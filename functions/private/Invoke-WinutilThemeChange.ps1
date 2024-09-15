@@ -3,10 +3,11 @@ function Invoke-WinutilThemeChange {
     param (
         $init = $false
     )
-    function applyTheme{
+    function Set-WinutilTheme{
         param (
             $ctttheme
         )
+        Write-host $ctttheme
         # Colors are stored as a SolidColorBrush Object
         $jsonColors = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {$_.Name -like "*color*"} | Select-Object Name, Value
         foreach ($entry in $jsonColors) {
@@ -62,24 +63,24 @@ function Invoke-WinutilThemeChange {
 
     }
     if ($init -eq $true) {
-        if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
+        $systemUsesDarkMode = Get-WinUtilToggleStatus WPFToggleDarkMode
+        if ($systemUsesDarkMode -eq $True) {
 
-            $Script:ctttheme = "Dark"
+            $sync.ctttheme = "Dark"
         } else {
-            $Script:ctttheme = "Light"
+            $sync.ctttheme = "Light"
         }
-        applyTheme -ctttheme "shared"
+        Set-WinutilTheme -ctttheme "shared"
     }
     else{
-        if ($ctttheme -eq "Dark") {
-            $Script:ctttheme = "Light"
+        if ($sync.ctttheme -eq "Dark") {
+            $sync.ctttheme = "Light"
         }
         else {
-            $Script:ctttheme = "Dark"
+            $sync.ctttheme = "Dark"
         }
     }
-
-    switch ($ctttheme) {
+    switch ($sync.ctttheme) {
         "Light"{
             $sync.Form.FindName("ThemeSelectorButton").Content = [char]0xE708
         }
@@ -88,52 +89,5 @@ function Invoke-WinutilThemeChange {
         }
     }
 
-    applyTheme -ctttheme $ctttheme
-
-    # $random = New-Object System.Random
-    # function Get-RandomColor {
-    #     param (
-    #         $type
-    #     )
-    #     $r = $random.Next(0, 256)
-    #     $g = $random.Next(0, 256)
-    #     $b = $random.Next(0, 256)
-    #         if ($type -eq "Color") {
-    #             return [Windows.Media.Color]::FromRgb($r, $g, $b)
-    #         }
-    #         else{
-    #             return [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb($r, $g, $b))
-    #         }
-
-    #     }
-    #     # Return a new SolidColorBrush with random RGB values
-
-    # $sync.Form.Resources["DComboBoxBackgroundColor"] = Get-RandomColor
-    # $sync.Form.Resources["DLabelboxForegroundColor"] = Get-RandomColor
-    # $sync.Form.Resources["DMainForegroundColor"] = Get-RandomColor
-    # $sync.Form.Resources["DMainBackgroundColor"] = Get-RandomColor
-    # $sync.Form.Resources["DLabelBackgroundColor"] = Get-RandomColor
-    # $sync.Form.Resources["DLinkForegroundColor"] = Get-RandomColor
-    # $sync.Form.Resources["DComboBoxForegroundColor"] = Get-RandomColor
-    # $sync.Form.Resources["DProgressBarForegroundColor"] = Get-RandomColor
-    # $sync.Form.Resources["DProgressBarBackgroundColor"] = Get-RandomColor
-    # $sync.Form.Resources["DProgressBarTextColor"] = Get-RandomColor
-    # $sync.Form.Resources["DButtonInstallBackgroundColor"] = Get-RandomColor
-    # $sync.Form.Resources["DButtonTweaksBackgroundColor"] = Get-RandomColor
-    # $sync.Form.Resources["DButtonConfigBackgroundColor"] = Get-RandomColor
-    # $sync.Form.Resources["DButtonUpdatesBackgroundColor"] = Get-RandomColor
-    # $sync.Form.Resources["DButtonInstallForegroundColor"] = Get-RandomColor
-    # $sync.Form.Resources["DButtonTweaksForegroundColor"] = Get-RandomColor
-    # $sync.Form.Resources["DButtonConfigForegroundColor"] = Get-RandomColor
-    # $sync.Form.Resources["DButtonUpdatesForegroundColor"] = Get-RandomColor
-    # $sync.Form.Resources["DButtonBackgroundColor"] = Get-RandomColor
-    # $sync.Form.Resources["DButtonBackgroundPressedColor"] = Get-RandomColor
-    # $sync.Form.Resources["DButtonBackgroundMouseoverColor"] = Get-RandomColor
-    # $sync.Form.Resources["DButtonBackgroundSelectedColor"] = Get-RandomColor
-    # $sync.Form.Resources["DButtonForegroundColor"] = Get-RandomColor
-    # $sync.Form.Resources["DToggleButtonOnColor"] = Get-RandomColor
-    # $sync.Form.Resources["DBorderColor"] = Get-RandomColor
-    # $sync.Form.Resources["CBorderColor"] = Get-RandomColor -type "Color"
-
+    Set-WinutilTheme -ctttheme $sync.ctttheme
 }
-#endregion

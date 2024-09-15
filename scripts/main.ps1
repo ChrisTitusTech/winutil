@@ -52,17 +52,6 @@ $sync.runspace.Open()
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
-# $defaulttheme = '_default'
-# if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
-#     if (Invoke-WinUtilGPU -eq $True) {
-#         $ctttheme = 'Matrix'
-#     } else {
-#         $ctttheme = 'Dark'
-#     }
-# } else {
-#     $ctttheme = 'Classic'
-# }
-
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
 

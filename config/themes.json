@@ -37,10 +37,8 @@
         "ButtonMargin":  "1",
         "ButtonCornerRadius": "2"
     },
-    "Light": {
-        "ProgressBarForegroundColor": "#2e77ff",
-        "ProgressBarBackgroundColor": "Transparent",
-        "ProgressBarTextColor": "#232629",
+    "Light": { 
+        "ComboBoxForegroundColor":  "#232629",    
         "ComboBoxBackgroundColor":  "#F7F7F7",
         "LabelboxForegroundColor":  "#232629",
         "MainForegroundColor":  "#232629",
@@ -48,7 +46,10 @@
         "LabelBackgroundColor":  "#F7F7F7",
         "LinkForegroundColor":  "#232629",
         "LinkHoverForegroundColor":  "#232629",
-        "ComboBoxForegroundColor":  "#232629",
+        
+        "ProgressBarForegroundColor": "#2e77ff",
+        "ProgressBarBackgroundColor": "Transparent",
+        "ProgressBarTextColor": "#232629",
         "ButtonInstallBackgroundColor":  "#F7F7F7",
         "ButtonTweaksBackgroundColor":  "#F7F7F7",
         "ButtonConfigBackgroundColor":  "#F7F7F7",
@@ -68,6 +69,7 @@
 
     },
     "Dark": {
+        "ComboBoxForegroundColor":  "#81a1c1",
         "ComboBoxBackgroundColor":  "#232629",
         "LabelboxForegroundColor":  "#81a1c1",
         "MainForegroundColor":  "#F7F7F7",
@@ -75,7 +77,6 @@
         "LabelBackgroundColor":  "#232629",
         "LinkForegroundColor":  "#add8e6",
         "LinkHoverForegroundColor":  "#F7F7F7",
-        "ComboBoxForegroundColor":  "#81a1c1",
         "ProgressBarForegroundColor": "#222222",
         "ProgressBarBackgroundColor": "Transparent",
         "ProgressBarTextColor": "#cccccc",
