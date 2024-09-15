@@ -1,5 +1,5 @@
 
-function Invoke-WPFChangeTheme {
+function Invoke-WinutilThemeChange {
     param (
         $init = $false
     )

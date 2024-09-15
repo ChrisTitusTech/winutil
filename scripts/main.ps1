@@ -91,7 +91,7 @@ if (-NOT ($readerOperationSuccessful)) {
     [System.GC]::Collect()
     exit 1
 }
-Invoke-WPFChangeTheme -init $true
+Invoke-WinutilThemeChange -init $true
 # Load the configuration files
 #Invoke-WPFUIElements -configVariable $sync.configs.nav -targetGridName "WPFMainGrid"
 Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 5
