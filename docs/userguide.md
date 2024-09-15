@@ -141,6 +141,10 @@ Open old-school Windows panels directly from WinUtil. Following Panels are avail
 * System Properties
 * User Accounts
 
+### Remote Access
+
+Enables OpenSSH server on your windows machine.
+
 ## Updates
 ---
 
