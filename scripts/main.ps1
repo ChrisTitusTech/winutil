@@ -225,9 +225,8 @@ $commonKeyEvents = {
 $sync["Form"].Add_PreViewKeyDown($commonKeyEvents)
 
 $sync["Form"].Add_MouseLeftButtonDown({
-    if ($sync["SettingsPopup"].IsOpen) {
-        $sync["SettingsPopup"].IsOpen = $false
-    }
+    $sync.SettingsPopup.IsOpen = $sync.SettingsPopup.IsOpen ? $false : $false
+    $sync.ThemePopup.IsOpen = $sync.ThemePopup.IsOpen ? $false : $false
     $sync["Form"].DragMove()
 })
 
@@ -241,9 +240,8 @@ $sync["Form"].Add_MouseDoubleClick({
 
 $sync["Form"].Add_Deactivated({
     Write-Debug "WinUtil lost focus"
-    if ($sync["SettingsPopup"].IsOpen) {
-        $sync["SettingsPopup"].IsOpen = $false
-    }
+    $sync.SettingsPopup.IsOpen = $sync.SettingsPopup.IsOpen ? $false : $false
+    $sync.ThemePopup.IsOpen = $sync.ThemePopup.IsOpen ? $false : $false
 })
 
 $sync["Form"].Add_ContentRendered({
@@ -458,6 +456,7 @@ $sync["Form"].Add_Activated({
 # Define event handler for ThemeButton click
 $sync["ThemeButton"].Add_Click({
     $sync.ThemePopup.IsOpen = $sync.ThemePopup.IsOpen -eq $false ? $true : $false
+    $sync.SettingsPopup.IsOpen = $false
 })
 
 # Define event handlers for menu items
@@ -483,11 +482,8 @@ $sync["LightThemeMenuItem"].Add_Click({
 # Define event handler for button click
 $sync["SettingsButton"].Add_Click({
     Write-Debug "SettingsButton clicked"
-    if ($sync["SettingsPopup"].IsOpen) {
-        $sync["SettingsPopup"].IsOpen = $false
-    } else {
-        $sync["SettingsPopup"].IsOpen = $true
-    }
+    $sync.SettingsPopup.IsOpen = $sync.SettingsPopup.IsOpen -eq $false ? $true : $false
+    $sync.ThemePopup.IsOpen = $false
     $_.Handled = $false
 })
 
