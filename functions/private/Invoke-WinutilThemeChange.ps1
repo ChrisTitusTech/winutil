@@ -128,13 +128,13 @@ function Invoke-WinutilThemeChange {
             }
         }
     }
-    
+
     $LightPreferencePath = "$env:LOCALAPPDATA\winutil\LightTheme.ini"
     $DarkPreferencePath = "$env:LOCALAPPDATA\winutil\DarkTheme.ini"
 
     if ($init) {
-        Set-WinutilTheme -currentTheme "shared"    
-        if (Test-Path $LightPreferencePath){
+        Set-WinutilTheme -currentTheme "shared"
+        if (Test-Path $LightPreferencePath) {
             $theme = "Light"
         }
         elseif (Test-Path $DarkPreferencePath) {
