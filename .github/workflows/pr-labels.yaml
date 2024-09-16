@@ -11,47 +11,25 @@ jobs:
       - name: Analyze PR Body and manage labels
         run: |
           body="${{ github.event.pull_request.body }}"
-
-          # Initialize the labels to be added and removed
           labels_to_add=()
           labels_to_remove=()
 
-          # Check for enhancement
-          if echo "$body" | grep -q '\- \[x\] New feature'; then
-            labels_to_add+=("enhancement")
-          else
-            labels_to_remove+=("enhancement")
-          fi
+          declare -A label_checks=(
+            ["New feature"]="enhancement"
+            ["Bug fix|Hotfix|Security patch"]="bug"
+            ["Documentation update"]="documentation"
+            ["Refactoring"]="refactor"
+            ["UI/UX improvement"]="UI/UX"
+          )
 
-          # Check for bug-related labels (Bug fix, Hotfix, Security patch)
-          if echo "$body" | grep -q '\- \[x\] Bug fix\|\- \[x\] Hotfix\|\- \[x\] Security patch'; then
-            labels_to_add+=("bug")
-          else
-            labels_to_remove+=("bug")
-          fi
+          for key in "${!label_checks[@]}"; do
+            if echo "$body" | grep -q "\- \[x\] $key"; then
+              labels_to_add+=("${label_checks[$key]}")
+            else
+              labels_to_remove+=("${label_checks[$key]}")
+            fi
+          done
 
-          # Check for documentation update
-          if echo "$body" | grep -q '\- \[x\] Documentation update'; then
-            labels_to_add+=("documentation")
-          else
-            labels_to_remove+=("documentation")
-          fi
-
-          # Check for refactoring
-          if echo "$body" | grep -q '\- \[x\] Refactoring'; then
-            labels_to_add+=("refactor")
-          else
-            labels_to_remove+=("refactor")
-          fi
-
-          # Check for UI/UX improvement
-          if echo "$body" | grep -q '\- \[x\] UI/UX improvement'; then
-            labels_to_add+=("UI/UX")
-          else
-            labels_to_remove+=("UI/UX")
-          fi
-
-          # Export the labels to add and remove as environment variables (formatted as space-separated lists)
           echo "LABELS_TO_ADD=${labels_to_add[*]}" >> $GITHUB_ENV
           echo "LABELS_TO_REMOVE=${labels_to_remove[*]}" >> $GITHUB_ENV
 
