@@ -1,71 +1,82 @@
-
 function Invoke-WinutilThemeChange {
     param (
-        $init = $false
+        [switch]$init = $false
     )
-    function Set-WinutilTheme{
+    
+    function Set-WinutilTheme {
         param (
             $ctttheme
         )
-        # Colors are stored as a SolidColorBrush Object
-        $jsonColors = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {$_.Name -like "*color*"} | Select-Object Name, Value
-        foreach ($entry in $jsonColors) {
-            $sync.Form.Resources[$($entry.Name)] = [Windows.Media.SolidColorBrush]::new($entry.Value)
-
-            # Because Border color is also used in a Drop Shadow, it's nesessary to also store it as a Color Resource
-            if (($entry.Name -eq "BorderColor") -or ($entry.Name -eq "ButtonBackgroundMouseoverColor"))  {
-                $hexColor = $entry.Value.TrimStart("#")
-                $r = [Convert]::ToInt32($hexColor.Substring(0, 2), 16)
-                $g = [Convert]::ToInt32($hexColor.Substring(2, 2), 16)
-                $b = [Convert]::ToInt32($hexColor.Substring(4, 2), 16)
-                $sync.Form.Resources["C$($entry.Name)"] = [Windows.Media.Color]::FromRgb($r, $g, $b)
-            }
-        }
-        $jsonRadius = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {($_.Name -like "*Radius*")} | Select-Object Name, Value
-        foreach ($entry in $jsonRadius) {
-            $sync.Form.Resources[$entry.Name] = [System.Windows.CornerRadius]::new($entry.Value)
-        }
-        $jsonRowHeight = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {($_.Name -like "*RowHeight*")} | Select-Object Name, Value
-        foreach ($entry in $jsonRowHeight) {
-            $sync.Form.Resources[$entry.Name] = [System.Windows.GridLength]::new($entry.Value)
-        }
-
-        $jsonThickness = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {($_.Name -like "*Thickness*") -or ($_.Name -like "*margin")} | Select-Object Name, Value
-        foreach ($entry in $jsonThickness) {
-            $values = $entry.Value -split ","
-            switch ($values.Count) {
-                1{$sync.Form.Resources[$entry.Name] = [System.Windows.Thickness]::new([double]$values[0])}
-                2{$sync.Form.Resources[$entry.Name] = [System.Windows.Thickness]::new([double]$values[0],[double]$values[1])}
-                4{$sync.Form.Resources[$entry.Name] = [System.Windows.Thickness]::new([double]$values[0],[double]$values[1],[double]$values[2],[double]$values[3])}
-            }
-
-            # Write-Host "$($entry.Name), $($sync.Form.Resources[$entry.Name])"
-        }
-        $jsonFontFamilys = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {$_.Name -like "*FontFamily*"} | Select-Object Name, Value
-        foreach ($entry in $jsonFontFamilys) {
-            $sync.Form.Resources[$entry.Name] = [Windows.Media.FontFamily]::new($entry.Value)
-        }
-
-        $jsonFontSize = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {($_.Name -notlike "*color*") -and ($_.Name -notlike "*margin*")-and ($_.Name -notlike "*FontFamily*")-and ($_.Name -notlike "*thickness*") -and ($_.Name -notlike "*RowHeight*") -and ($_.Name -notlike "*Radius*")} | Select-Object Name, Value
-        foreach ($entry in $jsonFontSize) {
+        
+        function Set-ResourceProperty {
+            param($Name, $Value, $Type)
             try {
-                $sync.Form.Resources[$entry.Name] = [double]$entry.Value
-                # Write-Host "$($entry.Name), $($entry.Value) Converted to double"
+                $sync.Form.Resources[$Name] = switch ($Type) {
+                    "ColorBrush" { [Windows.Media.SolidColorBrush]::new($Value) }
+                    "Color" {
+                        $hexColor = $Value.TrimStart("#")
+                        $r = [Convert]::ToInt32($hexColor.Substring(0,2), 16)
+                        $g = [Convert]::ToInt32($hexColor.Substring(2,2), 16)
+                        $b = [Convert]::ToInt32($hexColor.Substring(4,2), 16)
+                        [Windows.Media.Color]::FromRgb($r, $g, $b)
+                    }
+                    "CornerRadius" { [System.Windows.CornerRadius]::new($Value) }
+                    "GridLength" { [System.Windows.GridLength]::new($Value) }
+                    "Thickness" { 
+                        $values = $Value -split ","
+                        switch ($values.Count) {
+                            1 { [System.Windows.Thickness]::new([double]$values[0]) }
+                            2 { [System.Windows.Thickness]::new([double]$values[0], [double]$values[1]) }
+                            4 { [System.Windows.Thickness]::new([double]$values[0], [double]$values[1], [double]$values[2], [double]$values[3]) }
+                        }
+                    }
+                    "FontFamily" { [Windows.Media.FontFamily]::new($Value) }
+                    "Double" { [double]$Value }
+                    default { $Value }
+                }
             }
             catch {
-                # Write-Host "$($entry.Name), $($entry.Value) Could not be converted. Kept as a String"
-                $sync.Form.Resources[$entry.Name] = $entry.Value
-
+                Write-Warning "Failed to set property $($Name): $_"
             }
+        }
+        $themeProperties = $sync.configs.themes.$ctttheme.PSOBject.Properties
+        $themeProperties | Where-Object { $_.Name -like "*color*" } | ForEach-Object {
+            Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "ColorBrush"
+            if ($_.Name -in @("BorderColor", "ButtonBackgroundMouseoverColor")) {
+                Set-ResourceProperty -Name "C$($_.Name)" -Value $_.Value -Type "Color"
+            }
+        }
 
+        $themeProperties | Where-Object { $_.Name -like "*Radius*" } | ForEach-Object {
+            Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "CornerRadius"
+        }
+    
+        $themeProperties | Where-Object { $_.Name -like "*RowHeight*" } | ForEach-Object {
+            Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "GridLength"
+        }
+
+        $themeProperties | Where-Object { ($_.Name -like "*Thickness*") -or ($_.Name -like "*margin") } | ForEach-Object {
+            Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "Thickness"
+        }
+
+        $themeProperties | Where-Object { $_.Name -like "*FontFamily*" } | ForEach-Object {
+            Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "FontFamily"
+        }
+
+        $themeProperties | Where-Object { 
+            $_.Name -notmatch "(color|margin|FontFamily|thickness|RowHeight|Radius)"
+        } | ForEach-Object {
+            Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "Double"
         }
 
     }
+
     if ($init -eq $true) {
         $systemUsesDarkMode = Get-WinUtilToggleStatus WPFToggleDarkMode
         $sync.ctttheme = $systemUsesDarkMode ? "Dark" : "Light"
         Set-WinutilTheme -ctttheme "shared"
-    } else{
+    }
+    else {
         $sync.ctttheme -eq "Dark" ? ($sync.ctttheme = "Light") : ($sync.ctttheme = "Dark")
     }
     Set-WinutilTheme -ctttheme $sync.ctttheme
