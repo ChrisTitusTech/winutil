@@ -128,16 +128,24 @@ function Invoke-WinutilThemeChange {
         }
     }
 
+    $themePreferencePath = "$env:LOCALAPPDATA\winutil\PreferLightTheme.ini"
+
     # If init is true, initialize the theme based on the system's dark mode setting
     if ($init -eq $true) {
-        $systemUsesDarkMode = Get-WinUtilToggleStatus WPFToggleDarkMode
-        # Set theme based on system dark mode status
-        $sync.currentTheme = $systemUsesDarkMode ? "Dark" : "Light"
+        # Set theme based on system dark mode status if no config file is found
+        if (-not (Test-Path $themePreferencePath)) {
+            $systemUsesDarkMode = Get-WinUtilToggleStatus WPFToggleDarkMode
+            $sync.currentTheme = $systemUsesDarkMode ? "Dark" : "Light"
+        }
+        else{
+            $sync.currentTheme = "Light"
+        }
         Set-WinutilTheme -currentTheme "shared"
     }
     else {
         # Toggle the theme between 'Dark' and 'Light'
-        $sync.currentTheme -eq "Dark" ? ($sync.currentTheme = "Light") : ($sync.currentTheme = "Dark")
+        $sync.currentTheme -eq "Dark" ? $($sync.currentTheme = "Light"; New-Item $themePreferencePath -Force) : $($sync.currentTheme = "Dark"; Remove-Item $themePreferencePath -Force)
+
     }
 
     # Apply the new theme
