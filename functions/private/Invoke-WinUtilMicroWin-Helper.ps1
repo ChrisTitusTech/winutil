@@ -165,7 +165,8 @@ function Remove-ProvisionedPackages() {
                 $_.PackageName -NotLike "*Paint*" -and
                 $_.PackageName -NotLike "*Gaming*" -and
                 $_.PackageName -NotLike "*Extension*" -and
-                $_.PackageName -NotLike "*SecHealthUI*"
+                $_.PackageName -NotLike "*SecHealthUI*" -and
+                $_.PackageName -NotLike "*ScreenSketch*"
         }
 
         $counter = 0

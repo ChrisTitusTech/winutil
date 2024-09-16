@@ -71,7 +71,7 @@
     "Dark": {
         "ComboBoxForegroundColor":  "#81a1c1",
         "ComboBoxBackgroundColor":  "#232629",
-        "LabelboxForegroundColor":  "#81a1c1",
+        "LabelboxForegroundColor":  "#f7f7f7",
         "MainForegroundColor":  "#F7F7F7",
         "MainBackgroundColor":  "#232629",
         "LabelBackgroundColor":  "#232629",
@@ -89,12 +89,12 @@
         "ButtonConfigForegroundColor":  "#F7F7F7",
         "ButtonUpdatesForegroundColor":  "#F7F7F7",
         "ButtonBackgroundColor":  "#1E3747",
-        "ButtonBackgroundPressedColor":  "#00CFFF",
-        "ButtonBackgroundMouseoverColor":  "#5E81AC",
+        "ButtonBackgroundPressedColor":  "#F7F7F7",
+        "ButtonBackgroundMouseoverColor":  "#3B4252",
         "ButtonBackgroundSelectedColor":  "#5E81AC",
         "ButtonForegroundColor":  "#F7F7F7",
         "ToggleButtonOnColor":  "#2e77ff",
-        "BorderColor": "#0b1215",
+        "BorderColor": "#0060CC",
         "BorderOpacity": "0.2"
     }
 }
