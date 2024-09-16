@@ -742,7 +742,7 @@
                         Foreground="{DynamicResource ProgressBarTextColor}">
                     </TextBlock>
                 </Label>
-                <Button Name="ThemeSelectorButton"
+                <Button Name="ThemeButton"
                     Style="{StaticResource HoverButtonStyle}"
                     Grid.Column="2" BorderBrush="Transparent"
                     Background="{DynamicResource MainBackgroundColor}"

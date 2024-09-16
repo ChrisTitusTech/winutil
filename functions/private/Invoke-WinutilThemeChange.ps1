@@ -31,16 +31,16 @@ function Invoke-WinutilThemeChange {
         .DESCRIPTION
             This internal function applies the given theme by setting the relevant properties
             like colors, font families, corner radii, etc., in the UI. It uses the
-            'Set-ResourceProperty' helper function to modify the application's resources.
+            'Set-ThemeResourceProperty' helper function to modify the application's resources.
 
-        .PARAMETER ctttheme
+        .PARAMETER currentTheme
             The name of the theme to be applied. Common values are "Light", "Dark", or "shared".
         #>
         param (
-            [string]$ctttheme
+            [string]$currentTheme
         )
 
-        function Set-ResourceProperty {
+        function Set-ThemeResourceProperty {
             <#
             .SYNOPSIS
                 Sets a specific UI property in the application's resources.
@@ -95,35 +95,35 @@ function Invoke-WinutilThemeChange {
         }
 
         # Retrieve all theme properties from the theme configuration
-        $themeProperties = $sync.configs.themes.$ctttheme.PSObject.Properties
+        $themeProperties = $sync.configs.themes.$currentTheme.PSObject.Properties
         foreach ($_ in $themeProperties) {
             # Apply properties that deal with colors
             if ($_.Name -like "*color*") {
-                Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "ColorBrush"
-                # For certain color properties, also set complementary values (e.g., BorderColor -> CBorderColor) This is required because e.g DropShadowEffect requires a <Color> and not a <SolidColorBrush> object 
+                Set-ThemeResourceProperty -Name $_.Name -Value $_.Value -Type "ColorBrush"
+                # For certain color properties, also set complementary values (e.g., BorderColor -> CBorderColor) This is required because e.g DropShadowEffect requires a <Color> and not a <SolidColorBrush> object
                 if ($_.Name -in @("BorderColor", "ButtonBackgroundMouseoverColor")) {
-                    Set-ResourceProperty -Name "C$($_.Name)" -Value $_.Value -Type "Color"
+                    Set-ThemeResourceProperty -Name "C$($_.Name)" -Value $_.Value -Type "Color"
                 }
             }
             # Apply corner radius properties
             elseif ($_.Name -like "*Radius*") {
-                Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "CornerRadius"
+                Set-ThemeResourceProperty -Name $_.Name -Value $_.Value -Type "CornerRadius"
             }
             # Apply row height properties
             elseif ($_.Name -like "*RowHeight*") {
-                Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "GridLength"
+                Set-ThemeResourceProperty -Name $_.Name -Value $_.Value -Type "GridLength"
             }
             # Apply thickness or margin properties
             elseif (($_.Name -like "*Thickness*") -or ($_.Name -like "*margin")) {
-                Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "Thickness"
+                Set-ThemeResourceProperty -Name $_.Name -Value $_.Value -Type "Thickness"
             }
             # Apply font family properties
             elseif ($_.Name -like "*FontFamily*") {
-                Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "FontFamily"
+                Set-ThemeResourceProperty -Name $_.Name -Value $_.Value -Type "FontFamily"
             }
             # Apply any other properties as doubles (numerical values)
             else {
-                Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "Double"
+                Set-ThemeResourceProperty -Name $_.Name -Value $_.Value -Type "Double"
             }
         }
     }
@@ -132,21 +132,21 @@ function Invoke-WinutilThemeChange {
     if ($init -eq $true) {
         $systemUsesDarkMode = Get-WinUtilToggleStatus WPFToggleDarkMode
         # Set theme based on system dark mode status
-        $sync.ctttheme = $systemUsesDarkMode ? "Dark" : "Light"
-        Set-WinutilTheme -ctttheme "shared"
+        $sync.currentTheme = $systemUsesDarkMode ? "Dark" : "Light"
+        Set-WinutilTheme -currentTheme "shared"
     }
     else {
         # Toggle the theme between 'Dark' and 'Light'
-        $sync.ctttheme -eq "Dark" ? ($sync.ctttheme = "Light") : ($sync.ctttheme = "Dark")
+        $sync.currentTheme -eq "Dark" ? ($sync.currentTheme = "Light") : ($sync.currentTheme = "Dark")
     }
 
     # Apply the new theme
-    Set-WinutilTheme -ctttheme $sync.ctttheme
+    Set-WinutilTheme -currentTheme $sync.currentTheme
 
     # Update the theme selector button with the appropriate icon and tooltip
-    $themeIcon = $sync.ctttheme -eq "Light" ? ([char]0xE708) : ([char]0xE706) # Icon based on current theme
-    $toolTip = $sync.ctttheme -eq "Light" ? "Use Dark Mode" : "Use Light Mode" # Tooltip based on current theme
-    $ThemeSelectorButton = $sync.Form.FindName("ThemeSelectorButton")
-    $ThemeSelectorButton.Content = [string]$themeIcon
-    $ThemeSelectorButton.toolTip = $toolTip
+    $themeButtonIcon = $sync.currentTheme -eq "Light" ? ([char]0xE708) : ([char]0xE706) # Icon based on current theme
+    $ThemeButtonTooltip = $sync.currentTheme -eq "Light" ? "Use Dark Mode" : "Use Light Mode" # Tooltip based on current theme
+    $ThemeButton = $sync.Form.FindName("ThemeButton")
+    $ThemeButton.Content = [string]$themeButtonIcon
+    $ThemeButton.Tooltip = $ThemeButtonTooltip
 }
