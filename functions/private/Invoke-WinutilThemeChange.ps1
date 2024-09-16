@@ -2,12 +2,12 @@ function Invoke-WinutilThemeChange {
     param (
         [switch]$init = $false
     )
-    
+
     function Set-WinutilTheme {
         param (
-            $ctttheme
+            [string]$ctttheme
         )
-        
+
         function Set-ResourceProperty {
             param($Name, $Value, $Type)
             try {
@@ -22,7 +22,7 @@ function Invoke-WinutilThemeChange {
                     }
                     "CornerRadius" { [System.Windows.CornerRadius]::new($Value) }
                     "GridLength" { [System.Windows.GridLength]::new($Value) }
-                    "Thickness" { 
+                    "Thickness" {
                         $values = $Value -split ","
                         switch ($values.Count) {
                             1 { [System.Windows.Thickness]::new([double]$values[0]) }
@@ -40,35 +40,29 @@ function Invoke-WinutilThemeChange {
             }
         }
         $themeProperties = $sync.configs.themes.$ctttheme.PSOBject.Properties
-        $themeProperties | Where-Object { $_.Name -like "*color*" } | ForEach-Object {
-            Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "ColorBrush"
-            if ($_.Name -in @("BorderColor", "ButtonBackgroundMouseoverColor")) {
-                Set-ResourceProperty -Name "C$($_.Name)" -Value $_.Value -Type "Color"
+        foreach ($_ in $themeProperties) {
+            if ($_.Name -like "*color*") {
+                Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "ColorBrush"
+                if ($_.Name -in @("BorderColor", "ButtonBackgroundMouseoverColor")) {
+                    Set-ResourceProperty -Name "C$($_.Name)" -Value $_.Value -Type "Color"
+                }
+            }
+            elseif ($_.Name -like "*Radius*") {
+                Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "CornerRadius"
+            }
+            elseif ($_.Name -like "*RowHeight*") {
+                Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "GridLength"
+            }
+            elseif (($_.Name -like "*Thickness*") -or ($_.Name -like "*margin")) {
+                Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "Thickness"
+            }
+            elseif ($_.Name -like "*FontFamily*") {
+                Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "FontFamily"
+            }
+            else{
+                Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "Double"
             }
         }
-
-        $themeProperties | Where-Object { $_.Name -like "*Radius*" } | ForEach-Object {
-            Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "CornerRadius"
-        }
-    
-        $themeProperties | Where-Object { $_.Name -like "*RowHeight*" } | ForEach-Object {
-            Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "GridLength"
-        }
-
-        $themeProperties | Where-Object { ($_.Name -like "*Thickness*") -or ($_.Name -like "*margin") } | ForEach-Object {
-            Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "Thickness"
-        }
-
-        $themeProperties | Where-Object { $_.Name -like "*FontFamily*" } | ForEach-Object {
-            Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "FontFamily"
-        }
-
-        $themeProperties | Where-Object { 
-            $_.Name -notmatch "(color|margin|FontFamily|thickness|RowHeight|Radius)"
-        } | ForEach-Object {
-            Set-ResourceProperty -Name $_.Name -Value $_.Value -Type "Double"
-        }
-
     }
 
     if ($init -eq $true) {
@@ -80,11 +74,11 @@ function Invoke-WinutilThemeChange {
         $sync.ctttheme -eq "Dark" ? ($sync.ctttheme = "Light") : ($sync.ctttheme = "Dark")
     }
     Set-WinutilTheme -ctttheme $sync.ctttheme
-    
+
     # Update the Button to reflect the Theme
     $themeIcon = $sync.ctttheme -eq "Light" ? ([char]0xE708) : ([char]0xE706)
-    $ToolTip = $sync.ctttheme -eq "Light" ? "Use Dark Mode" : "Use Light Mode"
+    $toolTip = $sync.ctttheme -eq "Light" ? "Use Dark Mode" : "Use Light Mode"
     $ThemeSelectorButton = $sync.Form.FindName("ThemeSelectorButton")
     $ThemeSelectorButton.Content = [string]$themeIcon
-    $ThemeSelectorButton.ToolTip = $ToolTip
+    $ThemeSelectorButton.toolTip = $toolTip
 }

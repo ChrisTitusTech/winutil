@@ -1,5 +1,5 @@
 {
-    "shared":{        
+    "shared":{
         "CustomDialogFontSize":       "12",
         "CustomDialogFontSizeHeader": "14",
         "CustomDialogIconSize":       "25",
@@ -37,8 +37,8 @@
         "ButtonMargin":  "1",
         "ButtonCornerRadius": "2"
     },
-    "Light": { 
-        "ComboBoxForegroundColor":  "#232629",    
+    "Light": {
+        "ComboBoxForegroundColor":  "#232629",
         "ComboBoxBackgroundColor":  "#F7F7F7",
         "LabelboxForegroundColor":  "#232629",
         "MainForegroundColor":  "#232629",
@@ -46,7 +46,7 @@
         "LabelBackgroundColor":  "#F7F7F7",
         "LinkForegroundColor":  "#232629",
         "LinkHoverForegroundColor":  "#232629",
-        
+
         "ProgressBarForegroundColor": "#2e77ff",
         "ProgressBarBackgroundColor": "Transparent",
         "ProgressBarTextColor": "#232629",
@@ -59,7 +59,7 @@
         "ButtonConfigForegroundColor":  "#232629",
         "ButtonUpdatesForegroundColor":  "#232629",
         "ButtonBackgroundColor":  "#F5F5F5",
-        "ButtonBackgroundPressedColor":  "#1A1A1A",      
+        "ButtonBackgroundPressedColor":  "#1A1A1A",
         "ButtonBackgroundMouseoverColor":  "#C2C2C2",
         "ButtonBackgroundSelectedColor":  "#F0F0F0",
         "ButtonForegroundColor":  "#232629",
