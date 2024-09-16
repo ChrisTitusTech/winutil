@@ -753,7 +753,32 @@
                     Margin="0,5,5,0"
                     FontFamily="Segoe MDL2 Assets"
                     Content="N/A"
+                    ToolTip="Change the Winutil UI Theme"
                 />
+                <Popup Grid.Column="2" Name="ThemePopup"
+                    IsOpen="False"
+                    PlacementTarget="{Binding ElementName=ThemeButton}" Placement="Bottom"
+                    HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <Border Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
+                        <StackPanel Background="{DynamicResource MainBackgroundColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Auto" Name="AutoThemeMenuItem" Foreground="{DynamicResource MainForegroundColor}">
+                                <MenuItem.ToolTip>
+                                    <ToolTip Content="Follow the Windows Theme"/>
+                                </MenuItem.ToolTip>
+                            </MenuItem>
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Dark" Name="DarkThemeMenuItem" Foreground="{DynamicResource MainForegroundColor}">
+                                <MenuItem.ToolTip>
+                                    <ToolTip Content="Use Dark Theme"/>
+                                </MenuItem.ToolTip>
+                            </MenuItem>
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Light" Name="LightThemeMenuItem" Foreground="{DynamicResource MainForegroundColor}">
+                                <MenuItem.ToolTip>
+                                    <ToolTip Content="Use Light Theme"/>
+                                </MenuItem.ToolTip>
+                            </MenuItem>
+                        </StackPanel>
+                    </Border>
+                </Popup>
 
 
                 <Button Name="SettingsButton"

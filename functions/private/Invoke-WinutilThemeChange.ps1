@@ -20,7 +20,8 @@ function Invoke-WinutilThemeChange {
         # Initializes the theme based on the system's dark mode and applies the shared theme.
     #>
     param (
-        [switch]$init = $false
+        [switch]$init = $false,
+        [string]$theme
     )
 
     function Set-WinutilTheme {
@@ -127,34 +128,46 @@ function Invoke-WinutilThemeChange {
             }
         }
     }
+    
+    $LightPreferencePath = "$env:LOCALAPPDATA\winutil\LightTheme.ini"
+    $DarkPreferencePath = "$env:LOCALAPPDATA\winutil\DarkTheme.ini"
 
-    $themePreferencePath = "$env:LOCALAPPDATA\winutil\PreferLightTheme.ini"
+    if ($init) {
+        Set-WinutilTheme -currentTheme "shared"    
+        if (Test-Path $LightPreferencePath){
+            $theme = "Light"
+        }
+        elseif (Test-Path $DarkPreferencePath) {
+            $theme = "Dark"
+        }
+        else {
+            $theme = "Auto"
+        }
+    }
 
-    # If init is true, initialize the theme based on the system's dark mode setting
-    if ($init -eq $true) {
-        # Set theme based on system dark mode status if no config file is found
-        if (-not (Test-Path $themePreferencePath)) {
+    switch ($theme) {
+        "Auto" {
             $systemUsesDarkMode = Get-WinUtilToggleStatus WPFToggleDarkMode
-            $sync.currentTheme = $systemUsesDarkMode ? "Dark" : "Light"
+            Set-WinutilTheme  -currentTheme $($systemUsesDarkMode ? "Dark" : "Light")
+            $themeButtonIcon = [char]0xF08C
+            Remove-Item $LightPreferencePath -Force -ErrorAction SilentlyContinue
+            Remove-Item $DarkPreferencePath -Force -ErrorAction SilentlyContinue
         }
-        else{
-            $sync.currentTheme = "Light"
+        "Dark" {
+            Set-WinutilTheme  -currentTheme $theme
+            $themeButtonIcon = [char]0xE708
+            $null = New-Item $DarkPreferencePath -Force
+            Remove-Item $LightPreferencePath -Force -ErrorAction SilentlyContinue
+           }
+        "Light" {
+            Set-WinutilTheme  -currentTheme $theme
+            $themeButtonIcon = [char]0xE706
+            $null = New-Item $LightPreferencePath -Force
+            Remove-Item $DarkPreferencePath -Force -ErrorAction SilentlyContinue
         }
-        Set-WinutilTheme -currentTheme "shared"
-    }
-    else {
-        # Toggle the theme between 'Dark' and 'Light'
-        $sync.currentTheme -eq "Dark" ? $($sync.currentTheme = "Light"; New-Item $themePreferencePath -Force) : $($sync.currentTheme = "Dark"; Remove-Item $themePreferencePath -Force)
-
     }
 
-    # Apply the new theme
-    Set-WinutilTheme -currentTheme $sync.currentTheme
-
-    # Update the theme selector button with the appropriate icon and tooltip
-    $themeButtonIcon = $sync.currentTheme -eq "Light" ? ([char]0xE708) : ([char]0xE706) # Icon based on current theme
-    $ThemeButtonTooltip = $sync.currentTheme -eq "Light" ? "Use Dark Mode" : "Use Light Mode" # Tooltip based on current theme
+    # Update the theme selector button with the appropriate icon
     $ThemeButton = $sync.Form.FindName("ThemeButton")
     $ThemeButton.Content = [string]$themeButtonIcon
-    $ThemeButton.Tooltip = $ThemeButtonTooltip
 }

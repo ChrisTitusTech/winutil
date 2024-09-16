@@ -455,6 +455,30 @@ Set-WinUtilTaskbaritem -overlay "logo"
 $sync["Form"].Add_Activated({
     Set-WinUtilTaskbaritem -overlay "logo"
 })
+# Define event handler for ThemeButton click
+$sync["ThemeButton"].Add_Click({
+    $sync.ThemePopup.IsOpen = $sync.ThemePopup.IsOpen -eq $false ? $true : $false
+})
+
+# Define event handlers for menu items
+$sync["AutoThemeMenuItem"].Add_Click({
+    $sync.ThemePopup.IsOpen = $false
+    Invoke-WinutilThemeChange -theme "Auto"
+    $_.Handled = $false
+  })
+  # Define event handlers for menu items
+$sync["DarkThemeMenuItem"].Add_Click({
+    $sync.ThemePopup.IsOpen = $false
+    Invoke-WinutilThemeChange -theme "Dark"
+    $_.Handled = $false
+  })
+# Define event handlers for menu items
+$sync["LightThemeMenuItem"].Add_Click({
+    $sync.ThemePopup.IsOpen = $false
+    Invoke-WinutilThemeChange -theme "Light"
+    $_.Handled = $false
+  })
+
 
 # Define event handler for button click
 $sync["SettingsButton"].Add_Click({
