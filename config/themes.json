@@ -69,12 +69,12 @@
 
     },
     "Dark": {
-        "ComboBoxForegroundColor":  "#81a1c1",
+        "ComboBoxForegroundColor":  "#1e3747",
         "ComboBoxBackgroundColor":  "#232629",
-        "LabelboxForegroundColor":  "#f7f7f7",
+        "LabelboxForegroundColor":  "#0567ff",
         "MainForegroundColor":  "#F7F7F7",
-        "MainBackgroundColor":  "#232629",
-        "LabelBackgroundColor":  "#232629",
+        "MainBackgroundColor":  "#121212",
+        "LabelBackgroundColor":  "#121212",
         "LinkForegroundColor":  "#add8e6",
         "LinkHoverForegroundColor":  "#F7F7F7",
         "ProgressBarForegroundColor": "#222222",
@@ -94,7 +94,7 @@
         "ButtonBackgroundSelectedColor":  "#5E81AC",
         "ButtonForegroundColor":  "#F7F7F7",
         "ToggleButtonOnColor":  "#2e77ff",
-        "BorderColor": "#0060CC",
+        "BorderColor": "#2F373D",
         "BorderOpacity": "0.2"
     }
 }
