@@ -9,11 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Analyze PR Body and manage labels
+        shell: bash
         run: |
-          body="${{ github.event.pull_request.body }}"
+          body=$(jq -r '.pull_request.body' "$GITHUB_EVENT_PATH")
           labels_to_add=()
           labels_to_remove=()
-
           declare -A label_checks=(
             ["New feature"]="enhancement"
             ["Bug fix|Hotfix|Security patch"]="bug"
@@ -21,33 +21,34 @@ jobs:
             ["Refactoring"]="refactor"
             ["UI/UX improvement"]="UI/UX"
           )
-
-          for key in "${!label_checks[@]}"; do
-            if echo "$body" | grep -q "\- \[x\] $key"; then
-              labels_to_add+=("${label_checks[$key]}")
+          for pattern in "${!label_checks[@]}"; do
+            label="${label_checks[$pattern]}"
+            if echo "$body" | grep -Eq "\- \[x\] ($pattern)"; then
+              labels_to_add+=("$label")
             else
-              labels_to_remove+=("${label_checks[$key]}")
+              labels_to_remove+=("$label")
             fi
           done
 
-          echo "LABELS_TO_ADD=${labels_to_add[*]}" >> $GITHUB_ENV
-          echo "LABELS_TO_REMOVE=${labels_to_remove[*]}" >> $GITHUB_ENV
+          echo "LABELS_TO_ADD=$(IFS=,; echo "${labels_to_add[*]}")" >> $GITHUB_ENV
+          echo "LABELS_TO_REMOVE=$(IFS=,; echo "${labels_to_remove[*]}")" >> $GITHUB_ENV
 
       - name: Add labels if necessary
         if: env.LABELS_TO_ADD != ''
         run: |
-          for label in ${{ env.LABELS_TO_ADD }}; do
+          IFS=',' read -ra labels <<< "${LABELS_TO_ADD}"
+          for label in "${labels[@]}"; do
             curl -s -X POST \
               -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
               -H "Accept: application/vnd.github.v3+json" \
               -d "{\"labels\": [\"$label\"]}" \
               https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels
           done
-
       - name: Remove labels if necessary
         if: env.LABELS_TO_REMOVE != ''
         run: |
-          for label in ${{ env.LABELS_TO_REMOVE }}; do
+          IFS=',' read -ra labels <<< "${LABELS_TO_REMOVE}"
+          for label in "${labels[@]}"; do
             curl -s -X DELETE \
               -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
               -H "Accept: application/vnd.github.v3+json" \
