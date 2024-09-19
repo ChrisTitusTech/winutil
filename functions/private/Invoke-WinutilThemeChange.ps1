@@ -148,7 +148,14 @@ function Invoke-WinutilThemeChange {
     switch ($theme) {
         "Auto" {
             $systemUsesDarkMode = Get-WinUtilToggleStatus WPFToggleDarkMode
-            Set-WinutilTheme  -currentTheme $($systemUsesDarkMode ? "Dark" : "Light")
+            if ($systemUsesDarkMode){
+                Set-WinutilTheme  -currentTheme "Dark"
+            }
+            else{
+                Set-WinutilTheme  -currentTheme "Light"
+            }
+
+            
             $themeButtonIcon = [char]0xF08C
             Remove-Item $LightPreferencePath -Force -ErrorAction SilentlyContinue
             Remove-Item $DarkPreferencePath -Force -ErrorAction SilentlyContinue

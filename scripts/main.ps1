@@ -225,8 +225,12 @@ $commonKeyEvents = {
 $sync["Form"].Add_PreViewKeyDown($commonKeyEvents)
 
 $sync["Form"].Add_MouseLeftButtonDown({
-    $sync.SettingsPopup.IsOpen = $sync.SettingsPopup.IsOpen ? $false : $false
-    $sync.ThemePopup.IsOpen = $sync.ThemePopup.IsOpen ? $false : $false
+    # Hide Settings and Theme Popup on click anywhere else
+    if ($sync.SettingsButton.IsOpen -or
+        $sync.ThemePopup.IsOpen){
+            $sync.SettingsPopup.IsOpen = $false
+            $sync.ThemePopup.IsOpen = $false
+        }
     $sync["Form"].DragMove()
 })
 
@@ -240,8 +244,12 @@ $sync["Form"].Add_MouseDoubleClick({
 
 $sync["Form"].Add_Deactivated({
     Write-Debug "WinUtil lost focus"
-    $sync.SettingsPopup.IsOpen = $sync.SettingsPopup.IsOpen ? $false : $false
-    $sync.ThemePopup.IsOpen = $sync.ThemePopup.IsOpen ? $false : $false
+    # Hide Settings and Theme Popup on Winutil Focus Loss
+    if ($sync.SettingsButton.IsOpen -or
+        $sync.ThemePopup.IsOpen){
+            $sync.SettingsPopup.IsOpen = $false
+            $sync.ThemePopup.IsOpen = $false
+    }
 })
 
 $sync["Form"].Add_ContentRendered({
@@ -455,7 +463,12 @@ $sync["Form"].Add_Activated({
 })
 # Define event handler for ThemeButton click
 $sync["ThemeButton"].Add_Click({
-    $sync.ThemePopup.IsOpen = $sync.ThemePopup.IsOpen -eq $false ? $true : $false
+    if ($sync.ThemePopup.IsOpen){
+        $sync.ThemePopup.IsOpen = $false
+    }
+    else{
+        $sync.ThemePopup.IsOpen = $true
+    }
     $sync.SettingsPopup.IsOpen = $false
 })
 
@@ -482,8 +495,13 @@ $sync["LightThemeMenuItem"].Add_Click({
 # Define event handler for button click
 $sync["SettingsButton"].Add_Click({
     Write-Debug "SettingsButton clicked"
-    $sync.SettingsPopup.IsOpen = $sync.SettingsPopup.IsOpen -eq $false ? $true : $false
-    $sync.ThemePopup.IsOpen = $false
+    if ($sync.Settings.IsOpen){
+        $sync.Settings.IsOpen = $false
+    }
+    else{
+        $sync.Settings.IsOpen = $true
+    }
+    $sync.Settings.IsOpen = $false
     $_.Handled = $false
 })
 
