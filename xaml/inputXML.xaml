@@ -603,9 +603,23 @@
             <Setter Property="ContextMenu">
                 <Setter.Value>
                     <ContextMenu>
-                        <MenuItem Command="Cut" Header="Cut"/>
-                        <MenuItem Command="Copy" Header="Copy"/>
-                        <MenuItem Command="Paste" Header="Paste"/>
+                        <ContextMenu.Style>
+                            <Style TargetType="ContextMenu">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ContextMenu">
+                                            <Border Background="{MainBackgroundColor}" BorderBrush="{MainForegroundColor}" BorderThickness="1" CornerRadius="5" Padding="5">
+                                                <StackPanel>
+                                                    <MenuItem Command="Cut" Header="Cut"/>
+                                                    <MenuItem Command="Copy" Header="Copy"/>
+                                                    <MenuItem Command="Paste" Header="Paste"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ContextMenu.Style>
                     </ContextMenu>
                 </Setter.Value>
             </Setter>
