@@ -6,21 +6,27 @@ function Invoke-WPFInstall {
 
     #>
 
+    param (
+        $PackagesToInstall
+    )
+
     if($sync.ProcessRunning) {
         $msg = "[Invoke-WPFInstall] An Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
 
-    $PackagesToInstall = (Get-WinUtilCheckBoxes)["Install"]
-    Write-Host $PackagesToInstall
+    if ([string]::IsNullOrEmpty($InstallConfig)) {
+        $PackagesToInstall = (Get-WinUtilCheckBoxes)["Install"]
+    }
+
     if ($PackagesToInstall.Count -eq 0) {
         $WarningMsg = "Please select the program(s) to install or upgrade"
         [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
     $ChocoPreference = $($sync.WPFpreferChocolatey.IsChecked)
-    $installHandle = Invoke-WPFRunspace -ParameterList @(("PackagesToInstall", $PackagesToInstall),("ChocoPreference", $ChocoPreference)) -DebugPreference $DebugPreference -ScriptBlock {
+    Invoke-WPFRunspace -ParameterList @(("PackagesToInstall", $PackagesToInstall),("ChocoPreference", $ChocoPreference)) -DebugPreference $DebugPreference -ScriptBlock {
         param($PackagesToInstall, $ChocoPreference, $DebugPreference)
         if ($PackagesToInstall.count -eq 1) {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })

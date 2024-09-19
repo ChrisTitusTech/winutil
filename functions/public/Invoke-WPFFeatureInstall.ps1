@@ -6,13 +6,19 @@ function Invoke-WPFFeatureInstall {
 
     #>
 
+    param (
+        $Features
+    )
+
     if($sync.ProcessRunning) {
         $msg = "[Invoke-WPFFeatureInstall] Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
 
-    $Features = (Get-WinUtilCheckBoxes)["WPFFeature"]
+    if ([string]::IsNullOrEmpty($Features)) {
+        $Features = (Get-WinUtilCheckBoxes)["WPFFeature"]
+    }
 
     Invoke-WPFRunspace -ArgumentList $Features -DebugPreference $DebugPreference -ScriptBlock {
         param($Features, $DebugPreference)

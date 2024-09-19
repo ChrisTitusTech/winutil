@@ -105,10 +105,12 @@ if (-NOT ($readerOperationSuccessful)) {
 }
 
 # Load the configuration files
-#Invoke-WPFUIElements -configVariable $sync.configs.nav -targetGridName "WPFMainGrid"
-Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 5
-Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
-Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
+if (!$PARAM_RUN) {
+    #Invoke-WPFUIElements -configVariable $sync.configs.nav -targetGridName "WPFMainGrid"
+    Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 5
+    Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
+    Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
+}
 
 #===========================================================================
 # Store Form Objects In PowerShell
@@ -173,11 +175,61 @@ Invoke-WPFRunspace -ScriptBlock {
 } | Out-Null
 
 #===========================================================================
-# Setup and Show the Form
+# Print Logo into Console
 #===========================================================================
 
-# Print the logo
 Invoke-WPFFormVariables
+
+#===========================================================================
+# Run Automation
+#===========================================================================
+
+if ($PARAM_CONFIG) {
+    if ($PARAM_RUN) {
+        $installConfig = Get-Content $PARAM_CONFIG -Raw | ConvertFrom-Json
+        if ($installConfig.WPFInstall) {
+            write-host "Installing Programs"
+
+            # Create a new array to hold the combined install configurations
+            $combinedInstallConfig = @()
+
+            # Iterate over each WPFInstall entry
+            for ($i = 0; $i -lt $installConfig.WPFInstall.Count; $i++) {
+                $wpfInstallEntry = $installConfig.WPFInstall[$i]
+                $installEntry = $installConfig.Install[$i]
+
+                # Create a new object with the combined values
+                $combinedEntry = @{
+                    Name = $wpfInstallEntry
+                    Winget = $installEntry.winget
+                    Choco = $installEntry.choco
+                }
+
+                # Add the combined entry to the array
+                $combinedInstallConfig += $combinedEntry
+            }
+
+            # Invoke the WPFInstall function with the combined configuration
+            Invoke-WPFInstall -PackagesToInstall $combinedInstallConfig
+        }
+
+        if ($installConfig.WPFTweaks) {
+            write-host "Running Tweaks"
+            Invoke-WPFtweaksbutton -Tweaks $installConfig.WPFTweaks
+        }
+
+        if ($installConfig.WPFFeature) {
+            write-host "Installing Features"
+            Invoke-WPFFeatureInstall -Features $installConfig.WPFFeature
+        }
+    } else {
+        Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
+    }
+}
+
+#===========================================================================
+# Setup and Show the Form
+#===========================================================================
 
 # Progress bar in taskbaritem > Set-WinUtilProgressbar
 $sync["Form"].TaskbarItemInfo = New-Object System.Windows.Shell.TaskbarItemInfo
@@ -345,42 +397,6 @@ Add-Type @"
 
     Invoke-WPFTab "WPFTab1BT"
     $sync["Form"].Focus()
-
-    # maybe this is not the best place to load and execute config file?
-    # maybe community can help?
-    if ($PARAM_CONFIG) {
-        Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
-        if ($PARAM_RUN) {
-            while ($sync.ProcessRunning) {
-                Start-Sleep -Seconds 5
-            }
-            Start-Sleep -Seconds 5
-
-            Write-Host "Applying tweaks..."
-            Invoke-WPFtweaksbutton
-            while ($sync.ProcessRunning) {
-                Start-Sleep -Seconds 5
-            }
-            Start-Sleep -Seconds 5
-
-            Write-Host "Installing features..."
-            Invoke-WPFFeatureInstall
-            while ($sync.ProcessRunning) {
-                Start-Sleep -Seconds 5
-            }
-
-            Start-Sleep -Seconds 5
-            Write-Host "Installing applications..."
-            while ($sync.ProcessRunning) {
-                Start-Sleep -Seconds 1
-            }
-            Invoke-WPFInstall
-            Start-Sleep -Seconds 5
-
-            Write-Host "Done."
-        }
-    }
-
 })
 
 # Load Checkboxes and Labels outside of the Filter function only once on startup for performance reasons
@@ -551,5 +567,8 @@ $sync["SponsorMenuItem"].Add_Click({
     $Height = $sync.configs.themes.$ctttheme.CustomDialogHeight
     Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -LogoSize $LogoSize -EnableScroll $true
 })
-$sync["Form"].ShowDialog() | out-null
-Stop-Transcript
+
+if (!$PARAM_RUN) {
+    $sync["Form"].ShowDialog() | out-null
+    Stop-Transcript
+}
