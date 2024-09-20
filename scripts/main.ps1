@@ -255,10 +255,14 @@ $sync["Form"].Add_MouseLeftButtonDown({
 })
 
 $sync["Form"].Add_MouseDoubleClick({
-    if ($sync["Form"].WindowState -eq [Windows.WindowState]::Normal) {
-        $sync["Form"].WindowState = [Windows.WindowState]::Maximized;
-    } else {
-        $sync["Form"].WindowState = [Windows.WindowState]::Normal;
+    if ($_.OriginalSource -is [System.Windows.Controls.Grid] -or
+        $_.OriginalSource -is [System.Windows.Controls.StackPanel]) {
+            if ($sync["Form"].WindowState -eq [Windows.WindowState]::Normal){
+                $sync["Form"].WindowState = [Windows.WindowState]::Maximized
+            }
+            else{
+                $sync["Form"].WindowState = [Windows.WindowState]::Normal
+            }
     }
 })
 
