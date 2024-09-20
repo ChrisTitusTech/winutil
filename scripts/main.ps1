@@ -227,7 +227,7 @@ $sync["Form"].Add_PreViewKeyDown($commonKeyEvents)
 $sync["Form"].Add_MouseLeftButtonDown({
     # Hide Settings and Theme Popup on click anywhere else
     if ($sync.SettingsButton.IsOpen -or
-        $sync.ThemePopup.IsOpen){
+        $sync.ThemePopup.IsOpen) {
             $sync.SettingsPopup.IsOpen = $false
             $sync.ThemePopup.IsOpen = $false
         }
@@ -237,7 +237,7 @@ $sync["Form"].Add_MouseLeftButtonDown({
 $sync["Form"].Add_MouseDoubleClick({
     if ($_.OriginalSource -is [System.Windows.Controls.Grid] -or
         $_.OriginalSource -is [System.Windows.Controls.StackPanel]) {
-            if ($sync["Form"].WindowState -eq [Windows.WindowState]::Normal){
+            if ($sync["Form"].WindowState -eq [Windows.WindowState]::Normal) {
                 $sync["Form"].WindowState = [Windows.WindowState]::Maximized
             }
             else{
@@ -250,7 +250,7 @@ $sync["Form"].Add_Deactivated({
     Write-Debug "WinUtil lost focus"
     # Hide Settings and Theme Popup on Winutil Focus Loss
     if ($sync.SettingsButton.IsOpen -or
-        $sync.ThemePopup.IsOpen){
+        $sync.ThemePopup.IsOpen) {
             $sync.SettingsPopup.IsOpen = $false
             $sync.ThemePopup.IsOpen = $false
     }
@@ -467,7 +467,7 @@ $sync["Form"].Add_Activated({
 })
 # Define event handler for ThemeButton click
 $sync["ThemeButton"].Add_Click({
-    if ($sync.ThemePopup.IsOpen){
+    if ($sync.ThemePopup.IsOpen) {
         $sync.ThemePopup.IsOpen = $false
     }
     else{
@@ -499,7 +499,7 @@ $sync["LightThemeMenuItem"].Add_Click({
 # Define event handler for button click
 $sync["SettingsButton"].Add_Click({
     Write-Debug "SettingsButton clicked"
-    if ($sync.Settings.IsOpen){
+    if ($sync.Settings.IsOpen) {
         $sync.Settings.IsOpen = $false
     }
     else{
