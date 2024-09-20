@@ -26,9 +26,6 @@
         <Setter Property="FontSize" Value="{DynamicResource FontSize}"/>
         <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
     </Style>
-    <ItemsPanelTemplate x:Key="MenuItemPanelTemplate">
-        <StackPanel Margin="-20,0,0,0" Background="{DynamicResource MainBackgroundColor}"/>
-    </ItemsPanelTemplate>
 
     <Style TargetType="{x:Type MenuItem}">
         <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}"/>
@@ -37,7 +34,6 @@
         <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
         <Setter Property="Padding" Value="5,2,5,2"/>
         <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="ItemsPanel" Value="{StaticResource MenuItemPanelTemplate}"/>
     </Style>
 
     <!--Scrollbar Thumbs-->
