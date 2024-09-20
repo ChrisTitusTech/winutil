@@ -19,7 +19,6 @@ function Invoke-WPFButton {
     }
 
     Switch -Wildcard ($Button) {
-
         "WPFTab?BT" {Invoke-WPFTab $Button}
         "WPFInstall" {Invoke-WPFInstall}
         "WPFUninstall" {Invoke-WPFUnInstall}
