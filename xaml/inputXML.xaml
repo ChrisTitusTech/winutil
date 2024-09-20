@@ -348,24 +348,24 @@
             </Setter>
         </Style>
         <Style TargetType="RadioButton">
-            <Setter Property="Foreground" Value="{MainForegroundColor}"/>
-            <Setter Property="Background" Value="{MainBackgroundColor}"/>
-            <Setter Property="FontSize" Value="{FontSize}" />
-            <Setter Property="FontFamily" Value="{FontFamily}"/>
+            <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
+            <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}"/>
+            <Setter Property="FontSize" Value="{DynamicResource FontSize}" />
+            <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="RadioButton">
-                        <StackPanel Orientation="Horizontal" Margin="{CheckBoxMargin}">
+                        <StackPanel Orientation="Horizontal" Margin="{DynamicResource CheckBoxMargin}">
                             <Grid Width="14" Height="14">
                                 <Ellipse x:Name="OuterCircle"
-                                        Stroke="{ToggleButtonOffColor}"
-                                        Fill="{ButtonBackgroundColor}"
+                                        Stroke="{DynamicResource ToggleButtonOffColor}"
+                                        Fill="{DynamicResource ButtonBackgroundColor}"
                                         StrokeThickness="1"
                                         Width="14"
                                         Height="14"
                                         SnapsToDevicePixels="True"/>
                                 <Ellipse x:Name="InnerCircle"
-                                        Fill="{ToggleButtonOnColor}"
+                                        Fill="{DynamicResource ToggleButtonOnColor}"
                                         Width="8"
                                         Height="8"
                                         Visibility="Collapsed"
@@ -381,7 +381,7 @@
                                 <Setter TargetName="InnerCircle" Property="Visibility" Value="Visible"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="OuterCircle" Property="Stroke" Value="{ToggleButtonOnColor}"/>
+                                <Setter TargetName="OuterCircle" Property="Stroke" Value="{DynamicResource ToggleButtonOnColor}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -1139,9 +1139,9 @@
 
                                 <Bold>INSTRUCTIONS</Bold> <LineBreak/>
                                 - Download a Windows 11 ISO through the following options: <LineBreak/>
-                                    <TextBlock Margin="15,0,0,0" Text="- Select your own ISO: Manually download the latest Windows 11 image from " Foreground="{ComboBoxForegroundColor}"/>
+                                    <TextBlock Margin="15,0,0,0" Text="- Select your own ISO: Manually download the latest Windows 11 image from " Foreground="{DynamicResource ComboBoxForegroundColor}"/>
                                     <TextBlock Name="Win11DownloadLink" Style="{StaticResource HoverTextBlockStyle}" ToolTip="https://www.microsoft.com/software-download/windows11">Microsoft</TextBlock>. <LineBreak/>
-                                    <TextBlock Margin="15,0,0,0" Text="- Get newest ISO automatically: Choose Windows 11 Edition and preferred language." Foreground="{ComboBoxForegroundColor}"/> <LineBreak/>
+                                    <TextBlock Margin="15,0,0,0" Text="- Get newest ISO automatically: Choose Windows 11 Edition and preferred language." Foreground="{DynamicResource ComboBoxForegroundColor}"/> <LineBreak/>
                                 May take several minutes to process the ISO depending on your machine and connection <LineBreak/>
                                 - Put it somewhere on the C:\ drive so it is easily accessible <LineBreak/>
                                 - Launch WinUtil and MicroWin  <LineBreak/>
