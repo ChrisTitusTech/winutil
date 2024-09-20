@@ -52,6 +52,29 @@ $sync.runspace.Open()
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
+$defaulttheme = '_default'
+if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
+    if (Invoke-WinUtilGPU -eq $True) {
+        $ctttheme = 'Matrix'
+    } else {
+        $ctttheme = 'Dark'
+    }
+} else {
+    $ctttheme = 'Classic'
+}
+
+$returnVal = Set-WinUtilUITheme -inputXML $inputXML -customThemeName $ctttheme -defaultThemeName $defaulttheme
+if ($returnVal[0] -eq "") {
+    Write-Host "Failed to statically apply theming to xaml content using Set-WinUtilTheme, please check previous Error/Warning messages." -ForegroundColor Red
+    Write-Host "Quitting winutil..." -ForegroundColor Red
+    $sync.runspace.Dispose()
+    $sync.runspace.Close()
+    [System.GC]::Collect()
+    exit 1
+}
+$inputXML = $returnVal[0]
+$ctttheme = $returnVal[1]
+
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
 
@@ -80,7 +103,7 @@ if (-NOT ($readerOperationSuccessful)) {
     [System.GC]::Collect()
     exit 1
 }
-Invoke-WinutilThemeChange -init $true
+
 # Load the configuration files
 #Invoke-WPFUIElements -configVariable $sync.configs.nav -targetGridName "WPFMainGrid"
 Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 5
@@ -225,34 +248,24 @@ $commonKeyEvents = {
 $sync["Form"].Add_PreViewKeyDown($commonKeyEvents)
 
 $sync["Form"].Add_MouseLeftButtonDown({
-    # Hide Settings and Theme Popup on click anywhere else
-    if ($sync.SettingsButton.IsOpen -or
-        $sync.ThemePopup.IsOpen) {
-            $sync.SettingsPopup.IsOpen = $false
-            $sync.ThemePopup.IsOpen = $false
-        }
+    if ($sync["SettingsPopup"].IsOpen) {
+        $sync["SettingsPopup"].IsOpen = $false
+    }
     $sync["Form"].DragMove()
 })
 
 $sync["Form"].Add_MouseDoubleClick({
-    if ($_.OriginalSource -is [System.Windows.Controls.Grid] -or
-        $_.OriginalSource -is [System.Windows.Controls.StackPanel]) {
-            if ($sync["Form"].WindowState -eq [Windows.WindowState]::Normal) {
-                $sync["Form"].WindowState = [Windows.WindowState]::Maximized
-            }
-            else{
-                $sync["Form"].WindowState = [Windows.WindowState]::Normal
-            }
+    if ($sync["Form"].WindowState -eq [Windows.WindowState]::Normal) {
+        $sync["Form"].WindowState = [Windows.WindowState]::Maximized;
+    } else {
+        $sync["Form"].WindowState = [Windows.WindowState]::Normal;
     }
 })
 
 $sync["Form"].Add_Deactivated({
     Write-Debug "WinUtil lost focus"
-    # Hide Settings and Theme Popup on Winutil Focus Loss
-    if ($sync.SettingsButton.IsOpen -or
-        $sync.ThemePopup.IsOpen) {
-            $sync.SettingsPopup.IsOpen = $false
-            $sync.ThemePopup.IsOpen = $false
+    if ($sync["SettingsPopup"].IsOpen) {
+        $sync["SettingsPopup"].IsOpen = $false
     }
 })
 
@@ -465,47 +478,15 @@ Set-WinUtilTaskbaritem -overlay "logo"
 $sync["Form"].Add_Activated({
     Set-WinUtilTaskbaritem -overlay "logo"
 })
-# Define event handler for ThemeButton click
-$sync["ThemeButton"].Add_Click({
-    if ($sync.ThemePopup.IsOpen) {
-        $sync.ThemePopup.IsOpen = $false
-    }
-    else{
-        $sync.ThemePopup.IsOpen = $true
-    }
-    $sync.SettingsPopup.IsOpen = $false
-})
-
-# Define event handlers for menu items
-$sync["AutoThemeMenuItem"].Add_Click({
-    $sync.ThemePopup.IsOpen = $false
-    Invoke-WinutilThemeChange -theme "Auto"
-    $_.Handled = $false
-  })
-  # Define event handlers for menu items
-$sync["DarkThemeMenuItem"].Add_Click({
-    $sync.ThemePopup.IsOpen = $false
-    Invoke-WinutilThemeChange -theme "Dark"
-    $_.Handled = $false
-  })
-# Define event handlers for menu items
-$sync["LightThemeMenuItem"].Add_Click({
-    $sync.ThemePopup.IsOpen = $false
-    Invoke-WinutilThemeChange -theme "Light"
-    $_.Handled = $false
-  })
-
 
 # Define event handler for button click
 $sync["SettingsButton"].Add_Click({
     Write-Debug "SettingsButton clicked"
-    if ($sync.Settings.IsOpen) {
-        $sync.Settings.IsOpen = $false
+    if ($sync["SettingsPopup"].IsOpen) {
+        $sync["SettingsPopup"].IsOpen = $false
+    } else {
+        $sync["SettingsPopup"].IsOpen = $true
     }
-    else{
-        $sync.Settings.IsOpen = $true
-    }
-    $sync.Settings.IsOpen = $false
     $_.Handled = $false
 })
 
@@ -537,8 +518,12 @@ MicroWin : <a href="https://github.com/KonTy">@KonTy</a>
 GitHub   : <a href="https://github.com/ChrisTitusTech/winutil">ChrisTitusTech/winutil</a>
 Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sync.version)">$($sync.version)</a>
 "@
-
-    Show-CustomDialog -Message $authorInfo -LogoSize $LogoSize
+    $FontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSize
+    $HeaderFontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSizeHeader
+    $LogoSize = $sync.configs.themes.$ctttheme.CustomDialogLogoSize
+    $Width = $sync.configs.themes.$ctttheme.CustomDialogWidth
+    $Height = $sync.configs.themes.$ctttheme.CustomDialogHeight
+    Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -LogoSize $LogoSize
 })
 
 $sync["SponsorMenuItem"].Add_Click({
@@ -559,8 +544,12 @@ $sync["SponsorMenuItem"].Add_Click({
         $authorInfo += "An error occurred while fetching or processing the sponsors: $_`n"
     }
 
-    Show-CustomDialog -Message $authorInfo -EnableScroll $true
+    $FontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSize
+    $HeaderFontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSizeHeader
+    $LogoSize = $sync.configs.themes.$ctttheme.CustomDialogLogoSize
+    $Width = $sync.configs.themes.$ctttheme.CustomDialogWidth
+    $Height = $sync.configs.themes.$ctttheme.CustomDialogHeight
+    Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -LogoSize $LogoSize -EnableScroll $true
 })
-
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript
