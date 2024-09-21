@@ -80,7 +80,7 @@ function Invoke-WPFGetIso {
         # Auto download newest ISO
         # Credit: https://github.com/pbatard/Fido
         $fidopath = "$env:temp\Fido.ps1"
-        $originalLocation = Get-Location
+        $originalLocation = $PSScriptRoot
 
         Invoke-WebRequest "https://github.com/pbatard/Fido/raw/master/Fido.ps1" -OutFile $fidopath
 
