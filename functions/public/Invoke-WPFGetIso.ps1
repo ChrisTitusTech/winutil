@@ -95,8 +95,8 @@ function Invoke-WPFGetIso {
             & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch "x64" -Lang $sync["ISOLanguage"].SelectedItem -Ed "Windows 11 Home/Pro/Edu"
         }
         Set-Location $originalLocation
-		# Use the FullName property to only grab the file names. Using this property is necessary as, without it, you're passing the usual output of Get-ChildItem
-		# to the variable, and let's be honest, that does NOT exist in the file system
+        # Use the FullName property to only grab the file names. Using this property is necessary as, without it, you're passing the usual output of Get-ChildItem
+        # to the variable, and let's be honest, that does NOT exist in the file system
         $filePath = (Get-ChildItem -Path "$env:temp" -Filter "Win11*.iso").FullName | Sort-Object LastWriteTime -Descending | Select-Object -First 1
     }
 
