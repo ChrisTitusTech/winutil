@@ -530,13 +530,13 @@ $sync["LightThemeMenuItem"].Add_Click({
 # Define event handler for button click
 $sync["SettingsButton"].Add_Click({
     Write-Debug "SettingsButton clicked"
-    if ($sync.Settings.IsOpen) {
-        $sync.Settings.IsOpen = $false
+    if ($sync.SettingsPopup.IsOpen) {
+        $sync.SettingsPopup.IsOpen = $false
     }
     else{
-        $sync.Settings.IsOpen = $true
+        $sync.SettingsPopup.IsOpen = $true
     }
-    $sync.Settings.IsOpen = $false
+    $sync.ThemePopup.IsOpen = $false
     $_.Handled = $false
 })
 
