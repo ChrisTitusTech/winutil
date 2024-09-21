@@ -10,13 +10,32 @@
         WindowStyle="None"
         Width="Auto"
         Height="Auto"
-        MaxWidth="1280"
+        MaxWidth="1380"
         MaxHeight="800"
         Title="Chris Titus Tech's Windows Utility">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" CornerRadius="10"/>
     </WindowChrome.WindowChrome>
     <Window.Resources>
+    <Style TargetType="ToolTip">
+        <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}"/>
+        <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBackgroundSelectedColor}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="FontSize" Value="{DynamicResource FontSize}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
+    </Style>
+
+    <Style TargetType="{x:Type MenuItem}">
+        <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}"/>
+        <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
+        <Setter Property="FontSize" Value="{DynamicResource FontSize}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
+        <Setter Property="Padding" Value="5,2,5,2"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
     <!--Scrollbar Thumbs-->
     <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
         <Setter Property="Template">
@@ -76,7 +95,7 @@
     <!--ScrollBars-->
     <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
         <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
-        <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}" />
+        <Setter Property="Foreground" Value="{DynamicResource ScrollBarBackgroundColor}" />
         <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}" />
         <Setter Property="Width" Value="6" />
         <Setter Property="Template">
@@ -102,10 +121,10 @@
 
                     <ControlTemplate.Triggers>
                         <Trigger SourceName="Thumb" Property="IsMouseOver" Value="true">
-                            <Setter Value="{DynamicResource ButtonBackgroundMouseoverColor}" TargetName="Thumb" Property="Background" />
+                            <Setter Value="{DynamicResource ScrollBarHoverColor}" TargetName="Thumb" Property="Background" />
                         </Trigger>
                         <Trigger SourceName="Thumb" Property="IsDragging" Value="true">
-                            <Setter Value="{DynamicResource ButtonBackgroundSelectedColor}" TargetName="Thumb" Property="Background" />
+                            <Setter Value="{DynamicResource ScrollBarDraggingColor}" TargetName="Thumb" Property="Background" />
                         </Trigger>
 
                         <Trigger Property="IsEnabled" Value="false">
@@ -547,6 +566,29 @@
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="ContextMenu">
+                <Setter.Value>
+                    <ContextMenu>
+                        <ContextMenu.Style>
+                            <Style TargetType="ContextMenu">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ContextMenu">
+                                            <Border Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="5" Padding="5">
+                                                <StackPanel>
+                                                    <MenuItem Command="Cut" Header="Cut"/>
+                                                    <MenuItem Command="Copy" Header="Copy"/>
+                                                    <MenuItem Command="Paste" Header="Paste"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ContextMenu.Style>
+                    </ContextMenu>
+                </Setter.Value>
+            </Setter>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
@@ -697,7 +739,8 @@
                     Grid.Column="0"
                     VerticalAlignment="Center" HorizontalAlignment="Left"
                     FontFamily="Segoe MDL2 Assets"
-                    FontSize="{DynamicResource DynamicResource IconFontSize}"
+                    Foreground="{DynamicResource ButtonBackgroundSelectedColor}"
+                    FontSize="{DynamicResource IconFontSize}"
                     Margin="180,0,0,0">&#xE721;
                 </TextBlock>
                 <!--

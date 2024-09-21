@@ -46,6 +46,9 @@
         "LabelBackgroundColor":  "#F7F7F7",
         "LinkForegroundColor":  "#232629",
         "LinkHoverForegroundColor":  "#232629",
+        "ScrollBarBackgroundColor": "#4A4D52",
+        "ScrollBarHoverColor": "#5A5D62",
+        "ScrollBarDraggingColor": "#6A6D72",
 
         "ProgressBarForegroundColor": "#2e77ff",
         "ProgressBarBackgroundColor": "Transparent",
@@ -77,6 +80,10 @@
         "LabelBackgroundColor":  "#121212",
         "LinkForegroundColor":  "#add8e6",
         "LinkHoverForegroundColor":  "#F7F7F7",
+        "ScrollBarBackgroundColor": "#2E3135",
+        "ScrollBarHoverColor": "#3B4252",
+        "ScrollBarDraggingColor": "#5E81AC",
+
         "ProgressBarForegroundColor": "#222222",
         "ProgressBarBackgroundColor": "Transparent",
         "ProgressBarTextColor": "#cccccc",
