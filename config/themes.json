@@ -67,6 +67,7 @@
         "ButtonBackgroundSelectedColor":  "#F0F0F0",
         "ButtonForegroundColor":  "#232629",
         "ToggleButtonOnColor":  "#2e77ff",
+        "ToggleButtonOffColor": "#707070",
         "BorderColor": "#232629",
         "BorderOpacity": "0.2"
 
@@ -100,7 +101,8 @@
         "ButtonBackgroundMouseoverColor":  "#3B4252",
         "ButtonBackgroundSelectedColor":  "#5E81AC",
         "ButtonForegroundColor":  "#F7F7F7",
-        "ToggleButtonOnColor":  "#2e77ff",
+        "ToggleButtonOnColor": "#2e77ff",
+        "ToggleButtonOffColor": "#707070",
         "BorderColor": "#2F373D",
         "BorderOpacity": "0.2"
     }
