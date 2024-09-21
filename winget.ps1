@@ -163,23 +163,18 @@ function Get-OSInfo {
         $architecture = ($osDetails.OSArchitecture -replace "[^\d]").Trim()
 
         # If 32-bit or 64-bit replace with x32 and x64
-        if ($architecture -eq "32") {
-            $architecture = "x32"
-        } elseif ($architecture -eq "64") {
-            $architecture = "x64"
-        }
+        $architecture = "x$architecture"
 
         # Get OS version details (as version object)
         $versionValue = [System.Environment]::OSVersion.Version
 
         # Determine product type
         # Reference: https://learn.microsoft.com/en-us/dotnet/api/microsoft.powershell.commands.producttype?view=powershellsdk-1.1.0
-        if ($osDetails.ProductType -eq 1) {
-            $typeValue = "Workstation"
-        } elseif ($osDetails.ProductType -eq 2 -or $osDetails.ProductType -eq 3) {
-            $typeValue = "Server"
-        } else {
-            $typeValue = "Unknown"
+        $typeValue = switch ($osDetails.ProductType) {
+            1 { "Workstation" }
+            2 { "Server" }
+            3 { "Server" }
+            default { "Unknown" }
         }
 
         # Extract numerical value from Name
@@ -356,16 +351,8 @@ function Get-WingetStatus {
         Get-WingetStatus
     #>
 
-    # Check if winget is installed
-    $winget = Get-Command -Name winget -ErrorAction SilentlyContinue
-
-    # If winget is installed, return $true
-    if ($null -ne $winget) {
-        return $true
-    }
-
-    # If winget is not installed, return $false
-    return $false
+    # Check if winget is installed, return $true if it is, $false if it is not
+    return $null -ne (Get-Command -Name winget -ErrorAction SilentlyContinue)
 }
 
 function Update-PathEnvironmentVariable {
@@ -448,29 +435,34 @@ function Handle-Error {
     # Set to silently continue
     $ErrorActionPreference = 'SilentlyContinue'
 
-    if ($ErrorRecord.Exception.Message -match '0x80073D06') {
-        Write-Warning "Higher version already installed."
-        Write-Warning "That's okay, continuing..."
-    } elseif ($ErrorRecord.Exception.Message -match '0x80073CF0') {
-        Write-Warning "Same version already installed."
-        Write-Warning "That's okay, continuing..."
-    } elseif ($ErrorRecord.Exception.Message -match '0x80073D02') {
-        # Stop execution and return the ErrorRecord so that the calling try/catch block throws the error
-        Write-Warning "Resources modified are in-use. Try closing Windows Terminal / PowerShell / Command Prompt and try again."
-        Write-Warning "If the problem persists, restart your computer."
-        return $ErrorRecord
-    } elseif ($ErrorRecord.Exception.Message -match 'Unable to connect to the remote server') {
-        Write-Warning "Cannot connect to the Internet to download the required files."
-        Write-Warning "Try running the script again and make sure you are connected to the Internet."
-        Write-Warning "Sometimes the nuget.org server is down, so you may need to try again later."
-        return $ErrorRecord
-    } elseif ($ErrorRecord.Exception.Message -match "The remote name could not be resolved") {
-        Write-Warning "Cannot connect to the Internet to download the required files."
-        Write-Warning "Try running the script again and make sure you are connected to the Internet."
-        Write-Warning "Make sure DNS is working correctly on your computer."
-    } else {
-        # For other errors, we should stop the execution and return the ErrorRecord so that the calling try/catch block throws the error
-        return $ErrorRecord
+    # Common warning messages for certain error codes
+    switch -Regex ($ErrorRecord.Exception.Message) {
+        '0x80073D06' {
+            Write-Warning "Higher version already installed. That's okay, continuing..."
+        }
+        '0x80073CF0' {
+            Write-Warning "Same version already installed. That's okay, continuing..."
+        }
+        '0x80073D02' {
+            # Stop execution and return the ErrorRecord so that the calling try/catch block throws the error
+            Write-Warning "Resources modified are in use. Try closing Windows Terminal / PowerShell / Command Prompt and try again."
+            Write-Warning "If the problem persists, restart your computer."
+            return $ErrorRecord
+        }
+        'Unable to connect to the remote server' {
+            Write-Warning "Cannot connect to the Internet to download the required files."
+            Write-Warning "Try running the script again and ensure you're connected to the Internet."
+            Write-Warning "Sometimes the nuget.org server is down, so you may need to try again later."
+            return $ErrorRecord
+        }
+        'The remote name could not be resolved' {
+            Write-Warning "Cannot connect to the Internet to download the required files."
+            Write-Warning "Ensure DNS is working correctly on your computer."
+        }
+        default {
+            # For other errors, we should stop the execution and return the ErrorRecord so that the calling try/catch block throws the error
+            return $ErrorRecord
+        }
     }
 
     # Reset to original value
@@ -602,11 +594,7 @@ function Install-Prerequisite {
         $osNumericVersion = $osVersion.NumericVersion
 
         if (($osType -eq "Server" -and $osNumericVersion -eq 2022) -or ($osType -eq "Workstation" -and $osNumericVersion -eq 10)) {
-            if ($osType -eq "Server") {
-                $osName = "Server 2022"
-            } else {
-                $osName = "Windows 10"
-            }
+            $osName = $osType -eq "Server" ? "Server 2022" : "Windows 10"
             $domain = Get-DomainFromUrl $AlternateUrl
             $ThrowReason.Message = ($messageTemplate -replace "{OS}", $osName) -replace "{NAME}", $Name -replace "{DOMAIN}", $domain
             $ThrowReason.Code = 1
@@ -873,7 +861,7 @@ try {
     }
 
     # Cleanup
-    if ($DisableCleanup -eq $false) {
+    if (!$DisableCleanup) {
         if ($DebugMode) { Write-Output "" } # Extra line break for readability if DebugMode is enabled
         Cleanup -Path $wingetPath
         Cleanup -Path $wingetLicensePath
