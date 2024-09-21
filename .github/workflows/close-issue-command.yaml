@@ -15,18 +15,33 @@ jobs:
       contents: read
 
     steps:
-      - name: Check for /close comment
-        id: check_comment
+      - run: echo "command=false" >> $GITHUB_ENV
+
+      - name: Check for /close command
+        id: check_close_command
         run: |
           if [[ "${{ contains(github.event.comment.body, '/close') }}" == "true" ]]; then
-            echo "comment=true" >> $GITHUB_ENV
+            echo "command=true" >> $GITHUB_ENV
+            echo "close_command=true" >> $GITHUB_ENV
+            echo "reopen_command=false" >> $GITHUB_ENV
           else
-            echo "comment=false" >> $GITHUB_ENV
+            echo "close_command=false" >> $GITHUB_ENV
+          fi
+
+      - name: Check for /open or /reopen command
+        id: check_reopen_command
+        run: |
+          if [[ "${{ contains(github.event.comment.body, '/open') }}" == "true" ]] || [[ "${{ contains(github.event.comment.body, '/reopen') }}" == "true" ]]; then
+            echo "command=true" >> $GITHUB_ENV
+            echo "reopen_command=true" >> $GITHUB_ENV
+            echo "close_command=false" >> $GITHUB_ENV
+          else
+            echo "reopen_command=false" >> $GITHUB_ENV
           fi
 
       - name: Check if the user is allowed
         id: check_user
-        if: env.comment == 'true'
+        if: env.command == 'true'
         run: |
           ALLOWED_USERS=("ChrisTitusTech" "og-mrk" "Marterich" "MyDrift-user" "Real-MullaC")
           if [[ " ${ALLOWED_USERS[@]} " =~ " ${{ github.event.comment.user.login }} " ]]; then
@@ -36,10 +51,23 @@ jobs:
           fi
 
       - name: Close issue if conditions are met
-        if: env.comment == 'true' && env.user == 'true'
+        if: env.close_command == 'true' && env.user == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
           echo Closing the issue...
-          gh issue close $ISSUE_NUMBER --repo ${{ github.repository }}
+          if [[ "${{ contains(github.event.comment.body, 'not planned') }}" == "true" ]]; then
+            gh issue close $ISSUE_NUMBER --repo ${{ github.repository }} --reason 'not planned'
+          else
+            gh issue close $ISSUE_NUMBER --repo ${{ github.repository }}
+          fi
+      
+      - name: Reopen issue if conditions are met
+        if: env.reopen_command == 'true' && env.user == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          echo Reopening the issue...
+          gh issue reopen $ISSUE_NUMBER --repo ${{ github.repository }}
