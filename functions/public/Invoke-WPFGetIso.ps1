@@ -85,9 +85,19 @@ function Invoke-WPFGetIso {
         Invoke-WebRequest "https://github.com/pbatard/Fido/raw/master/Fido.ps1" -OutFile $fidopath
 
         Set-Location -Path $env:temp
-        & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch "x64" -Lang $sync["ISOLanguage"].SelectedItem -Ed "Windows 11 Home/Pro/Edu"
+        # Detect if the first option ("System language") has been selected and get a Fido-approved language from the current culture
+        if ($sync["ISOLanguage"].SelectedIndex -eq 0)
+        {
+            & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch "x64" -Lang $(Get-FidoLangFromCulture -langName "$((Get-Culture).Name)") -Ed "Windows 11 Home/Pro/Edu"
+        }
+        else
+        {
+            & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch "x64" -Lang $sync["ISOLanguage"].SelectedItem -Ed "Windows 11 Home/Pro/Edu"
+        }
         Set-Location $originalLocation
-        $filePath = Get-ChildItem -Path "$env:temp" -Filter "Win11*.iso" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+		# Use the FullName property to only grab the file names. Using this property is necessary as, without it, you're passing the usual output of Get-ChildItem
+		# to the variable, and let's be honest, that does NOT exist in the file system
+        $filePath = (Get-ChildItem -Path "$env:temp" -Filter "Win11*.iso").FullName | Sort-Object LastWriteTime -Descending | Select-Object -First 1
     }
 
     Write-Host "File path $($filePath)"
