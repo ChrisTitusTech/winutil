@@ -2680,6 +2680,11 @@
       $OneDrivePath = $($env:OneDrive)
       Write-Host \"Removing OneDrive\"
       $regPath = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OneDriveSetup.exe\"
+      # Move OneDrive files to user profile root
+      if (Test-Path $OneDrivePath) {
+          Write-Host \"Copy downloaded Files from the OneDrive Folder to Root UserProfile\"
+          Start-Process -FilePath powershell -ArgumentList \"robocopy '$($OneDrivePath)' '$($env:USERPROFILE.TrimEnd())\\' /mov /e /xj\" -NoNewWindow -Wait
+      }
       if (Test-Path $regPath) {
           $OneDriveUninstallString = Get-ItemPropertyValue \"$regPath\" -Name \"UninstallString\"
           $OneDriveExe, $OneDriveArgs = $OneDriveUninstallString.Split(\" \")
@@ -2690,9 +2695,6 @@
       }
       # Check if OneDrive got Uninstalled
       if (-not (Test-Path $regPath)) {
-      Write-Host \"Copy downloaded Files from the OneDrive Folder to Root UserProfile\"
-      Start-Process -FilePath powershell -ArgumentList \"robocopy '$($OneDrivePath)' '$($env:USERPROFILE.TrimEnd())\\' /mov /e /xj\" -NoNewWindow -Wait
-
       Write-Host \"Removing OneDrive leftovers\"
       Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:localappdata\\Microsoft\\OneDrive\"
       Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:localappdata\\OneDrive\"
