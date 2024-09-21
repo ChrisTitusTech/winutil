@@ -53,7 +53,7 @@ try {
         $releaseTag = "latest"
     }
 } catch {
-    Write-Host "An error occurred while downloading WinUtil's release metadata: $_`n" -ForegroundColor Red -NoNewline
+    Write-Host "An error occurred while downloading WinUtil's release information: $_" -ForegroundColor Red
     break
 }
 
@@ -80,42 +80,22 @@ function Get-WinUtilUpdates {
     )
 
     # Make a web request to the latest WinUtil release URL and store the raw script's content.
-    try {
-        $RawScriptContent = (Invoke-WebRequest $ProxyLatestReleaseURL -UseBasicParsing).RawContent
-    } catch {
-        Write-Host "An error occurred while getting the raw script content: $_`n" -ForegroundColor Red -NoNewline
-        break
-    }
+    $RawScriptContent = (Invoke-WebRequest $ProxyLatestReleaseURL -UseBasicParsing).RawContent
 
     # Extract and store the version numbers for both the remote WinUtil and local WinUtil script.
-    try {
-        $RemoteWinUtilVersion = ([regex]"\bVersion\s*:\s[\d.]+").Match($RawScriptContent).Value -replace ".*:\s", ""
-        $LocalWinUtilVersion = ([regex]"\bVersion\s*:\s[\d.]+").Match((Get-Content $ProxyWinUtilScriptPath)).Value -replace ".*:\s", ""
-    } catch {
-        Write-Host "An error occurred while extracting the version numbers: $_`n" -ForegroundColor Red -NoNewline
-        break
-    }
+    $RemoteWinUtilVersion = ([regex]"\bVersion\s*:\s[\d.]+").Match($RawScriptContent).Value -replace ".*:\s", ""
+    $LocalWinUtilVersion = ([regex]"\bVersion\s*:\s[\d.]+").Match((Get-Content $ProxyWinUtilScriptPath)).Value -replace ".*:\s", ""
 
     # Re-download WinUtil from the source repository if it has been upgraded since its last launch time.
     if ([version]$RemoteWinUtilVersion -gt [version]$LocalWinUtilVersion) {
-        try {
-            Write-Host "WinUtil has been upgraded since the last time it was launched. Downloading '$($RemoteWinUtilVersion)'..." -ForegroundColor DarkYellow
-            Invoke-RestMethod $ProxyLatestReleaseURL -OutFile $ProxyWinUtilScriptPath
-        } catch {
-            Write-Host "An error occurred while upgrading WinUtil to '$($RemoteWinUtilVersion)': $_`n" -ForegroundColor Red -NoNewline
-            break
-        }
+        Write-Host "WinUtil has been upgraded since the last time it was launched. Downloading '$($RemoteWinUtilVersion)'..." -ForegroundColor DarkYellow
+        Invoke-RestMethod $ProxyLatestReleaseURL -OutFile $ProxyWinUtilScriptPath
     }
 
     # Re-download WinUtil from the source repository if it has been downgraded since its last launch time.
     if ([version]$RemoteWinUtilVersion -lt [version]$LocalWinUtilVersion) {
-        try {
-            Write-Host "WinUtil has been downgraded since the last time it was launched. Downloading '$($RemoteWinUtilVersion)'..." -ForegroundColor DarkYellow
-            Invoke-RestMethod $ProxyLatestReleaseURL -OutFile $ProxyWinUtilScriptPath
-        } catch {
-            Write-Host "An error occurred while downgrading WinUtil to '$($RemoteWinUtilVersion)': $_`n" -ForegroundColor Red -NoNewline
-            break
-        }
+        Write-Host "WinUtil has been downgraded since the last time it was launched. Downloading '$($RemoteWinUtilVersion)'..." -ForegroundColor DarkYellow
+        Invoke-RestMethod $ProxyLatestReleaseURL -OutFile $ProxyWinUtilScriptPath
     }
 
     # Let the user know re-downloading WinUtil is skipped if the downloaded script is already up-to-date.
@@ -130,15 +110,10 @@ function Get-LatestWinUtil {
     $LatestReleaseURL = Get-WinUtilReleaseURL
     $WinUtilScriptPath = Join-Path "$env:TEMP" "winutil-dev.ps1"
 
-    try {
-        if (!(Test-Path $WinUtilScriptPath)) {
-            Invoke-RestMethod $LatestReleaseURL -OutFile $WinUtilScriptPath
-        } else {
-            Get-WinUtilUpdates $LatestReleaseURL $WinUtilScriptPath
-        }
-    } catch {
-        Write-Host "An error occurred while downloading WinUtil release '$($releaseTag)': $_`n" -ForegroundColor Red -NoNewline
-        break
+    if (!(Test-Path $WinUtilScriptPath)) {
+        Invoke-RestMethod $LatestReleaseURL -OutFile $WinUtilScriptPath
+    } else {
+        Get-WinUtilUpdates $LatestReleaseURL $WinUtilScriptPath
     }
 }
 
@@ -180,11 +155,20 @@ function Start-LatestWinUtil {
 }
 
 # Download the latest release of WinUtil from the source repository and launch it using Start-LatestWinUtil.
-Get-LatestWinUtil
+try {
+    Get-LatestWinUtil
+} catch {
+    Write-Host "An error occurred while downloading WinUtil release '$($releaseTag)': $_" -ForegroundColor Red
+    break
+}
 
 # Start the latest WinUtil release from the source repository; supports WinUtil's arguments if they are provided.
-if ($args) {
-    Start-LatestWinUtil $args
-} else {
-    Start-LatestWinUtil
+try {
+    if ($args) {
+        Start-LatestWinUtil $args
+    } else {
+        Start-LatestWinUtil
+    }
+} catch {
+    Write-Host "An error occurred while launching WinUtil release '$($releaseTag)': $_" -ForegroundColor Red
 }
