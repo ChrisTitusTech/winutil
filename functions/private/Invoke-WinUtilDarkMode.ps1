@@ -22,6 +22,10 @@ Function Invoke-WinUtilDarkMode {
         Set-ItemProperty -Path $Path -Name AppsUseLightTheme -Value $DarkMoveValue
         Set-ItemProperty -Path $Path -Name SystemUsesLightTheme -Value $DarkMoveValue
         Invoke-WinUtilExplorerRefresh
+        # Update Winutil Theme if the Theme Button shows the Icon for Auto
+        if ($sync.ThemeButton.Content -eq [char]0xF08C) {
+            Invoke-WinutilThemeChange -theme "Auto"
+        }
     } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
     } catch [System.Management.Automation.ItemNotFoundException] {

@@ -80,6 +80,35 @@ if (-NOT ($readerOperationSuccessful)) {
     [System.GC]::Collect()
     exit 1
 }
+
+# Setup the Window to follow listen for windows Theme Change events and update the winutil theme
+# throttle logic needed, because windows seems to send more than one theme change event per change
+$lastThemeChangeTime = [datetime]::MinValue
+$debounceInterval = [timespan]::FromSeconds(2)
+$sync.Form.Add_Loaded({
+    $interopHelper = New-Object System.Windows.Interop.WindowInteropHelper $sync.Form
+    $hwndSource = [System.Windows.Interop.HwndSource]::FromHwnd($interopHelper.Handle)
+    $hwndSource.AddHook({
+        param (
+            [System.IntPtr]$hwnd,
+            [int]$msg,
+            [System.IntPtr]$wParam,
+            [System.IntPtr]$lParam,
+            [ref]$handled
+        )
+        # Check for the Event WM_SETTINGCHANGE (0x1001A) and validate that Button shows the icon for "Auto" => [char]0xF08C
+        if (($msg -eq 0x001A) -and $sync.ThemeButton.Content -eq [char]0xF08C) {
+            $currentTime = [datetime]::Now
+            if ($currentTime - $lastThemeChangeTime -gt $debounceInterval) {
+                Invoke-WinutilThemeChange -theme "Auto"
+                $script:lastThemeChangeTime = $currentTime
+                $handled = $true
+            }
+        }
+        return 0
+    })
+})
+
 Invoke-WinutilThemeChange -init $true
 # Load the configuration files
 #Invoke-WPFUIElements -configVariable $sync.configs.nav -targetGridName "WPFMainGrid"
