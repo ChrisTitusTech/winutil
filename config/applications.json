@@ -2607,14 +2607,14 @@
         "link": "https://zerotier.com/",
         "winget": "ZeroTier.ZeroTierOne"
     },
-	"zen": {
-		"category": "Browsers",
-		"choco": "na",
-		"content": "Zen",
-		"description": "Experience tranquility while browsing the internet with Zen! Our mission is to give you a perfect balance for speed, privacy and productivity",
-		"link": "https://zen-browser.app/",
-		"winget": "Zen-Team.Zen-Browser"
-	},
+    "zen": {
+        "category": "Browsers",
+        "choco": "na",
+        "content": "Zen",
+        "description": "Experience tranquility while browsing the internet with Zen! Our mission is to give you a perfect balance for speed, privacy and productivity.",
+        "link": "https://zen-browser.app/",
+        "winget": "Zen-Team.Zen-Browser"
+    },
     "zim": {
         "category": "Document",
         "choco": "zim",
