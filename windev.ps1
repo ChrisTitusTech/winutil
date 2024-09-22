@@ -118,7 +118,7 @@ function Get-WinUtilUpdates {
 function Start-LatestWinUtil {
     param (
         [Parameter(Mandatory = $false)]
-        [array]$WinUtilArguments
+        [array]$WinUtilArgumentsList
     )
 
     # Setup the commands used to launch WinUtil based on the preferred console host.
@@ -127,24 +127,24 @@ function Start-LatestWinUtil {
 
     # Setup the script's launch arguments based on the preferred console host.
     if ($ProcessCommand -ne $PowerShellCommand) {
-        $WinUtilArgumentsList = "$PowerShellCommand -ExecutionPolicy Bypass -NoProfile -File `"$WinUtilScriptPath`""
+        $WinUtilLaunchArguments = "$PowerShellCommand -ExecutionPolicy Bypass -NoProfile -File `"$WinUtilScriptPath`""
     } else {
-        $WinUtilArgumentsList = "-ExecutionPolicy Bypass -NoProfile -File `"$WinUtilScriptPath`""
+        $WinUtilLaunchArguments = "-ExecutionPolicy Bypass -NoProfile -File `"$WinUtilScriptPath`""
     }
 
-    # Append WinUtil's launch arguments from $WinUtilArguments to the current arguments list if provided.
-    if ($WinUtilArguments) {
-        $WinUtilArgumentsList += " " + $($WinUtilArguments -join " ")
+    # Append WinUtil's launch arguments from $WinUtilArgumentsList to the current arguments list if provided.
+    if ($WinUtilArgumentsList) {
+        $WinUtilLaunchArguments += " " + $($WinUtilArgumentsList -join " ")
     }
 
     # Run the WinUtil script, relaunching it with administrator permissions when they are required.
     if (!$ProcessIsElevated) {
         Write-Host "WinUtil is not running as administrator. Relaunching with elevated permissions..." -ForegroundColor DarkCyan
         Write-Host "Running the selected WinUtil release: Version '$($ReleaseTag)' from the source repository." -ForegroundColor Green
-        Start-Process $ProcessCommand -ArgumentList $WinUtilArgumentsList -Wait -Verb RunAs
+        Start-Process $ProcessCommand -ArgumentList $WinUtilLaunchArguments -Wait -Verb RunAs
     } else {
         Write-Host "Running the selected WinUtil release: Version '$($ReleaseTag)' from the source repository." -ForegroundColor Green
-        Start-Process $ProcessCommand -ArgumentList $WinUtilArgumentsList -Wait
+        Start-Process $ProcessCommand -ArgumentList $WinUtilLaunchArguments -Wait
     }
 }
 
