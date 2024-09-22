@@ -25,7 +25,7 @@ function Invoke-WinUtilSSHServer {
     # Confirm the required services are running
     $SSHDaemonService = Get-Service -Name sshd
     $SSHAgentService = Get-Service -Name 'ssh-agent'
-    
+
     if ($SSHDaemonService.Status -eq 'Running') {
         Write-Host "OpenSSH Server is running."
     } else {
@@ -60,7 +60,7 @@ function Invoke-WinUtilSSHServer {
     }
 
     # Check for the authorized_keys file
-    $sshFolderPath = "$env:HOMEPATH\ssh"
+    $sshFolderPath = "$env:HOMEDRIVE\$env:HOMEPATH\.ssh"
     $authorizedKeysPath = "$sshFolderPath\authorized_keys"
 
     if (-not (Test-Path -Path $sshFolderPath)) {
@@ -77,5 +77,5 @@ function Invoke-WinUtilSSHServer {
     }
     Write-Host "OpenSSH server was successfully enabled."
     Write-Host "The config file can be located at C:\ProgramData\ssh\sshd_config "
-    Write-Host "Add your public keys to this file -> %HOMEPATH%\ssh\authorized_keys"
+    Write-Host "Add your public keys to this file -> $authorizedKeysPath"
 }
