@@ -77,6 +77,19 @@ function Invoke-WPFGetIso {
             return
         }
     } elseif ($sync["ISOdownloader"].IsChecked) {
+        # Create folder browsers for user-specified locations
+        [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
+        $isoDownloaderFBD = New-Object System.Windows.Forms.FolderBrowserDialog
+        $isoDownloaderFBD.Description = "Please specify the path to download the ISO file to:"
+        $isoDownloaderFBD.ShowNewFolderButton = $true
+        if ($isoDownloaderFBD.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK)
+        {
+            return
+        }
+
+        # Grab the location of the selected path
+        $targetFolder = $isoDownloaderFBD.SelectedPath
+
         # Auto download newest ISO
         # Credit: https://github.com/pbatard/Fido
         $fidopath = "$env:temp\Fido.ps1"
@@ -98,6 +111,24 @@ function Invoke-WPFGetIso {
         # Use the FullName property to only grab the file names. Using this property is necessary as, without it, you're passing the usual output of Get-ChildItem
         # to the variable, and let's be honest, that does NOT exist in the file system
         $filePath = (Get-ChildItem -Path "$env:temp" -Filter "Win11*.iso").FullName | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+        $fileName = [IO.Path]::GetFileName("$filePath")
+
+        if (($targetFolder -ne "") -and (Test-Path "$targetFolder"))
+        {
+            try
+            {
+				# "Let it download to $env:TEMP and then we **move** it to the file path." - CodingWonders
+                $destinationFilePath = "$targetFolder\$fileName"
+                Write-Host "Moving ISO file. Please wait..."
+                Move-Item -Path "$filePath" -Destination "$destinationFilePath" -Force
+                $filePath = $destinationFilePath
+            }
+            catch
+            {
+                Write-Host "Unable to move the ISO file to the location you specified. The downloaded ISO is in the `"$env:TEMP`" folder"
+                Write-Host "Error information: $($_.Exception.Message)" -ForegroundColor Yellow
+            }
+        }
     }
 
     Write-Host "File path $($filePath)"
