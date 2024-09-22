@@ -52,29 +52,6 @@ $sync.runspace.Open()
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
-$defaulttheme = '_default'
-if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
-    if (Invoke-WinUtilGPU -eq $True) {
-        $ctttheme = 'Matrix'
-    } else {
-        $ctttheme = 'Dark'
-    }
-} else {
-    $ctttheme = 'Classic'
-}
-
-$returnVal = Set-WinUtilUITheme -inputXML $inputXML -customThemeName $ctttheme -defaultThemeName $defaulttheme
-if ($returnVal[0] -eq "") {
-    Write-Host "Failed to statically apply theming to xaml content using Set-WinUtilTheme, please check previous Error/Warning messages." -ForegroundColor Red
-    Write-Host "Quitting winutil..." -ForegroundColor Red
-    $sync.runspace.Dispose()
-    $sync.runspace.Close()
-    [System.GC]::Collect()
-    exit 1
-}
-$inputXML = $returnVal[0]
-$ctttheme = $returnVal[1]
-
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
 
@@ -104,6 +81,35 @@ if (-NOT ($readerOperationSuccessful)) {
     exit 1
 }
 
+# Setup the Window to follow listen for windows Theme Change events and update the winutil theme
+# throttle logic needed, because windows seems to send more than one theme change event per change
+$lastThemeChangeTime = [datetime]::MinValue
+$debounceInterval = [timespan]::FromSeconds(2)
+$sync.Form.Add_Loaded({
+    $interopHelper = New-Object System.Windows.Interop.WindowInteropHelper $sync.Form
+    $hwndSource = [System.Windows.Interop.HwndSource]::FromHwnd($interopHelper.Handle)
+    $hwndSource.AddHook({
+        param (
+            [System.IntPtr]$hwnd,
+            [int]$msg,
+            [System.IntPtr]$wParam,
+            [System.IntPtr]$lParam,
+            [ref]$handled
+        )
+        # Check for the Event WM_SETTINGCHANGE (0x1001A) and validate that Button shows the icon for "Auto" => [char]0xF08C
+        if (($msg -eq 0x001A) -and $sync.ThemeButton.Content -eq [char]0xF08C) {
+            $currentTime = [datetime]::Now
+            if ($currentTime - $lastThemeChangeTime -gt $debounceInterval) {
+                Invoke-WinutilThemeChange -theme "Auto"
+                $script:lastThemeChangeTime = $currentTime
+                $handled = $true
+            }
+        }
+        return 0
+    })
+})
+
+Invoke-WinutilThemeChange -init $true
 # Load the configuration files
 #Invoke-WPFUIElements -configVariable $sync.configs.nav -targetGridName "WPFMainGrid"
 Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 5
@@ -248,24 +254,34 @@ $commonKeyEvents = {
 $sync["Form"].Add_PreViewKeyDown($commonKeyEvents)
 
 $sync["Form"].Add_MouseLeftButtonDown({
-    if ($sync["SettingsPopup"].IsOpen) {
-        $sync["SettingsPopup"].IsOpen = $false
-    }
+    # Hide Settings and Theme Popup on click anywhere else
+    if ($sync.SettingsButton.IsOpen -or
+        $sync.ThemePopup.IsOpen) {
+            $sync.SettingsPopup.IsOpen = $false
+            $sync.ThemePopup.IsOpen = $false
+        }
     $sync["Form"].DragMove()
 })
 
 $sync["Form"].Add_MouseDoubleClick({
-    if ($sync["Form"].WindowState -eq [Windows.WindowState]::Normal) {
-        $sync["Form"].WindowState = [Windows.WindowState]::Maximized;
-    } else {
-        $sync["Form"].WindowState = [Windows.WindowState]::Normal;
+    if ($_.OriginalSource -is [System.Windows.Controls.Grid] -or
+        $_.OriginalSource -is [System.Windows.Controls.StackPanel]) {
+            if ($sync["Form"].WindowState -eq [Windows.WindowState]::Normal) {
+                $sync["Form"].WindowState = [Windows.WindowState]::Maximized
+            }
+            else{
+                $sync["Form"].WindowState = [Windows.WindowState]::Normal
+            }
     }
 })
 
 $sync["Form"].Add_Deactivated({
     Write-Debug "WinUtil lost focus"
-    if ($sync["SettingsPopup"].IsOpen) {
-        $sync["SettingsPopup"].IsOpen = $false
+    # Hide Settings and Theme Popup on Winutil Focus Loss
+    if ($sync.SettingsButton.IsOpen -or
+        $sync.ThemePopup.IsOpen) {
+            $sync.SettingsPopup.IsOpen = $false
+            $sync.ThemePopup.IsOpen = $false
     }
 })
 
@@ -383,6 +399,37 @@ Add-Type @"
 
 })
 
+# Add event handlers for the RadioButtons
+$sync["ISOdownloader"].add_Checked({
+    $sync["ISORelease"].Visibility = [System.Windows.Visibility]::Visible
+    $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Visible
+})
+
+$sync["ISOmanual"].add_Checked({
+    $sync["ISORelease"].Visibility = [System.Windows.Visibility]::Collapsed
+    $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Collapsed
+})
+
+$sync["ISORelease"].Items.Add("23H2") | Out-Null
+$sync["ISORelease"].Items.Add("22H2") | Out-Null
+$sync["ISORelease"].Items.Add("21H2") | Out-Null
+$sync["ISORelease"].SelectedItem = "23H2"
+
+$currentCulture = Get-FidoLangFromCulture -langName (Get-Culture).Name
+
+$sync["ISOLanguage"].Items.Add($currentCulture) | Out-Null
+if ($currentCulture -ne "English International") {
+    $sync["ISOLanguage"].Items.Add("English International") | Out-Null
+}
+if ($currentCulture -ne "English") {
+    $sync["ISOLanguage"].Items.Add("English") | Out-Null
+}
+if ($sync["ISOLanguage"].Items.Count -eq 1) {
+    $sync["ISOLanguage"].IsEnabled = $false
+}
+$sync["ISOLanguage"].SelectedItem = $currentCulture
+
+
 # Load Checkboxes and Labels outside of the Filter function only once on startup for performance reasons
 $filter = Get-WinUtilVariables -Type CheckBox
 $CheckBoxes = ($sync.GetEnumerator()).where{ $psitem.Key -in $filter }
@@ -405,8 +452,8 @@ $sync["SearchBar"].Add_TextChanged({
     $textToSearch = $sync.SearchBar.Text.ToLower()
 
     foreach ($CheckBox in $CheckBoxes) {
-        # Check if the checkbox is null or if it doesn't have content
-        if ($CheckBox -eq $null -or $CheckBox.Value -eq $null -or $CheckBox.Value.Content -eq $null) {
+        # Skip if the checkbox is null, it doesn't have content or it is the prefer Choco checkbox
+        if ($CheckBox -eq $null -or $CheckBox.Value -eq $null -or $CheckBox.Value.Content -eq $null -or $CheckBox.Name -eq "WPFpreferChocolatey") {
             continue
         }
 
@@ -478,15 +525,47 @@ Set-WinUtilTaskbaritem -overlay "logo"
 $sync["Form"].Add_Activated({
     Set-WinUtilTaskbaritem -overlay "logo"
 })
+# Define event handler for ThemeButton click
+$sync["ThemeButton"].Add_Click({
+    if ($sync.ThemePopup.IsOpen) {
+        $sync.ThemePopup.IsOpen = $false
+    }
+    else{
+        $sync.ThemePopup.IsOpen = $true
+    }
+    $sync.SettingsPopup.IsOpen = $false
+})
+
+# Define event handlers for menu items
+$sync["AutoThemeMenuItem"].Add_Click({
+    $sync.ThemePopup.IsOpen = $false
+    Invoke-WinutilThemeChange -theme "Auto"
+    $_.Handled = $false
+  })
+  # Define event handlers for menu items
+$sync["DarkThemeMenuItem"].Add_Click({
+    $sync.ThemePopup.IsOpen = $false
+    Invoke-WinutilThemeChange -theme "Dark"
+    $_.Handled = $false
+  })
+# Define event handlers for menu items
+$sync["LightThemeMenuItem"].Add_Click({
+    $sync.ThemePopup.IsOpen = $false
+    Invoke-WinutilThemeChange -theme "Light"
+    $_.Handled = $false
+  })
+
 
 # Define event handler for button click
 $sync["SettingsButton"].Add_Click({
     Write-Debug "SettingsButton clicked"
-    if ($sync["SettingsPopup"].IsOpen) {
-        $sync["SettingsPopup"].IsOpen = $false
-    } else {
-        $sync["SettingsPopup"].IsOpen = $true
+    if ($sync.SettingsPopup.IsOpen) {
+        $sync.SettingsPopup.IsOpen = $false
     }
+    else{
+        $sync.SettingsPopup.IsOpen = $true
+    }
+    $sync.ThemePopup.IsOpen = $false
     $_.Handled = $false
 })
 
@@ -518,12 +597,8 @@ MicroWin : <a href="https://github.com/KonTy">@KonTy</a>
 GitHub   : <a href="https://github.com/ChrisTitusTech/winutil">ChrisTitusTech/winutil</a>
 Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sync.version)">$($sync.version)</a>
 "@
-    $FontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSize
-    $HeaderFontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSizeHeader
-    $LogoSize = $sync.configs.themes.$ctttheme.CustomDialogLogoSize
-    $Width = $sync.configs.themes.$ctttheme.CustomDialogWidth
-    $Height = $sync.configs.themes.$ctttheme.CustomDialogHeight
-    Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -LogoSize $LogoSize
+
+    Show-CustomDialog -Message $authorInfo -LogoSize $LogoSize
 })
 
 $sync["SponsorMenuItem"].Add_Click({
@@ -544,12 +619,8 @@ $sync["SponsorMenuItem"].Add_Click({
         $authorInfo += "An error occurred while fetching or processing the sponsors: $_`n"
     }
 
-    $FontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSize
-    $HeaderFontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSizeHeader
-    $LogoSize = $sync.configs.themes.$ctttheme.CustomDialogLogoSize
-    $Width = $sync.configs.themes.$ctttheme.CustomDialogWidth
-    $Height = $sync.configs.themes.$ctttheme.CustomDialogHeight
-    Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -LogoSize $LogoSize -EnableScroll $true
+    Show-CustomDialog -Message $authorInfo -EnableScroll $true
 })
+
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript

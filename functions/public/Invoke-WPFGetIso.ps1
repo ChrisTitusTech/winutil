@@ -62,17 +62,32 @@ function Invoke-WPFGetIso {
         }
     }
 
-    [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
-    $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
-    $openFileDialog.initialDirectory = $initialDirectory
-    $openFileDialog.filter = "ISO files (*.iso)| *.iso"
-    $openFileDialog.ShowDialog() | Out-Null
-    $filePath = $openFileDialog.FileName
+    if ($sync["ISOmanual"].IsChecked) {
+        # Open file dialog to let user choose the ISO file
+        [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
+        $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
+        $openFileDialog.initialDirectory = $initialDirectory
+        $openFileDialog.filter = "ISO files (*.iso)| *.iso"
+        $openFileDialog.ShowDialog() | Out-Null
+        $filePath = $openFileDialog.FileName
 
-    if ([string]::IsNullOrEmpty($filePath)) {
-        Write-Host "No ISO is chosen"
-        $sync.BusyMessage.Visibility="Hidden"
-        return
+        if ([string]::IsNullOrEmpty($filePath)) {
+            Write-Host "No ISO is chosen"
+            $sync.BusyMessage.Visibility="Hidden"
+            return
+        }
+    } elseif ($sync["ISOdownloader"].IsChecked) {
+        # Auto download newest ISO
+        # Credit: https://github.com/pbatard/Fido
+        $fidopath = "$env:temp\Fido.ps1"
+        $originalLocation = Get-Location
+
+        Invoke-WebRequest "https://github.com/pbatard/Fido/raw/master/Fido.ps1" -OutFile $fidopath
+
+        Set-Location -Path $env:temp
+        & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch "x64" -Lang $sync["ISOLanguage"].SelectedItem -Ed "Windows 11 Home/Pro/Edu"
+        Set-Location $originalLocation
+        $filePath = Get-ChildItem -Path "$env:temp" -Filter "Win11*.iso" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
     }
 
     Write-Host "File path $($filePath)"
