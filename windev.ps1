@@ -62,12 +62,15 @@ function Get-WinUtilReleaseTag {
     return $ReleaseTag
 }
 
+# Get the latest release tag for the current WinUtil release from the repository source.
+$WinUtilReleaseTag = Get-WinUtilReleaseTag
+
 # Function to generate the download URL used to download the latest release of WinUtil.
 function Get-WinUtilReleaseURL {
     $WinUtilDownloadURL = if ($ReleaseTag -eq "latest") {
-        "https://github.com/ChrisTitusTech/winutil/releases/$($ReleaseTag)/download/winutil.ps1"
+        "https://github.com/ChrisTitusTech/winutil/releases/$($WinUtilReleaseTag)/download/winutil.ps1"
     } elseif ($PreRelease -or $StableRelease) {
-        "https://github.com/ChrisTitusTech/winutil/releases/download/$($ReleaseTag)/winutil.ps1"
+        "https://github.com/ChrisTitusTech/winutil/releases/download/$($WinUtilReleaseTag)/winutil.ps1"
     }
 
     return $WinUtilDownloadURL
@@ -140,10 +143,10 @@ function Start-LatestWinUtil {
     # Run the WinUtil script, relaunching it with administrator permissions when they are required.
     if (!$ProcessIsElevated) {
         Write-Host "WinUtil is not running as administrator. Relaunching with elevated permissions..." -ForegroundColor DarkCyan
-        Write-Host "Running the selected WinUtil release: Version '$($ReleaseTag)' from the source repository." -ForegroundColor Green
+        Write-Host "Running the selected WinUtil release: Version '$($WinUtilReleaseTag)' from the source repository." -ForegroundColor Green
         Start-Process $ProcessCommand -ArgumentList $WinUtilLaunchArguments -Wait -Verb RunAs
     } else {
-        Write-Host "Running the selected WinUtil release: Version '$($ReleaseTag)' from the source repository." -ForegroundColor Green
+        Write-Host "Running the selected WinUtil release: Version '$($WinUtilReleaseTag)' from the source repository." -ForegroundColor Green
         Start-Process $ProcessCommand -ArgumentList $WinUtilLaunchArguments -Wait
     }
 }
@@ -152,7 +155,7 @@ function Start-LatestWinUtil {
 try {
     Get-LatestWinUtil
 } catch {
-    Write-Host "An error occurred while downloading WinUtil release '$($ReleaseTag)': $_" -ForegroundColor Red
+    Write-Host "An error occurred while downloading WinUtil release '$($WinUtilReleaseTag)': $_" -ForegroundColor Red
     break
 }
 
@@ -161,7 +164,7 @@ try {
 try {
     Get-WinUtilUpdates
 } catch {
-    Write-Host "An error occurred while upgrading/downgrading WinUtil release '$($ReleaseTag)': $_" -ForegroundColor Red
+    Write-Host "An error occurred while upgrading/downgrading WinUtil release '$($WinUtilReleaseTag)': $_" -ForegroundColor Red
     break
 }
 
@@ -173,5 +176,5 @@ try {
         Start-LatestWinUtil
     }
 } catch {
-    Write-Host "An error occurred while launching WinUtil release '$($ReleaseTag)': $_" -ForegroundColor Red
+    Write-Host "An error occurred while launching WinUtil release '$($WinUtilReleaseTag)': $_" -ForegroundColor Red
 }
