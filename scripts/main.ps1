@@ -190,23 +190,12 @@ if ($PARAM_CONFIG) {
         if ($installConfig.WPFInstall) {
             write-host "Installing Programs"
 
-            # Create a new array to hold the combined install configurations
-            $combinedInstallConfig = @()
-
-            # Iterate over each WPFInstall entry
-            for ($i = 0; $i -lt $installConfig.WPFInstall.Count; $i++) {
-                $wpfInstallEntry = $installConfig.WPFInstall[$i]
-                $installEntry = $installConfig.Install[$i]
-
-                # Create a new object with the combined values
-                $combinedEntry = @{
-                    Name = $wpfInstallEntry
-                    Winget = $installEntry.winget
-                    Choco = $installEntry.choco
+            $combinedInstallConfig = foreach ($i in 0..($installConfig.WPFInstall.Count - 1)) {
+                @{
+                    Name  = $installConfig.WPFInstall[$i]
+                    Winget = $installConfig.Install[$i].winget
+                    Choco  = $installConfig.Install[$i].choco
                 }
-
-                # Add the combined entry to the array
-                $combinedInstallConfig += $combinedEntry
             }
 
             # Invoke the WPFInstall function with the combined configuration
