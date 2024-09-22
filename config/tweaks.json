@@ -2683,7 +2683,7 @@
       # Move OneDrive files to user profile root
       if (Test-Path $OneDrivePath) {
           Write-Host \"Copy downloaded Files from the OneDrive Folder to Root UserProfile\"
-          Start-Process -FilePath powershell -ArgumentList \"robocopy '$($OneDrivePath)' '$($env:USERPROFILE.TrimEnd())\\' /mov /e /xj\" -NoNewWindow -Wait
+          Start-Process -FilePath powershell -ArgumentList \"robocopy '$OneDrivePath' '$($env:USERPROFILE.TrimEnd())\\OneDriveBackup\\' /mov /e /xj\" -NoNewWindow -Wait
       }
       if (Test-Path $regPath) {
           $OneDriveUninstallString = Get-ItemPropertyValue \"$regPath\" -Name \"UninstallString\"
