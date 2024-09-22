@@ -106,6 +106,13 @@ function Invoke-WPFGetIso {
         }
 
         & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch "x64" -Lang $lang -Ed "Windows 11 Home/Pro/Edu"
+        if (-not $?)
+        {
+            Write-Host "Could not download the ISO file. Look at the output of the console for more information."
+            $msg = "The ISO file could not be downloaded"
+            [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
+            return
+        }
         Set-Location $originalLocation
         # Use the FullName property to only grab the file names. Using this property is necessary as, without it, you're passing the usual output of Get-ChildItem
         # to the variable, and let's be honest, that does NOT exist in the file system
