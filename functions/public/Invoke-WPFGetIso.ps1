@@ -99,14 +99,13 @@ function Invoke-WPFGetIso {
 
         Set-Location -Path $env:temp
         # Detect if the first option ("System language") has been selected and get a Fido-approved language from the current culture
-        if ($sync["ISOLanguage"].SelectedIndex -eq 0)
-        {
-            & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch "x64" -Lang $(Get-FidoLangFromCulture -langName "$((Get-Culture).Name)") -Ed "Windows 11 Home/Pro/Edu"
+        $lang = if ($sync["ISOLanguage"].SelectedIndex -eq 0) {
+            Get-FidoLangFromCulture -langName (Get-Culture).Name
+        } else {
+            $sync["ISOLanguage"].SelectedItem
         }
-        else
-        {
-            & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch "x64" -Lang $sync["ISOLanguage"].SelectedItem -Ed "Windows 11 Home/Pro/Edu"
-        }
+
+        & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch "x64" -Lang $lang -Ed "Windows 11 Home/Pro/Edu"
         Set-Location $originalLocation
         # Use the FullName property to only grab the file names. Using this property is necessary as, without it, you're passing the usual output of Get-ChildItem
         # to the variable, and let's be honest, that does NOT exist in the file system
