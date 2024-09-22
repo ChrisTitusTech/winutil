@@ -68,52 +68,44 @@ function Get-WinUtilReleaseURL {
     return $url
 }
 
-# Function to check for and download any available updates to WinUtil from the source repository.
+# Get the URL to download the latest version of WinUtil from the source repository.
+$LatestReleaseURL = Get-WinUtilReleaseURL
+
+# Create the file path pointing to $env:TEMP\winutil-dev.ps1 on the local disk.
+$WinUtilScriptPath = Join-Path "$env:TEMP" "winutil-dev.ps1"
+
+# Function to download the latest release of WinUtil from the source repository.
+function Get-LatestWinUtil {
+    # Download and save the latest WinUtil release to the user's $env:TEMP directory.
+    if (!(Test-Path $WinUtilScriptPath)) {
+        Invoke-RestMethod $LatestReleaseURL -OutFile $WinUtilScriptPath
+    }
+}
+
+# Function to download any available updates to WinUtil from the source repository.
 function Get-WinUtilUpdates {
-    # Define the proxy parameters used to capture the values of $LatestReleaseURL and $WinUtilScriptPath.
-    param (
-        [Parameter()]
-        [string] $ProxyLatestReleaseURL,
-
-        [Parameter()]
-        [string] $ProxyWinUtilScriptPath
-    )
-
     # Make a web request to the latest WinUtil release URL and store the raw script's content.
-    $RawScriptContent = (Invoke-WebRequest $ProxyLatestReleaseURL -UseBasicParsing).RawContent
+    $RawScriptContent = (Invoke-WebRequest $LatestReleaseURL -UseBasicParsing).RawContent
 
     # Extract and store the version numbers for both the remote WinUtil and local WinUtil script.
     $RemoteWinUtilVersion = ([regex]"\bVersion\s*:\s[\d.]+").Match($RawScriptContent).Value -replace ".*:\s", ""
-    $LocalWinUtilVersion = ([regex]"\bVersion\s*:\s[\d.]+").Match((Get-Content $ProxyWinUtilScriptPath)).Value -replace ".*:\s", ""
+    $LocalWinUtilVersion = ([regex]"\bVersion\s*:\s[\d.]+").Match((Get-Content $WinUtilScriptPath)).Value -replace ".*:\s", ""
 
     # Re-download WinUtil from the source repository if it has been upgraded since its last launch time.
     if ([version]$RemoteWinUtilVersion -gt [version]$LocalWinUtilVersion) {
         Write-Host "WinUtil has been upgraded since the last time it was launched. Downloading '$($RemoteWinUtilVersion)'..." -ForegroundColor DarkYellow
-        Invoke-RestMethod $ProxyLatestReleaseURL -OutFile $ProxyWinUtilScriptPath
+        Invoke-RestMethod $LatestReleaseURL -OutFile $WinUtilScriptPath
     }
 
     # Re-download WinUtil from the source repository if it has been downgraded since its last launch time.
     if ([version]$RemoteWinUtilVersion -lt [version]$LocalWinUtilVersion) {
         Write-Host "WinUtil has been downgraded since the last time it was launched. Downloading '$($RemoteWinUtilVersion)'..." -ForegroundColor DarkYellow
-        Invoke-RestMethod $ProxyLatestReleaseURL -OutFile $ProxyWinUtilScriptPath
+        Invoke-RestMethod $LatestReleaseURL -OutFile $WinUtilScriptPath
     }
 
     # Let the user know re-downloading WinUtil is skipped if the downloaded script is already up-to-date.
     if ([version]$RemoteWinUtilVersion -eq [version]$LocalWinUtilVersion) {
         Write-Host "WinUtil is already up-to-date with release: Version '$($RemoteWinUtilVersion)'. Skipped update check." -ForegroundColor Yellow
-    }
-}
-
-# Function to download the latest release of WinUtil from the source repository.
-function Get-LatestWinUtil {
-    # Download and save the latest WinUtil release to $env:TEMP\winutil-dev.ps1 on the local disk.
-    $LatestReleaseURL = Get-WinUtilReleaseURL
-    $WinUtilScriptPath = Join-Path "$env:TEMP" "winutil-dev.ps1"
-
-    if (!(Test-Path $WinUtilScriptPath)) {
-        Invoke-RestMethod $LatestReleaseURL -OutFile $WinUtilScriptPath
-    } else {
-        Get-WinUtilUpdates $LatestReleaseURL $WinUtilScriptPath
     }
 }
 
@@ -124,14 +116,11 @@ function Start-LatestWinUtil {
         [array]$argsList
     )
 
-    # Create the file path pointing to $env:TEMP\winutil-dev.ps1 on the local disk.
-    $WinUtilScriptPath = Join-Path "$env:TEMP" "winutil-dev.ps1"
-
-    # Setup the commands used to launch WinUtil based on what is the preferred console software.
+    # Setup the commands used to launch WinUtil based on the preferred console host.
     $powershellCmd = if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { "pwsh.exe" } else { "powershell.exe" }
     $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { $powershellCmd }
 
-    # Setup the script's launch arguments based on what is used as preferred console software.
+    # Setup the script's launch arguments based on the preferred console host.
     if ($processCmd -ne $powershellCmd) {
         $WinUtilLaunchArguments = "$powershellCmd -ExecutionPolicy Bypass -NoProfile -File `"$WinUtilScriptPath`""
     } else {
@@ -154,7 +143,7 @@ function Start-LatestWinUtil {
     }
 }
 
-# Download the latest release of WinUtil from the source repository and launch it using Start-LatestWinUtil.
+# Download the latest release of WinUtil if not already downloaded from the source repository.
 try {
     Get-LatestWinUtil
 } catch {
@@ -162,7 +151,16 @@ try {
     break
 }
 
-# Start the latest WinUtil release from the source repository; supports WinUtil's arguments if they are provided.
+# Check for and download any newly released version of WinUtil from the source repository.
+# This same behavior will also apply to downgrades should any new releases get rolled back.
+try {
+    Get-WinUtilUpdates
+} catch {
+    Write-Host "An error occurred while upgrading/downgrading WinUtil release '$($releaseTag)': $_" -ForegroundColor Red
+    break
+}
+
+# Start the latest WinUtil release from the source repository; supports WinUtil's arguments if provided.
 try {
     if ($args) {
         Start-LatestWinUtil $args
