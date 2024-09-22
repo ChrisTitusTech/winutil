@@ -23,9 +23,10 @@ function Invoke-WinUtilSSHServer {
     Set-Service -Name 'ssh-agent' -StartupType 'Automatic'
 
     # Confirm the required services are running
-    $service = Get-Service -Name sshd
-    $service1 = Get-Service -Name 'ssh-agent'
-    if ($service.Status -eq 'Running') {
+    $SSHDaemonService = Get-Service -Name sshd
+    $SSHAgentService = Get-Service -Name 'ssh-agent'
+    
+    if ($SSHDaemonService.Status -eq 'Running') {
         Write-Host "OpenSSH Server is running."
     } else {
         try {
@@ -36,7 +37,7 @@ function Invoke-WinUtilSSHServer {
             Write-Host "Failed to restart OpenSSH Server: $_"
         }
     }
-    if ($service1.Status -eq 'Running') {
+    if ($SSHAgentService.Status -eq 'Running') {
         Write-Host "ssh-agent is running."
     } else {
         try {
