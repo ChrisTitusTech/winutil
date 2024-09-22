@@ -30,46 +30,51 @@
 $ProgressPreference = "SilentlyContinue"
 
 # Determine the current elevation status of the running process.
-$isElevated = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+$ProcessIsElevated = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
-# Query for the latest WinUtil releases from the source repository.
-try {
-    # Retrieve the list of WinUtil releases from the source repository.
-    $releases = Invoke-RestMethod 'https://api.github.com/repos/ChrisTitusTech/winutil/releases'
+# Function to query the source repository for the latest matching release tag.
+function Get-WinUtilReleaseTag {
+    # Retrieve the list of WinUtil's releases from the source repository.
+    try {
+        $ReleasesList = Invoke-RestMethod 'https://api.github.com/repos/ChrisTitusTech/winutil/releases'
+    } catch {
+        Write-Host "An error occurred while downloading WinUtil's releases list: $_" -ForegroundColor Red
+        break
+    }
 
     # Filter through WinUtil's releases and select the first stable release tag.
-    $stableRelease = $releases | Where-Object { $_.prerelease -eq $false } | Select-Object -First 1
+    $StableRelease = $ReleasesList | Where-Object { $_.prerelease -eq $false } | Select-Object -First 1
 
     # Filter through WinUtil's releases and select the first pre-release tag.
-    $preRelease = $releases | Where-Object { $_.prerelease -eq $true } | Select-Object -First 1
+    $PreRelease = $ReleasesList | Where-Object { $_.prerelease -eq $true } | Select-Object -First 1
 
-    # If releases exist, set the release tag based on the first matching release.
-    if ($releases -and ($preRelease -or $stableRelease)) {
-        $releaseTag = if ($preRelease) { $preRelease.tag_name } elseif ($stableRelease) { $stableRelease.tag_name }
+    # If a compatible release exists, set the release tag based on the first matching release.
+    if ($ReleasesList -and ($PreRelease -or $StableRelease)) {
+        $ReleaseTag = if ($PreRelease) { $PreRelease.tag_name } elseif ($StableRelease) { $StableRelease.tag_name }
     }
 
-    # If no releases exist, set the release tag to 'latest' and use it as a fallback.
-    if (!$releases -or !($preRelease -or $stableRelease)) {
-        $releaseTag = "latest"
+    # If no compatible releases exist, set the release tag to 'latest' and use it as a fallback.
+    if (!$ReleasesList -or !($PreRelease -or $StableRelease)) {
+        $ReleaseTag = "latest"
     }
-} catch {
-    Write-Host "An error occurred while downloading WinUtil's release information: $_" -ForegroundColor Red
-    break
+
+    # Return the $ReleaseTag variable to allow the usage of the returned version within other functions.
+    return $ReleaseTag
 }
 
 # Function to generate the download URL used to download the latest release of WinUtil.
 function Get-WinUtilReleaseURL {
-    $url = if ($releaseTag -eq "latest") {
-        "https://github.com/ChrisTitusTech/winutil/releases/$($releaseTag)/download/winutil.ps1"
-    } elseif ($preRelease -or $stableRelease) {
-        "https://github.com/ChrisTitusTech/winutil/releases/download/$($releaseTag)/winutil.ps1"
+    $WinUtilDownloadURL = if ($ReleaseTag -eq "latest") {
+        "https://github.com/ChrisTitusTech/winutil/releases/$($ReleaseTag)/download/winutil.ps1"
+    } elseif ($PreRelease -or $StableRelease) {
+        "https://github.com/ChrisTitusTech/winutil/releases/download/$($ReleaseTag)/winutil.ps1"
     }
 
-    return $url
+    return $WinUtilDownloadURL
 }
 
 # Get the URL to download the latest version of WinUtil from the source repository.
-$LatestReleaseURL = Get-WinUtilReleaseURL
+$WinUtilReleaseURL = Get-WinUtilReleaseURL
 
 # Create the file path pointing to $env:TEMP\winutil-dev.ps1 on the local disk.
 $WinUtilScriptPath = Join-Path "$env:TEMP" "winutil-dev.ps1"
@@ -78,29 +83,29 @@ $WinUtilScriptPath = Join-Path "$env:TEMP" "winutil-dev.ps1"
 function Get-LatestWinUtil {
     # Download and save the latest WinUtil release to the user's $env:TEMP directory.
     if (!(Test-Path $WinUtilScriptPath)) {
-        Invoke-RestMethod $LatestReleaseURL -OutFile $WinUtilScriptPath
+        Invoke-RestMethod $WinUtilReleaseURL -OutFile $WinUtilScriptPath
     }
 }
 
 # Function to download any available updates to WinUtil from the source repository.
 function Get-WinUtilUpdates {
     # Make a web request to the latest WinUtil release URL and store the raw script's content.
-    $RawScriptContent = (Invoke-WebRequest $LatestReleaseURL -UseBasicParsing).RawContent
+    $RawWinUtilScript = (Invoke-WebRequest $WinUtilReleaseURL -UseBasicParsing).RawContent
 
     # Extract and store the version numbers for both the remote WinUtil and local WinUtil script.
-    $RemoteWinUtilVersion = ([regex]"\bVersion\s*:\s[\d.]+").Match($RawScriptContent).Value -replace ".*:\s", ""
+    $RemoteWinUtilVersion = ([regex]"\bVersion\s*:\s[\d.]+").Match($RawWinUtilScript).Value -replace ".*:\s", ""
     $LocalWinUtilVersion = ([regex]"\bVersion\s*:\s[\d.]+").Match((Get-Content $WinUtilScriptPath)).Value -replace ".*:\s", ""
 
     # Re-download WinUtil from the source repository if it has been upgraded since its last launch time.
     if ([version]$RemoteWinUtilVersion -gt [version]$LocalWinUtilVersion) {
         Write-Host "WinUtil has been upgraded since the last time it was launched. Downloading '$($RemoteWinUtilVersion)'..." -ForegroundColor DarkYellow
-        Invoke-RestMethod $LatestReleaseURL -OutFile $WinUtilScriptPath
+        Invoke-RestMethod $WinUtilReleaseURL -OutFile $WinUtilScriptPath
     }
 
     # Re-download WinUtil from the source repository if it has been downgraded since its last launch time.
     if ([version]$RemoteWinUtilVersion -lt [version]$LocalWinUtilVersion) {
         Write-Host "WinUtil has been downgraded since the last time it was launched. Downloading '$($RemoteWinUtilVersion)'..." -ForegroundColor DarkYellow
-        Invoke-RestMethod $LatestReleaseURL -OutFile $WinUtilScriptPath
+        Invoke-RestMethod $WinUtilReleaseURL -OutFile $WinUtilScriptPath
     }
 
     # Let the user know re-downloading WinUtil is skipped if the downloaded script is already up-to-date.
@@ -113,33 +118,33 @@ function Get-WinUtilUpdates {
 function Start-LatestWinUtil {
     param (
         [Parameter(Mandatory = $false)]
-        [array]$argsList
+        [array]$WinUtilArguments
     )
 
     # Setup the commands used to launch WinUtil based on the preferred console host.
-    $powershellCmd = if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { "pwsh.exe" } else { "powershell.exe" }
-    $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { $powershellCmd }
+    $PowerShellCommand = if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { "pwsh.exe" } else { "powershell.exe" }
+    $ProcessCommand = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { $PowerShellCommand }
 
     # Setup the script's launch arguments based on the preferred console host.
-    if ($processCmd -ne $powershellCmd) {
-        $WinUtilLaunchArguments = "$powershellCmd -ExecutionPolicy Bypass -NoProfile -File `"$WinUtilScriptPath`""
+    if ($ProcessCommand -ne $PowerShellCommand) {
+        $WinUtilArgumentsList = "$PowerShellCommand -ExecutionPolicy Bypass -NoProfile -File `"$WinUtilScriptPath`""
     } else {
-        $WinUtilLaunchArguments = "-ExecutionPolicy Bypass -NoProfile -File `"$WinUtilScriptPath`""
+        $WinUtilArgumentsList = "-ExecutionPolicy Bypass -NoProfile -File `"$WinUtilScriptPath`""
     }
 
-    # Append WinUtil's launch arguments from $argsList to the current arguments list if provided.
-    if ($argsList) {
-        $WinUtilLaunchArguments += " " + $($argsList -join " ")
+    # Append WinUtil's launch arguments from $WinUtilArguments to the current arguments list if provided.
+    if ($WinUtilArguments) {
+        $WinUtilArgumentsList += " " + $($WinUtilArguments -join " ")
     }
 
     # Run the WinUtil script, relaunching it with administrator permissions when they are required.
-    if (!$isElevated) {
+    if (!$ProcessIsElevated) {
         Write-Host "WinUtil is not running as administrator. Relaunching with elevated permissions..." -ForegroundColor DarkCyan
-        Write-Host "Running the selected WinUtil release: Version '$($releaseTag)' from the source repository." -ForegroundColor Green
-        Start-Process $processCmd -ArgumentList $WinUtilLaunchArguments -Wait -Verb RunAs
+        Write-Host "Running the selected WinUtil release: Version '$($ReleaseTag)' from the source repository." -ForegroundColor Green
+        Start-Process $ProcessCommand -ArgumentList $WinUtilArgumentsList -Wait -Verb RunAs
     } else {
-        Write-Host "Running the selected WinUtil release: Version '$($releaseTag)' from the source repository." -ForegroundColor Green  
-        Start-Process $processCmd -ArgumentList $WinUtilLaunchArguments -Wait
+        Write-Host "Running the selected WinUtil release: Version '$($ReleaseTag)' from the source repository." -ForegroundColor Green
+        Start-Process $ProcessCommand -ArgumentList $WinUtilArgumentsList -Wait
     }
 }
 
@@ -147,7 +152,7 @@ function Start-LatestWinUtil {
 try {
     Get-LatestWinUtil
 } catch {
-    Write-Host "An error occurred while downloading WinUtil release '$($releaseTag)': $_" -ForegroundColor Red
+    Write-Host "An error occurred while downloading WinUtil release '$($ReleaseTag)': $_" -ForegroundColor Red
     break
 }
 
@@ -156,7 +161,7 @@ try {
 try {
     Get-WinUtilUpdates
 } catch {
-    Write-Host "An error occurred while upgrading/downgrading WinUtil release '$($releaseTag)': $_" -ForegroundColor Red
+    Write-Host "An error occurred while upgrading/downgrading WinUtil release '$($ReleaseTag)': $_" -ForegroundColor Red
     break
 }
 
@@ -168,5 +173,5 @@ try {
         Start-LatestWinUtil
     }
 } catch {
-    Write-Host "An error occurred while launching WinUtil release '$($releaseTag)': $_" -ForegroundColor Red
+    Write-Host "An error occurred while launching WinUtil release '$($ReleaseTag)': $_" -ForegroundColor Red
 }
