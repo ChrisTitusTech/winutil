@@ -32,11 +32,10 @@ function Invoke-WPFUnInstall {
 
     Invoke-WPFRunspace -ArgumentList @(("PackagesToInstall", $PackagesToInstall),("ChocoPreference", $ChocoPreference)) -DebugPreference $DebugPreference -ScriptBlock {
         param($PackagesToInstall, $ChocoPreference, $DebugPreference)
-        if ($PackagesToInstall.count -eq 1) {
-            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
-        } else {
-            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
-        }
+
+        $taskbarItemState = if ($PackagesToInstall.Count -eq 1) { "Indeterminate" } else { "Normal" }
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state $taskbarItemState -value 0.01 -overlay "logo" })
+
         $packagesWinget, $packagesChoco = {
             $packagesWinget = [System.Collections.ArrayList]::new()
             $packagesChoco = [System.Collections.ArrayList]::new()
@@ -47,7 +46,7 @@ function Invoke-WPFUnInstall {
                     $packagesWinget.add($package.winget)
                     Write-Host "Queueing $($package.winget) for Winget uninstall"
                 } else {
-                    $null = $packagesChoco.add($package.choco)
+                    $packagesChoco.add($package.choco)
                     Write-Host "Queueing $($package.choco) for Chocolatey uninstall"
                 }
             }
@@ -56,7 +55,7 @@ function Invoke-WPFUnInstall {
                     $packagesChoco.add($package.choco)
                     Write-Host "Queueing $($package.choco) for Chocolatey uninstall"
                 } else {
-                    $null = $packagesWinget.add($($package.winget))
+                    $packagesWinget.add($($package.winget))
                     Write-Host "Queueing $($package.winget) for Winget uninstall"
                 }
             }
