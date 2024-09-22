@@ -22,11 +22,10 @@ function Invoke-WPFInstall {
     $ChocoPreference = $($sync.WPFpreferChocolatey.IsChecked)
     $installHandle = Invoke-WPFRunspace -ParameterList @(("PackagesToInstall", $PackagesToInstall),("ChocoPreference", $ChocoPreference)) -DebugPreference $DebugPreference -ScriptBlock {
         param($PackagesToInstall, $ChocoPreference, $DebugPreference)
-        if ($PackagesToInstall.count -eq 1) {
-            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
-        } else {
-            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
-        }
+
+        $taskbarItemState = if ($PackagesToInstall.Count -eq 1) { "Indeterminate" } else { "Normal" }
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state $taskbarItemState -value 0.01 -overlay "logo" })
+
         $packagesWinget, $packagesChoco = {
             $packagesWinget = [System.Collections.ArrayList]::new()
             $packagesChoco = [System.Collections.ArrayList]::new()
