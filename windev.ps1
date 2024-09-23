@@ -82,6 +82,7 @@ $WinUtilScriptPath = Join-Path "$env:TEMP" "winutil.ps1"
 # Function to download the latest release of WinUtil from the releases page to the local disk.
 function Get-LatestWinUtil {
     if (!(Test-Path $WinUtilScriptPath)) {
+        Write-Host "WinUtil is not found. Downloading WinUtil '$($WinUtilReleaseTag)'..." -ForegroundColor DarkYellow
         Invoke-RestMethod $WinUtilReleaseURL -OutFile $WinUtilScriptPath
     }
 }
