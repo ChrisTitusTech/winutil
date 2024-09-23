@@ -56,7 +56,7 @@ function Invoke-WPFImpex {
                 }
             }
         }
-        
+
         Invoke-WPFPresets -preset $flattenedJson -imported $true
     }
 }
