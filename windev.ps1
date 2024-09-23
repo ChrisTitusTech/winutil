@@ -98,23 +98,20 @@ function Get-WinUtilUpdates {
     # Make a web request to the latest WinUtil release URL and store the script's raw code for processing.
     $RawWinUtilScript = (Invoke-WebRequest $WinUtilReleaseURL -UseBasicParsing).RawContent
 
-    # Match the 'Version:' header and replace it with an empty string, leaving the script's version number behind.
-    $RemoteWinUtilVersion = ([regex]"\bVersion\s*:\s[\d.]+").Match($RawWinUtilScript).Value -replace ".*:\s", ""
-    $LocalWinUtilVersion = ([regex]"\bVersion\s*:\s[\d.]+").Match((Get-Content $WinUtilScriptPath)).Value -replace ".*:\s", ""
+    # Create the regular expression pattern used to extract the script's version number from the script's raw content.
+    $VersionExtractionRegEx = "(\bVersion\s*:\s)([\d.]+)"
 
-    # If WinUtil has been upgraded since the last time it has been launched, re-download the WinUtil script.
-    if ([version]$RemoteWinUtilVersion -gt [version]$LocalWinUtilVersion) {
-        Write-Host "WinUtil has been upgraded since the last time it was launched. Downloading '$($RemoteWinUtilVersion)'..." -ForegroundColor DarkYellow
+    # Match the entire 'Version:' header and extract the script's version number directly using RegEx capture groups.
+    $RemoteWinUtilVersion = (([regex]($VersionExtractionRegEx)).Match($RawWinUtilScript).Groups[2].Value)
+    $LocalWinUtilVersion = (([regex]($VersionExtractionRegEx)).Match((Get-Content $WinUtilScriptPath)).Groups[2].Value)
+
+    # If WinUtil has been modified since the last time it was launched, download a fresh copy of the script.
+    if ([version]$RemoteWinUtilVersion -ne [version]$LocalWinUtilVersion) {
+        Write-Host "WinUtil is out-of-date. Downloading WinUtil '$($RemoteWinUtilVersion)'..." -ForegroundColor DarkYellow
         Invoke-RestMethod $WinUtilReleaseURL -OutFile $WinUtilScriptPath
     }
 
-    # If WinUtil has been downgraded since the last time it has been launched, re-download the WinUtil script.
-    if ([version]$RemoteWinUtilVersion -lt [version]$LocalWinUtilVersion) {
-        Write-Host "WinUtil has been downgraded since the last time it was launched. Downloading '$($RemoteWinUtilVersion)'..." -ForegroundColor DarkYellow
-        Invoke-RestMethod $WinUtilReleaseURL -OutFile $WinUtilScriptPath
-    }
-
-    # If WinUtil is already up-to-date, skip updating the script and let the user know it is already up-to-date. 
+    # If WinUtil has not been modified, skip updating the script and let the user know it is already up-to-date. 
     if ([version]$RemoteWinUtilVersion -eq [version]$LocalWinUtilVersion) {
         Write-Host "WinUtil is already up-to-date. Skipped update checking." -ForegroundColor Yellow
     }
