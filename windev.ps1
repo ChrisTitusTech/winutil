@@ -42,24 +42,17 @@ function Get-WinUtilReleaseTag {
         break
     }
 
-    # Filter through the released versions and select the first matching stable version.
-    $StableRelease = $ReleasesList | Where-Object { $_.prerelease -eq $false } | Select-Object -First 1
+    # Filter through the released versions and select the first matching stable or pre-release version.
+    $StableRelease = $ReleasesList | Where-Object { -not $_.prerelease } | Select-Object -First 1
+    $PreRelease = $ReleasesList | Where-Object { $_.prerelease } | Select-Object -First 1
 
-    # Filter through the released versions and select the first matching pre-release version.
-    $PreRelease = $ReleasesList | Where-Object { $_.prerelease -eq $true } | Select-Object -First 1
-
-    # If a stable or pre-release version is found, set the release tag to the returned version number.
-    if ($ReleasesList -and ($PreRelease -or $StableRelease)) {
-        $ReleaseTag = if ($PreRelease) {
-            $PreRelease.tag_name
-        } elseif ($StableRelease) {
-            $StableRelease.tag_name
-        }
-    }
-
-    # If no releases are found or a stable or pre-release doesn't exist default to using the 'latest' tag.
-    if (!$ReleasesList -or !($PreRelease -or $StableRelease)) {
-        $ReleaseTag = "latest"
+    # Set the release tag based on the available releases; if no release tag is found use the 'latest' tag.
+    $ReleaseTag = if ($PreRelease) {
+        $PreRelease.tag_name
+    } elseif ($StableRelease) {
+        $StableRelease.tag_name
+    } else {
+        "latest"
     }
 
     # Return the release tag to facilitate the usage of the version number within other parts of the script.
@@ -111,7 +104,7 @@ function Get-WinUtilUpdates {
         Invoke-RestMethod $WinUtilReleaseURL -OutFile $WinUtilScriptPath
     }
 
-    # If WinUtil has not been modified, skip updating the script and let the user know it is already up-to-date. 
+    # If WinUtil has not been modified, skip updating the script and let the user know it is already up-to-date.
     if ([version]$RemoteWinUtilVersion -eq [version]$LocalWinUtilVersion) {
         Write-Host "WinUtil is already up-to-date. Skipped update checking." -ForegroundColor Yellow
     }
