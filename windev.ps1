@@ -133,12 +133,12 @@ function Start-LatestWinUtil {
     }
 
     # If the WinUtil script is not running as administrator, relaunch the script with administrator permissions.
+    Write-Host "Running the selected WinUtil release: Version '$($WinUtilReleaseTag)'." -ForegroundColor Green
+
     if (!$ProcessIsElevated) {
         Write-Host "WinUtil is not running as administrator. Relaunching..." -ForegroundColor DarkCyan
-        Write-Host "Running the selected WinUtil release: Version '$($WinUtilReleaseTag)'." -ForegroundColor Green
         Start-Process $ProcessCommand -ArgumentList $WinUtilLaunchArguments -Wait -Verb RunAs
     } else {
-        Write-Host "Running the selected WinUtil release: Version '$($WinUtilReleaseTag)'." -ForegroundColor Green
         Start-Process $ProcessCommand -ArgumentList $WinUtilLaunchArguments -Wait
     }
 }
