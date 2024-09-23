@@ -415,9 +415,7 @@ $sync["ISORelease"].Items.Add("22H2") | Out-Null
 $sync["ISORelease"].Items.Add("21H2") | Out-Null
 $sync["ISORelease"].SelectedItem = "23H2"
 
-$currentCulture = Get-FidoLangFromCulture -langName (Get-Culture).Name
-
-$sync["ISOLanguage"].Items.Add($currentCulture) | Out-Null
+$sync["ISOLanguage"].Items.Add("System Language ($(Get-FidoLangFromCulture -langName $((Get-Culture).Name)))") | Out-Null
 if ($currentCulture -ne "English International") {
     $sync["ISOLanguage"].Items.Add("English International") | Out-Null
 }
@@ -427,7 +425,7 @@ if ($currentCulture -ne "English") {
 if ($sync["ISOLanguage"].Items.Count -eq 1) {
     $sync["ISOLanguage"].IsEnabled = $false
 }
-$sync["ISOLanguage"].SelectedItem = $currentCulture
+$sync["ISOLanguage"].SelectedIndex = 0
 
 
 # Load Checkboxes and Labels outside of the Filter function only once on startup for performance reasons
