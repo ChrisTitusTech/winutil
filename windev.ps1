@@ -121,10 +121,9 @@ function Start-LatestWinUtil {
     # Setup the script's launch arguments based on the presence of Windows Terminal or Windows PowerShell/PowerShell Core:
     # 1. Windows Terminal needs the name of the process to start ($PowerShellCommand) in addition to the launch arguments.
     # 2. Windows PowerShell and PowerShell Core can receive and use the launch arguments as is without extra modification.
+    $WinUtilLaunchArguments = "-ExecutionPolicy Bypass -NoProfile -File `"$WinUtilScriptPath`""
     if ($ProcessCommand -ne $PowerShellCommand) {
-        $WinUtilLaunchArguments = "$PowerShellCommand -ExecutionPolicy Bypass -NoProfile -File `"$WinUtilScriptPath`""
-    } else {
-        $WinUtilLaunchArguments = "-ExecutionPolicy Bypass -NoProfile -File `"$WinUtilScriptPath`""
+        $WinUtilLaunchArguments = "$PowerShellCommand $WinUtilLaunchArguments"
     }
 
     # If WinUtil's launch arguments are provided, append them to the end of the list of current launch arguments.
