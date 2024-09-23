@@ -98,14 +98,11 @@ function Get-WinUtilUpdates {
     $RemoteWinUtilVersion = (([regex]($VersionExtractionRegEx)).Match($RawWinUtilScript).Groups[2].Value)
     $LocalWinUtilVersion = (([regex]($VersionExtractionRegEx)).Match((Get-Content $WinUtilScriptPath)).Groups[2].Value)
 
-    # If WinUtil has been modified since the last time it was launched, download a fresh copy of the script.
+    # Check if WinUtil needs an update and either download a fresh copy or notify the user its already up-to-date.
     if ([version]$RemoteWinUtilVersion -ne [version]$LocalWinUtilVersion) {
         Write-Host "WinUtil is out-of-date. Downloading WinUtil '$($RemoteWinUtilVersion)'..." -ForegroundColor DarkYellow
         Invoke-RestMethod $WinUtilReleaseURL -OutFile $WinUtilScriptPath
-    }
-
-    # If WinUtil has not been modified, skip updating the script and let the user know it is already up-to-date.
-    if ([version]$RemoteWinUtilVersion -eq [version]$LocalWinUtilVersion) {
+    } else {
         Write-Host "WinUtil is already up-to-date. Skipped update checking." -ForegroundColor Yellow
     }
 }
