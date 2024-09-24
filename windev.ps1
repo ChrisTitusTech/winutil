@@ -15,15 +15,6 @@
     Run in PowerShell > iex "& { $(irm https://christitus.com/windev) } <arguments>"
     OR
     Run in PowerShell > .\windev.ps1 <arguments>
-.NOTES
-    Below are some usage examples for running the script with arguments:
-    Run in PowerShell > iex "& { $(irm https://christitus.com/windev) } -Config 'C:\your\config\file\path\here'"
-    OR
-    Run in PowerShell > .\windev.ps1 -Config "C:\your\config\file\path\here"
-    OR
-    Run in PowerShell > iex "& { $(irm https://christitus.com/windev) } -Run -Config 'C:\your\config\file\path\here'"
-    OR
-    Run in PowerShell > .\windev.ps1 -Run -Config "C:\your\config\file\path\here"
 #>
 
 # Speed up download-related tasks by suppressing the output of Write-Progress.
