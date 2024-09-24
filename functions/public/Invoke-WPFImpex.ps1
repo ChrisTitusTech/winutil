@@ -19,44 +19,46 @@ function Invoke-WPFImpex {
         $Config = $null
     )
 
-    if ($type -eq "export") {
-        $FileBrowser = New-Object System.Windows.Forms.SaveFileDialog
-    }
-    if ($type -eq "import") {
-        $FileBrowser = New-Object System.Windows.Forms.OpenFileDialog
-    }
+    function ConfigDialog {
+        if (!$Config) {
+            switch ($type) {
+                "export" { $FileBrowser = New-Object System.Windows.Forms.SaveFileDialog }
+                "import" { $FileBrowser = New-Object System.Windows.Forms.OpenFileDialog }
+            }
+            $FileBrowser.InitialDirectory = [Environment]::GetFolderPath('Desktop')
+            $FileBrowser.Filter = "JSON Files (*.json)|*.json"
+            $FileBrowser.ShowDialog() | Out-Null
 
-    if (-not $Config) {
-        $FileBrowser.InitialDirectory = [Environment]::GetFolderPath('Desktop')
-        $FileBrowser.Filter = "JSON Files (*.json)|*.json"
-        $FileBrowser.ShowDialog() | Out-Null
-
-        if($FileBrowser.FileName -eq "") {
-            return
+            if ($FileBrowser.FileName -eq "") {
+                return $null
+            } else {
+                return $FileBrowser.FileName
+            }
         } else {
-            $Config = $FileBrowser.FileName
+            return $Config
         }
     }
 
-    if ($type -eq "export") {
-        $jsonFile = Get-WinUtilCheckBoxes -unCheck $false
-        $jsonFile | ConvertTo-Json | Out-File $FileBrowser.FileName -Force
-        $runscript = "iex ""& { `$(irm christitus.com/win) } -Config '$($FileBrowser.FileName)'"""
-        $runscript | Set-Clipboard
-    }
-    if ($type -eq "import") {
-        $jsonFile = Get-Content $Config | ConvertFrom-Json
-
-        $flattenedJson = @()
-        $jsonFile.PSObject.Properties | ForEach-Object {
-            $category = $_.Name
-            foreach ($checkboxName in $_.Value) {
-                if ($category -ne "Install") {
-                    $flattenedJson += $checkboxName
-                }
+    switch ($type) {
+        "export" {
+            $Config = ConfigDialog
+            if ($Config) {
+                $jsonFile = Get-WinUtilCheckBoxes -unCheck $false | ConvertTo-Json
+                $jsonFile | Out-File $Config -Force
+                "iex ""& { `$(irm christitus.com/win) } -Config '$Config'""" | Set-Clipboard
             }
         }
-
-        Invoke-WPFPresets -preset $flattenedJson -imported $true
+        "import" {
+            $Config = ConfigDialog
+            if ($Config) {
+                if ($Config -match '^https?://') {
+                    $jsonFile = (Invoke-WebRequest "$Config").Content | ConvertFrom-Json
+                } else {
+                    $jsonFile = Get-Content $Config | ConvertFrom-Json
+                }
+                $flattenedJson = $jsonFile.PSObject.Properties.Where({ $_.Name -ne "Install" }).ForEach({ $_.Value })
+                Invoke-WPFPresets -preset $flattenedJson -imported $true
+            }
+        }
     }
 }
