@@ -72,80 +72,45 @@ function Invoke-Preprocessing {
         throw "[Invoke-Preprocessing] Invalid Paramter Value for 'WorkingDir', passed value: '$WorkingDir'. Either the path is a File or Non-Existing/Invlid, please double check your code."
     }
 
-    $count = $ExcludedFiles.Count
-
-    # Make sure there's a * at the end of folders in ExcludedFiles list
-    for ($i = 0; $i -lt $count; $i++) {
-        $excludedFile = $ExcludedFiles[$i]
-        $isFolder = ($excludedFile) -match '\\$'
-        if ($isFolder) { $ExcludedFiles[$i] = $excludedFile + '*' }
+    $InternalExcludedFiles = [System.Collections.Generic.List[string]]::new($ExcludedFiles.Count)
+    ForEach ($excludedFile in $ExcludedFiles) {
+        $InternalExcludedFiles.Add($excludedFile) | Out-Null
     }
 
-    # Validate the ExcludedFiles List before continuing on,
-    # that's if there's a list in the first place, and '-SkipExcludedFilesValidation' was not provided.
-    if (-not $SkipExcludedFilesValidation) {
-        for ($i = 0; $i -lt $count; $i++) {
-            $excludedFile = $ExcludedFiles[$i]
+    # Validate the ExcludedItems List before continuing on,
+    # that's if there's a list in the first place, and '-SkipInternalExcludedFilesValidation' was not provided.
+    if ($ExcludedFiles.Count -gt 0) {
+        ForEach ($excludedFile in $ExcludedFiles) {
             $filePath = "$(($WorkingDir -replace ('\\$', '')) + '\' + ($excludedFile -replace ('\.\\', '')))"
-
-            # Handle paths with wildcards in a different implementation
-            $matches = ($filePath) -match '^.*?\*'
-
-            if ($matches) {
-                if (-NOT (Get-ChildItem -Recurse -Path "$filePath" -File -Force)) {
-                    $failedFilesList += "'$filePath', "
+            $files = Get-ChildItem -Recurse -Path "$filePath" -File -Force
+            if ($files.Count -gt 0) {
+                ForEach ($file in $files) {
+                    $InternalExcludedFiles.Add("$($file.FullName)") | Out-Null
                 }
-            } else {
-                if (-NOT (Test-Path -Path "$filePath")) {
-                    $failedFilesList += "'$filePath', "
-                }
-            }
+            } else { $failedFilesList += "'$filePath', " }
         }
         $failedFilesList = $failedFilesList -replace (',\s*$', '')
-        if (-NOT $failedFilesList -eq "") {
+        if ((-not $failedFilesList -eq "") -and (-not $SkipExcludedFilesValidation)) {
             throw "[Invoke-Preprocessing] One or more File Paths and/or File Patterns were not found, you can use '-SkipExcludedFilesValidation' switch to skip this check, the failed to validate are: $failedFilesList"
         }
     }
 
     # Get Files List
-    [System.Collections.ArrayList]$files = Get-ChildItem $WorkingDir -Recurse -Exclude $ExcludedFiles -File -Force
-    $numOfFiles = $files.Count
+    [System.Collections.ArrayList]$files = Get-ChildItem -LiteralPath $WorkingDir -Recurse -Exclude $InternalExcludedFiles -File -Force
 
     # Only keep the 'FullName' Property for every entry in the list
-    for ($i = 0; $i -lt $numOfFiles; $i++) {
+    for ($i = 0; $i -lt $files.Count; $i++) {
         $file = $files[$i]
         $files[$i] = $file.FullName
     }
 
     # If a file(s) are found in Exclude List,
     # Remove the file from files list.
-    for ($j = 0; $j -lt $excludedFiles.Count; $j++) {
-        # Prepare some variables
-        $excluded = $excludedFiles[$j]
-        $pathToFind = ($excluded) -replace ('^\.\\', '')
-        $pathToFind = $WorkingDir + '\' + $pathToFind
-        $index = -1 # reset index on every iteration
-
-        # Handle paths with wildcards in a different implementation
-        $matches = ($pathToFind) -match '^.*?\*'
-
-        if ($matches) {
-             $filesToCheck = Get-ChildItem -Recurse -Path "$pathToFind" -File -Force
-             if ($filesToCheck) {
-                for ($k = 0; $k -lt $filesToCheck.Count; $k++) {
-                    $fileToCheck = $filesToCheck[$k]
-                    $index = $files.IndexOf("$fileToCheck")
-                    if ($index -ge 0) { $files.RemoveAt($index) }
-                }
-             }
-        } else {
-            $index = $files.IndexOf("$pathToFind")
-            if ($index -ge 0) { $files.RemoveAt($index) }
-        }
+    ForEach ($excludedFile in $InternalExcludedFiles) {
+        $index = $files.IndexOf("$excludedFile")
+        if ($index -ge 0) { $files.RemoveAt($index) }
     }
 
-    # Make sure 'numOfFiles' is synced with the actual Number of Files found in '$files'
-    # This's done because previous may or may not edit the files list, so we should update it
     $numOfFiles = $files.Count
 
     if ($numOfFiles -eq 0) {
