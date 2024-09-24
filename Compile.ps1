@@ -73,9 +73,7 @@ Get-ChildItem "functions" -Recurse -File | ForEach-Object {
     }
 Update-Progress "Adding: Config *.json" 40
 Get-ChildItem "config" | Where-Object {$psitem.extension -eq ".json"} | ForEach-Object {
-    $json = @"
-        $((Get-Content $psitem.FullName -Raw).replace("'","''"))
-"@
+    $json = (Get-Content $psitem.FullName -Raw)
     $jsonAsObject = $json | ConvertFrom-Json
 
     # Add 'WPFInstall' as a prefix to every entry-name in 'applications.json' file
@@ -88,11 +86,11 @@ Get-ChildItem "config" | Where-Object {$psitem.extension -eq ".json"} | ForEach-
     }
 
     $json = @"
-        $($jsonAsObject | ConvertTo-Json -Depth 3)
+$($jsonAsObject | ConvertTo-Json -Depth 3)
 "@
 
     $sync.configs.$($psitem.BaseName) = $json | ConvertFrom-Json
-    $script_content.Add($(Write-Output "`$sync.configs.$($psitem.BaseName) = '$json' `| ConvertFrom-Json" ))
+    $script_content.Add($(Write-Output "`$sync.configs.$($psitem.BaseName) = @'`n$json`n'@ `| ConvertFrom-Json" ))
 }
 
 # Read the entire XAML file as a single string, preserving line breaks
