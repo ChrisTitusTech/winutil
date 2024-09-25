@@ -292,7 +292,7 @@ function Invoke-WPFUIElements {
                         $checkBox.FontSize = $theme.FontSize
                         $checkBox.ToolTip = $entryInfo.Description
                         $checkBox.Margin = $theme.CheckBoxMargin
-                        if ($entryInfo.Checked) {
+                        if ($entryInfo.Checked -eq $true) {
                             $checkBox.IsChecked = $entryInfo.Checked
                         }
                         $horizontalStackPanel.Children.Add($checkBox) | Out-Null

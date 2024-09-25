@@ -77,17 +77,64 @@ function Invoke-WPFGetIso {
             return
         }
     } elseif ($sync["ISOdownloader"].IsChecked) {
+        # Create folder browsers for user-specified locations
+        [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
+        $isoDownloaderFBD = New-Object System.Windows.Forms.FolderBrowserDialog
+        $isoDownloaderFBD.Description = "Please specify the path to download the ISO file to:"
+        $isoDownloaderFBD.ShowNewFolderButton = $true
+        if ($isoDownloaderFBD.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK)
+        {
+            return
+        }
+
+        # Grab the location of the selected path
+        $targetFolder = $isoDownloaderFBD.SelectedPath
+
         # Auto download newest ISO
         # Credit: https://github.com/pbatard/Fido
         $fidopath = "$env:temp\Fido.ps1"
-        $originalLocation = Get-Location
+        $originalLocation = $PSScriptRoot
 
         Invoke-WebRequest "https://github.com/pbatard/Fido/raw/master/Fido.ps1" -OutFile $fidopath
 
         Set-Location -Path $env:temp
-        & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch "x64" -Lang $sync["ISOLanguage"].SelectedItem -Ed "Windows 11 Home/Pro/Edu"
+        # Detect if the first option ("System language") has been selected and get a Fido-approved language from the current culture
+        $lang = if ($sync["ISOLanguage"].SelectedIndex -eq 0) {
+            Get-FidoLangFromCulture -langName (Get-Culture).Name
+        } else {
+            $sync["ISOLanguage"].SelectedItem
+        }
+
+        & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch "x64" -Lang $lang -Ed "Windows 11 Home/Pro/Edu"
+        if (-not $?)
+        {
+            Write-Host "Could not download the ISO file. Look at the output of the console for more information."
+            $msg = "The ISO file could not be downloaded"
+            [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
+            return
+        }
         Set-Location $originalLocation
-        $filePath = Get-ChildItem -Path "$env:temp" -Filter "Win11*.iso" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+        # Use the FullName property to only grab the file names. Using this property is necessary as, without it, you're passing the usual output of Get-ChildItem
+        # to the variable, and let's be honest, that does NOT exist in the file system
+        $filePath = (Get-ChildItem -Path "$env:temp" -Filter "Win11*.iso").FullName | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+        $fileName = [IO.Path]::GetFileName("$filePath")
+
+        if (($targetFolder -ne "") -and (Test-Path "$targetFolder"))
+        {
+            try
+            {
+                # "Let it download to $env:TEMP and then we **move** it to the file path." - CodingWonders
+                $destinationFilePath = "$targetFolder\$fileName"
+                Write-Host "Moving ISO file. Please wait..."
+                Move-Item -Path "$filePath" -Destination "$destinationFilePath" -Force
+                $filePath = $destinationFilePath
+            }
+            catch
+            {
+                Write-Host "Unable to move the ISO file to the location you specified. The downloaded ISO is in the `"$env:TEMP`" folder"
+                Write-Host "Error information: $($_.Exception.Message)" -ForegroundColor Yellow
+            }
+        }
     }
 
     Write-Host "File path $($filePath)"

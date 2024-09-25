@@ -17,7 +17,7 @@ function Invoke-WPFPresets {
 
     param (
         [Parameter(position=0)]
-        [string]$preset = "",
+        [Array]$preset = "",
 
         [Parameter(position=1)]
         [bool]$imported = $false,
@@ -51,7 +51,7 @@ function Invoke-WPFPresets {
         }
 
         # Check if the checkbox name exists in the flattened JSON hashtable
-        if ($CheckBoxesToCheck.Contains($checkboxName)) {
+        if ($CheckBoxesToCheck -contains $checkboxName) {
             # If it exists, set IsChecked to true
             $sync.$checkboxName.IsChecked = $true
             Write-Debug "$checkboxName is checked"

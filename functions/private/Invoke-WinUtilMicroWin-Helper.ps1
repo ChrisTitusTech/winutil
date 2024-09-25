@@ -28,7 +28,7 @@ function Test-CompatibleImage() {
 function Get-FidoLangFromCulture {
 
     param (
-        [Parameter(Mandatory, Position = 0)] [string] $langName
+        [Parameter(Mandatory, Position = 0)] [string]$langName
     )
 
     switch -Wildcard ($langName)

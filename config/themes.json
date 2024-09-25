@@ -73,12 +73,12 @@
 
     },
     "Dark": {
-        "ComboBoxForegroundColor":  "#1e3747",
-        "ComboBoxBackgroundColor":  "#232629",
+        "ComboBoxForegroundColor":  "#F7F7F7",
+        "ComboBoxBackgroundColor":  "#1E3747",
         "LabelboxForegroundColor":  "#0567ff",
         "MainForegroundColor":  "#F7F7F7",
-        "MainBackgroundColor":  "#121212",
-        "LabelBackgroundColor":  "#121212",
+        "MainBackgroundColor":  "#232629",
+        "LabelBackgroundColor":  "#232629",
         "LinkForegroundColor":  "#add8e6",
         "LinkHoverForegroundColor":  "#F7F7F7",
         "ScrollBarBackgroundColor": "#2E3135",
