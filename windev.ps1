@@ -17,6 +17,13 @@
     Run in PowerShell > .\windev.ps1 <arguments>
 #>
 
+# Define the arguments for the WinUtil script; enables argument auto-completion.
+param (
+    [switch]$Debug,
+    [string]$Config,
+    [switch]$Run
+)
+
 # Speed up download-related tasks by suppressing the output of Write-Progress.
 $ProgressPreference = "SilentlyContinue"
 
