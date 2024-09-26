@@ -41,23 +41,36 @@ function Invoke-WPFImpex {
 
     switch ($type) {
         "export" {
-            $Config = ConfigDialog
-            if ($Config) {
-                $jsonFile = Get-WinUtilCheckBoxes -unCheck $false | ConvertTo-Json
-                $jsonFile | Out-File $Config -Force
-                "iex ""& { `$(irm christitus.com/win) } -Config '$Config'""" | Set-Clipboard
+            try {
+                $Config = ConfigDialog
+                if ($Config) {
+                    $jsonFile = Get-WinUtilCheckBoxes -unCheck $false | ConvertTo-Json
+                    $jsonFile | Out-File $Config -Force
+                    "iex ""& { `$(irm christitus.com/win) } -Config '$Config'""" | Set-Clipboard
+                }
+            } catch {
+                Write-Error "An error occurred while exporting: $_"
             }
         }
         "import" {
-            $Config = ConfigDialog
-            if ($Config) {
-                if ($Config -match '^https?://') {
-                    $jsonFile = (Invoke-WebRequest "$Config").Content | ConvertFrom-Json
-                } else {
-                    $jsonFile = Get-Content $Config | ConvertFrom-Json
+            try {
+                $Config = ConfigDialog
+                if ($Config) {
+                    try {
+                        if ($Config -match '^https?://') {
+                            $jsonFile = (Invoke-WebRequest "$Config").Content | ConvertFrom-Json
+                        } else {
+                            $jsonFile = Get-Content $Config | ConvertFrom-Json
+                        }
+                    } catch {
+                        Write-Error "Failed to load the JSON file from the specified path or URL: $_"
+                        return
+                    }
+                    $flattenedJson = $jsonFile.PSObject.Properties.Where({ $_.Name -ne "Install" }).ForEach({ $_.Value })
+                    Invoke-WPFPresets -preset $flattenedJson -imported $true
                 }
-                $flattenedJson = $jsonFile.PSObject.Properties.Where({ $_.Name -ne "Install" }).ForEach({ $_.Value })
-                Invoke-WPFPresets -preset $flattenedJson -imported $true
+            } catch {
+                Write-Error "An error occurred while importing: $_"
             }
         }
     }
