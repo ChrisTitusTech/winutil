@@ -62,9 +62,7 @@ $downloadURL = "https://github.com/ChrisTitusTech/winutil/releases/latest/downlo
 # Download the WinUtil script to '$env:TEMP'
 try {
     Write-Host "Downloading latest stable WinUtil version..." -ForegroundColor Green
-    $ProgressPreference = "SilentlyContinue"
     Invoke-RestMethod $downloadURL -OutFile "$env:TEMP\winutil.ps1"
-    $ProgressPreference = "Continue"
 } catch {
     Write-Host "Error downloading WinUtil: $_" -ForegroundColor Red
     break
@@ -86,7 +84,7 @@ try {
         Write-Host "WinUtil is not running as administrator. Relaunching..." -ForegroundColor DarkCyan
         Start-Process $processCmd -ArgumentList $launchArguments -Verb RunAs
     } else {
-        Write-Host "Running the latest stable version of WinUtil." -ForegroundColor Green
+        Write-Host "Running the latest stable version of WinUtil." -ForegroundColor DarkCyan
         Start-Process $processCmd -ArgumentList $launchArguments
     }
     break
