@@ -169,28 +169,7 @@ function Invoke-WPFUIElements {
                     $image.Width = 40
                     $image.Height = 40
                     $image.Margin = New-Object Windows.Thickness(0, 0, 10, 0)
-                    if (-not [string]::IsNullOrEmpty($kaka)) {
-                        try {
-                            $packageinfo = (choco info $entryInfo.choco --limit-output).Split(' ')[0]
-                            $packageinfo = $packageinfo -replace '\|', '.'
-                            $iconlink = "https://community.chocolatey.org/content/packageimages/" + $packageinfo
-                            $finishediconlink = $iconlink + ".png"
-
-                            $webimage = Invoke-WebRequest -Uri $finishediconlink -Method Head -ErrorAction SilentlyContinue
-
-                            if ($webimage.StatusCode -eq 200) {
-                                $image.Source = [Windows.Media.Imaging.BitmapImage]::new([Uri]::new($finishediconlink))
-                            } else {
-                                $finishediconlink = $iconlink + ".svg"
-                                $image.Source = $noimage
-                            }
-
-                        } catch {
-                            $image.Source = $noimage
-                        }
-                    } else {
-                        $image.Source = $noimage
-                    }
+                    $image.Source = $noimage
                     $image.Clip = New-Object Windows.Media.RectangleGeometry
                     $image.Clip.Rect = New-Object Windows.Rect(0, 0, $image.Width, $image.Height)
                     $image.Clip.RadiusX = 5
