@@ -137,6 +137,7 @@ function Invoke-WPFUIElements {
                 if ($configVariable -eq $sync.configs.applications) {
                     # Create the outer Border for the application type
                     $border = New-Object Windows.Controls.Border
+                    $border.Name = $entryInfo.Name
                     $border.BorderBrush = [Windows.Media.Brushes]::Gray
                     $border.BorderThickness = 1
                     $border.CornerRadius = 5
