@@ -171,7 +171,6 @@
         "category": "Browsers",
         "choco": "brave",
         "content": "Brave",
-        "Type": "application",
         "description": "Brave is a privacy-focused web browser that blocks ads and trackers, offering a faster and safer browsing experience.",
         "link": "https://www.brave.com",
         "winget": "Brave.Brave"
@@ -234,7 +233,6 @@
     },
     "chrome": {
         "category": "Browsers",
-        "Type": "application",
         "choco": "googlechrome",
         "content": "Chrome",
         "description": "Google Chrome is a widely used web browser known for its speed, simplicity, and seamless integration with Google services.",
@@ -243,7 +241,6 @@
     },
     "chromium": {
         "category": "Browsers",
-        "Type": "application",
         "choco": "chromium",
         "content": "Chromium",
         "description": "Chromium is the open-source project that serves as the foundation for various web browsers, including Chrome.",
@@ -252,7 +249,6 @@
     },
     "arc": {
         "category": "Browsers",
-        "Type": "application",
         "choco": "na",
         "content": "Arc",
         "description": "Arc is a Chromium based browser, known for it's clean and modern design.",
@@ -477,7 +473,6 @@
     },
     "edge": {
         "category": "Browsers",
-        "Type": "application",
         "choco": "microsoft-edge",
         "content": "Edge",
         "description": "Microsoft Edge is a modern web browser built on Chromium, offering performance, security, and integration with Microsoft services.",
@@ -534,7 +529,6 @@
     },
     "falkon": {
         "category": "Browsers",
-        "Type": "application",
         "choco": "falkon",
         "content": "Falkon",
         "description": "Falkon is a lightweight and fast web browser with a focus on user privacy and efficiency.",
@@ -591,7 +585,6 @@
     },
     "firefox": {
         "category": "Browsers",
-        "Type": "application",
         "choco": "firefox",
         "content": "Firefox",
         "description": "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions.",
@@ -600,7 +593,6 @@
     },
     "firefoxesr": {
         "category": "Browsers",
-        "Type": "application",
         "choco": "FirefoxESR",
         "content": "Firefox ESR",
         "description": "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions. Firefox ESR (Extended Support Release) receives major updates every 42 weeks with minor updates such as crash fixes, security fixes and policy updates as needed, but at least every four weeks.",
@@ -625,7 +617,6 @@
     },
     "floorp": {
         "category": "Browsers",
-        "Type": "application",
         "choco": "na",
         "content": "Floorp",
         "description": "Floorp is an open-source web browser project that aims to provide a simple and fast browsing experience.",
@@ -1098,7 +1089,6 @@
     },
     "librewolf": {
         "category": "Browsers",
-        "Type": "application",
         "choco": "librewolf",
         "content": "LibreWolf",
         "description": "LibreWolf is a privacy-focused web browser based on Firefox, with additional privacy and security enhancements.",
@@ -1291,7 +1281,6 @@
     },
     "mullvadbrowser": {
         "category": "Browsers",
-        "Type": "application",
         "choco": "na",
         "content": "Mullvad Browser",
         "description": "Mullvad Browser is a privacy-focused web browser, developed in partnership with the Tor Project.",
@@ -2204,7 +2193,6 @@
     },
     "thorium": {
         "category": "Browsers",
-        "Type": "application",
         "choco": "na",
         "content": "Thorium Browser AVX2",
         "description": "Browser built for speed over vanilla chromium. It is built with AVX2 optimizations and is the fastest browser on the market.",
@@ -2237,7 +2225,6 @@
     },
     "tor": {
         "category": "Browsers",
-        "Type": "application",
         "choco": "tor-browser",
         "content": "Tor Browser",
         "description": "Tor Browser is designed for anonymous web browsing, utilizing the Tor network to protect user privacy and security.",
@@ -2286,7 +2273,6 @@
     },
     "ungoogled": {
         "category": "Browsers",
-        "Type": "application",
         "choco": "ungoogled-chromium",
         "content": "Ungoogled",
         "description": "Ungoogled Chromium is a version of Chromium without Google's integration for enhanced privacy and control.",
@@ -2367,7 +2353,6 @@
     },
     "vivaldi": {
         "category": "Browsers",
-        "Type": "application",
         "choco": "vivaldi",
         "content": "Vivaldi",
         "description": "Vivaldi is a highly customizable web browser with a focus on user personalization and productivity features.",
@@ -2424,7 +2409,6 @@
     },
     "waterfox": {
         "category": "Browsers",
-        "Type": "application",
         "choco": "waterfox",
         "content": "Waterfox",
         "description": "Waterfox is a fast, privacy-focused web browser based on Firefox, designed to preserve user choice and privacy.",
@@ -2897,7 +2881,6 @@
     },
     "PaleMoon": {
         "category": "Browsers",
-        "Type": "application",
         "choco": "paleMoon",
         "content": "PaleMoon",
         "description":"Pale Moon is an Open Source, Goanna-based web browser available for Microsoft Windows and Linux (with other operating systems in development), focusing on efficiency and ease of use.",
