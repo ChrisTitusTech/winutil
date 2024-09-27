@@ -297,7 +297,33 @@ function Invoke-WPFUIElements {
                         $image.Width = 40
                         $image.Height = 40
                         $image.Margin = New-Object Windows.Thickness(0, 0, 10, 0)
-                        $image.Source = [Windows.Media.Imaging.BitmapImage]::new([Uri]::new("file:///$env:LOCALAPPDATA/winutil/cttlogo.ico"))
+                        if (-not [string]::IsNullOrEmpty($entryInfo.choco)) {
+                            try {
+                                $packageinfo = (choco info $entryInfo.choco --limit-output).Split(' ')[0]
+                                $packageinfo = $packageinfo -replace '\|', '.'
+                                $iconlink = "https://community.chocolatey.org/content/packageimages/" + $packageinfo
+                                $finishediconlink = $iconlink + ".png"
+
+                                $webimage = Invoke-WebRequest -Uri $finishediconlink -Method Head -ErrorAction SilentlyContinue
+
+                                if ($webimage.StatusCode -eq 200) {
+                                    $image.Source = [Windows.Media.Imaging.BitmapImage]::new([Uri]::new($finishediconlink))
+                                } else {
+                                    $finishediconlink = $iconlink + ".svg"
+                                    $image.Source = $noimage
+                                }
+
+                            } catch {
+                                $image.Source = $noimage
+                            }
+                        } else {
+                            $image.Source = $noimage
+                        }
+                        $image.Clip = New-Object Windows.Media.RectangleGeometry
+                        $image.Clip.Rect = New-Object Windows.Rect(0, 0, $image.Width, $image.Height)
+                        $image.Clip.RadiusX = 5
+                        $image.Clip.RadiusY = 5
+
                         $imageAndNamePanel.Children.Add($image) | Out-Null
 
                         # Create the TextBlock for the application name (bigger and bold)
@@ -345,7 +371,7 @@ function Invoke-WPFUIElements {
                         $button2.Height = 35
 
                         $uninstallIcon = New-Object Windows.Controls.TextBlock
-                        $uninstallIcon.Text = [char]0xE10A  # Uninstall Icon
+                        $uninstallIcon.Text = [char]0xE74D  # Uninstall Icon
                         $uninstallIcon.FontFamily = "Segoe MDL2 Assets"
                         $uninstallIcon.FontSize = 20
                         $uninstallIcon.Foreground = $theme.MainForegroundColor

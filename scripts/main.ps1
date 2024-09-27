@@ -112,6 +112,8 @@ $sync.Form.Add_Loaded({
 Invoke-WinutilThemeChange -init $true
 # Load the configuration files
 
+$noimage = "https://images.emojiterra.com/google/noto-emoji/unicode-15/color/512px/1f4e6.png"
+$noimage = [Windows.Media.Imaging.BitmapImage]::new([Uri]::new($noimage))
 
 Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 1
 
