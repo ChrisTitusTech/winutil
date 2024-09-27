@@ -927,14 +927,18 @@
                         <Button Name="WPFUninstall" Content=" Uninstall Selected" Margin="2"/>
                         <Button Name="WPFGetInstalled" Content=" Get Installed" Margin="2"/>
                         <Button Name="WPFClearInstallSelection" Content=" Clear Selection" Margin="2"/>
-                        <CheckBox Name="WPFpreferChocolatey" VerticalAlignment="Center" VerticalContentAlignment="Center">
-                            <TextBlock Text="Prefer Chocolatey" ToolTip="Prefers Chocolatey as Download Engine instead of Winget" VerticalAlignment="Center" />
-                        </CheckBox>
                     </StackPanel>
 
-                    <ScrollViewer x:Name="scrollViewer" Grid.Row="1" Grid.Column="0" Margin="{DynamicResource TabContentMargin}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
-                                BorderBrush="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Grid Name="appspanel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <ScrollViewer x:Name="scrollViewer" Grid.Row="1" Grid.Column="0" Margin="{DynamicResource TabContentMargin}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" BorderBrush="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*" />
+                                <ColumnDefinition Width="3*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Name="appscategory" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            </Grid>
+                            <Grid Name="appspanel" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            </Grid>
                         </Grid>
                     </ScrollViewer>
 

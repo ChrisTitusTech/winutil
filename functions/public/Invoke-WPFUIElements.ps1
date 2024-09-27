@@ -120,25 +120,6 @@ function Invoke-WPFUIElements {
 
         foreach ($category in ($organizedData[$panelKey].Keys | Sort-Object)) {
             $count++
-            if ($targetGridName -eq "appspanel" -and $columncount -gt 0) {
-                $panelcount2 = [Int](($count) / $maxcount - 0.5)
-                if ($panelcount -eq $panelcount2) {
-                    # Create a new Border for the new column
-                    $border = New-Object Windows.Controls.Border
-                    $border.VerticalAlignment = "Stretch" # Ensure the border stretches vertically
-                    [System.Windows.Controls.Grid]::SetColumn($border, $panelcount)
-                    $border.style = $borderstyle
-                    $targetGrid.Children.Add($border) | Out-Null
-
-                    # Create a new StackPanel inside the Border
-                    $stackPanel = New-Object Windows.Controls.StackPanel
-                    $stackPanel.Background = [Windows.Media.Brushes]::Transparent
-                    $stackPanel.SnapsToDevicePixels = $true
-                    $stackPanel.VerticalAlignment = "Stretch" # Ensure the stack panel stretches vertically
-                    $border.Child = $stackPanel
-                    $panelcount++
-                }
-            }
 
             $label = New-Object Windows.Controls.Label
             $label.Content = $category -replace ".*__", ""
@@ -152,25 +133,6 @@ function Invoke-WPFUIElements {
             $entries = $organizedData[$panelKey][$category] | Sort-Object Order, Name
             foreach ($entryInfo in $entries) {
                 $count++
-                if ($targetGridName -eq "appspanel" -and $columncount -gt 0) {
-                    $panelcount2 = [Int](($count) / $maxcount - 0.5)
-                    if ($panelcount -eq $panelcount2) {
-                        # Create a new Border for the new column
-                        $border = New-Object Windows.Controls.Border
-                        $border.VerticalAlignment = "Stretch" # Ensure the border stretches vertically
-                        [System.Windows.Controls.Grid]::SetColumn($border, $panelcount)
-                        $border.style = $borderstyle
-                        $targetGrid.Children.Add($border) | Out-Null
-
-                        # Create a new StackPanel inside the Border
-                        $stackPanel = New-Object Windows.Controls.StackPanel
-                        $stackPanel.Background = [Windows.Media.Brushes]::Transparent
-                        $stackPanel.SnapsToDevicePixels = $true
-                        $stackPanel.VerticalAlignment = "Stretch" # Ensure the stack panel stretches vertically
-                        $border.Child = $stackPanel
-                        $panelcount++
-                    }
-                }
 
                 switch ($entryInfo.Type) {
                     "Toggle" {
@@ -280,6 +242,149 @@ function Invoke-WPFUIElements {
                         $stackPanel.Children.Add($button) | Out-Null
 
                         $sync[$entryInfo.Name] = $button
+                    }
+
+                    "RadioButton" {
+                        $radioButton = New-Object Windows.Controls.RadioButton
+                        $radioButton.Name = $entryInfo.Name
+                        $radioButton.GroupName = $entryInfo.GroupName
+                        $radioButton.Content = $entryInfo.Content
+                        $radioButton.HorizontalAlignment = "Left"
+                        $radioButton.Margin = $theme.CheckBoxMargin
+                        $radioButton.FontSize = $theme.ButtonFontSize
+                        $radioButton.ToolTip = $entryInfo.Description
+
+                        if ($entryInfo.Checked -eq $true) {
+                            $radioButton.IsChecked = $true
+                        }
+
+                        $stackPanel.Children.Add($radioButton) | Out-Null
+                        $sync[$entryInfo.Name] = $radioButton
+                    }
+
+                    "application" {
+                        # Create the outer Border for the application type
+                        $border = New-Object Windows.Controls.Border
+                        $border.BorderBrush = [Windows.Media.Brushes]::Gray
+                        $border.BorderThickness = 1
+                        $border.CornerRadius = 5
+                        $border.Padding = New-Object Windows.Thickness(10)
+                        $border.HorizontalAlignment = "Stretch"
+                        $border.VerticalAlignment = "Top"
+                        $border.Margin = New-Object Windows.Thickness(0, 10, 0, 0)
+
+                        # Create a DockPanel inside the Border
+                        $dockPanel = New-Object Windows.Controls.DockPanel
+                        $dockPanel.LastChildFill = $true
+                        $border.Child = $dockPanel
+
+                        # Create the CheckBox, vertically centered
+                        $checkBox = New-Object Windows.Controls.CheckBox
+                        $checkBox.Name = $entryInfo.Name
+                        $checkBox.HorizontalAlignment = "Left"
+                        $checkBox.VerticalAlignment = "Center"
+                        $checkBox.Margin = New-Object Windows.Thickness(5, 0, 10, 0)
+                        [Windows.Controls.DockPanel]::SetDock($checkBox, [Windows.Controls.Dock]::Left)
+                        $dockPanel.Children.Add($checkBox) | Out-Null
+
+                        # Create a StackPanel for the image and name (for better alignment)
+                        $imageAndNamePanel = New-Object Windows.Controls.StackPanel
+                        $imageAndNamePanel.Orientation = "Horizontal"
+                        $imageAndNamePanel.VerticalAlignment = "Center"
+
+                        # Create the Image and load it from the local path
+                        $image = New-Object Windows.Controls.Image
+                        $image.Width = 40
+                        $image.Height = 40
+                        $image.Margin = New-Object Windows.Thickness(0, 0, 10, 0)
+                        $image.Source = [Windows.Media.Imaging.BitmapImage]::new([Uri]::new("file:///$env:LOCALAPPDATA/winutil/cttlogo.ico"))
+                        $imageAndNamePanel.Children.Add($image) | Out-Null
+
+                        # Create the TextBlock for the application name (bigger and bold)
+                        $appName = New-Object Windows.Controls.TextBlock
+                        $appName.Text = $entryInfo.Content
+                        $appName.FontSize = 16
+                        $appName.FontWeight = [Windows.FontWeights]::Bold
+                        $appName.VerticalAlignment = "Center"
+                        $appName.Margin = New-Object Windows.Thickness(5, 0, 0, 0)
+                        $imageAndNamePanel.Children.Add($appName) | Out-Null
+
+                        # Add the image and name panel to the dock panel (after the checkbox)
+                        [Windows.Controls.DockPanel]::SetDock($imageAndNamePanel, [Windows.Controls.Dock]::Left)
+                        $dockPanel.Children.Add($imageAndNamePanel) | Out-Null
+
+                        # Create the StackPanel for the buttons and dock it to the right
+                        $buttonPanel = New-Object Windows.Controls.StackPanel
+                        $buttonPanel.Orientation = "Horizontal"
+                        $buttonPanel.HorizontalAlignment = "Right"
+                        $buttonPanel.VerticalAlignment = "Center"
+                        $buttonPanel.Margin = New-Object Windows.Thickness(10, 0, 0, 0)
+                        [Windows.Controls.DockPanel]::SetDock($buttonPanel, [Windows.Controls.Dock]::Right)
+
+                        # Create the "Install" button with the install icon from Segoe MDL2 Assets
+                        $button1 = New-Object Windows.Controls.Button
+                        $button1.Width = 45
+                        $button1.Height = 35
+                        $button1.Margin = New-Object Windows.Thickness(0, 0, 10, 0)
+
+                        $installIcon = New-Object Windows.Controls.TextBlock
+                        $installIcon.Text = [char]0xE118  # Install Icon
+                        $installIcon.FontFamily = "Segoe MDL2 Assets"
+                        $installIcon.FontSize = 20
+                        $installIcon.Foreground = $theme.MainForegroundColor
+                        $installIcon.Background = "Transparent"
+                        $installIcon.HorizontalAlignment = "Center"
+                        $installIcon.VerticalAlignment = "Center"
+
+                        $button1.Content = $installIcon
+                        $buttonPanel.Children.Add($button1) | Out-Null
+
+                        # Create the "Uninstall" button with the uninstall icon from Segoe MDL2 Assets
+                        $button2 = New-Object Windows.Controls.Button
+                        $button2.Width = 45
+                        $button2.Height = 35
+
+                        $uninstallIcon = New-Object Windows.Controls.TextBlock
+                        $uninstallIcon.Text = [char]0xE10A  # Uninstall Icon
+                        $uninstallIcon.FontFamily = "Segoe MDL2 Assets"
+                        $uninstallIcon.FontSize = 20
+                        $uninstallIcon.Foreground = $theme.MainForegroundColor
+                        $uninstallIcon.Background = "Transparent"
+                        $uninstallIcon.HorizontalAlignment = "Center"
+                        $uninstallIcon.VerticalAlignment = "Center"
+
+                        $button2.Content = $uninstallIcon
+                        $buttonPanel.Children.Add($button2) | Out-Null
+
+                        # Create the "Info" button with the info icon from Segoe MDL2 Assets
+                        $infoButton = New-Object Windows.Controls.Button
+                        $infoButton.Width = 45
+                        $infoButton.Height = 35
+                        $infoButton.Margin = New-Object Windows.Thickness(10, 0, 0, 0)
+
+                        $infoIcon = New-Object Windows.Controls.TextBlock
+                        $infoIcon.Text = [char]0xE946  # Info Icon
+                        $infoIcon.FontFamily = "Segoe MDL2 Assets"
+                        $infoIcon.FontSize = 20
+                        $infoIcon.Foreground = $theme.MainForegroundColor
+                        $infoIcon.Background = "Transparent"
+                        $infoIcon.HorizontalAlignment = "Center"
+                        $infoIcon.VerticalAlignment = "Center"
+
+                        $infoButton.Content = $infoIcon
+                        $buttonPanel.Children.Add($infoButton) | Out-Null
+
+                        # Add the button panel to the DockPanel
+                        $dockPanel.Children.Add($buttonPanel) | Out-Null
+
+                        # Add the border to the main stack panel in the grid
+                        $stackPanel.Children.Add($border) | Out-Null
+
+                        # Sync the CheckBox, buttons, and info to the sync object for further use
+                        $sync[$entryInfo.Name] = $checkBox
+                        $sync[$entryInfo.Name + "_InstallButton"] = $button1
+                        $sync[$entryInfo.Name + "_UninstallButton"] = $button2
+                        $sync[$entryInfo.Name + "_InfoButton"] = $infoButton
                     }
 
                     default {
