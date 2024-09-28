@@ -220,10 +220,10 @@ function Invoke-WPFUIElements {
                     [Windows.Controls.DockPanel]::SetDock($buttonPanel, [Windows.Controls.Dock]::Right)
 
                     # Create the "Install" button with the install icon from Segoe MDL2 Assets
-                    $button1 = New-Object Windows.Controls.Button
-                    $button1.Width = 45
-                    $button1.Height = 35
-                    $button1.Margin = New-Object Windows.Thickness(0, 0, 10, 0)
+                    $installButton = New-Object Windows.Controls.Button
+                    $installButton.Width = 45
+                    $installButton.Height = 35
+                    $installButton.Margin = New-Object Windows.Thickness(0, 0, 10, 0)
 
                     $installIcon = New-Object Windows.Controls.TextBlock
                     $installIcon.Text = [char]0xE118  # Install Icon
@@ -234,18 +234,18 @@ function Invoke-WPFUIElements {
                     $installIcon.HorizontalAlignment = "Center"
                     $installIcon.VerticalAlignment = "Center"
 
-                    $button1.Content = $installIcon
-                    $buttonPanel.Children.Add($button1) | Out-Null
+                    $installButton.Content = $installIcon
+                    $buttonPanel.Children.Add($installButton) | Out-Null
 
                     # Add Click event for the "Install" button
-                    $button1.Add_Click({
+                    $installButton.Add_Click({
                         Write-Host "Installing ..."
                     })
 
                     # Create the "Uninstall" button with the uninstall icon from Segoe MDL2 Assets
-                    $button2 = New-Object Windows.Controls.Button
-                    $button2.Width = 45
-                    $button2.Height = 35
+                    $uninstallButton = New-Object Windows.Controls.Button
+                    $uninstallButton.Width = 45
+                    $uninstallButton.Height = 35
 
                     $uninstallIcon = New-Object Windows.Controls.TextBlock
                     $uninstallIcon.Text = [char]0xE74D  # Uninstall Icon
@@ -256,10 +256,10 @@ function Invoke-WPFUIElements {
                     $uninstallIcon.HorizontalAlignment = "Center"
                     $uninstallIcon.VerticalAlignment = "Center"
 
-                    $button2.Content = $uninstallIcon
-                    $buttonPanel.Children.Add($button2) | Out-Null
+                    $uninstallButton.Content = $uninstallIcon
+                    $buttonPanel.Children.Add($uninstallButton) | Out-Null
 
-                    $button2.Add_Click({
+                    $uninstallButton.Add_Click({
                         Write-Host "Uninstalling ..."
                     })
 
@@ -293,8 +293,8 @@ function Invoke-WPFUIElements {
 
                     # Sync the CheckBox, buttons, and info to the sync object for further use
                     $sync[$entryInfo.Name] = $checkBox
-                    $sync[$entryInfo.Name + "_InstallButton"] = $button1
-                    $sync[$entryInfo.Name + "_UninstallButton"] = $button2
+                    $sync[$entryInfo.Name + "_InstallButton"] = $installButton
+                    $sync[$entryInfo.Name + "_UninstallButton"] = $uninstallButton
                     $sync[$entryInfo.Name + "_InfoButton"] = $infoButton
                 } else {
                     # Create the UI elements based on the entry type
