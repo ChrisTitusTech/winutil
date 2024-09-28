@@ -184,7 +184,7 @@ function Invoke-WPFGetIso {
 
         try {
             Write-Host "Mounting Iso. Please wait. ($($filePath))"
-            $mountedISO = (Mount-DiskImage -PassThru -ImagePath $filePath)
+            $mountedISO = (Mount-DiskImage -PassThru "$filePath")
             Write-Host "Done mounting Iso $mountedISO"
             $driveLetter = (Get-Volume -DiskImage $mountedISO).DriveLetter
             Write-Host "Iso mounted to '$driveLetter'"
