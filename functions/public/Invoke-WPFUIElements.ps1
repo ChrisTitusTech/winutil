@@ -172,7 +172,8 @@ function Invoke-WPFUIElements {
                     $image.Height = 40
                     $image.Margin = New-Object Windows.Thickness(0, 0, 10, 0)
                     $image.Source = $noimage
-                    if (-not [string]::IsNullOrEmpty($kaka)) {
+                    # TODO: use UniGetUI's image db as a fallback
+                    if (-not [string]::IsNullOrEmpty($kaka)) { # replace kaka with $entryInfo.choco to get images, takes a lot longer but works for many packages
                         try {
                             $packageinfo = (choco info $entryInfo.choco --limit-output).Split(' ')[0]
                             $packageinfo = $packageinfo -replace '\|', '.'
