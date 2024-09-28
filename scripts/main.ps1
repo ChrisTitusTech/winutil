@@ -115,8 +115,6 @@ Invoke-WinutilThemeChange -init $true
 $noimage = "https://images.emojiterra.com/google/noto-emoji/unicode-15/color/512px/1f4e6.png"
 $noimage = [Windows.Media.Imaging.BitmapImage]::new([Uri]::new($noimage))
 
-Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 1
-
 # Extract unique categories from the applications configuration
 $uniqueCategories = $sync.configs.applications.PSObject.Properties.Value |
     Where-Object { $_.Category } |
@@ -131,91 +129,15 @@ foreach ($category in $uniqueCategories) {
 
     $categoryConfig[$sanitizedCategoryName] = [PSCustomObject]@{
         Category = "Categories"
-        Content = $category  # Keep original category name for display
+        Content = $category
     }
-}
-
-# Adding dynamically two radiobuttons for "Package Manager" category with GroupName
-$packageManagerConfig = @{
-    "WPFWingetRadioButton" = [PSCustomObject]@{
-        Name = "WingetRadioButton"
-        Content = "Winget"
-        Category = "__Package Manager"
-        Type = "RadioButton"
-        GroupName = "PackageManagerGroup"
-        Checked = $true
-        Order = "1"
-        Description = "Use Winget for package management"
-    }
-    "WPFChocoRadioButton" = [PSCustomObject]@{
-        Name = "ChocoRadioButton"
-        Content = "Chocolatey"
-        Category = "__Package Manager"
-        Type = "RadioButton"
-        GroupName = "PackageManagerGroup"
-        Checked = $false
-        Order = "2"
-        Description = "Use Chocolatey for package management"
-    }
-    "WPFautofallback" = [PSCustomObject]@{
-        Name = "AutoRadioButton"
-        Content = "Auto Fallback"
-        Category = "__Package Manager"
-        Checked = $true
-        Order = "3"
-        Description = "If the selected package manager fails, automatically switch to the other one"
-    }
-    "WPFDefaultScope" = [PSCustomObject]@{
-        Name = "DefaultScope"
-        Content = "Default"
-        Category = "_Installation Scope"
-        Type = "RadioButton"
-        GroupName = "InstallationScopeGroup"
-        Checked = $true
-        Order = "1"
-        Description = "Use the default scope of the application"
-    }
-    "WPFUserScope" = [PSCustomObject]@{
-        Name = "UserScope"
-        Content = "User"
-        Category = "_Installation Scope"
-        Type = "RadioButton"
-        GroupName = "InstallationScopeGroup"
-        Checked = $false
-        Order = "2"
-        Description = "If possible, install the application only for the current user"
-    }
-    "WPFGlobalMachineScope" = [PSCustomObject]@{
-        Name = "GlobalMachineScope"
-        Content = "Global (Machine)"
-        Category = "_Installation Scope"
-        Type = "RadioButton"
-        GroupName = "InstallationScopeGroup"
-        Checked = $false
-        Order = "3"
-        Description = "If possible, install the application globally for all users"
-    }
-}
-
-# Merge the packageManagerConfig with the existing category config
-$finalConfig = @{}
-$categoryConfig.Keys | ForEach-Object {
-    $finalConfig[$_] = $categoryConfig[$_]
-}
-$packageManagerConfig.Keys | ForEach-Object {
-    $finalConfig[$_] = $packageManagerConfig[$_]
-}
-
-# Convert to PSCustomObject for function input
-$finalConfigObject = [PSCustomObject]@{}
-$finalConfig.Keys | ForEach-Object {
-    Add-Member -InputObject $finalConfigObject -MemberType NoteProperty -Name $_ -Value $finalConfig[$_]
+    $sync.configs.appnavigation | Add-Member -MemberType NoteProperty -Name $sanitizedCategoryName -Value $categoryConfig[$sanitizedCategoryName] -Force
 }
 
 # Now call the function with the final merged config
-Invoke-WPFUIElements -configVariable $finalConfigObject -targetGridName "appscategory" -columncount 1
+Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
 
-
+Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 1
 Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
 Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
 

@@ -1,0 +1,54 @@
+{
+    "WingetRadioButton": {
+        "Content": "Winget",
+        "Category": "__Package Manager",
+        "Type": "RadioButton",
+        "GroupName": "PackageManagerGroup",
+        "Checked": true,
+        "Order": "1",
+        "Description": "Use Winget for package management"
+    },
+    "ChocoRadioButton": {
+        "Content": "Chocolatey",
+        "Category": "__Package Manager",
+        "Type": "RadioButton",
+        "GroupName": "PackageManagerGroup",
+        "Checked": false,
+        "Order": "2",
+        "Description": "Use Chocolatey for package management"
+    },
+    "autofallback": {
+        "Content": "Auto Fallback",
+        "Category": "__Package Manager",
+        "Checked": true,
+        "Order": "3",
+        "Description": "If the selected package manager fails, automatically switch to the other one"
+    },
+    "DefaultScope": {
+        "Content": "Default",
+        "Category": "_Installation Scope",
+        "Type": "RadioButton",
+        "GroupName": "InstallationScopeGroup",
+        "Checked": true,
+        "Order": "1",
+        "Description": "Use the default scope of the application"
+    },
+    "UserScope": {
+        "Content": "User",
+        "Category": "_Installation Scope",
+        "Type": "RadioButton",
+        "GroupName": "InstallationScopeGroup",
+        "Checked": false,
+        "Order": "2",
+        "Description": "If possible, install the application only for the current user"
+    },
+    "GlobalMachineScope": {
+        "Content": "Global (Machine)",
+        "Category": "_Installation Scope",
+        "Type": "RadioButton",
+        "GroupName": "InstallationScopeGroup",
+        "Checked": false,
+        "Order": "3",
+        "Description": "If possible, install the application globally for all users"
+    }
+}

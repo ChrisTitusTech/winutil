@@ -172,7 +172,6 @@ function Invoke-WPFUIElements {
                     $image.Height = 40
                     $image.Margin = New-Object Windows.Thickness(0, 0, 10, 0)
                     $image.Source = $noimage
-                    # TODO: use UniGetUI's image db as a fallback
                     if (-not [string]::IsNullOrEmpty($kaka)) { # replace kaka with $entryInfo.choco to get images, takes a lot longer but works for many packages
                         try {
                             $packageinfo = (choco info $entryInfo.choco --limit-output).Split(' ')[0]
@@ -183,7 +182,7 @@ function Invoke-WPFUIElements {
                             if ($webimage.StatusCode -eq 200) {
                                 $image.Source = [Windows.Media.Imaging.BitmapImage]::new([Uri]::new($finishediconlink))
                             } else {
-                                $finishediconlink = $iconlink + ".svg"
+                                # TODO: use UniGetUI's image db as a fallback
                                 $image.Source = $noimage
                             }
                         } catch {
