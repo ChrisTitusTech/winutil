@@ -171,6 +171,7 @@ function Invoke-WPFUIElements {
                     $image.Width = 40
                     $image.Height = 40
                     $image.Margin = New-Object Windows.Thickness(0, 0, 10, 0)
+                    $image.Source = $noimage
                     if (-not [string]::IsNullOrEmpty($kaka)) {
                         try {
                             $packageinfo = (choco info $entryInfo.choco --limit-output).Split(' ')[0]
@@ -187,9 +188,8 @@ function Invoke-WPFUIElements {
                         } catch {
                             $image.Source = $noimage
                         }
-                    } else {
-                        $image.Source = $noimage
                     }
+
                     #$image.Source = $noimage
                     $image.Clip = New-Object Windows.Media.RectangleGeometry
                     $image.Clip.Rect = New-Object Windows.Rect(0, 0, $image.Width, $image.Height)
