@@ -237,6 +237,11 @@ function Invoke-WPFUIElements {
                     $button1.Content = $installIcon
                     $buttonPanel.Children.Add($button1) | Out-Null
 
+                    # Add Click event for the "Install" button
+                    $button1.Add_Click({
+                        Write-Host "Installing ..."
+                    })
+
                     # Create the "Uninstall" button with the uninstall icon from Segoe MDL2 Assets
                     $button2 = New-Object Windows.Controls.Button
                     $button2.Width = 45
@@ -253,6 +258,10 @@ function Invoke-WPFUIElements {
 
                     $button2.Content = $uninstallIcon
                     $buttonPanel.Children.Add($button2) | Out-Null
+
+                    $button2.Add_Click({
+                        Write-Host "Uninstalling ..."
+                    })
 
                     # Create the "Info" button with the info icon from Segoe MDL2 Assets
                     $infoButton = New-Object Windows.Controls.Button
@@ -271,6 +280,10 @@ function Invoke-WPFUIElements {
 
                     $infoButton.Content = $infoIcon
                     $buttonPanel.Children.Add($infoButton) | Out-Null
+
+                    $infoButton.Add_Click({
+                        Write-Host "Getting info ..."
+                    })
 
                     # Add the button panel to the DockPanel
                     $dockPanel.Children.Add($buttonPanel) | Out-Null
