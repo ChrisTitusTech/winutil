@@ -260,19 +260,33 @@ function Invoke-WPFGetIso {
             $wimFile = $wimFile.Replace(".wim", ".esd").Trim()
         }
         $sync.MicrowinWindowsFlavors.Items.Clear()
-        Get-WindowsImage -ImagePath $wimFile | ForEach-Object {
+
+        # Store the results of Get-WindowsImage in a variable
+        $images = Get-WindowsImage -ImagePath $wimFile
+
+        $proEditionIndex = -1
+        $proeditionfound = $false
+
+        # Populate the list of Windows flavors and find the Pro edition
+        $images | ForEach-Object {
             $imageIdx = $_.ImageIndex
             $imageName = $_.ImageName
             $sync.MicrowinWindowsFlavors.Items.Add("$imageIdx : $imageName")
-        }
-        $sync.MicrowinWindowsFlavors.SelectedIndex = 0
-        Write-Host "Finding suitable Pro edition. This can take some time. Do note that this is an automatic process that might not select the edition you want."
-        Get-WindowsImage -ImagePath $wimFile | ForEach-Object {
-            if ((Get-WindowsImage -ImagePath $wimFile -Index $_.ImageIndex).EditionId -eq "Professional") {
-                # We have found the Pro edition
-                $sync.MicrowinWindowsFlavors.SelectedIndex = $_.ImageIndex - 1
+
+            # Check if the image name contains 'Pro'
+            if ($imageName -like "*Pro*" -and !$proeditionfound) {
+                $proEditionIndex = $imageIdx
+                $proeditionfound = $true
             }
         }
+
+        # Set the selected index to the Pro edition if found, otherwise default to the first item
+        if ($proEditionIndex -ne -1) {
+            $sync.MicrowinWindowsFlavors.SelectedIndex = $proEditionIndex - 1  # Index is zero-based
+        } else {
+            $sync.MicrowinWindowsFlavors.SelectedIndex = 0
+        }
+
         Get-Volume $driveLetter | Get-DiskImage | Dismount-DiskImage
         Write-Host "Selected value '$($sync.MicrowinWindowsFlavors.SelectedValue)'....."
 
