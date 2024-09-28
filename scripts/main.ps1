@@ -219,27 +219,6 @@ Invoke-WPFUIElements -configVariable $finalConfigObject -targetGridName "appscat
 Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
 Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
 
-$chocoapps = $sync.configs.applications.PSObject.Properties.Value | Where-Object { $_.Choco } | Select-Object
-
-$chocologos = Invoke-WPFRunspace -Argumentlist $chocoapps -DebugPreference $DebugPreference -ScriptBlock {
-    param ($chocoapps)
-    try {
-        foreach ($entry in $chocoapps) {
-            $packageinfo = (choco info $entry.choco --limit-output).Split(' ')[0]
-            $packageinfo = $packageinfo -replace '\|', '.'
-            $iconlink = "https://community.chocolatey.org/content/packageimages/" + $packageinfo
-            $webimage = $iconlink + ".png"
-
-            $webimage = [Windows.Media.Imaging.BitmapImage]::new([Uri]::new($webimage))
-            $result = @{}
-            $result[$entry.Name] = $webimage
-        }
-    } catch {
-        # do nothing
-    }
-    return $result
-}
-
 #===========================================================================
 # Store Form Objects In PowerShell
 #===========================================================================
