@@ -116,48 +116,64 @@ function Invoke-WPFUIElements {
 
         # Check if configVariable equals $sync.configs.applications
         if ($configVariable -eq $sync.configs.applications) {
-            # Create the StackPanel with buttons at the top inside the border
-            $stackPanelTop = New-Object Windows.Controls.StackPanel
-            $stackPanelTop.Background = $window.FindResource("MainBackgroundColor") # Dynamic resource for the background
-            $stackPanelTop.Orientation = "Horizontal"
-            $stackPanelTop.HorizontalAlignment = "Left"
-            $stackPanelTop.VerticalAlignment = "Top"
-            $stackPanelTop.Margin = $window.FindResource("TabContentMargin") # Dynamic resource for the margin
+            # Create a WrapPanel to hold buttons at the top
+            $wrapPanelTop = New-Object Windows.Controls.WrapPanel
+            $wrapPanelTop.Background = $window.FindResource("MainBackgroundColor") # Dynamic resource for the background
+            $wrapPanelTop.HorizontalAlignment = "Left"
+            $wrapPanelTop.VerticalAlignment = "Top"
+            $wrapPanelTop.Orientation = "Horizontal"
+            $wrapPanelTop.Margin = $window.FindResource("TabContentMargin") # Dynamic resource for the margin
 
-            # Create the buttons and add them to the StackPanel
+            # Create buttons and add them to the WrapPanel with dynamic widths
             $installButton = New-Object Windows.Controls.Button
             $installButton.Name = "WPFInstall"
-            $installButton.Content = " Install/Upgrade Selected"
+            $installButton.Content = "Install/Upgrade Selected"
             $installButton.Margin = New-Object Windows.Thickness(2)
-            $stackPanelTop.Children.Add($installButton) | Out-Null
+            $installButton.MinWidth = 100  # Minimum width to ensure readability
+            $installButton.MaxWidth = 200  # Max width to prevent buttons from being too large
+            $installButton.HorizontalAlignment = "Stretch"
+            $wrapPanelTop.Children.Add($installButton) | Out-Null
 
             $upgradeButton = New-Object Windows.Controls.Button
             $upgradeButton.Name = "WPFInstallUpgrade"
-            $upgradeButton.Content = " Upgrade All"
+            $upgradeButton.Content = "Upgrade All"
             $upgradeButton.Margin = New-Object Windows.Thickness(2)
-            $stackPanelTop.Children.Add($upgradeButton) | Out-Null
+            $upgradeButton.MinWidth = 100
+            $upgradeButton.MaxWidth = 200
+            $upgradeButton.HorizontalAlignment = "Stretch"
+            $wrapPanelTop.Children.Add($upgradeButton) | Out-Null
 
             $uninstallButton = New-Object Windows.Controls.Button
             $uninstallButton.Name = "WPFUninstall"
-            $uninstallButton.Content = " Uninstall Selected"
+            $uninstallButton.Content = "Uninstall Selected"
             $uninstallButton.Margin = New-Object Windows.Thickness(2)
-            $stackPanelTop.Children.Add($uninstallButton) | Out-Null
+            $uninstallButton.MinWidth = 100
+            $uninstallButton.MaxWidth = 200
+            $uninstallButton.HorizontalAlignment = "Stretch"
+            $wrapPanelTop.Children.Add($uninstallButton) | Out-Null
 
             $getInstalledButton = New-Object Windows.Controls.Button
             $getInstalledButton.Name = "WPFGetInstalled"
-            $getInstalledButton.Content = " Get Installed"
+            $getInstalledButton.Content = "Get Installed"
             $getInstalledButton.Margin = New-Object Windows.Thickness(2)
-            $stackPanelTop.Children.Add($getInstalledButton) | Out-Null
+            $getInstalledButton.MinWidth = 100
+            $getInstalledButton.MaxWidth = 200
+            $getInstalledButton.HorizontalAlignment = "Stretch"
+            $wrapPanelTop.Children.Add($getInstalledButton) | Out-Null
 
             $clearSelectionButton = New-Object Windows.Controls.Button
             $clearSelectionButton.Name = "WPFClearInstallSelection"
-            $clearSelectionButton.Content = " Clear Selection"
+            $clearSelectionButton.Content = "Clear Selection"
             $clearSelectionButton.Margin = New-Object Windows.Thickness(2)
-            $stackPanelTop.Children.Add($clearSelectionButton) | Out-Null
+            $clearSelectionButton.MinWidth = 100
+            $clearSelectionButton.MaxWidth = 200
+            $clearSelectionButton.HorizontalAlignment = "Stretch"
+            $wrapPanelTop.Children.Add($clearSelectionButton) | Out-Null
 
-            # Dock the top StackPanel at the top of the DockPanel
-            [Windows.Controls.DockPanel]::SetDock($stackPanelTop, [Windows.Controls.Dock]::Top)
-            $dockPanelContainer.Children.Add($stackPanelTop) | Out-Null
+            # Dock the WrapPanel at the top of the DockPanel
+            [Windows.Controls.DockPanel]::SetDock($wrapPanelTop, [Windows.Controls.Dock]::Top)
+            $dockPanelContainer.Children.Add($wrapPanelTop) | Out-Null
+
         }
 
         # Create a ScrollViewer to contain the main content (excluding buttons)

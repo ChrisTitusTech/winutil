@@ -929,9 +929,6 @@
                         <Grid Name="appspanel" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         </Grid>
                     </Grid>
-
-                    <Rectangle Grid.Row="0" Grid.Column="0" Width="22" Height="22" Fill="{DynamicResource MainBackgroundColor}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Style="{StaticResource ScrollVisibilityRectangle}"/>
-
                 </Grid>
             </TabItem>
             <TabItem Header="Tweaks" Visibility="Collapsed" Name="WPFTab2">
