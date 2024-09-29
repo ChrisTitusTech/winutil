@@ -76,22 +76,22 @@ jobs:
 
       - name: Generate Release Notes
         id: generate_notes
-        uses: release-drafter/release-drafter@v5
+        uses: release-drafter/release-drafter@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           config-name: release-drafter.yml
-          version: ${{ env.version }}
+          version: ${{ env.VERSION }} # Pass the version variable
 
       - name: Create and Upload Release
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.version }}
-          name: Pre-Release ${{ env.version }}
+          tag_name: ${{ env.VERSION }}
+          name: Pre-Release ${{ env.VERSION }}
           body: |
             ${{ steps.generate_notes.outputs.body }}
-            
+
             ![GitHub Downloads (specific asset, specific tag)](https://img.shields.io/github/downloads/ChrisTitusTech/winutil/${{ env.VERSION }}/winutil.ps1)
           append_body: false
           files: ./winutil.ps1

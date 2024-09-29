@@ -4,9 +4,17 @@ param (
     [switch]$SkipPreprocessing,
     [string]$Arguments
 )
+
+if ((Get-Item ".\winutil.ps1" -ErrorAction SilentlyContinue).IsReadOnly) {
+    Remove-Item ".\winutil.ps1" -Force
+}
+
 $OFS = "`r`n"
 $scriptname = "winutil.ps1"
 $workingdir = $PSScriptRoot
+
+Push-Location
+Set-Location $workingdir
 
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
@@ -42,11 +50,11 @@ if (-NOT $SkipPreprocessing) {
 
     # Dot source the 'Invoke-Preprocessing' Function from 'tools/Invoke-Preprocessing.ps1' Script
     $preprocessingFilePath = ".\tools\Invoke-Preprocessing.ps1"
-    . "$(($workingdir -replace ('\\$', '')) + '\' + ($preprocessingFilePath -replace ('\.\\', '')))"
+    . $preprocessingFilePath
 
     $excludedFiles = @('.\.git\', '.\.gitignore', '.\.gitattributes', '.\.github\CODEOWNERS', '.\LICENSE', "$preprocessingFilePath", '*.png', '*.exe')
     $msg = "Pre-req: Code Formatting"
-    Invoke-Preprocessing -WorkingDir "$workingdir" -ExcludedFiles $excludedFiles -ProgressStatusMessage $msg
+    Invoke-Preprocessing -WorkingDir "$workingdir" -ExcludedFiles $excludedFiles -ProgressStatusMessage $msg -ThrowExceptionOnEmptyFilesList
 }
 
 # Create the script in memory.
@@ -57,14 +65,14 @@ Update-Progress "Adding: Header" 5
 $script_content.Add($header)
 
 Update-Progress "Adding: Version" 10
-$script_content.Add($(Get-Content "$workingdir\scripts\start.ps1").replace('#{replaceme}',"$(Get-Date -Format yy.MM.dd)"))
+$script_content.Add($(Get-Content "scripts\start.ps1").replace('#{replaceme}',"$(Get-Date -Format yy.MM.dd)"))
 
 Update-Progress "Adding: Functions" 20
-Get-ChildItem "$workingdir\functions" -Recurse -File | ForEach-Object {
+Get-ChildItem "functions" -Recurse -File | ForEach-Object {
     $script_content.Add($(Get-Content $psitem.FullName))
     }
 Update-Progress "Adding: Config *.json" 40
-Get-ChildItem "$workingdir\config" | Where-Object {$psitem.extension -eq ".json"} | ForEach-Object {
+Get-ChildItem "config" | Where-Object {$psitem.extension -eq ".json"} | ForEach-Object {
     $json = (Get-Content $psitem.FullName).replace("'","''")
     $jsonAsObject = $json | convertfrom-json
 
@@ -85,34 +93,39 @@ Get-ChildItem "$workingdir\config" | Where-Object {$psitem.extension -eq ".json"
     $script_content.Add($(Write-output "`$sync.configs.$($psitem.BaseName) = '$json' `| convertfrom-json" ))
 }
 
-$xaml = (Get-Content "$workingdir\xaml\inputXML.xaml").replace("'","''")
+# Read the entire XAML file as a single string, preserving line breaks
+$xaml = Get-Content "$workingdir\xaml\inputXML.xaml" -Raw
 
 Update-Progress "Adding: Xaml " 90
 
-$script_content.Add($(Write-output "`$inputXML =  '$xaml'"))
+# Add the XAML content to $script_content using a here-string
+$script_content.Add(@"
+`$inputXML = @'
+$xaml
+'@
+"@)
 
-$script_content.Add($(Get-Content "$workingdir\scripts\main.ps1"))
+$script_content.Add($(Get-Content "scripts\main.ps1"))
 
 if ($Debug) {
     Update-Progress "Writing debug files" 95
-    $appXamlContent | Out-File -FilePath "$workingdir\xaml\inputApp.xaml" -Encoding ascii
-    $tweaksXamlContent | Out-File -FilePath "$workingdir\xaml\inputTweaks.xaml" -Encoding ascii
-    $featuresXamlContent | Out-File -FilePath "$workingdir\xaml\inputFeatures.xaml" -Encoding ascii
+    $appXamlContent | Out-File -FilePath "xaml\inputApp.xaml" -Encoding ascii
+    $tweaksXamlContent | Out-File -FilePath "xaml\inputTweaks.xaml" -Encoding ascii
+    $featuresXamlContent | Out-File -FilePath "xaml\inputFeatures.xaml" -Encoding ascii
 } else {
     Update-Progress "Removing temporary files" 99
-    Remove-Item "$workingdir\xaml\inputApp.xaml" -ErrorAction SilentlyContinue
-    Remove-Item "$workingdir\xaml\inputTweaks.xaml" -ErrorAction SilentlyContinue
-    Remove-Item "$workingdir\xaml\inputFeatures.xaml" -ErrorAction SilentlyContinue
+    Remove-Item "xaml\inputApp.xaml" -ErrorAction SilentlyContinue
+    Remove-Item "xaml\inputTweaks.xaml" -ErrorAction SilentlyContinue
+    Remove-Item "xaml\inputFeatures.xaml" -ErrorAction SilentlyContinue
 }
 
-Set-Content -Path "$workingdir\$scriptname" -Value ($script_content -join "`r`n") -Encoding ascii
+Set-Content -Path "$scriptname" -Value ($script_content -join "`r`n") -Encoding ascii
 Write-Progress -Activity "Compiling" -Completed
 
 Update-Progress -Activity "Validating" -StatusMessage "Checking winutil.ps1 Syntax" -Percent 0
 try {
     $null = Get-Command -Syntax .\winutil.ps1
-}
-catch {
+} catch {
     Write-Warning "Syntax Validation for 'winutil.ps1' has failed"
     Write-Host "$($Error[0])" -ForegroundColor Red
 }
@@ -128,3 +141,4 @@ if ($run) {
 
     break
 }
+Pop-Location

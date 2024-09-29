@@ -33,25 +33,25 @@ function Show-CustomDialog {
     #>
     param(
         [string]$Message,
-        [int]$Width = 300,
-        [int]$Height = 200,
-        [int]$FontSize = 10,
-        [int]$HeaderFontSize = 14,
-        [int]$IconSize = 25,
+        [int]$Width = $sync.Form.Resources.CustomDialogWidth,
+        [int]$Height = $sync.Form.Resources.CustomDialogHeight,
+        [int]$FontSize = $sync.Form.Resources.CustomDialogFontSize,
+        [int]$HeaderFontSize = $sync.Form.Resources.CustomDialogFontSizeHeader,
+        [int]$IconSize = $sync.Form.Resources.CustomDialogLogoSize,
         [bool]$EnableScroll = $false
     )
 
     Add-Type -AssemblyName PresentationFramework
 
     # Define theme colors
-    $foregroundColor = $sync.configs.themes.$ctttheme.MainForegroundColor
-    $backgroundColor = $sync.configs.themes.$ctttheme.MainBackgroundColor
+    $foregroundColor = $sync.Form.Resources.MainForegroundColor
+    $backgroundColor = $sync.Form.Resources.MainBackgroundColor
     $font = New-Object Windows.Media.FontFamily("Consolas")
-    $borderColor = $sync.configs.themes.$ctttheme.BorderColor # ButtonInstallBackgroundColor
-    $buttonBackgroundColor = $sync.configs.themes.$ctttheme.ButtonInstallBackgroundColor
-    $buttonForegroundColor = $sync.configs.themes.$ctttheme.ButtonInstallForegroundColor
+    $borderColor = $sync.Form.Resources.BorderColor # ButtonInstallBackgroundColor
+    $buttonBackgroundColor = $sync.Form.Resources.ButtonInstallBackgroundColor
+    $buttonForegroundColor = $sync.Form.Resources.ButtonInstallForegroundColor
     $shadowColor = [Windows.Media.ColorConverter]::ConvertFromString("#AAAAAAAA")
-    $logocolor = $sync.configs.themes.$ctttheme.ButtonBackgroundPressedColor
+    $logocolor = $sync.Form.Resources.LabelboxForegroundColor
 
     # Create a custom dialog window
     $dialog = New-Object Windows.Window
@@ -128,73 +128,15 @@ function Show-CustomDialog {
     $grid.Children.Add($stackPanel)
     [Windows.Controls.Grid]::SetRow($stackPanel, 0)  # Set the row to the second row (0-based index)
 
-    $viewbox = New-Object Windows.Controls.Viewbox
-    $viewbox.Width = $IconSize
-    $viewbox.Height = $IconSize
-
-    # Combine the paths into a single string
-#     $cttLogoPath = @"
-#     M174 1094 c-4 -14 -4 -55 -2 -92 3 -57 9 -75 41 -122 41 -60 45 -75 22 -84 -25 -9 -17 -21 30 -44 l45 -22 0 -103 c0 -91 3 -109 26 -155 30 -60 65 -87 204 -157 l95 -48 110 58 c184 96 205 127 205 293 l0 108 45 22 c47 23 55 36 30 46 -22 8 -18 30 9 63 13 16 34 48 46 71 20 37 21 52 15 116 l-6 73 -69 -23 c-38 -12 -137 -59 -220 -103 -82 -45 -160 -81 -171 -81 -12 0 -47 15 -78 34 -85 51 -239 127 -309 151 l-62 22 -6 -23z m500 -689 c20 -8 36 -19 36 -24 0 -18 -53 -51 -80 -51 -28 0 -80 33 -80 51 0 10 55 38 76 39 6 0 28 -7 48 -15z
-#     M177 711 c-19 -88 4 -242 49 -318 43 -74 107 -127 232 -191 176 -90 199 -84 28 7 -169 91 -214 129 -258 220 -29 58 -32 74 -37 190 -4 90 -8 116 -14 92z
-#     M1069 610 c-4 -131 -5 -137 -38 -198 -43 -79 -89 -119 -210 -181 -53 -27 -116 -61 -141 -76 -74 -43 -6 -20 115 40 221 109 296 217 294 425 -1 144 -16 137 -20 -10z
-# "@
-$cttLogoPath = @"
-           M 18.00,14.00
-           C 18.00,14.00 45.00,27.74 45.00,27.74
-             45.00,27.74 57.40,34.63 57.40,34.63
-             57.40,34.63 59.00,43.00 59.00,43.00
-             59.00,43.00 59.00,83.00 59.00,83.00
-             55.35,81.66 46.99,77.79 44.72,74.79
-             41.17,70.10 42.01,59.80 42.00,54.00
-             42.00,51.62 42.20,48.29 40.98,46.21
-             38.34,41.74 25.78,38.60 21.28,33.79
-             16.81,29.02 18.00,20.20 18.00,14.00 Z
-           M 107.00,14.00
-           C 109.01,19.06 108.93,30.37 104.66,34.21
-             100.47,37.98 86.38,43.10 84.60,47.21
-             83.94,48.74 84.01,51.32 84.00,53.00
-             83.97,57.04 84.46,68.90 83.26,72.00
-             81.06,77.70 72.54,81.42 67.00,83.00
-             67.00,83.00 67.00,43.00 67.00,43.00
-             67.00,43.00 67.99,35.63 67.99,35.63
-             67.99,35.63 80.00,28.26 80.00,28.26
-             80.00,28.26 107.00,14.00 107.00,14.00 Z
-           M 19.00,46.00
-           C 21.36,47.14 28.67,50.71 30.01,52.63
-             31.17,54.30 30.99,57.04 31.00,59.00
-             31.04,65.41 30.35,72.16 33.56,78.00
-             38.19,86.45 46.10,89.04 54.00,93.31
-             56.55,94.69 60.10,97.20 63.00,97.22
-             65.50,97.24 68.77,95.36 71.00,94.25
-             76.42,91.55 84.51,87.78 88.82,83.68
-             94.56,78.20 95.96,70.59 96.00,63.00
-             96.01,60.24 95.59,54.63 97.02,52.39
-             98.80,49.60 103.95,47.87 107.00,47.00
-             107.00,47.00 107.00,67.00 107.00,67.00
-             106.90,87.69 96.10,93.85 80.00,103.00
-             76.51,104.98 66.66,110.67 63.00,110.52
-             60.33,110.41 55.55,107.53 53.00,106.25
-             46.21,102.83 36.63,98.57 31.04,93.68
-             16.88,81.28 19.00,62.88 19.00,46.00 Z
-"@
-
-    # Add SVG path
-    $svgPath = New-Object Windows.Shapes.Path
-    $svgPath.Data = [Windows.Media.Geometry]::Parse($cttLogoPath)
-    $svgPath.Fill = $logocolor  # Set fill color to white
-
-    # Add SVG path to Viewbox
-    $viewbox.Child = $svgPath
-
     # Add SVG path to the stack panel
-    $stackPanel.Children.Add($viewbox)
+    $stackPanel.Children.Add((Invoke-WinUtilAssets -Type "logo" -Size 25))
 
     # Add "Winutil" text
     $winutilTextBlock = New-Object Windows.Controls.TextBlock
     $winutilTextBlock.Text = "Winutil"
     $winutilTextBlock.FontSize = $HeaderFontSize
     $winutilTextBlock.Foreground = $logocolor
-    $winutilTextBlock.Margin = New-Object Windows.Thickness(10, 5, 10, 5)  # Add margins around the text block
+    $winutilTextBlock.Margin = New-Object Windows.Thickness(10, 10, 10, 5)  # Add margins around the text block
     $stackPanel.Children.Add($winutilTextBlock)
     # Add TextBlock for information with text wrapping and margins
     $messageTextBlock = New-Object Windows.Controls.TextBlock
@@ -220,7 +162,7 @@ $cttLogoPath = @"
         $hyperlink.NavigateUri = New-Object System.Uri($match.Groups[1].Value)
         $hyperlink.Inlines.Add($match.Groups[2].Value)
         $hyperlink.TextDecorations = [Windows.TextDecorations]::None  # Remove underline
-        $hyperlink.Foreground = $sync.configs.themes.$ctttheme.LinkForegroundColor
+        $hyperlink.Foreground = $sync.Form.Resources.LinkForegroundColor
 
         $hyperlink.Add_Click({
             param($sender, $args)
@@ -228,11 +170,11 @@ $cttLogoPath = @"
         })
         $hyperlink.Add_MouseEnter({
             param($sender, $args)
-            $sender.Foreground = $sync.configs.themes.$ctttheme.LinkHoverForegroundColor
+            $sender.Foreground = $sync.Form.Resources.LinkHoverForegroundColor
         })
         $hyperlink.Add_MouseLeave({
             param($sender, $args)
-            $sender.Foreground = $sync.configs.themes.$ctttheme.LinkForegroundColor
+            $sender.Foreground = $sync.Form.Resources.LinkForegroundColor
         })
 
         $messageTextBlock.Inlines.Add($hyperlink)

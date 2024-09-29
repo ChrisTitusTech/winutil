@@ -27,7 +27,7 @@ function Invoke-WPFUIElements {
 
     $window = $sync["Form"]
 
-    $theme = $sync.configs.themes.$ctttheme
+    $theme = $sync.Form.Resources
     $borderstyle = $window.FindResource("BorderStyle")
     $HoverTextBlockStyle = $window.FindResource("HoverTextBlockStyle")
     $ColorfulToggleSwitchStyle = $window.FindResource("ColorfulToggleSwitchStyle")
@@ -186,7 +186,7 @@ function Invoke-WPFUIElements {
                         $label.ToolTip = $entryInfo.Description
                         $label.HorizontalAlignment = "Left"
                         $label.FontSize = $theme.FontSize
-                        $label.Foreground = $theme.MainForegroundColor
+                        $label.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "MainForegroundColor")
                         $dockPanel.Children.Add($label) | Out-Null
                         $stackPanel.Children.Add($dockPanel) | Out-Null
 
@@ -207,14 +207,14 @@ function Invoke-WPFUIElements {
                         $toggleButton.HorizontalAlignment = "Left"
                         $toggleButton.Height = $theme.TabButtonHeight
                         $toggleButton.Width = $theme.TabButtonWidth
-                        $toggleButton.Background = $theme.ButtonInstallBackgroundColor
-                        $toggleButton.Foreground = [Windows.Media.Brushes]::White
+                        $toggleButton.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "ButtonInstallBackgroundColor")
+                        $toggleButton.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "MainForegroundColor")
                         $toggleButton.FontWeight = [Windows.FontWeights]::Bold
 
                         $textBlock = New-Object Windows.Controls.TextBlock
                         $textBlock.FontSize = $theme.TabButtonFontSize
                         $textBlock.Background = [Windows.Media.Brushes]::Transparent
-                        $textBlock.Foreground = $theme.ButtonInstallForegroundColor
+                        $textBlock.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "ButtonInstallForegroundColor")
 
                         $underline = New-Object Windows.Documents.Underline
                         $underline.Inlines.Add($entryInfo.name -replace "(.).*", "`$1")
@@ -292,7 +292,7 @@ function Invoke-WPFUIElements {
                         $checkBox.FontSize = $theme.FontSize
                         $checkBox.ToolTip = $entryInfo.Description
                         $checkBox.Margin = $theme.CheckBoxMargin
-                        if ($entryInfo.Checked) {
+                        if ($entryInfo.Checked -eq $true) {
                             $checkBox.IsChecked = $entryInfo.Checked
                         }
                         $horizontalStackPanel.Children.Add($checkBox) | Out-Null
@@ -303,13 +303,6 @@ function Invoke-WPFUIElements {
                             $textBlock.Text = "(?)"
                             $textBlock.ToolTip = $entryInfo.Link
                             $textBlock.Style = $HoverTextBlockStyle
-
-                            # Add event handler for click to open link
-                            $handler = [System.Windows.Input.MouseButtonEventHandler]{
-                                param($sender, $e)
-                                Start-Process $sender.ToolTip.ToString()
-                            }
-                            $textBlock.AddHandler([Windows.Controls.TextBlock]::MouseLeftButtonUpEvent, $handler)
 
                             $horizontalStackPanel.Children.Add($textBlock) | Out-Null
 

@@ -25,6 +25,56 @@ function Test-CompatibleImage() {
     }
 }
 
+function Get-FidoLangFromCulture {
+
+    param (
+        [Parameter(Mandatory, Position = 0)] [string]$langName
+    )
+
+    switch -Wildcard ($langName)
+    {
+        "ar*" { return "Arabic" }
+        "pt-BR" { return "Brazilian Portuguese" }
+        "bg*" { return "Bulgarian" }
+        {($_ -eq "zh-CH") -or ($_ -like "zh-Hans*") -or ($_ -eq "zh-SG") -or ($_ -eq "zh-CHS")} { return "Chinese (Simplified)" }
+        {($_ -eq "zh") -or ($_ -eq "zh-Hant") -or ($_ -eq "zh-HK") -or ($_ -eq "zh-MO") -or ($_ -eq "zh-TW") -or ($_ -eq "zh-CHT")} { return "Chinese (Traditional)" }
+        "hr*" { return "Croatian" }
+        "cs*" { return "Czech" }
+        "da*" { return "Danish" }
+        "nl*" { return "Dutch" }
+        "en-US" { return "English" }
+        {($_ -like "en*") -and ($_ -ne "en-US")} { return "English International" }
+        "et*" { return "Estonian" }
+        "fi*" { return "Finnish" }
+        {($_ -like "fr*") -and ($_ -ne "fr-CA")} { return "French" }
+        "fr-CA" { return "French Canadian" }
+        "de*" { return "German" }
+        "el*" { return "Greek" }
+        "he*" { return "Hebrew" }
+        "hu*" { return "Hungarian" }
+        "it*" { return "Italian" }
+        "ja*" { return "Japanese" }
+        "ko*" { return "Korean" }
+        "lv*" { return "Latvian" }
+        "lt*" { return "Lituanian" }
+        "nb*" { return "Norwegian" }
+        "pl*" { return "Polish" }
+        {($_ -like "pt*") -and ($_ -ne "pt-BR")} { return "Portuguese" }
+        "ro*" { return "Romanian" }
+        "ru*" { return "Russian" }
+        "sr-Latn*" { return "Serbian Latin" }
+        "sk*" { return "Slovak" }
+        "sl*" { return "Slovenian" }
+        {($_ -like "es*") -and ($_ -ne "es-MX")} { return "Spanish" }
+        "es-MX" { return "Spanish (Mexico)" }
+        "sv*" { return "Swedish" }
+        "th*" { return "Thai" }
+        "tr*" { return "Turkish" }
+        "uk*" { return "Ukrainian" }
+        default { return "English" }
+    }
+}
+
 function Remove-Features() {
     <#
         .SYNOPSIS
@@ -37,23 +87,25 @@ function Remove-Features() {
             Remove-Features
     #>
     try {
-        $featlist = (Get-WindowsOptionalFeature -Path $scratchDir).FeatureName
+        $featlist = (Get-WindowsOptionalFeature -Path $scratchDir)
 
         $featlist = $featlist | Where-Object {
-            $_ -NotLike "*Defender*" -AND
-            $_ -NotLike "*Printing*" -AND
-            $_ -NotLike "*TelnetClient*" -AND
-            $_ -NotLike "*PowerShell*" -AND
-            $_ -NotLike "*NetFx*" -AND
-            $_ -NotLike "*Media*" -AND
-            $_ -NotLike "*NFS*"
+            $_.FeatureName -NotLike "*Defender*" -AND
+            $_.FeatureName -NotLike "*Printing*" -AND
+            $_.FeatureName -NotLike "*TelnetClient*" -AND
+            $_.FeatureName -NotLike "*PowerShell*" -AND
+            $_.FeatureName -NotLike "*NetFx*" -AND
+            $_.FeatureName -NotLike "*Media*" -AND
+            $_.FeatureName -NotLike "*NFS*" -AND
+            $_.FeatureName -NotLike "*SearchEngine*" -AND
+            $_.State -ne "Disabled"
         }
 
         foreach($feature in $featlist) {
-            $status = "Removing feature $feature"
+            $status = "Removing feature $($feature.FeatureName)"
             Write-Progress -Activity "Removing features" -Status $status -PercentComplete ($counter++/$featlist.Count*100)
-            Write-Debug "Removing feature $feature"
-            Disable-WindowsOptionalFeature -Path "$scratchDir" -FeatureName $feature -Remove  -ErrorAction SilentlyContinue -NoRestart
+            Write-Debug "Removing feature $($feature.FeatureName)"
+            Disable-WindowsOptionalFeature -Path "$scratchDir" -FeatureName $($feature.FeatureName) -Remove  -ErrorAction SilentlyContinue -NoRestart
         }
         Write-Progress -Activity "Removing features" -Status "Ready" -Completed
         Write-Host "You can re-enable the disabled features at any time, using either Windows Update or the SxS folder in <installation media>\Sources."
@@ -164,7 +216,8 @@ function Remove-ProvisionedPackages() {
                 $_.PackageName -NotLike "*Paint*" -and
                 $_.PackageName -NotLike "*Gaming*" -and
                 $_.PackageName -NotLike "*Extension*" -and
-                $_.PackageName -NotLike "*SecHealthUI*"
+                $_.PackageName -NotLike "*SecHealthUI*" -and
+                $_.PackageName -NotLike "*ScreenSketch*"
         }
 
         $counter = 0
@@ -259,7 +312,7 @@ function New-Unattend {
 
     param (
         [Parameter(Mandatory, Position = 0)] [string]$userName,
-        [Parameter(Position = 1)] [string] $userPassword
+        [Parameter(Position = 1)] [string]$userPassword
     )
 
     $unattend = @'

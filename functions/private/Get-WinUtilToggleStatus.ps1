@@ -16,136 +16,72 @@ Function Get-WinUtilToggleStatus {
     if($ToggleSwitch -eq "WPFToggleDarkMode") {
         $app = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').AppsUseLightTheme
         $system = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').SystemUsesLightTheme
-        if($app -eq 0 -and $system -eq 0) {
-            return $true
-        } else {
-            return $false
-        }
+        return $app -eq 0 -and $system -eq 0
     }
     if($ToggleSwitch -eq "WPFToggleBingSearch") {
         $bingsearch = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Search').BingSearchEnabled
-        if($bingsearch -eq 0) {
-            return $false
-        } else {
-            return $true
-        }
+        return $bingsearch -ne 0
     }
     if($ToggleSwitch -eq "WPFToggleNumLock") {
         $numlockvalue = (Get-ItemProperty -path 'HKCU:\Control Panel\Keyboard').InitialKeyboardIndicators
-        if($numlockvalue -eq 2) {
-            return $true
-        } else {
-            return $false
-        }
+        return $numlockvalue -eq 2
     }
     if($ToggleSwitch -eq "WPFToggleVerboseLogon") {
         $VerboseStatusvalue = (Get-ItemProperty -path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System').VerboseStatus
-        if($VerboseStatusvalue -eq 1) {
-            return $true
-        } else {
-            return $false
-        }
+        return $VerboseStatusvalue -eq 1
     }
     if($ToggleSwitch -eq "WPFToggleShowExt") {
         $hideextvalue = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').HideFileExt
-        if($hideextvalue -eq 0) {
-            return $true
-        } else {
-            return $false
-        }
+        return $hideextvalue -eq 0
     }
     if($ToggleSwitch -eq "WPFToggleSnapWindow") {
         $hidesnap = (Get-ItemProperty -path 'HKCU:\Control Panel\Desktop').WindowArrangementActive
-        if($hidesnap -eq 0) {
-            return $false
-        } else {
-            return $true
-        }
+        return $hidesnap -ne 0
     }
     if($ToggleSwitch -eq "WPFToggleSnapFlyout") {
         $hidesnap = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').EnableSnapAssistFlyout
-        if($hidesnap -eq 0) {
-            return $false
-        } else {
-            return $true
-        }
+        return $hidesnap -ne 0
     }
     if($ToggleSwitch -eq "WPFToggleSnapSuggestion") {
         $hidesnap = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').SnapAssist
-        if($hidesnap -eq 0) {
-            return $false
-        } else {
-            return $true
-        }
+        return $hidesnap -ne 0
     }
     if($ToggleSwitch -eq "WPFToggleMouseAcceleration") {
         $MouseSpeed = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseSpeed
         $MouseThreshold1 = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseThreshold1
         $MouseThreshold2 = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseThreshold2
 
-        if($MouseSpeed -eq 1 -and $MouseThreshold1 -eq 6 -and $MouseThreshold2 -eq 10) {
-            return $true
-        } else {
-            return $false
-        }
+        return $MouseSpeed -eq 1 -and $MouseThreshold1 -eq 6 -and $MouseThreshold2 -eq 10
     }
     if($ToggleSwitch -eq "WPFToggleTaskbarSearch") {
         $SearchButton = (Get-ItemProperty -path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search").SearchboxTaskbarMode
-        if($SearchButton -eq 0) {
-            return $false
-        } else {
-            return $true
-        }
+        return $SearchButton -ne 0
     }
     if ($ToggleSwitch -eq "WPFToggleStickyKeys") {
         $StickyKeys = (Get-ItemProperty -path 'HKCU:\Control Panel\Accessibility\StickyKeys').Flags
-        if($StickyKeys -eq 58) {
-            return $false
-        } else {
-            return $true
-        }
+        return $StickyKeys -ne 58
     }
     if ($ToggleSwitch -eq "WPFToggleTaskView") {
         $TaskView = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').ShowTaskViewButton
-        if($TaskView -eq 0) {
-            return $false
-        } else {
-            return $true
-        }
+        return $TaskView -ne 0
     }
 
     if ($ToggleSwitch -eq "WPFToggleHiddenFiles") {
         $HiddenFiles = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').Hidden
-        if($HiddenFiles -eq 0) {
-            return $false
-        } else {
-            return $true
-        }
+        return $HiddenFiles -ne 0
     }
 
     if ($ToggleSwitch -eq "WPFToggleTaskbarWidgets") {
         $TaskbarWidgets = (Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced").TaskBarDa
-        if($TaskbarWidgets -eq 0) {
-            return $false
-        } else {
-            return $true
-        }
+        return $TaskbarWidgets -ne 0
     }
     if ($ToggleSwitch -eq "WPFToggleTaskbarAlignment") {
         $TaskbarAlignment = (Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced").TaskbarAl
-        if($TaskbarAlignment -eq 0) {
-            return $false
-        } else {
-            return $true
-        }
+        return $TaskbarAlignment -ne 0
     }
     if ($ToggleSwitch -eq "WPFToggleDetailedBSoD") {
         $DetailedBSoD1 = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl').DisplayParameters
         $DetailedBSoD2 = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl').DisableEmoticon
-        if (($DetailedBSoD1 -eq 0) -or ($DetailedBSoD2 -eq 0) -or !$DetailedBSoD1 -or !$DetailedBSoD2) {
-            return $false
-        } else {
-            return $true
-        }
+        return !(($DetailedBSoD1 -eq 0) -or ($DetailedBSoD2 -eq 0) -or !$DetailedBSoD1 -or !$DetailedBSoD2)
     }
 }
