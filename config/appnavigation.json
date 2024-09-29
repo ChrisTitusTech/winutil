@@ -1,4 +1,18 @@
 {
+    "WPFGetInstalled": {
+        "Content": "Get Installed",
+        "Category": "____Navigation",
+        "Type": "Button",
+        "Order": "1",
+        "Description": "Show installed applications"
+    },
+    "WPFClearInstallSelection": {
+        "Content": "Clear Selection",
+        "Category": "____Navigation",
+        "Type": "Button",
+        "Order": "2",
+        "Description": "Clear the selection of applications"
+    },
     "SortbyCategory": {
         "Content": "Category",
         "Category": "___Sort by",
