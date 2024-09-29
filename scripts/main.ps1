@@ -80,6 +80,35 @@ if (-NOT ($readerOperationSuccessful)) {
     [System.GC]::Collect()
     exit 1
 }
+
+# Setup the Window to follow listen for windows Theme Change events and update the winutil theme
+# throttle logic needed, because windows seems to send more than one theme change event per change
+$lastThemeChangeTime = [datetime]::MinValue
+$debounceInterval = [timespan]::FromSeconds(2)
+$sync.Form.Add_Loaded({
+    $interopHelper = New-Object System.Windows.Interop.WindowInteropHelper $sync.Form
+    $hwndSource = [System.Windows.Interop.HwndSource]::FromHwnd($interopHelper.Handle)
+    $hwndSource.AddHook({
+        param (
+            [System.IntPtr]$hwnd,
+            [int]$msg,
+            [System.IntPtr]$wParam,
+            [System.IntPtr]$lParam,
+            [ref]$handled
+        )
+        # Check for the Event WM_SETTINGCHANGE (0x1001A) and validate that Button shows the icon for "Auto" => [char]0xF08C
+        if (($msg -eq 0x001A) -and $sync.ThemeButton.Content -eq [char]0xF08C) {
+            $currentTime = [datetime]::Now
+            if ($currentTime - $lastThemeChangeTime -gt $debounceInterval) {
+                Invoke-WinutilThemeChange -theme "Auto"
+                $script:lastThemeChangeTime = $currentTime
+                $handled = $true
+            }
+        }
+        return 0
+    })
+})
+
 Invoke-WinutilThemeChange -init $true
 # Load the configuration files
 #Invoke-WPFUIElements -configVariable $sync.configs.nav -targetGridName "WPFMainGrid"
@@ -370,6 +399,35 @@ Add-Type @"
 
 })
 
+# Add event handlers for the RadioButtons
+$sync["ISOdownloader"].add_Checked({
+    $sync["ISORelease"].Visibility = [System.Windows.Visibility]::Visible
+    $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Visible
+})
+
+$sync["ISOmanual"].add_Checked({
+    $sync["ISORelease"].Visibility = [System.Windows.Visibility]::Collapsed
+    $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Collapsed
+})
+
+$sync["ISORelease"].Items.Add("23H2") | Out-Null
+$sync["ISORelease"].Items.Add("22H2") | Out-Null
+$sync["ISORelease"].Items.Add("21H2") | Out-Null
+$sync["ISORelease"].SelectedItem = "23H2"
+
+$sync["ISOLanguage"].Items.Add("System Language ($(Get-FidoLangFromCulture -langName $((Get-Culture).Name)))") | Out-Null
+if ($currentCulture -ne "English International") {
+    $sync["ISOLanguage"].Items.Add("English International") | Out-Null
+}
+if ($currentCulture -ne "English") {
+    $sync["ISOLanguage"].Items.Add("English") | Out-Null
+}
+if ($sync["ISOLanguage"].Items.Count -eq 1) {
+    $sync["ISOLanguage"].IsEnabled = $false
+}
+$sync["ISOLanguage"].SelectedIndex = 0
+
+
 # Load Checkboxes and Labels outside of the Filter function only once on startup for performance reasons
 $filter = Get-WinUtilVariables -Type CheckBox
 $CheckBoxes = ($sync.GetEnumerator()).where{ $psitem.Key -in $filter }
@@ -392,8 +450,8 @@ $sync["SearchBar"].Add_TextChanged({
     $textToSearch = $sync.SearchBar.Text.ToLower()
 
     foreach ($CheckBox in $CheckBoxes) {
-        # Check if the checkbox is null or if it doesn't have content
-        if ($CheckBox -eq $null -or $CheckBox.Value -eq $null -or $CheckBox.Value.Content -eq $null) {
+        # Skip if the checkbox is null, it doesn't have content or it is the prefer Choco checkbox
+        if ($CheckBox -eq $null -or $CheckBox.Value -eq $null -or $CheckBox.Value.Content -eq $null -or $CheckBox.Name -eq "WPFpreferChocolatey") {
             continue
         }
 
@@ -499,13 +557,13 @@ $sync["LightThemeMenuItem"].Add_Click({
 # Define event handler for button click
 $sync["SettingsButton"].Add_Click({
     Write-Debug "SettingsButton clicked"
-    if ($sync.Settings.IsOpen) {
-        $sync.Settings.IsOpen = $false
+    if ($sync.SettingsPopup.IsOpen) {
+        $sync.SettingsPopup.IsOpen = $false
     }
     else{
-        $sync.Settings.IsOpen = $true
+        $sync.SettingsPopup.IsOpen = $true
     }
-    $sync.Settings.IsOpen = $false
+    $sync.ThemePopup.IsOpen = $false
     $_.Handled = $false
 })
 

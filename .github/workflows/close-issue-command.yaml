@@ -62,7 +62,7 @@ jobs:
           else
             gh issue close $ISSUE_NUMBER --repo ${{ github.repository }}
           fi
-      
+
       - name: Reopen issue if conditions are met
         if: env.reopen_command == 'true' && env.user == 'true'
         env:
