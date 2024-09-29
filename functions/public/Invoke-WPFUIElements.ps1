@@ -110,14 +110,78 @@ function Invoke-WPFUIElements {
         $border.style = $borderstyle
         $targetGrid.Children.Add($border) | Out-Null
 
-        # Create a StackPanel inside the Border
+        # Use a DockPanel to contain both the top buttons and the main content
+        $dockPanelContainer = New-Object Windows.Controls.DockPanel
+        $border.Child = $dockPanelContainer
+
+        # Check if configVariable equals $sync.configs.applications
+        if ($configVariable -eq $sync.configs.applications) {
+            # Create the StackPanel with buttons at the top inside the border
+            $stackPanelTop = New-Object Windows.Controls.StackPanel
+            $stackPanelTop.Background = $window.FindResource("MainBackgroundColor") # Dynamic resource for the background
+            $stackPanelTop.Orientation = "Horizontal"
+            $stackPanelTop.HorizontalAlignment = "Left"
+            $stackPanelTop.VerticalAlignment = "Top"
+            $stackPanelTop.Margin = $window.FindResource("TabContentMargin") # Dynamic resource for the margin
+
+            # Create the buttons and add them to the StackPanel
+            $installButton = New-Object Windows.Controls.Button
+            $installButton.Name = "WPFInstall"
+            $installButton.Content = " Install/Upgrade Selected"
+            $installButton.Margin = New-Object Windows.Thickness(2)
+            $stackPanelTop.Children.Add($installButton) | Out-Null
+
+            $upgradeButton = New-Object Windows.Controls.Button
+            $upgradeButton.Name = "WPFInstallUpgrade"
+            $upgradeButton.Content = " Upgrade All"
+            $upgradeButton.Margin = New-Object Windows.Thickness(2)
+            $stackPanelTop.Children.Add($upgradeButton) | Out-Null
+
+            $uninstallButton = New-Object Windows.Controls.Button
+            $uninstallButton.Name = "WPFUninstall"
+            $uninstallButton.Content = " Uninstall Selected"
+            $uninstallButton.Margin = New-Object Windows.Thickness(2)
+            $stackPanelTop.Children.Add($uninstallButton) | Out-Null
+
+            $getInstalledButton = New-Object Windows.Controls.Button
+            $getInstalledButton.Name = "WPFGetInstalled"
+            $getInstalledButton.Content = " Get Installed"
+            $getInstalledButton.Margin = New-Object Windows.Thickness(2)
+            $stackPanelTop.Children.Add($getInstalledButton) | Out-Null
+
+            $clearSelectionButton = New-Object Windows.Controls.Button
+            $clearSelectionButton.Name = "WPFClearInstallSelection"
+            $clearSelectionButton.Content = " Clear Selection"
+            $clearSelectionButton.Margin = New-Object Windows.Thickness(2)
+            $stackPanelTop.Children.Add($clearSelectionButton) | Out-Null
+
+            # Dock the top StackPanel at the top of the DockPanel
+            [Windows.Controls.DockPanel]::SetDock($stackPanelTop, [Windows.Controls.Dock]::Top)
+            $dockPanelContainer.Children.Add($stackPanelTop) | Out-Null
+        }
+
+        # Create a ScrollViewer to contain the main content (excluding buttons)
+        $scrollViewer = New-Object Windows.Controls.ScrollViewer
+        $scrollViewer.VerticalScrollBarVisibility = 'Auto'
+        $scrollViewer.HorizontalScrollBarVisibility = 'Auto'
+        $scrollViewer.HorizontalAlignment = 'Stretch'
+        $scrollViewer.VerticalAlignment = 'Stretch'
+
+        # Create a StackPanel inside the ScrollViewer for application content
         $stackPanel = New-Object Windows.Controls.StackPanel
-        $stackPanel.Background = [Windows.Media.Brushes]::Transparent
-        $stackPanel.SnapsToDevicePixels = $true
-        $stackPanel.VerticalAlignment = "Stretch" # Ensure the stack panel stretches vertically
-        $border.Child = $stackPanel
+        $stackPanel.Orientation = "Vertical"
+        $stackPanel.HorizontalAlignment = 'Stretch'
+        $stackPanel.VerticalAlignment = 'Stretch'
+
+        # Add the StackPanel to the ScrollViewer
+        $scrollViewer.Content = $stackPanel
+
+        # Add the ScrollViewer to the DockPanel (it will be below the top buttons StackPanel)
+        [Windows.Controls.DockPanel]::SetDock($scrollViewer, [Windows.Controls.Dock]::Bottom)
+        $dockPanelContainer.Children.Add($scrollViewer) | Out-Null
         $panelcount++
 
+        # Now proceed with adding category labels and entries to $stackPanel (as before)
         foreach ($category in ($organizedData[$panelKey].Keys | Sort-Object)) {
             $count++
 
