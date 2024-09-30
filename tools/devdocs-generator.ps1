@@ -526,7 +526,9 @@ function Generate-TypeSectionContent {
     foreach ($category in $categories.Keys) {
         $sectionContent += "### $category`r`n`r`n"
         foreach ($entry in $categories[$category]) {
-            $sectionContent += "- [$($entry.Name)]($($entry.Path))`r`n"
+            $fixedPath = $entry.Path -replace 'docs/', ''
+            $fixedPath = $fixedPath -replace '\.md$', '/'
+            $sectionContent += "- [$($entry.Name)]($fixedPath)`r`n"
         }
     }
     return $sectionContent
@@ -643,3 +645,14 @@ $indexContent += $(Generate-TypeSectionContent $featureEntries) + "`r`n"
 Set-Content -Path "../docs/devdocs.md" -Value $indexContent -Encoding utf8
 
 Update-Progress "Process Completed" 100
+
+Write-Host "Running Preprocessing"
+
+# Dot source the 'Invoke-Preprocessing' Function from 'tools/Invoke-Preprocessing.ps1' Script
+$preprocessingFilePath = ".\Invoke-Preprocessing.ps1"
+. $preprocessingFilePath
+
+$excludedFiles = @('.\.git\', '.\.gitignore', '.\.gitattributes', '.\.github\CODEOWNERS', '.\LICENSE', ".\tools\Invoke-Preprocessing.ps1", '*.png', '*.exe')
+$msg = "Pre-req: Code Formatting"
+$workingdir = $PSScriptRoot -replace '\\tools$', ''
+Invoke-Preprocessing -WorkingDir "$workingdir" -ExcludedFiles $excludedFiles -ProgressStatusMessage $msg -ThrowExceptionOnEmptyFilesList
