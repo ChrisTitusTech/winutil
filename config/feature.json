@@ -312,6 +312,7 @@
     "panel": "2",
     "Order": "a083_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Powershell-Profile/PSProfile"
   }
 }

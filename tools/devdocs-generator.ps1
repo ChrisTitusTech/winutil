@@ -194,11 +194,11 @@ function Generate-MarkdownFiles {
 
         # Add the entry to 'tocEntries' so we can generate Table Of Content easily
         # And add the Full FileName of entry
-        $tocEntries += @{
+        $tocEntries += [PSCustomObject]@{
             Category = $category
-            Path = $relativePath
-            Name = $itemDetails.Content
-            Type = $type
+            Path     = $relativePath
+            Name     = $itemDetails.Content
+            Type     = $type
         }
         $processedFiles += (Get-Item $filename).FullName
 
@@ -511,12 +511,13 @@ function Generate-TypeSectionContent {
     $currentProgress = 90
 
     $sectionContent = ""
-    $categories = @{}
+    $categories = [ordered]@{}
     foreach ($entry in $entries) {
-        if (-Not $categories.ContainsKey($entry.Category)) {
-            $categories[$entry.Category] = @()
+        $categoryKey = $entry.Category
+        if (-Not $categories.Contains($categoryKey)) {
+            $categories[$categoryKey] = @()
         }
-        $categories[$entry.Category] += $entry
+        $categories[$categoryKey] += $entry
 
         $currentProgress += $progressIncrement
         $roundedProgress = [math]::Round($currentProgress)
@@ -616,13 +617,13 @@ Add-LinkAttributeToJson -jsonFilePath "../config/tweaks.json" -outputDir "dev/tw
 Add-LinkAttributeToJson -jsonFilePath "../config/feature.json" -outputDir "dev/features"
 
 Update-Progress "Generating content for documentation" 60
-$tweakResult = Generate-MarkdownFiles -data $tweaks -outputDir $tweaksOutputDir -jsonFilePath "../config/tweaks.json" -lastModified $tweaksLastModified -type "tweak" -initialProgress 60
-$featureResult = Generate-MarkdownFiles -data $features -outputDir $featuresOutputDir -jsonFilePath "../config/feature.json" -lastModified $featuresLastModified -type "feature" -initialProgress 70
+$tweakResult = Generate-MarkdownFiles -data $tweaks -outputDir $tweaksOutputDir -jsonFilePath "config/tweaks.json" -lastModified $tweaksLastModified -type "tweak" -initialProgress 60
+$featureResult = Generate-MarkdownFiles -data $features -outputDir $featuresOutputDir -jsonFilePath "config/feature.json" -lastModified $featuresLastModified -type "feature" -initialProgress 70
 
 Update-Progress "Generating table of contents" 80
 $allTocEntries = $tweakResult.TocEntries + $featureResult.TocEntries
-$tweakEntries = ($allTocEntries).where{ $_.Type -eq 'tweak' } | Sort-Object Category, Name
-$featureEntries = ($allTocEntries).where{ $_.Type -eq 'feature' } | Sort-Object Category, Name
+$tweakEntries = ($allTocEntries).where{ $_.Type -eq 'tweak' }
+$featureEntries = ($allTocEntries).where{ $_.Type -eq 'feature' }
 
 $indexContent += Process-MultilineStrings @"
     \\# Table of Contents

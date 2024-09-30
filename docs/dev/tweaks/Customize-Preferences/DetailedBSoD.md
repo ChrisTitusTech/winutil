@@ -1,6 +1,6 @@
 # Detailed BSoD
 
-Last Updated: 2024-08-07
+Last Updated: 2024-09-30
 
 
 !!! info
@@ -53,6 +53,10 @@ Function Invoke-WinUtilDetailedBSoD {
         }
 
         $Path = "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl"
+        $dwords = ("DisplayParameters", "DisableEmoticon")
+        foreach ($name in $dwords) {
+            Set-ItemProperty -Path $Path -Name $name -Value $value
+        }
         Set-ItemProperty -Path $Path -Name DisplayParameters -Value $value
     } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"

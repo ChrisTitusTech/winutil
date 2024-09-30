@@ -1,6 +1,6 @@
 # Remove OneDrive
 
-Last Updated: 2024-08-07
+Last Updated: 2024-09-30
 
 
 !!! info
@@ -60,6 +60,9 @@ Moves OneDrive files to Default Home Folders and Uninstalls it.
       reg load \"hku\\Default\" \"C:\\Users\\Default\\NTUSER.DAT\"
       reg delete \"HKEY_USERS\\Default\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\" /v \"OneDriveSetup\" /f
       reg unload \"hku\\Default\"
+
+      Write-Host \"Removing autostart key\"
+      reg delete \"HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\" /v \"OneDrive\" /f
 
       Write-Host \"Removing startmenu entry\"
       Remove-Item -Force -ErrorAction SilentlyContinue \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\OneDrive.lnk\"
@@ -155,6 +158,9 @@ Moves OneDrive files to Default Home Folders and Uninstalls it.
       reg load "hku\Default" "C:\Users\Default\NTUSER.DAT"
       reg delete "HKEY_USERS\Default\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "OneDriveSetup" /f
       reg unload "hku\Default"
+
+      Write-Host "Removing autostart key"
+      reg delete "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run" /v "OneDrive" /f
 
       Write-Host "Removing startmenu entry"
       Remove-Item -Force -ErrorAction SilentlyContinue "$env:userprofile\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk"

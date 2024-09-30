@@ -1,6 +1,6 @@
 # Remove Home and Gallery from explorer
 
-Last Updated: 2024-08-07
+Last Updated: 2024-09-30
 
 
 !!! info

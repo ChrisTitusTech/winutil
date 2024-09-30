@@ -1,6 +1,6 @@
 # Create WinUtil Shortcut
 
-Last Updated: 2024-08-07
+Last Updated: 2024-09-30
 
 
 !!! info
@@ -84,6 +84,9 @@ function Invoke-WPFShortcut {
     $Shortcut = $WshShell.CreateShortcut($FileBrowser.FileName)
     $Shortcut.TargetPath = $shell
     $Shortcut.Arguments = $shellArgs
+    if (-NOT (Test-Path -Path $winutildir["logo.ico"])) {
+        Invoke-WebRequest -Uri "https://christitus.com/images/logo-full.ico" -OutFile $winutildir["logo.ico"]
+    }
     if (Test-Path -Path $winutildir["logo.ico"]) {
         $shortcut.IconLocation = $winutildir["logo.ico"]
     }

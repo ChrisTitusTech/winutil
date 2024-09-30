@@ -1,6 +1,6 @@
 # Change Windows Terminal default: PowerShell 5 -> PowerShell 7
 
-Last Updated: 2024-08-07
+Last Updated: 2024-09-30
 
 
 !!! info
@@ -380,13 +380,13 @@ function Set-WinUtilTaskbaritem {
     if ($overlay) {
         switch ($overlay) {
             'logo' {
-                $sync["Form"].taskbarItemInfo.Overlay = "$env:LOCALAPPDATA\winutil\cttlogo.png"
+                $sync["Form"].taskbarItemInfo.Overlay = $sync["logorender"]
             }
             'checkmark' {
-                $sync["Form"].taskbarItemInfo.Overlay = "$env:LOCALAPPDATA\winutil\checkmark.png"
+                $sync["Form"].taskbarItemInfo.Overlay = $sync["checkmarkrender"]
             }
             'warning' {
-                $sync["Form"].taskbarItemInfo.Overlay = "$env:LOCALAPPDATA\winutil\warning.png"
+                $sync["Form"].taskbarItemInfo.Overlay = $sync["warningrender"]
             }
             'None' {
                 $sync["Form"].taskbarItemInfo.Overlay = $null
