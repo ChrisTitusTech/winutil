@@ -156,7 +156,10 @@ function Remove-Packages {
                 $_ -NotLike "*WMIC*" -AND
                 $_ -NotLike "*UI.XaML*" -AND
                 $_ -NotLike "*Ethernet*" -AND
-                $_ -NotLike "*Wifi*"
+                $_ -NotLike "*Wifi*" -AND
+				$_ -NotLike "*FodMetadata*" -AND
+				$_ -NotLike "*Foundation*" -and
+                $_ -NotLike "*LanguageFeatures*"
             }
 
         $failedCount = 0
@@ -201,12 +204,8 @@ function Remove-ProvisionedPackages() {
                 $_.PackageName -NotLike "*AppInstaller*" -AND
                 $_.PackageName -NotLike "*Store*" -and
                 $_.PackageName -NotLike "*dism*" -and
-                $_.PackageName -NotLike "*Foundation*" -and
-                $_.PackageName -NotLike "*FodMetadata*" -and
-                $_.PackageName -NotLike "*LanguageFeatures*" -and
                 $_.PackageName -NotLike "*Notepad*" -and
                 $_.PackageName -NotLike "*Printing*" -and
-                $_.PackageName -NotLike "*Foundation*" -and
                 $_.PackageName -NotLike "*YourPhone*" -and
                 $_.PackageName -NotLike "*Xbox*" -and
                 $_.PackageName -NotLike "*WindowsTerminal*" -and
