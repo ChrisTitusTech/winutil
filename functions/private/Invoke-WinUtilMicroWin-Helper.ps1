@@ -157,8 +157,8 @@ function Remove-Packages {
                 $_ -NotLike "*UI.XaML*" -AND
                 $_ -NotLike "*Ethernet*" -AND
                 $_ -NotLike "*Wifi*" -AND
-				$_ -NotLike "*FodMetadata*" -AND
-				$_ -NotLike "*Foundation*" -and
+                $_ -NotLike "*FodMetadata*" -AND
+                $_ -NotLike "*Foundation*" -and
                 $_ -NotLike "*LanguageFeatures*"
             }
 
