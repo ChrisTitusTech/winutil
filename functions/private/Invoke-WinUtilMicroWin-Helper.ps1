@@ -164,7 +164,7 @@ function Remove-Packages {
         foreach ($pkg in $pkglist) {
             try {
                 $status = "Removing $pkg"
-                Write-Progress -Activity "Removing Apps" -Status $status -PercentComplete ($counter++/$pkglist.Count*100)
+                Write-Progress -Activity "Removing Packages" -Status $status -PercentComplete ($counter++/$pkglist.Count*100)
                 Remove-WindowsPackage -Path "$scratchDir" -PackageName $pkg -NoRestart -ErrorAction SilentlyContinue
             } catch {
                 # This can happen if the package that is being removed is a permanent one, like FodMetadata
@@ -173,7 +173,7 @@ function Remove-Packages {
                 continue
             }
         }
-        Write-Progress -Activity "Removing Apps" -Status "Ready" -Completed
+        Write-Progress -Activity "Removing Packages" -Status "Ready" -Completed
         if ($failedCount -gt 0)
         {
             Write-Host "Some packages could not be removed. Do not worry: your image will still work fine. This can happen if the package is permanent or has been superseded by a newer one."
