@@ -2012,7 +2012,7 @@
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
-        "OriginalValue": "1",
+        "OriginalValue": "10",
         "Name": "SystemResponsiveness",
         "Value": "0",
         "Type": "DWord"
