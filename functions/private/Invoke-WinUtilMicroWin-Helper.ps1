@@ -98,6 +98,7 @@ function Remove-Features() {
             $_.FeatureName -NotLike "*Media*" -AND
             $_.FeatureName -NotLike "*NFS*" -AND
             $_.FeatureName -NotLike "*SearchEngine*" -AND
+            $_.FeatureName -NotLike "*RemoteDesktop*" -AND
             $_.State -ne "Disabled"
         }
 
