@@ -59,5 +59,6 @@ function Invoke-WPFButton {
         "MicrowinScratchDirBT" {Invoke-ScratchDialog}
         "WPFWinUtilInstallPSProfile" {Invoke-WinUtilInstallPSProfile}
         "WPFWinUtilUninstallPSProfile" {Invoke-WinUtilUninstallPSProfile}
+        "WPFWinUtilSSHServer" {Invoke-WinUtilSSHServer}
     }
 }
