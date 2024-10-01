@@ -16,9 +16,17 @@ function Invoke-WinUtilInstallPSProfile {
             }
 
             if ($NewHash.Hash -ne $OldHash.Hash) {
-                if ((Test-Path $PSProfile) -and (-not (Test-Path "$PSProfile.bak"))) {
-                    Write-Host "===> Backing Up Profile... <===" -ForegroundColor Yellow
-                    Copy-Item -Path $PSProfile -Destination "$PSProfile.bak"
+                if (Test-Path "$env:USERPROFILE\oldprofile.ps1") {
+                    Write-Host "===> Backup File Exists... <===" -ForegroundColor Yellow
+                    Write-Host "===> Moving Backup File... <===" -ForegroundColor Yellow
+                    Copy-Item "$env:USERPROFILE\oldprofile.ps1" "$PSProfile.bak"
+                    Write-Host "===> Profile Backup: Done. <===" -ForegroundColor Yellow
+                } else {
+                    if ((Test-Path $PSProfile) -and (-not (Test-Path "$PSProfile.bak"))) {
+                        Write-Host "===> Backing Up Profile... <===" -ForegroundColor Yellow
+                        Copy-Item -Path $PSProfile -Destination "$PSProfile.bak"
+                        Write-Host "===> Profile Backup: Done. <===" -ForegroundColor Yellow
+                    }
                 }
 
                 Write-Host "===> Installing Profile... <===" -ForegroundColor Yellow

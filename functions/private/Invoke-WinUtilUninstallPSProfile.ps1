@@ -5,7 +5,6 @@ function Invoke-WinUtilUninstallPSProfile {
     #>
 
     Invoke-WPFRunspace -ArgumentList $PROFILE -DebugPreference $DebugPreference -ScriptBlock {
-        # PSProfile parameter
         param ($PSProfile)
 
         # Function to uninstall Nerd Fonts
@@ -33,10 +32,7 @@ function Invoke-WinUtilUninstallPSProfile {
         if ((Get-FileHash $PSProfile).Hash -eq $PSProfileHash) {
             # Uninstall OhMyPosh
             try {
-                # Get backup profile's content
                 $PSProfileContent = Get-Content "$PSProfile.bak"
-
-                # Check if OhMyPosh is in use
                 $OhMyPoshInUse = $PSProfileContent -match "oh-my-posh init"
                 if (-not $OhMyPoshInUse) {
                     if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
@@ -61,10 +57,7 @@ function Invoke-WinUtilUninstallPSProfile {
 
             # Uninstall Terminal-Icons
             try {
-                # Get backup profile's content
                 $PSProfileContent = Get-Content "$PSProfile.bak"
-
-                # Check if Terminal-Icons is in use
                 $TerminalIconsInUse = $PSProfileContent -match "Import-Module" -and $PSProfileContent -match "Terminal-Icons"
                 if (-not $TerminalIconsInUse) {
                     if (Get-Module -ListAvailable Terminal-Icons) {
@@ -80,10 +73,7 @@ function Invoke-WinUtilUninstallPSProfile {
 
             # Uninstall Zoxide
             try {
-                # Get backup profile's content
                 $PSProfileContent = Get-Content "$PSProfile.bak"
-
-                # Check if Zoxide is in use
                 $ZoxideInUse = $PSProfileContent -match "zoxide init"
                 if (-not $ZoxideInUse) {
                     if (Get-Command zoxide -ErrorAction SilentlyContinue) {
@@ -114,6 +104,9 @@ function Invoke-WinUtilUninstallPSProfile {
             } catch {
                 Write-Error "Failed to restore profile backup. Error: $_" -ForegroundColor Red
             }
+
+            # Silently cleanup oldprofile.ps1 script
+            Remove-Item "$env:USERPROFILE\oldprofile.ps1" | Out-Null
 
             # Silently cleanup $PSProfile.hash file
             Remove-Item "$PSProfile.hash" | Out-Null
