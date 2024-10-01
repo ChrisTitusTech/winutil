@@ -34,8 +34,9 @@
     * By default Winutil will use winget to install/upgrade/remove packages and fallback to Chocolatey. This option reverses the preference.
     * This preference will be used for all Buttons on the Install page and persist across Winutil restarts
 
-![Install Image](assets/Install-Tab-Dark.png#only-dark)
-![Install Image](assets/Install-Tab-Light.png#only-light)
+![Install Image](assets/Install-Tab-Dark.png#only-dark#gh-dark-mode-only)
+![Install Image](assets/Install-Tab-Light.png#only-light#gh-light-mode-only)
+
 !!! tip
 
      If you have trouble finding an application, press `ctrl + f` and search the name of it. Applications will filter depending on your input.
@@ -43,8 +44,8 @@
 ## Tweaks
 ---
 
-![Tweaks Image](assets/Tweaks-Tab-Dark.png#only-dark)
-![Tweaks Image](assets/Tweaks-Tab-Light.png#only-light)
+![Tweaks Image](assets/Tweaks-Tab-Dark.png#only-dark#gh-dark-mode-only)
+![Tweaks Image](assets/Tweaks-Tab-Light.png#only-light#gh-light-mode-only)
 
 ### Run Tweaks
 * **Open Tweaks Tab**: Navigate to the 'Tweaks' tab in the application.
@@ -141,6 +142,10 @@ Open old-school Windows panels directly from WinUtil. Following Panels are avail
 * System Properties
 * User Accounts
 
+### Remote Access
+
+Enables OpenSSH server on your windows machine.
+
 ## Updates
 ---
 
@@ -175,8 +180,8 @@ The utility provides three distinct settings for managing Windows updates: Defau
 
 * **MicroWin** lets you customize your Windows 10 and 11 installation images by debloating them however you want.
 
-![Microwin](assets/Microwin-Dark.png#only-dark)
-![Microwin](assets/Microwin-Light.png#only-light)
+![Microwin](assets/Microwin-Dark.png#only-dark#gh-dark-mode-only)
+![Microwin](assets/Microwin-Light.png#only-light#gh-light-mode-only)
 
 #### Basic usage
 
@@ -234,12 +239,12 @@ With MicroWin, you can also configure your user before proceeding if you don't w
 * Some features are available through automation. This allows you to save your config file, pass it to WinUtil, walk away and come back to a finished system. Here is how you can set it up currently with Winutil >24.01.15
 
 * On the Install Tab, click "Get Installed", this will get all installed apps **supported by Winutil** on the system.
-![GetInstalled](assets/Get-Installed-Dark.png#only-dark)
-![GetInstalled](assets/Get-Installed-Light.png#only-light)
+![GetInstalled](assets/Get-Installed-Dark.png#only-dark#gh-dark-mode-only)
+![GetInstalled](assets/Get-Installed-Light.png#only-light#gh-light-mode-only)
 
 * Click on the Settings cog in the upper right corner and choose Export. Choose file file and location; this will export the setting file.
-![SettingsExport](assets/Settings-Export-Dark.png#only-dark)
-![SettingsExport](assets/Settings-Export-Light.png#only-light)
+![SettingsExport](assets/Settings-Export-Dark.png#only-dark#gh-dark-mode-only)
+![SettingsExport](assets/Settings-Export-Light.png#only-light#gh-light-mode-only)
 
 * Copy this file to a USB or somewhere you can use it after Windows installation.
 
