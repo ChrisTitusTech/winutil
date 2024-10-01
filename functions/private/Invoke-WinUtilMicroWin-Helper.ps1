@@ -145,6 +145,7 @@ function Remove-Packages {
                 $_ -NotLike "*ParentalControls*" -AND
                 $_ -NotLike "*Win32WebViewHost*" -AND
                 $_ -NotLike "*InputApp*" -AND
+                $_ -NotLike "*DirectPlay*" -AND
                 $_ -NotLike "*AccountsControl*" -AND
                 $_ -NotLike "*AsyncTextService*" -AND
                 $_ -NotLike "*CapturePicker*" -AND
