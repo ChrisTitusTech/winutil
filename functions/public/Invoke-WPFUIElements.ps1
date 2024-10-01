@@ -11,23 +11,23 @@ function Invoke-WPFUIElements {
     .EXAMPLE
         Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "install" -columncount 5
     .NOTES
-        Future me/contributer: If possible please wrap this into a runspace to make it load all panels at the same time.
+        Future me/contributor: If possible, please wrap this into a runspace to make it load all panels at the same time.
     #>
 
     param(
-        [Parameter(Mandatory, position=0)]
+        [Parameter(Mandatory, Position = 0)]
         [PSCustomObject]$configVariable,
 
-        [Parameter(Mandatory, position=1)]
+        [Parameter(Mandatory, Position = 1)]
         [string]$targetGridName,
 
-        [Parameter(Mandatory, position=2)]
+        [Parameter(Mandatory, Position = 2)]
         [int]$columncount
     )
 
-    $window = $sync["Form"]
+    $window = $sync.form
 
-    $theme = $sync.Form.Resources
+    $theme = $window.Resources
     $borderstyle = $window.FindResource("BorderStyle")
     $HoverTextBlockStyle = $window.FindResource("HoverTextBlockStyle")
     $ColorfulToggleSwitchStyle = $window.FindResource("ColorfulToggleSwitchStyle")
@@ -66,19 +66,20 @@ function Invoke-WPFUIElements {
 
         # Create an object for the application
         $entryObject = [PSCustomObject]@{
-            Name = $entry
-            Order = $entryInfo.order
-            Category = $entryInfo.Category
-            Content = $entryInfo.Content
-            Choco = $entryInfo.choco
-            Winget = $entryInfo.winget
-            Panel = if ($entryInfo.Panel) { $entryInfo.Panel } else { "0" }
-            Link = $entryInfo.link
+            Name        = $entry
+            Order       = $entryInfo.order
+            Category    = $entryInfo.Category
+            Content     = $entryInfo.Content
+            Choco       = $entryInfo.choco
+            Winget      = $entryInfo.winget
+            Panel       = if ($entryInfo.Panel) { $entryInfo.Panel } else { "0" }
+            Link        = $entryInfo.link
             Description = $entryInfo.description
-            Type = $entryInfo.type
-            ComboItems = $entryInfo.ComboItems
-            Checked = $entryInfo.Checked
+            Type        = $entryInfo.type
+            ComboItems  = $entryInfo.ComboItems
+            Checked     = $entryInfo.Checked
             ButtonWidth = $entryInfo.ButtonWidth
+            GroupName   = $entryInfo.GroupName  # Added for RadioButton groupings
         }
 
         if (-not $organizedData.ContainsKey($entryObject.Panel)) {
@@ -99,6 +100,9 @@ function Invoke-WPFUIElements {
             $maxcount = [Math]::Round($entrycount / $columncount + 0.5)
         }
     }
+
+    # Initialize panel count
+    $panelcount = 0
 
     # Iterate through 'organizedData' by panel, category, and application
     $count = 0
@@ -160,22 +164,32 @@ function Invoke-WPFUIElements {
         $scrollViewer.HorizontalScrollBarVisibility = 'Auto'
         $scrollViewer.HorizontalAlignment = 'Stretch'
         $scrollViewer.VerticalAlignment = 'Stretch'
+        $scrollViewer.CanContentScroll = $true  # Enable virtualization
 
-        # Create a StackPanel inside the ScrollViewer for application content
-        $stackPanel = New-Object Windows.Controls.StackPanel
-        $stackPanel.Orientation = "Vertical"
-        $stackPanel.HorizontalAlignment = 'Stretch'
-        $stackPanel.VerticalAlignment = 'Stretch'
+        # Create an ItemsControl inside the ScrollViewer for application content
+        $itemsControl = New-Object Windows.Controls.ItemsControl
+        $itemsControl.HorizontalAlignment = 'Stretch'
+        $itemsControl.VerticalAlignment = 'Stretch'
 
-        # Add the StackPanel to the ScrollViewer
-        $scrollViewer.Content = $stackPanel
+        # Set the ItemsPanel to a VirtualizingStackPanel
+        $itemsPanelTemplate = New-Object Windows.Controls.ItemsPanelTemplate
+        $factory = New-Object Windows.FrameworkElementFactory ([Windows.Controls.VirtualizingStackPanel])
+        $itemsPanelTemplate.VisualTree = $factory
+        $itemsControl.ItemsPanel = $itemsPanelTemplate
+
+        # Set virtualization properties
+        $itemsControl.SetValue([Windows.Controls.VirtualizingStackPanel]::IsVirtualizingProperty, $true)
+        $itemsControl.SetValue([Windows.Controls.VirtualizingStackPanel]::VirtualizationModeProperty, [Windows.Controls.VirtualizationMode]::Recycling)
+
+        # Add the ItemsControl to the ScrollViewer
+        $scrollViewer.Content = $itemsControl
 
         # Add the ScrollViewer to the DockPanel (it will be below the top buttons StackPanel)
         [Windows.Controls.DockPanel]::SetDock($scrollViewer, [Windows.Controls.Dock]::Bottom)
         $dockPanelContainer.Children.Add($scrollViewer) | Out-Null
         $panelcount++
 
-        # Now proceed with adding category labels and entries to $stackPanel (as before)
+        # Now proceed with adding category labels and entries to $itemsControl
         foreach ($category in ($organizedData[$panelKey].Keys | Sort-Object)) {
             $count++
 
@@ -183,11 +197,11 @@ function Invoke-WPFUIElements {
             $label.Content = $category -replace ".*__", ""
             $label.FontSize = $theme.FontSizeHeading
             $label.FontFamily = $theme.HeaderFontFamily
-            $stackPanel.Children.Add($label) | Out-Null
+            $itemsControl.Items.Add($label) | Out-Null
 
             $sync[$category] = $label
 
-            # Sort entries by Order and then by Name, but only display Name
+            # Sort entries by Order and then by Name
             $entries = $organizedData[$panelKey][$category] | Sort-Object Order, Name
             foreach ($entryInfo in $entries) {
                 $count++
@@ -218,37 +232,20 @@ function Invoke-WPFUIElements {
                     [Windows.Controls.DockPanel]::SetDock($checkBox, [Windows.Controls.Dock]::Left)
                     $dockPanel.Children.Add($checkBox) | Out-Null
 
-                    # Create a StackPanel for the image and name (for better alignment)
+                    # Create a StackPanel for the image and name
                     $imageAndNamePanel = New-Object Windows.Controls.StackPanel
                     $imageAndNamePanel.Orientation = "Horizontal"
                     $imageAndNamePanel.VerticalAlignment = "Center"
 
-                    # Create the Image and load it from the local path
+                    # Create the Image and set a placeholder
                     $image = New-Object Windows.Controls.Image
                     $image.Name = "wpfapplogo" + $entryInfo.Name
                     $image.Width = 40
                     $image.Height = 40
                     $image.Margin = New-Object Windows.Thickness(0, 0, 10, 0)
-                    $image.Source = $noimage
-                    if (-not [string]::IsNullOrEmpty($kaka)) { # replace kaka with $entryInfo.choco to get images, takes a lot longer but works for many packages
-                        try {
-                            $packageinfo = (choco info $entryInfo.choco --limit-output).Split(' ')[0]
-                            $packageinfo = $packageinfo -replace '\|', '.'
-                            $iconlink = "https://community.chocolatey.org/content/packageimages/" + $packageinfo
-                            $finishediconlink = $iconlink + ".png"
-                            $webimage = Invoke-WebRequest -Uri $finishediconlink -Method Head -ErrorAction SilentlyContinue
-                            if ($webimage.StatusCode -eq 200) {
-                                $image.Source = [Windows.Media.Imaging.BitmapImage]::new([Uri]::new($finishediconlink))
-                            } else {
-                                # TODO: use UniGetUI's image db as a fallback
-                                $image.Source = $noimage
-                            }
-                        } catch {
-                            $image.Source = $noimage
-                        }
-                    }
+                    $image.Source = $noimage  # Ensure $noimage is defined in your script
 
-                    #$image.Source = $noimage
+                    # Clip the image corners
                     $image.Clip = New-Object Windows.Media.RectangleGeometry
                     $image.Clip.Rect = New-Object Windows.Rect(0, 0, $image.Width, $image.Height)
                     $image.Clip.RadiusX = 5
@@ -256,7 +253,7 @@ function Invoke-WPFUIElements {
 
                     $imageAndNamePanel.Children.Add($image) | Out-Null
 
-                    # Create the TextBlock for the application name (bigger and bold)
+                    # Create the TextBlock for the application name
                     $appName = New-Object Windows.Controls.TextBlock
                     $appName.Text = $entryInfo.Content
                     $appName.FontSize = 16
@@ -265,7 +262,7 @@ function Invoke-WPFUIElements {
                     $appName.Margin = New-Object Windows.Thickness(5, 0, 0, 0)
                     $imageAndNamePanel.Children.Add($appName) | Out-Null
 
-                    # Add the image and name panel to the dock panel (after the checkbox)
+                    # Add the image and name panel to the dock panel
                     [Windows.Controls.DockPanel]::SetDock($imageAndNamePanel, [Windows.Controls.Dock]::Left)
                     $dockPanel.Children.Add($imageAndNamePanel) | Out-Null
 
@@ -277,7 +274,7 @@ function Invoke-WPFUIElements {
                     $buttonPanel.Margin = New-Object Windows.Thickness(10, 0, 0, 0)
                     [Windows.Controls.DockPanel]::SetDock($buttonPanel, [Windows.Controls.Dock]::Right)
 
-                    # Create the "Install" button with the install icon from Segoe MDL2 Assets
+                    # Create the "Install" button
                     $installButton = New-Object Windows.Controls.Button
                     $installButton.Width = 45
                     $installButton.Height = 35
@@ -297,10 +294,10 @@ function Invoke-WPFUIElements {
 
                     # Add Click event for the "Install" button
                     $installButton.Add_Click({
-                        Write-Host "Installing ..."
+                        Write-Host "Installing $($entryInfo.Name) ..."
                     })
 
-                    # Create the "Uninstall" button with the uninstall icon from Segoe MDL2 Assets
+                    # Create the "Uninstall" button
                     $uninstallButton = New-Object Windows.Controls.Button
                     $uninstallButton.Width = 45
                     $uninstallButton.Height = 35
@@ -318,10 +315,10 @@ function Invoke-WPFUIElements {
                     $buttonPanel.Children.Add($uninstallButton) | Out-Null
 
                     $uninstallButton.Add_Click({
-                        Write-Host "Uninstalling ..."
+                        Write-Host "Uninstalling $($entryInfo.Name) ..."
                     })
 
-                    # Create the "Info" button with the info icon from Segoe MDL2 Assets
+                    # Create the "Info" button
                     $infoButton = New-Object Windows.Controls.Button
                     $infoButton.Width = 45
                     $infoButton.Height = 35
@@ -340,20 +337,40 @@ function Invoke-WPFUIElements {
                     $buttonPanel.Children.Add($infoButton) | Out-Null
 
                     $infoButton.Add_Click({
-                        Write-Host "Getting info ..."
+                        Write-Host "Getting info for $($entryInfo.Name) ..."
                     })
 
                     # Add the button panel to the DockPanel
                     $dockPanel.Children.Add($buttonPanel) | Out-Null
 
-                    # Add the border to the main stack panel in the grid
-                    $stackPanel.Children.Add($border) | Out-Null
+                    # Add the border to the main items control in the grid
+                    $itemsControl.Items.Add($border) | Out-Null
 
                     # Sync the CheckBox, buttons, and info to the sync object for further use
                     $sync[$entryInfo.Name] = $checkBox
                     $sync[$entryInfo.Name + "_InstallButton"] = $installButton
                     $sync[$entryInfo.Name + "_UninstallButton"] = $uninstallButton
                     $sync[$entryInfo.Name + "_InfoButton"] = $infoButton
+
+                    $image.Source = $noimage
+                    if (-not [string]::IsNullOrEmpty($none)) { # replace $none with $entryInfo.choco to get images, takes a lot longer but works for many packages
+                        try {
+                            $packageinfo = (choco info $entryInfo.choco --limit-output).Split(' ')[0]
+                            $packageinfo = $packageinfo -replace '\|', '.'
+                            $iconlink = "https://community.chocolatey.org/content/packageimages/" + $packageinfo
+                            $finishediconlink = $iconlink + ".png"
+                            $webimage = Invoke-WebRequest -Uri $finishediconlink -Method Head -ErrorAction SilentlyContinue
+                            if ($webimage.StatusCode -eq 200) {
+                                $image.Source = [Windows.Media.Imaging.BitmapImage]::new([Uri]::new($finishediconlink))
+                            } else {
+                                # TODO: use UniGetUI's image db as a fallback
+                                $image.Source = $noimage
+                            }
+                        } catch {
+                            $image.Source = $noimage
+                        }
+                    }
+
                 } else {
                     # Create the UI elements based on the entry type
                     switch ($entryInfo.Type) {
@@ -372,7 +389,7 @@ function Invoke-WPFUIElements {
                             $label.FontSize = $theme.FontSize
                             $label.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "MainForegroundColor")
                             $dockPanel.Children.Add($label) | Out-Null
-                            $stackPanel.Children.Add($dockPanel) | Out-Null
+                            $itemsControl.Items.Add($dockPanel) | Out-Null
 
                             $sync[$entryInfo.Name] = $checkBox
 
@@ -387,7 +404,6 @@ function Invoke-WPFUIElements {
                         "ToggleButton" {
                             $toggleButton = New-Object Windows.Controls.ToggleButton
                             $toggleButton.Name = $entryInfo.Name
-                            $toggleButton.Name = "WPFTab" + ($stackPanel.Children.Count + 1) + "BT"
                             $toggleButton.HorizontalAlignment = "Left"
                             $toggleButton.Height = $theme.TabButtonHeight
                             $toggleButton.Width = $theme.TabButtonWidth
@@ -401,17 +417,17 @@ function Invoke-WPFUIElements {
                             $textBlock.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "ButtonInstallForegroundColor")
 
                             $underline = New-Object Windows.Documents.Underline
-                            $underline.Inlines.Add($entryInfo.name -replace "(.).*", "`$1")
+                            $underline.Inlines.Add($entryInfo.Name -replace "(.).*", "$1")
 
                             $run = New-Object Windows.Documents.Run
-                            $run.Text = $entryInfo.name -replace "^.", ""
+                            $run.Text = $entryInfo.Name -replace "^.", ""
 
                             $textBlock.Inlines.Add($underline)
                             $textBlock.Inlines.Add($run)
 
                             $toggleButton.Content = $textBlock
 
-                            $stackPanel.Children.Add($toggleButton) | Out-Null
+                            $itemsControl.Items.Add($toggleButton) | Out-Null
 
                             $sync[$entryInfo.Name] = $toggleButton
                         }
@@ -444,7 +460,7 @@ function Invoke-WPFUIElements {
                             }
 
                             $horizontalStackPanel.Children.Add($comboBox) | Out-Null
-                            $stackPanel.Children.Add($horizontalStackPanel) | Out-Null
+                            $itemsControl.Items.Add($horizontalStackPanel) | Out-Null
 
                             $comboBox.SelectedIndex = 0
 
@@ -461,7 +477,7 @@ function Invoke-WPFUIElements {
                             if ($entryInfo.ButtonWidth) {
                                 $button.Width = $entryInfo.ButtonWidth
                             }
-                            $stackPanel.Children.Add($button) | Out-Null
+                            $itemsControl.Items.Add($button) | Out-Null
 
                             $sync[$entryInfo.Name] = $button
                         }
@@ -480,7 +496,7 @@ function Invoke-WPFUIElements {
                                 $radioButton.IsChecked = $true
                             }
 
-                            $stackPanel.Children.Add($radioButton) | Out-Null
+                            $itemsControl.Items.Add($radioButton) | Out-Null
                             $sync[$entryInfo.Name] = $radioButton
                         }
 
@@ -511,7 +527,7 @@ function Invoke-WPFUIElements {
                                 $sync[$textBlock.Name] = $textBlock
                             }
 
-                            $stackPanel.Children.Add($horizontalStackPanel) | Out-Null
+                            $itemsControl.Items.Add($horizontalStackPanel) | Out-Null
                             $sync[$entryInfo.Name] = $checkBox
                         }
                     }
