@@ -194,11 +194,11 @@ function Generate-MarkdownFiles {
 
         # Add the entry to 'tocEntries' so we can generate Table Of Content easily
         # And add the Full FileName of entry
-        $tocEntries += @{
+        $tocEntries += [PSCustomObject]@{
             Category = $category
-            Path = $relativePath
-            Name = $itemDetails.Content
-            Type = $type
+            Path     = $relativePath
+            Name     = $itemDetails.Content
+            Type     = $type
         }
         $processedFiles += (Get-Item $filename).FullName
 
@@ -511,12 +511,13 @@ function Generate-TypeSectionContent {
     $currentProgress = 90
 
     $sectionContent = ""
-    $categories = @{}
+    $categories = [ordered]@{}
     foreach ($entry in $entries) {
-        if (-Not $categories.ContainsKey($entry.Category)) {
-            $categories[$entry.Category] = @()
+        $categoryKey = $entry.Category
+        if (-Not $categories.Contains($categoryKey)) {
+            $categories[$categoryKey] = @()
         }
-        $categories[$entry.Category] += $entry
+        $categories[$categoryKey] += $entry
 
         $currentProgress += $progressIncrement
         $roundedProgress = [math]::Round($currentProgress)
@@ -525,7 +526,9 @@ function Generate-TypeSectionContent {
     foreach ($category in $categories.Keys) {
         $sectionContent += "### $category`r`n`r`n"
         foreach ($entry in $categories[$category]) {
-            $sectionContent += "- [$($entry.Name)]($($entry.Path))`r`n"
+            $fixedPath = $entry.Path -replace 'docs/', ''
+            $fixedPath = $fixedPath -replace '\.md$', '/'
+            $sectionContent += "- [$($entry.Name)]($fixedPath)`r`n"
         }
     }
     return $sectionContent
@@ -616,13 +619,13 @@ Add-LinkAttributeToJson -jsonFilePath "../config/tweaks.json" -outputDir "dev/tw
 Add-LinkAttributeToJson -jsonFilePath "../config/feature.json" -outputDir "dev/features"
 
 Update-Progress "Generating content for documentation" 60
-$tweakResult = Generate-MarkdownFiles -data $tweaks -outputDir $tweaksOutputDir -jsonFilePath "../config/tweaks.json" -lastModified $tweaksLastModified -type "tweak" -initialProgress 60
-$featureResult = Generate-MarkdownFiles -data $features -outputDir $featuresOutputDir -jsonFilePath "../config/feature.json" -lastModified $featuresLastModified -type "feature" -initialProgress 70
+$tweakResult = Generate-MarkdownFiles -data $tweaks -outputDir $tweaksOutputDir -jsonFilePath "config/tweaks.json" -lastModified $tweaksLastModified -type "tweak" -initialProgress 60
+$featureResult = Generate-MarkdownFiles -data $features -outputDir $featuresOutputDir -jsonFilePath "config/feature.json" -lastModified $featuresLastModified -type "feature" -initialProgress 70
 
 Update-Progress "Generating table of contents" 80
 $allTocEntries = $tweakResult.TocEntries + $featureResult.TocEntries
-$tweakEntries = ($allTocEntries).where{ $_.Type -eq 'tweak' } | Sort-Object Category, Name
-$featureEntries = ($allTocEntries).where{ $_.Type -eq 'feature' } | Sort-Object Category, Name
+$tweakEntries = ($allTocEntries).where{ $_.Type -eq 'tweak' }
+$featureEntries = ($allTocEntries).where{ $_.Type -eq 'feature' }
 
 $indexContent += Process-MultilineStrings @"
     \\# Table of Contents
@@ -642,3 +645,14 @@ $indexContent += $(Generate-TypeSectionContent $featureEntries) + "`r`n"
 Set-Content -Path "../docs/devdocs.md" -Value $indexContent -Encoding utf8
 
 Update-Progress "Process Completed" 100
+
+Write-Host "Running Preprocessing"
+
+# Dot source the 'Invoke-Preprocessing' Function from 'tools/Invoke-Preprocessing.ps1' Script
+$preprocessingFilePath = ".\Invoke-Preprocessing.ps1"
+. $preprocessingFilePath
+
+$excludedFiles = @('.\.git\', '.\.gitignore', '.\.gitattributes', '.\.github\CODEOWNERS', '.\LICENSE', ".\tools\Invoke-Preprocessing.ps1", '*.png', '*.exe')
+$msg = "Pre-req: Code Formatting"
+$workingdir = $PSScriptRoot -replace '\\tools$', ''
+Invoke-Preprocessing -WorkingDir "$workingdir" -ExcludedFiles $excludedFiles -ProgressStatusMessage $msg -ThrowExceptionOnEmptyFilesList

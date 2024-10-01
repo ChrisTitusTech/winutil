@@ -1,6 +1,6 @@
-# Printer Settings
+# Printer Panel
 
-Last Updated: 2024-08-31
+Last Updated: 2024-10-01
 
 
 !!! info
@@ -16,11 +16,12 @@ Last Updated: 2024-08-31
 
 ```json
 {
-  "Content": "Printer Settings",
+  "Content": "Printer Panel",
   "category": "Legacy Windows Panels",
   "panel": "2",
   "Type": "Button",
-  "ButtonWidth": "300"
+  "ButtonWidth": "300",
+  "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/printer"
 }
 ```
 
@@ -61,5 +62,5 @@ function Invoke-WPFControlPanel {
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/../config/feature.json)
+[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)
 

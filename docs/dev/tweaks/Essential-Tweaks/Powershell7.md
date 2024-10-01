@@ -1,6 +1,6 @@
 # Change Windows Terminal default: PowerShell 5 -> PowerShell 7
 
-Last Updated: 2024-08-07
+Last Updated: 2024-10-01
 
 
 !!! info
@@ -279,41 +279,6 @@ Function Install-WinUtilProgramWinget {
 }
 
 ```
-## Function: Set-WinUtilProgressbar
-
-```powershell
-function Set-WinUtilProgressbar{
-    <#
-    .SYNOPSIS
-        This function is used to Update the Progress Bar displayed in the winutil GUI.
-        It will be automatically hidden if the user clicks something and no process is running
-    .PARAMETER Label
-        The Text to be overlayed onto the Progress Bar
-    .PARAMETER PERCENT
-        The percentage of the Progress Bar that should be filled (0-100)
-    .PARAMETER Hide
-        If provided, the Progress Bar and the label will be hidden
-    #>
-    param(
-        [string]$Label,
-        [ValidateRange(0,100)]
-        [int]$Percent,
-        $Hide
-    )
-    if ($hide) {
-        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Visibility = "Collapsed"})
-        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBar.Visibility = "Collapsed"})
-    } else {
-        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Visibility = "Visible"})
-        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBar.Visibility = "Visible"})
-    }
-    $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Content.Text = $label})
-    $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Content.ToolTip = $label})
-    $sync.form.Dispatcher.Invoke([action]{ $sync.ProgressBar.Value = $percent})
-
-}
-
-```
 ## Function: Set-WinUtilTaskbarItem
 
 ```powershell
@@ -380,13 +345,13 @@ function Set-WinUtilTaskbaritem {
     if ($overlay) {
         switch ($overlay) {
             'logo' {
-                $sync["Form"].taskbarItemInfo.Overlay = "$env:LOCALAPPDATA\winutil\cttlogo.png"
+                $sync["Form"].taskbarItemInfo.Overlay = $sync["logorender"]
             }
             'checkmark' {
-                $sync["Form"].taskbarItemInfo.Overlay = "$env:LOCALAPPDATA\winutil\checkmark.png"
+                $sync["Form"].taskbarItemInfo.Overlay = $sync["checkmarkrender"]
             }
             'warning' {
-                $sync["Form"].taskbarItemInfo.Overlay = "$env:LOCALAPPDATA\winutil\warning.png"
+                $sync["Form"].taskbarItemInfo.Overlay = $sync["warningrender"]
             }
             'None' {
                 $sync["Form"].taskbarItemInfo.Overlay = $null
@@ -402,6 +367,41 @@ function Set-WinUtilTaskbaritem {
     if ($description) {
         $sync["Form"].taskbarItemInfo.Description = $description
     }
+}
+
+```
+## Function: Set-WinUtilProgressbar
+
+```powershell
+function Set-WinUtilProgressbar{
+    <#
+    .SYNOPSIS
+        This function is used to Update the Progress Bar displayed in the winutil GUI.
+        It will be automatically hidden if the user clicks something and no process is running
+    .PARAMETER Label
+        The Text to be overlayed onto the Progress Bar
+    .PARAMETER PERCENT
+        The percentage of the Progress Bar that should be filled (0-100)
+    .PARAMETER Hide
+        If provided, the Progress Bar and the label will be hidden
+    #>
+    param(
+        [string]$Label,
+        [ValidateRange(0,100)]
+        [int]$Percent,
+        $Hide
+    )
+    if ($hide) {
+        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Visibility = "Collapsed"})
+        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBar.Visibility = "Collapsed"})
+    } else {
+        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Visibility = "Visible"})
+        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBar.Visibility = "Visible"})
+    }
+    $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Content.Text = $label})
+    $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Content.ToolTip = $label})
+    $sync.form.Dispatcher.Invoke([action]{ $sync.ProgressBar.Value = $percent})
+
 }
 
 ```

@@ -1,6 +1,6 @@
 # Disable Hibernation
 
-Last Updated: 2024-08-07
+Last Updated: 2024-10-01
 
 
 !!! info

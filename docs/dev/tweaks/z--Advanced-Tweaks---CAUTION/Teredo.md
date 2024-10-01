@@ -1,6 +1,6 @@
 # Disable Teredo
 
-Last Updated: 2024-08-27
+Last Updated: 2024-10-01
 
 
 !!! info
