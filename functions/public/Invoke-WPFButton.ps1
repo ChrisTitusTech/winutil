@@ -57,6 +57,7 @@ function Invoke-WPFButton {
         "WPFMicrowin" {Invoke-WPFMicrowin}
         "WPFCloseButton" {Invoke-WPFCloseButton}
         "MicrowinScratchDirBT" {Invoke-ScratchDialog}
-        "WPFWinUtilPSProfile" {Invoke-WinUtilpsProfile}
+        "WPFWinUtilInstallPSProfile" {Invoke-WinUtilInstallPSProfile}
+        "WPFWinUtilUninstallPSProfile" {Invoke-WinUtilUninstallPSProfile}
     }
 }
