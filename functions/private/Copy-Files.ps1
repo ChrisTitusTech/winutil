@@ -37,7 +37,9 @@ function Copy-Files {
         }
         Write-Progress -Activity "Copy Windows files" -Status "Ready" -Completed
     } catch {
-        Write-Warning "Unable to Copy all the files due to unhandled exception:"
-        Write-Warning $psitem.Exception.ToString()
+        Write-Host "Unable to Copy all the files due to an unhandled exception" -ForegroundColor Yellow
+        Write-Host "Error information: $($_.Exception.Message)`n" -ForegroundColor Yellow
+        Write-Host "Additional information:" -ForegroundColor Yellow
+        Write-Host $PSItem.Exception.StackTrace
     }
 }
