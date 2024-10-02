@@ -160,8 +160,9 @@ function Remove-Packages {
                 $_ -NotLike "*Ethernet*" -AND
                 $_ -NotLike "*Wifi*" -AND
                 $_ -NotLike "*FodMetadata*" -AND
-                $_ -NotLike "*Foundation*" -and
-                $_ -NotLike "*LanguageFeatures*"
+                $_ -NotLike "*Foundation*" -AND
+                $_ -NotLike "*LanguageFeatures*" -AND
+                $_ -NotLike "*VBSCRIPT*"
             }
 
         $failedCount = 0
