@@ -91,6 +91,14 @@ public class PowerManagement {
         return
     }
 
+    # Detect whether the image to process contains Windows 10 and show warning
+    if ((Test-CompatibleImage $imgVersion $([System.Version]::new(10,0,21996,1))) -eq $false) {
+        $msg = "Windows 10 has been detected in the image you want to process. While you can continue, Windows 10 is not a recommended target for MicroWin, and you may not get the full experience."
+        $dlg_msg = $msg
+        Write-Host $msg
+        [System.Windows.MessageBox]::Show($dlg_msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Exclamation)
+    }
+
     $mountDirExists = Test-Path $mountDir
     $scratchDirExists = Test-Path $scratchDir
     if (-not $mountDirExists -or -not $scratchDirExists) {
