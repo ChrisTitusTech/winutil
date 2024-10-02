@@ -205,7 +205,6 @@ function Remove-ProvisionedPackages() {
         $appxProvisionedPackages = Get-AppxProvisionedPackage -Path "$($scratchDir)" | Where-Object {
                 $_.PackageName -NotLike "*AppInstaller*" -AND
                 $_.PackageName -NotLike "*Store*" -and
-                $_.PackageName -NotLike "*dism*" -and
                 $_.PackageName -NotLike "*Notepad*" -and
                 $_.PackageName -NotLike "*Printing*" -and
                 $_.PackageName -NotLike "*YourPhone*" -and
