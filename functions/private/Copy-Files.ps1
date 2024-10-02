@@ -19,10 +19,10 @@ function Copy-Files {
     try {
 
         $files = Get-ChildItem -Path $path -Recurse:$recurse
-        Write-Host "Copy $($files.Count)(s) from $path to $destination"
+        Write-Host "Copy $($files.Count) file(s) from $path to $destination"
 
         foreach ($file in $files) {
-            $status = "Copy files {0} on {1}: {2}" -f $counter, $files.Count, $file.Name
+            $status = "Copying file {0} of {1}: {2}" -f $counter, $files.Count, $file.Name
             Write-Progress -Activity "Copy Windows files" -Status $status -PercentComplete ($counter++/$files.count*100)
             $restpath = $file.FullName -Replace $path, ''
 
@@ -37,7 +37,7 @@ function Copy-Files {
         }
         Write-Progress -Activity "Copy Windows files" -Status "Ready" -Completed
     } catch {
-        Write-Warning "Unable to Copy all the files due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
+        Write-Warning "Unable to Copy all the files due to unhandled exception:"
+        Write-Warning $psitem.Exception.ToString()
     }
 }
