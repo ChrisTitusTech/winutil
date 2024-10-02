@@ -59,6 +59,8 @@ function Invoke-WPFUIElements {
         $configHashtable[$_] = $configVariable.$_
     }
 
+    $radioButtonGroups = @{}
+
     $organizedData = @{}
     # Iterate through JSON data and organize by panel and category
     foreach ($entry in $configHashtable.Keys) {
@@ -483,6 +485,20 @@ function Invoke-WPFUIElements {
                         }
 
                         "RadioButton" {
+                            # Check if a container for this GroupName already exists
+                            if (-not $radioButtonGroups.ContainsKey($entryInfo.GroupName)) {
+                                # Create a StackPanel for this group
+                                $groupStackPanel = New-Object Windows.Controls.StackPanel
+                                $groupStackPanel.Orientation = "Vertical"
+
+                                # Add the group container to the ItemsControl
+                                $itemsControl.Items.Add($groupStackPanel) | Out-Null
+                            } else {
+                                # Retrieve the existing group container
+                                $groupStackPanel = $radioButtonGroups[$entryInfo.GroupName]
+                            }
+
+                            # Create the RadioButton
                             $radioButton = New-Object Windows.Controls.RadioButton
                             $radioButton.Name = $entryInfo.Name
                             $radioButton.GroupName = $entryInfo.GroupName
@@ -496,7 +512,8 @@ function Invoke-WPFUIElements {
                                 $radioButton.IsChecked = $true
                             }
 
-                            $itemsControl.Items.Add($radioButton) | Out-Null
+                            # Add the RadioButton to the group container
+                            $groupStackPanel.Children.Add($radioButton) | Out-Null
                             $sync[$entryInfo.Name] = $radioButton
                         }
 
