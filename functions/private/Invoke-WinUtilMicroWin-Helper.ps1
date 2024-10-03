@@ -25,6 +25,17 @@ function Test-CompatibleImage() {
     }
 }
 
+class ErroredPackage {
+    [string]$PackageName
+    [string]$ErrorMessage
+    ErroredPackage() { $this.Init(@{} )}
+    # Constructor for packages that have errored out
+    ErroredPackage([string]$pkgName, [string]$reason) {
+        $this.PackageName = $pkgName
+        $this.ErrorMessage = $reason
+    }
+}
+
 function Get-FidoLangFromCulture {
 
     param (
@@ -168,14 +179,16 @@ function Remove-Packages {
 
         $failedCount = 0
 
+        $erroredPackages = [System.Collections.Generic.List[ErroredPackage]]::new()
+
         foreach ($pkg in $pkglist) {
             try {
                 $status = "Removing $pkg"
                 Write-Progress -Activity "Removing Packages" -Status $status -PercentComplete ($counter++/$pkglist.Count*100)
                 Remove-WindowsPackage -Path "$scratchDir" -PackageName $pkg -NoRestart -ErrorAction SilentlyContinue
             } catch {
-                # This can happen if the package that is being removed is a permanent one, like FodMetadata
-                Write-Host "Could not remove OS package $($pkg)"
+                # This can happen if the package that is being removed is a permanent one
+                $erroredPackages.Add([ErroredPackage]::new($pkg, $_.Exception.Message))
                 $failedCount += 1
                 continue
             }
@@ -184,6 +197,10 @@ function Remove-Packages {
         if ($failedCount -gt 0)
         {
             Write-Host "Some packages could not be removed. Do not worry: your image will still work fine. This can happen if the package is permanent or has been superseded by a newer one."
+            if ($erroredPackages.Count -gt 0)
+            {
+                $erroredPackages
+            }
         }
     } catch {
         Write-Host "Unable to get information about the packages. MicroWin processing will continue, but packages will not be processed"
