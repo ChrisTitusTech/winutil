@@ -41,5 +41,7 @@ function Copy-Files {
         Write-Host "Error information: $($_.Exception.Message)`n" -ForegroundColor Yellow
         Write-Host "Additional information:" -ForegroundColor Yellow
         Write-Host $PSItem.Exception.StackTrace
+        # Write possible suggestions
+        Write-Host "`nIf you are using an antivirus, try configuring exclusions"
     }
 }
