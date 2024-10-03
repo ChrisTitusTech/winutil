@@ -121,7 +121,7 @@ function Remove-Packages {
 
         $pkglist = $pkglist | Where-Object {
                 $_ -NotLike "*ApplicationModel*" -AND
-                $_ -NotLike "*indows-Client-LanguagePack*" -AND
+                $_ -NotLike "*Windows-Client-LanguagePack*" -AND
                 $_ -NotLike "*LanguageFeatures-Basic*" -AND
                 $_ -NotLike "*Package_for_ServicingStack*" -AND
                 $_ -NotLike "*.NET*" -AND
