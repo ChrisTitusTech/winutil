@@ -235,7 +235,7 @@ public class PowerManagement {
         Write-Host "Done disabling Teams"
 
         Write-Host "Fix Windows Volume Mixer Issue"
-        reg add "HKLM\zDEFAULT\Microsoft\Internet Explorer\LowRegistry\Audio\PolicyConfig\PropertyStore" /f
+        reg add "HKLM\zNTUSER\Microsoft\Internet Explorer\LowRegistry\Audio\PolicyConfig\PropertyStore" /f
 
         Write-Host "Bypassing system requirements (system image)"
         reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
