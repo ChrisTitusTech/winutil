@@ -411,9 +411,6 @@ $sync["ISOmanual"].add_Checked({
 })
 
 $sync["ISORelease"].Items.Add("24H2") | Out-Null
-$sync["ISORelease"].Items.Add("23H2") | Out-Null
-$sync["ISORelease"].Items.Add("22H2") | Out-Null
-$sync["ISORelease"].Items.Add("21H2") | Out-Null
 $sync["ISORelease"].SelectedItem = "24H2"
 
 $sync["ISOLanguage"].Items.Add("System Language ($(Get-FidoLangFromCulture -langName $((Get-Culture).Name)))") | Out-Null
