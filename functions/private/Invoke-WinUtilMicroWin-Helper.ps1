@@ -842,8 +842,17 @@ function New-FirstRun {
     # Done create WinUtil shortcut on the desktop
     # ************************************************
 
-    Start-Process explorer
+    try
+    {
+        if ((Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -like "Recall" }).Count -gt 0)
+        {
+            Disable-WindowsOptionalFeature -Online -FeatureName "Recall" -Remove
+        }
+    }
+    catch
+    {
 
+    }
 '@
     $firstRun | Out-File -FilePath "$env:temp\FirstStartup.ps1" -Force
 }
