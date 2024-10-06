@@ -684,70 +684,70 @@ function New-CheckInstall {
     # using here string to embedd firstrun
     $checkInstall = @'
     @echo off
-    if exist "C:\windows\cpu.txt" (
-        echo C:\windows\cpu.txt exists
+    if exist "%HOMEDRIVE%\windows\cpu.txt" (
+        echo %HOMEDRIVE%\windows\cpu.txt exists
     ) else (
-        echo C:\windows\cpu.txt does not exist
+        echo %HOMEDRIVE%\windows\cpu.txt does not exist
     )
-    if exist "C:\windows\SerialNumber.txt" (
-        echo C:\windows\SerialNumber.txt exists
+    if exist "%HOMEDRIVE%\windows\SerialNumber.txt" (
+        echo %HOMEDRIVE%\windows\SerialNumber.txt exists
     ) else (
-        echo C:\windows\SerialNumber.txt does not exist
+        echo %HOMEDRIVE%\windows\SerialNumber.txt does not exist
     )
-    if exist "C:\unattend.xml" (
-        echo C:\unattend.xml exists
+    if exist "%HOMEDRIVE%\unattend.xml" (
+        echo %HOMEDRIVE%\unattend.xml exists
     ) else (
-        echo C:\unattend.xml does not exist
+        echo %HOMEDRIVE%\unattend.xml does not exist
     )
-    if exist "C:\Windows\Setup\Scripts\SetupComplete.cmd" (
-        echo C:\Windows\Setup\Scripts\SetupComplete.cmd exists
+    if exist "%HOMEDRIVE%\Windows\Setup\Scripts\SetupComplete.cmd" (
+        echo %HOMEDRIVE%\Windows\Setup\Scripts\SetupComplete.cmd exists
     ) else (
-        echo C:\Windows\Setup\Scripts\SetupComplete.cmd does not exist
+        echo %HOMEDRIVE%\Windows\Setup\Scripts\SetupComplete.cmd does not exist
     )
-    if exist "C:\Windows\Panther\unattend.xml" (
-        echo C:\Windows\Panther\unattend.xml exists
+    if exist "%HOMEDRIVE%\Windows\Panther\unattend.xml" (
+        echo %HOMEDRIVE%\Windows\Panther\unattend.xml exists
     ) else (
-        echo C:\Windows\Panther\unattend.xml does not exist
+        echo %HOMEDRIVE%\Windows\Panther\unattend.xml does not exist
     )
-    if exist "C:\Windows\System32\Sysprep\unattend.xml" (
-        echo C:\Windows\System32\Sysprep\unattend.xml exists
+    if exist "%HOMEDRIVE%\Windows\System32\Sysprep\unattend.xml" (
+        echo %HOMEDRIVE%\Windows\System32\Sysprep\unattend.xml exists
     ) else (
-        echo C:\Windows\System32\Sysprep\unattend.xml does not exist
+        echo %HOMEDRIVE%\Windows\System32\Sysprep\unattend.xml does not exist
     )
-    if exist "C:\Windows\FirstStartup.ps1" (
-        echo C:\Windows\FirstStartup.ps1 exists
+    if exist "%HOMEDRIVE%\Windows\FirstStartup.ps1" (
+        echo %HOMEDRIVE%\Windows\FirstStartup.ps1 exists
     ) else (
-        echo C:\Windows\FirstStartup.ps1 does not exist
+        echo %HOMEDRIVE%\Windows\FirstStartup.ps1 does not exist
     )
-    if exist "C:\Windows\winutil.ps1" (
-        echo C:\Windows\winutil.ps1 exists
+    if exist "%HOMEDRIVE%\Windows\winutil.ps1" (
+        echo %HOMEDRIVE%\Windows\winutil.ps1 exists
     ) else (
-        echo C:\Windows\winutil.ps1 does not exist
+        echo %HOMEDRIVE%\Windows\winutil.ps1 does not exist
     )
-    if exist "C:\Windows\LogSpecialize.txt" (
-        echo C:\Windows\LogSpecialize.txt exists
+    if exist "%HOMEDRIVE%\Windows\LogSpecialize.txt" (
+        echo %HOMEDRIVE%\Windows\LogSpecialize.txt exists
     ) else (
-        echo C:\Windows\LogSpecialize.txt does not exist
+        echo %HOMEDRIVE%\Windows\LogSpecialize.txt does not exist
     )
-    if exist "C:\Windows\LogAuditUser.txt" (
-        echo C:\Windows\LogAuditUser.txt exists
+    if exist "%HOMEDRIVE%\Windows\LogAuditUser.txt" (
+        echo %HOMEDRIVE%\Windows\LogAuditUser.txt exists
     ) else (
-        echo C:\Windows\LogAuditUser.txt does not exist
+        echo %HOMEDRIVE%\Windows\LogAuditUser.txt does not exist
     )
-    if exist "C:\Windows\LogOobeSystem.txt" (
-        echo C:\Windows\LogOobeSystem.txt exists
+    if exist "%HOMEDRIVE%\Windows\LogOobeSystem.txt" (
+        echo %HOMEDRIVE%\Windows\LogOobeSystem.txt exists
     ) else (
-        echo C:\Windows\LogOobeSystem.txt does not exist
+        echo %HOMEDRIVE%\Windows\LogOobeSystem.txt does not exist
     )
-    if exist "c:\windows\csup.txt" (
-        echo c:\windows\csup.txt exists
+    if exist "%HOMEDRIVE%\windows\csup.txt" (
+        echo %HOMEDRIVE%\windows\csup.txt exists
     ) else (
-        echo c:\windows\csup.txt does not exist
+        echo %HOMEDRIVE%\windows\csup.txt does not exist
     )
-    if exist "c:\windows\LogFirstRun.txt" (
-        echo c:\windows\LogFirstRun.txt exists
+    if exist "%HOMEDRIVE%\windows\LogFirstRun.txt" (
+        echo %HOMEDRIVE%\windows\LogFirstRun.txt exists
     ) else (
-        echo c:\windows\LogFirstRun.txt does not exist
+        echo %HOMEDRIVE%\windows\LogFirstRun.txt does not exist
     )
 '@
     $checkInstall | Out-File -FilePath "$env:temp\checkinstall.cmd" -Force -Encoding Ascii
@@ -785,7 +785,7 @@ function New-FirstRun {
         }
     }
 
-    "FirstStartup has worked" | Out-File -FilePath c:\windows\LogFirstRun.txt -Append -NoClobber
+    "FirstStartup has worked" | Out-File -FilePath "$env:HOMEDRIVE\windows\LogFirstRun.txt" -Append -NoClobber
 
     $taskbarPath = "$env:AppData\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar"
     # Delete all files on the Taskbar
@@ -805,7 +805,7 @@ function New-FirstRun {
         }
     }
     Remove-Item -Path "$env:USERPROFILE\Desktop\*.lnk"
-    Remove-Item -Path "C:\Users\Default\Desktop\*.lnk"
+    Remove-Item -Path "$env:HOMEDRIVE\Users\Default\Desktop\*.lnk"
 
     # ************************************************
     # Create WinUtil shortcut on the desktop
@@ -821,8 +821,8 @@ function New-FirstRun {
     # Create a shortcut object
     $shortcut = $shell.CreateShortcut($shortcutPath)
 
-    if (Test-Path -Path "c:\Windows\cttlogo.png") {
-        $shortcut.IconLocation = "c:\Windows\cttlogo.png"
+    if (Test-Path -Path "$env:HOMEDRIVE\Windows\cttlogo.png") {
+        $shortcut.IconLocation = "$env:HOMEDRIVE\Windows\cttlogo.png"
     }
 
     # Set properties of the shortcut
