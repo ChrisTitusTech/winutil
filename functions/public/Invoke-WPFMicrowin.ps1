@@ -51,10 +51,6 @@ public class PowerManagement {
     $index = $sync.MicrowinWindowsFlavors.SelectedValue.Split(":")[0].Trim()
     Write-Host "Index chosen: '$index' from $($sync.MicrowinWindowsFlavors.SelectedValue)"
 
-    $keepPackages = $sync.WPFMicrowinKeepProvisionedPackages.IsChecked
-    $keepProvisionedPackages = $sync.WPFMicrowinKeepAppxPackages.IsChecked
-    $keepDefender = $sync.WPFMicrowinKeepDefender.IsChecked
-    $keepEdge = $sync.WPFMicrowinKeepEdge.IsChecked
     $copyToUSB = $sync.WPFMicrowinCopyToUsb.IsChecked
     $injectDrivers = $sync.MicrowinInjectDrivers.IsChecked
     $importDrivers = $sync.MicrowinImportDrivers.IsChecked
@@ -245,6 +241,9 @@ public class PowerManagement {
         reg query "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Communications" /v "ConfigureChatAutoInstall"                      >$null 2>&1
         # Write-Host Error code $LASTEXITCODE
         Write-Host "Done disabling Teams"
+
+        Write-Host "Fix Windows Volume Mixer Issue"
+        reg add "HKLM\zNTUSER\Microsoft\Internet Explorer\LowRegistry\Audio\PolicyConfig\PropertyStore" /f
 
         Write-Host "Bypassing system requirements (system image)"
         reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
