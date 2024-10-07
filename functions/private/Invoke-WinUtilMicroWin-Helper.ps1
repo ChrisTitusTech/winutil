@@ -36,30 +36,6 @@ class ErroredPackage {
     }
 }
 
-class ErroredPackageComparer : System.Collections.Generic.IComparer[ErroredPackage] {
-    [string]$PropertyName
-    [bool]$Descending = $false
-
-    ErroredPackageComparer([string]$property) {
-        $this.PropertyName = $property
-    }
-
-    ErroredPackageComparer([string]$property, [bool]$descending) {
-        $this.PropertyName = $property
-        $this.Descending = $descending
-    }
-
-    [int]Compare([ErroredPackage]$a, [ErroredPackage]$b) {
-        if ($a.$($this.PropertyName) -eq $b.$($this.PropertyName)) { $res = 0 }
-        elseif ($a.$($this.PropertyName) -lt $b.$($this.PropertyName)) { $res = -1 }
-        else { $res = 1 }
-
-        if ($this.Descending) { $res *= -1 }
-
-        return $res
-    }
-}
-
 function Get-FidoLangFromCulture {
 
     param (
@@ -223,8 +199,7 @@ function Remove-Packages {
             Write-Host "$failedCount package(s) could not be removed. Your image will still work fine, however. Below is information on what packages failed to be removed and why."
             if ($erroredPackages.Count -gt 0)
             {
-                $ErrorMessageComparer = [ErroredPackageComparer]::new("ErrorMessage")
-                $erroredPackages.Sort($ErrorMessageComparer)
+                $erroredPackages = $erroredPackages | Sort-Object -Property ErrorMessage
 
                 $previousErroredPackage = $erroredPackages[0]
                 $counter = 0
