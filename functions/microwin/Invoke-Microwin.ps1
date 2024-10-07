@@ -1,4 +1,4 @@
-function Invoke-WPFMicrowin {
+function Invoke-Microwin {
     <#
         .DESCRIPTION
         Invoke MicroWin routines...
@@ -78,7 +78,7 @@ public class PowerManagement {
     $imgVersion = (Get-WindowsImage -ImagePath $mountDir\sources\install.wim -Index $index).Version
 
     # Detect image version to avoid performing MicroWin processing on Windows 8 and earlier
-    if ((Test-CompatibleImage $imgVersion $([System.Version]::new(10,0,10240,0))) -eq $false) {
+    if ((Invoke-MicrowinTestCompatibleImage $imgVersion $([System.Version]::new(10,0,10240,0))) -eq $false) {
         $msg = "This image is not compatible with MicroWin processing. Make sure it isn't a Windows 8 or earlier image."
         $dlg_msg = $msg + "`n`nIf you want more information, the version of the image selected is $($imgVersion)`n`nIf an image has been incorrectly marked as incompatible, report an issue to the developers."
         Write-Host $msg
@@ -88,7 +88,7 @@ public class PowerManagement {
     }
 
     # Detect whether the image to process contains Windows 10 and show warning
-    if ((Test-CompatibleImage $imgVersion $([System.Version]::new(10,0,21996,1))) -eq $false) {
+    if ((Invoke-MicrowinTestCompatibleImage $imgVersion $([System.Version]::new(10,0,21996,1))) -eq $false) {
         $msg = "Windows 10 has been detected in the image you want to process. While you can continue, Windows 10 is not a recommended target for MicroWin, and you may not get the full experience."
         $dlg_msg = $msg
         Write-Host $msg
@@ -155,47 +155,47 @@ public class PowerManagement {
         }
 
         Write-Host "Remove Features from the image"
-        Remove-Features
+        Invoke-MicrowinRemoveFeatures
         Write-Host "Removing features complete!"
         Write-Host "Removing OS packages"
-        Remove-Packages
+        Invoke-MicrowinRemovePackages
         Write-Host "Removing Appx Bloat"
-        Remove-ProvisionedPackages
+        Invoke-MicrowinRemoveProvisionedPackages
 
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" -Directory
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\DiagTrack" -Directory
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\InboxApps" -Directory
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LocationNotificationWindows.exe"
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Photo Viewer" -Directory
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Photo Viewer" -Directory
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Media Player" -Directory
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Media Player" -Directory
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Mail" -Directory
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Mail" -Directory
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Internet Explorer" -Directory
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Internet Explorer" -Directory
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\GameBarPresenceWriter"
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDriveSetup.exe"
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDrive.ico"
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*narratorquickstart*" -Directory
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*ParentalControls*" -Directory
+        Invoke-MicrowinRemoveFileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" -Directory
+        Invoke-MicrowinRemoveFileOrDirectory -pathToDelete "$($scratchDir)\Windows\DiagTrack" -Directory
+        Invoke-MicrowinRemoveFileOrDirectory -pathToDelete "$($scratchDir)\Windows\InboxApps" -Directory
+        Invoke-MicrowinRemoveFileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LocationNotificationWindows.exe"
+        Invoke-MicrowinRemoveFileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Photo Viewer" -Directory
+        Invoke-MicrowinRemoveFileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Photo Viewer" -Directory
+        Invoke-MicrowinRemoveFileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Media Player" -Directory
+        Invoke-MicrowinRemoveFileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Media Player" -Directory
+        Invoke-MicrowinRemoveFileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Mail" -Directory
+        Invoke-MicrowinRemoveFileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Mail" -Directory
+        Invoke-MicrowinRemoveFileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Internet Explorer" -Directory
+        Invoke-MicrowinRemoveFileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Internet Explorer" -Directory
+        Invoke-MicrowinRemoveFileOrDirectory -pathToDelete "$($scratchDir)\Windows\GameBarPresenceWriter"
+        Invoke-MicrowinRemoveFileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDriveSetup.exe"
+        Invoke-MicrowinRemoveFileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDrive.ico"
+        Invoke-MicrowinRemoveFileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*narratorquickstart*" -Directory
+        Invoke-MicrowinRemoveFileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*ParentalControls*" -Directory
         Write-Host "Removal complete!"
 
         Write-Host "Create unattend.xml"
-        #New-Unattend
+        #Invoke-MicrowinNewUnattend
         if ($sync.MicrowinUserName.Text -eq "")
         {
-            New-Unattend -userName "User"
+            Invoke-MicrowinNewUnattend -userName "User"
         }
         else
         {
             if ($sync.MicrowinUserPassword.Password -eq "")
             {
-                New-Unattend -userName "$($sync.MicrowinUserName.Text)"
+                Invoke-MicrowinNewUnattend -userName "$($sync.MicrowinUserName.Text)"
             }
             else
             {
-                New-Unattend -userName "$($sync.MicrowinUserName.Text)" -userPassword "$($sync.MicrowinUserPassword.Password)"
+                Invoke-MicrowinNewUnattend -userName "$($sync.MicrowinUserName.Text)" -userPassword "$($sync.MicrowinUserPassword.Password)"
             }
         }
         Write-Host "Done Create unattend.xml"
@@ -208,7 +208,7 @@ public class PowerManagement {
         Write-Host "Done Copy unattend.xml"
 
         Write-Host "Create FirstRun"
-        New-FirstRun
+        Invoke-MicrowinNewFirstRun
         Write-Host "Done create FirstRun"
         Write-Host "Copy FirstRun.ps1 into the ISO"
         Copy-Item "$env:temp\FirstStartup.ps1" "$($scratchDir)\Windows\FirstStartup.ps1" -force
@@ -220,7 +220,7 @@ public class PowerManagement {
         dism /English /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
 
         Write-Host "Copy checkinstall.cmd into the ISO"
-        New-CheckInstall
+        Invoke-MicrowinNewCheckInstall
         Copy-Item "$env:temp\checkinstall.cmd" "$($scratchDir)\Windows\checkinstall.cmd" -force
         Write-Host "Done copy checkinstall.cmd"
 
@@ -296,7 +296,7 @@ public class PowerManagement {
         reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "AppsUseLightTheme" /t REG_DWORD /d 0 /f
         reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "SystemUsesLightTheme" /t REG_DWORD /d 0 /f
 
-        if ((Test-CompatibleImage $imgVersion $([System.Version]::new(10,0,21996,1))) -eq $false) {
+        if ((Invoke-MicrowinTestCompatibleImage $imgVersion $([System.Version]::new(10,0,21996,1))) -eq $false) {
             # We're dealing with Windows 10. Configure sane desktop settings. NOTE: even though stuff to disable News and Interests is there,
             # it doesn't seem to work, and I don't want to waste more time dealing with an operating system that will lose support in a year (2025)
 
@@ -408,7 +408,7 @@ public class PowerManagement {
 
         if ($copyToUSB) {
             Write-Host "Copying target ISO to the USB drive"
-            Copy-ToUSB("$($SaveDialog.FileName)")
+            Invoke-MicrowinCopyToUSB("$($SaveDialog.FileName)")
             if ($?) { Write-Host "Done Copying target ISO to USB drive!" } else { Write-Host "ISO copy failed." }
         }
 
