@@ -596,7 +596,7 @@ GitHub   : <a href="https://github.com/ChrisTitusTech/winutil">ChrisTitusTech/wi
 Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sync.version)">$($sync.version)</a>
 "@
 
-    Show-CustomDialog -Message $authorInfo -LogoSize $LogoSize
+    Show-CustomDialog -Message $authorInfo
 })
 
 $sync["SponsorMenuItem"].Add_Click({
@@ -612,7 +612,9 @@ $sync["SponsorMenuItem"].Add_Click({
         $sponsors = Invoke-WinUtilSponsors
 
         # Append the sponsors to the authorInfo
-        $sponsors | ForEach-Object { $authorInfo += "$_`n" }
+        foreach ($sponsor in $sponsors) {
+            $authorInfo += "<a href=`"https://github.com/sponsors/ChrisTitusTech`">$sponsor</a>`n"
+        }
     } catch {
         $authorInfo += "An error occurred while fetching or processing the sponsors: $_`n"
     }
