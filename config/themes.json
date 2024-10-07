@@ -7,7 +7,7 @@
         "CustomDialogHeight":         "200",
         "FontSize":         "12",
         "FontFamily":       "Arial",
-        "FontSizeHeading":  "16",
+        "HeadingFontSize":  "16",
         "HeaderFontFamily": "Consolas, Monaco",
         "CheckBoxBulletDecoratorSize": "14",
         "CheckBoxMargin": "15,0,0,2",
