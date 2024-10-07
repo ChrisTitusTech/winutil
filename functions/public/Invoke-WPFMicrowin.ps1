@@ -297,8 +297,12 @@ public class PowerManagement {
         reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "SystemUsesLightTheme" /t REG_DWORD /d 0 /f
 
         if ((Test-CompatibleImage $imgVersion $([System.Version]::new(10,0,21996,1))) -eq $false) {
-            # We're dealing with Windows 10. Configure sane desktop settings
-            Write-Host "Disabling Search Highlights and News and Interests..."
+            # We're dealing with Windows 10. Configure sane desktop settings. NOTE: even though stuff to disable News and Interests is there,
+            # it doesn't seem to work, and I don't want to waste more time dealing with an operating system that will lose support in a year (2025)
+
+            # I invite anyone to work on improving stuff for News and Interests, but that won't be me!
+
+            Write-Host "Disabling Search Highlights..."
             reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds\DSB" /v "ShowDynamicContent" /t REG_DWORD /d 0 /f
             reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\SearchSettings" /v "IsDynamicSearchBoxEnabled" /t REG_DWORD /d 0 /f
             reg add "HKLM\zSOFTWARE\Policies\Microsoft\Dsh" /v "AllowNewsAndInterests" /t REG_DWORD /d 0 /f
