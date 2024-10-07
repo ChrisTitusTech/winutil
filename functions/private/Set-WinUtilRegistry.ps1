@@ -36,7 +36,7 @@ function Set-WinUtilRegistry {
         }
 
         Write-Host "Set $Path\$Name to $Value"
-        if ($Value -ne "<RemoveEntry>"){
+        if ($Value -ne "<RemoveEntry>") {
             Set-ItemProperty -Path $Path -Name $Name -Type $Type -Value $Value -Force -ErrorAction Stop | Out-Null
         }
         else{
