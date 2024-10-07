@@ -596,7 +596,7 @@ GitHub   : <a href="https://github.com/ChrisTitusTech/winutil">ChrisTitusTech/wi
 Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sync.version)">$($sync.version)</a>
 "@
 
-    Show-CustomDialog -Message $authorInfo
+    Show-CustomDialog -Title "About" -Message $authorInfo
 })
 
 $sync["SponsorMenuItem"].Add_Click({
@@ -619,7 +619,7 @@ $sync["SponsorMenuItem"].Add_Click({
         $authorInfo += "An error occurred while fetching or processing the sponsors: $_`n"
     }
 
-    Show-CustomDialog -Message $authorInfo -EnableScroll $true
+    Show-CustomDialog -Title "Sponsors" -Message $authorInfo -EnableScroll $true
 })
 
 $sync["Form"].ShowDialog() | out-null

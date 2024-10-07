@@ -2,7 +2,7 @@
     "shared":{
         "CustomDialogFontSize":       "12",
         "CustomDialogFontSizeHeader": "14",
-        "CustomDialogIconSize":       "25",
+        "CustomDialogLogoSize":       "25",
         "CustomDialogWidth":          "400",
         "CustomDialogHeight":         "200",
         "FontSize":         "12",
