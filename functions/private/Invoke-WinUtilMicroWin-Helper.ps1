@@ -174,7 +174,8 @@ function Remove-Packages {
                 $_ -NotLike "*FodMetadata*" -AND
                 $_ -NotLike "*Foundation*" -AND
                 $_ -NotLike "*LanguageFeatures*" -AND
-                $_ -NotLike "*VBSCRIPT*"
+                $_ -NotLike "*VBSCRIPT*" -AND
+                $_ -NotLike "*License*"
             }
 
         $failedCount = 0
