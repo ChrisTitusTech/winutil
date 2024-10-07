@@ -111,8 +111,33 @@ $sync.Form.Add_Loaded({
 
 Invoke-WinutilThemeChange -init $true
 # Load the configuration files
-#Invoke-WPFUIElements -configVariable $sync.configs.nav -targetGridName "WPFMainGrid"
-Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 5
+
+$noimage = "https://images.emojiterra.com/google/noto-emoji/unicode-15/color/512px/1f4e6.png"
+$noimage = [Windows.Media.Imaging.BitmapImage]::new([Uri]::new($noimage))
+
+# Extract unique categories from the applications configuration
+$uniqueCategories = $sync.configs.applications.PSObject.Properties.Value |
+    Where-Object { $_.Category } |
+    Select-Object -Unique -ExpandProperty Category
+
+# Create a custom PSCustomObject to simulate category-level checkboxes
+$categoryConfig = @{}
+
+foreach ($category in $uniqueCategories) {
+    # Sanitize the category name for use in the Name property (remove spaces, special characters)
+    $sanitizedCategoryName = $category -replace '\W', '_'
+
+    $categoryConfig[$sanitizedCategoryName] = [PSCustomObject]@{
+        Category = "Categories"
+        Content = $category
+    }
+    $sync.configs.appnavigation | Add-Member -MemberType NoteProperty -Name $sanitizedCategoryName -Value $categoryConfig[$sanitizedCategoryName] -Force
+}
+
+# Now call the function with the final merged config
+Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
+Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 1
+
 Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
 Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
 
@@ -123,12 +148,12 @@ Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "feat
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
 
 #Persist the Chocolatey preference across winutil restarts
-$ChocoPreferencePath = "$env:LOCALAPPDATA\winutil\preferChocolatey.ini"
-$sync.WPFpreferChocolatey.Add_Checked({New-Item -Path $ChocoPreferencePath -Force })
-$sync.WPFpreferChocolatey.Add_Unchecked({Remove-Item $ChocoPreferencePath -Force})
-if (Test-Path $ChocoPreferencePath) {
-    $sync.WPFpreferChocolatey.IsChecked = $true
-}
+#$ChocoPreferencePath = "$env:LOCALAPPDATA\winutil\preferChocolatey.ini"
+#$sync.WPFpreferChocolatey.Add_Checked({New-Item -Path $ChocoPreferencePath -Force })
+#$sync.WPFpreferChocolatey.Add_Unchecked({Remove-Item $ChocoPreferencePath -Force})
+#if (Test-Path $ChocoPreferencePath) {
+#    $sync.WPFpreferChocolatey.IsChecked = $true
+#}
 
 $sync.keys | ForEach-Object {
     if($sync.$psitem) {
