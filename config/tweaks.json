@@ -3400,6 +3400,15 @@
     "Type": "Toggle",
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DetailedBSoD"
   },
+  "WPFToggleGPUScheduling": {
+    "Content": "Hardware-Accelerated GPU Scheduling",
+    "Description": "If Enabled then Hardware-Accelerated GPU Scheduling will be activated. | Reboot required!",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a206_",
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/GPUScheduling"
+  },
   "WPFOOSUbutton": {
     "Content": "Run OO Shutup 10",
     "category": "z__Advanced Tweaks - CAUTION",
