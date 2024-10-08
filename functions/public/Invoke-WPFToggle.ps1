@@ -35,5 +35,6 @@ function Invoke-WPFToggle {
         "WPFToggleHiddenFiles" {Invoke-WinUtilHiddenFiles $ToggleStatus}
         "WPFToggleTaskbarAlignment" {Invoke-WinUtilTaskbarAlignment $ToggleStatus}
         "WPFToggleDetailedBSoD" {Invoke-WinUtilDetailedBSoD $ToggleStatus}
+        "WPFToggleGPUScheduling" {Invoke-WinUtilGPUScheduling $ToggleStatus}
     }
 }
