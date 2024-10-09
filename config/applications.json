@@ -2954,7 +2954,7 @@
     "mpc-be": {
         "category": "Multimedia Tools",
         "choco": "mpc-be",
-        "content": "MPC-BE",
+        "content": "Media Player Classic - Black Edition",
         "description": "Media Player Classic - Black Edition is a free and open source audio and video player for Windows.",
         "link": "https://mkvtoolnix.download/",
         "winget": "MPC-BE.MPC-BE"
