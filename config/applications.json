@@ -2926,5 +2926,77 @@
         "description": "Fork - a fast and friendly git client.",
         "link": "https://git-fork.com/",
         "winget": "Fork.Fork"
+    },
+        "directoryopus": {
+        "category": "Utilities",
+        "choco": "directoryopus",
+        "content": "Directory Opus",
+        "description": "Directory Opus is a complete replacement for Explorer.",
+        "link": "https://www.gpsoft.com.au/",
+        "winget": "GPSoftware.DirectoryOpus"
+    },
+    "jre8": {
+        "category": "Utilities",
+        "choco": "javaruntime",
+        "content": "Java Runtime (JRE) 8",
+        "description": "Java allows you to play online games, chat with people around the world, calculate your mortgage interest, and view images in 3D, just to name a few.",
+        "link": "https://www.java.com/en/",
+        "winget": "Oracle.JavaRuntimeEnvironment"
+    },
+    "mkvtoolnix": {
+        "category": "Multimedia Tools",
+        "choco": "mkvtoolnix",
+        "content": "MKVToolNix",
+        "description": "MKVToolNix is a set of tools to create, alter and inspect Matroska files under Linux, other Unices and Windows.",
+        "link": "https://mkvtoolnix.download/",
+        "winget": "MoritzBunkus.MKVToolNix"
+    },
+    "mpc-be": {
+        "category": "Multimedia Tools",
+        "choco": "mpc-be",
+        "content": "MPC-BE",
+        "description": "Media Player Classic - Black Edition is a free and open source audio and video player for Windows.",
+        "link": "https://mkvtoolnix.download/",
+        "winget": "MPC-BE.MPC-BE"
+    },
+    "startallback": {
+        "category": "Utilities",
+        "choco": "startallback",
+        "content": "StartAllBack",
+        "description": "StartAllBack fully integrates with Windows 11 and provides original Windows taskbar and start menu, as well as manu other essential shell enhancements.",
+        "link": "https://www.startallback.com/",
+        "winget": "StartIsBack.StartAllBack"
+    },
+    "syncbackfree": {
+        "category": "Utilities",
+        "choco": "syncbackfree",
+        "content": "SyncBackFree",
+        "description": "Windows Backup Software that is free for personal, educational, charity, government, and commercial use.",
+        "link": "https://www.2brightsparks.com/download-syncbackfree.html",
+        "winget": "2BrightSparks.SyncBackFree"
+    },
+    "volume2": {
+        "category": "Utilities",
+        "choco": "volume2.portable",
+        "content": "Volume 2 Portable",
+        "description": "Advanced Windows volume control.",
+        "link": "https://irzyxa.blogspot.com/",
+        "winget": "irzyxa.Volume2Portable"
+    },
+    "w10privacy": {
+        "category": "Utilities",
+        "choco": "w10privacy",
+        "content": "W10Privacy",
+        "description": "W10Privacy can display typical Windows 10 security settings that can be activated and deactivated within the program.",
+        "link": "https://www.w10privacy.de/english-home/",
+        "winget": "na"
+    },
+    "gamesavemanager": {
+        "category": "Games",
+        "choco": "gamesavemanager",
+        "content": "GameSave Manager",
+        "description": "With GameSave Manager, you can easily backup, restore and transfer your game save(s).",
+        "link": "https://www.gamesave-manager.com/",
+        "winget": "na"
     }
 }
