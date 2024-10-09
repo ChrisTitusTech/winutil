@@ -140,7 +140,7 @@ function Remove-Packages {
                 $_ -NotLike "*.NET*" -AND
                 $_ -NotLike "*Store*" -AND
                 $_ -NotLike "*VCLibs*" -AND
-                $_ -NotLike "*AAD.BrokerPlugin",
+                $_ -NotLike "*AAD.BrokerPlugin" -AND
                 $_ -NotLike "*LockApp*" -AND
                 $_ -NotLike "*Notepad*" -AND
                 $_ -NotLike "*immersivecontrolpanel*" -AND
