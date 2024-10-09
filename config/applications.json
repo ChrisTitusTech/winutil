@@ -2927,7 +2927,7 @@
         "link": "https://git-fork.com/",
         "winget": "Fork.Fork"
     },
-        "directoryopus": {
+    "directoryopus": {
         "category": "Utilities",
         "choco": "directoryopus",
         "content": "Directory Opus",
