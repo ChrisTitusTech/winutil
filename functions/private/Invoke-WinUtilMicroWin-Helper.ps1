@@ -240,19 +240,19 @@ function Remove-ProvisionedPackages() {
     {
         $appxProvisionedPackages = Get-AppxProvisionedPackage -Path "$($scratchDir)" | Where-Object {
                 $_.PackageName -NotLike "*AppInstaller*" -AND
-                $_.PackageName -NotLike "*Store*" -and
-                $_.PackageName -NotLike "*Notepad*" -and
-                $_.PackageName -NotLike "*Printing*" -and
-                $_.PackageName -NotLike "*YourPhone*" -and
-                $_.PackageName -NotLike "*Xbox*" -and
-                $_.PackageName -NotLike "*WindowsTerminal*" -and
-                $_.PackageName -NotLike "*Calculator*" -and
-                $_.PackageName -NotLike "*Photos*" -and
-                $_.PackageName -NotLike "*VCLibs*" -and
-                $_.PackageName -NotLike "*Paint*" -and
-                $_.PackageName -NotLike "*Gaming*" -and
-                $_.PackageName -NotLike "*Extension*" -and
-                $_.PackageName -NotLike "*SecHealthUI*" -and
+                $_.PackageName -NotLike "*Store*" -AND
+                $_.PackageName -NotLike "*Notepad*" -AND
+                $_.PackageName -NotLike "*Printing*" -AND
+                $_.PackageName -NotLike "*YourPhone*" -AND
+                $_.PackageName -NotLike "*Xbox*" -AND
+                $_.PackageName -NotLike "*WindowsTerminal*" -AND
+                $_.PackageName -NotLike "*Calculator*" -AND
+                $_.PackageName -NotLike "*Photos*" -AND
+                $_.PackageName -NotLike "*VCLibs*" -AND
+                $_.PackageName -NotLike "*Paint*" -AND
+                $_.PackageName -NotLike "*Gaming*" -AND
+                $_.PackageName -NotLike "*Extension*" -AND
+                $_.PackageName -NotLike "*SecHealthUI*" -AND
                 $_.PackageName -NotLike "*ScreenSketch*"
         }
 
