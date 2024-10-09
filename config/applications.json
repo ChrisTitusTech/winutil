@@ -2951,7 +2951,7 @@
         "link": "https://mkvtoolnix.download/",
         "winget": "MoritzBunkus.MKVToolNix"
     },
-    "mpc-be": {
+    "mpcbe": {
         "category": "Multimedia Tools",
         "choco": "mpc-be",
         "content": "Media Player Classic - Black Edition",
