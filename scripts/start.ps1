@@ -1,11 +1,12 @@
 <#
 .NOTES
-    Author         : Chris Titus @christitustech
-    Runspace Author: @DeveloperDurp
-    GitHub         : https://github.com/ChrisTitusTech
-    Version        : #{replaceme}
+    Author          : Chris Titus @christitustech
+    Runspace Author : @DeveloperDurp
+    GitHub          : https://github.com/ChrisTitusTech
+    Version         : #{replaceme}
 #>
 
+# Define the arguments for the WinUtil script
 param (
     [switch]$Debug,
     [string]$Config,
@@ -17,12 +18,13 @@ if ($Debug) {
     $DebugPreference = "Continue"
 }
 
+# Handle the -Config parameter
 if ($Config) {
     $PARAM_CONFIG = $Config
 }
 
-$PARAM_RUN = $false
 # Handle the -Run switch
+$PARAM_RUN = $false
 if ($Run) {
     Write-Host "Running config file tasks..."
     $PARAM_RUN = $true
@@ -39,38 +41,66 @@ $sync.version = "#{replaceme}"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
-if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Output "Winutil needs to be run as Administrator. Attempting to relaunch."
-    $argList = @()
+# Store elevation status of the process
+$isElevated = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
-    $PSBoundParameters.GetEnumerator() | ForEach-Object {
-        $argList += if ($_.Value -is [switch] -and $_.Value) {
-            "-$($_.Key)"
-        } elseif ($_.Value) {
-            "-$($_.Key) `"$($_.Value)`""
-        }
+# Initialize the arguments list array
+$argsList = @()
+
+# Add the passed parameters to $argsList
+$PSBoundParameters.GetEnumerator() | ForEach-Object {
+    $argsList += if ($_.Value -is [switch] -and $_.Value) {
+        "-$($_.Key)"
+    } elseif ($_.Value) {
+        "-$($_.Key) `"$($_.Value)`""
     }
+}
 
-    $script = if ($MyInvocation.MyCommand.Path) {
-        "& { & '$($MyInvocation.MyCommand.Path)' $argList }"
-    } else {
-        "iex '& { $(irm https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1) } $argList'"
-    }
+# Set the download URL for the latest release
+$downloadURL = "https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1"
 
-    $powershellcmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
-    $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { $powershellcmd }
-
-    Start-Process $processCmd -ArgumentList "$powershellcmd -ExecutionPolicy Bypass -NoProfile -Command $script" -Verb RunAs
-
+# Download the WinUtil script to '$env:TEMP'
+try {
+    Write-Host "Downloading the latest stable WinUtil version..." -ForegroundColor Green
+    Invoke-RestMethod $downloadURL -OutFile "$env:TEMP\winutil.ps1"
+} catch {
+    Write-Host "Error downloading WinUtil: $_" -ForegroundColor Red
     break
 }
 
-$dateTime = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
+# Setup the commands used to launch the script
+$powershellCmd = if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { "pwsh.exe" } else { "powershell.exe" }
+$processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { $powershellCmd }
 
+# Setup the script's launch arguments
+$launchArguments = "-ExecutionPolicy Bypass -NoProfile -File `"$env:TEMP\winutil.ps1`" $argsList"
+if ($processCmd -ne $powershellCmd) {
+    $launchArguments = "$powershellCmd $launchArguments"
+}
+
+# Set the title of the running PowerShell instance
+$BaseWindowTitle = $MyInvocation.MyCommand.Path ?? $MyInvocation.MyCommand.Definition
+$Host.UI.RawUI.WindowTitle = if ($isElevated) {
+    $BaseWindowTitle + " (Admin)"
+} else {
+    $BaseWindowTitle + " (User)"
+}
+
+# Relaunch the script as administrator if necessary
+try {
+    if (!$isElevated) {
+        Write-Host "WinUtil is not running as administrator. Relaunching..." -ForegroundColor DarkCyan
+        Start-Process $processCmd -ArgumentList $launchArguments -Verb RunAs
+        break
+    } else {
+        Write-Host "Running the latest stable version of WinUtil as admin." -ForegroundColor DarkCyan
+    }
+} catch {
+    Write-Host "Error launching WinUtil: $_" -ForegroundColor Red
+    break
+}
+
+# Start WinUtil transcript logging-mm-ss"
 $logdir = "$env:localappdata\winutil\logs"
 [System.IO.Directory]::CreateDirectory("$logdir") | Out-Null
 Start-Transcript -Path "$logdir\winutil_$dateTime.log" -Append -NoClobber | Out-Null
-
-# Set PowerShell window title
-$Host.UI.RawUI.WindowTitle = $myInvocation.MyCommand.Definition + "(Admin)"
-clear-host
