@@ -78,17 +78,38 @@ if ($processCmd -ne $powershellCmd) {
     $launchArguments = "$powershellCmd $launchArguments"
 }
 
-# Set the title of the running PowerShell instance
+# Store the script's directory in $ScriptDirectory
+# Note: This is not used with -WorkingDirectory but
+# is used in the PowerShell instance's window title.
+if ($MyInvocation.MyCommand.Path) {
+    $ScriptDirectory = "$(Split-Path $MyInvocation.MyCommand.Path)"
+} elseif ($PSScriptRoot) {
+    $ScriptDirectory = "$($PSScriptRoot)"
+} else {
+    $ScriptDirectory = "$($PWD)"
+}
+
+# Create the base titles used for naming the instance
+$FallbackWindowTitle = "$ScriptDirectory\winutil.ps1"
 $BaseWindowTitle = if ($MyInvocation.MyCommand.Path) {
     $MyInvocation.MyCommand.Path
 } else {
     $MyInvocation.MyCommand.Definition
 }
 
-$Host.UI.RawUI.WindowTitle = if ($isElevated) {
-    $BaseWindowTitle + " (Admin)"
-} else {
-    $BaseWindowTitle + " (User)"
+# Append (User) or (Admin) prefix to the window title
+try {
+    $Host.UI.RawUI.WindowTitle = if ($isElevated) {
+        $BaseWindowTitle + " (Admin)"
+    } else {
+        $BaseWindowTitle + " (User)"
+    }
+} catch {
+    $Host.UI.RawUI.WindowTitle = if ($isElevated) {
+        "$FallbackWindowTitle (Admin)"
+    } else {
+        "$FallbackWindowTitle (User)"
+    }
 }
 
 # Relaunch the script as administrator if necessary
