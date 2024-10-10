@@ -79,7 +79,12 @@ if ($processCmd -ne $powershellCmd) {
 }
 
 # Set the title of the running PowerShell instance
-$BaseWindowTitle = $MyInvocation.MyCommand.Path ?? $MyInvocation.MyCommand.Definition
+$BaseWindowTitle = if ($MyInvocation.MyCommand.Path) {
+    $MyInvocation.MyCommand.Path
+} else {
+    $MyInvocation.MyCommand.Definition
+}
+
 $Host.UI.RawUI.WindowTitle = if ($isElevated) {
     $BaseWindowTitle + " (Admin)"
 } else {
@@ -100,7 +105,8 @@ try {
     break
 }
 
-# Start WinUtil transcript logging-mm-ss"
+# Start WinUtil transcript logging
+$dateTime = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
 $logdir = "$env:localappdata\winutil\logs"
 [System.IO.Directory]::CreateDirectory("$logdir") | Out-Null
 Start-Transcript -Path "$logdir\winutil_$dateTime.log" -Append -NoClobber | Out-Null
