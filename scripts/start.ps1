@@ -97,18 +97,18 @@ $BaseWindowTitle = if ($MyInvocation.MyCommand.Path) {
     $MyInvocation.MyCommand.Definition
 }
 
-# Append (User) or (Admin) prefix to the window title
+# Prepend (User) or (Admin) prefix to the window title
 try {
     $Host.UI.RawUI.WindowTitle = if ($isElevated) {
-        $BaseWindowTitle + " (Admin)"
+        "(Admin) " + $BaseWindowTitle
     } else {
-        $BaseWindowTitle + " (User)"
+        "(User) " + $BaseWindowTitle
     }
 } catch {
     $Host.UI.RawUI.WindowTitle = if ($isElevated) {
-        "$FallbackWindowTitle (Admin)"
+        "(Admin) $FallbackWindowTitle"
     } else {
-        "$FallbackWindowTitle (User)"
+        "(User) $FallbackWindowTitle"
     }
 }
 
