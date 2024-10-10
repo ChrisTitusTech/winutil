@@ -78,16 +78,14 @@ if ($processCmd -ne $powershellCmd) {
     $launchArguments = "$powershellCmd $launchArguments"
 }
 
-# Store the script's directory in $CurrentDirectory
-# Note: This is not used with -WorkingDirectory but
-# is used in the PowerShell instance's window title.
+# Store the script's directory; used in the fallback window title
 $CurrentDirectory = if ($MyInvocation.MyCommand.Path) {
     "$($MyInvocation.MyCommand.Path)"
 } elseif ($PSScriptRoot) {
     "$($PSScriptRoot)"
 } elseif ($PWD) { "$PWD" }
 
-# Create the base titles used for naming the instance
+# Create the fallback and base window titles used in the window title
 $FallbackWindowTitle = "$CurrentDirectory\winutil.ps1"
 $BaseWindowTitle = if ($MyInvocation.MyCommand.Path) {
     $MyInvocation.MyCommand.Path
@@ -95,7 +93,7 @@ $BaseWindowTitle = if ($MyInvocation.MyCommand.Path) {
     $MyInvocation.MyCommand.Definition
 }
 
-# Prepend (User) or (Admin) prefix to the window title
+# Add elevation status prefix to the beginning of the window title
 try {
     $Host.UI.RawUI.WindowTitle = if (!$isElevated) {
         "(User) " + $BaseWindowTitle
@@ -104,9 +102,9 @@ try {
     }
 } catch {
     $Host.UI.RawUI.WindowTitle = if (!$isElevated) {
-        "(User) $FallbackWindowTitle"
+        "(User) " + $FallbackWindowTitle
     } else {
-        "(Admin) $FallbackWindowTitle"
+        "(Admin) " + $FallbackWindowTitle
     }
 }
 

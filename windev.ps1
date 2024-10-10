@@ -137,6 +137,36 @@ function Start-LatestWinUtil {
         $WinUtilLaunchArguments += " " + $($WinUtilArgumentsList -join " ")
     }
 
+    # Store the script's current directory; this is used as part of the instance's fallback window title.
+    $CurrentDirectory = if ($MyInvocation.MyCommand.Path) {
+        "$($MyInvocation.MyCommand.Path)"
+    } elseif ($PSScriptRoot) {
+        "$($PSScriptRoot)"
+    } elseif ($PWD) { "$PWD" }
+
+    # Create the base and fallback window titles used for setting the window title of the running instance.
+    $FallbackWindowTitle = "$CurrentDirectory\winutil.ps1"
+    $BaseWindowTitle = if ($MyInvocation.MyCommand.Path) {
+        $MyInvocation.MyCommand.Path
+    } else {
+        $MyInvocation.MyCommand.Definition
+    }
+
+    # Add the processes' elevation status prefix to the beginning of the running instance's window title.
+    try {
+        $Host.UI.RawUI.WindowTitle = if (!$isElevated) {
+            "(User) " + $BaseWindowTitle
+        } else {
+            "(Admin) " + $BaseWindowTitle
+        }
+    } catch {
+        $Host.UI.RawUI.WindowTitle = if (!$isElevated) {
+            "(User) " + $FallbackWindowTitle
+        } else {
+            "(Admin) " + $FallbackWindowTitle
+        }
+    }
+
     # If the WinUtil script is not running as administrator, relaunch the script with administrator permissions.
     if (!$ProcessIsElevated) {
         Write-Host "WinUtil is not running as administrator. Relaunching..." -ForegroundColor DarkCyan
