@@ -54,7 +54,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
     $script = if ($MyInvocation.MyCommand.Path) {
         "& { & '$($MyInvocation.MyCommand.Path)' $argList }"
     } else {
-        "iex '& { $(irm https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1) } $argList'"
+        "iex '& { $(Invoke-RestMethod https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1) } $argList'"
     }
 
     $powershellcmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
