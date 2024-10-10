@@ -61,7 +61,7 @@ $downloadURL = "https://github.com/ChrisTitusTech/winutil/releases/latest/downlo
 
 # Download the WinUtil script to '$env:TEMP'
 try {
-    Write-Host "Downloading latest stable WinUtil version..." -ForegroundColor Green
+    Write-Host "Downloading the latest stable WinUtil version..." -ForegroundColor Green
     Invoke-RestMethod $downloadURL -OutFile "$env:TEMP\winutil.ps1"
 } catch {
     Write-Host "Error downloading WinUtil: $_" -ForegroundColor Red
@@ -69,7 +69,7 @@ try {
 }
 
 # Setup the commands used to launch the script
-$powershellCmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh.exe" } else { "powershell.exe" }
+$powershellCmd = if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { "pwsh.exe" } else { "powershell.exe" }
 $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { $powershellCmd }
 
 # Setup the script's launch arguments
@@ -78,16 +78,23 @@ if ($processCmd -ne $powershellCmd) {
     $launchArguments = "$powershellCmd $launchArguments"
 }
 
+# Set the title of the running PowerShell instance
+$BaseWindowTitle = $MyInvocation.MyCommand.Path ?? $MyInvocation.MyCommand.Definition
+$Host.UI.RawUI.WindowTitle = if ($isElevated) {
+    $BaseWindowTitle + " (Admin)"
+} else {
+    $BaseWindowTitle + " (User)"
+}
+
 # Relaunch the script as administrator if necessary
 try {
     if (!$isElevated) {
         Write-Host "WinUtil is not running as administrator. Relaunching..." -ForegroundColor DarkCyan
         Start-Process $processCmd -ArgumentList $launchArguments -Verb RunAs
+        break
     } else {
-        Write-Host "Running the latest stable version of WinUtil." -ForegroundColor DarkCyan
-        Start-Process $processCmd -ArgumentList $launchArguments
+        Write-Host "Running the latest stable version of WinUtil as admin." -ForegroundColor DarkCyan
     }
-    break
 } catch {
     Write-Host "Error launching WinUtil: $_" -ForegroundColor Red
     break
@@ -98,7 +105,3 @@ $dateTime = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
 $logdir = "$env:localappdata\winutil\logs"
 [System.IO.Directory]::CreateDirectory("$logdir") | Out-Null
 Start-Transcript -Path "$logdir\winutil_$dateTime.log" -Append -NoClobber | Out-Null
-
-# Set PowerShell window title
-$Host.UI.RawUI.WindowTitle = $MyInvocation.MyCommand.Definition + " (Admin)"
-Clear-Host
