@@ -78,19 +78,17 @@ if ($processCmd -ne $powershellCmd) {
     $launchArguments = "$powershellCmd $launchArguments"
 }
 
-# Store the script's directory in $ScriptDirectory
+# Store the script's directory in $CurrentDirectory
 # Note: This is not used with -WorkingDirectory but
 # is used in the PowerShell instance's window title.
-if ($MyInvocation.MyCommand.Path) {
-    $ScriptDirectory = "$(Split-Path $MyInvocation.MyCommand.Path)"
+$CurrentDirectory = if ($MyInvocation.MyCommand.Path) {
+    "$($MyInvocation.MyCommand.Path)"
 } elseif ($PSScriptRoot) {
-    $ScriptDirectory = "$($PSScriptRoot)"
-} else {
-    $ScriptDirectory = "$($PWD)"
-}
+    "$($PSScriptRoot)"
+} elseif ($PWD) { "$PWD" }
 
 # Create the base titles used for naming the instance
-$FallbackWindowTitle = "$ScriptDirectory\winutil.ps1"
+$FallbackWindowTitle = "$CurrentDirectory\winutil.ps1"
 $BaseWindowTitle = if ($MyInvocation.MyCommand.Path) {
     $MyInvocation.MyCommand.Path
 } else {
@@ -99,16 +97,16 @@ $BaseWindowTitle = if ($MyInvocation.MyCommand.Path) {
 
 # Prepend (User) or (Admin) prefix to the window title
 try {
-    $Host.UI.RawUI.WindowTitle = if ($isElevated) {
-        "(Admin) " + $BaseWindowTitle
-    } else {
+    $Host.UI.RawUI.WindowTitle = if (!$isElevated) {
         "(User) " + $BaseWindowTitle
+    } else {
+        "(Admin) " + $BaseWindowTitle
     }
 } catch {
-    $Host.UI.RawUI.WindowTitle = if ($isElevated) {
-        "(Admin) $FallbackWindowTitle"
-    } else {
+    $Host.UI.RawUI.WindowTitle = if (!$isElevated) {
         "(User) $FallbackWindowTitle"
+    } else {
+        "(Admin) $FallbackWindowTitle"
     }
 }
 

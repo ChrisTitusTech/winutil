@@ -24,6 +24,18 @@ param (
     [switch]$Run
 )
 
+# Create a new arguments array; this will be used to store WinUtil's passed arguments.
+$WinUtilArgumentsList = @()
+
+# Loop over the arguments passed to WinUtil and append them to the arguments array.
+$PSBoundParameters.GetEnumerator() | ForEach-Object {
+    $WinUtilArgumentsList += if ($_.Value -is [switch] -and $_.Value) {
+        "-$($_.Key)"
+    } elseif ($_.Value) {
+        "-$($_.Key) `"$($_.Value)`""
+    }
+}
+
 # Speed up download-related tasks by suppressing the output of Write-Progress.
 $ProgressPreference = "SilentlyContinue"
 
@@ -108,11 +120,6 @@ function Get-WinUtilUpdates {
 
 # Function to start the latest release of WinUtil that was previously downloaded and saved to '$env:TEMP\winutil.ps1'.
 function Start-LatestWinUtil {
-    param (
-        [Parameter(Mandatory = $false)]
-        [array]$WinUtilArgumentsList
-    )
-
     # Setup the commands used to launch WinUtil using Windows Terminal or Windows PowerShell/PowerShell Core.
     $PowerShellCommand = if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { "pwsh.exe" } else { "powershell.exe" }
     $ProcessCommand = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { $PowerShellCommand }
@@ -159,8 +166,8 @@ try {
 
 # Attempt to start the latest release of WinUtil saved to the local disk; also supports WinUtil's arguments.
 try {
-    if ($args) {
-        Start-LatestWinUtil $args
+    if ($WinUtilArgumentsList) {
+        Start-LatestWinUtil $WinUtilArgumentsList
     } else {
         Start-LatestWinUtil
     }
