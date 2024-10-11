@@ -39,20 +39,26 @@ $sync.version = "#{replaceme}"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
+# Store latest script URL in variable.
 $latestScript = "https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1"
 
+# Check if script is running as Administrator
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Output "Winutil needs to be run as Administrator. Attempting to relaunch."
+
+    # Partial rollback from #2648, changed irm and iex to Invoke-RestMethod and Invoke-Expression.
     $script = if ($MyInvocation.MyCommand.Path) { "& '" + $MyInvocation.MyCommand.Path + "'" } else { "Invoke-RestMethod '$latestScript' | Invoke-Expression"}
 
     $powershellcmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
     $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { $powershellcmd }
 
+    # Start new process with elevated privileges
     Start-Process $processCmd -ArgumentList "$powershellcmd -ExecutionPolicy Bypass -NoProfile -Command $script" -Verb RunAs
 
     break
 }
 
+# Logging
 $dateTime = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
 
 $logdir = "$env:localappdata\winutil\logs"
