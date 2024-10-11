@@ -39,28 +39,16 @@ $sync.version = "#{replaceme}"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
+$latestScript = "https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1"
+
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Output "Winutil needs to be run as Administrator. Attempting to relaunch."
-    $argList = @()
-
-    $PSBoundParameters.GetEnumerator() | ForEach-Object {
-        $argList += if ($_.Value -is [switch] -and $_.Value) {
-            "-$($_.Key)"
-        } elseif ($_.Value) {
-            "-$($_.Key) `"$($_.Value)`""
-        }
-    }
-
-    $script = if ($MyInvocation.MyCommand.Path) {
-        "& { & '$($MyInvocation.MyCommand.Path)' $argList }"
-    } else {
-        "iex '& { $(Invoke-RestMethod https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1) } $argList'"
-    }
+    $script = if ($MyInvocation.MyCommand.Path) { "& '" + $MyInvocation.MyCommand.Path + "'" } else { "Invoke-RestMethod '$latestScript' | Invoke-Expression"}
 
     $powershellcmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
     $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { $powershellcmd }
 
-    Start-Process $processCmd -ArgumentList "$powershellcmd -ExecutionPolicy Bypass -NoExit -NoProfile -Command $script" -Verb RunAs
+    Start-Process $processCmd -ArgumentList "$powershellcmd -ExecutionPolicy Bypass -NoProfile -Command $script" -Verb RunAs
 
     break
 }
