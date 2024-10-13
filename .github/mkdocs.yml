@@ -11,6 +11,9 @@ nav:
       - Known Issues: 'KnownIssues.md'
   - FAQ: 'faq.md'
 
+not_in_nav: |
+  dev/
+
 theme:
   name: material
   custom_dir: '../overrides'

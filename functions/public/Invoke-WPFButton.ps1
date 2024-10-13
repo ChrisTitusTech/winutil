@@ -58,5 +58,6 @@ function Invoke-WPFButton {
         "WPFCloseButton" {Invoke-WPFCloseButton}
         "MicrowinScratchDirBT" {Invoke-ScratchDialog}
         "WPFWinUtilPSProfile" {Invoke-WinUtilpsProfile}
+        "WPFWinUtilSSHServer" {Invoke-WinUtilSSHServer}
     }
 }

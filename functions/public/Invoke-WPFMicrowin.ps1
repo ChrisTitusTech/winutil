@@ -51,10 +51,6 @@ public class PowerManagement {
     $index = $sync.MicrowinWindowsFlavors.SelectedValue.Split(":")[0].Trim()
     Write-Host "Index chosen: '$index' from $($sync.MicrowinWindowsFlavors.SelectedValue)"
 
-    $keepPackages = $sync.WPFMicrowinKeepProvisionedPackages.IsChecked
-    $keepProvisionedPackages = $sync.WPFMicrowinKeepAppxPackages.IsChecked
-    $keepDefender = $sync.WPFMicrowinKeepDefender.IsChecked
-    $keepEdge = $sync.WPFMicrowinKeepEdge.IsChecked
     $copyToUSB = $sync.WPFMicrowinCopyToUsb.IsChecked
     $injectDrivers = $sync.MicrowinInjectDrivers.IsChecked
     $importDrivers = $sync.MicrowinImportDrivers.IsChecked
@@ -89,6 +85,14 @@ public class PowerManagement {
         [System.Windows.MessageBox]::Show($dlg_msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Exclamation)
         Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
         return
+    }
+
+    # Detect whether the image to process contains Windows 10 and show warning
+    if ((Test-CompatibleImage $imgVersion $([System.Version]::new(10,0,21996,1))) -eq $false) {
+        $msg = "Windows 10 has been detected in the image you want to process. While you can continue, Windows 10 is not a recommended target for MicroWin, and you may not get the full experience."
+        $dlg_msg = $msg
+        Write-Host $msg
+        [System.Windows.MessageBox]::Show($dlg_msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Exclamation)
     }
 
     $mountDirExists = Test-Path $mountDir
@@ -238,6 +242,9 @@ public class PowerManagement {
         # Write-Host Error code $LASTEXITCODE
         Write-Host "Done disabling Teams"
 
+        Write-Host "Fix Windows Volume Mixer Issue"
+        reg add "HKLM\zNTUSER\Software\Microsoft\Internet Explorer\LowRegistry\Audio\PolicyConfig\PropertyStore" /f
+
         Write-Host "Bypassing system requirements (system image)"
         reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
         reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
@@ -288,6 +295,19 @@ public class PowerManagement {
         Write-Host "Changing theme to dark. This only works on Activated Windows"
         reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "AppsUseLightTheme" /t REG_DWORD /d 0 /f
         reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "SystemUsesLightTheme" /t REG_DWORD /d 0 /f
+
+        if ((Test-CompatibleImage $imgVersion $([System.Version]::new(10,0,21996,1))) -eq $false) {
+            # We're dealing with Windows 10. Configure sane desktop settings. NOTE: even though stuff to disable News and Interests is there,
+            # it doesn't seem to work, and I don't want to waste more time dealing with an operating system that will lose support in a year (2025)
+
+            # I invite anyone to work on improving stuff for News and Interests, but that won't be me!
+
+            Write-Host "Disabling Search Highlights..."
+            reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds\DSB" /v "ShowDynamicContent" /t REG_DWORD /d 0 /f
+            reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\SearchSettings" /v "IsDynamicSearchBoxEnabled" /t REG_DWORD /d 0 /f
+            reg add "HKLM\zSOFTWARE\Policies\Microsoft\Dsh" /v "AllowNewsAndInterests" /t REG_DWORD /d 0 /f
+            reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "TraySearchBoxVisible" /t REG_DWORD /d 1 /f
+        }
 
     } catch {
         Write-Error "An unexpected error occurred: $_"

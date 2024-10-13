@@ -445,7 +445,7 @@
         "category": "Utilities",
         "content": "Dual Monitor Tools",
         "link": "https://dualmonitortool.sourceforge.net/",
-        "description": "Dual Monitor Tools (DMT) is a FOSS app that customize handling multiple monitors and even lock the mouse on specific monitor. Useful for full screen games and apps that does not handle well a second monitor or helps the workflow."
+        "description": "Dual Monitor Tools (DMT) is a FOSS app that allows you to customize the handling of multiple monitors. Useful for fullscreen games and apps that handle a second monitor poorly and can improve your workflow."
     },
     "duplicati": {
         "category": "Utilities",
@@ -2854,14 +2854,6 @@
         "description":"Kicad is an open-source EDA tool. It's a good starting point for those who want to do electrical design and is even used by professionals in the industry.",
         "link": "https://www.kicad.org/",
         "winget": "KiCad.KiCad"
-    },
-    "FormatFactory": {
-        "category": "Utilities",
-        "choco": "formatfactory",
-        "content": "Format Factory",
-        "description":"FormatFactory is an ad-supported freeware multimedia converter that can convert video, audio, and picture files. It is also capable of ripping DVDs and CDs to other file formats, as well as creating .iso images. It can also join multiple video files together into one.",
-        "link": "http://www.pcfreetime.com/formatfactory/",
-        "winget": "na"
     },
     "dropox": {
         "category": "Utilities",

@@ -46,5 +46,23 @@
         "Secondary": "94.140.15.16",
         "Primary6": "2a10:50c0::bad1:ff",
         "Secondary6": "2a10:50c0::bad2:ff"
+    },
+    "dns0.eu_Open":{
+        "Primary": "193.110.81.254",
+        "Secondary": "185.253.5.254",
+        "Primary6": "2a0f:fc80::ffff",
+        "Secondary6": "2a0f:fc81::ffff"
+    },
+    "dns0.eu_ZERO":{
+        "Primary": "193.110.81.9",
+        "Secondary": "185.253.5.9",
+        "Primary6": "2a0f:fc80::9",
+        "Secondary6": "2a0f:fc81::9"
+    },
+    "dns0.eu_KIDS":{
+        "Primary": "193.110.81.1",
+        "Secondary": "185.253.5.1",
+        "Primary6": "2a0f:fc80::1",
+        "Secondary6": "2a0f:fc81::1"
     }
 }
