@@ -21,7 +21,7 @@ function Invoke-WPFInstall {
         [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
-    $ChocoPreference = $($sync.WPFpreferChocolatey.IsChecked)
+    $ChocoPreference = $($sync.ChocoRadioButton.IsChecked)
     $installHandle = Invoke-WPFRunspace -ParameterList @(("PackagesToInstall", $PackagesToInstall),("ChocoPreference", $ChocoPreference)) -DebugPreference $DebugPreference -ScriptBlock {
         param($PackagesToInstall, $ChocoPreference, $DebugPreference)
         if ($PackagesToInstall.count -eq 1) {

@@ -229,7 +229,7 @@ function Invoke-WPFUIApps {
         $loadingLabel.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSizeHeading")
         $loadingLabel.FontWeight = [Windows.FontWeights]::Bold
         $loadingLabel.Foreground = [Windows.Media.Brushes]::Gray
-        $sync.LoadingLabel = $
+        $sync.LoadingLabel = $loadingLabel
 
         $itemsControl.Items.Clear()
         $null = $itemsControl.Items.Add($sync.LoadingLabel)

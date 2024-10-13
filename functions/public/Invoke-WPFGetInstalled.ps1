@@ -16,10 +16,10 @@ function Invoke-WPFGetInstalled {
         return
     }
 
-    if(($sync.WPFpreferChocolatey.IsChecked -eq $false) -and ((Test-WinUtilPackageManager -winget) -eq "not-installed") -and $checkbox -eq "winget") {
+    if(($sync.ChocoRadioButton.IsChecked -eq $false) -and ((Test-WinUtilPackageManager -winget) -eq "not-installed") -and $checkbox -eq "winget") {
         return
     }
-    $preferChoco = $sync.WPFpreferChocolatey.IsChecked
+    $preferChoco = $sync.ChocoRadioButton.IsChecked
     $sync.ItemsControl.Dispatcher.Invoke([action]{  
         $sync.ItemsControl.Items | ForEach-Object   { $_.Visibility = [Windows.Visibility]::Collapsed}
         $null = $sync.itemsControl.Items.Add($sync.LoadingLabel)

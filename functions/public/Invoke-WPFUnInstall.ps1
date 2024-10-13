@@ -29,7 +29,7 @@ function Invoke-WPFUnInstall {
     $confirm = [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
 
     if($confirm -eq "No") {return}
-    $ChocoPreference = $($sync.WPFpreferChocolatey.IsChecked)
+    $ChocoPreference = $($sync.ChocoRadioButton.IsChecked)
 
     Invoke-WPFRunspace -ArgumentList @(("PackagesToUninstall", $PackagesToUninstall),("ChocoPreference", $ChocoPreference)) -DebugPreference $DebugPreference -ScriptBlock {
         param($PackagesToUninstall, $ChocoPreference, $DebugPreference)
