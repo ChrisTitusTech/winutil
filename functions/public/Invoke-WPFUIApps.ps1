@@ -50,12 +50,11 @@ function Search-AppsByNameOrDescription {
 }
 function Show-OnlyCheckedApps {
     param (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory=$false)]
         [String[]]$appKeys,
         [Parameter(Mandatory=$true)]
         [System.Windows.Controls.ItemsControl]$ItemsControl
     )
-    Write-Host "Showing only $($appKeys.Count) apps"
     $sync.ShowOnlySelected = -not $sync.ShowOnlySelected
     if ($sync.ShowOnlySelected) {
         $sync.Buttons.ShowSelectedAppsButton.Content = "Show All"
@@ -76,7 +75,6 @@ function Invoke-WPFUIApps {
     param(
         [Parameter(Mandatory, Position = 0)]
         [PSCustomObject[]]$Apps,
-
         [Parameter(Mandatory, Position = 1)]
         [string]$TargetGridName,
         [Parameter()]
@@ -151,9 +149,7 @@ function Invoke-WPFUIApps {
         $showSelectedAppsButton.Name = "ShowSelectedAppsButton"
         $showSelectedAppsButton.Content = "Show Selected"
         $showSelectedAppsButton.Add_Click({
-            if ($sync.SelectedApps.Count -gt 0) {
-                Show-OnlyCheckedApps -appKeys $sync.SelectedApps -ItemsControl $sync.ItemsControl
-            }
+            Show-OnlyCheckedApps -appKeys $sync.SelectedApps -ItemsControl $sync.ItemsControl
         })
         $sync.Buttons.ShowSelectedAppsButton = $showSelectedAppsButton
         $null = $wrapPanelTop.Children.Add($showSelectedAppsButton)
@@ -230,12 +226,13 @@ function Invoke-WPFUIApps {
         $loadingLabel.Content = "Loading, please wait..."
         $loadingLabel.HorizontalAlignment = "Center"
         $loadingLabel.VerticalAlignment = "Center"
-        $loadingLabel.FontSize = 16
+        $loadingLabel.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSizeHeading")
         $loadingLabel.FontWeight = [Windows.FontWeights]::Bold
         $loadingLabel.Foreground = [Windows.Media.Brushes]::Gray
+        $sync.LoadingLabel = $
 
         $itemsControl.Items.Clear()
-        $null = $itemsControl.Items.Add($loadingLabel)
+        $null = $itemsControl.Items.Add($sync.LoadingLabel)
 
         $itemsControl.Dispatcher.Invoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{
             $itemsControl.Items.Clear()

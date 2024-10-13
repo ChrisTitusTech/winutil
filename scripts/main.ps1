@@ -114,7 +114,6 @@ Invoke-WinutilThemeChange -init $true
 
 $noimage = "https://images.emojiterra.com/google/noto-emoji/unicode-15/color/512px/1f4e6.png"
 $noimage = [Windows.Media.Imaging.BitmapImage]::new([Uri]::new($noimage))
-
 $sync.Buttons = @{}
 $SortedAppsHashtable = [ordered]@{}
 $sortedProperties = $sync.configs.applications.PSObject.Properties | Sort-Object { $_.Value.Content }
@@ -124,8 +123,8 @@ $sortedProperties | ForEach-Object {
 
 # Now call the function with the final merged config
 Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
-
 Invoke-WPFUIApps -Apps $SortedAppsHashtable -targetGridName "appspanel"
+
 
 Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
 Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
@@ -458,7 +457,11 @@ $sync["SearchBar"].Add_TextChanged({
     } else {
         $sync.SearchBarClearButton.Visibility = "Collapsed"
     }
-    Search-AppsByNameOrDescription -SearchString $sync.SearchBar.Text
+    switch ($sync.currentTab) {
+        "Install" {
+            Search-AppsByNameOrDescription -SearchString $sync.SearchBar.Text
+        }
+    }
 })
 
 $sync["Form"].Add_Loaded({
@@ -590,9 +593,6 @@ $sync["SponsorMenuItem"].Add_Click({
     Show-CustomDialog -Message $authorInfo -EnableScroll $true
 })
 
-#Initialize List to store the Names of the selected Apps on the Install Tab
-$sync.selectedApps = [System.Collections.Generic.List[string]]::new()
-$sync.ShowOnlySeleced = $false
 
 
 $sync["Form"].ShowDialog() | out-null

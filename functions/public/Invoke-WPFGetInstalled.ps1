@@ -20,9 +20,13 @@ function Invoke-WPFGetInstalled {
         return
     }
     $preferChoco = $sync.WPFpreferChocolatey.IsChecked
+    $sync.ItemsControl.Dispatcher.Invoke([action]{  
+        $sync.ItemsControl.Items | ForEach-Object   { $_.Visibility = [Windows.Visibility]::Collapsed}
+        $null = $sync.itemsControl.Items.Add($sync.LoadingLabel)
+    })
     Invoke-WPFRunspace -ArgumentList $checkbox, $preferChoco -ParameterList @(,("ShowOnlyCheckedApps",${function:Show-OnlyCheckedApps})) -DebugPreference $DebugPreference -ScriptBlock {
         param($checkbox, $preferChoco, $ShowOnlyCheckedApps,$DebugPreference)
-        Write-Host $ShowOnlyCheckedApps.ToString()
+
         $sync.ProcessRunning = $true
         $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" })
 
@@ -46,6 +50,7 @@ function Invoke-WPFGetInstalled {
         })
         $sync.ItemsControl.Dispatcher.Invoke([action]{
             $ShowOnlyCheckedApps.Invoke($sync.SelectedApps, $sync.ItemsControl)
+            $sync.ItemsControl.Items.Remove($sync.LoadingLabel)
         })
         Write-Host "Done..."
         $sync.ProcessRunning = $false
