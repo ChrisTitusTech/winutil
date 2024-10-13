@@ -1,4 +1,8 @@
 function Invoke-WPFInstall {
+    param (
+        [Parameter(Mandatory=$false)]
+        [PSObject[]]$PackagesToInstall = $($sync.selectedApps | Foreach-Object { $SortedAppsHashtable.$_ })
+    )
     <#
 
     .SYNOPSIS
@@ -12,8 +16,6 @@ function Invoke-WPFInstall {
         return
     }
 
-    $PackagesToInstall = (Get-WinUtilCheckBoxes)["Install"]
-    Write-Host $PackagesToInstall
     if ($PackagesToInstall.Count -eq 0) {
         $WarningMsg = "Please select the program(s) to install or upgrade"
         [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
