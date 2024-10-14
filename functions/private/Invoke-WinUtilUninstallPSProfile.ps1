@@ -78,7 +78,7 @@ function Invoke-WinUtilUninstallPSProfile {
                     }
                 } catch {
                     # Let the user know that an error was encountered when uninstalling OhMyPosh.
-                    Write-Error "Failed to uninstall OhMyPosh. Error: $_" -ForegroundColor Red
+                    Write-Host "Failed to uninstall OhMyPosh. Error: $_" -ForegroundColor Red
                 }
 
                 # Attempt to uninstall the specified Nerd Fonts package from the system.
@@ -93,7 +93,7 @@ function Invoke-WinUtilUninstallPSProfile {
                     Uninstall-NerdFonts -FontsPath $FontsPath -FontFamilyName $FontFamilyName
                 } catch {
                     # Let the user know that an error was encountered when uninstalling Nerd Fonts.
-                    Write-Error "Failed to uninstall Nerd Fonts. Error: $_" -ForegroundColor Red
+                    Write-Host "Failed to uninstall Nerd Fonts. Error: $_" -ForegroundColor Red
                 }
 
                 # Attempt to uninstall the Terminal-Icons PowerShell module from the system.
@@ -120,7 +120,7 @@ function Invoke-WinUtilUninstallPSProfile {
                     }
                 } catch {
                     # Let the user know that an error was encountered when uninstalling Terminal-Icons.
-                    Write-Error "Failed to uninstall Terminal-Icons. Error: $_" -ForegroundColor Red
+                    Write-Host "Failed to uninstall Terminal-Icons. Error: $_" -ForegroundColor Red
                 }
 
                 # Attempt to uninstall the Zoxide application from the system.
@@ -147,7 +147,7 @@ function Invoke-WinUtilUninstallPSProfile {
                     }
                 } catch {
                     # Let the user know that an error was encountered when uninstalling Zoxide.
-                    Write-Error "Failed to uninstall Zoxide. Error: $_" -ForegroundColor Red
+                    Write-Host "Failed to uninstall Zoxide. Error: $_" -ForegroundColor Red
                 }
 
                 # Attempt to uninstall the CTT PowerShell profile from the system.
@@ -159,7 +159,7 @@ function Invoke-WinUtilUninstallPSProfile {
                     Write-Host "Profile has been uninstalled. Please restart your shell to reflect the changes!" -ForegroundColor Magenta
                 } catch {
                     # Let the user know that an error was encountered when uninstalling the profile.
-                    Write-Error "Failed to uninstall profile. Error: $_" -ForegroundColor Red
+                    Write-Host "Failed to uninstall profile. Error: $_" -ForegroundColor Red
                 }
 
                 # Attempt to move the user's original PowerShell profile backup back to its original location.
@@ -174,7 +174,7 @@ function Invoke-WinUtilUninstallPSProfile {
                     }
                 } catch {
                     # Let the user know that an error was encountered when restoring the profile backup.
-                    Write-Error "Failed to restore profile backup. Error: $_" -ForegroundColor Red
+                    Write-Host "Failed to restore profile backup. Error: $_" -ForegroundColor Red
                 }
 
                 # Silently cleanup the oldprofile.ps1 file that was created when the CTT PowerShell profile was installed.
