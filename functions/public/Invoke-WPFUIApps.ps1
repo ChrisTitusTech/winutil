@@ -213,6 +213,8 @@ function Invoke-WPFUIApps {
         $categoryPanel.Cursor = [System.Windows.Input.Cursors]::Hand
 
         $categoryPanel.Add_MouseUp({
+            # Clear the search bar when a category is clicked
+            $sync.SearchBar.Text = ""
             Toggle-CategoryVisibility -Category $this.Children[1].Text -ItemsControl $this.Parent
         })
         $null = $ItemsControl.Items.Add($categoryPanel)
