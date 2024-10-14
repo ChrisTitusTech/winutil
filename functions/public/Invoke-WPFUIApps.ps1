@@ -284,6 +284,7 @@ function Invoke-WPFUIApps {
         $checkBox.HorizontalAlignment = "Left"
         $checkBox.VerticalAlignment = "Center"
         $checkBox.Margin = New-Object Windows.Thickness(5, 0, 10, 0)
+        $checkBox.SetResourceReference([Windows.Controls.Control]::StyleProperty, "CollapsedCheckBoxStyle") 
         $checkbox.Add_Checked({
             Invoke-WPFSelectedLabelUpdate -type "Add" -checkbox $this
             $borderElement = $this.Parent.Parent
