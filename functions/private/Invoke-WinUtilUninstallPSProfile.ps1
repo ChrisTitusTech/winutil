@@ -1,117 +1,191 @@
 function Invoke-WinUtilUninstallPSProfile {
     <#
     .SYNOPSIS
-        # Uninstalls the CTT PowerShell profile then restores the original profile
+        # Uninstalls the CTT PowerShell profile then restores the original profile.
     #>
 
     Invoke-WPFRunspace -ArgumentList $PROFILE -DebugPreference $DebugPreference -ScriptBlock {
+        # Remap the automatic built-in $PROFILE variable to the parameter named $PSProfile.
         param ($PSProfile)
 
-        # Function to uninstall Nerd Fonts
+        # Helper function used to uninstall a specific Nerd Fonts font package.
         function Uninstall-NerdFonts {
+            # Define the parameters block for the Uninstall-NerdFonts function.
             param (
                 [string]$FontsPath = "$env:LOCALAPPDATA\Microsoft\Windows\Fonts",
                 [string]$FontFamilyName = "CaskaydiaCoveNerdFont"
             )
 
+            # Get the list of installed fonts as specified by the FontFamilyName parameter.
             $Fonts = Get-ChildItem $FontsPath -Recurse -Filter "*.ttf" | Where-Object { $_.Name -match $FontFamilyName }
+
+            # Check if the specified fonts are currently installed on the system.
             if ($Fonts) {
+                # Let the user know that the Nerd Fonts are currently being uninstalled.
                 Write-Host "===> Uninstalling: Nerd Fonts... <===" -ForegroundColor Yellow
+
+                # Loop over the font files and remove each installed font file one-by-one.
                 $Fonts | ForEach-Object {
+                    # Check if the font file exists on the disk before attempting to remove it.
                     if (Test-Path "$($_.FullName)") {
+                        # Remove the found font files from the disk; uninstalling the font.
                         Remove-Item "$($_.FullName)"
                     }
                 }
-            } else {
-                Write-Host "===> Already Uninstalled: Nerd Fonts. <===" -ForegroundColor Yellow
+            }
+
+            # Let the user know that the Nerd Fonts package has been uninstalled from the system.
+            if (-not $Fonts) {
+                Write-Host "===> Successfully Uninstalled: Nerd Fonts. <===" -ForegroundColor Yellow
             }
         }
 
-        # Check if profile is installed
-        $PSProfileHash = Get-Content "$PSProfile.hash"
-        if ((Get-FileHash $PSProfile).Hash -eq $PSProfileHash) {
-            # Uninstall OhMyPosh
-            try {
-                $PSProfileContent = Get-Content "$PSProfile.bak"
-                $OhMyPoshInUse = $PSProfileContent -match "oh-my-posh init"
-                if (-not $OhMyPoshInUse) {
-                    if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
-                        Write-Host "===> Uninstalling: OhMyPosh... <===" -ForegroundColor Yellow
-                        winget uninstall -e --id JanDeDobbeleer.OhMyPosh
+        # Check if Chris Titus Tech's PowerShell profile is currently installed on the system.
+        if (Test-Path $PSProfile -PathType Leaf) {
+            # Get the file hash for Chris Titus Tech's PowerShell profile and store the returned hash.
+            $CurrentHash = Get-FileHash $PSProfile
+
+            # Store the file hash of Chris Titus Tech's PowerShell profile and save it to disk.
+            if (!(Test-Path "$PSProfile.hash")) {
+                $CurrentHash.Hash | Out-File "$PSProfile.hash"
+            }
+
+            # Get the file hash of Chris Titus Tech's PowerShell profile and store the returned value.
+            $PSProfileHash = Get-Content "$PSProfile.hash"
+
+            # Check if Chris Titus Tech's PowerShell profile file hash matches the one that was stored.
+            if ((Get-FileHash $PSProfile).Hash -eq $PSProfileHash) {
+                try {
+                    # Get the content of the backup PowerShell profile and store it in-memory.
+                    $PSProfileContent = Get-Content "$PSProfile.bak"
+
+                    # Store the flag used to check if OhMyPosh is in use by the backup PowerShell profile.
+                    $OhMyPoshInUse = $PSProfileContent -match "oh-my-posh init"
+
+                    # Check if OhMyPosh is not currently in use by the backup PowerShell profile.
+                    if (-not $OhMyPoshInUse) {
+                        # If OhMyPosh is currently installed attempt to uninstall it from the system.
+                        if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
+                            # Let the user know that OhMyPosh is currently being uninstalled from their system.
+                            Write-Host "===> Uninstalling: OhMyPosh... <===" -ForegroundColor Yellow
+
+                            # Attempt to uninstall OhMyPosh from the system with the WinGet package manager.
+                            winget uninstall -e --id JanDeDobbeleer.OhMyPosh
+                        }
+                    } else {
+                        # Let the user know that the uninstallation of OhMyPosh has been skipped because it is in use.
+                        Write-Host "===> Skipped Uninstall: OhMyPosh In-Use. <===" -ForegroundColor Yellow
                     }
-                } else {
-                    Write-Host "===> Skipped Uninstall: OhMyPosh In-Use. <===" -ForegroundColor Yellow
+                } catch {
+                    # Let the user know that an error was encountered when uninstalling OhMyPosh.
+                    Write-Error "Failed to uninstall OhMyPosh. Error: $_" -ForegroundColor Red
                 }
-            } catch {
-                Write-Error "Failed to uninstall OhMyPosh. Error: $_" -ForegroundColor Red
-            }
 
-            # Uninstall Nerd Fonts
-            try {
-                [string]$FontsPath = "$env:LOCALAPPDATA\Microsoft\Windows\Fonts"
-                [string]$FontFamilyName = "CaskaydiaCoveNerdFont"
-                Uninstall-NerdFonts -FontsPath $FontsPath -FontFamilyName $FontFamilyName
-            } catch {
-                Write-Error "Failed to uninstall Nerd Fonts. Error: $_" -ForegroundColor Red
-            }
+                # Attempt to uninstall the specified Nerd Fonts package from the system.
+                try {
+                    # Specify the directory that the specified font package will be uninstalled from.
+                    [string]$FontsPath = "$env:LOCALAPPDATA\Microsoft\Windows\Fonts"
 
-            # Uninstall Terminal-Icons
-            try {
-                $PSProfileContent = Get-Content "$PSProfile.bak"
-                $TerminalIconsInUse = $PSProfileContent -match "Import-Module" -and $PSProfileContent -match "Terminal-Icons"
-                if (-not $TerminalIconsInUse) {
-                    if (Get-Module -ListAvailable Terminal-Icons) {
-                        Write-Host "===> Uninstalling: Terminal-Icons... <===" -ForegroundColor Yellow
-                        Uninstall-Module -Name Terminal-Icons
+                    # Specify the name of the font package that is to be uninstalled from the system.
+                    [string]$FontFamilyName = "CaskaydiaCoveNerdFont"
+
+                    # Call the function used to uninstall the specified Nerd Fonts package from the system.
+                    Uninstall-NerdFonts -FontsPath $FontsPath -FontFamilyName $FontFamilyName
+                } catch {
+                    # Let the user know that an error was encountered when uninstalling Nerd Fonts.
+                    Write-Error "Failed to uninstall Nerd Fonts. Error: $_" -ForegroundColor Red
+                }
+
+                # Attempt to uninstall the Terminal-Icons PowerShell module from the system.
+                try {
+                    # Get the content of the backup PowerShell profile and store it in-memory.
+                    $PSProfileContent = Get-Content "$PSProfile.bak"
+
+                    # Store the flag used to check if Terminal-Icons is in use by the backup PowerShell profile.
+                    $TerminalIconsInUse = $PSProfileContent -match "Import-Module" -and $PSProfileContent -match "Terminal-Icons"
+
+                    # Check if Terminal-Icons is not currently in use by the backup PowerShell profile.
+                    if (-not $TerminalIconsInUse) {
+                        # If Terminal-Icons is currently installed attempt to uninstall it from the system.
+                        if (Get-Module -ListAvailable Terminal-Icons) {
+                            # Let the user know that Terminal-Icons is currently being uninstalled from their system.
+                            Write-Host "===> Uninstalling: Terminal-Icons... <===" -ForegroundColor Yellow
+
+                            # Attempt to uninstall Terminal-Icons from the system with Uninstall-Module.
+                            Uninstall-Module -Name Terminal-Icons
+                        }
+                    } else {
+                        # Let the user know that the uninstallation of Terminal-Icons has been skipped because it is in use.
+                        Write-Host "===> Skipped Uninstall: Terminal-Icons In-Use. <===" -ForegroundColor Yellow
                     }
-                } else {
-                    Write-Host "===> Skipped Uninstall: Terminal-Icons In-Use. <===" -ForegroundColor Yellow
+                } catch {
+                    # Let the user know that an error was encountered when uninstalling Terminal-Icons.
+                    Write-Error "Failed to uninstall Terminal-Icons. Error: $_" -ForegroundColor Red
                 }
-            } catch {
-                Write-Error "Failed to uninstall Terminal-Icons. Error: $_" -ForegroundColor Red
-            }
 
-            # Uninstall Zoxide
-            try {
-                $PSProfileContent = Get-Content "$PSProfile.bak"
-                $ZoxideInUse = $PSProfileContent -match "zoxide init"
-                if (-not $ZoxideInUse) {
-                    if (Get-Command zoxide -ErrorAction SilentlyContinue) {
-                        Write-Host "===> Uninstalling: Zoxide... <===" -ForegroundColor Yellow
-                        winget uninstall -e --id ajeetdsouza.zoxide
+                # Attempt to uninstall the Zoxide application from the system.
+                try {
+                    # Get the content of the backup PowerShell profile and store it in-memory.
+                    $PSProfileContent = Get-Content "$PSProfile.bak"
+
+                    # Store the flag used to check if Zoxide is in use by the backup PowerShell profile.
+                    $ZoxideInUse = $PSProfileContent -match "zoxide init"
+
+                    # Check if Zoxide is not currently in use by the backup PowerShell profile.
+                    if (-not $ZoxideInUse) {
+                        # If Zoxide is currently installed attempt to uninstall it from the system.
+                        if (Get-Command zoxide -ErrorAction SilentlyContinue) {
+                            # Let the user know that Zoxide is currently being uninstalled from their system.
+                            Write-Host "===> Uninstalling: Zoxide... <===" -ForegroundColor Yellow
+
+                            # Attempt to uninstall Zoxide from the system with the WinGet package manager.
+                            winget uninstall -e --id ajeetdsouza.zoxide
+                        }
+                    } else {
+                        # Let the user know that the uninstallation of Zoxide been skipped because it is in use.
+                        Write-Host "===> Skipped Uninstall: Zoxide In-Use. <===" -ForegroundColor Yellow
                     }
-                } else {
-                    Write-Host "===> Skipped Uninstall: Zoxide In-Use. <===" -ForegroundColor Yellow
+                } catch {
+                    # Let the user know that an error was encountered when uninstalling Zoxide.
+                    Write-Error "Failed to uninstall Zoxide. Error: $_" -ForegroundColor Red
                 }
-            } catch {
-                Write-Error "Failed to uninstall Zoxide. Error: $_" -ForegroundColor Red
-            }
 
-            # Uninstall CTT PowerShell profile
-            try {
-                Remove-Item $PSProfile
-                Write-Host "Profile has been uninstalled. Please restart your shell to reflect the changes!" -ForegroundColor Magenta
-            } catch {
-                Write-Error "Failed to uninstall profile. Error: $_" -ForegroundColor Red
-            }
+                # Attempt to uninstall the CTT PowerShell profile from the system.
+                try {
+                    # Try and remove the CTT PowerShell Profile file from the disk with Remove-Item.
+                    Remove-Item $PSProfile
 
-            # Restore PowerShell profile backup
-            try {
-                if (Test-Path "$PSProfile.bak") {
-                    Move-Item "$PSProfile.bak" $PSProfile
-                    Write-Host "===> Restored Profile Backup. <===" -ForegroundColor Yellow
+                    # Let the user know that the CTT PowerShell profile has been uninstalled from the system.
+                    Write-Host "Profile has been uninstalled. Please restart your shell to reflect the changes!" -ForegroundColor Magenta
+                } catch {
+                    # Let the user know that an error was encountered when uninstalling the profile.
+                    Write-Error "Failed to uninstall profile. Error: $_" -ForegroundColor Red
                 }
-            } catch {
-                Write-Error "Failed to restore profile backup. Error: $_" -ForegroundColor Red
+
+                # Attempt to move the user's original PowerShell profile backup back to its original location.
+                try {
+                    # Check if the backup PowerShell profile exists before attempting to restore the backup.
+                    if (Test-Path "$PSProfile.bak") {
+                        # Restore the backup PowerShell profile and move it to its original location.
+                        Move-Item "$PSProfile.bak" $PSProfile
+
+                        # Let the user know that their PowerShell profile backup has been successfully restored.
+                        Write-Host "===> Restored Profile Backup. <===" -ForegroundColor Yellow
+                    }
+                } catch {
+                    # Let the user know that an error was encountered when restoring the profile backup.
+                    Write-Error "Failed to restore profile backup. Error: $_" -ForegroundColor Red
+                }
+
+                # Silently cleanup the oldprofile.ps1 file that was created when the CTT PowerShell profile was installed.
+                Remove-Item "$env:USERPROFILE\oldprofile.ps1" | Out-Null
+
+                # Silently cleanup the file storing the file hash of the CTT PowerShell profile.
+                Remove-Item "$PSProfile.hash" | Out-Null
             }
-
-            # Silently cleanup oldprofile.ps1 script
-            Remove-Item "$env:USERPROFILE\oldprofile.ps1" | Out-Null
-
-            # Silently cleanup $PSProfile.hash file
-            Remove-Item "$PSProfile.hash" | Out-Null
         } else {
-            Write-Host "===> Already Uninstalled CTT PowerShell Profile. <===" -ForegroundColor Magenta
+            # Let the user know that no PowerShell profile was found and that the uninstallation was skipped.
+            Write-Host "===> No PowerShell Profile Found. Skipped Uninstallation. <===" -ForegroundColor Magenta
         }
     }
 }
