@@ -6,9 +6,9 @@ function Toggle-CategoryVisibility {
         [System.Windows.Controls.ItemsControl]$ItemsControl
     )
 
-    $appsInCategory = $ItemsControl.Items | Where-Object { 
-        if ($null -ne $_.Tag){
-            $sync.configs.applicationsHashtable.$($_.Tag).Category -eq $Category 
+    $appsInCategory = $ItemsControl.Items | Where-Object {
+        if ($null -ne $_.Tag) {
+            $sync.configs.applicationsHashtable.$($_.Tag).Category -eq $Category
         }
     }
     $isCollapsed = $appsInCategory[0].Visibility -eq [Windows.Visibility]::Visible
@@ -55,8 +55,12 @@ function Show-OnlyCheckedApps {
         [Parameter(Mandatory=$true)]
         [System.Windows.Controls.ItemsControl]$ItemsControl
     )
-    $sync.ShowOnlySelected = -not $sync.ShowOnlySelected
-    if ($sync.ShowOnlySelected) {
+    # If no apps are selected, do not allow switching to show only selected
+    if (($false -eq $sync.ShowOnlySelected) -and ($appKeys.Count -eq 0)) {
+        return
+    }
+        $sync.ShowOnlySelected = -not $sync.ShowOnlySelected
+        if ($sync.ShowOnlySelected) {
         $sync.Buttons.ShowSelectedAppsButton.Content = "Show All"
         foreach ($item in $ItemsControl.Items) {
             if ($appKeys -contains $item.Tag) {
@@ -64,7 +68,7 @@ function Show-OnlyCheckedApps {
             } else {
                 $item.Visibility = [Windows.Visibility]::Collapsed
             }
-        } 
+        }
     } else {
         $sync.Buttons.ShowSelectedAppsButton.Content = "Show Selected"
         $ItemsControl.Items | ForEach-Object { $_.Visibility = [Windows.Visibility]::Visible }

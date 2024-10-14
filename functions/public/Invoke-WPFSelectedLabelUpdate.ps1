@@ -38,4 +38,4 @@ function Invoke-WPFSelectedLabelUpdate {
     } else {
         $SelectedLabel.ToolTip = $Null
     }
-}   
+}

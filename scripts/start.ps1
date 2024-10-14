@@ -42,6 +42,7 @@ $sync.ProcessRunning = $false
 $sync.selectedApps = [System.Collections.Generic.List[string]]::new()
 $sync.ShowOnlySeleced = $false
 $sync.currentTab = "Install"
+$sync.ShowOnlySelected = $false
 
 
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
