@@ -3,7 +3,9 @@ function Toggle-CategoryVisibility {
         [Parameter(Mandatory=$true)]
         [string]$Category,
         [Parameter(Mandatory=$true)]
-        [System.Windows.Controls.ItemsControl]$ItemsControl
+        [System.Windows.Controls.ItemsControl]$ItemsControl,
+        [Parameter(Mandatory=$true)]
+        [bool]$isChecked
     )
 
     $appsInCategory = $ItemsControl.Items | Where-Object {
@@ -11,16 +13,14 @@ function Toggle-CategoryVisibility {
             $sync.configs.applicationsHashtable.$($_.Tag).Category -eq $Category
         }
     }
-    $isCollapsed = $appsInCategory[0].Visibility -eq [Windows.Visibility]::Visible
+    
     foreach ($appEntry in $appsInCategory) {
-        $appEntry.Visibility = if ($isCollapsed) {
-            [Windows.Visibility]::Collapsed
-        } else {
+        $appEntry.Visibility = if ($isChecked) {
             [Windows.Visibility]::Visible
+        } else {
+            [Windows.Visibility]::Collapsed
         }
     }
-    $categoryPanel = $ItemsControl.Items | Where-Object { $_ -is [System.Windows.Controls.StackPanel] -and $_.Children[1].Text -eq $Category } | Select-Object -First 1
-    $categoryPanel.Children[0].Text = if ($isCollapsed) { "[+] " } else { "[-] " }
 }
 
 function Search-AppsByNameOrDescription {
@@ -34,8 +34,12 @@ function Search-AppsByNameOrDescription {
 
     if ([string]::IsNullOrWhiteSpace($SearchString)) {
         $Apps | ForEach-Object {
-            $_.Visibility = 'Visible'
-        }
+            if ($null -ne $_.Tag) {
+                $_.Visibility = 'Collapsed'
+            } else {
+                $_.Visibility = 'Visible'
+            }
+        }   
     } else {
         $Apps | ForEach-Object {
             if ($null -ne $_.Tag) {
@@ -188,36 +192,24 @@ function Invoke-WPFUIApps {
         return $itemsControl
     }
 
-    function Add-CategoryLabel {
+    function Add-Category {
         param(
             [string]$Category,
             $ItemsControl
         )
+        
+        $toggleButton = New-Object Windows.Controls.Primitives.ToggleButton
+        $toggleButton.Content = "$Category"
+        $toggleButton.Cursor = [System.Windows.Input.Cursors]::Hand
+        $toggleButton.Style = $window.FindResource("CategoryToggleButtonStyle")
+    
 
-        $categoryPanel = New-Object Windows.Controls.StackPanel
-        $categoryPanel.Orientation = [Windows.Controls.Orientation]::Horizontal
-
-        $expanderIcon = New-Object Windows.Controls.TextBlock
-        $expanderIcon.Text = "[+] "
-        $expanderIcon.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSizeHeading")
-        $expanderIcon.SetResourceReference([Windows.Controls.Control]::FontFamilyProperty, "HeaderFontFamily")
-        $expanderIcon.VerticalAlignment = "Center"
-        $null = $categoryPanel.Children.Add($expanderIcon)
-
-        $categoryLabel = New-Object Windows.Controls.TextBlock
-        $categoryLabel.Text = $Category
-        $categoryLabel.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSizeHeading")
-        $categoryLabel.SetResourceReference([Windows.Controls.Control]::FontFamilyProperty, "HeaderFontFamily")
-        $categoryLabel.VerticalAlignment = "Center"
-        $null = $categoryPanel.Children.Add($categoryLabel)
-        $categoryPanel.Cursor = [System.Windows.Input.Cursors]::Hand
-
-        $categoryPanel.Add_MouseUp({
+        $toggleButton.Add_Click({
             # Clear the search bar when a category is clicked
             $sync.SearchBar.Text = ""
-            Toggle-CategoryVisibility -Category $this.Children[1].Text -ItemsControl $this.Parent
+            Toggle-CategoryVisibility -Category $this.Content -ItemsControl $this.Parent -isChecked $this.IsChecked
         })
-        $null = $ItemsControl.Items.Add($categoryPanel)
+        $null = $ItemsControl.Items.Add($toggleButton)
     }
 
     function New-CategoryAppList {
@@ -242,7 +234,7 @@ function Invoke-WPFUIApps {
 
             $categories = $Apps.Values | Select-Object -ExpandProperty category -Unique | Sort-Object
             foreach ($category in $categories) {
-                Add-CategoryLabel -Category $category -ItemsControl $itemsControl
+                Add-Category -Category $category -ItemsControl $itemsControl
                 $Apps.Keys | Where-Object { $Apps.$_.Category -eq $category } | Sort-Object | ForEach-Object {
                     New-AppEntry -ItemsControl $itemsControl -AppKey $_ -Hidden $true
                 }
@@ -266,6 +258,7 @@ function Invoke-WPFUIApps {
         $border.HorizontalAlignment = "Stretch"
         $border.VerticalAlignment = "Top"
         $border.Margin = New-Object Windows.Thickness(0, 10, 0, 0)
+        $border.Cursor = [System.Windows.Input.Cursors]::Hand
         $border.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallUnselectedColor")
         $border.Tag = $Appkey
         $border.ToolTip = $App.description
