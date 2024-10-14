@@ -13,24 +13,6 @@
         "Order": "2",
         "Description": "Clear the selection of applications"
     },
-    "SortbyCategory": {
-        "Content": "Category",
-        "Category": "___Sort by",
-        "Type": "RadioButton",
-        "GroupName": "SortAppsByGroup",
-        "Checked": true,
-        "Order": "1",
-        "Description": ""
-    },
-    "SortbyAlphabet": {
-        "Content": "Alphabetical Order",
-        "Category": "___Sort by",
-        "Type": "RadioButton",
-        "GroupName": "SortAppsByGroup",
-        "Checked": false,
-        "Order": "2",
-        "Description": ""
-    },
     "WingetRadioButton": {
         "Content": "Winget",
         "Category": "__Package Manager",

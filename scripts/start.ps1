@@ -37,10 +37,12 @@ $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
 $sync.version = "#{replaceme}"
 $sync.configs = @{}
+$sync.Buttons = @{}
 $sync.ProcessRunning = $false
 $sync.selectedApps = [System.Collections.Generic.List[string]]::new()
 $sync.ShowOnlySeleced = $false
 $sync.currentTab = "Install"
+
 
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Output "Winutil needs to be run as Administrator. Attempting to relaunch."

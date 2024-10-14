@@ -34,7 +34,7 @@ function Invoke-WPFSelectedLabelUpdate {
     $count = $sync.SelectedApps.Count
     $SelectedLabel.Content = "Selected Apps: $count"
     if ($count -gt 0) {
-        $SelectedLabel.ToolTip = $($sync.SelectedApps | Foreach-Object { $SortedAppsHashtable.$_.Content }) -join "`n"
+        $SelectedLabel.ToolTip = $($sync.SelectedApps | Foreach-Object { $sync.configs.applicationsHashtable.$_.Content }) -join "`n"
     } else {
         $SelectedLabel.ToolTip = $Null
     }

@@ -114,33 +114,19 @@ Invoke-WinutilThemeChange -init $true
 
 $noimage = "https://images.emojiterra.com/google/noto-emoji/unicode-15/color/512px/1f4e6.png"
 $noimage = [Windows.Media.Imaging.BitmapImage]::new([Uri]::new($noimage))
-$sync.Buttons = @{}
-$SortedAppsHashtable = [ordered]@{}
-$sortedProperties = $sync.configs.applications.PSObject.Properties | Sort-Object { $_.Value.Content }
-$sortedProperties | ForEach-Object {
-    $SortedAppsHashtable[$_.Name] = $_.Value
+
+$sync.configs.applicationsHashtable = @{}
+$sync.configs.applications.PSObject.Properties | ForEach-Object {
+    $sync.configs.applicationsHashtable[$_.Name] = $_.Value
 }
 
 # Now call the function with the final merged config
 Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
-Invoke-WPFUIApps -Apps $SortedAppsHashtable -targetGridName "appspanel"
+Invoke-WPFUIApps -Apps $sync.configs.applicationsHashtable -targetGridName "appspanel"
 
 
 Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
 Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
-
-$sync.SortbyCategory.Add_Checked({
-    Write-Host "Sort By Category"
-    $sync.Form.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{
-        Invoke-WPFUIApps -Apps $SortedAppsHashtable -targetGridName "appspanel"
-    }) | Out-Null
-})
-$sync.SortbyAlphabet.Add_Checked({
-    Write-Host "Sort By Alphabet"
-    $sync.Form.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{
-        Invoke-WPFUIApps -Apps $SortedAppsHashtable -targetGridName "appspanel" -alphabetical $true
-    })
-})
 
 #===========================================================================
 # Store Form Objects In PowerShell

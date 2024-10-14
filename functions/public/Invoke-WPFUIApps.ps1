@@ -8,7 +8,7 @@ function Toggle-CategoryVisibility {
 
     $appsInCategory = $ItemsControl.Items | Where-Object { 
         if ($null -ne $_.Tag){
-            $SortedAppsHashtable.$($_.Tag).Category -eq $Category 
+            $sync.configs.applicationsHashtable.$($_.Tag).Category -eq $Category 
         }
     }
     $isCollapsed = $appsInCategory[0].Visibility -eq [Windows.Visibility]::Visible
@@ -39,7 +39,7 @@ function Search-AppsByNameOrDescription {
     } else {
         $Apps | ForEach-Object {
             if ($null -ne $_.Tag) {
-                if ($SortedAppsHashtable.$($_.Tag).Content -like "*$SearchString*") {
+                if ($sync.configs.applicationsHashtable.$($_.Tag).Content -like "*$SearchString*") {
                     $_.Visibility = 'Visible'
                 } else {
                     $_.Visibility = 'Collapsed'
@@ -76,9 +76,7 @@ function Invoke-WPFUIApps {
         [Parameter(Mandatory, Position = 0)]
         [PSCustomObject[]]$Apps,
         [Parameter(Mandatory, Position = 1)]
-        [string]$TargetGridName,
-        [Parameter()]
-        [System.Boolean]$Alphabetical = $false
+        [string]$TargetGridName
     )
 
     function Initialize-StackPanel {
@@ -219,8 +217,7 @@ function Invoke-WPFUIApps {
     function New-CategoryAppList {
         param(
             $TargetGrid,
-            $Apps,
-            [System.Boolean]$Alphabetical
+            $Apps
         )
         $loadingLabel = New-Object Windows.Controls.Label
         $loadingLabel.Content = "Loading, please wait..."
@@ -237,17 +234,11 @@ function Invoke-WPFUIApps {
         $itemsControl.Dispatcher.Invoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{
             $itemsControl.Items.Clear()
 
-            if (-not ($Alphabetical)) {
-                $categories = $Apps.Values | Select-Object -ExpandProperty category -Unique | Sort-Object
-                foreach ($category in $categories) {
-                    Add-CategoryLabel -Category $category -ItemsControl $itemsControl
-                    $Apps.Keys | Where-Object { $Apps.$_.Category -eq $category } | ForEach-Object {
-                        New-AppEntry -ItemsControl $itemsControl -AppKey $_ -Hidden $true
-                    }
-                }
-            } else {
-                foreach ($appKey in $Apps.Keys) {
-                    New-AppEntry -ItemsControl $itemsControl -AppKey $appKey -Hidden $false
+            $categories = $Apps.Values | Select-Object -ExpandProperty category -Unique | Sort-Object
+            foreach ($category in $categories) {
+                Add-CategoryLabel -Category $category -ItemsControl $itemsControl
+                $Apps.Keys | Where-Object { $Apps.$_.Category -eq $category } | Sort-Object | ForEach-Object {
+                    New-AppEntry -ItemsControl $itemsControl -AppKey $_ -Hidden $true
                 }
             }
         })
@@ -369,7 +360,7 @@ function Invoke-WPFUIApps {
         # Add Click event for the "Install" button
         $installButton.Add_Click({
             $appKey = $this.Parent.Parent.Parent.Tag
-            $appObject = $SortedAppsHashtable.$appKey
+            $appObject = $sync.configs.applicationsHashtable.$appKey
             Invoke-WPFInstall -PackagesToInstall $appObject
         })
 
@@ -393,7 +384,7 @@ function Invoke-WPFUIApps {
         $uninstallButton.ToolTip = "Uninstall the application"
         $uninstallButton.Add_Click({
             $appKey = $this.Parent.Parent.Parent.Tag
-            $appObject = $SortedAppsHashtable.$appKey
+            $appObject = $sync.configs.applicationsHashtable.$appKey
             Invoke-WPFUnInstall -PackagesToUninstall $appObject
         })
 
@@ -418,7 +409,7 @@ function Invoke-WPFUIApps {
 
         $infoButton.Add_Click({
             $appKey = $this.Parent.Parent.Parent.Tag
-            $appObject = $SortedAppsHashtable.$appKey
+            $appObject = $sync.configs.applicationsHashtable.$appKey
             Start-Process $appObject.link
         })
 
@@ -438,7 +429,7 @@ function Invoke-WPFUIApps {
             $dockPanelContainer = Initialize-Header -TargetGrid $targetGrid
             $itemsControl = Initialize-AppArea -TargetGrid $dockPanelContainer
             $sync.ItemsControl = $itemsControl
-            New-CategoryAppList -TargetGrid $itemsControl -Apps $Apps -Alphabetical $Alphabetical
+            New-CategoryAppList -TargetGrid $itemsControl -Apps $Apps
         }
         default {
             Write-Output "$TargetGridName not yet implemented"

@@ -1,7 +1,7 @@
 function Invoke-WPFInstall {
     param (
         [Parameter(Mandatory=$false)]
-        [PSObject[]]$PackagesToInstall = $($sync.selectedApps | Foreach-Object { $SortedAppsHashtable.$_ })
+        [PSObject[]]$PackagesToInstall = $($sync.selectedApps | Foreach-Object { $sync.configs.applicationsHashtable.$_ })
     )
     <#
 
