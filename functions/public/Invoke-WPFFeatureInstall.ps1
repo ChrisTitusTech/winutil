@@ -20,7 +20,7 @@ function Invoke-WPFFeatureInstall {
         $Features = (Get-WinUtilCheckBoxes)["WPFFeature"]
     }
 
-    Invoke-WPFRunspace -ArgumentList $Features -DebugPreference $DebugPreference -ScriptBlock {
+    $handle = Invoke-WPFRunspace -ArgumentList $Features -DebugPreference $DebugPreference -ScriptBlock {
         param($Features, $DebugPreference)
         $sync.ProcessRunning = $true
         if ($Features.count -eq 1) {
@@ -39,4 +39,5 @@ function Invoke-WPFFeatureInstall {
         Write-Host "---  A Reboot may be required   ---"
         Write-Host "==================================="
     }
+    return $handle
 }

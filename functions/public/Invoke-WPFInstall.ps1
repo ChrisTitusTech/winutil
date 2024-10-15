@@ -26,7 +26,7 @@ function Invoke-WPFInstall {
         return
     }
     $ChocoPreference = $($sync.WPFpreferChocolatey.IsChecked)
-    Invoke-WPFRunspace -ParameterList @(("PackagesToInstall", $PackagesToInstall),("ChocoPreference", $ChocoPreference)) -DebugPreference $DebugPreference -ScriptBlock {
+    $handle = Invoke-WPFRunspace -ParameterList @(("PackagesToInstall", $PackagesToInstall),("ChocoPreference", $ChocoPreference)) -DebugPreference $DebugPreference -ScriptBlock {
         param($PackagesToInstall, $ChocoPreference, $DebugPreference)
         if ($PackagesToInstall.count -eq 1) {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
@@ -84,4 +84,5 @@ function Invoke-WPFInstall {
         }
         $sync.ProcessRunning = $False
     }
+    return $handle
 }
