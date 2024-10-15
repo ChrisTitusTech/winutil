@@ -66,7 +66,7 @@ function Invoke-WinUtilInstallPSProfile {
             }
         }
 
-        # Check if PowerShell Core is currently installed as a program on the user's system.
+        # Check if PowerShell Core is currently installed as a program and is available as a command.
         if (Get-Command "pwsh" -ErrorAction SilentlyContinue) {
             # Check if the version of PowerShell Core currently in use is version 7 or higher.
             if ($PSVersionTable.PSVersion.Major -ge 7) {

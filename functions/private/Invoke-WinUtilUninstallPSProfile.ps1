@@ -40,21 +40,17 @@ function Invoke-WinUtilUninstallPSProfile {
             }
         }
 
-        # Check if Chris Titus Tech's PowerShell profile is currently installed on the system.
+        # Check if Chris Titus Tech's PowerShell profile is currently available in the PowerShell profile folder.
         if (Test-Path $PSProfile -PathType Leaf) {
-            # Get the file hash for Chris Titus Tech's PowerShell profile and store the returned hash.
-            $CurrentHash = Get-FileHash $PSProfile
+            # Set the GitHub repo path used for looking up the name of Chris Titus Tech's powershell-profile repo.
+            $GitHubRepoPath = "ChrisTitusTech/powershell-profile"
 
-            # Store the file hash of Chris Titus Tech's PowerShell profile and save it to disk.
-            if (!(Test-Path "$PSProfile.hash")) {
-                $CurrentHash.Hash | Out-File "$PSProfile.hash"
-            }
+            # Get the unique identifier used to test for the presence of Chris Titus Tech's PowerShell profile.
+            $PSProfileIdentifier = (Invoke-RestMethod "https://api.github.com/repos/$GitHubRepoPath").full_name
 
-            # Get the file hash of Chris Titus Tech's PowerShell profile and store the returned value.
-            $PSProfileHash = Get-Content "$PSProfile.hash"
-
-            # Check if Chris Titus Tech's PowerShell profile file hash matches the one that was stored.
-            if ((Get-FileHash $PSProfile).Hash -eq $PSProfileHash) {
+            # Check if Chris Titus Tech's PowerShell profile is currently installed in the PowerShell profile folder.
+            if ((Get-Content $PSProfile) -match $PSProfileIdentifier) {
+                # Attempt to uninstall Chris Titus Tech's PowerShell profile from the PowerShell profile folder.
                 try {
                     # Get the content of the backup PowerShell profile and store it in-memory.
                     $PSProfileContent = Get-Content "$PSProfile.bak"
@@ -179,9 +175,9 @@ function Invoke-WinUtilUninstallPSProfile {
 
                 # Silently cleanup the oldprofile.ps1 file that was created when the CTT PowerShell profile was installed.
                 Remove-Item "$env:USERPROFILE\oldprofile.ps1" | Out-Null
-
-                # Silently cleanup the file storing the file hash of the CTT PowerShell profile.
-                Remove-Item "$PSProfile.hash" | Out-Null
+            } else {
+                # Let the user know that the CTT PowerShell profile is not installed and that the uninstallation was skipped.
+                Write-Host "===> Chris Titus Tech's PowerShell Profile Not Found. Skipped Uninstallation. <===" -ForegroundColor Magenta
             }
         } else {
             # Let the user know that no PowerShell profile was found and that the uninstallation was skipped.
