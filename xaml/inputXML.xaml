@@ -212,7 +212,7 @@
                     <ControlTemplate TargetType="ToggleButton">
                         <Border Background="{TemplateBinding Background}" 
                                 BorderBrush="{DynamicResource BorderColor}" 
-                                BorderThickness="{DynamicResource ButtonBorderThickness}" 
+                                BorderThickness="0" 
                                 CornerRadius="{DynamicResource ButtonCornerRadius}">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}">
                                 <TextBlock x:Name="PrefixTextBlock"/>

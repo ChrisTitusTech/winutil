@@ -1,3 +1,22 @@
+function Collapse-AllCategories {
+    param(
+        [Parameter(Mandatory=$true)]
+        [System.Windows.Controls.ItemsControl]$ItemsControl
+    )
+    $sync.Buttons | Where-Object {$_.Tag -like "CategoryToggleButton"} | ForEach-Object {
+        $_.IsChecked = $false
+    }
+}   
+function Expand-AllCategories {
+    param(
+        [Parameter(Mandatory=$true)]
+        [System.Windows.Controls.ItemsControl]$ItemsControl
+    )
+    $sync.Buttons | Where-Object {$_.Tag -like "CategoryToggleButton"} | ForEach-Object {
+        $_.IsChecked = $true
+    }
+}   
+
 function Toggle-CategoryVisibility {
     param(
         [Parameter(Mandatory=$true)]
@@ -7,15 +26,9 @@ function Toggle-CategoryVisibility {
         [Parameter(Mandatory=$true)]
         [bool]$isChecked
     )
-
-    $appsInCategory = $ItemsControl.Items | Where-Object {
-        if ($null -ne $_.Tag) {
-            $sync.configs.applicationsHashtable.$($_.Tag).Category -eq $Category
-        }
-    }
-    
-    foreach ($appEntry in $appsInCategory) {
-        $appEntry.Visibility = if ($isChecked) {
+    # Show or hide the category, based on if it was clicked or not 
+    $ItemsControl.Items | Where-Object {($_.Tag -eq "CategoryWrapPanel_$Category")} | ForEach-Object {
+        $_.Visibility = if ($isChecked) {
             [Windows.Visibility]::Visible
         } else {
             [Windows.Visibility]::Collapsed
@@ -30,28 +43,48 @@ function Search-AppsByNameOrDescription {
         [Parameter(Mandatory=$false)]
         [System.Windows.Controls.ItemsControl]$ItemsControl = $sync.ItemsControl
     )
-    $Apps = $ItemsControl.Items
 
     if ([string]::IsNullOrWhiteSpace($SearchString)) {
-        $Apps | ForEach-Object {
-            if ($null -ne $_.Tag) {
-                $_.Visibility = 'Collapsed'
-            } else {
-                $_.Visibility = 'Visible'
+        # Reset all categories when a search is cleared
+        $sync.Buttons | Where-Object {$_.Tag -like "CategoryToggleButton"} | ForEach-Object {
+            $_.IsChecked = $false
+        }
+        
+        $ItemsControl.Items | ForEach-Object {
+            if ($_.Tag -like "CategoryWrapPanel_*") {
+                # Reset CategoryWrapPanel visibility
+                $_.Visibility = [Windows.Visibility]::Collapsed
+                # Reset Items visibility
+                $_.Children | ForEach-Object {$_.Visibility = [Windows.Visibility]::Visible}
             }
-        }   
-    } else {
-        $Apps | ForEach-Object {
-            if ($null -ne $_.Tag) {
-                if ($sync.configs.applicationsHashtable.$($_.Tag).Content -like "*$SearchString*") {
-                    $_.Visibility = 'Visible'
-                } else {
-                    $_.Visibility = 'Collapsed'
-                }
+            else {
+                # Reset Rest (Category Label) visibility
+                $_.Visibility = [Windows.Visibility]::Visible
             }
         }
     }
+    else {
+        $ItemsControl.Items | ForEach-Object {
+            if ($_.Tag -like "CategoryWrapPanel_*") {
+                $_.Visibility = [Windows.Visibility]::Visible
+                # Search for Apps that match the search string
+                $_.Children | Foreach-Object {
+                    if ($sync.configs.applicationsHashtable.$($_.Tag).Content -like "*$SearchString*") {
+                        $_.Visibility = [Windows.Visibility]::Visible
+                    }
+                    else {
+                        $_.Visibility = [Windows.Visibility]::Collapsed
+                    }
+                }
+            }
+            else {
+                # Hide all Category Labels
+                $_.Visibility = [Windows.Visibility]::Collapsed
+            }
+        }   
+    }
 }
+
 function Show-OnlyCheckedApps {
     param (
         [Parameter(Mandatory=$false)]
@@ -63,19 +96,51 @@ function Show-OnlyCheckedApps {
     if (($false -eq $sync.ShowOnlySelected) -and ($appKeys.Count -eq 0)) {
         return
     }
-        $sync.ShowOnlySelected = -not $sync.ShowOnlySelected
-        if ($sync.ShowOnlySelected) {
-        $sync.Buttons.ShowSelectedAppsButton.Content = "Show All"
-        foreach ($item in $ItemsControl.Items) {
-            if ($appKeys -contains $item.Tag) {
-                $item.Visibility = [Windows.Visibility]::Visible
-            } else {
-                $item.Visibility = [Windows.Visibility]::Collapsed
+    $sync.ShowOnlySelected = -not $sync.ShowOnlySelected
+    if ($sync.ShowOnlySelected) {
+        $sync.Buttons | Where-Object {$_.Name -like "ShowSelectedAppsButton"} | ForEach-Object {
+            $_.Content = "Show All"
+        }
+        
+        $ItemsControl.Items | Foreach-Object {
+            # Search for App Container and set them to visible
+            if ($_.Tag -like "CategoryWrapPanel_*") {
+                $_.Visibility = [Windows.Visibility]::Visible
+                # Iterate through all the apps in the container and set them to visible if they are in the appKeys array
+                $_.Children | ForEach-Object {
+                    if ($appKeys -contains $_.Tag) {
+                        $_.Visibility = [Windows.Visibility]::Visible
+                    }
+                    else {
+                        $_.Visibility = [Windows.Visibility]::Collapsed
+                    }
+                }
+            }
+            else {
+                # Set all other items to collapsed
+                $_.Visibility = [Windows.Visibility]::Collapsed
             }
         }
     } else {
-        $sync.Buttons.ShowSelectedAppsButton.Content = "Show Selected"
-        $ItemsControl.Items | ForEach-Object { $_.Visibility = [Windows.Visibility]::Visible }
+        $sync.Buttons | Where-Object {$_.Name -like "ShowSelectedAppsButton"} | ForEach-Object {
+            $_.Content = "Show Selected"
+        }
+        # Reset all CategoryToggleButtons to unchecked
+        $sync.Buttons | Where-Object {$_.Tag -like "CategoryToggleButton"} | ForEach-Object {
+            $_.IsChecked = $false
+        }
+        $ItemsControl.Items | Foreach-Object {
+            # Reset App Containers to visible
+            if ($_.Tag -like "CategoryWrapPanel_*") {
+                $_.Visibility = [Windows.Visibility]::Collapsed
+                # Reset Apps to visible
+                $_.Children | ForEach-Object {$_.Visibility = [Windows.Visibility]::Visible}  
+            }
+            else {
+                # Reset all other items to visible
+                $_.Visibility = [Windows.Visibility]::Visible
+            }
+        }
     }
 }
 function Invoke-WPFUIApps {
@@ -157,9 +222,26 @@ function Invoke-WPFUIApps {
         $showSelectedAppsButton.Add_Click({
             Show-OnlyCheckedApps -appKeys $sync.SelectedApps -ItemsControl $sync.ItemsControl
         })
-        $sync.Buttons.ShowSelectedAppsButton = $showSelectedAppsButton
+        $sync.Buttons.Add($showSelectedAppsButton)
+
         $null = $wrapPanelTop.Children.Add($showSelectedAppsButton)
 
+        $compactViewButton = New-Object Windows.Controls.Button
+        $compactViewButton.Name = "CompactViewButton"
+        $compactViewButton.Content = "Compact View"
+        $compactViewButton.Add_Click({
+            $sync.CompactView = -not $sync.CompactView
+            Update-AppTileProperties
+            if ($sync.CompactView) {
+                Expand-AllCategories -ItemsControl $sync.ItemsControl
+                $this.Content = "Expanded View"
+            }
+            else {
+                Collapse-AllCategories -ItemsControl $sync.ItemsControl
+                $this.Content = "Compact View"
+            }   
+        })
+        $null = $wrapPanelTop.Children.Add($compactViewButton)
         [Windows.Controls.DockPanel]::SetDock($wrapPanelTop, [Windows.Controls.Dock]::Top)
         $null = $dockPanel.Children.Add($wrapPanelTop)
         return $dockPanel
@@ -172,6 +254,7 @@ function Invoke-WPFUIApps {
         $scrollViewer.HorizontalAlignment = 'Stretch'
         $scrollViewer.VerticalAlignment = 'Stretch'
         $scrollViewer.CanContentScroll = $true
+        $scrollViewer.Margin = 0
 
         $itemsControl = New-Object Windows.Controls.ItemsControl
         $itemsControl.HorizontalAlignment = 'Stretch'
@@ -200,13 +283,16 @@ function Invoke-WPFUIApps {
         
         $toggleButton = New-Object Windows.Controls.Primitives.ToggleButton
         $toggleButton.Content = "$Category"
+        $toggleButton.Tag = "CategoryToggleButton"
         $toggleButton.Cursor = [System.Windows.Input.Cursors]::Hand
         $toggleButton.Style = $window.FindResource("CategoryToggleButtonStyle")
-    
-
-        $toggleButton.Add_Click({
+        $sync.Buttons.Add($toggleButton)
+        $toggleButton.Add_Checked({
             # Clear the search bar when a category is clicked
             $sync.SearchBar.Text = ""
+            Toggle-CategoryVisibility -Category $this.Content -ItemsControl $this.Parent -isChecked $this.IsChecked
+        })
+        $toggleButton.Add_Unchecked({
             Toggle-CategoryVisibility -Category $this.Content -ItemsControl $this.Parent -isChecked $this.IsChecked
         })
         $null = $ItemsControl.Items.Add($toggleButton)
@@ -235,8 +321,16 @@ function Invoke-WPFUIApps {
             $categories = $Apps.Values | Select-Object -ExpandProperty category -Unique | Sort-Object
             foreach ($category in $categories) {
                 Add-Category -Category $category -ItemsControl $itemsControl
+                $wrapPanel = New-Object Windows.Controls.WrapPanel
+                $wrapPanel.Orientation = "Horizontal"
+                $wrapPanel.HorizontalAlignment = "Stretch"
+                $wrapPanel.VerticalAlignment = "Center"
+                $wrapPanel.Margin = New-Object Windows.Thickness(0, 0, 0, 20)
+                $wrapPanel.Visibility = [Windows.Visibility]::Collapsed
+                $wrapPanel.Tag = "CategoryWrapPanel_$category"
+                $null = $itemsControl.Items.Add($wrapPanel)
                 $Apps.Keys | Where-Object { $Apps.$_.Category -eq $category } | Sort-Object | ForEach-Object {
-                    New-AppEntry -ItemsControl $itemsControl -AppKey $_ -Hidden $true
+                    New-AppEntry -WrapPanel $wrapPanel -AppKey $_
                 }
             }
         })
@@ -244,25 +338,23 @@ function Invoke-WPFUIApps {
 
     function New-AppEntry {
         param(
-            $ItemsControl,
-            $AppKey,
-            [bool]$Hidden
+            $WrapPanel,
+            $AppKey
         )
         $App = $Apps.$AppKey
         # Create the outer Border for the application type
         $border = New-Object Windows.Controls.Border
         $border.BorderBrush = [Windows.Media.Brushes]::Gray
-        $border.BorderThickness = 1
+        $border.SetResourceReference([Windows.Controls.Control]::BorderThicknessProperty, "AppTileBorderThickness")
         $border.CornerRadius = 5
-        $border.Padding = New-Object Windows.Thickness(10)
-        $border.HorizontalAlignment = "Stretch"
+        $border.SetResourceReference([Windows.Controls.Control]::PaddingProperty, "AppTileMargins")
+        $border.SetResourceReference([Windows.Controls.Control]::WidthProperty, "AppTileWidth")
         $border.VerticalAlignment = "Top"
-        $border.Margin = New-Object Windows.Thickness(0, 10, 0, 0)
+        $border.SetResourceReference([Windows.Controls.Control]::MarginProperty, "AppTileMargins")
         $border.Cursor = [System.Windows.Input.Cursors]::Hand
         $border.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallUnselectedColor")
         $border.Tag = $Appkey
         $border.ToolTip = $App.description
-        $border.Visibility = if ($Hidden) {[Windows.Visibility]::Collapsed} else {[Windows.Visibility]::Visible}
         $border.Add_MouseUp({
             $childCheckbox = ($this.Child.Children | Where-Object {$_.Template.TargetType -eq [System.Windows.Controls.Checkbox]})[0]
             $childCheckBox.isChecked = -not $childCheckbox.IsChecked
@@ -278,7 +370,7 @@ function Invoke-WPFUIApps {
         $checkBox.Background = "Transparent"
         $checkBox.HorizontalAlignment = "Left"
         $checkBox.VerticalAlignment = "Center"
-        $checkBox.Margin = New-Object Windows.Thickness(5, 0, 10, 0)
+        $checkBox.SetResourceReference([Windows.Controls.Control]::MarginProperty, "AppTileMargins")
         $checkBox.SetResourceReference([Windows.Controls.Control]::StyleProperty, "CollapsedCheckBoxStyle") 
         $checkbox.Add_Checked({
             Invoke-WPFSelectedLabelUpdate -type "Add" -checkbox $this
@@ -310,16 +402,18 @@ function Invoke-WPFUIApps {
         $image.Clip.Rect = New-Object Windows.Rect(0, 0, $image.Width, $image.Height)
         $image.Clip.RadiusX = 5
         $image.Clip.RadiusY = 5
+        $image.SetResourceReference([Windows.Controls.Control]::VisibilityProperty, "AppTileCompactVisibility")
 
         $imageAndNamePanel.Children.Add($image) | Out-Null
 
         # Create the TextBlock for the application name
         $appName = New-Object Windows.Controls.TextBlock
         $appName.Text = $App.Content
-        $appName.FontSize = 16
+        $appName.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "AppTileFontSize")
         $appName.FontWeight = [Windows.FontWeights]::Bold
+        $appName.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "MainForegroundColor")
         $appName.VerticalAlignment = "Center"
-        $appName.Margin = New-Object Windows.Thickness(5, 0, 0, 0)
+        $appName.SetResourceReference([Windows.Controls.Control]::MarginProperty, "AppTileMargins")
         $appName.Background = "Transparent"
         $imageAndNamePanel.Children.Add($appName) | Out-Null
 
@@ -335,7 +429,8 @@ function Invoke-WPFUIApps {
         $buttonPanel.Orientation = "Horizontal"
         $buttonPanel.HorizontalAlignment = "Right"
         $buttonPanel.VerticalAlignment = "Center"
-        $buttonPanel.Margin = New-Object Windows.Thickness(10, 0, 0, 0)
+        $buttonPanel.SetResourceReference([Windows.Controls.Control]::MarginProperty, "AppTileMargins")
+        $buttonPanel.SetResourceReference([Windows.Controls.Control]::VisibilityProperty, "AppTileCompactVisibility")
         [Windows.Controls.DockPanel]::SetDock($buttonPanel, [Windows.Controls.Dock]::Right)
 
         # Create the "Install" button
@@ -417,7 +512,7 @@ function Invoke-WPFUIApps {
         $dockPanel.Children.Add($buttonPanel) | Out-Null
 
         # Add the border to the main items control in the grid
-        $itemsControl.Items.Add($border) | Out-Null
+        $wrapPanel.Children.Add($border) | Out-Null
     }
 
 

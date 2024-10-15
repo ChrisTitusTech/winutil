@@ -195,6 +195,32 @@ Invoke-WPFRunspace -ScriptBlock {
 
 # Print the logo
 Invoke-WPFFormVariables
+$sync.CompactView = $false
+$sync.Form.Resources.AppTileWidth = [double]::NaN
+$sync.Form.Resources.AppTileCompactVisibility = [Windows.Visibility]::Visible
+$sync.Form.Resources.AppTileFontSize = [double]16
+$sync.Form.Resources.AppTileMargins = [Windows.Thickness]5
+$sync.Form.Resources.AppTileBorderThickness = [Windows.Thickness]0
+function Update-AppTileProperties {
+    if ($sync.CompactView -eq $true) {
+        $sync.Form.Resources.AppTileWidth = [double]::NaN
+        $sync.Form.Resources.AppTileCompactVisibility = [Windows.Visibility]::Collapsed
+        $sync.Form.Resources.AppTileFontSize = [double]12
+        $sync.Form.Resources.AppTileMargins = [Windows.Thickness]2
+        $sync.Form.Resources.AppTileBorderThickness = [Windows.Thickness]0
+    }
+    else {
+        $sync.Form.Resources.AppTileWidth = $sync.ItemsControl.ActualWidth -20
+        $sync.Form.Resources.AppTileCompactVisibility = [Windows.Visibility]::Visible
+        $sync.Form.Resources.AppTileFontSize = [double]16
+        $sync.Form.Resources.AppTileMargins = [Windows.Thickness]5
+        $sync.Form.Resources.AppTileBorderThickness = [Windows.Thickness]1
+    }
+}   
+# We need to update the app tile properties when the form is resized because to fill a WrapPanel update the width of the elemenmt manually (afaik) 
+$sync.Form.Add_SizeChanged({
+    Update-AppTileProperties
+})
 
 # Progress bar in taskbaritem > Set-WinUtilProgressbar
 $sync["Form"].TaskbarItemInfo = New-Object System.Windows.Shell.TaskbarItemInfo
