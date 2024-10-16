@@ -1,14 +1,16 @@
 Function Invoke-WPFUltimatePerformance {
     <#
-
     .SYNOPSIS
         Enables or disables the Ultimate Performance power scheme based on its GUID.
 
     .PARAMETER State
         Specifies whether to "Enable" or "Disable" the Ultimate Performance power scheme.
-
+        Must be either "Enable" or "Disable".
     #>
-    param($State)
+    param(
+        [ValidateSet("Enable", "Disable")]
+        [string]$State
+    )
 
     try {
         # GUID of the Ultimate Performance power plan
@@ -25,7 +27,7 @@ Function Invoke-WPFUltimatePerformance {
             # Extract the new GUID from the duplicateOutput
             foreach ($line in $duplicateOutput) {
                 if ($line -match "\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b") {
-                    $guid = $matches[0]  # $matches[0] will contain the first match, which is the GUID
+                    $guid = $matches[0]
                     Write-Output "GUID: $guid has been extracted and stored in the variable."
                     break
                 }
@@ -46,27 +48,31 @@ Function Invoke-WPFUltimatePerformance {
             Write-Output "The power plan has been set as active. Output:"
             Write-Output $setActiveOutput
 
-            Write-Host "> Ultimate Performance plan installed and set as active."
+            Write-Output "> Ultimate Performance plan installed and set as active."
 
         } elseif ($State -eq "Disable") {
             # Check if the Ultimate Performance plan is installed by GUID
-            $installedPlan = (powercfg -list | Select-String -Pattern "ChrisTitus - Ultimate Power Plan").Line.Split()[3]
+            $installedPlan = (powercfg -list | Select-String -Pattern "ChrisTitus - Ultimate Power Plan")
 
-            if ($installedPlan) {
+            if ($installedPlan -and $installedPlan.Count -gt 0) {
                 # Extract the GUID of the installed Ultimate Performance plan
-                $ultimatePlanGUID = $installedPlan.Line.Split()[3]
+                $ultimatePlanGUID = $installedPlan[0].Line.Split()[3]
+                if (-not $ultimatePlanGUID) {
+                    Write-Output "Unable to extract the GUID for the Ultimate Performance plan."
+                    return
+                }
 
                 # Set a different power plan as active before deleting the Ultimate Performance plan
-                $balancedPlanGUID = 381b4222-f694-41f0-9685-ff5bb260df2e
+                $balancedPlanGUID = "381b4222-f694-41f0-9685-ff5bb260df2e"
                 powercfg -setactive $balancedPlanGUID
 
                 # Delete the Ultimate Performance plan by GUID
                 powercfg -delete $ultimatePlanGUID
 
-                Write-Host "Ultimate Performance plan has been uninstalled."
-                Write-Host "> Balanced plan is now active."
+                Write-Output "Ultimate Performance plan has been uninstalled."
+                Write-Output "> Balanced plan is now active."
             } else {
-                Write-Host "Ultimate Performance plan is not installed."
+                Write-Output "Ultimate Performance plan is not installed."
             }
         }
     } catch {
