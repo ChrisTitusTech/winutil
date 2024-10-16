@@ -65,21 +65,20 @@ function Search-AppsByNameOrDescription {
     }
     else {
         $ItemsControl.Items | ForEach-Object {
+            # Hide all CategoryWrapPanel and ToggleButton
+            $_.Visibility = [Windows.Visibility]::Collapsed
             if ($_.Tag -like "CategoryWrapPanel_*") {
-                $_.Visibility = [Windows.Visibility]::Visible
                 # Search for Apps that match the search string
                 $_.Children | Foreach-Object {
                     if ($sync.configs.applicationsHashtable.$($_.Tag).Content -like "*$SearchString*") {
+                        # Show the App and the parent CategoryWrapPanel
                         $_.Visibility = [Windows.Visibility]::Visible
+                        $_.parent.Visibility = [Windows.Visibility]::Visible
                     }
                     else {
                         $_.Visibility = [Windows.Visibility]::Collapsed
                     }
                 }
-            }
-            else {
-                # Hide all Category Labels
-                $_.Visibility = [Windows.Visibility]::Collapsed
             }
         }   
     }
@@ -254,7 +253,6 @@ function Invoke-WPFUIApps {
         $scrollViewer.HorizontalAlignment = 'Stretch'
         $scrollViewer.VerticalAlignment = 'Stretch'
         $scrollViewer.CanContentScroll = $true
-        $scrollViewer.Margin = 0
 
         $itemsControl = New-Object Windows.Controls.ItemsControl
         $itemsControl.HorizontalAlignment = 'Stretch'
