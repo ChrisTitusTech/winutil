@@ -110,7 +110,6 @@ function Remove-Features() {
             $_.FeatureName -NotLike "*NFS*" -AND
             $_.FeatureName -NotLike "*SearchEngine*" -AND
             $_.FeatureName -NotLike "*RemoteDesktop*" -AND
-            $_.FeatureName -NotLike "*Recall*" -AND
             $_.State -ne "Disabled"
         }
 
@@ -274,6 +273,31 @@ function Remove-ProvisionedPackages() {
         # This can happen if getting AppX packages fails
         Write-Host "Unable to get information about the AppX packages. MicroWin processing will continue, but AppX packages will not be processed"
         Write-Host "Error information: $($_.Exception.Message)" -ForegroundColor Yellow
+    }
+}
+
+function Get-LocalizedUsers
+{
+    <#
+        .SYNOPSIS
+            Gets a localized user group representation for ICACLS commands (Port from DISMTools PE Helper)
+        .PARAMETER admins
+            Determines whether to get a localized user group representation for the Administrators user group
+        .OUTPUTS
+            A string containing the localized user group
+        .EXAMPLE
+            Get-LocalizedUsers -admins $true
+    #>
+    param (
+        [Parameter(Mandatory = $true, Position = 0)] [bool]$admins
+    )
+    if ($admins)
+    {
+        return (Get-LocalGroup | Where-Object { $_.SID.Value -like "S-1-5-32-544" }).Name
+    }
+    else
+    {
+        return (Get-LocalGroup | Where-Object { $_.SID.Value -like "S-1-5-32-545" }).Name
     }
 }
 
