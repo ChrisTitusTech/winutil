@@ -42,7 +42,7 @@ If you are still having issues, try using a **VPN**, or changing your **DNS prov
 ### WinGet configuration
 If you have not installed anything using PowerShell before, you may be prompted to configure WinGet. This requires user interaction on first run. You will need to manually type `y` into the PowerShell console and press enter to continue. Once you do it the first time, you will not be prompted again.
 
-### Error `0x80041031`
+### MicroWin: Error `0x80041031`
 This error code typically indicates an issue related to Windows Management Instrumentation (WMI). Here are a few steps you can try to resolve the issue:
 
 1. **Reboot Your Computer:**
