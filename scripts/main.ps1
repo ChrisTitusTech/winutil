@@ -470,7 +470,7 @@ $sync["SearchBar"].Add_TextChanged({
     }
     switch ($sync.currentTab) {
         "Install" {
-            Search-AppsByNameOrDescription -SearchString $sync.SearchBar.Text
+            Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text
         }
     }
 })

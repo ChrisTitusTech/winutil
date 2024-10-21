@@ -1,23 +1,4 @@
-function Collapse-AllCategories {
-    param(
-        [Parameter(Mandatory=$true)]
-        [System.Windows.Controls.ItemsControl]$ItemsControl
-    )
-    $sync.Buttons | Where-Object {$_.Tag -like "CategoryToggleButton"} | ForEach-Object {
-        $_.IsChecked = $false
-    }
-}   
-function Expand-AllCategories {
-    param(
-        [Parameter(Mandatory=$true)]
-        [System.Windows.Controls.ItemsControl]$ItemsControl
-    )
-    $sync.Buttons | Where-Object {$_.Tag -like "CategoryToggleButton"} | ForEach-Object {
-        $_.IsChecked = $true
-    }
-}   
-
-function Toggle-CategoryVisibility {
+function Set-CategoryVisibility {
     param(
         [Parameter(Mandatory=$true)]
         [string]$Category,
@@ -26,9 +7,14 @@ function Toggle-CategoryVisibility {
         [Parameter(Mandatory=$true)]
         [bool]$isChecked
     )
-    # Show or hide the category, based on if it was clicked or not 
-    $ItemsControl.Items | Where-Object {($_.Tag -eq "CategoryWrapPanel_$Category")} | ForEach-Object {
-        $_.Visibility = if ($isChecked) {
+    # Show or hide the category, based on if it was clicked or not
+    if  ($category -eq "*"){      
+        $items = $ItemsControl.Items | Where-Object {($_.Tag -like "CategoryWrapPanel_*")}
+    } else {
+        $items = $ItemsControl.Items | Where-Object {($_.Tag -eq "CategoryWrapPanel_$Category")}
+    }
+    $items | ForEach-Object {
+        $_.Visibility = if ($isChecked -eq $true) {
             [Windows.Visibility]::Visible
         } else {
             [Windows.Visibility]::Collapsed
@@ -36,7 +22,7 @@ function Toggle-CategoryVisibility {
     }
 }
 
-function Search-AppsByNameOrDescription {
+function Find-AppsByNameOrDescription {
     param(
         [Parameter(Mandatory=$false)]
         [string]$SearchString = "",
@@ -45,15 +31,21 @@ function Search-AppsByNameOrDescription {
     )
 
     if ([string]::IsNullOrWhiteSpace($SearchString)) {
-        # Reset all categories when a search is cleared
-        $sync.Buttons | Where-Object {$_.Tag -like "CategoryToggleButton"} | ForEach-Object {
-            $_.IsChecked = $false
+        if ($sync.CompactView -eq $true) {
+            Set-CategoryVisibility -Category "*" -ItemsControl $ItemsControl -isChecked $true
+        } else {
+            Set-CategoryVisibility -Category "*" -ItemsControl $ItemsControl -isChecked $false
         }
         
         $ItemsControl.Items | ForEach-Object {
             if ($_.Tag -like "CategoryWrapPanel_*") {
-                # Reset CategoryWrapPanel visibility
-                $_.Visibility = [Windows.Visibility]::Collapsed
+                # If CompactView is enabled, show all Apps when the search bar is empty
+                # otherwise, hide all Apps
+                if ($sync.CompactView -eq $true) {
+                $_.Visibility = [Windows.Visibility]::Visible
+                } else {
+                    $_.Visibility = [Windows.Visibility]::Collapsed
+                }
                 # Reset Items visibility
                 $_.Children | ForEach-Object {$_.Visibility = [Windows.Visibility]::Visible}
             }
@@ -231,14 +223,18 @@ function Invoke-WPFUIApps {
         $compactViewButton.Add_Click({
             $sync.CompactView = -not $sync.CompactView
             Update-AppTileProperties
-            if ($sync.CompactView) {
-                Expand-AllCategories -ItemsControl $sync.ItemsControl
+            if ($sync.CompactView -eq $true) {
+                if ($sync.SearchBar.Text -eq "") {
+                    Set-CategoryVisibility -Category "*" -ItemsControl $sync.ItemsControl -isChecked $true
+                }
                 $this.Content = "Expanded View"
             }
             else {
-                Collapse-AllCategories -ItemsControl $sync.ItemsControl
+                if ($sync.SearchBar.Text -eq "") {
+                    Set-CategoryVisibility -Category "*" -ItemsControl $sync.ItemsControl -isChecked $false
+                }
                 $this.Content = "Compact View"
-            }   
+            }  
         })
         $null = $wrapPanelTop.Children.Add($compactViewButton)
         [Windows.Controls.DockPanel]::SetDock($wrapPanelTop, [Windows.Controls.Dock]::Top)
@@ -288,10 +284,10 @@ function Invoke-WPFUIApps {
         $toggleButton.Add_Checked({
             # Clear the search bar when a category is clicked
             $sync.SearchBar.Text = ""
-            Toggle-CategoryVisibility -Category $this.Content -ItemsControl $this.Parent -isChecked $this.IsChecked
+            Set-CategoryVisibility -Category $this.Content -ItemsControl $this.Parent -isChecked $true
         })
         $toggleButton.Add_Unchecked({
-            Toggle-CategoryVisibility -Category $this.Content -ItemsControl $this.Parent -isChecked $this.IsChecked
+            Set-CategoryVisibility -Category $this.Content -ItemsControl $this.Parent -isChecked $false
         })
         $null = $ItemsControl.Items.Add($toggleButton)
     }
