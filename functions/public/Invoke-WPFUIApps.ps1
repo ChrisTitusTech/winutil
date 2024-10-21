@@ -4,21 +4,28 @@ function Set-CategoryVisibility {
         [string]$Category,
         [Parameter(Mandatory=$true)]
         [System.Windows.Controls.ItemsControl]$ItemsControl,
-        [Parameter(Mandatory=$true)]
-        [bool]$isChecked
+        [bool]$isChecked = $true,
+        [switch]$automaticVisibility
     )
-    # Show or hide the category, based on if it was clicked or not
+    if ($automaticVisibility) {
+        $isChecked = $sync.CompactView
+    }
+
+    # If all the Categories are affected, update the Checked state of the ToggleButtons. 
+    # Otherwise, the state is not synced when toggling between the display modes
     if  ($category -eq "*"){      
         $items = $ItemsControl.Items | Where-Object {($_.Tag -like "CategoryWrapPanel_*")}
+        $ItemsControl.Items | Where-Object {($_.Tag -eq "CategoryToggleButton")} | Foreach-Object { $_.Visibility = [Windows.Visibility]::Visible; $_.IsChecked = $isChecked }
     } else {
         $items = $ItemsControl.Items | Where-Object {($_.Tag -eq "CategoryWrapPanel_$Category")}
     }
+    
+    $elementVisibility = if ($isChecked -eq $true) {[Windows.Visibility]::Visible} else {[Windows.Visibility]::Collapsed}
     $items | ForEach-Object {
-        $_.Visibility = if ($isChecked -eq $true) {
-            [Windows.Visibility]::Visible
-        } else {
-            [Windows.Visibility]::Collapsed
+        $_.Visibility = $elementVisibility
         }
+    $items.Children | ForEach-Object {
+        $_.Visibility = $elementVisibility
     }
 }
 
@@ -31,11 +38,8 @@ function Find-AppsByNameOrDescription {
     )
 
     if ([string]::IsNullOrWhiteSpace($SearchString)) {
-        if ($sync.CompactView -eq $true) {
-            Set-CategoryVisibility -Category "*" -ItemsControl $ItemsControl -isChecked $true
-        } else {
-            Set-CategoryVisibility -Category "*" -ItemsControl $ItemsControl -isChecked $false
-        }
+            Set-CategoryVisibility -Category "*" -ItemsControl $ItemsControl -automaticVisibility
+        
         
         $ItemsControl.Items | ForEach-Object {
             if ($_.Tag -like "CategoryWrapPanel_*") {
@@ -54,8 +58,7 @@ function Find-AppsByNameOrDescription {
                 $_.Visibility = [Windows.Visibility]::Visible
             }
         }
-    }
-    else {
+    } else {
         $ItemsControl.Items | ForEach-Object {
             # Hide all CategoryWrapPanel and ToggleButton
             $_.Visibility = [Windows.Visibility]::Collapsed
@@ -85,6 +88,7 @@ function Show-OnlyCheckedApps {
     )
     # If no apps are selected, do not allow switching to show only selected
     if (($false -eq $sync.ShowOnlySelected) -and ($appKeys.Count -eq 0)) {
+        Write-Host "No apps selected"
         return
     }
     $sync.ShowOnlySelected = -not $sync.ShowOnlySelected
@@ -116,24 +120,10 @@ function Show-OnlyCheckedApps {
         $sync.Buttons | Where-Object {$_.Name -like "ShowSelectedAppsButton"} | ForEach-Object {
             $_.Content = "Show Selected"
         }
-        # Reset all CategoryToggleButtons to unchecked
-        $sync.Buttons | Where-Object {$_.Tag -like "CategoryToggleButton"} | ForEach-Object {
-            $_.IsChecked = $false
-        }
-        $ItemsControl.Items | Foreach-Object {
-            # Reset App Containers to visible
-            if ($_.Tag -like "CategoryWrapPanel_*") {
-                $_.Visibility = [Windows.Visibility]::Collapsed
-                # Reset Apps to visible
-                $_.Children | ForEach-Object {$_.Visibility = [Windows.Visibility]::Visible}  
-            }
-            else {
-                # Reset all other items to visible
-                $_.Visibility = [Windows.Visibility]::Visible
-            }
-        }
-    }
+        Set-CategoryVisibility -Category "*" -ItemsControl $ItemsControl -automaticVisibility
 }
+}
+
 function Invoke-WPFUIApps {
     [OutputType([void])]
     param(
@@ -223,16 +213,12 @@ function Invoke-WPFUIApps {
         $compactViewButton.Add_Click({
             $sync.CompactView = -not $sync.CompactView
             Update-AppTileProperties
-            if ($sync.CompactView -eq $true) {
-                if ($sync.SearchBar.Text -eq "") {
-                    Set-CategoryVisibility -Category "*" -ItemsControl $sync.ItemsControl -isChecked $true
-                }
-                $this.Content = "Expanded View"
+            if ($sync.SearchBar.Text -eq "") {
+                Set-CategoryVisibility -Category "*" -ItemsControl $sync.ItemsControl -automaticVisibility
             }
-            else {
-                if ($sync.SearchBar.Text -eq "") {
-                    Set-CategoryVisibility -Category "*" -ItemsControl $sync.ItemsControl -isChecked $false
-                }
+            if ($sync.CompactView -eq $true) {
+                $this.Content = "Expanded View"
+            } else {
                 $this.Content = "Compact View"
             }  
         })
@@ -525,3 +511,4 @@ function Invoke-WPFUIApps {
         }
     }
 }
+
