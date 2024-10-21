@@ -63,6 +63,14 @@
         "link": "https://www.anaconda.com/products/distribution",
         "winget": "Anaconda.Anaconda3"
     },
+    "Glab": {
+        "category": "Development",
+        "choco": "glab",
+        "content": "Glab",
+        "description": "GLab is an open source GitLab CLI tool bringing GitLab to your terminal next to where you are already working with git and your code without switching between windows and browser tabs",
+        "link": "https://gitlab.com/gitlab-org/cli",
+        "winget": "GLab.GLab"
+    },
     "angryipscanner": {
         "category": "Pro Tools",
         "choco": "angryip",
