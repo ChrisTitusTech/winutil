@@ -91,7 +91,7 @@ $($jsonAsObject | ConvertTo-Json -Depth 3)
 "@
 
     $sync.configs.$($psitem.BaseName) = $json | ConvertFrom-Json
-    $script_content.Add($(Write-Output "`$sync.configs.$($psitem.BaseName) = @'`n$json`n'@ `| ConvertFrom-Json" ))
+    $script_content.Add($(Write-Output "`$sync.configs.$($psitem.BaseName) = @'`r`n$json`r`n'@ `| ConvertFrom-Json" ))
 }
 
 # Read the entire XAML file as a single string, preserving line breaks
