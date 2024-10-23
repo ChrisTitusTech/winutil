@@ -1,0 +1,12 @@
+{
+    "json.schemas": [
+        {
+            "fileMatch": ["config/applications.json"],
+            "url": "https://json.schemastore.org/winutil-applications.json"
+        },
+        {
+            "fileMatch": ["config/preset.json"],
+            "url": "https://json.schemastore.org/winutil-presets.json"
+        }
+    ]
+}
