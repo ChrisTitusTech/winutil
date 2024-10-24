@@ -84,4 +84,8 @@ Function Get-WinUtilToggleStatus {
         $DetailedBSoD2 = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl').DisableEmoticon
         return !(($DetailedBSoD1 -eq 0) -or ($DetailedBSoD2 -eq 0) -or !$DetailedBSoD1 -or !$DetailedBSoD2)
     }
+    if ($ToggleSwitch -eq "WPFToggleGPUScheduling") {
+        $GPUScheduling = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers').HwSchMode
+        return $GPUScheduling -ne 1
+    }
 }
