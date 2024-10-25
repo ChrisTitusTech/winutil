@@ -10,7 +10,10 @@ function Invoke-WPFTab {
 
     #>
 
-    Param ($ClickedTab)
+    Param (
+        [Parameter(Mandatory,position=0)]
+        [string]$ClickedTab
+    )
 
     $tabNav = Get-WinUtilVariables | Where-Object {$psitem -like "WPFTabNav"}
     $tabNumber = [int]($ClickedTab -replace "WPFTab","" -replace "BT","") - 1
