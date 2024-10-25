@@ -1,4 +1,4 @@
-function Invoke-MicrowinNewUnattend {
+function Microwin-NewUnattend {
 
     param (
         [Parameter(Mandatory, Position = 0)] [string]$userName,
@@ -160,7 +160,7 @@ function Invoke-MicrowinNewUnattend {
                 </RunSynchronousCommand>
                 <RunSynchronousCommand wcm:action="add">
                     <Order>19</Order>
-                    <Path>powershell.exe -NoProfile -Command "Get-Content -LiteralPath 'C:\Windows\Temp\Invoke-MicrowinRemovePackages.ps1' -Raw | Invoke-Expression;"</Path>
+                    <Path>powershell.exe -NoProfile -Command "Get-Content -LiteralPath 'C:\Windows\Temp\Microwin-RemovePackages.ps1' -Raw | Invoke-Expression;"</Path>
                 </RunSynchronousCommand>
                 <RunSynchronousCommand wcm:action="add">
                     <Order>20</Order>
@@ -294,7 +294,7 @@ function Invoke-MicrowinNewUnattend {
         </component>
     </settings>
 '@
-    if ((Invoke-MicrowinTestCompatibleImage $imgVersion $([System.Version]::new(10,0,22000,1))) -eq $false) {
+    if ((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,22000,1))) -eq $false) {
     # Replace the placeholder text with an empty string to make it valid for Windows 10 Setup
     $unattend = $unattend.Replace("<#REPLACEME#>", "").Trim()
     } else {

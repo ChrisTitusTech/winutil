@@ -1,4 +1,4 @@
-function Invoke-MicrowinCopyToUSB([string]$fileToCopy) {
+function Microwin-CopyToUSB([string]$fileToCopy) {
     foreach ($volume in Get-Volume) {
         if ($volume -and $volume.FileSystemLabel -ieq "ventoy") {
             $destinationPath = "$($volume.DriveLetter):\"

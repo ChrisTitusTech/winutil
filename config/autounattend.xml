@@ -113,7 +113,7 @@
                 </RunSynchronousCommand>
                 <RunSynchronousCommand wcm:action="add">
                     <Order>19</Order>
-                    <Path>powershell.exe -NoProfile -Command "Get-Content -LiteralPath 'C:\Windows\Temp\Invoke-MicrowinRemovePackages.ps1' -Raw | Invoke-Expression;"</Path>
+                    <Path>powershell.exe -NoProfile -Command "Get-Content -LiteralPath 'C:\Windows\Temp\Microwin-RemovePackages.ps1' -Raw | Invoke-Expression;"</Path>
                 </RunSynchronousCommand>
                 <RunSynchronousCommand wcm:action="add">
                     <Order>20</Order>
@@ -312,7 +312,7 @@ foreach( $file in $Document.unattend.Extensions.File ) {
     [System.IO.File]::WriteAllBytes( $path, ( $encoding.GetPreamble() + $encoding.GetBytes( $file.InnerText.Trim() ) ) );
 }
         </ExtractScript>
-        <File path="C:\Windows\Temp\Invoke-MicrowinRemovePackages.ps1">
+        <File path="C:\Windows\Temp\Microwin-RemovePackages.ps1">
 $selectors = @(
     'Microsoft.Microsoft3DViewer';
     'Microsoft.BingSearch';
@@ -359,7 +359,7 @@ $removeCommand = {
   }
 };
 $type = 'Package';
-$logfile = 'C:\Windows\Temp\Invoke-MicrowinRemovePackages.log';
+$logfile = 'C:\Windows\Temp\Microwin-RemovePackages.log';
 &amp; {
     $installed = &amp; $getCommand;
     foreach( $selector in $selectors ) {

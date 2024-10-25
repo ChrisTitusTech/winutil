@@ -1,4 +1,4 @@
-function Invoke-MicrowinTestCompatibleImage() {
+function Microwin-TestCompatibleImage() {
     <#
         .SYNOPSIS
             Checks the version of a Windows image and determines whether or not it is compatible with a specific feature depending on a desired version

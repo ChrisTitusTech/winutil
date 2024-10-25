@@ -1,4 +1,4 @@
-function Invoke-MicrowinGetLangFromCulture {
+function Microwin-GetLangFromCulture {
 
     param (
         [Parameter(Mandatory, Position = 0)] [string]$langName

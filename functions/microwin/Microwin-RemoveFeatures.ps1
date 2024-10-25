@@ -1,4 +1,4 @@
-function Invoke-MicrowinRemoveFeatures() {
+function Microwin-RemoveFeatures() {
     <#
         .SYNOPSIS
             Removes certain features from ISO image
@@ -7,7 +7,7 @@ function Invoke-MicrowinRemoveFeatures() {
             No Params
 
         .EXAMPLE
-            Invoke-MicrowinRemoveFeatures
+            Microwin-RemoveFeatures
     #>
     try {
         $featlist = (Get-WindowsOptionalFeature -Path $scratchDir)

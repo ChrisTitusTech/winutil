@@ -1,4 +1,4 @@
-function Invoke-MicrowinRemoveFileOrDirectory([string]$pathToDelete, [string]$mask = "", [switch]$Directory = $false) {
+function Microwin-RemoveFileOrDirectory([string]$pathToDelete, [string]$mask = "", [switch]$Directory = $false) {
     if(([string]::IsNullOrEmpty($pathToDelete))) { return }
     if (-not (Test-Path -Path "$($pathToDelete)")) { return }
 

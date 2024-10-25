@@ -1,4 +1,4 @@
-function Invoke-MicrowinRemovePackages {
+function Microwin-RemovePackages {
     try {
         $pkglist = (Get-WindowsPackage -Path "$scratchDir").PackageName
 

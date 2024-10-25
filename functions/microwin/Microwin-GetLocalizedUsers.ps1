@@ -1,4 +1,4 @@
-function Invoke-MicrowinGetLocalizedUsers
+function Microwin-GetLocalizedUsers
 {
     <#
         .SYNOPSIS
@@ -8,7 +8,7 @@ function Invoke-MicrowinGetLocalizedUsers
         .OUTPUTS
             A string containing the localized user group
         .EXAMPLE
-            Invoke-MicrowinGetLocalizedUsers -admins $true
+            Microwin-GetLocalizedUsers -admins $true
     #>
     param (
         [Parameter(Mandatory = $true, Position = 0)] [bool]$admins

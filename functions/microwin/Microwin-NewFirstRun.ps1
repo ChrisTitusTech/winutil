@@ -1,4 +1,4 @@
-function Invoke-MicrowinNewFirstRun {
+function Microwin-NewFirstRun {
 
     # using here string to embedd firstrun
     $firstRun = @'

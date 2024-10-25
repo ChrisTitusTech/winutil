@@ -1,4 +1,4 @@
-function Invoke-MicrowinRemoveProvisionedPackages() {
+function Microwin-RemoveProvisionedPackages() {
     <#
         .SYNOPSIS
         Removes AppX packages from a Windows image during MicroWin processing
@@ -7,7 +7,7 @@ function Invoke-MicrowinRemoveProvisionedPackages() {
         No Params
 
         .EXAMPLE
-        Invoke-MicrowinRemoveProvisionedPackages
+        Microwin-RemoveProvisionedPackages
     #>
     try
     {

@@ -1,4 +1,4 @@
-function Invoke-MicrowinNewCheckInstall {
+function Microwin-NewCheckInstall {
 
     # using here string to embedd firstrun
     $checkInstall = @'
