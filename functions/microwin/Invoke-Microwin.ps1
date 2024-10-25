@@ -162,6 +162,28 @@ public class PowerManagement {
         Write-Host "Removing Appx Bloat"
         Invoke-MicrowinRemoveProvisionedPackages
 
+        # Detect Windows 11 24H2 and add dependency to FileExp to prevent Explorer look from going back - thanks @WitherOrNot and @thecatontheceiling
+        if ((Test-CompatibleImage $imgVersion $([System.Version]::new(10,0,26100,1))) -eq $true) {
+            try {
+                if (Test-Path "$scratchDir\Windows\SystemApps\MicrosoftWindows.Client.FileExp_cw5n1h2txyewy\appxmanifest.xml" -PathType Leaf) {
+                    # Found the culprit. Do the following:
+                    # 1. Take ownership of the file, from TrustedInstaller to Administrators
+                    takeown /F "$scratchDir\Windows\SystemApps\MicrosoftWindows.Client.FileExp_cw5n1h2txyewy\appxmanifest.xml" /A
+                    # 2. Set ACLs so that we can write to it
+                    icacls "$scratchDir\Windows\SystemApps\MicrosoftWindows.Client.FileExp_cw5n1h2txyewy\appxmanifest.xml" /grant "$(Invoke-MicrowinGetLocalizedUsers -admins $true):(M)" | Out-Host
+                    # 3. Open the file and do the modification
+                    $appxManifest = Get-Content -Path "$scratchDir\Windows\SystemApps\MicrosoftWindows.Client.FileExp_cw5n1h2txyewy\appxmanifest.xml"
+                    $originalLine = $appxManifest[13]
+                    $dependency = "`n        <PackageDependency Name=`"Microsoft.WindowsAppRuntime.CBS`" MinVersion=`"1.0.0.0`" Publisher=`"CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US`" />"
+                    $appxManifest[13] = "$originalLine$dependency"
+                    Set-Content -Path "$scratchDir\Windows\SystemApps\MicrosoftWindows.Client.FileExp_cw5n1h2txyewy\appxmanifest.xml" -Value $appxManifest -Force -Encoding utf8
+                }
+            }
+            catch {
+                # Do nothing
+            }
+        }
+
         Invoke-MicrowinRemoveFileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" -Directory
         Invoke-MicrowinRemoveFileOrDirectory -pathToDelete "$($scratchDir)\Windows\DiagTrack" -Directory
         Invoke-MicrowinRemoveFileOrDirectory -pathToDelete "$($scratchDir)\Windows\InboxApps" -Directory

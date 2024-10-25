@@ -22,7 +22,6 @@ function Invoke-MicrowinRemoveFeatures() {
             $_.FeatureName -NotLike "*NFS*" -AND
             $_.FeatureName -NotLike "*SearchEngine*" -AND
             $_.FeatureName -NotLike "*RemoteDesktop*" -AND
-            $_.FeatureName -NotLike "*Recall*" -AND
             $_.State -ne "Disabled"
         }
 
