@@ -254,12 +254,12 @@ $commonKeyEvents = {
 $sync["Form"].Add_PreViewKeyDown($commonKeyEvents)
 
 $sync["Form"].Add_MouseLeftButtonDown({
-    # Hide Settings and Theme Popup on click anywhere else
-    if ($sync.SettingsButton.IsOpen -or
-        $sync.ThemePopup.IsOpen) {
-            $sync.SettingsPopup.IsOpen = $false
-            $sync.ThemePopup.IsOpen = $false
-        }
+    if ($sync.SettingsPopup -eq $null -or
+        $sync.ThemePopup -eq $null) {
+        Write-Host "Either Settings or Theme Popup is null, this's not allowed to happen in the first place. Please double check your UI code." -ForegroundColor Red
+    }
+    $sync.SettingsPopup.IsOpen = $false
+    $sync.ThemePopup.IsOpen = $false
     $sync["Form"].DragMove()
 })
 
@@ -277,12 +277,12 @@ $sync["Form"].Add_MouseDoubleClick({
 
 $sync["Form"].Add_Deactivated({
     Write-Debug "WinUtil lost focus"
-    # Hide Settings and Theme Popup on Winutil Focus Loss
-    if ($sync.SettingsButton.IsOpen -or
-        $sync.ThemePopup.IsOpen) {
-            $sync.SettingsPopup.IsOpen = $false
-            $sync.ThemePopup.IsOpen = $false
+    if ($sync.SettingsPopup -eq $null -or
+        $sync.ThemePopup -eq $null) {
+        Write-Host "Either Settings or Theme Popup is null, this's not allowed to happen in the first place. Please double check your UI code." -ForegroundColor Red
     }
+    $sync.SettingsPopup.IsOpen = $false
+    $sync.ThemePopup.IsOpen = $false
 })
 
 $sync["Form"].Add_ContentRendered({
@@ -525,29 +525,39 @@ $sync["Form"].Add_Activated({
 })
 # Define event handler for ThemeButton click
 $sync["ThemeButton"].Add_Click({
-    if ($sync.ThemePopup.IsOpen) {
-        $sync.ThemePopup.IsOpen = $false
+    if ($sync.SettingsPopup -eq $null -or
+        $sync.ThemePopup -eq $null) {
+        Write-Host "Either Settings or Theme Popup is null, this's not allowed to happen in the first place. Please double check your UI code." -ForegroundColor Red
     }
-    else{
-        $sync.ThemePopup.IsOpen = $true
-    }
+    # Hide the settings popup and toggle the themes popup
+    $sync.ThemePopup.IsOpen = -not $sync.ThemePopup.IsOpen
     $sync.SettingsPopup.IsOpen = $false
+    $_.Handled = $false
 })
 
 # Define event handlers for menu items
 $sync["AutoThemeMenuItem"].Add_Click({
+    if ($sync.ThemePopup -eq $null) {
+        Write-Host "Theme Popup is null, this's not allowed to happen in the first place. Please double check your UI code." -ForegroundColor Red
+    }
     $sync.ThemePopup.IsOpen = $false
     Invoke-WinutilThemeChange -theme "Auto"
     $_.Handled = $false
   })
   # Define event handlers for menu items
 $sync["DarkThemeMenuItem"].Add_Click({
+    if ($sync.ThemePopup -eq $null) {
+        Write-Host "Theme Popup is null, this's not allowed to happen in the first place. Please double check your UI code." -ForegroundColor Red
+    }
     $sync.ThemePopup.IsOpen = $false
     Invoke-WinutilThemeChange -theme "Dark"
     $_.Handled = $false
   })
 # Define event handlers for menu items
 $sync["LightThemeMenuItem"].Add_Click({
+    if ($sync.ThemePopup -eq $null) {
+        Write-Host "Theme Popup is null, this's not allowed to happen in the first place. Please double check your UI code." -ForegroundColor Red
+    }
     $sync.ThemePopup.IsOpen = $false
     Invoke-WinutilThemeChange -theme "Light"
     $_.Handled = $false
@@ -557,29 +567,35 @@ $sync["LightThemeMenuItem"].Add_Click({
 # Define event handler for button click
 $sync["SettingsButton"].Add_Click({
     Write-Debug "SettingsButton clicked"
-    if ($sync.SettingsPopup.IsOpen) {
-        $sync.SettingsPopup.IsOpen = $false
+    if ($sync.SettingsPopup -eq $null -or
+        $sync.ThemePopup -eq $null) {
+        Write-Host "Either Settings or Theme Popup is null, this's not allowed to happen in the first place. Please double check your UI code." -ForegroundColor Red
     }
-    else{
-        $sync.SettingsPopup.IsOpen = $true
-    }
+    # Hide the themes popup and toggle the settings popup
+    $sync.SettingsPopup.IsOpen = -not $sync.SettingsPopup.IsOpen
     $sync.ThemePopup.IsOpen = $false
     $_.Handled = $false
 })
 
 # Define event handlers for menu items
 $sync["ImportMenuItem"].Add_Click({
-  # Handle Import menu item click
-  Write-Debug "Import clicked"
-  $sync["SettingsPopup"].IsOpen = $false
-  Invoke-WPFImpex -type "import"
-  $_.Handled = $false
+    # Handle Import menu item click
+    Write-Debug "Import clicked"
+    if ($sync.SettingsPopup -eq $null) {
+        Write-Host "Either Settings is null, this's not allowed to happen in the first place. Please double check your UI code." -ForegroundColor Red
+    }
+    $sync.SettingsPopup.IsOpen = $false
+    Invoke-WPFImpex -type "import"
+    $_.Handled = $false
 })
 
 $sync["ExportMenuItem"].Add_Click({
     # Handle Export menu item click
     Write-Debug "Export clicked"
-    $sync["SettingsPopup"].IsOpen = $false
+    if ($sync.SettingsPopup -eq $null) {
+        Write-Host "Either Settings is null, this's not allowed to happen in the first place. Please double check your UI code." -ForegroundColor Red
+    }
+    $sync.SettingsPopup.IsOpen = $false
     Invoke-WPFImpex -type "export"
     $_.Handled = $false
 })
@@ -587,7 +603,10 @@ $sync["ExportMenuItem"].Add_Click({
 $sync["AboutMenuItem"].Add_Click({
     # Handle Export menu item click
     Write-Debug "About clicked"
-    $sync["SettingsPopup"].IsOpen = $false
+    if ($sync.SettingsPopup -eq $null) {
+        Write-Host "Either Settings is null, this's not allowed to happen in the first place. Please double check your UI code." -ForegroundColor Red
+    }
+    $sync.SettingsPopup.IsOpen = $false
     $authorInfo = @"
 Author   : <a href="https://github.com/ChrisTitusTech">@christitustech</a>
 Runspace : <a href="https://github.com/DeveloperDurp">@DeveloperDurp</a>
@@ -602,7 +621,10 @@ Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sy
 $sync["SponsorMenuItem"].Add_Click({
     # Handle Export menu item click
     Write-Debug "Sponsors clicked"
-    $sync["SettingsPopup"].IsOpen = $false
+    if ($sync.SettingsPopup -eq $null) {
+        Write-Host "Either Settings is null, this's not allowed to happen in the first place. Please double check your UI code." -ForegroundColor Red
+    }
+    $sync.SettingsPopup.IsOpen = $false
     $authorInfo = @"
 <a href="https://github.com/sponsors/ChrisTitusTech">Current sponsors for ChrisTitusTech:</a>
 "@
