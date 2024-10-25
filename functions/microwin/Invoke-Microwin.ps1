@@ -204,7 +204,7 @@ public class PowerManagement {
         Write-Host "Removal complete!"
 
         Write-Host "Create unattend.xml"
-        #Microwin-NewUnattend
+
         if ($sync.MicrowinUserName.Text -eq "")
         {
             Microwin-NewUnattend -userName "User"
