@@ -31,23 +31,20 @@ $sync.runspace.Open()
 
 # Create classes for different exceptions
 
-    class WingetFailedInstall : Exception {
-        [string]$additionalData
+class WingetFailedInstall : Exception {
+    [string]$additionalData
+    WingetFailedInstall($Message) : base($Message) {}
+}
 
-        WingetFailedInstall($Message) : base($Message) {}
-    }
+class ChocoFailedInstall : Exception {
+    [string]$additionalData
+    ChocoFailedInstall($Message) : base($Message) {}
+}
 
-    class ChocoFailedInstall : Exception {
-        [string]$additionalData
-
-        ChocoFailedInstall($Message) : base($Message) {}
-    }
-
-    class GenericException : Exception {
-        [string]$additionalData
-
-        GenericException($Message) : base($Message) {}
-    }
+class GenericException : Exception {
+    [string]$additionalData
+    GenericException($Message) : base($Message) {}
+}
 
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
@@ -543,8 +540,8 @@ $sync["AutoThemeMenuItem"].Add_Click({
     $sync.ThemePopup.IsOpen = $false
     Invoke-WinutilThemeChange -theme "Auto"
     $_.Handled = $false
-  })
-  # Define event handlers for menu items
+})
+# Define event handlers for menu items
 $sync["DarkThemeMenuItem"].Add_Click({
     if ($sync.ThemePopup -eq $null) {
         Write-Host "Theme Popup is null, this's not allowed to happen in the first place. Please double check your UI code." -ForegroundColor Red
@@ -552,7 +549,7 @@ $sync["DarkThemeMenuItem"].Add_Click({
     $sync.ThemePopup.IsOpen = $false
     Invoke-WinutilThemeChange -theme "Dark"
     $_.Handled = $false
-  })
+})
 # Define event handlers for menu items
 $sync["LightThemeMenuItem"].Add_Click({
     if ($sync.ThemePopup -eq $null) {
@@ -561,7 +558,7 @@ $sync["LightThemeMenuItem"].Add_Click({
     $sync.ThemePopup.IsOpen = $false
     Invoke-WinutilThemeChange -theme "Light"
     $_.Handled = $false
-  })
+})
 
 
 # Define event handler for button click
