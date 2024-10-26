@@ -314,6 +314,16 @@ function Invoke-WPFUIApps {
             $childCheckbox = ($this.Child.Children | Where-Object {$_.Template.TargetType -eq [System.Windows.Controls.Checkbox]})[0]
             $childCheckBox.isChecked = -not $childCheckbox.IsChecked
         })
+        $border.Add_MouseEnter({
+            if (($sync.$($this.Tag).IsChecked) -eq $false){
+                $this.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallHighlightedColor")
+            }
+        })
+        $border.Add_MouseLeave({
+            if (($sync.$($this.Tag).IsChecked) -eq $false){
+                $this.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallUnselectedColor")
+            }
+        })
         # Create a DockPanel inside the Border
         $dockPanel = New-Object Windows.Controls.DockPanel
         $dockPanel.LastChildFill = $true
