@@ -122,6 +122,18 @@ $sync.configs.applications.PSObject.Properties | ForEach-Object {
 
 # Now call the function with the final merged config
 Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
+# Add logic to handle click to the ToggleView Button on the Install Tab
+$sync.WPFToggleView.Add_Click({
+    $sync.CompactView = -not $sync.CompactView
+    Update-AppTileProperties
+    if ($sync.SearchBar.Text -eq "") {
+        Set-CategoryVisibility -Category "*" -ItemsControl $sync.ItemsControl -automaticVisibility
+    }
+})
+# Add logic to handle click to the Filter Button on the Install Tab
+$sync.WPFSelectedFilter.Add_Click{(
+    Show-OnlyCheckedApps -appKeys $sync.SelectedApps -ItemsControl $sync.ItemsControl
+)}
 Invoke-WPFUIApps -Apps $sync.configs.applicationsHashtable -targetGridName "appspanel"
 
 Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2

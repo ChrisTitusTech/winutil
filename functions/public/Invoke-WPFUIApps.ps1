@@ -197,32 +197,6 @@ function Invoke-WPFUIApps {
         $null = $wrapPanelTop.Children.Add($selectedLabel)
         $sync.$($selectedLabel.Name) = $selectedLabel
 
-        $showSelectedAppsButton = New-Object Windows.Controls.Button
-        $showSelectedAppsButton.Name = "ShowSelectedAppsButton"
-        $showSelectedAppsButton.Content = "Show Selected"
-        $showSelectedAppsButton.Add_Click({
-            Show-OnlyCheckedApps -appKeys $sync.SelectedApps -ItemsControl $sync.ItemsControl
-        })
-        $sync.Buttons.Add($showSelectedAppsButton)
-
-        $null = $wrapPanelTop.Children.Add($showSelectedAppsButton)
-
-        $compactViewButton = New-Object Windows.Controls.Button
-        $compactViewButton.Name = "CompactViewButton"
-        $compactViewButton.Content = "Compact View"
-        $compactViewButton.Add_Click({
-            $sync.CompactView = -not $sync.CompactView
-            Update-AppTileProperties
-            if ($sync.SearchBar.Text -eq "") {
-                Set-CategoryVisibility -Category "*" -ItemsControl $sync.ItemsControl -automaticVisibility
-            }
-            if ($sync.CompactView -eq $true) {
-                $this.Content = "Expanded View"
-            } else {
-                $this.Content = "Compact View"
-            }
-        })
-        $null = $wrapPanelTop.Children.Add($compactViewButton)
         [Windows.Controls.DockPanel]::SetDock($wrapPanelTop, [Windows.Controls.Dock]::Top)
         $null = $dockPanel.Children.Add($wrapPanelTop)
         return $dockPanel
