@@ -356,6 +356,13 @@
                                     BorderThickness="{DynamicResource ButtonBorderThickness}"
                                     CornerRadius="{DynamicResource ButtonCornerRadius}">
                                 <Grid>
+                                    <!-- Toggle Dot Background -->
+                                    <Ellipse
+                                        Width="8" Height="16"
+                                        Fill="{DynamicResource ToggleButtonOnColor}"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Top"
+                                        Margin="0,3,5,0" />
                                     <!-- Toggle Dot -->
                                     <Ellipse x:Name="ToggleDot"
                                         Width="8" Height="8"
@@ -1028,8 +1035,8 @@
 
                     <Grid Grid.Row="0" Grid.Column="0" Margin="{DynamicResource TabContentMargin}">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*" />
-                            <ColumnDefinition Width="3*" />
+                            <ColumnDefinition Width="225" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
                         <Grid Name="appscategory" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
