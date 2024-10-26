@@ -13,19 +13,19 @@
         "Order": "2",
         "Description": "Toggle between showing all or only the selected applications"
     },
-    "WPFGetInstalled": {
-        "Content": "Get Installed",
-        "Category": "____Actions",
-        "Type": "Button",
-        "Order": "3",
-        "Description": "Show installed applications"
-    },
     "WPFClearInstallSelection": {
         "Content": "Clear Selection",
         "Category": "____Actions",
         "Type": "Button",
-        "Order": "4",
+        "Order": "3",
         "Description": "Clear the selection of applications"
+    },
+    "WPFGetInstalled": {
+        "Content": "Get Installed",
+        "Category": "____Actions",
+        "Type": "Button",
+        "Order": "4",
+        "Description": "Show installed applications"
     },
     "WingetRadioButton": {
         "Content": "Winget",

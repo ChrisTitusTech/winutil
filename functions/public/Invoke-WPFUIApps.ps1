@@ -89,6 +89,7 @@ function Show-OnlyCheckedApps {
     # If no apps are selected, do not allow switching to show only selected
     if (($false -eq $sync.ShowOnlySelected) -and ($appKeys.Count -eq 0)) {
         Write-Host "No apps selected"
+        $sync.wpfselectedfilter.IsChecked = $false
         return
     }
     $sync.ShowOnlySelected = -not $sync.ShowOnlySelected
