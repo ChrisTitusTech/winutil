@@ -11,15 +11,15 @@ function Set-CategoryVisibility {
         $isChecked = $sync.CompactView
     }
 
-    # If all the Categories are affected, update the Checked state of the ToggleButtons. 
+    # If all the Categories are affected, update the Checked state of the ToggleButtons.
     # Otherwise, the state is not synced when toggling between the display modes
-    if  ($category -eq "*"){      
+    if  ($category -eq "*") {
         $items = $ItemsControl.Items | Where-Object {($_.Tag -like "CategoryWrapPanel_*")}
         $ItemsControl.Items | Where-Object {($_.Tag -eq "CategoryToggleButton")} | Foreach-Object { $_.Visibility = [Windows.Visibility]::Visible; $_.IsChecked = $isChecked }
     } else {
         $items = $ItemsControl.Items | Where-Object {($_.Tag -eq "CategoryWrapPanel_$Category")}
     }
-    
+
     $elementVisibility = if ($isChecked -eq $true) {[Windows.Visibility]::Visible} else {[Windows.Visibility]::Collapsed}
     $items | ForEach-Object {
         $_.Visibility = $elementVisibility
@@ -39,8 +39,8 @@ function Find-AppsByNameOrDescription {
 
     if ([string]::IsNullOrWhiteSpace($SearchString)) {
             Set-CategoryVisibility -Category "*" -ItemsControl $ItemsControl -automaticVisibility
-        
-        
+
+
         $ItemsControl.Items | ForEach-Object {
             if ($_.Tag -like "CategoryWrapPanel_*") {
                 # If CompactView is enabled, show all Apps when the search bar is empty
@@ -75,7 +75,7 @@ function Find-AppsByNameOrDescription {
                     }
                 }
             }
-        }   
+        }
     }
 }
 
@@ -96,7 +96,7 @@ function Show-OnlyCheckedApps {
         $sync.Buttons | Where-Object {$_.Name -like "ShowSelectedAppsButton"} | ForEach-Object {
             $_.Content = "Show All"
         }
-        
+
         $ItemsControl.Items | Foreach-Object {
             # Search for App Container and set them to visible
             if ($_.Tag -like "CategoryWrapPanel_*") {
@@ -220,7 +220,7 @@ function Invoke-WPFUIApps {
                 $this.Content = "Expanded View"
             } else {
                 $this.Content = "Compact View"
-            }  
+            }
         })
         $null = $wrapPanelTop.Children.Add($compactViewButton)
         [Windows.Controls.DockPanel]::SetDock($wrapPanelTop, [Windows.Controls.Dock]::Top)
@@ -260,7 +260,7 @@ function Invoke-WPFUIApps {
             [string]$Category,
             $ItemsControl
         )
-        
+
         $toggleButton = New-Object Windows.Controls.Primitives.ToggleButton
         $toggleButton.Content = "$Category"
         $toggleButton.Tag = "CategoryToggleButton"
@@ -351,7 +351,7 @@ function Invoke-WPFUIApps {
         $checkBox.HorizontalAlignment = "Left"
         $checkBox.VerticalAlignment = "Center"
         $checkBox.SetResourceReference([Windows.Controls.Control]::MarginProperty, "AppTileMargins")
-        $checkBox.SetResourceReference([Windows.Controls.Control]::StyleProperty, "CollapsedCheckBoxStyle") 
+        $checkBox.SetResourceReference([Windows.Controls.Control]::StyleProperty, "CollapsedCheckBoxStyle")
         $checkbox.Add_Checked({
             Invoke-WPFSelectedLabelUpdate -type "Add" -checkbox $this
             $borderElement = $this.Parent.Parent

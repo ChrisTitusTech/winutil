@@ -210,9 +210,9 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
-                        <Border Background="{TemplateBinding Background}" 
-                                BorderBrush="{DynamicResource BorderColor}" 
-                                BorderThickness="0" 
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{DynamicResource BorderColor}"
+                                BorderThickness="0"
                                 CornerRadius="{DynamicResource ButtonCornerRadius}">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}">
                                 <TextBlock x:Name="PrefixTextBlock"/>
@@ -337,6 +337,64 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style x:Key="ToggleButtonStyle" TargetType="ToggleButton">
+            <Setter Property="Margin" Value="{DynamicResource ButtonMargin}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundColor}"/>
+            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundColor}"/>
+            <Setter Property="Height" Value="{DynamicResource ButtonHeight}"/>
+            <Setter Property="Width" Value="{DynamicResource ButtonWidth}"/>
+            <Setter Property="FontSize" Value="{DynamicResource ButtonFontSize}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid>
+                            <Border x:Name="BackgroundBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{DynamicResource ButtonBorderThickness}"
+                                    CornerRadius="{DynamicResource ButtonCornerRadius}">
+                                <Grid>
+                                    <!-- Toggle Dot -->
+                                    <Ellipse x:Name="ToggleDot"
+                                            Width="8" Height="8"
+                                            Fill="{DynamicResource ButtonForegroundColor}"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Top"
+                                            Margin="5,3,0,0" />
+
+                                    <!-- Content Presenter -->
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,2,10,2"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                        <!-- Triggers for ToggleButton states -->
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="ToggleDot" Property="VerticalAlignment" Value="Bottom"/>
+                                <Setter TargetName="ToggleDot" Property="Margin" Value="5,0,0,3"/> <!-- Consistent bottom margin -->
+                            </Trigger>
+
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource ButtonBackgroundPressedColor}"/>
+                            </Trigger>
+
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource ButtonBackgroundMouseoverColor}"/>
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource ButtonBackgroundSelectedColor}"/>
+                                <Setter Property="Foreground" Value="DimGray"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <Style x:Key="SearchBarClearButtonStyle" TargetType="Button">
             <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
             <Setter Property="FontSize" Value="{DynamicResource SearchBarClearButtonFontSize}"/>
@@ -410,9 +468,9 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBox">
-                    <ContentPresenter Content="{TemplateBinding Content}" 
-                                    VerticalAlignment="Center" 
-                                    HorizontalAlignment="Left" 
+                    <ContentPresenter Content="{TemplateBinding Content}"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Left"
                                     Margin="{TemplateBinding Padding}"/>
                 </ControlTemplate>
             </Setter.Value>

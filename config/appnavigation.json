@@ -1,16 +1,30 @@
 {
+    "WPFToggleView": {
+        "Content": ["Expanded View", "Compact View"],
+        "Category": "____Actions",
+        "Type": "ToggleButton",
+        "Order": "1",
+        "Description": "Toggle between a list and a compact grid like view"
+    },
+    "WPFSelectedFilter": {
+        "Content": ["Show Selected", "Show All"],
+        "Category": "____Actions",
+        "Type": "ToggleButton",
+        "Order": "2",
+        "Description": "Toggle between showing all or only the selected applications"
+    },
     "WPFGetInstalled": {
         "Content": "Get Installed",
         "Category": "____Actions",
         "Type": "Button",
-        "Order": "1",
+        "Order": "3",
         "Description": "Show installed applications"
     },
     "WPFClearInstallSelection": {
         "Content": "Clear Selection",
         "Category": "____Actions",
         "Type": "Button",
-        "Order": "2",
+        "Order": "4",
         "Description": "Clear the selection of applications"
     },
     "WingetRadioButton": {

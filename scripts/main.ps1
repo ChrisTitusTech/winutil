@@ -216,8 +216,8 @@ function Update-AppTileProperties {
         $sync.Form.Resources.AppTileMargins = [Windows.Thickness]5
         $sync.Form.Resources.AppTileBorderThickness = [Windows.Thickness]1
     }
-}   
-# We need to update the app tile properties when the form is resized because to fill a WrapPanel update the width of the elemenmt manually (afaik) 
+}
+# We need to update the app tile properties when the form is resized because to fill a WrapPanel update the width of the elemenmt manually (afaik)
 $sync.Form.Add_SizeChanged({
     Update-AppTileProperties
 })

@@ -30,6 +30,7 @@ function Invoke-WPFUIElements {
     $borderstyle = $window.FindResource("BorderStyle")
     $HoverTextBlockStyle = $window.FindResource("HoverTextBlockStyle")
     $ColorfulToggleSwitchStyle = $window.FindResource("ColorfulToggleSwitchStyle")
+    $ToggleButtonStyle = $window.FindResource("ToggleButtonStyle")
 
     if (!$borderstyle -or !$HoverTextBlockStyle -or !$ColorfulToggleSwitchStyle) {
         throw "Failed to retrieve Styles using 'FindResource' from main window element."
@@ -187,40 +188,48 @@ function Invoke-WPFUIElements {
                         $sync[$entryInfo.Name].IsChecked = Get-WinUtilToggleStatus $sync[$entryInfo.Name].Name
 
                         $sync[$entryInfo.Name].Add_Click({
-                                [System.Object]$Sender = $args[0]
-                                Invoke-WPFToggle $Sender.name
-                            })
+                            [System.Object]$Sender = $args[0]
+                            Invoke-WPFToggle $Sender.name
+                        })
                     }
 
                     "ToggleButton" {
-                        $toggleButton = New-Object Windows.Controls.ToggleButton
+                        # Determine contentOn and contentOff based on the Content property
+                        if ($entryInfo.Content -is [array]) {
+                            # If Content is an array, use its elements
+                            write-host "Content is an array"
+                            write-host $entryInfo.Content
+                            $contentOn = if ($entryInfo.Content.Count -ge 1) { $entryInfo.Content[0] } else { "" }
+                            $contentOff = if ($entryInfo.Content.Count -ge 2) { $entryInfo.Content[1] } else { $contentOn }
+                        } else {
+                            # If Content is a single value, use it for both states
+                            $contentOn = $entryInfo.Content
+                            $contentOff = $entryInfo.Content
+                        }
+
+                        $toggleButton = New-Object Windows.Controls.Primitives.ToggleButton
                         $toggleButton.Name = $entryInfo.Name
+                        $toggleButton.Content = $contentOff
+                        $toggleButton.ToolTip = $entryInfo.Description
                         $toggleButton.HorizontalAlignment = "Left"
-                        $toggleButton.SetResourceReference([Windows.Controls.Control]::HeightProperty, "TabButtonHeight")
-                        $toggleButton.SetResourceReference([Windows.Controls.Control]::WidthProperty, "TabButtonWidth")
-                        $toggleButton.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "ButtonInstallBackgroundColor")
-                        $toggleButton.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "MainForegroundColor")
-                        $toggleButton.FontWeight = [Windows.FontWeights]::Bold
+                        $toggleButton.Style = $ToggleButtonStyle
 
-                        $textBlock = New-Object Windows.Controls.TextBlock
-                        $textBlock.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "TabButtonFontSize")
-                        $textBlock.Background = [Windows.Media.Brushes]::Transparent
-                        $textBlock.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "ButtonInstallForegroundColor")
-
-                        $underline = New-Object Windows.Documents.Underline
-                        $underline.Inlines.Add($entryInfo.Name -replace "(.).*", "$1")
-
-                        $run = New-Object Windows.Documents.Run
-                        $run.Text = $entryInfo.Name -replace "^.", ""
-
-                        $textBlock.Inlines.Add($underline)
-                        $textBlock.Inlines.Add($run)
-
-                        $toggleButton.Content = $textBlock
+                        $toggleButton.Tag = @{
+                            contentOn = $contentOn
+                            contentOff = $contentOff
+                        }
 
                         $itemsControl.Items.Add($toggleButton) | Out-Null
 
                         $sync[$entryInfo.Name] = $toggleButton
+
+                        $sync[$entryInfo.Name].Add_Checked({
+                            $this.Content = $this.Tag.contentOn
+                        })
+
+                        $sync[$entryInfo.Name].Add_Unchecked({
+                            $this.Content = $this.Tag.contentOff
+                        })
                     }
 
                     "Combobox" {
