@@ -121,7 +121,7 @@ function Show-OnlyCheckedApps {
             $_.Content = "Show Selected"
         }
         Set-CategoryVisibility -Category "*" -ItemsControl $ItemsControl -automaticVisibility
-}
+    }
 }
 
 function Invoke-WPFUIApps {

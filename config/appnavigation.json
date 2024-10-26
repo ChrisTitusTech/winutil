@@ -7,7 +7,7 @@
         "Description": "Toggle between a list and a compact grid like view"
     },
     "WPFSelectedFilter": {
-        "Content": ["Show Selected", "Show All"],
+        "Content": [ "Show All", "Show Selected"],
         "Category": "____Actions",
         "Type": "ToggleButton",
         "Order": "2",

@@ -358,11 +358,11 @@
                                 <Grid>
                                     <!-- Toggle Dot -->
                                     <Ellipse x:Name="ToggleDot"
-                                            Width="8" Height="8"
-                                            Fill="{DynamicResource ButtonForegroundColor}"
-                                            HorizontalAlignment="Left"
-                                            VerticalAlignment="Top"
-                                            Margin="5,3,0,0" />
+                                        Width="8" Height="8"
+                                        Fill="{DynamicResource ButtonForegroundColor}"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Top"
+                                        Margin="0,3,5,0" />
 
                                     <!-- Content Presenter -->
                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,2,10,2"/>
@@ -374,7 +374,7 @@
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="True">
                                 <Setter TargetName="ToggleDot" Property="VerticalAlignment" Value="Bottom"/>
-                                <Setter TargetName="ToggleDot" Property="Margin" Value="5,0,0,3"/> <!-- Consistent bottom margin -->
+                                <Setter TargetName="ToggleDot" Property="Margin" Value="0,0,5,3"/> <!-- Consistent bottom margin on the right -->
                             </Trigger>
 
                             <Trigger Property="IsPressed" Value="True">

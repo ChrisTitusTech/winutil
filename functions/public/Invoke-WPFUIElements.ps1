@@ -194,29 +194,16 @@ function Invoke-WPFUIElements {
                     }
 
                     "ToggleButton" {
-                        # Determine contentOn and contentOff based on the Content property
-                        if ($entryInfo.Content -is [array]) {
-                            # If Content is an array, use its elements
-                            write-host "Content is an array"
-                            write-host $entryInfo.Content
-                            $contentOn = if ($entryInfo.Content.Count -ge 1) { $entryInfo.Content[0] } else { "" }
-                            $contentOff = if ($entryInfo.Content.Count -ge 2) { $entryInfo.Content[1] } else { $contentOn }
-                        } else {
-                            # If Content is a single value, use it for both states
-                            $contentOn = $entryInfo.Content
-                            $contentOff = $entryInfo.Content
-                        }
-
                         $toggleButton = New-Object Windows.Controls.Primitives.ToggleButton
                         $toggleButton.Name = $entryInfo.Name
-                        $toggleButton.Content = $contentOff
+                        $toggleButton.Content = $entryInfo.Content[1]
                         $toggleButton.ToolTip = $entryInfo.Description
                         $toggleButton.HorizontalAlignment = "Left"
                         $toggleButton.Style = $ToggleButtonStyle
 
                         $toggleButton.Tag = @{
-                            contentOn = $contentOn
-                            contentOff = $contentOff
+                            contentOn = if ($entryInfo.Content.Count -ge 1) { $entryInfo.Content[0] } else { "" }
+                            contentOff = if ($entryInfo.Content.Count -ge 2) { $entryInfo.Content[1] } else { $contentOn }
                         }
 
                         $itemsControl.Items.Add($toggleButton) | Out-Null
