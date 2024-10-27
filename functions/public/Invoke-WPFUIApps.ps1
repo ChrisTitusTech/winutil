@@ -315,12 +315,12 @@ function Invoke-WPFUIApps {
             $childCheckBox.isChecked = -not $childCheckbox.IsChecked
         })
         $border.Add_MouseEnter({
-            if (($sync.$($this.Tag).IsChecked) -eq $false){
+            if (($sync.$($this.Tag).IsChecked) -eq $false) {
                 $this.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallHighlightedColor")
             }
         })
         $border.Add_MouseLeave({
-            if (($sync.$($this.Tag).IsChecked) -eq $false){
+            if (($sync.$($this.Tag).IsChecked) -eq $false) {
                 $this.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallUnselectedColor")
             }
         })

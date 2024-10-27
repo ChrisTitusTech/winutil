@@ -357,41 +357,73 @@
                                     CornerRadius="{DynamicResource ButtonCornerRadius}">
                                 <Grid>
                                     <!-- Toggle Dot Background -->
-                                    <Ellipse
-                                        Width="8" Height="16"
-                                        Fill="{DynamicResource ToggleButtonOnColor}"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Top"
-                                        Margin="0,3,5,0" />
-                                    <!-- Toggle Dot -->
+                                    <Ellipse Width="8" Height="16"
+                                            Fill="{DynamicResource ToggleButtonOnColor}"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Top"
+                                            Margin="0,3,5,0" />
+
+                                    <!-- Toggle Dot with hover grow effect -->
                                     <Ellipse x:Name="ToggleDot"
-                                        Width="8" Height="8"
-                                        Fill="{DynamicResource ButtonForegroundColor}"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Top"
-                                        Margin="0,3,5,0" />
+                                            Width="8" Height="8"
+                                            Fill="{DynamicResource ButtonForegroundColor}"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Top"
+                                            Margin="0,3,5,0"
+                                            RenderTransformOrigin="0.5,0.5">
+                                        <Ellipse.RenderTransform>
+                                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                        </Ellipse.RenderTransform>
+                                    </Ellipse>
 
                                     <!-- Content Presenter -->
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,2,10,2"/>
+                                    <ContentPresenter HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    Margin="10,2,10,2"/>
                                 </Grid>
                             </Border>
                         </Grid>
 
                         <!-- Triggers for ToggleButton states -->
                         <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="ToggleDot" Property="VerticalAlignment" Value="Bottom"/>
-                                <Setter TargetName="ToggleDot" Property="Margin" Value="0,0,5,3"/> <!-- Consistent bottom margin on the right -->
-                            </Trigger>
-
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource ButtonBackgroundPressedColor}"/>
-                            </Trigger>
-
+                            <!-- Hover effect -->
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource ButtonBackgroundMouseoverColor}"/>
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <!-- Animation to grow the dot when hovered -->
+                                            <DoubleAnimation Storyboard.TargetName="ToggleDot"
+                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                            To="1.2" Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="ToggleDot"
+                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                            To="1.2" Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <!-- Animation to shrink the dot back to original size when not hovered -->
+                                            <DoubleAnimation Storyboard.TargetName="ToggleDot"
+                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                            To="1.0" Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="ToggleDot"
+                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                            To="1.0" Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
                             </Trigger>
 
+                            <!-- IsChecked state -->
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="ToggleDot" Property="VerticalAlignment" Value="Bottom"/>
+                                <Setter TargetName="ToggleDot" Property="Margin" Value="0,0,5,3"/>
+                            </Trigger>
+
+                            <!-- IsEnabled state -->
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource ButtonBackgroundSelectedColor}"/>
                                 <Setter Property="Foreground" Value="DimGray"/>
