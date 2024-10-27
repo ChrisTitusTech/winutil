@@ -26,7 +26,7 @@ function Invoke-WPFButton {
         "WPFStandard" {Invoke-WPFPresets "Standard" -checkboxfilterpattern "WPFTweak*"}
         "WPFMinimal" {Invoke-WPFPresets "Minimal" -checkboxfilterpattern "WPFTweak*"}
         "WPFClearTweaksSelection" {Invoke-WPFPresets -imported $true -checkboxfilterpattern "WPFTweak*"}
-        "WPFClearInstallSelection" {Invoke-WPFPresets -imported $true -checkboxfilterpattern "WPFInstall*"; if ($sync.ShowOnlySelected -eq $true) {Show-OnlyCheckedApps -ItemsControl $sync.ItemsControl}}
+        "WPFClearInstallSelection" {Invoke-WPFPresets -imported $true -checkboxfilterpattern "WPFInstall*"; if ($sync.ShowOnlySelected -eq $true) {Show-OnlyCheckedApps -ItemsControl $sync.ItemsControl}; $sync.wpfselectedfilter.IsChecked = $false}
         "WPFtweaksbutton" {Invoke-WPFtweaksbutton}
         "WPFOOSUbutton" {Invoke-WPFOOSU}
         "WPFAddUltPerf" {Invoke-WPFUltimatePerformance -State "Enable"}
