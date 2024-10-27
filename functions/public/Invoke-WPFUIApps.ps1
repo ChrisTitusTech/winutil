@@ -185,18 +185,52 @@ function Invoke-WPFUIApps {
             $null = $wrapPanelTop.Children.Add($button)
             $sync[$config.Name] = $button
         }
+    
+        $selectedAppsButton = New-Object Windows.Controls.Button
+        $selectedAppsButton.Name = "WPFselectedAppsButton"
+        $selectedAppsButton.Content = "Selected Apps: 0"
+        $selectedAppsButton.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSizeHeading")
+        $selectedAppsButton.SetResourceReference([Windows.Controls.Control]::MarginProperty, "TabContentMargin")
+        $selectedAppsButton.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "MainForegroundColor")
+        $selectedAppsButton.HorizontalAlignment = "Center"
+        $selectedAppsButton.VerticalAlignment = "Center"
+        
+        $selectedAppsPopup = New-Object Windows.Controls.Primitives.Popup
+        $selectedAppsPopup.IsOpen = $false
+        $selectedAppsPopup.PlacementTarget = $selectedAppsButton
+        $selectedAppsPopup.Placement = [System.Windows.Controls.Primitives.PlacementMode]::Bottom
+        $selectedAppsPopup.AllowsTransparency = $true
 
-        $selectedLabel = New-Object Windows.Controls.Label
-        $selectedLabel.Name = "WPFSelectedLabel"
-        $selectedLabel.Content = "Selected Apps: 0"
-        $selectedLabel.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSizeHeading")
-        $selectedLabel.SetResourceReference([Windows.Controls.Control]::MarginProperty, "TabContentMargin")
-        $selectedLabel.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "MainForegroundColor")
-        $selectedLabel.HorizontalAlignment = "Center"
-        $selectedLabel.VerticalAlignment = "Center"
+        $selectedAppsBorder = New-Object Windows.Controls.Border
+        $selectedAppsBorder.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "MainBackgroundColor")
+        $selectedAppsBorder.SetResourceReference([Windows.Controls.Control]::BorderBrushProperty, "MainForegroundColor")
+        $selectedAppsBorder.SetResourceReference([Windows.Controls.Control]::BorderThicknessProperty, "ButtonBorderThickness")
+        $selectedAppsBorder.Width = 200
+        $selectedAppsBorder.Padding = 5
+        $selectedAppsPopup.Child = $selectedAppsBorder
+        $sync.selectedAppsPopup = $selectedAppsPopup
+        
+        $sync.selectedAppsstackPanel = New-Object Windows.Controls.StackPanel
+        $selectedAppsBorder.Child = $sync.selectedAppsstackPanel
 
-        $null = $wrapPanelTop.Children.Add($selectedLabel)
-        $sync.$($selectedLabel.Name) = $selectedLabel
+        # Toggle selectedAppsPopup open/close with button
+        $selectedAppsButton.Add_Click({
+            $sync.selectedAppsPopup.IsOpen = -not $sync.selectedAppsPopup.IsOpen
+        })
+        # Close selectedAppsPopup when mouse leaves both button and selectedAppsPopup
+        $selectedAppsButton.Add_MouseLeave({
+            if (-not $sync.selectedAppsPopup.IsMouseOver) {
+                $sync.selectedAppsPopup.IsOpen = $false
+            }
+        })
+        $selectedAppsPopup.Add_MouseLeave({
+            if (-not $selectedAppsButton.IsMouseOver) {
+                $sync.selectedAppsPopup.IsOpen = $false
+            }
+        })
+
+        $null = $wrapPanelTop.Children.Add($selectedAppsButton)
+        $sync.$($selectedAppsButton.Name) = $selectedAppsButton
 
         [Windows.Controls.DockPanel]::SetDock($wrapPanelTop, [Windows.Controls.Dock]::Top)
         $null = $dockPanel.Children.Add($wrapPanelTop)
@@ -338,13 +372,13 @@ function Invoke-WPFUIApps {
         $checkBox.SetResourceReference([Windows.Controls.Control]::MarginProperty, "AppTileMargins")
         $checkBox.SetResourceReference([Windows.Controls.Control]::StyleProperty, "CollapsedCheckBoxStyle")
         $checkbox.Add_Checked({
-            Invoke-WPFSelectedLabelUpdate -type "Add" -checkbox $this
+            Invoke-WPFSelectedAppsUpdate -type "Add" -checkbox $this
             $borderElement = $this.Parent.Parent
             $borderElement.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallSelectedColor")
         })
 
         $checkbox.Add_Unchecked({
-            Invoke-WPFSelectedLabelUpdate -type "Remove" -checkbox $this
+            Invoke-WPFSelectedAppsUpdate -type "Remove" -checkbox $this
             $borderElement = $this.Parent.Parent
             $borderElement.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallUnselectedColor")
         })

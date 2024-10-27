@@ -43,6 +43,8 @@ $sync.selectedApps = [System.Collections.Generic.List[string]]::new()
 $sync.ShowOnlySeleced = $false
 $sync.currentTab = "Install"
 $sync.ShowOnlySelected = $false
+$sync.selectedAppsStackPanel
+$sync.selectedAppsPopup
 
 
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
