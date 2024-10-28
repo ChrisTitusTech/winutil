@@ -48,7 +48,7 @@ function Invoke-WPFGetInstalled {
             }
         })
         $sync.ItemsControl.Dispatcher.Invoke([action] {
-            $ShowOnlyCheckedApps.Invoke($sync.SelectedApps, $sync.ItemsControl)
+            $ShowOnlyCheckedApps.Invoke($sync.SelectedApps)
             $sync.ItemsControl.Items.Remove($sync.LoadingLabel)
         })
         Write-Host "Done..."
