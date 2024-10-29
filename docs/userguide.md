@@ -83,7 +83,7 @@ The utility provides a convenient DNS selection feature, allowing users to choos
 * [**Cloudflare_Malware_Adult**](https://developers.cloudflare.com/1.1.1.1/setup/#:~:text=Use%20the%20following%20DNS%20resolvers%20to%20block%20malware%20and%20adult%20content%3A): Blocks both malware and adult content, offering more comprehensive filtering.
 * [**Open_DNS**](https://www.opendns.com/setupguide/#familyshield): Offers customizable filtering and enhanced security features.
 * [**Quad9**](https://quad9.net/): Focuses on security by blocking known malicious domains.
-* [**AdGuard_Ads_Trackers**](https://adguard-dns.io/en/welcome.html) AdGuard DNS will not block ads, trackers, or any other DNS requests. Visit website and login for a dashboard, statistics and customize your experience in the server settings.
+* [**AdGuard_Ads_Trackers**](https://adguard-dns.io/en/welcome.html) AdGuard DNS will block ads, trackers, or any other DNS requests. Visit website and login for a dashboard, statistics and customize your experience in the server settings.
 * [**AdGuard_Ads_Trackers_Malware_Adult**](https://adguard-dns.io/en/welcome.html) AdGuard DNS will block ads, trackers, adult content, and enable Safe Search and Safe Mode, where possible.
 * [**dns0.eu_Open**](https://www.dns0.eu/) The European public DNS that makes your Internet safer. Offers general-purpose filtering to block malware, phishing, and tracking domains for enhanced privacy and security.
 * [**dns0.eu_ZERO**](https://www.dns0.eu/zero) Provides advanced security with robust filters for highly sensitive environments, blocking high-risk domains using threat intelligence and sophisticated heuristics like Newly Registered Domains (NRD) and Domain Generation Algorithms (DGA).
