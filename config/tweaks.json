@@ -3464,14 +3464,5 @@
     "Type": "Button",
     "ButtonWidth": "300",
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/RemoveUltPerf"
-  },
-  "WPFWinUtilShortcut": {
-    "Content": "Create WinUtil Shortcut",
-    "category": "Shortcuts",
-    "panel": "2",
-    "Order": "a082_",
-    "Type": "Button",
-    "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut"
   }
 }

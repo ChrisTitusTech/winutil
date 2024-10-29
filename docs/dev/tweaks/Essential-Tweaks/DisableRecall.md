@@ -36,7 +36,7 @@ Disables MS Recall built into Windows since 24H2.
     "InvokeScript": [
       "
       Write-Host \"Disable Recall\"
-      DISM /Online /Disable-Feature /FeatureName:Recall     
+      DISM /Online /Disable-Feature /FeatureName:Recall
       "
     ],
     "UndoScript": [
@@ -45,7 +45,7 @@ Disables MS Recall built into Windows since 24H2.
       DISM /Online /Enable-Feature /FeatureName:Recall
       "
     ],
-	"link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DisableRecall"
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DisableRecall"
   },
 ```
 
@@ -56,7 +56,7 @@ Disables MS Recall built into Windows since 24H2.
 ```powershell
 
       Write-Host "Disable Recall"
-      DISM /Online /Disable-Feature /FeatureName:Recall    
+      DISM /Online /Disable-Feature /FeatureName:Recall
 
 
 ```
