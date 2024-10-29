@@ -807,41 +807,6 @@ function New-FirstRun {
     Remove-Item -Path "$env:USERPROFILE\Desktop\*.lnk"
     Remove-Item -Path "$env:HOMEDRIVE\Users\Default\Desktop\*.lnk"
 
-    # ************************************************
-    # Create WinUtil shortcut on the desktop
-    #
-    $desktopPath = "$($env:USERPROFILE)\Desktop"
-    # Specify the target PowerShell command
-    $command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
-    # Specify the path for the shortcut
-    $shortcutPath = Join-Path $desktopPath 'winutil.lnk'
-    # Create a shell object
-    $shell = New-Object -ComObject WScript.Shell
-
-    # Create a shortcut object
-    $shortcut = $shell.CreateShortcut($shortcutPath)
-
-    if (Test-Path -Path "$env:HOMEDRIVE\Windows\cttlogo.png") {
-        $shortcut.IconLocation = "$env:HOMEDRIVE\Windows\cttlogo.png"
-    }
-
-    # Set properties of the shortcut
-    $shortcut.TargetPath = "powershell.exe"
-    $shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
-    # Save the shortcut
-    $shortcut.Save()
-
-    # Make the shortcut have 'Run as administrator' property on
-    $bytes = [System.IO.File]::ReadAllBytes($shortcutPath)
-    # Set byte value at position 0x15 in hex, or 21 in decimal, from the value 0x00 to 0x20 in hex
-    $bytes[0x15] = $bytes[0x15] -bor 0x20
-    [System.IO.File]::WriteAllBytes($shortcutPath, $bytes)
-
-    Write-Host "Shortcut created at: $shortcutPath"
-    #
-    # Done create WinUtil shortcut on the desktop
-    # ************************************************
-
     try
     {
         if ((Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -like "Recall" }).Count -gt 0)
