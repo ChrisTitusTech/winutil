@@ -61,12 +61,5 @@ function Invoke-WPFShortcut {
     # Save the Shortcut to disk
     $Shortcut.Save()
 
-    if ($RunAsAdmin -eq $true) {
-        $bytes = [System.IO.File]::ReadAllBytes($FileBrowser.FileName)
-        # Set byte value at position 0x15 in hex, or 21 in decimal, from the value 0x00 to 0x20 in hex
-        $bytes[0x15] = $bytes[0x15] -bor 0x20
-        [System.IO.File]::WriteAllBytes($FileBrowser.FileName, $bytes)
-    }
-
     Write-Host "Shortcut for $ShortcutToAdd has been saved to $($FileBrowser.FileName) with 'Run as administrator' set to $RunAsAdmin"
 }
