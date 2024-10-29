@@ -7,9 +7,6 @@ function Initialize-InstallHeader {
             The Parent Element into which the Header should be placed
     #>
     param($TargetElement)
-    $dockPanel = New-Object Windows.Controls.DockPanel
-    $TargetElement.Children.Add($dockPanel)
-
     function New-WPFButton {
         param (
             [string]$Name,
@@ -88,5 +85,5 @@ function Initialize-InstallHeader {
     $sync.$($selectedAppsButton.Name) = $selectedAppsButton
 
     [Windows.Controls.DockPanel]::SetDock($wrapPanelTop, [Windows.Controls.Dock]::Top)
-    $null = $dockPanel.Children.Add($wrapPanelTop)
+    $null = $TargetElement.Children.Add($wrapPanelTop)
 }

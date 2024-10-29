@@ -9,9 +9,9 @@ function Invoke-WPFUIApps {
 
     switch ($TargetGridName) {
         "appspanel" {
-            $mainStackPanel = Initialize-AppStackPanel -TargetGridName $TargetGridName
-            $null = Initialize-InstallHeader -TargetElement $mainStackPanel 
-            $sync.ItemsControl = Initialize-InstallAppArea -TargetElement $mainStackPanel
+            $dockPanel = Initialize-InstallAppsMainElement -TargetGridName $TargetGridName
+            $null = Initialize-InstallHeader -TargetElement $dockPanel 
+            $sync.ItemsControl = Initialize-InstallAppArea -TargetElement $dockPanel
             Initialize-InstallCategoryAppList -TargetElement $sync.ItemsControl -Apps $Apps
         }
         default {
