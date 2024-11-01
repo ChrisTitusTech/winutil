@@ -617,22 +617,9 @@
                                         <ControlTemplate TargetType="ContextMenu">
                                             <Border Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="5" Padding="5">
                                                 <StackPanel>
-                                                    <MenuItem Command="Cut" Header="Cut">
-                                                    <MenuItem.Icon>
-                                                            <TextBlock Text="&#xE8C6;" FontSize="14" FontFamily="Segoe Fluent Icons"/>
-                                                        </MenuItem.Icon>
-                                                    </MenuItem>
-                                                    <MenuItem Command="Copy" Header="Copy">
-                                                        <MenuItem.Icon>
-                                                            <TextBlock Text="&#xE8C8;" FontSize="14" FontFamily="Segoe Fluent Icons"/>
-                                                        </MenuItem.Icon>
-                                                    </MenuItem>
-                                                    <MenuItem Command="Paste" Header="Paste">
-                                                        <MenuItem.Icon>
-                                                            <TextBlock Text="&#xE77F;" FontSize="14" FontFamily="Segoe Fluent Icons"/>
-                                                        </MenuItem.Icon>
-                                                    </MenuItem>
-
+                                                    <MenuItem Command="Cut" Header="Cut"/>
+                                                    <MenuItem Command="Copy" Header="Copy"/>
+                                                    <MenuItem Command="Paste" Header="Paste"/>
                                                 </StackPanel>
                                             </Border>
                                         </ControlTemplate>
@@ -887,7 +874,7 @@
                     Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
                     HorizontalAlignment="Right" VerticalAlignment="Top"
                     Margin="5,5,5,0"
-                    FontFamily="Segoe Fluent Icons"
+                    FontFamily="Segoe MDL2 Assets"
                     Content="&#xE713;"/>
                 <Popup Grid.Column="3" Name="SettingsPopup"
                     IsOpen="False"
@@ -914,13 +901,13 @@
 
             <Button
                 Grid.Column="4"
-                Content="&#xE8BB;" BorderThickness="0"
+                Content="&#xD7;" BorderThickness="0"
                 BorderBrush="Transparent"
                 Background="{DynamicResource MainBackgroundColor}"
                 Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
                 HorizontalAlignment="Right" VerticalAlignment="Top"
                 Margin="0,5,5,0"
-                FontFamily="Segoe Fluent Icons"
+                FontFamily="{DynamicResource FontFamily}"
                 Foreground="{DynamicResource MainForegroundColor}" FontSize="{DynamicResource CloseIconFontSize}" Name="WPFCloseButton" />
             </Grid>
 

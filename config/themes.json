@@ -19,7 +19,7 @@
         "IconFontSize":     "14",
         "IconButtonSize":   "35",
         "SettingsIconFontSize":   "18",
-        "CloseIconFontSize":      "12",
+        "CloseIconFontSize":      "18",
         "MicroWinLogoSize": "10",
         "MicrowinCheckBoxMargin": "-10,5,0,0",
         "GroupBorderBackgroundColor":  "#232629",
