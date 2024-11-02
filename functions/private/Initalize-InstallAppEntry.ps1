@@ -1,12 +1,12 @@
 function Initialize-InstallAppEntry {
     <#
         .SYNOPSIS
-            Creates the app entry to be placed on the isntall tab for a given app 
+            Creates the app entry to be placed on the isntall tab for a given app
             Used to as part of the Install Tab UI generation
         .PARAMETER TargetElement
             The Element into which the Apps should be placed
         .PARAMETER AppKey
-            The Key of the app inside the $sync.configs.applicationsHashtable 
+            The Key of the app inside the $sync.configs.applicationsHashtable
     #>
         param(
             [Windows.Controls.WrapPanel]$TargetElement,

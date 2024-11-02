@@ -25,7 +25,7 @@ function Invoke-WPFSelectedAppsUpdate {
         $sync.selectedApps.Add($appKey)
         # The List type needs to be specified again, because otherwise Sort-Object will convert the list to a string if there is only a single entry
         [System.Collections.Generic.List[pscustomobject]]$sync.selectedApps = $sync.SelectedApps | Sort-Object
-        
+
     }
     elseif ($type -eq "Remove") {
         $sync.SelectedApps.Remove($appKey)
@@ -33,11 +33,11 @@ function Invoke-WPFSelectedAppsUpdate {
     else{
         Write-Error "Type: $type not implemented"
     }
-    
+
     $count = $sync.SelectedApps.Count
     $selectedAppsButton.Content = "Selected Apps: $count"
     # On every change, remove all entries inside the Popup Menu. This is done, so we can keep the alphabetical order even if elements are selected in a random way
-    $sync.selectedAppsstackPanel.Children.Clear()    
+    $sync.selectedAppsstackPanel.Children.Clear()
     $sync.SelectedApps | Foreach-Object { Add-SelectedAppsMenuItem -name $($sync.configs.applicationsHashtable.$_.Content) -key $_ }
-    
+
 }

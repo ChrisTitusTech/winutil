@@ -2,14 +2,14 @@ function Initialize-InstallCategoryAppList {
     <#
         .SYNOPSIS
             Clears the Target Element and sets up a "Loading" message. This is done, because loading of all apps can take a bit of time in some scenarios
-            Iterates through all Categories and Apps and adds them to the UI    
+            Iterates through all Categories and Apps and adds them to the UI
             Used to as part of the Install Tab UI generation
         .PARAMETER TargetElement
             The Element into which the Categories and Apps should be placed
         .PARAMETER Apps
             The Hashtable of Apps to be added to the UI
             The Categories are also extracted from the Apps Hashtable
-        
+
     #>
         param(
             $TargetElement,
@@ -20,7 +20,7 @@ function Initialize-InstallCategoryAppList {
                 [string]$Category,
                 [Windows.Controls.ItemsControl]$TargetElement
             )
-    
+
             $toggleButton = New-Object Windows.Controls.Primitives.ToggleButton
             $toggleButton.Content = "$Category"
             $toggleButton.Tag = "CategoryToggleButton"
@@ -51,7 +51,7 @@ function Initialize-InstallCategoryAppList {
         $null = $TargetElement.Items.Add($sync.LoadingLabel)
         # Use the Dispatcher to make sure the Loading message is shown before the logic loading the apps starts, and only is removed when the loading is complete and the apps are added to the UI
         $TargetElement.Dispatcher.Invoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{
-            
+
             $TargetElement.Items.Clear() # Remove the loading message
             $categories = $Apps.Values | Select-Object -ExpandProperty category -Unique | Sort-Object
             foreach ($category in $categories) {

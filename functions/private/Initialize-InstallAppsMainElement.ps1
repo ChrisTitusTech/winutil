@@ -4,7 +4,7 @@ function Initialize-InstallAppsMainElement {
             Clears the given WPF Grid and creates a [Windows.Controls.Border] containing a [Windows.Controls.StackPanel]
             Used to as part of the Install Tab UI generation
         .PARAMETER TargetGridName
-            The WPF Grid name 
+            The WPF Grid name
         .OUTPUTS
             Returns the created [Windows.Controls.StackPanel] element
     #>
@@ -12,7 +12,7 @@ function Initialize-InstallAppsMainElement {
         [Parameter(Mandatory)]
         [string]$TargetGridName
     )
-    $targetGrid = $sync.Form.FindName($TargetGridName)       
+    $targetGrid = $sync.Form.FindName($TargetGridName)
     $null = $targetGrid.Children.Clear()
 
     $Border = New-Object Windows.Controls.Border

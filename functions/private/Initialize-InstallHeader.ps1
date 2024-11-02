@@ -46,7 +46,7 @@ function Initialize-InstallHeader {
     $selectedAppsButton.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "MainForegroundColor")
     $selectedAppsButton.HorizontalAlignment = "Center"
     $selectedAppsButton.VerticalAlignment = "Center"
-    
+
     $selectedAppsPopup = New-Object Windows.Controls.Primitives.Popup
     $selectedAppsPopup.IsOpen = $false
     $selectedAppsPopup.PlacementTarget = $selectedAppsButton
@@ -61,7 +61,7 @@ function Initialize-InstallHeader {
     $selectedAppsBorder.Padding = 5
     $selectedAppsPopup.Child = $selectedAppsBorder
     $sync.selectedAppsPopup = $selectedAppsPopup
-    
+
     $sync.selectedAppsstackPanel = New-Object Windows.Controls.StackPanel
     $selectedAppsBorder.Child = $sync.selectedAppsstackPanel
 

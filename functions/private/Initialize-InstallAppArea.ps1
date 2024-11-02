@@ -2,11 +2,11 @@
         <#
             .SYNOPSIS
                 Creates a [Windows.Controls.ScrollViewer] containing a [Windows.Controls.ItemsControl] which is setup to use Virtualization to only load the visible elements for performance reasons.
-                This is used as the parent object for all category and app entries on the install tab 
+                This is used as the parent object for all category and app entries on the install tab
                 Used to as part of the Install Tab UI generation
-            
+
             .PARAMETER TargetElement
-                The element to which the AppArea shoud be added 
+                The element to which the AppArea shoud be added
 
         #>
         param($TargetElement)

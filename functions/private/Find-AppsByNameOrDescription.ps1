@@ -1,14 +1,14 @@
 function Find-AppsByNameOrDescription {
     <#
-        .SYNOPSIS 
+        .SYNOPSIS
             Searches through the Apps on the Install Tab and hides all entries that do not match the string
-        
+
         .PARAMETER SearchString
             The string to be searched for
     #>
     param(
         [Parameter(Mandatory=$false)]
-        [string]$SearchString = ""       
+        [string]$SearchString = ""
     )
     # Reset the visibility if the search string is empty or the search is cleared
     if ([string]::IsNullOrWhiteSpace($SearchString)) {
@@ -31,5 +31,5 @@ function Find-AppsByNameOrDescription {
                 }
             }
         }
-    }   
+    }
 }
