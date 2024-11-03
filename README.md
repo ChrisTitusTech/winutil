@@ -8,7 +8,7 @@ This utility is a compilation of Windows tasks I perform on each Windows system 
 
 ![screen-install](./docs/assets/Title-Screen.png)
 
-## 💡 Usage
+## 💡 Usages
 
 Winutil must be run in Admin mode because it performs system-wide tweaks. To achieve this, run PowerShell as an administrator. Here are a few ways to do it:
 
