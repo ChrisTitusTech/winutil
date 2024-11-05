@@ -3302,6 +3302,15 @@
     "panel": "2",
     "Order": "a101_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "Name": "BingSearchEnabled",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/BingSearch"
   },
   "WPFToggleNumLock": {
