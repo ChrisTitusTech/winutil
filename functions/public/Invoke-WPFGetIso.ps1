@@ -261,30 +261,19 @@ function Invoke-WPFGetIso {
         }
         $sync.MicrowinWindowsFlavors.Items.Clear()
 
-        # Store the results of Get-WindowsImage in a variable
         $images = Get-WindowsImage -ImagePath $wimFile
-
-        $proEditionIndex = -1
-        $proeditionfound = $false
 
         # Populate the list of Windows flavors and find the Pro edition
         $images | ForEach-Object {
             $imageIdx = $_.ImageIndex
             $imageName = $_.ImageName
+
             $sync.MicrowinWindowsFlavors.Items.Add("$imageIdx : $imageName")
 
-            # Check if the image name contains 'Pro'
-            if ($imageName -like "*Pro*" -and !$proeditionfound) {
-                $proEditionIndex = $imageIdx
-                $proeditionfound = $true
+            if ((Get-WindowsImage -ImagePath $wimFile -Index $_.ImageIndex).EditionId -eq "Professional") {
+                # We have found the Pro edition
+                $sync.MicrowinWindowsFlavors.SelectedIndex = $_.ImageIndex - 1
             }
-        }
-
-        # Set the selected index to the Pro edition if found, otherwise default to the first item
-        if ($proEditionIndex -ne -1) {
-            $sync.MicrowinWindowsFlavors.SelectedIndex = $proEditionIndex - 1
-        } else {
-            $sync.MicrowinWindowsFlavors.SelectedIndex = 0
         }
 
         Get-Volume $driveLetter | Get-DiskImage | Dismount-DiskImage
