@@ -3310,10 +3310,14 @@
       }
     ],
     "InvokeScript": [
-      "Invoke-WinUtilExplorerRefresh"
+      "
+      Invoke-WinUtilExplorerRefresh
+      "
     ],
     "UndoScript": [
-      "Invoke-WinUtilExplorerRefresh"
+      "
+      Invoke-WinUtilExplorerRefresh
+      "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DarkMode"
   },

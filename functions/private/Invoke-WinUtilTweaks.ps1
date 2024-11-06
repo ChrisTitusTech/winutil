@@ -77,6 +77,10 @@ function Invoke-WinUtilTweaks {
     if($sync.configs.tweaks.$CheckBox.registry) {
         $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
             Write-Debug "$($psitem.Name) and state is $($psitem.$($values.registry))"
+            if (($psitem.Path -imatch "hku") -and !(Get-PSDrive -Name HKU -ErrorAction SilentlyContinue)) {
+                New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS
+                write-host "Created HKU drive"
+            }
             Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
         }
     }
