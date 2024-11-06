@@ -52,8 +52,8 @@ function Invoke-WPFButton {
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
-        "WPFGetIso" {Invoke-WPFGetIso}
-        "WPFMicrowin" {Invoke-WPFMicrowin}
+        "WPFGetIso" {Invoke-MicrowinGetIso}
+        "WPFMicrowin" {Invoke-Microwin}
         "WPFCloseButton" {Invoke-WPFCloseButton}
         "MicrowinScratchDirBT" {Invoke-ScratchDialog}
         "WPFWinUtilPSProfile" {Invoke-WinUtilpsProfile}
