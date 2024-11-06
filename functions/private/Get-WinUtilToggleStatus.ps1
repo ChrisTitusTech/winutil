@@ -17,7 +17,7 @@ Function Get-WinUtilToggleStatus {
     $ToggleSwitchReg = $sync.configs.tweaks.$ToggleSwitch.registry
 
     if (($ToggleSwitchReg.path -imatch "hku") -and !(Get-PSDrive -Name HKU -ErrorAction SilentlyContinue)) {
-        New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS
+        $null = New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS
         write-host "Created HKU drive"
         if (Get-PSDrive -Name HKU -ErrorAction SilentlyContinue) {
             Write-Host "HKU drive created successfully" -ForegroundColor Green
