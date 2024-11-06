@@ -270,6 +270,9 @@ function Invoke-WPFGetIso {
 
             $sync.MicrowinWindowsFlavors.Items.Add("$imageIdx : $imageName")
 
+        $sync.MicrowinWindowsFlavors.SelectedIndex = 0
+        Write-Host "Finding suitable Pro edition. This can take some time. Do note that this is an automatic process that might not select the edition you want."
+        
             if ((Get-WindowsImage -ImagePath $wimFile -Index $_.ImageIndex).EditionId -eq "Professional") {
                 # We have found the Pro edition
                 $sync.MicrowinWindowsFlavors.SelectedIndex = $_.ImageIndex - 1
