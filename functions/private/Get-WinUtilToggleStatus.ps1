@@ -19,25 +19,32 @@ Function Get-WinUtilToggleStatus {
     if (($ToggleSwitchReg.path -imatch "hku") -and !(Get-PSDrive -Name HKU -ErrorAction SilentlyContinue)) {
         New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS
         write-host "Created HKU drive"
+        if (Get-PSDrive -Name HKU -ErrorAction SilentlyContinue) {
+            Write-Host "HKU drive created successfully" -ForegroundColor Green
+        } else {
+            Write-Host "Failed to create HKU drive"
+        }
     }
 
     if ($ToggleSwitchReg) {
         $count = 0
 
         foreach ($regentry in $ToggleSwitchReg) {
-            $regstate = (Get-ItemProperty -path $($regentry.Path)).$($regentry.Name)
+            write-host "Checking $($regentry.path)"
+            $regstate = (Get-ItemProperty -path $regentry.Path).$($regentry.Name)
             if ($regstate -eq $regentry.Value) {
                 $count += 1
+                write-host "$($regentry.Name) is true (state: $regstate, value: $($regentry.Value), original: $($regentry.OriginalValue))" -ForegroundColor Green
             } else {
-                write-debug "$($regentry.Name) is false (state: $regstate, value: $($regentry.Value), original: $($regentry.OriginalValue))"
+                write-host "$($regentry.Name) is false (state: $regstate, value: $($regentry.Value), original: $($regentry.OriginalValue))"
             }
         }
 
         if ($count -eq $ToggleSwitchReg.Count) {
-            write-debug "$($ToggleSwitchReg.Name) is true (count: $count)"
+            write-host "$($ToggleSwitchReg.Name) is true (count: $count)" -ForegroundColor Green
             return $true
         } else {
-            write-debug "$($ToggleSwitchReg.Name) is false (count: $count)"
+            write-host "$($ToggleSwitchReg.Name) is false (count: $count)"
             return $false
         }
     } else {
