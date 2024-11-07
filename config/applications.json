@@ -1892,7 +1892,7 @@
         "choco": "sdio",
         "content": "Snappy Driver Installer Origin",
         "description": "Snappy Driver Installer Origin is a free and open-source driver updater with a vast driver database for Windows.",
-        "link": "https://sourceforge.net/projects/snappy-driver-installer-origin",
+        "link": "https://www.glenn.delahoy.com/snappy-driver-installer-origin/",
         "winget": "GlennDelahoy.SnappyDriverInstallerOrigin"
     },
     "session": {
