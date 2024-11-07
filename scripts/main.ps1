@@ -10,7 +10,7 @@ $InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionSta
 $InitialSessionState.Variables.Add($hashVars)
 
 # Get every private function and add them to the session state
-$functions = (Get-ChildItem function:\).where{$_.name -like "*winutil*" -or $_.name -like "*WPF*"}
+$functions = Get-ChildItem function:\ | Where-Object { $_.Name -imatch 'winutil|Microwin|WPF' }
 foreach ($function in $functions) {
     $functionDefinition = Get-Content function:\$($function.name)
     $functionEntry = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $($function.name), $functionDefinition
@@ -413,7 +413,7 @@ $sync["ISOmanual"].add_Checked({
 $sync["ISORelease"].Items.Add("24H2") | Out-Null
 $sync["ISORelease"].SelectedItem = "24H2"
 
-$sync["ISOLanguage"].Items.Add("System Language ($(Get-FidoLangFromCulture -langName $((Get-Culture).Name)))") | Out-Null
+$sync["ISOLanguage"].Items.Add("System Language ($(Microwin-GetLangFromCulture -langName $((Get-Culture).Name)))") | Out-Null
 if ($currentCulture -ne "English International") {
     $sync["ISOLanguage"].Items.Add("English International") | Out-Null
 }

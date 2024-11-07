@@ -11,21 +11,21 @@
         "Name": "EnableActivityFeed",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
         "Name": "PublishUserActivities",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
         "Name": "UploadUserActivities",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/AH"
@@ -1598,126 +1598,126 @@
         "Name": "CreateDesktopShortcutDefault",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "PersonalizationReportingEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "ShowRecommendationsEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "HideFirstRunExperience",
         "Type": "DWord",
         "Value": "1",
-        "OriginalValue": "0"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "UserFeedbackAllowed",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "ConfigureDoNotTrack",
         "Type": "DWord",
         "Value": "1",
-        "OriginalValue": "0"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "AlternateErrorPagesEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "EdgeCollectionsEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "EdgeShoppingAssistantEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "MicrosoftEdgeInsiderPromotionEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "PersonalizationReportingEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "ShowMicrosoftRewards",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "WebWidgetAllowed",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "DiagnosticData",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "EdgeAssetDeliveryServiceEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "EdgeCollectionsEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "CryptoWalletEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "WalletDonationEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/EdgeDebloat"
@@ -1731,7 +1731,7 @@
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-        "OriginalValue": "0",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "DisableWindowsConsumerFeatures",
         "Value": "1",
         "Type": "DWord"
@@ -1818,11 +1818,11 @@
         "Type": "DWord",
         "Value": "0",
         "Name": "AllowTelemetry",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
-        "OriginalValue": "1",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "AllowTelemetry",
         "Value": "0",
         "Type": "DWord"
@@ -1906,21 +1906,21 @@
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
-        "OriginalValue": "0",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "DoNotShowFeedbackNotifications",
         "Value": "1",
         "Type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-        "OriginalValue": "0",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "DisableTailoredExperiencesWithDiagnosticData",
         "Value": "1",
         "Type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo",
-        "OriginalValue": "0",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "DisabledByGroupPolicy",
         "Value": "1",
         "Type": "DWord"
@@ -2047,7 +2047,7 @@
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Feeds",
-        "OriginalValue": "1",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "EnableFeeds",
         "Value": "0",
         "Type": "DWord"
@@ -2061,7 +2061,7 @@
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
-        "OriginalValue": "1",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "HideSCAMeetNow",
         "Value": "1",
         "Type": "DWord"
@@ -2553,14 +2553,14 @@
         "Name": "TurnOffWindowsCopilot",
         "Type": "DWord",
         "Value": "1",
-        "OriginalValue": "0"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\WindowsCopilot",
         "Name": "TurnOffWindowsCopilot",
         "Type": "DWord",
         "Value": "1",
-        "OriginalValue": "0"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
@@ -2597,7 +2597,7 @@
         "Name": "DisableAIDataAnalysis",
         "Type": "DWord",
         "Value": "1",
-        "OriginalValue": "0"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "InvokeScript": [
@@ -2824,7 +2824,7 @@
         "Name": "DisableNotificationCenter",
         "Type": "DWord",
         "Value": "1",
-        "OriginalValue": "0"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications",
@@ -3183,7 +3183,7 @@
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR",
         "Name": "AllowGameDVR",
         "Value": "0",
-        "OriginalValue": "1",
+        "OriginalValue": "<RemoveEntry>",
         "Type": "DWord"
       }
     ],
