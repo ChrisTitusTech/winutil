@@ -76,6 +76,7 @@ public class PowerManagement {
     }
 
     $imgVersion = (Get-WindowsImage -ImagePath $mountDir\sources\install.wim -Index $index).Version
+    Write-Host "The Windows Image Build Version is: $imgVersion"
 
     # Detect image version to avoid performing MicroWin processing on Windows 8 and earlier
     if ((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,10240,0))) -eq $false) {
