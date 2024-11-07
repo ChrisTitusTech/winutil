@@ -1,10 +1,10 @@
-function Get-Oscdimg {
+function Microwin-GetOscdimg {
     <#
         .DESCRIPTION
         This function will download oscdimg file from github Release folders and put it into env:temp folder
 
         .EXAMPLE
-        Get-Oscdimg
+        Microwin-GetOscdimg
     #>
 
     param(
