@@ -17,12 +17,11 @@ Function Get-WinUtilToggleStatus {
     $ToggleSwitchReg = $sync.configs.tweaks.$ToggleSwitch.registry
 
     if (($ToggleSwitchReg.path -imatch "hku") -and !(Get-PSDrive -Name HKU -ErrorAction SilentlyContinue)) {
-        $null = New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS
-        write-host "Created HKU drive"
+        $null = (New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS)
         if (Get-PSDrive -Name HKU -ErrorAction SilentlyContinue) {
-            Write-Host "HKU drive created successfully" -ForegroundColor Green
+            Write-Debug "HKU drive created successfully"
         } else {
-            Write-Host "Failed to create HKU drive"
+            Write-Debug "Failed to create HKU drive"
         }
     }
 
@@ -30,21 +29,20 @@ Function Get-WinUtilToggleStatus {
         $count = 0
 
         foreach ($regentry in $ToggleSwitchReg) {
-            write-host "Checking $($regentry.path)"
             $regstate = (Get-ItemProperty -path $regentry.Path).$($regentry.Name)
             if ($regstate -eq $regentry.Value) {
                 $count += 1
-                write-host "$($regentry.Name) is true (state: $regstate, value: $($regentry.Value), original: $($regentry.OriginalValue))" -ForegroundColor Green
+                Write-Debug "$($regentry.Name) is true (state: $regstate, value: $($regentry.Value), original: $($regentry.OriginalValue))"
             } else {
-                write-host "$($regentry.Name) is false (state: $regstate, value: $($regentry.Value), original: $($regentry.OriginalValue))"
+                Write-Debug "$($regentry.Name) is false (state: $regstate, value: $($regentry.Value), original: $($regentry.OriginalValue))"
             }
         }
 
         if ($count -eq $ToggleSwitchReg.Count) {
-            write-host "$($ToggleSwitchReg.Name) is true (count: $count)" -ForegroundColor Green
+            Write-Debug "$($ToggleSwitchReg.Name) is true (count: $count)"
             return $true
         } else {
-            write-host "$($ToggleSwitchReg.Name) is false (count: $count)"
+            Write-Debug "$($ToggleSwitchReg.Name) is false (count: $count)"
             return $false
         }
     } else {

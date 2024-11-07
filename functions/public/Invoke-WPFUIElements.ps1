@@ -194,12 +194,6 @@ function Invoke-WPFUIElements {
 
                         $sync[$entryInfo.Name].IsChecked = (Get-WinUtilToggleStatus $entryInfo.Name)
 
-                        if ($sync[$entryInfo.Name].IsChecked) {
-                            write-host "$($entryInfo.Name) is checked" -ForegroundColor Blue
-                        } else {
-                            write-host "$($entryInfo.Name) is not checked" -ForegroundColor Red
-                        }
-
                         $sync[$entryInfo.Name].Add_Checked({
                             [System.Object]$Sender = $args[0]
                             Invoke-WinUtilTweaks $sender.name
