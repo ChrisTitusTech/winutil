@@ -164,7 +164,7 @@ public class PowerManagement {
         Microwin-RemoveProvisionedPackages
 
         # Detect Windows 11 24H2 and add dependency to FileExp to prevent Explorer look from going back - thanks @WitherOrNot and @thecatontheceiling
-        if ((Test-CompatibleImage $imgVersion $([System.Version]::new(10,0,26100,1))) -eq $true) {
+        if ((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,26100,1))) -eq $true) {
             try {
                 if (Test-Path "$scratchDir\Windows\SystemApps\MicrosoftWindows.Client.FileExp_cw5n1h2txyewy\appxmanifest.xml" -PathType Leaf) {
                     # Found the culprit. Do the following:
