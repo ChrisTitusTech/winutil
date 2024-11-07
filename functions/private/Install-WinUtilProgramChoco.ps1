@@ -44,7 +44,7 @@ function Install-WinUtilProgramChoco {
         New-Item -ItemType File -Path $filePath | Out-Null
     }
 
-    function Run-ChocoCommand {
+    function Invoke-ChocoCommand {
         <#
         .SYNOPSIS
         Executes a Chocolatey command with the specified arguments and returns the exit code.
@@ -60,14 +60,14 @@ function Install-WinUtilProgramChoco {
         The exit code of the Chocolatey command.
 
         .EXAMPLE
-        $exitCode = Run-ChocoCommand -arguments "install 7zip -y"
+        $exitCode = Invoke-ChocoCommand -arguments "install 7zip -y"
         #>
 
         param ($arguments)
         return (Start-Process -FilePath "choco" -ArgumentList $arguments -Wait -PassThru).ExitCode
     }
 
-    function Check-UpgradeNeeded {
+    function Test-UpgradeNeeded {
         <#
         .SYNOPSIS
         Checks if an upgrade is needed for a Chocolatey package based on the content of a log file.
@@ -83,7 +83,7 @@ function Install-WinUtilProgramChoco {
         True if the log file indicates that an upgrade is needed; otherwise, false.
 
         .EXAMPLE
-        $isUpgradeNeeded = Check-UpgradeNeeded -filePath "C:\temp\install-output.txt"
+        $isUpgradeNeeded = Test-UpgradeNeeded -filePath "C:\temp\install-output.txt"
         #>
 
         param ($filePath)
@@ -149,11 +149,11 @@ function Install-WinUtilProgramChoco {
         Write-Host "Starting installation of $Program with Chocolatey."
 
         try {
-            $installStatusCode = Run-ChocoCommand "install $Program -y --log-file $installOutputFile"
+            $installStatusCode = Invoke-ChocoCommand "install $Program -y --log-file $installOutputFile"
             if ($installStatusCode -eq 0) {
 
-                if (Check-UpgradeNeeded $installOutputFile) {
-                    $upgradeStatusCode = Run-ChocoCommand "upgrade $Program -y"
+                if (Test-UpgradeNeeded $installOutputFile) {
+                    $upgradeStatusCode = Invoke-ChocoCommand "upgrade $Program -y"
                     Write-Host "$Program was" $(if ($upgradeStatusCode -eq 0) { "upgraded successfully." } else { "not upgraded." })
                 }
                 else {
@@ -207,7 +207,7 @@ function Install-WinUtilProgramChoco {
         if ($chocoPackages) {
             Write-Host "Starting uninstallation of $chocoPackages with Chocolatey."
             try {
-                $uninstallStatusCode = Run-ChocoCommand "uninstall $chocoPackages -y"
+                $uninstallStatusCode = Invoke-ChocoCommand "uninstall $chocoPackages -y"
                 Write-Host "$Program" $(if ($uninstallStatusCode -eq 0) { "uninstalled successfully." } else { "failed to uninstall." })
             }
             catch {
