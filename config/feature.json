@@ -312,8 +312,7 @@
     "panel": "2",
     "Order": "a083_",
     "Type": "Button",
-    "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/features/Powershell-Profile/PSProfileInstall"
+    "ButtonWidth": "300"
   },
   "WPFWinUtilUninstallPSProfile": {
     "Content": "Uninstall CTT PowerShell Profile",
@@ -321,8 +320,7 @@
     "panel": "2",
     "Order": "a084_",
     "Type": "Button",
-    "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/features/Powershell-Profile/PSProfileUninstall"
+    "ButtonWidth": "300"
   },
   "WPFWinUtilSSHServer": {
     "Content": "Enable OpenSSH Server",
