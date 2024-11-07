@@ -3311,12 +3311,12 @@
     ],
     "InvokeScript": [
       "
-      Invoke-WinUtilExplorerRefresh
+      Invoke-WinUtilExplorerUpdate
       "
     ],
     "UndoScript": [
       "
-      Invoke-WinUtilExplorerRefresh
+      Invoke-WinUtilExplorerUpdate
       "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DarkMode"
@@ -3416,6 +3416,16 @@
         "Type": "DWord"
       }
     ],
+    "InvokeScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
+    "UndoScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapFlyout"
   },
   "WPFToggleSnapSuggestion": {
@@ -3433,6 +3443,16 @@
         "OriginalValue": "0",
         "Type": "DWord"
       }
+    ],
+    "InvokeScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
+    "UndoScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapSuggestion"
   },
