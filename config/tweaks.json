@@ -3312,11 +3312,17 @@
     "InvokeScript": [
       "
       Invoke-WinUtilExplorerUpdate
+      if ($sync.ThemeButton.Content -eq [char]0xF08C) {
+        Invoke-WinutilThemeChange -theme \"Auto\"
+      }
       "
     ],
     "UndoScript": [
       "
       Invoke-WinUtilExplorerUpdate
+      if ($sync.ThemeButton.Content -eq [char]0xF08C) {
+        Invoke-WinutilThemeChange -theme \"Auto\"
+      }
       "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DarkMode"
