@@ -3401,7 +3401,7 @@
         "Name": "WindowArrangementActive",
         "Value": "1",
         "OriginalValue": "0",
-        "Type": "DWord"
+        "Type": "String"
       }
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapWindow"
