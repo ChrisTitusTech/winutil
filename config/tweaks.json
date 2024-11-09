@@ -3338,8 +3338,8 @@
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
         "Name": "BingSearchEnabled",
-        "Value": "0",
-        "OriginalValue": "1",
+        "Value": "1",
+        "OriginalValue": "0",
         "Type": "DWord"
       }
     ],
