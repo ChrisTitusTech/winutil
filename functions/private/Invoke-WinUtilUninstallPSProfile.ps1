@@ -175,6 +175,9 @@ function Invoke-WinUtilUninstallPSProfile {
 
                 # Silently cleanup the oldprofile.ps1 file that was created when the CTT PowerShell profile was installed.
                 Remove-Item "$env:USERPROFILE\oldprofile.ps1" | Out-Null
+
+                # Silently cleanup the $PSProfile.hash file that was created when the CTT PowerShell profile was installed.
+                Remove-Item "$PSProfile.hash" | Out-Null
             } else {
                 # Let the user know that the CTT PowerShell profile is not installed and that the uninstallation was skipped.
                 Write-Host "===> Chris Titus Tech's PowerShell Profile Not Found. Skipped Uninstallation. <===" -ForegroundColor Magenta
