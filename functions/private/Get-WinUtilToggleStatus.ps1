@@ -16,25 +16,34 @@ Function Get-WinUtilToggleStatus {
 
     $ToggleSwitchReg = $sync.configs.tweaks.$ToggleSwitch.registry
 
-    if (($ToggleSwitchReg.path -imatch "hku") -and !(Get-PSDrive -Name HKU -ErrorAction SilentlyContinue)) {
-        $null = (New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS)
-        if (Get-PSDrive -Name HKU -ErrorAction SilentlyContinue) {
-            Write-Debug "HKU drive created successfully"
-        } else {
-            Write-Debug "Failed to create HKU drive"
+    try {
+        if (($ToggleSwitchReg.path -imatch "hku") -and !(Get-PSDrive -Name HKU -ErrorAction SilentlyContinue)) {
+            $null = (New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS)
+            if (Get-PSDrive -Name HKU -ErrorAction SilentlyContinue) {
+                Write-Debug "HKU drive created successfully"
+            } else {
+                Write-Debug "Failed to create HKU drive"
+            }
         }
+    } catch {
+        Write-Error "An error occurred regarding the HKU Drive: $_"
+        return $false
     }
 
     if ($ToggleSwitchReg) {
         $count = 0
 
         foreach ($regentry in $ToggleSwitchReg) {
-            $regstate = (Get-ItemProperty -path $regentry.Path).$($regentry.Name)
-            if ($regstate -eq $regentry.Value) {
-                $count += 1
-                Write-Debug "$($regentry.Name) is true (state: $regstate, value: $($regentry.Value), original: $($regentry.OriginalValue))"
-            } else {
-                Write-Debug "$($regentry.Name) is false (state: $regstate, value: $($regentry.Value), original: $($regentry.OriginalValue))"
+            try {
+                $regstate = (Get-ItemProperty -path $regentry.Path).$($regentry.Name)
+                if ($regstate -eq $regentry.Value) {
+                    $count += 1
+                    Write-Debug "$($regentry.Name) is true (state: $regstate, value: $($regentry.Value), original: $($regentry.OriginalValue))"
+                } else {
+                    Write-Debug "$($regentry.Name) is false (state: $regstate, value: $($regentry.Value), original: $($regentry.OriginalValue))"
+                }
+            } catch {
+                Write-Error "An error occurred while accessing registry entry $($regentry.Path): $_"
             }
         }
 
