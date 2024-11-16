@@ -1,5 +1,5 @@
-function Invoke-WPFTweakPS7{
-        <#
+function Invoke-WPFTweakPS7 {
+    <#
     .SYNOPSIS
         This will edit the config file of the Windows Terminal Replacing the Powershell 5 to Powershell 7 and install Powershell 7 if necessary
     .PARAMETER action
@@ -12,7 +12,7 @@ function Invoke-WPFTweakPS7{
     )
 
     switch ($action) {
-        "PS7"{
+        "PS7" {
             if (Test-Path -Path "$env:ProgramFiles\PowerShell\7") {
                 Write-Host "Powershell 7 is already installed."
             } else {
@@ -20,9 +20,11 @@ function Invoke-WPFTweakPS7{
                 Install-WinUtilProgramWinget -Action Install -Programs @("Microsoft.PowerShell")
             }
             $targetTerminalName = "PowerShell"
+            $targetCommandLine = "C:\Program Files\PowerShell\7\pwsh.exe"
         }
-        "PS5"{
+        "PS5" {
             $targetTerminalName = "Windows PowerShell"
+            $targetCommandLine = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
         }
     }
     # Check if the Windows Terminal is installed and return if not (Prerequisite for the following code)
@@ -30,7 +32,7 @@ function Invoke-WPFTweakPS7{
         Write-Host "Windows Terminal not installed. Skipping Terminal preference"
         return
     }
-    # Check if the Windows Terminal settings.json file exists and return if not (Prereqisite for the following code)
+    # Check if the Windows Terminal settings.json file exists and return if not (Prerequisite for the following code)
     $settingsPath = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
     if (-not (Test-Path -Path $settingsPath)) {
         Write-Host "Windows Terminal Settings file not found at $settingsPath"
@@ -39,15 +41,17 @@ function Invoke-WPFTweakPS7{
 
     Write-Host "Settings file found."
     $settingsContent = Get-Content -Path $settingsPath | ConvertFrom-Json
-    $ps7Profile = $settingsContent.profiles.list | Where-Object { $_.name -eq $targetTerminalName }
-    if ($ps7Profile) {
-        $settingsContent.defaultProfile = $ps7Profile.guid
+    $targetProfile = $settingsContent.profiles.list | Where-Object { $_.name -eq $targetTerminalName }
+    if ($targetProfile) {
+        $settingsContent.defaultProfile = $targetProfile.guid
+        $targetProfile.commandline = $targetCommandLine
         $updatedSettings = $settingsContent | ConvertTo-Json -Depth 100
         Set-Content -Path $settingsPath -Value $updatedSettings
         Write-Host "Default profile updated to " -NoNewline
         Write-Host "$targetTerminalName " -ForegroundColor White -NoNewline
-        Write-Host "using the name attribute."
+        Write-Host "with command line: $targetCommandLine"
     } else {
-        Write-Host "No PowerShell 7 profile found in Windows Terminal settings using the name attribute."
+        Write-Host "No $targetTerminalName profile found in Windows Terminal settings using the name attribute."
     }
 }
+
