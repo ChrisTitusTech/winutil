@@ -537,19 +537,19 @@ $sync["AutoThemeMenuItem"].Add_Click({
     $sync.ThemePopup.IsOpen = $false
     Invoke-WinutilThemeChange -theme "Auto"
     $_.Handled = $false
-  })
-  # Define event handlers for menu items
+})
+# Define event handlers for menu items
 $sync["DarkThemeMenuItem"].Add_Click({
     $sync.ThemePopup.IsOpen = $false
     Invoke-WinutilThemeChange -theme "Dark"
     $_.Handled = $false
-  })
+})
 # Define event handlers for menu items
 $sync["LightThemeMenuItem"].Add_Click({
     $sync.ThemePopup.IsOpen = $false
     Invoke-WinutilThemeChange -theme "Light"
     $_.Handled = $false
-  })
+})
 
 
 # Define event handler for button click
@@ -567,11 +567,11 @@ $sync["SettingsButton"].Add_Click({
 
 # Define event handlers for menu items
 $sync["ImportMenuItem"].Add_Click({
-  # Handle Import menu item click
-  Write-Debug "Import clicked"
-  $sync["SettingsPopup"].IsOpen = $false
-  Invoke-WPFImpex -type "import"
-  $_.Handled = $false
+    # Handle Import menu item click
+    Write-Debug "Import clicked"
+    $sync["SettingsPopup"].IsOpen = $false
+    Invoke-WPFImpex -type "import"
+    $_.Handled = $false
 })
 
 $sync["ExportMenuItem"].Add_Click({
