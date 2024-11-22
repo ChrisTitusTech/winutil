@@ -63,6 +63,22 @@ function Microwin-NewFirstRun {
     {
 
     }
+
+    # Get BCD entries and set bootmgr timeout accordingly
+    try
+    {
+        # Check if the number of occurrences of "path" is 2 - this fixes the Boot Manager screen issue (#2562)
+        if ((bcdedit | Select-String "path").Count -eq 2)
+        {
+            # Set bootmgr timeout to 0
+            bcdedit /set `{bootmgr`} timeout 0
+        }
+    }
+    catch
+    {
+
+    }
+
 '@
     $firstRun | Out-File -FilePath "$env:temp\FirstStartup.ps1" -Force
 }
