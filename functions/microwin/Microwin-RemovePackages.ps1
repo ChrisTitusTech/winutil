@@ -45,7 +45,8 @@ function Microwin-RemovePackages {
                 $_ -NotLike "*Foundation*" -AND
                 $_ -NotLike "*LanguageFeatures*" -AND
                 $_ -NotLike "*VBSCRIPT*" -AND
-                $_ -NotLike "*License*"
+                $_ -NotLike "*License*" -AND
+                $_ -NotLike "*HelloFace*"
             }
 
         $failedCount = 0
