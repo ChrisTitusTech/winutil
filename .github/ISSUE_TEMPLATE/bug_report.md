@@ -9,12 +9,11 @@ assignees: ''
 ## Describe the bug
 <!-- A clear and concise description of what the bug is. -->
 
-## To Reproduce
-Steps to reproduce the behavior:
+## Steps to reproduce
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
-4. See error
+4. See the error.
 
 ## Expected behavior
 <!-- A clear and concise description of what you expected to happen. -->
@@ -24,3 +23,8 @@ Steps to reproduce the behavior:
 
 ## Additional context
 <!-- Add any other context about the problem here. -->
+
+## Issue validation
+- [ ] I checked for duplicate issues.
+- [ ] I checked for already existing discussions.
+- [ ] This bug is not yet addressed by an open pull request.
