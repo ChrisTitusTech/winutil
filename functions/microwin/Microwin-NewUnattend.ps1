@@ -31,7 +31,7 @@ function Microwin-NewUnattend {
                             <Group>Administrators</Group>
                             <Password>
                                 <Value>PW-REPLACEME</Value>
-                                <PlainText>true</PlainText>
+                                <PlainText>PT-STATUS</PlainText>
                             </Password>
                         </LocalAccount>
                     </LocalAccounts>
@@ -42,7 +42,7 @@ function Microwin-NewUnattend {
                     <LogonCount>1</LogonCount>
                     <Password>
                         <Value>PW-REPLACEME</Value>
-                        <PlainText>true</PlainText>
+                        <PlainText>PT-STATUS</PlainText>
                     </Password>
                 </AutoLogon>
                 <OOBE>
@@ -295,15 +295,38 @@ function Microwin-NewUnattend {
     </settings>
 '@
     if ((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,22000,1))) -eq $false) {
-    # Replace the placeholder text with an empty string to make it valid for Windows 10 Setup
-    $unattend = $unattend.Replace("<#REPLACEME#>", "").Trim()
+        # Replace the placeholder text with an empty string to make it valid for Windows 10 Setup
+        $unattend = $unattend.Replace("<#REPLACEME#>", "").Trim()
     } else {
-    # Replace the placeholder text with the Specialize pass
-    $unattend = $unattend.Replace("<#REPLACEME#>", $specPass).Trim()
+        # Replace the placeholder text with the Specialize pass
+        $unattend = $unattend.Replace("<#REPLACEME#>", $specPass).Trim()
     }
+
+    # User password in Base64. According to Microsoft, this is the way you can hide this sensitive information.
+    # More information can be found here: https://learn.microsoft.com/en-us/windows-hardware/customize/desktop/wsim/hide-sensitive-data-in-an-answer-file
+    # Yeah, I know this is not the best way to protect this kind of data, but we all know how Microsoft is - a cheese grater without holes in terms of security
+    $b64pass = ""
+
     # Replace default User and Password values with the provided parameters
     $unattend = $unattend.Replace("USER-REPLACEME", $userName).Trim()
-    $unattend = $unattend.Replace("PW-REPLACEME", $userPassword).Trim()
+    try {
+        # I want to play it safe here - I don't want encoding mismatch problems like last time
+
+        # NOTE: "Password" needs to be appended to the password specified by the user. Otherwise, a parse error will occur when processing oobeSystem.
+        # This will not be added to the actual password stored in the target system's SAM file - only the provided password
+        $b64pass = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes("$($userPassword)Password"))
+    } catch {
+        $b64pass = ""
+    }
+    if ($b64pass -ne "") {
+        # If we could encode the password with Base64, put it in the answer file and indicate that it's NOT in plain text
+        $unattend = $unattend.Replace("PW-REPLACEME", $b64pass).Trim()
+        $unattend = $unattend.Replace("PT-STATUS", "false").Trim()
+        $b64pass = ""
+    } else {
+        $unattend = $unattend.Replace("PW-REPLACEME", $userPassword).Trim()
+        $unattend = $unattend.Replace("PT-STATUS", "true").Trim()
+    }
 
     # Save unattended answer file with UTF-8 encoding
     $unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force -Encoding utf8
