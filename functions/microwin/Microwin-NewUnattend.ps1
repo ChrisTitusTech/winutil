@@ -304,7 +304,9 @@ function Microwin-NewUnattend {
 
     # User password in Base64. According to Microsoft, this is the way you can hide this sensitive information.
     # More information can be found here: https://learn.microsoft.com/en-us/windows-hardware/customize/desktop/wsim/hide-sensitive-data-in-an-answer-file
-    # Yeah, I know this is not the best way to protect this kind of data, but we all know how Microsoft is - a cheese grater without holes in terms of security
+    # Yeah, I know this is not the best way to protect this kind of data, but we all know how Microsoft is - "the Apple of security" (in a sense, it takes them
+    # an eternity to implement basic security features right. Just look at the NTLM and Kerberos situation!)
+
     $b64pass = ""
 
     # Replace default User and Password values with the provided parameters
