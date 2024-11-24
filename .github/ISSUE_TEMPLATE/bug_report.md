@@ -27,4 +27,4 @@ assignees: ''
 ## Issue validation
 - [ ] I checked for duplicate issues.
 - [ ] I checked for already existing discussions.
-- [ ] This bug is not yet addressed by an open pull request.
+- [ ] I checked for an already existing pull request addressing the issue.
