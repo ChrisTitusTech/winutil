@@ -599,6 +599,14 @@
         "link": "https://www.mozilla.org/en-US/firefox/enterprise/",
         "winget": "Mozilla.Firefox.ESR"
     },
+    "zen": {
+        "category": "Browsers",
+        "choco": "zen-browser",
+        "content": "Zen Browser",
+        "description": "Zen is based on Firefox, ensuring that your browsing experience prioritizes security and privacy.",
+        "link": "https://zen-browser.app/download/",
+        "winget": "Zen-Team.Zen-Browser"
+    },
     "flameshot": {
         "category": "Multimedia Tools",
         "choco": "flameshot",
