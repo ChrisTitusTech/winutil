@@ -2682,17 +2682,26 @@
       "
       $OneDrivePath = $($env:OneDrive)
       Write-Host \"Removing OneDrive\"
+
+      # Check both traditional and Microsoft Store installations
       $regPath = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OneDriveSetup.exe\"
+      $msStorePath = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Appx\\AppxAllUserStore\\Applications\\*OneDrive*\"
+
       if (Test-Path $regPath) {
           $OneDriveUninstallString = Get-ItemPropertyValue \"$regPath\" -Name \"UninstallString\"
           $OneDriveExe, $OneDriveArgs = $OneDriveUninstallString.Split(\" \")
           Start-Process -FilePath $OneDriveExe -ArgumentList \"$OneDriveArgs /silent\" -NoNewWindow -Wait
+      } elseif (Test-Path $msStorePath) {
+          Write-Host \"OneDrive appears to be installed via Microsoft Store\" -ForegroundColor Yellow
+          # Attempt to uninstall via winget
+          Start-Process -FilePath winget -ArgumentList \"uninstall -e --purge --accept-source-agreements Microsoft.OneDrive\" -NoNewWindow -Wait
       } else {
-          Write-Host \"Onedrive dosn't seem to be installed anymore\" -ForegroundColor Red
-          return
+          Write-Host \"OneDrive doesn't seem to be installed\" -ForegroundColor Red
+          Write-Host \"Running cleanup if OneDrive path exists\" -ForegroundColor Red
       }
-      # Check if OneDrive got Uninstalled
-      if (-not (Test-Path $regPath)) {
+
+      # Check if OneDrive got Uninstalled (both paths)
+      if (Test-Path $OneDrivePath) {
         Write-Host \"Copy downloaded Files from the OneDrive Folder to Root UserProfile\"
         Start-Process -FilePath powershell -ArgumentList \"robocopy '$($OneDrivePath)' '$($env:USERPROFILE.TrimEnd())\\' /mov /e /xj\" -NoNewWindow -Wait
 
@@ -2758,7 +2767,7 @@
         Write-Host \"If there are Files missing afterwards, please Login to Onedrive.com and Download them manually\" -ForegroundColor Yellow
         Start-Sleep 5
       } else {
-        Write-Host \"Something went Wrong during the Unistallation of OneDrive\" -ForegroundColor Red
+        Write-Host \"Nothing to Cleanup with OneDrive\" -ForegroundColor Red
       }
       "
     ],
