@@ -115,6 +115,8 @@ Invoke-WinutilThemeChange -init $true
 Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 5
 Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
 Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
+# Future implementation: Add Windows Version to updates panel
+#Invoke-WPFUIElements -configVariable $sync.configs.updates -targetGridName "updatespanel" -columncount 1
 
 #===========================================================================
 # Store Form Objects In PowerShell

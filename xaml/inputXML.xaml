@@ -996,31 +996,97 @@
             </TabItem>
             <TabItem Header="Updates" Visibility="Collapsed" Name="WPFTab4">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{DynamicResource TabContentMargin}">
-                <Grid Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource BorderStyle}">
-                        <StackPanel Background="{DynamicResource MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Button Name="WPFUpdatesdefault" FontSize="{DynamicResource ConfigTabButtonFontSize}" Height="Auto" Width="Auto" Content="Default (Out of Box) Settings" Margin="20,4,20,10" Padding="10"/>
-                            <TextBlock Foreground="{DynamicResource ComboBoxForegroundColor}" Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This is the default settings that come with Windows. <LineBreak/><LineBreak/> No modifications are made and will remove any custom windows update settings.<LineBreak/><LineBreak/>Note: If you still encounter update errors, reset all updates in the config tab. That will restore ALL Microsoft Update Services from their servers and reinstall them to default settings.</TextBlock>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource BorderStyle}">
-                        <StackPanel Background="{DynamicResource MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Button Name="WPFUpdatessecurity" FontSize="{DynamicResource ConfigTabButtonFontSize}" Height="Auto" Width="Auto" Content="Security (Recommended) Settings" Margin="20,4,20,10" Padding="10"/>
-                            <TextBlock Foreground="{DynamicResource ComboBoxForegroundColor}" Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This is my recommended setting I use on all computers.<LineBreak/><LineBreak/> It will delay feature updates by 2 years and will install security updates 4 days after release.<LineBreak/><LineBreak/>Feature Updates: Adds features and often bugs to systems when they are released. You want to delay these as long as possible.<LineBreak/><LineBreak/>Security Updates: Typically these are pressing security flaws that need to be patched quickly. You only want to delay these a couple of days just to see if they are safe and don't break other systems. You don't want to go without these for ANY extended periods of time.</TextBlock>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource BorderStyle}">
-                        <StackPanel Background="{DynamicResource MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Button Name="WPFUpdatesdisable" FontSize="{DynamicResource ConfigTabButtonFontSize}" Height="Auto" Width="Auto" Content="Disable ALL Updates (NOT RECOMMENDED!)" Margin="20,4,20,10" Padding="10,10,10,10"/>
-                            <TextBlock Foreground="{DynamicResource ComboBoxForegroundColor}" Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This completely disables ALL Windows Updates and is NOT RECOMMENDED.<LineBreak/><LineBreak/> However, it can be suitable if you use your system for a select purpose and do not actively browse the internet. <LineBreak/><LineBreak/>Note: Your system will be easier to hack and infect without security updates.</TextBlock>
-                            <TextBlock Text=" " Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
-                        </StackPanel>
-                        </Border>
+                    <Grid Background="Transparent">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>  <!-- Row for the 3 columns -->
+                            <RowDefinition Height="Auto"/>  <!-- Row for Windows Version -->
+                        </Grid.RowDefinitions>
+
+                        <!-- Three columns container -->
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Default Settings -->
+                            <Border Grid.Column="0" Style="{StaticResource BorderStyle}">
+                                <StackPanel>
+                                    <Button Name="WPFFixesUpdate"
+                                            FontSize="{DynamicResource ConfigTabButtonFontSize}"
+                                            Content="Default Settings"
+                                            Margin="10,5"
+                                            Padding="10"/>
+                                    <TextBlock Margin="10"
+                                             TextWrapping="Wrap"
+                                             Foreground="{DynamicResource MainForegroundColor}">
+                                        <Run FontWeight="Bold">Default Windows Update Configuration</Run>
+                                        <LineBreak/>
+                                         - No modifications to Windows defaults
+                                        <LineBreak/>
+                                         - Removes any custom update settings
+                                        <LineBreak/><LineBreak/>
+                                        <Run FontStyle="Italic" FontSize="11">Note: This resets your Windows Update settings to default out of the box settings. It removes ANY policy or customization that has been done to Windows Update.</Run>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Security Settings -->
+                            <Border Grid.Column="1" Style="{StaticResource BorderStyle}">
+                                <StackPanel>
+                                    <Button Name="WPFUpdatessecurity"
+                                            FontSize="{DynamicResource ConfigTabButtonFontSize}"
+                                            Content="Security Settings"
+                                            Margin="10,5"
+                                            Padding="10"/>
+                                    <TextBlock Margin="10"
+                                             TextWrapping="Wrap"
+                                             Foreground="{DynamicResource MainForegroundColor}">
+                                        <Run FontWeight="Bold">Balanced Security Configuration</Run>
+                                        <LineBreak/>
+                                         - Feature updates delayed by 2 years
+                                        <LineBreak/>
+                                         - Security updates installed after 4 days
+                                        <LineBreak/><LineBreak/>
+                                        <Run FontWeight="SemiBold">Feature Updates:</Run> New features and potential bugs
+                                        <LineBreak/>
+                                        <Run FontWeight="SemiBold">Security Updates:</Run> Critical security patches
+                                    <LineBreak/><LineBreak/>
+                                    <Run FontStyle="Italic" FontSize="11">Note: This only applies to Pro systems that can use group policy.</Run>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Disable Updates -->
+                            <Border Grid.Column="2" Style="{StaticResource BorderStyle}">
+                                <StackPanel>
+                                    <Button Name="WPFUpdatesdisable"
+                                            FontSize="{DynamicResource ConfigTabButtonFontSize}"
+                                            Content="Disable All Updates"
+                                            Foreground="Red"
+                                            Margin="10,5"
+                                            Padding="10"/>
+                                    <TextBlock Margin="10"
+                                             TextWrapping="Wrap"
+                                             Foreground="{DynamicResource MainForegroundColor}">
+                                        <Run FontWeight="Bold" Foreground="Red">!! Not Recommended !!</Run>
+                                        <LineBreak/>
+                                         - Disables ALL Windows Updates
+                                        <LineBreak/>
+                                         - Increases security risks
+                                        <LineBreak/>
+                                         - Only use for isolated systems
+                                        <LineBreak/><LineBreak/>
+                                        <Run FontStyle="Italic" FontSize="11">Warning: Your system will be vulnerable without security updates.</Run>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <!-- Future Implementation: Add Windows Version to updates panel -->
+                        <Grid Name="updatespanel" Grid.Row="1" Background="Transparent">
+                        </Grid>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
