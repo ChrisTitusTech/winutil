@@ -91,7 +91,7 @@ $($jsonAsObject | ConvertTo-Json -Depth 3)
 "@
 
     $sync.configs.$($psitem.BaseName) = $json | ConvertFrom-Json
-    $script_content.Add($(Write-Output "`$sync.configs.$($psitem.BaseName) = @'`n$json`n'@ `| ConvertFrom-Json" ))
+    $script_content.Add($(Write-Output "`$sync.configs.$($psitem.BaseName) = @'`r`n$json`r`n'@ `| ConvertFrom-Json" ))
 }
 
 # Read the entire XAML file as a single string, preserving line breaks
@@ -125,10 +125,12 @@ Write-Progress -Activity "Compiling" -Completed
 
 Update-Progress -Activity "Validating" -StatusMessage "Checking winutil.ps1 Syntax" -Percent 0
 try {
-    $null = Get-Command -Syntax .\winutil.ps1
+    Get-Command -Syntax .\winutil.ps1 | Out-Null
 } catch {
     Write-Warning "Syntax Validation for 'winutil.ps1' has failed"
     Write-Host "$($Error[0])" -ForegroundColor Red
+    Pop-Location # Restore previous location before exiting...
+    exit 1
 }
 Write-Progress -Activity "Validating" -Completed
 

@@ -35,11 +35,12 @@ function Set-WinUtilRegistry {
             New-Item -Path $Path -Force -ErrorAction Stop | Out-Null
         }
 
-        Write-Host "Set $Path\$Name to $Value"
         if ($Value -ne "<RemoveEntry>") {
+            Write-Host "Set $Path\$Name to $Value"
             Set-ItemProperty -Path $Path -Name $Name -Type $Type -Value $Value -Force -ErrorAction Stop | Out-Null
         }
         else{
+            Write-Host "Remove $Path\$Name"
             Remove-ItemProperty -Path $Path -Name $Name -Force -ErrorAction Stop | Out-Null
         }
     } catch [System.Security.SecurityException] {

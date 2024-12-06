@@ -1,4 +1,4 @@
-function Invoke-WPFGetIso {
+function Invoke-MicrowinGetIso {
     <#
     .DESCRIPTION
     Function to get the path to Iso file for MicroWin, unpack that isom=, read basic information and populate the UI Options
@@ -50,7 +50,7 @@ function Invoke-WPFGetIso {
             return
         } else {
             [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it from github. This might take a long time.")
-            Get-Oscdimg -oscdimgPath $oscdimgPath
+            Microwin-GetOscdimg -oscdimgPath $oscdimgPath
             $oscdImgFound = Test-Path $oscdimgPath -PathType Leaf
             if (!$oscdImgFound) {
                 $msg = "oscdimg was not downloaded can not proceed"
@@ -100,7 +100,7 @@ function Invoke-WPFGetIso {
         Set-Location -Path $env:temp
         # Detect if the first option ("System language") has been selected and get a Fido-approved language from the current culture
         $lang = if ($sync["ISOLanguage"].SelectedIndex -eq 0) {
-            Get-FidoLangFromCulture -langName (Get-Culture).Name
+            Microwin-GetLangFromCulture -langName (Get-Culture).Name
         } else {
             $sync["ISOLanguage"].SelectedItem
         }

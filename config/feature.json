@@ -306,13 +306,23 @@
     "ButtonWidth": "300",
     "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user"
   },
-  "WPFWinUtilPSProfile": {
+  "WPFWinUtilInstallPSProfile": {
     "Content": "Install CTT PowerShell Profile",
     "category": "Powershell Profile",
     "panel": "2",
     "Order": "a083_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Powershell-Profile/PSProfileInstall"
+  },
+  "WPFWinUtilUninstallPSProfile": {
+    "Content": "Uninstall CTT PowerShell Profile",
+    "category": "Powershell Profile",
+    "panel": "2",
+    "Order": "a084_",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Powershell-Profile/PSProfileUninstall"
   },
   "WPFWinUtilSSHServer": {
     "Content": "Enable OpenSSH Server",
