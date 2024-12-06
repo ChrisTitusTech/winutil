@@ -28,7 +28,7 @@ jobs:
           else
             echo "label_command=false" >> $GITHUB_ENV
           fi
-      
+
       - name: Check for /unlabel command
         id: check_unlabel_command
         run: |
@@ -86,7 +86,7 @@ jobs:
           else
             gh issue close $ISSUE_NUMBER --repo ${{ github.repository }}
           fi
-      
+
       - name: Reopen issue
         if: env.reopen_command == 'true'
         env:
@@ -104,7 +104,7 @@ jobs:
         run: |
           echo Labeling the issue...
           gh issue edit $ISSUE_NUMBER --repo ${{ github.repository }} --add-label "${{ env.label_name }}"
-      
+
       - name: Remove labels
         if: env.unlabel_command == 'true'
         env:
