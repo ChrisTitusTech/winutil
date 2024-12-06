@@ -1,0 +1,19 @@
+name: Review Effort Analysis
+on:
+  pull-request:
+    types: [opened, reopened, edited, synchronize, ready_for_review]
+    branches:
+      - main
+
+concurrency:
+  group: pr-analysis
+  cancel-in-progress: false
+
+jobs:
+  analyze-prs:
+    runs-on: ubuntu-latest
+    steps:
+    - name: PR Triage
+      uses: pr-triage-effort/pr-triage-effort-action@v1
+      with:
+        github_token: ${{ secrets.ANALYSIS_TOKEN }}
