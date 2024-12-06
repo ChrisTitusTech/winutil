@@ -55,6 +55,8 @@ public class PowerManagement {
     $injectDrivers = $sync.MicrowinInjectDrivers.IsChecked
     $importDrivers = $sync.MicrowinImportDrivers.IsChecked
 
+    $importVirtIO = $sync.MicrowinCopyVirtIO.IsChecked
+
     $mountDir = $sync.MicrowinMountDir.Text
     $scratchDir = $sync.MicrowinScratchDir.Text
 
@@ -153,6 +155,11 @@ public class PowerManagement {
             } else {
                 Write-Host "Path to drivers is invalid continuing without driver injection"
             }
+        }
+
+        if ($importVirtIO) {
+            Write-Host "Copying VirtIO drivers..."
+            Microwin-CopyVirtIO
         }
 
         Write-Host "Remove Features from the image"
