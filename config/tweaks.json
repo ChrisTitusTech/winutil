@@ -3399,7 +3399,7 @@
   },
   "WPFToggleStartMenuRecommendations": {
     "Content": "Recommendations in Start Menu",
-    "Description": "If disabled then you will not see recommendations in the Start Menu. | Relogin Required.",
+    "Description": "If disabled then you will not see recommendations in the Start Menu. | Enables 'iseducationenvironment' | Relogin Required.",
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a104_",
