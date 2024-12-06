@@ -3302,6 +3302,38 @@
     "panel": "2",
     "Order": "a100_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "Name": "AppsUseLightTheme",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "Name": "SystemUsesLightTheme",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      }
+    ],
+    "InvokeScript": [
+      "
+      Invoke-WinUtilExplorerUpdate
+      if ($sync.ThemeButton.Content -eq [char]0xF08C) {
+        Invoke-WinutilThemeChange -theme \"Auto\"
+      }
+      "
+    ],
+    "UndoScript": [
+      "
+      Invoke-WinUtilExplorerUpdate
+      if ($sync.ThemeButton.Content -eq [char]0xF08C) {
+        Invoke-WinutilThemeChange -theme \"Auto\"
+      }
+      "
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DarkMode"
   },
   "WPFToggleBingSearch": {
@@ -3311,6 +3343,15 @@
     "panel": "2",
     "Order": "a101_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "Name": "BingSearchEnabled",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/BingSearch"
   },
   "WPFToggleNumLock": {
@@ -3320,6 +3361,22 @@
     "panel": "2",
     "Order": "a102_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKU:\\.Default\\Control Panel\\Keyboard",
+        "Name": "InitialKeyboardIndicators",
+        "Value": "2",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Keyboard",
+        "Name": "InitialKeyboardIndicators",
+        "Value": "2",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/NumLock"
   },
   "WPFToggleVerboseLogon": {
@@ -3329,6 +3386,15 @@
     "panel": "2",
     "Order": "a103_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+        "Name": "VerboseStatus",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/VerboseLogon"
   },
   "WPFToggleSnapWindow": {
@@ -3338,6 +3404,15 @@
     "panel": "2",
     "Order": "a104_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Desktop",
+        "Name": "WindowArrangementActive",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "String"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapWindow"
   },
   "WPFToggleSnapFlyout": {
@@ -3347,6 +3422,25 @@
     "panel": "2",
     "Order": "a105_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "EnableSnapAssistFlyout",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
+    "InvokeScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
+    "UndoScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapFlyout"
   },
   "WPFToggleSnapSuggestion": {
@@ -3356,6 +3450,25 @@
     "panel": "2",
     "Order": "a106_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "SnapAssist",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
+    "InvokeScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
+    "UndoScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapSuggestion"
   },
   "WPFToggleMouseAcceleration": {
@@ -3365,6 +3478,29 @@
     "panel": "2",
     "Order": "a107_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Mouse",
+        "Name": "MouseSpeed",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Mouse",
+        "Name": "MouseThreshold1",
+        "Value": "6",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Mouse",
+        "Name": "MouseThreshold2",
+        "Value": "10",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/MouseAcceleration"
   },
   "WPFToggleStickyKeys": {
@@ -3374,6 +3510,15 @@
     "panel": "2",
     "Order": "a108_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Accessibility\\StickyKeys",
+        "Name": "Flags",
+        "Value": "510",
+        "OriginalValue": "58",
+        "Type": "DWord"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/StickyKeys"
   },
   "WPFToggleHiddenFiles": {
@@ -3383,6 +3528,25 @@
     "panel": "2",
     "Order": "a200_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "Hidden",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
+    "InvokeScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
+    "UndoScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/HiddenFiles"
   },
   "WPFToggleShowExt": {
@@ -3392,6 +3556,25 @@
     "panel": "2",
     "Order": "a201_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "HideFileExt",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      }
+    ],
+    "InvokeScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
+    "UndoScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/ShowExt"
   },
   "WPFToggleTaskbarSearch": {
@@ -3401,6 +3584,15 @@
     "panel": "2",
     "Order": "a202_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "Name": "SearchboxTaskbarMode",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarSearch"
   },
   "WPFToggleTaskView": {
@@ -3410,6 +3602,15 @@
     "panel": "2",
     "Order": "a203_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "ShowTaskViewButton",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskView"
   },
   "WPFToggleTaskbarWidgets": {
@@ -3419,6 +3620,15 @@
     "panel": "2",
     "Order": "a204_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "TaskbarDa",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarWidgets"
   },
   "WPFToggleTaskbarAlignment": {
@@ -3428,6 +3638,15 @@
     "panel": "2",
     "Order": "a204_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "TaskbarAl",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarAlignment"
   },
   "WPFToggleDetailedBSoD": {
@@ -3437,6 +3656,22 @@
     "panel": "2",
     "Order": "a205_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\CrashControl",
+        "Name": "DisplayParameters",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\CrashControl",
+        "Name": "DisableEmoticon",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DetailedBSoD"
   },
   "WPFOOSUbutton": {

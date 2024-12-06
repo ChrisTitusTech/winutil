@@ -31,23 +31,20 @@ $sync.runspace.Open()
 
 # Create classes for different exceptions
 
-    class WingetFailedInstall : Exception {
-        [string]$additionalData
+class WingetFailedInstall : Exception {
+    [string]$additionalData
+    WingetFailedInstall($Message) : base($Message) {}
+}
 
-        WingetFailedInstall($Message) : base($Message) {}
-    }
+class ChocoFailedInstall : Exception {
+    [string]$additionalData
+    ChocoFailedInstall($Message) : base($Message) {}
+}
 
-    class ChocoFailedInstall : Exception {
-        [string]$additionalData
-
-        ChocoFailedInstall($Message) : base($Message) {}
-    }
-
-    class GenericException : Exception {
-        [string]$additionalData
-
-        GenericException($Message) : base($Message) {}
-    }
+class GenericException : Exception {
+    [string]$additionalData
+    GenericException($Message) : base($Message) {}
+}
 
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
@@ -115,6 +112,8 @@ Invoke-WinutilThemeChange -init $true
 Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 5
 Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
 Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
+# Future implementation: Add Windows Version to updates panel
+#Invoke-WPFUIElements -configVariable $sync.configs.updates -targetGridName "updatespanel" -columncount 1
 
 #===========================================================================
 # Store Form Objects In PowerShell
@@ -254,12 +253,7 @@ $commonKeyEvents = {
 $sync["Form"].Add_PreViewKeyDown($commonKeyEvents)
 
 $sync["Form"].Add_MouseLeftButtonDown({
-    # Hide Settings and Theme Popup on click anywhere else
-    if ($sync.SettingsButton.IsOpen -or
-        $sync.ThemePopup.IsOpen) {
-            $sync.SettingsPopup.IsOpen = $false
-            $sync.ThemePopup.IsOpen = $false
-        }
+    Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme")
     $sync["Form"].DragMove()
 })
 
@@ -277,12 +271,7 @@ $sync["Form"].Add_MouseDoubleClick({
 
 $sync["Form"].Add_Deactivated({
     Write-Debug "WinUtil lost focus"
-    # Hide Settings and Theme Popup on Winutil Focus Loss
-    if ($sync.SettingsButton.IsOpen -or
-        $sync.ThemePopup.IsOpen) {
-            $sync.SettingsPopup.IsOpen = $false
-            $sync.ThemePopup.IsOpen = $false
-    }
+    Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme")
 })
 
 $sync["Form"].Add_ContentRendered({
@@ -521,101 +510,79 @@ Set-WinUtilTaskbaritem -overlay "logo"
 $sync["Form"].Add_Activated({
     Set-WinUtilTaskbaritem -overlay "logo"
 })
-# Define event handler for ThemeButton click
-$sync["ThemeButton"].Add_Click({
-    if ($sync.ThemePopup.IsOpen) {
-        $sync.ThemePopup.IsOpen = $false
-    }
-    else{
-        $sync.ThemePopup.IsOpen = $true
-    }
-    $sync.SettingsPopup.IsOpen = $false
-})
 
-# Define event handlers for menu items
+$sync["ThemeButton"].Add_Click({
+    Write-Debug "ThemeButton clicked"
+    Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "Theme" = "Toggle" }
+    $_.Handled = $false
+})
 $sync["AutoThemeMenuItem"].Add_Click({
-    $sync.ThemePopup.IsOpen = $false
+    Write-Debug "About clicked"
+    Invoke-WPFPopup -Action "Hide" -Popups @("Theme")
     Invoke-WinutilThemeChange -theme "Auto"
     $_.Handled = $false
-  })
-  # Define event handlers for menu items
+})
 $sync["DarkThemeMenuItem"].Add_Click({
-    $sync.ThemePopup.IsOpen = $false
+    Write-Debug "Dark Theme clicked"
+    Invoke-WPFPopup -Action "Hide" -Popups @("Theme")
     Invoke-WinutilThemeChange -theme "Dark"
     $_.Handled = $false
-  })
-# Define event handlers for menu items
+})
 $sync["LightThemeMenuItem"].Add_Click({
-    $sync.ThemePopup.IsOpen = $false
+    Write-Debug "Light Theme clicked"
+    Invoke-WPFPopup -Action "Hide" -Popups @("Theme")
     Invoke-WinutilThemeChange -theme "Light"
     $_.Handled = $false
-  })
+})
 
 
-# Define event handler for button click
 $sync["SettingsButton"].Add_Click({
     Write-Debug "SettingsButton clicked"
-    if ($sync.SettingsPopup.IsOpen) {
-        $sync.SettingsPopup.IsOpen = $false
-    }
-    else{
-        $sync.SettingsPopup.IsOpen = $true
-    }
-    $sync.ThemePopup.IsOpen = $false
+    Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Toggle"; "Theme" = "Hide" }
     $_.Handled = $false
 })
-
-# Define event handlers for menu items
 $sync["ImportMenuItem"].Add_Click({
-  # Handle Import menu item click
-  Write-Debug "Import clicked"
-  $sync["SettingsPopup"].IsOpen = $false
-  Invoke-WPFImpex -type "import"
-  $_.Handled = $false
+    Write-Debug "Import clicked"
+    Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
+    Invoke-WPFImpex -type "import"
+    $_.Handled = $false
 })
-
 $sync["ExportMenuItem"].Add_Click({
-    # Handle Export menu item click
     Write-Debug "Export clicked"
-    $sync["SettingsPopup"].IsOpen = $false
+    Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
     Invoke-WPFImpex -type "export"
     $_.Handled = $false
 })
-
 $sync["AboutMenuItem"].Add_Click({
-    # Handle Export menu item click
     Write-Debug "About clicked"
-    $sync["SettingsPopup"].IsOpen = $false
+    Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
+
     $authorInfo = @"
 Author   : <a href="https://github.com/ChrisTitusTech">@christitustech</a>
 Runspace : <a href="https://github.com/DeveloperDurp">@DeveloperDurp</a>
-MicroWin : <a href="https://github.com/KonTy">@KonTy</a>
+MicroWin : <a href="https://github.com/KonTy">@KonTy</a>, <a href="https://github.com/CodingWonders">@CodingWonders</a>
 GitHub   : <a href="https://github.com/ChrisTitusTech/winutil">ChrisTitusTech/winutil</a>
 Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sync.version)">$($sync.version)</a>
 "@
-
-    Show-CustomDialog -Message $authorInfo -LogoSize $LogoSize
+    Show-CustomDialog -Title "About" -Message $authorInfo
 })
-
 $sync["SponsorMenuItem"].Add_Click({
-    # Handle Export menu item click
     Write-Debug "Sponsors clicked"
-    $sync["SettingsPopup"].IsOpen = $false
+    Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
+
     $authorInfo = @"
 <a href="https://github.com/sponsors/ChrisTitusTech">Current sponsors for ChrisTitusTech:</a>
 "@
     $authorInfo += "`n"
     try {
-        # Call the function to get the sponsors
         $sponsors = Invoke-WinUtilSponsors
-
-        # Append the sponsors to the authorInfo
-        $sponsors | ForEach-Object { $authorInfo += "$_`n" }
+        foreach ($sponsor in $sponsors) {
+            $authorInfo += "<a href=`"https://github.com/sponsors/ChrisTitusTech`">$sponsor</a>`n"
+        }
     } catch {
         $authorInfo += "An error occurred while fetching or processing the sponsors: $_`n"
     }
-
-    Show-CustomDialog -Message $authorInfo -EnableScroll $true
+    Show-CustomDialog -Title "Sponsors" -Message $authorInfo -EnableScroll $true
 })
 
 $sync["Form"].ShowDialog() | out-null

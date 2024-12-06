@@ -43,7 +43,7 @@ function Invoke-WPFButton {
         "WPFPanelprinter" {Invoke-WPFControlPanel -Panel $button}
         "WPFPanelsystem" {Invoke-WPFControlPanel -Panel $button}
         "WPFPaneluser" {Invoke-WPFControlPanel -Panel $button}
-        "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}
+        "WPFUpdatesdefault" {Invoke-WPFFixesUpdate}
         "WPFFixesUpdate" {Invoke-WPFFixesUpdate}
         "WPFFixesWinget" {Invoke-WPFFixesWinget}
         "WPFRunAdobeCCCleanerTool" {Invoke-WPFRunAdobeCCCleanerTool}

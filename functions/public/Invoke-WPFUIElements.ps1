@@ -98,6 +98,7 @@ function Invoke-WPFUIElements {
             $entrycount = $configHashtable.Keys.Count + $organizedData["0"].Keys.Count
             $maxcount = [Math]::Round($entrycount / $columncount + 0.5)
         }
+
     }
 
     # Iterate through 'organizedData' by panel, category, and application
@@ -105,7 +106,7 @@ function Invoke-WPFUIElements {
     foreach ($panelKey in ($organizedData.Keys | Sort-Object)) {
         # Create a Border for each column
         $border = New-Object Windows.Controls.Border
-        $border.VerticalAlignment = "Stretch" # Ensure the border stretches vertically
+        $border.VerticalAlignment = "Stretch"
         [System.Windows.Controls.Grid]::SetColumn($border, $panelcount)
         $border.style = $borderstyle
         $targetGrid.Children.Add($border) | Out-Null
@@ -114,9 +115,19 @@ function Invoke-WPFUIElements {
         $stackPanel = New-Object Windows.Controls.StackPanel
         $stackPanel.Background = [Windows.Media.Brushes]::Transparent
         $stackPanel.SnapsToDevicePixels = $true
-        $stackPanel.VerticalAlignment = "Stretch" # Ensure the stack panel stretches vertically
+        $stackPanel.VerticalAlignment = "Stretch"
         $border.Child = $stackPanel
         $panelcount++
+
+        # Add Windows Version label if this is the updates panel
+        if ($targetGridName -eq "updatespanel") {
+            $windowsVersion = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").ProductName
+            $versionLabel = New-Object Windows.Controls.Label
+            $versionLabel.Content = "Windows Version: $windowsVersion"
+            $versionLabel.FontSize = $theme.FontSize
+            $versionLabel.HorizontalAlignment = "Left"
+            $stackPanel.Children.Add($versionLabel) | Out-Null
+        }
 
         foreach ($category in ($organizedData[$panelKey].Keys | Sort-Object)) {
             $count++
@@ -125,7 +136,7 @@ function Invoke-WPFUIElements {
                 if ($panelcount -eq $panelcount2) {
                     # Create a new Border for the new column
                     $border = New-Object Windows.Controls.Border
-                    $border.VerticalAlignment = "Stretch" # Ensure the border stretches vertically
+                    $border.VerticalAlignment = "Stretch"
                     [System.Windows.Controls.Grid]::SetColumn($border, $panelcount)
                     $border.style = $borderstyle
                     $targetGrid.Children.Add($border) | Out-Null
@@ -134,7 +145,7 @@ function Invoke-WPFUIElements {
                     $stackPanel = New-Object Windows.Controls.StackPanel
                     $stackPanel.Background = [Windows.Media.Brushes]::Transparent
                     $stackPanel.SnapsToDevicePixels = $true
-                    $stackPanel.VerticalAlignment = "Stretch" # Ensure the stack panel stretches vertically
+                    $stackPanel.VerticalAlignment = "Stretch"
                     $border.Child = $stackPanel
                     $panelcount++
                 }
@@ -142,7 +153,7 @@ function Invoke-WPFUIElements {
 
             $label = New-Object Windows.Controls.Label
             $label.Content = $category -replace ".*__", ""
-            $label.FontSize = $theme.FontSizeHeading
+            $label.FontSize = $theme.HeadingFontSize
             $label.FontFamily = $theme.HeaderFontFamily
             $stackPanel.Children.Add($label) | Out-Null
 
@@ -157,7 +168,7 @@ function Invoke-WPFUIElements {
                     if ($panelcount -eq $panelcount2) {
                         # Create a new Border for the new column
                         $border = New-Object Windows.Controls.Border
-                        $border.VerticalAlignment = "Stretch" # Ensure the border stretches vertically
+                        $border.VerticalAlignment = "Stretch"
                         [System.Windows.Controls.Grid]::SetColumn($border, $panelcount)
                         $border.style = $borderstyle
                         $targetGrid.Children.Add($border) | Out-Null
@@ -166,7 +177,7 @@ function Invoke-WPFUIElements {
                         $stackPanel = New-Object Windows.Controls.StackPanel
                         $stackPanel.Background = [Windows.Media.Brushes]::Transparent
                         $stackPanel.SnapsToDevicePixels = $true
-                        $stackPanel.VerticalAlignment = "Stretch" # Ensure the stack panel stretches vertically
+                        $stackPanel.VerticalAlignment = "Stretch"
                         $border.Child = $stackPanel
                         $panelcount++
                     }
@@ -192,11 +203,16 @@ function Invoke-WPFUIElements {
 
                         $sync[$entryInfo.Name] = $checkBox
 
-                        $sync[$entryInfo.Name].IsChecked = Get-WinUtilToggleStatus $sync[$entryInfo.Name].Name
+                        $sync[$entryInfo.Name].IsChecked = (Get-WinUtilToggleStatus $entryInfo.Name)
 
-                        $sync[$entryInfo.Name].Add_Click({
+                        $sync[$entryInfo.Name].Add_Checked({
                             [System.Object]$Sender = $args[0]
-                            Invoke-WPFToggle $Sender.name
+                            Invoke-WinUtilTweaks $sender.name
+                        })
+
+                        $sync[$entryInfo.Name].Add_Unchecked({
+                            [System.Object]$Sender = $args[0]
+                            Invoke-WinUtiltweaks $sender.name -undo $true
                         })
                     }
 
