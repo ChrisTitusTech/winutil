@@ -3397,12 +3397,44 @@
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/VerboseLogon"
   },
+  "WPFToggleStartMenuRecommendations": {
+    "Content": "Recommendations in Start Menu",
+    "Description": "If disabled then you will not see recommendations in the Start Menu. | Relogin Required.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a104_",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\Start",
+        "Name": "HideRecommendedSection",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\Education",
+        "Name": "IsEducationEnvironment",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer",
+        "Name": "HideRecommendedSection",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      }
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/WPFToggleStartMenuRecommendations"
+  },
   "WPFToggleSnapWindow": {
     "Content": "Snap Window",
     "Description": "If enabled you can align windows by dragging them. | Relogin Required",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a104_",
+    "Order": "a105_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3420,7 +3452,7 @@
     "Description": "If enabled then Snap preview is disabled when maximize button is hovered.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a105_",
+    "Order": "a106_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3448,7 +3480,7 @@
     "Description": "If enabled then you will get suggestions to snap other applications in the left over spaces.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a106_",
+    "Order": "a107_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3476,7 +3508,7 @@
     "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a107_",
+    "Order": "a108_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3508,7 +3540,7 @@
     "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a108_",
+    "Order": "a109_",
     "Type": "Toggle",
     "registry": [
       {
