@@ -7,45 +7,18 @@ function Microwin-RemovePackages {
                 $_ -NotLike "*indows-Client-LanguagePack*" -AND
                 $_ -NotLike "*LanguageFeatures-Basic*" -AND
                 $_ -NotLike "*Package_for_ServicingStack*" -AND
-                $_ -NotLike "*.NET*" -AND
-                $_ -NotLike "*Store*" -AND
-                $_ -NotLike "*VCLibs*" -AND
-                $_ -NotLike "*AAD.BrokerPlugin",
-                $_ -NotLike "*LockApp*" -AND
+                $_ -NotLike "*DotNet*" -AND
                 $_ -NotLike "*Notepad*" -AND
-                $_ -NotLike "*immersivecontrolpanel*" -AND
-                $_ -NotLike "*ContentDeliveryManager*" -AND
-                $_ -NotLike "*PinningConfirMationDialog*" -AND
-                $_ -NotLike "*SecHealthUI*" -AND
-                $_ -NotLike "*SecureAssessmentBrowser*" -AND
-                $_ -NotLike "*PrintDialog*" -AND
-                $_ -NotLike "*AssignedAccessLockApp*" -AND
-                $_ -NotLike "*OOBENetworkConnectionFlow*" -AND
-                $_ -NotLike "*Apprep.ChxApp*" -AND
-                $_ -NotLike "*CBS*" -AND
-                $_ -NotLike "*OOBENetworkCaptivePortal*" -AND
-                $_ -NotLike "*PeopleExperienceHost*" -AND
-                $_ -NotLike "*ParentalControls*" -AND
-                $_ -NotLike "*Win32WebViewHost*" -AND
-                $_ -NotLike "*InputApp*" -AND
-                $_ -NotLike "*DirectPlay*" -AND
-                $_ -NotLike "*AccountsControl*" -AND
-                $_ -NotLike "*AsyncTextService*" -AND
-                $_ -NotLike "*CapturePicker*" -AND
-                $_ -NotLike "*CredDialogHost*" -AND
-                $_ -NotLike "*BioEnrollMent*" -AND
-                $_ -NotLike "*ShellExperienceHost*" -AND
-                $_ -NotLike "*DesktopAppInstaller*" -AND
-                $_ -NotLike "*WebMediaExtensions*" -AND
                 $_ -NotLike "*WMIC*" -AND
-                $_ -NotLike "*UI.XaML*" -AND
                 $_ -NotLike "*Ethernet*" -AND
                 $_ -NotLike "*Wifi*" -AND
                 $_ -NotLike "*FodMetadata*" -AND
                 $_ -NotLike "*Foundation*" -AND
                 $_ -NotLike "*LanguageFeatures*" -AND
                 $_ -NotLike "*VBSCRIPT*" -AND
-                $_ -NotLike "*License*"
+                $_ -NotLike "*License*" -AND
+                $_ -NotLike "*Hello-Face*" -AND
+                $_ -NotLike "*ISE*"
             }
 
         $failedCount = 0

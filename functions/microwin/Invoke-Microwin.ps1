@@ -55,6 +55,8 @@ public class PowerManagement {
     $injectDrivers = $sync.MicrowinInjectDrivers.IsChecked
     $importDrivers = $sync.MicrowinImportDrivers.IsChecked
 
+    $importVirtIO = $sync.MicrowinCopyVirtIO.IsChecked
+
     $mountDir = $sync.MicrowinMountDir.Text
     $scratchDir = $sync.MicrowinScratchDir.Text
 
@@ -155,6 +157,11 @@ public class PowerManagement {
             }
         }
 
+        if ($importVirtIO) {
+            Write-Host "Copying VirtIO drivers..."
+            Microwin-CopyVirtIO
+        }
+
         Write-Host "Remove Features from the image"
         Microwin-RemoveFeatures
         Write-Host "Removing features complete!"
@@ -189,8 +196,6 @@ public class PowerManagement {
         Microwin-RemoveFileOrDirectory -pathToDelete "$($scratchDir)\Windows\DiagTrack" -Directory
         Microwin-RemoveFileOrDirectory -pathToDelete "$($scratchDir)\Windows\InboxApps" -Directory
         Microwin-RemoveFileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LocationNotificationWindows.exe"
-        Microwin-RemoveFileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Photo Viewer" -Directory
-        Microwin-RemoveFileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Photo Viewer" -Directory
         Microwin-RemoveFileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Media Player" -Directory
         Microwin-RemoveFileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Media Player" -Directory
         Microwin-RemoveFileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Mail" -Directory
