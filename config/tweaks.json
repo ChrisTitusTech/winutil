@@ -3349,6 +3349,7 @@
         "Name": "BingSearchEnabled",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "true",
         "Type": "DWord"
       }
     ],
@@ -3392,6 +3393,7 @@
         "Name": "VerboseStatus",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "false",
         "Type": "DWord"
       }
     ],
@@ -3410,6 +3412,7 @@
         "Name": "HideRecommendedSection",
         "Value": "0",
         "OriginalValue": "1",
+        "DefaultState": "true",
         "Type": "DWord"
       },
       {
@@ -3417,6 +3420,7 @@
         "Name": "IsEducationEnvironment",
         "Value": "0",
         "OriginalValue": "1",
+        "DefaultState": "true",
         "Type": "DWord"
       },
       {
@@ -3424,6 +3428,7 @@
         "Name": "HideRecommendedSection",
         "Value": "0",
         "OriginalValue": "1",
+        "DefaultState": "true",
         "Type": "DWord"
       }
     ],
@@ -3442,6 +3447,7 @@
         "Name": "WindowArrangementActive",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "true",
         "Type": "String"
       }
     ],
@@ -3460,6 +3466,7 @@
         "Name": "EnableSnapAssistFlyout",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "true",
         "Type": "DWord"
       }
     ],
@@ -3488,6 +3495,7 @@
         "Name": "SnapAssist",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "true",
         "Type": "DWord"
       }
     ],
@@ -3516,6 +3524,7 @@
         "Name": "MouseSpeed",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "true",
         "Type": "DWord"
       },
       {
@@ -3523,6 +3532,7 @@
         "Name": "MouseThreshold1",
         "Value": "6",
         "OriginalValue": "0",
+        "DefaultState": "true",
         "Type": "DWord"
       },
       {
@@ -3530,6 +3540,7 @@
         "Name": "MouseThreshold2",
         "Value": "10",
         "OriginalValue": "0",
+        "DefaultState": "true",
         "Type": "DWord"
       }
     ],
@@ -3548,6 +3559,7 @@
         "Name": "Flags",
         "Value": "510",
         "OriginalValue": "58",
+        "DefaultState": "true",
         "Type": "DWord"
       }
     ],
@@ -3622,6 +3634,7 @@
         "Name": "SearchboxTaskbarMode",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "true",
         "Type": "DWord"
       }
     ],
@@ -3640,6 +3653,7 @@
         "Name": "ShowTaskViewButton",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "true",
         "Type": "DWord"
       }
     ],
@@ -3658,6 +3672,7 @@
         "Name": "TaskbarDa",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "true",
         "Type": "DWord"
       }
     ],
@@ -3676,6 +3691,7 @@
         "Name": "TaskbarAl",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "true",
         "Type": "DWord"
       }
     ],
@@ -3694,6 +3710,7 @@
         "Name": "DisplayParameters",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "false",
         "Type": "DWord"
       },
       {
@@ -3701,6 +3718,7 @@
         "Name": "DisableEmoticon",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "false",
         "Type": "DWord"
       }
     ],
