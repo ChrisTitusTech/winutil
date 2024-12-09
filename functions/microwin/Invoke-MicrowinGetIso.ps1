@@ -242,8 +242,8 @@ function Invoke-MicrowinGetIso {
 
         # xcopy we can verify files and also not copy files that already exist, but hard to measure
         # xcopy.exe /E /I /H /R /Y /J $DriveLetter":" $mountDir >$null
-        $totalTime = Measure-Command { Copy-Files "$($driveLetter):" $mountDir -Recurse -Force }
-        Write-Host "Copy complete! Total Time: $($totalTime.Minutes)m$($totalTime.Seconds)s"
+        $totalTime = Measure-Command { Copy-Files "$($driveLetter):" "$mountDir" -Recurse -Force }
+        Write-Host "Copy complete! Total Time: $($totalTime.Minutes) minutes, $($totalTime.Seconds) seconds"
 
         $wimFile = "$mountDir\sources\install.wim"
         Write-Host "Getting image information $wimFile"
