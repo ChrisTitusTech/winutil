@@ -46,19 +46,15 @@ Function Get-WinUtilToggleStatus {
                     Write-Debug "$($regentry.Name) is false (state: $regstate, value: $($regentry.Value), original: $($regentry.OriginalValue))"
                 }
                 if (!$regstate) {
-                    write-host "missing $($regentry.Name)"
                     switch ($regentry.DefaultState) {
                         "true" {
-                            write-host "true"
                             $regstate = $regentry.Value
                             $count += 1
                         }
                         "false" {
-                            write-host "false"
                             $regstate = $regentry.OriginalValue
                         }
                         default {
-                            write-host "default"
                             Write-Error "Entry for $($regentry.Name) does not exist and no DefaultState is defined."
                             $regstate = $regentry.OriginalValue
                         }
