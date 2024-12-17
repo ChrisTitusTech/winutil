@@ -47,6 +47,22 @@
 		"link": "https://www.aimp.ru/",
 		"winget": "AIMP.AIMP"
 	},
+	"lsDelux": {
+		"category": "Development",
+		"choco": "lsd",
+		"content": "LS Delux",
+		"description": "This project is a rewrite of GNU ls with lots of added features like colors, icons, tree-view, more formatting options etc. The project is heavily inspired by the super colorls project.",
+		"link": "https://github.com/lsd-rs/lsd",
+		"winget": "lsd-rs.lsd"
+	},
+	"helix": {
+		"category": "Development",
+		"choco": "helix",
+		"content": "A post-modern modal text editor.",
+		"description": "A post-modern modal text editor.",
+		"link": "https://helix-editor.com/",
+		"winget": "Helix.Helix"
+	},
 	"alacritty": {
 		"category": "Utilities",
 		"choco": "alacritty",
