@@ -285,20 +285,22 @@ public class PowerManagement {
         reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassTPMCheck" /t REG_DWORD /d 1 /f
         reg add "HKLM\zSYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
 
-        # Prevent Windows Update Installing so called Expedited Apps
-        @(
-            'EdgeUpdate',
-            'DevHomeUpdate',
-            'OutlookUpdate',
-            'CrossDeviceUpdate'
-        ) | ForEach-Object {
-            Write-Host "Removing Windows Expedited App: $_"
+        # Prevent Windows Update Installing so called Expedited Apps - 24H2 and newer
+        if ((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,26100,1))) -eq $true) {
+            @(
+                'EdgeUpdate',
+                'DevHomeUpdate',
+                'OutlookUpdate',
+                'CrossDeviceUpdate'
+            ) | ForEach-Object {
+                Write-Host "Removing Windows Expedited App: $_"
 
-            # Copied here After Installation (Online)
-            # reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler\$_" /f | Out-Null
+                # Copied here After Installation (Online)
+                # reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler\$_" /f | Out-Null
 
-            # When in Offline Image
-            reg delete "HKLM\zSOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\$_" /f | Out-Null
+                # When in Offline Image
+                reg delete "HKLM\zSOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\$_" /f | Out-Null
+            }
         }
 
         reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTaskbarMode" /t REG_DWORD /d 0 /f
