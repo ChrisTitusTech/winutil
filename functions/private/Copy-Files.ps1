@@ -2,11 +2,17 @@ function Copy-Files {
     <#
 
         .DESCRIPTION
-        This function will make all modifications to the registry
-
+            Copies the contents of a given ISO file to a given destination
+        .PARAMETER Path
+            The source of the files to copy
+        .PARAMETER Destination
+            The destination to copy the files to
+        .PARAMETER Recurse
+            Determines whether or not to copy all files of the ISO file, including those in subdirectories
+        .PARAMETER Force
+            Determines whether or not to overwrite existing files
         .EXAMPLE
-
-        Set-WinUtilRegistry -Name "PublishUserActivities" -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Type "DWord" -Value "0"
+            Copy-Files "D:" "C:\ISOFile" -Recurse -Force
 
     #>
     param (
@@ -23,7 +29,7 @@ function Copy-Files {
 
         foreach ($file in $files) {
             $status = "Copying file {0} of {1}: {2}" -f $counter, $files.Count, $file.Name
-            Write-Progress -Activity "Copy Windows files" -Status $status -PercentComplete ($counter++/$files.count*100)
+            Write-Progress -Activity "Copy disc image files" -Status $status -PercentComplete ($counter++/$files.count*100)
             $restpath = $file.FullName -Replace $path, ''
 
             if ($file.PSIsContainer -eq $true) {
@@ -35,7 +41,7 @@ function Copy-Files {
                 Set-ItemProperty -Path ($destination+$restpath) -Name IsReadOnly -Value $false
             }
         }
-        Write-Progress -Activity "Copy Windows files" -Status "Ready" -Completed
+        Write-Progress -Activity "Copy disc image files" -Status "Ready" -Completed
     } catch {
         Write-Host "Unable to Copy all the files due to an unhandled exception" -ForegroundColor Yellow
         Write-Host "Error information: $($_.Exception.Message)`n" -ForegroundColor Yellow
