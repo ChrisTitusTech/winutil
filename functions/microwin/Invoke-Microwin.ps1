@@ -111,7 +111,7 @@ public class PowerManagement {
         Write-Host "Mounting Windows image. This may take a while."
         Mount-WindowsImage -ImagePath "$mountDir\sources\install.wim" -Index $index -Path "$scratchDir"
         if ($?) {
-            Write-Host "Mounting complete! Performing removal of applications..."
+            Write-Host "The Windows image has been mounted successfully. Continuing processing..."
         } else {
             Write-Host "Could not mount image. Exiting..."
             Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
