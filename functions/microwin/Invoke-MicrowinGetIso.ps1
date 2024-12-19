@@ -169,7 +169,7 @@ function Invoke-MicrowinGetIso {
     try {
         Write-Host "Mounting Iso. Please wait."
         $mountedISO = Mount-DiskImage -PassThru "$filePath"
-        Write-Host "Done mounting Iso $mountedISO"
+        Write-Host "Done mounting Iso `"$($mountedISO.ImagePath)`""
         $driveLetter = (Get-Volume -DiskImage $mountedISO).DriveLetter
         Write-Host "Iso mounted to '$driveLetter'"
     } catch {
