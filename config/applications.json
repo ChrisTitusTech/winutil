@@ -1142,5 +1142,5 @@
         "description": "Discord is a popular communication platform with voice, video, and text chat, designed for gamers but used by a wide range of communities.",
         "link": "https://discord.com/",
         "winget": "Discord.Discord"
-    },
+    }
 }
