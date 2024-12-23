@@ -1106,6 +1106,30 @@
         "link": "https://ubisoftconnect.com/",
         "winget": "Ubisoft.Connect"
     },
+    "osu": {
+        "category": "Games",
+        "choco": "na",
+        "content": "osu!",
+        "description": "osu! is a free-to-win rhythm game developed by Dean Herbert, featuring multiple game modes and a large community of players.",
+        "link": "https://osu.ppy.sh/",
+        "winget": "ppy.osu"
+    },
+    "modrinth": {
+        "category": "Games",
+        "choco": "na",
+        "content": "Modrinth",
+        "description": "Modrinth is a mod manager and platform for Minecraft mods, providing a curated selection of mods for the game.",
+        "link": "https://modrinth.com/",
+        "winget": "Modrinth.ModrinthApp"
+    },
+    "Vortex": {
+        "category": "Games",
+        "choco": "na",
+        "content": "Vortex",
+        "description": "Vortex is a mod manager for various PC games, offering a simple way to install, manage, and update mods.",
+        "link": "https://www.nexusmods.com/site/mods/1",
+        "winget": "NexusMods.Vortex"
+    },
 
 
 
