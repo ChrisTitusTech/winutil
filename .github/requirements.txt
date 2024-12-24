@@ -15,7 +15,7 @@ gitdb==4.0.11
 GitPython==3.1.43
 htmlmin2==0.1.13
 idna==3.7
-Jinja2==3.1.4
+Jinja2==3.1.5
 jsmin==3.0.1
 Markdown==3.6
 MarkupSafe==2.1.5
