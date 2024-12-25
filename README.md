@@ -4,6 +4,8 @@
 
 This is a custom configuration for ChrisTitusTech's winutil tool. I have removed and added some tools from winutil to make it more usable for me.
 
+![screen-install](./assets/Title-Screen.png)
+
 ## 💡 Usage
 
 To use this configuration, you can either download a prebuilt PowerShell script or compile it yourself. The prebuilt script can be run in the same way as the original winutil, instructions can be found [here](https://github.com/ChrisTitusTech/winutil).
@@ -16,5 +18,5 @@ Compilation Steps:
 4. The output should be a single file named `winutil.ps1`
 
 ## 💖 Support
-- If you like this tool, make sure to star both the original and this fork ⭐
+- If you like this tool, make sure to star both this config and winutil ⭐
 - Check out [Chris Titus Tech's winutil](https://github.com/ChrisTitusTech/winutil).
