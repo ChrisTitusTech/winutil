@@ -1,6 +1,6 @@
 # RealCrayfish's Custom Config for ChrisTitusTech's winutil
 [![Version](https://img.shields.io/github/v/release/RealCrayfishh/WinutilConfig?color=%230567ff&label=Latest%20Release&style=for-the-badge)](https://github.com/RealCrayfish/WinutilConfig/releases/latest)
-![GitHub Downloads (specific asset, all releases)](https://img.shields.io/github/downloads/RealCrayfish/WinutilConfig/WindowsUtility.ps1?label=Total%20Downloads&style=for-the-badge)
+![GitHub Downloads (specific asset, all releases)](https://img.shields.io/github/downloads/RealCrayfish/WinutilConfig/config.zip?label=Total%20Downloads&style=for-the-badge)
 
 This is a custom configuration for ChrisTitusTech's winutil tool. I have removed and added some tools from winutil to make it more usable for me.
 
