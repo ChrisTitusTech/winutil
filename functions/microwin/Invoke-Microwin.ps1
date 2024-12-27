@@ -163,12 +163,12 @@ public class PowerManagement {
         }
 
         Write-Host "Remove Features from the image"
-        Microwin-RemoveFeatures
+        Microwin-RemoveFeatures -UseCmdlets $true
         Write-Host "Removing features complete!"
         Write-Host "Removing OS packages"
-        Microwin-RemovePackages
+        Microwin-RemovePackages -UseCmdlets $true
         Write-Host "Removing Appx Bloat"
-        Microwin-RemoveProvisionedPackages
+        Microwin-RemoveProvisionedPackages -UseCmdlets $true
 
         # Detect Windows 11 24H2 and add dependency to FileExp to prevent Explorer look from going back - thanks @WitherOrNot and @thecatontheceiling
         if ((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,26100,1))) -eq $true) {
