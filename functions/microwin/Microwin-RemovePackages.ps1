@@ -35,7 +35,8 @@ function Microwin-RemovePackages {
                     $_ -NotLike "*VBSCRIPT*" -AND
                     $_ -NotLike "*License*" -AND
                     $_ -NotLike "*Hello-Face*" -AND
-                    $_ -NotLike "*ISE*"
+                    $_ -NotLike "*ISE*" -AND
+                    $_ -NotLike "*OpenSSH*"
                 }
         } else {
             $pkgList = dism /english /image="$scratchDir" /get-packages | Select-String -Pattern "Package Identity : " -CaseSensitive -SimpleMatch
@@ -58,7 +59,8 @@ function Microwin-RemovePackages {
                     $_ -NotLike "*VBSCRIPT*" -AND
                     $_ -NotLike "*License*" -AND
                     $_ -NotLike "*Hello-Face*" -AND
-                    $_ -NotLike "*ISE*"
+                    $_ -NotLike "*ISE*" -AND
+                    $_ -NotLike "*OpenSSH*"
                 }
             } else {
                 Write-Host "Packages could not be obtained with DISM. MicroWin processing will continue, but packages will be skipped."
