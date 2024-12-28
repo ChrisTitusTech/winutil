@@ -223,7 +223,7 @@ function Invoke-MicrowinGetIso {
     $mountDir = Join-Path $env:TEMP $randomMicrowin
     $scratchDir = Join-Path $env:TEMP $randomMicrowinScratch
     } else {
-        $scratchDir = $sync.MicrowinScratchDirBox.Text+"Scrach"
+        $scratchDir = $sync.MicrowinScratchDirBox.Text+"Scratch"
         $mountDir = $sync.MicrowinScratchDirBox.Text+"micro"
     }
 
