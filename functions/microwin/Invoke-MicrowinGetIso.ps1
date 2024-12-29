@@ -189,7 +189,7 @@ function Invoke-MicrowinGetIso {
         $sync.MicrowinScratchDirBox.Text =""
     }
 
-     $UseISOScratchDir = $sync.WPFMicrowinISOScratchDir.IsChecked
+    $UseISOScratchDir = $sync.WPFMicrowinISOScratchDir.IsChecked
 
     if ($UseISOScratchDir) {
         $sync.MicrowinScratchDirBox.Text=$mountedISOPath
@@ -220,8 +220,8 @@ function Invoke-MicrowinGetIso {
     $sync.BusyText.Text=" - Mounting"
     Write-Host "Mounting Iso. Please wait."
     if ($sync.MicrowinScratchDirBox.Text -eq "") {
-    $mountDir = Join-Path $env:TEMP $randomMicrowin
-    $scratchDir = Join-Path $env:TEMP $randomMicrowinScratch
+        $mountDir = Join-Path $env:TEMP $randomMicrowin
+        $scratchDir = Join-Path $env:TEMP $randomMicrowinScratch
     } else {
         $scratchDir = $sync.MicrowinScratchDirBox.Text+"Scratch"
         $mountDir = $sync.MicrowinScratchDirBox.Text+"micro"
