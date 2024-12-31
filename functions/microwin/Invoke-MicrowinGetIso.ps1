@@ -169,7 +169,7 @@ function Invoke-MicrowinGetIso {
     try {
         Write-Host "Mounting Iso. Please wait."
         $mountedISO = Mount-DiskImage -PassThru "$filePath"
-        Write-Host "Done mounting Iso $mountedISO"
+        Write-Host "Done mounting Iso `"$($mountedISO.ImagePath)`""
         $driveLetter = (Get-Volume -DiskImage $mountedISO).DriveLetter
         Write-Host "Iso mounted to '$driveLetter'"
     } catch {
@@ -189,7 +189,7 @@ function Invoke-MicrowinGetIso {
         $sync.MicrowinScratchDirBox.Text =""
     }
 
-     $UseISOScratchDir = $sync.WPFMicrowinISOScratchDir.IsChecked
+    $UseISOScratchDir = $sync.WPFMicrowinISOScratchDir.IsChecked
 
     if ($UseISOScratchDir) {
         $sync.MicrowinScratchDirBox.Text=$mountedISOPath
@@ -220,10 +220,10 @@ function Invoke-MicrowinGetIso {
     $sync.BusyText.Text=" - Mounting"
     Write-Host "Mounting Iso. Please wait."
     if ($sync.MicrowinScratchDirBox.Text -eq "") {
-    $mountDir = Join-Path $env:TEMP $randomMicrowin
-    $scratchDir = Join-Path $env:TEMP $randomMicrowinScratch
+        $mountDir = Join-Path $env:TEMP $randomMicrowin
+        $scratchDir = Join-Path $env:TEMP $randomMicrowinScratch
     } else {
-        $scratchDir = $sync.MicrowinScratchDirBox.Text+"Scrach"
+        $scratchDir = $sync.MicrowinScratchDirBox.Text+"Scratch"
         $mountDir = $sync.MicrowinScratchDirBox.Text+"micro"
     }
 
@@ -242,8 +242,8 @@ function Invoke-MicrowinGetIso {
 
         # xcopy we can verify files and also not copy files that already exist, but hard to measure
         # xcopy.exe /E /I /H /R /Y /J $DriveLetter":" $mountDir >$null
-        $totalTime = Measure-Command { Copy-Files "$($driveLetter):" $mountDir -Recurse -Force }
-        Write-Host "Copy complete! Total Time: $($totalTime.Minutes)m$($totalTime.Seconds)s"
+        $totalTime = Measure-Command { Copy-Files "$($driveLetter):" "$mountDir" -Recurse -Force }
+        Write-Host "Copy complete! Total Time: $($totalTime.Minutes) minutes, $($totalTime.Seconds) seconds"
 
         $wimFile = "$mountDir\sources\install.wim"
         Write-Host "Getting image information $wimFile"
