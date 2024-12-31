@@ -60,7 +60,7 @@ jobs:
         run: |
           $cert = Get-ChildItem -Path Cert:\CurrentUser\My -CodeSigningCert | Select-Object -First 1
           if ($null -eq $cert) { throw "Code signing certificate not found" }
-          Set-AuthenticodeSignature -FilePath ./winutil.ps1 -Certificate $cert
+          Set-AuthenticodeSignature -FilePath ./winutil.ps1 -Certificate $cert -TimeStampServer "http://timestamp.digicert.com"
 
       - name: Verify code signature
         shell: pwsh
