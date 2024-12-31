@@ -35,6 +35,9 @@ Function Get-WinUtilToggleStatus {
 
         foreach ($regentry in $ToggleSwitchReg) {
             try {
+                if (!(Test-Path $regentry.Path)) {
+                    New-Item -Path $regentry.Path -Force | Out-Null
+                }
                 $regstate = (Get-ItemProperty -path $regentry.Path).$($regentry.Name)
                 if ($regstate -eq $regentry.Value) {
                     $count += 1
@@ -42,8 +45,23 @@ Function Get-WinUtilToggleStatus {
                 } else {
                     Write-Debug "$($regentry.Name) is false (state: $regstate, value: $($regentry.Value), original: $($regentry.OriginalValue))"
                 }
+                if (!$regstate) {
+                    switch ($regentry.DefaultState) {
+                        "true" {
+                            $regstate = $regentry.Value
+                            $count += 1
+                        }
+                        "false" {
+                            $regstate = $regentry.OriginalValue
+                        }
+                        default {
+                            Write-Error "Entry for $($regentry.Name) does not exist and no DefaultState is defined."
+                            $regstate = $regentry.OriginalValue
+                        }
+                    }
+                }
             } catch {
-                Write-Error "An error occurred while accessing registry entry $($regentry.Path): $_"
+                Write-Error "An unexpected error occurred: $_"
             }
         }
 

@@ -3301,6 +3301,7 @@
         "Name": "AppsUseLightTheme",
         "Value": "0",
         "OriginalValue": "1",
+        "DefaultState": "false",
         "Type": "DWord"
       },
       {
@@ -3308,6 +3309,7 @@
         "Name": "SystemUsesLightTheme",
         "Value": "0",
         "OriginalValue": "1",
+        "DefaultState": "false",
         "Type": "DWord"
       }
     ],
@@ -3342,6 +3344,7 @@
         "Name": "BingSearchEnabled",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "true",
         "Type": "DWord"
       }
     ],
@@ -3360,6 +3363,7 @@
         "Name": "InitialKeyboardIndicators",
         "Value": "2",
         "OriginalValue": "0",
+        "DefaultState": "false",
         "Type": "DWord"
       },
       {
@@ -3367,6 +3371,7 @@
         "Name": "InitialKeyboardIndicators",
         "Value": "2",
         "OriginalValue": "0",
+        "DefaultState": "false",
         "Type": "DWord"
       }
     ],
@@ -3385,17 +3390,53 @@
         "Name": "VerboseStatus",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "false",
         "Type": "DWord"
       }
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/VerboseLogon"
+  },
+  "WPFToggleStartMenuRecommendations": {
+    "Content": "Recommendations in Start Menu",
+    "Description": "If disabled then you will not see recommendations in the Start Menu. | Enables 'iseducationenvironment' | Relogin Required.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a104_",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\Start",
+        "Name": "HideRecommendedSection",
+        "Value": "0",
+        "OriginalValue": "1",
+        "DefaultState": "true",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\Education",
+        "Name": "IsEducationEnvironment",
+        "Value": "0",
+        "OriginalValue": "1",
+        "DefaultState": "true",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer",
+        "Name": "HideRecommendedSection",
+        "Value": "0",
+        "OriginalValue": "1",
+        "DefaultState": "true",
+        "Type": "DWord"
+      }
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/WPFToggleStartMenuRecommendations"
   },
   "WPFToggleSnapWindow": {
     "Content": "Snap Window",
     "Description": "If enabled you can align windows by dragging them. | Relogin Required",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a104_",
+    "Order": "a105_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3403,6 +3444,7 @@
         "Name": "WindowArrangementActive",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "true",
         "Type": "String"
       }
     ],
@@ -3413,7 +3455,7 @@
     "Description": "If enabled then Snap preview is disabled when maximize button is hovered.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a105_",
+    "Order": "a106_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3421,6 +3463,7 @@
         "Name": "EnableSnapAssistFlyout",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "true",
         "Type": "DWord"
       }
     ],
@@ -3441,7 +3484,7 @@
     "Description": "If enabled then you will get suggestions to snap other applications in the left over spaces.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a106_",
+    "Order": "a107_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3449,6 +3492,7 @@
         "Name": "SnapAssist",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "true",
         "Type": "DWord"
       }
     ],
@@ -3469,7 +3513,7 @@
     "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a107_",
+    "Order": "a108_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3477,6 +3521,7 @@
         "Name": "MouseSpeed",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "true",
         "Type": "DWord"
       },
       {
@@ -3484,6 +3529,7 @@
         "Name": "MouseThreshold1",
         "Value": "6",
         "OriginalValue": "0",
+        "DefaultState": "true",
         "Type": "DWord"
       },
       {
@@ -3491,6 +3537,7 @@
         "Name": "MouseThreshold2",
         "Value": "10",
         "OriginalValue": "0",
+        "DefaultState": "true",
         "Type": "DWord"
       }
     ],
@@ -3501,7 +3548,7 @@
     "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a108_",
+    "Order": "a109_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3509,6 +3556,7 @@
         "Name": "Flags",
         "Value": "510",
         "OriginalValue": "58",
+        "DefaultState": "true",
         "Type": "DWord"
       }
     ],
@@ -3527,6 +3575,7 @@
         "Name": "Hidden",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "false",
         "Type": "DWord"
       }
     ],
@@ -3555,6 +3604,7 @@
         "Name": "HideFileExt",
         "Value": "0",
         "OriginalValue": "1",
+        "DefaultState": "false",
         "Type": "DWord"
       }
     ],
@@ -3583,6 +3633,7 @@
         "Name": "SearchboxTaskbarMode",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "true",
         "Type": "DWord"
       }
     ],
@@ -3601,6 +3652,7 @@
         "Name": "ShowTaskViewButton",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "true",
         "Type": "DWord"
       }
     ],
@@ -3619,6 +3671,7 @@
         "Name": "TaskbarDa",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "true",
         "Type": "DWord"
       }
     ],
@@ -3637,6 +3690,7 @@
         "Name": "TaskbarAl",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "true",
         "Type": "DWord"
       }
     ],
@@ -3655,6 +3709,7 @@
         "Name": "DisplayParameters",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "false",
         "Type": "DWord"
       },
       {
@@ -3662,6 +3717,7 @@
         "Name": "DisableEmoticon",
         "Value": "1",
         "OriginalValue": "0",
+        "DefaultState": "false",
         "Type": "DWord"
       }
     ],
