@@ -55,6 +55,8 @@ public class PowerManagement {
     $injectDrivers = $sync.MicrowinInjectDrivers.IsChecked
     $importDrivers = $sync.MicrowinImportDrivers.IsChecked
 
+    $importVirtIO = $sync.MicrowinCopyVirtIO.IsChecked
+
     $mountDir = $sync.MicrowinMountDir.Text
     $scratchDir = $sync.MicrowinScratchDir.Text
 
@@ -109,7 +111,7 @@ public class PowerManagement {
         Write-Host "Mounting Windows image. This may take a while."
         Mount-WindowsImage -ImagePath "$mountDir\sources\install.wim" -Index $index -Path "$scratchDir"
         if ($?) {
-            Write-Host "Mounting complete! Performing removal of applications..."
+            Write-Host "The Windows image has been mounted successfully. Continuing processing..."
         } else {
             Write-Host "Could not mount image. Exiting..."
             Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
@@ -155,13 +157,18 @@ public class PowerManagement {
             }
         }
 
+        if ($importVirtIO) {
+            Write-Host "Copying VirtIO drivers..."
+            Microwin-CopyVirtIO
+        }
+
         Write-Host "Remove Features from the image"
-        Microwin-RemoveFeatures
+        Microwin-RemoveFeatures -UseCmdlets $true
         Write-Host "Removing features complete!"
         Write-Host "Removing OS packages"
-        Microwin-RemovePackages
+        Microwin-RemovePackages -UseCmdlets $true
         Write-Host "Removing Appx Bloat"
-        Microwin-RemoveProvisionedPackages
+        Microwin-RemoveProvisionedPackages -UseCmdlets $true
 
         # Detect Windows 11 24H2 and add dependency to FileExp to prevent Explorer look from going back - thanks @WitherOrNot and @thecatontheceiling
         if ((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,26100,1))) -eq $true) {
@@ -189,8 +196,6 @@ public class PowerManagement {
         Microwin-RemoveFileOrDirectory -pathToDelete "$($scratchDir)\Windows\DiagTrack" -Directory
         Microwin-RemoveFileOrDirectory -pathToDelete "$($scratchDir)\Windows\InboxApps" -Directory
         Microwin-RemoveFileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LocationNotificationWindows.exe"
-        Microwin-RemoveFileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Photo Viewer" -Directory
-        Microwin-RemoveFileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Photo Viewer" -Directory
         Microwin-RemoveFileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Media Player" -Directory
         Microwin-RemoveFileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Media Player" -Directory
         Microwin-RemoveFileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Mail" -Directory
@@ -280,20 +285,22 @@ public class PowerManagement {
         reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassTPMCheck" /t REG_DWORD /d 1 /f
         reg add "HKLM\zSYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
 
-        # Prevent Windows Update Installing so called Expedited Apps
-        @(
-            'EdgeUpdate',
-            'DevHomeUpdate',
-            'OutlookUpdate',
-            'CrossDeviceUpdate'
-        ) | ForEach-Object {
-            Write-Host "Removing Windows Expedited App: $_"
+        # Prevent Windows Update Installing so called Expedited Apps - 24H2 and newer
+        if ((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,26100,1))) -eq $true) {
+            @(
+                'EdgeUpdate',
+                'DevHomeUpdate',
+                'OutlookUpdate',
+                'CrossDeviceUpdate'
+            ) | ForEach-Object {
+                Write-Host "Removing Windows Expedited App: $_"
 
-            # Copied here After Installation (Online)
-            # reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler\$_" /f | Out-Null
+                # Copied here After Installation (Online)
+                # reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler\$_" /f | Out-Null
 
-            # When in Offline Image
-            reg delete "HKLM\zSOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\$_" /f | Out-Null
+                # When in Offline Image
+                reg delete "HKLM\zSOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\$_" /f | Out-Null
+            }
         }
 
         reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTaskbarMode" /t REG_DWORD /d 0 /f
