@@ -2596,13 +2596,15 @@
     "InvokeScript": [
       "
       Write-Host \"Disable Recall\"
-      DISM /Online /Disable-Feature /FeatureName:Recall
+      DISM /Online /Disable-Feature /FeatureName:Recall /Quiet /NoRestart
+      Write-Host \"Please restart your computer in order for the changes to be fully applied.\"
       "
     ],
     "UndoScript": [
       "
       Write-Host \"Enable Recall\"
-      DISM /Online /Enable-Feature /FeatureName:Recall
+      DISM /Online /Enable-Feature /FeatureName:Recall /Quiet /NoRestart
+      Write-Host \"Please restart your computer in order for the changes to be fully applied.\"
       "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DisableRecall"
