@@ -1775,6 +1775,14 @@
         "link": "https://www.qbittorrent.org/",
         "winget": "qBittorrent.qBittorrent"
     },
+    "teraterm": {
+		"category": "Pro Tools",
+		"choco": "teraterm",
+		"content": "Tera Term",
+		"description": "Tera Term is a free software advanced terminal emulator",
+		"link": "https://github.com/TeraTermProject/teraterm",
+		"winget": "TeraTermProject.teraterm5"
+	},
     "transmission": {
         "category": "Utilities",
         "choco": "transmission",
