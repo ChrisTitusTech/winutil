@@ -6,7 +6,7 @@ Windows Security (formerly Defender) and other anti-virus software are known to 
 To resolve this, allow/whitelist the script in your anti-virus software settings, or temporarily disable real-time protection. Since the project is open source, you may audit the code if security is a concern.
 
 ### Download not working
-If `christitus.com/win` is not working, or you want to download the code from GitHub directly, you can use the direct download link:
+If `https://christitus.com/win` is not working, or you want to download the code from GitHub directly, you can use the direct download link:
 
 ```ps1
 irm https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1 | iex
@@ -34,7 +34,7 @@ If you are still having issues, try using a **VPN**, or changing your **DNS prov
 2. In the PowerShell window, type this to allow unsigned code to execute and run the installation script:
     ```ps1
     Set-ExecutionPolicy Unrestricted -Scope Process -Force
-    irm christitus.com/win | iex
+    irm https://christitus.com/win | iex
     ```
 
 ## Runtime Issues
