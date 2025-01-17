@@ -258,6 +258,6 @@ With MicroWin, you can also configure your user before proceeding if you don't w
 
 * On any supported Windows machine, open PowerShell **as Admin** and run the following command to automatically apply tweaks and install apps from the config file.
     ```ps1
-    iex "& { $(irm christitus.com/win) } -Config [path-to-your-config] -Run"
+    iex "& { $(irm https://christitus.com/win) } -Config [path-to-your-config] -Run"
     ```
 * Have a cup of coffee! Come back when it's done.

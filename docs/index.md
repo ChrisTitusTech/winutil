@@ -11,7 +11,7 @@ Welcome to the official documentation for WinUtil, your go-to utility for optimi
 * You will first need to start a Powershell terminal **as Admin**.
 * Now you can run the following command:
    ```ps1
-   irm christitus.com/win | iex
+   irm https://christitus.com/win | iex
    ```
 
 !!! info

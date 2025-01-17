@@ -6,7 +6,7 @@
 
 #### **Run the latest pre-release**
    ```ps1
-   irm christitus.com/windev | iex
+   irm https://christitus.com/windev | iex
    ```
 
 !!! bug "Keep in mind"
