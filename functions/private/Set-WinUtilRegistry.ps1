@@ -47,7 +47,7 @@ function Set-WinUtilRegistry {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
     } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    } catch [System.UnauthorizedAccessException]{
+    } catch [System.UnauthorizedAccessException] {
        Write-Warning $psitem.Exception.Message
     } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
