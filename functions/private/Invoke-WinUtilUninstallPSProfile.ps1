@@ -58,7 +58,7 @@ function Invoke-WinUtilUninstallPSProfile {
                 Where-Object { $_.Name -match $FontFamilyName } |
                 ForEach-Object {
                     If ($_.Name -like "*$FontFamilyName*") {
-                        Remove-ItemProperty -path $FontsRegPath -Name $_.Name -ErrorAction Stop
+                        Remove-ItemProperty -path $FontsRegPath -Name $_.Name -ErrorAction SilentlyContinue
                     }
                 }
             } catch {
