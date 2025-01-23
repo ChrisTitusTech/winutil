@@ -62,7 +62,7 @@ function Invoke-WinUtilUninstallPSProfile {
                     }
                 }
             } catch {
-                Write-Host "Error removing registry keys: $($_.exception.message)" -foregroundcolor red
+                Write-Host "Error removing registry keys: $($_.exception.message)" -ForegroundColor Red
             }
         }
 
