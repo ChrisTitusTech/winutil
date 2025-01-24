@@ -88,7 +88,7 @@ function Microwin-RemovePackages {
         } else {
             foreach ($package in $pkgList) {
                 $status = "Removing package $package"
-                Write-Progress -Activity "Removing features" -Status $status -PercentComplete ($counter++/$featlist.Count*100)
+                Write-Progress -Activity "Removing Packages" -Status $status -PercentComplete ($counter++/$pkglist.Count*100)
                 Write-Debug "Removing package $package"
                 dism /english /image="$scratchDir" /remove-package /packagename=$package /remove /quiet /norestart | Out-Null
                 if ($? -eq $false) {
