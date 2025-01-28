@@ -38,6 +38,32 @@ function Invoke-WinUtilUninstallPSProfile {
             if (-not $Fonts) {
                 Write-Host "===> Successfully Uninstalled: Nerd Fonts. <===" -ForegroundColor Yellow
             }
+
+        }
+
+        # Helper function used to uninstall a specific Nerd Fonts font corresponding registry keys.
+        function Uninstall-NerdFontRegKeys {
+            # Define the parameters block for the Uninstall-NerdFontsRegKey function.
+            param (
+                [string]$FontsRegPath = "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts",
+                [string]$FontFamilyName = "CaskaydiaCove"
+            )
+
+            try {
+                # Get all properties (font registrations) from the registry path
+                $registryProperties = Get-ItemProperty -Path $FontsRegPath
+
+                # Filter and remove properties that match the font family name
+                $registryProperties.PSObject.Properties |
+                Where-Object { $_.Name -match $FontFamilyName } |
+                ForEach-Object {
+                    If ($_.Name -like "*$FontFamilyName*") {
+                        Remove-ItemProperty -path $FontsRegPath -Name $_.Name -ErrorAction SilentlyContinue
+                    }
+                }
+            } catch {
+                Write-Host "Error removing registry keys: $($_.exception.message)" -ForegroundColor Red
+            }
         }
 
         # Check if Chris Titus Tech's PowerShell profile is currently available in the PowerShell profile folder.
@@ -87,9 +113,26 @@ function Invoke-WinUtilUninstallPSProfile {
 
                     # Call the function used to uninstall the specified Nerd Fonts package from the system.
                     Uninstall-NerdFonts -FontsPath $FontsPath -FontFamilyName $FontFamilyName
+
                 } catch {
                     # Let the user know that an error was encountered when uninstalling Nerd Fonts.
                     Write-Host "Failed to uninstall Nerd Fonts. Error: $_" -ForegroundColor Red
+                }
+
+                # Attempt to uninstall the specified Nerd Fonts registry keys from the system.
+                try {
+                    # Specify the registry path that the specified font registry keys will be uninstalled from.
+                    [string]$FontsRegPath = "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts"
+
+                    # Specify the name of the font registry keys that is to be uninstalled from the system.
+                    [string]$FontFamilyName = "CaskaydiaCove"
+
+                    # Call the function used to uninstall the specified Nerd Fonts registry keys from the system.
+                    Uninstall-NerdFontRegKeys -FontsPath $FontsRegPath -FontFamilyName $FontFamilyName
+
+                } catch {
+                    # Let the user know that an error was encountered when uninstalling Nerd Font registry keys.
+                    Write-Host "Failed to uninstall Nerd Font Registry Keys. Error: $_" -ForegroundColor Red
                 }
 
                 # Attempt to uninstall the Terminal-Icons PowerShell module from the system.
@@ -185,3 +228,4 @@ function Invoke-WinUtilUninstallPSProfile {
         }
     }
 }
+
