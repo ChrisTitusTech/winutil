@@ -1199,6 +1199,14 @@
         "link": "https://www.mongodb.com/products/tools/compass",
         "winget": "MongoDB.Compass.Full"
     },
+    "CompassReadonly": {
+        "category": "Development",
+        "choco": "mongodb-compass-readonly",
+        "content": "MongoDB Compass (readonly)",
+        "description": "Compass is a free interactive tool for analyzing your MongoDB data",
+        "link": "https://www.mongodb.com/products/tools/compass",
+        "winget": "MongoDB.Compass.Readonly"
+    },
     "monitorian": {
         "category": "Utilities",
         "choco": "monitorian",
