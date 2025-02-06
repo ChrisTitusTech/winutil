@@ -2,6 +2,7 @@
 
 # Configuration folder
 .vscode/
+.idea/
 
 ### Visual Studio ###
 
