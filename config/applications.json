@@ -7,6 +7,22 @@
         "link": "https://1password.com/",
         "winget": "AgileBits.1Password"
     },
+    "Termius": {
+        "category": "Development",
+        "choco": "termius",
+        "content": "Termius",
+        "description": "Modern SSH Client. Build for Productivity and Collaboration.",
+        "link": "https://termius.com/",
+        "winget": "Termius.Termius"
+    },
+    "Cyberduck": {
+        "category": "Utilities",
+        "choco": "cyberduck",
+        "content": "Cyberduck",
+        "description": "Cyberduck is a libre server and cloud storage browser.",
+        "link": "https://cyberduck.io/",
+        "winget": "Iterate.Cyberduck"
+    },
     "7zip": {
         "category": "Utilities",
         "choco": "7zip",
