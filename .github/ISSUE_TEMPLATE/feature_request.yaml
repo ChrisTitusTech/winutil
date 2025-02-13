@@ -28,8 +28,7 @@ body:
     id: problem_statement
     attributes:
       label: ❓ Is your feature request related to a problem?
-      description: "Provide a clear and concise description of the issue you're facing. Example: 'I'm always frustrated when [...]'"
-      placeholder: "Describe the problem here..."
+      placeholder: "Provide a clear and concise description of the issue you're facing. Example: 'I'm always frustrated when [...]'"
     validations:
       required: false
 
@@ -37,8 +36,7 @@ body:
     id: proposed_solution
     attributes:
       label: 💡 Describe the solution you'd like
-      description: "Provide a clear and concise description of what you want to happen."
-      placeholder: "Describe the ideal solution here..."
+      placeholder: "Provide a clear and concise description of what you want to happen."
     validations:
       required: true
 
@@ -46,8 +44,7 @@ body:
     id: alternatives
     attributes:
       label: 🔄 Describe alternatives you've considered
-      description: "Provide details on any alternative solutions or features you've thought about."
-      placeholder: "Describe any alternatives here..."
+      placeholder: "Provide details on any alternative solutions or features you've thought about."
     validations:
       required: false
 
@@ -55,7 +52,6 @@ body:
     id: additional_context
     attributes:
       label: 🖼️ Additional context
-      description: "Include screenshots, code blocks (use triple backticks ```), or any other relevant information."
-      placeholder: "Provide additional details here..."
+      placeholder: "Include screenshots, code blocks (use triple backticks ```), or any other relevant information."
     validations:
       required: false
