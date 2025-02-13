@@ -1,0 +1,61 @@
+name: "Feature request"
+description: "Suggest a new feature or improvement for the project."
+labels: ["enhancement"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # ✨ **Feature request**
+        Thank you for taking the time to suggest a feature! Please provide as much detail as possible to help us understand and evaluate your request.
+
+        ## ⚠️ **IMPORTANT**  
+        - 🛠️ **Supported environments only:** We only support Windows 11.
+        - 💡 For general questions, use the [Discussions section](https://github.com/Christitustech/winutil/discussions) or join our Community-driven [Discord Server](https://discord.gg/RUbZUZyByQ).
+
+  - type: checkboxes
+    attributes:
+      label: ⚙️ Issue Checklist
+      options:
+        - label: I have read the guidelines.
+        - label: I checked for duplicate issues.
+        - label: I searched for existing discussions.
+        - label: I checked for an existing pull request that addresses this request.
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem_statement
+    attributes:
+      label: ❓ Is your feature request related to a problem?
+      description: "Provide a clear and concise description of the issue you're facing. Example: 'I'm always frustrated when [...]'"
+      placeholder: "Describe the problem here..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: 💡 Describe the solution you'd like
+      description: "Provide a clear and concise description of what you want to happen."
+      placeholder: "Describe the ideal solution here..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 🔄 Describe alternatives you've considered
+      description: "Provide details on any alternative solutions or features you've thought about."
+      placeholder: "Describe any alternatives here..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: 🖼️ Additional context
+      description: "Include screenshots, code blocks (use triple backticks ```), or any other relevant information."
+      placeholder: "Provide additional details here..."
+    validations:
+      required: false
