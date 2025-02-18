@@ -683,9 +683,9 @@
         "category": "Multimedia Tools",
         "choco": "fxsound",
         "content": "FxSound",
-        "description": "FxSound is a cutting-edge audio enhancement software that elevates your listening experience across all media.",
+        "description": "FxSound is free open-source software to boost sound quality, volume, and bass. Including an equalizer, effects, and presets for customized audio.",
         "link": "https://www.fxsound.com/",
-        "winget": "FxSoundLLC.FxSound"
+        "winget": "FxSound.FxSound"
     },
     "fzf": {
         "category": "Utilities",
