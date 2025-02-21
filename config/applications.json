@@ -1551,6 +1551,22 @@
         "link": "https://openvpn.net/",
         "winget": "OpenVPNTechnologies.OpenVPNConnect"
     },
+    "opera": {
+      "category": "Browsers",
+      "choco": "opera",
+      "content": "Opera",
+      "description": "Opera is a fast and secure web browser with built-in VPN, ad blocker, and a host of innovative features.",
+      "link": "https://www.opera.com/",
+      "winget": "Opera.Opera"
+    },
+    "operagx": {
+      "category": "Browsers",
+      "choco": "operagx",
+      "content": "Opera GX",
+      "description": "Opera GX is a gaming-focused browser offering performance controls, unique design, and exclusive gaming integrations.",
+      "link": "https://www.opera.com/gx",
+      "winget": "Opera.OperaGX"
+    },
     "OVirtualBox": {
         "category": "Utilities",
         "choco": "virtualbox",
