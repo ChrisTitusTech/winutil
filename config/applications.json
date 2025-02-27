@@ -2934,5 +2934,21 @@
         "description": "Fork - a fast and friendly git client.",
         "link": "https://git-fork.com/",
         "winget": "Fork.Fork"
+    };
+    "MiKTeX": {
+        "category": "Document",
+        "choco": "miktex",
+        "content": "MiKTeX Latex Editor",
+        "description": "MiKTeX is a free, open-source TeX/LaTeX distribution for Windows, macOS, and Linux. It provides tools for typesetting documents, including a package manager for easy installation of necessary components. It's designed to help create professional documents.",
+        "link": "https://miktex.org/download",
+        "winget": "MiKTeX.MiKTeX"
+    };
+    "MiKTeXPortable": {
+        "category": "Document",
+        "choco": "miktex.portable",
+        "content": "MiKTeX Latex Editor - Portable",
+        "description": "MiKTeX Portable allows you to run the MiKTeX TeX/LaTeX distribution from a USB drive or other portable storage. It avoids installing into the host computer's system, keeping configurations and files self-contained. This enables use of MiKTeX on various Windows machines without leaving traces.",
+        "link": "https://miktex.org/download",
+        "winget": "na"
     }
 }
