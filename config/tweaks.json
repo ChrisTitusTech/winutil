@@ -11,21 +11,21 @@
         "Name": "EnableActivityFeed",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
         "Name": "PublishUserActivities",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
         "Name": "UploadUserActivities",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/AH"
@@ -1598,126 +1598,126 @@
         "Name": "CreateDesktopShortcutDefault",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "PersonalizationReportingEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "ShowRecommendationsEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "HideFirstRunExperience",
         "Type": "DWord",
         "Value": "1",
-        "OriginalValue": "0"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "UserFeedbackAllowed",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "ConfigureDoNotTrack",
         "Type": "DWord",
         "Value": "1",
-        "OriginalValue": "0"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "AlternateErrorPagesEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "EdgeCollectionsEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "EdgeShoppingAssistantEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "MicrosoftEdgeInsiderPromotionEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "PersonalizationReportingEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "ShowMicrosoftRewards",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "WebWidgetAllowed",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "DiagnosticData",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "EdgeAssetDeliveryServiceEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "EdgeCollectionsEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "CryptoWalletEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "WalletDonationEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/EdgeDebloat"
@@ -1731,7 +1731,7 @@
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-        "OriginalValue": "0",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "DisableWindowsConsumerFeatures",
         "Value": "1",
         "Type": "DWord"
@@ -1818,11 +1818,11 @@
         "Type": "DWord",
         "Value": "0",
         "Name": "AllowTelemetry",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
-        "OriginalValue": "1",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "AllowTelemetry",
         "Value": "0",
         "Type": "DWord"
@@ -1906,21 +1906,21 @@
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
-        "OriginalValue": "0",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "DoNotShowFeedbackNotifications",
         "Value": "1",
         "Type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-        "OriginalValue": "0",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "DisableTailoredExperiencesWithDiagnosticData",
         "Value": "1",
         "Type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo",
-        "OriginalValue": "0",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "DisabledByGroupPolicy",
         "Value": "1",
         "Type": "DWord"
@@ -2047,7 +2047,7 @@
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Feeds",
-        "OriginalValue": "1",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "EnableFeeds",
         "Value": "0",
         "Type": "DWord"
@@ -2061,7 +2061,7 @@
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
-        "OriginalValue": "1",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "HideSCAMeetNow",
         "Value": "1",
         "Type": "DWord"
@@ -2320,17 +2320,10 @@
       "microsoft.windowscommunicationsapps",
       "Microsoft.WindowsFeedbackHub",
       "Microsoft.WindowsMaps",
-      "Microsoft.YourPhone",
       "Microsoft.WindowsSoundRecorder",
-      "Microsoft.XboxApp",
       "Microsoft.ConnectivityStore",
       "Microsoft.ScreenSketch",
-      "Microsoft.Xbox.TCUI",
-      "Microsoft.XboxGameOverlay",
-      "Microsoft.XboxGameCallableUI",
-      "Microsoft.XboxSpeechToTextOverlay",
       "Microsoft.MixedReality.Portal",
-      "Microsoft.XboxIdentityProvider",
       "Microsoft.ZuneMusic",
       "Microsoft.ZuneVideo",
       "Microsoft.Getstarted",
@@ -2553,14 +2546,14 @@
         "Name": "TurnOffWindowsCopilot",
         "Type": "DWord",
         "Value": "1",
-        "OriginalValue": "0"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\WindowsCopilot",
         "Name": "TurnOffWindowsCopilot",
         "Type": "DWord",
         "Value": "1",
-        "OriginalValue": "0"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
@@ -2583,6 +2576,38 @@
       "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveCopilot"
+  },
+  "WPFTweaksRecallOff": {
+    "Content": "Disable Recall",
+    "Description": "Turn Recall off",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a011_",
+    "registry": [
+      {
+
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI",
+        "Name": "DisableAIDataAnalysis",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>"
+      }
+    ],
+    "InvokeScript": [
+      "
+      Write-Host \"Disable Recall\"
+      DISM /Online /Disable-Feature /FeatureName:Recall /Quiet /NoRestart
+      Write-Host \"Please restart your computer in order for the changes to be fully applied.\"
+      "
+    ],
+    "UndoScript": [
+      "
+      Write-Host \"Enable Recall\"
+      DISM /Online /Enable-Feature /FeatureName:Recall /Quiet /NoRestart
+      Write-Host \"Please restart your computer in order for the changes to be fully applied.\"
+      "
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DisableRecall"
   },
   "WPFTweaksDisableLMS1": {
     "Content": "Disable Intel MM (vPro LMS)",
@@ -2642,6 +2667,22 @@
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableLMS1"
   },
+  "WPFTweaksDisableWpbtExecution": {
+    "Content": "Disable Windows Platform Binary Table (WPBT)",
+    "Description": "If enabled then allows your computer vendor to execute a program each time it boots. It enables computer vendors to force install anti-theft software, software drivers, or a software program conveniently. This could also be a security risk.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a027_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager",
+        "Name": "DisableWpbtExecution",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>",
+        "Type": "DWord"
+      }
+    ]
+  },
   "WPFTweaksRemoveOnedrive": {
     "Content": "Remove OneDrive",
     "Description": "Moves OneDrive files to Default Home Folders and Uninstalls it.",
@@ -2652,17 +2693,26 @@
       "
       $OneDrivePath = $($env:OneDrive)
       Write-Host \"Removing OneDrive\"
+
+      # Check both traditional and Microsoft Store installations
       $regPath = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OneDriveSetup.exe\"
+      $msStorePath = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Appx\\AppxAllUserStore\\Applications\\*OneDrive*\"
+
       if (Test-Path $regPath) {
           $OneDriveUninstallString = Get-ItemPropertyValue \"$regPath\" -Name \"UninstallString\"
           $OneDriveExe, $OneDriveArgs = $OneDriveUninstallString.Split(\" \")
           Start-Process -FilePath $OneDriveExe -ArgumentList \"$OneDriveArgs /silent\" -NoNewWindow -Wait
+      } elseif (Test-Path $msStorePath) {
+          Write-Host \"OneDrive appears to be installed via Microsoft Store\" -ForegroundColor Yellow
+          # Attempt to uninstall via winget
+          Start-Process -FilePath winget -ArgumentList \"uninstall -e --purge --accept-source-agreements Microsoft.OneDrive\" -NoNewWindow -Wait
       } else {
-          Write-Host \"Onedrive dosn't seem to be installed anymore\" -ForegroundColor Red
-          return
+          Write-Host \"OneDrive doesn't seem to be installed\" -ForegroundColor Red
+          Write-Host \"Running cleanup if OneDrive path exists\" -ForegroundColor Red
       }
-      # Check if OneDrive got Uninstalled
-      if (-not (Test-Path $regPath)) {
+
+      # Check if OneDrive got Uninstalled (both paths)
+      if (Test-Path $OneDrivePath) {
         Write-Host \"Copy downloaded Files from the OneDrive Folder to Root UserProfile\"
         Start-Process -FilePath powershell -ArgumentList \"robocopy '$($OneDrivePath)' '$($env:USERPROFILE.TrimEnd())\\' /mov /e /xj\" -NoNewWindow -Wait
 
@@ -2728,7 +2778,7 @@
         Write-Host \"If there are Files missing afterwards, please Login to Onedrive.com and Download them manually\" -ForegroundColor Yellow
         Start-Sleep 5
       } else {
-        Write-Host \"Something went Wrong during the Unistallation of OneDrive\" -ForegroundColor Red
+        Write-Host \"Nothing to Cleanup with OneDrive\" -ForegroundColor Red
       }
       "
     ],
@@ -2794,7 +2844,7 @@
         "Name": "DisableNotificationCenter",
         "Type": "DWord",
         "Value": "1",
-        "OriginalValue": "0"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications",
@@ -3153,7 +3203,7 @@
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR",
         "Name": "AllowGameDVR",
         "Value": "0",
-        "OriginalValue": "1",
+        "OriginalValue": "<RemoveEntry>",
         "Type": "DWord"
       }
     ],
@@ -3162,9 +3212,9 @@
   "WPFTweaksIPv46": {
     "Content": "Prefer IPv4 over IPv6",
     "Description": "To set the IPv4 preference can have latency and security benefits on private networks where IPv6 is not configured.",
-    "category": "Essential Tweaks",
+    "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a005_",
+    "Order": "a023_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
@@ -3263,6 +3313,40 @@
     "panel": "2",
     "Order": "a100_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "Name": "AppsUseLightTheme",
+        "Value": "0",
+        "OriginalValue": "1",
+        "DefaultState": "false",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "Name": "SystemUsesLightTheme",
+        "Value": "0",
+        "OriginalValue": "1",
+        "DefaultState": "false",
+        "Type": "DWord"
+      }
+    ],
+    "InvokeScript": [
+      "
+      Invoke-WinUtilExplorerUpdate
+      if ($sync.ThemeButton.Content -eq [char]0xF08C) {
+        Invoke-WinutilThemeChange -theme \"Auto\"
+      }
+      "
+    ],
+    "UndoScript": [
+      "
+      Invoke-WinUtilExplorerUpdate
+      if ($sync.ThemeButton.Content -eq [char]0xF08C) {
+        Invoke-WinutilThemeChange -theme \"Auto\"
+      }
+      "
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DarkMode"
   },
   "WPFToggleBingSearch": {
@@ -3272,6 +3356,16 @@
     "panel": "2",
     "Order": "a101_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "Name": "BingSearchEnabled",
+        "Value": "1",
+        "OriginalValue": "0",
+        "DefaultState": "true",
+        "Type": "DWord"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/BingSearch"
   },
   "WPFToggleNumLock": {
@@ -3281,6 +3375,24 @@
     "panel": "2",
     "Order": "a102_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKU:\\.Default\\Control Panel\\Keyboard",
+        "Name": "InitialKeyboardIndicators",
+        "Value": "2",
+        "OriginalValue": "0",
+        "DefaultState": "false",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Keyboard",
+        "Name": "InitialKeyboardIndicators",
+        "Value": "2",
+        "OriginalValue": "0",
+        "DefaultState": "false",
+        "Type": "DWord"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/NumLock"
   },
   "WPFToggleVerboseLogon": {
@@ -3290,15 +3402,70 @@
     "panel": "2",
     "Order": "a103_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+        "Name": "VerboseStatus",
+        "Value": "1",
+        "OriginalValue": "0",
+        "DefaultState": "false",
+        "Type": "DWord"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/VerboseLogon"
+  },
+  "WPFToggleStartMenuRecommendations": {
+    "Content": "Recommendations in Start Menu",
+    "Description": "If disabled then you will not see recommendations in the Start Menu. | Enables 'iseducationenvironment' | Relogin Required.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a104_",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\Start",
+        "Name": "HideRecommendedSection",
+        "Value": "0",
+        "OriginalValue": "1",
+        "DefaultState": "true",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\Education",
+        "Name": "IsEducationEnvironment",
+        "Value": "0",
+        "OriginalValue": "1",
+        "DefaultState": "true",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer",
+        "Name": "HideRecommendedSection",
+        "Value": "0",
+        "OriginalValue": "1",
+        "DefaultState": "true",
+        "Type": "DWord"
+      }
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/WPFToggleStartMenuRecommendations"
   },
   "WPFToggleSnapWindow": {
     "Content": "Snap Window",
     "Description": "If enabled you can align windows by dragging them. | Relogin Required",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a104_",
+    "Order": "a105_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Desktop",
+        "Name": "WindowArrangementActive",
+        "Value": "1",
+        "OriginalValue": "0",
+        "DefaultState": "true",
+        "Type": "String"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapWindow"
   },
   "WPFToggleSnapFlyout": {
@@ -3306,8 +3473,28 @@
     "Description": "If enabled then Snap preview is disabled when maximize button is hovered.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a105_",
+    "Order": "a106_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "EnableSnapAssistFlyout",
+        "Value": "1",
+        "OriginalValue": "0",
+        "DefaultState": "true",
+        "Type": "DWord"
+      }
+    ],
+    "InvokeScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
+    "UndoScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapFlyout"
   },
   "WPFToggleSnapSuggestion": {
@@ -3315,8 +3502,28 @@
     "Description": "If enabled then you will get suggestions to snap other applications in the left over spaces.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a106_",
+    "Order": "a107_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "SnapAssist",
+        "Value": "1",
+        "OriginalValue": "0",
+        "DefaultState": "true",
+        "Type": "DWord"
+      }
+    ],
+    "InvokeScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
+    "UndoScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapSuggestion"
   },
   "WPFToggleMouseAcceleration": {
@@ -3324,8 +3531,34 @@
     "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a107_",
+    "Order": "a108_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Mouse",
+        "Name": "MouseSpeed",
+        "Value": "1",
+        "OriginalValue": "0",
+        "DefaultState": "true",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Mouse",
+        "Name": "MouseThreshold1",
+        "Value": "6",
+        "OriginalValue": "0",
+        "DefaultState": "true",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Mouse",
+        "Name": "MouseThreshold2",
+        "Value": "10",
+        "OriginalValue": "0",
+        "DefaultState": "true",
+        "Type": "DWord"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/MouseAcceleration"
   },
   "WPFToggleStickyKeys": {
@@ -3333,8 +3566,18 @@
     "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a108_",
+    "Order": "a109_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Accessibility\\StickyKeys",
+        "Name": "Flags",
+        "Value": "510",
+        "OriginalValue": "58",
+        "DefaultState": "true",
+        "Type": "DWord"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/StickyKeys"
   },
   "WPFToggleHiddenFiles": {
@@ -3344,6 +3587,26 @@
     "panel": "2",
     "Order": "a200_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "Hidden",
+        "Value": "1",
+        "OriginalValue": "0",
+        "DefaultState": "false",
+        "Type": "DWord"
+      }
+    ],
+    "InvokeScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
+    "UndoScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/HiddenFiles"
   },
   "WPFToggleShowExt": {
@@ -3353,6 +3616,26 @@
     "panel": "2",
     "Order": "a201_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "HideFileExt",
+        "Value": "0",
+        "OriginalValue": "1",
+        "DefaultState": "false",
+        "Type": "DWord"
+      }
+    ],
+    "InvokeScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
+    "UndoScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/ShowExt"
   },
   "WPFToggleTaskbarSearch": {
@@ -3362,6 +3645,16 @@
     "panel": "2",
     "Order": "a202_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "Name": "SearchboxTaskbarMode",
+        "Value": "1",
+        "OriginalValue": "0",
+        "DefaultState": "true",
+        "Type": "DWord"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarSearch"
   },
   "WPFToggleTaskView": {
@@ -3371,6 +3664,16 @@
     "panel": "2",
     "Order": "a203_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "ShowTaskViewButton",
+        "Value": "1",
+        "OriginalValue": "0",
+        "DefaultState": "true",
+        "Type": "DWord"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskView"
   },
   "WPFToggleTaskbarWidgets": {
@@ -3380,6 +3683,16 @@
     "panel": "2",
     "Order": "a204_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "TaskbarDa",
+        "Value": "1",
+        "OriginalValue": "0",
+        "DefaultState": "true",
+        "Type": "DWord"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarWidgets"
   },
   "WPFToggleTaskbarAlignment": {
@@ -3389,6 +3702,16 @@
     "panel": "2",
     "Order": "a204_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "TaskbarAl",
+        "Value": "1",
+        "OriginalValue": "0",
+        "DefaultState": "true",
+        "Type": "DWord"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarAlignment"
   },
   "WPFToggleDetailedBSoD": {
@@ -3398,6 +3721,24 @@
     "panel": "2",
     "Order": "a205_",
     "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\CrashControl",
+        "Name": "DisplayParameters",
+        "Value": "1",
+        "OriginalValue": "0",
+        "DefaultState": "false",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\CrashControl",
+        "Name": "DisableEmoticon",
+        "Value": "1",
+        "OriginalValue": "0",
+        "DefaultState": "false",
+        "Type": "DWord"
+      }
+    ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DetailedBSoD"
   },
   "WPFOOSUbutton": {
@@ -3434,14 +3775,5 @@
     "Type": "Button",
     "ButtonWidth": "300",
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/RemoveUltPerf"
-  },
-  "WPFWinUtilShortcut": {
-    "Content": "Create WinUtil Shortcut",
-    "category": "Shortcuts",
-    "panel": "2",
-    "Order": "a082_",
-    "Type": "Button",
-    "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut"
   }
 }

@@ -1,11 +1,11 @@
-name: Close issue on /close
+name: Issue slash commands
 
 on:
   issue_comment:
     types: [created, edited]
 
 jobs:
-  closeIssueOnClose:
+  issueCommands:
     # Skip this job if the comment was created/edited on a PR
     if: ${{ !github.event.issue.pull_request }}
     runs-on: ubuntu-latest
@@ -16,6 +16,30 @@ jobs:
 
     steps:
       - run: echo "command=false" >> $GITHUB_ENV
+
+      - name: Check for /label command
+        id: check_label_command
+        run: |
+          if [[ "${{ contains(github.event.comment.body, '/label') }}" == "true" ]]; then
+            echo "command=true" >> $GITHUB_ENV
+            LABEL_NAME=$(echo "${{ github.event.comment.body }}" | awk -F"/label" '/\/label/ { match($2, /'\''([^'\'']*)'\''/, arr); if (arr[1] != "") print arr[1] }')
+            echo "label_command=true" >> $GITHUB_ENV
+            echo "label_name=${LABEL_NAME}" >> $GITHUB_ENV
+          else
+            echo "label_command=false" >> $GITHUB_ENV
+          fi
+
+      - name: Check for /unlabel command
+        id: check_unlabel_command
+        run: |
+          if [[ "${{ contains(github.event.comment.body, '/unlabel') }}" == "true" ]]; then
+            echo "command=true" >> $GITHUB_ENV
+            UNLABEL_NAME=$(echo "${{ github.event.comment.body }}" | awk -F"/unlabel" '/\/unlabel/ { match($2, /'\''([^'\'']*)'\''/, arr); if (arr[1] != "") print arr[1] }')
+            echo "unlabel_command=true" >> $GITHUB_ENV
+            echo "unlabel_name=${UNLABEL_NAME}" >> $GITHUB_ENV
+          else
+            echo "unlabel_command=false" >> $GITHUB_ENV
+          fi
 
       - name: Check for /close command
         id: check_close_command
@@ -43,15 +67,15 @@ jobs:
         id: check_user
         if: env.command == 'true'
         run: |
-          ALLOWED_USERS=("ChrisTitusTech" "og-mrk" "Marterich" "MyDrift-user" "Real-MullaC")
+          ALLOWED_USERS=("ChrisTitusTech" "og-mrk" "Marterich" "MyDrift-user" "Real-MullaC" "CodingWonders")
           if [[ " ${ALLOWED_USERS[@]} " =~ " ${{ github.event.comment.user.login }} " ]]; then
             echo "user=true" >> $GITHUB_ENV
           else
-            echo "user=false" >> $GITHUB_ENV
+            exit 0
           fi
 
-      - name: Close issue if conditions are met
-        if: env.close_command == 'true' && env.user == 'true'
+      - name: Close issue
+        if: env.close_command == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
@@ -63,11 +87,29 @@ jobs:
             gh issue close $ISSUE_NUMBER --repo ${{ github.repository }}
           fi
 
-      - name: Reopen issue if conditions are met
-        if: env.reopen_command == 'true' && env.user == 'true'
+      - name: Reopen issue
+        if: env.reopen_command == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
           echo Reopening the issue...
           gh issue reopen $ISSUE_NUMBER --repo ${{ github.repository }}
+
+      - name: Label issue
+        if: env.label_command == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          echo Labeling the issue...
+          gh issue edit $ISSUE_NUMBER --repo ${{ github.repository }} --add-label "${{ env.label_name }}"
+
+      - name: Remove labels
+        if: env.unlabel_command == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          echo Unlabeling the issue...
+          gh issue edit $ISSUE_NUMBER --repo ${{ github.repository }} --remove-label "${{ env.unlabel_name }}"

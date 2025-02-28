@@ -439,6 +439,14 @@
         "link": "https://dotnet.microsoft.com/download/dotnet/8.0",
         "winget": "Microsoft.DotNet.DesktopRuntime.8"
     },
+    "dotnet9": {
+        "category": "Microsoft Tools",
+        "choco": "dotnet-9.0-runtime",
+        "content": ".NET Desktop Runtime 9",
+        "description": ".NET Desktop Runtime 9 is a runtime environment required for running applications developed with .NET 9.",
+        "link": "https://dotnet.microsoft.com/download/dotnet/9.0",
+        "winget": "Microsoft.DotNet.DesktopRuntime.9"
+    },
     "dmt": {
         "winget": "GNE.DualMonitorTools",
         "choco": "dual-monitor-tools",
@@ -675,9 +683,9 @@
         "category": "Multimedia Tools",
         "choco": "fxsound",
         "content": "FxSound",
-        "description": "FxSound is a cutting-edge audio enhancement software that elevates your listening experience across all media.",
+        "description": "FxSound is free open-source software to boost sound quality, volume, and bass. Including an equalizer, effects, and presets for customized audio.",
         "link": "https://www.fxsound.com/",
-        "winget": "FxSoundLLC.FxSound"
+        "winget": "FxSound.FxSound"
     },
     "fzf": {
         "category": "Utilities",
@@ -908,7 +916,7 @@
         "choco": "imgburn",
         "content": "ImgBurn",
         "description": "ImgBurn is a lightweight CD, DVD, HD-DVD, and Blu-ray burning application with advanced features for creating and burning disc images.",
-        "link": "http://www.imgburn.com/",
+        "link": "https://www.imgburn.com/",
         "winget": "LIGHTNINGUK.ImgBurn"
     },
     "inkscape": {
@@ -980,7 +988,7 @@
         "choco": "jdownloader",
         "content": "JDownloader",
         "description": "JDownloader is a feature-rich download manager with support for various file hosting services.",
-        "link": "http://jdownloader.org/",
+        "link": "https://jdownloader.org/",
         "winget": "AppWork.JDownloader"
     },
     "jellyfinmediaplayer": {
@@ -1372,7 +1380,7 @@
         "choco": "na",
         "content": "nGlide (3dfx compatibility)",
         "description": "nGlide is a 3Dfx Voodoo Glide wrapper. It allows you to play games that use Glide API on modern graphics cards without the need for a 3Dfx Voodoo graphics card.",
-        "link": "http://www.zeus-software.com/downloads/nglide",
+        "link": "https://www.zeus-software.com/downloads/nglide",
         "winget": "ZeusSoftware.nGlide"
     },
     "nmap": {
@@ -1892,7 +1900,7 @@
         "choco": "sdio",
         "content": "Snappy Driver Installer Origin",
         "description": "Snappy Driver Installer Origin is a free and open-source driver updater with a vast driver database for Windows.",
-        "link": "https://sourceforge.net/projects/snappy-driver-installer-origin",
+        "link": "https://www.glenn.delahoy.com/snappy-driver-installer-origin/",
         "winget": "GlennDelahoy.SnappyDriverInstallerOrigin"
     },
     "session": {
@@ -2196,7 +2204,7 @@
         "choco": "na",
         "content": "Thorium Browser AVX2",
         "description": "Browser built for speed over vanilla chromium. It is built with AVX2 optimizations and is the fastest browser on the market.",
-        "link": "http://thorium.rocks/",
+        "link": "https://thorium.rocks/",
         "winget": "Alex313031.Thorium.AVX2"
     },
     "thunderbird": {
@@ -2453,7 +2461,7 @@
         "content": "UniGetUI",
         "description": "UniGetUI is a GUI for Winget, Chocolatey, and other Windows CLI package managers.",
         "link": "https://www.marticliment.com/wingetui/",
-        "winget": "SomePythonThings.WingetUIStore"
+        "winget": "MartiCliment.UniGetUI"
     },
     "winmerge": {
         "category": "Document",

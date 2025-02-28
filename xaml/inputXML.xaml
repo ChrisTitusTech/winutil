@@ -1133,31 +1133,97 @@
             </TabItem>
             <TabItem Header="Updates" Visibility="Collapsed" Name="WPFTab4">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{DynamicResource TabContentMargin}">
-                <Grid Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource BorderStyle}">
-                        <StackPanel Background="{DynamicResource MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Button Name="WPFUpdatesdefault" FontSize="{DynamicResource ConfigTabButtonFontSize}" Height="Auto" Width="Auto" Content="Default (Out of Box) Settings" Margin="20,4,20,10" Padding="10"/>
-                            <TextBlock Foreground="{DynamicResource ComboBoxForegroundColor}" Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This is the default settings that come with Windows. <LineBreak/><LineBreak/> No modifications are made and will remove any custom windows update settings.<LineBreak/><LineBreak/>Note: If you still encounter update errors, reset all updates in the config tab. That will restore ALL Microsoft Update Services from their servers and reinstall them to default settings.</TextBlock>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource BorderStyle}">
-                        <StackPanel Background="{DynamicResource MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Button Name="WPFUpdatessecurity" FontSize="{DynamicResource ConfigTabButtonFontSize}" Height="Auto" Width="Auto" Content="Security (Recommended) Settings" Margin="20,4,20,10" Padding="10"/>
-                            <TextBlock Foreground="{DynamicResource ComboBoxForegroundColor}" Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This is my recommended setting I use on all computers.<LineBreak/><LineBreak/> It will delay feature updates by 2 years and will install security updates 4 days after release.<LineBreak/><LineBreak/>Feature Updates: Adds features and often bugs to systems when they are released. You want to delay these as long as possible.<LineBreak/><LineBreak/>Security Updates: Typically these are pressing security flaws that need to be patched quickly. You only want to delay these a couple of days just to see if they are safe and don't break other systems. You don't want to go without these for ANY extended periods of time.</TextBlock>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource BorderStyle}">
-                        <StackPanel Background="{DynamicResource MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Button Name="WPFUpdatesdisable" FontSize="{DynamicResource ConfigTabButtonFontSize}" Height="Auto" Width="Auto" Content="Disable ALL Updates (NOT RECOMMENDED!)" Margin="20,4,20,10" Padding="10,10,10,10"/>
-                            <TextBlock Foreground="{DynamicResource ComboBoxForegroundColor}" Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This completely disables ALL Windows Updates and is NOT RECOMMENDED.<LineBreak/><LineBreak/> However, it can be suitable if you use your system for a select purpose and do not actively browse the internet. <LineBreak/><LineBreak/>Note: Your system will be easier to hack and infect without security updates.</TextBlock>
-                            <TextBlock Text=" " Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
-                        </StackPanel>
-                        </Border>
+                    <Grid Background="Transparent">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>  <!-- Row for the 3 columns -->
+                            <RowDefinition Height="Auto"/>  <!-- Row for Windows Version -->
+                        </Grid.RowDefinitions>
+
+                        <!-- Three columns container -->
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Default Settings -->
+                            <Border Grid.Column="0" Style="{StaticResource BorderStyle}">
+                                <StackPanel>
+                                    <Button Name="WPFFixesUpdate"
+                                            FontSize="{DynamicResource ConfigTabButtonFontSize}"
+                                            Content="Default Settings"
+                                            Margin="10,5"
+                                            Padding="10"/>
+                                    <TextBlock Margin="10"
+                                             TextWrapping="Wrap"
+                                             Foreground="{DynamicResource MainForegroundColor}">
+                                        <Run FontWeight="Bold">Default Windows Update Configuration</Run>
+                                        <LineBreak/>
+                                         - No modifications to Windows defaults
+                                        <LineBreak/>
+                                         - Removes any custom update settings
+                                        <LineBreak/><LineBreak/>
+                                        <Run FontStyle="Italic" FontSize="11">Note: This resets your Windows Update settings to default out of the box settings. It removes ANY policy or customization that has been done to Windows Update.</Run>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Security Settings -->
+                            <Border Grid.Column="1" Style="{StaticResource BorderStyle}">
+                                <StackPanel>
+                                    <Button Name="WPFUpdatessecurity"
+                                            FontSize="{DynamicResource ConfigTabButtonFontSize}"
+                                            Content="Security Settings"
+                                            Margin="10,5"
+                                            Padding="10"/>
+                                    <TextBlock Margin="10"
+                                             TextWrapping="Wrap"
+                                             Foreground="{DynamicResource MainForegroundColor}">
+                                        <Run FontWeight="Bold">Balanced Security Configuration</Run>
+                                        <LineBreak/>
+                                         - Feature updates delayed by 2 years
+                                        <LineBreak/>
+                                         - Security updates installed after 4 days
+                                        <LineBreak/><LineBreak/>
+                                        <Run FontWeight="SemiBold">Feature Updates:</Run> New features and potential bugs
+                                        <LineBreak/>
+                                        <Run FontWeight="SemiBold">Security Updates:</Run> Critical security patches
+                                    <LineBreak/><LineBreak/>
+                                    <Run FontStyle="Italic" FontSize="11">Note: This only applies to Pro systems that can use group policy.</Run>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Disable Updates -->
+                            <Border Grid.Column="2" Style="{StaticResource BorderStyle}">
+                                <StackPanel>
+                                    <Button Name="WPFUpdatesdisable"
+                                            FontSize="{DynamicResource ConfigTabButtonFontSize}"
+                                            Content="Disable All Updates"
+                                            Foreground="Red"
+                                            Margin="10,5"
+                                            Padding="10"/>
+                                    <TextBlock Margin="10"
+                                             TextWrapping="Wrap"
+                                             Foreground="{DynamicResource MainForegroundColor}">
+                                        <Run FontWeight="Bold" Foreground="Red">!! Not Recommended !!</Run>
+                                        <LineBreak/>
+                                         - Disables ALL Windows Updates
+                                        <LineBreak/>
+                                         - Increases security risks
+                                        <LineBreak/>
+                                         - Only use for isolated systems
+                                        <LineBreak/><LineBreak/>
+                                        <Run FontStyle="Italic" FontSize="11">Warning: Your system will be vulnerable without security updates.</Run>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <!-- Future Implementation: Add Windows Version to updates panel -->
+                        <Grid Name="updatespanel" Grid.Row="1" Background="Transparent">
+                        </Grid>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
@@ -1182,8 +1248,10 @@
                                 Choose a Windows ISO file that you've downloaded <LineBreak/>
                                 Check the status in the console
                             </TextBlock>
+                            <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
+                            <TextBlock Margin="5" Padding="1" TextWrapping="Wrap" Foreground="{DynamicResource ComboBoxForegroundColor}" ToolTip="Scratch directories act as a custom destination for image files"><Bold>Scratch directory settings (optional)</Bold></TextBlock>
                             <CheckBox x:Name="WPFMicrowinISOScratchDir" Content="Use ISO directory for ScratchDir " IsChecked="False" Margin="{DynamicResource MicrowinCheckBoxMargin}"
-                                ToolTip="Use ISO directory for ScratchDir " />
+                                ToolTip="Check this to use the path of the ISO file you specify as a scratch directory" />
                             <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" /> <!-- Takes the remaining space -->
@@ -1193,7 +1261,7 @@
                                         Text="Scratch"
                                         Margin="2"
                                         IsReadOnly="False"
-                                        ToolTip="Alt Path For Scratch Directory"
+                                        ToolTip="Specify an alternate path for the scratch directory"
                                         Grid.Column="0"
                                         VerticalAlignment="Center"
                                         Foreground="{DynamicResource LabelboxForegroundColor}">
@@ -1209,6 +1277,7 @@
                                     </Button.Content>
                                 </Button>
                             </Grid>
+                            <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                             <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderBrush="{DynamicResource MainForegroundColor}"
                                 Text="ISO location will be printed here"
                                 Margin="2"
@@ -1243,6 +1312,7 @@
                                 ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"
                             />
                             <CheckBox Name="MicrowinImportDrivers" Content="Import drivers from current system" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="Export all third-party drivers from your system and inject them to the MicroWin image"/>
+                            <CheckBox Name="MicrowinCopyVirtIO" Content="Include VirtIO drivers" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="Copy VirtIO Guest Tools drivers to your ISO file. Check this only if you want to use it on QEMU/Proxmox VE"/>
                             <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                             <CheckBox Name="WPFMicrowinCopyToUsb" Content="Copy to Ventoy" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="Copy to USB disk with a label Ventoy"/>
                             <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
@@ -1333,7 +1403,13 @@
                                 - Once complete, the target ISO file will be in the directory you have specified <LineBreak/>
                                 - Copy this image to your Ventoy USB Stick, boot to this image, gg
                                 <LineBreak/>
-                                If you are injecting drivers ensure you put all your inf, sys, and dll files for each driver into a separate directory
+                                If you are injecting drivers ensure you put all your inf, sys, and dll files for each driver into a separate directory <LineBreak/><LineBreak/>
+                                <Bold>Installing VirtIO drivers</Bold><LineBreak/>
+                                If you plan on using your ISO on QEMU/Proxmox VE, you can bundle VirtIO drivers with your ISO to automatically install drivers. Simply tick the "Include VirtIO drivers" checkbox before starting the process. Then, follow these instructions:<LineBreak/><LineBreak/>
+                                    <TextBlock TextWrapping="WrapWithOverflow" Margin="15,0,0,0" Text="1. Proceed with Setup until you reach the disk selection screen, in which you won't see any drives" Foreground="{DynamicResource ComboBoxForegroundColor}"/><LineBreak/>
+                                    <TextBlock TextWrapping="WrapWithOverflow" Margin="15,0,0,0" Text="2. Click &quot;Load Driver&quot; and click Browse" Foreground="{DynamicResource ComboBoxForegroundColor}"/><LineBreak/>
+                                    <TextBlock TextWrapping="WrapWithOverflow" Margin="15,0,0,0" Text="3. In the folder selection dialog, point to this path: &quot;D:\VirtIO\vioscsi\w11\amd64&quot; (replace amd64 with ARM64 if you are using Windows on ARM, and &quot;D:&quot; with the drive letter of the ISO)" Foreground="{DynamicResource ComboBoxForegroundColor}"/><LineBreak/>
+                                    <TextBlock TextWrapping="WrapWithOverflow" Margin="15,0,0,0" Text="4. Select all drivers that will appear in the list box and click OK" Foreground="{DynamicResource ComboBoxForegroundColor}"/><LineBreak/>
                             </TextBlock>
                             <TextBlock Margin="15,0,15,15"
                                 Padding = "1"
@@ -1344,7 +1420,7 @@
                                 Foreground = "{DynamicResource ComboBoxForegroundColor}"
                                 xml:space = "preserve"
                             >
-<Bold>Example:</Bold>
+<Bold>Driver structure example:</Bold>
      C:\drivers\
           |-- Driver1\
           |   |-- Driver1.inf
@@ -1353,7 +1429,7 @@
           |   |-- Driver2.inf
           |   |-- Driver2.sys
           |-- OtherFiles...
-                                </TextBlock>
+                            </TextBlock>
                             </StackPanel>
                         </Border>
                     </Grid>

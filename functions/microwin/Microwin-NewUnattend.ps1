@@ -1,42 +1,89 @@
-<?xml version="1.0" encoding="utf-8"?>
-<unattend xmlns="urn:schemas-microsoft-com:unattend" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
-    <!--https://schneegans.de/windows/unattend-generator/?LanguageMode=Unattended&UILanguage=en-US&Locale=en-US&Keyboard=00000409&GeoLocation=244&ProcessorArchitecture=amd64&BypassRequirementsCheck=true&BypassNetworkCheck=true&ComputerNameMode=Random&TimeZoneMode=Implicit&PartitionMode=Interactive&WindowsEditionMode=Unattended&WindowsEdition=pro&UserAccountMode=Unattended&AccountName0=User&AccountPassword0=&AccountGroup0=Administrators&AccountName1=&AccountName2=&AccountName3=&AccountName4=&AutoLogonMode=Own&PasswordExpirationMode=Unlimited&LockoutMode=Default&HideFiles=Hidden&DisableWidgets=true&ClassicContextMenu=true&DisableFastStartup=true&EnableLongPaths=true&DisableAppSuggestions=true&PreventDeviceEncryption=true&WifiMode=Skip&ExpressSettings=DisableAll&Remove3DViewer=true&RemoveBingSearch=true&RemoveCamera=true&RemoveClipchamp=true&RemoveClock=true&RemoveCopilot=true&RemoveCortana=true&RemoveDevHome=true&RemoveFamily=true&RemoveFeedbackHub=true&RemoveGetHelp=true&RemoveInternetExplorer=true&RemoveMailCalendar=true&RemoveMaps=true&RemoveMathInputPanel=true&RemoveZuneVideo=true&RemoveNews=true&RemoveNotepad=true&RemoveOffice365=true&RemoveOneDrive=true&RemoveOneNote=true&RemoveOpenSSHClient=true&RemoveOutlook=true&RemovePaint3D=true&RemovePeople=true&RemovePowerAutomate=true&RemoveQuickAssist=true&RemoveSkype=true&RemoveSolitaire=true&RemoveStepsRecorder=true&RemoveStickyNotes=true&RemoveTeams=true&RemoveGetStarted=true&RemoveToDo=true&RemoveVoiceRecorder=true&RemoveWeather=true&RemoveWindowsMediaPlayer=true&RemoveZuneMusic=true&RemoveWordPad=true&WdacMode=Skip-->
-    <settings pass="offlineServicing"></settings>
-    <settings pass="windowsPE">
-        <component name="Microsoft-Windows-International-Core-WinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
-            <SetupUILanguage>
-                <UILanguage>en-US</UILanguage>
-            </SetupUILanguage>
-            <InputLocale>0409:00000409</InputLocale>
-            <SystemLocale>en-US</SystemLocale>
-            <UILanguage>en-US</UILanguage>
-            <UserLocale>en-US</UserLocale>
+function Microwin-NewUnattend {
+
+    param (
+        [Parameter(Mandatory, Position = 0)] [string]$userName,
+        [Parameter(Position = 1)] [string]$userPassword
+    )
+
+    $unattend = @'
+    <?xml version="1.0" encoding="utf-8"?>
+    <unattend xmlns="urn:schemas-microsoft-com:unattend"
+            xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <#REPLACEME#>
+        <settings pass="auditUser">
+            <component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <RunSynchronous>
+                    <RunSynchronousCommand wcm:action="add">
+                        <Order>1</Order>
+                        <CommandLine>CMD /C echo LAU GG&gt;C:\Windows\LogAuditUser.txt</CommandLine>
+                        <Description>StartMenu</Description>
+                    </RunSynchronousCommand>
+                </RunSynchronous>
+            </component>
+        </settings>
+        <settings pass="oobeSystem">
+            <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <UserAccounts>
+                    <LocalAccounts>
+                        <LocalAccount wcm:action="add">
+                            <Name>USER-REPLACEME</Name>
+                            <Group>Administrators</Group>
+                            <Password>
+                                <Value>PW-REPLACEME</Value>
+                                <PlainText>PT-STATUS</PlainText>
+                            </Password>
+                        </LocalAccount>
+                    </LocalAccounts>
+                </UserAccounts>
+                <AutoLogon>
+                    <Username>USER-REPLACEME</Username>
+                    <Enabled>true</Enabled>
+                    <LogonCount>1</LogonCount>
+                    <Password>
+                        <Value>PW-REPLACEME</Value>
+                        <PlainText>PT-STATUS</PlainText>
+                    </Password>
+                </AutoLogon>
+                <OOBE>
+                    <HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
+                    <SkipUserOOBE>true</SkipUserOOBE>
+                    <SkipMachineOOBE>true</SkipMachineOOBE>
+                    <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
+                    <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
+                    <HideEULAPage>true</HideEULAPage>
+                    <ProtectYourPC>3</ProtectYourPC>
+                </OOBE>
+                <FirstLogonCommands>
+                    <SynchronousCommand wcm:action="add">
+                        <Order>1</Order>
+                        <CommandLine>reg.exe add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoLogonCount /t REG_DWORD /d 0 /f</CommandLine>
+                    </SynchronousCommand>
+                    <SynchronousCommand wcm:action="add">
+                        <Order>2</Order>
+                        <CommandLine>cmd.exe /c echo 23&gt;c:\windows\csup.txt</CommandLine>
+                    </SynchronousCommand>
+                    <SynchronousCommand wcm:action="add">
+                        <Order>3</Order>
+                        <CommandLine>CMD /C echo GG&gt;C:\Windows\LogOobeSystem.txt</CommandLine>
+                    </SynchronousCommand>
+                    <SynchronousCommand wcm:action="add">
+                        <Order>4</Order>
+                        <CommandLine>powershell -ExecutionPolicy Bypass -File c:\windows\FirstStartup.ps1</CommandLine>
+                    </SynchronousCommand>
+                </FirstLogonCommands>
+            </component>
+        </settings>
+    </unattend>
+'@
+    $specPass = @'
+<settings pass="specialize">
+        <component name="Microsoft-Windows-SQMApi" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <CEIPEnabled>0</CEIPEnabled>
         </component>
-        <component name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
-            <UserData>
-                <ProductKey>
-                    <Key>VK7JG-NPHTM-C97JM-9MPGT-3V66T</Key>
-                </ProductKey>
-                <AcceptEula>true</AcceptEula>
-            </UserData>
-            <RunSynchronous>
-                <RunSynchronousCommand wcm:action="add">
-                    <Order>1</Order>
-                    <Path>reg.exe add "HKLM\SYSTEM\Setup\LabConfig" /v BypassTPMCheck /t REG_DWORD /d 1 /f</Path>
-                </RunSynchronousCommand>
-                <RunSynchronousCommand wcm:action="add">
-                    <Order>2</Order>
-                    <Path>reg.exe add "HKLM\SYSTEM\Setup\LabConfig" /v BypassSecureBootCheck /t REG_DWORD /d 1 /f</Path>
-                </RunSynchronousCommand>
-                <RunSynchronousCommand wcm:action="add">
-                    <Order>3</Order>
-                    <Path>reg.exe add "HKLM\SYSTEM\Setup\LabConfig" /v BypassRAMCheck /t REG_DWORD /d 1 /f</Path>
-                </RunSynchronousCommand>
-            </RunSynchronous>
+        <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <ConfigureChatAutoInstall>false</ConfigureChatAutoInstall>
         </component>
-    </settings>
-    <settings pass="generalize"></settings>
-    <settings pass="specialize">
         <component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
             <RunSynchronous>
                 <RunSynchronousCommand wcm:action="add">
@@ -246,197 +293,43 @@
             </RunSynchronous>
         </component>
     </settings>
-    <settings pass="auditSystem"></settings>
-    <settings pass="auditUser"></settings>
-    <settings pass="oobeSystem">
-        <component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
-            <InputLocale>0409:00000409</InputLocale>
-            <SystemLocale>en-US</SystemLocale>
-            <UILanguage>en-US</UILanguage>
-            <UserLocale>en-US</UserLocale>
-        </component>
-        <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
-            <UserAccounts>
-                <LocalAccounts>
-                    <LocalAccount wcm:action="add">
-                        <Name>User</Name>
-                        <Group>Administrators</Group>
-                        <Password>
-                            <Value></Value>
-                            <PlainText>true</PlainText>
-                        </Password>
-                    </LocalAccount>
-                </LocalAccounts>
-            </UserAccounts>
-            <AutoLogon>
-                <Username>User</Username>
-                <Enabled>true</Enabled>
-                <LogonCount>1</LogonCount>
-                <Password>
-                    <Value></Value>
-                    <PlainText>true</PlainText>
-                </Password>
-            </AutoLogon>
-            <OOBE>
-                <ProtectYourPC>3</ProtectYourPC>
-                <HideEULAPage>true</HideEULAPage>
-                <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
-            </OOBE>
-            <FirstLogonCommands>
-                <SynchronousCommand wcm:action="add">
-                    <Order>1</Order>
-                    <CommandLine>reg.exe add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoLogonCount /t REG_DWORD /d 0 /f</CommandLine>
-                </SynchronousCommand>
-            </FirstLogonCommands>
-        </component>
-    </settings>
-    <Extensions xmlns="https://schneegans.de/windows/unattend-generator/">
-        <ExtractScript>
-param(
-    [xml]$Document
-);
+'@
+    if ((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,22000,1))) -eq $false) {
+        # Replace the placeholder text with an empty string to make it valid for Windows 10 Setup
+        $unattend = $unattend.Replace("<#REPLACEME#>", "").Trim()
+    } else {
+        # Replace the placeholder text with the Specialize pass
+        $unattend = $unattend.Replace("<#REPLACEME#>", $specPass).Trim()
+    }
 
-$scriptsDir = 'C:\Windows\Setup\Scripts\';
-foreach( $file in $Document.unattend.Extensions.File ) {
-    $path = [System.Environment]::ExpandEnvironmentVariables(
-        $file.GetAttribute( 'path' )
-    );
-    if( $path.StartsWith( $scriptsDir ) ) {
-        mkdir -Path $scriptsDir -ErrorAction 'SilentlyContinue';
+    # User password in Base64. According to Microsoft, this is the way you can hide this sensitive information.
+    # More information can be found here: https://learn.microsoft.com/en-us/windows-hardware/customize/desktop/wsim/hide-sensitive-data-in-an-answer-file
+    # Yeah, I know this is not the best way to protect this kind of data, but we all know how Microsoft is - "the Apple of security" (in a sense, it takes them
+    # an eternity to implement basic security features right. Just look at the NTLM and Kerberos situation!)
+
+    $b64pass = ""
+
+    # Replace default User and Password values with the provided parameters
+    $unattend = $unattend.Replace("USER-REPLACEME", $userName).Trim()
+    try {
+        # I want to play it safe here - I don't want encoding mismatch problems like last time
+
+        # NOTE: "Password" needs to be appended to the password specified by the user. Otherwise, a parse error will occur when processing oobeSystem.
+        # This will not be added to the actual password stored in the target system's SAM file - only the provided password
+        $b64pass = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes("$($userPassword)Password"))
+    } catch {
+        $b64pass = ""
     }
-    $encoding = switch( [System.IO.Path]::GetExtension( $path ) ) {
-        { $_ -in '.ps1', '.xml' } { [System.Text.Encoding]::UTF8; }
-        { $_ -in '.reg', '.vbs', '.js' } { [System.Text.UnicodeEncoding]::new( $false, $true ); }
-        default { [System.Text.Encoding]::Default; }
-    };
-    [System.IO.File]::WriteAllBytes( $path, ( $encoding.GetPreamble() + $encoding.GetBytes( $file.InnerText.Trim() ) ) );
+    if ($b64pass -ne "") {
+        # If we could encode the password with Base64, put it in the answer file and indicate that it's NOT in plain text
+        $unattend = $unattend.Replace("PW-REPLACEME", $b64pass).Trim()
+        $unattend = $unattend.Replace("PT-STATUS", "false").Trim()
+        $b64pass = ""
+    } else {
+        $unattend = $unattend.Replace("PW-REPLACEME", $userPassword).Trim()
+        $unattend = $unattend.Replace("PT-STATUS", "true").Trim()
+    }
+
+    # Save unattended answer file with UTF-8 encoding
+    $unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force -Encoding utf8
 }
-        </ExtractScript>
-        <File path="C:\Windows\Temp\Microwin-RemovePackages.ps1">
-$selectors = @(
-    'Microsoft.Microsoft3DViewer';
-    'Microsoft.BingSearch';
-    'Microsoft.WindowsCamera';
-    'Clipchamp.Clipchamp';
-    'Microsoft.WindowsAlarms';
-    'Microsoft.549981C3F5F10';
-    'Microsoft.Windows.DevHome';
-    'MicrosoftCorporationII.MicrosoftFamily';
-    'Microsoft.WindowsFeedbackHub';
-    'Microsoft.GetHelp';
-    'Microsoft.Getstarted';
-    'microsoft.windowscommunicationsapps';
-    'Microsoft.WindowsMaps';
-    'Microsoft.BingNews';
-    'Microsoft.WindowsNotepad';
-    'Microsoft.MicrosoftOfficeHub';
-    'Microsoft.Office.OneNote';
-    'Microsoft.OutlookForWindows';
-    'Microsoft.MSPaint';
-    'Microsoft.People';
-    'Microsoft.PowerAutomateDesktop';
-    'MicrosoftCorporationII.QuickAssist';
-    'Microsoft.SkypeApp';
-    'Microsoft.MicrosoftSolitaireCollection';
-    'Microsoft.MicrosoftStickyNotes';
-    'MSTeams';
-    'Microsoft.Todos';
-    'Microsoft.WindowsSoundRecorder';
-    'Microsoft.BingWeather';
-    'Microsoft.ZuneMusic';
-    'Microsoft.ZuneVideo';
-);
-$getCommand = { Get-AppxProvisionedPackage -Online; };
-$filterCommand = { $_.DisplayName -eq $selector; };
-$removeCommand = {
-  [CmdletBinding()]
-  param(
-    [Parameter( Mandatory, ValueFromPipeline )]
-    $InputObject
-  );
-  process {
-    $InputObject | Remove-AppxProvisionedPackage -AllUsers -Online -ErrorAction 'Continue';
-  }
-};
-$type = 'Package';
-$logfile = 'C:\Windows\Temp\Microwin-RemovePackages.log';
-&amp; {
-    $installed = &amp; $getCommand;
-    foreach( $selector in $selectors ) {
-        $result = [ordered] @{
-            Selector = $selector;
-        };
-        $found = $installed | Where-Object -FilterScript $filterCommand;
-        if( $found ) {
-            $result.Output = $found | &amp; $removeCommand;
-            if( $? ) {
-                $result.Message = "$type removed.";
-            } else {
-                $result.Message = "$type not removed.";
-                $result.Error = $Error[0];
-            }
-        } else {
-            $result.Message = "$type not installed.";
-        }
-        $result | ConvertTo-Json -Depth 3 -Compress;
-    }
-} *&gt;&amp;1 &gt;&gt; $logfile;
-        </File>
-        <File path="C:\Windows\Temp\remove-caps.ps1">
-$selectors = @(
-    'Browser.InternetExplorer';
-    'MathRecognizer';
-    'OpenSSH.Client';
-    'App.Support.QuickAssist';
-    'App.StepsRecorder';
-    'Media.WindowsMediaPlayer';
-    'Microsoft.Windows.WordPad';
-);
-$getCommand = { Get-WindowsCapability -Online; };
-$filterCommand = { ($_.Name -split '~')[0] -eq $selector; };
-$removeCommand = {
-  [CmdletBinding()]
-  param(
-    [Parameter( Mandatory, ValueFromPipeline )]
-    $InputObject
-  );
-  process {
-    $InputObject | Remove-WindowsCapability -Online -ErrorAction 'Continue';
-  }
-};
-$type = 'Capability';
-$logfile = 'C:\Windows\Temp\remove-caps.log';
-&amp; {
-    $installed = &amp; $getCommand;
-    foreach( $selector in $selectors ) {
-        $result = [ordered] @{
-            Selector = $selector;
-        };
-        $found = $installed | Where-Object -FilterScript $filterCommand;
-        if( $found ) {
-            $result.Output = $found | &amp; $removeCommand;
-            if( $? ) {
-                $result.Message = "$type removed.";
-            } else {
-                $result.Message = "$type not removed.";
-                $result.Error = $Error[0];
-            }
-        } else {
-            $result.Message = "$type not installed.";
-        }
-        $result | ConvertTo-Json -Depth 3 -Compress;
-    }
-} *&gt;&amp;1 &gt;&gt; $logfile;
-        </File>
-        <File path="C:\Users\Default\AppData\Local\Microsoft\Windows\Shell\LayoutModification.xml"><![CDATA[
-<LayoutModificationTemplate Version="1" xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification">
-    <LayoutOptions StartTileGroupCellWidth="6" />
-    <DefaultLayoutOverride>
-        <StartLayoutCollection>
-            <StartLayout GroupCellWidth="6" xmlns="http://schemas.microsoft.com/Start/2014/FullDefaultLayout" />
-        </StartLayoutCollection>
-    </DefaultLayoutOverride>
-</LayoutModificationTemplate>
-        ]]></File>
-    </Extensions>
-</unattend>

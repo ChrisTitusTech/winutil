@@ -35,17 +35,20 @@ function Set-WinUtilRegistry {
             New-Item -Path $Path -Force -ErrorAction Stop | Out-Null
         }
 
-        Write-Host "Set $Path\$Name to $Value"
         if ($Value -ne "<RemoveEntry>") {
+            Write-Host "Set $Path\$Name to $Value"
             Set-ItemProperty -Path $Path -Name $Name -Type $Type -Value $Value -Force -ErrorAction Stop | Out-Null
         }
         else{
+            Write-Host "Remove $Path\$Name"
             Remove-ItemProperty -Path $Path -Name $Name -Force -ErrorAction Stop | Out-Null
         }
     } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
     } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
+    } catch [System.UnauthorizedAccessException] {
+       Write-Warning $psitem.Exception.Message
     } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace

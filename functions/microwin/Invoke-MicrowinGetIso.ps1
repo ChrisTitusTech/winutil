@@ -1,4 +1,4 @@
-function Invoke-WPFGetIso {
+function Invoke-MicrowinGetIso {
     <#
     .DESCRIPTION
     Function to get the path to Iso file for MicroWin, unpack that isom=, read basic information and populate the UI Options
@@ -50,7 +50,7 @@ function Invoke-WPFGetIso {
             return
         } else {
             [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it from github. This might take a long time.")
-            Get-Oscdimg -oscdimgPath $oscdimgPath
+            Microwin-GetOscdimg -oscdimgPath $oscdimgPath
             $oscdImgFound = Test-Path $oscdimgPath -PathType Leaf
             if (!$oscdImgFound) {
                 $msg = "oscdimg was not downloaded can not proceed"
@@ -100,7 +100,7 @@ function Invoke-WPFGetIso {
         Set-Location -Path $env:temp
         # Detect if the first option ("System language") has been selected and get a Fido-approved language from the current culture
         $lang = if ($sync["ISOLanguage"].SelectedIndex -eq 0) {
-            Get-FidoLangFromCulture -langName (Get-Culture).Name
+            Microwin-GetLangFromCulture -langName (Get-Culture).Name
         } else {
             $sync["ISOLanguage"].SelectedItem
         }
@@ -169,7 +169,7 @@ function Invoke-WPFGetIso {
     try {
         Write-Host "Mounting Iso. Please wait."
         $mountedISO = Mount-DiskImage -PassThru "$filePath"
-        Write-Host "Done mounting Iso $mountedISO"
+        Write-Host "Done mounting Iso `"$($mountedISO.ImagePath)`""
         $driveLetter = (Get-Volume -DiskImage $mountedISO).DriveLetter
         Write-Host "Iso mounted to '$driveLetter'"
     } catch {
@@ -189,7 +189,7 @@ function Invoke-WPFGetIso {
         $sync.MicrowinScratchDirBox.Text =""
     }
 
-     $UseISOScratchDir = $sync.WPFMicrowinISOScratchDir.IsChecked
+    $UseISOScratchDir = $sync.WPFMicrowinISOScratchDir.IsChecked
 
     if ($UseISOScratchDir) {
         $sync.MicrowinScratchDirBox.Text=$mountedISOPath
@@ -220,10 +220,10 @@ function Invoke-WPFGetIso {
     $sync.BusyText.Text=" - Mounting"
     Write-Host "Mounting Iso. Please wait."
     if ($sync.MicrowinScratchDirBox.Text -eq "") {
-    $mountDir = Join-Path $env:TEMP $randomMicrowin
-    $scratchDir = Join-Path $env:TEMP $randomMicrowinScratch
+        $mountDir = Join-Path $env:TEMP $randomMicrowin
+        $scratchDir = Join-Path $env:TEMP $randomMicrowinScratch
     } else {
-        $scratchDir = $sync.MicrowinScratchDirBox.Text+"Scrach"
+        $scratchDir = $sync.MicrowinScratchDirBox.Text+"Scratch"
         $mountDir = $sync.MicrowinScratchDirBox.Text+"micro"
     }
 
@@ -242,8 +242,8 @@ function Invoke-WPFGetIso {
 
         # xcopy we can verify files and also not copy files that already exist, but hard to measure
         # xcopy.exe /E /I /H /R /Y /J $DriveLetter":" $mountDir >$null
-        $totalTime = Measure-Command { Copy-Files "$($driveLetter):" $mountDir -Recurse -Force }
-        Write-Host "Copy complete! Total Time: $($totalTime.Minutes)m$($totalTime.Seconds)s"
+        $totalTime = Measure-Command { Copy-Files "$($driveLetter):" "$mountDir" -Recurse -Force }
+        Write-Host "Copy complete! Total Time: $($totalTime.Minutes) minutes, $($totalTime.Seconds) seconds"
 
         $wimFile = "$mountDir\sources\install.wim"
         Write-Host "Getting image information $wimFile"

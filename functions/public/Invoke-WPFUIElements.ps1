@@ -98,6 +98,7 @@ function Invoke-WPFUIElements {
             $panelcount = 0
             $entrycount = $configHashtable.Keys.Count + $organizedData["0"].Keys.Count
         }
+
     }
 
     # Initialize panel count
@@ -108,7 +109,7 @@ function Invoke-WPFUIElements {
     foreach ($panelKey in ($organizedData.Keys | Sort-Object)) {
         # Create a Border for each column
         $border = New-Object Windows.Controls.Border
-        $border.VerticalAlignment = "Stretch" # Ensure the border stretches vertically
+        $border.VerticalAlignment = "Stretch"
         [System.Windows.Controls.Grid]::SetColumn($border, $panelcount)
         $border.style = $borderstyle
         $targetGrid.Children.Add($border) | Out-Null
@@ -157,7 +158,6 @@ function Invoke-WPFUIElements {
             $label.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSizeHeading")
             $label.SetResourceReference([Windows.Controls.Control]::FontFamilyProperty, "HeaderFontFamily")
             $itemsControl.Items.Add($label) | Out-Null
-
             $sync[$category] = $label
 
             # Sort entries by Order and then by Name
@@ -185,11 +185,16 @@ function Invoke-WPFUIElements {
 
                         $sync[$entryInfo.Name] = $checkBox
 
-                        $sync[$entryInfo.Name].IsChecked = Get-WinUtilToggleStatus $sync[$entryInfo.Name].Name
+                        $sync[$entryInfo.Name].IsChecked = (Get-WinUtilToggleStatus $entryInfo.Name)
 
-                        $sync[$entryInfo.Name].Add_Click({
+                        $sync[$entryInfo.Name].Add_Checked({
                             [System.Object]$Sender = $args[0]
-                            Invoke-WPFToggle $Sender.name
+                            Invoke-WinUtilTweaks $sender.name
+                        })
+
+                        $sync[$entryInfo.Name].Add_Unchecked({
+                            [System.Object]$Sender = $args[0]
+                            Invoke-WinUtiltweaks $sender.name -undo $true
                         })
                     }
 
