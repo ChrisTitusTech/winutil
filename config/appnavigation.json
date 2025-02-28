@@ -44,12 +44,5 @@
         "Checked": false,
         "Order": "2",
         "Description": "Use Chocolatey for package management"
-    },
-    "autofallback": {
-        "Content": "Auto Fallback",
-        "Category": "__Package Manager",
-        "Checked": true,
-        "Order": "3",
-        "Description": "If the selected package manager fails, automatically switch to the other one"
     }
 }

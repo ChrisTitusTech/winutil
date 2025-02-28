@@ -148,12 +148,6 @@ if (Test-Path $ChocoPreferencePath) {
    $sync.ChocoRadioButton.IsChecked = $true
 }
 
-$sync.autofallback.IsEnabled = $false
-$sync.autofallback.Opacity = 0.5
-$sync.autofallback.ToolTip = "This feature is currently under development."
-
-[System.Windows.Controls.ToolTipService]::SetShowOnDisabled($sync.autofallback, $true)
-
 $sync.keys | ForEach-Object {
     if($sync.$psitem) {
         if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton") {
