@@ -114,19 +114,11 @@ function Invoke-WPFUIElements {
         $border.style = $borderstyle
         $targetGrid.Children.Add($border) | Out-Null
 
-        # Use a DockPanel to contain both the top buttons and the main content
+        # Use a DockPanel to contain the content
         $dockPanelContainer = New-Object Windows.Controls.DockPanel
         $border.Child = $dockPanelContainer
 
-        # Create a ScrollViewer to contain the main content (excluding buttons)
-        $scrollViewer = New-Object Windows.Controls.ScrollViewer
-        $scrollViewer.VerticalScrollBarVisibility = 'Auto'
-        $scrollViewer.HorizontalScrollBarVisibility = 'Auto'
-        $scrollViewer.HorizontalAlignment = 'Stretch'
-        $scrollViewer.VerticalAlignment = 'Stretch'
-        $scrollViewer.CanContentScroll = $true  # Enable virtualization
-
-        # Create an ItemsControl inside the ScrollViewer for application content
+        # Create an ItemsControl for application content
         $itemsControl = New-Object Windows.Controls.ItemsControl
         $itemsControl.HorizontalAlignment = 'Stretch'
         $itemsControl.VerticalAlignment = 'Stretch'
@@ -141,12 +133,9 @@ function Invoke-WPFUIElements {
         $itemsControl.SetValue([Windows.Controls.VirtualizingStackPanel]::IsVirtualizingProperty, $true)
         $itemsControl.SetValue([Windows.Controls.VirtualizingStackPanel]::VirtualizationModeProperty, [Windows.Controls.VirtualizationMode]::Recycling)
 
-        # Add the ItemsControl to the ScrollViewer
-        $scrollViewer.Content = $itemsControl
-
-        # Add the ScrollViewer to the DockPanel (it will be below the top buttons StackPanel)
-        [Windows.Controls.DockPanel]::SetDock($scrollViewer, [Windows.Controls.Dock]::Bottom)
-        $dockPanelContainer.Children.Add($scrollViewer) | Out-Null
+        # Add the ItemsControl directly to the DockPanel
+        [Windows.Controls.DockPanel]::SetDock($itemsControl, [Windows.Controls.Dock]::Bottom)
+        $dockPanelContainer.Children.Add($itemsControl) | Out-Null
         $panelcount++
 
         # Now proceed with adding category labels and entries to $itemsControl
