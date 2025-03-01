@@ -197,6 +197,45 @@
             <Setter Property="Background" Value="{DynamicResource LabelBackgroundColor}"/>
             <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
         </Style>
+        <!-- Category Toggle Button Style for the Apps Window-->
+        <Style x:Key="CategoryToggleButtonStyle" TargetType="ToggleButton">
+            <Setter Property="Foreground" Value="{DynamicResource LabelboxForegroundColor}"/>
+            <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource HeaderFontFamily}"/>
+            <Setter Property="FontSize" Value="{DynamicResource FontSizeHeading}"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="10,2,10,2"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{DynamicResource BorderColor}"
+                                BorderThickness="0"
+                                CornerRadius="{DynamicResource ButtonCornerRadius}">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}">
+                                <TextBlock x:Name="PrefixTextBlock"/>
+                                <ContentPresenter Content="{TemplateBinding Content}" />
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="PrefixTextBlock" Property="Text" Value="[-] "/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter TargetName="PrefixTextBlock" Property="Text" Value="[+] "/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource ButtonBackgroundMouseoverColor}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
 
         <!-- TextBlock template -->
         <Style TargetType="TextBlock">
@@ -298,6 +337,103 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style x:Key="ToggleButtonStyle" TargetType="ToggleButton">
+            <Setter Property="Margin" Value="{DynamicResource ButtonMargin}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundColor}"/>
+            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundColor}"/>
+            <Setter Property="Height" Value="{DynamicResource ButtonHeight}"/>
+            <Setter Property="Width" Value="{DynamicResource ButtonWidth}"/>
+            <Setter Property="FontSize" Value="{DynamicResource ButtonFontSize}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid>
+                            <Border x:Name="BackgroundBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{DynamicResource ButtonBorderThickness}"
+                                    CornerRadius="{DynamicResource ButtonCornerRadius}">
+                                <Grid>
+                                    <!-- Toggle Dot Background -->
+                                    <Ellipse Width="8" Height="16"
+                                            Fill="{DynamicResource ToggleButtonOnColor}"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Top"
+                                            Margin="0,3,5,0" />
+
+                                    <!-- Toggle Dot with hover grow effect -->
+                                    <Ellipse x:Name="ToggleDot"
+                                            Width="8" Height="8"
+                                            Fill="{DynamicResource ButtonForegroundColor}"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Top"
+                                            Margin="0,3,5,0"
+                                            RenderTransformOrigin="0.5,0.5">
+                                        <Ellipse.RenderTransform>
+                                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                        </Ellipse.RenderTransform>
+                                    </Ellipse>
+
+                                    <!-- Content Presenter -->
+                                    <ContentPresenter HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    Margin="10,2,10,2"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                        <!-- Triggers for ToggleButton states -->
+                        <ControlTemplate.Triggers>
+                            <!-- Hover effect -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource ButtonBackgroundMouseoverColor}"/>
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <!-- Animation to grow the dot when hovered -->
+                                            <DoubleAnimation Storyboard.TargetName="ToggleDot"
+                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                            To="1.2" Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="ToggleDot"
+                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                            To="1.2" Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <!-- Animation to shrink the dot back to original size when not hovered -->
+                                            <DoubleAnimation Storyboard.TargetName="ToggleDot"
+                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                            To="1.0" Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="ToggleDot"
+                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                            To="1.0" Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+
+                            <!-- IsChecked state -->
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="ToggleDot" Property="VerticalAlignment" Value="Bottom"/>
+                                <Setter TargetName="ToggleDot" Property="Margin" Value="0,0,5,3"/>
+                            </Trigger>
+
+                            <!-- IsEnabled state -->
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource ButtonBackgroundSelectedColor}"/>
+                                <Setter Property="Foreground" Value="DimGray"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <Style x:Key="SearchBarClearButtonStyle" TargetType="Button">
             <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
             <Setter Property="FontSize" Value="{DynamicResource SearchBarClearButtonFontSize}"/>
@@ -366,6 +502,19 @@
                  </Setter.Value>
             </Setter>
         </Style>
+    <!-- Collapsed Checkbox Style -->
+    <Style x:Key="CollapsedCheckBoxStyle" TargetType="CheckBox">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <ContentPresenter Content="{TemplateBinding Content}"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Left"
+                                    Margin="{TemplateBinding Padding}"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
         <Style TargetType="RadioButton">
             <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
             <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}"/>
@@ -864,7 +1013,6 @@
                     </Border>
                 </Popup>
 
-
                 <Button Name="SettingsButton"
                     Style="{StaticResource HoverButtonStyle}"
                     Grid.Column="3" BorderBrush="Transparent"
@@ -917,29 +1065,18 @@
             <TabItem Header="Install" Visibility="Collapsed" Name="WPFTab1">
                 <Grid Background="Transparent" >
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="45px"/>
-                        <RowDefinition Height="0.95*"/>
-                    </Grid.RowDefinitions>
-                    <StackPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="0" Grid.ColumnSpan="3" Margin="{DynamicResource TabContentMargin}">
-                        <Button Name="WPFInstall" Content=" Install/Upgrade Selected" Margin="2" />
-                        <Button Name="WPFInstallUpgrade" Content=" Upgrade All" Margin="2"/>
-                        <Button Name="WPFUninstall" Content=" Uninstall Selected" Margin="2"/>
-                        <Button Name="WPFGetInstalled" Content=" Get Installed" Margin="2"/>
-                        <Button Name="WPFClearInstallSelection" Content=" Clear Selection" Margin="2"/>
-                        <CheckBox Name="WPFpreferChocolatey" VerticalAlignment="Center" VerticalContentAlignment="Center">
-                            <TextBlock Text="Prefer Chocolatey" ToolTip="Prefers Chocolatey as Download Engine instead of Winget" VerticalAlignment="Center" />
-                        </CheckBox>
-                    </StackPanel>
+                    <Grid Grid.Row="0" Grid.Column="0" Margin="{DynamicResource TabContentMargin}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="225" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
 
-                    <ScrollViewer x:Name="scrollViewer" Grid.Row="1" Grid.Column="0" Margin="{DynamicResource TabContentMargin}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
-                                BorderBrush="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Grid Name="appspanel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid Name="appscategory" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         </Grid>
-                    </ScrollViewer>
 
-                    <Rectangle Grid.Row="1" Grid.Column="0" Width="22" Height="22" Fill="{DynamicResource MainBackgroundColor}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Style="{StaticResource ScrollVisibilityRectangle}"/>
-
+                        <Grid Name="appspanel" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        </Grid>
+                    </Grid>
                 </Grid>
             </TabItem>
             <TabItem Header="Tweaks" Visibility="Collapsed" Name="WPFTab2">

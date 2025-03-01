@@ -38,6 +38,9 @@
         "ButtonCornerRadius": "2"
     },
     "Light": {
+        "AppInstallUnselectedColor": "#F0F0F0",
+        "AppInstallHighlightedColor": "#CFCFCF",
+        "AppInstallSelectedColor": "#C2C2C2",
         "ComboBoxForegroundColor":  "#232629",
         "ComboBoxBackgroundColor":  "#F7F7F7",
         "LabelboxForegroundColor":  "#232629",
@@ -73,6 +76,9 @@
 
     },
     "Dark": {
+        "AppInstallUnselectedColor": "#232629",
+        "AppInstallHighlightedColor": "#3C3C3C",
+        "AppInstallSelectedColor": "#4C4C4C",
         "ComboBoxForegroundColor":  "#F7F7F7",
         "ComboBoxBackgroundColor":  "#1E3747",
         "LabelboxForegroundColor":  "#0567ff",
