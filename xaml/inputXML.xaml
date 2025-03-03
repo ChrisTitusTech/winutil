@@ -842,6 +842,182 @@
                 </MultiDataTrigger>
             </Style.Triggers>
         </Style>
+        <Style TargetType="DataGrid">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderColor}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="FontSize" Value="{DynamicResource FontSize}" />
+            <Setter Property="FontFamily" Value="{DynamicResource FontFamily}" />
+            <Setter Property="RowBackground" Value="Transparent" />
+            <Setter Property="AlternatingRowBackground" Value="{DynamicResource AlternatingRowBackgroundColor}" />
+            <Setter Property="GridLinesVisibility" Value="None" />
+            <Setter Property="HeadersVisibility" Value="Column" />
+            <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
+            <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+            <Setter Property="SelectionMode" Value="Extended" />
+            <Setter Property="SelectionUnit" Value="FullRow" />
+            <Setter Property="CanUserAddRows" Value="False" />
+            <Setter Property="CanUserDeleteRows" Value="False" />
+            <Setter Property="CanUserReorderColumns" Value="False" />
+            <Setter Property="CanUserResizeRows" Value="True" />
+            <Setter Property="CanUserSortColumns" Value="True" />
+            <Setter Property="AutoGenerateColumns" Value="False" />
+            <Setter Property="Margin" Value="0,10,0,10" />
+            <Setter Property="CellStyle">
+                <Setter.Value>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="Padding" Value="10,6" />
+                        <Setter Property="BorderThickness" Value="0" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="DataGridCell">
+                                    <Border Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="4"
+                                            Margin="2,1"
+                                            Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter VerticalAlignment="Center" />
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource ButtonBackgroundMouseoverColor}" />
+                                <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource ButtonBackgroundSelectedColor}" />
+                                <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}" />
+                                <Setter Property="BorderThickness" Value="0" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="RowStyle">
+                <Setter.Value>
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}" />
+                        <Setter Property="MinHeight" Value="35" />
+                        <Setter Property="VerticalContentAlignment" Value="Center" />
+                        <Setter Property="Margin" Value="0,1" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="DataGridRow">
+                                    <Border x:Name="RowBorder"
+                                            BorderThickness="0"
+                                            BorderBrush="{DynamicResource BorderColor}"
+                                            Background="{TemplateBinding Background}"
+                                            CornerRadius="6"
+                                            Margin="4,2"
+                                            SnapsToDevicePixels="True">
+                                        <SelectiveScrollingGrid>
+                                            <SelectiveScrollingGrid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </SelectiveScrollingGrid.ColumnDefinitions>
+                                            <SelectiveScrollingGrid.RowDefinitions>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </SelectiveScrollingGrid.RowDefinitions>
+                                            <DataGridCellsPresenter Grid.Column="1"
+                                                                  ItemsPanel="{TemplateBinding ItemsPanel}"
+                                                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                            <DataGridDetailsPresenter Grid.Column="1" Grid.Row="1"
+                                                                   Visibility="{TemplateBinding DetailsVisibility}"
+                                                                   SelectiveScrollingGrid.SelectiveScrollingOrientation="{Binding AreRowDetailsFrozen,
+                                                                                                                                 RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},
+                                                                                                                                 Converter={x:Static DataGrid.RowDetailsScrollingConverter},
+                                                                                                                                 ConverterParameter={x:Static SelectiveScrollingOrientation.Vertical}}"/>
+                                            <DataGridRowHeader Grid.RowSpan="2"
+                                                            SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical"
+                                                            Visibility="{Binding HeadersVisibility,
+                                                                                 RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},
+                                                                                 Converter={x:Static DataGrid.HeadersVisibilityConverter},
+                                                                                 ConverterParameter={x:Static DataGridHeadersVisibility.Row}}"/>
+                                        </SelectiveScrollingGrid>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource ButtonBackgroundMouseoverColor}" />
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect ShadowDepth="0" BlurRadius="5" Opacity="0.2" Color="#000000" />
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource ButtonBackgroundSelectedColor}" />
+                                <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}" />
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect ShadowDepth="1" BlurRadius="7" Opacity="0.3" Color="#000000" />
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ColumnHeaderStyle">
+                <Setter.Value>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundColor}" />
+                        <Setter Property="FontSize" Value="{DynamicResource FontSize}" />
+                        <Setter Property="FontFamily" Value="{DynamicResource FontFamily}" />
+                        <Setter Property="FontWeight" Value="SemiBold" />
+                        <Setter Property="Padding" Value="10,8" />
+                        <Setter Property="BorderThickness" Value="0" />
+                        <Setter Property="HorizontalContentAlignment" Value="Left" />
+                        <Setter Property="VerticalContentAlignment" Value="Center" />
+                        <Setter Property="Margin" Value="2,0" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="DataGridColumnHeader">
+                                    <Grid>
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="{DynamicResource BorderColor}"
+                                                BorderThickness="0,0,0,1"
+                                                Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                            SnapsToDevicePixels="True" />
+                                        </Border>
+                                        <Path x:Name="SortArrow" Visibility="Collapsed"
+                                              HorizontalAlignment="Right" VerticalAlignment="Center"
+                                              Margin="0,0,5,0" Fill="{DynamicResource ButtonForegroundColor}"
+                                              Width="8" Height="6" Stretch="Fill" />
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="SortDirection" Value="Ascending">
+                                            <Setter TargetName="SortArrow" Property="Visibility" Value="Visible"/>
+                                            <Setter TargetName="SortArrow" Property="Data" Value="M 0,5 L 8,5 L 4,0 Z"/>
+                                        </Trigger>
+                                        <Trigger Property="SortDirection" Value="Descending">
+                                            <Setter TargetName="SortArrow" Property="Visibility" Value="Visible"/>
+                                            <Setter TargetName="SortArrow" Property="Data" Value="M 0,0 L 8,0 L 4,5 Z"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="{DynamicResource LinkHoverForegroundColor}" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
     <Grid Background="{DynamicResource MainBackgroundColor}" ShowGridLines="False" Name="WPFMainGrid" Width="Auto" Height="Auto" HorizontalAlignment="Stretch">
         <Grid.RowDefinitions>
@@ -1135,95 +1311,103 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{DynamicResource TabContentMargin}">
                     <Grid Background="Transparent">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>  <!-- Row for the 3 columns -->
-                            <RowDefinition Height="Auto"/>  <!-- Row for Windows Version -->
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <!-- Three columns container -->
                         <Grid Grid.Row="0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="200"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <!-- Default Settings -->
-                            <Border Grid.Column="0" Style="{StaticResource BorderStyle}">
-                                <StackPanel>
+                            <!-- Left Column - Update Options -->
+                            <Border Grid.Column="0" Style="{StaticResource BorderStyle}" VerticalAlignment="Stretch">
+                                <StackPanel Margin="5">
+                                    <TextBlock Text="Update Presets" Margin="0,0,0,5"/>
                                     <Button Name="WPFFixesUpdate"
-                                            FontSize="{DynamicResource ConfigTabButtonFontSize}"
-                                            Content="Default Settings"
-                                            Margin="10,5"
-                                            Padding="10"/>
-                                    <TextBlock Margin="10"
-                                             TextWrapping="Wrap"
-                                             Foreground="{DynamicResource MainForegroundColor}">
-                                        <Run FontWeight="Bold">Default Windows Update Configuration</Run>
-                                        <LineBreak/>
-                                         - No modifications to Windows defaults
-                                        <LineBreak/>
-                                         - Removes any custom update settings
-                                        <LineBreak/><LineBreak/>
-                                        <Run FontStyle="Italic" FontSize="11">Note: This resets your Windows Update settings to default out of the box settings. It removes ANY policy or customization that has been done to Windows Update.</Run>
-                                    </TextBlock>
-                                </StackPanel>
-                            </Border>
+                                            Content="Default"
+                                            Width="Auto"
+                                            Margin="0,2"
+                                            ToolTip="Default Windows Update Configuration&#x0a;- No modifications to Windows defaults&#x0a;- Removes any custom update settings&#x0a;&#x0a;Note: This resets your Windows Update settings to default out of the box settings. It removes ANY policy or customization that has been done to Windows Update."/>
 
-                            <!-- Security Settings -->
-                            <Border Grid.Column="1" Style="{StaticResource BorderStyle}">
-                                <StackPanel>
                                     <Button Name="WPFUpdatessecurity"
-                                            FontSize="{DynamicResource ConfigTabButtonFontSize}"
-                                            Content="Security Settings"
-                                            Margin="10,5"
-                                            Padding="10"/>
-                                    <TextBlock Margin="10"
-                                             TextWrapping="Wrap"
-                                             Foreground="{DynamicResource MainForegroundColor}">
-                                        <Run FontWeight="Bold">Balanced Security Configuration</Run>
-                                        <LineBreak/>
-                                         - Feature updates delayed by 2 years
-                                        <LineBreak/>
-                                         - Security updates installed after 4 days
-                                        <LineBreak/><LineBreak/>
-                                        <Run FontWeight="SemiBold">Feature Updates:</Run> New features and potential bugs
-                                        <LineBreak/>
-                                        <Run FontWeight="SemiBold">Security Updates:</Run> Critical security patches
-                                    <LineBreak/><LineBreak/>
-                                    <Run FontStyle="Italic" FontSize="11">Note: This only applies to Pro systems that can use group policy.</Run>
-                                    </TextBlock>
-                                </StackPanel>
-                            </Border>
+                                            Content="Security"
+                                            Width="Auto"
+                                            Margin="0,2"
+                                            ToolTip="Balanced Security Configuration&#x0a;- Feature updates delayed by 2 years&#x0a;- Security updates installed after 4 days&#x0a;&#x0a;Feature Updates: New features and potential bugs&#x0a;Security Updates: Critical security patches&#x0a;&#x0a;Note: This only applies to Pro systems that can use group policy."/>
 
-                            <!-- Disable Updates -->
-                            <Border Grid.Column="2" Style="{StaticResource BorderStyle}">
-                                <StackPanel>
                                     <Button Name="WPFUpdatesdisable"
-                                            FontSize="{DynamicResource ConfigTabButtonFontSize}"
-                                            Content="Disable All Updates"
+                                            Content="Disable"
+                                            Width="Auto"
                                             Foreground="Red"
-                                            Margin="10,5"
-                                            Padding="10"/>
-                                    <TextBlock Margin="10"
-                                             TextWrapping="Wrap"
-                                             Foreground="{DynamicResource MainForegroundColor}">
-                                        <Run FontWeight="Bold" Foreground="Red">!! Not Recommended !!</Run>
-                                        <LineBreak/>
-                                         - Disables ALL Windows Updates
-                                        <LineBreak/>
-                                         - Increases security risks
-                                        <LineBreak/>
-                                         - Only use for isolated systems
-                                        <LineBreak/><LineBreak/>
-                                        <Run FontStyle="Italic" FontSize="11">Warning: Your system will be vulnerable without security updates.</Run>
-                                    </TextBlock>
+                                            Margin="0,2"
+                                            ToolTip="!! Not Recommended !!&#x0a;- Disables ALL Windows Updates&#x0a;- Increases security risks&#x0a;- Only use for isolated systems&#x0a;&#x0a;Warning: Your system will be vulnerable without security updates."/>
                                 </StackPanel>
+                            </Border>
+
+                            <!-- Right Column - Updates List -->
+                            <Border Grid.Column="1" Style="{StaticResource BorderStyle}" VerticalAlignment="Stretch">
+                                <Grid Margin="5,0,0,0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <Button Name="WPFScanUpdates"
+                                            Content="Scan for Updates"
+                                            Grid.Row="0"
+                                            Margin="5"
+                                            HorizontalAlignment="Left"
+                                            Padding="10,5"/>
+
+                                    <DataGrid Name="WPFUpdatesList"
+                                            Grid.Row="1"
+                                            Margin="5"
+                                            AutoGenerateColumns="False"
+                                            Background="Transparent"
+                                            IsReadOnly="True">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Title"
+                                                            Binding="{Binding Title}"
+                                                            Width="*"/>
+                                            <DataGridTextColumn Header="KB"
+                                                            Binding="{Binding KB}"
+                                                            Width="100"/>
+                                            <DataGridTextColumn Header="Size"
+                                                            Binding="{Binding Size}"
+                                                            Width="80"/>
+                                            <DataGridTextColumn Header="Status"
+                                                            Binding="{Binding Status}"
+                                                            Width="100"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+
+                                    <StackPanel Grid.Row="2"
+                                                Orientation="Horizontal"
+                                                HorizontalAlignment="Right"
+                                                Margin="5">
+                                        <Button Name="WPFInstallSelected"
+                                                Content="Install Selected"
+                                                Margin="5"
+                                                Padding="10,5"/>
+                                        <Button Name="WPFInstallAll"
+                                                Content="Install All"
+                                                Margin="5"
+                                                Padding="10,5"/>
+                                    </StackPanel>
+                                </Grid>
                             </Border>
                         </Grid>
 
-                        <!-- Future Implementation: Add Windows Version to updates panel -->
-                        <Grid Name="updatespanel" Grid.Row="1" Background="Transparent">
-                        </Grid>
+                        <Border Grid.Row="1" Style="{StaticResource BorderStyle}">
+                            <StackPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left">
+                                <TextBlock Padding="10">
+                                    Note: Updates may require a system restart to complete installation. Make sure to save any work before proceeding.
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
                     </Grid>
                 </ScrollViewer>
             </TabItem>

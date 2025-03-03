@@ -61,5 +61,6 @@ function Invoke-WPFButton {
         "WPFWinUtilInstallPSProfile" {Invoke-WinUtilInstallPSProfile}
         "WPFWinUtilUninstallPSProfile" {Invoke-WinUtilUninstallPSProfile}
         "WPFWinUtilSSHServer" {Invoke-WPFSSHServer}
+        "WPFScanUpdates" {Invoke-WPFScanUpdates}
     }
 }
