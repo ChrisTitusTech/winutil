@@ -2937,7 +2937,7 @@
     },
     "ZenBrowser": {
         "category": "Browsers",
-        "choco": "zen-browser",
+        "choco": "na",
         "content": "Zen Browser",
         "description": "The modern, privacy-focused, performance-driven browser built on Firefox",
         "link": "https://zen-browser.app/",
