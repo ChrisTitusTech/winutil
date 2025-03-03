@@ -127,16 +127,16 @@ function Install-WinUtilWinget {
         }
         # GitHub fallback installation method
         $releases_url = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
-        $asset = (Invoke-RestMethod -Uri $releases_url).assets | 
-            Where-Object { $_.name -match "\.msixbundle$" } | 
+        $asset = (Invoke-RestMethod -Uri $releases_url).assets |
+            Where-Object { $_.name -match "\.msixbundle$" } |
             Select-Object -First 1
-        
+
         $download_url = $asset.browser_download_url
         $output_path = Join-Path $env:TEMP $asset.name
-        
+
         Invoke-WebRequest -Uri $download_url -OutFile $output_path
         Add-AppxPackage -Path $output_path -ErrorAction Stop
-        
+
         # Verify installation
         $wingetCmd = Get-Command winget -ErrorAction Stop
         Write-Information "Successfully installed WinGet through GitHub"

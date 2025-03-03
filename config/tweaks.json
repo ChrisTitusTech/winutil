@@ -424,26 +424,6 @@
         "OriginalType": "Automatic"
       },
       {
-        "Name": "DoSvc",
-        "StartupType": "AutomaticDelayedStart",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "DsSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "DsmSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "DusmSvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
         "Name": "EFS",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -899,11 +879,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "SgrmBroker",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
         "Name": "SharedAccess",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -932,11 +907,6 @@
         "Name": "SstpSvc",
         "StartupType": "Manual",
         "OriginalType": "Manual"
-      },
-      {
-        "Name": "StateRepository",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
       },
       {
         "Name": "StiSvc",
@@ -971,11 +941,6 @@
       {
         "Name": "TermService",
         "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "TextInputManagementService",
-        "StartupType": "Manual",
         "OriginalType": "Automatic"
       },
       {
