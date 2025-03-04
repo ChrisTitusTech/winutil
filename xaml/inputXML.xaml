@@ -1308,7 +1308,7 @@
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Updates" Visibility="Collapsed" Name="WPFTab4">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{DynamicResource TabContentMargin}">
+                <!-- <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{DynamicResource TabContentMargin}"> -->
                     <Grid Background="Transparent">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
@@ -1352,51 +1352,163 @@
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="*"/>
-                                        <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
 
-                                    <Button Name="WPFScanUpdates"
-                                            Content="Scan for Updates"
-                                            Grid.Row="0"
-                                            Margin="5"
-                                            HorizontalAlignment="Left"
-                                            Padding="10,5"/>
-
-                                    <DataGrid Name="WPFUpdatesList"
-                                            Grid.Row="1"
-                                            Margin="5"
-                                            AutoGenerateColumns="False"
-                                            Background="Transparent"
-                                            IsReadOnly="True">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Title"
-                                                            Binding="{Binding Title}"
-                                                            Width="*"/>
-                                            <DataGridTextColumn Header="KB"
-                                                            Binding="{Binding KB}"
-                                                            Width="100"/>
-                                            <DataGridTextColumn Header="Size"
-                                                            Binding="{Binding Size}"
-                                                            Width="80"/>
-                                            <DataGridTextColumn Header="Status"
-                                                            Binding="{Binding Status}"
-                                                            Width="100"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-
-                                    <StackPanel Grid.Row="2"
-                                                Orientation="Horizontal"
-                                                HorizontalAlignment="Right"
-                                                Margin="5">
-                                        <Button Name="WPFInstallSelected"
-                                                Content="Install Selected"
-                                                Margin="5"
-                                                Padding="10,5"/>
-                                        <Button Name="WPFInstallAll"
-                                                Content="Install All"
-                                                Margin="5"
-                                                Padding="10,5"/>
+                                    <!-- Toggle button at the top -->
+                                    <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
+                                        <ToggleButton Name="WPFShowUpdateHistory"
+                                                    Content="Show History"
+                                                    Style="{StaticResource ToggleButtonStyle}"
+                                                    Margin="5"
+                                                    Padding="10,5"
+                                                    ToolTip="Toggle between pending updates and update history"/>
                                     </StackPanel>
+
+                                    <!-- Updates Grid - Visible by default -->
+                                    <Grid Grid.Row="1" Name="UpdatesGrid" Visibility="Visible">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <Button Name="WPFScanUpdates"
+                                                Content="Scan for Updates"
+                                                Grid.Row="0"
+                                                Margin="5"
+                                                HorizontalAlignment="Left"
+                                                Padding="10,5"/>
+
+                                        <DataGrid Name="WPFUpdatesList"
+                                                Grid.Row="1"
+                                                Margin="5"
+                                                AutoGenerateColumns="False"
+                                                Background="Transparent"
+                                                IsReadOnly="True"
+                                                ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="ComputerName"
+                                                                    Binding="{Binding ComputerName}"
+                                                                    Width="Auto"
+                                                                    Visibility="Collapsed"/>
+                                                <DataGridTextColumn Header="Title"
+                                                                    Binding="{Binding Title}"
+                                                                    Width="*"
+                                                                    MinWidth="100"/>
+                                                <DataGridTextColumn Header="KB"
+                                                                    Binding="{Binding KB}"
+                                                                    Width="Auto"
+                                                                    MinWidth="100">
+                                                    <DataGridTextColumn.ElementStyle>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="TextAlignment" Value="Center"/>
+                                                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                        </Style>
+                                                    </DataGridTextColumn.ElementStyle>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Header="Size"
+                                                                    Binding="{Binding Size}"
+                                                                    Width="Auto"
+                                                                    MinWidth="80">
+                                                    <DataGridTextColumn.ElementStyle>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="TextAlignment" Value="Center"/>
+                                                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                        </Style>
+                                                    </DataGridTextColumn.ElementStyle>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Header="Status"
+                                                                    Binding="{Binding Status}"
+                                                                    Width="Auto"
+                                                                    MinWidth="100">
+                                                    <DataGridTextColumn.ElementStyle>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="TextAlignment" Value="Center"/>
+                                                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                        </Style>
+                                                    </DataGridTextColumn.ElementStyle>
+                                                </DataGridTextColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+
+                                        <StackPanel Grid.Row="2"
+                                                    Orientation="Horizontal"
+                                                    HorizontalAlignment="Right"
+                                                    Margin="5">
+                                            <Button Name="WPFUpdateSelectedInstall"
+                                                    Content="Install Selected"
+                                                    Margin="5"
+                                                    Padding="10,5"/>
+                                            <Button Name="WPFUpdateAllInstall"
+                                                    Content="Install All"
+                                                    Margin="5"
+                                                    Padding="10,5"/>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <!-- History Grid - Collapsed by default -->
+                                    <Grid Grid.Row="1" Name="HistoryGrid" Visibility="Collapsed">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+
+                                        <Button Name="WPFUpdateScanHistory"
+                                                Content="Scan History"
+                                                Grid.Row="0"
+                                                Margin="5"
+                                                HorizontalAlignment="Left"
+                                                Padding="10,5"/>
+
+                                        <DataGrid Name="WPFUpdateHistory"
+                                                Grid.Row="1"
+                                                Margin="5"
+                                                AutoGenerateColumns="False"
+                                                Background="Transparent"
+                                                IsReadOnly="True"
+                                                ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="ComputerName"
+                                                                    Binding="{Binding ComputerName}"
+                                                                    Width="Auto"
+                                                                    Visibility="Collapsed"/>
+
+                                                <DataGridTextColumn Header="Result"
+                                                                    Binding="{Binding Result}"
+                                                                    Width="Auto"
+                                                                    MinWidth="100">
+                                                    <DataGridTextColumn.ElementStyle>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="TextAlignment" Value="Center"/>
+                                                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                        </Style>
+                                                    </DataGridTextColumn.ElementStyle>
+                                                </DataGridTextColumn>
+
+                                                <DataGridTextColumn Header="Title"
+                                                                    Binding="{Binding Title}"
+                                                                    Width="*"/>
+
+                                                <DataGridTextColumn Header="KB"
+                                                                    Binding="{Binding KB}"
+                                                                    Width="Auto"
+                                                                    MinWidth="100">
+                                                    <DataGridTextColumn.ElementStyle>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="TextAlignment" Value="Center"/>
+                                                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                        </Style>
+                                                    </DataGridTextColumn.ElementStyle>
+                                                </DataGridTextColumn>
+
+                                                <DataGridTextColumn Header="Date"
+                                                                    Binding="{Binding Date}"
+                                                                    Width="Auto"
+                                                                    MinWidth="160">
+                                                </DataGridTextColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Grid>
                                 </Grid>
                             </Border>
                         </Grid>
@@ -1409,7 +1521,7 @@
                             </StackPanel>
                         </Border>
                     </Grid>
-                </ScrollViewer>
+                <!-- </ScrollViewer> -->
             </TabItem>
             <TabItem Header="MicroWin" Visibility="Collapsed" Name="WPFTab5">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{DynamicResource TabContentMargin}">

@@ -1,4 +1,4 @@
-function Invoke-WPFScanUpdates {
+function Invoke-WPFUpdatesScan {
 
 
     Invoke-WPFRunspace -DebugPreference $DebugPreference -ScriptBlock {
@@ -26,7 +26,6 @@ function Invoke-WPFScanUpdates {
         }
 
         try {
-            Write-Host "Clearing updates list..."
             $sync.form.Dispatcher.Invoke([action] { $sync["WPFUpdatesList"].Items.Clear() })
             Write-Host "Scanning for Windows updates..."
             $updates = Get-WindowsUpdate -ErrorAction Stop
@@ -35,12 +34,20 @@ function Invoke-WPFScanUpdates {
             $sync.form.Dispatcher.Invoke([action] {
                 foreach ($update in $updates) {
                     $item = New-Object PSObject -Property @{
+                        ComputerName = $update.ComputerName
                         KB = $update.KB
                         Size = $update.Size
                         Title = $update.Title -replace '\s*\(KB\d+\)', '' -replace '\s*KB\d+\b', '' # Remove KB number from title, first in parentheses, then standalone
                         Status = "Not Installed"
                     }
+                    $Computers = $item | Select-Object -ExpandProperty ComputerName -Unique
                     $sync["WPFUpdatesList"].Items.Add($item)
+                }
+                if ($Computers.Count -gt 1) {
+                    $sync["WPFUpdatesList"].Columns[0].Visibility = "Visible"
+                } else {
+                    Write-Debug "Hiding ComputerName column, only $item.ComputerName"
+                    $sync["WPFUpdatesList"].Columns[0].Visibility = "Collapsed"
                 }
             })
         } catch {
