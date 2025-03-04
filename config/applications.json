@@ -2934,5 +2934,13 @@
         "description": "Fork - a fast and friendly git client.",
         "link": "https://git-fork.com/",
         "winget": "Fork.Fork"
+    },
+    "ZenBrowser": {
+        "category": "Browsers",
+        "choco": "na",
+        "content": "Zen Browser",
+        "description": "The modern, privacy-focused, performance-driven browser built on Firefox",
+        "link": "https://zen-browser.app/",
+        "winget": "Zen-Team.Zen-Browser"
     }
 }
