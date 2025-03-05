@@ -56,7 +56,7 @@ function Test-WinUtilPackageManager {
             # Check if Winget's Version is too old.
             $wingetCurrentVersion = [System.Version]::Parse($wingetVersion.Trim('v'))
             # Grabs the latest release of Winget from the Github API for version check process.
-            $response = winget search -e Microsoft.AppInstaller
+            $response = winget search -e Microsoft.AppInstaller --accept-source-agreements
             $wingetLatestVersion = ($response | Select-String -Pattern '\d+\.\d+\.\d+\.\d+').Matches.Value
             Write-Host "Latest Search Version: $wingetLatestVersion" -ForegroundColor White
             Write-Host "Current Installed Version: $wingetCurrentVersion" -ForegroundColor White
