@@ -1387,6 +1387,10 @@
                                                 IsReadOnly="True"
                                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                                             <DataGrid.Columns>
+                                                <DataGridTextColumn Header="LongTitle"
+                                                                    Binding="{Binding LongTitle}"
+                                                                    Width="Auto"
+                                                                    Visibility="Collapsed"/>
                                                 <DataGridTextColumn Header="ComputerName"
                                                                     Binding="{Binding ComputerName}"
                                                                     Width="Auto"
@@ -1435,6 +1439,14 @@
                                                     Orientation="Horizontal"
                                                     HorizontalAlignment="Right"
                                                     Margin="5">
+                                            <StackPanel VerticalAlignment="Center">
+                                                <CheckBox x:Name="WPFUpdateVerbose"
+                                                    Content="Verbose Output"
+                                                    Margin="5"
+                                                    Padding="10,5"
+                                                    ToolTip="Verbose output for update installation"
+                                                    IsChecked="True"/>
+                                            </StackPanel>
                                             <Button Name="WPFUpdateSelectedInstall"
                                                     Content="Install Selected"
                                                     Margin="5"

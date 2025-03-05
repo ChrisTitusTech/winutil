@@ -34,6 +34,7 @@ function Invoke-WPFUpdatesScan {
             $sync.form.Dispatcher.Invoke([action] {
                 foreach ($update in $updates) {
                     $item = New-Object PSObject -Property @{
+                        LongTitle = $update.Title
                         ComputerName = $update.ComputerName
                         KB = $update.KB
                         Size = $update.Size
