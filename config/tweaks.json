@@ -3427,7 +3427,8 @@
         "Name": "SettingsPageVisibility",
         "Type": "String",
         "Value": "hide:home",
-        "OriginalValue": ""
+        "OriginalValue": "show:home",
+        "DefaultState": "false"
       }
     ]
   },
