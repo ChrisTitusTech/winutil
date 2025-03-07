@@ -4,6 +4,11 @@ function Invoke-WPFUpdateMGMT {
         [switch]$All
     )
 
+    if ((-not $Selected -and -not $All) -or ($Selected -and $All)) {
+        Write-Host "[Invoke-WPFUpdateMGMT] Use either 'Selected' or 'All' switches, used switches are: 'Selected' is $Selected, 'All' is $All" -ForegroundColor Red
+        return
+    }
+
     $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
 
     if ($All) {
