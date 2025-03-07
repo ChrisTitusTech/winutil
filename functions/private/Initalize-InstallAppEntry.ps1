@@ -27,13 +27,9 @@ function Initialize-InstallAppEntry {
         $border.Tag = $Appkey
         $border.ToolTip = $App.description
         $border.Add_MouseUp({
-            if ($_.ChangedButton -eq [System.Windows.Input.MouseButton]::Left) {
-                $childCheckbox = ($this.Child.Children | Where-Object {$_.Template.TargetType -eq [System.Windows.Controls.Checkbox]})[0]
-                $childCheckBox.isChecked = -not $childCheckbox.IsChecked
+            if ($_.ChangedButton -eq [System.Windows.Input.MouseButton]::Right) {
+                Invoke-WPFPresets -imported $true -checkboxfilterpattern "WPFInstall*";
             }
-        })
-        $border.Add_MouseRightButtonUp({
-            Invoke-WPFPresets -imported $true -checkboxfilterpattern "WPFInstall*";
             $childCheckbox = ($this.Child.Children | Where-Object {$_.Template.TargetType -eq [System.Windows.Controls.Checkbox]})[0]
             $childCheckBox.isChecked = -not $childCheckbox.IsChecked
         })
