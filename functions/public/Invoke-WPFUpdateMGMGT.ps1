@@ -33,10 +33,18 @@ function Invoke-WPFUpdateMGMT {
             param ($selectedUpdates, $WPFUpdateVerbose)
             foreach ($update in $selectedUpdates) {
                 Write-Host "Installing update $($update.Title) on $($update.ComputerName)"
-                if ($WPFUpdateVerbose) {
-                    Get-WindowsUpdate -ComputerName $update.ComputerName -Title $update.Title -Install -Confirm:$false -Verbose -IgnoreReboot:$true -IgnoreRebootRequired:$true
+                if ($update.KB -ne "") {
+                    if ($WPFUpdateVerbose) {
+                        Get-WindowsUpdate -ComputerName $update.ComputerName -KBArticleID $update.KB -Install -Confirm:$false -Verbose -IgnoreReboot:$true -IgnoreRebootRequired:$true
+                    } else {
+                        Get-WindowsUpdate -ComputerName $update.ComputerName -KBArticleID $update.KB -Install -Confirm:$false -IgnoreReboot:$true -IgnoreRebootRequired:$true
+                    }
                 } else {
-                    Get-WindowsUpdate -ComputerName $update.ComputerName -Title $update.Title -Install -Confirm:$false -IgnoreReboot:$true -IgnoreRebootRequired:$true
+                    if ($WPFUpdateVerbose) {
+                        Get-WindowsUpdate -ComputerName $update.ComputerName -Title "$($update.Title)" -Install -Confirm:$false -Verbose -IgnoreReboot:$true -IgnoreRebootRequired:$true
+                    } else {
+                        Get-WindowsUpdate -ComputerName $update.ComputerName -Title "$($update.Title)" -Install -Confirm:$false -IgnoreReboot:$true -IgnoreRebootRequired:$true
+                    }
                 }
             }
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
