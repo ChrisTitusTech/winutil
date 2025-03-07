@@ -1,8 +1,9 @@
 function Invoke-WPFUpdatesScan {
-
-
+    $sync["WPFScanUpdates"].IsEnabled = $false
+    $sync["WPFUpdateSelectedInstall"].IsEnabled = $false
+    $sync["WPFUpdateAllInstall"].IsEnabled = $false
+    Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo"
     Invoke-WPFRunspace -DebugPreference $DebugPreference -ScriptBlock {
-        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
         # Check if the PSWindowsUpdate module is installed
         if (-not (Get-Module -ListAvailable -Name PSWindowsUpdate)) {
             try {
@@ -12,6 +13,7 @@ function Invoke-WPFUpdatesScan {
             }
             catch {
                 Write-Error "Failed to install PSWindowsUpdate module: $_"
+                $sync.form.Dispatcher.Invoke([action] { $sync["WPFScanUpdates"].IsEnabled = $true })
                 return
             }
         }
@@ -23,6 +25,7 @@ function Invoke-WPFUpdatesScan {
         }
         catch {
             Write-Error "Failed to import PSWindowsUpdate module: $_"
+            $sync.form.Dispatcher.Invoke([action] { $sync["WPFScanUpdates"].IsEnabled = $true })
             return
         }
 
@@ -58,4 +61,7 @@ function Invoke-WPFUpdatesScan {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -overlay "warning" })
         }
     }
+    $sync["WPFScanUpdates"].IsEnabled = $false
+    $sync["WPFUpdateSelectedInstall"].IsEnabled = $false
+    $sync["WPFUpdateAllInstall"].IsEnabled = $false
 }
