@@ -1,4 +1,5 @@
 function Invoke-WPFUpdateScanHistory {
+    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
     $sync["WPFUpdateHistory"].Items.Clear()
     Invoke-WPFRunspace -DebugPreference $DebugPreference -ScriptBlock {
         write-host "Scanning for Windows update history..."
@@ -35,6 +36,8 @@ function Invoke-WPFUpdateScanHistory {
                     $sync["WPFUpdateHistory"].Columns[0].Visibility = "Collapsed"
                 }
             })
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
+            #catch $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -overlay "warning" })
         }
         else {
             $sync.form.Dispatcher.Invoke([action] {

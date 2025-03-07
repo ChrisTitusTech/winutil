@@ -4,6 +4,8 @@ function Invoke-WPFUpdateMGMT {
         [switch]$All
     )
 
+    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
+
     if ($All) {
         Write-Host "Installing all available updates ..."
         Invoke-WPFRunspace -ArgumentList $sync["WPFUpdateVerbose"].IsChecked -DebugPreference $DebugPreference -ScriptBlock {
@@ -13,7 +15,9 @@ function Invoke-WPFUpdateMGMT {
             } else {
                 Install-WindowsUpdate -Confirm:$false -IgnoreReboot:$true -IgnoreRebootRequired:$true
             }
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
             Write-Host "All Update Processes Completed"
+            #catch $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -overlay "warning" })
         }
     } elseif (($Selected) -and ($sync["WPFUpdatesList"].SelectedItems.Count -gt 0)) {
         write-host "Installing selected updates..."
@@ -35,11 +39,12 @@ function Invoke-WPFUpdateMGMT {
                     Get-WindowsUpdate -ComputerName $update.ComputerName -Title $update.Title -Install -Confirm:$false -IgnoreReboot:$true -IgnoreRebootRequired:$true
                 }
             }
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
             Write-Host "Selected Update Processes Completed"
+            #catch $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -overlay "warning" })
         }
     } else {
         Write-Host "No updates selected"
         return
     }
-
 }
