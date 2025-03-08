@@ -2417,13 +2417,7 @@
             Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -Value \"0\" -Type DWord -Force -ErrorAction Stop | Out-Null
         }
 
-        # Attempt to load the required module for Get-ComputerRestorePoint
-        try {
-            Import-Module Microsoft.PowerShell.Management -ErrorAction Stop
-        } catch {
-            Write-Host \"Failed to load the Microsoft.PowerShell.Management module: $_\"
-            return
-        }
+        Invoke-WinUtilInitializeModule -module \"Microsoft.PowerShell.Management\"
 
         # Get all the restore points for the current day
         try {
