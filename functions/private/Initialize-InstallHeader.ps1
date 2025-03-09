@@ -29,7 +29,8 @@ function Initialize-InstallHeader {
     $buttonConfigs = @(
         @{Name="WPFInstall"; Content="Install/Upgrade Selected"},
         @{Name="WPFInstallUpgrade"; Content="Upgrade All"},
-        @{Name="WPFUninstall"; Content="Uninstall Selected"}
+        @{Name="WPFUninstall"; Content="Uninstall Selected"},
+        @{Name="WPFselectedAppsButton"; Content="Selected Apps: 0"}
     )
 
     foreach ($config in $buttonConfigs) {
@@ -38,18 +39,9 @@ function Initialize-InstallHeader {
         $sync[$config.Name] = $button
     }
 
-    $selectedAppsButton = New-Object Windows.Controls.Button
-    $selectedAppsButton.Name = "WPFselectedAppsButton"
-    $selectedAppsButton.Content = "Selected Apps: 0"
-    $selectedAppsButton.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSizeHeading")
-    $selectedAppsButton.SetResourceReference([Windows.Controls.Control]::MarginProperty, "TabContentMargin")
-    $selectedAppsButton.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "MainForegroundColor")
-    $selectedAppsButton.HorizontalAlignment = "Center"
-    $selectedAppsButton.VerticalAlignment = "Center"
-
     $selectedAppsPopup = New-Object Windows.Controls.Primitives.Popup
     $selectedAppsPopup.IsOpen = $false
-    $selectedAppsPopup.PlacementTarget = $selectedAppsButton
+    $selectedAppsPopup.PlacementTarget = $sync.WPFselectedAppsButton
     $selectedAppsPopup.Placement = [System.Windows.Controls.Primitives.PlacementMode]::Bottom
     $selectedAppsPopup.AllowsTransparency = $true
 
@@ -66,23 +58,20 @@ function Initialize-InstallHeader {
     $selectedAppsBorder.Child = $sync.selectedAppsstackPanel
 
     # Toggle selectedAppsPopup open/close with button
-    $selectedAppsButton.Add_Click({
+    $sync.WPFselectedAppsButton.Add_Click({
         $sync.selectedAppsPopup.IsOpen = -not $sync.selectedAppsPopup.IsOpen
     })
     # Close selectedAppsPopup when mouse leaves both button and selectedAppsPopup
-    $selectedAppsButton.Add_MouseLeave({
+    $sync.WPFselectedAppsButton.Add_MouseLeave({
         if (-not $sync.selectedAppsPopup.IsMouseOver) {
             $sync.selectedAppsPopup.IsOpen = $false
         }
     })
     $selectedAppsPopup.Add_MouseLeave({
-        if (-not $selectedAppsButton.IsMouseOver) {
+        if (-not $sync.WPFselectedAppsButton.IsMouseOver) {
             $sync.selectedAppsPopup.IsOpen = $false
         }
     })
-
-    $null = $wrapPanelTop.Children.Add($selectedAppsButton)
-    $sync.$($selectedAppsButton.Name) = $selectedAppsButton
 
     [Windows.Controls.DockPanel]::SetDock($wrapPanelTop, [Windows.Controls.Dock]::Top)
     $null = $TargetElement.Children.Add($wrapPanelTop)
