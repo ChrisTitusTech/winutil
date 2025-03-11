@@ -3740,5 +3740,34 @@
     "Type": "Button",
     "ButtonWidth": "300",
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/RemoveUltPerf"
-  }
+  },
+  "WPFTweaksDisableExplorerAutoDiscovery": {
+    "Content": "Disable Explorer automatic folder discovery",
+    "Description": "Windows Explorer automatically tries to guess the type of the folder based on its contents, slowing down the browsing experience.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a017_",
+    "InvokeScript": [
+      "
+      $bags = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\"
+      $bagsMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagsMRU\"
+
+      Remove-Item -Path $bags -Recurse -Force
+      Write-Host \"Removed $bags\"
+
+      Remove-Item -Path $bagsMRU -Recurse -Force
+      Write-Host \"Removed $bagsMRU\"
+
+      $allFolders = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\\AllFolders\\Shell\"
+
+      if (!(Test-Path $allFolders)) {
+        New-Item -Path $allFolders -Force
+        Write-Host \"Created $allFolders\"
+      }
+
+      New-ItemProperty -Path $allFolders -Name \"FolderType\" -Value \"NotSpecified\" -PropertyType String -Force
+      Write-Host \"Set FolderType to NotSpecified\"
+      "
+    ],
+  },
 }
