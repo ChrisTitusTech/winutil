@@ -3753,14 +3753,14 @@
       $bags = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\"
 
       # Folder types lookup table
-      $bagsMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagsMRU\"
+      $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
 
       # Flush explorer view database
       Remove-Item -Path $bags -Recurse -Force
       Write-Host \"Removed $bags\"
 
-      Remove-Item -Path $bagsMRU -Recurse -Force
-      Write-Host \"Removed $bagsMRU\"
+      Remove-Item -Path $bagMRU -Recurse -Force
+      Write-Host \"Removed $bagMRU\"
 
       # Every folder
       $allFolders = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\\AllFolders\\Shell\"
@@ -3783,14 +3783,14 @@
       $bags = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\"
 
       # Folder types lookup table
-      $bagsMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagsMRU\"
+      $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
 
       # Flush explorer view database
       Remove-Item -Path $bags -Recurse -Force
       Write-Host \"Removed $bags\"
 
-      Remove-Item -Path $bagsMRU -Recurse -Force
-      Write-Host \"Removed $bagsMRU\"
+      Remove-Item -Path $bagMRU -Recurse -Force
+      Write-Host \"Removed $bagMRU\"
 
       Write-Host Please sign out and back in, or restart your computer to apply the changes!
       "
