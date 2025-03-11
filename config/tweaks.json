@@ -3777,5 +3777,21 @@
       Write-Host Please sign out and back in, or restart your computer to apply the changes!
       "
     ],
+    "UndoScript": [
+      "
+      # Previously detected folders
+      $bags = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\"
+
+      # Folder types lookup table
+      $bagsMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagsMRU\"
+
+      # Flush explorer view database
+      Remove-Item -Path $bags -Recurse -Force
+      Write-Host \"Removed $bags\"
+
+      Remove-Item -Path $bagsMRU -Recurse -Force
+      Write-Host \"Removed $bagsMRU\"
+      "
+    ],
   },
 }
