@@ -3791,6 +3791,8 @@
 
       Remove-Item -Path $bagsMRU -Recurse -Force
       Write-Host \"Removed $bagsMRU\"
+
+      Write-Host Please sign out and back in, or restart your computer to apply the changes!
       "
     ],
   },
