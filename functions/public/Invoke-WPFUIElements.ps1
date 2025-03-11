@@ -11,26 +11,26 @@ function Invoke-WPFUIElements {
     .EXAMPLE
         Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "install" -columncount 5
     .NOTES
-        Future me/contributer: If possible please wrap this into a runspace to make it load all panels at the same time.
+        Future me/contributor: If possible, please wrap this into a runspace to make it load all panels at the same time.
     #>
 
     param(
-        [Parameter(Mandatory, position=0)]
+        [Parameter(Mandatory, Position = 0)]
         [PSCustomObject]$configVariable,
 
-        [Parameter(Mandatory, position=1)]
+        [Parameter(Mandatory, Position = 1)]
         [string]$targetGridName,
 
-        [Parameter(Mandatory, position=2)]
+        [Parameter(Mandatory, Position = 2)]
         [int]$columncount
     )
 
-    $window = $sync["Form"]
+    $window = $sync.form
 
-    $theme = $sync.Form.Resources
     $borderstyle = $window.FindResource("BorderStyle")
     $HoverTextBlockStyle = $window.FindResource("HoverTextBlockStyle")
     $ColorfulToggleSwitchStyle = $window.FindResource("ColorfulToggleSwitchStyle")
+    $ToggleButtonStyle = $window.FindResource("ToggleButtonStyle")
 
     if (!$borderstyle -or !$HoverTextBlockStyle -or !$ColorfulToggleSwitchStyle) {
         throw "Failed to retrieve Styles using 'FindResource' from main window element."
@@ -59,6 +59,8 @@ function Invoke-WPFUIElements {
         $configHashtable[$_] = $configVariable.$_
     }
 
+    $radioButtonGroups = @{}
+
     $organizedData = @{}
     # Iterate through JSON data and organize by panel and category
     foreach ($entry in $configHashtable.Keys) {
@@ -66,19 +68,18 @@ function Invoke-WPFUIElements {
 
         # Create an object for the application
         $entryObject = [PSCustomObject]@{
-            Name = $entry
-            Order = $entryInfo.order
-            Category = $entryInfo.Category
-            Content = $entryInfo.Content
-            Choco = $entryInfo.choco
-            Winget = $entryInfo.winget
-            Panel = if ($entryInfo.Panel) { $entryInfo.Panel } else { "0" }
-            Link = $entryInfo.link
+            Name        = $entry
+            Order       = $entryInfo.order
+            Category    = $entryInfo.Category
+            Content     = $entryInfo.Content
+            Panel       = if ($entryInfo.Panel) { $entryInfo.Panel } else { "0" }
+            Link        = $entryInfo.link
             Description = $entryInfo.description
-            Type = $entryInfo.type
-            ComboItems = $entryInfo.ComboItems
-            Checked = $entryInfo.Checked
+            Type        = $entryInfo.type
+            ComboItems  = $entryInfo.ComboItems
+            Checked     = $entryInfo.Checked
             ButtonWidth = $entryInfo.ButtonWidth
+            GroupName   = $entryInfo.GroupName  # Added for RadioButton groupings
         }
 
         if (-not $organizedData.ContainsKey($entryObject.Panel)) {
@@ -96,10 +97,12 @@ function Invoke-WPFUIElements {
         if ($targetGridName -eq "appspanel") {
             $panelcount = 0
             $entrycount = $configHashtable.Keys.Count + $organizedData["0"].Keys.Count
-            $maxcount = [Math]::Round($entrycount / $columncount + 0.5)
         }
 
     }
+
+    # Initialize panel count
+    $panelcount = 0
 
     # Iterate through 'organizedData' by panel, category, and application
     $count = 0
@@ -111,78 +114,46 @@ function Invoke-WPFUIElements {
         $border.style = $borderstyle
         $targetGrid.Children.Add($border) | Out-Null
 
-        # Create a StackPanel inside the Border
-        $stackPanel = New-Object Windows.Controls.StackPanel
-        $stackPanel.Background = [Windows.Media.Brushes]::Transparent
-        $stackPanel.SnapsToDevicePixels = $true
-        $stackPanel.VerticalAlignment = "Stretch"
-        $border.Child = $stackPanel
+        # Use a DockPanel to contain the content
+        $dockPanelContainer = New-Object Windows.Controls.DockPanel
+        $border.Child = $dockPanelContainer
+
+        # Create an ItemsControl for application content
+        $itemsControl = New-Object Windows.Controls.ItemsControl
+        $itemsControl.HorizontalAlignment = 'Stretch'
+        $itemsControl.VerticalAlignment = 'Stretch'
+
+        # Set the ItemsPanel to a VirtualizingStackPanel
+        $itemsPanelTemplate = New-Object Windows.Controls.ItemsPanelTemplate
+        $factory = New-Object Windows.FrameworkElementFactory ([Windows.Controls.VirtualizingStackPanel])
+        $itemsPanelTemplate.VisualTree = $factory
+        $itemsControl.ItemsPanel = $itemsPanelTemplate
+
+        # Set virtualization properties
+        $itemsControl.SetValue([Windows.Controls.VirtualizingStackPanel]::IsVirtualizingProperty, $true)
+        $itemsControl.SetValue([Windows.Controls.VirtualizingStackPanel]::VirtualizationModeProperty, [Windows.Controls.VirtualizationMode]::Recycling)
+
+        # Add the ItemsControl directly to the DockPanel
+        [Windows.Controls.DockPanel]::SetDock($itemsControl, [Windows.Controls.Dock]::Bottom)
+        $dockPanelContainer.Children.Add($itemsControl) | Out-Null
         $panelcount++
 
-        # Add Windows Version label if this is the updates panel
-        if ($targetGridName -eq "updatespanel") {
-            $windowsVersion = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").ProductName
-            $versionLabel = New-Object Windows.Controls.Label
-            $versionLabel.Content = "Windows Version: $windowsVersion"
-            $versionLabel.FontSize = $theme.FontSize
-            $versionLabel.HorizontalAlignment = "Left"
-            $stackPanel.Children.Add($versionLabel) | Out-Null
-        }
-
+        # Now proceed with adding category labels and entries to $itemsControl
         foreach ($category in ($organizedData[$panelKey].Keys | Sort-Object)) {
             $count++
-            if ($targetGridName -eq "appspanel" -and $columncount -gt 0) {
-                $panelcount2 = [Int](($count) / $maxcount - 0.5)
-                if ($panelcount -eq $panelcount2) {
-                    # Create a new Border for the new column
-                    $border = New-Object Windows.Controls.Border
-                    $border.VerticalAlignment = "Stretch"
-                    [System.Windows.Controls.Grid]::SetColumn($border, $panelcount)
-                    $border.style = $borderstyle
-                    $targetGrid.Children.Add($border) | Out-Null
-
-                    # Create a new StackPanel inside the Border
-                    $stackPanel = New-Object Windows.Controls.StackPanel
-                    $stackPanel.Background = [Windows.Media.Brushes]::Transparent
-                    $stackPanel.SnapsToDevicePixels = $true
-                    $stackPanel.VerticalAlignment = "Stretch"
-                    $border.Child = $stackPanel
-                    $panelcount++
-                }
-            }
 
             $label = New-Object Windows.Controls.Label
             $label.Content = $category -replace ".*__", ""
-            $label.FontSize = $theme.HeadingFontSize
-            $label.FontFamily = $theme.HeaderFontFamily
-            $stackPanel.Children.Add($label) | Out-Null
-
+            $label.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSizeHeading")
+            $label.SetResourceReference([Windows.Controls.Control]::FontFamilyProperty, "HeaderFontFamily")
+            $itemsControl.Items.Add($label) | Out-Null
             $sync[$category] = $label
 
-            # Sort entries by Order and then by Name, but only display Name
+            # Sort entries by Order and then by Name
             $entries = $organizedData[$panelKey][$category] | Sort-Object Order, Name
             foreach ($entryInfo in $entries) {
                 $count++
-                if ($targetGridName -eq "appspanel" -and $columncount -gt 0) {
-                    $panelcount2 = [Int](($count) / $maxcount - 0.5)
-                    if ($panelcount -eq $panelcount2) {
-                        # Create a new Border for the new column
-                        $border = New-Object Windows.Controls.Border
-                        $border.VerticalAlignment = "Stretch"
-                        [System.Windows.Controls.Grid]::SetColumn($border, $panelcount)
-                        $border.style = $borderstyle
-                        $targetGrid.Children.Add($border) | Out-Null
-
-                        # Create a new StackPanel inside the Border
-                        $stackPanel = New-Object Windows.Controls.StackPanel
-                        $stackPanel.Background = [Windows.Media.Brushes]::Transparent
-                        $stackPanel.SnapsToDevicePixels = $true
-                        $stackPanel.VerticalAlignment = "Stretch"
-                        $border.Child = $stackPanel
-                        $panelcount++
-                    }
-                }
-
+                # Create the UI elements based on the entry type
                 switch ($entryInfo.Type) {
                     "Toggle" {
                         $dockPanel = New-Object Windows.Controls.DockPanel
@@ -196,10 +167,10 @@ function Invoke-WPFUIElements {
                         $label.Content = $entryInfo.Content
                         $label.ToolTip = $entryInfo.Description
                         $label.HorizontalAlignment = "Left"
-                        $label.FontSize = $theme.FontSize
+                        $label.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
                         $label.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "MainForegroundColor")
                         $dockPanel.Children.Add($label) | Out-Null
-                        $stackPanel.Children.Add($dockPanel) | Out-Null
+                        $itemsControl.Items.Add($dockPanel) | Out-Null
 
                         $sync[$entryInfo.Name] = $checkBox
 
@@ -217,35 +188,29 @@ function Invoke-WPFUIElements {
                     }
 
                     "ToggleButton" {
-                        $toggleButton = New-Object Windows.Controls.ToggleButton
+                        $toggleButton = New-Object Windows.Controls.Primitives.ToggleButton
                         $toggleButton.Name = $entryInfo.Name
-                        $toggleButton.Name = "WPFTab" + ($stackPanel.Children.Count + 1) + "BT"
+                        $toggleButton.Content = $entryInfo.Content[1]
+                        $toggleButton.ToolTip = $entryInfo.Description
                         $toggleButton.HorizontalAlignment = "Left"
-                        $toggleButton.Height = $theme.TabButtonHeight
-                        $toggleButton.Width = $theme.TabButtonWidth
-                        $toggleButton.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "ButtonInstallBackgroundColor")
-                        $toggleButton.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "MainForegroundColor")
-                        $toggleButton.FontWeight = [Windows.FontWeights]::Bold
+                        $toggleButton.Style = $ToggleButtonStyle
 
-                        $textBlock = New-Object Windows.Controls.TextBlock
-                        $textBlock.FontSize = $theme.TabButtonFontSize
-                        $textBlock.Background = [Windows.Media.Brushes]::Transparent
-                        $textBlock.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "ButtonInstallForegroundColor")
+                        $toggleButton.Tag = @{
+                            contentOn = if ($entryInfo.Content.Count -ge 1) { $entryInfo.Content[0] } else { "" }
+                            contentOff = if ($entryInfo.Content.Count -ge 2) { $entryInfo.Content[1] } else { $contentOn }
+                        }
 
-                        $underline = New-Object Windows.Documents.Underline
-                        $underline.Inlines.Add($entryInfo.name -replace "(.).*", "`$1")
-
-                        $run = New-Object Windows.Documents.Run
-                        $run.Text = $entryInfo.name -replace "^.", ""
-
-                        $textBlock.Inlines.Add($underline)
-                        $textBlock.Inlines.Add($run)
-
-                        $toggleButton.Content = $textBlock
-
-                        $stackPanel.Children.Add($toggleButton) | Out-Null
+                        $itemsControl.Items.Add($toggleButton) | Out-Null
 
                         $sync[$entryInfo.Name] = $toggleButton
+
+                        $sync[$entryInfo.Name].Add_Checked({
+                            $this.Content = $this.Tag.contentOn
+                        })
+
+                        $sync[$entryInfo.Name].Add_Unchecked({
+                            $this.Content = $this.Tag.contentOff
+                        })
                     }
 
                     "Combobox" {
@@ -257,26 +222,26 @@ function Invoke-WPFUIElements {
                         $label.Content = $entryInfo.Content
                         $label.HorizontalAlignment = "Left"
                         $label.VerticalAlignment = "Center"
-                        $label.FontSize = $theme.ButtonFontSize
+                        $label.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
                         $horizontalStackPanel.Children.Add($label) | Out-Null
 
                         $comboBox = New-Object Windows.Controls.ComboBox
                         $comboBox.Name = $entryInfo.Name
-                        $comboBox.Height = $theme.ButtonHeight
-                        $comboBox.Width = $theme.ButtonWidth
+                        $comboBox.SetResourceReference([Windows.Controls.Control]::HeightProperty, "ButtonHeight")
+                        $comboBox.SetResourceReference([Windows.Controls.Control]::WidthProperty, "ButtonWidth")
                         $comboBox.HorizontalAlignment = "Left"
                         $comboBox.VerticalAlignment = "Center"
-                        $comboBox.Margin = $theme.ButtonMargin
+                        $comboBox.SetResourceReference([Windows.Controls.Control]::MarginProperty, "ButtonMargin")
 
                         foreach ($comboitem in ($entryInfo.ComboItems -split " ")) {
                             $comboBoxItem = New-Object Windows.Controls.ComboBoxItem
                             $comboBoxItem.Content = $comboitem
-                            $comboBoxItem.FontSize = $theme.ButtonFontSize
+                            $comboBoxItem.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
                             $comboBox.Items.Add($comboBoxItem) | Out-Null
                         }
 
                         $horizontalStackPanel.Children.Add($comboBox) | Out-Null
-                        $stackPanel.Children.Add($horizontalStackPanel) | Out-Null
+                        $itemsControl.Items.Add($horizontalStackPanel) | Out-Null
 
                         $comboBox.SelectedIndex = 0
 
@@ -288,14 +253,48 @@ function Invoke-WPFUIElements {
                         $button.Name = $entryInfo.Name
                         $button.Content = $entryInfo.Content
                         $button.HorizontalAlignment = "Left"
-                        $button.Margin = $theme.ButtonMargin
-                        $button.FontSize = $theme.ButtonFontSize
+                        $button.SetResourceReference([Windows.Controls.Control]::MarginProperty, "ButtonMargin")
+                        $button.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
                         if ($entryInfo.ButtonWidth) {
                             $button.Width = $entryInfo.ButtonWidth
                         }
-                        $stackPanel.Children.Add($button) | Out-Null
+                        $itemsControl.Items.Add($button) | Out-Null
 
                         $sync[$entryInfo.Name] = $button
+                    }
+
+                    "RadioButton" {
+                        # Check if a container for this GroupName already exists
+                        if (-not $radioButtonGroups.ContainsKey($entryInfo.GroupName)) {
+                            # Create a StackPanel for this group
+                            $groupStackPanel = New-Object Windows.Controls.StackPanel
+                            $groupStackPanel.Orientation = "Vertical"
+
+                            # Add the group container to the ItemsControl
+                            $itemsControl.Items.Add($groupStackPanel) | Out-Null
+                        }
+                        else {
+                            # Retrieve the existing group container
+                            $groupStackPanel = $radioButtonGroups[$entryInfo.GroupName]
+                        }
+
+                        # Create the RadioButton
+                        $radioButton = New-Object Windows.Controls.RadioButton
+                        $radioButton.Name = $entryInfo.Name
+                        $radioButton.GroupName = $entryInfo.GroupName
+                        $radioButton.Content = $entryInfo.Content
+                        $radioButton.HorizontalAlignment = "Left"
+                        $radioButton.SetResourceReference([Windows.Controls.Control]::MarginProperty, "CheckBoxMargin")
+                        $radioButton.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
+                        $radioButton.ToolTip = $entryInfo.Description
+
+                        if ($entryInfo.Checked -eq $true) {
+                            $radioButton.IsChecked = $true
+                        }
+
+                        # Add the RadioButton to the group container
+                        $groupStackPanel.Children.Add($radioButton) | Out-Null
+                        $sync[$entryInfo.Name] = $radioButton
                     }
 
                     default {
@@ -305,9 +304,9 @@ function Invoke-WPFUIElements {
                         $checkBox = New-Object Windows.Controls.CheckBox
                         $checkBox.Name = $entryInfo.Name
                         $checkBox.Content = $entryInfo.Content
-                        $checkBox.FontSize = $theme.FontSize
+                        $checkBox.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
                         $checkBox.ToolTip = $entryInfo.Description
-                        $checkBox.Margin = $theme.CheckBoxMargin
+                        $checkBox.SetResourceReference([Windows.Controls.Control]::MarginProperty, "CheckBoxMargin")
                         if ($entryInfo.Checked -eq $true) {
                             $checkBox.IsChecked = $entryInfo.Checked
                         }
@@ -325,7 +324,7 @@ function Invoke-WPFUIElements {
                             $sync[$textBlock.Name] = $textBlock
                         }
 
-                        $stackPanel.Children.Add($horizontalStackPanel) | Out-Null
+                        $itemsControl.Items.Add($horizontalStackPanel) | Out-Null
                         $sync[$entryInfo.Name] = $checkBox
                     }
                 }

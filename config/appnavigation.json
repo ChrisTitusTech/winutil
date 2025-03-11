@@ -1,0 +1,48 @@
+{
+    "WPFToggleView": {
+        "Content": ["Expanded View", "Compact View"],
+        "Category": "____Actions",
+        "Type": "ToggleButton",
+        "Order": "1",
+        "Description": "Toggle between a list and a compact grid like view"
+    },
+    "WPFSelectedFilter": {
+        "Content": [ "Show All", "Show Selected"],
+        "Category": "____Actions",
+        "Type": "ToggleButton",
+        "Order": "2",
+        "Description": "Toggle between showing all or only the selected applications"
+    },
+    "WPFClearInstallSelection": {
+        "Content": "Clear Selection",
+        "Category": "____Actions",
+        "Type": "Button",
+        "Order": "3",
+        "Description": "Clear the selection of applications"
+    },
+    "WPFGetInstalled": {
+        "Content": "Get Installed",
+        "Category": "____Actions",
+        "Type": "Button",
+        "Order": "4",
+        "Description": "Show installed applications"
+    },
+    "WingetRadioButton": {
+        "Content": "Winget",
+        "Category": "__Package Manager",
+        "Type": "RadioButton",
+        "GroupName": "PackageManagerGroup",
+        "Checked": true,
+        "Order": "1",
+        "Description": "Use Winget for package management"
+    },
+    "ChocoRadioButton": {
+        "Content": "Chocolatey",
+        "Category": "__Package Manager",
+        "Type": "RadioButton",
+        "GroupName": "PackageManagerGroup",
+        "Checked": false,
+        "Order": "2",
+        "Description": "Use Chocolatey for package management"
+    }
+}

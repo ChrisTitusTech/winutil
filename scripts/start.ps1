@@ -37,7 +37,15 @@ $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
 $sync.version = "#{replaceme}"
 $sync.configs = @{}
+$sync.Buttons = [System.Collections.Generic.List[PSObject]]::new()
 $sync.ProcessRunning = $false
+$sync.selectedApps = [System.Collections.Generic.List[string]]::new()
+$sync.ShowOnlySeleced = $false
+$sync.currentTab = "Install"
+$sync.ShowOnlySelected = $false
+$sync.selectedAppsStackPanel
+$sync.selectedAppsPopup
+
 
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Output "Winutil needs to be run as Administrator. Attempting to relaunch."
@@ -46,21 +54,27 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
     $PSBoundParameters.GetEnumerator() | ForEach-Object {
         $argList += if ($_.Value -is [switch] -and $_.Value) {
             "-$($_.Key)"
+        } elseif ($_.Value -is [array]) {
+            "-$($_.Key) $($_.Value -join ',')"
         } elseif ($_.Value) {
-            "-$($_.Key) `"$($_.Value)`""
+            "-$($_.Key) '$($_.Value)'"
         }
     }
 
-    $script = if ($MyInvocation.MyCommand.Path) {
-        "& { & '$($MyInvocation.MyCommand.Path)' $argList }"
+    $script = if ($PSCommandPath) {
+        "& { & `'$($PSCommandPath)`' $($argList -join ' ') }"
     } else {
-        "iex '& { $(irm https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1) } $argList'"
+        "&([ScriptBlock]::Create((irm https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1))) $($argList -join ' ')"
     }
 
-    $powershellcmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
-    $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { $powershellcmd }
+    $powershellCmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
+    $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { "$powershellCmd" }
 
-    Start-Process $processCmd -ArgumentList "$powershellcmd -ExecutionPolicy Bypass -NoProfile -Command $script" -Verb RunAs
+    if ($processCmd -eq "wt.exe") {
+        Start-Process $processCmd -ArgumentList "$powershellCmd -ExecutionPolicy Bypass -NoProfile -Command `"$script`"" -Verb RunAs
+    } else {
+        Start-Process $processCmd -ArgumentList "-ExecutionPolicy Bypass -NoProfile -Command `"$script`"" -Verb RunAs
+    }
 
     break
 }

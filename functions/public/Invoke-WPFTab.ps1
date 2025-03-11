@@ -28,4 +28,5 @@ function Invoke-WPFTab {
             $sync.$tabNav.Items[$tabNumber].IsSelected = $true
         }
     }
+    $sync.currentTab = $sync.$tabNav.Items[$tabNumber].Header
 }

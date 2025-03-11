@@ -108,8 +108,27 @@ $sync.Form.Add_Loaded({
 
 Invoke-WinutilThemeChange -init $true
 # Load the configuration files
-#Invoke-WPFUIElements -configVariable $sync.configs.nav -targetGridName "WPFMainGrid"
-Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 5
+
+$noimage = "https://images.emojiterra.com/google/noto-emoji/unicode-15/color/512px/1f4e6.png"
+$noimage = [Windows.Media.Imaging.BitmapImage]::new([Uri]::new($noimage))
+
+$sync.configs.applicationsHashtable = @{}
+$sync.configs.applications.PSObject.Properties | ForEach-Object {
+    $sync.configs.applicationsHashtable[$_.Name] = $_.Value
+}
+
+# Now call the function with the final merged config
+Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
+# Add logic to handle click to the ToggleView Button on the Install Tab
+$sync.WPFToggleView.Add_Click({
+    $sync.CompactView = -not $sync.CompactView
+    Update-AppTileProperties
+    if ($sync.SearchBar.Text -eq "") {
+        Set-CategoryVisibility -Category "*"
+    }
+})
+Invoke-WPFUIApps -Apps $sync.configs.applicationsHashtable -targetGridName "appspanel"
+
 Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
 Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
 # Future implementation: Add Windows Version to updates panel
@@ -123,10 +142,10 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
 
 #Persist the Chocolatey preference across winutil restarts
 $ChocoPreferencePath = "$env:LOCALAPPDATA\winutil\preferChocolatey.ini"
-$sync.WPFpreferChocolatey.Add_Checked({New-Item -Path $ChocoPreferencePath -Force })
-$sync.WPFpreferChocolatey.Add_Unchecked({Remove-Item $ChocoPreferencePath -Force})
+$sync.ChocoRadioButton.Add_Checked({New-Item -Path $ChocoPreferencePath -Force })
+$sync.ChocoRadioButton.Add_Unchecked({Remove-Item $ChocoPreferencePath -Force})
 if (Test-Path $ChocoPreferencePath) {
-    $sync.WPFpreferChocolatey.IsChecked = $true
+   $sync.ChocoRadioButton.IsChecked = $true
 }
 
 $sync.keys | ForEach-Object {
@@ -183,6 +202,32 @@ Invoke-WPFRunspace -ScriptBlock {
 
 # Print the logo
 Invoke-WPFFormVariables
+$sync.CompactView = $false
+$sync.Form.Resources.AppTileWidth = [double]::NaN
+$sync.Form.Resources.AppTileCompactVisibility = [Windows.Visibility]::Visible
+$sync.Form.Resources.AppTileFontSize = [double]16
+$sync.Form.Resources.AppTileMargins = [Windows.Thickness]5
+$sync.Form.Resources.AppTileBorderThickness = [Windows.Thickness]0
+function Update-AppTileProperties {
+    if ($sync.CompactView -eq $true) {
+        $sync.Form.Resources.AppTileWidth = [double]::NaN
+        $sync.Form.Resources.AppTileCompactVisibility = [Windows.Visibility]::Collapsed
+        $sync.Form.Resources.AppTileFontSize = [double]12
+        $sync.Form.Resources.AppTileMargins = [Windows.Thickness]2
+        $sync.Form.Resources.AppTileBorderThickness = [Windows.Thickness]0
+    }
+    else {
+        $sync.Form.Resources.AppTileWidth = $sync.ItemsControl.ActualWidth -20
+        $sync.Form.Resources.AppTileCompactVisibility = [Windows.Visibility]::Visible
+        $sync.Form.Resources.AppTileFontSize = [double]16
+        $sync.Form.Resources.AppTileMargins = [Windows.Thickness]5
+        $sync.Form.Resources.AppTileBorderThickness = [Windows.Thickness]1
+    }
+}
+# We need to update the app tile properties when the form is resized because to fill a WrapPanel update the width of the elemenmt manually (afaik)
+$sync.Form.Add_SizeChanged({
+    Update-AppTileProperties
+})
 
 # Progress bar in taskbaritem > Set-WinUtilProgressbar
 $sync["Form"].TaskbarItemInfo = New-Object System.Windows.Shell.TaskbarItemInfo
@@ -414,73 +459,22 @@ if ($sync["ISOLanguage"].Items.Count -eq 1) {
 }
 $sync["ISOLanguage"].SelectedIndex = 0
 
-
-# Load Checkboxes and Labels outside of the Filter function only once on startup for performance reasons
-$filter = Get-WinUtilVariables -Type CheckBox
-$CheckBoxes = ($sync.GetEnumerator()).where{ $psitem.Key -in $filter }
-
-$filter = Get-WinUtilVariables -Type Label
-$labels = @{}
-($sync.GetEnumerator()).where{$PSItem.Key -in $filter} | ForEach-Object {$labels[$_.Key] = $_.Value}
-
-$allCategories = $checkBoxes.Name | ForEach-Object {$sync.configs.applications.$_} | Select-Object  -Unique -ExpandProperty category
-
 $sync["SearchBar"].Add_TextChanged({
     if ($sync.SearchBar.Text -ne "") {
         $sync.SearchBarClearButton.Visibility = "Visible"
     } else {
         $sync.SearchBarClearButton.Visibility = "Collapsed"
     }
-
-    $activeApplications = @()
-
-    $textToSearch = $sync.SearchBar.Text.ToLower()
-
-    foreach ($CheckBox in $CheckBoxes) {
-        # Skip if the checkbox is null, it doesn't have content or it is the prefer Choco checkbox
-        if ($CheckBox -eq $null -or $CheckBox.Value -eq $null -or $CheckBox.Value.Content -eq $null -or $CheckBox.Name -eq "WPFpreferChocolatey") {
-            continue
+    switch ($sync.currentTab) {
+        "Install" {
+            Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text
         }
-
-        $checkBoxName = $CheckBox.Key
-        $textBlockName = $checkBoxName + "Link"
-
-        # Retrieve the corresponding text block based on the generated name
-        $textBlock = $sync[$textBlockName]
-
-        if ($CheckBox.Value.Content.ToString().ToLower().Contains($textToSearch)) {
-            $CheckBox.Value.Visibility = "Visible"
-            $activeApplications += $sync.configs.applications.$checkboxName
-            # Set the corresponding text block visibility
-            if ($textBlock -ne $null -and $textBlock -is [System.Windows.Controls.TextBlock]) {
-                $textBlock.Visibility = "Visible"
-            }
-        } else {
-            $CheckBox.Value.Visibility = "Collapsed"
-            # Set the corresponding text block visibility
-            if ($textBlock -ne $null -and $textBlock -is [System.Windows.Controls.TextBlock]) {
-                $textBlock.Visibility = "Collapsed"
-            }
-        }
-    }
-
-    $activeCategories = $activeApplications | Select-Object -ExpandProperty category -Unique
-
-    foreach ($category in $activeCategories) {
-        $sync[$category].Visibility = "Visible"
-    }
-    if ($activeCategories) {
-        $inactiveCategories = Compare-Object -ReferenceObject $allCategories -DifferenceObject $activeCategories -PassThru
-    } else {
-        $inactiveCategories = $allCategories
-    }
-    foreach ($category in $inactiveCategories) {
-        $sync[$category].Visibility = "Collapsed"
     }
 })
 
 $sync["Form"].Add_Loaded({
     param($e)
+    $sync.Form.MinWidth = "1000"
     $sync["Form"].MaxWidth = [Double]::PositiveInfinity
     $sync["Form"].MaxHeight = [Double]::PositiveInfinity
 })
@@ -584,6 +578,8 @@ $sync["SponsorMenuItem"].Add_Click({
     }
     Show-CustomDialog -Title "Sponsors" -Message $authorInfo -EnableScroll $true
 })
+
+
 
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript

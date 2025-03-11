@@ -424,26 +424,6 @@
         "OriginalType": "Automatic"
       },
       {
-        "Name": "DoSvc",
-        "StartupType": "AutomaticDelayedStart",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "DsSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "DsmSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "DusmSvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
         "Name": "EFS",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -899,11 +879,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "SgrmBroker",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
         "Name": "SharedAccess",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -932,11 +907,6 @@
         "Name": "SstpSvc",
         "StartupType": "Manual",
         "OriginalType": "Manual"
-      },
-      {
-        "Name": "StateRepository",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
       },
       {
         "Name": "StiSvc",
@@ -971,11 +941,6 @@
       {
         "Name": "TermService",
         "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "TextInputManagementService",
-        "StartupType": "Manual",
         "OriginalType": "Automatic"
       },
       {
@@ -2666,6 +2631,22 @@
       "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableLMS1"
+  },
+  "WPFTweaksDisableWpbtExecution": {
+    "Content": "Disable Windows Platform Binary Table (WPBT)",
+    "Description": "If enabled then allows your computer vendor to execute a program each time it boots. It enables computer vendors to force install anti-theft software, software drivers, or a software program conveniently. This could also be a security risk.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a027_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager",
+        "Name": "DisableWpbtExecution",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>",
+        "Type": "DWord"
+      }
+    ]
   },
   "WPFTweaksRemoveOnedrive": {
     "Content": "Remove OneDrive",

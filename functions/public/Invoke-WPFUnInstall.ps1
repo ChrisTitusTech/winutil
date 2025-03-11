@@ -1,9 +1,12 @@
 function Invoke-WPFUnInstall {
+    param(
+        [Parameter(Mandatory=$false)]
+        [PSObject[]]$PackagesToUninstall = $($sync.selectedApps | Foreach-Object { $sync.configs.applicationsHashtable.$_ })
+    )
     <#
 
     .SYNOPSIS
         Uninstalls the selected programs
-
     #>
 
     if($sync.ProcessRunning) {
@@ -12,9 +15,7 @@ function Invoke-WPFUnInstall {
         return
     }
 
-    $PackagesToInstall = (Get-WinUtilCheckBoxes)["Install"]
-
-    if ($PackagesToInstall.Count -eq 0) {
+    if ($PackagesToUninstall.Count -eq 0) {
         $WarningMsg = "Please select the program(s) to uninstall"
         [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
@@ -22,17 +23,17 @@ function Invoke-WPFUnInstall {
 
     $ButtonType = [System.Windows.MessageBoxButton]::YesNo
     $MessageboxTitle = "Are you sure?"
-    $Messageboxbody = ("This will uninstall the following applications: `n $($PackagesToInstall | Format-Table | Out-String)")
+    $Messageboxbody = ("This will uninstall the following applications: `n $($PackagesToUninstall | Select-Object Name, Description| Out-String)")
     $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
     $confirm = [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
 
     if($confirm -eq "No") {return}
-    $ChocoPreference = $($sync.WPFpreferChocolatey.IsChecked)
+    $ChocoPreference = $($sync.ChocoRadioButton.IsChecked)
 
-    Invoke-WPFRunspace -ArgumentList @(("PackagesToInstall", $PackagesToInstall),("ChocoPreference", $ChocoPreference)) -DebugPreference $DebugPreference -ScriptBlock {
-        param($PackagesToInstall, $ChocoPreference, $DebugPreference)
-        if ($PackagesToInstall.count -eq 1) {
+    Invoke-WPFRunspace -ArgumentList @(("PackagesToUninstall", $PackagesToUninstall),("ChocoPreference", $ChocoPreference)) -DebugPreference $DebugPreference -ScriptBlock {
+        param($PackagesToUninstall, $ChocoPreference, $DebugPreference)
+        if ($PackagesToUninstall.count -eq 1) {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
         } else {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
@@ -41,7 +42,7 @@ function Invoke-WPFUnInstall {
             $packagesWinget = [System.Collections.ArrayList]::new()
             $packagesChoco = [System.Collections.ArrayList]::new()
 
-        foreach ($package in $PackagesToInstall) {
+        foreach ($package in $PackagesToUninstall) {
             if ($ChocoPreference) {
                 if ($package.choco -eq "na") {
                     $packagesWinget.add($package.winget)
@@ -62,7 +63,7 @@ function Invoke-WPFUnInstall {
             }
         }
         return $packagesWinget, $packagesChoco
-        }.Invoke($PackagesToInstall)
+        }.Invoke($PackagesToUninstall)
 
         try {
             $sync.ProcessRunning = $true

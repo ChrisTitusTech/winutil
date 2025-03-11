@@ -5,7 +5,7 @@ function Invoke-WPFInstallUpgrade {
         Invokes the function that upgrades all installed programs
 
     #>
-    if ($sync.WPFpreferChocolatey.IsChecked) {
+    if ($sync.ChocoRadioButton.IsChecked) {
         Install-WinUtilChoco
         $chocoUpgradeStatus = (Start-Process "choco" -ArgumentList "upgrade all -y" -Wait -PassThru -NoNewWindow).ExitCode
         if ($chocoUpgradeStatus -eq 0) {
