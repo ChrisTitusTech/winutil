@@ -3749,15 +3749,20 @@
     "Order": "a017_",
     "InvokeScript": [
       "
+      # Previously detected folders
       $bags = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\"
+
+      # Folder types lookup table
       $bagsMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagsMRU\"
 
+      # Flush explorer view database
       Remove-Item -Path $bags -Recurse -Force
       Write-Host \"Removed $bags\"
 
       Remove-Item -Path $bagsMRU -Recurse -Force
       Write-Host \"Removed $bagsMRU\"
 
+      # Every folder
       $allFolders = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\\AllFolders\\Shell\"
 
       if (!(Test-Path $allFolders)) {
@@ -3765,8 +3770,11 @@
         Write-Host \"Created $allFolders\"
       }
 
+      # Generic view
       New-ItemProperty -Path $allFolders -Name \"FolderType\" -Value \"NotSpecified\" -PropertyType String -Force
       Write-Host \"Set FolderType to NotSpecified\"
+
+      Write-Host Please sign out and back in, or restart your computer to apply the changes!
       "
     ],
   },
