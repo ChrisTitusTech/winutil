@@ -306,6 +306,13 @@
     "ButtonWidth": "300",
     "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user"
   },
+  "WPFPanelGodMode": {
+    "Content": "God Mode",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "Button",
+    "ButtonWidth": "300"
+  },
   "WPFWinUtilInstallPSProfile": {
     "Content": "Install CTT PowerShell Profile",
     "category": "Powershell Profile",
