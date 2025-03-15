@@ -47,4 +47,7 @@ True
 test.ps1
 winutil.ps1
 
+# temporary excludes for docs
+.github/site/
+
 binary/
