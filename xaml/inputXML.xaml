@@ -67,6 +67,82 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+    <Style x:Key="AppTileBorderStyle" TargetType="Border">
+        <Setter Property="BorderBrush" Value="Gray"/>
+        <Setter Property="BorderThickness" Value="{DynamicResource AppTileBorderThickness}"/>
+        <Setter Property="CornerRadius" Value="5"/>
+        <Setter Property="Padding" Value="{DynamicResource AppTileMargins}"/>
+        <Setter Property="Width" Value="{DynamicResource AppTileWidth}"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="Margin" Value="{DynamicResource AppTileMargins}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Background" Value="{DynamicResource AppInstallUnselectedColor}"/>
+    </Style>
+    <Style x:Key="AppTileCheckboxStyle" TargetType="CheckBox">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="{DynamicResource AppTileMargins}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <ContentPresenter Content="{TemplateBinding Content}"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Left"
+                                    Margin="{TemplateBinding Padding}"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="AppTileImageStyle" TargetType="Image">
+        <Setter Property="Width" Value="{DynamicResource AppTileImageSize}"/>
+        <Setter Property="Height" Value="{DynamicResource AppTileImageSize}"/>
+        <Setter Property="Margin">
+            <Setter.Value>
+                <Thickness Left="0" Top="0" Right="10" Bottom="0"/>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Clip">
+            <Setter.Value>
+                <RectangleGeometry Rect="0,0,40,40" RadiusX="5" RadiusY="5"/>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Visibility" Value="{DynamicResource AppTileCompactVisibility}"/>
+    </Style>
+    <Style x:Key="AppTileNameStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="{DynamicResource AppTileFontSize}"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="{DynamicResource AppTileMargins}"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+    <Style x:Key="AppTileButtonPanelStyle" TargetType="StackPanel">
+        <Setter Property="Orientation" Value="Horizontal"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="{DynamicResource AppTileMargins}"/>
+        <Setter Property="Visibility" Value="{DynamicResource AppTileCompactVisibility}"/>
+    </Style>
+    <Style x:Key="AppTileButtonStyle" TargetType="Button">
+        <Setter Property="Width" Value="45"/>
+        <Setter Property="Height" Value="35"/>
+        <Setter Property="Margin" Value="0,0,10,0"/>
+        <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundColor}"/>
+        <Setter Property="Background" Value="{DynamicResource ButtonBackgroundColor}"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" FontFamily="Segoe MDL2 Assets" FontSize="20" 
+                               Foreground="{DynamicResource MainForegroundColor}" 
+                               Background="Transparent" HorizontalAlignment="Center" 
+                               VerticalAlignment="Center"/>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
     <Style TargetType="Button" x:Key="HoverButtonStyle">
         <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}" />
@@ -202,7 +278,7 @@
             <Setter Property="Foreground" Value="{DynamicResource LabelboxForegroundColor}"/>
             <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}"/>
             <Setter Property="FontFamily" Value="{DynamicResource HeaderFontFamily}"/>
-            <Setter Property="FontSize" Value="{DynamicResource FontSizeHeading}"/>
+            <Setter Property="FontSize" Value="{DynamicResource HeadingFontSize}"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>

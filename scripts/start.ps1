@@ -12,6 +12,16 @@ param (
     [switch]$Run
 )
 
+function log_time_taken {
+    param (
+        [string]$description
+    )
+    $current_time = Get-Date
+    $time_taken = $current_time - $sync.start_time
+    Write-Output "[$time_taken] $description" >> $sync.log
+    $sync.start_time = $current_time
+}
+
 # Set DebugPreference based on the -Debug switch
 if ($Debug) {
     $DebugPreference = "Continue"
@@ -34,6 +44,8 @@ Add-Type -AssemblyName System.Windows.Forms
 
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
+$sync.log = "$ENV:USERPROFILE\Desktop\winutil.log"
+$sync.start_time = Get-Date
 $sync.PSScriptRoot = $PSScriptRoot
 $sync.version = "#{replaceme}"
 $sync.configs = @{}
@@ -88,3 +100,5 @@ Start-Transcript -Path "$logdir\winutil_$dateTime.log" -Append -NoClobber | Out-
 # Set PowerShell window title
 $Host.UI.RawUI.WindowTitle = $myInvocation.MyCommand.Definition + "(Admin)"
 clear-host
+Write-Output "" > $sync.log
+log_time_taken "Start.ps1 finished"
