@@ -1699,7 +1699,7 @@
         "category": "Games",
         "choco": "prismlauncher",
         "content": "Prism Launcher",
-        "description": "Prism Launcher is a game launcher and manager designed to provide a clean and intuitive interface for organizing and launching your games.",
+        "description": "Prism Launcher is an Open Source Minecraft launcher with the ability to manage multiple instances, accounts and mods.",
         "link": "https://prismlauncher.org/",
         "winget": "PrismLauncher.PrismLauncher"
     },

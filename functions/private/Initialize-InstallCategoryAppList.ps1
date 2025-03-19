@@ -42,7 +42,7 @@ function Initialize-InstallCategoryAppList {
         $loadingLabel.Content = "Loading, please wait..."
         $loadingLabel.HorizontalAlignment = "Center"
         $loadingLabel.VerticalAlignment = "Center"
-        $loadingLabel.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "HeadingFontSize")
+        $loadingLabel.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "HeaderFontSize")
         $loadingLabel.FontWeight = [Windows.FontWeights]::Bold
         $loadingLabel.Foreground = [Windows.Media.Brushes]::Gray
         $sync.LoadingLabel = $loadingLabel
