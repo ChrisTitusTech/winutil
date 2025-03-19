@@ -5,19 +5,19 @@ function Initialize-InstallAppEntry {
             Used to as part of the Install Tab UI generation
         .PARAMETER TargetElement
             The Element into which the Apps should be placed
-        .PARAMETER AppKey
+        .PARAMETER appKey
             The Key of the app inside the $sync.configs.applicationsHashtable
     #>
         param(
             [Windows.Controls.WrapPanel]$TargetElement,
-            $AppKey  
+            $appKey
         )
 
         # Create the outer Border for the application type
         $border = New-Object Windows.Controls.Border
         $border.Style = $sync.Form.Resources.AppTileBorderStyle
-        $border.Tag = $AppKey
-        $border.ToolTip = $Apps.$AppKey.description
+        $border.Tag = $appKey
+        $border.ToolTip = $Apps.$appKey.description
         $border.Add_MouseUp({
             $childCheckbox = ($this.Child.Children | Where-Object {$_.Template.TargetType -eq [System.Windows.Controls.Checkbox]})[0]
             $childCheckBox.isChecked = -not $childCheckbox.IsChecked
@@ -39,7 +39,7 @@ function Initialize-InstallAppEntry {
 
         # Create the CheckBox, vertically centered
         $checkBox = New-Object Windows.Controls.CheckBox
-        $checkBox.Name = $AppKey
+        $checkBox.Name = $appKey
         $checkbox.Style = $sync.Form.Resources.AppTileCheckboxStyle
         $checkbox.Add_Checked({
             Invoke-WPFSelectedAppsUpdate -type "Add" -checkbox $this
@@ -52,7 +52,7 @@ function Initialize-InstallAppEntry {
             $borderElement = $this.Parent.Parent
             $borderElement.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallUnselectedColor")
         })
-        
+
         # Create a StackPanel for the image and name
         $imageAndNamePanel = New-Object Windows.Controls.StackPanel
         $imageAndNamePanel.Orientation = "Horizontal"
@@ -69,7 +69,7 @@ function Initialize-InstallAppEntry {
         # Create the TextBlock for the application name
         $appName = New-Object Windows.Controls.TextBlock
         $appName.Style = $sync.Form.Resources.AppTileNameStyle
-        $appName.Text = $Apps.$AppKey.content
+        $appName.Text = $Apps.$appKey.content
         $imageAndNamePanel.Children.Add($appName) | Out-Null
 
         # Add the image and name panel to the Checkbox
@@ -122,7 +122,7 @@ function Initialize-InstallAppEntry {
                     })
                 }
             }
-        } 
+        }
 
         # Add the button panel to the DockPanel
         $dockPanel.Children.Add($buttonPanel) | Out-Null

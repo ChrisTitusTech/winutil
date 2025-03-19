@@ -45,7 +45,6 @@ class GenericException : Exception {
     [string]$additionalData
     GenericException($Message) : base($Message) {}
 }
-log_time_taken "Main.ps1 class setup line 48"
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
@@ -582,7 +581,5 @@ $sync["SponsorMenuItem"].Add_Click({
     Show-CustomDialog -Title "Sponsors" -Message $authorInfo -EnableScroll $true
 })
 
-
-log_time_taken "Main.ps1 before ShowDialog"
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript

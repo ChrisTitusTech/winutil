@@ -135,9 +135,9 @@
         <Setter Property="ContentTemplate">
             <Setter.Value>
                 <DataTemplate>
-                    <TextBlock Text="{Binding}" FontFamily="Segoe MDL2 Assets" FontSize="20" 
-                               Foreground="{DynamicResource MainForegroundColor}" 
-                               Background="Transparent" HorizontalAlignment="Center" 
+                    <TextBlock Text="{Binding}" FontFamily="Segoe MDL2 Assets" FontSize="20"
+                               Foreground="{DynamicResource MainForegroundColor}"
+                               Background="Transparent" HorizontalAlignment="Center"
                                VerticalAlignment="Center"/>
                 </DataTemplate>
             </Setter.Value>
