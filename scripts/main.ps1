@@ -77,7 +77,7 @@ if (-NOT ($readerOperationSuccessful)) {
     [System.GC]::Collect()
     exit 1
 }
-log_time_taken "Main.ps1 xaml loaded"
+
 # Setup the Window to follow listen for windows Theme Change events and update the winutil theme
 # throttle logic needed, because windows seems to send more than one theme change event per change
 $lastThemeChangeTime = [datetime]::MinValue
@@ -105,21 +105,21 @@ $sync.Form.Add_Loaded({
         return 0
     })
 })
-log_time_taken "Main.ps1 theme change event setup"
+
 Invoke-WinutilThemeChange -init $true
 # Load the configuration files
 
 $noimage = "https://images.emojiterra.com/google/noto-emoji/unicode-15/color/512px/1f4e6.png"
 $noimage = [Windows.Media.Imaging.BitmapImage]::new([Uri]::new($noimage))
-log_time_taken "Main.ps1 downloaded default image"
+
 $sync.configs.applicationsHashtable = @{}
 $sync.configs.applications.PSObject.Properties | ForEach-Object {
     $sync.configs.applicationsHashtable[$_.Name] = $_.Value
 }
-log_time_taken "Main.ps1 loaded applications"
+
 # Now call the function with the final merged config
 Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
-log_time_taken "Main.ps1 loaded appnavigation"
+
 # Add logic to handle click to the ToggleView Button on the Install Tab
 $sync.WPFToggleView.Add_Click({
     $sync.CompactView = -not $sync.CompactView
@@ -129,11 +129,11 @@ $sync.WPFToggleView.Add_Click({
     }
 })
 Invoke-WPFUIApps -Apps $sync.configs.applicationsHashtable -targetGridName "appspanel"
-log_time_taken "Main.ps1 loaded appspanel"
+
 Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
-log_time_taken "Main.ps1 loaded tweakspanel"
+
 Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
-log_time_taken "Main.ps1 loaded featurespanel"
+
 # Future implementation: Add Windows Version to updates panel
 #Invoke-WPFUIElements -configVariable $sync.configs.updates -targetGridName "updatespanel" -columncount 1
 
