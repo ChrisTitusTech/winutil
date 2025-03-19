@@ -19,5 +19,6 @@ function Invoke-WPFControlPanel {
         "WPFPanelprinter" {Start-Process "shell:::{A8A91A66-3A7D-4424-8D24-04E180695C7A}"}
         "WPFPanelsystem"  {cmd /c sysdm.cpl}
         "WPFPaneluser"    {cmd /c "control userpasswords2"}
+        "WPFPanelGodMode" {Start-Process "shell:::{ED7BA470-8E54-465E-825C-99712043E01C}"}
     }
 }
