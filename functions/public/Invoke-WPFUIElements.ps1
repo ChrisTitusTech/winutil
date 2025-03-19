@@ -144,7 +144,7 @@ function Invoke-WPFUIElements {
 
             $label = New-Object Windows.Controls.Label
             $label.Content = $category -replace ".*__", ""
-            $label.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSizeHeading")
+            $label.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "HeaderFontSize")
             $label.SetResourceReference([Windows.Controls.Control]::FontFamilyProperty, "HeaderFontFamily")
             $itemsControl.Items.Add($label) | Out-Null
             $sync[$category] = $label
