@@ -578,19 +578,6 @@
                  </Setter.Value>
             </Setter>
         </Style>
-    <!-- Collapsed Checkbox Style -->
-    <Style x:Key="CollapsedCheckBoxStyle" TargetType="CheckBox">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="CheckBox">
-                    <ContentPresenter Content="{TemplateBinding Content}"
-                                    VerticalAlignment="Center"
-                                    HorizontalAlignment="Left"
-                                    Margin="{TemplateBinding Padding}"/>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
         <Style TargetType="RadioButton">
             <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
             <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}"/>
