@@ -20,13 +20,11 @@ function Set-PackageManagerPreference {
     #Try loading from file if no argument given.
     if ($null -eq $preferedPackageManager) {
         # Backwards compat for preferChocolatey.ini
-        if (Test-Path -Path $oldChocoPath)
-        {
+        if (Test-Path -Path $oldChocoPath) {
             $preferedPackageManager = [PackageManagers]::Choco
             Remove-Item -Path $oldChocoPath
         }
-        else
-        {
+        else {
             $potential = Get-Content -Path $preferencePath -TotalCount 1
             if ($potential)
                 {$preferedPackageManager = [PackageManagers]$potential}
