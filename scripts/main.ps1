@@ -491,44 +491,36 @@ $sync["Form"].Add_Activated({
 $sync["ThemeButton"].Add_Click({
     Write-Debug "ThemeButton clicked"
     Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "Theme" = "Toggle" }
-    $_.Handled = $false
 })
 $sync["AutoThemeMenuItem"].Add_Click({
     Write-Debug "About clicked"
     Invoke-WPFPopup -Action "Hide" -Popups @("Theme")
     Invoke-WinutilThemeChange -theme "Auto"
-    $_.Handled = $false
 })
 $sync["DarkThemeMenuItem"].Add_Click({
     Write-Debug "Dark Theme clicked"
     Invoke-WPFPopup -Action "Hide" -Popups @("Theme")
     Invoke-WinutilThemeChange -theme "Dark"
-    $_.Handled = $false
 })
 $sync["LightThemeMenuItem"].Add_Click({
     Write-Debug "Light Theme clicked"
     Invoke-WPFPopup -Action "Hide" -Popups @("Theme")
     Invoke-WinutilThemeChange -theme "Light"
-    $_.Handled = $false
 })
-
 
 $sync["SettingsButton"].Add_Click({
     Write-Debug "SettingsButton clicked"
     Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Toggle"; "Theme" = "Hide" }
-    $_.Handled = $false
 })
 $sync["ImportMenuItem"].Add_Click({
     Write-Debug "Import clicked"
     Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
     Invoke-WPFImpex -type "import"
-    $_.Handled = $false
 })
 $sync["ExportMenuItem"].Add_Click({
     Write-Debug "Export clicked"
     Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
     Invoke-WPFImpex -type "export"
-    $_.Handled = $false
 })
 $sync["AboutMenuItem"].Add_Click({
     Write-Debug "About clicked"
