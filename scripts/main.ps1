@@ -201,7 +201,7 @@ Invoke-WPFRunspace -ScriptBlock {
 #===========================================================================
 
 # Print the logo
-Invoke-WPFFormVariables
+Show-CTTLogo
 $sync.CompactView = $false
 $sync.Form.Resources.AppTileWidth = [double]::NaN
 $sync.Form.Resources.AppTileCompactVisibility = [Windows.Visibility]::Visible
