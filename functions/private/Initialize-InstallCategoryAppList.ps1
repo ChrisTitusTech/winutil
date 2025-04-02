@@ -53,8 +53,17 @@ function Initialize-InstallCategoryAppList {
         $TargetElement.Dispatcher.Invoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{
 
             $TargetElement.Items.Clear() # Remove the loading message
-            $categories = $Apps.Values | Select-Object -ExpandProperty category -Unique | Sort-Object
-            foreach ($category in $categories) {
+
+            # Pre-group apps by category
+            $appsByCategory = @{}
+            foreach ($appKey in $Apps.Keys) {
+                $category = $Apps.$appKey.Category
+                if (-not $appsByCategory.ContainsKey($category)) {
+                    $appsByCategory[$category] = @()
+                }
+                $appsByCategory[$category] += $appKey
+            }
+            foreach ($category in $($appsByCategory.Keys | Sort-Object)) {
                 Add-Category -Category $category -TargetElement $TargetElement
                 $wrapPanel = New-Object Windows.Controls.WrapPanel
                 $wrapPanel.Orientation = "Horizontal"
@@ -64,9 +73,9 @@ function Initialize-InstallCategoryAppList {
                 $wrapPanel.Visibility = [Windows.Visibility]::Collapsed
                 $wrapPanel.Tag = "CategoryWrapPanel_$category"
                 $null = $TargetElement.Items.Add($wrapPanel)
-                $Apps.Keys | Where-Object { $Apps.$_.Category -eq $category } | Sort-Object | ForEach-Object {
-                    Initialize-InstallAppEntry -TargetElement $wrapPanel -AppKey $_
-                }
+                $appsByCategory[$category] | ForEach-Object {
+                    $sync.$_ =  $(Initialize-InstallAppEntry -TargetElement $wrapPanel -AppKey $_)
             }
-        })
+        }
+    })
     }
