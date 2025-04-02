@@ -65,11 +65,11 @@ public class PowerManagement {
         Write-Host "Exporting Windows image to a WIM file, keeping the index we want to work on. This can take several minutes, depending on the performance of your computer..."
         try {
             # Try ps command first
-            Export-WindowsImage -SourceImagePath $mountDir\sources\install.esd -SourceIndex $index -DestinationImagePath $mountDir\sources\install.wim -CompressionType "Max"
+            Export-WindowsImage -SourceImagePath "$mountDir\sources\install.esd" -SourceIndex $index -DestinationImagePath "$mountDir\sources\install.wim" -CompressionType "Max"
         } catch {
             # Fallback to DISM command
             Write-Host "Export-WindowsImage failed, using DISM instead..."
-            dism /Export-Image /SourceImageFile:$mountDir\sources\install.esd /SourceIndex:$index /DestinationImageFile:$mountDir\sources\install.wim /Compress:max
+            dism /Export-Image /SourceImageFile:"$mountDir\sources\install.esd" /SourceIndex:$index /DestinationImageFile:"$mountDir\sources\install.wim" /Compress:max
         }
         if ($?) {
             Remove-Item -Path "$mountDir\sources\install.esd" -Force
