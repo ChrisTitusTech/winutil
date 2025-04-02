@@ -248,6 +248,10 @@ $sync["Form"].Add_Closing({
 $sync.SearchBarClearButton.Add_Click({
     $sync.SearchBar.Text = ""
     $sync.SearchBarClearButton.Visibility = "Collapsed"
+
+    # Focus the search bar after clearing the text
+    $sync.SearchBar.Focus()
+    $sync.SearchBar.SelectAll()
 })
 
 # add some shortcuts for people that don't like clicking
@@ -470,6 +474,9 @@ $sync["SearchBar"].Add_TextChanged({
     switch ($sync.currentTab) {
         "Install" {
             Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text
+        }
+        "Tweaks" {
+            Find-TweaksByNameOrDescription -SearchString $sync.SearchBar.Text
         }
     }
 })
