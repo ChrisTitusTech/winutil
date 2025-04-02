@@ -65,11 +65,11 @@ public class PowerManagement {
         Write-Host "Exporting Windows image to a WIM file, keeping the index we want to work on. This can take several minutes, depending on the performance of your computer..."
         try {
             # Try ps command first
-            Export-WindowsImage -SourceImagePath $mountDir\sources\install.esd -SourceIndex $index -DestinationImagePath $mountDir\sources\install.wim -CompressionType "Max"
+            Export-WindowsImage -SourceImagePath "$mountDir\sources\install.esd" -SourceIndex $index -DestinationImagePath "$mountDir\sources\install.wim" -CompressionType "Max"
         } catch {
             # Fallback to DISM command
             Write-Host "Export-WindowsImage failed, using DISM instead..."
-            dism /Export-Image /SourceImageFile:$mountDir\sources\install.esd /SourceIndex:$index /DestinationImageFile:$mountDir\sources\install.wim /Compress:max
+            dism /Export-Image /SourceImageFile:"$mountDir\sources\install.esd" /SourceIndex:$index /DestinationImageFile:"$mountDir\sources\install.wim" /Compress:max
         }
         if ($?) {
             Remove-Item -Path "$mountDir\sources\install.esd" -Force
@@ -158,7 +158,7 @@ public class PowerManagement {
             $driverPath = $sync.MicrowinDriverLocation.Text
             if (Test-Path $driverPath) {
                 Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-                dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
+                dism /English /image:"$scratchDir" /add-driver /driver:"$driverPath" /recurse | Out-Host
             } else {
                 Write-Host "Path to drivers is invalid continuing without driver injection"
             }
@@ -252,7 +252,7 @@ public class PowerManagement {
         Write-Host "Copy link to winutil.ps1 into the ISO"
         $desktopDir = "$($scratchDir)\Windows\Users\Default\Desktop"
         New-Item -ItemType Directory -Force -Path "$desktopDir"
-        dism /English /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
+        dism /English /image:"$($scratchDir)" /set-profilepath:"$($scratchDir)\Windows\Users\Default"
 
         Write-Host "Copy checkinstall.cmd into the ISO"
         Microwin-NewCheckInstall
@@ -357,7 +357,7 @@ public class PowerManagement {
         reg unload HKLM\zSYSTEM
 
         Write-Host "Cleaning up image..."
-        dism /English /image:$scratchDir /Cleanup-Image /StartComponentCleanup /ResetBase
+        dism /English /image:"$scratchDir" /Cleanup-Image /StartComponentCleanup /ResetBase
         Write-Host "Cleanup complete."
 
         Write-Host "Unmounting image..."
@@ -394,7 +394,7 @@ public class PowerManagement {
             $driverPath = $sync.MicrowinDriverLocation.Text
             if (Test-Path $driverPath) {
                 Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-                dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
+                dism /English /image:"$scratchDir" /add-driver /driver:"$driverPath" /recurse | Out-Host
             } else {
                 Write-Host "Path to drivers is invalid continuing without driver injection"
             }
