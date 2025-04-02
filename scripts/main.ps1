@@ -353,46 +353,53 @@ Add-Type @"
 "@
     }
 
-   foreach ($proc in (Get-Process).where{ $_.MainWindowTitle -and $_.MainWindowTitle -like "*titus*" }) {
+    # Initialize window handle with a default value
+    $windowHandle = [System.IntPtr]::Zero
+    
+    foreach ($proc in (Get-Process).where{ $_.MainWindowTitle -and $_.MainWindowTitle -like "*titus*" }) {
         # Check if the process's MainWindowHandle is valid
         if ($proc.MainWindowHandle -ne [System.IntPtr]::Zero) {
             Write-Debug "MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle) $($proc.MainWindowHandle)"
             $windowHandle = $proc.MainWindowHandle
         } else {
             Write-Warning "Process found, but no MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle)"
-
         }
     }
 
     $rect = New-Object RECT
-    [Window]::GetWindowRect($windowHandle, [ref]$rect)
-    $width  = $rect.Right  - $rect.Left
-    $height = $rect.Bottom - $rect.Top
+    # Call GetWindowRect only if a valid window handle is present
+    if ($windowHandle -ne [System.IntPtr]::Zero) {
+        [Window]::GetWindowRect($windowHandle, [ref]$rect)
+        $width  = $rect.Right  - $rect.Left
+        $height = $rect.Bottom - $rect.Top
 
-    Write-Debug "UpperLeft:$($rect.Left),$($rect.Top) LowerBottom:$($rect.Right),$($rect.Bottom). Width:$($width) Height:$($height)"
+        Write-Debug "UpperLeft:$($rect.Left),$($rect.Top) LowerBottom:$($rect.Right),$($rect.Bottom). Width:$($width) Height:$($height)"
 
-    # Load the Windows Forms assembly
-    Add-Type -AssemblyName System.Windows.Forms
-    $primaryScreen = [System.Windows.Forms.Screen]::PrimaryScreen
-    # Check if the primary screen is found
-    if ($primaryScreen) {
-        # Extract screen width and height for the primary monitor
-        $screenWidth = $primaryScreen.Bounds.Width
-        $screenHeight = $primaryScreen.Bounds.Height
+        # Load the Windows Forms assembly
+        Add-Type -AssemblyName System.Windows.Forms
+        $primaryScreen = [System.Windows.Forms.Screen]::PrimaryScreen
+        # Check if the primary screen is found
+        if ($primaryScreen) {
+            # Extract screen width and height for the primary monitor
+            $screenWidth = $primaryScreen.Bounds.Width
+            $screenHeight = $primaryScreen.Bounds.Height
 
-        # Print the screen size
-        Write-Debug "Primary Monitor Width: $screenWidth pixels"
-        Write-Debug "Primary Monitor Height: $screenHeight pixels"
+            # Print the screen size
+            Write-Debug "Primary Monitor Width: $screenWidth pixels"
+            Write-Debug "Primary Monitor Height: $screenHeight pixels"
 
-        # Compare with the primary monitor size
-        if ($width -gt $screenWidth -or $height -gt $screenHeight) {
-            Write-Debug "The specified width and/or height is greater than the primary monitor size."
-            [void][Window]::MoveWindow($windowHandle, 0, 0, $screenWidth, $screenHeight, $True)
+            # Compare with the primary monitor size
+            if ($width -gt $screenWidth -or $height -gt $screenHeight) {
+                Write-Debug "The specified width and/or height is greater than the primary monitor size."
+                [void][Window]::MoveWindow($windowHandle, 0, 0, $screenWidth, $screenHeight, $True)
+            } else {
+                Write-Debug "The specified width and height are within the primary monitor size limits."
+            }
         } else {
-            Write-Debug "The specified width and height are within the primary monitor size limits."
+            Write-Debug "Unable to retrieve information about the primary monitor."
         }
     } else {
-        Write-Debug "Unable to retrieve information about the primary monitor."
+        Write-Debug "No valid window handle found for window positioning."
     }
 
     Invoke-WPFTab "WPFTab1BT"
