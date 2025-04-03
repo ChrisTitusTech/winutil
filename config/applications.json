@@ -349,7 +349,7 @@
         "content": "Display Driver Uninstaller",
         "description": "Display Driver Uninstaller (DDU) is a tool for completely uninstalling graphics drivers from NVIDIA, AMD, and Intel. It is useful for troubleshooting graphics driver-related issues.",
         "link": "https://www.wagnardsoft.com/display-driver-uninstaller-DDU-",
-        "winget": "ddu"
+        "winget": "Wagnardsoft.DisplayDriverUninstaller"
     },
     "deluge": {
         "category": "Utilities",
@@ -1803,7 +1803,7 @@
         "category": "Utilities",
         "choco": "quicklook",
         "content": "Quicklook",
-        "description": "Bring macOS “Quick Look” feature to Windows",
+        "description": "Bring macOS \"Quick Look\" feature to Windows",
         "link": "https://github.com/QL-Win/QuickLook",
         "winget": "QL-Win.QuickLook"
     },

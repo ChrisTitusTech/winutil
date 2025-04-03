@@ -63,7 +63,14 @@ public class PowerManagement {
     # Detect if the Windows image is an ESD file and convert it to WIM
     if (-not (Test-Path -Path "$mountDir\sources\install.wim" -PathType Leaf) -and (Test-Path -Path "$mountDir\sources\install.esd" -PathType Leaf)) {
         Write-Host "Exporting Windows image to a WIM file, keeping the index we want to work on. This can take several minutes, depending on the performance of your computer..."
-        Export-WindowsImage -SourceImagePath $mountDir\sources\install.esd -SourceIndex $index -DestinationImagePath $mountDir\sources\install.wim -CompressionType "Max"
+        try {
+            # Try ps command first
+            Export-WindowsImage -SourceImagePath "$mountDir\sources\install.esd" -SourceIndex $index -DestinationImagePath "$mountDir\sources\install.wim" -CompressionType "Max"
+        } catch {
+            # Fallback to DISM command
+            Write-Host "Export-WindowsImage failed, using DISM instead..."
+            dism /Export-Image /SourceImageFile:"$mountDir\sources\install.esd" /SourceIndex:$index /DestinationImageFile:"$mountDir\sources\install.wim" /Compress:max
+        }
         if ($?) {
             Remove-Item -Path "$mountDir\sources\install.esd" -Force
             # Since we've already exported the image index we wanted, switch to the first one
@@ -151,7 +158,7 @@ public class PowerManagement {
             $driverPath = $sync.MicrowinDriverLocation.Text
             if (Test-Path $driverPath) {
                 Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-                dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
+                dism /English /image:"$scratchDir" /add-driver /driver:"$driverPath" /recurse | Out-Host
             } else {
                 Write-Host "Path to drivers is invalid continuing without driver injection"
             }
@@ -245,7 +252,7 @@ public class PowerManagement {
         Write-Host "Copy link to winutil.ps1 into the ISO"
         $desktopDir = "$($scratchDir)\Windows\Users\Default\Desktop"
         New-Item -ItemType Directory -Force -Path "$desktopDir"
-        dism /English /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
+        dism /English /image:"$($scratchDir)" /set-profilepath:"$($scratchDir)\Windows\Users\Default"
 
         Write-Host "Copy checkinstall.cmd into the ISO"
         Microwin-NewCheckInstall
@@ -350,7 +357,7 @@ public class PowerManagement {
         reg unload HKLM\zSYSTEM
 
         Write-Host "Cleaning up image..."
-        dism /English /image:$scratchDir /Cleanup-Image /StartComponentCleanup /ResetBase
+        dism /English /image:"$scratchDir" /Cleanup-Image /StartComponentCleanup /ResetBase
         Write-Host "Cleanup complete."
 
         Write-Host "Unmounting image..."
@@ -360,7 +367,14 @@ public class PowerManagement {
     try {
 
         Write-Host "Exporting image into $mountDir\sources\install2.wim"
-        Export-WindowsImage -SourceImagePath "$mountDir\sources\install.wim" -SourceIndex $index -DestinationImagePath "$mountDir\sources\install2.wim" -CompressionType "Max"
+        try {
+            # Try ps command first
+            Export-WindowsImage -SourceImagePath "$mountDir\sources\install.wim" -SourceIndex $index -DestinationImagePath "$mountDir\sources\install2.wim" -CompressionType "Max"
+        } catch {
+            # Fallback to DISM command
+            Write-Host "Export-WindowsImage failed, using DISM instead..."
+            dism /Export-Image /SourceImageFile:"$mountDir\sources\install.wim" /SourceIndex:$index /DestinationImageFile:"$mountDir\sources\install2.wim" /Compress:max
+        }
         Write-Host "Remove old '$mountDir\sources\install.wim' and rename $mountDir\sources\install2.wim"
         Remove-Item "$mountDir\sources\install.wim"
         Rename-Item "$mountDir\sources\install2.wim" "$mountDir\sources\install.wim"
@@ -380,7 +394,7 @@ public class PowerManagement {
             $driverPath = $sync.MicrowinDriverLocation.Text
             if (Test-Path $driverPath) {
                 Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-                dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
+                dism /English /image:"$scratchDir" /add-driver /driver:"$driverPath" /recurse | Out-Host
             } else {
                 Write-Host "Path to drivers is invalid continuing without driver injection"
             }
