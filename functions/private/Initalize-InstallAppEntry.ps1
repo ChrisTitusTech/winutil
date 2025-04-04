@@ -19,6 +19,9 @@ function Initialize-InstallAppEntry {
         $border.Tag = $appKey
         $border.ToolTip = $Apps.$appKey.description
         $border.Add_MouseUp({
+            if ($_.ChangedButton -eq [System.Windows.Input.MouseButton]::Right) {
+                Invoke-WPFPresets -imported $true -checkboxfilterpattern "WPFInstall*";
+            }
             $childCheckbox = ($this.Child.Children | Where-Object {$_.Template.TargetType -eq [System.Windows.Controls.Checkbox]})[0]
             $childCheckBox.isChecked = -not $childCheckbox.IsChecked
         })
