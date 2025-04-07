@@ -53,7 +53,7 @@ $preprocessingFilePath = ".\tools\Invoke-Preprocessing.ps1"
 
 $excludedFiles = @('.\.git\', '.\.gitignore', '.\.gitattributes', '.\.github\CODEOWNERS', '.\LICENSE', "$preprocessingFilePath", '*.png', '*.exe','.\.preprocessor_hashes.json')
 $msg = "Pre-req: Code Formatting"
-Invoke-Preprocessing -WorkingDir "$workingdir" -ExcludedFiles $excludedFiles -ProgressStatusMessage $msg -ThrowExceptionOnEmptyFilesList
+Invoke-Preprocessing -WorkingDir "$workingdir" -ExcludedFiles $excludedFiles -ProgressStatusMessage $msg
 
 # Create the script in memory.
 Update-Progress "Pre-req: Allocating Memory" 0
