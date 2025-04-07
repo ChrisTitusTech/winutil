@@ -709,7 +709,7 @@
         "content": "GIMP (Image Editor)",
         "description": "GIMP is a versatile open-source raster graphics editor used for tasks such as photo retouching, image editing, and image composition.",
         "link": "https://www.gimp.org/",
-        "winget": "GIMP.GIMP"
+        "winget": "GIMP.GIMP.3"
     },
     "git": {
         "category": "Development",
