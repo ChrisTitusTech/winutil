@@ -1,6 +1,5 @@
 function Invoke-WPFSystemRepair {
     <#
-
     .SYNOPSIS
         Checks for system corruption using Chkdsk, SFC, and DISM
 
@@ -11,11 +10,7 @@ function Invoke-WPFSystemRepair {
         4. SFC Run 2 - Fixes system file corruption, this time with an almost guaranteed uncorrupted system image
     #>
 
-    Write-Progress -Id 0 -Activity "Repairing Windows" -PercentComplete 0
-    # Wait for the first progress bar to show, otherwise the second one won't show
-    Start-Sleep -Milliseconds 200
-
-    function run_chkdsk {
+    function Invoke-Chkdsk {
         <#
         .SYNOPSIS
             Runs chkdsk on the system drive
@@ -24,10 +19,11 @@ function Invoke-WPFSystemRepair {
         .PARAMETER verbose
             If specified, print output from chkdsk
         .NOTES
-            VerbosePreference is defined locally, so it only affects this function. This is done by wrapping the code inside a script block and calling it with & { ... }
+            VerbosePreference is set locally within a script block (& { ... }) to avoid affecting the global or parent scope.
         #>
         param(
-            [switch]$verbose
+            [switch]$verbose,
+            [int]$parentProgressId = 0
         )
         & {
             if ($verbose) {
@@ -36,8 +32,8 @@ function Invoke-WPFSystemRepair {
             else {
                 $VerbosePreference = "SilentlyContinue"
             }
-
-            Write-Progress -Id 1 -Activity "Scanning for corruption" -Status "Running chkdsk..." -PercentComplete 0
+            
+            Write-Progress -Id 1 -ParentId $parentProgressId -Activity $childProgressBarActivity -Status "Running chkdsk..." -PercentComplete 0
             $oldpercent = 0
             # 2>&1 redirects stdout, allowing iteration over the output
             chkdsk.exe /scan /perf 2>&1 | ForEach-Object {
@@ -46,16 +42,16 @@ function Invoke-WPFSystemRepair {
                 if ($_ -match "%.*?(\d+)%") {
                     [int]$percent = $matches[1]
                     if ($percent -gt $oldpercent) {
-                        Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running chkdsk... ($percent%)" -PercentComplete $percent    
+                        Write-Progress -Id 1 -Activity $childProgressBarActivity -Status "Running chkdsk... ($percent%)" -PercentComplete $percent
                         $oldpercent = $percent
-                    }   
+                    }
                 }
             }
-            Write-Progress -Id 1 -Activity "Scanning for corruption" -Status "chkdsk Completed" -PercentComplete 100    
+            Write-Progress -Id 1 -Activity $childProgressBarActivity -Status "chkdsk Completed" -PercentComplete 100 -Completed
         }
     }
-    
-    function run_sfc {
+
+    function Invoke-SFC {
         <#
         .SYNOPSIS
             Runs sfc on the system drive
@@ -64,10 +60,13 @@ function Invoke-WPFSystemRepair {
         .PARAMETER verbose
             If specified, print output from sfc
         .NOTES
-            VerbosePreference and ErrorPreference is defined locally, so it only affects this function. This is done by wrapping the code inside a script block and calling it with & { ... }
+            VerbosePreference and ErrorActionPreference are set locally within a script block to isolate their effects. ErrorActionPreference suppresses false errors caused by sfc.exe output redirection.
+            A bug in SFC output buffering causes progress updates to appear in chunks when redirecting output
+
         #>
         param(
-            [switch]$verbose
+            [switch]$verbose,
+            [int]$parentProgressId = 0
         )
 
         & {
@@ -78,29 +77,27 @@ function Invoke-WPFSystemRepair {
                 $VerbosePreference = "SilentlyContinue"
             }
             $ErrorActionPreference = "SilentlyContinue"
-            Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running SFC..." -PercentComplete 0
+            Write-Progress -Id 1 -ParentId $parentProgressId -Activity $childProgressBarActivity -Status "Running SFC..." -PercentComplete 0
             $oldpercent = 0
-            # SFC has a bug when redirected which causes it to output only when the stdout buffer is full, causing the progress bar to move in chunks
             sfc.exe /scannow 2>&1 | ForEach-Object {
                 Write-Verbose $_
                 if ($_ -ne "") {
                     # sfc.exe /scannow outputs unicode characters, so we directly remove null characters for optimization
                     $utf8line = $_ -replace "`0", ""
-                    if ($utf8line -match "(\d+)\s%") {
-                        # Write-Host "$($matches[0]) $($matches[1])"
+                    if ($utf8line -match "(\d+)\s*%") {
                         [int]$percent = $matches[1]
                         if ($percent -gt $oldpercent) {
-                            Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running SFC... ($percent%)" -PercentComplete $percent    
+                            Write-Progress -Id 1 -Activity $childProgressBarActivity -Status "Running SFC... ($percent%)" -PercentComplete $percent
                             $oldpercent = $percent
-                        }    
+                        }
                     }
                 }
             }
-            Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "SFC Completed" -PercentComplete 100
-        } 
+            Write-Progress -Id 1 -Activity $childProgressBarActivity -Status "SFC Completed" -PercentComplete 100 -Completed
+        }
     }
-    
-    function run_dism {
+
+    function Invoke-DISM {
         <#
         .SYNOPSIS
             Runs DISM on the system drive
@@ -110,13 +107,14 @@ function Invoke-WPFSystemRepair {
               /Cleanup-Image    - Performs cleanup operations on the image, could remove some unneeded temporary files
               /Restorehealth    - Performs a scan of the image and fixes any corruption
 
-        .PARAMETER verbose  
+        .PARAMETER verbose
             If specified, print output from DISM
         .NOTES
-            VerbosePreference is defined locally, so it only affects this function. This is done by wrapping the code inside a script block and calling it with & { ... }
+            VerbosePreference is set locally within a script block (& { ... }) to avoid affecting the global or parent scope.
         #>
         param(
-            [switch]$verbose
+            [switch]$verbose,
+            [int]$parentProgressId = 0
         )
         & {
             if ($verbose) {
@@ -125,41 +123,41 @@ function Invoke-WPFSystemRepair {
             else {
                 $VerbosePreference = "SilentlyContinue"
             }
-        
-            Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running DISM..." -PercentComplete 0
+
+            Write-Progress -Id 1 -ParentId $parentProgressId -Activity $childProgressBarActivity -Status "Running DISM..." -PercentComplete 0
             $oldpercent = 0
             DISM /Online /Cleanup-Image /RestoreHealth | ForEach-Object {
                 Write-Verbose $_
-        
+
                 # Filter for lines that contain a percentage that is greater than the previous one
                 if ($_ -match "(\d+)[.,]\d+%") {
                     [int]$percent = $matches[1]
                     if ($percent -gt $oldpercent) {
                         # Update the progress bar
-                        Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running DISM... ($percent%)" -PercentComplete $percent
+                        Write-Progress -Id 1 -Activity $childProgressBarActivity -Status "Running DISM... ($percent%)" -PercentComplete $percent
                         $oldpercent = $percent
                     }
                 }
             }
-            Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "DISM Completed" -PercentComplete 100   
-        }    
+            Write-Progress -Id 1 -Activity $childProgressBarActivity -Status "DISM Completed" -PercentComplete 100 -Completed
+        }
     }
-
-    # Scan system for corruption
-    Write-Progress -Id 0 -Activity "Repairing Windows" -Status "Scanning for corruption... " -PercentComplete 0
+    
+    $childProgressBarActivity = "Scanning for corruption"
+    Write-Progress -Id 0 -Activity "Repairing Windows" -PercentComplete 0
     # Step 1: Run chkdsk to fix disk and filesystem corruption before proceeding with system file repairs
-    run_chkdsk
-    Write-Progress -Id 0 -Activity "Repairing Windows" -Status "Scanning for corruption... (25%)" -PercentComplete 25
+    Invoke-Chkdsk
+    Write-Progress -Id 0 -Activity "Repairing Windows" -PercentComplete 25
 
     # Step 2: Run SFC to fix system file corruption and ensure DISM can operate correctly
-    run_sfc
-    Write-Progress -Id 0 -Activity "Repairing Windows" -Status "Scanning for corruption... (50%)" -PercentComplete 50
+    Invoke-SFC
+    Write-Progress -Id 0 -Activity "Repairing Windows" -PercentComplete 50
 
     # Step 3: Run DISM to repair the system image, which SFC relies on for accurate repairs
-    run_dism
-    Write-Progress -Id 0 -Activity "Repairing Windows" -Status "Scanning for corruption... (75%)" -PercentComplete 75
+    Invoke-DISM
+    Write-Progress -Id 0 -Activity "Repairing Windows" -PercentComplete 75
 
     # Step 4: Run SFC again to ensure system files are repaired using the now-fixed system image
-    run_sfc
-    Write-Progress -Id 0 -Activity "Repairing Windows" -Status "Scanning for corruption completed" -PercentComplete 100
+    Invoke-SFC
+    Write-Progress -Id 0 -Activity "Repairing Windows" -PercentComplete 100 -Completed
 }
