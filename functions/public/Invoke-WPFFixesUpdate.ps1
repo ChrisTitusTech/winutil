@@ -6,19 +6,7 @@ function Invoke-WPFFixesUpdate {
         Performs various tasks in an attempt to repair Windows Update
 
     .DESCRIPTION
-        1. (Aggressive Only) Scans the system for corruption using chkdsk, SFC, and DISM
-            Steps:
-                1. Runs chkdsk /scan /perf
-                    /scan - Runs an online scan on the volume
-                    /perf - Uses more system resources to complete a scan as fast as possible
-                2. Runs SFC /scannow
-                    /scannow - Scans integrity of all protected system files and repairs files with problems when possible
-                3. Runs DISM /Online /Cleanup-Image /RestoreHealth
-                    /Online - Targets the running operating system
-                    /Cleanup-Image - Performs cleanup and recovery operations on the image
-                    /RestoreHealth - Scans the image for component store corruption and attempts to repair the corruption using Windows Update
-                4. Runs SFC /scannow
-                    Ran twice in case DISM repaired SFC
+        1. (Aggressive Only) Scans the system for corruption using the Invoke-WPFSystemRepair function
         2. Stops Windows Update Services
         3. Remove the QMGR Data file, which stores BITS jobs
         4. (Aggressive Only) Renames the DataStore and CatRoot2 folders
@@ -46,104 +34,7 @@ function Invoke-WPFFixesUpdate {
     Start-Sleep -Milliseconds 200
 
     if ($Aggressive) {
-        # Scan system for corruption
-        Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Scanning for corruption..." -PercentComplete 0
-        Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running chkdsk..." -PercentComplete 0
-        # 2>&1 redirects stdout, alowing iteration over the output
-        chkdsk.exe /scan /perf 2>&1 | ForEach-Object {
-            # Write stdout to the Verbose stream
-            Write-Verbose $_
-
-            # Get the index of the total percentage
-            $index = $_.IndexOf("Total:")
-            if (
-                # If the percent is found
-                ($percent = try {(
-                    $_.Substring(
-                        $index + 6,
-                        $_.IndexOf("%", $index) - $index - 6
-                    )
-                ).Trim()} catch {0}) `
-                <# And the current percentage is greater than the previous one #>`
-                -and $percent -gt $oldpercent
-            ) {
-                # Update the progress bar
-                $oldpercent = $percent
-                Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running chkdsk... ($percent%)" -PercentComplete $percent
-            }
-        }
-
-        Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running SFC..." -PercentComplete 0
-        $oldpercent = 0
-        # SFC has a bug when redirected which causes it to output only when the stdout buffer is full, causing the progress bar to move in chunks
-        sfc /scannow 2>&1 | ForEach-Object {
-            # Write stdout to the Verbose stream
-            Write-Verbose $_
-
-            # Filter for lines that contain a percentage that is greater than the previous one
-            if (
-                (
-                    # Use a different method to get the percentage that accounts for SFC's Unicode output
-                    [int]$percent = try {(
-                        (
-                            $_.Substring(
-                                $_.IndexOf("n") + 2,
-                                $_.IndexOf("%") - $_.IndexOf("n") - 2
-                            ).ToCharArray() | Where-Object {$_}
-                        ) -join ''
-                    ).TrimStart()} catch {0}
-                ) -and $percent -gt $oldpercent
-            ) {
-                # Update the progress bar
-                $oldpercent = $percent
-                Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running SFC... ($percent%)" -PercentComplete $percent
-            }
-        }
-
-        Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running DISM..." -PercentComplete 0
-        $oldpercent = 0
-        DISM /Online /Cleanup-Image /RestoreHealth | ForEach-Object {
-            # Write stdout to the Verbose stream
-            Write-Verbose $_
-
-            # Filter for lines that contain a percentage that is greater than the previous one
-            if (
-                ($percent = try {
-                    [int]($_ -replace "\[" -replace "=" -replace " " -replace "%" -replace "\]")
-                } catch {0}) `
-                -and $percent -gt $oldpercent
-            ) {
-                # Update the progress bar
-                $oldpercent = $percent
-                Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running DISM... ($percent%)" -PercentComplete $percent
-            }
-        }
-
-        Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running SFC again..." -PercentComplete 0
-        $oldpercent = 0
-        sfc /scannow 2>&1 | ForEach-Object {
-            # Write stdout to the Verbose stream
-            Write-Verbose $_
-
-            # Filter for lines that contain a percentage that is greater than the previous one
-            if (
-                (
-                    [int]$percent = try {(
-                        (
-                            $_.Substring(
-                                $_.IndexOf("n") + 2,
-                                $_.IndexOf("%") - $_.IndexOf("n") - 2
-                            ).ToCharArray() | Where-Object {$_}
-                        ) -join ''
-                    ).TrimStart()} catch {0}
-                ) -and $percent -gt $oldpercent
-            ) {
-                # Update the progress bar
-                $oldpercent = $percent
-                Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running SFC... ($percent%)" -PercentComplete $percent
-            }
-        }
-        Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Completed" -PercentComplete 100
+        Invoke-WPFSystemRepair
     }
 
 
