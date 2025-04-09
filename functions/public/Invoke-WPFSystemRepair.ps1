@@ -16,39 +16,26 @@ function Invoke-WPFSystemRepair {
             Runs chkdsk on the system drive
         .DESCRIPTION
             Chkdsk /Scan - Runs an online scan on the system drive, attempts to fix any corruption, and queues other corruption for fixing on reboot
-        .PARAMETER verbose
-            If specified, print output from chkdsk
-        .NOTES
-            VerbosePreference is set locally within a script block (& { ... }) to avoid affecting the global or parent scope.
         #>
         param(
-            [switch]$verbose,
             [int]$parentProgressId = 0
         )
-        & {
-            if ($verbose) {
-                $VerbosePreference = "Continue"
-            }
-            else {
-                $VerbosePreference = "SilentlyContinue"
-            }
-            
-            Write-Progress -Id 1 -ParentId $parentProgressId -Activity $childProgressBarActivity -Status "Running chkdsk..." -PercentComplete 0
-            $oldpercent = 0
-            # 2>&1 redirects stdout, allowing iteration over the output
-            chkdsk.exe /scan /perf 2>&1 | ForEach-Object {
-                Write-Verbose $_
-                # Regex to match the total percentage regardless of windows locale (it's always the second percentage in the status output)
-                if ($_ -match "%.*?(\d+)%") {
-                    [int]$percent = $matches[1]
-                    if ($percent -gt $oldpercent) {
-                        Write-Progress -Id 1 -Activity $childProgressBarActivity -Status "Running chkdsk... ($percent%)" -PercentComplete $percent
-                        $oldpercent = $percent
-                    }
+
+        Write-Progress -Id 1 -ParentId $parentProgressId -Activity $childProgressBarActivity -Status "Running chkdsk..." -PercentComplete 0
+        $oldpercent = 0
+        # 2>&1 redirects stdout, allowing iteration over the output
+        chkdsk.exe /scan /perf 2>&1 | ForEach-Object {
+            Write-Verbose $_
+            # Regex to match the total percentage regardless of windows locale (it's always the second percentage in the status output)
+            if ($_ -match "%.*?(\d+)%") {
+                [int]$percent = $matches[1]
+                if ($percent -gt $oldpercent) {
+                    Write-Progress -Id 1 -Activity $childProgressBarActivity -Status "Running chkdsk... ($percent%)" -PercentComplete $percent
+                    $oldpercent = $percent
                 }
             }
-            Write-Progress -Id 1 -Activity $childProgressBarActivity -Status "chkdsk Completed" -PercentComplete 100 -Completed
         }
+        Write-Progress -Id 1 -Activity $childProgressBarActivity -Status "chkdsk Completed" -PercentComplete 100 -Completed 
     }
 
     function Invoke-SFC {
@@ -57,25 +44,15 @@ function Invoke-WPFSystemRepair {
             Runs sfc on the system drive
         .DESCRIPTION
             SFC /ScanNow - Performs a scan of the system files and fixes any corruption
-        .PARAMETER verbose
-            If specified, print output from sfc
         .NOTES
-            VerbosePreference and ErrorActionPreference are set locally within a script block to isolate their effects. ErrorActionPreference suppresses false errors caused by sfc.exe output redirection.
+            ErrorActionPreference is set locally within a script block & {...} to isolate their effects. 
+            ErrorActionPreference suppresses false errors caused by sfc.exe output redirection.
             A bug in SFC output buffering causes progress updates to appear in chunks when redirecting output
-
         #>
         param(
-            [switch]$verbose,
             [int]$parentProgressId = 0
         )
-
         & {
-            if ($verbose) {
-                $VerbosePreference = "Continue"
-            }
-            else {
-                $VerbosePreference = "SilentlyContinue"
-            }
             $ErrorActionPreference = "SilentlyContinue"
             Write-Progress -Id 1 -ParentId $parentProgressId -Activity $childProgressBarActivity -Status "Running SFC..." -PercentComplete 0
             $oldpercent = 0
@@ -106,41 +83,25 @@ function Invoke-WPFSystemRepair {
               /Online           - Fixes the currently running system image
               /Cleanup-Image    - Performs cleanup operations on the image, could remove some unneeded temporary files
               /Restorehealth    - Performs a scan of the image and fixes any corruption
-
-        .PARAMETER verbose
-            If specified, print output from DISM
-        .NOTES
-            VerbosePreference is set locally within a script block (& { ... }) to avoid affecting the global or parent scope.
         #>
         param(
-            [switch]$verbose,
             [int]$parentProgressId = 0
         )
-        & {
-            if ($verbose) {
-                $VerbosePreference = "Continue"
-            }
-            else {
-                $VerbosePreference = "SilentlyContinue"
-            }
-
-            Write-Progress -Id 1 -ParentId $parentProgressId -Activity $childProgressBarActivity -Status "Running DISM..." -PercentComplete 0
-            $oldpercent = 0
-            DISM /Online /Cleanup-Image /RestoreHealth | ForEach-Object {
-                Write-Verbose $_
-
-                # Filter for lines that contain a percentage that is greater than the previous one
-                if ($_ -match "(\d+)[.,]\d+%") {
-                    [int]$percent = $matches[1]
-                    if ($percent -gt $oldpercent) {
-                        # Update the progress bar
-                        Write-Progress -Id 1 -Activity $childProgressBarActivity -Status "Running DISM... ($percent%)" -PercentComplete $percent
-                        $oldpercent = $percent
-                    }
+        Write-Progress -Id 1 -ParentId $parentProgressId -Activity $childProgressBarActivity -Status "Running DISM..." -PercentComplete 0
+        $oldpercent = 0
+        DISM /Online /Cleanup-Image /RestoreHealth | ForEach-Object {
+            Write-Verbose $_
+            # Filter for lines that contain a percentage that is greater than the previous one
+            if ($_ -match "(\d+)[.,]\d+%") {
+                [int]$percent = $matches[1]
+                if ($percent -gt $oldpercent) {
+                    # Update the progress bar
+                    Write-Progress -Id 1 -Activity $childProgressBarActivity -Status "Running DISM... ($percent%)" -PercentComplete $percent
+                    $oldpercent = $percent
                 }
             }
-            Write-Progress -Id 1 -Activity $childProgressBarActivity -Status "DISM Completed" -PercentComplete 100 -Completed
         }
+        Write-Progress -Id 1 -Activity $childProgressBarActivity -Status "DISM Completed" -PercentComplete 100 -Completed
     }
     
     $childProgressBarActivity = "Scanning for corruption"
