@@ -34,7 +34,7 @@ function Invoke-WPFButton {
         "WPFRemoveUltPerf" {Invoke-WPFUltimatePerformance -State "Disable"}
         "WPFundoall" {Invoke-WPFundoall}
         "WPFFeatureInstall" {Invoke-WPFFeatureInstall}
-        "WPFPanelDISM" {Invoke-WPFPanelDISM}
+        "WPFPanelDISM" {Invoke-WPFSystemRepair}
         "WPFPanelAutologin" {Invoke-WPFPanelAutologin}
         "WPFPanelcontrol" {Invoke-WPFControlPanel -Panel $button}
         "WPFPanelnetwork" {Invoke-WPFControlPanel -Panel $button}
