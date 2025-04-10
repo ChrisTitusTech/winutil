@@ -25,7 +25,7 @@ function Invoke-WPFSystemRepair {
         $oldpercent = 0
         # 2>&1 redirects stdout, allowing iteration over the output
         chkdsk.exe /scan /perf 2>&1 | ForEach-Object {
-            Write-Verbose $_
+            Write-Debug $_
             # Regex to match the total percentage regardless of windows locale (it's always the second percentage in the status output)
             if ($_ -match "%.*?(\d+)%") {
                 [int]$percent = $matches[1]
@@ -57,7 +57,7 @@ function Invoke-WPFSystemRepair {
             Write-Progress -Id 1 -ParentId $parentProgressId -Activity $childProgressBarActivity -Status "Running SFC..." -PercentComplete 0
             $oldpercent = 0
             sfc.exe /scannow 2>&1 | ForEach-Object {
-                Write-Verbose $_
+                Write-Debug $_
                 if ($_ -ne "") {
                     # sfc.exe /scannow outputs unicode characters, so we directly remove null characters for optimization
                     $utf8line = $_ -replace "`0", ""
@@ -90,7 +90,7 @@ function Invoke-WPFSystemRepair {
         Write-Progress -Id 1 -ParentId $parentProgressId -Activity $childProgressBarActivity -Status "Running DISM..." -PercentComplete 0
         $oldpercent = 0
         DISM /Online /Cleanup-Image /RestoreHealth | ForEach-Object {
-            Write-Verbose $_
+            Write-Debug $_
             # Filter for lines that contain a percentage that is greater than the previous one
             if ($_ -match "(\d+)[.,]\d+%") {
                 [int]$percent = $matches[1]
