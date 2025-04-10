@@ -188,7 +188,8 @@ public class PowerManagement {
                 }
             }
             catch {
-                # Do nothing
+                # Fall back to what we used to do: delayed disablement
+                Enable-WindowsOptionalFeature -Path "$scratchDir" -FeatureName "Recall"
             }
         }
 
