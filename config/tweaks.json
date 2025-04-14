@@ -128,23 +128,6 @@
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Home"
   },
-  "WPFTweaksDisableNews": {
-    "Content": "Disable News and Interest in Taskbar",
-    "Description": "Disables the 'News and Interest' taskbar widget.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a005_",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Feeds",
-        "Name": "EnableFeeds",
-        "Value": "0",
-        "OriginalValue": "1",
-        "Type": "DWord"
-      }
-    ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DisableNews"
-  },
   "WPFTweaksLoc": {
     "Content": "Disable Location Tracking",
     "Description": "Disables Location Tracking...DUH!",
