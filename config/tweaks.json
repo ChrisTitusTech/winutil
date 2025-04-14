@@ -3760,11 +3760,11 @@
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/RemoveUltPerf"
   },
   "WPFTweaksDisableExplorerAutoDiscovery": {
-    "Content": "Disable Explorer automatic folder discovery",
+    "Content": "Disable Explorer Automatic Folder Discovery",
     "Description": "Windows Explorer automatically tries to guess the type of the folder based on its contents, slowing down the browsing experience.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a017_",
+    "Order": "a005_",
     "InvokeScript": [
       "
       # Previously detected folders
