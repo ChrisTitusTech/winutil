@@ -2,6 +2,7 @@
   "Standard": [
     "WPFTweaksAH",
     "WPFTweaksConsumerFeatures",
+    "WPFTweaksDisableExplorerAutoDiscovery",
     "WPFTweaksDVR",
     "WPFTweaksHiber",
     "WPFTweaksHome",
@@ -18,6 +19,7 @@
   ],
   "Minimal": [
     "WPFTweaksConsumerFeatures",
+    "WPFTweaksDisableExplorerAutoDiscovery",
     "WPFTweaksHome",
     "WPFTweaksServices",
     "WPFTweaksTele"
