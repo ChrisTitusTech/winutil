@@ -29,20 +29,46 @@ function Invoke-WPFUnInstall {
     $confirm = [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
 
     if($confirm -eq "No") {return}
+    $ChocoPreference = $($sync.ChocoRadioButton.IsChecked)
 
-    $ManagerPreference = $sync["ManagerPreference"]
+    Invoke-WPFRunspace -ArgumentList @(("PackagesToUninstall", $PackagesToUninstall),("ChocoPreference", $ChocoPreference)) -DebugPreference $DebugPreference -ScriptBlock {
+        param($PackagesToUninstall, $ChocoPreference, $DebugPreference)
+        if ($PackagesToUninstall.count -eq 1) {
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
+        } else {
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
+        }
+        $packagesWinget, $packagesChoco = {
+            $packagesWinget = [System.Collections.ArrayList]::new()
+            $packagesChoco = [System.Collections.ArrayList]::new()
 
-    Invoke-WPFRunspace -ArgumentList @(("PackagesToUninstall", $PackagesToInstall),("ManagerPreference", $ManagerPreference)) -DebugPreference $DebugPreference -ScriptBlock {
-        param($PackagesToUninstall, $ManagerPreference, $DebugPreference)
-
-        $packagesSorted = Get-WinUtilSelectedPackages -PackageList $PackagesToInstall -Preference $ManagerPreference
-        $packagesWinget = $packagesSorted[[PackageManagers]::Winget]
-        $packagesChoco = $packagesSorted[[PackageManagers]::Choco]
+        foreach ($package in $PackagesToUninstall) {
+            if ($ChocoPreference) {
+                if ($package.choco -eq "na") {
+                    $packagesWinget.add($package.winget)
+                    Write-Host "Queueing $($package.winget) for Winget uninstall"
+                } else {
+                    $null = $packagesChoco.add($package.choco)
+                    Write-Host "Queueing $($package.choco) for Chocolatey uninstall"
+                }
+            }
+            else {
+                if ($package.winget -eq "na") {
+                    $packagesChoco.add($package.choco)
+                    Write-Host "Queueing $($package.choco) for Chocolatey uninstall"
+                } else {
+                    $null = $packagesWinget.add($($package.winget))
+                    Write-Host "Queueing $($package.winget) for Winget uninstall"
+                }
+            }
+        }
+        return $packagesWinget, $packagesChoco
+        }.Invoke($PackagesToUninstall)
 
         try {
             $sync.ProcessRunning = $true
 
-            # Uninstall all selected programs in new window
+            # Install all selected programs in new window
             if($packagesWinget.Count -gt 0) {
                 Install-WinUtilProgramWinget -Action Uninstall -Programs $packagesWinget
             }
