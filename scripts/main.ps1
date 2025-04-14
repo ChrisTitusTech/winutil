@@ -1,3 +1,12 @@
+# Create enums
+Add-Type @"
+public enum PackageManagers
+{
+    Winget,
+    Choco
+}
+"@
+
 # SPDX-License-Identifier: MIT
 # Set the maximum number of threads for the RunspacePool to the number of threads on the machine
 $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
@@ -142,12 +151,14 @@ Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "feat
 
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
 
-#Persist the Chocolatey preference across winutil restarts
-$ChocoPreferencePath = "$env:LOCALAPPDATA\winutil\preferChocolatey.ini"
-$sync.ChocoRadioButton.Add_Checked({New-Item -Path $ChocoPreferencePath -Force })
-$sync.ChocoRadioButton.Add_Unchecked({Remove-Item $ChocoPreferencePath -Force})
-if (Test-Path $ChocoPreferencePath) {
-   $sync.ChocoRadioButton.IsChecked = $true
+#Persist Package Manager preference across winutil restarts
+$sync.ChocoRadioButton.Add_Checked({Set-PackageManagerPreference Choco})
+$sync.WingetRadioButton.Add_Checked({Set-PackageManagerPreference Winget})
+Set-PackageManagerPreference
+
+switch ($sync["ManagerPreference"]) {
+    "Choco" {$sync.ChocoRadioButton.IsChecked = $true; break}
+    "Winget" {$sync.WingetRadioButton.IsChecked = $true; break}
 }
 
 $sync.keys | ForEach-Object {
