@@ -46,7 +46,6 @@ class GenericException : Exception {
     GenericException($Message) : base($Message) {}
 }
 
-
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
@@ -119,6 +118,7 @@ $sync.configs.applications.PSObject.Properties | ForEach-Object {
 
 # Now call the function with the final merged config
 Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
+
 # Add logic to handle click to the ToggleView Button on the Install Tab
 $sync.WPFToggleView.Add_Click({
     $sync.CompactView = -not $sync.CompactView
@@ -130,7 +130,9 @@ $sync.WPFToggleView.Add_Click({
 Invoke-WPFUIApps -Apps $sync.configs.applicationsHashtable -targetGridName "appspanel"
 
 Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
+
 Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
+
 # Future implementation: Add Windows Version to updates panel
 #Invoke-WPFUIElements -configVariable $sync.configs.updates -targetGridName "updatespanel" -columncount 1
 
@@ -303,8 +305,8 @@ $sync["Form"].Add_MouseLeftButtonDown({
 })
 
 $sync["Form"].Add_MouseDoubleClick({
-    if ($_.OriginalSource -is [System.Windows.Controls.Grid] -or
-        $_.OriginalSource -is [System.Windows.Controls.StackPanel]) {
+    if ($_.OriginalSource.Name -eq "NavDockPanel" -or
+        $_.OriginalSource.Name -eq "GridBesideNavDockPanel") {
             if ($sync["Form"].WindowState -eq [Windows.WindowState]::Normal) {
                 $sync["Form"].WindowState = [Windows.WindowState]::Maximized
             }
@@ -578,8 +580,6 @@ $sync["SponsorMenuItem"].Add_Click({
     }
     Show-CustomDialog -Title "Sponsors" -Message $authorInfo -EnableScroll $true
 })
-
-
 
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript

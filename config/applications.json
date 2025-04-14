@@ -527,14 +527,6 @@
         "link": "https://espanso.org/",
         "winget": "Espanso.Espanso"
     },
-    "etcher": {
-        "category": "Utilities",
-        "choco": "etcher",
-        "content": "Etcher USB Creator",
-        "description": "Etcher is a powerful tool for creating bootable USB drives with ease.",
-        "link": "https://www.balena.io/etcher/",
-        "winget": "Balena.Etcher"
-    },
     "falkon": {
         "category": "Browsers",
         "choco": "falkon",
@@ -1699,7 +1691,7 @@
         "category": "Games",
         "choco": "prismlauncher",
         "content": "Prism Launcher",
-        "description": "Prism Launcher is a game launcher and manager designed to provide a clean and intuitive interface for organizing and launching your games.",
+        "description": "Prism Launcher is an Open Source Minecraft launcher with the ability to manage multiple instances, accounts and mods.",
         "link": "https://prismlauncher.org/",
         "winget": "PrismLauncher.PrismLauncher"
     },
@@ -2934,5 +2926,13 @@
         "description": "Fork - a fast and friendly git client.",
         "link": "https://git-fork.com/",
         "winget": "Fork.Fork"
+    },
+    "ZenBrowser": {
+        "category": "Browsers",
+        "choco": "na",
+        "content": "Zen Browser",
+        "description": "The modern, privacy-focused, performance-driven browser built on Firefox",
+        "link": "https://zen-browser.app/",
+        "winget": "Zen-Team.Zen-Browser"
     }
 }

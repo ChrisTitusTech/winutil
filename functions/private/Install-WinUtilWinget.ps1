@@ -33,18 +33,44 @@ function Install-WinUtilWinget {
             return
         }
 
-        # Install Winget via GitHub method.
-        # Used part of my own script with some modification: ruxunderscore/windows-initialization
-        Write-Host "Downloading Winget and License File`r"
-        Get-WinUtilWingetLatest
-        Write-Host "Enabling NuGet and Module..."
-        Install-PackageProvider -Name NuGet -Force
-        Install-Module -Name Microsoft.WinGet.Client -Force
-        # Winget only needs a refresh of the environment variables to be used.
-        Write-Output "Refreshing Environment Variables...`n"
-        $ENV:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-    } catch {
-        Write-Error "Failed to install Winget: $($_.Exception.Message)"
-    }
+        Write-Host "Attempting to install/update Winget`r"
+        try {
+            $wingetCmd = Get-Command winget -ErrorAction Stop
+            Write-Information "Attempting to update WinGet using WinGet..."
+            $result = Start-Process -FilePath "`"$($wingetCmd.Source)`"" -ArgumentList "install -e --accept-source-agreements --accept-package-agreements Microsoft.AppInstaller" -Wait -NoNewWindow -PassThru
+            if ($result.ExitCode -ne 0) {
+                throw "WinGet update failed with exit code: $($result.ExitCode)"
+            }
+            Write-Output "Refreshing Environment Variables...`n"
+            $ENV:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+            return
+        } catch {
+            Write-Information "WinGet not found or update failed. Attempting to install from Microsoft Store..."
+        }
+        try {
+            Write-Host "Attempting to repair WinGet using Repair-WinGetPackageManager..." -ForegroundColor Yellow
 
+            # Check if Windows version supports Repair-WinGetPackageManager (24H2 and above)
+            if ([System.Environment]::OSVersion.Version.Build -ge 26100) {
+                Repair-WinGetPackageManager -Force -Latest -Verbose
+                # Verify if repair was successful
+                $wingetCmd = Get-Command winget -ErrorAction Stop
+                Write-Host "WinGet repair successful!" -ForegroundColor Green
+            } else {
+                Write-Host "Repair-WinGetPackageManager is only available on Windows 24H2 and above. Your version doesn't support this method." -ForegroundColor Yellow
+                throw "Windows version not supported for repair method"
+            }
+
+            Write-Output "Refreshing Environment Variables...`n"
+            $ENV:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+            return
+
+        } catch {
+            Write-Error "All installation methods failed. Unable to install WinGet."
+            throw
+        }
+    } catch {
+        Write-Error "An error occurred during WinGet installation: $_"
+        throw
+    }
 }

@@ -424,26 +424,6 @@
         "OriginalType": "Automatic"
       },
       {
-        "Name": "DoSvc",
-        "StartupType": "AutomaticDelayedStart",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "DsSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "DsmSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "DusmSvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
         "Name": "EFS",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -899,11 +879,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "SgrmBroker",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
         "Name": "SharedAccess",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -932,11 +907,6 @@
         "Name": "SstpSvc",
         "StartupType": "Manual",
         "OriginalType": "Manual"
-      },
-      {
-        "Name": "StateRepository",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
       },
       {
         "Name": "StiSvc",
@@ -971,11 +941,6 @@
       {
         "Name": "TermService",
         "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "TextInputManagementService",
-        "StartupType": "Manual",
         "OriginalType": "Automatic"
       },
       {
@@ -3443,12 +3408,30 @@
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/WPFToggleStartMenuRecommendations"
   },
+  "WPFToggleHideSettingsHome": {
+    "Content": "Remove Settings Home Page",
+    "Description": "Removes the Home page in the Windows Settings app.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a105_",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+        "Name": "SettingsPageVisibility",
+        "Type": "String",
+        "Value": "hide:home",
+        "OriginalValue": "show:home",
+        "DefaultState": "false"
+      }
+    ]
+  },
   "WPFToggleSnapWindow": {
     "Content": "Snap Window",
     "Description": "If enabled you can align windows by dragging them. | Relogin Required",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a105_",
+    "Order": "a106_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3467,7 +3450,7 @@
     "Description": "If enabled then Snap preview is disabled when maximize button is hovered.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a106_",
+    "Order": "a107_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3496,7 +3479,7 @@
     "Description": "If enabled then you will get suggestions to snap other applications in the left over spaces.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a107_",
+    "Order": "a108_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3525,7 +3508,7 @@
     "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a108_",
+    "Order": "a109_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3560,7 +3543,7 @@
     "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a109_",
+    "Order": "a110_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3769,5 +3752,60 @@
     "Type": "Button",
     "ButtonWidth": "300",
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/RemoveUltPerf"
-  }
+  },
+  "WPFTweaksDisableExplorerAutoDiscovery": {
+    "Content": "Disable Explorer Automatic Folder Discovery",
+    "Description": "Windows Explorer automatically tries to guess the type of the folder based on its contents, slowing down the browsing experience.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a005_",
+    "InvokeScript": [
+      "
+      # Previously detected folders
+      $bags = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\"
+
+      # Folder types lookup table
+      $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
+
+      # Flush explorer view database
+      Remove-Item -Path $bags -Recurse -Force
+      Write-Host \"Removed $bags\"
+
+      Remove-Item -Path $bagMRU -Recurse -Force
+      Write-Host \"Removed $bagMRU\"
+
+      # Every folder
+      $allFolders = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\\AllFolders\\Shell\"
+
+      if (!(Test-Path $allFolders)) {
+        New-Item -Path $allFolders -Force
+        Write-Host \"Created $allFolders\"
+      }
+
+      # Generic view
+      New-ItemProperty -Path $allFolders -Name \"FolderType\" -Value \"NotSpecified\" -PropertyType String -Force
+      Write-Host \"Set FolderType to NotSpecified\"
+
+      Write-Host Please sign out and back in, or restart your computer to apply the changes!
+      "
+    ],
+    "UndoScript": [
+      "
+      # Previously detected folders
+      $bags = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\"
+
+      # Folder types lookup table
+      $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
+
+      # Flush explorer view database
+      Remove-Item -Path $bags -Recurse -Force
+      Write-Host \"Removed $bags\"
+
+      Remove-Item -Path $bagMRU -Recurse -Force
+      Write-Host \"Removed $bagMRU\"
+
+      Write-Host Please sign out and back in, or restart your computer to apply the changes!
+      "
+    ],
+  },
 }

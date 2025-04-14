@@ -7,7 +7,7 @@
         "CustomDialogHeight":         "200",
         "FontSize":         "12",
         "FontFamily":       "Arial",
-        "HeadingFontSize":  "16",
+        "HeaderFontSize":  "16",
         "HeaderFontFamily": "Consolas, Monaco",
         "CheckBoxBulletDecoratorSize": "14",
         "CheckBoxMargin": "15,0,0,2",
@@ -35,7 +35,8 @@
         "CheckboxMouseOverColor": "#999999",
         "ButtonBorderThickness":  "1",
         "ButtonMargin":  "1",
-        "ButtonCornerRadius": "2"
+        "ButtonCornerRadius": "2",
+        "AppTileImageSize": "40"
     },
     "Light": {
         "AppInstallUnselectedColor": "#F0F0F0",
