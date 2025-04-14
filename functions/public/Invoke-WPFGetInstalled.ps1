@@ -18,15 +18,15 @@ function Invoke-WPFGetInstalled {
     if (($sync.ChocoRadioButton.IsChecked -eq $false) -and ((Test-WinUtilPackageManager -winget) -eq "not-installed") -and $checkbox -eq "winget") {
         return
     }
-    $managerPreference = $sync["ManagerPreference"]
+    $preferChoco = $sync.ChocoRadioButton.IsChecked
     $sync.ItemsControl.Dispatcher.Invoke([action] {
             $sync.ItemsControl.Items | ForEach-Object { $_.Visibility = [Windows.Visibility]::Collapsed }
             $null = $sync.itemsControl.Items.Add($sync.LoadingLabel)
         })
-    Invoke-WPFRunspace -ParameterList @(("managerPreference", $managerPreference),("checkbox", $checkbox),("ShowOnlyCheckedApps", ${function:Show-OnlyCheckedApps})) -DebugPreference $DebugPreference -ScriptBlock {
+    Invoke-WPFRunspace -ParameterList @(("preferChoco", $preferChoco),("checkbox", $checkbox),("ShowOnlyCheckedApps", ${function:Show-OnlyCheckedApps})) -DebugPreference $DebugPreference -ScriptBlock {
         param (
             [string]$checkbox,
-            [PackageManagers]$managerPreference,
+            [boolean]$preferChoco,
             [scriptblock]$ShowOnlyCheckedApps
         )
         $sync.ProcessRunning = $true
@@ -34,10 +34,8 @@ function Invoke-WPFGetInstalled {
 
         if ($checkbox -eq "winget") {
             Write-Host "Getting Installed Programs..."
-            switch ($managerPreference) {
-                "Choco"{$Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox "choco"; break}
-                "Winget"{$Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox; break}
-            }
+            if ($preferChoco) { $Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox "choco" }
+            else { $Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox }
         }
         elseif ($checkbox -eq "tweaks") {
             Write-Host "Getting Installed Tweaks..."
