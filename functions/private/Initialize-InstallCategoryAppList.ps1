@@ -73,7 +73,7 @@ function Initialize-InstallCategoryAppList {
                 $wrapPanel.Visibility = [Windows.Visibility]::Collapsed
                 $wrapPanel.Tag = "CategoryWrapPanel_$category"
                 $null = $TargetElement.Items.Add($wrapPanel)
-                $appsByCategory[$category] | ForEach-Object {
+                $appsByCategory[$category] |Sort-Object | ForEach-Object {
                     $sync.$_ =  $(Initialize-InstallAppEntry -TargetElement $wrapPanel -AppKey $_)
             }
         }
