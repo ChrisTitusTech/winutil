@@ -3812,6 +3812,6 @@
 
       Write-Host Please sign out and back in, or restart your computer to apply the changes!
       "
-    ],
-  },
+    ]
+  }
 }
