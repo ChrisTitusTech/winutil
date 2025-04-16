@@ -42,6 +42,7 @@ $sync.ProcessRunning = $false
 $sync.selectedApps = [System.Collections.Generic.List[string]]::new()
 $sync.ShowOnlySeleced = $false
 $sync.currentTab = "Install"
+$sync.CompactView = $true
 $sync.ShowOnlySelected = $false
 $sync.selectedAppsStackPanel
 $sync.selectedAppsPopup
