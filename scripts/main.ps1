@@ -200,7 +200,7 @@ Invoke-WPFRunspace -ScriptBlock {
         $sync.ConfigLoaded = $True
     }
     finally{
-        $ProgressPreference = "Continue"
+        $ProgressPreference = $oldProgressPreference
     }
 
 } | Out-Null
@@ -334,55 +334,6 @@ $sync["Form"].Add_Deactivated({
 })
 
 $sync["Form"].Add_ContentRendered({
-
-    try {
-        [void][Window]
-    } catch {
-Add-Type @"
-        using System;
-        using System.Runtime.InteropServices;
-        public class Window {
-            [DllImport("user32.dll")]
-            public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
-
-            [DllImport("user32.dll")]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
-
-            [DllImport("user32.dll")]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            public static extern bool MoveWindow(IntPtr handle, int x, int y, int width, int height, bool redraw);
-
-            [DllImport("user32.dll")]
-            public static extern int GetSystemMetrics(int nIndex);
-        };
-        public struct RECT {
-            public int Left;   // x position of upper-left corner
-            public int Top;    // y position of upper-left corner
-            public int Right;  // x position of lower-right corner
-            public int Bottom; // y position of lower-right corner
-        }
-"@
-    }
-
-   foreach ($proc in (Get-Process).where{ $_.MainWindowTitle -and $_.MainWindowTitle -like "*titus*" }) {
-        # Check if the process's MainWindowHandle is valid
-        if ($proc.MainWindowHandle -ne [System.IntPtr]::Zero) {
-            Write-Debug "MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle) $($proc.MainWindowHandle)"
-            $windowHandle = $proc.MainWindowHandle
-        } else {
-            Write-Warning "Process found, but no MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle)"
-
-        }
-    }
-
-    $rect = New-Object RECT
-    [Window]::GetWindowRect($windowHandle, [ref]$rect)
-    $width  = $rect.Right  - $rect.Left
-    $height = $rect.Bottom - $rect.Top
-
-    Write-Debug "UpperLeft:$($rect.Left),$($rect.Top) LowerBottom:$($rect.Right),$($rect.Bottom). Width:$($width) Height:$($height)"
-
     # Load the Windows Forms assembly
     Add-Type -AssemblyName System.Windows.Forms
     $primaryScreen = [System.Windows.Forms.Screen]::PrimaryScreen
@@ -397,9 +348,12 @@ Add-Type @"
         Write-Debug "Primary Monitor Height: $screenHeight pixels"
 
         # Compare with the primary monitor size
-        if ($width -gt $screenWidth -or $height -gt $screenHeight) {
+        if ($sync.Form.ActualWidth -gt $screenWidth -or $sync.Form.ActualHeight -gt $screenHeight) {
             Write-Debug "The specified width and/or height is greater than the primary monitor size."
-            [void][Window]::MoveWindow($windowHandle, 0, 0, $screenWidth, $screenHeight, $True)
+            $sync.Form.Left = 0
+            $sync.Form.Top = 0
+            $sync.Form.Width = $screenWidth
+            $sync.Form.Height = $screenHeight
         } else {
             Write-Debug "The specified width and height are within the primary monitor size limits."
         }
