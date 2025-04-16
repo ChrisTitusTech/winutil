@@ -132,9 +132,6 @@ Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName
 $sync.WPFToggleView.Add_Click({
     $sync.CompactView = -not $sync.CompactView
     Update-AppTileProperties
-    if ($sync.SearchBar.Text -eq "") {
-        Set-CategoryVisibility -Category "*"
-    }
 })
 Invoke-WPFUIApps -Apps $sync.configs.applicationsHashtable -targetGridName "appspanel"
 
@@ -197,7 +194,6 @@ $sync.keys | ForEach-Object {
 # Load computer information in the background
 Invoke-WPFRunspace -ScriptBlock {
     try {
-        $oldProgressPreference = $ProgressPreference
         $ProgressPreference = "SilentlyContinue"
         $sync.ConfigLoaded = $False
         $sync.ComputerInfo = Get-ComputerInfo
@@ -215,12 +211,6 @@ Invoke-WPFRunspace -ScriptBlock {
 
 # Print the logo
 Invoke-WPFFormVariables
-$sync.CompactView = $false
-$sync.Form.Resources.AppTileWidth = [double]::NaN
-$sync.Form.Resources.AppTileCompactVisibility = [Windows.Visibility]::Visible
-$sync.Form.Resources.AppTileFontSize = [double]16
-$sync.Form.Resources.AppTileMargins = [Windows.Thickness]5
-$sync.Form.Resources.AppTileBorderThickness = [Windows.Thickness]0
 function Update-AppTileProperties {
     if ($sync.CompactView -eq $true) {
         $sync.Form.Resources.AppTileWidth = [double]::NaN
@@ -229,14 +219,25 @@ function Update-AppTileProperties {
         $sync.Form.Resources.AppTileMargins = [Windows.Thickness]2
         $sync.Form.Resources.AppTileBorderThickness = [Windows.Thickness]0
     }
-    else {
-        $sync.Form.Resources.AppTileWidth = $sync.ItemsControl.ActualWidth -20
+    else {    
+        # On first load, set the AppTileWidth to NaN because the Window dosnt exist yet and there is no ActuaWidth
+        if ($sync.ItemsControl.ActualWidth -gt 0) {
+            $sync.Form.Resources.AppTileWidth = $sync.ItemsControl.ActualWidth -20}
+        else {
+            $sync.Form.Resources.AppTileWidth = [double]::NaN
+        }
         $sync.Form.Resources.AppTileCompactVisibility = [Windows.Visibility]::Visible
         $sync.Form.Resources.AppTileFontSize = [double]16
         $sync.Form.Resources.AppTileMargins = [Windows.Thickness]5
         $sync.Form.Resources.AppTileBorderThickness = [Windows.Thickness]1
     }
+    if ($sync.SearchBar.Text -eq "") {
+        Set-CategoryVisibility -Category "*"
+    }
 }
+# initialize AppTile properties
+Update-AppTileProperties
+
 # We need to update the app tile properties when the form is resized because to fill a WrapPanel update the width of the elemenmt manually (afaik)
 $sync.Form.Add_SizeChanged({
     Update-AppTileProperties
