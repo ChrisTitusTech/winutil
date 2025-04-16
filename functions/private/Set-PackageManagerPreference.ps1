@@ -24,17 +24,15 @@ function Set-PackageManagerPreference {
             $preferedPackageManager = [PackageManagers]::Choco
             Remove-Item -Path $oldChocoPath
         }
-        else {
+        elseif (Test-Path -Path $preferencePath) {
             $potential = Get-Content -Path $preferencePath -TotalCount 1
-            if ($potential)
-                {$preferedPackageManager = [PackageManagers]$potential}
+            $preferedPackageManager = [PackageManagers]$potential
+        }
+        else {
+            Write-Debug "Creating new preference file, defaulting to winget."
+            $preferedPackageManager = [PackageManagers]::Winget
         }
     }
-
-    #If no preference argument, .ini file bad read, and $sync empty then default to winget.
-    if ($null -eq $preferedPackageManager -and $null -eq $sync["ManagerPreference"])
-        { $preferedPackageManager = [PackageManagers]::Winget }
-
 
     $sync["ManagerPreference"] = [PackageManagers]::$preferedPackageManager
     Write-Debug "Manager Preference changed to '$($sync["ManagerPreference"])'"

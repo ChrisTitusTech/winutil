@@ -219,7 +219,7 @@ function Update-AppTileProperties {
         $sync.Form.Resources.AppTileMargins = [Windows.Thickness]2
         $sync.Form.Resources.AppTileBorderThickness = [Windows.Thickness]0
     }
-    else {    
+    else {
         # On first load, set the AppTileWidth to NaN because the Window dosnt exist yet and there is no ActuaWidth
         if ($sync.ItemsControl.ActualWidth -gt 0) {
             $sync.Form.Resources.AppTileWidth = $sync.ItemsControl.ActualWidth -20}
