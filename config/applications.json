@@ -1503,14 +1503,6 @@
         "link": "https://github.com/namazso/OpenHashTab/",
         "winget": "namazso.OpenHashTab"
     },
-    "openoffice": {
-        "category": "Document",
-        "choco": "openoffice",
-        "content": "Apache OpenOffice",
-        "description": "Apache OpenOffice is an open-source office software suite for word processing, spreadsheets, presentations, and more.",
-        "link": "https://www.openoffice.org/",
-        "winget": "Apache.OpenOffice"
-    },
     "openrgb": {
         "category": "Utilities",
         "choco": "openrgb",
