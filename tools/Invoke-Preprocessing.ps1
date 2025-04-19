@@ -3,12 +3,9 @@ function Invoke-Preprocessing {
         .SYNOPSIS
         A function that does Code Formatting using RegEx, useful when trying to force specific coding standard(s) to a project.
 
-        .PARAMETER SkipExcludedFilesValidation
-        A switch to stop file path validation on 'ExcludedFiles' list.
-
         .PARAMETER ExcludedFiles
         A list of file paths which're *relative to* 'WorkingDir' Folder, every item in the list can be pointing to File (doesn't end with '\') or Directory (ends with '\') or None-Existing File/Directory.
-        By default, it checks if everyitem exists, and throws an exception if one or more are not found (None-Existing), if you want to skip this validation, please consider providing the '-SkipExcludedFilesValidation' switch to skip this check.
+        By default, it checks if everyitem exists, and throws an exception if one or more are not found (None-Existing).
 
         .PARAMETER WorkingDir
         The folder to search inside recursively for files which're going to be Preprocessed (Code Formatted), unless they're found in 'ExcludedFiles' List.
@@ -36,7 +33,6 @@ function Invoke-Preprocessing {
         .EXAMPLE
         Invoke-Preprocessing -Skip -WorkingDir "DRIVE:\Path\To\Folder\" -ExcludedFiles @('file.txt', '.\.git\', '*.png') -ProgressStatusMessage "Doing Preprocessing"
 
-        Same as Example No. 1, but uses '-SkipExcludedFilesValidation', which'll skip the validation step for 'ExcludedFiles' list. This can be useful when 'ExcludedFiles' list is generated from another function, or from unreliable source (you can't guarantee every item in list is a valid path), but you want to silently continue through the function.
     #>
 
     param (
@@ -62,9 +58,8 @@ function Invoke-Preprocessing {
     ForEach ($excludedFile in $ExcludedFiles) {
         $InternalExcludedFiles.Add($excludedFile) | Out-Null
     }
-
-    # Validate the ExcludedItems List before continuing on,
-    # that's if there's a list in the first place, and '-SkipInternalExcludedFilesValidation' was not provided.
+    
+    # Validate the ExcludedItems List before continuing on
     if ($ExcludedFiles.Count -gt 0) {
         ForEach ($excludedFile in $ExcludedFiles) {
             $filePath = "$(($WorkingDir -replace ('\\$', '')) + '\' + ($excludedFile -replace ('\.\\', '')))"
@@ -76,8 +71,8 @@ function Invoke-Preprocessing {
             } else { $failedFilesList += "'$filePath', " }
         }
         $failedFilesList = $failedFilesList -replace (',\s*$', '')
-        if ((-not $failedFilesList -eq "") -and (-not $SkipExcludedFilesValidation) -and (-not $excludedFile -eq ".preprocessor_hashes.json")) {
-            throw "[Invoke-Preprocessing] One or more File Paths and/or File Patterns were not found, you can use '-SkipExcludedFilesValidation' switch to skip this check, the failed to validate are: $failedFilesList"
+        if ((-not $failedFilesList -eq "")) {
+            Write-Warning "[Invoke-Preprocessing] One or more File Paths and/or File Patterns were not found: $failedFilesList"
         }
     }
 
