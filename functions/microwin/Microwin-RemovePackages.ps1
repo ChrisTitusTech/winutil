@@ -90,7 +90,7 @@ function Microwin-RemovePackages {
                 $status = "Removing package $package"
                 Write-Progress -Activity "Removing Packages" -Status $status -PercentComplete ($counter++/$pkglist.Count*100)
                 Write-Debug "Removing package $package"
-                dism /english /image="$scratchDir" /remove-package /packagename=$package /remove /quiet /norestart | Out-Null
+                dism /english /image="$scratchDir" /remove-package /packagename=$package /quiet /norestart | Out-Null
                 if ($? -eq $false) {
                     Write-Host "Package $package could not be removed."
                 }

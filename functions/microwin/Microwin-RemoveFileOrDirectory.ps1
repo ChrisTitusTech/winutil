@@ -12,7 +12,11 @@ function Microwin-RemoveFileOrDirectory([string]$pathToDelete, [string]$mask = "
         [void]$itemsToDelete.Add($pathToDelete)
     } else {
         Write-Debug "Adding $($pathToDelete) to array and mask is $($mask)"
-        if ($Directory) { $itemsToDelete = Get-ChildItem $pathToDelete -Include $mask -Recurse -Directory } else { $itemsToDelete = Get-ChildItem $pathToDelete -Include $mask -Recurse }
+        if ($Directory) {
+            $itemsToDelete = Get-ChildItem $pathToDelete -Include $mask -Recurse -Directory
+        } else {
+            $itemsToDelete = Get-ChildItem $pathToDelete -Include $mask -Recurse
+        }
     }
 
     foreach($itemToDelete in $itemsToDelete) {
