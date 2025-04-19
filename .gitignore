@@ -11,6 +11,9 @@
 
 winutil.pdb
 
+### Preprocessor Hashes ###
+.preprocessor_hashes.json
+
 ### Windows ###
 
 # Folder config file
