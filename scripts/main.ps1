@@ -1,3 +1,12 @@
+# Create enums
+Add-Type @"
+public enum PackageManagers
+{
+    Winget,
+    Choco
+}
+"@
+
 # SPDX-License-Identifier: MIT
 # Set the maximum number of threads for the RunspacePool to the number of threads on the machine
 $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
@@ -123,9 +132,6 @@ Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName
 $sync.WPFToggleView.Add_Click({
     $sync.CompactView = -not $sync.CompactView
     Update-AppTileProperties
-    if ($sync.SearchBar.Text -eq "") {
-        Set-CategoryVisibility -Category "*"
-    }
 })
 Invoke-WPFUIApps -Apps $sync.configs.applicationsHashtable -targetGridName "appspanel"
 
@@ -142,12 +148,14 @@ Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "feat
 
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
 
-#Persist the Chocolatey preference across winutil restarts
-$ChocoPreferencePath = "$env:LOCALAPPDATA\winutil\preferChocolatey.ini"
-$sync.ChocoRadioButton.Add_Checked({New-Item -Path $ChocoPreferencePath -Force })
-$sync.ChocoRadioButton.Add_Unchecked({Remove-Item $ChocoPreferencePath -Force})
-if (Test-Path $ChocoPreferencePath) {
-   $sync.ChocoRadioButton.IsChecked = $true
+#Persist Package Manager preference across winutil restarts
+$sync.ChocoRadioButton.Add_Checked({Set-PackageManagerPreference Choco})
+$sync.WingetRadioButton.Add_Checked({Set-PackageManagerPreference Winget})
+Set-PackageManagerPreference
+
+switch ($sync["ManagerPreference"]) {
+    "Choco" {$sync.ChocoRadioButton.IsChecked = $true; break}
+    "Winget" {$sync.WingetRadioButton.IsChecked = $true; break}
 }
 
 $sync.keys | ForEach-Object {
@@ -186,7 +194,6 @@ $sync.keys | ForEach-Object {
 # Load computer information in the background
 Invoke-WPFRunspace -ScriptBlock {
     try {
-        $oldProgressPreference = $ProgressPreference
         $ProgressPreference = "SilentlyContinue"
         $sync.ConfigLoaded = $False
         $sync.ComputerInfo = Get-ComputerInfo
@@ -204,12 +211,6 @@ Invoke-WPFRunspace -ScriptBlock {
 
 # Print the logo
 Invoke-WPFFormVariables
-$sync.CompactView = $false
-$sync.Form.Resources.AppTileWidth = [double]::NaN
-$sync.Form.Resources.AppTileCompactVisibility = [Windows.Visibility]::Visible
-$sync.Form.Resources.AppTileFontSize = [double]16
-$sync.Form.Resources.AppTileMargins = [Windows.Thickness]5
-$sync.Form.Resources.AppTileBorderThickness = [Windows.Thickness]0
 function Update-AppTileProperties {
     if ($sync.CompactView -eq $true) {
         $sync.Form.Resources.AppTileWidth = [double]::NaN
@@ -219,13 +220,24 @@ function Update-AppTileProperties {
         $sync.Form.Resources.AppTileBorderThickness = [Windows.Thickness]0
     }
     else {
-        $sync.Form.Resources.AppTileWidth = $sync.ItemsControl.ActualWidth -20
+        # On first load, set the AppTileWidth to NaN because the Window dosnt exist yet and there is no ActuaWidth
+        if ($sync.ItemsControl.ActualWidth -gt 0) {
+            $sync.Form.Resources.AppTileWidth = $sync.ItemsControl.ActualWidth -20}
+        else {
+            $sync.Form.Resources.AppTileWidth = [double]::NaN
+        }
         $sync.Form.Resources.AppTileCompactVisibility = [Windows.Visibility]::Visible
         $sync.Form.Resources.AppTileFontSize = [double]16
         $sync.Form.Resources.AppTileMargins = [Windows.Thickness]5
         $sync.Form.Resources.AppTileBorderThickness = [Windows.Thickness]1
     }
+    if ($sync.SearchBar.Text -eq "") {
+        Set-CategoryVisibility -Category "*"
+    }
 }
+# initialize AppTile properties
+Update-AppTileProperties
+
 # We need to update the app tile properties when the form is resized because to fill a WrapPanel update the width of the elemenmt manually (afaik)
 $sync.Form.Add_SizeChanged({
     Update-AppTileProperties
@@ -309,8 +321,8 @@ $sync["Form"].Add_MouseLeftButtonDown({
 })
 
 $sync["Form"].Add_MouseDoubleClick({
-    if ($_.OriginalSource -is [System.Windows.Controls.Grid] -or
-        $_.OriginalSource -is [System.Windows.Controls.StackPanel]) {
+    if ($_.OriginalSource.Name -eq "NavDockPanel" -or
+        $_.OriginalSource.Name -eq "GridBesideNavDockPanel") {
             if ($sync["Form"].WindowState -eq [Windows.WindowState]::Normal) {
                 $sync["Form"].WindowState = [Windows.WindowState]::Maximized
             }

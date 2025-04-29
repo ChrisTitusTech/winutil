@@ -527,14 +527,6 @@
         "link": "https://espanso.org/",
         "winget": "Espanso.Espanso"
     },
-    "etcher": {
-        "category": "Utilities",
-        "choco": "etcher",
-        "content": "Etcher USB Creator",
-        "description": "Etcher is a powerful tool for creating bootable USB drives with ease.",
-        "link": "https://www.balena.io/etcher/",
-        "winget": "Balena.Etcher"
-    },
     "falkon": {
         "category": "Browsers",
         "choco": "falkon",
@@ -709,7 +701,7 @@
         "content": "GIMP (Image Editor)",
         "description": "GIMP is a versatile open-source raster graphics editor used for tasks such as photo retouching, image editing, and image composition.",
         "link": "https://www.gimp.org/",
-        "winget": "GIMP.GIMP"
+        "winget": "GIMP.GIMP.3"
     },
     "git": {
         "category": "Development",
