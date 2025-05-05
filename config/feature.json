@@ -10,7 +10,7 @@
       "NetFx3"
     ],
     "InvokeScript": [],
-    "link": "https://christitustech.github.io/winutil/dev/features/Features/dotnet"
+    "link": "https://winutil.christitus.com/dev/features/features/dotnet"
   },
   "WPFFeatureshyperv": {
     "Content": "HyperV Virtualization",
@@ -31,7 +31,7 @@
     "InvokeScript": [
       "Start-Process -FilePath cmd.exe -ArgumentList '/c bcdedit /set hypervisorschedulertype classic' -Wait"
     ],
-    "link": "https://christitustech.github.io/winutil/dev/features/Features/hyperv"
+    "link": "https://winutil.christitus.com/dev/features/features/hyperv"
   },
   "WPFFeatureslegacymedia": {
     "Content": "Legacy Media (WMP, DirectPlay)",
@@ -46,7 +46,7 @@
       "LegacyComponents"
     ],
     "InvokeScript": [],
-    "link": "https://christitustech.github.io/winutil/dev/features/Features/legacymedia"
+    "link": "https://winutil.christitus.com/dev/features/features/legacymedia"
   },
   "WPFFeaturewsl": {
     "Content": "Windows Subsystem for Linux",
@@ -59,7 +59,7 @@
       "Microsoft-Windows-Subsystem-Linux"
     ],
     "InvokeScript": [],
-    "link": "https://christitustech.github.io/winutil/dev/features/Features/wsl"
+    "link": "https://winutil.christitus.com/dev/features/features/wsl"
   },
   "WPFFeaturenfs": {
     "Content": "NFS - Network File System",
@@ -79,7 +79,7 @@
       "nfsadmin client start",
       "nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i"
     ],
-    "link": "https://christitustech.github.io/winutil/dev/features/Features/nfs"
+    "link": "https://winutil.christitus.com/dev/features/features/nfs"
   },
   "WPFFeatureEnableSearchSuggestions": {
     "Content": "Enable Search Box Web Suggestions in Registry(explorer restart)",
@@ -97,7 +97,7 @@
       Stop-Process -name explorer -force
       "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/features/Features/EnableSearchSuggestions"
+    "link": "https://winutil.christitus.com/dev/features/features/enablesearchsuggestions"
   },
   "WPFFeatureDisableSearchSuggestions": {
     "Content": "Disable Search Box Web Suggestions in Registry(explorer restart)",
@@ -115,7 +115,7 @@
       Stop-Process -name explorer -force
       "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/features/Features/DisableSearchSuggestions"
+    "link": "https://winutil.christitus.com/dev/features/features/disablesearchsuggestions"
   },
   "WPFFeatureRegBackup": {
     "Content": "Enable Daily Registry Backup Task 12.30am",
@@ -133,7 +133,7 @@
       Register-ScheduledTask -Action $action -Trigger $trigger -TaskName 'AutoRegBackup' -Description 'Create System Registry Backups' -User 'System'
       "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/features/Features/RegBackup"
+    "link": "https://winutil.christitus.com/dev/features/features/regbackup"
   },
   "WPFFeatureEnableLegacyRecovery": {
     "Content": "Enable Legacy F8 Boot Recovery",
@@ -151,7 +151,7 @@
       Start-Process -FilePath cmd.exe -ArgumentList '/c bcdedit /Set {Current} BootMenuPolicy Legacy' -Wait
       "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/features/Features/EnableLegacyRecovery"
+    "link": "https://winutil.christitus.com/dev/features/features/enablelegacyrecovery"
   },
   "WPFFeatureDisableLegacyRecovery": {
     "Content": "Disable Legacy F8 Boot Recovery",
@@ -169,7 +169,7 @@
       Start-Process -FilePath cmd.exe -ArgumentList '/c bcdedit /Set {Current} BootMenuPolicy Standard' -Wait
       "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/features/Features/DisableLegacyRecovery"
+    "link": "https://winutil.christitus.com/dev/features/features/disablelegacyrecovery"
   },
   "WPFFeaturesSandbox": {
     "Content": "Windows Sandbox",
@@ -177,7 +177,7 @@
     "panel": "1",
     "Order": "a021_",
     "Description": "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation.",
-    "link": "https://christitustech.github.io/winutil/dev/features/Features/Sandbox"
+    "link": "https://winutil.christitus.com/dev/features/features/sandbox"
   },
   "WPFFeatureInstall": {
     "Content": "Install Features",
@@ -186,7 +186,7 @@
     "Order": "a060_",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/features/Features/Install"
+    "link": "https://winutil.christitus.com/dev/features/features/install"
   },
   "WPFPanelAutologin": {
     "Content": "Set Up Autologin",
@@ -195,7 +195,7 @@
     "panel": "1",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Autologin"
+    "link": "https://winutil.christitus.com/dev/features/fixes/autologin"
   },
   "WPFFixesUpdate": {
     "Content": "Reset Windows Update",
@@ -204,7 +204,7 @@
     "Order": "a041_",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Update"
+    "link": "https://winutil.christitus.com/dev/features/fixes/update"
   },
   "WPFFixesNetwork": {
     "Content": "Reset Network",
@@ -213,7 +213,7 @@
     "panel": "1",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Network"
+    "link": "https://winutil.christitus.com/dev/features/fixes/network"
   },
   "WPFPanelDISM": {
     "Content": "System Corruption Scan",
@@ -222,7 +222,7 @@
     "Order": "a043_",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/DISM"
+    "link": "https://winutil.christitus.com/dev/features/fixes/dism"
   },
   "WPFFixesWinget": {
     "Content": "WinGet Reinstall",
@@ -231,7 +231,7 @@
     "Order": "a044_",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Winget"
+    "link": "https://winutil.christitus.com/dev/features/fixes/winget"
   },
   "WPFRunAdobeCCCleanerTool": {
     "Content": "Remove Adobe Creative Cloud",
@@ -240,7 +240,7 @@
     "Order": "a045_",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/RunAdobeCCCleanerTool"
+    "link": "https://winutil.christitus.com/dev/features/fixes/runadobecccleanertool"
   },
   "WPFPanelnetwork": {
     "Content": "Network Connections",
@@ -248,7 +248,7 @@
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/network"
+    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/network"
   },
   "WPFPanelcontrol": {
     "Content": "Control Panel",
@@ -256,7 +256,7 @@
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/control"
+    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/control"
   },
   "WPFPanelpower": {
     "Content": "Power Panel",
@@ -264,7 +264,7 @@
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/power"
+    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/power"
   },
   "WPFPanelregion": {
     "Content": "Region",
@@ -272,7 +272,7 @@
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/region"
+    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/region"
   },
   "WPFPanelsound": {
     "Content": "Sound Settings",
@@ -280,7 +280,7 @@
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/sound"
+    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/sound"
   },
   "WPFPanelprinter": {
     "Content": "Printer Panel",
@@ -288,7 +288,7 @@
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/printer"
+    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/printer"
   },
   "WPFPanelsystem": {
     "Content": "System Properties",
@@ -296,7 +296,7 @@
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/system"
+    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/system"
   },
   "WPFPaneluser": {
     "Content": "User Accounts",
@@ -304,7 +304,7 @@
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user"
+    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/user"
   },
   "WPFPanelGodMode": {
     "Content": "God Mode",

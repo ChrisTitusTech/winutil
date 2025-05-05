@@ -28,7 +28,7 @@
         "OriginalValue": "<RemoveEntry>"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/AH"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/ah"
   },
   "WPFTweaksHiber": {
     "Content": "Disable Hibernation",
@@ -58,7 +58,7 @@
     "UndoScript": [
       "powercfg.exe /hibernate on"
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Hiber"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/hiber"
   },
   "WPFTweaksLaptopHibernation": {
     "Content": "Set Hibernation as default (good for laptops)",
@@ -106,7 +106,7 @@
       Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-dc 15\" -NoNewWindow -Wait
       "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/LaptopHibernation"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/laptophibernation"
   },
   "WPFTweaksHome": {
     "Content": "Disable Homegroup",
@@ -126,7 +126,7 @@
         "OriginalType": "Automatic"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Home"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/home"
   },
   "WPFTweaksLoc": {
     "Content": "Disable Location Tracking",
@@ -164,7 +164,7 @@
         "OriginalValue": "1"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Loc"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/loc"
   },
   "WPFTweaksServices": {
     "Content": "Set Services to Manual",
@@ -1549,7 +1549,7 @@
         "OriginalType": "Manual"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Services"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/services"
   },
   "WPFTweaksEdgeDebloat": {
     "Content": "Debloat Edge",
@@ -1685,7 +1685,7 @@
         "OriginalValue": "<RemoveEntry>"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/EdgeDebloat"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/edgedebloat"
   },
   "WPFTweaksConsumerFeatures": {
     "Content": "Disable ConsumerFeatures",
@@ -1702,7 +1702,7 @@
         "Type": "DWord"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/ConsumerFeatures"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/consumerfeatures"
   },
   "WPFTweaksTele": {
     "Content": "Disable Telemetry",
@@ -2074,7 +2074,7 @@
         Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction SilentlyContinue | Out-Null
         "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Tele"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/tele"
   },
   "WPFTweaksWifi": {
     "Content": "Disable Wifi-Sense",
@@ -2098,7 +2098,7 @@
         "OriginalValue": "1"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Wifi"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/wifi"
   },
   "WPFTweaksUTC": {
     "Content": "Set Time to UTC (Dual Boot)",
@@ -2115,7 +2115,7 @@
         "OriginalValue": "0"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/UTC"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/utc"
   },
   "WPFTweaksRemoveHomeGallery": {
     "Content": "Remove Home and Gallery from explorer",
@@ -2137,7 +2137,7 @@
       REG DELETE \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\"
       "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveHomeGallery"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removehomegallery"
   },
   "WPFTweaksDisplay": {
     "Content": "Set Display for Performance",
@@ -2244,7 +2244,7 @@
     "UndoScript": [
       "Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\""
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Display"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/display"
   },
   "WPFTweaksDeBloat": {
     "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
@@ -2356,7 +2356,7 @@
         }
       "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DeBloat"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/debloat"
   },
   "WPFTweaksRestorePoint": {
     "Content": "Create Restore Point",
@@ -2407,7 +2407,7 @@
         }
       "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/RestorePoint"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/restorepoint"
   },
   "WPFTweaksEndTaskOnTaskbar": {
     "Content": "Enable End Task With Right Click",
@@ -2441,7 +2441,7 @@
       # Set the property, creating it if it doesn't exist
       New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null"
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/EndTaskOnTaskbar"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/endtaskontaskbar"
   },
   "WPFTweaksPowershell7": {
     "Content": "Change Windows Terminal default: PowerShell 5 -> PowerShell 7",
@@ -2455,7 +2455,7 @@
     "UndoScript": [
       "Invoke-WPFTweakPS7 -action \"PS5\""
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Powershell7"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/powershell7"
   },
   "WPFTweaksPowershell7Tele": {
     "Content": "Disable Powershell 7 Telemetry",
@@ -2469,7 +2469,7 @@
     "UndoScript": [
       "[Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '', 'Machine')"
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Powershell7Tele"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/powershell7tele"
   },
   "WPFTweaksStorage": {
     "Content": "Disable Storage Sense",
@@ -2483,7 +2483,7 @@
     "UndoScript": [
       "Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Name \"01\" -Value 1 -Type Dword -Force"
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Storage"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/storage"
   },
   "WPFTweaksRemoveEdge": {
     "Content": "Remove Microsoft Edge",
@@ -2497,7 +2497,7 @@
     "UndoScript": [
       "Uninstall-WinUtilEdgeBrowser -action \"Install\""
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveEdge"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removeedge"
   },
   "WPFTweaksRemoveCopilot": {
     "Content": "Disable Microsoft Copilot",
@@ -2540,7 +2540,7 @@
       dism /online /add-package /package-name:Microsoft.Windows.Copilot
       "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveCopilot"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removecopilot"
   },
   "WPFTweaksRecallOff": {
     "Content": "Disable Recall",
@@ -2550,7 +2550,6 @@
     "Order": "a011_",
     "registry": [
       {
-
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI",
         "Name": "DisableAIDataAnalysis",
         "Type": "DWord",
@@ -2572,7 +2571,7 @@
       Write-Host \"Please restart your computer in order for the changes to be fully applied.\"
       "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DisableRecall"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/disablerecall"
   },
   "WPFTweaksDisableLMS1": {
     "Content": "Disable Intel MM (vPro LMS)",
@@ -2630,7 +2629,7 @@
 
       "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableLMS1"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disablelms1"
   },
   "WPFTweaksDisableWpbtExecution": {
     "Content": "Disable Windows Platform Binary Table (WPBT)",
@@ -2753,7 +2752,7 @@
       Start-Process -FilePath winget -ArgumentList \"install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.OneDrive \" -NoNewWindow -Wait
       "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveOnedrive"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removeonedrive"
   },
   "WPFTweaksRazerBlock": {
     "Content": "Block Razer Software Installs",
@@ -2795,7 +2794,7 @@
           New-Item -Path \"C:\\Windows\\Installer\\\" -Name \"Razer\" -ItemType \"directory\"
       "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/RazerBlock"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/razerblock"
   },
   "WPFTweaksDisableNotifications": {
     "Content": "Disable Notification Tray/Calendar",
@@ -2819,7 +2818,7 @@
         "OriginalValue": "1"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableNotifications"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disablenotifications"
   },
   "WPFTweaksDebloatAdobe": {
     "Content": "Adobe Debloat",
@@ -2968,7 +2967,7 @@
         "OriginalType": "Automatic"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DebloatAdobe"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/debloatadobe"
   },
   "WPFTweaksBlockAdobeNet": {
     "Content": "Adobe Network Block",
@@ -3076,7 +3075,7 @@
       }
       "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/BlockAdobeNet"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/blockadobenet"
   },
   "WPFTweaksRightClickMenu": {
     "Content": "Set Classic Right-Click Menu ",
@@ -3101,7 +3100,7 @@
       Stop-Process -InputObject $process
       "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RightClickMenu"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/rightclickmenu"
   },
   "WPFTweaksDiskCleanup": {
     "Content": "Run Disk Cleanup",
@@ -3115,7 +3114,7 @@
       Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
       "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DiskCleanup"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/diskcleanup"
   },
   "WPFTweaksDeleteTempFiles": {
     "Content": "Delete Temporary Files",
@@ -3127,7 +3126,7 @@
       "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
     Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DeleteTempFiles"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/deletetempfiles"
   },
   "WPFTweaksDVR": {
     "Content": "Disable GameDVR",
@@ -3172,7 +3171,7 @@
         "Type": "DWord"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DVR"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/dvr"
   },
   "WPFTweaksIPv46": {
     "Content": "Prefer IPv4 over IPv6",
@@ -3189,7 +3188,7 @@
         "Type": "DWord"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/IPv46"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/ipv46"
   },
   "WPFTweaksTeredo": {
     "Content": "Disable Teredo",
@@ -3212,7 +3211,7 @@
     "UndoScript": [
       "netsh interface teredo set state default"
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Teredo"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/teredo"
   },
   "WPFTweaksDisableipsix": {
     "Content": "Disable IPv6",
@@ -3235,7 +3234,7 @@
     "UndoScript": [
       "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Disableipsix"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disableipsix"
   },
   "WPFTweaksDisableBGapps": {
     "Content": "Disable Background Apps",
@@ -3252,7 +3251,7 @@
         "Type": "DWord"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableBGapps"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disablebgapps"
   },
   "WPFTweaksDisableFSO": {
     "Content": "Disable Fullscreen Optimizations",
@@ -3269,7 +3268,7 @@
         "Type": "DWord"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableFSO"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disablefso"
   },
   "WPFToggleDarkMode": {
     "Content": "Dark Theme for Windows",
@@ -3312,7 +3311,7 @@
       }
       "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DarkMode"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/darkmode"
   },
   "WPFToggleBingSearch": {
     "Content": "Bing Search in Start Menu",
@@ -3331,7 +3330,7 @@
         "Type": "DWord"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/BingSearch"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/bingsearch"
   },
   "WPFToggleNumLock": {
     "Content": "NumLock on Startup",
@@ -3358,7 +3357,7 @@
         "Type": "DWord"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/NumLock"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/numlock"
   },
   "WPFToggleVerboseLogon": {
     "Content": "Verbose Messages During Logon",
@@ -3377,7 +3376,7 @@
         "Type": "DWord"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/VerboseLogon"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/verboselogon"
   },
   "WPFToggleStartMenuRecommendations": {
     "Content": "Recommendations in Start Menu",
@@ -3412,7 +3411,7 @@
         "Type": "DWord"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/WPFToggleStartMenuRecommendations"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/wpftogglestartmenurecommendations"
   },
   "WPFToggleHideSettingsHome": {
     "Content": "Remove Settings Home Page",
@@ -3449,7 +3448,7 @@
         "Type": "String"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapWindow"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/snapwindow"
   },
   "WPFToggleSnapFlyout": {
     "Content": "Snap Assist Flyout",
@@ -3478,7 +3477,7 @@
       Invoke-WinUtilExplorerUpdate -action \"restart\"
       "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapFlyout"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/snapflyout"
   },
   "WPFToggleSnapSuggestion": {
     "Content": "Snap Assist Suggestion",
@@ -3507,7 +3506,7 @@
       Invoke-WinUtilExplorerUpdate -action \"restart\"
       "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapSuggestion"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/snapsuggestion"
   },
   "WPFToggleMouseAcceleration": {
     "Content": "Mouse Acceleration",
@@ -3542,7 +3541,7 @@
         "Type": "DWord"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/MouseAcceleration"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/mouseacceleration"
   },
   "WPFToggleStickyKeys": {
     "Content": "Sticky Keys",
@@ -3561,7 +3560,7 @@
         "Type": "DWord"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/StickyKeys"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/stickykeys"
   },
   "WPFToggleHiddenFiles": {
     "Content": "Show Hidden Files",
@@ -3590,7 +3589,7 @@
       Invoke-WinUtilExplorerUpdate -action \"restart\"
       "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/HiddenFiles"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/hiddenfiles"
   },
   "WPFToggleShowExt": {
     "Content": "Show File Extensions",
@@ -3619,7 +3618,7 @@
       Invoke-WinUtilExplorerUpdate -action \"restart\"
       "
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/ShowExt"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/showext"
   },
   "WPFToggleTaskbarSearch": {
     "Content": "Search Button in Taskbar",
@@ -3638,7 +3637,7 @@
         "Type": "DWord"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarSearch"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/taskbarsearch"
   },
   "WPFToggleTaskView": {
     "Content": "Task View Button in Taskbar",
@@ -3657,7 +3656,7 @@
         "Type": "DWord"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskView"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/taskview"
   },
   "WPFToggleTaskbarWidgets": {
     "Content": "Widgets Button in Taskbar",
@@ -3676,7 +3675,7 @@
         "Type": "DWord"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarWidgets"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/taskbarwidgets"
   },
   "WPFToggleTaskbarAlignment": {
     "Content": "Center Taskbar Items",
@@ -3695,7 +3694,7 @@
         "Type": "DWord"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarAlignment"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/taskbaralignment"
   },
   "WPFToggleDetailedBSoD": {
     "Content": "Detailed BSoD",
@@ -3722,7 +3721,7 @@
         "Type": "DWord"
       }
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DetailedBSoD"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/detailedbsod"
   },
   "WPFOOSUbutton": {
     "Content": "Run OO Shutup 10",
@@ -3730,7 +3729,7 @@
     "panel": "1",
     "Order": "a039_",
     "Type": "Button",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/OOSUbutton"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/oosubutton"
   },
   "WPFchangedns": {
     "Content": "DNS",
@@ -3739,7 +3738,7 @@
     "Order": "a040_",
     "Type": "Combobox",
     "ComboItems": "Default DHCP Google Cloudflare Cloudflare_Malware Cloudflare_Malware_Adult Open_DNS Quad9 AdGuard_Ads_Trackers AdGuard_Ads_Trackers_Malware_Adult dns0.eu_Open dns0.eu_ZERO dns0.eu_KIDS",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/changedns"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/changedns"
   },
   "WPFAddUltPerf": {
     "Content": "Add and Activate Ultimate Performance Profile",
@@ -3748,7 +3747,7 @@
     "Order": "a080_",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/AddUltPerf"
+    "link": "https://winutil.christitus.com/dev/tweaks/performance-plans/addultperf"
   },
   "WPFRemoveUltPerf": {
     "Content": "Remove Ultimate Performance Profile",
@@ -3757,7 +3756,7 @@
     "Order": "a081_",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/RemoveUltPerf"
+    "link": "https://winutil.christitus.com/dev/tweaks/performance-plans/removeultperf"
   },
   "WPFTweaksDisableExplorerAutoDiscovery": {
     "Content": "Disable Explorer Automatic Folder Discovery",
