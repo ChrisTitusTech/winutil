@@ -210,7 +210,14 @@ Invoke-WPFRunspace -ScriptBlock {
 #===========================================================================
 
 # Print the logo
-Invoke-WPFFormVariables
+Show-CTTLogo
+$sync.CompactView = $false
+$sync.Form.Resources.AppTileWidth = [double]::NaN
+$sync.Form.Resources.AppTileCompactVisibility = [Windows.Visibility]::Visible
+$sync.Form.Resources.AppTileFontSize = [double]16
+$sync.Form.Resources.AppTileMargins = [Windows.Thickness]5
+$sync.Form.Resources.AppTileBorderThickness = [Windows.Thickness]0
+
 function Update-AppTileProperties {
     if ($sync.CompactView -eq $true) {
         $sync.Form.Resources.AppTileWidth = [double]::NaN
