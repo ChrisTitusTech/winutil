@@ -3,15 +3,9 @@ function Invoke-Preprocessing {
         .SYNOPSIS
         A function that does Code Formatting using RegEx, useful when trying to force specific coding standard(s) to a project.
 
-        .PARAMETER ThrowExceptionOnEmptyFilesList
-        A switch which'll throw an exception upon not finding any files inside the provided 'WorkingDir'.
-
-        .PARAMETER SkipExcludedFilesValidation
-        A switch to stop file path validation on 'ExcludedFiles' list.
-
         .PARAMETER ExcludedFiles
         A list of file paths which're *relative to* 'WorkingDir' Folder, every item in the list can be pointing to File (doesn't end with '\') or Directory (ends with '\') or None-Existing File/Directory.
-        By default, it checks if everyitem exists, and throws an exception if one or more are not found (None-Existing), if you want to skip this validation, please consider providing the '-SkipExcludedFilesValidation' switch to skip this check.
+        By default, it checks if everyitem exists, and throws an exception if one or more are not found (None-Existing).
 
         .PARAMETER WorkingDir
         The folder to search inside recursively for files which're going to be Preprocessed (Code Formatted), unless they're found in 'ExcludedFiles' List.
@@ -37,34 +31,22 @@ function Invoke-Preprocessing {
         Same as Example No. 1, but uses 'ProgressActivity' which's used in Progress Bar.
 
         .EXAMPLE
-        Invoke-Preprocessing -ThrowExceptionOnEmptyFilesList -WorkingDir "DRIVE:\Path\To\Folder\" -ExcludedFiles @('file.txt', '.\.git\', '*.png') -ProgressStatusMessage "Doing Preprocessing"
-
-        Same as Example No. 1, but uses '-ThrowExceptionOnEmptyFilesList', which's an optional parameter that'll make 'Invoke-Preprocessing' throw an exception when no files are found in 'WorkingDir' (not including the ExcludedFiles, of course), useful when you want to double check your parameters & you're sure there's files to process in the 'WorkingDir'.
-
-        .EXAMPLE
         Invoke-Preprocessing -Skip -WorkingDir "DRIVE:\Path\To\Folder\" -ExcludedFiles @('file.txt', '.\.git\', '*.png') -ProgressStatusMessage "Doing Preprocessing"
 
-        Same as Example No. 1, but uses '-SkipExcludedFilesValidation', which'll skip the validation step for 'ExcludedFiles' list. This can be useful when 'ExcludedFiles' list is generated from another function, or from unreliable source (you can't guarantee every item in list is a valid path), but you want to silently continue through the function.
     #>
 
     param (
-        [Parameter(position=0)]
-        [switch]$SkipExcludedFilesValidation,
-
-        [Parameter(position=1)]
-        [switch]$ThrowExceptionOnEmptyFilesList,
-
-        [Parameter(Mandatory, position=2)]
+        [Parameter(Mandatory, position=1)]
         [ValidateScript({[System.IO.Path]::IsPathRooted($_)})]
         [string]$WorkingDir,
 
-        [Parameter(position=3)]
+        [Parameter(position=2)]
         [string[]]$ExcludedFiles,
 
-        [Parameter(Mandatory, position=4)]
+        [Parameter(Mandatory, position=3)]
         [string]$ProgressStatusMessage,
 
-        [Parameter(position=5)]
+        [Parameter(position=4)]
         [string]$ProgressActivity = "Preprocessing"
     )
 
@@ -76,9 +58,8 @@ function Invoke-Preprocessing {
     ForEach ($excludedFile in $ExcludedFiles) {
         $InternalExcludedFiles.Add($excludedFile) | Out-Null
     }
-
-    # Validate the ExcludedItems List before continuing on,
-    # that's if there's a list in the first place, and '-SkipInternalExcludedFilesValidation' was not provided.
+    
+    # Validate the ExcludedItems List before continuing on
     if ($ExcludedFiles.Count -gt 0) {
         ForEach ($excludedFile in $ExcludedFiles) {
             $filePath = "$(($WorkingDir -replace ('\\$', '')) + '\' + ($excludedFile -replace ('\.\\', '')))"
@@ -90,8 +71,8 @@ function Invoke-Preprocessing {
             } else { $failedFilesList += "'$filePath', " }
         }
         $failedFilesList = $failedFilesList -replace (',\s*$', '')
-        if ((-not $failedFilesList -eq "") -and (-not $SkipExcludedFilesValidation)) {
-            throw "[Invoke-Preprocessing] One or more File Paths and/or File Patterns were not found, you can use '-SkipExcludedFilesValidation' switch to skip this check, the failed to validate are: $failedFilesList"
+        if ((-not $failedFilesList -eq "")) {
+            Write-Warning "[Invoke-Preprocessing] One or more File Paths and/or File Patterns were not found: $failedFilesList"
         }
     }
 
@@ -111,14 +92,45 @@ function Invoke-Preprocessing {
         if ($index -ge 0) { $files.RemoveAt($index) }
     }
 
-    $numOfFiles = $files.Count
+    # Define a path to store the file hashes
+    $hashFilePath = Join-Path -Path $WorkingDir -ChildPath ".preprocessor_hashes.json"
 
-    if ($numOfFiles -eq 0) {
-        if ($ThrowExceptionOnEmptyFilesList) {
-            throw "[Invoke-Preprocessing] Found 0 Files to Preprocess inside 'WorkingDir' Directory and '-ThrowExceptionOnEmptyFilesList' Switch is provided, value of 'WorkingDir': '$WorkingDir'."
-        } else {
-            return # Do an early return, there's nothing else to do
+    # Load existing hashes if the file exists
+    $existingHashes = @{}
+    if (Test-Path -Path $hashFilePath) {
+        # intentionally dosn't use ConvertFrom-Json -AsHashtable as it isn't supported on old powershell versions
+        $file_content = Get-Content -Path $hashFilePath | ConvertFrom-Json 
+        foreach ($property in $file_content.PSObject.Properties) {
+            $existingHashes[$property.Name] = $property.Value
         }
+    }
+
+    $newHashes = @{}
+    $changedFiles = @()
+    $hashingAlgorithm = "MD5"
+    foreach ($file in $files){
+        # Calculate the hash of the file
+        $hash = Get-FileHash -Path $file -Algorithm $hashingAlgorithm | Select-Object -ExpandProperty Hash
+        $newHashes[$file] = $hash
+
+        # Check if the hash already exists in the existing hashes
+        if (($existingHashes.ContainsKey($file) -and $existingHashes[$file] -eq $hash)) {
+            # Skip processing this file as it hasn't changed
+            continue;
+        }
+        else {
+            # If the hash doesn't exist or has changed, add it to the changed files list
+            $changedFiles += $file
+        }
+    }
+
+    $files = $changedFiles
+    $numOfFiles = $files.Count
+    Write-Debug "[Invoke-Preprocessing] Files Changed: $numOfFiles"
+
+    if ($numOfFiles -eq 0){
+        Write-Debug "[Invoke-Preprocessing] Found 0 Files to Preprocess inside 'WorkingDir' Directory : '$WorkingDir'."
+        return
     }
 
     for ($i = 0; $i -lt $numOfFiles; $i++) {
@@ -139,9 +151,13 @@ function Invoke-Preprocessing {
             -replace ('\}\s*Catch\s*(?<exceptions>\[.*?\])\s*\{', '} catch ${exceptions} {') `
             -replace ('(?<parameter_type>\[[^$0-9]+\])\s*(?<str_after_type>\$.*?)', '${parameter_type}${str_after_type}') `
         | Set-Content "$fullFileName"
+        $newHashes[$fullFileName] = Get-FileHash -Path $fullFileName -Algorithm $hashingAlgorithm | Select-Object -ExpandProperty Hash
 
         Write-Progress -Activity $ProgressActivity -Status "$ProgressStatusMessage - Finished $i out of $numOfFiles" -PercentComplete (($i/$numOfFiles)*100)
     }
 
     Write-Progress -Activity $ProgressActivity -Status "$ProgressStatusMessage - Finished Task Successfully" -Completed
+
+    # Save the new hashes to the file  
+    $newHashes | ConvertTo-Json -Depth 10 | Set-Content -Path $hashFilePath
 }

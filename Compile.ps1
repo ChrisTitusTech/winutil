@@ -1,7 +1,6 @@
 param (
     [switch]$Debug,
     [switch]$Run,
-    [switch]$SkipPreprocessing,
     [string]$Arguments
 )
 
@@ -45,17 +44,16 @@ $header = @"
 ################################################################################################################
 "@
 
-if (-NOT $SkipPreprocessing) {
-    Update-Progress "Pre-req: Running Preprocessor..." 0
 
-    # Dot source the 'Invoke-Preprocessing' Function from 'tools/Invoke-Preprocessing.ps1' Script
-    $preprocessingFilePath = ".\tools\Invoke-Preprocessing.ps1"
-    . $preprocessingFilePath
+Update-Progress "Pre-req: Running Preprocessor..." 0
 
-    $excludedFiles = @('.\.git\', '.\.gitignore', '.\.gitattributes', '.\.github\CODEOWNERS', '.\LICENSE', "$preprocessingFilePath", '*.png', '*.exe')
-    $msg = "Pre-req: Code Formatting"
-    Invoke-Preprocessing -WorkingDir "$workingdir" -ExcludedFiles $excludedFiles -ProgressStatusMessage $msg -ThrowExceptionOnEmptyFilesList
-}
+# Dot source the 'Invoke-Preprocessing' Function from 'tools/Invoke-Preprocessing.ps1' Script
+$preprocessingFilePath = ".\tools\Invoke-Preprocessing.ps1"
+. $preprocessingFilePath
+
+$excludedFiles = @('.\.git\', '.\.gitignore', '.\.gitattributes', '.\.github\CODEOWNERS', '.\LICENSE', "$preprocessingFilePath", '*.png', '*.exe','.\.preprocessor_hashes.json')
+$msg = "Pre-req: Code Formatting"
+Invoke-Preprocessing -WorkingDir "$workingdir" -ExcludedFiles $excludedFiles -ProgressStatusMessage $msg
 
 # Create the script in memory.
 Update-Progress "Pre-req: Allocating Memory" 0
