@@ -271,51 +271,34 @@ $sync.SearchBarClearButton.Add_Click({
 
 # add some shortcuts for people that don't like clicking
 $commonKeyEvents = {
+    # Prevent shortcuts from executing if a process is already running
     if ($sync.ProcessRunning -eq $true) {
         return
     }
 
-    if ($_.Key -eq "Escape") {
-        $sync.SearchBar.SelectAll()
-        $sync.SearchBar.Text = ""
-        $sync.SearchBarClearButton.Visibility = "Collapsed"
-        return
+    # Handle key presses of single keys
+    switch ($_.Key) {
+        "Escape" { $sync.SearchBar.Text = "" }
     }
-
-    # don't ask, I know what I'm doing, just go...
-    if (($_.Key -eq "Q" -and $_.KeyboardDevice.Modifiers -eq "Ctrl")) {
-        $this.Close()
-    }
+    # Handle Alt key combinations for navigation
     if ($_.KeyboardDevice.Modifiers -eq "Alt") {
-        if ($_.SystemKey -eq "I") {
-            Invoke-WPFButton "WPFTab1BT"
-        }
-        if ($_.SystemKey -eq "T") {
-            Invoke-WPFButton "WPFTab2BT"
-        }
-        if ($_.SystemKey -eq "C") {
-            Invoke-WPFButton "WPFTab3BT"
-        }
-        if ($_.SystemKey -eq "U") {
-            Invoke-WPFButton "WPFTab4BT"
-        }
-        if ($_.SystemKey -eq "M") {
-            Invoke-WPFButton "WPFTab5BT"
-        }
-        if ($_.SystemKey -eq "P") {
-            Write-Host "Your Windows Product Key: $((Get-WmiObject -query 'select * from SoftwareLicensingService').OA3xOriginalProductKey)"
+        $keyEventArgs = $_
+        switch ($_.SystemKey) {
+            "I" { Invoke-WPFButton "WPFTab1BT"; $keyEventArgs.Handled = $true } # Navigate to Install tab and suppress Windows Warning Sound
+            "T" { Invoke-WPFButton "WPFTab2BT"; $keyEventArgs.Handled = $true } # Navigate to Tweaks tab
+            "C" { Invoke-WPFButton "WPFTab3BT"; $keyEventArgs.Handled = $true } # Navigate to Config tab
+            "U" { Invoke-WPFButton "WPFTab4BT"; $keyEventArgs.Handled = $true } # Navigate to Updates tab
+            "M" { Invoke-WPFButton "WPFTab5BT"; $keyEventArgs.Handled = $true } # Navigate to MicroWin tab
         }
     }
-    # shortcut for the filter box
-    if ($_.Key -eq "F" -and $_.KeyboardDevice.Modifiers -eq "Ctrl") {
-        if ($sync.SearchBar.Text -eq "Ctrl-F to filter") {
-            $sync.SearchBar.SelectAll()
-            $sync.SearchBar.Text = ""
+    # Handle Ctrl key combinations for specific actions
+    if ($_.KeyboardDevice.Modifiers -eq "Ctrl") {
+        switch ($_.Key) {
+            "F" { $sync.SearchBar.Focus() } # Focus on the search bar
+            "Q" { $this.Close() } # Close the application
         }
-        $sync.SearchBar.Focus()
     }
 }
-
 $sync["Form"].Add_PreViewKeyDown($commonKeyEvents)
 
 $sync["Form"].Add_MouseLeftButtonDown({
@@ -483,44 +466,36 @@ $sync["Form"].Add_Activated({
 $sync["ThemeButton"].Add_Click({
     Write-Debug "ThemeButton clicked"
     Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "Theme" = "Toggle" }
-    $_.Handled = $false
 })
 $sync["AutoThemeMenuItem"].Add_Click({
     Write-Debug "About clicked"
     Invoke-WPFPopup -Action "Hide" -Popups @("Theme")
     Invoke-WinutilThemeChange -theme "Auto"
-    $_.Handled = $false
 })
 $sync["DarkThemeMenuItem"].Add_Click({
     Write-Debug "Dark Theme clicked"
     Invoke-WPFPopup -Action "Hide" -Popups @("Theme")
     Invoke-WinutilThemeChange -theme "Dark"
-    $_.Handled = $false
 })
 $sync["LightThemeMenuItem"].Add_Click({
     Write-Debug "Light Theme clicked"
     Invoke-WPFPopup -Action "Hide" -Popups @("Theme")
     Invoke-WinutilThemeChange -theme "Light"
-    $_.Handled = $false
 })
-
 
 $sync["SettingsButton"].Add_Click({
     Write-Debug "SettingsButton clicked"
     Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Toggle"; "Theme" = "Hide" }
-    $_.Handled = $false
 })
 $sync["ImportMenuItem"].Add_Click({
     Write-Debug "Import clicked"
     Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
     Invoke-WPFImpex -type "import"
-    $_.Handled = $false
 })
 $sync["ExportMenuItem"].Add_Click({
     Write-Debug "Export clicked"
     Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
     Invoke-WPFImpex -type "export"
-    $_.Handled = $false
 })
 $sync["AboutMenuItem"].Add_Click({
     Write-Debug "About clicked"
