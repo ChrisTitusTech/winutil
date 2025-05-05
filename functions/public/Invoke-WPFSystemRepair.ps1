@@ -35,7 +35,7 @@ function Invoke-WPFSystemRepair {
                 }
             }
         }
-        Write-Progress -Id 1 -Activity $childProgressBarActivity -Status "chkdsk Completed" -PercentComplete 100 -Completed 
+        Write-Progress -Id 1 -Activity $childProgressBarActivity -Status "chkdsk Completed" -PercentComplete 100 -Completed
     }
 
     function Invoke-SFC {
@@ -45,7 +45,7 @@ function Invoke-WPFSystemRepair {
         .DESCRIPTION
             SFC /ScanNow - Performs a scan of the system files and fixes any corruption
         .NOTES
-            ErrorActionPreference is set locally within a script block & {...} to isolate their effects. 
+            ErrorActionPreference is set locally within a script block & {...} to isolate their effects.
             ErrorActionPreference suppresses false errors caused by sfc.exe output redirection.
             A bug in SFC output buffering causes progress updates to appear in chunks when redirecting output
         #>
@@ -103,7 +103,7 @@ function Invoke-WPFSystemRepair {
         }
         Write-Progress -Id 1 -Activity $childProgressBarActivity -Status "DISM Completed" -PercentComplete 100 -Completed
     }
-    
+
     $childProgressBarActivity = "Scanning for corruption"
     Write-Progress -Id 0 -Activity "Repairing Windows" -PercentComplete 0
     # Step 1: Run chkdsk to fix disk and filesystem corruption before proceeding with system file repairs
