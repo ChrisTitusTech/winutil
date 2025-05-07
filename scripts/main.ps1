@@ -117,9 +117,6 @@ $sync.Form.Add_Loaded({
 Invoke-WinutilThemeChange -init $true
 # Load the configuration files
 
-$noimage = "https://images.emojiterra.com/google/noto-emoji/unicode-15/color/512px/1f4e6.png"
-$noimage = [Windows.Media.Imaging.BitmapImage]::new([Uri]::new($noimage))
-
 $sync.configs.applicationsHashtable = @{}
 $sync.configs.applications.PSObject.Properties | ForEach-Object {
     $sync.configs.applicationsHashtable[$_.Name] = $_.Value
@@ -128,11 +125,6 @@ $sync.configs.applications.PSObject.Properties | ForEach-Object {
 # Now call the function with the final merged config
 Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
 
-# Add logic to handle click to the ToggleView Button on the Install Tab
-$sync.WPFToggleView.Add_Click({
-    $sync.CompactView = -not $sync.CompactView
-    Update-AppTileProperties
-})
 Invoke-WPFUIApps -Apps $sync.configs.applicationsHashtable -targetGridName "appspanel"
 
 Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
@@ -211,44 +203,11 @@ Invoke-WPFRunspace -ScriptBlock {
 
 # Print the logo
 Show-CTTLogo
-$sync.CompactView = $true
-$sync.Form.Resources.AppTileWidth = [double]::NaN
-$sync.Form.Resources.AppTileCompactVisibility = [Windows.Visibility]::Visible
-$sync.Form.Resources.AppTileFontSize = [double]16
-$sync.Form.Resources.AppTileMargins = [Windows.Thickness]5
+
+$sync.Form.Resources.AppTileWidth = [double]150
+$sync.Form.Resources.AppTileFontSize = [double]11
+$sync.Form.Resources.AppTileMargins = [Windows.Thickness]1
 $sync.Form.Resources.AppTileBorderThickness = [Windows.Thickness]0
-
-function Update-AppTileProperties {
-    if ($sync.CompactView -eq $true) {
-        $sync.Form.Resources.AppTileWidth = [double]::NaN
-        $sync.Form.Resources.AppTileCompactVisibility = [Windows.Visibility]::Collapsed
-        $sync.Form.Resources.AppTileFontSize = [double]12
-        $sync.Form.Resources.AppTileMargins = [Windows.Thickness]2
-        $sync.Form.Resources.AppTileBorderThickness = [Windows.Thickness]0
-    }
-    else {
-        # On first load, set the AppTileWidth to NaN because the Window dosnt exist yet and there is no ActuaWidth
-        if ($sync.ItemsControl.ActualWidth -gt 0) {
-            $sync.Form.Resources.AppTileWidth = $sync.ItemsControl.ActualWidth -20}
-        else {
-            $sync.Form.Resources.AppTileWidth = [double]::NaN
-        }
-        $sync.Form.Resources.AppTileCompactVisibility = [Windows.Visibility]::Visible
-        $sync.Form.Resources.AppTileFontSize = [double]16
-        $sync.Form.Resources.AppTileMargins = [Windows.Thickness]5
-        $sync.Form.Resources.AppTileBorderThickness = [Windows.Thickness]1
-    }
-    if ($sync.SearchBar.Text -eq "") {
-        Set-CategoryVisibility -Category "*"
-    }
-}
-# initialize AppTile properties
-Update-AppTileProperties
-
-# We need to update the app tile properties when the form is resized because to fill a WrapPanel update the width of the elemenmt manually (afaik)
-$sync.Form.Add_SizeChanged({
-    Update-AppTileProperties
-})
 
 # Progress bar in taskbaritem > Set-WinUtilProgressbar
 $sync["Form"].TaskbarItemInfo = New-Object System.Windows.Shell.TaskbarItemInfo

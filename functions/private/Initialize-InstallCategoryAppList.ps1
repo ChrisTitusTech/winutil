@@ -21,20 +21,11 @@ function Initialize-InstallCategoryAppList {
                 [Windows.Controls.ItemsControl]$TargetElement
             )
 
-            $toggleButton = New-Object Windows.Controls.Primitives.ToggleButton
+            $toggleButton = New-Object Windows.Controls.Label
             $toggleButton.Content = "$Category"
             $toggleButton.Tag = "CategoryToggleButton"
-            $toggleButton.Cursor = [System.Windows.Input.Cursors]::Hand
-            $toggleButton.SetResourceReference([Windows.Controls.Control]::StyleProperty, "CategoryToggleButtonStyle")
-            $sync.Buttons.Add($toggleButton)
-            $toggleButton.Add_Checked({
-                # Clear the search bar when a category is clicked
-                $sync.SearchBar.Text = ""
-                Set-CategoryVisibility -Category $this.Content -overrideState Expand
-            })
-            $toggleButton.Add_Unchecked({
-                Set-CategoryVisibility -Category $this.Content -overrideState Collapse
-            })
+            $sync.$Category = $Category
+
             $null = $TargetElement.Items.Add($toggleButton)
         }
 
@@ -70,7 +61,7 @@ function Initialize-InstallCategoryAppList {
                 $wrapPanel.HorizontalAlignment = "Stretch"
                 $wrapPanel.VerticalAlignment = "Center"
                 $wrapPanel.Margin = New-Object Windows.Thickness(0, 0, 0, 20)
-                $wrapPanel.Visibility = [Windows.Visibility]::Collapsed
+                $wrapPanel.Visibility = [Windows.Visibility]::Visible
                 $wrapPanel.Tag = "CategoryWrapPanel_$category"
                 $null = $TargetElement.Items.Add($wrapPanel)
                 $appsByCategory[$category] |Sort-Object | ForEach-Object {

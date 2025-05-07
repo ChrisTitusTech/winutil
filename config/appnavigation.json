@@ -1,25 +1,4 @@
 {
-    "WPFToggleView": {
-        "Content": ["Expanded View", "Compact View"],
-        "Category": "____Actions",
-        "Type": "ToggleButton",
-        "Order": "1",
-        "Description": "Toggle between a list and a compact grid like view"
-    },
-    "WPFSelectedFilter": {
-        "Content": [ "Show All", "Show Selected"],
-        "Category": "____Actions",
-        "Type": "ToggleButton",
-        "Order": "2",
-        "Description": "Toggle between showing all or only the selected applications"
-    },
-    "WPFClearInstallSelection": {
-        "Content": "Clear Selection",
-        "Category": "____Actions",
-        "Type": "Button",
-        "Order": "3",
-        "Description": "Clear the selection of applications"
-    },
     "WPFGetInstalled": {
         "Content": "Get Installed",
         "Category": "____Actions",
@@ -44,5 +23,40 @@
         "Checked": false,
         "Order": "2",
         "Description": "Use Chocolatey for package management"
+    },
+    "WPFInstall": {
+        "Content": "Install/Upgrade Applications",
+        "Category": "____Actions",
+        "Type": "Button",
+        "Order": "5",
+        "Description": "Install or upgrade the selected applications"
+    },
+    "WPFInstallUpgrade": {
+        "Content": "Upgrade all Applications",
+        "Category": "____Actions",
+        "Type": "Button",
+        "Order": "6",
+        "Description": "Upgrade all applications to the latest version"
+    },
+    "WPFUninstall": {
+        "Content": "Uninstall Applications",
+        "Category": "____Actions",
+        "Type": "Button",
+        "Order": "7",
+        "Description": "Uninstall the selected applications"
+    },
+    "WPFselectedAppsButton": {
+        "Content": "Selected Apps: 0",
+        "Category": "__Selection",
+        "Type": "Button",
+        "Order": "2",
+        "Description": "Show the selected applications"
+    },
+    "WPFClearInstallSelection": {
+        "Content": "Clear Selection",
+        "Category": "__Selection",
+        "Type": "Button",
+        "Order": "1",
+        "Description": "Clear the selection of applications"
     }
 }

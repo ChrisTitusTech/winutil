@@ -23,7 +23,7 @@ function Invoke-WPFGetInstalled {
             $sync.ItemsControl.Items | ForEach-Object { $_.Visibility = [Windows.Visibility]::Collapsed }
             $null = $sync.itemsControl.Items.Add($sync.LoadingLabel)
         })
-    Invoke-WPFRunspace -ParameterList @(("managerPreference", $managerPreference),("checkbox", $checkbox),("ShowOnlyCheckedApps", ${function:Show-OnlyCheckedApps})) -DebugPreference $DebugPreference -ScriptBlock {
+    Invoke-WPFRunspace -ParameterList @(("managerPreference", $managerPreference),("checkbox", $checkbox)) -DebugPreference $DebugPreference -ScriptBlock {
         param (
             [string]$checkbox,
             [PackageManagers]$managerPreference,
