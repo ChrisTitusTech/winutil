@@ -232,45 +232,6 @@
             <Setter Property="Background" Value="{DynamicResource LabelBackgroundColor}"/>
             <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
         </Style>
-        <!-- Category Toggle Button Style for the Apps Window-->
-        <Style x:Key="CategoryToggleButtonStyle" TargetType="ToggleButton">
-            <Setter Property="Foreground" Value="{DynamicResource LabelboxForegroundColor}"/>
-            <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}"/>
-            <Setter Property="FontFamily" Value="{DynamicResource HeaderFontFamily}"/>
-            <Setter Property="FontSize" Value="{DynamicResource ButtonFontSize}"/>
-            <Setter Property="HorizontalAlignment" Value="Stretch"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Padding" Value="10,2,10,2"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ToggleButton">
-                        <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{DynamicResource BorderColor}"
-                                BorderThickness="0"
-                                CornerRadius="{DynamicResource ButtonCornerRadius}">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}">
-                                <TextBlock x:Name="PrefixTextBlock"/>
-                                <ContentPresenter Content="{TemplateBinding Content}" />
-                            </StackPanel>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="PrefixTextBlock" Property="Text" Value="[-] "/>
-                            </Trigger>
-                            <Trigger Property="IsChecked" Value="False">
-                                <Setter TargetName="PrefixTextBlock" Property="Text" Value="[+] "/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{DynamicResource ButtonBackgroundMouseoverColor}"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
 
         <!-- TextBlock template -->
         <Style TargetType="TextBlock">

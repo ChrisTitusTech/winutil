@@ -19,15 +19,11 @@ function Invoke-WPFGetInstalled {
         return
     }
     $managerPreference = $sync["ManagerPreference"]
-    $sync.ItemsControl.Dispatcher.Invoke([action] {
-            $sync.ItemsControl.Items | ForEach-Object { $_.Visibility = [Windows.Visibility]::Collapsed }
-            $null = $sync.itemsControl.Items.Add($sync.LoadingLabel)
-        })
+
     Invoke-WPFRunspace -ParameterList @(("managerPreference", $managerPreference),("checkbox", $checkbox)) -DebugPreference $DebugPreference -ScriptBlock {
         param (
             [string]$checkbox,
-            [PackageManagers]$managerPreference,
-            [scriptblock]$ShowOnlyCheckedApps
+            [PackageManagers]$managerPreference
         )
         $sync.ProcessRunning = $true
         $sync.form.Dispatcher.Invoke([action] { Set-WinUtilTaskbaritem -state "Indeterminate" })
@@ -49,11 +45,7 @@ function Invoke-WPFGetInstalled {
                 $sync.$checkbox.ischecked = $True
             }
         })
-        $sync.ItemsControl.Dispatcher.Invoke([action] {
-            $ShowOnlyCheckedApps.Invoke($sync.SelectedApps)
-            $sync["WPFSelectedFilter"].IsChecked = $true
-            $sync.ItemsControl.Items.Remove($sync.LoadingLabel)
-        })
+
         Write-Host "Done..."
         $sync.ProcessRunning = $false
         $sync.form.Dispatcher.Invoke([action] { Set-WinUtilTaskbaritem -state "None" })

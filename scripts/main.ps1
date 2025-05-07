@@ -204,7 +204,7 @@ Invoke-WPFRunspace -ScriptBlock {
 # Print the logo
 Show-CTTLogo
 
-$sync.Form.Resources.AppTileWidth = [double]150
+$sync.Form.Resources.AppTileWidth = [double]130
 $sync.Form.Resources.AppTileFontSize = [double]11
 $sync.Form.Resources.AppTileMargins = [Windows.Thickness]1
 $sync.Form.Resources.AppTileBorderThickness = [Windows.Thickness]0
