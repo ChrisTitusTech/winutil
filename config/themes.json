@@ -40,7 +40,7 @@
         "AppTileImageSize": "40"
     },
     "Light": {
-        "AppInstallUnselectedColor": "#F0F0F0",
+        "AppInstallUnselectedColor": "#F7F7F7",
         "AppInstallHighlightedColor": "#CFCFCF",
         "AppInstallSelectedColor": "#C2C2C2",
         "ComboBoxForegroundColor":  "#232629",
@@ -73,6 +73,7 @@
         "ButtonForegroundColor":  "#232629",
         "ToggleButtonOnColor":  "#2e77ff",
         "ToggleButtonOffColor": "#707070",
+        "ToolTipBackgroundColor": "#F7F7F7",
         "BorderColor": "#232629",
         "BorderOpacity": "0.2"
 
@@ -111,6 +112,7 @@
         "ButtonForegroundColor":  "#F7F7F7",
         "ToggleButtonOnColor": "#2e77ff",
         "ToggleButtonOffColor": "#707070",
+        "ToolTipBackgroundColor": "#2F373D",
         "BorderColor": "#2F373D",
         "BorderOpacity": "0.2"
     }

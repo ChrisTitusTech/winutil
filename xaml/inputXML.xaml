@@ -18,7 +18,7 @@
     </WindowChrome.WindowChrome>
     <Window.Resources>
     <Style TargetType="ToolTip">
-        <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}"/>
+        <Setter Property="Background" Value="{DynamicResource ToolTipBackgroundColor}"/>
         <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource BorderColor}"/>
         <Setter Property="MaxWidth" Value="{DynamicResource ToolTipWidth}"/>
