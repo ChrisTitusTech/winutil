@@ -15,7 +15,7 @@ function Initialize-InstallAppEntry {
 
         # Create the outer Border for the application type
         $border = New-Object Windows.Controls.Border
-        $border.Style = $sync.Form.Resources.AppTileBorderStyle
+        $border.Style = $sync.Form.Resources.AppEntryBorderStyle
         $border.Tag = $appKey
         $border.ToolTip = $Apps.$appKey.description
         $border.Add_MouseUp({
@@ -36,7 +36,7 @@ function Initialize-InstallAppEntry {
         # Create the CheckBox, vertically centered
         $checkBox = New-Object Windows.Controls.CheckBox
         $checkBox.Name = $appKey
-        $checkbox.Style = $sync.Form.Resources.AppTileCheckboxStyle
+        $checkbox.Style = $sync.Form.Resources.AppEntryCheckboxStyle
         $checkbox.Add_Checked({
             Invoke-WPFSelectedAppsUpdate -type "Add" -checkbox $this
             $borderElement = $this.Parent
@@ -51,7 +51,7 @@ function Initialize-InstallAppEntry {
 
         # Create the TextBlock for the application name
         $appName = New-Object Windows.Controls.TextBlock
-        $appName.Style = $sync.Form.Resources.AppTileNameStyle
+        $appName.Style = $sync.Form.Resources.AppEntryNameStyle
         $appName.Text = $Apps.$appKey.content
 
         # Add the name to the Checkbox

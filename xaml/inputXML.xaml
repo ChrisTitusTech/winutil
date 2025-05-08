@@ -82,22 +82,22 @@
             </Trigger>
         </Style.Triggers>
     </Style>
-    <Style x:Key="AppTileBorderStyle" TargetType="Border">
+    <Style x:Key="AppEntryBorderStyle" TargetType="Border">
         <Setter Property="BorderBrush" Value="Gray"/>
-        <Setter Property="BorderThickness" Value="{DynamicResource AppTileBorderThickness}"/>
+        <Setter Property="BorderThickness" Value="{DynamicResource AppEntryBorderThickness}"/>
         <Setter Property="CornerRadius" Value="5"/>
-        <Setter Property="Padding" Value="{DynamicResource AppTileMargins}"/>
-        <Setter Property="Width" Value="{DynamicResource AppTileWidth}"/>
+        <Setter Property="Padding" Value="{DynamicResource AppEntryMargin}"/>
+        <Setter Property="Width" Value="{DynamicResource AppEntryWidth}"/>
         <Setter Property="VerticalAlignment" Value="Top"/>
-        <Setter Property="Margin" Value="{DynamicResource AppTileMargins}"/>
+        <Setter Property="Margin" Value="{DynamicResource AppEntryMargin}"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Background" Value="{DynamicResource AppInstallUnselectedColor}"/>
     </Style>
-    <Style x:Key="AppTileCheckboxStyle" TargetType="CheckBox">
+    <Style x:Key="AppEntryCheckboxStyle" TargetType="CheckBox">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="Margin" Value="{DynamicResource AppTileMargins}"/>
+        <Setter Property="Margin" Value="{DynamicResource AppEntryMargin}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBox">
@@ -109,12 +109,12 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style x:Key="AppTileNameStyle" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="{DynamicResource AppTileFontSize}"/>
+    <Style x:Key="AppEntryNameStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="{DynamicResource AppEntryFontSize}"/>
         <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="Margin" Value="{DynamicResource AppTileMargins}"/>
+        <Setter Property="Margin" Value="{DynamicResource AppEntryMargin}"/>
         <Setter Property="Background" Value="Transparent"/>
     </Style>
 

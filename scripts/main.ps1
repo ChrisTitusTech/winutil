@@ -204,11 +204,6 @@ Invoke-WPFRunspace -ScriptBlock {
 # Print the logo
 Show-CTTLogo
 
-$sync.Form.Resources.AppTileWidth = [double]130
-$sync.Form.Resources.AppTileFontSize = [double]11
-$sync.Form.Resources.AppTileMargins = [Windows.Thickness]1
-$sync.Form.Resources.AppTileBorderThickness = [Windows.Thickness]0
-
 # Progress bar in taskbaritem > Set-WinUtilProgressbar
 $sync["Form"].TaskbarItemInfo = New-Object System.Windows.Shell.TaskbarItemInfo
 Set-WinUtilTaskbaritem -state "None"

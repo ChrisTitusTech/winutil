@@ -1,5 +1,9 @@
 {
     "shared":{
+        "AppEntryWidth":  "130",
+        "AppEntryFontSize":  "11",
+        "AppEntryMargin":  "1,1,1,1",
+        "AppEntryBorderTickness":  "0",
         "CustomDialogFontSize":       "12",
         "CustomDialogFontSizeHeader": "14",
         "CustomDialogLogoSize":       "25",
@@ -36,8 +40,7 @@
         "CheckboxMouseOverColor": "#999999",
         "ButtonBorderThickness":  "1",
         "ButtonMargin":  "1",
-        "ButtonCornerRadius": "2",
-        "AppTileImageSize": "40"
+        "ButtonCornerRadius": "2"
     },
     "Light": {
         "AppInstallUnselectedColor": "#F7F7F7",
