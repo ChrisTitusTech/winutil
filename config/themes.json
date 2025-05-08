@@ -16,6 +16,7 @@
         "TabButtonWidth":         "110",
         "TabButtonHeight":        "26",
         "TabRowHeightInPixels":   "50",
+        "ToolTipWidth":         "300",
         "IconFontSize":     "14",
         "IconButtonSize":   "35",
         "SettingsIconFontSize":   "18",
