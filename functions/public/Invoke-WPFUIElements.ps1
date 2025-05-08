@@ -93,12 +93,6 @@ function Invoke-WPFUIElements {
         # Store application data in an array under the category
         $organizedData[$entryObject.Panel][$entryObject.Category] += $entryObject
 
-        # Only apply the logic for distributing entries across columns if the targetGridName is "appspanel"
-        if ($targetGridName -eq "appspanel") {
-            $panelcount = 0
-            $entrycount = $configHashtable.Keys.Count + $organizedData["0"].Keys.Count
-        }
-
     }
 
     # Initialize panel count

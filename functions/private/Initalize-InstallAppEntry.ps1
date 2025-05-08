@@ -33,7 +33,6 @@ function Initialize-InstallAppEntry {
             }
         })
 
-        # Create the CheckBox, vertically centered
         $checkBox = New-Object Windows.Controls.CheckBox
         $checkBox.Name = $appKey
         $checkbox.Style = $sync.Form.Resources.AppEntryCheckboxStyle
@@ -56,6 +55,10 @@ function Initialize-InstallAppEntry {
 
         # Add the name to the Checkbox
         $checkBox.Content = $appName
+
+        # Add accessibility properties to make the elements screen reader friendly
+        $checkBox.SetValue([Windows.Automation.AutomationProperties]::NameProperty, $Apps.$appKey.content)
+        $border.SetValue([Windows.Automation.AutomationProperties]::NameProperty, $Apps.$appKey.content)
 
         $border.Child = $checkBox
         # Add the border to the corresponding Category
