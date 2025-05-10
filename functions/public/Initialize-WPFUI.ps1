@@ -7,6 +7,11 @@ function Initialize-WPFUI {
 
     switch ($TargetGridName) {
         "appscategory"{
+            # TODO 
+            # Switch UI generation of the sidebar to this function
+            # $sync.ItemsControl = Initialize-InstallAppArea -TargetElement $TargetGridName
+            # ...
+
             # Create and configure a popup for displaying selected apps
             $selectedAppsPopup = New-Object Windows.Controls.Primitives.Popup
             $selectedAppsPopup.IsOpen = $false
