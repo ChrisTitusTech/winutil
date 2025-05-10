@@ -34,7 +34,6 @@ function Invoke-WPFInstall {
 
         try {
             $sync.ProcessRunning = $true
-            $errorPackages = @()
             if($packagesWinget.Count -gt 0) {
                 Install-WinUtilWinget
                 Install-WinUtilProgramWinget -Action Install -Programs $packagesWinget

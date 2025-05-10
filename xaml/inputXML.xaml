@@ -12,7 +12,7 @@
         Height="Auto"
         MaxWidth="1380"
         MaxHeight="800"
-        Title="Chris Titus Tech's Windows Utility">
+        Title="WinUtil">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" CornerRadius="10"/>
     </WindowChrome.WindowChrome>
