@@ -135,6 +135,14 @@
         "link": "https://github.com/debauchee/barrier",
         "winget": "DebaucheeOpenSourceGroup.Barrier"
     },
+    "zeroinstall": {
+        "category": "Utilities",
+        "choco": "0install",
+        "content": "Zero Install",
+        "description": "A decentralized cross-platform software installation system available that allows software developers to publish programs directly from their own web-sites, while supporting features familiar from centralised distribution repositories such as shared libraries, automatic updates and digital signatures.",
+        "link": "https://github.com/0install/0install",
+        "winget": "ZeroInstall.ZeroInstall"
+    },
     "bat": {
         "category": "Utilities",
         "choco": "bat",
