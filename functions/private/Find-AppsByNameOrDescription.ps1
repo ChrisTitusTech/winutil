@@ -12,10 +12,23 @@ function Find-AppsByNameOrDescription {
     )
     # Reset the visibility if the search string is empty or the search is cleared
     if ([string]::IsNullOrWhiteSpace($SearchString)) {
-            Set-CategoryVisibility -Category "*"
-            return
+        $sync.ItemsControl.Items | ForEach-Object {
+            $_.Visibility = [Windows.Visibility]::Visible
+            $_.Children | ForEach-Object {
+                if ($null -ne $_) {
+                    $_.Visibility = [Windows.Visibility]::Visible
+                }
+
+            }
+        }
+        return
     }
     $sync.ItemsControl.Items | ForEach-Object {
+        # Ensure ToggleButtons remain visible
+        if ($_.Tag -like "CategoryToggleButton") {
+            $_.Visibility = [Windows.Visibility]::Visible
+            return
+        }
         # Hide all CategoryWrapPanel and ToggleButton
         $_.Visibility = [Windows.Visibility]::Collapsed
         if ($_.Tag -like "CategoryWrapPanel_*") {

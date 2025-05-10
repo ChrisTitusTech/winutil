@@ -1,31 +1,24 @@
 {
-    "WPFToggleView": {
-        "Content": ["Expanded View", "Compact View"],
+    "WPFInstall": {
+        "Content": "Install/Upgrade Applications",
         "Category": "____Actions",
-        "Type": "ToggleButton",
+        "Type": "Button",
         "Order": "1",
-        "Description": "Toggle between a list and a compact grid like view"
+        "Description": "Install or upgrade the selected applications"
     },
-    "WPFSelectedFilter": {
-        "Content": [ "Show All", "Show Selected"],
+    "WPFUninstall": {
+        "Content": "Uninstall Applications",
         "Category": "____Actions",
-        "Type": "ToggleButton",
+        "Type": "Button",
         "Order": "2",
-        "Description": "Toggle between showing all or only the selected applications"
+        "Description": "Uninstall the selected applications"
     },
-    "WPFClearInstallSelection": {
-        "Content": "Clear Selection",
+    "WPFInstallUpgrade": {
+        "Content": "Upgrade all Applications",
         "Category": "____Actions",
         "Type": "Button",
         "Order": "3",
-        "Description": "Clear the selection of applications"
-    },
-    "WPFGetInstalled": {
-        "Content": "Get Installed",
-        "Category": "____Actions",
-        "Type": "Button",
-        "Order": "4",
-        "Description": "Show installed applications"
+        "Description": "Upgrade all applications to the latest version"
     },
     "WingetRadioButton": {
         "Content": "Winget",
@@ -44,5 +37,26 @@
         "Checked": false,
         "Order": "2",
         "Description": "Use Chocolatey for package management"
+    },
+    "WPFClearInstallSelection": {
+        "Content": "Clear Selection",
+        "Category": "__Selection",
+        "Type": "Button",
+        "Order": "1",
+        "Description": "Clear the selection of applications"
+    },
+    "WPFGetInstalled": {
+        "Content": "Get Installed",
+        "Category": "__Selection",
+        "Type": "Button",
+        "Order": "2",
+        "Description": "Show installed applications"
+    },
+    "WPFselectedAppsButton": {
+        "Content": "Selected Apps: 0",
+        "Category": "__Selection",
+        "Type": "Button",
+        "Order": "3",
+        "Description": "Show the selected applications"
     }
 }

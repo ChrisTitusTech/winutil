@@ -40,10 +40,7 @@ $sync.configs = @{}
 $sync.Buttons = [System.Collections.Generic.List[PSObject]]::new()
 $sync.ProcessRunning = $false
 $sync.selectedApps = [System.Collections.Generic.List[string]]::new()
-$sync.ShowOnlySeleced = $false
 $sync.currentTab = "Install"
-$sync.CompactView = $true
-$sync.ShowOnlySelected = $false
 $sync.selectedAppsStackPanel
 $sync.selectedAppsPopup
 
@@ -87,5 +84,5 @@ $logdir = "$env:localappdata\winutil\logs"
 Start-Transcript -Path "$logdir\winutil_$dateTime.log" -Append -NoClobber | Out-Null
 
 # Set PowerShell window title
-$Host.UI.RawUI.WindowTitle = $myInvocation.MyCommand.Definition + "(Admin)"
+$Host.UI.RawUI.WindowTitle = "WinUtil (Admin)"
 clear-host

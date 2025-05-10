@@ -45,7 +45,6 @@ function Find-TweaksByNameOrDescription {
 
     # Search for matching tweaks when search string is not null
     $tweakspanel = $sync.Form.FindName("tweakspanel")
-    $matchFound = $false
 
     $tweakspanel.Children | ForEach-Object {
         $categoryBorder = $_
@@ -96,9 +95,6 @@ function Find-TweaksByNameOrDescription {
             # Set the visibility based on if any item matched
             $categoryBorder.Visibility = if ($categoryVisible) { [Windows.Visibility]::Visible } else { [Windows.Visibility]::Collapsed }
 
-            if ($categoryVisible) {
-                $matchFound = $true
-            }
         }
     }
 }

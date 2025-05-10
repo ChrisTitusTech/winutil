@@ -25,7 +25,7 @@ function Invoke-WPFtweaksbutton {
   Write-Debug "Number of tweaks to process: $($Tweaks.Count)"
 
   # The leading "," in the ParameterList is nessecary because we only provide one argument and powershell cannot be convinced that we want a nested loop with only one argument otherwise
-  $tweaksHandle = Invoke-WPFRunspace -ParameterList @(,("tweaks",$tweaks)) -DebugPreference $DebugPreference -ScriptBlock {
+  Invoke-WPFRunspace -ParameterList @(,("tweaks",$tweaks)) -DebugPreference $DebugPreference -ScriptBlock {
     param(
       $tweaks,
       $DebugPreference
