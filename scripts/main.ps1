@@ -124,9 +124,10 @@ $sync.configs.applications.PSObject.Properties | ForEach-Object {
 
 # Now call the function with the final merged config
 Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
+Initialize-WPFUI -targetGridName "appscategory"
 
-Invoke-WPFUIApps -Apps $sync.configs.applicationsHashtable -targetGridName "appspanel"
-c
+Initialize-WPFUI -targetGridName "appspanel"
+
 Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
 
 Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2

@@ -1,14 +1,12 @@
-function Invoke-WPFUIApps {
+function Initialize-WPFUI {
     [OutputType([void])]
     param(
-        [Parameter(Mandatory, Position = 0)]
-        [PSCustomObject[]]$Apps,
-        [Parameter(Mandatory, Position = 1)]
+        [Parameter(Mandatory)]
         [string]$TargetGridName
     )
 
     switch ($TargetGridName) {
-        "appspanel" {
+        "appscategory"{
             # Create and configure a popup for displaying selected apps
             $selectedAppsPopup = New-Object Windows.Controls.Primitives.Popup
             $selectedAppsPopup.IsOpen = $false
@@ -41,8 +39,10 @@ function Invoke-WPFUIApps {
                     $sync.selectedAppsPopup.IsOpen = $false
                 }
             })
+        }
+        "appspanel" {
             $sync.ItemsControl = Initialize-InstallAppArea -TargetElement $TargetGridName
-            Initialize-InstallCategoryAppList -TargetElement $sync.ItemsControl -Apps $Apps
+            Initialize-InstallCategoryAppList -TargetElement $sync.ItemsControl -Apps $sync.configs.applicationsHashtable
         }
         default {
             Write-Output "$TargetGridName not yet implemented"
