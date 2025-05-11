@@ -799,6 +799,14 @@
         "link": "https://www.google.com/drive/",
         "winget": "Google.GoogleDrive"
     },
+    "gpg4win": {
+        "category": "Utilities",
+        "choco": "gpg4win",
+        "content": "Gpg4win",
+        "description": "Gpg4win is a Windows version of GnuPG, a free encryption software for secure communication and data storage.",
+        "link": "https://www.gpg4win.org/",
+        "winget": "GnuPG.Gpg4win"
+    },
     "gpuz": {
         "category": "Utilities",
         "choco": "gpu-z",
