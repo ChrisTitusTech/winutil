@@ -20,7 +20,7 @@ function Invoke-WPFSelectedAppsUpdate {
 
     $selectedAppsButton = $sync.WPFselectedAppsButton
     # Get the actual Name from the selectedAppLabel inside the Checkbox
-    $appKey = $checkbox.Parent.Parent.Tag
+    $appKey = $checkbox.Parent.Tag
     if ($type -eq "Add") {
         $sync.selectedApps.Add($appKey)
         # The List type needs to be specified again, because otherwise Sort-Object will convert the list to a string if there is only a single entry

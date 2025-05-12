@@ -1,5 +1,9 @@
 {
     "shared":{
+        "AppEntryWidth":  "130",
+        "AppEntryFontSize":  "11",
+        "AppEntryMargin":  "1,1,1,1",
+        "AppEntryBorderTickness":  "0",
         "CustomDialogFontSize":       "12",
         "CustomDialogFontSizeHeader": "14",
         "CustomDialogLogoSize":       "25",
@@ -16,6 +20,7 @@
         "TabButtonWidth":         "110",
         "TabButtonHeight":        "26",
         "TabRowHeightInPixels":   "50",
+        "ToolTipWidth":         "300",
         "IconFontSize":     "14",
         "IconButtonSize":   "35",
         "SettingsIconFontSize":   "18",
@@ -35,11 +40,10 @@
         "CheckboxMouseOverColor": "#999999",
         "ButtonBorderThickness":  "1",
         "ButtonMargin":  "1",
-        "ButtonCornerRadius": "2",
-        "AppTileImageSize": "40"
+        "ButtonCornerRadius": "2"
     },
     "Light": {
-        "AppInstallUnselectedColor": "#F0F0F0",
+        "AppInstallUnselectedColor": "#F7F7F7",
         "AppInstallHighlightedColor": "#CFCFCF",
         "AppInstallSelectedColor": "#C2C2C2",
         "ComboBoxForegroundColor":  "#232629",
@@ -72,6 +76,7 @@
         "ButtonForegroundColor":  "#232629",
         "ToggleButtonOnColor":  "#2e77ff",
         "ToggleButtonOffColor": "#707070",
+        "ToolTipBackgroundColor": "#F7F7F7",
         "BorderColor": "#232629",
         "BorderOpacity": "0.2"
 
@@ -110,6 +115,7 @@
         "ButtonForegroundColor":  "#F7F7F7",
         "ToggleButtonOnColor": "#2e77ff",
         "ToggleButtonOffColor": "#707070",
+        "ToolTipBackgroundColor": "#2F373D",
         "BorderColor": "#2F373D",
         "BorderOpacity": "0.2"
     }
