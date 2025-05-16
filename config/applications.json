@@ -1647,6 +1647,14 @@
         "link": "https://www.postman.com/",
         "winget": "Postman.Postman"
     },
+    "potplayer": {
+        "category": "Multimedia Tools",
+        "choco": "potplayer",
+        "content": "PotPlayer",
+        "description": "Potplayer is a powerful All-in-one multimedia software player playing most of the media formats. It provides the maximum performance with the minimum resource using DVXA,CUDA and QuickSync.",
+        "link": "https://potplayer.daum.net/",
+        "winget": "Daum.PotPlayer"
+    },
     "powerautomate": {
         "category": "Microsoft Tools",
         "choco": "powerautomatedesktop",
