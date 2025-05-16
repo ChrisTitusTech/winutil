@@ -1703,6 +1703,14 @@
         "link": "https://www.spotify.com/",
         "winget": "Spotify.Spotify"
     },
+        "spicetify": {
+        "category": "Multimedia Tools",
+        "choco": "spicetify-cli",
+        "content": "Spicetify",
+        "description": "Powerful CLI tool to take control of the Spotify client. Allows the installation of extentions, scripts, themes and more for Spotify.",
+        "link": "https://spicetify.app/",
+        "winget": "Spicetify.Spicetify"
+    },
     "processmonitor": {
         "category": "Microsoft Tools",
         "choco": "procexp",
