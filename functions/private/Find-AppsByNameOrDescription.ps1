@@ -34,7 +34,8 @@ function Find-AppsByNameOrDescription {
         if ($_.Tag -like "CategoryWrapPanel_*") {
             # Search for Apps that match the search string
             $_.Children | Foreach-Object {
-                if ($sync.configs.applicationsHashtable.$($_.Tag).Content -like "*$SearchString*") {
+                $appEntry = $sync.configs.applicationsHashtable.$($_.Tag)
+                if ($appEntry.Content -like "*$SearchString*" -or $appEntry.Description -like "*$SearchString*") {
                     # Show the App and the parent CategoryWrapPanel if the string is found
                     $_.Visibility = [Windows.Visibility]::Visible
                     $_.parent.Visibility = [Windows.Visibility]::Visible
