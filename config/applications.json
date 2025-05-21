@@ -1983,14 +1983,6 @@
         "link": "http://www.uderzo.it/main_products/space_sniffer/",
         "winget": "UderzoSoftware.SpaceSniffer"
     },
-    "spotube": {
-        "category": "Multimedia Tools",
-        "choco": "spotube",
-        "content": "Spotube",
-        "description": "Open source Spotify client that doesn't require Premium nor uses Electron! Available for both desktop & mobile! ",
-        "link": "https://github.com/KRTirtho/spotube",
-        "winget": "KRTirtho.Spotube"
-    },
     "starship": {
         "category": "Development",
         "choco": "starship",
