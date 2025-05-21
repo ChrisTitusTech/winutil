@@ -7,7 +7,7 @@ function Initialize-WPFUI {
 
     switch ($TargetGridName) {
         "appscategory"{
-            # TODO 
+            # TODO
             # Switch UI generation of the sidebar to this function
             # $sync.ItemsControl = Initialize-InstallAppArea -TargetElement $TargetGridName
             # ...
