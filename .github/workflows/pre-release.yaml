@@ -49,31 +49,6 @@ jobs:
           }
         shell: pwsh
 
-      - name: Create and import code signing certificate
-        shell: pwsh
-        run: |
-          [System.IO.File]::WriteAllBytes("$env:USERPROFILE\code-signing-cert.pfx", [System.Convert]::FromBase64String("$env:CERTIFICATE_BASE64"))
-          Import-PfxCertificate -FilePath "$env:USERPROFILE\code-signing-cert.pfx" -CertStoreLocation Cert:\CurrentUser\My
-
-      - name: Code sign winutil.ps1
-        shell: pwsh
-        run: |
-          $cert = Get-ChildItem -Path Cert:\CurrentUser\My -CodeSigningCert | Select-Object -First 1
-          if ($null -eq $cert) { throw "Code signing certificate not found" }
-          Set-AuthenticodeSignature -FilePath ./winutil.ps1 -Certificate $cert -TimeStampServer "http://timestamp.digicert.com"
-
-      - name: Verify code signature
-        shell: pwsh
-        run: |
-          $signature = Get-AuthenticodeSignature -FilePath ./winutil.ps1
-          if ($signature.Status -ne 'Valid') { throw "Code signing failed" }
-
-      - name: Upload winutil.ps1 as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: winutil
-          path: ./winutil.ps1
-
       - name: Generate Release Notes
         id: generate_notes
         uses: release-drafter/release-drafter@v6
