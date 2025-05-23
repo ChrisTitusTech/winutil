@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         UseLayoutRounding="True"
-        WindowStyle="SingleBorderWindow"
+        WindowStyle="None"
         Width="Auto"
         Height="Auto"
         MaxWidth="1380"
