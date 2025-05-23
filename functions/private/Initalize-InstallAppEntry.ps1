@@ -18,7 +18,7 @@ function Initialize-InstallAppEntry {
         $border.Style = $sync.Form.Resources.AppEntryBorderStyle
         $border.Tag = $appKey
         $border.ToolTip = $Apps.$appKey.description
-        $border.Add_MouseUp({
+        $border.Add_MouseLeftButtonUp({
             $childCheckbox = ($this.Child | Where-Object {$_.Template.TargetType -eq [System.Windows.Controls.Checkbox]})[0]
             $childCheckBox.isChecked = -not $childCheckbox.IsChecked
         })
@@ -31,6 +31,13 @@ function Initialize-InstallAppEntry {
             if (($sync.$($this.Tag).IsChecked) -eq $false) {
                 $this.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallUnselectedColor")
             }
+        })
+        $border.Add_MouseRightButtonUp({
+            # Store the selected app in a global variable so it can be used in the popup
+            $sync.appPopupSelectedApp = $this.Tag
+            # Set the popup position to the current mouse position
+            $sync.appPopup.PlacementTarget = $this
+            $sync.appPopup.IsOpen = $true
         })
 
         $checkBox = New-Object Windows.Controls.CheckBox
