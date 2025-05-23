@@ -349,7 +349,7 @@
         "content": "Display Driver Uninstaller",
         "description": "Display Driver Uninstaller (DDU) is a tool for completely uninstalling graphics drivers from NVIDIA, AMD, and Intel. It is useful for troubleshooting graphics driver-related issues.",
         "link": "https://www.wagnardsoft.com/display-driver-uninstaller-DDU-",
-        "winget": "ddu"
+        "winget": "Wagnardsoft.DisplayDriverUninstaller"
     },
     "deluge": {
         "category": "Utilities",
@@ -1862,14 +1862,6 @@
         "description": "Provides support for thumbnails in Explorer with more formats.",
         "link": "https://sagethumbs.en.lo4d.com/windows",
         "winget": "CherubicSoftware.SageThumbs"
-    },
-    "samsungmagician": {
-        "category": "Utilities",
-        "choco": "samsung-magician",
-        "content": "Samsung Magician",
-        "description": "Samsung Magician is a utility for managing and optimizing Samsung SSDs.",
-        "link": "https://semiconductor.samsung.com/consumer-storage/magician/",
-        "winget": "Samsung.SamsungMagician"
     },
     "sandboxie": {
         "category": "Utilities",
