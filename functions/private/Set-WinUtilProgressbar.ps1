@@ -16,15 +16,15 @@ function Set-WinUtilProgressbar{
         [int]$Percent,
         $Hide
     )
-    if ($hide) {
-        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Visibility = "Collapsed"})
-        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBar.Visibility = "Collapsed"})
-    } else {
-        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Visibility = "Visible"})
-        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBar.Visibility = "Visible"})
-    }
-    $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Content.Text = $label})
-    $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Content.ToolTip = $label})
+    # if ($hide) {
+    #     $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Visibility = "Collapsed"})
+    #     $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBar.Visibility = "Collapsed"})
+    # } else {
+    #     $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Visibility = "Visible"})
+    #     $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBar.Visibility = "Visible"})
+    # }
+    $sync.form.Dispatcher.Invoke([action]{$sync.progressBarTextBlock.Text = $label})
+    $sync.form.Dispatcher.Invoke([action]{$sync.progressBarTextBlock.ToolTip = $label})
     $sync.form.Dispatcher.Invoke([action]{ $sync.ProgressBar.Value = $percent})
 
 }
