@@ -52,17 +52,14 @@
         $null = $targetGrid.Children.Add($Border)
 
 
-
-
-
-        # Add a semi-transparent gray overlay when the border is disabled
         $overlay = New-Object Windows.Controls.Border
-        # $overlay.Background = New-Object Windows.Media.SolidColorBrush ([Windows.Media.Color]::FromARgb(64, 128, 128, 128)) # Semi-transparent gray
-        # $overlay.SetResourceReference([Windows.Controls.Control]::StyleProperty, "OverlayStyle")
+        # TODO: Implement a dynamic way to set the size of the overlay based on the size of the parent element
+        $overlay.Width = "300"
+        $overlay.Height = "300"
+        $overlay.CornerRadius = New-Object Windows.CornerRadius(10)
+        $overlay.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallOverlayBackgroundColor")
         $overlay.Visibility = [Windows.Visibility]::Collapsed
-        # $overlay.HorizontalAlignment = 'Stretch'
-        # $overlay.VerticalAlignment = 'Stretch'
-        $overlay.IsHitTestVisible = $false
+
         $Border.Child = New-Object Windows.Controls.Grid
         $Border.Child.Children.Add($scrollViewer) | Out-Null
         $Border.Child.Children.Add($overlay) | Out-Null
@@ -73,23 +70,17 @@
         $overlayText.HorizontalAlignment = 'Center'
         $overlayText.VerticalAlignment = 'Center'
         $overlayText.SetResourceReference([Windows.Controls.TextBlock]::ForegroundProperty, "MainForegroundColor")
+        $overlayText.Background = "Transparent"
         $overlayText.SetResourceReference([Windows.Controls.TextBlock]::FontSizeProperty, "HeaderFontSize")
         $overlayText.SetResourceReference([Windows.Controls.TextBlock]::FontFamilyProperty, "MainFontFamily")
         $overlayText.SetResourceReference([Windows.Controls.TextBlock]::FontWeightProperty, "MainFontWeight")
         $overlayText.SetResourceReference([Windows.Controls.TextBlock]::MarginProperty, "MainMargin")
-        $overlayText.Tag = "overlayText"
         $sync.InstallAppAreaOverlayText = $overlayText
 
         $progressbar = New-Object Windows.Controls.ProgressBar
         $progressbar.Name = "ProgressBar"
-        $progressbar.Minimum = 0
-        $progressbar.Maximum = 100
         $progressbar.Width = 250
         $progressbar.Height = 50
-        $progressbar.VerticalAlignment = 'Center'
-        $progressbar.HorizontalAlignment = 'Left'
-
-
         $sync.ProgressBar = $progressbar
 
         # Add a TextBlock overlay for the progress bar text
@@ -101,7 +92,6 @@
         $progressBarTextBlock.Height = $progressbar.Height
         $progressBarTextBlock.SetResourceReference([Windows.Controls.TextBlock]::ForegroundProperty, "ProgressBarTextColor")
         $progressBarTextBlock.TextTrimming = "CharacterEllipsis"
-
         $progressBarTextBlock.Background = "Transparent"
         $sync.progressBarTextBlock = $progressBarTextBlock
 
@@ -109,13 +99,12 @@
         $progressGrid = New-Object Windows.Controls.Grid
         $progressGrid.Width = $progressbar.Width
         $progressGrid.Height = $progressbar.Height
+        $progressGrid.Margin = "0,10,0,10"
         $progressGrid.Children.Add($progressbar) | Out-Null
         $progressGrid.Children.Add($progressBarTextBlock) | Out-Null
 
         $overlayStackPanel = New-Object Windows.Controls.StackPanel
         $overlayStackPanel.Orientation = "Vertical"
-        $overlayStackPanel.HorizontalAlignment = 'Stretch'
-        $overlayStackPanel.VerticalAlignment = 'Stretch'
         $overlayStackPanel.HorizontalAlignment = 'Center'
         $overlayStackPanel.VerticalAlignment = 'Center'
         $overlayStackPanel.Children.Add($overlayText) | Out-Null

@@ -25,6 +25,9 @@ function Set-WinUtilProgressbar{
     # }
     $sync.form.Dispatcher.Invoke([action]{$sync.progressBarTextBlock.Text = $label})
     $sync.form.Dispatcher.Invoke([action]{$sync.progressBarTextBlock.ToolTip = $label})
+    if ($percent -lt 5 ) {
+        $percent = 5 # Ensure the progress bar is not empty, as it looks weird
+    }
     $sync.form.Dispatcher.Invoke([action]{ $sync.ProgressBar.Value = $percent})
 
 }
