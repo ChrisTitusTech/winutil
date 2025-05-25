@@ -5,6 +5,8 @@
                 This is used as the parent object for all category and app entries on the install tab
                 Used to as part of the Install Tab UI generation
 
+                Also creates an overlay with a progress bar and text to indicate that an install or uninstall is in progress
+
             .PARAMETER TargetElement
                 The element to which the AppArea shoud be added
 
@@ -28,16 +30,16 @@
         $sync.InstallAppAreaScrollViewer = $scrollViewer
         $Border.Child = $scrollViewer
 
-
-        # Add blur effect when the border is disabled
+        # Initialize the Blur Effect for the ScrollViewer, which will be used to indicate that an install/uninstall is in progress
         $blurEffect = New-Object Windows.Media.Effects.BlurEffect
         $blurEffect.Radius = 0
-
         $scrollViewer.Effect = $blurEffect
+
         ## Create the ItemsControl, which will be the parent of all the app entries
         $itemsControl = New-Object Windows.Controls.ItemsControl
         $itemsControl.HorizontalAlignment = 'Stretch'
         $itemsControl.VerticalAlignment = 'Stretch'
+        $scrollViewer.Content = $itemsControl
 
         # Enable virtualization for the ItemsControl to improve performance (It's hard to test if this is actually working, so if you know what you're doing, please check this)
         $itemsPanelTemplate = New-Object Windows.Controls.ItemsPanelTemplate
@@ -47,10 +49,8 @@
         $itemsControl.SetValue([Windows.Controls.VirtualizingStackPanel]::IsVirtualizingProperty, $true)
         $itemsControl.SetValue([Windows.Controls.VirtualizingStackPanel]::VirtualizationModeProperty, [Windows.Controls.VirtualizationMode]::Recycling)
 
-        $scrollViewer.Content = $itemsControl
-
-        $null = $targetGrid.Children.Add($Border)
-
+        # Add the Border containing the App Area to the target Grid
+        $targetGrid.Children.Add($Border) | Out-Null
 
         $overlay = New-Object Windows.Controls.Border
         # TODO: Implement a dynamic way to set the size of the overlay based on the size of the parent element
@@ -60,9 +60,8 @@
         $overlay.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallOverlayBackgroundColor")
         $overlay.Visibility = [Windows.Visibility]::Collapsed
 
-        $Border.Child = New-Object Windows.Controls.Grid
-        $Border.Child.Children.Add($scrollViewer) | Out-Null
-        $Border.Child.Children.Add($overlay) | Out-Null
+        # Also add the overlay to the target Grid on top of the App Area
+        $targetGrid.Children.Add($overlay) | Out-Null
         $sync.InstallAppAreaOverlay = $overlay
 
         $overlayText = New-Object Windows.Controls.TextBlock

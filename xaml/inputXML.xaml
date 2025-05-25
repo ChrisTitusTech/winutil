@@ -992,36 +992,6 @@
                     Margin="210,0,0,0" Visibility="Collapsed">
                 </Button>
 
-                <!-- <ProgressBar
-                    Grid.Column="1"
-                    Minimum="0"
-                    Maximum="100"
-                    Width="250"
-                    Height="{DynamicResource SearchBarHeight}"
-                    Foreground="{DynamicResource ProgressBarForegroundColor}"
-                    Background="{DynamicResource ProgressBarBackgroundColor}"
-                    BorderBrush="{DynamicResource ProgressBarForegroundColor}"
-                    Visibility="Collapsed"
-                    VerticalAlignment="Center" HorizontalAlignment="Left"
-                    Margin="2,0,0,0" BorderThickness="1" Padding="6,2,2,2"
-                    Name="ProgressBar">
-                </ProgressBar> -->
-                <!-- <Label
-                    Grid.Column="1"
-                    Width="250"
-                    Height="{DynamicResource SearchBarHeight}"
-                    VerticalAlignment="Center" HorizontalAlignment="Left"
-                    FontSize="{DynamicResource SearchBarTextBoxFontSize}"
-                    Background="Transparent"
-                    Visibility="Collapsed"
-                    Margin="2,0,0,0" BorderThickness="0" Padding="6,2,2,2"
-                    Name="ProgressBarLabel">
-                    <TextBlock
-                        TextTrimming="CharacterEllipsis"
-                        Background="Transparent"
-                        Foreground="{DynamicResource ProgressBarTextColor}">
-                    </TextBlock>
-                </Label> -->
                 <Button Name="ThemeButton"
                     Style="{StaticResource HoverButtonStyle}"
                     Grid.Column="2" BorderBrush="Transparent"

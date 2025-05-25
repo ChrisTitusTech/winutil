@@ -1,4 +1,11 @@
 function Show-WPFInstallAppBusy {
+    <#
+    .SYNOPSIS
+        Displays a busy overlay in the install app area of the WPF form.
+        This is used to indicate that an install or uninstall is in progress.
+    .PARAMETER text
+        The text to display in the busy overlay. Defaults to "Installing apps...".
+    #>
     param (
         $text = "Installing apps..."
     )
@@ -9,11 +16,3 @@ function Show-WPFInstallAppBusy {
         $sync.InstallAppAreaScrollViewer.Effect.Radius = 5
         })
     }
-
-function Hide-WPFInstallAppBusy {
-    $sync.form.Dispatcher.Invoke([action]{
-        $sync.InstallAppAreaOverlay.Visibility = [Windows.Visibility]::Collapsed
-        $sync.InstallAppAreaBorder.IsEnabled = $true
-        $sync.InstallAppAreaScrollViewer.Effect.Radius = 0
-    })
-}
