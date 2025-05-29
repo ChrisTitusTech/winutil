@@ -64,9 +64,10 @@ function Invoke-WPFInstall {
                         $button.Size = New-Object System.Drawing.Size(75, 23)
                         $button.Location = New-Object System.Drawing.Point(400, 125)
                         $button.Add_Click({
-                            $password = $passwordBox.Text
+                            $password = $passwordBox.Text | ConvertTo-SecureString -AsPlainText -Force
                             if ($password) {
-                                Set-LocalUser -Name $user -Password (ConvertTo-SecureString $password -AsPlainText -Force)
+                                Set-LocalUser -Name $user -Password $password
+                                $password.Close()
                                 $Form.Close()
                             } else {
                                 [System.Windows.Forms.MessageBox]::Show('No password entered!')
