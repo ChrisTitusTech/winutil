@@ -85,7 +85,7 @@
         "content": "AnyDesk",
         "description": "AnyDesk is a remote desktop software that enables users to access and control computers remotely. It is known for its fast connection and low latency.",
         "link": "https://anydesk.com/",
-        "winget": "AnyDeskSoftwareGmbH.AnyDesk"
+        "winget": "AnyDesk.AnyDesk"
     },
     "audacity": {
         "category": "Multimedia Tools",
@@ -518,6 +518,14 @@
         "description": "Everything Search is a fast and efficient file search utility for Windows.",
         "link": "https://www.voidtools.com/",
         "winget": "voidtools.Everything"
+    },
+    "esearchpt": {
+        "category": "Utilities",
+        "choco": "everythingpowertoys",
+        "content": "EverythingPowerToys (EPT)",
+        "description": "EverythingPowerToys (EPT) is a plugin for the program PowerToys Run (PTR), that adds the ability to search the computer for files and folders using Everything inside PTR",
+        "link": "https://github.com/lin-ycv/EverythingPowerToys?tab=readme-ov-file"
+        "winget": "lin-ycv.EverythingPowerToys"
     },
     "espanso": {
         "category": "Utilities",
@@ -1974,6 +1982,14 @@
         "description": "A tool application that lets you understand how folders and files are structured on your disks",
         "link": "http://www.uderzo.it/main_products/space_sniffer/",
         "winget": "UderzoSoftware.SpaceSniffer"
+    },
+    "spicetify": {
+        "category": "Multimedia Tools",
+        "choco": "spicetify-cli",
+        "content": "Spicetify",
+        "description": "Powerful CLI tool to take control of the Spotify client.",
+        "link": "spicetify.app",
+        "winget": "Spicetify.Spicetify"
     },
     "starship": {
         "category": "Development",
