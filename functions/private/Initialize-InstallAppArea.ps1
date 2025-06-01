@@ -53,9 +53,6 @@
         $targetGrid.Children.Add($Border) | Out-Null
 
         $overlay = New-Object Windows.Controls.Border
-        # TODO: Implement a dynamic way to set the size of the overlay based on the size of the parent element
-        $overlay.Width = "300"
-        $overlay.Height = "300"
         $overlay.CornerRadius = New-Object Windows.CornerRadius(10)
         $overlay.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallOverlayBackgroundColor")
         $overlay.Visibility = [Windows.Visibility]::Collapsed
