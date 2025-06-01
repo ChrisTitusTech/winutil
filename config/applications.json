@@ -524,7 +524,7 @@
         "choco": "everythingpowertoys",
         "content": "EverythingPowerToys (EPT)",
         "description": "EverythingPowerToys (EPT) is a plugin for the program PowerToys Run (PTR), that adds the ability to search the computer for files and folders using Everything inside PTR",
-        "link": "https://github.com/lin-ycv/EverythingPowerToys?tab=readme-ov-file"
+        "link": "https://github.com/lin-ycv/EverythingPowerToys",
         "winget": "lin-ycv.EverythingPowerToys"
     },
     "espanso": {
