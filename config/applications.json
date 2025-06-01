@@ -1423,6 +1423,14 @@
         "link": "https://notepad-plus-plus.org/",
         "winget": "Notepad++.Notepad++"
     },
+    "notepads":{
+        "category": "Document",
+        "choco": "na",
+        "content": "Notepads",
+        "description": "A modern, lightweight text editor with a minimalist design.",
+        "link": "https://www.notepadsapp.com/",
+        "winget": "JackieLiu.NotepadsApp"
+    },
     "nuget": {
         "category": "Microsoft Tools",
         "choco": "nuget.commandline",
