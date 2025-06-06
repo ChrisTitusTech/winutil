@@ -85,7 +85,7 @@
         "content": "AnyDesk",
         "description": "AnyDesk is a remote desktop software that enables users to access and control computers remotely. It is known for its fast connection and low latency.",
         "link": "https://anydesk.com/",
-        "winget": "AnyDeskSoftwareGmbH.AnyDesk"
+        "winget": "AnyDesk.AnyDesk"
     },
     "audacity": {
         "category": "Multimedia Tools",
