@@ -1997,13 +1997,6 @@
         "Type": "DWord"
       },
       {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "400",
-        "Name": "MouseHoverTime",
-        "Value": "400",
-        "Type": "String"
-      },
-      {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters",
         "OriginalValue": "20",
         "Name": "IRPStackSize",
