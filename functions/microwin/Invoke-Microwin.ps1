@@ -268,7 +268,6 @@ public class PowerManagement {
         reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\Windows Chat" /v ChatIcon /t REG_DWORD /d 2 /f                             >$null 2>&1
         reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarMn" /t REG_DWORD /d 0 /f        >$null 2>&1
         reg query "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Communications" /v "ConfigureChatAutoInstall"                      >$null 2>&1
-        # Write-Host Error code $LASTEXITCODE
         Write-Host "Done disabling Teams"
 
         Write-Host "Fix Windows Volume Mixer Issue"
@@ -295,11 +294,6 @@ public class PowerManagement {
                 'CrossDeviceUpdate'
             ) | ForEach-Object {
                 Write-Host "Removing Windows Expedited App: $_"
-
-                # Copied here After Installation (Online)
-                # reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler\$_" /f | Out-Null
-
-                # When in Offline Image
                 reg delete "HKLM\zSOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\$_" /f | Out-Null
             }
         }
@@ -307,7 +301,6 @@ public class PowerManagement {
         reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTaskbarMode" /t REG_DWORD /d 0 /f
         Write-Host "Setting all services to start manually"
         reg add "HKLM\zSOFTWARE\CurrentControlSet\Services" /v Start /t REG_DWORD /d 3 /f
-        # Write-Host $LASTEXITCODE
 
         Write-Host "Enabling Local Accounts on OOBE"
         reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\OOBE" /v "BypassNRO" /t REG_DWORD /d "1" /f
@@ -469,7 +462,6 @@ public class PowerManagement {
 
         $sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
 
-        #$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
         $sync.MicrowinFinalIsoLocation.Text = "$($SaveDialog.FileName)"
         # Allow the machine to sleep again (optional)
         [PowerManagement]::SetThreadExecutionState(0)
