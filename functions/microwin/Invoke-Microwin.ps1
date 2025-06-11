@@ -378,16 +378,6 @@ public class PowerManagement {
         Write-Host "Mounting boot image $mountDir\sources\boot.wim into $scratchDir"
         Mount-WindowsImage -ImagePath "$mountDir\sources\boot.wim" -Index 2 -Path "$scratchDir"
 
-        if ($injectDrivers) {
-            $driverPath = $sync.MicrowinDriverLocation.Text
-            if (Test-Path $driverPath) {
-                Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-                dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
-            } else {
-                Write-Host "Path to drivers is invalid continuing without driver injection"
-            }
-        }
-
         Write-Host "Loading registry..."
         reg load HKLM\zCOMPONENTS "$($scratchDir)\Windows\System32\config\COMPONENTS" >$null
         reg load HKLM\zDEFAULT "$($scratchDir)\Windows\System32\config\default" >$null
