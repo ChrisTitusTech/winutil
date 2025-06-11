@@ -362,7 +362,12 @@ public class PowerManagement {
     try {
 
         Write-Host "Exporting image into $mountDir\sources\install2.wim"
-        Export-WindowsImage -SourceImagePath "$mountDir\sources\install.wim" -SourceIndex $index -DestinationImagePath "$mountDir\sources\install2.wim" -CompressionType "Max"
+        try {
+            Export-WindowsImage -SourceImagePath "$mountDir\sources\install.wim" -SourceIndex $index -DestinationImagePath "$mountDir\sources\install2.wim" -CompressionType "Max"
+        } catch {
+            # Usually the case if it can't find unattend.dll on the host system. Guys, fix your corrupt messes that are your installations!
+            dism /english /export-image /sourceimagefile="$mountDir\sources\install.wim" /sourceindex=$index /destinationimagefile="$mountDir\sources\install2.wim" /compress:max
+        }
         Write-Host "Remove old '$mountDir\sources\install.wim' and rename $mountDir\sources\install2.wim"
         Remove-Item "$mountDir\sources\install.wim"
         Rename-Item "$mountDir\sources\install2.wim" "$mountDir\sources\install.wim"
