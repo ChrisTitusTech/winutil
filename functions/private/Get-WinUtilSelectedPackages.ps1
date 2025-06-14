@@ -33,7 +33,7 @@ function Get-WinUtilSelectedPackages
             "Choco" {
                 if ($package.choco -eq "na") {
                     Write-Debug "$($package.content) has no Choco value."
-                    $packagesWinget.add($package.winget)
+                    $null = $packagesWinget.add($($package.winget))
                     Write-Host "Queueing $($package.winget) for Winget"
                 } else {
                     $null = $packagesChoco.add($package.choco)
@@ -44,7 +44,7 @@ function Get-WinUtilSelectedPackages
             "Winget" {
                 if ($package.winget -eq "na") {
                     Write-Debug "$($package.content) has no Winget value."
-                    $packagesChoco.add($package.choco)
+                    $null = $packagesChoco.add($package.choco)
                     Write-Host "Queueing $($package.choco) for Chocolatey"
                 } else {
                     $null = $packagesWinget.add($($package.winget))
