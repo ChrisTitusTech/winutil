@@ -11,6 +11,7 @@ function Invoke-WPFControlPanel {
     param($Panel)
 
     switch ($Panel) {
+        "WPFPanelTIMEDATE" {timedate.cpl}
         "WPFPanelcontrol" {cmd /c control}
         "WPFPanelnetwork" {cmd /c ncpa.cpl}
         "WPFPanelpower"   {cmd /c powercfg.cpl}

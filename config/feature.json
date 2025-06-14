@@ -274,6 +274,14 @@
     "ButtonWidth": "300",
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/region"
   },
+  "WPFPanelTIMEDATE": {
+    "Content": "Time and Date",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/timedate"
+  },
   "WPFPanelsound": {
     "Content": "Sound Settings",
     "category": "Legacy Windows Panels",
