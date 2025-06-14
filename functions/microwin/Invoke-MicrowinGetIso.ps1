@@ -12,55 +12,14 @@ function Invoke-MicrowinGetIso {
         return
     }
 
-    $sync.BusyMessage.Visibility="Visible"
-    $sync.BusyText.Text="N Busy"
-
-
+    Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
+    Invoke-MicrowinBusyInfo -wip "Busy... (not interactive)"
 
     Write-Host "         _                     __    __  _         "
     Write-Host "  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __   "
     Write-Host " /    \ | | / __|| '__| / _ \ \ \/  \/ /| || '_ \  "
     Write-Host "/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | "
     Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
-
-    $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
-    $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg.exe) -or (Test-Path $oscdimgPath -PathType Leaf)
-    Write-Host "oscdimg.exe on system: $oscdImgFound"
-
-    if (!$oscdImgFound) {
-        $downloadFromGitHub = $sync.WPFMicrowinDownloadFromGitHub.IsChecked
-        $sync.BusyMessage.Visibility="Hidden"
-
-        if (!$downloadFromGitHub) {
-            # only show the message to people who did check the box to download from github, if you check the box
-            # you consent to downloading it, no need to show extra dialogs
-            [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it using choco. This might take a long time.")
-            # the step below needs choco to download oscdimg
-            # Install Choco if not already present
-            Install-WinUtilChoco
-            $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
-            Write-Host "choco on system: $chocoFound"
-            if (!$chocoFound) {
-                [System.Windows.MessageBox]::Show("choco.exe is not found on the system, you need choco to download oscdimg.exe")
-                return
-            }
-
-            Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install windows-adk-oscdimg"
-            [System.Windows.MessageBox]::Show("oscdimg is installed, now close, reopen PowerShell terminal and re-launch winutil.ps1")
-            return
-        } else {
-            [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it from github. This might take a long time.")
-            Microwin-GetOscdimg -oscdimgPath $oscdimgPath
-            $oscdImgFound = Test-Path $oscdimgPath -PathType Leaf
-            if (!$oscdImgFound) {
-                $msg = "oscdimg was not downloaded can not proceed"
-                [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
-                return
-            } else {
-                Write-Host "oscdimg.exe was successfully downloaded from github"
-            }
-        }
-    }
 
     if ($sync["ISOmanual"].IsChecked) {
         # Open file dialog to let user choose the ISO file
@@ -73,9 +32,9 @@ function Invoke-MicrowinGetIso {
 
         if ([string]::IsNullOrEmpty($filePath)) {
             Write-Host "No ISO is chosen"
-            $sync.BusyMessage.Visibility="Hidden"
             return
         }
+
     } elseif ($sync["ISOdownloader"].IsChecked) {
         # Create folder browsers for user-specified locations
         [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
@@ -110,6 +69,8 @@ function Invoke-MicrowinGetIso {
         {
             Write-Host "Could not download the ISO file. Look at the output of the console for more information."
             $msg = "The ISO file could not be downloaded"
+            Invoke-MicrowinBusyInfo -warning $msg
+            Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
             [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
             return
         }
@@ -131,8 +92,11 @@ function Invoke-MicrowinGetIso {
             }
             catch
             {
-                Write-Host "Unable to move the ISO file to the location you specified. The downloaded ISO is in the `"$env:TEMP`" folder"
+                $msg = "Unable to move the ISO file to the location you specified. The downloaded ISO is in the `"$env:TEMP`" folder"
+                Write-Host $msg
                 Write-Host "Error information: $($_.Exception.Message)" -ForegroundColor Yellow
+                Invoke-MicrowinBusyInfo -warning $msg
+                return
             }
         }
     }
@@ -140,11 +104,51 @@ function Invoke-MicrowinGetIso {
     Write-Host "File path $($filePath)"
     if (-not (Test-Path -Path "$filePath" -PathType Leaf)) {
         $msg = "File you've chosen doesn't exist"
+        Invoke-MicrowinBusyInfo -warning $msg
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
         return
     }
 
-    Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
+    $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
+    $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg.exe) -or (Test-Path $oscdimgPath -PathType Leaf)
+    Write-Host "oscdimg.exe on system: $oscdImgFound"
+
+    if (!$oscdImgFound) {
+        $downloadFromGitHub = $sync.WPFMicrowinDownloadFromGitHub.IsChecked
+
+        if (!$downloadFromGitHub) {
+            # only show the message to people who did check the box to download from github, if you check the box
+            # you consent to downloading it, no need to show extra dialogs
+            [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it using choco. This might take a long time.")
+            # the step below needs choco to download oscdimg
+            # Install Choco if not already present
+            Install-WinUtilChoco
+            $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
+            Write-Host "choco on system: $chocoFound"
+            if (!$chocoFound) {
+                [System.Windows.MessageBox]::Show("choco.exe is not found on the system, you need choco to download oscdimg.exe")
+                return
+            }
+
+            Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install windows-adk-oscdimg"
+            $msg = "oscdimg is installed, now close, reopen PowerShell terminal and re-launch winutil.ps1"
+            Invoke-MicrowinBusyInfo -wip $msg
+            [System.Windows.MessageBox]::Show($msg)
+            return
+        } else {
+            [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it from github. This might take a long time.")
+            Microwin-GetOscdimg -oscdimgPath $oscdimgPath
+            $oscdImgFound = Test-Path $oscdimgPath -PathType Leaf
+            if (!$oscdImgFound) {
+                $msg = "oscdimg was not downloaded can not proceed"
+                Invoke-MicrowinBusyInfo -warning $msg
+                [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
+                return
+            } else {
+                Write-Host "oscdimg.exe was successfully downloaded from github"
+            }
+        }
+    }
 
     # Detect the file size of the ISO and compare it with the free space of the system drive
     $isoSize = (Get-Item -Path "$filePath").Length
@@ -159,8 +163,10 @@ function Invoke-MicrowinGetIso {
     }
     elseif ($driveSpace -lt $isoSize) {
         # It's critical and we can't continue. Output an error
-        Write-Host "You don't have enough space for this operation. You need at least $([Math]::Round(($isoSize / ([Math]::Pow(1024, 2))) * 2, 2)) MB of free space to copy the ISO files to a temp directory and to be able to perform additional operations."
+        $msg = "You don't have enough space for this operation. You need at least $([Math]::Round(($isoSize / ([Math]::Pow(1024, 2))) * 2, 2)) MB of free space to copy the ISO files to a temp directory and to be able to perform additional operations."
+        Write-Host $msg
         Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
+        Invoke-MicrowinBusyInfo -warning $msg
         return
     } else {
         Write-Host "You have enough space for this operation."
@@ -174,10 +180,12 @@ function Invoke-MicrowinGetIso {
         Write-Host "Iso mounted to '$driveLetter'"
     } catch {
         # @ChrisTitusTech  please copy this wiki and change the link below to your copy of the wiki
-        Write-Error "Failed to mount the image. Error: $($_.Exception.Message)"
+        $msg = "Failed to mount the image. Error: $($_.Exception.Message)"
+        Write-Error $msg
         Write-Error "This is NOT winutil's problem, your ISO might be corrupt, or there is a problem on the system"
         Write-Host "Please refer to this wiki for more details: https://christitustech.github.io/winutil/KnownIssues/#troubleshoot-errors-during-microwin-usage" -ForegroundColor Red
         Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
+        Invoke-MicrowinBusyInfo -warning $msg
         return
     }
     # storing off values in hidden fields for further steps
@@ -251,8 +259,9 @@ function Invoke-MicrowinGetIso {
         if ((-not (Test-Path -Path "$wimFile" -PathType Leaf)) -and (-not (Test-Path -Path "$($wimFile.Replace(".wim", ".esd").Trim())" -PathType Leaf))) {
             $msg = "Neither install.wim nor install.esd exist in the image, this could happen if you use unofficial Windows images. Please don't use shady images from the internet, use only official images. Here are instructions how to download ISO images if the Microsoft website is not showing the link to download and ISO. https://www.techrepublic.com/article/how-to-download-a-windows-10-iso-file-without-using-the-media-creation-tool/"
             Write-Host $msg
-            [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
+            Invoke-MicrowinBusyInfo -warning $msg
             Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
+            [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
             throw
         }
         elseif ((-not (Test-Path -Path $wimFile -PathType Leaf)) -and (Test-Path -Path $wimFile.Replace(".wim", ".esd").Trim() -PathType Leaf)) {
@@ -282,6 +291,9 @@ function Invoke-MicrowinGetIso {
         Get-Volume $driveLetter | Get-DiskImage | Dismount-DiskImage
         Remove-Item -Recurse -Force "$($scratchDir)"
         Remove-Item -Recurse -Force "$($mountDir)"
+        Invoke-MicrowinBusyInfo -warning "Failed to read and unpack ISO"
+        Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
+
     }
 
     Write-Host "Done reading and unpacking ISO"
@@ -289,7 +301,7 @@ function Invoke-MicrowinGetIso {
     Write-Host "*********************************"
     Write-Host "Check the UI for further steps!!!"
 
-    $sync.BusyMessage.Visibility="Hidden"
+    Invoke-MicrowinBusyInfo -done "Done! Proceed with customization."
     $sync.ProcessRunning = $false
     Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
 }
