@@ -2309,7 +2309,7 @@
         "content": "Viber",
         "description": "Viber is a free messaging and calling app with features like group chats, video calls, and more.",
         "link": "https://www.viber.com/",
-        "winget": "Viber.Viber"
+        "winget": "Rakuten.Viber"
     },
     "videomass": {
         "category": "Multimedia Tools",
