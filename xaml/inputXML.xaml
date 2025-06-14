@@ -801,6 +801,7 @@
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="CaretBrush" Value="{DynamicResource MainForegroundColor}"/>
             <Setter Property="ContextMenu">
                 <Setter.Value>
                     <ContextMenu>
@@ -855,6 +856,7 @@
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="CaretBrush" Value="{DynamicResource MainForegroundColor}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="PasswordBox">
@@ -1371,7 +1373,7 @@
                                 Foreground="{DynamicResource LabelboxForegroundColor}"
                                 MaxLength="20"
                             />
-                            <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Password (characters will not be shown for your security):</TextBlock>
+                            <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Password:</TextBlock>
                             <PasswordBox Name="MicrowinUserPassword" Background="Transparent" BorderThickness="1" BorderBrush="{DynamicResource MainForegroundColor}"
                                 Margin="6"
                                 PasswordChar="*"
