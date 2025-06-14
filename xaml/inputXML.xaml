@@ -1344,8 +1344,46 @@
                                 </Button.Content>
                             </Button>
                         </StackPanel>
+
                         <!-- Visibility="Hidden" -->
                         <StackPanel Name="MicrowinOptionsPanel" HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Hidden">
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Button Name="WPFMicrowinPanelBack"
+                                        Grid.Column="0"
+                                        Width="30" Height="30"
+                                        HorizontalAlignment="Left"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="12"
+                                        Content="&#xE76B;"
+                                        ToolTip="Back to main view"
+                                        Background="{DynamicResource ButtonBackgroundColor}"
+                                        Foreground="{DynamicResource ButtonForegroundColor}"
+                                        BorderBrush="{DynamicResource ButtonBackgroundColor}"
+                                        BorderThickness="1"
+                                        Padding="0">
+                                    <Button.ContentTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}"
+                                                      HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"/>
+                                        </DataTemplate>
+                                    </Button.ContentTemplate>
+                                </Button>
+
+                                <TextBlock Name="MicrowinPanel2Title"
+                                         Grid.Column="1"
+                                         Text="Configure Windows ISO"
+                                         Margin="10,0,0,0"
+                                         Foreground="{DynamicResource MainForegroundColor}"
+                                         FontSize="16"
+                                         VerticalAlignment="Center"/>
+                            </Grid>
+
                             <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Choose Windows SKU</TextBlock>
                             <ComboBox x:Name = "MicrowinWindowsFlavors" Margin="1" />
                             <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>

@@ -276,8 +276,8 @@ function Invoke-MicrowinGetIso {
         Get-Volume $driveLetter | Get-DiskImage | Dismount-DiskImage
         Write-Host "Selected value '$($sync.MicrowinWindowsFlavors.SelectedValue)'....."
 
-        $sync.MicrowinOptionsPanel.Visibility = 'Visible'
-        $sync.MicrowinISOPanel.Visibility = 'Collapsed'
+        Toggle-MicrowinPanel 2
+
     } catch {
         Write-Host "Dismounting bad image..."
         Get-Volume $driveLetter | Get-DiskImage | Dismount-DiskImage
