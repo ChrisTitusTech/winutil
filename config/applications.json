@@ -555,7 +555,7 @@
         "category": "Multimedia Tools",
         "choco": "ffmpeg-full",
         "content": "FFmpeg (full)",
-        "description": "FFmpeg is a powerful multimedia processing tool that enables users to convert, edit, and stream audio and video files with a vast range of codecs and formats.",
+        "description": "FFmpeg is a powerful multimedia processing tool that enables users to convert, edit, and stream audio and video files with a vast range of codecs and formats. | Note: FFmpeg can not be uninstalled using winget.",
         "link": "https://ffmpeg.org/",
         "winget": "Gyan.FFmpeg"
     },
