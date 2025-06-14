@@ -1551,6 +1551,49 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/services"
   },
+  "WPFTweaksBraveDebloat": {
+    "Content": "Debloat Brave",
+    "Description": "Disables various annoyances like Brave Rewards,Leo AI,Crypto Wallet and VPN",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a017_",
+    "registry": [
+      {
+        "Path":"HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "Name": "BraveRewardsDisabled",
+        "Type": "DWord",
+        "Value": "1"
+      },
+            {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "Name": "BraveWalletDisabled",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>"
+      },
+            {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "Name": "BraveVPNDisabled",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>"
+      },
+            {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "Name": "BraveAIChatEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "<RemoveEntry>"
+      },
+            {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "Name": "SyncDisabled",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>"
+      }
+    ]
+  },
   "WPFTweaksEdgeDebloat": {
     "Content": "Debloat Edge",
     "Description": "Disables various telemetry options, popups, and other annoyances in Edge.",
