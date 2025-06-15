@@ -12,8 +12,8 @@ function Invoke-MicrowinGetIso {
         return
     }
 
-    Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
-    Invoke-MicrowinBusyInfo -wip "Busy... (not interactive)"
+    # Provide immediate feedback to user
+    Invoke-MicrowinBusyInfo -wip "Initializing MicroWin process..."
 
     Write-Host "         _                     __    __  _         "
     Write-Host "  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __   "
@@ -23,6 +23,7 @@ function Invoke-MicrowinGetIso {
 
     if ($sync["ISOmanual"].IsChecked) {
         # Open file dialog to let user choose the ISO file
+        Invoke-MicrowinBusyInfo -wip "Please select an ISO file..."
         [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
         $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
         $openFileDialog.initialDirectory = $initialDirectory
@@ -32,19 +33,25 @@ function Invoke-MicrowinGetIso {
 
         if ([string]::IsNullOrEmpty($filePath)) {
             Write-Host "No ISO is chosen"
+            Invoke-MicrowinBusyInfo -hide
             return
         }
 
     } elseif ($sync["ISOdownloader"].IsChecked) {
         # Create folder browsers for user-specified locations
+        Invoke-MicrowinBusyInfo -wip "Please select download location..."
         [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
         $isoDownloaderFBD = New-Object System.Windows.Forms.FolderBrowserDialog
         $isoDownloaderFBD.Description = "Please specify the path to download the ISO file to:"
         $isoDownloaderFBD.ShowNewFolderButton = $true
         if ($isoDownloaderFBD.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK)
         {
+            Invoke-MicrowinBusyInfo -hide
             return
         }
+
+        Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
+        Invoke-MicrowinBusyInfo -wip "Preparing to download ISO..."
 
         # Grab the location of the selected path
         $targetFolder = $isoDownloaderFBD.SelectedPath
@@ -54,6 +61,7 @@ function Invoke-MicrowinGetIso {
         $fidopath = "$env:temp\Fido.ps1"
         $originalLocation = $PSScriptRoot
 
+        Invoke-MicrowinBusyInfo -wip "Downloading Fido script..."
         Invoke-WebRequest "https://github.com/pbatard/Fido/raw/master/Fido.ps1" -OutFile $fidopath
 
         Set-Location -Path $env:temp
@@ -64,6 +72,7 @@ function Invoke-MicrowinGetIso {
             $sync["ISOLanguage"].SelectedItem
         }
 
+        Invoke-MicrowinBusyInfo -wip "Downloading Windows ISO... (This may take a long time)"
         & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch "x64" -Lang $lang -Ed "Windows 11 Home/Pro/Edu"
         if (-not $?)
         {
@@ -109,6 +118,9 @@ function Invoke-MicrowinGetIso {
         return
     }
 
+    Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
+    Invoke-MicrowinBusyInfo -wip "Checking system requirements..."
+
     $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
     $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg.exe) -or (Test-Path $oscdimgPath -PathType Leaf)
     Write-Host "oscdimg.exe on system: $oscdImgFound"
@@ -137,6 +149,7 @@ function Invoke-MicrowinGetIso {
             return
         } else {
             [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it from github. This might take a long time.")
+            Invoke-MicrowinBusyInfo -wip "Downloading oscdimg.exe..."
             Microwin-GetOscdimg -oscdimgPath $oscdimgPath
             $oscdImgFound = Test-Path $oscdimgPath -PathType Leaf
             if (!$oscdImgFound) {
@@ -149,6 +162,8 @@ function Invoke-MicrowinGetIso {
             }
         }
     }
+
+    Invoke-MicrowinBusyInfo -wip "Checking disk space..."
 
     # Detect the file size of the ISO and compare it with the free space of the system drive
     $isoSize = (Get-Item -Path "$filePath").Length
@@ -173,6 +188,7 @@ function Invoke-MicrowinGetIso {
     }
 
     try {
+        Invoke-MicrowinBusyInfo -wip "Mounting ISO file..."
         Write-Host "Mounting Iso. Please wait."
         $mountedISO = Mount-DiskImage -PassThru "$filePath"
         Write-Host "Done mounting Iso `"$($mountedISO.ImagePath)`""
@@ -244,15 +260,23 @@ function Invoke-MicrowinGetIso {
     try {
 
         #$data = @($driveLetter, $filePath)
+        Invoke-MicrowinBusyInfo -wip "Creating directories..."
         New-Item -ItemType Directory -Force -Path "$($mountDir)" | Out-Null
         New-Item -ItemType Directory -Force -Path "$($scratchDir)" | Out-Null
+
+        Invoke-MicrowinBusyInfo -wip "Copying Windows files... (This may take several minutes)"
         Write-Host "Copying Windows image. This will take awhile, please don't use UI or cancel this step!"
 
         # xcopy we can verify files and also not copy files that already exist, but hard to measure
         # xcopy.exe /E /I /H /R /Y /J $DriveLetter":" $mountDir >$null
-        $totalTime = Measure-Command { Copy-Files "$($driveLetter):" "$mountDir" -Recurse -Force }
+        $totalTime = Measure-Command {
+            Copy-Files "$($driveLetter):" "$mountDir" -Recurse -Force
+            # Force UI update during long operation
+            [System.Windows.Forms.Application]::DoEvents()
+        }
         Write-Host "Copy complete! Total Time: $($totalTime.Minutes) minutes, $($totalTime.Seconds) seconds"
 
+        Invoke-MicrowinBusyInfo -wip "Processing Windows image..."
         $wimFile = "$mountDir\sources\install.wim"
         Write-Host "Getting image information $wimFile"
 
@@ -274,14 +298,21 @@ function Invoke-MicrowinGetIso {
             $imageName = $_.ImageName
             $sync.MicrowinWindowsFlavors.Items.Add("$imageIdx : $imageName")
         }
+        [System.Windows.Forms.Application]::DoEvents()
+
         $sync.MicrowinWindowsFlavors.SelectedIndex = 0
         Write-Host "Finding suitable Pro edition. This can take some time. Do note that this is an automatic process that might not select the edition you want."
+        Invoke-MicrowinBusyInfo -wip "Finding suitable Pro edition..."
+
         Get-WindowsImage -ImagePath $wimFile | ForEach-Object {
             if ((Get-WindowsImage -ImagePath $wimFile -Index $_.ImageIndex).EditionId -eq "Professional") {
                 # We have found the Pro edition
                 $sync.MicrowinWindowsFlavors.SelectedIndex = $_.ImageIndex - 1
             }
+            # Allow UI updates during this loop
+            [System.Windows.Forms.Application]::DoEvents()
         }
+
         Get-Volume $driveLetter | Get-DiskImage | Dismount-DiskImage
         Write-Host "Selected value '$($sync.MicrowinWindowsFlavors.SelectedValue)'....."
 
