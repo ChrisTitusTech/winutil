@@ -129,6 +129,9 @@ function Invoke-WPFSystemRepair {
     } catch {
         Write-Error "An error occurred while repairing the system: $_"
         Set-WinUtilTaskbaritem -state "Error" -overlay "warning"
+    } finally {
+        Write-Host "==> Finished System Repair"
+        Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
     }
 
 }
