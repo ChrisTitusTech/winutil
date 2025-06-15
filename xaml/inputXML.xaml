@@ -1403,6 +1403,7 @@
                                          Foreground="{DynamicResource MicrowinBusyColor}"/>
                                 <TextBlock x:Name="BusyText" Text="Microwin"
                                          VerticalAlignment="Center"
+                                         TextTrimming="CharacterEllipsis"
                                          Foreground="{DynamicResource MicrowinBusyColor}"/>
                             </StackPanel>
 
