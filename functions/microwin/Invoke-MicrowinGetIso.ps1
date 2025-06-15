@@ -12,9 +12,6 @@ function Invoke-MicrowinGetIso {
         return
     }
 
-    # Provide immediate feedback to user
-    Invoke-MicrowinBusyInfo -wip "Initializing MicroWin process..."
-
     Write-Host "         _                     __    __  _         "
     Write-Host "  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __   "
     Write-Host " /    \ | | / __|| '__| / _ \ \ \/  \/ /| || '_ \  "
@@ -23,7 +20,6 @@ function Invoke-MicrowinGetIso {
 
     if ($sync["ISOmanual"].IsChecked) {
         # Open file dialog to let user choose the ISO file
-        Invoke-MicrowinBusyInfo -wip "Please select an ISO file..."
         [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
         $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
         $openFileDialog.initialDirectory = $initialDirectory
@@ -33,20 +29,16 @@ function Invoke-MicrowinGetIso {
 
         if ([string]::IsNullOrEmpty($filePath)) {
             Write-Host "No ISO is chosen"
-            Invoke-MicrowinBusyInfo -hide
             return
         }
 
     } elseif ($sync["ISOdownloader"].IsChecked) {
-        # Create folder browsers for user-specified locations
-        Invoke-MicrowinBusyInfo -wip "Please select download location..."
         [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
         $isoDownloaderFBD = New-Object System.Windows.Forms.FolderBrowserDialog
         $isoDownloaderFBD.Description = "Please specify the path to download the ISO file to:"
         $isoDownloaderFBD.ShowNewFolderButton = $true
         if ($isoDownloaderFBD.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK)
         {
-            Invoke-MicrowinBusyInfo -hide
             return
         }
 
