@@ -377,8 +377,8 @@ public class PowerManagement {
         Rename-Item "$mountDir\sources\install2.wim" "$mountDir\sources\install.wim"
 
         if (-not (Test-Path -Path "$mountDir\sources\install.wim")) {
-            $msg = "Something went wrong and '$mountDir\sources\install.wim' doesn't exist. Please report this bug to the devs"
-            Write-Error $msg
+            $msg = "Something went wrong. Please report this bug to the devs."
+            Write-Error "$($msg) '$($mountDir)\sources\install.wim' doesn't exist"
             Invoke-MicrowinBusyInfo -warning $msg
             Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
             return
