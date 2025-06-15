@@ -41,13 +41,13 @@ public class PowerManagement {
     if ($SaveDialog.FileName -eq "") {
         $msg = "No file name for the target image was specified"
         Write-Host $msg
-        Invoke-MicrowinBusyInfo -warning $msg
+        Invoke-MicrowinBusyInfo -action "warning" -message $msg
         Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
         return
     }
 
     Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
-    Invoke-MicrowinBusyInfo -wip "Busy... (not interactive)"
+    Invoke-MicrowinBusyInfo -action "wip" -message "Busy..." -interactive $false
 
     Write-Host "Target ISO location: $($SaveDialog.FileName)"
 
@@ -75,7 +75,7 @@ public class PowerManagement {
             $msg = "The export process has failed and MicroWin processing cannot continue"
             Write-Host $msg
             Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
-            Invoke-MicrowinBusyInfo -warning $msg
+            Invoke-MicrowinBusyInfo -action "warning" -message $msg
             [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
             return
         }
@@ -91,7 +91,7 @@ public class PowerManagement {
         Write-Host $msg
         [System.Windows.MessageBox]::Show($dlg_msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Exclamation)
         Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
-        Invoke-MicrowinBusyInfo -warning $msg
+        Invoke-MicrowinBusyInfo -action "warning" -message $msg
         return
     }
 
@@ -109,7 +109,7 @@ public class PowerManagement {
         $msg = "Required directories '$mountDirExists' '$scratchDirExists' and do not exist."
         Write-Error $msg
         Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
-        Invoke-MicrowinBusyInfo -warning $msg
+        Invoke-MicrowinBusyInfo -action "warning" -message $msg
         return
     }
 
@@ -123,7 +123,7 @@ public class PowerManagement {
             $msg = "Could not mount image. Exiting..."
             Write-Host $msg
             Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
-            Invoke-MicrowinBusyInfo -warning $msg
+            Invoke-MicrowinBusyInfo -action "warning" -message $msg
             return
         }
 
@@ -379,7 +379,7 @@ public class PowerManagement {
         if (-not (Test-Path -Path "$mountDir\sources\install.wim")) {
             $msg = "Something went wrong. Please report this bug to the devs."
             Write-Error "$($msg) '$($mountDir)\sources\install.wim' doesn't exist"
-            Invoke-MicrowinBusyInfo -warning $msg
+            Invoke-MicrowinBusyInfo -action "warning" -message $msg
             Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
             return
         }
@@ -470,7 +470,7 @@ public class PowerManagement {
             $msg = "Done. ISO image is located here: $($SaveDialog.FileName)"
             Write-Host $msg
             Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
-            Invoke-MicrowinBusyInfo -done "Finished!"
+            Invoke-MicrowinBusyInfo -action "done" -message "Finished!"
             [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information)
         } else {
             Write-Host "ISO creation failed. The "$($mountDir)" directory has not been removed."
@@ -479,7 +479,7 @@ public class PowerManagement {
                 # Now, this will NOT throw an exception
                 $exitCode = New-Object System.ComponentModel.Win32Exception($LASTEXITCODE)
                 Write-Host "Reason: $($exitCode.Message)"
-                Invoke-MicrowinBusyInfo -warning $exitCode.Message
+                Invoke-MicrowinBusyInfo -action "warning" -message $exitCode.Message
                 Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
             } catch {
                 # Could not get error description from Windows APIs

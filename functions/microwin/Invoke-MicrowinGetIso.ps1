@@ -12,6 +12,9 @@ function Invoke-MicrowinGetIso {
         return
     }
 
+    # Provide immediate feedback to user
+    Invoke-MicrowinBusyInfo -action "wip" -message "Initializing MicroWin process..." -interactive $false
+
     Write-Host "         _                     __    __  _         "
     Write-Host "  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __   "
     Write-Host " /    \ | | / __|| '__| / _ \ \ \/  \/ /| || '_ \  "
@@ -20,6 +23,7 @@ function Invoke-MicrowinGetIso {
 
     if ($sync["ISOmanual"].IsChecked) {
         # Open file dialog to let user choose the ISO file
+        Invoke-MicrowinBusyInfo -action "wip" -message "Please select an ISO file..." -interactive $true
         [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
         $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
         $openFileDialog.initialDirectory = $initialDirectory
@@ -29,21 +33,25 @@ function Invoke-MicrowinGetIso {
 
         if ([string]::IsNullOrEmpty($filePath)) {
             Write-Host "No ISO is chosen"
+            Invoke-MicrowinBusyInfo -action "hide"
             return
         }
 
     } elseif ($sync["ISOdownloader"].IsChecked) {
+        # Create folder browsers for user-specified locations
+        Invoke-MicrowinBusyInfo -action "wip" -message "Please select download location..." -interactive $true
         [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
         $isoDownloaderFBD = New-Object System.Windows.Forms.FolderBrowserDialog
         $isoDownloaderFBD.Description = "Please specify the path to download the ISO file to:"
         $isoDownloaderFBD.ShowNewFolderButton = $true
         if ($isoDownloaderFBD.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK)
         {
+            Invoke-MicrowinBusyInfo -action "hide"
             return
         }
 
         Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
-        Invoke-MicrowinBusyInfo -wip "Preparing to download ISO..."
+        Invoke-MicrowinBusyInfo -action "wip" -message "Preparing to download ISO..." -interactive $false
 
         # Grab the location of the selected path
         $targetFolder = $isoDownloaderFBD.SelectedPath
@@ -53,7 +61,7 @@ function Invoke-MicrowinGetIso {
         $fidopath = "$env:temp\Fido.ps1"
         $originalLocation = $PSScriptRoot
 
-        Invoke-MicrowinBusyInfo -wip "Downloading Fido script..."
+        Invoke-MicrowinBusyInfo -action "wip" -message "Downloading Fido script..." -interactive $false
         Invoke-WebRequest "https://github.com/pbatard/Fido/raw/master/Fido.ps1" -OutFile $fidopath
 
         Set-Location -Path $env:temp
@@ -64,13 +72,13 @@ function Invoke-MicrowinGetIso {
             $sync["ISOLanguage"].SelectedItem
         }
 
-        Invoke-MicrowinBusyInfo -wip "Downloading Windows ISO... (This may take a long time)"
+        Invoke-MicrowinBusyInfo -action "wip" -message "Downloading Windows ISO... (This may take a long time)" -interactive $false
         & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch "x64" -Lang $lang -Ed "Windows 11 Home/Pro/Edu"
         if (-not $?)
         {
             Write-Host "Could not download the ISO file. Look at the output of the console for more information."
             $msg = "The ISO file could not be downloaded"
-            Invoke-MicrowinBusyInfo -warning $msg
+            Invoke-MicrowinBusyInfo -action "warning" -message $msg
             Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
             [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
             return
@@ -96,7 +104,7 @@ function Invoke-MicrowinGetIso {
                 $msg = "Unable to move the ISO file to the location you specified. The downloaded ISO is in the `"$env:TEMP`" folder"
                 Write-Host $msg
                 Write-Host "Error information: $($_.Exception.Message)" -ForegroundColor Yellow
-                Invoke-MicrowinBusyInfo -warning $msg
+                Invoke-MicrowinBusyInfo -action "warning" -message $msg
                 return
             }
         }
@@ -105,13 +113,13 @@ function Invoke-MicrowinGetIso {
     Write-Host "File path $($filePath)"
     if (-not (Test-Path -Path "$filePath" -PathType Leaf)) {
         $msg = "File you've chosen doesn't exist"
-        Invoke-MicrowinBusyInfo -warning $msg
+        Invoke-MicrowinBusyInfo -action "warning" -message $msg
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
         return
     }
 
     Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
-    Invoke-MicrowinBusyInfo -wip "Checking system requirements..."
+    Invoke-MicrowinBusyInfo -action "wip" -message "Checking system requirements..." -interactive $false
 
     $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
     $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg.exe) -or (Test-Path $oscdimgPath -PathType Leaf)
@@ -136,17 +144,17 @@ function Invoke-MicrowinGetIso {
 
             Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install windows-adk-oscdimg"
             $msg = "oscdimg is installed, now close, reopen PowerShell terminal and re-launch winutil.ps1"
-            Invoke-MicrowinBusyInfo -wip $msg
+            Invoke-MicrowinBusyInfo -action "done" -message $msg        # We set it to done because it immediately returns from this function
             [System.Windows.MessageBox]::Show($msg)
             return
         } else {
             [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it from github. This might take a long time.")
-            Invoke-MicrowinBusyInfo -wip "Downloading oscdimg.exe..."
+            Invoke-MicrowinBusyInfo -action "wip" -message "Downloading oscdimg.exe..." -interactive $false
             Microwin-GetOscdimg -oscdimgPath $oscdimgPath
             $oscdImgFound = Test-Path $oscdimgPath -PathType Leaf
             if (!$oscdImgFound) {
                 $msg = "oscdimg was not downloaded can not proceed"
-                Invoke-MicrowinBusyInfo -warning $msg
+                Invoke-MicrowinBusyInfo -action "warning" -message $msg
                 [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
                 return
             } else {
@@ -155,7 +163,7 @@ function Invoke-MicrowinGetIso {
         }
     }
 
-    Invoke-MicrowinBusyInfo -wip "Checking disk space..."
+    Invoke-MicrowinBusyInfo -action "wip" -message "Checking disk space..." -interactive $false
 
     # Detect the file size of the ISO and compare it with the free space of the system drive
     $isoSize = (Get-Item -Path "$filePath").Length
@@ -173,14 +181,14 @@ function Invoke-MicrowinGetIso {
         $msg = "You don't have enough space for this operation. You need at least $([Math]::Round(($isoSize / ([Math]::Pow(1024, 2))) * 2, 2)) MB of free space to copy the ISO files to a temp directory and to be able to perform additional operations."
         Write-Host $msg
         Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
-        Invoke-MicrowinBusyInfo -warning $msg
+        Invoke-MicrowinBusyInfo -action "warning" -message $msg
         return
     } else {
         Write-Host "You have enough space for this operation."
     }
 
     try {
-        Invoke-MicrowinBusyInfo -wip "Mounting ISO file..."
+        Invoke-MicrowinBusyInfo -action "wip" -message "Mounting ISO file..." -interactive $false
         Write-Host "Mounting Iso. Please wait."
         $mountedISO = Mount-DiskImage -PassThru "$filePath"
         Write-Host "Done mounting Iso `"$($mountedISO.ImagePath)`""
@@ -193,7 +201,7 @@ function Invoke-MicrowinGetIso {
         Write-Error "This is NOT winutil's problem, your ISO might be corrupt, or there is a problem on the system"
         Write-Host "Please refer to this wiki for more details: https://christitustech.github.io/winutil/KnownIssues/#troubleshoot-errors-during-microwin-usage" -ForegroundColor Red
         Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
-        Invoke-MicrowinBusyInfo -warning $msg
+        Invoke-MicrowinBusyInfo -action "warning" -message $msg
         return
     }
     # storing off values in hidden fields for further steps
@@ -252,11 +260,11 @@ function Invoke-MicrowinGetIso {
     try {
 
         #$data = @($driveLetter, $filePath)
-        Invoke-MicrowinBusyInfo -wip "Creating directories..."
+        Invoke-MicrowinBusyInfo -action "wip" -message "Creating directories..." -interactive $false
         New-Item -ItemType Directory -Force -Path "$($mountDir)" | Out-Null
         New-Item -ItemType Directory -Force -Path "$($scratchDir)" | Out-Null
 
-        Invoke-MicrowinBusyInfo -wip "Copying Windows files... (This may take several minutes)"
+        Invoke-MicrowinBusyInfo -action "wip" -message "Copying Windows files... (This may take several minutes)" -interactive $false
         Write-Host "Copying Windows image. This will take awhile, please don't use UI or cancel this step!"
 
         # xcopy we can verify files and also not copy files that already exist, but hard to measure
@@ -268,14 +276,14 @@ function Invoke-MicrowinGetIso {
         }
         Write-Host "Copy complete! Total Time: $($totalTime.Minutes) minutes, $($totalTime.Seconds) seconds"
 
-        Invoke-MicrowinBusyInfo -wip "Processing Windows image..."
+        Invoke-MicrowinBusyInfo -action "wip" -message "Processing Windows image..." -interactive $false
         $wimFile = "$mountDir\sources\install.wim"
         Write-Host "Getting image information $wimFile"
 
         if ((-not (Test-Path -Path "$wimFile" -PathType Leaf)) -and (-not (Test-Path -Path "$($wimFile.Replace(".wim", ".esd").Trim())" -PathType Leaf))) {
             $msg = "Neither install.wim nor install.esd exist in the image, this could happen if you use unofficial Windows images. Please don't use shady images from the internet."
             Write-Host "$($msg) Only use official images. Here are instructions how to download ISO images if the Microsoft website is not showing the link to download and ISO. https://www.techrepublic.com/article/how-to-download-a-windows-10-iso-file-without-using-the-media-creation-tool/"
-            Invoke-MicrowinBusyInfo -warning $msg
+            Invoke-MicrowinBusyInfo -action "warning" -message $msg
             Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
             [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
             throw
@@ -294,7 +302,7 @@ function Invoke-MicrowinGetIso {
 
         $sync.MicrowinWindowsFlavors.SelectedIndex = 0
         Write-Host "Finding suitable Pro edition. This can take some time. Do note that this is an automatic process that might not select the edition you want."
-        Invoke-MicrowinBusyInfo -wip "Finding suitable Pro edition..."
+        Invoke-MicrowinBusyInfo -action "wip" -message "Finding suitable Pro edition..." -interactive $false
 
         Get-WindowsImage -ImagePath $wimFile | ForEach-Object {
             if ((Get-WindowsImage -ImagePath $wimFile -Index $_.ImageIndex).EditionId -eq "Professional") {
@@ -314,7 +322,7 @@ function Invoke-MicrowinGetIso {
         Get-Volume $driveLetter | Get-DiskImage | Dismount-DiskImage
         Remove-Item -Recurse -Force "$($scratchDir)"
         Remove-Item -Recurse -Force "$($mountDir)"
-        Invoke-MicrowinBusyInfo -warning "Failed to read and unpack ISO"
+        Invoke-MicrowinBusyInfo -action "warning" -message "Failed to read and unpack ISO"
         Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
 
     }
@@ -324,7 +332,7 @@ function Invoke-MicrowinGetIso {
     Write-Host "*********************************"
     Write-Host "Check the UI for further steps!!!"
 
-    Invoke-MicrowinBusyInfo -done "Done! Proceed with customization."
+    Invoke-MicrowinBusyInfo -action "done" -message "Done! Proceed with customization."
     $sync.ProcessRunning = $false
     Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
 }
