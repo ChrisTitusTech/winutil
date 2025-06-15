@@ -55,14 +55,14 @@ Function Invoke-WPFUltimatePerformance {
             }
             "Disable" {
                 # Check if the Ultimate Performance plan is installed by GUID
-                $installedPlan = (powercfg -list | Select-String -Pattern "ChrisTitus - Ultimate Power Plan").Line.Split()[3]
+                $installedPlan = powercfg -list | Select-String -Pattern "ChrisTitus - Ultimate Power Plan"
 
                 if ($installedPlan) {
                     # Extract the GUID of the installed Ultimate Performance plan
                     $ultimatePlanGUID = $installedPlan.Line.Split()[3]
 
                     # Set a different power plan as active before deleting the Ultimate Performance plan
-                    $balancedPlanGUID = 381b4222-f694-41f0-9685-ff5bb260df2e
+                    $balancedPlanGUID = "381b4222-f694-41f0-9685-ff5bb260df2e"
                     powercfg -setactive $balancedPlanGUID
 
                     # Delete the Ultimate Performance plan by GUID
