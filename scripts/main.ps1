@@ -428,7 +428,7 @@ $sync["Form"].Add_Loaded({
 
     # Initial language load - this will also trigger the first Refresh-UIText.
     # Get-LocalizedString should be available at this point.
-    Set-Language -languageCode "en"
+    Set-Language -languageCode "zh"
 })
 
 $NavLogoPanel = $sync["Form"].FindName("NavLogoPanel")
