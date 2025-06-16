@@ -33,7 +33,7 @@ function Invoke-MicrowinGetIso {
 
         if ([string]::IsNullOrEmpty($filePath)) {
             Write-Host "No ISO is chosen"
-            Invoke-MicrowinBusyInfo -action "hide"
+            Invoke-MicrowinBusyInfo -action "hide" -message " "
             return
         }
 
@@ -46,7 +46,7 @@ function Invoke-MicrowinGetIso {
         $isoDownloaderFBD.ShowNewFolderButton = $true
         if ($isoDownloaderFBD.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK)
         {
-            Invoke-MicrowinBusyInfo -action "hide"
+            Invoke-MicrowinBusyInfo -action "hide" -message " "
             return
         }
 
