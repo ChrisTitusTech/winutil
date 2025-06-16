@@ -18,8 +18,13 @@ $InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionSta
 # Add the variable to the session state
 $InitialSessionState.Variables.Add($hashVars)
 
+# Source critical functions early if they are needed by other function definitions or by the main script logic before runspace creation
+# Ensure Get-LocalizedString is available globally and for session state
+. "$PSScriptRoot\..\functions\private\Get-LocalizedString.ps1"
+
 # Get every private function and add them to the session state
-$functions = Get-ChildItem function:\ | Where-Object { $_.Name -imatch 'winutil|Microwin|WPF' }
+# Updated to include Get-LocalizedString as it's now dot-sourced and available in function:\
+$functions = Get-ChildItem function:\ | Where-Object { $_.Name -imatch 'winutil|Microwin|WPF|Get-LocalizedString' }
 foreach ($function in $functions) {
     $functionDefinition = Get-Content function:\$($function.name)
     $functionEntry = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $($function.name), $functionDefinition
@@ -411,6 +416,19 @@ $sync["Form"].Add_Loaded({
     $sync.Form.MinWidth = "1000"
     $sync["Form"].MaxWidth = [Double]::PositiveInfinity
     $sync["Form"].MaxHeight = [Double]::PositiveInfinity
+
+    # Add Event Handlers for new MenuItems
+    if ($sync.EnglishLangMenuItem -and $sync.ChineseLangMenuItem) {
+        $sync.EnglishLangMenuItem.Add_Click({ Set-Language -languageCode "en" })
+        $sync.ChineseLangMenuItem.Add_Click({ Set-Language -languageCode "zh" })
+        Write-Host "Language MenuItem event handlers added."
+    } else {
+        Write-Warning "Language MenuItems (EnglishLangMenuItem or ChineseLangMenuItem) not found in `$sync. Event handlers not added."
+    }
+
+    # Initial language load - this will also trigger the first Refresh-UIText.
+    # Get-LocalizedString should be available at this point.
+    Set-Language -languageCode "zh"
 })
 
 $NavLogoPanel = $sync["Form"].FindName("NavLogoPanel")
@@ -505,6 +523,36 @@ $sync["SponsorMenuItem"].Add_Click({
     }
     Show-CustomDialog -Title "Sponsors" -Message $authorInfo -EnableScroll $true
 })
+
+# Define language setting functions
+function Set-Language {
+    param([string]$languageCode)
+    $Global:UserSelectedLanguage = $languageCode
+    Write-Host "Language set to: $languageCode (Global:UserSelectedLanguage)" # Debug output
+    # Call Refresh-UIText - this function will be more fleshed out later
+    Refresh-UIText
+}
+
+function Refresh-UIText {
+    # Placeholder: In a future step, this will re-apply localized strings
+    Write-Host "UI Text refresh triggered for $Global:UserSelectedLanguage"
+
+    # Example of how one item might be updated (actual update logic will be more comprehensive)
+    if ($sync.LanguageMenuItem -and $sync.EnglishLangMenuItem -and $sync.ChineseLangMenuItem) { # Check if UI elements are loaded
+        # Ensure Get-LocalizedString is available before calling it
+        if (Get-Command Get-LocalizedString -ErrorAction SilentlyContinue) {
+            $sync.LanguageMenuItem.Header = Get-LocalizedString -Key 'settingsPopup.languageMenuItem.header'
+            $sync.EnglishLangMenuItem.Header = Get-LocalizedString -Key 'settingsPopup.englishLangMenuItem.header'
+            $sync.ChineseLangMenuItem.Header = Get-LocalizedString -Key 'settingsPopup.chineseLangMenuItem.header'
+            # Add more UI elements here as localization is implemented for them
+            # For example:
+            # $sync.WPFTab1BT.Content.Text = Get-LocalizedString -Key 'installTab.textBlock.text' # This needs careful handling of nested elements
+            # $sync.AboutMenuItem.Header = Get-LocalizedString -Key 'settingsPopup.aboutMenuItem.header'
+        } else {
+            Write-Warning "Get-LocalizedString function not found. UI text not refreshed."
+        }
+    }
+}
 
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript

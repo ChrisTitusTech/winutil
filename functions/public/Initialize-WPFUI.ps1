@@ -1,3 +1,5 @@
+. "$PSScriptRoot/../private/Get-LocalizedString.ps1" # Assuming Get-LocalizedString.ps1 is in functions/private
+
 function Initialize-WPFUI {
     [OutputType([void])]
     param(
@@ -78,7 +80,7 @@ function Initialize-WPFUI {
                     "Install" {
                         $newButton.Add_MouseEnter({
                             $appObject = $sync.configs.applicationsHashtable.$($sync.appPopupSelectedApp)
-                            $this.ToolTip = "Install or Upgrade $($appObject.content)"
+                            $this.ToolTip = (Get-LocalizedString -Key 'appActions.installButton.tooltip' -FormatArguments $appObject.content)
                         })
                         $newButton.Add_Click({
                             $appObject = $sync.configs.applicationsHashtable.$($sync.appPopupSelectedApp)
@@ -88,7 +90,7 @@ function Initialize-WPFUI {
                     "Uninstall" {
                         $newButton.Add_MouseEnter({
                             $appObject = $sync.configs.applicationsHashtable.$($sync.appPopupSelectedApp)
-                            $this.ToolTip = "Uninstall $($appObject.content)"
+                            $this.ToolTip = (Get-LocalizedString -Key 'appActions.uninstallButton.tooltip' -FormatArguments $appObject.content)
                         })
                         $newButton.Add_Click({
                             $appObject = $sync.configs.applicationsHashtable.$($sync.appPopupSelectedApp)
@@ -98,7 +100,8 @@ function Initialize-WPFUI {
                     "Info" {
                         $newButton.Add_MouseEnter({
                             $appObject = $sync.configs.applicationsHashtable.$($sync.appPopupSelectedApp)
-                            $this.ToolTip = "Open the application's website in your default browser`n$($appObject.link)"
+                            # Using 'appActions.infoButton.tooltipLink' as it includes the placeholder for the link itself.
+                            $this.ToolTip = (Get-LocalizedString -Key 'appActions.infoButton.tooltipLink' -FormatArguments $appObject.link)
                         })
                         $newButton.Add_Click({
                             $appObject = $sync.configs.applicationsHashtable.$($sync.appPopupSelectedApp)
@@ -113,8 +116,7 @@ function Initialize-WPFUI {
             Initialize-InstallCategoryAppList -TargetElement $sync.ItemsControl -Apps $sync.configs.applicationsHashtable
         }
         default {
-            Write-Output "$TargetGridName not yet implemented"
+            Write-Output (Get-LocalizedString -Key 'initializeWPFUI.notImplementedWarning' -FormatArguments $TargetGridName)
         }
     }
 }
-
