@@ -1086,6 +1086,10 @@
                                 </MenuItem.ToolTip>
                             </MenuItem>
                             <Separator/>
+                            <MenuItem Name="LanguageMenuItem" Header="Language" FontSize="{DynamicResource ButtonFontSize}" Foreground="{DynamicResource MainForegroundColor}">
+                                <MenuItem Name="EnglishLangMenuItem" Header="English" FontSize="{DynamicResource ButtonFontSize}" Foreground="{DynamicResource MainForegroundColor}"/>
+                                <MenuItem Name="ChineseLangMenuItem" Header="Chinese" FontSize="{DynamicResource ButtonFontSize}" Foreground="{DynamicResource MainForegroundColor}"/>
+                            </MenuItem>
                             <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="About" Name="AboutMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
                             <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Sponsors" Name="SponsorMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
                         </StackPanel>
