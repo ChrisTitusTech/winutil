@@ -1,20 +1,20 @@
-# Disable Legacy F8 Boot Recovery
+# 禁用旧版 F8 启动恢复
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-## Description
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
+## 描述
 
-Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.
+禁用高级启动选项屏幕，该屏幕允许您以高级故障排除模式启动 Windows。
 
 <!-- BEGIN CUSTOM CONTENT -->
 
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -39,7 +39,7 @@ Disables Advanced Boot Options screen that lets you start Windows in advanced tr
 
 </details>
 
-## Invoke Script
+## 调用脚本
 
 ```powershell
 
@@ -57,5 +57,4 @@ Disables Advanced Boot Options screen that lets you start Windows in advanced tr
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)

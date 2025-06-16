@@ -1,10 +1,10 @@
-# Remove Ultimate Performance Profile
+# 删除卓越性能配置文件
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
 
 
 <!-- BEGIN CUSTOM CONTENT -->
@@ -12,7 +12,7 @@ Last Updated: 2024-08-07
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -28,56 +28,56 @@ Last Updated: 2024-08-07
 
 </details>
 
-## Function: Invoke-WPFUltimatePerformance
+## 函数：Invoke-WPFUltimatePerformance
 
 ```powershell
 Function Invoke-WPFUltimatePerformance {
     <#
 
     .SYNOPSIS
-        Creates or removes the Ultimate Performance power scheme
+        创建或删除卓越性能电源计划
 
     .PARAMETER State
-        Indicates whether to enable or disable the Ultimate Performance power scheme
+        指示是启用还是禁用卓越性能电源计划
 
     #>
     param($State)
     try {
-        # Check if Ultimate Performance plan is installed
+        # 检查是否安装了卓越性能计划
         $ultimatePlan = powercfg -list | Select-String -Pattern "Ultimate Performance"
         if($state -eq "Enable") {
             if ($ultimatePlan) {
-                Write-Host "Ultimate Performance plan is already installed."
+                Write-Host "卓越性能计划已安装。"
             } else {
-                Write-Host "Installing Ultimate Performance plan..."
+                Write-Host "正在安装卓越性能计划..."
                 powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61
-                Write-Host "> Ultimate Performance plan installed."
+                Write-Host "> 卓越性能计划已安装。"
             }
 
-            # Set the Ultimate Performance plan as active
+            # 将卓越性能计划设置为活动状态
             $ultimatePlanGUID = (powercfg -list | Select-String -Pattern "Ultimate Performance").Line.Split()[3]
             powercfg -setactive $ultimatePlanGUID
 
-            Write-Host "Ultimate Performance plan is now active."
+            Write-Host "卓越性能计划现已激活。"
 
 
         }
         elseif($state -eq "Disable") {
             if ($ultimatePlan) {
-                # Extract the GUID of the Ultimate Performance plan
+                # 提取卓越性能计划的 GUID
                 $ultimatePlanGUID = $ultimatePlan.Line.Split()[3]
 
-                # Set a different power plan as active before deleting the Ultimate Performance plan
+                # 在删除卓越性能计划之前将其他电源计划设置为活动状态
                 $balancedPlanGUID = (powercfg -list | Select-String -Pattern "Balanced").Line.Split()[3]
                 powercfg -setactive $balancedPlanGUID
 
-                # Delete the Ultimate Performance plan
+                # 删除卓越性能计划
                 powercfg -delete $ultimatePlanGUID
 
-                Write-Host "Ultimate Performance plan has been uninstalled."
-                Write-Host "> Balanced plan is now active."
+                Write-Host "卓越性能计划已卸载。"
+                Write-Host "> 平衡计划现已激活。"
             } else {
-                Write-Host "Ultimate Performance plan is not installed."
+                Write-Host "未安装卓越性能计划。"
             }
         }
     } catch {
@@ -93,5 +93,4 @@ Function Invoke-WPFUltimatePerformance {
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)

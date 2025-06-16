@@ -1,10 +1,10 @@
-# Set Up Autologin
+# 设置自动登录
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
 
 
 <!-- BEGIN CUSTOM CONTENT -->
@@ -12,7 +12,7 @@ Last Updated: 2024-08-07
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -28,14 +28,14 @@ Last Updated: 2024-08-07
 
 </details>
 
-## Function: Invoke-WPFPanelAutologin
+## 函数：Invoke-WPFPanelAutologin
 
 ```powershell
 function Invoke-WPFPanelAutologin {
     <#
 
     .SYNOPSIS
-        Enables autologin using Sysinternals Autologon.exe
+        使用 Sysinternals Autologon.exe 启用自动登录
 
     #>
 
@@ -52,5 +52,4 @@ function Invoke-WPFPanelAutologin {
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)

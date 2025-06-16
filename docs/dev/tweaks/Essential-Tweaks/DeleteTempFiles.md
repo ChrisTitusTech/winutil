@@ -1,20 +1,20 @@
-# Delete Temporary Files
+# 删除临时文件
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-## Description
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
+## 描述
 
-Erases TEMP Folders
+清除 TEMP 文件夹
 
 <!-- BEGIN CUSTOM CONTENT -->
 
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -33,7 +33,7 @@ Erases TEMP Folders
 
 </details>
 
-## Invoke Script
+## 调用脚本
 
 ```powershell
 Get-ChildItem -Path "C:\Windows\Temp" *.* -Recurse | Remove-Item -Force -Recurse
@@ -46,5 +46,4 @@ Get-ChildItem -Path "C:\Windows\Temp" *.* -Recurse | Remove-Item -Force -Recurse
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)

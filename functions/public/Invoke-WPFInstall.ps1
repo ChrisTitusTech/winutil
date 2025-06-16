@@ -11,13 +11,13 @@ function Invoke-WPFInstall {
     #>
 
     if($sync.ProcessRunning) {
-        $msg = "[Invoke-WPFInstall] An Install process is currently running."
+        $msg = "[Invoke-WPFInstall] 安装进程当前正在运行。"
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
 
     if ($PackagesToInstall.Count -eq 0) {
-        $WarningMsg = "Please select the program(s) to install or upgrade"
+        $WarningMsg = "请选择要安装或升级的程序"
         [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
@@ -44,12 +44,12 @@ function Invoke-WPFInstall {
                 Install-WinUtilProgramChoco -Action Install -Programs $packagesChoco
             }
             Write-Host "==========================================="
-            Write-Host "--      Installs have finished          ---"
+            Write-Host "--      安装已完成          ---"
             Write-Host "==========================================="
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
         } catch {
             Write-Host "==========================================="
-            Write-Host "Error: $_"
+            Write-Host "错误：$_"
             Write-Host "==========================================="
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -overlay "warning" })
         }

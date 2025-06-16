@@ -1,20 +1,20 @@
-# Verbose Messages During Logon
+# 登录期间的详细消息
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-## Description
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
+## 描述
 
-Show detailed messages during the login process for troubleshooting and diagnostics.
+在登录过程中显示详细消息，以便进行故障排除和诊断。
 
 <!-- BEGIN CUSTOM CONTENT -->
 
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -30,33 +30,33 @@ Show detailed messages during the login process for troubleshooting and diagnost
 
 </details>
 
-## Function: Invoke-WinUtilVerboseLogon
+## 函数：Invoke-WinUtilVerboseLogon
 
 ```powershell
 function Invoke-WinUtilVerboseLogon {
     <#
     .SYNOPSIS
-        Disables/Enables VerboseLogon Messages
+        禁用/启用详细登录消息
     .PARAMETER Enabled
-        Indicates whether to enable or disable VerboseLogon messages
+        指示是启用还是禁用详细登录消息
     #>
     Param($Enabled)
     try {
         if ($Enabled -eq $false) {
-            Write-Host "Enabling Verbose Logon Messages"
+            Write-Host "正在启用详细登录消息"
             $value = 1
         } else {
-            Write-Host "Disabling Verbose Logon Messages"
+            Write-Host "正在禁用详细登录消息"
             $value = 0
         }
         $Path = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
         Set-ItemProperty -Path $Path -Name VerboseStatus -Value $value
     } catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+        Write-Warning "由于安全异常，无法将 $Path\$Name 设置为 $Value"
     } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
     } catch {
-        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning "由于未处理的异常，无法设置 $Name"
         Write-Warning $psitem.Exception.StackTrace
     }
 }
@@ -69,5 +69,4 @@ function Invoke-WinUtilVerboseLogon {
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)

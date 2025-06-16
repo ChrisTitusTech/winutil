@@ -903,7 +903,7 @@
                 Background="{DynamicResource ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
                 <ToggleButton.Content>
                     <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonInstallForegroundColor}" >
-                        <Underline>I</Underline>nstall
+                        <Underline>安</Underline>装
                     </TextBlock>
                 </ToggleButton.Content>
             </ToggleButton>
@@ -911,7 +911,7 @@
                 Background="{DynamicResource ButtonTweaksBackgroundColor}" Foreground="{DynamicResource ButtonTweaksForegroundColor}" FontWeight="Bold" Name="WPFTab2BT">
                 <ToggleButton.Content>
                     <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonTweaksForegroundColor}">
-                        <Underline>T</Underline>weaks
+                        <Underline>调</Underline>整
                     </TextBlock>
                 </ToggleButton.Content>
             </ToggleButton>
@@ -919,7 +919,7 @@
                 Background="{DynamicResource ButtonConfigBackgroundColor}" Foreground="{DynamicResource ButtonConfigForegroundColor}" FontWeight="Bold" Name="WPFTab3BT">
                 <ToggleButton.Content>
                     <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonConfigForegroundColor}">
-                        <Underline>C</Underline>onfig
+                        <Underline>配</Underline>置
                     </TextBlock>
                 </ToggleButton.Content>
             </ToggleButton>
@@ -927,7 +927,7 @@
                 Background="{DynamicResource ButtonUpdatesBackgroundColor}" Foreground="{DynamicResource ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab4BT">
                 <ToggleButton.Content>
                     <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonUpdatesForegroundColor}">
-                        <Underline>U</Underline>pdates
+                        <Underline>更</Underline>新
                     </TextBlock>
                 </ToggleButton.Content>
             </ToggleButton>
@@ -935,7 +935,7 @@
                 Background="{DynamicResource ButtonUpdatesBackgroundColor}" Foreground="{DynamicResource ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab5BT">
                 <ToggleButton.Content>
                     <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonUpdatesForegroundColor}">
-                        <Underline>M</Underline>icroWin
+                        <Underline>微</Underline>型Win
                     </TextBlock>
                 </ToggleButton.Content>
             </ToggleButton>
@@ -968,7 +968,7 @@
                     Foreground="{DynamicResource MainForegroundColor}" Background="{DynamicResource MainBackgroundColor}"
                     Padding="3,3,30,0"
                     Margin="5,0,0,0"
-                    ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter">
+                    ToolTip="按 Ctrl-F 并键入应用程序名称以筛选下面的应用程序列表。按 Esc 重置筛选器">
                 </TextBox>
                 <TextBlock
                     Grid.Column="0"
@@ -1030,8 +1030,8 @@
                     HorizontalAlignment="Right" VerticalAlignment="Top"
                     Margin="0,5,5,0"
                     FontFamily="Segoe MDL2 Assets"
-                    Content="N/A"
-                    ToolTip="Change the Winutil UI Theme"
+                    Content="不适用"
+                    ToolTip="更改 WinUtil 用户界面主题"
                 />
                 <Popup Grid.Column="2" Name="ThemePopup"
                     IsOpen="False"
@@ -1039,19 +1039,19 @@
                     HorizontalAlignment="Right" VerticalAlignment="Top">
                     <Border Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
                         <StackPanel Background="{DynamicResource MainBackgroundColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Auto" Name="AutoThemeMenuItem" Foreground="{DynamicResource MainForegroundColor}">
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="自动" Name="AutoThemeMenuItem" Foreground="{DynamicResource MainForegroundColor}">
                                 <MenuItem.ToolTip>
-                                    <ToolTip Content="Follow the Windows Theme"/>
+                                    <ToolTip Content="跟随 Windows 主题"/>
                                 </MenuItem.ToolTip>
                             </MenuItem>
-                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Dark" Name="DarkThemeMenuItem" Foreground="{DynamicResource MainForegroundColor}">
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="深色" Name="DarkThemeMenuItem" Foreground="{DynamicResource MainForegroundColor}">
                                 <MenuItem.ToolTip>
-                                    <ToolTip Content="Use Dark Theme"/>
+                                    <ToolTip Content="使用深色主题"/>
                                 </MenuItem.ToolTip>
                             </MenuItem>
-                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Light" Name="LightThemeMenuItem" Foreground="{DynamicResource MainForegroundColor}">
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="浅色" Name="LightThemeMenuItem" Foreground="{DynamicResource MainForegroundColor}">
                                 <MenuItem.ToolTip>
-                                    <ToolTip Content="Use Light Theme"/>
+                                    <ToolTip Content="使用浅色主题"/>
                                 </MenuItem.ToolTip>
                             </MenuItem>
                         </StackPanel>
@@ -1075,19 +1075,19 @@
                     HorizontalAlignment="Right" VerticalAlignment="Top">
                     <Border Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
                         <StackPanel Background="{DynamicResource MainBackgroundColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Import" Name="ImportMenuItem" Foreground="{DynamicResource MainForegroundColor}">
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="导入" Name="ImportMenuItem" Foreground="{DynamicResource MainForegroundColor}">
                                 <MenuItem.ToolTip>
-                                    <ToolTip Content="Import Configuration from exported file."/>
+                                    <ToolTip Content="从导出的文件导入配置。"/>
                                 </MenuItem.ToolTip>
                             </MenuItem>
-                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Export" Name="ExportMenuItem" Foreground="{DynamicResource MainForegroundColor}">
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="导出" Name="ExportMenuItem" Foreground="{DynamicResource MainForegroundColor}">
                                 <MenuItem.ToolTip>
-                                    <ToolTip Content="Export Selected Elements and copy execution command to clipboard."/>
+                                    <ToolTip Content="导出选定元素并将执行命令复制到剪贴板。"/>
                                 </MenuItem.ToolTip>
                             </MenuItem>
                             <Separator/>
-                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="About" Name="AboutMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
-                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Sponsors" Name="SponsorMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="关于" Name="AboutMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="赞助商" Name="SponsorMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
                         </StackPanel>
                     </Border>
                 </Popup>
@@ -1107,7 +1107,7 @@
         </DockPanel>
 
         <TabControl Name="WPFTabNav" Background="Transparent" Width="Auto" Height="Auto" BorderBrush="Transparent" BorderThickness="0" Grid.Row="1" Grid.Column="0" Padding="-1">
-            <TabItem Header="Install" Visibility="Collapsed" Name="WPFTab1">
+            <TabItem Header="安装" Visibility="Collapsed" Name="WPFTab1">
                 <Grid Background="Transparent" >
 
                     <Grid Grid.Row="0" Grid.Column="0" Margin="{DynamicResource TabContentMargin}">
@@ -1124,7 +1124,7 @@
                     </Grid>
                 </Grid>
             </TabItem>
-            <TabItem Header="Tweaks" Visibility="Collapsed" Name="WPFTab2">
+            <TabItem Header="调整" Visibility="Collapsed" Name="WPFTab2">
                 <Grid>
                     <!-- Main content area with a ScrollViewer -->
                     <Grid.RowDefinitions>
@@ -1141,11 +1141,11 @@
                             </Grid.RowDefinitions>
 
                             <StackPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="5">
-                                <Label Content="Recommended Selections:" FontSize="{DynamicResource FontSize}" VerticalAlignment="Center" Margin="2"/>
-                                <Button Name="WPFstandard" Content=" Standard " Margin="2"/>
-                                <Button Name="WPFminimal" Content=" Minimal " Margin="2"/>
-                                <Button Name="WPFClearTweaksSelection" Content=" Clear " Margin="2"/>
-                                <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="2"/>
+                                <Label Content="推荐选择：" FontSize="{DynamicResource FontSize}" VerticalAlignment="Center" Margin="2"/>
+                                <Button Name="WPFstandard" Content=" 标准 " Margin="2"/>
+                                <Button Name="WPFminimal" Content=" 最小 " Margin="2"/>
+                                <Button Name="WPFClearTweaksSelection" Content=" 清除 " Margin="2"/>
+                                <Button Name="WPFGetInstalledTweaks" Content=" 获取已安装 " Margin="2"/>
                             </StackPanel>
 
                             <Grid Name="tweakspanel" Grid.Row="1">
@@ -1155,8 +1155,8 @@
                             <Border Grid.ColumnSpan="2" Grid.Row="2" Grid.Column="0" Style="{StaticResource BorderStyle}">
                                 <StackPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left">
                                     <TextBlock Padding="10">
-                                        Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
-                                        <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else!
+                                        注意：将鼠标悬停在项目上以获取更详细的说明。请小心，因为其中许多调整会严重修改您的系统。
+                                        <LineBreak/>推荐的选择适用于普通用户，如果您不确定，请勿选择其他任何内容！
                                     </TextBlock>
                                 </StackPanel>
                             </Border>
@@ -1164,19 +1164,19 @@
                     </ScrollViewer>
                     <Border Grid.Row="1" Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="5" HorizontalAlignment="Stretch" Padding="10">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0">
-                            <Button Name="WPFTweaksbutton" Content="Run Tweaks" Margin="5"/>
-                            <Button Name="WPFUndoall" Content="Undo Selected Tweaks" Margin="5"/>
+                            <Button Name="WPFTweaksbutton" Content="运行调整" Margin="5"/>
+                            <Button Name="WPFUndoall" Content="撤销选定的调整" Margin="5"/>
                         </StackPanel>
                     </Border>
                 </Grid>
             </TabItem>
-            <TabItem Header="Config" Visibility="Collapsed" Name="WPFTab3">
+            <TabItem Header="配置" Visibility="Collapsed" Name="WPFTab3">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{DynamicResource TabContentMargin}">
                     <Grid Name="featurespanel" Grid.Row="1" Background="Transparent">
                     </Grid>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Updates" Visibility="Collapsed" Name="WPFTab4">
+            <TabItem Header="更新" Visibility="Collapsed" Name="WPFTab4">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{DynamicResource TabContentMargin}">
                     <Grid Background="Transparent">
                         <Grid.RowDefinitions>
@@ -1197,19 +1197,19 @@
                                 <StackPanel>
                                     <Button Name="WPFFixesUpdate"
                                             FontSize="{DynamicResource ConfigTabButtonFontSize}"
-                                            Content="Default Settings"
+                                            Content="默认设置"
                                             Margin="10,5"
                                             Padding="10"/>
                                     <TextBlock Margin="10"
                                              TextWrapping="Wrap"
                                              Foreground="{DynamicResource MainForegroundColor}">
-                                        <Run FontWeight="Bold">Default Windows Update Configuration</Run>
+                                        <Run FontWeight="Bold">默认 Windows 更新配置</Run>
                                         <LineBreak/>
-                                         - No modifications to Windows defaults
+                                         - 不修改 Windows 默认值
                                         <LineBreak/>
-                                         - Removes any custom update settings
+                                         - 删除任何自定义更新设置
                                         <LineBreak/><LineBreak/>
-                                        <Run FontStyle="Italic" FontSize="11">Note: This resets your Windows Update settings to default out of the box settings. It removes ANY policy or customization that has been done to Windows Update.</Run>
+                                        <Run FontStyle="Italic" FontSize="11">注意：这将您的 Windows 更新设置重置为默认的出厂设置。它会删除已对 Windows 更新进行的任何策略或自定义。</Run>
                                     </TextBlock>
                                 </StackPanel>
                             </Border>
@@ -1219,23 +1219,23 @@
                                 <StackPanel>
                                     <Button Name="WPFUpdatessecurity"
                                             FontSize="{DynamicResource ConfigTabButtonFontSize}"
-                                            Content="Security Settings"
+                                            Content="安全设置"
                                             Margin="10,5"
                                             Padding="10"/>
                                     <TextBlock Margin="10"
                                              TextWrapping="Wrap"
                                              Foreground="{DynamicResource MainForegroundColor}">
-                                        <Run FontWeight="Bold">Balanced Security Configuration</Run>
+                                        <Run FontWeight="Bold">平衡安全配置</Run>
                                         <LineBreak/>
-                                         - Feature updates delayed by 2 years
+                                         - 功能更新延迟 2 年
                                         <LineBreak/>
-                                         - Security updates installed after 4 days
+                                         - 安全更新在 4 天后安装
                                         <LineBreak/><LineBreak/>
-                                        <Run FontWeight="SemiBold">Feature Updates:</Run> New features and potential bugs
+                                        <Run FontWeight="SemiBold">功能更新：</Run> 新功能和潜在错误
                                         <LineBreak/>
-                                        <Run FontWeight="SemiBold">Security Updates:</Run> Critical security patches
+                                        <Run FontWeight="SemiBold">安全更新：</Run> 关键安全补丁
                                     <LineBreak/><LineBreak/>
-                                    <Run FontStyle="Italic" FontSize="11">Note: This only applies to Pro systems that can use group policy.</Run>
+                                    <Run FontStyle="Italic" FontSize="11">注意：这仅适用于可以使用组策略的 Pro 系统。</Run>
                                     </TextBlock>
                                 </StackPanel>
                             </Border>
@@ -1245,22 +1245,22 @@
                                 <StackPanel>
                                     <Button Name="WPFUpdatesdisable"
                                             FontSize="{DynamicResource ConfigTabButtonFontSize}"
-                                            Content="Disable All Updates"
+                                            Content="禁用所有更新"
                                             Foreground="Red"
                                             Margin="10,5"
                                             Padding="10"/>
                                     <TextBlock Margin="10"
                                              TextWrapping="Wrap"
                                              Foreground="{DynamicResource MainForegroundColor}">
-                                        <Run FontWeight="Bold" Foreground="Red">!! Not Recommended !!</Run>
+                                        <Run FontWeight="Bold" Foreground="Red">!! 不推荐 !!</Run>
                                         <LineBreak/>
-                                         - Disables ALL Windows Updates
+                                         - 禁用所有 Windows 更新
                                         <LineBreak/>
-                                         - Increases security risks
+                                         - 增加安全风险
                                         <LineBreak/>
-                                         - Only use for isolated systems
+                                         - 仅用于隔离系统
                                         <LineBreak/><LineBreak/>
-                                        <Run FontStyle="Italic" FontSize="11">Warning: Your system will be vulnerable without security updates.</Run>
+                                        <Run FontStyle="Italic" FontSize="11">警告：如果没有安全更新，您的系统将易受攻击。</Run>
                                     </TextBlock>
                                 </StackPanel>
                             </Border>
@@ -1272,7 +1272,7 @@
                     </Grid>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="MicroWin" Visibility="Collapsed" Name="WPFTab5">
+            <TabItem Header="微型Win" Visibility="Collapsed" Name="WPFTab5">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{DynamicResource TabContentMargin}">
                 <Grid Width="Auto" Height="Auto">
                     <Grid.ColumnDefinitions>
@@ -1288,25 +1288,25 @@
                         HorizontalAlignment="Stretch">
                     <StackPanel Name="MicrowinMain" Background="{DynamicResource MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="0" Grid.Row="0">
                         <StackPanel Background="Transparent" SnapsToDevicePixels="True" Margin="1">
-                            <CheckBox x:Name="WPFMicrowinDownloadFromGitHub" Content="Download oscdimg.exe from CTT Github repo" IsChecked="True" Margin="{DynamicResource MicrowinCheckBoxMargin}" />
+                            <CheckBox x:Name="WPFMicrowinDownloadFromGitHub" Content="从 CTT Github 存储库下载 oscdimg.exe" IsChecked="True" Margin="{DynamicResource MicrowinCheckBoxMargin}" />
                             <TextBlock Margin="5" Padding="1" TextWrapping="Wrap" Foreground="{DynamicResource ComboBoxForegroundColor}">
-                                Choose a Windows ISO file that you've downloaded <LineBreak/>
-                                Check the status in the console
+                                选择您已下载的 Windows ISO 文件 <LineBreak/>
+                                在控制台中检查状态
                             </TextBlock>
                             <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
-                            <TextBlock Margin="5" Padding="1" TextWrapping="Wrap" Foreground="{DynamicResource ComboBoxForegroundColor}" ToolTip="Scratch directories act as a custom destination for image files"><Bold>Scratch directory settings (optional)</Bold></TextBlock>
-                            <CheckBox x:Name="WPFMicrowinISOScratchDir" Content="Use ISO directory for ScratchDir " IsChecked="False" Margin="{DynamicResource MicrowinCheckBoxMargin}"
-                                ToolTip="Check this to use the path of the ISO file you specify as a scratch directory" />
+                            <TextBlock Margin="5" Padding="1" TextWrapping="Wrap" Foreground="{DynamicResource ComboBoxForegroundColor}" ToolTip="Scratch directories act as a custom destination for image files"><Bold>临时目录设置（可选）</Bold></TextBlock>
+                            <CheckBox x:Name="WPFMicrowinISOScratchDir" Content="使用 ISO 目录作为 ScratchDir " IsChecked="False" Margin="{DynamicResource MicrowinCheckBoxMargin}"
+                                ToolTip="选中此项以使用您指定的 ISO文件的路径作为临时目录" />
                             <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" /> <!-- Takes the remaining space -->
                                 <ColumnDefinition Width="30" /> <!-- Fixed width for Button -->
                             </Grid.ColumnDefinitions>
                                 <TextBox Name="MicrowinScratchDirBox" Background="Transparent" BorderBrush="{DynamicResource MainForegroundColor}"
-                                        Text="Scratch"
+                                        Text="临时"
                                         Margin="2"
                                         IsReadOnly="False"
-                                        ToolTip="Specify an alternate path for the scratch directory"
+                                        ToolTip="指定临时目录的备用路径"
                                         Grid.Column="0"
                                         VerticalAlignment="Center"
                                         Foreground="{DynamicResource LabelboxForegroundColor}">
@@ -1324,45 +1324,45 @@
                             </Grid>
                             <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                             <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderBrush="{DynamicResource MainForegroundColor}"
-                                Text="ISO location will be printed here"
+                                Text="ISO 位置将在此处打印"
                                 Margin="2"
                                 IsReadOnly="True"
                                 TextWrapping="Wrap"
                                 Foreground="{DynamicResource LabelboxForegroundColor}"
                             />
-                            <RadioButton x:Name="ISOmanual" Content="Select your own ISO" GroupName="Options" Margin="0,10,0,0" IsChecked="True"/>
-                            <RadioButton x:Name="ISOdownloader" Content="Get newest ISO automatically" GroupName="Options" Margin="0,5,0,5"/>
+                            <RadioButton x:Name="ISOmanual" Content="选择自己的 ISO" GroupName="Options" Margin="0,10,0,0" IsChecked="True"/>
+                            <RadioButton x:Name="ISOdownloader" Content="自动获取最新的 ISO" GroupName="Options" Margin="0,5,0,5"/>
                             <ComboBox x:Name="ISORelease" Visibility="Collapsed"/>
                             <ComboBox x:Name="ISOLanguage" Visibility="Collapsed"/>
                             <Button Name="WPFGetIso" Margin="2" Padding="15">
                                 <Button.Content>
                                     <TextBlock Background="Transparent" Foreground="{DynamicResource ButtonForegroundColor}">
-                                        Get Windows <Underline>I</Underline>SO
+                                        获取 Windows <Underline>I</Underline>SO
                                     </TextBlock>
                                 </Button.Content>
                             </Button>
                         </StackPanel>
                         <!-- Visibility="Hidden" -->
                         <StackPanel Name="MicrowinOptionsPanel" HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Hidden">
-                            <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Choose Windows SKU</TextBlock>
+                            <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">选择 Windows SKU</TextBlock>
                             <ComboBox x:Name = "MicrowinWindowsFlavors" Margin="1" />
                             <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
-                            <CheckBox Name="MicrowinInjectDrivers" Content="Inject drivers (I KNOW WHAT I'M DOING)" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"/>
+                            <CheckBox Name="MicrowinInjectDrivers" Content="注入驱动程序（我知道我在做什么）" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="需要驱动程序的设备的已解包驱动程序所有 sys 和 inf 文件的路径"/>
                             <TextBox Name="MicrowinDriverLocation" Background="Transparent" BorderThickness="1" BorderBrush="{DynamicResource MainForegroundColor}"
                                 Margin="6"
                                 Text=""
                                 IsReadOnly="False"
                                 TextWrapping="Wrap"
                                 Foreground="{DynamicResource LabelboxForegroundColor}"
-                                ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"
+                                ToolTip="需要驱动程序的设备的已解包驱动程序所有 sys 和 inf 文件的路径"
                             />
-                            <CheckBox Name="MicrowinImportDrivers" Content="Import drivers from current system" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="Export all third-party drivers from your system and inject them to the MicroWin image"/>
-                            <CheckBox Name="MicrowinCopyVirtIO" Content="Include VirtIO drivers" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="Copy VirtIO Guest Tools drivers to your ISO file. Check this only if you want to use it on QEMU/Proxmox VE"/>
+                            <CheckBox Name="MicrowinImportDrivers" Content="从当前系统导入驱动程序" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="从系统中导出所有第三方驱动程序并将其注入 MicroWin 映像"/>
+                            <CheckBox Name="MicrowinCopyVirtIO" Content="包括 VirtIO 驱动程序" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="将 VirtIO Guest Tools 驱动程序复制到您的 ISO 文件。仅当您想在 QEMU/Proxmox VE 上使用它时才选中此项"/>
                             <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
-                            <CheckBox Name="WPFMicrowinCopyToUsb" Content="Copy to Ventoy" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="Copy to USB disk with a label Ventoy"/>
+                            <CheckBox Name="WPFMicrowinCopyToUsb" Content="复制到 Ventoy" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="复制到标签为 Ventoy 的 USB 磁盘"/>
                             <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
-                            <TextBlock Margin="6" Padding="1" TextWrapping="Wrap"><Bold>Custom user settings (leave empty for default user)</Bold></TextBlock>
-                            <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">User name (20 characters max.):</TextBlock>
+                            <TextBlock Margin="6" Padding="1" TextWrapping="Wrap"><Bold>自定义用户设置（默认用户留空）</Bold></TextBlock>
+                            <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">用户名（最多 20 个字符）：</TextBlock>
                             <TextBox Name="MicrowinUserName" Background="Transparent" BorderThickness="1" BorderBrush="{DynamicResource MainForegroundColor}"
                                 Margin="6"
                                 Text=""
@@ -1371,14 +1371,14 @@
                                 Foreground="{DynamicResource LabelboxForegroundColor}"
                                 MaxLength="20"
                             />
-                            <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Password (characters will not be shown for your security):</TextBlock>
+                            <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">密码（为安全起见，字符将不显示）：</TextBlock>
                             <PasswordBox Name="MicrowinUserPassword" Background="Transparent" BorderThickness="1" BorderBrush="{DynamicResource MainForegroundColor}"
                                 Margin="6"
                                 PasswordChar="*"
                                 Foreground="{DynamicResource LabelboxForegroundColor}"
                             />
                             <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
-                            <Button Name="WPFMicrowin" Content="Start the process" Margin="2" Padding="15"/>
+                            <Button Name="WPFMicrowin" Content="开始处理" Margin="2" Padding="15"/>
                         </StackPanel>
                         <StackPanel HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Collapsed">
                             <TextBlock Name="MicrowinIsoDrive" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{DynamicResource ComboBoxForegroundColor}"/>
@@ -1396,7 +1396,7 @@
                         <StackPanel HorizontalAlignment="Left" Background="{DynamicResource MainBackgroundColor}" SnapsToDevicePixels="True" Visibility="Visible">
 
                             <Grid Name = "BusyMessage" Visibility="Collapsed">
-                              <TextBlock Name = "BusyText" Text="NBusy" Padding="22,2,1,1" />
+                              <TextBlock Name = "BusyText" Text="忙碌" Padding="22,2,1,1" />
                               <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe MDL2 Assets"
                                   FontSize="{DynamicResource IconFontSize}" Margin="16,0,0,0">&#xE701;</TextBlock>
                             </Grid>
@@ -1424,37 +1424,37 @@
                                 Height = "Auto"
                                 Width = "Auto"
                                 Foreground="{DynamicResource ComboBoxForegroundColor}">
-                                <Bold>MicroWin features:</Bold><LineBreak/>
-                                - Remove Telemetry and Tracking <LineBreak/>
-                                - Fast Install using either the "User" local account or the account of your choosing <LineBreak/>
-                                - No internet requirement for install <LineBreak/>
-                                - Apps debloat <LineBreak/>
+                                <Bold>MicroWin 功能：</Bold><LineBreak/>
+                                - 删除遥测和跟踪 <LineBreak/>
+                                - 使用“用户”本地帐户或您选择的帐户快速安装 <LineBreak/>
+                                - 安装无需互联网连接 <LineBreak/>
+                                - 应用精简 <LineBreak/>
                                 <LineBreak/>
                                 <LineBreak/>
 
-                                <Bold>INSTRUCTIONS</Bold> <LineBreak/>
-                                - Download a Windows 11 ISO through the following options: <LineBreak/>
-                                    <TextBlock Margin="15,0,0,0" Text="- Select your own ISO: Manually download the latest Windows 11 image from " Foreground="{DynamicResource ComboBoxForegroundColor}"/>
-                                    <TextBlock Name="Win11DownloadLink" Style="{StaticResource HoverTextBlockStyle}" ToolTip="https://www.microsoft.com/software-download/windows11">Microsoft</TextBlock>. <LineBreak/>
-                                    <TextBlock Margin="15,0,0,0" Text="- Get newest ISO automatically: Choose Windows 11 Edition and preferred language." Foreground="{DynamicResource ComboBoxForegroundColor}"/> <LineBreak/>
-                                May take several minutes to process the ISO depending on your machine and connection <LineBreak/>
-                                - Put it somewhere on the C:\ drive so it is easily accessible <LineBreak/>
-                                - Launch WinUtil and MicroWin  <LineBreak/>
-                                - Click on the "Select Windows ISO" button and wait for WinUtil to process the image <LineBreak/>
-                                It will be processed and unpacked which may take some time <LineBreak/>
-                                - Once complete, choose which Windows flavor you want to base your image on <LineBreak/>
-                                - Click the "Start Process" button <LineBreak/>
-                                The process of creating the Windows image may take some time, please check the console and wait for it to say "Done" <LineBreak/>
-                                - Once complete, the target ISO file will be in the directory you have specified <LineBreak/>
-                                - Copy this image to your Ventoy USB Stick, boot to this image, gg
+                                <Bold>说明</Bold> <LineBreak/>
+                                - 通过以下选项下载 Windows 11 ISO： <LineBreak/>
+                                    <TextBlock Margin="15,0,0,0" Text="- 选择自己的 ISO：手动从 " Foreground="{DynamicResource ComboBoxForegroundColor}"/>
+                                    <TextBlock Name="Win11DownloadLink" Style="{StaticResource HoverTextBlockStyle}" ToolTip="https://www.microsoft.com/software-download/windows11">微软</TextBlock>. <LineBreak/>
+                                    <TextBlock Margin="15,0,0,0" Text="- 自动获取最新的 ISO：选择 Windows 11 版本和首选语言。" Foreground="{DynamicResource ComboBoxForegroundColor}"/> <LineBreak/>
+                                根据您的计算机和连接情况，处理 ISO 可能需要几分钟时间 <LineBreak/>
+                                - 将其放在 C:\ 驱动器上的某个位置，以便于访问 <LineBreak/>
+                                - 启动 WinUtil 和 MicroWin  <LineBreak/>
+                                - 单击“选择 Windows ISO”按钮，然后等待 WinUtil 处理映像 <LineBreak/>
+                                它将被处理和解包，这可能需要一些时间 <LineBreak/>
+                                - 完成后，选择要作为映像基础的 Windows 版本 <LineBreak/>
+                                - 单击“开始处理”按钮 <LineBreak/>
+                                创建 Windows 映像的过程可能需要一些时间，请检查控制台并等待其显示“完成” <LineBreak/>
+                                - 完成后，目标 ISO 文件将位于您指定的目录中 <LineBreak/>
+                                - 将此映像复制到您的 Ventoy USB 盘，启动此映像，完成
                                 <LineBreak/>
-                                If you are injecting drivers ensure you put all your inf, sys, and dll files for each driver into a separate directory <LineBreak/><LineBreak/>
-                                <Bold>Installing VirtIO drivers</Bold><LineBreak/>
-                                If you plan on using your ISO on QEMU/Proxmox VE, you can bundle VirtIO drivers with your ISO to automatically install drivers. Simply tick the "Include VirtIO drivers" checkbox before starting the process. Then, follow these instructions:<LineBreak/><LineBreak/>
-                                    <TextBlock TextWrapping="WrapWithOverflow" Margin="15,0,0,0" Text="1. Proceed with Setup until you reach the disk selection screen, in which you won't see any drives" Foreground="{DynamicResource ComboBoxForegroundColor}"/><LineBreak/>
-                                    <TextBlock TextWrapping="WrapWithOverflow" Margin="15,0,0,0" Text="2. Click &quot;Load Driver&quot; and click Browse" Foreground="{DynamicResource ComboBoxForegroundColor}"/><LineBreak/>
-                                    <TextBlock TextWrapping="WrapWithOverflow" Margin="15,0,0,0" Text="3. In the folder selection dialog, point to this path: &quot;D:\VirtIO\vioscsi\w11\amd64&quot; (replace amd64 with ARM64 if you are using Windows on ARM, and &quot;D:&quot; with the drive letter of the ISO)" Foreground="{DynamicResource ComboBoxForegroundColor}"/><LineBreak/>
-                                    <TextBlock TextWrapping="WrapWithOverflow" Margin="15,0,0,0" Text="4. Select all drivers that will appear in the list box and click OK" Foreground="{DynamicResource ComboBoxForegroundColor}"/><LineBreak/>
+                                如果要注入驱动程序，请确保将每个驱动程序的所有 inf、sys 和 dll 文件放入单独的目录中 <LineBreak/><LineBreak/>
+                                <Bold>安装 VirtIO 驱动程序</Bold><LineBreak/>
+                                如果您计划在 QEMU/Proxmox VE 上使用 ISO，则可以将 VirtIO 驱动程序与 ISO 捆绑在一起以自动安装驱动程序。只需在开始处理之前勾选“包括 VirtIO 驱动程序”复选框即可。然后，按照以下说明操作：<LineBreak/><LineBreak/>
+                                    <TextBlock TextWrapping="WrapWithOverflow" Margin="15,0,0,0" Text="1. 继续安装，直到到达磁盘选择屏幕，此时您将看不到任何驱动器" Foreground="{DynamicResource ComboBoxForegroundColor}"/><LineBreak/>
+                                    <TextBlock TextWrapping="WrapWithOverflow" Margin="15,0,0,0" Text="2. 单击“加载驱动程序”，然后单击“浏览”" Foreground="{DynamicResource ComboBoxForegroundColor}"/><LineBreak/>
+                                    <TextBlock TextWrapping="WrapWithOverflow" Margin="15,0,0,0" Text="3. 在文件夹选择对话框中，指向此路径：“D:\VirtIO\vioscsi\w11\amd64”（如果您在 ARM 上使用 Windows，请将 amd64 替换为 ARM64，并将“D:”替换为 ISO 的驱动器号）" Foreground="{DynamicResource ComboBoxForegroundColor}"/><LineBreak/>
+                                    <TextBlock TextWrapping="WrapWithOverflow" Margin="15,0,0,0" Text="4. 选择列表框中出现的所有驱动程序，然后单击“确定”" Foreground="{DynamicResource ComboBoxForegroundColor}"/><LineBreak/>
                             </TextBlock>
                             <TextBlock Margin="15,0,15,15"
                                 Padding = "1"
@@ -1465,7 +1465,7 @@
                                 Foreground = "{DynamicResource ComboBoxForegroundColor}"
                                 xml:space = "preserve"
                             >
-<Bold>Driver structure example:</Bold>
+<Bold>驱动程序结构示例：</Bold>
      C:\drivers\
           |-- Driver1\
           |   |-- Driver1.inf

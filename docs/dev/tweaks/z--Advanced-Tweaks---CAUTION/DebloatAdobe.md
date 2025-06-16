@@ -1,20 +1,20 @@
-# Adobe Debloat
+# Adobe 精简
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-## Description
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
+## 描述
 
-Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates
+管理 Adobe 服务、Adobe 桌面服务和 Acrobat 更新
 
 <!-- BEGIN CUSTOM CONTENT -->
 
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -170,14 +170,14 @@ Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates
 
 </details>
 
-## Invoke Script
+## 调用脚本
 
 ```powershell
 
       function CCStopper {
         $path = "C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\ADS\Adobe Desktop Service.exe"
 
-        # Test if the path exists before proceeding
+        # 在继续之前测试路径是否存在
         if (Test-Path $path) {
             Takeown /f $path
             $acl = Get-Acl $path
@@ -186,34 +186,34 @@ Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates
 
             Rename-Item -Path $path -NewName "Adobe Desktop Service.exe.old" -Force
         } else {
-            Write-Host "Adobe Desktop Service is not in the default location."
+            Write-Host "Adobe 桌面服务不在默认位置。"
         }
       }
 
 
       function AcrobatUpdates {
-        # Editing Acrobat Updates. The last folder before the key is dynamic, therefore using a script.
-        # Possible Values for the edited key:
-        # 0 = Do not download or install updates automatically
-        # 2 = Automatically download updates but let the user choose when to install them
-        # 3 = Automatically download and install updates (default value)
-        # 4 = Notify the user when an update is available but don't download or install it automatically
-        #   = It notifies the user using Windows Notifications. It runs on startup without having to have a Service/Acrobat/Reader running, therefore 0 is the next best thing.
+        # 编辑 Acrobat 更新。密钥之前的最后一个文件夹是动态的，因此使用脚本。
+        # 编辑密钥的可能值：
+        # 0 = 不自动下载或安装更新
+        # 2 = 自动下载更新，但让用户选择何时安装
+        # 3 = 自动下载并安装更新（默认值）
+        # 4 = 当有可用更新时通知用户，但不自动下载或安装
+        #   = 它使用 Windows 通知通知用户。它在启动时运行，无需运行服务/Acrobat/Reader，因此 0 是次优选择。
 
         $rootPath = "HKLM:\SOFTWARE\WOW6432Node\Adobe\Adobe ARM\Legacy\Acrobat"
 
-        # Get all subkeys under the specified root path
+        # 获取指定根路径下的所有子项
         $subKeys = Get-ChildItem -Path $rootPath | Where-Object { $_.PSChildName -like "{*}" }
 
-        # Loop through each subkey
+        # 遍历每个子项
         foreach ($subKey in $subKeys) {
-            # Get the full registry path
+            # 获取完整的注册表路径
             $fullPath = Join-Path -Path $rootPath -ChildPath $subKey.PSChildName
             try {
                 Set-ItemProperty -Path $fullPath -Name Mode -Value 0
-                Write-Host "Acrobat Updates have been disabled."
+                Write-Host "Acrobat 更新已禁用。"
             } catch {
-                Write-Host "Registry Key for changing Acrobat Updates does not exist in $fullPath"
+                Write-Host "用于更改 Acrobat 更新的注册表项在 $fullPath 中不存在"
             }
         }
       }
@@ -223,7 +223,7 @@ Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates
 
 
 ```
-## Undo Script
+## 撤销脚本
 
 ```powershell
 
@@ -233,29 +233,29 @@ Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates
 
         if (Test-Path -Path $originalPath) {
             Rename-Item -Path $originalPath -NewName "Adobe Desktop Service.exe" -Force
-            Write-Host "Adobe Desktop Service has been restored."
+            Write-Host "Adobe 桌面服务已还原。"
         } else {
-            Write-Host "Backup file does not exist. No changes were made."
+            Write-Host "备份文件不存在。未进行任何更改。"
         }
       }
 
       function AcrobatUpdates {
-        # Default Value:
-        # 3 = Automatically download and install updates
+        # 默认值：
+        # 3 = 自动下载并安装更新
 
         $rootPath = "HKLM:\SOFTWARE\WOW6432Node\Adobe\Adobe ARM\Legacy\Acrobat"
 
-        # Get all subkeys under the specified root path
+        # 获取指定根路径下的所有子项
         $subKeys = Get-ChildItem -Path $rootPath | Where-Object { $_.PSChildName -like "{*}" }
 
-        # Loop through each subkey
+        # 遍历每个子项
         foreach ($subKey in $subKeys) {
-            # Get the full registry path
+            # 获取完整的注册表路径
             $fullPath = Join-Path -Path $rootPath -ChildPath $subKey.PSChildName
             try {
                 Set-ItemProperty -Path $fullPath -Name Mode -Value 3
             } catch {
-                Write-Host "Registry Key for changing Acrobat Updates does not exist in $fullPath"
+                Write-Host "用于更改 Acrobat 更新的注册表项在 $fullPath 中不存在"
             }
         }
       }
@@ -265,71 +265,71 @@ Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates
 
 
 ```
-## Service Changes
+## 服务更改
 
-Windows services are background processes for system functions or applications. Setting some to manual optimizes performance by starting them only when needed.
+Windows 服务是用于系统功能或应用程序的后台进程。将某些服务设置为手动可以通过仅在需要时启动它们来优化性能。
 
-You can find information about services on [Wikipedia](https://www.wikiwand.com/en/Windows_service) and [Microsoft's Website](https://learn.microsoft.com/en-us/dotnet/framework/windows-services/introduction-to-windows-service-applications).
+您可以在 [Wikipedia](https://www.wikiwand.com/en/Windows_service) 和 [Microsoft 网站](https://learn.microsoft.com/zh-cn/dotnet/framework/windows-services/introduction-to-windows-service-applications)上找到有关服务的信息。
 
-### Service Name: AGSService
+### 服务名称：AGSService
 
-**Startup Type:** Disabled
+**启动类型：** 已禁用
 
-**Original Type:** Automatic
+**原始类型：** 自动
 
-### Service Name: AGMService
+### 服务名称：AGMService
 
-**Startup Type:** Disabled
+**启动类型：** 已禁用
 
-**Original Type:** Automatic
+**原始类型：** 自动
 
-### Service Name: AdobeUpdateService
+### 服务名称：AdobeUpdateService
 
-**Startup Type:** Manual
+**启动类型：** 手动
 
-**Original Type:** Automatic
+**原始类型：** 自动
 
-### Service Name: Adobe Acrobat Update
+### 服务名称：Adobe Acrobat Update
 
-**Startup Type:** Manual
+**启动类型：** 手动
 
-**Original Type:** Automatic
+**原始类型：** 自动
 
-### Service Name: Adobe Genuine Monitor Service
+### 服务名称：Adobe Genuine Monitor Service
 
-**Startup Type:** Disabled
+**启动类型：** 已禁用
 
-**Original Type:** Automatic
+**原始类型：** 自动
 
-### Service Name: AdobeARMservice
+### 服务名称：AdobeARMservice
 
-**Startup Type:** Manual
+**启动类型：** 手动
 
-**Original Type:** Automatic
+**原始类型：** 自动
 
-### Service Name: Adobe Licensing Console
+### 服务名称：Adobe Licensing Console
 
-**Startup Type:** Manual
+**启动类型：** 手动
 
-**Original Type:** Automatic
+**原始类型：** 自动
 
-### Service Name: CCXProcess
+### 服务名称：CCXProcess
 
-**Startup Type:** Manual
+**启动类型：** 手动
 
-**Original Type:** Automatic
+**原始类型：** 自动
 
-### Service Name: AdobeIPCBroker
+### 服务名称：AdobeIPCBroker
 
-**Startup Type:** Manual
+**启动类型：** 手动
 
-**Original Type:** Automatic
+**原始类型：** 自动
 
-### Service Name: CoreSync
+### 服务名称：CoreSync
 
-**Startup Type:** Manual
+**启动类型：** 手动
 
-**Original Type:** Automatic
+**原始类型：** 自动
 
 
 
@@ -338,5 +338,4 @@ You can find information about services on [Wikipedia](https://www.wikiwand.com/
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)

@@ -1,20 +1,20 @@
-# Enable End Task With Right Click
+# 通过右键单击启用结束任务
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-## Description
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
+## 描述
 
-Enables option to end task when right clicking a program in the taskbar
+启用在任务栏中右键单击程序时结束任务的选项
 
 <!-- BEGIN CUSTOM CONTENT -->
 
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -55,35 +55,35 @@ Enables option to end task when right clicking a program in the taskbar
 
 </details>
 
-## Invoke Script
+## 调用脚本
 
 ```powershell
 $path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"
       $name = "TaskbarEndTask"
       $value = 1
 
-      # Ensure the registry key exists
+      # 确保注册表项存在
       if (-not (Test-Path $path)) {
         New-Item -Path $path -Force | Out-Null
       }
 
-      # Set the property, creating it if it doesn't exist
+      # 设置属性，如果不存在则创建它
       New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null
 
 ```
-## Undo Script
+## 撤销脚本
 
 ```powershell
 $path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"
       $name = "TaskbarEndTask"
       $value = 0
 
-      # Ensure the registry key exists
+      # 确保注册表项存在
       if (-not (Test-Path $path)) {
         New-Item -Path $path -Force | Out-Null
       }
 
-      # Set the property, creating it if it doesn't exist
+      # 设置属性，如果不存在则创建它
       New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null
 
 ```
@@ -93,5 +93,4 @@ $path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\Taskb
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)

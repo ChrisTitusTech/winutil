@@ -10,20 +10,20 @@ function Invoke-WPFUnInstall {
     #>
 
     if($sync.ProcessRunning) {
-        $msg = "[Invoke-WPFUnInstall] Install process is currently running"
+        $msg = "[Invoke-WPFUnInstall] 安装进程当前正在运行"
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
 
     if ($PackagesToUninstall.Count -eq 0) {
-        $WarningMsg = "Please select the program(s) to uninstall"
+        $WarningMsg = "请选择要卸载的程序"
         [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
 
     $ButtonType = [System.Windows.MessageBoxButton]::YesNo
-    $MessageboxTitle = "Are you sure?"
-    $Messageboxbody = ("This will uninstall the following applications: `n $($PackagesToUninstall | Select-Object Name, Description| Out-String)")
+    $MessageboxTitle = "您确定吗？"
+    $Messageboxbody = ("这将卸载以下应用程序： `n $($PackagesToUninstall | Select-Object Name, Description| Out-String)")
     $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
     $confirm = [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
@@ -51,12 +51,12 @@ function Invoke-WPFUnInstall {
             }
 
             Write-Host "==========================================="
-            Write-Host "--       Uninstalls have finished       ---"
+            Write-Host "--       卸载已完成       ---"
             Write-Host "==========================================="
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
         } catch {
             Write-Host "==========================================="
-            Write-Host "Error: $_"
+            Write-Host "错误：$_"
             Write-Host "==========================================="
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -overlay "warning" })
         }

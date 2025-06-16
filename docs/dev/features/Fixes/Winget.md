@@ -1,10 +1,10 @@
-# WinGet Reinstall
+# WinGet 重新安装
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
 
 
 <!-- BEGIN CUSTOM CONTENT -->
@@ -12,7 +12,7 @@ Last Updated: 2024-08-07
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -28,7 +28,7 @@ Last Updated: 2024-08-07
 
 </details>
 
-## Function: Invoke-WPFFixesWinget
+## 函数：Invoke-WPFFixesWinget
 
 ```powershell
 function Invoke-WPFFixesWinget {
@@ -36,11 +36,11 @@ function Invoke-WPFFixesWinget {
     <#
 
     .SYNOPSIS
-        Fixes Winget by running choco install winget
+        通过运行 choco install winget 修复 Winget
     .DESCRIPTION
-        BravoNorris for the fantastic idea of a button to reinstall winget
+        感谢 BravoNorris 提出了一个重新安装 winget 按钮的绝佳主意
     #>
-    # Install Choco if not already present
+    # 如果 Choco 尚不存在，则安装它
     Install-WinUtilChoco
     Start-Process -FilePath "choco" -ArgumentList "install winget -y --force" -NoNewWindow -Wait
 
@@ -54,5 +54,4 @@ function Invoke-WPFFixesWinget {
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)

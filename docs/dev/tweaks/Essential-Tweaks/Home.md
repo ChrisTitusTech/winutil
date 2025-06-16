@@ -1,20 +1,20 @@
-# Disable Homegroup
+# 禁用家庭组
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-## Description
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
+## 描述
 
-Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network.
+禁用家庭组 - 家庭组是一项受密码保护的家庭网络服务，可让您与当前正在运行并连接到网络的其他电脑共享您的内容。
 
 <!-- BEGIN CUSTOM CONTENT -->
 
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -41,23 +41,23 @@ Disables HomeGroup - HomeGroup is a password-protected home networking service t
 
 </details>
 
-## Service Changes
+## 服务更改
 
-Windows services are background processes for system functions or applications. Setting some to manual optimizes performance by starting them only when needed.
+Windows 服务是用于系统功能或应用程序的后台进程。将某些服务设置为手动可以通过仅在需要时启动它们来优化性能。
 
-You can find information about services on [Wikipedia](https://www.wikiwand.com/en/Windows_service) and [Microsoft's Website](https://learn.microsoft.com/en-us/dotnet/framework/windows-services/introduction-to-windows-service-applications).
+您可以在 [Wikipedia](https://www.wikiwand.com/en/Windows_service) 和 [Microsoft 网站](https://learn.microsoft.com/zh-cn/dotnet/framework/windows-services/introduction-to-windows-service-applications)上找到有关服务的信息。
 
-### Service Name: HomeGroupListener
+### 服务名称：HomeGroupListener
 
-**Startup Type:** Manual
+**启动类型：** 手动
 
-**Original Type:** Automatic
+**原始类型：** 自动
 
-### Service Name: HomeGroupProvider
+### 服务名称：HomeGroupProvider
 
-**Startup Type:** Manual
+**启动类型：** 手动
 
-**Original Type:** Automatic
+**原始类型：** 自动
 
 
 
@@ -66,5 +66,4 @@ You can find information about services on [Wikipedia](https://www.wikiwand.com/
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)

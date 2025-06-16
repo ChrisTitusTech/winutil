@@ -67,19 +67,19 @@ try {
     $sync["Form"] = [Windows.Markup.XamlReader]::Load( $reader )
     $readerOperationSuccessful = $true
 } catch [System.Management.Automation.MethodInvocationException] {
-    Write-Host "We ran into a problem with the XAML code.  Check the syntax for this control..." -ForegroundColor Red
+    Write-Host "XAML 代码出现问题。请检查此控件的语法..." -ForegroundColor Red
     Write-Host $error[0].Exception.Message -ForegroundColor Red
 
     If ($error[0].Exception.Message -like "*button*") {
-        write-Host "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n" -ForegroundColor Red
+        write-Host "确保 `$inputXML 中的 &lt;button 没有 Click=ButtonClick 属性。PS 无法处理此属性`n`n`n`n" -ForegroundColor Red
     }
 } catch {
-    Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed." -ForegroundColor Red
+    Write-Host "无法加载 Windows.Markup.XamlReader。请仔细检查语法并确保已安装 .net。" -ForegroundColor Red
 }
 
 if (-NOT ($readerOperationSuccessful)) {
-    Write-Host "Failed to parse xaml content using Windows.Markup.XamlReader's Load Method." -ForegroundColor Red
-    Write-Host "Quitting winutil..." -ForegroundColor Red
+    Write-Host "使用 Windows.Markup.XamlReader 的 Load 方法分析 xAML 内容失败。" -ForegroundColor Red
+    Write-Host "正在退出 winutil..." -ForegroundColor Red
     $sync.runspace.Dispose()
     $sync.runspace.Close()
     [System.GC]::Collect()
@@ -293,21 +293,21 @@ $sync["Form"].Add_ContentRendered({
         $screenHeight = $primaryScreen.Bounds.Height
 
         # Print the screen size
-        Write-Debug "Primary Monitor Width: $screenWidth pixels"
-        Write-Debug "Primary Monitor Height: $screenHeight pixels"
+        Write-Debug "主显示器宽度: $screenWidth 像素"
+        Write-Debug "主显示器高度: $screenHeight 像素"
 
         # Compare with the primary monitor size
         if ($sync.Form.ActualWidth -gt $screenWidth -or $sync.Form.ActualHeight -gt $screenHeight) {
-            Write-Debug "The specified width and/or height is greater than the primary monitor size."
+            Write-Debug "指定的宽度和/或高度大于主显示器尺寸。"
             $sync.Form.Left = 0
             $sync.Form.Top = 0
             $sync.Form.Width = $screenWidth
             $sync.Form.Height = $screenHeight
         } else {
-            Write-Debug "The specified width and height are within the primary monitor size limits."
+            Write-Debug "指定的宽度和高度在主显示器尺寸限制内。"
         }
     } else {
-        Write-Debug "Unable to retrieve information about the primary monitor."
+        Write-Debug "无法检索有关主显示器的信息。"
     }
 
     Invoke-WPFTab "WPFTab1BT"
@@ -323,28 +323,28 @@ $sync["Form"].Add_ContentRendered({
             }
             Start-Sleep -Seconds 5
 
-            Write-Host "Applying tweaks..."
+            Write-Host "正在应用调整..."
             Invoke-WPFtweaksbutton
             while ($sync.ProcessRunning) {
                 Start-Sleep -Seconds 5
             }
             Start-Sleep -Seconds 5
 
-            Write-Host "Installing features..."
+            Write-Host "正在安装功能..."
             Invoke-WPFFeatureInstall
             while ($sync.ProcessRunning) {
                 Start-Sleep -Seconds 5
             }
 
             Start-Sleep -Seconds 5
-            Write-Host "Installing applications..."
+            Write-Host "正在安装应用程序..."
             while ($sync.ProcessRunning) {
                 Start-Sleep -Seconds 1
             }
             Invoke-WPFInstall
             Start-Sleep -Seconds 5
 
-            Write-Host "Done."
+            Write-Host "完成。"
         }
     }
 
@@ -364,12 +364,12 @@ $sync["ISOmanual"].add_Checked({
 $sync["ISORelease"].Items.Add("24H2") | Out-Null
 $sync["ISORelease"].SelectedItem = "24H2"
 
-$sync["ISOLanguage"].Items.Add("System Language ($(Microwin-GetLangFromCulture -langName $((Get-Culture).Name)))") | Out-Null
+$sync["ISOLanguage"].Items.Add("系统语言 ($(Microwin-GetLangFromCulture -langName $((Get-Culture).Name)))") | Out-Null
 if ($currentCulture -ne "English International") {
-    $sync["ISOLanguage"].Items.Add("English International") | Out-Null
+    $sync["ISOLanguage"].Items.Add("国际英语") | Out-Null
 }
 if ($currentCulture -ne "English") {
-    $sync["ISOLanguage"].Items.Add("English") | Out-Null
+    $sync["ISOLanguage"].Items.Add("英语") | Out-Null
 }
 if ($sync["ISOLanguage"].Items.Count -eq 1) {
     $sync["ISOLanguage"].IsEnabled = $false
@@ -478,21 +478,21 @@ $sync["AboutMenuItem"].Add_Click({
     Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
 
     $authorInfo = @"
-Author   : <a href="https://github.com/ChrisTitusTech">@christitustech</a>
+作者   : <a href="https://github.com/ChrisTitusTech">@christitustech</a>
 UI       : <a href="https://github.com/MyDrift-user">@MyDrift-user</a>, <a href="https://github.com/Marterich">@Marterich</a>
 Runspace : <a href="https://github.com/DeveloperDurp">@DeveloperDurp</a>, <a href="https://github.com/Marterich">@Marterich</a>
 MicroWin : <a href="https://github.com/KonTy">@KonTy</a>, <a href="https://github.com/CodingWonders">@CodingWonders</a>
 GitHub   : <a href="https://github.com/ChrisTitusTech/winutil">ChrisTitusTech/winutil</a>
-Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sync.version)">$($sync.version)</a>
+版本  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sync.version)">$($sync.version)</a>
 "@
-    Show-CustomDialog -Title "About" -Message $authorInfo
+    Show-CustomDialog -Title "关于" -Message $authorInfo
 })
 $sync["SponsorMenuItem"].Add_Click({
     Write-Debug "Sponsors clicked"
     Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
 
     $authorInfo = @"
-<a href="https://github.com/sponsors/ChrisTitusTech">Current sponsors for ChrisTitusTech:</a>
+<a href="https://github.com/sponsors/ChrisTitusTech">ChrisTitusTech 当前赞助商：</a>
 "@
     $authorInfo += "`n"
     try {
@@ -501,9 +501,9 @@ $sync["SponsorMenuItem"].Add_Click({
             $authorInfo += "<a href=`"https://github.com/sponsors/ChrisTitusTech`">$sponsor</a>`n"
         }
     } catch {
-        $authorInfo += "An error occurred while fetching or processing the sponsors: $_`n"
+        $authorInfo += "获取或处理赞助商时出错：$_`n"
     }
-    Show-CustomDialog -Title "Sponsors" -Message $authorInfo -EnableScroll $true
+    Show-CustomDialog -Title "赞助商" -Message $authorInfo -EnableScroll $true
 })
 
 $sync["Form"].ShowDialog() | out-null

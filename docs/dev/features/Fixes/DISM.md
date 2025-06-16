@@ -1,10 +1,10 @@
-# System Corruption Scan
+# 系统损坏扫描
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
 
 
 <!-- BEGIN CUSTOM CONTENT -->
@@ -12,7 +12,7 @@ Last Updated: 2024-08-07
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -28,31 +28,31 @@ Last Updated: 2024-08-07
 
 </details>
 
-## Function: Invoke-WPFPanelDISM
+## 函数：Invoke-WPFPanelDISM
 
 ```powershell
 function Invoke-WPFPanelDISM {
     <#
 
     .SYNOPSIS
-        Checks for system corruption using Chkdsk, SFC, and DISM
+        使用 Chkdsk、SFC 和 DISM 检查系统损坏情况
 
     .DESCRIPTION
-        1. Chkdsk    - Fixes disk and filesystem corruption
-        2. SFC Run 1 - Fixes system file corruption, and fixes DISM if it was corrupted
-        3. DISM      - Fixes system image corruption, and fixes SFC's system image if it was corrupted
-        4. SFC Run 2 - Fixes system file corruption, this time with an almost guaranteed uncorrupted system image
+        1. Chkdsk - 修复磁盘和文件系统损坏
+        2. SFC 运行 1 - 修复系统文件损坏，如果 DISM 已损坏则修复 DISM
+        3. DISM - 修复系统映像损坏，如果 SFC 的系统映像已损坏则修复 SFC 的系统映像
+        4. SFC 运行 2 - 修复系统文件损坏，这次使用几乎可以保证未损坏的系统映像
 
     .NOTES
-        Command Arguments:
+        命令参数：
             1. Chkdsk
-                /Scan - Runs an online scan on the system drive, attempts to fix any corruption, and queues other corruption for fixing on reboot
+                /Scan - 在系统驱动器上运行联机扫描，尝试修复任何损坏，并将其他损坏排队以便在重新启动时修复
             2. SFC
-                /ScanNow - Performs a scan of the system files and fixes any corruption
-            3. DISM      - Fixes system image corruption, and fixes SFC's system image if it was corrupted
-                /Online - Fixes the currently running system image
-                /Cleanup-Image - Performs cleanup operations on the image, could remove some unneeded temporary files
-                /Restorehealth - Performs a scan of the image and fixes any corruption
+                /ScanNow - 执行系统文件扫描并修复任何损坏
+            3. DISM - 修复系统映像损坏，如果 SFC 的系统映像已损坏则修复 SFC 的系统映像
+                /Online - 修复当前正在运行的系统映像
+                /Cleanup-Image - 对映像执行清理操作，可能会删除一些不需要的临时文件
+                /Restorehealth - 执行映像扫描并修复任何损坏
 
     #>
     Start-Process PowerShell -ArgumentList "Write-Host '(1/4) Chkdsk' -ForegroundColor Green; Chkdsk /scan;
@@ -70,5 +70,4 @@ function Invoke-WPFPanelDISM {
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)

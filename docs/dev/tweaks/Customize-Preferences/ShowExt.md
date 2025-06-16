@@ -1,20 +1,20 @@
-# Show File Extensions
+# 显示文件扩展名
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-## Description
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
+## 描述
 
-If enabled then File extensions (e.g., .txt, .jpg) are visible.
+如果启用，则文件扩展名（例如 .txt、.jpg）可见。
 
 <!-- BEGIN CUSTOM CONTENT -->
 
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -30,33 +30,33 @@ If enabled then File extensions (e.g., .txt, .jpg) are visible.
 
 </details>
 
-## Function: Invoke-WinUtilShowExt
+## 函数：Invoke-WinUtilShowExt
 
 ```powershell
 function Invoke-WinUtilShowExt {
     <#
     .SYNOPSIS
-        Disables/Enables Show file Extentions
+        禁用/启用显示文件扩展名
     .PARAMETER Enabled
-        Indicates whether to enable or disable Show file extentions
+        指示是启用还是禁用显示文件扩展名
     #>
     Param($Enabled)
     try {
         if ($Enabled -eq $false) {
-            Write-Host "Showing file extentions"
+            Write-Host "正在显示文件扩展名"
             $value = 0
         } else {
-            Write-Host "hiding file extensions"
+            Write-Host "正在隐藏文件扩展名"
             $value = 1
         }
         $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
         Set-ItemProperty -Path $Path -Name HideFileExt -Value $value
     } catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+        Write-Warning "由于安全异常，无法将 $Path\$Name 设置为 $Value"
     } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
     } catch {
-        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning "由于未处理的异常，无法设置 $Name"
         Write-Warning $psitem.Exception.StackTrace
     }
 }
@@ -69,5 +69,4 @@ function Invoke-WinUtilShowExt {
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)

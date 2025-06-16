@@ -1,20 +1,20 @@
-# Set Hibernation as default (good for laptops)
+# 将休眠设置为默认值（适用于笔记本电脑）
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-## Description
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
+## 描述
 
-Most modern laptops have connected standby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399
+大多数现代笔记本电脑都启用了连接待机功能，这会消耗电池电量，此设置将休眠设置为默认值，从而不会消耗电池电量。请参阅问题 https://github.com/ChrisTitusTech/winutil/issues/1399
 
 <!-- BEGIN CUSTOM CONTENT -->
 
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -41,7 +41,7 @@ Most modern laptops have connected standby enabled which drains the battery, thi
   ],
   "InvokeScript": [
     "
-      Write-Host \"Turn on Hibernation\"
+      Write-Host \"开启休眠\"
       Start-Process -FilePath powercfg -ArgumentList \"/hibernate on\" -NoNewWindow -Wait
 
       # Set hibernation as the default action
@@ -53,7 +53,7 @@ Most modern laptops have connected standby enabled which drains the battery, thi
   ],
   "UndoScript": [
     "
-      Write-Host \"Turn off Hibernation\"
+      Write-Host \"关闭休眠\"
       Start-Process -FilePath powercfg -ArgumentList \"/hibernate off\" -NoNewWindow -Wait
 
       # Set standby to detault values
@@ -69,14 +69,14 @@ Most modern laptops have connected standby enabled which drains the battery, thi
 
 </details>
 
-## Invoke Script
+## 调用脚本
 
 ```powershell
 
-      Write-Host "Turn on Hibernation"
+      Write-Host "开启休眠"
       Start-Process -FilePath powercfg -ArgumentList "/hibernate on" -NoNewWindow -Wait
 
-      # Set hibernation as the default action
+      # 将休眠设置为默认操作
       Start-Process -FilePath powercfg -ArgumentList "/change standby-timeout-ac 60" -NoNewWindow -Wait
       Start-Process -FilePath powercfg -ArgumentList "/change standby-timeout-dc 60" -NoNewWindow -Wait
       Start-Process -FilePath powercfg -ArgumentList "/change monitor-timeout-ac 10" -NoNewWindow -Wait
@@ -84,14 +84,14 @@ Most modern laptops have connected standby enabled which drains the battery, thi
 
 
 ```
-## Undo Script
+## 撤销脚本
 
 ```powershell
 
-      Write-Host "Turn off Hibernation"
+      Write-Host "关闭休眠"
       Start-Process -FilePath powercfg -ArgumentList "/hibernate off" -NoNewWindow -Wait
 
-      # Set standby to detault values
+      # 将待机设置为默认值
       Start-Process -FilePath powercfg -ArgumentList "/change standby-timeout-ac 15" -NoNewWindow -Wait
       Start-Process -FilePath powercfg -ArgumentList "/change standby-timeout-dc 15" -NoNewWindow -Wait
       Start-Process -FilePath powercfg -ArgumentList "/change monitor-timeout-ac 15" -NoNewWindow -Wait
@@ -99,27 +99,27 @@ Most modern laptops have connected standby enabled which drains the battery, thi
 
 
 ```
-## Registry Changes
-Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.
+## 注册表更改
+应用程序和系统组件存储和检索配置数据以修改 Windows 设置，因此我们可以使用注册表在一个位置更改许多设置。
 
 
-You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).
+您可以在 [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) 和 [Microsoft 网站](https://learn.microsoft.com/zh-cn/windows/win32/sysinfo/registry)上找到有关注册表的信息。
 
-### Registry Key: Attributes
+### 注册表项：Attributes
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 2
+**新值：** 2
 
-### Registry Key: Attributes
+### 注册表项：Attributes
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 0
+**原始值：** 0
 
-**New Value:** 2
+**新值：** 2
 
 
 
@@ -128,5 +128,4 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)

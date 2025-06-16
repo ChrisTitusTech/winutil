@@ -1,20 +1,20 @@
-# Debloat Edge
+# Edge 精简
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-## Description
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
+## 描述
 
-Disables various telemetry options, popups, and other annoyances in Edge.
+禁用 Edge 中的各种遥测选项、弹出窗口和其他烦人的功能。
 
 <!-- BEGIN CUSTOM CONTENT -->
 
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -178,179 +178,179 @@ Disables various telemetry options, popups, and other annoyances in Edge.
 
 </details>
 
-## Registry Changes
-Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.
+## 注册表更改
+应用程序和系统组件存储和检索配置数据以修改 Windows 设置，因此我们可以使用注册表在一个位置更改许多设置。
 
 
-You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).
+您可以在 [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) 和 [Microsoft 网站](https://learn.microsoft.com/zh-cn/windows/win32/sysinfo/registry)上找到有关注册表的信息。
 
-### Registry Key: CreateDesktopShortcutDefault
+### 注册表项：CreateDesktopShortcutDefault
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: EdgeEnhanceImagesEnabled
+### 注册表项：EdgeEnhanceImagesEnabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: PersonalizationReportingEnabled
+### 注册表项：PersonalizationReportingEnabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: ShowRecommendationsEnabled
+### 注册表项：ShowRecommendationsEnabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: HideFirstRunExperience
+### 注册表项：HideFirstRunExperience
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 0
+**原始值：** 0
 
-**New Value:** 1
+**新值：** 1
 
-### Registry Key: UserFeedbackAllowed
+### 注册表项：UserFeedbackAllowed
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: ConfigureDoNotTrack
+### 注册表项：ConfigureDoNotTrack
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 0
+**原始值：** 0
 
-**New Value:** 1
+**新值：** 1
 
-### Registry Key: AlternateErrorPagesEnabled
+### 注册表项：AlternateErrorPagesEnabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: EdgeCollectionsEnabled
+### 注册表项：EdgeCollectionsEnabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: EdgeFollowEnabled
+### 注册表项：EdgeFollowEnabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: EdgeShoppingAssistantEnabled
+### 注册表项：EdgeShoppingAssistantEnabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: MicrosoftEdgeInsiderPromotionEnabled
+### 注册表项：MicrosoftEdgeInsiderPromotionEnabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: PersonalizationReportingEnabled
+### 注册表项：PersonalizationReportingEnabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: ShowMicrosoftRewards
+### 注册表项：ShowMicrosoftRewards
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: WebWidgetAllowed
+### 注册表项：WebWidgetAllowed
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: DiagnosticData
+### 注册表项：DiagnosticData
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: EdgeAssetDeliveryServiceEnabled
+### 注册表项：EdgeAssetDeliveryServiceEnabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: EdgeCollectionsEnabled
+### 注册表项：EdgeCollectionsEnabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: CryptoWalletEnabled
+### 注册表项：CryptoWalletEnabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: ConfigureDoNotTrack
+### 注册表项：ConfigureDoNotTrack
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 0
+**原始值：** 0
 
-**New Value:** 1
+**新值：** 1
 
-### Registry Key: WalletDonationEnabled
+### 注册表项：WalletDonationEnabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
 
 
@@ -359,5 +359,4 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)

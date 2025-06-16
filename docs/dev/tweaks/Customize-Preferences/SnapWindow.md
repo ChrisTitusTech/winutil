@@ -1,20 +1,20 @@
-# Snap Window
+# 贴靠窗口
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-## Description
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
+## 描述
 
-If enabled you can align windows by dragging them. | Relogin Required
+如果启用，您可以通过拖动窗口来对齐窗口。| 需要重新登录
 
 <!-- BEGIN CUSTOM CONTENT -->
 
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -30,33 +30,33 @@ If enabled you can align windows by dragging them. | Relogin Required
 
 </details>
 
-## Function: Invoke-WinUtilSnapWindow
+## 函数：Invoke-WinUtilSnapWindow
 
 ```powershell
 function Invoke-WinUtilSnapWindow {
     <#
     .SYNOPSIS
-        Disables/Enables Snapping Windows on startup
+        在启动时禁用/启用贴靠窗口
     .PARAMETER Enabled
-        Indicates whether to enable or disable Snapping Windows on startup
+        指示是否在启动时启用或禁用贴靠窗口
     #>
     Param($Enabled)
     try {
         if ($Enabled -eq $false) {
-            Write-Host "Enabling Snap Windows On startup | Relogin Required"
+            Write-Host "正在启用启动时贴靠窗口 | 需要重新登录"
             $value = 1
         } else {
-            Write-Host "Disabling Snap Windows On startup | Relogin Required"
+            Write-Host "正在禁用启动时贴靠窗口 | 需要重新登录"
             $value = 0
         }
         $Path = "HKCU:\Control Panel\Desktop"
         Set-ItemProperty -Path $Path -Name WindowArrangementActive -Value $value
     } catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+        Write-Warning "由于安全异常，无法将 $Path\$Name 设置为 $Value"
     } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
     } catch {
-        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning "由于未处理的异常，无法设置 $Name"
         Write-Warning $psitem.Exception.StackTrace
     }
 }
@@ -69,5 +69,4 @@ function Invoke-WinUtilSnapWindow {
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)

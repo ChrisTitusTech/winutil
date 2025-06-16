@@ -1,20 +1,20 @@
-# Mouse Acceleration
+# 鼠标加速
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-## Description
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
+## 描述
 
-If Enabled then Cursor movement is affected by the speed of your physical mouse movements.
+如果启用，则光标移动会受到物理鼠标移动速度的影响。
 
 <!-- BEGIN CUSTOM CONTENT -->
 
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -30,28 +30,28 @@ If Enabled then Cursor movement is affected by the speed of your physical mouse 
 
 </details>
 
-## Function: Invoke-WinUtilMouseAcceleration
+## 函数：Invoke-WinUtilMouseAcceleration
 
 ```powershell
 Function Invoke-WinUtilMouseAcceleration {
     <#
 
     .SYNOPSIS
-        Enables/Disables Mouse Acceleration
+        启用/禁用鼠标加速
 
     .PARAMETER DarkMoveEnabled
-        Indicates the current Mouse Acceleration State
+        指示当前鼠标加速状态
 
     #>
     Param($MouseAccelerationEnabled)
     try {
         if ($MouseAccelerationEnabled -eq $false) {
-            Write-Host "Enabling Mouse Acceleration"
+            Write-Host "正在启用鼠标加速"
             $MouseSpeed = 1
             $MouseThreshold1 = 6
             $MouseThreshold2 = 10
         } else {
-            Write-Host "Disabling Mouse Acceleration"
+            Write-Host "正在禁用鼠标加速"
             $MouseSpeed = 0
             $MouseThreshold1 = 0
             $MouseThreshold2 = 0
@@ -63,11 +63,11 @@ Function Invoke-WinUtilMouseAcceleration {
         Set-ItemProperty -Path $Path -Name MouseThreshold1 -Value $MouseThreshold1
         Set-ItemProperty -Path $Path -Name MouseThreshold2 -Value $MouseThreshold2
     } catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+        Write-Warning "由于安全异常，无法将 $Path\$Name 设置为 $Value"
     } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
     } catch {
-        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning "由于未处理的异常，无法设置 $Name"
         Write-Warning $psitem.Exception.StackTrace
     }
 }
@@ -80,5 +80,4 @@ Function Invoke-WinUtilMouseAcceleration {
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)

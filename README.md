@@ -1,65 +1,65 @@
-# Chris Titus Tech's Windows Utility
+# Chris Titus Tech Windows 工具
 
-[![Version](https://img.shields.io/github/v/release/ChrisTitusTech/winutil?color=%230567ff&label=Latest%20Release&style=for-the-badge)](https://github.com/ChrisTitusTech/winutil/releases/latest)
-![GitHub Downloads (specific asset, all releases)](https://img.shields.io/github/downloads/ChrisTitusTech/winutil/winutil.ps1?label=Total%20Downloads&style=for-the-badge)
+[![Version](https://img.shields.io/github/v/release/ChrisTitusTech/winutil?color=%230567ff&label=最新版本&style=for-the-badge)](https://github.com/ChrisTitusTech/winutil/releases/latest)
+![GitHub Downloads (specific asset, all releases)](https://img.shields.io/github/downloads/ChrisTitusTech/winutil/winutil.ps1?label=总下载量&style=for-the-badge)
 [![](https://dcbadge.limes.pink/api/server/https://discord.gg/RUbZUZyByQ?theme=default-inverted&style=for-the-badge)](https://discord.gg/RUbZUZyByQ)
-[![Static Badge](https://img.shields.io/badge/Documentation-_?style=for-the-badge&logo=bookstack&color=grey)](https://winutil.christitus.com/)
+[![Static Badge](https://img.shields.io/badge/文档-_?style=for-the-badge&logo=bookstack&color=grey)](https://winutil.christitus.com/)
 
-This utility is a compilation of Windows tasks I perform on each Windows system I use. It is meant to streamline *installs*, debloat with *tweaks*, troubleshoot with *config*, and fix Windows *updates*. I am extremely picky about any contributions to keep this project clean and efficient.
+此工具是我在每个使用的 Windows 系统上执行的 Windows 任务的汇编。它旨在简化*安装*，通过*调整*进行精简，通过*配置*进行故障排除，并修复 Windows *更新*。我对任何贡献都极为挑剔，以保持此项目的整洁和高效。
 
 ![screen-install](./docs/assets/Title-Screen.png)
 
-## 💡 Usage
+## 💡 用法
 
-Winutil must be run in Admin mode because it performs system-wide tweaks. To achieve this, run PowerShell as an administrator. Here are a few ways to do it:
+Winutil 必须在管理员模式下运行，因为它执行系统范围的调整。为此，请以管理员身份运行 PowerShell。以下是一些方法：
 
-1. **Start menu Method:**
-   - Right-click on the start menu.
-   - Choose "Windows PowerShell (Admin)" (for Windows 10) or "Terminal (Admin)" (for Windows 11).
+1. **开始菜单方法：**
+   - 右键单击开始菜单。
+   - 选择“Windows PowerShell (管理员)”（适用于 Windows 10）或“终端 (管理员)”（适用于 Windows 11）。
 
-2. **Search and Launch Method:**
-   - Press the Windows key.
-   - Type "PowerShell" or "Terminal" (for Windows 11).
-   - Press `Ctrl + Shift + Enter` or Right-click and choose "Run as administrator" to launch it with administrator privileges.
+2. **搜索并启动方法：**
+   - 按 Windows 键。
+   - 键入“PowerShell”或“终端”（适用于 Windows 11）。
+   - 按 `Ctrl + Shift + Enter` 或右键单击并选择“以管理员身份运行”以管理员权限启动它。
 
-### Launch Command
+### 启动命令
 
-#### Stable Branch (Recommended)
+#### 稳定分支（推荐）
 
 ```ps1
 irm "https://christitus.com/win" | iex
 ```
-#### Dev Branch
+#### 开发分支
 
 ```ps1
 irm "https://christitus.com/windev" | iex
 ```
 
-If you have Issues, refer to [Known Issues](https://winutil.christitus.com/knownissues/)
+如果您遇到问题，请参阅[已知问题](https://winutil.christitus.com/knownissues/)
 
-## 🎓 Documentation
+## 🎓 文档
 
-### [WinUtil Official Documentation](https://winutil.christitus.com/)
+### [WinUtil 官方文档](https://winutil.christitus.com/)
 
-### [YouTube Tutorial](https://www.youtube.com/watch?v=6UQZ5oQg8XA)
+### [YouTube 教程](https://www.youtube.com/watch?v=6UQZ5oQg8XA)
 
-### [ChrisTitus.com Article](https://christitus.com/windows-tool/)
+### [ChrisTitus.com 文章](https://christitus.com/windows-tool/)
 
-## 💖 Support
-- To morally and mentally support the project, make sure to leave a ⭐️!
-- EXE Wrapper for $10 @ https://www.cttstore.com/windows-toolbox
+## 💖 支持
+- 为了在精神上和精神上支持该项目，请务必留下一个 ⭐️！
+- EXE 包装器，售价 10 美元 @ https://www.cttstore.com/windows-toolbox
 
-## 💖 Sponsors
+## 💖 赞助商
 
-These are the sponsors that help keep this project alive with monthly contributions.
+这些是通过每月捐款帮助维持此项目运行的赞助商。
 
 <!-- sponsors --><a href="https://github.com/TriHydera"><img src="https:&#x2F;&#x2F;github.com&#x2F;TriHydera.png" width="60px" alt="User avatar: TriHydera" /></a><a href="https://github.com/DelDongo"><img src="https:&#x2F;&#x2F;github.com&#x2F;DelDongo.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/markamos"><img src="https:&#x2F;&#x2F;github.com&#x2F;markamos.png" width="60px" alt="User avatar: Mark Amos" /></a><a href="https://github.com/dwelfusius"><img src="https:&#x2F;&#x2F;github.com&#x2F;dwelfusius.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/mews-se"><img src="https:&#x2F;&#x2F;github.com&#x2F;mews-se.png" width="60px" alt="User avatar: Martin Stockzell" /></a><a href="https://github.com/jdiegmueller"><img src="https:&#x2F;&#x2F;github.com&#x2F;jdiegmueller.png" width="60px" alt="User avatar: Jason A. Diegmueller" /></a><a href="https://github.com/robertsandrock"><img src="https:&#x2F;&#x2F;github.com&#x2F;robertsandrock.png" width="60px" alt="User avatar: RMS" /></a><a href="https://github.com/KenichiQaz"><img src="https:&#x2F;&#x2F;github.com&#x2F;KenichiQaz.png" width="60px" alt="User avatar: Stefan" /></a><a href="https://github.com/paulsheets"><img src="https:&#x2F;&#x2F;github.com&#x2F;paulsheets.png" width="60px" alt="User avatar: Paul" /></a><a href="https://github.com/djones369"><img src="https:&#x2F;&#x2F;github.com&#x2F;djones369.png" width="60px" alt="User avatar: Dave J. - WhamGeek" /></a><a href="https://github.com/anthonymendez"><img src="https:&#x2F;&#x2F;github.com&#x2F;anthonymendez.png" width="60px" alt="User avatar: Anthony Mendez" /></a><a href="https://github.com/FatBastard0"><img src="https:&#x2F;&#x2F;github.com&#x2F;FatBastard0.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/DursleyGuy"><img src="https:&#x2F;&#x2F;github.com&#x2F;DursleyGuy.png" width="60px" alt="User avatar: DursleyGuy" /></a><a href="https://github.com/realmuddy"><img src="https:&#x2F;&#x2F;github.com&#x2F;realmuddy.png" width="60px" alt="User avatar: Phillip Waters" /></a><a href="https://github.com/quaszi"><img src="https:&#x2F;&#x2F;github.com&#x2F;quaszi.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/DwayneTheRockLobster1"><img src="https:&#x2F;&#x2F;github.com&#x2F;DwayneTheRockLobster1.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/KieraKujisawa"><img src="https:&#x2F;&#x2F;github.com&#x2F;KieraKujisawa.png" width="60px" alt="User avatar: Kiera Meredith" /></a><a href="https://github.com/craigccfl"><img src="https:&#x2F;&#x2F;github.com&#x2F;craigccfl.png" width="60px" alt="User avatar: CraigW" /></a><a href="https://github.com/RoelCrabbe"><img src="https:&#x2F;&#x2F;github.com&#x2F;RoelCrabbe.png" width="60px" alt="User avatar: Roel Crabbé" /></a><a href="https://github.com/Data-Syd"><img src="https:&#x2F;&#x2F;github.com&#x2F;Data-Syd.png" width="60px" alt="User avatar: Data Syd" /></a><!-- sponsors -->
 
-## 🏅 Thanks to all Contributors
-Thanks a lot for spending your time helping Winutil grow. Thanks a lot! Keep rocking 🍻.
+## 🏅 感谢所有贡献者
+非常感谢您花时间帮助 Winutil 成长。非常感谢！继续加油 🍻。
 
 [![Contributors](https://contrib.rocks/image?repo=ChrisTitusTech/winutil)](https://github.com/ChrisTitusTech/winutil/graphs/contributors)
 
-## 📊 GitHub Stats
+## 📊 GitHub 统计
 
 ![Alt](https://repobeats.axiom.co/api/embed/aad37eec9114c507f109d34ff8d38a59adc9503f.svg "Repobeats analytics image")

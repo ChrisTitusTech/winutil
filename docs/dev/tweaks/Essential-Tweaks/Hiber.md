@@ -1,20 +1,20 @@
-# Disable Hibernation
+# 禁用休眠
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-## Description
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
+## 描述
 
-Hibernation is really meant for laptops as it saves what's in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don't be like Bob. Bob likes hibernation.
+休眠功能主要用于笔记本电脑，它会在关闭电脑前保存内存中的内容。它实际上不应该被使用，但有些人很懒惰并依赖它。不要像鲍勃那样。鲍勃喜欢休眠。
 
 <!-- BEGIN CUSTOM CONTENT -->
 
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -51,39 +51,39 @@ Hibernation is really meant for laptops as it saves what's in memory before turn
 
 </details>
 
-## Invoke Script
+## 调用脚本
 
 ```powershell
 powercfg.exe /hibernate off
 
 ```
-## Undo Script
+## 撤销脚本
 
 ```powershell
 powercfg.exe /hibernate on
 
 ```
-## Registry Changes
-Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.
+## 注册表更改
+应用程序和系统组件存储和检索配置数据以修改 Windows 设置，因此我们可以使用注册表在一个位置更改许多设置。
 
 
-You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).
+您可以在 [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) 和 [Microsoft 网站](https://learn.microsoft.com/zh-cn/windows/win32/sysinfo/registry)上找到有关注册表的信息。
 
-### Registry Key: HibernateEnabled
+### 注册表项：HibernateEnabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: ShowHibernateOption
+### 注册表项：ShowHibernateOption
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
 
 
@@ -92,5 +92,4 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)

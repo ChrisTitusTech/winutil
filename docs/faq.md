@@ -1,7 +1,7 @@
-# FAQ's
+# 常见问题解答
 
-## How do I uninstall WinUtil?
-* You do not have to uninstall WinUtil. As it is a script you run from Powershell it only loads into your RAM. This means as soon as you close WinUtil it will be deleted off your system.
+## 如何卸载 WinUtil？
+* 您无需卸载 WinUtil。由于它是您从 Powershell 运行的脚本，因此它仅加载到您的 RAM 中。这意味着一旦您关闭 WinUtil，它就会从您的系统中删除。
 
-## I applied a tweak and now something doesn't work, what do I do?
-* If you applied a tweak and it breaks something, you can always revert the tweak by selecting the tweak and clicking "Undo Selected Tweaks".
+## 我应用了一个调整，现在某些功能无法正常工作，我该怎么办？
+* 如果您应用了一个调整并导致某些功能损坏，您始终可以通过选择该调整并单击“撤销选定的调整”来还原该调整。

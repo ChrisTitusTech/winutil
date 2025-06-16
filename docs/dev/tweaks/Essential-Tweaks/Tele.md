@@ -1,20 +1,20 @@
-# Disable Telemetry
+# 禁用遥测
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-## Description
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
+## 描述
 
-Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser.
+禁用 Microsoft 遥测。注意：这将锁定许多 Edge 浏览器设置。使用 Edge 浏览器时，Microsoft 会对您进行大量监视。
 
 <!-- BEGIN CUSTOM CONTENT -->
 
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -393,7 +393,7 @@ Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. M
 
 </details>
 
-## Invoke Script
+## 调用脚本
 
 ```powershell
 
@@ -410,13 +410,12 @@ Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. M
         }
         Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Recurse -ErrorAction SilentlyContinue
 
-        # Fix Managed by your organization in Edge if regustry path exists then remove it
-
+        # 如果注册表路径存在，则修复 Edge 中的“由您的组织管理”
         If (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge") {
             Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge" -Recurse -ErrorAction SilentlyContinue
         }
 
-        # Group svchost.exe processes
+        # 分组 svchost.exe 进程
         $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
         Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "SvcHostSplitThresholdInKB" -Type DWord -Value $ram -Force
 
@@ -426,398 +425,398 @@ Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. M
         }
         icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null
 
-        # Disable Defender Auto Sample Submission
+        # 禁用 Defender 自动示例提交
         Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction SilentlyContinue | Out-Null
 
 
 ```
-## Registry Changes
-Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.
+## 注册表更改
+应用程序和系统组件存储和检索配置数据以修改 Windows 设置，因此我们可以使用注册表在一个位置更改许多设置。
 
 
-You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).
+您可以在 [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) 和 [Microsoft 网站](https://learn.microsoft.com/zh-cn/windows/win32/sysinfo/registry)上找到有关注册表的信息。
 
-### Registry Key: AllowTelemetry
+### 注册表项：AllowTelemetry
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: AllowTelemetry
+### 注册表项：AllowTelemetry
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: ContentDeliveryAllowed
+### 注册表项：ContentDeliveryAllowed
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: OemPreInstalledAppsEnabled
+### 注册表项：OemPreInstalledAppsEnabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: PreInstalledAppsEnabled
+### 注册表项：PreInstalledAppsEnabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: PreInstalledAppsEverEnabled
+### 注册表项：PreInstalledAppsEverEnabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: SilentInstalledAppsEnabled
+### 注册表项：SilentInstalledAppsEnabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: SubscribedContent-338387Enabled
+### 注册表项：SubscribedContent-338387Enabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: SubscribedContent-338388Enabled
+### 注册表项：SubscribedContent-338388Enabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: SubscribedContent-338389Enabled
+### 注册表项：SubscribedContent-338389Enabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: SubscribedContent-353698Enabled
+### 注册表项：SubscribedContent-353698Enabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: SystemPaneSuggestionsEnabled
+### 注册表项：SystemPaneSuggestionsEnabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: NumberOfSIUFInPeriod
+### 注册表项：NumberOfSIUFInPeriod
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 0
+**原始值：** 0
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: DoNotShowFeedbackNotifications
+### 注册表项：DoNotShowFeedbackNotifications
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 0
+**原始值：** 0
 
-**New Value:** 1
+**新值：** 1
 
-### Registry Key: DisableTailoredExperiencesWithDiagnosticData
+### 注册表项：DisableTailoredExperiencesWithDiagnosticData
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 0
+**原始值：** 0
 
-**New Value:** 1
+**新值：** 1
 
-### Registry Key: DisabledByGroupPolicy
+### 注册表项：DisabledByGroupPolicy
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 0
+**原始值：** 0
 
-**New Value:** 1
+**新值：** 1
 
-### Registry Key: Disabled
+### 注册表项：Disabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 0
+**原始值：** 0
 
-**New Value:** 1
+**新值：** 1
 
-### Registry Key: DODownloadMode
+### 注册表项：DODownloadMode
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 1
+**新值：** 1
 
-### Registry Key: fAllowToGetHelp
+### 注册表项：fAllowToGetHelp
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: EnthusiastMode
+### 注册表项：EnthusiastMode
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 0
+**原始值：** 0
 
-**New Value:** 1
+**新值：** 1
 
-### Registry Key: ShowTaskViewButton
+### 注册表项：ShowTaskViewButton
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: PeopleBand
+### 注册表项：PeopleBand
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: LaunchTo
+### 注册表项：LaunchTo
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 1
+**新值：** 1
 
-### Registry Key: LongPathsEnabled
+### 注册表项：LongPathsEnabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 0
+**原始值：** 0
 
-**New Value:** 1
+**新值：** 1
 
-### Registry Key: SearchOrderConfig
+### 注册表项：SearchOrderConfig
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 1
+**新值：** 1
 
-### Registry Key: SystemResponsiveness
+### 注册表项：SystemResponsiveness
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: NetworkThrottlingIndex
+### 注册表项：NetworkThrottlingIndex
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 4294967295
+**新值：** 4294967295
 
-### Registry Key: MenuShowDelay
+### 注册表项：MenuShowDelay
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 1
+**新值：** 1
 
-### Registry Key: AutoEndTasks
+### 注册表项：AutoEndTasks
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 1
+**新值：** 1
 
-### Registry Key: ClearPageFileAtShutdown
+### 注册表项：ClearPageFileAtShutdown
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 0
+**原始值：** 0
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: Start
+### 注册表项：Start
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 2
+**新值：** 2
 
-### Registry Key: MouseHoverTime
+### 注册表项：MouseHoverTime
 
-**Type:** String
+**类型：** String
 
-**Original Value:** 400
+**原始值：** 400
 
-**New Value:** 400
+**新值：** 400
 
-### Registry Key: IRPStackSize
+### 注册表项：IRPStackSize
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 20
+**原始值：** 20
 
-**New Value:** 30
+**新值：** 30
 
-### Registry Key: EnableFeeds
+### 注册表项：EnableFeeds
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
-### Registry Key: ShellFeedsTaskbarViewMode
+### 注册表项：ShellFeedsTaskbarViewMode
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 2
+**新值：** 2
 
-### Registry Key: HideSCAMeetNow
+### 注册表项：HideSCAMeetNow
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 1
+**新值：** 1
 
-### Registry Key: ScoobeSystemSettingEnabled
+### 注册表项：ScoobeSystemSettingEnabled
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 1
+**原始值：** 1
 
-**New Value:** 0
+**新值：** 0
 
 
-## Scheduled Task Changes
+## 计划任务更改
 
-Windows scheduled tasks are used to run scripts or programs at specific times or events. Disabling unnecessary tasks can improve system performance and reduce unwanted background activity.
+Windows 计划任务用于在特定时间或事件运行脚本或程序。禁用不必要的任务可以提高系统性能并减少不必要的后台活动。
 
 
-You can find information about scheduled tasks on [Wikipedia](https://www.wikiwand.com/en/Windows_Task_Scheduler) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/desktop/taskschd/about-the-task-scheduler).
+您可以在 [Wikipedia](https://www.wikiwand.com/en/Windows_Task_Scheduler) 和 [Microsoft 网站](https://learn.microsoft.com/zh-cn/windows/desktop/taskschd/about-the-task-scheduler)上找到有关计划任务的信息。
 
-### Task Name: Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser
+### 任务名称：Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser
 
-**State:** Disabled
+**状态：** 已禁用
 
-**Original State:** Enabled
+**原始状态：** 已启用
 
-### Task Name: Microsoft\Windows\Application Experience\ProgramDataUpdater
+### 任务名称：Microsoft\Windows\Application Experience\ProgramDataUpdater
 
-**State:** Disabled
+**状态：** 已禁用
 
-**Original State:** Enabled
+**原始状态：** 已启用
 
-### Task Name: Microsoft\Windows\Autochk\Proxy
+### 任务名称：Microsoft\Windows\Autochk\Proxy
 
-**State:** Disabled
+**状态：** 已禁用
 
-**Original State:** Enabled
+**原始状态：** 已启用
 
-### Task Name: Microsoft\Windows\Customer Experience Improvement Program\Consolidator
+### 任务名称：Microsoft\Windows\Customer Experience Improvement Program\Consolidator
 
-**State:** Disabled
+**状态：** 已禁用
 
-**Original State:** Enabled
+**原始状态：** 已启用
 
-### Task Name: Microsoft\Windows\Customer Experience Improvement Program\UsbCeip
+### 任务名称：Microsoft\Windows\Customer Experience Improvement Program\UsbCeip
 
-**State:** Disabled
+**状态：** 已禁用
 
-**Original State:** Enabled
+**原始状态：** 已启用
 
-### Task Name: Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector
+### 任务名称：Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector
 
-**State:** Disabled
+**状态：** 已禁用
 
-**Original State:** Enabled
+**原始状态：** 已启用
 
-### Task Name: Microsoft\Windows\Feedback\Siuf\DmClient
+### 任务名称：Microsoft\Windows\Feedback\Siuf\DmClient
 
-**State:** Disabled
+**状态：** 已禁用
 
-**Original State:** Enabled
+**原始状态：** 已启用
 
-### Task Name: Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload
+### 任务名称：Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload
 
-**State:** Disabled
+**状态：** 已禁用
 
-**Original State:** Enabled
+**原始状态：** 已启用
 
-### Task Name: Microsoft\Windows\Windows Error Reporting\QueueReporting
+### 任务名称：Microsoft\Windows\Windows Error Reporting\QueueReporting
 
-**State:** Disabled
+**状态：** 已禁用
 
-**Original State:** Enabled
+**原始状态：** 已启用
 
-### Task Name: Microsoft\Windows\Application Experience\MareBackup
+### 任务名称：Microsoft\Windows\Application Experience\MareBackup
 
-**State:** Disabled
+**状态：** 已禁用
 
-**Original State:** Enabled
+**原始状态：** 已启用
 
-### Task Name: Microsoft\Windows\Application Experience\StartupAppTask
+### 任务名称：Microsoft\Windows\Application Experience\StartupAppTask
 
-**State:** Disabled
+**状态：** 已禁用
 
-**Original State:** Enabled
+**原始状态：** 已启用
 
-### Task Name: Microsoft\Windows\Application Experience\PcaPatchDbTask
+### 任务名称：Microsoft\Windows\Application Experience\PcaPatchDbTask
 
-**State:** Disabled
+**状态：** 已禁用
 
-**Original State:** Enabled
+**原始状态：** 已启用
 
-### Task Name: Microsoft\Windows\Maps\MapsUpdateTask
+### 任务名称：Microsoft\Windows\Maps\MapsUpdateTask
 
-**State:** Disabled
+**状态：** 已禁用
 
-**Original State:** Enabled
+**原始状态：** 已启用
 
 
 
@@ -826,5 +825,4 @@ You can find information about scheduled tasks on [Wikipedia](https://www.wikiwa
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)

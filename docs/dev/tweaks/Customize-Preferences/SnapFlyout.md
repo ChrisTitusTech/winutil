@@ -1,20 +1,20 @@
-# Snap Assist Flyout
+# 贴靠辅助浮出控件
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-## Description
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
+## 描述
 
-If enabled then Snap preview is disabled when maximize button is hovered.
+如果启用，则在将鼠标悬停在最大化按钮上时禁用贴靠预览。
 
 <!-- BEGIN CUSTOM CONTENT -->
 
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -30,23 +30,23 @@ If enabled then Snap preview is disabled when maximize button is hovered.
 
 </details>
 
-## Function: Invoke-WinUtilSnapFlyout
+## 函数：Invoke-WinUtilSnapFlyout
 
 ```powershell
 function Invoke-WinUtilSnapFlyout {
     <#
     .SYNOPSIS
-        Disables/Enables Snap Assist Flyout on startup
+        在启动时禁用/启用贴靠辅助浮出控件
     .PARAMETER Enabled
-        Indicates whether to enable or disable Snap Assist Flyout on startup
+        指示是否在启动时启用或禁用贴靠辅助浮出控件
     #>
     Param($Enabled)
     try {
         if ($Enabled -eq $false) {
-            Write-Host "Enabling Snap Assist Flyout On startup"
+            Write-Host "正在启用启动时贴靠辅助浮出控件"
             $value = 1
         } else {
-            Write-Host "Disabling Snap Assist Flyout On startup"
+            Write-Host "正在禁用启动时贴靠辅助浮出控件"
             $value = 0
         }
         # taskkill.exe /F /IM "explorer.exe"
@@ -55,11 +55,11 @@ function Invoke-WinUtilSnapFlyout {
         Set-ItemProperty -Path $Path -Name EnableSnapAssistFlyout -Value $value
         Start-Process "explorer.exe"
     } catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+        Write-Warning "由于安全异常，无法将 $Path\$Name 设置为 $Value"
     } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
     } catch {
-        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning "由于未处理的异常，无法设置 $Name"
         Write-Warning $psitem.Exception.StackTrace
     }
 }
@@ -72,5 +72,4 @@ function Invoke-WinUtilSnapFlyout {
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)

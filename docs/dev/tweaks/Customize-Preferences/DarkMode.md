@@ -1,20 +1,20 @@
-# Dark Theme for Windows
+# Windows 深色主题
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-## Description
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
+## 描述
 
-Enable/Disable Dark Mode.
+启用/禁用深色模式。
 
 <!-- BEGIN CUSTOM CONTENT -->
 
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -30,26 +30,26 @@ Enable/Disable Dark Mode.
 
 </details>
 
-## Function: Invoke-WinUtilDarkMode
+## 函数：Invoke-WinUtilDarkMode
 
 ```powershell
 Function Invoke-WinUtilDarkMode {
     <#
 
     .SYNOPSIS
-        Enables/Disables Dark Mode
+        启用/禁用深色模式
 
     .PARAMETER DarkMoveEnabled
-        Indicates the current dark mode state
+        指示当前的深色模式状态
 
     #>
     Param($DarkMoveEnabled)
     try {
         if ($DarkMoveEnabled -eq $false) {
-            Write-Host "Enabling Dark Mode"
+            Write-Host "正在启用深色模式"
             $DarkMoveValue = 0
         } else {
-            Write-Host "Disabling Dark Mode"
+            Write-Host "正在禁用深色模式"
             $DarkMoveValue = 1
         }
 
@@ -57,11 +57,11 @@ Function Invoke-WinUtilDarkMode {
         Set-ItemProperty -Path $Path -Name AppsUseLightTheme -Value $DarkMoveValue
         Set-ItemProperty -Path $Path -Name SystemUsesLightTheme -Value $DarkMoveValue
     } catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+        Write-Warning "由于安全异常，无法将 $Path\$Name 设置为 $Value"
     } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
     } catch {
-        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning "由于未处理的异常，无法设置 $Name"
         Write-Warning $psitem.Exception.StackTrace
     }
 }
@@ -74,5 +74,4 @@ Function Invoke-WinUtilDarkMode {
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)

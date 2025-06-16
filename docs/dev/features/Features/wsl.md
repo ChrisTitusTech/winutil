@@ -1,20 +1,20 @@
-# Windows Subsystem for Linux
+# 适用于 Linux 的 Windows 子系统
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-## Description
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
+## 描述
 
-Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting.
+适用于 Linux 的 Windows 子系统是 Windows 的一项可选功能，允许 Linux 程序在 Windows 上本机运行，而无需单独的虚拟机或双启动。
 
 <!-- BEGIN CUSTOM CONTENT -->
 
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -34,15 +34,15 @@ Windows Subsystem for Linux is an optional feature of Windows that allows Linux 
 
 </details>
 
-## Features
+## 功能
 
 
-Optional Windows Features are additional functionalities or components in the Windows operating system that users can choose to enable or disable based on their specific needs and preferences.
+可选 Windows 功能是 Windows 操作系统中的附加功能或组件，用户可以根据自己的特定需求和偏好选择启用或禁用这些功能或组件。
 
 
-You can find information about Optional Windows Features on [Microsoft's Website for Optional Features](https://learn.microsoft.com/en-us/windows/client-management/client-tools/add-remove-hide-features?pivots=windows-11).
+您可以在 [Microsoft 可选功能网站](https://learn.microsoft.com/zh-cn/windows/client-management/client-tools/add-remove-hide-features?pivots=windows-11)上找到有关可选 Windows 功能的信息。
 
-### Features to install
+### 要安装的功能
 - VirtualMachinePlatform
 - Microsoft-Windows-Subsystem-Linux
 
@@ -52,5 +52,4 @@ You can find information about Optional Windows Features on [Microsoft's Website
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)

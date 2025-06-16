@@ -1,10 +1,10 @@
-# Remove Adobe Creative Cloud
+# 删除 Adobe Creative Cloud
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
 
 
 <!-- BEGIN CUSTOM CONTENT -->
@@ -12,7 +12,7 @@ Last Updated: 2024-08-07
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -28,29 +28,29 @@ Last Updated: 2024-08-07
 
 </details>
 
-## Function: Invoke-WPFRunAdobeCCCleanerTool
+## 函数：Invoke-WPFRunAdobeCCCleanerTool
 
 ```powershell
 function Invoke-WPFRunAdobeCCCleanerTool {
     <#
     .SYNOPSIS
-        It removes or fixes problem files and resolves permission issues in registry keys.
+        它会删除或修复问题文件，并解决注册表项中的权限问题。
     .DESCRIPTION
-        The Creative Cloud Cleaner tool is a utility for experienced users to clean up corrupted installations.
+        Creative Cloud Cleaner 工具是一款供有经验的用户清理损坏安装的实用程序。
     #>
 
     [string]$url="https://swupmf.adobe.com/webfeed/CleanerTool/win/AdobeCreativeCloudCleanerTool.exe"
 
-    Write-Host "The Adobe Creative Cloud Cleaner tool is hosted at"
+    Write-Host "Adobe Creative Cloud Cleaner 工具托管在"
     Write-Host "$url"
 
     try {
-        # Don't show the progress because it will slow down the download speed
+        # 不要显示进度，因为它会降低下载速度
         $ProgressPreference='SilentlyContinue'
 
         Invoke-WebRequest -Uri $url -OutFile "$env:TEMP\AdobeCreativeCloudCleanerTool.exe" -UseBasicParsing -ErrorAction SilentlyContinue -Verbose
 
-        # Revert back the ProgressPreference variable to the default value since we got the file desired
+        # 获取所需文件后，将 ProgressPreference 变量恢复为默认值
         $ProgressPreference='Continue'
 
         Start-Process -FilePath "$env:TEMP\AdobeCreativeCloudCleanerTool.exe" -Wait -ErrorAction SilentlyContinue -Verbose
@@ -58,7 +58,7 @@ function Invoke-WPFRunAdobeCCCleanerTool {
         Write-Error $_.Exception.Message
     } finally {
         if (Test-Path -Path "$env:TEMP\AdobeCreativeCloudCleanerTool.exe") {
-            Write-Host "Cleaning up..."
+            Write-Host "正在清理..."
             Remove-Item -Path "$env:TEMP\AdobeCreativeCloudCleanerTool.exe" -Verbose
         }
     }
@@ -72,5 +72,4 @@ function Invoke-WPFRunAdobeCCCleanerTool {
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)

@@ -1,20 +1,20 @@
-# Search Button in Taskbar
+# 任务栏中的搜索按钮
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-## Description
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
+## 描述
 
-If Enabled Search Button will be on the taskbar.
+如果启用，搜索按钮将显示在任务栏上。
 
 <!-- BEGIN CUSTOM CONTENT -->
 
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -30,36 +30,36 @@ If Enabled Search Button will be on the taskbar.
 
 </details>
 
-## Function: Invoke-WinUtilTaskbarSearch
+## 函数：Invoke-WinUtilTaskbarSearch
 
 ```powershell
 function Invoke-WinUtilTaskbarSearch {
     <#
 
     .SYNOPSIS
-        Enable/Disable Taskbar Search Button.
+        启用/禁用任务栏搜索按钮。
 
     .PARAMETER Enabled
-        Indicates whether to enable or disable Taskbar Search Button.
+        指示是启用还是禁用任务栏搜索按钮。
 
     #>
     Param($Enabled)
     try {
         if ($Enabled -eq $false) {
-            Write-Host "Enabling Search Button"
+            Write-Host "正在启用搜索按钮"
             $value = 1
         } else {
-            Write-Host "Disabling Search Button"
+            Write-Host "正在禁用搜索按钮"
             $value = 0
         }
         $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search\"
         Set-ItemProperty -Path $Path -Name SearchboxTaskbarMode -Value $value
     } catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+        Write-Warning "由于安全异常，无法将 $Path\$Name 设置为 $Value"
     } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
     } catch {
-        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning "由于未处理的异常，无法设置 $Name"
         Write-Warning $psitem.Exception.StackTrace
     }
 }
@@ -72,5 +72,4 @@ function Invoke-WinUtilTaskbarSearch {
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)

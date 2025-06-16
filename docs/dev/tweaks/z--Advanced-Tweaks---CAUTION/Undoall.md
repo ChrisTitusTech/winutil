@@ -1,10 +1,10 @@
-# Undo Selected Tweaks
+# 撤销选定的调整
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
 
 
 <!-- BEGIN CUSTOM CONTENT -->
@@ -12,7 +12,7 @@ Last Updated: 2024-08-07
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -27,19 +27,19 @@ Last Updated: 2024-08-07
 
 </details>
 
-## Function: Invoke-WPFundoall
+## 函数：Invoke-WPFundoall
 
 ```powershell
 function Invoke-WPFundoall {
     <#
 
     .SYNOPSIS
-        Undoes every selected tweak
+        撤销每个选定的调整
 
     #>
 
     if($sync.ProcessRunning) {
-        $msg = "[Invoke-WPFundoall] Install process is currently running."
+        $msg = "[Invoke-WPFundoall] 安装过程当前正在运行。"
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
@@ -47,7 +47,7 @@ function Invoke-WPFundoall {
     $tweaks = (Get-WinUtilCheckBoxes)["WPFtweaks"]
 
     if ($tweaks.count -eq 0) {
-        $msg = "Please check the tweaks you wish to undo."
+        $msg = "请选中您希望撤销的调整。"
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
@@ -64,16 +64,16 @@ function Invoke-WPFundoall {
 
 
         for ($i = 0; $i -lt $tweaks.Count; $i++) {
-            Set-WinUtilProgressBar -Label "Undoing $($tweaks[$i])" -Percent ($i / $tweaks.Count * 100)
+            Set-WinUtilProgressBar -Label "正在撤销 $($tweaks[$i])" -Percent ($i / $tweaks.Count * 100)
             Invoke-WinUtiltweaks $tweaks[$i] -undo $true
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($i/$tweaks.Count) })
         }
 
-        Set-WinUtilProgressBar -Label "Undo Tweaks Finished" -Percent 100
+        Set-WinUtilProgressBar -Label "撤销调整已完成" -Percent 100
         $sync.ProcessRunning = $false
         $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
         Write-Host "=================================="
-        Write-Host "---  Undo Tweaks are Finished  ---"
+        Write-Host "---  撤销调整已完成  ---"
         Write-Host "=================================="
 
     }
@@ -87,5 +87,4 @@ function Invoke-WPFundoall {
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)

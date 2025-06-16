@@ -78,7 +78,7 @@ function Initialize-WPFUI {
                     "Install" {
                         $newButton.Add_MouseEnter({
                             $appObject = $sync.configs.applicationsHashtable.$($sync.appPopupSelectedApp)
-                            $this.ToolTip = "Install or Upgrade $($appObject.content)"
+                            $this.ToolTip = "安装或升级 $($appObject.content)"
                         })
                         $newButton.Add_Click({
                             $appObject = $sync.configs.applicationsHashtable.$($sync.appPopupSelectedApp)
@@ -88,7 +88,7 @@ function Initialize-WPFUI {
                     "Uninstall" {
                         $newButton.Add_MouseEnter({
                             $appObject = $sync.configs.applicationsHashtable.$($sync.appPopupSelectedApp)
-                            $this.ToolTip = "Uninstall $($appObject.content)"
+                            $this.ToolTip = "卸载 $($appObject.content)"
                         })
                         $newButton.Add_Click({
                             $appObject = $sync.configs.applicationsHashtable.$($sync.appPopupSelectedApp)
@@ -98,7 +98,7 @@ function Initialize-WPFUI {
                     "Info" {
                         $newButton.Add_MouseEnter({
                             $appObject = $sync.configs.applicationsHashtable.$($sync.appPopupSelectedApp)
-                            $this.ToolTip = "Open the application's website in your default browser`n$($appObject.link)"
+                            $this.ToolTip = "在默认浏览器中打开应用程序网站`n$($appObject.link)"
                         })
                         $newButton.Add_Click({
                             $appObject = $sync.configs.applicationsHashtable.$($sync.appPopupSelectedApp)
@@ -113,8 +113,7 @@ function Initialize-WPFUI {
             Initialize-InstallCategoryAppList -TargetElement $sync.ItemsControl -Apps $sync.configs.applicationsHashtable
         }
         default {
-            Write-Output "$TargetGridName not yet implemented"
+            Write-Output "$TargetGridName 尚未实现"
         }
     }
 }
-

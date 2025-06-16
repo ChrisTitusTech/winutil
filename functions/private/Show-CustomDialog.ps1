@@ -258,7 +258,7 @@ function Show-CustomDialog {
 
     # Add OK button
     $okButton = New-Object Windows.Controls.Button
-    $okButton.Content = "OK"
+    $okButton.Content = "确定"
     $okButton.FontSize = $FontSize
     $okButton.Width = 80
     $okButton.Height = 30

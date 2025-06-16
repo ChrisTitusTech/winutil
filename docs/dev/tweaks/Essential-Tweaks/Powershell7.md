@@ -1,20 +1,20 @@
-# Change Windows Terminal default: PowerShell 5 -> PowerShell 7
+# 更改 Windows 终端默认值：PowerShell 5 -> PowerShell 7
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-## Description
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
+## 描述
 
-This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary
+这将编辑 Windows 终端的配置文件，将 PowerShell 5 替换为 PowerShell 7，并在必要时安装 PS7。
 
 <!-- BEGIN CUSTOM CONTENT -->
 
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -35,28 +35,28 @@ This will edit the config file of the Windows Terminal replacing PowerShell 5 wi
 
 </details>
 
-## Invoke Script
+## 调用脚本
 
 ```powershell
 Invoke-WPFTweakPS7 -action "PS7"
 
 ```
-## Undo Script
+## 撤销脚本
 
 ```powershell
 Invoke-WPFTweakPS7 -action "PS5"
 
 ```
-## Function: Invoke-WPFTweakPS7
+## 函数：Invoke-WPFTweakPS7
 
 ```powershell
 function Invoke-WPFTweakPS7{
         <#
     .SYNOPSIS
-        This will edit the config file of the Windows Terminal Replacing the Powershell 5 to Powershell 7 and install Powershell 7 if necessary
+        这将编辑 Windows 终端的配置文件，将 Powershell 5 替换为 Powershell 7，并在必要时安装 Powershell 7
     .PARAMETER action
-        PS7:           Configures Powershell 7 to be the default Terminal
-        PS5:           Configures Powershell 5 to be the default Terminal
+        PS7：将 Powershell 7 配置为默认终端
+        PS5：将 Powershell 5 配置为默认终端
     #>
     param (
         [ValidateSet("PS7", "PS5")]
@@ -66,9 +66,9 @@ function Invoke-WPFTweakPS7{
     switch ($action) {
         "PS7"{
             if (Test-Path -Path "$env:ProgramFiles\PowerShell\7") {
-                Write-Host "Powershell 7 is already installed."
+                Write-Host "Powershell 7 已安装。"
             } else {
-                Write-Host "Installing Powershell 7..."
+                Write-Host "正在安装 Powershell 7..."
                 Install-WinUtilProgramWinget -Action Install -Programs @("Microsoft.PowerShell")
             }
             $targetTerminalName = "PowerShell"
@@ -77,51 +77,51 @@ function Invoke-WPFTweakPS7{
             $targetTerminalName = "Windows PowerShell"
         }
     }
-    # Check if the Windows Terminal is installed and return if not (Prerequisite for the following code)
+    # 检查 Windows 终端是否已安装，如果未安装则返回（以下代码的先决条件）
     if (-not (Get-Command "wt" -ErrorAction SilentlyContinue)) {
-        Write-Host "Windows Terminal not installed. Skipping Terminal preference"
+        Write-Host "未安装 Windows 终端。正在跳过终端首选项"
         return
     }
-    # Check if the Windows Terminal settings.json file exists and return if not (Prereqisite for the following code)
+    # 检查 Windows 终端 settings.json 文件是否存在，如果不存在则返回（以下代码的先决条件）
     $settingsPath = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
     if (-not (Test-Path -Path $settingsPath)) {
-        Write-Host "Windows Terminal Settings file not found at $settingsPath"
+        Write-Host "在 $settingsPath 中找不到 Windows 终端设置文件"
         return
     }
 
-    Write-Host "Settings file found."
+    Write-Host "找到设置文件。"
     $settingsContent = Get-Content -Path $settingsPath | ConvertFrom-Json
     $ps7Profile = $settingsContent.profiles.list | Where-Object { $_.name -eq $targetTerminalName }
     if ($ps7Profile) {
         $settingsContent.defaultProfile = $ps7Profile.guid
         $updatedSettings = $settingsContent | ConvertTo-Json -Depth 100
         Set-Content -Path $settingsPath -Value $updatedSettings
-        Write-Host "Default profile updated to " -NoNewline
+        Write-Host "默认配置文件已更新为 " -NoNewline
         Write-Host "$targetTerminalName " -ForegroundColor White -NoNewline
-        Write-Host "using the name attribute."
+        Write-Host "使用名称属性。"
     } else {
-        Write-Host "No PowerShell 7 profile found in Windows Terminal settings using the name attribute."
+        Write-Host "在 Windows 终端设置中使用名称属性找不到 PowerShell 7 配置文件。"
     }
 }
 
 ```
-## Function: Install-WinUtilProgramWinget
+## 函数：Install-WinUtilProgramWinget
 
 ```powershell
 Function Install-WinUtilProgramWinget {
     <#
     .SYNOPSIS
-    Runs the designated action on the provided programs using Winget
+    使用 Winget 对提供的程序运行指定的操作
 
     .PARAMETER Programs
-    A list of programs to process
+    要处理的程序列表
 
     .PARAMETER action
-    The action to perform on the programs, can be either 'Install' or 'Uninstall'
+    要对程序执行的操作，可以是“Install”或“Uninstall”
 
     .NOTES
-    The triple quotes are required any time you need a " in a normal script block.
-    The winget Return codes are documented here: https://github.com/microsoft/winget-cli/blob/master/doc/windows/package-actionr/winget/returnCodes.md
+    当您在普通脚本块中需要 " 时，三重引号是必需的。
+    winget 返回代码记录在此处：https://github.com/microsoft/winget-cli/blob/master/doc/windows/package-manager/winget/returnCodes.md
     #>
 
     param(
@@ -135,19 +135,19 @@ Function Install-WinUtilProgramWinget {
     Function Invoke-Winget {
     <#
     .SYNOPSIS
-    Invokes the winget.exe with the provided arguments and return the exit code
+    使用提供的参数调用 winget.exe 并返回退出代码
 
     .PARAMETER wingetId
-    The Id of the Program that Winget should Install/Uninstall
+    Winget 应安装/卸载的程序的 ID
 
     .PARAMETER scope
-    Determines the installation mode. Can be "user" or "machine" (For more info look at the winget documentation)
+    确定安装模式。可以是“user”或“machine”（有关更多信息，请参阅 winget 文档）
 
     .PARAMETER credential
-    The PSCredential Object of the user that should be used to run winget
+    应用于运行 winget 的用户的 PSCredential 对象
 
     .NOTES
-    Invoke Winget uses the public variable $Action defined outside the function to determine if a Program should be installed or removed
+    Invoke Winget 使用在函数外部定义的公共变量 $Action 来确定是应安装还是删除程序
     #>
         param (
             [string]$wingetId,
@@ -180,56 +180,56 @@ Function Install-WinUtilProgramWinget {
     Function Invoke-Install {
     <#
     .SYNOPSIS
-    Contains the Install Logic and return code handling from winget
+    包含来自 winget 的安装逻辑和返回代码处理
 
     .PARAMETER Program
-    The Winget ID of the Program that should be installed
+    应安装的程序的 Winget ID
     #>
         param (
             [string]$Program
         )
         $status = Invoke-Winget -wingetId $Program
         if ($status -eq 0) {
-            Write-Host "$($Program) installed successfully."
+            Write-Host "$($Program) 已成功安装。"
             return $true
         } elseif ($status -eq -1978335189) {
-            Write-Host "$($Program) No applicable update found"
+            Write-Host "$($Program) 未找到适用的更新"
             return $true
         }
 
-        Write-Host "Attempt installation of $($Program) with User scope"
+        Write-Host "尝试使用用户范围安装 $($Program)"
         $status = Invoke-Winget -wingetId $Program -scope "user"
         if ($status -eq 0) {
-            Write-Host "$($Program) installed successfully with User scope."
+            Write-Host "$($Program) 已成功使用用户范围安装。"
             return $true
         } elseif ($status -eq -1978335189) {
-            Write-Host "$($Program) No applicable update found"
+            Write-Host "$($Program) 未找到适用的更新"
             return $true
         }
 
-        $userChoice = [System.Windows.MessageBox]::Show("Do you want to attempt $($Program) installation with specific user credentials? Select 'Yes' to proceed or 'No' to skip.", "User credential Prompt", [System.Windows.MessageBoxButton]::YesNo)
+        $userChoice = [System.Windows.MessageBox]::Show("您是否要尝试使用特定用户凭据安装 $($Program)？选择“是”继续或“否”跳过。", "用户凭据提示", [System.Windows.MessageBoxButton]::YesNo)
         if ($userChoice -eq 'Yes') {
             $getcreds = Get-Credential
             $status = Invoke-Winget -wingetId $Program -credential $getcreds
             if ($status -eq 0) {
-                Write-Host "$($Program) installed successfully with User prompt."
+                Write-Host "$($Program) 已成功使用用户提示安装。"
                 return $true
             }
         } else {
-            Write-Host "Skipping installation with specific user credentials."
+            Write-Host "正在跳过使用特定用户凭据的安装。"
         }
 
-        Write-Host "Failed to install $($Program)."
+        Write-Host "未能安装 $($Program)。"
         return $false
     }
 
     Function Invoke-Uninstall {
         <#
         .SYNOPSIS
-        Contains the Uninstall Logic and return code handling from winget
+        包含来自 winget 的卸载逻辑和返回代码处理
 
         .PARAMETER Program
-        The Winget ID of the Program that should be uninstalled
+        应卸载的程序的 Winget ID
         #>
         param (
             [psobject]$Program
@@ -238,14 +238,14 @@ Function Install-WinUtilProgramWinget {
         try {
             $status = Invoke-Winget -wingetId $Program
             if ($status -eq 0) {
-                Write-Host "$($Program) uninstalled successfully."
+                Write-Host "$($Program) 已成功卸载。"
                 return $true
             } else {
-                Write-Host "Failed to uninstall $($Program)."
+                Write-Host "未能卸载 $($Program)。"
                 return $false
             }
         } catch {
-            Write-Host "Failed to uninstall $($Program) due to an error: $_"
+            Write-Host "由于错误未能卸载 $($Program)：$_"
             return $false
         }
     }
@@ -254,7 +254,7 @@ Function Install-WinUtilProgramWinget {
     $failedPackages = @()
 
     Write-Host "==========================================="
-    Write-Host "--    Configuring winget packages       ---"
+    Write-Host "--    正在配置 winget 包       ---"
     Write-Host "==========================================="
 
     for ($i = 0; $i -lt $count; $i++) {
@@ -266,7 +266,7 @@ Function Install-WinUtilProgramWinget {
         $result = switch ($Action) {
             "Install" {Invoke-Install -Program $Program}
             "Uninstall" {Invoke-Uninstall -Program $Program}
-            default {throw "[Install-WinUtilProgramWinget] Invalid action: $Action"}
+            default {throw "[Install-WinUtilProgramWinget] 无效操作：$Action"}
         }
 
         if (-not $result) {
@@ -274,25 +274,25 @@ Function Install-WinUtilProgramWinget {
         }
     }
 
-    Set-WinUtilProgressBar -label "$($Action)ation done" -percent 100
+    Set-WinUtilProgressBar -label "$($Action)ation 完成" -percent 100
     return $failedPackages
 }
 
 ```
-## Function: Set-WinUtilProgressbar
+## 函数：Set-WinUtilProgressbar
 
 ```powershell
 function Set-WinUtilProgressbar{
     <#
     .SYNOPSIS
-        This function is used to Update the Progress Bar displayed in the winutil GUI.
-        It will be automatically hidden if the user clicks something and no process is running
+        此函数用于更新 winutil GUI 中显示的进度条。
+        如果用户单击某项并且没有进程正在运行，它将自动隐藏
     .PARAMETER Label
-        The Text to be overlayed onto the Progress Bar
+        要覆盖在进度条上的文本
     .PARAMETER PERCENT
-        The percentage of the Progress Bar that should be filled (0-100)
+        应填充的进度条百分比 (0-100)
     .PARAMETER Hide
-        If provided, the Progress Bar and the label will be hidden
+        如果提供，则将隐藏进度条和标签
     #>
     param(
         [string]$Label,
@@ -314,46 +314,46 @@ function Set-WinUtilProgressbar{
 }
 
 ```
-## Function: Set-WinUtilTaskbarItem
+## 函数：Set-WinUtilTaskbarItem
 
 ```powershell
 function Set-WinUtilTaskbaritem {
     <#
 
     .SYNOPSIS
-        Modifies the Taskbaritem of the WPF Form
+        修改 WPF 窗体的任务栏项
 
     .PARAMETER value
-        Value can be between 0 and 1, 0 being no progress done yet and 1 being fully completed
-        Value does not affect item without setting the state to 'Normal', 'Error' or 'Paused'
+        值可以在 0 和 1 之间，0 表示尚未开始进度，1 表示已完全完成
+        如果不将状态设置为“Normal”、“Error”或“Paused”，则值不会影响项目
         Set-WinUtilTaskbaritem -value 0.5
 
     .PARAMETER state
-        State can be 'None' > No progress, 'Indeterminate' > inf. loading gray, 'Normal' > Gray, 'Error' > Red, 'Paused' > Yellow
-        no value needed:
+        状态可以是“None”> 无进度，“Indeterminate”> 无限加载灰色，“Normal”> 灰色，“Error”> 红色，“Paused”> 黄色
+        不需要值：
         - Set-WinUtilTaskbaritem -state "None"
         - Set-WinUtilTaskbaritem -state "Indeterminate"
-        value needed:
+        需要值：
         - Set-WinUtilTaskbaritem -state "Error"
         - Set-WinUtilTaskbaritem -state "Normal"
         - Set-WinUtilTaskbaritem -state "Paused"
 
     .PARAMETER overlay
-        Overlay icon to display on the taskbar item, there are the presets 'None', 'logo' and 'checkmark' or you can specify a path/link to an image file.
-        CTT logo preset:
+        要在任务栏项上显示的覆盖图标，有预设的“None”、“logo”和“checkmark”，或者您可以指定图像文件的路径/链接。
+        CTT 徽标预设：
         - Set-WinUtilTaskbaritem -overlay "logo"
-        Checkmark preset:
+        复选标记预设：
         - Set-WinUtilTaskbaritem -overlay "checkmark"
-        Warning preset:
+        警告预设：
         - Set-WinUtilTaskbaritem -overlay "warning"
-        No overlay:
+        无覆盖：
         - Set-WinUtilTaskbaritem -overlay "None"
-        Custom icon (needs to be supported by WPF):
+        自定义图标（需要受 WPF 支持）：
         - Set-WinUtilTaskbaritem -overlay "C:\path\to\icon.png"
 
     .PARAMETER description
-        Description to display on the taskbar item preview
-        Set-WinUtilTaskbaritem -description "This is a description"
+        要在任务栏项预览中显示的描述
+        Set-WinUtilTaskbaritem -description "这是一个描述"
     #>
     param (
         [string]$state,
@@ -373,7 +373,7 @@ function Set-WinUtilTaskbaritem {
             'Normal' { $sync["Form"].taskbarItemInfo.ProgressState = "Normal" }
             'Error' { $sync["Form"].taskbarItemInfo.ProgressState = "Error" }
             'Paused' { $sync["Form"].taskbarItemInfo.ProgressState = "Paused" }
-            default { throw "[Set-WinUtilTaskbarItem] Invalid state" }
+            default { throw "[Set-WinUtilTaskbarItem] 无效状态" }
         }
     }
 
@@ -412,5 +412,4 @@ function Set-WinUtilTaskbaritem {
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)

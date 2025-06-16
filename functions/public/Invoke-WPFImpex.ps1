@@ -26,7 +26,7 @@ function Invoke-WPFImpex {
                 "import" { $FileBrowser = New-Object System.Windows.Forms.OpenFileDialog }
             }
             $FileBrowser.InitialDirectory = [Environment]::GetFolderPath('Desktop')
-            $FileBrowser.Filter = "JSON Files (*.json)|*.json"
+            $FileBrowser.Filter = "JSON 文件 (*.json)|*.json"
             $FileBrowser.ShowDialog() | Out-Null
 
             if ($FileBrowser.FileName -eq "") {
@@ -49,7 +49,7 @@ function Invoke-WPFImpex {
                     "iex ""& { `$(irm https://christitus.com/win) } -Config '$Config'""" | Set-Clipboard
                 }
             } catch {
-                Write-Error "An error occurred while exporting: $_"
+                Write-Error "导出时出错：$_"
             }
         }
         "import" {
@@ -63,14 +63,14 @@ function Invoke-WPFImpex {
                             $jsonFile = Get-Content $Config | ConvertFrom-Json
                         }
                     } catch {
-                        Write-Error "Failed to load the JSON file from the specified path or URL: $_"
+                        Write-Error "从指定路径或 URL 加载 JSON 文件失败：$_"
                         return
                     }
                     $flattenedJson = $jsonFile.PSObject.Properties.Where({ $_.Name -ne "Install" }).ForEach({ $_.Value })
                     Invoke-WPFPresets -preset $flattenedJson -imported $true
                 }
             } catch {
-                Write-Error "An error occurred while importing: $_"
+                Write-Error "导入时出错：$_"
             }
         }
     }

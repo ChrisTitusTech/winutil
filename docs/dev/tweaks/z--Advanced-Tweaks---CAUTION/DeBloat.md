@@ -1,20 +1,20 @@
-# Remove ALL MS Store Apps - NOT RECOMMENDED
+# 删除所有 MS Store 应用 - 不推荐
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-## Description
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
+## 描述
 
-USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!
+谨慎使用！！！！！！这将删除除 winget 工作所必需的应用之外的所有 Microsoft Store 应用。MS Store 安装的游戏也包括在内！
 
 <!-- BEGIN CUSTOM CONTENT -->
 
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -103,26 +103,26 @@ USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the e
         $TeamsPath = [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Teams')
         $TeamsUpdateExePath = [System.IO.Path]::Combine($TeamsPath, 'Update.exe')
 
-        Write-Host \"Stopping Teams process...\"
+        Write-Host \"正在停止 Teams 进程...\"
         Stop-Process -Name \"*teams*\" -Force -ErrorAction SilentlyContinue
 
-        Write-Host \"Uninstalling Teams from AppData\\Microsoft\\Teams\"
+        Write-Host \"正在从 AppData\\Microsoft\\Teams 卸载 Teams\"
         if ([System.IO.File]::Exists($TeamsUpdateExePath)) {
             # Uninstall app
             $proc = Start-Process $TeamsUpdateExePath \"-uninstall -s\" -PassThru
             $proc.WaitForExit()
         }
 
-        Write-Host \"Removing Teams AppxPackage...\"
+        Write-Host \"正在删除 Teams AppxPackage...\"
         Get-AppxPackage \"*Teams*\" | Remove-AppxPackage -ErrorAction SilentlyContinue
         Get-AppxPackage \"*Teams*\" -AllUsers | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
 
-        Write-Host \"Deleting Teams directory\"
+        Write-Host \"正在删除 Teams 目录\"
         if ([System.IO.Directory]::Exists($TeamsPath)) {
             Remove-Item $TeamsPath -Force -Recurse -ErrorAction SilentlyContinue
         }
 
-        Write-Host \"Deleting Teams uninstall registry key\"
+        Write-Host \"正在删除 Teams 卸载注册表项\"
         # Uninstall from Uninstall registry key UninstallString
         $us = (Get-ChildItem -Path HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall, HKLM:\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -like '*Teams*'}).UninstallString
         if ($us.Length -gt 0) {
@@ -140,34 +140,34 @@ USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the e
 
 </details>
 
-## Invoke Script
+## 调用脚本
 
 ```powershell
 
         $TeamsPath = [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Teams')
         $TeamsUpdateExePath = [System.IO.Path]::Combine($TeamsPath, 'Update.exe')
 
-        Write-Host "Stopping Teams process..."
+        Write-Host "正在停止 Teams 进程..."
         Stop-Process -Name "*teams*" -Force -ErrorAction SilentlyContinue
 
-        Write-Host "Uninstalling Teams from AppData\Microsoft\Teams"
+        Write-Host "正在从 AppData\Microsoft\Teams 卸载 Teams"
         if ([System.IO.File]::Exists($TeamsUpdateExePath)) {
-            # Uninstall app
+            # 卸载应用
             $proc = Start-Process $TeamsUpdateExePath "-uninstall -s" -PassThru
             $proc.WaitForExit()
         }
 
-        Write-Host "Removing Teams AppxPackage..."
+        Write-Host "正在删除 Teams AppxPackage..."
         Get-AppxPackage "*Teams*" | Remove-AppxPackage -ErrorAction SilentlyContinue
         Get-AppxPackage "*Teams*" -AllUsers | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
 
-        Write-Host "Deleting Teams directory"
+        Write-Host "正在删除 Teams 目录"
         if ([System.IO.Directory]::Exists($TeamsPath)) {
             Remove-Item $TeamsPath -Force -Recurse -ErrorAction SilentlyContinue
         }
 
-        Write-Host "Deleting Teams uninstall registry key"
-        # Uninstall from Uninstall registry key UninstallString
+        Write-Host "正在删除 Teams 卸载注册表项"
+        # 从卸载注册表项 UninstallString 卸载
         $us = (Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall, HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -like '*Teams*'}).UninstallString
         if ($us.Length -gt 0) {
             $us = ($us.Replace('/I', '/uninstall ') + ' /quiet').Replace('  ', ' ')
@@ -185,5 +185,4 @@ USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the e
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)

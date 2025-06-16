@@ -1,10 +1,10 @@
-# Reset Windows Update
+# 重置 Windows 更新
 
-Last Updated: 2024-08-07
+最后更新时间：2024-08-07
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
 
 
 <!-- BEGIN CUSTOM CONTENT -->
@@ -12,7 +12,7 @@ Last Updated: 2024-08-07
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 {
@@ -28,7 +28,7 @@ Last Updated: 2024-08-07
 
 </details>
 
-## Function: Invoke-WPFFixesUpdate
+## 函数：Invoke-WPFFixesUpdate
 
 ```powershell
 function Invoke-WPFFixesUpdate {
@@ -36,87 +36,87 @@ function Invoke-WPFFixesUpdate {
     <#
 
     .SYNOPSIS
-        Performs various tasks in an attempt to repair Windows Update
+        执行各种任务以尝试修复 Windows 更新
 
     .DESCRIPTION
-        1. (Aggressive Only) Scans the system for corruption using chkdsk, SFC, and DISM
-            Steps:
-                1. Runs chkdsk /scan /perf
-                    /scan - Runs an online scan on the volume
-                    /perf - Uses more system resources to complete a scan as fast as possible
-                2. Runs SFC /scannow
-                    /scannow - Scans integrity of all protected system files and repairs files with problems when possible
-                3. Runs DISM /Online /Cleanup-Image /RestoreHealth
-                    /Online - Targets the running operating system
-                    /Cleanup-Image - Performs cleanup and recovery operations on the image
-                    /RestoreHealth - Scans the image for component store corruption and attempts to repair the corruption using Windows Update
-                4. Runs SFC /scannow
-                    Ran twice in case DISM repaired SFC
-        2. Stops Windows Update Services
-        3. Remove the QMGR Data file, which stores BITS jobs
-        4. (Aggressive Only) Renames the DataStore and CatRoot2 folders
-            DataStore - Contains the Windows Update History and Log Files
-            CatRoot2 - Contains the Signatures for Windows Update Packages
-        5. Renames the Windows Update Download Folder
-        6. Deletes the Windows Update Log
-        7. (Aggressive Only) Resets the Security Descriptors on the Windows Update Services
-        8. Reregisters the BITS and Windows Update DLLs
-        9. Removes the WSUS client settings
-        10. Resets WinSock
-        11. Gets and deletes all BITS jobs
-        12. Sets the startup type of the Windows Update Services then starts them
-        13. Forces Windows Update to check for updates
+        1. （仅限积极模式）使用 chkdsk、SFC 和 DISM 扫描系统是否存在损坏
+            步骤：
+                1. 运行 chkdsk /scan /perf
+                    /scan - 在卷上运行联机扫描
+                    /perf - 使用更多系统资源以尽快完成扫描
+                2. 运行 SFC /scannow
+                    /scannow - 扫描所有受保护系统文件的完整性，并在可能的情况下修复有问题的文件
+                3. 运行 DISM /Online /Cleanup-Image /RestoreHealth
+                    /Online - 针对正在运行的操作系统
+                    /Cleanup-Image - 对映像执行清理和恢复操作
+                    /RestoreHealth - 扫描映像是否存在组件存储损坏，并尝试使用 Windows 更新修复损坏
+                4. 运行 SFC /scannow
+                    如果 DISM 修复了 SFC，则运行两次
+        2. 停止 Windows 更新服务
+        3. 删除存储 BITS 作业的 QMGR 数据文件
+        4. （仅限积极模式）重命名 DataStore 和 CatRoot2 文件夹
+            DataStore - 包含 Windows 更新历史记录和日志文件
+            CatRoot2 - 包含 Windows 更新包的签名
+        5. 重命名 Windows 更新下载文件夹
+        6. 删除 Windows 更新日志
+        7. （仅限积极模式）重置 Windows 更新服务的安全描述符
+        8. 重新注册 BITS 和 Windows 更新 DLL
+        9. 删除 WSUS 客户端设置
+        10. 重置 WinSock
+        11. 获取并删除所有 BITS 作业
+        12. 设置 Windows 更新服务的启动类型然后启动它们
+        13. 强制 Windows 更新检查更新
 
     .PARAMETER Aggressive
-        If specified, the script will take additional steps to repair Windows Update that are more dangerous, take a significant amount of time, or are generally unnecessary
+        如果指定，脚本将采取额外的步骤来修复 Windows 更新，这些步骤更危险、花费大量时间或通常不必要
 
     #>
 
     param($Aggressive = $false)
 
-    Write-Progress -Id 0 -Activity "Repairing Windows Update" -PercentComplete 0
-    # Wait for the first progress bar to show, otherwise the second one won't show
+    Write-Progress -Id 0 -Activity "正在修复 Windows 更新" -PercentComplete 0
+    # 等待第一个进度条显示，否则第二个进度条不会显示
     Start-Sleep -Milliseconds 200
 
     if ($Aggressive) {
-        # Scan system for corruption
-        Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Scanning for corruption..." -PercentComplete 0
-        Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running chkdsk..." -PercentComplete 0
-        # 2>&1 redirects stdout, alowing iteration over the output
+        # 扫描系统是否存在损坏
+        Write-Progress -Id 0 -Activity "正在修复 Windows 更新" -Status "正在扫描损坏..." -PercentComplete 0
+        Write-Progress -Id 1 -ParentId 0 -Activity "正在扫描损坏" -Status "正在运行 chkdsk..." -PercentComplete 0
+        # 2>&1 重定向 stdout，允许遍历输出
         chkdsk.exe /scan /perf 2>&1 | ForEach-Object {
-            # Write stdout to the Verbose stream
+            # 将 stdout 写入 Verbose 流
             Write-Verbose $_
 
-            # Get the index of the total percentage
+            # 获取总百分比的索引
             $index = $_.IndexOf("Total:")
             if (
-                # If the percent is found
+                # 如果找到百分比
                 ($percent = try {(
                     $_.Substring(
                         $index + 6,
                         $_.IndexOf("%", $index) - $index - 6
                     )
                 ).Trim()} catch {0}) `
-                <# And the current percentage is greater than the previous one #>`
+                <# 并且当前百分比大于前一个百分比 #>`
                 -and $percent -gt $oldpercent
             ) {
-                # Update the progress bar
+                # 更新进度条
                 $oldpercent = $percent
-                Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running chkdsk... ($percent%)" -PercentComplete $percent
+                Write-Progress -Id 1 -ParentId 0 -Activity "正在扫描损坏" -Status "正在运行 chkdsk... ($percent%)" -PercentComplete $percent
             }
         }
 
-        Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running SFC..." -PercentComplete 0
+        Write-Progress -Id 1 -ParentId 0 -Activity "正在扫描损坏" -Status "正在运行 SFC..." -PercentComplete 0
         $oldpercent = 0
-        # SFC has a bug when redirected which causes it to output only when the stdout buffer is full, causing the progress bar to move in chunks
+        # SFC 在重定向时存在一个错误，导致它仅在 stdout 缓冲区已满时才输出，从而导致进度条成块移动
         sfc /scannow 2>&1 | ForEach-Object {
-            # Write stdout to the Verbose stream
+            # 将 stdout 写入 Verbose 流
             Write-Verbose $_
 
-            # Filter for lines that contain a percentage that is greater than the previous one
+            # 筛选包含大于前一个百分比的百分比的行
             if (
                 (
-                    # Use a different method to get the percentage that accounts for SFC's Unicode output
+                    # 使用不同的方法获取考虑 SFC Unicode 输出的百分比
                     [int]$percent = try {(
                         (
                             $_.Substring(
@@ -127,38 +127,38 @@ function Invoke-WPFFixesUpdate {
                     ).TrimStart()} catch {0}
                 ) -and $percent -gt $oldpercent
             ) {
-                # Update the progress bar
+                # 更新进度条
                 $oldpercent = $percent
-                Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running SFC... ($percent%)" -PercentComplete $percent
+                Write-Progress -Id 1 -ParentId 0 -Activity "正在扫描损坏" -Status "正在运行 SFC... ($percent%)" -PercentComplete $percent
             }
         }
 
-        Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running DISM..." -PercentComplete 0
+        Write-Progress -Id 1 -ParentId 0 -Activity "正在扫描损坏" -Status "正在运行 DISM..." -PercentComplete 0
         $oldpercent = 0
         DISM /Online /Cleanup-Image /RestoreHealth | ForEach-Object {
-            # Write stdout to the Verbose stream
+            # 将 stdout 写入 Verbose 流
             Write-Verbose $_
 
-            # Filter for lines that contain a percentage that is greater than the previous one
+            # 筛选包含大于前一个百分比的百分比的行
             if (
                 ($percent = try {
                     [int]($_ -replace "\[" -replace "=" -replace " " -replace "%" -replace "\]")
                 } catch {0}) `
                 -and $percent -gt $oldpercent
             ) {
-                # Update the progress bar
+                # 更新进度条
                 $oldpercent = $percent
-                Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running DISM... ($percent%)" -PercentComplete $percent
+                Write-Progress -Id 1 -ParentId 0 -Activity "正在扫描损坏" -Status "正在运行 DISM... ($percent%)" -PercentComplete $percent
             }
         }
 
-        Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running SFC again..." -PercentComplete 0
+        Write-Progress -Id 1 -ParentId 0 -Activity "正在扫描损坏" -Status "再次运行 SFC..." -PercentComplete 0
         $oldpercent = 0
         sfc /scannow 2>&1 | ForEach-Object {
-            # Write stdout to the Verbose stream
+            # 将 stdout 写入 Verbose 流
             Write-Verbose $_
 
-            # Filter for lines that contain a percentage that is greater than the previous one
+            # 筛选包含大于前一个百分比的百分比的行
             if (
                 (
                     [int]$percent = try {(
@@ -171,64 +171,64 @@ function Invoke-WPFFixesUpdate {
                     ).TrimStart()} catch {0}
                 ) -and $percent -gt $oldpercent
             ) {
-                # Update the progress bar
+                # 更新进度条
                 $oldpercent = $percent
-                Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running SFC... ($percent%)" -PercentComplete $percent
+                Write-Progress -Id 1 -ParentId 0 -Activity "正在扫描损坏" -Status "正在运行 SFC... ($percent%)" -PercentComplete $percent
             }
         }
-        Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Completed" -PercentComplete 100
+        Write-Progress -Id 1 -ParentId 0 -Activity "正在扫描损坏" -Status "已完成" -PercentComplete 100
     }
 
 
-    Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Stopping Windows Update Services..." -PercentComplete 10
-    # Stop the Windows Update Services
-    Write-Progress -Id 2 -ParentId 0 -Activity "Stopping Services" -Status "Stopping BITS..." -PercentComplete 0
+    Write-Progress -Id 0 -Activity "正在修复 Windows 更新" -Status "正在停止 Windows 更新服务..." -PercentComplete 10
+    # 停止 Windows 更新服务
+    Write-Progress -Id 2 -ParentId 0 -Activity "正在停止服务" -Status "正在停止 BITS..." -PercentComplete 0
     Stop-Service -Name BITS -Force
-    Write-Progress -Id 2 -ParentId 0 -Activity "Stopping Services" -Status "Stopping wuauserv..." -PercentComplete 20
+    Write-Progress -Id 2 -ParentId 0 -Activity "正在停止服务" -Status "正在停止 wuauserv..." -PercentComplete 20
     Stop-Service -Name wuauserv -Force
-    Write-Progress -Id 2 -ParentId 0 -Activity "Stopping Services" -Status "Stopping appidsvc..." -PercentComplete 40
+    Write-Progress -Id 2 -ParentId 0 -Activity "正在停止服务" -Status "正在停止 appidsvc..." -PercentComplete 40
     Stop-Service -Name appidsvc -Force
-    Write-Progress -Id 2 -ParentId 0 -Activity "Stopping Services" -Status "Stopping cryptsvc..." -PercentComplete 60
+    Write-Progress -Id 2 -ParentId 0 -Activity "正在停止服务" -Status "正在停止 cryptsvc..." -PercentComplete 60
     Stop-Service -Name cryptsvc -Force
-    Write-Progress -Id 2 -ParentId 0 -Activity "Stopping Services" -Status "Completed" -PercentComplete 100
+    Write-Progress -Id 2 -ParentId 0 -Activity "正在停止服务" -Status "已完成" -PercentComplete 100
 
 
-    # Remove the QMGR Data file
-    Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Renaming/Removing Files..." -PercentComplete 20
-    Write-Progress -Id 3 -ParentId 0 -Activity "Renaming/Removing Files" -Status "Removing QMGR Data files..." -PercentComplete 0
+    # 删除 QMGR 数据文件
+    Write-Progress -Id 0 -Activity "正在修复 Windows 更新" -Status "正在重命名/删除文件..." -PercentComplete 20
+    Write-Progress -Id 3 -ParentId 0 -Activity "正在重命名/删除文件" -Status "正在删除 QMGR 数据文件..." -PercentComplete 0
     Remove-Item "$env:allusersprofile\Application Data\Microsoft\Network\Downloader\qmgr*.dat" -ErrorAction SilentlyContinue
 
 
     if ($Aggressive) {
-        # Rename the Windows Update Log and Signature Folders
-        Write-Progress -Id 3 -ParentId 0 -Activity "Renaming/Removing Files" -Status "Renaming the Windows Update Log, Download, and Signature Folder..." -PercentComplete 20
+        # 重命名 Windows 更新日志和签名文件夹
+        Write-Progress -Id 3 -ParentId 0 -Activity "正在重命名/删除文件" -Status "正在重命名 Windows 更新日志、下载和签名文件夹..." -PercentComplete 20
         Rename-Item $env:systemroot\SoftwareDistribution\DataStore DataStore.bak -ErrorAction SilentlyContinue
         Rename-Item $env:systemroot\System32\Catroot2 catroot2.bak -ErrorAction SilentlyContinue
     }
 
-    # Rename the Windows Update Download Folder
-    Write-Progress -Id 3 -ParentId 0 -Activity "Renaming/Removing Files" -Status "Renaming the Windows Update Download Folder..." -PercentComplete 20
+    # 重命名 Windows 更新下载文件夹
+    Write-Progress -Id 3 -ParentId 0 -Activity "正在重命名/删除文件" -Status "正在重命名 Windows 更新下载文件夹..." -PercentComplete 20
     Rename-Item $env:systemroot\SoftwareDistribution\Download Download.bak -ErrorAction SilentlyContinue
 
-    # Delete the legacy Windows Update Log
-    Write-Progress -Id 3 -ParentId 0 -Activity "Renaming/Removing Files" -Status "Removing the old Windows Update log..." -PercentComplete 80
+    # 删除旧版 Windows 更新日志
+    Write-Progress -Id 3 -ParentId 0 -Activity "正在重命名/删除文件" -Status "正在删除旧的 Windows 更新日志..." -PercentComplete 80
     Remove-Item $env:systemroot\WindowsUpdate.log -ErrorAction SilentlyContinue
-    Write-Progress -Id 3 -ParentId 0 -Activity "Renaming/Removing Files" -Status "Completed" -PercentComplete 100
+    Write-Progress -Id 3 -ParentId 0 -Activity "正在重命名/删除文件" -Status "已完成" -PercentComplete 100
 
 
     if ($Aggressive) {
-        # Reset the Security Descriptors on the Windows Update Services
-        Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Resetting the WU Service Security Descriptors..." -PercentComplete 25
-        Write-Progress -Id 4 -ParentId 0 -Activity "Resetting the WU Service Security Descriptors" -Status "Resetting the BITS Security Descriptor..." -PercentComplete 0
+        # 重置 Windows 更新服务的安全描述符
+        Write-Progress -Id 0 -Activity "正在修复 Windows 更新" -Status "正在重置 WU 服务安全描述符..." -PercentComplete 25
+        Write-Progress -Id 4 -ParentId 0 -Activity "正在重置 WU 服务安全描述符" -Status "正在重置 BITS 安全描述符..." -PercentComplete 0
         Start-Process -NoNewWindow -FilePath "sc.exe" -ArgumentList "sdset", "bits", "D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)"
-        Write-Progress -Id 4 -ParentId 0 -Activity "Resetting the WU Service Security Descriptors" -Status "Resetting the wuauserv Security Descriptor..." -PercentComplete 50
+        Write-Progress -Id 4 -ParentId 0 -Activity "正在重置 WU 服务安全描述符" -Status "正在重置 wuauserv 安全描述符..." -PercentComplete 50
         Start-Process -NoNewWindow -FilePath "sc.exe" -ArgumentList "sdset", "wuauserv", "D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)"
-        Write-Progress -Id 4 -ParentId 0 -Activity "Resetting the WU Service Security Descriptors" -Status "Completed" -PercentComplete 100
+        Write-Progress -Id 4 -ParentId 0 -Activity "正在重置 WU 服务安全描述符" -Status "已完成" -PercentComplete 100
     }
 
 
-    # Reregister the BITS and Windows Update DLLs
-    Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Reregistering DLLs..." -PercentComplete 40
+    # 重新注册 BITS 和 Windows 更新 DLL
+    Write-Progress -Id 0 -Activity "正在修复 Windows 更新" -Status "正在重新注册 DLL..." -PercentComplete 40
     $oldLocation = Get-Location
     Set-Location $env:systemroot\system32
     $i = 0
@@ -242,86 +242,86 @@ function Invoke-WPFFixesUpdate {
         "wuweb.dll", "qmgr.dll", "qmgrprxy.dll", "wucltux.dll", "muweb.dll", "wuwebv.dll"
     )
     foreach ($dll in $DLLs) {
-        Write-Progress -Id 5 -ParentId 0 -Activity "Reregistering DLLs" -Status "Registering $dll..." -PercentComplete ($i / $DLLs.Count * 100)
+        Write-Progress -Id 5 -ParentId 0 -Activity "正在重新注册 DLL" -Status "正在注册 $dll..." -PercentComplete ($i / $DLLs.Count * 100)
         $i++
         Start-Process -NoNewWindow -FilePath "regsvr32.exe" -ArgumentList "/s", $dll
     }
     Set-Location $oldLocation
-    Write-Progress -Id 5 -ParentId 0 -Activity "Reregistering DLLs" -Status "Completed" -PercentComplete 100
+    Write-Progress -Id 5 -ParentId 0 -Activity "正在重新注册 DLL" -Status "已完成" -PercentComplete 100
 
 
-    # Remove the WSUS client settings
+    # 删除 WSUS 客户端设置
     if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate") {
-        Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Removing WSUS client settings..." -PercentComplete 60
-        Write-Progress -Id 6 -ParentId 0 -Activity "Removing WSUS client settings" -PercentComplete 0
+        Write-Progress -Id 0 -Activity "正在修复 Windows 更新" -Status "正在删除 WSUS 客户端设置..." -PercentComplete 60
+        Write-Progress -Id 6 -ParentId 0 -Activity "正在删除 WSUS 客户端设置" -PercentComplete 0
         Start-Process -NoNewWindow -FilePath "REG" -ArgumentList "DELETE", "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate", "/v", "AccountDomainSid", "/f" -RedirectStandardError $true
         Start-Process -NoNewWindow -FilePath "REG" -ArgumentList "DELETE", "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate", "/v", "PingID", "/f" -RedirectStandardError $true
         Start-Process -NoNewWindow -FilePath "REG" -ArgumentList "DELETE", "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate", "/v", "SusClientId", "/f" -RedirectStandardError $true
-        Write-Progress -Id 6 -ParentId 0 -Activity "Removing WSUS client settings" -Status "Completed" -PercentComplete 100
+        Write-Progress -Id 6 -ParentId 0 -Activity "正在删除 WSUS 客户端设置" -Status "已完成" -PercentComplete 100
     }
 
 
-    # Reset WinSock
-    Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Resetting WinSock..." -PercentComplete 65
-    Write-Progress -Id 7 -ParentId 0 -Activity "Resetting WinSock" -Status "Resetting WinSock..." -PercentComplete 0
+    # 重置 WinSock
+    Write-Progress -Id 0 -Activity "正在修复 Windows 更新" -Status "正在重置 WinSock..." -PercentComplete 65
+    Write-Progress -Id 7 -ParentId 0 -Activity "正在重置 WinSock" -Status "正在重置 WinSock..." -PercentComplete 0
     Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winsock", "reset" -RedirectStandardOutput $true
     Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winhttp", "reset", "proxy" -RedirectStandardOutput $true
     Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "int", "ip", "reset" -RedirectStandardOutput $true
-    Write-Progress -Id 7 -ParentId 0 -Activity "Resetting WinSock" -Status "Completed" -PercentComplete 100
+    Write-Progress -Id 7 -ParentId 0 -Activity "正在重置 WinSock" -Status "已完成" -PercentComplete 100
 
 
-    # Get and delete all BITS jobs
-    Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Deleting BITS jobs..." -PercentComplete 75
-    Write-Progress -Id 8 -ParentId 0 -Activity "Deleting BITS jobs" -Status "Deleting BITS jobs..." -PercentComplete 0
+    # 获取并删除所有 BITS 作业
+    Write-Progress -Id 0 -Activity "正在修复 Windows 更新" -Status "正在删除 BITS 作业..." -PercentComplete 75
+    Write-Progress -Id 8 -ParentId 0 -Activity "正在删除 BITS 作业" -Status "正在删除 BITS 作业..." -PercentComplete 0
     Get-BitsTransfer | Remove-BitsTransfer
-    Write-Progress -Id 8 -ParentId 0 -Activity "Deleting BITS jobs" -Status "Completed" -PercentComplete 100
+    Write-Progress -Id 8 -ParentId 0 -Activity "正在删除 BITS 作业" -Status "已完成" -PercentComplete 100
 
 
-    # Change the startup type of the Windows Update Services and start them
-    Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Starting Windows Update Services..." -PercentComplete 90
-    Write-Progress -Id 9 -ParentId 0 -Activity "Starting Windows Update Services" -Status "Starting BITS..." -PercentComplete 0
+    # 更改 Windows 更新服务的启动类型并启动它们
+    Write-Progress -Id 0 -Activity "正在修复 Windows 更新" -Status "正在启动 Windows 更新服务..." -PercentComplete 90
+    Write-Progress -Id 9 -ParentId 0 -Activity "正在启动 Windows 更新服务" -Status "正在启动 BITS..." -PercentComplete 0
     Get-Service BITS | Set-Service -StartupType Manual -PassThru | Start-Service
-    Write-Progress -Id 9 -ParentId 0 -Activity "Starting Windows Update Services" -Status "Starting wuauserv..." -PercentComplete 25
+    Write-Progress -Id 9 -ParentId 0 -Activity "正在启动 Windows 更新服务" -Status "正在启动 wuauserv..." -PercentComplete 25
     Get-Service wuauserv | Set-Service -StartupType Manual -PassThru | Start-Service
-    Write-Progress -Id 9 -ParentId 0 -Activity "Starting Windows Update Services" -Status "Starting AppIDSvc..." -PercentComplete 50
-    # The AppIDSvc service is protected, so the startup type has to be changed in the registry
-    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AppIDSvc" -Name "Start" -Value "3" # Manual
+    Write-Progress -Id 9 -ParentId 0 -Activity "正在启动 Windows 更新服务" -Status "正在启动 AppIDSvc..." -PercentComplete 50
+    # AppIDSvc 服务受保护，因此必须在注册表中更改启动类型
+    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AppIDSvc" -Name "Start" -Value "3" # 手动
     Start-Service AppIDSvc
-    Write-Progress -Id 9 -ParentId 0 -Activity "Starting Windows Update Services" -Status "Starting CryptSvc..." -PercentComplete 75
+    Write-Progress -Id 9 -ParentId 0 -Activity "正在启动 Windows 更新服务" -Status "正在启动 CryptSvc..." -PercentComplete 75
     Get-Service CryptSvc | Set-Service -StartupType Manual -PassThru | Start-Service
-    Write-Progress -Id 9 -ParentId 0 -Activity "Starting Windows Update Services" -Status "Completed" -PercentComplete 100
+    Write-Progress -Id 9 -ParentId 0 -Activity "正在启动 Windows 更新服务" -Status "已完成" -PercentComplete 100
 
 
-    # Force Windows Update to check for updates
-    Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Forcing discovery..." -PercentComplete 95
-    Write-Progress -Id 10 -ParentId 0 -Activity "Forcing discovery" -Status "Forcing discovery..." -PercentComplete 0
+    # 强制 Windows 更新检查更新
+    Write-Progress -Id 0 -Activity "正在修复 Windows 更新" -Status "正在强制发现..." -PercentComplete 95
+    Write-Progress -Id 10 -ParentId 0 -Activity "正在强制发现" -Status "正在强制发现..." -PercentComplete 0
     (New-Object -ComObject Microsoft.Update.AutoUpdate).DetectNow()
     Start-Process -NoNewWindow -FilePath "wuauclt" -ArgumentList "/resetauthorization", "/detectnow"
-    Write-Progress -Id 10 -ParentId 0 -Activity "Forcing discovery" -Status "Completed" -PercentComplete 100
-    Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Completed" -PercentComplete 100
+    Write-Progress -Id 10 -ParentId 0 -Activity "正在强制发现" -Status "已完成" -PercentComplete 100
+    Write-Progress -Id 0 -Activity "正在修复 Windows 更新" -Status "已完成" -PercentComplete 100
 
     $ButtonType = [System.Windows.MessageBoxButton]::OK
-    $MessageboxTitle = "Reset Windows Update "
-    $Messageboxbody = ("Stock settings loaded.`n Please reboot your computer")
+    $MessageboxTitle = "重置 Windows 更新 "
+    $Messageboxbody = ("已加载默认设置。\n请重新启动您的计算机")
     $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
     [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
     Write-Host "==============================================="
-    Write-Host "-- Reset All Windows Update Settings to Stock -"
+    Write-Host "-- 将所有 Windows 更新设置重置为默认值 -"
     Write-Host "==============================================="
 
-    # Remove the progress bars
-    Write-Progress -Id 0 -Activity "Repairing Windows Update" -Completed
-    Write-Progress -Id 1 -Activity "Scanning for corruption" -Completed
-    Write-Progress -Id 2 -Activity "Stopping Services" -Completed
-    Write-Progress -Id 3 -Activity "Renaming/Removing Files" -Completed
-    Write-Progress -Id 4 -Activity "Resetting the WU Service Security Descriptors" -Completed
-    Write-Progress -Id 5 -Activity "Reregistering DLLs" -Completed
-    Write-Progress -Id 6 -Activity "Removing WSUS client settings" -Completed
-    Write-Progress -Id 7 -Activity "Resetting WinSock" -Completed
-    Write-Progress -Id 8 -Activity "Deleting BITS jobs" -Completed
-    Write-Progress -Id 9 -Activity "Starting Windows Update Services" -Completed
-    Write-Progress -Id 10 -Activity "Forcing discovery" -Completed
+    # 删除进度条
+    Write-Progress -Id 0 -Activity "正在修复 Windows 更新" -Completed
+    Write-Progress -Id 1 -Activity "正在扫描损坏" -Completed
+    Write-Progress -Id 2 -Activity "正在停止服务" -Completed
+    Write-Progress -Id 3 -Activity "正在重命名/删除文件" -Completed
+    Write-Progress -Id 4 -Activity "正在重置 WU 服务安全描述符" -Completed
+    Write-Progress -Id 5 -Activity "正在重新注册 DLL" -Completed
+    Write-Progress -Id 6 -Activity "正在删除 WSUS 客户端设置" -Completed
+    Write-Progress -Id 7 -Activity "正在重置 WinSock" -Completed
+    Write-Progress -Id 8 -Activity "正在删除 BITS 作业" -Completed
+    Write-Progress -Id 9 -Activity "正在启动 Windows 更新服务" -Completed
+    Write-Progress -Id 10 -Activity "正在强制发现" -Completed
 }
 
 ```
@@ -332,5 +332,4 @@ function Invoke-WPFFixesUpdate {
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)
-
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)

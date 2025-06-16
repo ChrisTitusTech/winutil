@@ -1,20 +1,20 @@
-# Disable Microsoft Recall
+# 禁用 Microsoft Recall
 
-Last Updated: 2024-10-24
+最后更新时间：2024-10-24
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-## Description
+     开发文档是在每次编译 WinUtil 时自动生成的，这意味着其中一部分将始终保持最新状态。**开发人员确实可以添加自定义内容，这些内容不会自动更新。**
+## 描述
 
-Disables MS Recall built into Windows since 24H2.
+禁用自 24H2 版本以来内置于 Windows 中的 MS Recall 功能。
 
 <!-- BEGIN CUSTOM CONTENT -->
 
 <!-- END CUSTOM CONTENT -->
 
 <details>
-<summary>Preview Code</summary>
+<summary>预览代码</summary>
 
 ```json
 "WPFTweaksRecallOff": {
@@ -35,13 +35,13 @@ Disables MS Recall built into Windows since 24H2.
     ],
     "InvokeScript": [
       "
-      Write-Host \"Disable Recall\"
+      Write-Host \"禁用 Recall\"
       DISM /Online /Disable-Feature /FeatureName:Recall
       "
     ],
     "UndoScript": [
       "
-      Write-Host \"Enable Recall\"
+      Write-Host \"启用 Recall\"
       DISM /Online /Enable-Feature /FeatureName:Recall
       "
     ],
@@ -51,41 +51,41 @@ Disables MS Recall built into Windows since 24H2.
 
 </details>
 
-## Invoke Script
+## 调用脚本
 
 ```powershell
 
-      Write-Host "Disable Recall"
+      Write-Host "禁用 Recall"
       DISM /Online /Disable-Feature /FeatureName:Recall
 
 
 ```
-## Undo Script
+## 撤销脚本
 
 ```powershell
 
-      Write-Host "Enable Recall"
+      Write-Host "启用 Recall"
       DISM /Online /Enable-Feature /FeatureName:Recall
 
 
 ```
-## Registry Changes
-Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.
+## 注册表更改
+应用程序和系统组件存储和检索配置数据以修改 Windows 设置，因此我们可以使用注册表在一个位置更改许多设置。
 
 
-You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).
+您可以在 [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) 和 [Microsoft 网站](https://learn.microsoft.com/zh-cn/windows/win32/sysinfo/registry)上找到有关注册表的信息。
 
-### Registry Key: DisableAIDataAnalysis
+### 注册表项：DisableAIDataAnalysis
 
-**Type:** DWord
+**类型：** DWord
 
-**Original Value:** 0
+**原始值：** 0
 
-**New Value:** 1
+**新值：** 1
 
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
+[查看 JSON 文件](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
