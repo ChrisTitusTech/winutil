@@ -1562,7 +1562,7 @@
         "Path":"HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
         "Name": "BraveRewardsDisabled",
         "Type": "DWord",
-        "Value": "1"
+        "Value": "1",
         "OriginalValue": "<RemoveEntry>"
       },
             {
