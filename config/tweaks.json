@@ -1556,7 +1556,7 @@
     "Description": "Disables various annoyances like Brave Rewards,Leo AI,Crypto Wallet and VPN",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a017_",
+    "Order": "a016_",
     "registry": [
       {
         "Path":"HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
