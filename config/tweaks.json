@@ -1971,13 +1971,6 @@
       {
         "Path": "HKCU:\\Control Panel\\Desktop",
         "OriginalValue": "1",
-        "Name": "MenuShowDelay",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Desktop",
-        "OriginalValue": "1",
         "Name": "AutoEndTasks",
         "Value": "1",
         "Type": "DWord"
@@ -2155,7 +2148,7 @@
       },
       {
         "Path": "HKCU:\\Control Panel\\Desktop",
-        "OriginalValue": "1",
+        "OriginalValue": "400",
         "Name": "MenuShowDelay",
         "Value": "200",
         "Type": "String"
