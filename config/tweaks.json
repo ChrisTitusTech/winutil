@@ -2522,20 +2522,6 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/storage"
   },
-  "WPFTweaksRemoveEdge": {
-    "Content": "Remove Microsoft Edge",
-    "Description": "Removes MS Edge when it gets reinstalled by updates. Credit: Psyirius",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a029_",
-    "InvokeScript": [
-      "Uninstall-WinUtilEdgeBrowser -action \"Uninstall\""
-    ],
-    "UndoScript": [
-      "Uninstall-WinUtilEdgeBrowser -action \"Install\""
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removeedge"
-  },
   "WPFTweaksRemoveCopilot": {
     "Content": "Disable Microsoft Copilot",
     "Description": "Disables MS Copilot AI built into Windows since 23H2.",
