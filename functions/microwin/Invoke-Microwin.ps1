@@ -63,7 +63,12 @@ public class PowerManagement {
     # Detect if the Windows image is an ESD file and convert it to WIM
     if (-not (Test-Path -Path "$mountDir\sources\install.wim" -PathType Leaf) -and (Test-Path -Path "$mountDir\sources\install.esd" -PathType Leaf)) {
         Write-Host "Exporting Windows image to a WIM file, keeping the index we want to work on. This can take several minutes, depending on the performance of your computer..."
-        Export-WindowsImage -SourceImagePath $mountDir\sources\install.esd -SourceIndex $index -DestinationImagePath $mountDir\sources\install.wim -CompressionType "Max"
+        try {
+            Export-WindowsImage -SourceImagePath "$mountDir\sources\install.esd" -SourceIndex $index -DestinationImagePath "$mountDir\sources\install.wim" -CompressionType "Max"
+        } catch {
+            # Usually the case if it can't find unattend.dll on the host system. Guys, fix your corrupt messes that are your installations!
+            dism /english /export-image /sourceimagefile="$mountDir\sources\install.esd" /sourceindex=$index /destinationimagefile="$mountDir\sources\install.wim" /compress:max
+        }
         if ($?) {
             Remove-Item -Path "$mountDir\sources\install.esd" -Force
             # Since we've already exported the image index we wanted, switch to the first one
@@ -268,7 +273,6 @@ public class PowerManagement {
         reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\Windows Chat" /v ChatIcon /t REG_DWORD /d 2 /f                             >$null 2>&1
         reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarMn" /t REG_DWORD /d 0 /f        >$null 2>&1
         reg query "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Communications" /v "ConfigureChatAutoInstall"                      >$null 2>&1
-        # Write-Host Error code $LASTEXITCODE
         Write-Host "Done disabling Teams"
 
         Write-Host "Fix Windows Volume Mixer Issue"
@@ -295,11 +299,6 @@ public class PowerManagement {
                 'CrossDeviceUpdate'
             ) | ForEach-Object {
                 Write-Host "Removing Windows Expedited App: $_"
-
-                # Copied here After Installation (Online)
-                # reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler\$_" /f | Out-Null
-
-                # When in Offline Image
                 reg delete "HKLM\zSOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\$_" /f | Out-Null
             }
         }
@@ -307,7 +306,6 @@ public class PowerManagement {
         reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTaskbarMode" /t REG_DWORD /d 0 /f
         Write-Host "Setting all services to start manually"
         reg add "HKLM\zSOFTWARE\CurrentControlSet\Services" /v Start /t REG_DWORD /d 3 /f
-        # Write-Host $LASTEXITCODE
 
         Write-Host "Enabling Local Accounts on OOBE"
         reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\OOBE" /v "BypassNRO" /t REG_DWORD /d "1" /f
@@ -362,7 +360,12 @@ public class PowerManagement {
     try {
 
         Write-Host "Exporting image into $mountDir\sources\install2.wim"
-        Export-WindowsImage -SourceImagePath "$mountDir\sources\install.wim" -SourceIndex $index -DestinationImagePath "$mountDir\sources\install2.wim" -CompressionType "Max"
+        try {
+            Export-WindowsImage -SourceImagePath "$mountDir\sources\install.wim" -SourceIndex $index -DestinationImagePath "$mountDir\sources\install2.wim" -CompressionType "Max"
+        } catch {
+            # Usually the case if it can't find unattend.dll on the host system. Guys, fix your corrupt messes that are your installations!
+            dism /english /export-image /sourceimagefile="$mountDir\sources\install.wim" /sourceindex=$index /destinationimagefile="$mountDir\sources\install2.wim" /compress:max
+        }
         Write-Host "Remove old '$mountDir\sources\install.wim' and rename $mountDir\sources\install2.wim"
         Remove-Item "$mountDir\sources\install.wim"
         Rename-Item "$mountDir\sources\install2.wim" "$mountDir\sources\install.wim"
@@ -377,16 +380,6 @@ public class PowerManagement {
         # Next step boot image
         Write-Host "Mounting boot image $mountDir\sources\boot.wim into $scratchDir"
         Mount-WindowsImage -ImagePath "$mountDir\sources\boot.wim" -Index 2 -Path "$scratchDir"
-
-        if ($injectDrivers) {
-            $driverPath = $sync.MicrowinDriverLocation.Text
-            if (Test-Path $driverPath) {
-                Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-                dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
-            } else {
-                Write-Host "Path to drivers is invalid continuing without driver injection"
-            }
-        }
 
         Write-Host "Loading registry..."
         reg load HKLM\zCOMPONENTS "$($scratchDir)\Windows\System32\config\COMPONENTS" >$null
@@ -474,7 +467,6 @@ public class PowerManagement {
 
         $sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
 
-        #$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
         $sync.MicrowinFinalIsoLocation.Text = "$($SaveDialog.FileName)"
         # Allow the machine to sleep again (optional)
         [PowerManagement]::SetThreadExecutionState(0)

@@ -1440,7 +1440,7 @@
                                 May take several minutes to process the ISO depending on your machine and connection <LineBreak/>
                                 - Put it somewhere on the C:\ drive so it is easily accessible <LineBreak/>
                                 - Launch WinUtil and MicroWin  <LineBreak/>
-                                - Click on the "Select Windows ISO" button and wait for WinUtil to process the image <LineBreak/>
+                                - Click on the "Get Windows ISO" button and wait for WinUtil to process the image <LineBreak/>
                                 It will be processed and unpacked which may take some time <LineBreak/>
                                 - Once complete, choose which Windows flavor you want to base your image on <LineBreak/>
                                 - Click the "Start Process" button <LineBreak/>
