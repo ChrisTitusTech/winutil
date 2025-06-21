@@ -1935,14 +1935,6 @@
         "link": "https://github.com/henrypp/simplewall",
         "winget": "Henry++.simplewall"
     },
-    "skype": {
-        "category": "Communications",
-        "choco": "skype",
-        "content": "Skype",
-        "description": "Skype is a widely used communication platform offering video calls, voice calls, and instant messaging services.",
-        "link": "https://www.skype.com/",
-        "winget": "Microsoft.Skype"
-    },
     "slack": {
         "category": "Communications",
         "choco": "slack",
