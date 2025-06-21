@@ -391,6 +391,22 @@
         "link": "https://www.docker.com/products/docker-desktop",
         "winget": "Docker.DockerDesktop"
     },
+    "podman": {
+        "category": "Development",
+        "choco": "na",
+        "content": "Podman",
+        "description": "Podman is a tool for managing OCI containers and pods.",
+        "link": "https://podman.io/",
+        "winget": "RedHat.Podman"
+    },
+    "podmandesktop": {
+        "category": "Development",
+        "choco": "podman-desktop",
+        "content": "Podman Desktop",
+        "description": "Podman Desktop is a graphical interface that enables application developers to seamlessly work with containers and Kubernetes.",
+        "link": "https://podman-desktop.io/",
+        "winget": "RedHat.Podman-Desktop"
+    },
     "dotnet3": {
         "category": "Microsoft Tools",
         "choco": "dotnetcore3-desktop-runtime",
