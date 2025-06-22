@@ -303,6 +303,14 @@
         "link": "https://crystalmark.info/en/software/crystaldiskinfo/",
         "winget": "CrystalDewWorld.CrystalDiskInfo"
     },
+    "x64dbg": {
+        "category": "Development",
+        "choco": "na",
+        "content": "x64dbg",
+        "description": "An open-source x64/x32 debugger for windows.",
+        "link": "https://x64dbg.com/",
+        "winget": "x64dbg.x64dbg"
+    },
     "capframex": {
         "category": "Utilities",
         "choco": "na",
