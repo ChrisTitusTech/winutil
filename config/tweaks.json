@@ -1824,10 +1824,10 @@
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection",
-        "Type": "DWord",
-        "Value": "0",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "AllowTelemetry",
-        "OriginalValue": "<RemoveEntry>"
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
@@ -2541,7 +2541,7 @@
     "Description": "Disables MS Copilot AI built into Windows since 23H2.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a025_",
+    "Order": "a025a_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot",
@@ -2563,6 +2563,27 @@
         "Type": "DWord",
         "Value": "0",
         "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Shell\\Copilot",
+        "Name": "IsCopilotAvailable",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Shell\\Copilot",
+        "Name": "CopilotDisabledReason",
+        "Type": "String",
+        "Value": "IsEnabledForGeographicRegionFailed",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\input\\Settings",
+        "Name": "InsightsEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
       }
     ],
     "InvokeScript": [
@@ -2579,6 +2600,157 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removecopilot"
   },
+  "WPFTweaksRemoveAIFeatures": {
+    "Content": "Disable Integrated AI Features",
+    "Description": "Disables all integrated AI features in Windows, including Copilot, Bing Chat, Click-to-Do, generative AI access, and AI tools in apps like Notepad, Paint, and Edge.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a025b_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Shell\\Copilot\\BingChat",
+        "Name": "IsUserEligible",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI",
+        "Name": "DisableClickToDo",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "CopilotCDPPageContext",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "CopilotPageContext",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "HubsSidebarEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings",
+        "Name": "AutoOpenCopilotLargeScreens",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\generativeAI",
+        "Name": "Value",
+        "Type": "String",
+        "Value": "Deny",
+        "OriginalValue": "Allow"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AppPrivacy",
+        "Name": "LetAppsAccessGenerativeAI",
+        "Type": "DWord",
+        "Value": "2",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AppPrivacy",
+        "Name": "LetAppsAccessSystemAIModels",
+        "Type": "DWord",
+        "Value": "2",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\WindowsCopilot",
+        "Name": "AllowCopilotRuntime",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint",
+        "Name": "DisableImageCreator",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint",
+        "Name": "DisableCocreator",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint",
+        "Name": "DisableGenerativeFill",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\WindowsNotepad",
+        "Name": "DisableAIFeatures",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>"
+      }
+    ],
+    "InvokeScript": [
+      "
+      $files = @('System32', 'SysWOW64') | ForEach {
+          \"C:\\Windows\\$_\\Windows.AI.MachineLearning.dll\",
+          \"C:\\Windows\\$_\\Windows.AI.MachineLearning.Preview.dll\"
+      }
+
+      $files | Where { Test-Path $_ } | ForEach {
+          try {
+              $acl = Get-Acl $_
+              $acl.SetOwner([System.Security.Principal.WindowsIdentity]::GetCurrent().User)
+              $acl.SetAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule(
+                  [System.Security.Principal.WindowsIdentity]::GetCurrent().User,
+                  'FullControl',
+                  'Allow'
+              )))
+              Set-Acl $_ $acl
+              Rename-Item $_ \"$_.bak\" -Force
+          } catch { }
+      }
+      "
+    ],
+    "UndoScript": [
+      "
+      $files = @('System32', 'SysWOW64') | ForEach {
+          \"C:\\Windows\\$_\\Windows.AI.MachineLearning.dll.bak\",
+          \"C:\\Windows\\$_\\Windows.AI.MachineLearning.Preview.dll.bak\"
+      }
+
+      $files | Where { Test-Path $_ } | ForEach {
+          try {
+              $acl = Get-Acl $_
+              $acl.SetOwner([System.Security.Principal.WindowsIdentity]::GetCurrent().User)
+              $acl.SetAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule(
+                  [System.Security.Principal.WindowsIdentity]::GetCurrent().User,
+                  'FullControl',
+                  'Allow'
+              )))
+              Set-Acl $_ $acl
+              Rename-Item $_ ($_ -replace '\\.bak$') -Force
+          } catch { }
+      }
+      "
+    ]
+  },
   "WPFTweaksRecallOff": {
     "Content": "Disable Recall",
     "Description": "Turn Recall off",
@@ -2591,6 +2763,13 @@
         "Name": "DisableAIDataAnalysis",
         "Type": "DWord",
         "Value": "1",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI",
+        "Name": "AllowRecallEnablement",
+        "Type": "DWord",
+        "Value": "0",
         "OriginalValue": "<RemoveEntry>"
       }
     ],
@@ -2689,7 +2868,7 @@
     "Description": "Moves OneDrive files to Default Home Folders and Uninstalls it.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a030_",
+    "Order": "a031_",
     "InvokeScript": [
       "
       $OneDrivePath = $($env:OneDrive)
@@ -2796,7 +2975,7 @@
     "Description": "Blocks ALL Razer Software installations. The hardware works fine without any software.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a031_",
+    "Order": "a032_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
