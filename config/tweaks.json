@@ -2592,6 +2592,13 @@
         "Value": "",
         "OriginalValue": "<RemoveEntry>"
       },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Shell\\Copilot\\BingChat",
+        "Name": "IsUserEligible",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "<RemoveEntry>"
+      }
     ],
   "InvokeScript": [
     "
