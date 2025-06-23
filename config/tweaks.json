@@ -2600,21 +2600,21 @@
         "OriginalValue": "<RemoveEntry>"
       }
     ],
-  "InvokeScript": [
-    "
-    Write-Host \"Remove Copilot\"
-    Get-Package | Where-Object Name -like '*copilot*'
-    Get-AppxPackage -AllUsers *Copilot* | Remove-AppxPackage -AllUsers
-    Get-AppxProvisionedPackage -Online | Where-Object PackageName -like '*Copilot*' | Remove-AppxProvisionedPackage -Online
-    dism /online /remove-package /package-name:Microsoft.Windows.Copilot
-    "
-  ],
-  "UndoScript": [
-    "
-    Write-Host \"Install Copilot\"
-    winget install --name \"Microsoft Copilot\" --source msstore --accept-package-agreements --accept-source-agreements --silent
-    "
-  ],
+    "InvokeScript": [
+      "
+      Write-Host \"Remove Copilot\"
+      Get-Package | Where-Object Name -like '*copilot*'
+      Get-AppxPackage -AllUsers *Copilot* | Remove-AppxPackage -AllUsers
+      Get-AppxProvisionedPackage -Online | Where-Object PackageName -like '*Copilot*' | Remove-AppxProvisionedPackage -Online
+      dism /online /remove-package /package-name:Microsoft.Windows.Copilot
+      "
+    ],
+    "UndoScript": [
+      "
+      Write-Host \"Install Copilot\"
+      winget install --name \"Microsoft Copilot\" --source msstore --accept-package-agreements --accept-source-agreements --silent
+      "
+    ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removecopilot"
   },
   "WPFTweaksRecallOff": {
