@@ -1824,10 +1824,10 @@
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection",
-        "Type": "DWord",
-        "Value": "0",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "AllowTelemetry",
-        "OriginalValue": "<RemoveEntry>"
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
@@ -1914,6 +1914,13 @@
         "Type": "DWord"
       },
       {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Siuf\\Rules",
+        "OriginalValue": "<RemoveEntry>",
+        "Name": "PeriodInNanoSeconds",
+        "Value": "<RemoveEntry>",
+        "Type": "QWord"
+      },
+      {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
         "OriginalValue": "<RemoveEntry>",
         "Name": "DoNotShowFeedbackNotifications",
@@ -1945,7 +1952,14 @@
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DeliveryOptimization\\Config",
         "OriginalValue": "1",
         "Name": "DODownloadMode",
-        "Value": "1",
+        "Value": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DeliveryOptimization",
+        "OriginalValue": "1",
+        "Name": "DODownloadMode",
+        "Value": "0",
         "Type": "DWord"
       },
       {
