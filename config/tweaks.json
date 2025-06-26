@@ -2560,18 +2560,56 @@
         "Type": "DWord",
         "Value": "0",
         "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Shell\\Copilot",
+        "Name": "IsCopilotAvailable",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Shell\\Copilot",
+        "Name": "CopilotDisabledReason",
+        "Type": "String",
+        "Value": "IsEnabledForGeographicRegionFailed",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\WindowsCopilot",
+        "Name": "AllowCopilotRuntime",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Blocked",
+        "Name": "{CB3B0003-8088-4EDE-8769-8B354AB2FF8C}",
+        "Type": "String",
+        "Value": "",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Shell\\Copilot\\BingChat",
+        "Name": "IsUserEligible",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "InvokeScript": [
       "
       Write-Host \"Remove Copilot\"
+      Get-Package | Where-Object Name -like '*copilot*'
+      Get-AppxPackage -AllUsers *Copilot* | Remove-AppxPackage -AllUsers
+      Get-AppxProvisionedPackage -Online | Where-Object PackageName -like '*Copilot*' | Remove-AppxProvisionedPackage -Online
       dism /online /remove-package /package-name:Microsoft.Windows.Copilot
       "
     ],
     "UndoScript": [
       "
       Write-Host \"Install Copilot\"
-      dism /online /add-package /package-name:Microsoft.Windows.Copilot
+      winget install --name \"Microsoft Copilot\" --source msstore --accept-package-agreements --accept-source-agreements --silent
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removecopilot"
