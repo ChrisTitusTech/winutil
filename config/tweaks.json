@@ -1551,6 +1551,50 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/services"
   },
+  "WPFTweaksBraveDebloat": {
+    "Content": "Debloat Brave",
+    "Description": "Disables various annoyances like Brave Rewards,Leo AI,Crypto Wallet and VPN",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a016_",
+    "registry": [
+      {
+        "Path":"HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "Name": "BraveRewardsDisabled",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>"
+      },
+            {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "Name": "BraveWalletDisabled",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>"
+      },
+            {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "Name": "BraveVPNDisabled",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>"
+      },
+            {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "Name": "BraveAIChatEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "<RemoveEntry>"
+      },
+            {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "Name": "SyncDisabled",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>"
+      }
+    ]
+  },
   "WPFTweaksEdgeDebloat": {
     "Content": "Debloat Edge",
     "Description": "Disables various telemetry options, popups, and other annoyances in Edge.",
@@ -1995,13 +2039,6 @@
         "Name": "Start",
         "Value": "2",
         "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "400",
-        "Name": "MouseHoverTime",
-        "Value": "400",
-        "Type": "String"
       },
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters",
@@ -2484,20 +2521,6 @@
       "Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Name \"01\" -Value 1 -Type Dword -Force"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/storage"
-  },
-  "WPFTweaksRemoveEdge": {
-    "Content": "Remove Microsoft Edge",
-    "Description": "Removes MS Edge when it gets reinstalled by updates. Credit: Psyirius",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a029_",
-    "InvokeScript": [
-      "Uninstall-WinUtilEdgeBrowser -action \"Uninstall\""
-    ],
-    "UndoScript": [
-      "Uninstall-WinUtilEdgeBrowser -action \"Install\""
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removeedge"
   },
   "WPFTweaksRemoveCopilot": {
     "Content": "Disable Microsoft Copilot",
