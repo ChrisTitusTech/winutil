@@ -472,7 +472,7 @@ public class PowerManagement {
             }
         }
 
-        $sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
+        Toggle-MicrowinPanel 1
 
         #$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
         $sync.MicrowinFinalIsoLocation.Text = "$($SaveDialog.FileName)"
