@@ -1407,11 +1407,17 @@
                         Grid.Row="0" Grid.Column="1">
                         <StackPanel HorizontalAlignment="Left" Background="{DynamicResource MainBackgroundColor}" SnapsToDevicePixels="True" Visibility="Visible">
 
-                            <Grid Name = "BusyMessage" Visibility="Collapsed">
-                              <TextBlock Name = "BusyText" Text="NBusy" Padding="22,2,1,1" />
-                              <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe MDL2 Assets"
-                                  FontSize="{DynamicResource IconFontSize}" Margin="16,0,0,0">&#xE701;</TextBlock>
-                            </Grid>
+                            <StackPanel x:Name="MicrowinBusyIndicator" Orientation="Horizontal" Margin="15,15,15,0">
+                                <TextBlock x:Name="BusyIcon" FontFamily="Segoe MDL2 Assets" Text="&#xE701;"
+                                         Margin="0,0,8,2"
+                                         FontSize="16"
+                                         VerticalAlignment="Center"
+                                         Foreground="{DynamicResource MicrowinBusyColor}"/>
+                                <TextBlock x:Name="BusyText" Text="Microwin"
+                                         VerticalAlignment="Center"
+                                         TextTrimming="CharacterEllipsis"
+                                         Foreground="{DynamicResource MicrowinBusyColor}"/>
+                            </StackPanel>
 
                             <TextBlock x:Name = "asciiTextBlock"
                                 xml:space ="preserve"
