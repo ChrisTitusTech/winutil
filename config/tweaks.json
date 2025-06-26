@@ -2589,6 +2589,20 @@
         "Type": "DWord",
         "Value": "1",
         "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI",
+        "Name": "AllowRecallEnablement",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\CI\\Policy",
+        "Name": "VerifiedAndReputablePolicyState",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "InvokeScript": [
