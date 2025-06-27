@@ -1957,7 +1957,7 @@
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DeliveryOptimization",
-        "OriginalValue": "1",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "DODownloadMode",
         "Value": "0",
         "Type": "DWord"
