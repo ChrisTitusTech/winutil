@@ -51,7 +51,7 @@ If you have Issues, refer to [Known Issues](https://winutil.christitus.com/known
 ## 🛠️ Build & Develop
 
 > [!NOTE]
-> Winutil is a relatively large script, so it's split into multiple files which're combined into a single `.ps1` file using a custom compiler. This makes maintaining the project a lot easiler.
+> Winutil is a relatively large script, so it's split into multiple files which're combined into a single `.ps1` file using a custom compiler. This makes maintaining the project a lot easier.
 
 Get a copy of the source code, this can be done using GitHub UI (`Code -> Download ZIP`), or by cloning (downloading) the repo using git.
 
