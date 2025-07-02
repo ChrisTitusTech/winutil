@@ -3646,6 +3646,25 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/stickykeys"
   },
+  "WPFToggleMultiplaneOverlay": {
+    "Content": "Multiplane Overlay",
+    "Description": "Disable the Multiplane Overlay which can sometimes cause issues with Graphics Cards.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a111_",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\DWM",
+        "Name": "OverlayTestMode",
+        "Value": "5",
+        "OriginalValue": "<RemoveEntry>",
+        "DefaultState": "true",
+        "Type": "DWord"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/multplaneoverlay"
+  },
   "WPFToggleHiddenFiles": {
     "Content": "Show Hidden Files",
     "Description": "If Enabled then Hidden Files will be shown.",
