@@ -247,7 +247,6 @@ public class PowerManagement {
         Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\Panther\unattend.xml" -force
         New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\Sysprep"
         Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\System32\Sysprep\unattend.xml" -force
-        Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\unattend.xml" -force
         Write-Host "Done Copy unattend.xml"
 
         Write-Host "Create FirstRun"
