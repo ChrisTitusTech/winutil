@@ -15,7 +15,7 @@ function Invoke-WPFButton {
     # Use this to get the name of the button
     #[System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")
     if (-not $sync.ProcessRunning) {
-        Set-WinUtilProgressBar  -label "" -percent 0 -hide $true
+        Set-WinUtilProgressBar  -label "" -percent 0
     }
 
     Switch -Wildcard ($Button) {
@@ -35,6 +35,7 @@ function Invoke-WPFButton {
         "WPFFeatureInstall" {Invoke-WPFFeatureInstall}
         "WPFPanelDISM" {Invoke-WPFSystemRepair}
         "WPFPanelAutologin" {Invoke-WPFPanelAutologin}
+        "WPFPanelcomputer" {Invoke-WPFControlPanel -Panel $button}
         "WPFPanelcontrol" {Invoke-WPFControlPanel -Panel $button}
         "WPFPanelnetwork" {Invoke-WPFControlPanel -Panel $button}
         "WPFPanelpower" {Invoke-WPFControlPanel -Panel $button}
@@ -62,5 +63,6 @@ function Invoke-WPFButton {
         "WPFWinUtilUninstallPSProfile" {Invoke-WinUtilUninstallPSProfile}
         "WPFWinUtilSSHServer" {Invoke-WPFSSHServer}
         "WPFselectedAppsButton" {$sync.selectedAppsPopup.IsOpen = -not $sync.selectedAppsPopup.IsOpen}
+        "WPFMicrowinPanelBack" {Toggle-MicrowinPanel 1}
     }
 }

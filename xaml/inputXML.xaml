@@ -801,6 +801,7 @@
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="CaretBrush" Value="{DynamicResource MainForegroundColor}"/>
             <Setter Property="ContextMenu">
                 <Setter.Value>
                     <ContextMenu>
@@ -855,6 +856,7 @@
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="CaretBrush" Value="{DynamicResource MainForegroundColor}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="PasswordBox">
@@ -992,34 +994,6 @@
                     Margin="210,0,0,0" Visibility="Collapsed">
                 </Button>
 
-                <ProgressBar
-                    Grid.Column="1"
-                    Minimum="0"
-                    Maximum="100"
-                    Width="250"
-                    Height="{DynamicResource SearchBarHeight}"
-                    Foreground="{DynamicResource ProgressBarForegroundColor}" Background="{DynamicResource ProgressBarBackgroundColor}" BorderBrush="{DynamicResource ProgressBarForegroundColor}"
-                    Visibility="Collapsed"
-                    VerticalAlignment="Center" HorizontalAlignment="Left"
-                    Margin="2,0,0,0" BorderThickness="1" Padding="6,2,2,2"
-                    Name="ProgressBar">
-                </ProgressBar>
-                <Label
-                    Grid.Column="1"
-                    Width="250"
-                    Height="{DynamicResource SearchBarHeight}"
-                    VerticalAlignment="Center" HorizontalAlignment="Left"
-                    FontSize="{DynamicResource SearchBarTextBoxFontSize}"
-                    Background="Transparent"
-                    Visibility="Collapsed"
-                    Margin="2,0,0,0" BorderThickness="0" Padding="6,2,2,2"
-                    Name="ProgressBarLabel">
-                    <TextBlock
-                        TextTrimming="CharacterEllipsis"
-                        Background="Transparent"
-                        Foreground="{DynamicResource ProgressBarTextColor}">
-                    </TextBlock>
-                </Label>
                 <Button Name="ThemeButton"
                     Style="{StaticResource HoverButtonStyle}"
                     Grid.Column="2" BorderBrush="Transparent"
@@ -1287,7 +1261,7 @@
                         VerticalAlignment="Stretch"
                         HorizontalAlignment="Stretch">
                     <StackPanel Name="MicrowinMain" Background="{DynamicResource MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="0" Grid.Row="0">
-                        <StackPanel Background="Transparent" SnapsToDevicePixels="True" Margin="1">
+                        <StackPanel Name="MicrowinISOPanel" Background="Transparent" SnapsToDevicePixels="True" Margin="1">
                             <CheckBox x:Name="WPFMicrowinDownloadFromGitHub" Content="Download oscdimg.exe from CTT Github repo" IsChecked="True" Margin="{DynamicResource MicrowinCheckBoxMargin}" />
                             <TextBlock Margin="5" Padding="1" TextWrapping="Wrap" Foreground="{DynamicResource ComboBoxForegroundColor}">
                                 Choose a Windows ISO file that you've downloaded <LineBreak/>
@@ -1342,8 +1316,46 @@
                                 </Button.Content>
                             </Button>
                         </StackPanel>
+
                         <!-- Visibility="Hidden" -->
                         <StackPanel Name="MicrowinOptionsPanel" HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Hidden">
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Button Name="WPFMicrowinPanelBack"
+                                        Grid.Column="0"
+                                        Width="30" Height="30"
+                                        HorizontalAlignment="Left"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="12"
+                                        Content="&#xE76B;"
+                                        ToolTip="Back to main view"
+                                        Background="{DynamicResource ButtonBackgroundColor}"
+                                        Foreground="{DynamicResource ButtonForegroundColor}"
+                                        BorderBrush="{DynamicResource ButtonBackgroundColor}"
+                                        BorderThickness="1"
+                                        Padding="0">
+                                    <Button.ContentTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}"
+                                                      HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"/>
+                                        </DataTemplate>
+                                    </Button.ContentTemplate>
+                                </Button>
+
+                                <TextBlock Name="MicrowinPanel2Title"
+                                         Grid.Column="1"
+                                         Text="Configure Windows ISO"
+                                         Margin="10,0,0,0"
+                                         Foreground="{DynamicResource MainForegroundColor}"
+                                         FontSize="16"
+                                         VerticalAlignment="Center"/>
+                            </Grid>
+
                             <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Choose Windows SKU</TextBlock>
                             <ComboBox x:Name = "MicrowinWindowsFlavors" Margin="1" />
                             <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
@@ -1371,7 +1383,7 @@
                                 Foreground="{DynamicResource LabelboxForegroundColor}"
                                 MaxLength="20"
                             />
-                            <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Password (characters will not be shown for your security):</TextBlock>
+                            <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Password:</TextBlock>
                             <PasswordBox Name="MicrowinUserPassword" Background="Transparent" BorderThickness="1" BorderBrush="{DynamicResource MainForegroundColor}"
                                 Margin="6"
                                 PasswordChar="*"
@@ -1395,11 +1407,17 @@
                         Grid.Row="0" Grid.Column="1">
                         <StackPanel HorizontalAlignment="Left" Background="{DynamicResource MainBackgroundColor}" SnapsToDevicePixels="True" Visibility="Visible">
 
-                            <Grid Name = "BusyMessage" Visibility="Collapsed">
-                              <TextBlock Name = "BusyText" Text="NBusy" Padding="22,2,1,1" />
-                              <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe MDL2 Assets"
-                                  FontSize="{DynamicResource IconFontSize}" Margin="16,0,0,0">&#xE701;</TextBlock>
-                            </Grid>
+                            <StackPanel x:Name="MicrowinBusyIndicator" Orientation="Horizontal" Margin="15,15,15,0">
+                                <TextBlock x:Name="BusyIcon" FontFamily="Segoe MDL2 Assets" Text="&#xE701;"
+                                         Margin="0,0,8,2"
+                                         FontSize="16"
+                                         VerticalAlignment="Center"
+                                         Foreground="{DynamicResource MicrowinBusyColor}"/>
+                                <TextBlock x:Name="BusyText" Text="Microwin"
+                                         VerticalAlignment="Center"
+                                         TextTrimming="CharacterEllipsis"
+                                         Foreground="{DynamicResource MicrowinBusyColor}"/>
+                            </StackPanel>
 
                             <TextBlock x:Name = "asciiTextBlock"
                                 xml:space ="preserve"
