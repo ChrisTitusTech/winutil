@@ -69,40 +69,9 @@ Update-Progress "Adding: Functions" 20
 Get-ChildItem "functions" -Recurse -File | ForEach-Object {
     $script_content.Add($(Get-Content $psitem.FullName))
     }
-Update-Progress "Adding: Config *.json" 40
-Get-ChildItem "config" | Where-Object {$psitem.extension -eq ".json"} | ForEach-Object {
-    $json = (Get-Content $psitem.FullName -Raw)
-    $jsonAsObject = $json | ConvertFrom-Json
 
-    # Add 'WPFInstall' as a prefix to every entry-name in 'applications.json' file
-    if ($psitem.Name -eq "applications.json") {
-        foreach ($appEntryName in $jsonAsObject.PSObject.Properties.Name) {
-            $appEntryContent = $jsonAsObject.$appEntryName
-            $jsonAsObject.PSObject.Properties.Remove($appEntryName)
-            $jsonAsObject | Add-Member -MemberType NoteProperty -Name "WPFInstall$appEntryName" -Value $appEntryContent
-        }
-    }
 
-    # Line 90 requires no whitespace inside the here-strings, to keep formatting of the JSON in the final script.
-    $json = @"
-$($jsonAsObject | ConvertTo-Json -Depth 3)
-"@
 
-    $sync.configs.$($psitem.BaseName) = $json | ConvertFrom-Json
-    $script_content.Add($(Write-Output "`$sync.configs.$($psitem.BaseName) = @'`r`n$json`r`n'@ `| ConvertFrom-Json" ))
-}
-
-# Read the entire XAML file as a single string, preserving line breaks
-$xaml = Get-Content "$workingdir\xaml\inputXML.xaml" -Raw
-
-Update-Progress "Adding: Xaml " 90
-
-# Add the XAML content to $script_content using a here-string
-$script_content.Add(@"
-`$inputXML = @'
-$xaml
-'@
-"@)
 
 $script_content.Add($(Get-Content "scripts\main.ps1"))
 
