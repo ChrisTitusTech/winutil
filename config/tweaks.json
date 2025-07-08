@@ -1991,14 +1991,6 @@
         "Type": "DWord"
       },
       {
-        "_Comment": "Driver searching is a function that should be left in",
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
-        "OriginalValue": "1",
-        "Name": "SearchOrderConfig",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
         "OriginalValue": "1",
         "Name": "SystemResponsiveness",
@@ -2107,8 +2099,8 @@
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/tele"
   },
   "WPFTweaksWifi": {
-    "Content": "Disable Wifi-Sense",
-    "Description": "Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location.",
+    "Content": "Disable WiFi Sense",
+    "Description": "WiFi Sense is a spying service that phones home all nearby scanned wifi networks and your current geographic location.",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a005_",
@@ -2148,8 +2140,8 @@
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/utc"
   },
   "WPFTweaksRemoveHome": {
-    "Content": "Remove Home from explorer",
-    "Description": "Removes the Home from explorer and sets This PC as default",
+    "Content": "Remove Home from Explorer",
+    "Description": "Removes the Home from Explorer and sets This PC as default",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a029_",
@@ -2169,7 +2161,7 @@
   },
   "WPFTweaksRemoveGallery": {
     "Content": "Remove Gallery from explorer",
-    "Description": "Removes the Gallery from explorer and sets This PC as default",
+    "Description": "Removes the Gallery from Explorer and sets This PC as default",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a030_",
@@ -2777,7 +2769,7 @@
             Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$OneDrivePath\"
         }
 
-        Write-Host \"Remove Onedrive from explorer sidebar\"
+        Write-Host \"Remove Onedrive from Explorer sidebar\"
         Set-ItemProperty -Path \"HKCR:\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" -Name \"System.IsPinnedToNameSpaceTree\" -Value 0
         Set-ItemProperty -Path \"HKCR:\\Wow6432Node\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" -Name \"System.IsPinnedToNameSpaceTree\" -Value 0
 
@@ -2823,7 +2815,7 @@
         taskkill.exe /F /IM \"explorer.exe\"
         Start-Process \"explorer.exe\"
 
-        Write-Host \"Waiting for explorer to complete loading\"
+        Write-Host \"Waiting for Explorer to complete loading\"
         Write-Host \"Please Note - The OneDrive folder at $OneDrivePath may still have items in it. You must manually delete it, but all the files should already be copied to the base user folder.\"
         Write-Host \"If there are Files missing afterwards, please Login to Onedrive.com and Download them manually\" -ForegroundColor Yellow
         Start-Sleep 5
@@ -2842,7 +2834,7 @@
   },
   "WPFTweaksRazerBlock": {
     "Content": "Block Razer Software Installs",
-    "Description": "Blocks ALL Razer Software installations. The hardware works fine without any software.",
+    "Description": "Blocks ALL Razer Software installations. The hardware works fine without any software. WARNING: this will also block all Windows third-party driver installations.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a032_",
@@ -3874,7 +3866,7 @@
       # Folder types lookup table
       $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
 
-      # Flush explorer view database
+      # Flush Explorer view database
       Remove-Item -Path $bags -Recurse -Force
       Write-Host \"Removed $bags\"
 
@@ -3904,7 +3896,7 @@
       # Folder types lookup table
       $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
 
-      # Flush explorer view database
+      # Flush Explorer view database
       Remove-Item -Path $bags -Recurse -Force
       Write-Host \"Removed $bags\"
 
