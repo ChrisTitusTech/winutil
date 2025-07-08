@@ -2099,8 +2099,8 @@
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/tele"
   },
   "WPFTweaksWifi": {
-    "Content": "Disable WiFi Sense",
-    "Description": "WiFi Sense is a spying service that phones home all nearby scanned wifi networks and your current geographic location.",
+    "Content": "Disable Wi-Fi Sense",
+    "Description": "Wi-Fi Sense is a spying service that phones home all nearby scanned Wi-Fi networks and your current geographic location.",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a005_",
