@@ -55,6 +55,9 @@ class GenericException : Exception {
     GenericException($Message) : base($Message) {}
 }
 
+$xamlFilePath = Join-Path $PSScriptRoot "xaml\inputXML.xaml"
+$inputXML = Get-Content $xamlFilePath -Raw
+
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
@@ -115,11 +118,26 @@ $sync.Form.Add_Loaded({
 })
 
 Invoke-WinutilThemeChange -init $true
-# Load the configuration files
+# Load the configuration files dynamically
+$configPath = Join-Path $PSScriptRoot "config"
+Get-ChildItem $configPath -Filter "*.json" | ForEach-Object {
+    $jsonContent = Get-Content $_.FullName -Raw | ConvertFrom-Json
 
-$sync.configs.applicationsHashtable = @{}
-$sync.configs.applications.PSObject.Properties | ForEach-Object {
-    $sync.configs.applicationsHashtable[$_.Name] = $_.Value
+    # Special handling for applications.json
+    if ($_.Name -eq "applications.json") {
+        $newApplicationsObject = New-Object PSObject
+        foreach ($appEntryName in $jsonContent.PSObject.Properties.Name) {
+            $appEntryContent = $jsonContent.$appEntryName
+            $newApplicationsObject | Add-Member -MemberType NoteProperty -Name "WPFInstall$appEntryName" -Value $appEntryContent
+        }
+        $sync.configs.applications = $newApplicationsObject
+        $sync.configs.applicationsHashtable = @{}
+        $sync.configs.applications.PSObject.Properties | ForEach-Object {
+            $sync.configs.applicationsHashtable[$_.Name] = $_.Value
+        }
+    } else {
+        $sync.configs.$($_.BaseName) = $jsonContent
+    }
 }
 
 # Now call the function with the final merged config
