@@ -261,7 +261,7 @@ $commonKeyEvents = {
 $sync["Form"].Add_PreViewKeyDown($commonKeyEvents)
 
 $sync["Form"].Add_MouseLeftButtonDown({
-    Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme")
+    Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme", "FontScaling")
     $sync["Form"].DragMove()
 })
 
@@ -279,7 +279,7 @@ $sync["Form"].Add_MouseDoubleClick({
 
 $sync["Form"].Add_Deactivated({
     Write-Debug "WinUtil lost focus"
-    Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme")
+    Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme", "FontScaling")
 })
 
 $sync["Form"].Add_ContentRendered({
@@ -441,7 +441,7 @@ $sync["Form"].Add_Activated({
 
 $sync["ThemeButton"].Add_Click({
     Write-Debug "ThemeButton clicked"
-    Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "Theme" = "Toggle" }
+    Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "Theme" = "Toggle"; "FontScaling" = "Hide" }
 })
 $sync["AutoThemeMenuItem"].Add_Click({
     Write-Debug "About clicked"
@@ -461,7 +461,7 @@ $sync["LightThemeMenuItem"].Add_Click({
 
 $sync["SettingsButton"].Add_Click({
     Write-Debug "SettingsButton clicked"
-    Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Toggle"; "Theme" = "Hide" }
+    Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Toggle"; "Theme" = "Hide"; "FontScaling" = "Hide" }
 })
 $sync["ImportMenuItem"].Add_Click({
     Write-Debug "Import clicked"
@@ -504,6 +504,31 @@ $sync["SponsorMenuItem"].Add_Click({
         $authorInfo += "An error occurred while fetching or processing the sponsors: $_`n"
     }
     Show-CustomDialog -Title "Sponsors" -Message $authorInfo -EnableScroll $true
+})
+
+# Font Scaling Event Handlers
+$sync["FontScalingButton"].Add_Click({
+    Write-Debug "FontScalingButton clicked"
+    Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "Theme" = "Hide"; "FontScaling" = "Toggle" }
+})
+
+$sync["FontScalingSlider"].Add_ValueChanged({
+    param($slider)
+    $percentage = [math]::Round($slider.Value * 100)
+    $sync.FontScalingValue.Text = "$percentage%"
+})
+
+$sync["FontScalingResetButton"].Add_Click({
+    Write-Debug "FontScalingResetButton clicked"
+    $sync.FontScalingSlider.Value = 1.0
+    $sync.FontScalingValue.Text = "100%"
+})
+
+$sync["FontScalingApplyButton"].Add_Click({
+    Write-Debug "FontScalingApplyButton clicked"
+    $scaleFactor = $sync.FontScalingSlider.Value
+    Invoke-WinUtilFontScaling -ScaleFactor $scaleFactor
+    Invoke-WPFPopup -Action "Hide" -Popups @("FontScaling")
 })
 
 $sync["Form"].ShowDialog() | out-null
