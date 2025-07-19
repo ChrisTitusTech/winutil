@@ -948,6 +948,7 @@
                     <ColumnDefinition Width="Auto"/><!-- Space for close button -->
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/><!-- Space for Font Scaling button-->
                 </Grid.ColumnDefinitions>
 
                 <!--
@@ -1032,9 +1033,77 @@
                     </Border>
                 </Popup>
 
-                <Button Name="SettingsButton"
+                <Button Name="FontScalingButton"
                     Style="{StaticResource HoverButtonStyle}"
                     Grid.Column="3" BorderBrush="Transparent"
+                    Background="{DynamicResource MainBackgroundColor}"
+                    Foreground="{DynamicResource MainForegroundColor}"
+                    FontSize="{DynamicResource SettingsIconFontSize}"
+                    Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="0,5,5,0"
+                    FontFamily="Segoe MDL2 Assets"
+                    Content="&#xE8D3;"
+                    ToolTip="Adjust Font Scaling for Accessibility"
+                />
+                <Popup Grid.Column="3" Name="FontScalingPopup"
+                    IsOpen="False"
+                    PlacementTarget="{Binding ElementName=FontScalingButton}" Placement="Bottom"
+                    HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <Border Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
+                        <StackPanel Background="{DynamicResource MainBackgroundColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinWidth="200">
+                            <TextBlock Text="Font Scaling"
+                                       FontSize="{DynamicResource ButtonFontSize}"
+                                       Foreground="{DynamicResource MainForegroundColor}"
+                                       HorizontalAlignment="Center"
+                                       Margin="10,5,10,5"
+                                       FontWeight="Bold"/>
+                            <Separator Margin="5,0,5,5"/>
+                            <StackPanel Orientation="Horizontal" Margin="10,5,10,10">
+                                <TextBlock Text="Small"
+                                           FontSize="{DynamicResource ButtonFontSize}"
+                                           Foreground="{DynamicResource MainForegroundColor}"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,10,0"/>
+                                <Slider Name="FontScalingSlider"
+                                        Minimum="0.75" Maximum="2.0"
+                                        Value="1.0"
+                                        TickFrequency="0.25"
+                                        TickPlacement="BottomRight"
+                                        IsSnapToTickEnabled="True"
+                                        Width="120"
+                                        VerticalAlignment="Center"/>
+                                <TextBlock Text="Large"
+                                           FontSize="{DynamicResource ButtonFontSize}"
+                                           Foreground="{DynamicResource MainForegroundColor}"
+                                           VerticalAlignment="Center"
+                                           Margin="10,0,0,0"/>
+                            </StackPanel>
+                            <TextBlock Name="FontScalingValue"
+                                       Text="100%"
+                                       FontSize="{DynamicResource ButtonFontSize}"
+                                       Foreground="{DynamicResource MainForegroundColor}"
+                                       HorizontalAlignment="Center"
+                                       Margin="10,0,10,5"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10,0,10,10">
+                                <Button Name="FontScalingResetButton"
+                                        Content="Reset"
+                                        Style="{StaticResource HoverButtonStyle}"
+                                        Width="60" Height="25"
+                                        Margin="5,0,5,0"/>
+                                <Button Name="FontScalingApplyButton"
+                                        Content="Apply"
+                                        Style="{StaticResource HoverButtonStyle}"
+                                        Width="60" Height="25"
+                                        Margin="5,0,5,0"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Popup>
+
+                <Button Name="SettingsButton"
+                    Style="{StaticResource HoverButtonStyle}"
+                    Grid.Column="4" BorderBrush="Transparent"
                     Background="{DynamicResource MainBackgroundColor}"
                     Foreground="{DynamicResource MainForegroundColor}"
                     FontSize="{DynamicResource SettingsIconFontSize}"
@@ -1067,7 +1136,7 @@
                 </Popup>
 
             <Button
-                Grid.Column="4"
+                Grid.Column="5"
                 Content="&#xD7;" BorderThickness="0"
                 BorderBrush="Transparent"
                 Background="{DynamicResource MainBackgroundColor}"
