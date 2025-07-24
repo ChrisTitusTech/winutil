@@ -32,15 +32,16 @@ function Invoke-WPFUnInstall {
 
     $ManagerPreference = $sync["ManagerPreference"]
 
-    Invoke-WPFRunspace -ArgumentList @(("PackagesToUninstall", $PackagesToInstall),("ManagerPreference", $ManagerPreference)) -DebugPreference $DebugPreference -ScriptBlock {
+    Invoke-WPFRunspace -ArgumentList @(("PackagesToUninstall", $PackagesToUninstall),("ManagerPreference", $ManagerPreference)) -DebugPreference $DebugPreference -ScriptBlock {
         param($PackagesToUninstall, $ManagerPreference, $DebugPreference)
 
-        $packagesSorted = Get-WinUtilSelectedPackages -PackageList $PackagesToInstall -Preference $ManagerPreference
+        $packagesSorted = Get-WinUtilSelectedPackages -PackageList $PackagesToUninstall -Preference $ManagerPreference
         $packagesWinget = $packagesSorted[[PackageManagers]::Winget]
         $packagesChoco = $packagesSorted[[PackageManagers]::Choco]
 
         try {
             $sync.ProcessRunning = $true
+            Show-WPFInstallAppBusy -text "Uninstalling apps..."
 
             # Uninstall all selected programs in new window
             if($packagesWinget.Count -gt 0) {
@@ -49,7 +50,7 @@ function Invoke-WPFUnInstall {
             if($packagesChoco.Count -gt 0) {
                 Install-WinUtilProgramChoco -Action Uninstall -Programs $packagesChoco
             }
-
+            Hide-WPFInstallAppBusy
             Write-Host "==========================================="
             Write-Host "--       Uninstalls have finished       ---"
             Write-Host "==========================================="

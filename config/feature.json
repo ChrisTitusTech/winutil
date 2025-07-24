@@ -258,6 +258,14 @@
     "ButtonWidth": "300",
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/control"
   },
+  "WPFPanelcomputer": {
+    "Content": "Computer Management",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/computer"
+  },
   "WPFPanelpower": {
     "Content": "Power Panel",
     "category": "Legacy Windows Panels",

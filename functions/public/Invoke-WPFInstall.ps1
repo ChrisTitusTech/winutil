@@ -78,6 +78,9 @@ function Invoke-WPFInstall {
                     }
                 }
 
+            Show-WPFInstallAppBusy -text "Installing apps..."
+
+            if($packagesWinget.Count -gt 0) {
                 Install-WinUtilWinget
                 Install-WinUtilProgramWinget -Action Install -Programs $packagesWinget
             }
@@ -85,6 +88,7 @@ function Invoke-WPFInstall {
                 Install-WinUtilChoco
                 Install-WinUtilProgramChoco -Action Install -Programs $packagesChoco
             }
+            Hide-WPFInstallAppBusy
             Write-Host "==========================================="
             Write-Host "--      Installs have finished          ---"
             Write-Host "==========================================="

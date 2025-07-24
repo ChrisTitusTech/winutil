@@ -39,12 +39,15 @@ public class PowerManagement {
     $SaveDialog.ShowDialog() | Out-Null
 
     if ($SaveDialog.FileName -eq "") {
-        Write-Host "No file name for the target image was specified"
+        $msg = "No file name for the target image was specified"
+        Write-Host $msg
+        Invoke-MicrowinBusyInfo -action "warning" -message $msg
         Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
         return
     }
 
     Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
+    Invoke-MicrowinBusyInfo -action "wip" -message "Busy..." -interactive $false
 
     Write-Host "Target ISO location: $($SaveDialog.FileName)"
 
@@ -70,9 +73,10 @@ public class PowerManagement {
             $index = 1
         } else {
             $msg = "The export process has failed and MicroWin processing cannot continue"
-            Write-Host "Failed to export the image"
-            [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
+            Write-Host $msg
             Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
+            Invoke-MicrowinBusyInfo -action "warning" -message $msg
+            [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
             return
         }
     }
@@ -87,6 +91,7 @@ public class PowerManagement {
         Write-Host $msg
         [System.Windows.MessageBox]::Show($dlg_msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Exclamation)
         Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
+        Invoke-MicrowinBusyInfo -action "warning" -message $msg
         return
     }
 
@@ -101,8 +106,10 @@ public class PowerManagement {
     $mountDirExists = Test-Path $mountDir
     $scratchDirExists = Test-Path $scratchDir
     if (-not $mountDirExists -or -not $scratchDirExists) {
-        Write-Error "Required directories '$mountDirExists' '$scratchDirExists' and do not exist."
+        $msg = "Required directories '$mountDirExists' '$scratchDirExists' and do not exist."
+        Write-Error $msg
         Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
+        Invoke-MicrowinBusyInfo -action "warning" -message $msg
         return
     }
 
@@ -113,8 +120,10 @@ public class PowerManagement {
         if ($?) {
             Write-Host "The Windows image has been mounted successfully. Continuing processing..."
         } else {
-            Write-Host "Could not mount image. Exiting..."
+            $msg = "Could not mount image. Exiting..."
+            Write-Host $msg
             Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
+            Invoke-MicrowinBusyInfo -action "warning" -message $msg
             return
         }
 
@@ -368,7 +377,9 @@ public class PowerManagement {
         Rename-Item "$mountDir\sources\install2.wim" "$mountDir\sources\install.wim"
 
         if (-not (Test-Path -Path "$mountDir\sources\install.wim")) {
-            Write-Error "Something went wrong and '$mountDir\sources\install.wim' doesn't exist. Please report this bug to the devs"
+            $msg = "Something went wrong. Please report this bug to the devs."
+            Write-Error "$($msg) '$($mountDir)\sources\install.wim' doesn't exist"
+            Invoke-MicrowinBusyInfo -action "warning" -message $msg
             Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
             return
         }
@@ -459,6 +470,7 @@ public class PowerManagement {
             $msg = "Done. ISO image is located here: $($SaveDialog.FileName)"
             Write-Host $msg
             Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
+            Invoke-MicrowinBusyInfo -action "done" -message "Finished!"
             [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information)
         } else {
             Write-Host "ISO creation failed. The "$($mountDir)" directory has not been removed."
@@ -467,12 +479,14 @@ public class PowerManagement {
                 # Now, this will NOT throw an exception
                 $exitCode = New-Object System.ComponentModel.Win32Exception($LASTEXITCODE)
                 Write-Host "Reason: $($exitCode.Message)"
+                Invoke-MicrowinBusyInfo -action "warning" -message $exitCode.Message
+                Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
             } catch {
                 # Could not get error description from Windows APIs
             }
         }
 
-        $sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
+        Toggle-MicrowinPanel 1
 
         #$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
         $sync.MicrowinFinalIsoLocation.Text = "$($SaveDialog.FileName)"
