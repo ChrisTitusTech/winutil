@@ -1741,7 +1741,7 @@
         "content": "Python3",
         "description": "Python is a versatile programming language used for web development, data analysis, artificial intelligence, and more.",
         "link": "https://www.python.org/",
-        "winget": "Python.Python.3.12"
+        "winget": "Python.Python.3.13"
     },
     "qbittorrent": {
         "category": "Utilities",
