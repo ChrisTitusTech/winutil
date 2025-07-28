@@ -264,7 +264,7 @@ function Microwin-NewUnattend {
                 </RunSynchronousCommand>
                 <RunSynchronousCommand wcm:action="add">
                     <Order>45</Order>
-                    <Path>reg.exe add "HKLM\Software\Policies\Microsoft\Windows\CloudContent" /v "DisableWindowsConsumerFeatures" /t REG_DWORD /d 0 /f</Path>
+                    <Path>reg.exe add "HKLM\Software\Policies\Microsoft\Windows\CloudContent" /v "DisableWindowsConsumerFeatures" /t REG_DWORD /d 1 /f</Path>
                 </RunSynchronousCommand>
                 <RunSynchronousCommand wcm:action="add">
                     <Order>46</Order>
