@@ -58,6 +58,9 @@ public class PowerManagement {
     $injectDrivers = $sync.MicrowinInjectDrivers.IsChecked
     $importDrivers = $sync.MicrowinImportDrivers.IsChecked
 
+    $WPBT = $sync.MicroWinWPBT.IsChecked
+    $unsupported = $sync.MicroWinUnsupported.IsChecked
+
     $importVirtIO = $sync.MicrowinCopyVirtIO.IsChecked
 
     $mountDir = $sync.MicrowinMountDir.Text
@@ -169,6 +172,27 @@ public class PowerManagement {
             } else {
                 Write-Host "Path to drivers is invalid continuing without driver injection"
             }
+        }
+
+        if ($WPBT) {
+            Write-Host "Disabling WPBT Execution"
+            reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM"
+            reg add HKLM\zSYSTEM\ControlSet001\Control\Session Manager /v DisableWpbtExecution /t REG_DWORD /d 1 /f
+            reg unload HKLM\zSYSTEM
+        }
+
+        if ($unsupported) {
+            Write-Host "Bypassing system requirements (locally)"
+            reg add "HKLM\DEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
+            reg add "HKLM\DEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
+            reg add "HKLM\NTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
+            reg add "HKLM\NTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
+            reg add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassCPUCheck" /t REG_DWORD /d 1 /f
+            reg add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassRAMCheck" /t REG_DWORD /d 1 /f
+            reg add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassSecureBootCheck" /t REG_DWORD /d 1 /f
+            reg add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassStorageCheck" /t REG_DWORD /d 1 /f
+            reg add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassTPMCheck" /t REG_DWORD /d 1 /f
+            reg add "HKLM\SYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
         }
 
         if ($importVirtIO) {
@@ -473,6 +497,7 @@ public class PowerManagement {
                 Write-Host "Reason: $($exitCode.Message)"
                 Invoke-MicrowinBusyInfo -action "warning" -message $exitCode.Message
                 Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
+                [System.Windows.MessageBox]::Show("MicroWin failed to make the ISO.", "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
             } catch {
                 # Could not get error description from Windows APIs
             }
