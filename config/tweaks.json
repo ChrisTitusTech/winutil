@@ -3981,5 +3981,23 @@
       Write-Host Please sign out and back in, or restart your computer to apply the changes!
       "
     ]
+  },
+  "WPFTweaksDisableCrossDeviceResume": {
+    "Content": "Cross-Device Resume",
+    "Description": "This tweak controls the Resume function in Windows 11 24H2 and later, which allows you to resume an activity from a mobile device and vice-versa.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a207_",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\CrossDeviceResume\\Configuration",
+        "Name": "IsResumeAllowed",
+        "Value": "1",
+        "OriginalValue": "0",
+        "DefaultState": "true",
+        "Type": "DWord"
+      }
+    ]
   }
 }
