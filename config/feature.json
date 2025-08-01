@@ -242,15 +242,7 @@
     "ButtonWidth": "300",
     "link": "https://winutil.christitus.com/dev/features/fixes/runadobecccleanertool"
   },
-  "WPFPanelnetwork": {
-    "Content": "Network Connections",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "Button",
-    "ButtonWidth": "300",
-    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/network"
-  },
-  "WPFPanelcontrol": {
+  "WPFPanelControl": {
     "Content": "Control Panel",
     "category": "Legacy Windows Panels",
     "panel": "2",
@@ -258,7 +250,7 @@
     "ButtonWidth": "300",
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/control"
   },
-  "WPFPanelcomputer": {
+  "WPFPanelComputer": {
     "Content": "Computer Management",
     "category": "Legacy Windows Panels",
     "panel": "2",
@@ -266,7 +258,15 @@
     "ButtonWidth": "300",
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/computer"
   },
-  "WPFPanelpower": {
+  "WPFPanelNetwork": {
+    "Content": "Network Connections",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/network"
+  },
+  "WPFPanelPower": {
     "Content": "Power Panel",
     "category": "Legacy Windows Panels",
     "panel": "2",
@@ -274,23 +274,7 @@
     "ButtonWidth": "300",
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/power"
   },
-  "WPFPanelregion": {
-    "Content": "Region",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "Button",
-    "ButtonWidth": "300",
-    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/region"
-  },
-  "WPFPanelsound": {
-    "Content": "Sound Settings",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "Button",
-    "ButtonWidth": "300",
-    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/sound"
-  },
-  "WPFPanelprinter": {
+  "WPFPanelPrinter": {
     "Content": "Printer Panel",
     "category": "Legacy Windows Panels",
     "panel": "2",
@@ -298,7 +282,24 @@
     "ButtonWidth": "300",
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/printer"
   },
-  "WPFPanelsystem": {
+  "WPFPanelRegion": {
+    "Content": "Region",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/region"
+  },
+  "WPFPanelSound": {
+    "Content": "Sound Settings",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/user"
+  },
+
+  "WPFPanelSystem": {
     "Content": "System Properties",
     "category": "Legacy Windows Panels",
     "panel": "2",
@@ -306,20 +307,13 @@
     "ButtonWidth": "300",
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/system"
   },
-  "WPFPaneluser": {
-    "Content": "User Accounts",
+  "WPFPanelTimedate": {
+    "Content": "Time and Date",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/user"
-  },
-  "WPFPanelGodMode": {
-    "Content": "God Mode",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "Button",
-    "ButtonWidth": "300"
+    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/timedate"
   },
   "WPFWinUtilInstallPSProfile": {
     "Content": "Install CTT PowerShell Profile",
