@@ -411,6 +411,20 @@ public class PowerManagement {
         }
         Write-Host "Windows image completed. Continuing with boot.wim."
 
+        $esd = $sync.MicroWinESD.IsChecked
+        if ($esd) {
+            Write-Host "Converting install image to ESD."
+            try {
+                Export-WindowsImage -SourceImagePath "$mountDir\sources\install.wim" -SourceIndex $index -DestinationImagePath "$mountDir\sources\install.esd" -CompressionType "Recovery"
+                Remove-Item "$mountDir\sources\install.wim"
+                Write-Host "Converted install image to ESD."
+            } catch {
+                Start-Process -FilePath "$env:SystemRoot\System32\dism.exe" -ArgumentList "/export-image /sourceimagefile:`"$mountDir\sources\install.wim`" /sourceindex:1 /destinationimagefile:`"$mountDir\sources\install.esd`" /compress:recovery" -Wait -NoNewWindow
+                Remove-Item "$mountDir\sources\install.wim"
+                Write-Host "Converted install image to ESD."
+            }
+        }
+
         # Next step boot image
         Write-Host "Mounting boot image $mountDir\sources\boot.wim into $scratchDir"
         Mount-WindowsImage -ImagePath "$mountDir\sources\boot.wim" -Index 2 -Path "$scratchDir"
