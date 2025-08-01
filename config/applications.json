@@ -2210,8 +2210,8 @@
     "ttaskbar": {
         "category": "Utilities",
         "choco": "translucenttb",
-        "content": "Translucent Taskbar",
-        "description": "Translucent Taskbar is a tool that allows you to customize the transparency of the Windows taskbar.",
+        "content": "TranslucentTB",
+        "description": "TranslucentTB is a tool that allows you to customize the transparency of the Windows taskbar.",
         "link": "https://github.com/TranslucentTB/TranslucentTB",
         "winget": "9PF4KZ2VN4W9"
     },
