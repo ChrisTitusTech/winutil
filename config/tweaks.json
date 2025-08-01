@@ -1824,10 +1824,10 @@
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection",
-        "Type": "DWord",
-        "Value": "0",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "AllowTelemetry",
-        "OriginalValue": "<RemoveEntry>"
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
@@ -1914,6 +1914,13 @@
         "Type": "DWord"
       },
       {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Siuf\\Rules",
+        "OriginalValue": "<RemoveEntry>",
+        "Name": "PeriodInNanoSeconds",
+        "Value": "<RemoveEntry>",
+        "Type": "QWord"
+      },
+      {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
         "OriginalValue": "<RemoveEntry>",
         "Name": "DoNotShowFeedbackNotifications",
@@ -1945,7 +1952,14 @@
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DeliveryOptimization\\Config",
         "OriginalValue": "1",
         "Name": "DODownloadMode",
-        "Value": "1",
+        "Value": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DeliveryOptimization",
+        "OriginalValue": "<RemoveEntry>",
+        "Name": "DODownloadMode",
+        "Value": "0",
         "Type": "DWord"
       },
       {
@@ -1987,14 +2001,6 @@
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FileSystem",
         "OriginalValue": "0",
         "Name": "LongPathsEnabled",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "_Comment": "Driver searching is a function that should be left in",
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
-        "OriginalValue": "1",
-        "Name": "SearchOrderConfig",
         "Value": "1",
         "Type": "DWord"
       },
@@ -2107,8 +2113,8 @@
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/tele"
   },
   "WPFTweaksWifi": {
-    "Content": "Disable Wifi-Sense",
-    "Description": "Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location.",
+    "Content": "Disable Wi-Fi Sense",
+    "Description": "Wi-Fi Sense is a spying service that phones home all nearby scanned Wi-Fi networks and your current geographic location.",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a005_",
@@ -2148,8 +2154,8 @@
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/utc"
   },
   "WPFTweaksRemoveHome": {
-    "Content": "Remove Home from explorer",
-    "Description": "Removes the Home from explorer and sets This PC as default",
+    "Content": "Remove Home from Explorer",
+    "Description": "Removes the Home from Explorer and sets This PC as default",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a029_",
@@ -2169,7 +2175,7 @@
   },
   "WPFTweaksRemoveGallery": {
     "Content": "Remove Gallery from explorer",
-    "Description": "Removes the Gallery from explorer and sets This PC as default",
+    "Description": "Removes the Gallery from Explorer and sets This PC as default",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a030_",
@@ -2777,7 +2783,7 @@
             Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$OneDrivePath\"
         }
 
-        Write-Host \"Remove Onedrive from explorer sidebar\"
+        Write-Host \"Remove Onedrive from Explorer sidebar\"
         Set-ItemProperty -Path \"HKCR:\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" -Name \"System.IsPinnedToNameSpaceTree\" -Value 0
         Set-ItemProperty -Path \"HKCR:\\Wow6432Node\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" -Name \"System.IsPinnedToNameSpaceTree\" -Value 0
 
@@ -2823,7 +2829,7 @@
         taskkill.exe /F /IM \"explorer.exe\"
         Start-Process \"explorer.exe\"
 
-        Write-Host \"Waiting for explorer to complete loading\"
+        Write-Host \"Waiting for Explorer to complete loading\"
         Write-Host \"Please Note - The OneDrive folder at $OneDrivePath may still have items in it. You must manually delete it, but all the files should already be copied to the base user folder.\"
         Write-Host \"If there are Files missing afterwards, please Login to Onedrive.com and Download them manually\" -ForegroundColor Yellow
         Start-Sleep 5
@@ -2842,7 +2848,7 @@
   },
   "WPFTweaksRazerBlock": {
     "Content": "Block Razer Software Installs",
-    "Description": "Blocks ALL Razer Software installations. The hardware works fine without any software.",
+    "Description": "Blocks ALL Razer Software installations. The hardware works fine without any software. WARNING: this will also block all Windows third-party driver installations.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a032_",
@@ -3646,6 +3652,69 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/stickykeys"
   },
+  "WPFToggleNewOutlook": {
+    "Content": "New Outlook",
+    "Description": "If disabled it removes the toggle for new Outlook, disables the new Outlook migration and makes sure the Outlook Application actually uses the old Outlook.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a112_",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Office\\16.0\\Outlook\\Preferences",
+        "Name": "UseNewOutlook",
+        "Value": "1",
+        "OriginalValue": "0",
+        "DefaultState": "true",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Office\\16.0\\Outlook\\Options\\General",
+        "Name": "HideNewOutlookToggle",
+        "Value": "0",
+        "OriginalValue": "1",
+        "DefaultState": "true",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Software\\Policies\\Microsoft\\Office\\16.0\\Outlook\\Options\\General",
+        "Name": "DoNewOutlookAutoMigration",
+        "Value": "0",
+        "OriginalValue": "0",
+        "DefaultState": "false",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Software\\Policies\\Microsoft\\Office\\16.0\\Outlook\\Preferences",
+        "Name": "NewOutlookMigrationUserSetting",
+        "Value": "0",
+        "OriginalValue": "<RemoveEntry>",
+        "DefaultState": "true",
+        "Type": "DWord"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/newoutlook"
+  },
+
+  "WPFToggleMultiplaneOverlay": {
+    "Content": "Multiplane Overlay",
+    "Description": "Disable the Multiplane Overlay which can sometimes cause issues with Graphics Cards.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a111_",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Dwm",
+        "Name": "OverlayTestMode",
+        "Value": "5",
+        "OriginalValue": "<RemoveEntry>",
+        "DefaultState": "true",
+        "Type": "DWord"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/multplaneoverlay"
+  },
   "WPFToggleHiddenFiles": {
     "Content": "Show Hidden Files",
     "Description": "If Enabled then Hidden Files will be shown.",
@@ -3874,7 +3943,7 @@
       # Folder types lookup table
       $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
 
-      # Flush explorer view database
+      # Flush Explorer view database
       Remove-Item -Path $bags -Recurse -Force
       Write-Host \"Removed $bags\"
 
@@ -3904,7 +3973,7 @@
       # Folder types lookup table
       $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
 
-      # Flush explorer view database
+      # Flush Explorer view database
       Remove-Item -Path $bags -Recurse -Force
       Write-Host \"Removed $bags\"
 
@@ -3913,6 +3982,24 @@
 
       Write-Host Please sign out and back in, or restart your computer to apply the changes!
       "
+    ]
+  },
+  "WPFTweaksDisableCrossDeviceResume": {
+    "Content": "Cross-Device Resume",
+    "Description": "This tweak controls the Resume function in Windows 11 24H2 and later, which allows you to resume an activity from a mobile device and vice-versa.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a207_",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\CrossDeviceResume\\Configuration",
+        "Name": "IsResumeAllowed",
+        "Value": "1",
+        "OriginalValue": "0",
+        "DefaultState": "true",
+        "Type": "DWord"
+      }
     ]
   }
 }
