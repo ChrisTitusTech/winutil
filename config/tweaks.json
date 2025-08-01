@@ -3677,15 +3677,25 @@
         "Type": "DWord"
       },
       {
-        "Path": "HKCU:\\Software\\Policies\\Microsoft\\office\\16.0\\outlook\\preferences",
-        "Name": "NewOutlookMigrationUserSetting",
-        "Value": "1",
+        "Path": "HKCU:\\Software\\Policies\\Microsoft\\Office\\16.0\\Outlook\\Options\\General",
+        "Name": "DoNewOutlookAutoMigration",
+        "Value": "0",
         "OriginalValue": "0",
+        "DefaultState": "false",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Software\\Policies\\Microsoft\\Office\\16.0\\Outlook\\Preferences",
+        "Name": "NewOutlookMigrationUserSetting",
+        "Value": "0",
+        "OriginalValue": "<RemoveEntry>",
+        "DefaultState": "true",
+        "Type": "DWord"
       }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/newoutlook"
   },
-    
+
   "WPFToggleMultiplaneOverlay": {
     "Content": "Multiplane Overlay",
     "Description": "Disable the Multiplane Overlay which can sometimes cause issues with Graphics Cards.",
@@ -3695,7 +3705,7 @@
     "Type": "Toggle",
     "registry": [
       {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\DWM",
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Dwm",
         "Name": "OverlayTestMode",
         "Value": "5",
         "OriginalValue": "<RemoveEntry>",
