@@ -104,21 +104,34 @@ function Invoke-WPFSystemRepair {
         Write-Progress -Id 1 -Activity $childProgressBarActivity -Status "DISM Completed" -PercentComplete 100 -Completed
     }
 
-    $childProgressBarActivity = "Scanning for corruption"
-    Write-Progress -Id 0 -Activity "Repairing Windows" -PercentComplete 0
-    # Step 1: Run chkdsk to fix disk and filesystem corruption before proceeding with system file repairs
-    Invoke-Chkdsk
-    Write-Progress -Id 0 -Activity "Repairing Windows" -PercentComplete 25
+    try {
+        Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
 
-    # Step 2: Run SFC to fix system file corruption and ensure DISM can operate correctly
-    Invoke-SFC
-    Write-Progress -Id 0 -Activity "Repairing Windows" -PercentComplete 50
+        $childProgressBarActivity = "Scanning for corruption"
+        Write-Progress -Id 0 -Activity "Repairing Windows" -PercentComplete 0
+        # Step 1: Run chkdsk to fix disk and filesystem corruption before proceeding with system file repairs
+        Invoke-Chkdsk
+        Write-Progress -Id 0 -Activity "Repairing Windows" -PercentComplete 25
 
-    # Step 3: Run DISM to repair the system image, which SFC relies on for accurate repairs
-    Invoke-DISM
-    Write-Progress -Id 0 -Activity "Repairing Windows" -PercentComplete 75
+        # Step 2: Run SFC to fix system file corruption and ensure DISM can operate correctly
+        Invoke-SFC
+        Write-Progress -Id 0 -Activity "Repairing Windows" -PercentComplete 50
 
-    # Step 4: Run SFC again to ensure system files are repaired using the now-fixed system image
-    Invoke-SFC
-    Write-Progress -Id 0 -Activity "Repairing Windows" -PercentComplete 100 -Completed
+        # Step 3: Run DISM to repair the system image, which SFC relies on for accurate repairs
+        Invoke-DISM
+        Write-Progress -Id 0 -Activity "Repairing Windows" -PercentComplete 75
+
+        # Step 4: Run SFC again to ensure system files are repaired using the now-fixed system image
+        Invoke-SFC
+        Write-Progress -Id 0 -Activity "Repairing Windows" -PercentComplete 100 -Completed
+
+        Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
+    } catch {
+        Write-Error "An error occurred while repairing the system: $_"
+        Set-WinUtilTaskbaritem -state "Error" -overlay "warning"
+    } finally {
+        Write-Host "==> Finished System Repair"
+        Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
+    }
+
 }

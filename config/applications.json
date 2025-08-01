@@ -85,7 +85,7 @@
         "content": "AnyDesk",
         "description": "AnyDesk is a remote desktop software that enables users to access and control computers remotely. It is known for its fast connection and low latency.",
         "link": "https://anydesk.com/",
-        "winget": "AnyDeskSoftwareGmbH.AnyDesk"
+        "winget": "AnyDesk.AnyDesk"
     },
     "audacity": {
         "category": "Multimedia Tools",
@@ -246,14 +246,6 @@
         "description": "Chromium is the open-source project that serves as the foundation for various web browsers, including Chrome.",
         "link": "https://github.com/Hibbiki/chromium-win64",
         "winget": "Hibbiki.Chromium"
-    },
-    "arc": {
-        "category": "Browsers",
-        "choco": "na",
-        "content": "Arc",
-        "description": "Arc is a Chromium based browser, known for it's clean and modern design.",
-        "link": "https://arc.net/",
-        "winget": "TheBrowserCompany.Arc"
     },
     "clementine": {
         "category": "Multimedia Tools",
@@ -555,7 +547,7 @@
         "category": "Multimedia Tools",
         "choco": "ffmpeg-full",
         "content": "FFmpeg (full)",
-        "description": "FFmpeg is a powerful multimedia processing tool that enables users to convert, edit, and stream audio and video files with a vast range of codecs and formats.",
+        "description": "FFmpeg is a powerful multimedia processing tool that enables users to convert, edit, and stream audio and video files with a vast range of codecs and formats. | Note: FFmpeg can not be uninstalled using winget.",
         "link": "https://ffmpeg.org/",
         "winget": "Gyan.FFmpeg"
     },
@@ -1943,14 +1935,6 @@
         "link": "https://github.com/henrypp/simplewall",
         "winget": "Henry++.simplewall"
     },
-    "skype": {
-        "category": "Communications",
-        "choco": "skype",
-        "content": "Skype",
-        "description": "Skype is a widely used communication platform offering video calls, voice calls, and instant messaging services.",
-        "link": "https://www.skype.com/",
-        "winget": "Microsoft.Skype"
-    },
     "slack": {
         "category": "Communications",
         "choco": "slack",
@@ -2226,8 +2210,8 @@
     "ttaskbar": {
         "category": "Utilities",
         "choco": "translucenttb",
-        "content": "Translucent Taskbar",
-        "description": "Translucent Taskbar is a tool that allows you to customize the transparency of the Windows taskbar.",
+        "content": "TranslucentTB",
+        "description": "TranslucentTB is a tool that allows you to customize the transparency of the Windows taskbar.",
         "link": "https://github.com/TranslucentTB/TranslucentTB",
         "winget": "9PF4KZ2VN4W9"
     },
@@ -2309,7 +2293,7 @@
         "content": "Viber",
         "description": "Viber is a free messaging and calling app with features like group chats, video calls, and more.",
         "link": "https://www.viber.com/",
-        "winget": "Viber.Viber"
+        "winget": "Rakuten.Viber"
     },
     "videomass": {
         "category": "Multimedia Tools",
