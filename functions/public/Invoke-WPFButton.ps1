@@ -64,5 +64,6 @@ function Invoke-WPFButton {
         "WPFWinUtilSSHServer" {Invoke-WPFSSHServer}
         "WPFselectedAppsButton" {$sync.selectedAppsPopup.IsOpen = -not $sync.selectedAppsPopup.IsOpen}
         "WPFMicrowinPanelBack" {Toggle-MicrowinPanel 1}
+        "MicrowinAutoConfigBtn" {Invoke-AutoConfigDialog}
     }
 }
