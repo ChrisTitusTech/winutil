@@ -177,7 +177,7 @@ public class PowerManagement {
         if ($WPBT) {
             Write-Host "Disabling WPBT Execution"
             reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM"
-            reg add HKLM\zSYSTEM\ControlSet001\Control\Session Manager /v DisableWpbtExecution /t REG_DWORD /d 1 /f
+            reg add "HKLM\zSYSTEM\ControlSet001\Control\Session Manager" /v DisableWpbtExecution /t REG_DWORD /d 1 /f
             reg unload HKLM\zSYSTEM
         }
 
