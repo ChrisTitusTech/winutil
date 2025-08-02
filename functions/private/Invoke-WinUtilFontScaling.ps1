@@ -29,6 +29,7 @@ function Invoke-WinUtilFontScaling {
         "ButtonFontSize",
         "HeaderFontSize",
         "TabButtonFontSize",
+        "ConfigTabButtonFontSize",
         "IconFontSize",
         "SettingsIconFontSize",
         "CloseIconFontSize",
