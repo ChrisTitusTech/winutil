@@ -52,7 +52,6 @@ function Invoke-WinUtilFontScaling {
         "CustomDialogHeight",
         "CustomDialogLogoSize",
         "MicroWinLogoSize",
-        "TabRowHeightInPixels",
         "ToolTipWidth"
     )
 
