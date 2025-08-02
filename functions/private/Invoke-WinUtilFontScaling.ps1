@@ -38,7 +38,21 @@ function Invoke-WinUtilFontScaling {
         "CustomDialogFontSize",
         "CustomDialogFontSizeHeader",
         "ConfigUpdateButtonFontSize",
-        "CheckBoxBulletDecoratorSize"
+        "CheckBoxBulletDecoratorSize",
+        "ButtonWidth",
+        "ButtonHeight",
+        "TabButtonWidth",
+        "TabButtonHeight",
+        "IconButtonSize",
+        "AppEntryWidth",
+        "SearchBarWidth",
+        "SearchBarHeight",
+        "CustomDialogWidth",
+        "CustomDialogHeight",
+        "CustomDialogLogoSize",
+        "MicroWinLogoSize",
+        "TabRowHeightInPixels",
+        "ToolTipWidth"
     )
 
     # Apply scaling to each resource
