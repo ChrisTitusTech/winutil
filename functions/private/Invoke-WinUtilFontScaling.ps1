@@ -25,6 +25,7 @@ function Invoke-WinUtilFontScaling {
 
     # Define an array for resources to be scaled
     $fontResources = @(
+        # Fonts
         "FontSize",
         "ButtonFontSize",
         "HeaderFontSize",
@@ -39,6 +40,7 @@ function Invoke-WinUtilFontScaling {
         "CustomDialogFontSize",
         "CustomDialogFontSizeHeader",
         "ConfigUpdateButtonFontSize",
+        # Buttons and UI
         "CheckBoxBulletDecoratorSize",
         "ButtonWidth",
         "ButtonHeight",
