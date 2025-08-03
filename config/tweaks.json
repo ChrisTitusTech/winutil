@@ -1585,13 +1585,6 @@
         "Type": "DWord",
         "Value": "0",
         "OriginalValue": "<RemoveEntry>"
-      },
-            {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
-        "Name": "SyncDisabled",
-        "Type": "DWord",
-        "Value": "1",
-        "OriginalValue": "<RemoveEntry>"
       }
     ]
   },
