@@ -375,6 +375,14 @@
         "link": "https://discord.com/",
         "winget": "Discord.Discord"
     },
+    "dismtools": {
+        "category": "Microsoft Tools",
+        "choco": "na",
+        "content": "DISMTools",
+        "description": "DISMTools is a front-end for DISM that lets you manage your Windows Imaging (WIM) files and a whole lot more.",
+        "link": "https://github.com/CodingWonders/DISMTools",
+        "winget": "CodingWondersSoftware.DISMTools.Stable"
+    },
     "ditto": {
         "category": "Utilities",
         "choco": "ditto",
