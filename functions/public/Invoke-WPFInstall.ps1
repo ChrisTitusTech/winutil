@@ -67,7 +67,6 @@ function Invoke-WPFInstall {
                             $password = $passwordBox.Text | ConvertTo-SecureString -AsPlainText -Force
                             if ($password) {
                                 Set-LocalUser -Name $user -Password $password
-                                $password.Close()
                                 $Form.Close()
                             } else {
                                 [System.Windows.Forms.MessageBox]::Show('No password entered!')
