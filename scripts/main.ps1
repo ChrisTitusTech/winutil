@@ -324,19 +324,19 @@ $sync["Form"].Add_ContentRendered({
             Start-Sleep -Seconds 5
 
             Write-Host "Applying tweaks..."
-            Invoke-WPFtweaksbutton
             while ($sync.ProcessRunning) {
                 Start-Sleep -Seconds 5
             }
+            Invoke-WPFtweaksbutton
             Start-Sleep -Seconds 5
 
             Write-Host "Installing features..."
-            Invoke-WPFFeatureInstall
             while ($sync.ProcessRunning) {
                 Start-Sleep -Seconds 5
             }
-
+            Invoke-WPFFeatureInstall
             Start-Sleep -Seconds 5
+            
             Write-Host "Installing applications..."
             while ($sync.ProcessRunning) {
                 Start-Sleep -Seconds 1
