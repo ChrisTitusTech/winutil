@@ -54,3 +54,5 @@ winutil.ps1
 .github/site/
 
 binary/
+
+.preprocessor_hashes.json

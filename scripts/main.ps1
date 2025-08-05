@@ -315,33 +315,40 @@ $sync["Form"].Add_ContentRendered({
 
     # maybe this is not the best place to load and execute config file?
     # maybe community can help?
-    if ($PARAM_CONFIG) {
+    if ($PARAM_CONFIG -and -not [string]::IsNullOrWhiteSpace($PARAM_CONFIG)) {
         Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
         if ($PARAM_RUN) {
+            # Wait for any existing process to complete before starting
             while ($sync.ProcessRunning) {
                 Start-Sleep -Seconds 5
             }
             Start-Sleep -Seconds 5
 
             Write-Host "Applying tweaks..."
-            Invoke-WPFtweaksbutton
-            while ($sync.ProcessRunning) {
-                Start-Sleep -Seconds 5
+            if (-not $sync.ProcessRunning) {
+                Invoke-WPFtweaksbutton
+                while ($sync.ProcessRunning) {
+                    Start-Sleep -Seconds 5
+                }
             }
             Start-Sleep -Seconds 5
 
             Write-Host "Installing features..."
-            Invoke-WPFFeatureInstall
-            while ($sync.ProcessRunning) {
-                Start-Sleep -Seconds 5
+            if (-not $sync.ProcessRunning) {
+                Invoke-WPFFeatureInstall
+                while ($sync.ProcessRunning) {
+                    Start-Sleep -Seconds 5
+                }
             }
-
             Start-Sleep -Seconds 5
+
             Write-Host "Installing applications..."
-            while ($sync.ProcessRunning) {
-                Start-Sleep -Seconds 1
+            if (-not $sync.ProcessRunning) {
+                Invoke-WPFInstall
+                while ($sync.ProcessRunning) {
+                    Start-Sleep -Seconds 1
+                }
             }
-            Invoke-WPFInstall
             Start-Sleep -Seconds 5
 
             Write-Host "Done."
