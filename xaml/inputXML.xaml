@@ -1459,6 +1459,37 @@
                                 Foreground="{DynamicResource LabelboxForegroundColor}"
                             />
                             <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
+                            <TextBlock Margin="6" Padding="1" TextWrapping="Wrap"><Bold>Tweaks (leave empty for default settings)</Bold></TextBlock>
+                            <CheckBox Name="MicroWinWPBT" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="If enabled then allows your computer vendor to execute a program each time it boots. It enables computer vendors to force install anti-theft software, software drivers, or a software program conveniently. This could also be a security risk."><AccessText TextWrapping="Wrap" Text="Disable Windows Platform Binary Table (WPBT) (ADVANCED TWEAK)" /></CheckBox>
+                            <CheckBox Name="MicroWinUnsupported" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="If enabled then it will allow you to upgrade your PC to Windows 11 if your PC does not support Windows 11 yet. This is good for if you do not have a USB and want to upgrade to Windows 11 on unsupported hardware."><AccessText TextWrapping="Wrap" Text="Allow this PC to upgrade to Windows 11" /></CheckBox>
+                            <CheckBox Name="MicroWinESD" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="The ESD file format compresses the installation image even further, therefore reducing ISO file sizes a little more. Select this if you have a small USB."><AccessText TextWrapping="Wrap" Text="Convert this image to ESD (This will take longer)" /></CheckBox>
+                            <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">WinUtil configuration file (JSON)</TextBlock>
+                            <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" /> <!-- Takes the remaining space -->
+                                <ColumnDefinition Width="32" /> <!-- Fixed width for Button -->
+                            </Grid.ColumnDefinitions>
+                                <TextBox Name="MicrowinAutoConfigBox" Background="Transparent" BorderBrush="{DynamicResource MainForegroundColor}"
+                                        Text=""
+                                        Margin="2"
+                                        IsReadOnly="False"
+                                        Grid.Column="0"
+                                        ToolTip="Path of your configuration file"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource LabelboxForegroundColor}">
+                                </TextBox>
+                                <Button Name="MicrowinAutoConfigBtn"
+                                    Width="Auto"
+                                    Height="Auto"
+                                    Grid.Column="1"
+                                    Margin="2"
+                                    Padding="1"  VerticalAlignment="Center">
+                                    <Button.Content>
+                                    ...
+                                    </Button.Content>
+                                </Button>
+                            </Grid>
+                            <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                             <Button Name="WPFMicrowin" Content="Start the process" Margin="2" Padding="15"/>
                         </StackPanel>
                         <StackPanel HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Collapsed">
@@ -1527,7 +1558,7 @@
                                 May take several minutes to process the ISO depending on your machine and connection <LineBreak/>
                                 - Put it somewhere on the C:\ drive so it is easily accessible <LineBreak/>
                                 - Launch WinUtil and MicroWin  <LineBreak/>
-                                - Click on the "Select Windows ISO" button and wait for WinUtil to process the image <LineBreak/>
+                                - Click on the "Get Windows ISO" button and wait for WinUtil to process the image <LineBreak/>
                                 It will be processed and unpacked which may take some time <LineBreak/>
                                 - Once complete, choose which Windows flavor you want to base your image on <LineBreak/>
                                 - Click the "Start Process" button <LineBreak/>

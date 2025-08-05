@@ -58,6 +58,9 @@ public class PowerManagement {
     $injectDrivers = $sync.MicrowinInjectDrivers.IsChecked
     $importDrivers = $sync.MicrowinImportDrivers.IsChecked
 
+    $WPBT = $sync.MicroWinWPBT.IsChecked
+    $unsupported = $sync.MicroWinUnsupported.IsChecked
+
     $importVirtIO = $sync.MicrowinCopyVirtIO.IsChecked
 
     $mountDir = $sync.MicrowinMountDir.Text
@@ -66,7 +69,12 @@ public class PowerManagement {
     # Detect if the Windows image is an ESD file and convert it to WIM
     if (-not (Test-Path -Path "$mountDir\sources\install.wim" -PathType Leaf) -and (Test-Path -Path "$mountDir\sources\install.esd" -PathType Leaf)) {
         Write-Host "Exporting Windows image to a WIM file, keeping the index we want to work on. This can take several minutes, depending on the performance of your computer..."
-        Export-WindowsImage -SourceImagePath $mountDir\sources\install.esd -SourceIndex $index -DestinationImagePath $mountDir\sources\install.wim -CompressionType "Max"
+        try {
+            Export-WindowsImage -SourceImagePath "$mountDir\sources\install.esd" -SourceIndex $index -DestinationImagePath "$mountDir\sources\install.wim" -CompressionType "Max"
+        } catch {
+            # Usually the case if it can't find unattend.dll on the host system. Guys, fix your corrupt messes that are your installations!
+            dism /english /export-image /sourceimagefile="$mountDir\sources\install.esd" /sourceindex=$index /destinationimagefile="$mountDir\sources\install.wim" /compress:max
+        }
         if ($?) {
             Remove-Item -Path "$mountDir\sources\install.esd" -Force
             # Since we've already exported the image index we wanted, switch to the first one
@@ -166,6 +174,25 @@ public class PowerManagement {
             }
         }
 
+        if ($WPBT) {
+            Write-Host "Disabling WPBT Execution"
+            reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM"
+            reg add "HKLM\zSYSTEM\ControlSet001\Control\Session Manager" /v DisableWpbtExecution /t REG_DWORD /d 1 /f
+            reg unload HKLM\zSYSTEM
+        }
+
+        if ($unsupported) {
+            Write-Host "Bypassing system requirements (locally)"
+            reg add "HKCU\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
+            reg add "HKCU\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
+            reg add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassCPUCheck" /t REG_DWORD /d 1 /f
+            reg add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassRAMCheck" /t REG_DWORD /d 1 /f
+            reg add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassSecureBootCheck" /t REG_DWORD /d 1 /f
+            reg add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassStorageCheck" /t REG_DWORD /d 1 /f
+            reg add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassTPMCheck" /t REG_DWORD /d 1 /f
+            reg add "HKLM\SYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
+        }
+
         if ($importVirtIO) {
             Write-Host "Copying VirtIO drivers..."
             Microwin-CopyVirtIO
@@ -221,6 +248,20 @@ public class PowerManagement {
 
         Write-Host "Create unattend.xml"
 
+        if (($sync.MicrowinAutoConfigBox.Text -ne "") -and (Test-Path "$($sync.MicrowinAutoConfigBox.Text)"))
+        {
+            try
+            {
+                Write-Host "A configuration file has been specified. Copying to WIM file..."
+                Copy-Item "$($sync.MicrowinAutoConfigBox.Text)" "$($scratchDir)\winutil-config.json"
+            }
+            catch
+            {
+                Write-Host "The config file could not be copied. Continuing without it..."
+            }
+        }
+
+        # Create unattended answer file with user information - Check condition to learn more about this functionality
         if ($sync.MicrowinUserName.Text -eq "")
         {
             Microwin-NewUnattend -userName "User"
@@ -242,7 +283,6 @@ public class PowerManagement {
         Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\Panther\unattend.xml" -force
         New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\Sysprep"
         Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\System32\Sysprep\unattend.xml" -force
-        Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\unattend.xml" -force
         Write-Host "Done Copy unattend.xml"
 
         Write-Host "Create FirstRun"
@@ -277,7 +317,6 @@ public class PowerManagement {
         reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\Windows Chat" /v ChatIcon /t REG_DWORD /d 2 /f                             >$null 2>&1
         reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarMn" /t REG_DWORD /d 0 /f        >$null 2>&1
         reg query "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Communications" /v "ConfigureChatAutoInstall"                      >$null 2>&1
-        # Write-Host Error code $LASTEXITCODE
         Write-Host "Done disabling Teams"
 
         Write-Host "Fix Windows Volume Mixer Issue"
@@ -304,11 +343,6 @@ public class PowerManagement {
                 'CrossDeviceUpdate'
             ) | ForEach-Object {
                 Write-Host "Removing Windows Expedited App: $_"
-
-                # Copied here After Installation (Online)
-                # reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler\$_" /f | Out-Null
-
-                # When in Offline Image
                 reg delete "HKLM\zSOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\$_" /f | Out-Null
             }
         }
@@ -316,7 +350,6 @@ public class PowerManagement {
         reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTaskbarMode" /t REG_DWORD /d 0 /f
         Write-Host "Setting all services to start manually"
         reg add "HKLM\zSOFTWARE\CurrentControlSet\Services" /v Start /t REG_DWORD /d 3 /f
-        # Write-Host $LASTEXITCODE
 
         Write-Host "Enabling Local Accounts on OOBE"
         reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\OOBE" /v "BypassNRO" /t REG_DWORD /d "1" /f
@@ -371,7 +404,12 @@ public class PowerManagement {
     try {
 
         Write-Host "Exporting image into $mountDir\sources\install2.wim"
-        Export-WindowsImage -SourceImagePath "$mountDir\sources\install.wim" -SourceIndex $index -DestinationImagePath "$mountDir\sources\install2.wim" -CompressionType "Max"
+        try {
+            Export-WindowsImage -SourceImagePath "$mountDir\sources\install.wim" -SourceIndex $index -DestinationImagePath "$mountDir\sources\install2.wim" -CompressionType "Max"
+        } catch {
+            # Usually the case if it can't find unattend.dll on the host system. Guys, fix your corrupt messes that are your installations!
+            dism /english /export-image /sourceimagefile="$mountDir\sources\install.wim" /sourceindex=$index /destinationimagefile="$mountDir\sources\install2.wim" /compress:max
+        }
         Write-Host "Remove old '$mountDir\sources\install.wim' and rename $mountDir\sources\install2.wim"
         Remove-Item "$mountDir\sources\install.wim"
         Rename-Item "$mountDir\sources\install2.wim" "$mountDir\sources\install.wim"
@@ -384,6 +422,20 @@ public class PowerManagement {
             return
         }
         Write-Host "Windows image completed. Continuing with boot.wim."
+
+        $esd = $sync.MicroWinESD.IsChecked
+        if ($esd) {
+            Write-Host "Converting install image to ESD."
+            try {
+                Export-WindowsImage -SourceImagePath "$mountDir\sources\install.wim" -SourceIndex $index -DestinationImagePath "$mountDir\sources\install.esd" -CompressionType "Recovery"
+                Remove-Item "$mountDir\sources\install.wim"
+                Write-Host "Converted install image to ESD."
+            } catch {
+                Start-Process -FilePath "$env:SystemRoot\System32\dism.exe" -ArgumentList "/export-image /sourceimagefile:`"$mountDir\sources\install.wim`" /sourceindex:1 /destinationimagefile:`"$mountDir\sources\install.esd`" /compress:recovery" -Wait -NoNewWindow
+                Remove-Item "$mountDir\sources\install.wim"
+                Write-Host "Converted install image to ESD."
+            }
+        }
 
         # Next step boot image
         Write-Host "Mounting boot image $mountDir\sources\boot.wim into $scratchDir"
@@ -481,6 +533,7 @@ public class PowerManagement {
                 Write-Host "Reason: $($exitCode.Message)"
                 Invoke-MicrowinBusyInfo -action "warning" -message $exitCode.Message
                 Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
+                [System.Windows.MessageBox]::Show("MicroWin failed to make the ISO.", "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
             } catch {
                 # Could not get error description from Windows APIs
             }
@@ -488,7 +541,6 @@ public class PowerManagement {
 
         Toggle-MicrowinPanel 1
 
-        #$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
         $sync.MicrowinFinalIsoLocation.Text = "$($SaveDialog.FileName)"
         # Allow the machine to sleep again (optional)
         [PowerManagement]::SetThreadExecutionState(0)
