@@ -32,6 +32,7 @@
         "ButtonFontFamily": "Arial",
         "ButtonWidth":      "200",
         "ButtonHeight":     "25",
+        "ConfigTabButtonFontSize":   "14",
         "ConfigUpdateButtonFontSize":   "14",
         "SearchBarWidth":               "200",
         "SearchBarHeight":              "26",
