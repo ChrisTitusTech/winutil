@@ -91,6 +91,17 @@ function Microwin-NewFirstRun {
     # This will set List view in Start menu on Win11 25H2. This will not do anything in 24H2 and older
     reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Start" /v AllAppsViewMode /t REG_DWORD /d 2 /f
 
+    # This will disable the Recommendations in 25H2. This is much simpler than the method used in 24H2 that requires the Education Environment policy
+    reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v Start_IrisRecommendations /t REG_DWORD /d 0 /f
+
+    # Other Start Menu settings
+    reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v Start_AccountNotifications /t REG_DWORD /d 0 /f
+    reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Start" /v ShowAllPinsList /t REG_DWORD /d 0 /f
+    reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Start" /v ShowFrequentList /t REG_DWORD /d 0 /f
+    reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Start" /v ShowRecentList /t REG_DWORD /d 0 /f
+    reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v Start_TrackDocs /t REG_DWORD /d 0 /f
+
+
     if (Test-Path -Path "$env:HOMEDRIVE\winutil-config.json")
     {
         Write-Host "Configuration file detected. Applying..."
