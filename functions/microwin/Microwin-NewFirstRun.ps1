@@ -88,6 +88,9 @@ function Microwin-NewFirstRun {
     reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.AccountHealth" /f
     reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.AccountHealth" /v Enabled /t REG_DWORD /d 0 /f
 
+    # This will set List view in Start menu on Win11 25H2. This will not do anything in 24H2 and older
+    reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Start" /v AllAppsViewMode /t REG_DWORD /d 2 /f
+
     if (Test-Path -Path "$env:HOMEDRIVE\winutil-config.json")
     {
         Write-Host "Configuration file detected. Applying..."
