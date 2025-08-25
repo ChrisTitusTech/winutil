@@ -123,14 +123,36 @@ $sync.configs.applications.PSObject.Properties | ForEach-Object {
 }
 
 # Now call the function with the final merged config
-Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
-Initialize-WPFUI -targetGridName "appscategory"
+# Initialize Actions tab with modern design after Form objects are loaded
+# This ensures the target grid is available in the sync hashtable
 
-Initialize-WPFUI -targetGridName "appspanel"
+Initialize-WPFUI -targetGridName "appspanel" -UseResponsiveLayout $true
 
-Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
+# Apply initial package manager filter and update stats after apps are loaded
+Update-PackageManagerStats
+# Give UI time to initialize before applying filter
+Start-Sleep -Milliseconds 200
+Invoke-WPFPackageManagerFilter -FilterType "All"
 
-Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
+# Initialize category navigation if enhanced layout is being used
+if ($sync.ItemsControl -and $sync.ItemsControl -is [Windows.Controls.StackPanel]) {
+    $categories = Get-AppCategories
+    if ($categories -and $categories.Count -gt 0 -and -not $sync.CategoryNavigationBar) {
+        Add-CategoryNavigationBar -TargetContainer $sync.ItemsControl -Categories $categories
+    }
+}
+
+# Ensure radio buttons are properly initialized before setting up events
+Start-Sleep -Milliseconds 100
+
+# Use enhanced card-based layout for Tweaks section (similar to Install section)
+Initialize-TweaksArea -TargetGridName "tweakspanel"
+
+# Use enhanced card-based layout for Config section (similar to Install section)
+Initialize-ConfigArea -TargetGridName "featurespanel"
+
+# Use enhanced visual styling for MicroWin section (improved typography and layout)
+Initialize-MicroWinArea -TargetElement "MicrowinMain"
 
 # Future implementation: Add Windows Version to updates panel
 #Invoke-WPFUIElements -configVariable $sync.configs.updates -targetGridName "updatespanel" -columncount 1
@@ -141,14 +163,27 @@ Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "feat
 
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
 
-#Persist Package Manager preference across winutil restarts
-$sync.ChocoRadioButton.Add_Checked({Set-PackageManagerPreference Choco})
-$sync.WingetRadioButton.Add_Checked({Set-PackageManagerPreference Winget})
-Set-PackageManagerPreference
+# Initialize Actions tab with dedicated function for better styling and layout
+Initialize-WPFActionsTab -TargetGridName "appscategory"
+Initialize-WPFUI -targetGridName "appscategory"
 
+# Set initial filter and package manager preference
+Set-PackageManagerPreference
+$sync.CurrentPackageFilter = "Winget"
+
+# Radio button event handlers are now managed within the Actions tab initialization
+# Initial state will be set after the Actions tab is fully initialized
+
+# Legacy preference handling (for installation, not filtering)
 switch ($sync["ManagerPreference"]) {
-    "Choco" {$sync.ChocoRadioButton.IsChecked = $true; break}
-    "Winget" {$sync.WingetRadioButton.IsChecked = $true; break}
+    "Choco" {
+        # Set Choco for installation preference
+        break
+    }
+    "Winget" {
+        # Set Winget for installation preference
+        break
+    }
 }
 
 $sync.keys | ForEach-Object {
@@ -398,6 +433,9 @@ $searchBarTimer.add_Tick({
         }
         "Tweaks" {
             Find-TweaksByNameOrDescription -SearchString $sync.SearchBar.Text
+        }
+        "Config" {
+            Find-FeaturesByNameOrDescription -SearchString $sync.SearchBar.Text
         }
     }
 })

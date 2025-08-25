@@ -27,7 +27,7 @@
         "GroupName": "PackageManagerGroup",
         "Checked": true,
         "Order": "1",
-        "Description": "Use Winget for package management"
+        "Description": "Show only Winget applications"
     },
     "ChocoRadioButton": {
         "Content": "Chocolatey",
@@ -36,7 +36,7 @@
         "GroupName": "PackageManagerGroup",
         "Checked": false,
         "Order": "2",
-        "Description": "Use Chocolatey for package management"
+        "Description": "Show only Chocolatey applications"
     },
     "WPFClearInstallSelection": {
         "Content": "Clear Selection",

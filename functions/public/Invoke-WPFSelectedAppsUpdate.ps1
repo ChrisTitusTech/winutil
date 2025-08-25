@@ -19,25 +19,51 @@ function Invoke-WPFSelectedAppsUpdate {
     )
 
     $selectedAppsButton = $sync.WPFselectedAppsButton
-    # Get the actual Name from the selectedAppLabel inside the Checkbox
-    $appKey = $checkbox.Parent.Tag
-    if ($type -eq "Add") {
-        $sync.selectedApps.Add($appKey)
-        # The List type needs to be specified again, because otherwise Sort-Object will convert the list to a string if there is only a single entry
-        [System.Collections.Generic.List[pscustomobject]]$sync.selectedApps = $sync.SelectedApps | Sort-Object
+    # Get the actual Name from the checkbox - enhanced layout compatibility
+    $appKey = $checkbox.Name
 
+    # If appKey is null, try to find it from parent structure (fallback for different layouts)
+    if (-not $appKey) {
+        $parent = $checkbox.Parent
+        while ($parent -and -not $appKey) {
+            if ($parent.Tag) {
+                $appKey = $parent.Tag
+                break
+            }
+            $parent = $parent.Parent
+        }
+    }
+    # Ensure the selectedApps list is initialized
+    if (-not $sync.selectedApps) {
+        $sync.selectedApps = [System.Collections.Generic.List[string]]::new()
+    }
+
+    if ($type -eq "Add") {
+        if (-not $sync.selectedApps.Contains($appKey)) {
+            $sync.selectedApps.Add($appKey)
+        }
     }
     elseif ($type -eq "Remove") {
-        $sync.SelectedApps.Remove($appKey)
+        $sync.selectedApps.Remove($appKey)
     }
     else{
         Write-Error "Type: $type not implemented"
     }
 
-    $count = $sync.SelectedApps.Count
+    $count = $sync.selectedApps.Count
     $selectedAppsButton.Content = "Selected Apps: $count"
-    # On every change, remove all entries inside the Popup Menu. This is done, so we can keep the alphabetical order even if elements are selected in a random way
-    $sync.selectedAppsstackPanel.Children.Clear()
-    $sync.SelectedApps | Foreach-Object { Add-SelectedAppsMenuItem -name $($sync.configs.applicationsHashtable.$_.Content) -key $_ }
+
+    # On every change, remove all entries inside the Popup Menu and rebuild
+    if ($sync.selectedAppsstackPanel) {
+        $sync.selectedAppsstackPanel.Children.Clear()
+        # Sort apps alphabetically and add to popup
+        $sortedApps = $sync.selectedApps | Sort-Object { $sync.configs.applicationsHashtable.$_.Content }
+        $sortedApps | ForEach-Object {
+            $appInfo = $sync.configs.applicationsHashtable.$_
+            if ($appInfo) {
+                Add-SelectedAppsMenuItem -name $appInfo.Content -key $_
+            }
+        }
+    }
 
 }

@@ -40,7 +40,7 @@ function Invoke-WPFInstall {
 
                 Get-LocalUser | Where-Object Enabled -eq $true | ForEach-Object {
                     try {
-                        $myPasswordIsBlank = $PrincipalContext.ValidateCredentials($user, $null)
+                        $PrincipalContext.ValidateCredentials($user, $null)
                     } catch {
                         $form = New-Object System.Windows.Forms.Form
                         $form.Text = "Set password for $user"

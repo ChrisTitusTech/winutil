@@ -210,18 +210,18 @@ function Show-CustomDialog {
         $hyperlink.Foreground = $LinkForegroundColor
 
         $hyperlink.Add_Click({
-            param($sender, $args)
-            Start-Process $sender.NavigateUri.AbsoluteUri
+            param($source, $e)
+            Start-Process $source.NavigateUri.AbsoluteUri
         })
         $hyperlink.Add_MouseEnter({
-            param($sender, $args)
-            $sender.Foreground = $LinkHoverForegroundColor
-            $sender.FontSize = ($FontSize + ($FontSize / 4))
-            $sender.FontWeight = "SemiBold"
+            param($source, $e)
+            $source.Foreground = $LinkHoverForegroundColor
+            $source.FontSize = ($FontSize + ($FontSize / 4))
+            $source.FontWeight = "SemiBold"
         })
         $hyperlink.Add_MouseLeave({
-            param($sender, $args)
-            $sender.Foreground = $LinkForegroundColor
+            param($source, $e)
+            $source.Foreground = $LinkForegroundColor
             $sender.FontSize = $FontSize
             $sender.FontWeight = "Normal"
         })
