@@ -534,11 +534,18 @@
                                                 Height="{DynamicResource CheckBoxBulletDecoratorSize *0.85}"
                                                 Margin="2"
                                                 SnapsToDevicePixels="True"/>
-                                        <Path x:Name="CheckMark"
-                                              Stroke="{DynamicResource ToggleButtonOnColor}"
-                                              StrokeThickness="2"
-                                              Data="M 0 5 L 5 10 L 12 0"
-                                              Visibility="Collapsed"/>
+                                        <Viewbox x:Name="CheckMarkContainer"
+                                                Width="{DynamicResource CheckBoxBulletDecoratorSize}"
+                                                Height="{DynamicResource CheckBoxBulletDecoratorSize}"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Visibility="Collapsed">
+                                            <Path x:Name="CheckMark"
+                                                  Stroke="{DynamicResource ToggleButtonOnColor}"
+                                                  StrokeThickness="1.5"
+                                                  Data="M 0 5 L 5 10 L 12 0"
+                                                  Stretch="Uniform"/>
+                                        </Viewbox>
                                     </Grid>
                                 </BulletDecorator.Bullet>
                                 <ContentPresenter Margin="4,0,0,0"
@@ -549,7 +556,7 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="CheckMarkContainer" Property="Visibility" Value="Visible"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <!--Setter TargetName="Border" Property="Background" Value="{DynamicResource ButtonBackgroundPressedColor}"/-->
@@ -569,22 +576,24 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="RadioButton">
                         <StackPanel Orientation="Horizontal" Margin="{DynamicResource CheckBoxMargin}">
-                            <Grid Width="14" Height="14">
-                                <Ellipse x:Name="OuterCircle"
-                                        Stroke="{DynamicResource ToggleButtonOffColor}"
-                                        Fill="{DynamicResource ButtonBackgroundColor}"
-                                        StrokeThickness="1"
-                                        Width="14"
-                                        Height="14"
-                                        SnapsToDevicePixels="True"/>
-                                <Ellipse x:Name="InnerCircle"
-                                        Fill="{DynamicResource ToggleButtonOnColor}"
-                                        Width="8"
-                                        Height="8"
-                                        Visibility="Collapsed"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"/>
-                            </Grid>
+                            <Viewbox Width="{DynamicResource CheckBoxBulletDecoratorSize}" Height="{DynamicResource CheckBoxBulletDecoratorSize}">
+                                <Grid Width="14" Height="14">
+                                    <Ellipse x:Name="OuterCircle"
+                                            Stroke="{DynamicResource ToggleButtonOffColor}"
+                                            Fill="{DynamicResource ButtonBackgroundColor}"
+                                            StrokeThickness="1"
+                                            Width="14"
+                                            Height="14"
+                                            SnapsToDevicePixels="True"/>
+                                    <Ellipse x:Name="InnerCircle"
+                                            Fill="{DynamicResource ToggleButtonOnColor}"
+                                            Width="8"
+                                            Height="8"
+                                            Visibility="Collapsed"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"/>
+                                </Grid>
+                            </Viewbox>
                             <ContentPresenter Margin="4,0,0,0"
                                             VerticalAlignment="Center"
                                             RecognizesAccessKey="True"/>
