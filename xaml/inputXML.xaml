@@ -966,27 +966,28 @@
                     Consider using a Math Solver, will help in making
                     development of these things much easier
                 -->
-                <TextBox
-                    Grid.Column="0"
-                    Width="{DynamicResource SearchBarWidth}"
-                    Height="{DynamicResource SearchBarHeight}"
-                    FontSize="{DynamicResource SearchBarTextBoxFontSize}"
-                    VerticalAlignment="Center" HorizontalAlignment="Left"
-                    BorderThickness="1"
-                    Name="SearchBar"
-                    Foreground="{DynamicResource MainForegroundColor}" Background="{DynamicResource MainBackgroundColor}"
-                    Padding="3,3,30,0"
-                    Margin="5,0,0,0"
-                    ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter">
-                </TextBox>
-                <TextBlock
-                    Grid.Column="0"
-                    VerticalAlignment="Center" HorizontalAlignment="Left"
-                    FontFamily="Segoe MDL2 Assets"
-                    Foreground="{DynamicResource ButtonBackgroundSelectedColor}"
-                    FontSize="{DynamicResource IconFontSize}"
-                    Margin="180,0,0,0">&#xE721;
-                </TextBlock>
+                <Border Grid.Column="0" Margin="5,0,0,0" Width="{DynamicResource SearchBarWidth}" Height="{DynamicResource SearchBarHeight}" VerticalAlignment="Center" HorizontalAlignment="Left">
+                    <Grid>
+                        <TextBox
+                            Width="{DynamicResource SearchBarWidth}"
+                            Height="{DynamicResource SearchBarHeight}"
+                            FontSize="{DynamicResource SearchBarTextBoxFontSize}"
+                            VerticalAlignment="Center" HorizontalAlignment="Left"
+                            BorderThickness="1"
+                            Name="SearchBar"
+                            Foreground="{DynamicResource MainForegroundColor}" Background="{DynamicResource MainBackgroundColor}"
+                            Padding="3,3,30,0"
+                            ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter">
+                        </TextBox>
+                        <TextBlock
+                            VerticalAlignment="Center" HorizontalAlignment="Right"
+                            FontFamily="Segoe MDL2 Assets"
+                            Foreground="{DynamicResource ButtonBackgroundSelectedColor}"
+                            FontSize="{DynamicResource IconFontSize}"
+                            Margin="0,0,8,0" Width="Auto" Height="Auto">&#xE721;
+                        </TextBlock>
+                    </Grid>
+                </Border>
                 <!--
                   TODO:
                     Make this ClearButton Positioning react to
@@ -998,7 +999,7 @@
                     VerticalAlignment="Center" HorizontalAlignment="Left"
                     Name="SearchBarClearButton"
                     Style="{StaticResource SearchBarClearButtonStyle}"
-                    Margin="210,0,0,0" Visibility="Collapsed">
+                    Margin="213,0,0,0" Visibility="Collapsed">
                 </Button>
 
                 <!-- Buttons Container -->
