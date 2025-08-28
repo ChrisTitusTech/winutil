@@ -52,7 +52,10 @@ function Install-WinUtilWinget {
 
             # Check if Windows version supports Repair-WinGetPackageManager (24H2 and above)
             if ([System.Environment]::OSVersion.Version.Build -ge 26100) {
-		Install-Module -Name Microsoft.WinGet.Client -Force -ErrorAction Continue
+                Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+                Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+                Install-Module "Microsoft.WinGet.Client" -Force
+                Import-Module Microsoft.WinGet.Client
                 Repair-WinGetPackageManager -Force -Latest -Verbose
                 # Verify if repair was successful
                 $wingetCmd = Get-Command winget -ErrorAction Stop
