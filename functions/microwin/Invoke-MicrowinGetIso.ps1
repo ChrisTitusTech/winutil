@@ -4,7 +4,7 @@ function Invoke-MicrowinGetIso {
     Function to get the path to Iso file for MicroWin, unpack that isom=, read basic information and populate the UI Options
     #>
 
-    Write-Host "Invoking WPFGetIso"
+    Write-Debug "Invoking WPFGetIso"
 
     if($sync.ProcessRunning) {
         $msg = "GetIso process is currently running."
