@@ -2902,5 +2902,13 @@
         "description": "The modern, privacy-focused, performance-driven browser built on Firefox",
         "link": "https://zen-browser.app/",
         "winget": "Zen-Team.Zen-Browser"
+    },
+    "WinDirStat": {
+        "category": "Utilities",
+        "choco": "windirstat",
+        "content": "WinDirStat",
+        "description": "WinDirStat a free, open source, fast disk space analyzer that allows you to find drive space hogs at a glance.",
+        "link": "https://windirstat.net/",
+        "winget": "WinDirStat.WinDirStat"
     }
 }
