@@ -376,12 +376,20 @@
         "winget": "Discord.Discord"
     },
     "dismtools": {
-        "category": "Microsoft Tools",
+        "category": "DISM Utilities",
         "choco": "na",
         "content": "DISMTools",
-        "description": "DISMTools is a front-end for DISM that lets you manage your Windows Imaging (WIM) files and a whole lot more.",
+        "description": "DISMTools is a fast, customizable GUI for the DISM utility, supporting Windows images from Windows 7 onward. It handles installations on any drive, offers project support, and lets users tweak settings like color modes, language, and DISM versions; powered by both native DISM and a managed DISM API.",
         "link": "https://github.com/CodingWonders/DISMTools",
         "winget": "CodingWondersSoftware.DISMTools.Stable"
+    },
+    "ntlite": {
+        "category": "DISM Utilities",
+        "choco": "ntlite-free",
+        "content": "NTLite",
+        "description": "Integrate updates, drivers, automate Windows and application setup, speedup Windows deployment process and have it all set for the next time.",
+        "link": "https://ntlite.com",
+        "winget": "Nlitesoft.NTLite"
     },
     "ditto": {
         "category": "Utilities",
@@ -1163,7 +1171,7 @@
         "category": "Communications",
         "choco": "element-desktop",
         "content": "Element",
-        "description": "Element is a client for Matrix—an open network for secure, decentralized communication.",
+        "description": "Element is a client for Matrix; an open network for secure, decentralized communication.",
         "link": "https://element.io/",
         "winget": "Element.Element"
     },
