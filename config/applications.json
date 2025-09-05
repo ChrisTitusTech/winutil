@@ -1509,7 +1509,7 @@
         "content": "OpenRGB",
         "description": "OpenRGB is an open-source RGB lighting control software designed to manage and control RGB lighting for various components and peripherals.",
         "link": "https://openrgb.org/",
-        "winget": "CalcProgrammer1.OpenRGB"
+        "winget": "OpenRGB.OpenRGB"
     },
     "openscad": {
         "category": "Multimedia Tools",
