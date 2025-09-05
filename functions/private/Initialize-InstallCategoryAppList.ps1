@@ -24,7 +24,9 @@ function Initialize-InstallCategoryAppList {
             $toggleButton = New-Object Windows.Controls.Label
             $toggleButton.Content = "$Category"
             $toggleButton.Tag = "CategoryToggleButton"
-            $sync.$Category = $Category
+            $toggleButton.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "HeaderFontSize")
+            $toggleButton.SetResourceReference([Windows.Controls.Control]::FontFamilyProperty, "HeaderFontFamily")
+            $sync.$Category = $toggleButton
 
             $null = $TargetElement.Items.Add($toggleButton)
         }

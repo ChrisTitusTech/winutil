@@ -140,6 +140,7 @@ function Invoke-WPFUIElements {
             $label.Content = $category -replace ".*__", ""
             $label.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "HeaderFontSize")
             $label.SetResourceReference([Windows.Controls.Control]::FontFamilyProperty, "HeaderFontFamily")
+            $label.UseLayoutRounding = $true
             $itemsControl.Items.Add($label) | Out-Null
             $sync[$category] = $label
 
@@ -154,6 +155,7 @@ function Invoke-WPFUIElements {
                         $checkBox = New-Object Windows.Controls.CheckBox
                         $checkBox.Name = $entryInfo.Name
                         $checkBox.HorizontalAlignment = "Right"
+                        $checkBox.UseLayoutRounding = $true
                         $dockPanel.Children.Add($checkBox) | Out-Null
                         $checkBox.Style = $ColorfulToggleSwitchStyle
 
@@ -163,6 +165,7 @@ function Invoke-WPFUIElements {
                         $label.HorizontalAlignment = "Left"
                         $label.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
                         $label.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "MainForegroundColor")
+                        $label.UseLayoutRounding = $true
                         $dockPanel.Children.Add($label) | Out-Null
                         $itemsControl.Items.Add($dockPanel) | Out-Null
 
@@ -217,6 +220,7 @@ function Invoke-WPFUIElements {
                         $label.HorizontalAlignment = "Left"
                         $label.VerticalAlignment = "Center"
                         $label.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
+                        $label.UseLayoutRounding = $true
                         $horizontalStackPanel.Children.Add($label) | Out-Null
 
                         $comboBox = New-Object Windows.Controls.ComboBox
@@ -226,11 +230,14 @@ function Invoke-WPFUIElements {
                         $comboBox.HorizontalAlignment = "Left"
                         $comboBox.VerticalAlignment = "Center"
                         $comboBox.SetResourceReference([Windows.Controls.Control]::MarginProperty, "ButtonMargin")
+                        $comboBox.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
+                        $comboBox.UseLayoutRounding = $true
 
                         foreach ($comboitem in ($entryInfo.ComboItems -split " ")) {
                             $comboBoxItem = New-Object Windows.Controls.ComboBoxItem
                             $comboBoxItem.Content = $comboitem
                             $comboBoxItem.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
+                            $comboBoxItem.UseLayoutRounding = $true
                             $comboBox.Items.Add($comboBoxItem) | Out-Null
                         }
 
@@ -238,6 +245,19 @@ function Invoke-WPFUIElements {
                         $itemsControl.Items.Add($horizontalStackPanel) | Out-Null
 
                         $comboBox.SelectedIndex = 0
+
+                        # Set initial text
+                        if ($comboBox.Items.Count -gt 0) {
+                            $comboBox.Text = $comboBox.Items[0].Content
+                        }
+
+                        # Add SelectionChanged event handler to update the text property
+                        $comboBox.Add_SelectionChanged({
+                            $selectedItem = $this.SelectedItem
+                            if ($selectedItem) {
+                                $this.Text = $selectedItem.Content
+                            }
+                        })
 
                         $sync[$entryInfo.Name] = $comboBox
                     }
@@ -250,7 +270,8 @@ function Invoke-WPFUIElements {
                         $button.SetResourceReference([Windows.Controls.Control]::MarginProperty, "ButtonMargin")
                         $button.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
                         if ($entryInfo.ButtonWidth) {
-                            $button.Width = $entryInfo.ButtonWidth
+                            $baseWidth = [int]$entryInfo.ButtonWidth
+                            $button.Width = [math]::Max($baseWidth, 350)
                         }
                         $itemsControl.Items.Add($button) | Out-Null
 
@@ -281,6 +302,7 @@ function Invoke-WPFUIElements {
                         $radioButton.SetResourceReference([Windows.Controls.Control]::MarginProperty, "CheckBoxMargin")
                         $radioButton.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
                         $radioButton.ToolTip = $entryInfo.Description
+                        $radioButton.UseLayoutRounding = $true
 
                         if ($entryInfo.Checked -eq $true) {
                             $radioButton.IsChecked = $true
@@ -301,6 +323,7 @@ function Invoke-WPFUIElements {
                         $checkBox.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
                         $checkBox.ToolTip = $entryInfo.Description
                         $checkBox.SetResourceReference([Windows.Controls.Control]::MarginProperty, "CheckBoxMargin")
+                        $checkBox.UseLayoutRounding = $true
                         if ($entryInfo.Checked -eq $true) {
                             $checkBox.IsChecked = $entryInfo.Checked
                         }
@@ -312,6 +335,7 @@ function Invoke-WPFUIElements {
                             $textBlock.Text = "(?)"
                             $textBlock.ToolTip = $entryInfo.Link
                             $textBlock.Style = $HoverTextBlockStyle
+                            $textBlock.UseLayoutRounding = $true
 
                             $horizontalStackPanel.Children.Add($textBlock) | Out-Null
 
