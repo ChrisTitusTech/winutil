@@ -39,42 +39,55 @@ function Invoke-WPFInstall {
                 $user = $env:USERNAME
 
                 Get-LocalUser | Where-Object Enabled -eq $true | ForEach-Object {
-                    try {
-                        $myPasswordIsBlank = $PrincipalContext.ValidateCredentials($user, $null)
-                    } catch {
-                        $form = New-Object System.Windows.Forms.Form
-                        $form.Text = "Set password for $user"
-                        $form.Size = New-Object System.Drawing.Size(500, 200)
+                        $validPassword = $false
+                        while (-not $validPassword) {
+                            try {
+                                $myPasswordIsBlank = $PrincipalContext.ValidateCredentials($user, $null)
+                                $validPassword = $true
+                            } catch {
+                                $form = New-Object System.Windows.Forms.Form
+                                $form.Text = "Set password for $user"
+                                $form.Size = New-Object System.Drawing.Size(500, 200)
 
-                        $label = New-Object System.Windows.Forms.Label
-                        $label.Text = 'Maybe a program needs to be installed in "usermode" and you have no password set, you need to set it here. After putting a password into the text box a page asking for your password might open (not right after). If you keep the text box empty, nothing will happen.
-                        REMEMBER THE PASSWORD FOR THE FUTURE. YOU WILL NEED FOR STUFF AND TO LOGIN IF AUTOLOGIN ISN`T SET'
-                        $label.Size = New-Object System.Drawing.Size(480, 60)
-                        $label.Location = New-Object System.Drawing.Point(10, 10)
-                        $form.Controls.Add($label)
+                                $label = New-Object System.Windows.Forms.Label
+                                $label.Text = 'Maybe a program needs to be installed in "usermode" and you have no password set, you need to set it here. After putting a password into the text box a page asking for your password might open (not right after). If you keep the text box empty, nothing will happen.
+                                REMEMBER THE PASSWORD FOR THE FUTURE. YOU WILL NEED FOR STUFF AND TO LOGIN IF AUTOLOGIN ISN`T SET'
+                                $label.Size = New-Object System.Drawing.Size(480, 60)
+                                $label.Location = New-Object System.Drawing.Point(10, 10)
+                                $form.Controls.Add($label)
 
-                        $passwordBox = New-Object System.Windows.Forms.TextBox
-                        $passwordBox.Size = New-Object System.Drawing.Size(380, 20)
-                        $passwordBox.UseSystemPasswordChar = $true
-                        $passwordBox.Location = New-Object System.Drawing.Point(10, 125)
-                        $form.Controls.Add($passwordBox)
+                                $passwordBox = New-Object System.Windows.Forms.TextBox
+                                $passwordBox.Size = New-Object System.Drawing.Size(380, 20)
+                                $passwordBox.UseSystemPasswordChar = $true
+                                $passwordBox.Location = New-Object System.Drawing.Point(10, 125)
+                                $form.Controls.Add($passwordBox)
 
-                        $button = New-Object System.Windows.Forms.Button
-                        $button.Text = 'Submit'
-                        $button.Size = New-Object System.Drawing.Size(75, 23)
-                        $button.Location = New-Object System.Drawing.Point(400, 125)
-                        $button.Add_Click({
-                            $password = $passwordBox.Text | ConvertTo-SecureString -AsPlainText -Force
-                            if ($password) {
-                                Set-LocalUser -Name $user -Password $password
-                                $Form.Close()
-                            } else {
-                                [System.Windows.Forms.MessageBox]::Show('No password entered!')
+                                $button = New-Object System.Windows.Forms.Button
+                                $button.Text = 'Submit'
+                                $button.Size = New-Object System.Drawing.Size(75, 23)
+                                $button.Location = New-Object System.Drawing.Point(400, 125)
+                                $button.Add_Click({
+                                    $password = $passwordBox.Text | ConvertTo-SecureString -AsPlainText -Force
+                                    if ($password) {
+                                        try {
+                                            Set-LocalUser -Name $user -Password $password
+                                            $validPassword = $PrincipalContext.ValidateCredentials($user, $passwordBox.Text)
+                                            if ($validPassword) {
+                                                $form.Close()
+                                            } else {
+                                                [System.Windows.Forms.MessageBox]::Show('Invalid password! Please try again.')
+                                            }
+                                        } catch {
+                                            [System.Windows.Forms.MessageBox]::Show('Error setting password!')
+                                        }
+                                    } else {
+                                        [System.Windows.Forms.MessageBox]::Show('No password entered!')
+                                    }
+                                })
+                                $form.Controls.Add($button)
+                                $form.ShowDialog() | Out-Null
                             }
-                        })
-                        $form.Controls.Add($button)
-                        $form.ShowDialog() | Out-Null
-                    }
+                        }
                 }
 
                 Show-WPFInstallAppBusy -text "Installing apps..."
