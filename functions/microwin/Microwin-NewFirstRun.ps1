@@ -34,7 +34,9 @@ function Microwin-NewFirstRun {
 
     $taskbarPath = "$env:AppData\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar"
     # Delete all files on the Taskbar
-    Get-ChildItem -Path $taskbarPath -File | Remove-Item -Force
+    if (Test-Path "$taskbarPath") {
+        Get-ChildItem -Path $taskbarPath -File | Remove-Item -Force
+    }
     Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "FavoritesRemovedChanges"
     Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "FavoritesChanges"
     Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "Favorites"
@@ -101,6 +103,9 @@ function Microwin-NewFirstRun {
     reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Start" /v ShowRecentList /t REG_DWORD /d 0 /f
     reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v Start_TrackDocs /t REG_DWORD /d 0 /f
 
+    Clear-Host
+    Write-Host "The taskbar will take around a minute to show up, but you can start using your computer now. Try pressing the Windows key to open the Start menu, or Windows + E to launch File Explorer."
+    Start-Sleep -Seconds 10
 
     if (Test-Path -Path "$env:HOMEDRIVE\winutil-config.json")
     {
