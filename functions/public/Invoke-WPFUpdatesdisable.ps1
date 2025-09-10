@@ -9,20 +9,20 @@ function Invoke-WPFUpdatesdisable {
         This function requires administrator privileges and will attempt to run as SYSTEM for certain operations.
 
     #>
-    
+
     Write-Host "Configuring registry settings..." -ForegroundColor Yellow
-    
+
     If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
         New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
     }
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Type DWord -Value 1
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUOptions" -Type DWord -Value 1
-    
+
     If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config")) {
         New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Force | Out-Null
     }
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 0
-    
+
     # Additional registry settings
     Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" -Name "Start" -Type DWord -Value 4 -ErrorAction SilentlyContinue
     $failureActions = [byte[]](0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x14,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xc0,0xd4,0x01,0x00,0x00,0x00,0x00,0x00,0xe0,0x93,0x04,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00)
@@ -30,7 +30,7 @@ function Invoke-WPFUpdatesdisable {
 
     # Disable and stop update related services
     Write-Host "Disabling update services..." -ForegroundColor Yellow
-    
+
     $services = @(
         "BITS"
         "wuauserv"
@@ -46,7 +46,7 @@ function Invoke-WPFUpdatesdisable {
             if ($serviceObj) {
                 Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
                 Set-Service -Name $service -StartupType Disabled -ErrorAction SilentlyContinue
-                
+
                 # Set failure actions to nothing using sc command
                 Start-Process -FilePath "sc.exe" -ArgumentList "failure `"$service`" reset= 0 actions= `"`"" -Wait -WindowStyle Hidden -ErrorAction SilentlyContinue
             }
@@ -58,26 +58,26 @@ function Invoke-WPFUpdatesdisable {
 
     # Rename critical update service DLLs (requires SYSTEM privileges)
     Write-Host "Attempting to rename critical update service DLLs..." -ForegroundColor Yellow
-    
+
     $dlls = @("WaaSMedicSvc", "wuaueng")
-    
+
     foreach ($dll in $dlls) {
         $dllPath = "C:\Windows\System32\$dll.dll"
         $backupPath = "C:\Windows\System32\${dll}_BAK.dll"
-        
+
         if (Test-Path $dllPath) {
             try {
                 # Take ownership
                 Start-Process -FilePath "takeown.exe" -ArgumentList "/f `"$dllPath`"" -Wait -WindowStyle Hidden -ErrorAction SilentlyContinue
-                
+
                 # Grant full control to everyone
                 Start-Process -FilePath "icacls.exe" -ArgumentList "`"$dllPath`" /grant *S-1-1-0:F" -Wait -WindowStyle Hidden -ErrorAction SilentlyContinue
-                
+
                 # Rename file
                 if (!(Test-Path $backupPath)) {
                     Rename-Item -Path $dllPath -NewName "${dll}_BAK.dll" -ErrorAction SilentlyContinue
                     Write-Host "Renamed $dll.dll to ${dll}_BAK.dll"
-                    
+
                     # Restore ownership to TrustedInstaller
                     Start-Process -FilePath "icacls.exe" -ArgumentList "`"$backupPath`" /setowner `"NT SERVICE\TrustedInstaller`"" -Wait -WindowStyle Hidden -ErrorAction SilentlyContinue
                     Start-Process -FilePath "icacls.exe" -ArgumentList "`"$backupPath`" /remove *S-1-1-0" -Wait -WindowStyle Hidden -ErrorAction SilentlyContinue
@@ -91,7 +91,7 @@ function Invoke-WPFUpdatesdisable {
 
     # Delete downloaded update files
     Write-Host "Cleaning up downloaded update files..." -ForegroundColor Yellow
-    
+
     try {
         $softwareDistPath = "C:\Windows\SoftwareDistribution"
         if (Test-Path $softwareDistPath) {
@@ -105,7 +105,7 @@ function Invoke-WPFUpdatesdisable {
 
     # Disable update related scheduled tasks
     Write-Host "Disabling update related scheduled tasks..." -ForegroundColor Yellow
-    
+
     $taskPaths = @(
         '\Microsoft\Windows\InstallService\*'
         '\Microsoft\Windows\UpdateOrchestrator\*'
@@ -129,7 +129,7 @@ function Invoke-WPFUpdatesdisable {
     }
 
     Write-Host "=================================" -ForegroundColor Green
-    Write-Host "---   Updates ARE DISABLED    ---" -ForegroundColor Green  
+    Write-Host "---   Updates ARE DISABLED    ---" -ForegroundColor Green
     Write-Host "===================================" -ForegroundColor Green
     Write-Host "Note: Some operations may require a system restart to take full effect." -ForegroundColor Yellow
 }

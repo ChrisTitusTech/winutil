@@ -60,6 +60,7 @@ public class PowerManagement {
 
     $WPBT = $sync.MicroWinWPBT.IsChecked
     $unsupported = $sync.MicroWinUnsupported.IsChecked
+    $skipFla = $sync.MicroWinNoFLA.IsChecked
 
     $importVirtIO = $sync.MicrowinCopyVirtIO.IsChecked
 
@@ -179,6 +180,15 @@ public class PowerManagement {
             reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM"
             reg add "HKLM\zSYSTEM\ControlSet001\Control\Session Manager" /v DisableWpbtExecution /t REG_DWORD /d 1 /f
             reg unload HKLM\zSYSTEM
+        }
+
+        if ($skipFla) {
+            Write-Host "Skipping first logon animation..."
+            reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE"
+            reg add "HKLM\zSOFTWARE\Microsoft\Active Setup\Installed Components\CMP_NoFla" /f
+            reg add "HKLM\zSOFTWARE\Microsoft\Active Setup\Installed Components\CMP_NoFla" /ve /t REG_SZ /d "Stop First Logon Animation Process" /f
+            reg add "HKLM\zSOFTWARE\Microsoft\Active Setup\Installed Components\CMP_NoFla" /v StubPath /t REG_EXPAND_SZ /d '""%WINDIR%\System32\cmd.exe"" /C ""taskkill /f /im firstlogonanim.exe""' /f
+            reg unload HKLM\zSOFTWARE
         }
 
         if ($unsupported) {

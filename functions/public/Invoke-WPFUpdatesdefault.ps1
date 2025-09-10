@@ -5,9 +5,9 @@ function Invoke-WPFUpdatesdefault {
         Resets Windows Update settings to default
 
     #>
-    
+
     Write-Host "Restoring Windows Update registry settings..." -ForegroundColor Yellow
-    
+
     If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
         New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
     }
@@ -25,7 +25,7 @@ function Invoke-WPFUpdatesdefault {
 
     # Restore update services to their default state
     Write-Host "Restoring update services..." -ForegroundColor Yellow
-    
+
     $services = @(
         @{Name = "BITS"; StartupType = "Manual"},
         @{Name = "wuauserv"; StartupType = "Manual"},
@@ -40,10 +40,10 @@ function Invoke-WPFUpdatesdefault {
             $serviceObj = Get-Service -Name $service.Name -ErrorAction SilentlyContinue
             if ($serviceObj) {
                 Set-Service -Name $service.Name -StartupType $service.StartupType -ErrorAction SilentlyContinue
-                
+
                 # Reset failure actions to default using sc command
                 Start-Process -FilePath "sc.exe" -ArgumentList "failure `"$($service.Name)`" reset= 86400 actions= restart/60000/restart/60000/restart/60000" -Wait -WindowStyle Hidden -ErrorAction SilentlyContinue
-                
+
                 # Start the service if it should be running
                 if ($service.StartupType -eq "Automatic") {
                     Start-Service -Name $service.Name -ErrorAction SilentlyContinue
@@ -57,25 +57,25 @@ function Invoke-WPFUpdatesdefault {
 
     # Restore renamed DLLs if they exist
     Write-Host "Restoring renamed update service DLLs..." -ForegroundColor Yellow
-    
+
     $dlls = @("WaaSMedicSvc", "wuaueng")
-    
+
     foreach ($dll in $dlls) {
         $dllPath = "C:\Windows\System32\$dll.dll"
         $backupPath = "C:\Windows\System32\${dll}_BAK.dll"
-        
+
         if ((Test-Path $backupPath) -and !(Test-Path $dllPath)) {
             try {
                 # Take ownership of backup file
                 Start-Process -FilePath "takeown.exe" -ArgumentList "/f `"$backupPath`"" -Wait -WindowStyle Hidden -ErrorAction SilentlyContinue
-                
+
                 # Grant full control to everyone
                 Start-Process -FilePath "icacls.exe" -ArgumentList "`"$backupPath`" /grant *S-1-1-0:F" -Wait -WindowStyle Hidden -ErrorAction SilentlyContinue
-                
+
                 # Rename back to original
                 Rename-Item -Path $backupPath -NewName "$dll.dll" -ErrorAction SilentlyContinue
                 Write-Host "Restored ${dll}_BAK.dll to $dll.dll"
-                
+
                 # Restore ownership to TrustedInstaller
                 Start-Process -FilePath "icacls.exe" -ArgumentList "`"$dllPath`" /setowner `"NT SERVICE\TrustedInstaller`"" -Wait -WindowStyle Hidden -ErrorAction SilentlyContinue
                 Start-Process -FilePath "icacls.exe" -ArgumentList "`"$dllPath`" /remove *S-1-1-0" -Wait -WindowStyle Hidden -ErrorAction SilentlyContinue
@@ -88,7 +88,7 @@ function Invoke-WPFUpdatesdefault {
 
     # Enable update related scheduled tasks
     Write-Host "Enabling update related scheduled tasks..." -ForegroundColor Yellow
-    
+
     $taskPaths = @(
         '\Microsoft\Windows\InstallService\*'
         '\Microsoft\Windows\UpdateOrchestrator\*'
@@ -124,7 +124,7 @@ function Invoke-WPFUpdatesdefault {
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "BranchReadinessLevel" -ErrorAction SilentlyContinue
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -ErrorAction SilentlyContinue
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays" -ErrorAction SilentlyContinue
-    
+
     Write-Host "==================================================="
     Write-Host "---  Windows Update Settings Reset to Default   ---"
     Write-Host "==================================================="
@@ -148,6 +148,6 @@ function Invoke-WPFUpdatesdefault {
     Write-Host "==================================================="
     Write-Host "---  Windows Local Policies Reset to Default   ---"
     Write-Host "==================================================="
-    
+
     Write-Host "Note: A system restart may be required for all changes to take full effect." -ForegroundColor Yellow
 }
