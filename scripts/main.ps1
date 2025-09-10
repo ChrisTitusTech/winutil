@@ -368,8 +368,8 @@ $sync["ISOmanual"].add_Checked({
     $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Collapsed
 })
 
-$sync["ISORelease"].Items.Add("24H2") | Out-Null
-$sync["ISORelease"].SelectedItem = "24H2"
+$sync["ISORelease"].Items.Add("25H2") | Out-Null
+$sync["ISORelease"].SelectedItem = "25H2"
 
 $sync["ISOLanguage"].Items.Add("System Language ($(Microwin-GetLangFromCulture -langName $((Get-Culture).Name)))") | Out-Null
 if ($currentCulture -ne "English International") {
