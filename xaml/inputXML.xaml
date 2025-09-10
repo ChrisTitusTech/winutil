@@ -1238,7 +1238,7 @@
                             <!-- Default Settings -->
                             <Border Grid.Column="0" Style="{StaticResource BorderStyle}">
                                 <StackPanel>
-                                    <Button Name="WPFFixesUpdate"
+                                    <Button Name="WPFUpdatesdefault"
                                             FontSize="{DynamicResource ConfigTabButtonFontSize}"
                                             Content="Default Settings"
                                             Margin="10,5"

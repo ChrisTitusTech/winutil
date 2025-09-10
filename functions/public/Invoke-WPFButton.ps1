@@ -45,7 +45,7 @@ function Invoke-WPFButton {
         "WPFPanelSystem" {Invoke-WPFControlPanel -Panel $button}
         "WPFPanelTimedate" {Invoke-WPFControlPanel -Panel $button}
         "WPFPanelUser" {Invoke-WPFControlPanel -Panel $button}
-        "WPFUpdatesdefault" {Invoke-WPFFixesUpdate}
+        "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}
         "WPFFixesUpdate" {Invoke-WPFFixesUpdate}
         "WPFFixesWinget" {Invoke-WPFFixesWinget}
         "WPFRunAdobeCCCleanerTool" {Invoke-WPFRunAdobeCCCleanerTool}
