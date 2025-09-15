@@ -73,7 +73,7 @@ function Invoke-MicrowinGetIso {
         }
 
         Invoke-MicrowinBusyInfo -action "wip" -message "Downloading Windows ISO... (This may take a long time)" -interactive $false
-        & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch "x64" -Lang $lang -Ed "Windows 11 Home/Pro/Edu"
+        & $fidopath -Win 'Windows 11' -Rel Latest -Arch "x64" -Lang $lang
         if (-not $?)
         {
             Write-Host "Could not download the ISO file. Look at the output of the console for more information."
