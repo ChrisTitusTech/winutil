@@ -50,8 +50,7 @@ function Invoke-WPFInstall {
                                 $form.Size = New-Object System.Drawing.Size(500, 200)
 
                                 $label = New-Object System.Windows.Forms.Label
-                                $label.Text = 'Maybe a program needs to be installed in "usermode" and you have no password set, you need to set it here. After putting a password into the text box a page asking for your password might open (not right after). If you keep the text box empty, nothing will happen.
-                                REMEMBER THE PASSWORD FOR THE FUTURE. YOU WILL NEED FOR STUFF AND TO LOGIN IF AUTOLOGIN ISN`T SET'
+                                $label.Text = 'Admin mode install failed. Set a USER password for login and user-based installation.'
                                 $label.Size = New-Object System.Drawing.Size(480, 60)
                                 $label.Location = New-Object System.Drawing.Point(10, 10)
                                 $form.Controls.Add($label)
