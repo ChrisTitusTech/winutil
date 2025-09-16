@@ -376,7 +376,7 @@
         "winget": "Discord.Discord"
     },
     "dismtools": {
-        "category": "DISM Utilities",
+        "category": "Microsoft Tools",
         "choco": "na",
         "content": "DISMTools",
         "description": "DISMTools is a fast, customizable GUI for the DISM utility, supporting Windows images from Windows 7 onward. It handles installations on any drive, offers project support, and lets users tweak settings like color modes, language, and DISM versions; powered by both native DISM and a managed DISM API.",
@@ -384,7 +384,7 @@
         "winget": "CodingWondersSoftware.DISMTools.Stable"
     },
     "ntlite": {
-        "category": "DISM Utilities",
+        "category": "Microsoft Tools",
         "choco": "ntlite-free",
         "content": "NTLite",
         "description": "Integrate updates, drivers, automate Windows and application setup, speedup Windows deployment process and have it all set for the next time.",
