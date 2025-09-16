@@ -4,7 +4,7 @@ function Invoke-MicrowinGetIso {
     Function to get the path to Iso file for MicroWin, unpack that isom=, read basic information and populate the UI Options
     #>
 
-    Write-Host "Invoking WPFGetIso"
+    Write-Debug "Invoking WPFGetIso"
 
     if($sync.ProcessRunning) {
         $msg = "GetIso process is currently running."
@@ -77,6 +77,7 @@ function Invoke-MicrowinGetIso {
         if (-not $?)
         {
             Write-Host "Could not download the ISO file. Look at the output of the console for more information."
+            Write-Host "If you get an error about scripts is disabled on this system please close WinUtil and run - 'Set-ExecutionPolicy -ExecutionPolicy Unrestricted' and select 'A' and retry using MicroWin again."
             $msg = "The ISO file could not be downloaded"
             Invoke-MicrowinBusyInfo -action "warning" -message $msg
             Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
