@@ -1893,7 +1893,7 @@
         "content": "Session",
         "description": "Session is a private and secure messaging app built on a decentralized network for user privacy and data protection.",
         "link": "https://getsession.org/",
-        "winget": "Oxen.Session"
+        "winget": "Session.Session"
     },
     "sharex": {
         "category": "Multimedia Tools",
