@@ -359,17 +359,12 @@ $sync["Form"].Add_ContentRendered({
 
 # Add event handlers for the RadioButtons
 $sync["ISOdownloader"].add_Checked({
-    $sync["ISORelease"].Visibility = [System.Windows.Visibility]::Visible
     $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Visible
 })
 
 $sync["ISOmanual"].add_Checked({
-    $sync["ISORelease"].Visibility = [System.Windows.Visibility]::Collapsed
     $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Collapsed
 })
-
-$sync["ISORelease"].Items.Add("24H2") | Out-Null
-$sync["ISORelease"].SelectedItem = "24H2"
 
 $sync["ISOLanguage"].Items.Add("System Language ($(Microwin-GetLangFromCulture -langName $((Get-Culture).Name)))") | Out-Null
 if ($currentCulture -ne "English International") {
