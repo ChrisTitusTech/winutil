@@ -310,7 +310,35 @@ $sync["Form"].Add_ContentRendered({
         Write-Debug "Unable to retrieve information about the primary monitor."
     }
 
-    Invoke-WPFTab "WPFTab1BT"
+    # Check internet connectivity and disable install tab if offline
+    $isOnline = Test-WinUtilInternetConnection
+
+    if (-not $isOnline) {
+        # Disable the install tab
+        $sync.WPFTab1BT.IsEnabled = $false
+        $sync.WPFTab1BT.Opacity = 0.5
+        $sync.WPFTab1BT.ToolTip = "Internet connection required for installing applications"
+
+        # Disable install-related buttons
+        $sync.WPFInstall.IsEnabled = $false
+        $sync.WPFUninstall.IsEnabled = $false
+        $sync.WPFInstallUpgrade.IsEnabled = $false
+        $sync.WPFGetInstalled.IsEnabled = $false
+
+        # Show offline indicator
+        Write-Host "Offline mode detected - Install tab disabled" -ForegroundColor Yellow
+
+        # Optionally switch to a different tab if install tab was going to be default
+        Invoke-WPFTab "WPFTab2BT"  # Switch to Tweaks tab instead
+    }
+    else {
+        # Online - ensure install tab is enabled
+        $sync.WPFTab1BT.IsEnabled = $true
+        $sync.WPFTab1BT.Opacity = 1.0
+        $sync.WPFTab1BT.ToolTip = $null
+        Invoke-WPFTab "WPFTab1BT"  # Default to install tab
+    }
+
     $sync["Form"].Focus()
 
     # maybe this is not the best place to load and execute config file?

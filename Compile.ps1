@@ -51,7 +51,7 @@ Update-Progress "Pre-req: Running Preprocessor..." 0
 $preprocessingFilePath = ".\tools\Invoke-Preprocessing.ps1"
 . $preprocessingFilePath
 
-$excludedFiles = @('.\.git\', '.\.gitignore', '.\.gitattributes', '.\.github\CODEOWNERS', '.\LICENSE', "$preprocessingFilePath", '*.png', '*.exe','.\.preprocessor_hashes.json')
+$excludedFiles = @('.\.git\', '.\binary\', '.\.gitignore', '.\.gitattributes', '.\.github\CODEOWNERS', '.\LICENSE', "$preprocessingFilePath", '*.png', '*.exe','.\.preprocessor_hashes.json')
 $msg = "Pre-req: Code Formatting"
 Invoke-Preprocessing -WorkingDir "$workingdir" -ExcludedFiles $excludedFiles -ProgressStatusMessage $msg
 
