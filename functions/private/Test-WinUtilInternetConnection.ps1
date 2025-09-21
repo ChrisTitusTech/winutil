@@ -14,7 +14,7 @@ function Test-WinUtilInternetConnection {
         )
 
         foreach ($site in $testSites) {
-            if (Test-Connection -ComputerName $site -Count 1 -Quiet -TimeoutSeconds 3 -ErrorAction SilentlyContinue) {
+            if (Test-Connection -ComputerName $site -Count 1 -Quiet -ErrorAction SilentlyContinue) {
                 return $true
             }
         }
