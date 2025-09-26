@@ -2131,11 +2131,11 @@
   },
   "WPFTweaksDisableEdge": {
     "Content": "Disable Edge",
-    "Description": "Disables Microsoft Edge via the registry and prevents scheduled tasks from running Edge updates",
-    "Category": "z__Advanced Tweaks - CAUTION",
-    "Panel": "1",
+    "Description": "Disables Microsoft Edge via the registry and prevents scheduled tasks from running Edge updates.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
     "Order": "a016_",
-    "Registry": [
+    "registry": [
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\DisallowRun",
         "Name": "DisableEdge",
@@ -2147,17 +2147,17 @@
         "Path": "HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
         "Name": "DisallowRun",
         "Type": "DWord",
-        "Value": 1,
+        "Value": "1",
         "OriginalValue": "<RemoveEntry>"
       }
     ],
-    "InvokeScript": [
+    "invokeScript": [
       "Get-ScheduledTask -TaskPath '\\' | Where-Object {$_.TaskName -like 'MicrosoftEdge*'} | ForEach-Object { Disable-ScheduledTask -TaskName $_.TaskName -TaskPath '\\' }"
     ],
-    "UndoScript": [
+    "undoScript": [
       "Get-ScheduledTask -TaskPath '\\' | Where-Object {$_.TaskName -like 'MicrosoftEdge*'} | ForEach-Object { Enable-ScheduledTask -TaskName $_.TaskName -TaskPath '\\' }"
     ],
-    "Link": ""
+    "link": ""
   },
   "WPFTweaksUTC": {
     "Content": "Set Time to UTC (Dual Boot)",
