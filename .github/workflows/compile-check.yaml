@@ -15,6 +15,14 @@ jobs:
     - name: Checkout Sources
       uses: actions/checkout@v5
 
+    - name: Ensure binary directory exists
+      run: |
+        $filePath = 'D:\a\winutil\winutil\binary\'
+        if (!(Test-Path "$filePath")) {
+          New-Item -ItemType Directory -Path "$filePath"
+        }
+      shell: pwsh
+
     - name: Compile and Syntaxcheck winutil.ps1
       shell: pwsh
       run: |
