@@ -63,6 +63,10 @@ function Invoke-Preprocessing {
     if ($ExcludedFiles.Count -gt 0) {
         ForEach ($excludedFile in $ExcludedFiles) {
             $filePath = "$(($WorkingDir -replace ('\\$', '')) + '\' + ($excludedFile -replace ('\.\\', '')))"
+            # Only attempt to create the directory if the excludedFile ends with '\'
+            if ($excludedFile -match '\\$' -and -not (Test-Path "$filePath")) {
+                New-Item -Path "$filePath" -ItemType Directory -Force | Out-Null
+            }
             $files = Get-ChildItem -Recurse -Path "$filePath" -File -Force
             if ($files.Count -gt 0) {
                 ForEach ($file in $files) {
