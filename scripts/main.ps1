@@ -311,7 +311,8 @@ $sync["Form"].Add_ContentRendered({
     }
 
     # Check internet connectivity and disable install tab if offline
-    $isOnline = Test-WinUtilInternetConnection
+    #$isOnline = Test-WinUtilInternetConnection
+    $isOnline = $true # Temporarily force online mode until we can resolve false negatives
 
     if (-not $isOnline) {
         # Disable the install tab

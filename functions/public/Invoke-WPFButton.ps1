@@ -41,6 +41,7 @@ function Invoke-WPFButton {
         "WPFPanelPower" {Invoke-WPFControlPanel -Panel $button}
         "WPFPanelPrinter" {Invoke-WPFControlPanel -Panel $button}
         "WPFPanelRegion" {Invoke-WPFControlPanel -Panel $button}
+        "WPFPanelRestore" {Invoke-WPFControlPanel -Panel $button}
         "WPFPanelSound" {Invoke-WPFControlPanel -Panel $button}
         "WPFPanelSystem" {Invoke-WPFControlPanel -Panel $button}
         "WPFPanelTimedate" {Invoke-WPFControlPanel -Panel $button}
