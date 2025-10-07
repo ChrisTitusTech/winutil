@@ -290,6 +290,14 @@
     "ButtonWidth": "300",
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/region"
   },
+  "WPFPanelRestore": {
+    "Content": "Windows Restore",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/restore"
+  },
   "WPFPanelSound": {
     "Content": "Sound Settings",
     "category": "Legacy Windows Panels",

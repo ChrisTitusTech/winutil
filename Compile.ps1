@@ -51,7 +51,24 @@ Update-Progress "Pre-req: Running Preprocessor..." 0
 $preprocessingFilePath = ".\tools\Invoke-Preprocessing.ps1"
 . $preprocessingFilePath
 
-$excludedFiles = @('.\.git\', '.\binary\', '.\.gitignore', '.\.gitattributes', '.\.github\CODEOWNERS', '.\LICENSE', "$preprocessingFilePath", '*.png', '*.exe','.\.preprocessor_hashes.json')
+$excludedFiles = @()
+
+# Add directories only if they exist
+if (Test-Path '.\.git\') { $excludedFiles += '.\.git\' }
+if (Test-Path '.\binary\') { $excludedFiles += '.\binary\' }
+
+# Add files that should always be excluded
+$excludedFiles += @(
+    '.\.gitignore',
+    '.\.gitattributes',
+    '.\.github\CODEOWNERS',
+    '.\LICENSE',
+    "$preprocessingFilePath",
+    '*.png',
+    '*.exe',
+    '.\.preprocessor_hashes.json'
+)
+
 $msg = "Pre-req: Code Formatting"
 Invoke-Preprocessing -WorkingDir "$workingdir" -ExcludedFiles $excludedFiles -ProgressStatusMessage $msg
 
