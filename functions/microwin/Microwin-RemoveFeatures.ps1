@@ -27,6 +27,7 @@ function Microwin-RemoveFeatures() {
                 $_.FeatureName -NotLike "*NetFx*" -AND
                 $_.FeatureName -NotLike "*Media*" -AND
                 $_.FeatureName -NotLike "*NFS*" -AND
+                $_.FeatureName -NotLike "*UserModeDriverFramework*" -AND
                 $_.FeatureName -NotLike "*SearchEngine*" -AND
                 $_.FeatureName -NotLike "*RemoteDesktop*" -AND
                 $_.State -ne "Disabled"
@@ -45,6 +46,7 @@ function Microwin-RemoveFeatures() {
                     $_ -NotLike "*NetFx*" -AND
                     $_ -NotLike "*Media*" -AND
                     $_ -NotLike "*NFS*" -AND
+                    $_ -NotLike "*UserModeDriverFramework*" -AND
                     $_ -NotLike "*SearchEngine*" -AND
                     $_ -NotLike "*RemoteDesktop*"
                 }
