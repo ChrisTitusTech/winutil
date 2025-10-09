@@ -29,6 +29,7 @@ function Invoke-WPFInstall {
 
         $packagesWinget = $packagesSorted[[PackageManagers]::Winget]
         $packagesChoco = $packagesSorted[[PackageManagers]::Choco]
+        $wasProcessCancelled = $false
 
         try {
             $sync.ProcessRunning = $true
@@ -84,14 +85,25 @@ function Invoke-WPFInstall {
                                     }
                                 })
                                 $form.Controls.Add($button)
+                                $cancel =  = New-Object System.Windows.Forms.Button
+                                $cancel.Text = 'Cancel'
+                                $cancel.Size = New-Object System.Drawing.Size(75, 23)
+                                $cancel.Location = New-Object System.Drawing.Point(25, 125)
+                                $button.Add_Click({
+                                    $wasProcessCancelled = $true
+                                    break
+                                })
                                 $form.ShowDialog() | Out-Null
                             }
                         }
                 }
-
-                Show-WPFInstallAppBusy -text "Installing apps..."
-                Install-WinUtilWinget
-                Install-WinUtilProgramWinget -Action Install -Programs $packagesWinget
+                if($wasProcessCancelled) {
+                    Show-WPFInstallAppBusy -text "Skipping Winget Apps..."
+                }else{
+                    Show-WPFInstallAppBusy -text "Installing apps..."
+                    Install-WinUtilWinget
+                    Install-WinUtilProgramWinget -Action Install -Programs $packagesWinget
+                }
             }
             if($packagesChoco.Count -gt 0) {
                 Install-WinUtilChoco
