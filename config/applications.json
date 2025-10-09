@@ -517,7 +517,7 @@
         "content": "Epic Games Launcher",
         "description": "Epic Games Launcher is the client for accessing and playing games from the Epic Games Store.",
         "link": "https://www.epicgames.com/store/en-US/",
-        "winget": "EpicGames.EpicGamesLauncher"
+        "winget": "XP9D2F6P292W0T"
     },
     "esearch": {
         "category": "Utilities",
