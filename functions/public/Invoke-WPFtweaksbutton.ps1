@@ -16,6 +16,12 @@ function Invoke-WPFtweaksbutton {
 
   Set-WinUtilDNS -DNSProvider $sync["WPFchangedns"].text
 
+  # Whether to apply tweaks to all users (HKU)
+  $ApplyAllUsers = $false
+  if ($sync.ContainsKey('WPFTweaksApplyAllUsers')) {
+    $ApplyAllUsers = [bool]$sync['WPFTweaksApplyAllUsers'].IsChecked
+  }
+
   if ($tweaks.count -eq 0 -and  $sync["WPFchangedns"].text -eq "Default") {
     $msg = "Please check the tweaks you wish to perform."
     [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
@@ -25,10 +31,11 @@ function Invoke-WPFtweaksbutton {
   Write-Debug "Number of tweaks to process: $($Tweaks.Count)"
 
   # The leading "," in the ParameterList is nessecary because we only provide one argument and powershell cannot be convinced that we want a nested loop with only one argument otherwise
-  Invoke-WPFRunspace -ParameterList @(,("tweaks",$tweaks)) -DebugPreference $DebugPreference -ScriptBlock {
+  Invoke-WPFRunspace -ParameterList @(,("tweaks",$tweaks,$ApplyAllUsers)) -DebugPreference $DebugPreference -ScriptBlock {
     param(
       $tweaks,
-      $DebugPreference
+      $DebugPreference,
+      $ApplyAllUsers
       )
     Write-Debug "Inside Number of tweaks to process: $($Tweaks.Count)"
 
@@ -43,7 +50,7 @@ function Invoke-WPFtweaksbutton {
 
     for ($i = 0; $i -lt $Tweaks.Count; $i++) {
       Set-WinUtilProgressBar -Label "Applying $($tweaks[$i])" -Percent ($i / $tweaks.Count * 100)
-      Invoke-WinUtilTweaks $tweaks[$i]
+      Invoke-WinUtilTweaks $tweaks[$i] -ApplyToAllUsers:$ApplyAllUsers
       $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($i/$Tweaks.Count) })
     }
     Set-WinUtilProgressBar -Label "Tweaks finished" -Percent 100

@@ -175,12 +175,16 @@ function Invoke-WPFUIElements {
 
                         $sync[$entryInfo.Name].Add_Checked({
                             [System.Object]$Sender = $args[0]
-                            Invoke-WinUtilTweaks $sender.name
+                            $applyAll = $false
+                            if ($sync.ContainsKey('WPFTweaksApplyAllUsers')) { $applyAll = [bool]$sync['WPFTweaksApplyAllUsers'].IsChecked }
+                            Invoke-WinUtilTweaks $sender.name -ApplyToAllUsers:$applyAll
                         })
 
                         $sync[$entryInfo.Name].Add_Unchecked({
                             [System.Object]$Sender = $args[0]
-                            Invoke-WinUtiltweaks $sender.name -undo $true
+                            $applyAll = $false
+                            if ($sync.ContainsKey('WPFTweaksApplyAllUsers')) { $applyAll = [bool]$sync['WPFTweaksApplyAllUsers'].IsChecked }
+                            Invoke-WinUtiltweaks $sender.name -undo $true -ApplyToAllUsers:$applyAll
                         })
                     }
 
