@@ -20,8 +20,12 @@ function Invoke-WPFundoall {
         return
     }
 
-    Invoke-WPFRunspace -ArgumentList $tweaks -DebugPreference $DebugPreference -ScriptBlock {
-        param($tweaks, $DebugPreference)
+    # Capture global ApplyAllUsers checkbox state
+    $ApplyAllUsers = $false
+    if ($sync.ContainsKey('WPFTweaksApplyAllUsers')) { $ApplyAllUsers = [bool]$sync['WPFTweaksApplyAllUsers'].IsChecked }
+
+    Invoke-WPFRunspace -ArgumentList @($tweaks,$ApplyAllUsers) -DebugPreference $DebugPreference -ScriptBlock {
+        param($tweaks, $ApplyAllUsers, $DebugPreference)
 
         $sync.ProcessRunning = $true
         if ($tweaks.count -eq 1) {
@@ -33,7 +37,7 @@ function Invoke-WPFundoall {
 
         for ($i = 0; $i -lt $tweaks.Count; $i++) {
             Set-WinUtilProgressBar -Label "Undoing $($tweaks[$i])" -Percent ($i / $tweaks.Count * 100)
-            Invoke-WinUtiltweaks $tweaks[$i] -undo $true
+            Invoke-WinUtiltweaks $tweaks[$i] -undo $true -ApplyToAllUsers:$ApplyAllUsers
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($i/$tweaks.Count) })
         }
 

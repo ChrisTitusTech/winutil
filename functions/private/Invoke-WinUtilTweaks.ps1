@@ -18,7 +18,8 @@ function Invoke-WinUtilTweaks {
     param(
         $CheckBox,
         $undo = $false,
-        $KeepServiceStartup = $true
+        $KeepServiceStartup = $true,
+        [switch]$ApplyToAllUsers
     )
 
     if ($Checkbox -contains "Toggle") {
@@ -77,15 +78,41 @@ function Invoke-WinUtilTweaks {
     if($sync.configs.tweaks.$CheckBox.registry) {
         $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
             Write-Debug "$($psitem.Name) and state is $($psitem.$($values.registry))"
-            if (($psitem.Path -imatch "hku") -and !(Get-PSDrive -Name HKU -ErrorAction SilentlyContinue)) {
-                $null = (New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS)
-                if (Get-PSDrive -Name HKU -ErrorAction SilentlyContinue) {
-                    Write-Debug "HKU drive created successfully"
-                } else {
-                    Write-Debug "Failed to create HKU drive"
+
+            # If the path targets HKCU and user requested ApplyToAllUsers, iterate through HKEY_USERS and apply to each user's hive
+            if ($ApplyToAllUsers -and ($psitem.Path -imatch "HKCU:" -or $psitem.Path -imatch "HKEY_CURRENT_USER")) {
+                try {
+                    if(!(Test-Path 'HKU:\')) {New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS}
+                    $users = Get-ChildItem -Path HKU:\ | Where-Object { $_.PSChildName -notin @('S-1-5-18','S-1-5-19','S-1-5-20','.DEFAULT') }
+                    foreach ($user in $users) {
+                        $userHive = $user.PSPath -replace '^Registry::',''
+                        # Build a HKU path equivalent to the HKCU path
+                        $relative = $psitem.Path -replace '^(HKCU:|HKEY_CURRENT_USER\\?)',''
+                        $targetPath = "HKU:\$($user.PSChildName)\$relative"
+                        try {
+                            if (!(Test-Path $targetPath)) {
+                                New-Item -Path $targetPath -Force | Out-Null
+                            }
+                            Set-WinUtilRegistry -Name $psitem.Name -Path $targetPath -Type $psitem.Type -Value $psitem.$($values.registry)
+                        } catch {
+                            Write-Warning "Failed to set $targetPath\$($psitem.Name): $_"
+                        }
+                    }
+                } catch {
+                    Write-Warning "Failed enumerating user hives: $_"
                 }
             }
-            Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
+            else {
+                if (($psitem.Path -imatch "hku") -and !(Get-PSDrive -Name HKU -ErrorAction SilentlyContinue)) {
+                    $null = (New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS)
+                    if (Get-PSDrive -Name HKU -ErrorAction SilentlyContinue) {
+                        Write-Debug "HKU drive created successfully"
+                    } else {
+                        Write-Debug "Failed to create HKU drive"
+                    }
+                }
+                Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
+            }
         }
     }
     if($sync.configs.tweaks.$CheckBox.$($values.ScriptType)) {
