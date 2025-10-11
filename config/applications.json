@@ -511,6 +511,14 @@
         "link": "https://emulationstation.org/",
         "winget": "Emulationstation.Emulationstation"
     },
+    "ente-auth": {
+        "category": "Utilities",
+        "choco": "ente-auth",
+        "content": "Ente Auth",
+        "description": "Ente Auth is a free, cross-platform, end-to-end encrypted authenticator app.",
+        "link": "https://ente.io/auth/",
+        "winget": "ente-io.auth-desktop"
+    },
     "epicgames": {
         "category": "Games",
         "choco": "epicgameslauncher",
@@ -1030,6 +1038,14 @@
         "description": "JPEGView is a lean, fast and highly configurable viewer/editor for JPEG, BMP, PNG, WEBP, TGA, GIF, JXL, HEIC, HEIF, AVIF and TIFF images with a minimal GUI",
         "link": "https://github.com/sylikc/jpegview",
         "winget": "sylikc.JPEGView"
+    },
+    "kando": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "Kando",
+        "description": "Gesture-based pie menu for opening programs and links. Supports commands, links, shortcuts and pasting text templates",
+        "link": "https://kando.menu/",
+        "winget": "KandoMenu.Kando"
     },
     "kdeconnect": {
         "category": "Utilities",
