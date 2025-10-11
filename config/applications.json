@@ -1039,6 +1039,14 @@
         "link": "https://github.com/sylikc/jpegview",
         "winget": "sylikc.JPEGView"
     },
+    "kando": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "Kando",
+        "description": "Gesture-based pie menu for opening programs and links. Supports commands, links, shortcuts and pasting text templates",
+        "link": "https://kando.menu/",
+        "winget": "KandoMenu.Kando"
+    },
     "kdeconnect": {
         "category": "Utilities",
         "choco": "kdeconnect-kde",
