@@ -2152,10 +2152,10 @@
       }
     ],
     "invokeScript": [
-      "Get-ScheduledTask -TaskPath '\\' | Where-Object {$_.TaskName -like 'MicrosoftEdge*'} | ForEach-Object { Disable-ScheduledTask -TaskName $_.TaskName -TaskPath '\\' }"
+      "Get-ScheduledTask | Where-Object { $_.TaskName -like '*MicrosoftEdgeUpdate*' } | Disable-ScheduledTask"
     ],
     "undoScript": [
-      "Get-ScheduledTask -TaskPath '\\' | Where-Object {$_.TaskName -like 'MicrosoftEdge*'} | ForEach-Object { Enable-ScheduledTask -TaskName $_.TaskName -TaskPath '\\' }"
+      "Get-ScheduledTask | Where-Object { $_.TaskName -like '*MicrosoftEdgeUpdate*' } | Enable-ScheduledTask"
     ],
     "link": ""
   },
