@@ -33,7 +33,7 @@ function Test-WinUtilPackageManager {
                 $wingetVersionFull = ($wingetInfo | Select-String -Pattern 'Package Manager v\d+\.\d+\.\d+').Matches.Value.Split(' ')[-1]
             }
         } catch [System.Management.Automation.CommandNotFoundException], [System.Management.Automation.ApplicationFailedException] {
-            Write-Warning "Winget was not found due to un-availablity reasons"
+            Write-Warning "Winget was not found due to un-availability reasons"
             $wingetExists = $false
         } catch {
             Write-Warning "Winget was not found due to un-known reasons, The Stack Trace is:`n$($psitem.Exception.StackTrace)"
@@ -41,7 +41,7 @@ function Test-WinUtilPackageManager {
         }
 
         # If Winget is available, Parse it's Version and give proper information to Terminal Output.
-    # If it isn't available, the return of this funtion will be "not-installed", indicating that
+    # If it isn't available, the return of this function will be "not-installed", indicating that
         # Winget isn't installed/available on The System.
     if ($wingetExists) {
             # Check if Preview Version
@@ -55,7 +55,7 @@ function Test-WinUtilPackageManager {
 
             # Check if Winget's Version is too old.
             $wingetCurrentVersion = [System.Version]::Parse($wingetVersion.Trim('v'))
-            # Grabs the latest release of Winget from the Github API for version check process.
+            # Grabs the latest release of Winget from the GitHub API for version check process.
             $response = winget search -e Microsoft.AppInstaller --accept-source-agreements
             $wingetLatestVersion = ($response | Select-String -Pattern '\d+\.\d+\.\d+\.\d+').Matches.Value
             Write-Host "Latest Search Version: $wingetLatestVersion" -ForegroundColor White

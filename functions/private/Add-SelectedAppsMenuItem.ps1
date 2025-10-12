@@ -41,7 +41,7 @@
         $selectedAppRemoveButton.Add_MouseEnter({ $this.Foreground = "Red" })
         $selectedAppRemoveButton.Add_MouseLeave({ $this.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "MainForegroundColor") })
         $selectedAppRemoveButton.Add_Click({
-            $sync.($this.Tag).isChecked = $false # On click of the remove button, we only have to uncheck the corresponding checkbox. This will kick of all neccessary changes to update the UI
+            $sync.($this.Tag).isChecked = $false # On click of the remove button, we only have to uncheck the corresponding checkbox. This will kick of all necessary changes to update the UI
         })
         [System.Windows.Controls.Grid]::SetColumn($selectedAppRemoveButton, 1)
         $selectedAppGrid.Children.Add($selectedAppRemoveButton)
