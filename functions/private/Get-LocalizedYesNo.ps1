@@ -13,7 +13,7 @@ function Get-LocalizedYesNo {
     #>
 
     # Run choice and capture its options as output
-    # The output shows the options for Yes and No as "[Y,N]?" in the (partitially) localized format.
+    # The output shows the options for Yes and No as "[Y,N]?" in the (partially) localized format.
     # eg. English: [Y,N]?
     # Dutch: [Y,N]?
     # German: [J,N]?

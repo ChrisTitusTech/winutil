@@ -12,7 +12,7 @@ function Invoke-WPFInstallUpgrade {
             Write-Host "Upgrade Successful"
         }
         else{
-            Write-Host "Error Occured. Return Code: $chocoUpgradeStatus"
+            Write-Host "Error Occurred. Return Code: $chocoUpgradeStatus"
         }
     }
     else{
