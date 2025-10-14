@@ -6,35 +6,35 @@ function Set-PackageManagerPreference {
 
         Reads from preference.ini if no argument sent.
 
-    .PARAMETER preferedPackageManager
+    .PARAMETER preferredPackageManager
         The PackageManager that was selected.
     #>
     param(
         [Parameter(Position=0, Mandatory=$false)]
-        [PackageManagers]$preferedPackageManager
+        [PackageManagers]$preferredPackageManager
     )
 
     $preferencePath = "$env:LOCALAPPDATA\winutil\preferences.ini"
     $oldChocoPath = "$env:LOCALAPPDATA\winutil\preferChocolatey.ini"
 
     #Try loading from file if no argument given.
-    if ($null -eq $preferedPackageManager) {
+    if ($null -eq $preferredPackageManager) {
         # Backwards compat for preferChocolatey.ini
         if (Test-Path -Path $oldChocoPath) {
-            $preferedPackageManager = [PackageManagers]::Choco
+            $preferredPackageManager = [PackageManagers]::Choco
             Remove-Item -Path $oldChocoPath
         }
         elseif (Test-Path -Path $preferencePath) {
             $potential = Get-Content -Path $preferencePath -TotalCount 1
-            $preferedPackageManager = [PackageManagers]$potential
+            $preferredPackageManager = [PackageManagers]$potential
         }
         else {
             Write-Debug "Creating new preference file, defaulting to winget."
-            $preferedPackageManager = [PackageManagers]::Winget
+            $preferredPackageManager = [PackageManagers]::Winget
         }
     }
 
-    $sync["ManagerPreference"] = [PackageManagers]::$preferedPackageManager
+    $sync["ManagerPreference"] = [PackageManagers]::$preferredPackageManager
     Write-Debug "Manager Preference changed to '$($sync["ManagerPreference"])'"
 
 

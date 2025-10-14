@@ -4,7 +4,7 @@ function Set-WinUtilProgressbar{
         This function is used to Update the Progress Bar displayed in the winutil GUI.
         It will be automatically hidden if the user clicks something and no process is running
     .PARAMETER Label
-        The Text to be overlayed onto the Progress Bar
+        The Text to be overlaid onto the Progress Bar
     .PARAMETER PERCENT
         The percentage of the Progress Bar that should be filled (0-100)
     #>
