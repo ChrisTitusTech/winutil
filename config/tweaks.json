@@ -2129,6 +2129,36 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/wifi"
   },
+  "WPFTweaksDisableEdge": {
+    "Content": "Disable Edge",
+    "Description": "Disables Microsoft Edge via the registry and prevents scheduled tasks from running Edge updates.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a016_",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\DisallowRun",
+        "Name": "DisableEdge",
+        "Type": "String",
+        "Value": "msedge.exe",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+        "Name": "DisallowRun",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>"
+      }
+    ],
+    "invokeScript": [
+      "Get-ScheduledTask | Where-Object { $_.TaskName -like '*MicrosoftEdgeUpdate*' } | Disable-ScheduledTask"
+    ],
+    "undoScript": [
+      "Get-ScheduledTask | Where-Object { $_.TaskName -like '*MicrosoftEdgeUpdate*' } | Enable-ScheduledTask"
+    ],
+    "link": ""
+  },
   "WPFTweaksUTC": {
     "Content": "Set Time to UTC (Dual Boot)",
     "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux Systems.",
