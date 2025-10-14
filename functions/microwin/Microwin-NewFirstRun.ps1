@@ -1,6 +1,6 @@
 function Microwin-NewFirstRun {
 
-    # using here string to embedd firstrun
+    # using here string to embed firstrun
     $firstRun = @'
     # Set the global error action preference to continue
     $ErrorActionPreference = "Continue"

@@ -3,7 +3,7 @@
         "AppEntryWidth":  "130",
         "AppEntryFontSize":  "11",
         "AppEntryMargin":  "1,1,1,1",
-        "AppEntryBorderTickness":  "0",
+        "AppEntryBorderThickness":  "0",
         "CustomDialogFontSize":       "12",
         "CustomDialogFontSizeHeader": "14",
         "CustomDialogLogoSize":       "25",
