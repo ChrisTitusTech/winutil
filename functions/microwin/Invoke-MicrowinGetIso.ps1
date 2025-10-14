@@ -200,7 +200,7 @@ function Invoke-MicrowinGetIso {
         $msg = "Failed to mount the image. Error: $($_.Exception.Message)"
         Write-Error $msg
         Write-Error "This is NOT winutil's problem, your ISO might be corrupt, or there is a problem on the system"
-        Write-Host "Please refer to this wiki for more details: https://christitustech.github.io/winutil/KnownIssues/#troubleshoot-errors-during-microwin-usage" -ForegroundColor Red
+        Write-Host "Please refer to this wiki for more details: https://winutil.christitus.com/knownissues/" -ForegroundColor Red
         Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
         Invoke-MicrowinBusyInfo -action "warning" -message $msg
         return
