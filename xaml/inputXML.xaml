@@ -1228,6 +1228,12 @@
                         <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0">
                             <Button Name="WPFTweaksbutton" Content="Run Tweaks" Margin="5" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
                             <Button Name="WPFUndoall" Content="Undo Selected Tweaks" Margin="5" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
+                            <!-- Checkbox to allow user to apply tweaks to all users (HKU) -->
+                            <CheckBox Name="WPFTweaksApplyAllUsers" Content="Apply to all users" Margin="8,0,0,0" VerticalAlignment="Center">
+                                <ToolTipService.ToolTip>
+                                    <TextBlock TextWrapping="Wrap">If checked, registry tweaks targeting the current user (HKCU) will be applied to all user hives under HKEY_USERS as well.</TextBlock>
+                                </ToolTipService.ToolTip>
+                            </CheckBox>
                         </WrapPanel>
                     </Border>
                 </Grid>
