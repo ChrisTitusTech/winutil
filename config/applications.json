@@ -1703,7 +1703,7 @@
         "link": "https://bitsum.com/",
         "winget": "BitSum.ProcessLasso"
     },
-    "ente-auth": {
+    "proton-auth": {
         "category": "Utilities",
         "choco": "protonauth",
         "content": "Proton Authenticator",
