@@ -2137,10 +2137,10 @@
         "OriginalValue": "<RemoveEntry>"
       }
     ],
-    "invokeScript": [
+    "InvokeScript": [
       "Get-ScheduledTask | Where-Object { $_.TaskName -like '*MicrosoftEdgeUpdate*' } | Disable-ScheduledTask"
     ],
-    "undoScript": [
+    "UndoScript": [
       "Get-ScheduledTask | Where-Object { $_.TaskName -like '*MicrosoftEdgeUpdate*' } | Enable-ScheduledTask"
     ],
     "link": ""
