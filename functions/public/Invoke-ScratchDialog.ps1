@@ -4,7 +4,7 @@ function Invoke-ScratchDialog {
     <#
 
     .SYNOPSIS
-        Enable Editable Text box Alternate Scartch path
+        Enable Editable Text box Alternate Scratch path
 
     .PARAMETER Button
     #>
