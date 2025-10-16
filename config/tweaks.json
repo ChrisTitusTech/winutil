@@ -99,7 +99,7 @@
       Write-Host \"Turn off Hibernation\"
       Start-Process -FilePath powercfg -ArgumentList \"/hibernate off\" -NoNewWindow -Wait
 
-      # Set standby to detault values
+      # Set standby to default values
       Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-ac 15\" -NoNewWindow -Wait
       Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-dc 15\" -NoNewWindow -Wait
       Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-ac 15\" -NoNewWindow -Wait
@@ -1667,13 +1667,6 @@
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
-        "Name": "PersonalizationReportingEnabled",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "<RemoveEntry>"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "ShowMicrosoftRewards",
         "Type": "DWord",
         "Value": "0",
@@ -1696,13 +1689,6 @@
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "EdgeAssetDeliveryServiceEnabled",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "<RemoveEntry>"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
-        "Name": "EdgeCollectionsEnabled",
         "Type": "DWord",
         "Value": "0",
         "OriginalValue": "<RemoveEntry>"
