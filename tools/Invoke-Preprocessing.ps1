@@ -23,7 +23,7 @@ function Invoke-Preprocessing {
         .EXAMPLE
         Invoke-Preprocessing -WorkingDir "DRIVE:\Path\To\Folder\" -ExcludedFiles @('file.txt', '.\.git\', '*.png') -ProgressStatusMessage "Doing Preprocessing"
 
-        Calls 'Invoke-Preprocessing' function using Named Paramters, with 'WorkingDir' (Mandatory Parameter) which's used as the base folder when searching for files recursively (using 'Get-ChildItem'), other two paramters are, in order from right to left, the Optional 'ExcludeFiles', which can be a path to a file, folder, or pattern-matched (like '*.png'), and the 'ProgressStatusMessage', which's used in Progress Bar.
+        Calls 'Invoke-Preprocessing' function using Named Parameters, with 'WorkingDir' (Mandatory Parameter) which's used as the base folder when searching for files recursively (using 'Get-ChildItem'), other two parameters are, in order from right to left, the Optional 'ExcludeFiles', which can be a path to a file, folder, or pattern-matched (like '*.png'), and the 'ProgressStatusMessage', which's used in Progress Bar.
 
         .EXAMPLE
         Invoke-Preprocessing -WorkingDir "DRIVE:\Path\To\Folder\" -ExcludedFiles @('file.txt', '.\.git\', '*.png') -ProgressStatusMessage "Doing Preprocessing" -ProgressActivity "Re-Formatting Code"
@@ -51,7 +51,7 @@ function Invoke-Preprocessing {
     )
 
     if (-NOT (Test-Path -PathType Container -Path "$WorkingDir")) {
-        throw "[Invoke-Preprocessing] Invalid Paramter Value for 'WorkingDir', passed value: '$WorkingDir'. Either the path is a File or Non-Existing/Invlid, please double check your code."
+        throw "[Invoke-Preprocessing] Invalid Parameter Value for 'WorkingDir', passed value: '$WorkingDir'. Either the path is a File or Non-Existing/Invlid, please double check your code."
     }
 
     $InternalExcludedFiles = [System.Collections.Generic.List[string]]::new($ExcludedFiles.Count)

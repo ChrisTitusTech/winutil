@@ -87,7 +87,7 @@ graph TD
 
 ### Testing your changes
 
-* To test to see if your changes work as intended run following commands in a powershell teminal as admin:
+* To test to see if your changes work as intended run following commands in a powershell terminal as admin:
 
 * Change the directory where you are running the commands to the forked project.
 * `cd {path to the folder with the compile.ps1}`

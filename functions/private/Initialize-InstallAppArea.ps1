@@ -8,7 +8,7 @@
                 Also creates an overlay with a progress bar and text to indicate that an install or uninstall is in progress
 
             .PARAMETER TargetElement
-                The element to which the AppArea shoud be added
+                The element to which the AppArea should be added
 
         #>
         param($TargetElement)

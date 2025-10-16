@@ -2699,7 +2699,7 @@
         "category": "Utilities",
         "choco": "ultravnc",
         "content": "UltraVNC",
-        "description": "UltraVNC is a powerful, easy to use and free - remote pc access softwares - that can display the screen of another computer (via internet or network) on your own screen. The program allows you to use your mouse and keyboard to control the other PC remotely. It means that you can work on a remote computer, as if you were sitting in front of it, right from your current location.",
+        "description": "UltraVNC is a powerful, easy to use and free - remote pc access software - that can display the screen of another computer (via internet or network) on your own screen. The program allows you to use your mouse and keyboard to control the other PC remotely. It means that you can work on a remote computer, as if you were sitting in front of it, right from your current location.",
         "link": "https://uvnc.com/",
         "winget": "uvncbvba.UltraVnc"
     },
