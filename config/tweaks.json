@@ -2137,12 +2137,6 @@
         "OriginalValue": "<RemoveEntry>"
       }
     ],
-    "invokeScript": [
-      "Get-ScheduledTask | Where-Object { $_.TaskName -like '*MicrosoftEdgeUpdate*' } | Disable-ScheduledTask"
-    ],
-    "undoScript": [
-      "Get-ScheduledTask | Where-Object { $_.TaskName -like '*MicrosoftEdgeUpdate*' } | Enable-ScheduledTask"
-    ],
     "link": ""
   },
   "WPFTweaksUTC": {
