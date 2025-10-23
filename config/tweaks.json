@@ -2120,7 +2120,7 @@
     "Description": "Disables Microsoft Edge via the registry and prevents scheduled tasks from running Edge updates.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a016_",
+    "Order": "a023_",
     "registry": [
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\DisallowRun",
@@ -2136,12 +2136,6 @@
         "Value": "1",
         "OriginalValue": "<RemoveEntry>"
       }
-    ],
-    "invokeScript": [
-      "Get-ScheduledTask | Where-Object { $_.TaskName -like '*MicrosoftEdgeUpdate*' } | Disable-ScheduledTask"
-    ],
-    "undoScript": [
-      "Get-ScheduledTask | Where-Object { $_.TaskName -like '*MicrosoftEdgeUpdate*' } | Enable-ScheduledTask"
     ],
     "link": ""
   },
