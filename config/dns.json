@@ -52,17 +52,5 @@
         "Secondary": "185.253.5.254",
         "Primary6": "2a0f:fc80::ffff",
         "Secondary6": "2a0f:fc81::ffff"
-    },
-    "dns0.eu_ZERO":{
-        "Primary": "193.110.81.9",
-        "Secondary": "185.253.5.9",
-        "Primary6": "2a0f:fc80::9",
-        "Secondary6": "2a0f:fc81::9"
-    },
-    "dns0.eu_KIDS":{
-        "Primary": "193.110.81.1",
-        "Secondary": "185.253.5.1",
-        "Primary6": "2a0f:fc80::1",
-        "Secondary6": "2a0f:fc81::1"
     }
 }
