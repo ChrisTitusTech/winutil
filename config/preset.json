@@ -19,7 +19,6 @@
   "Minimal": [
     "WPFTweaksConsumerFeatures",
     "WPFTweaksDisableExplorerAutoDiscovery",
-    "WPFTweaksHome",
     "WPFTweaksServices",
     "WPFTweaksTele"
   ]
