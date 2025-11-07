@@ -2863,14 +2863,6 @@
         "link": "https://shotcut.org/",
         "winget": "Meltytech.Shotcut"
     },
-    "LenovoLegionToolkit": {
-        "category": "Utilities",
-        "choco": "na",
-        "content": "Lenovo Legion Toolkit",
-        "description": "Lenovo Legion Toolkit (LLT) is a open-source utility created for Lenovo Legion (and similar) series laptops, that allows changing a couple of features that are only available in Lenovo Vantage or Legion Zone. It runs no background services, uses less memory, uses virtually no CPU, and contains no telemetry. Just like Lenovo Vantage, this application is Windows only.",
-        "link": "https://github.com/BartoszCichecki/LenovoLegionToolkit",
-        "winget": "BartoszCichecki.LenovoLegionToolkit"
-    },
     "PulsarEdit": {
         "category": "Development",
         "choco": "pulsar",
@@ -2910,5 +2902,21 @@
         "description": "The modern, privacy-focused, performance-driven browser built on Firefox",
         "link": "https://zen-browser.app/",
         "winget": "Zen-Team.Zen-Browser"
+    },
+    "NVIDIA": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "NVIDIA App",
+        "description": "NVIDIA GeForce app",
+        "link": "https://www.nvidia.com/en-us/software/nvidia-app/",
+        "winget": "NVIDIA.NVIDIAApp"
+    },
+    "AMD": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "AMD Radeon App",
+        "description": "AMD GPU software and driver manager",
+        "link": "na",
+        "winget": "AMD.RadeonSoftware"
     }
 }
