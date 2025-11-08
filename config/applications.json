@@ -887,6 +887,14 @@
         "link": "https://hexchat.github.io/",
         "winget": "HexChat.HexChat"
     },
+    "hoppscotch": {
+        "category": "Development",
+        "choco": "na",
+        "content": "Hoppscotch",
+        "description": "Hoppscotch is an open-source API development ecosystem that helps you create, test, and share APIs faster.",
+        "link": "https://hoppscotch.com/",
+        "winget": "hoppscotch.Hoppscotch"
+    },
     "hwinfo": {
         "category": "Utilities",
         "choco": "hwinfo",
