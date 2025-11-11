@@ -3217,8 +3217,8 @@
     "Order": "a002_",
     "InvokeScript": [
       "
-      Remove-Item -Path "$Env:Temp\*" -Recurse -Force
-      Remove-Item -Path "$Env:SystemRoot\Temp\*" -Recurse -Force
+      Remove-Item -Path \"$Env:Temp\\*\" -Recurse -Force
+      Remove-Item -Path \"$Env:SystemRoot\\Temp\\*\" -Recurse -Force
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/deletetempfiles"
