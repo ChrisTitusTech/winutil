@@ -2425,10 +2425,10 @@
     "InvokeScript": [
       "
       if (-not (Get-ComputerRestorePoint -ErrorAction SilentlyContinue)) {
-          Enable-ComputerRestore -Drive $env:SystemDrive
+          Enable-ComputerRestore -Drive \"$env:SystemDrive\"
       }
       
-      Checkpoint-Computer -Description "System Restore Point created by WinUtil" -RestorePointType "MODIFY_SETTINGS"
+      Checkpoint-Computer -Description \"System Restore Point created by WinUtil\" -RestorePointType \"MODIFY_SETTINGS\"
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/restorepoint"
