@@ -1625,6 +1625,27 @@
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "BuiltInDnsClientEnabled",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "DnsOverHttpsMode",
+        "Type": "String",
+        "Value": "secure"
+        // This setting forces secure DNS mode to be active.
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "DnsOverHttpsTemplates",
+        "Type": "String",
+        "Value": "https://cloudflare-dns.com/dns-query"
+        // This enforces Cloudflare DNS, the fastest and can connnect to any website. Even the user system is not secured with a secure at least there browser should be secure
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "UserFeedbackAllowed",
         "Type": "DWord",
         "Value": "0",
