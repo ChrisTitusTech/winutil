@@ -3073,7 +3073,7 @@
     "InvokeScript": [
       "
       $hostsUrl = https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts
-      $hosts = $Env:SystemRoot\\System32\\drivers\\etc\\hosts
+      $hosts = $Env:SystemRoot\System32\drivers\etc\hosts
       
       Copy-Item $hosts $hosts.bak
       Invoke-WebRequest $hostsUrl -OutFile $hosts
@@ -3084,7 +3084,7 @@
     ],
     "UndoScript": [
       "
-      $hosts = $Env:SystemRoot\\System32\\drivers\\etc\\hosts
+      $hosts = $Env:SystemRoot\System32\drivers\etc\hosts
       
       Copy-Item $hosts.bak $hosts
       Remove-Item $backup
