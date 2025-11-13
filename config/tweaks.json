@@ -3072,24 +3072,25 @@
     "Order": "a021_",
     "InvokeScript": [
       "
-      $hostsUrl = \"https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts\"
-      $hosts = \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\"
+      $hostsUrl = https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts
+      $hosts = $Env:SystemRoot\\System32\\drivers\\etc\\hosts
       
-      Copy-Item $hosts \"$hosts.bak\"
+      Copy-Item $hosts $hosts.bak
       Invoke-WebRequest $hostsUrl -OutFile $hosts
       ipconfig flushdns
-      Write-Host \"Added Adobe url block list from host file\"
+      
+      Write-Host Added Adobe url block list from host file
       "
     ],
     "UndoScript": [
       "
-      $hosts = \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\"
-      $backup = \"$hosts.bak\"
+      $hosts = $Env:SystemRoot\\System32\\drivers\\etc\\hosts
       
-      Copy-Item $backup $hosts
+      Copy-Item $hosts.bak $hosts
       Remove-Item $backup
       ipconfig flushdns
-      Write-Host \"Removed Adobe url block list from host file\"
+      
+      Write-Host Removed Adobe url block list from host file
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/blockadobenet"
