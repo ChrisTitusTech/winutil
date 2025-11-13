@@ -12,7 +12,7 @@
     Run in Admin Powershell >  ./windev.ps1
 #>
 
-Invoke-WebRequest "https://github.com/ChrisTitusTech/winutil/archive/refs/heads/main.zip" -OutFile winutil.zip
+Invoke-WebRequest -Url "https://github.com/ChrisTitusTech/winutil/archive/refs/heads/main.zip" -OutFile winutil.zip
 
 Expand-Archive .\winutil.zip
 Remove-Item .\winutil.zip
