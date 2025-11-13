@@ -2534,11 +2534,14 @@
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a005_",
-    "InvokeScript": [
-      "Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Name \"01\" -Value 0 -Type Dword -Force"
-    ],
-    "UndoScript": [
-      "Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Name \"01\" -Value 1 -Type Dword -Force"
+    "registry": [
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy",
+        "Name": "01",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1",
+      }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/storage"
   },
