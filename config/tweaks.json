@@ -49,7 +49,7 @@
         "Name": "ShowHibernateOption",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "InvokeScript": [
@@ -69,17 +69,17 @@
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\238C9FA8-0AAD-41ED-83F4-97BE242C8F20\\7bc4a2f9-d8fc-4469-b07b-33eb785aaca0",
-        "OriginalValue": "1",
         "Name": "Attributes",
-        "Value": "2",
         "Type": "DWord"
+        "Value": "2",
+        "OriginalValue": "1",
       },
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\abfc2519-3608-4c2a-94ea-171b0ed546ab\\94ac6d29-73ce-41a6-809f-6363ba21b47e",
-        "OriginalValue": "0",
-        "Name": "Attributes ",
-        "Value": "2",
+        "Name": "Attributes",
         "Type": "DWord"
+        "Value": "2",
+        "OriginalValue": "<RemoveEntry>",
       }
     ],
     "InvokeScript": [
@@ -161,7 +161,7 @@
         "Name": "AutoUpdateEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/loc"
@@ -1719,10 +1719,10 @@
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-        "OriginalValue": "<RemoveEntry>",
         "Name": "DisableWindowsConsumerFeatures",
-        "Value": "1",
         "Type": "DWord"
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>",
       }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/consumerfeatures"
@@ -2103,7 +2103,7 @@
         "Name": "Value",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowAutoConnectToWiFiSenseHotspots",
@@ -2151,7 +2151,7 @@
         "Name": "RealTimeIsUniversal",
         "Type": "DWord",
         "Value": "1",
-        "OriginalValue": "0"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/utc"
@@ -2205,94 +2205,94 @@
     "registry": [
       {
         "Path": "HKCU:\\Control Panel\\Desktop",
-        "OriginalValue": "1",
         "Name": "DragFullWindows",
-        "Value": "0",
         "Type": "String"
+        "Value": "0",
+        "OriginalValue": "1",
       },
       {
         "Path": "HKCU:\\Control Panel\\Desktop",
-        "OriginalValue": "400",
         "Name": "MenuShowDelay",
-        "Value": "200",
         "Type": "String"
+        "Value": "200",
+        "OriginalValue": "400",
       },
       {
         "Path": "HKCU:\\Control Panel\\Desktop\\WindowMetrics",
-        "OriginalValue": "1",
         "Name": "MinAnimate",
-        "Value": "0",
         "Type": "String"
+        "Value": "0",
+        "OriginalValue": "1",
       },
       {
         "Path": "HKCU:\\Control Panel\\Keyboard",
-        "OriginalValue": "1",
         "Name": "KeyboardDelay",
-        "Value": "0",
         "Type": "DWord"
+        "Value": "0",
+        "OriginalValue": "1",
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "OriginalValue": "1",
         "Name": "ListviewAlphaSelect",
-        "Value": "0",
         "Type": "DWord"
+        "Value": "0",
+        "OriginalValue": "1",
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "OriginalValue": "1",
         "Name": "ListviewShadow",
-        "Value": "0",
         "Type": "DWord"
+        "Value": "0",
+        "OriginalValue": "1",
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "OriginalValue": "1",
         "Name": "TaskbarAnimations",
-        "Value": "0",
         "Type": "DWord"
+        "Value": "0",
+        "OriginalValue": "1",
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects",
-        "OriginalValue": "1",
         "Name": "VisualFXSetting",
-        "Value": "3",
         "Type": "DWord"
+        "Value": "3",
+        "OriginalValue": "1",
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\DWM",
-        "OriginalValue": "1",
         "Name": "EnableAeroPeek",
-        "Value": "0",
         "Type": "DWord"
+        "Value": "0",
+        "OriginalValue": "1",
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "OriginalValue": "1",
         "Name": "TaskbarMn",
-        "Value": "0",
         "Type": "DWord"
+        "Value": "0",
+        "OriginalValue": "1",
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "OriginalValue": "1",
         "Name": "TaskbarDa",
-        "Value": "0",
         "Type": "DWord"
+        "Value": "0",
+        "OriginalValue": "1",
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "OriginalValue": "1",
         "Name": "ShowTaskViewButton",
-        "Value": "0",
         "Type": "DWord"
+        "Value": "0",
+        "OriginalValue": "1",
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
-        "OriginalValue": "1",
         "Name": "SearchboxTaskbarMode",
-        "Value": "0",
         "Type": "DWord"
+        "Value": "0",
+        "OriginalValue": "1",
       }
     ],
     "InvokeScript": [
