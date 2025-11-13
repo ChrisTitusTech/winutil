@@ -2540,7 +2540,7 @@
         "Name": "01",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1",
+        "OriginalValue": "1"
       }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/storage"
