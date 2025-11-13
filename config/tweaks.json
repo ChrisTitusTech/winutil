@@ -3072,7 +3072,7 @@
     "Order": "a021_",
     "InvokeScript": [
       "
-      $hostsUrl = https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts
+      $hostsUrl = \"https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts\"
       $hosts = \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\"
       
       Copy-Item $hosts $hosts.bak
