@@ -19,5 +19,5 @@ Remove-Item .\winutil.zip
 
 Set-Location .\winutil\winutil-main
 
-Invoke-Expression .\Complie.ps1
-Invoke-Expression .\Winutil.ps1
+Invoke-Expression .\Compile.ps1
+Invoke-Expression .\winutil.ps1
