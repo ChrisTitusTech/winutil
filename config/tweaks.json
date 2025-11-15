@@ -2422,6 +2422,15 @@
     "panel": "1",
     "Checked": "False",
     "Order": "a001_",
+        "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore",
+        "Name": "SystemRestorePointCreationFrequency",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1440"
+      }
+    ],
     "InvokeScript": [
       "
       if (-not (Get-ComputerRestorePoint)) {
