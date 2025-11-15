@@ -2422,7 +2422,7 @@
     "panel": "1",
     "Checked": "False",
     "Order": "a001_",
-        "registry": [
+    "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore",
         "Name": "SystemRestorePointCreationFrequency",
