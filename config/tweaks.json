@@ -2424,7 +2424,7 @@
     "Order": "a001_",
     "InvokeScript": [
       "
-      if (-not (Get-ComputerRestorePoint -ErrorAction SilentlyContinue)) {
+      if (-not (Get-ComputerRestorePoint)) {
           Enable-ComputerRestore -Drive \"$env:SystemDrive\"
       }
       
