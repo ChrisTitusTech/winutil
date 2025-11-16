@@ -2323,9 +2323,8 @@
       "Microsoft.MinecraftUWP",
       "Microsoft.GamingServices",
       "Microsoft.GetHelp",
-      "Microsoft.Getstarted",
+      "Microsoft.GetStarted",
       "Microsoft.Messaging",
-      "Microsoft.Microsoft3DViewer",
       "Microsoft.MicrosoftSolitaireCollection",
       "Microsoft.NetworkSpeedTest",
       "Microsoft.News",
@@ -2339,7 +2338,7 @@
       "Microsoft.Wallet",
       "Microsoft.Whiteboard",
       "Microsoft.WindowsAlarms",
-      "microsoft.windowscommunicationsapps",
+      "Microsoft.WindowsCommunicationsApps",
       "Microsoft.WindowsFeedbackHub",
       "Microsoft.WindowsMaps",
       "Microsoft.WindowsSoundRecorder",
@@ -2348,7 +2347,6 @@
       "Microsoft.MixedReality.Portal",
       "Microsoft.ZuneMusic",
       "Microsoft.ZuneVideo",
-      "Microsoft.Getstarted",
       "Microsoft.MicrosoftOfficeHub",
       "*EclipseManager*",
       "*ActiproSoftwareLLC*",
@@ -2369,7 +2367,7 @@
       "*ACGMediaPlayer*",
       "*Netflix*",
       "*OneCalendar*",
-      "*LinkedInforWindows*",
+      "*LinkedInForWindows*",
       "*HiddenCityMysteryofShadows*",
       "*Hulu*",
       "*HiddenCity*",
@@ -3987,7 +3985,7 @@
       "
     ]
   },
-  "WPFTweaksDisableCrossDeviceResume": {
+  "WPFToggleDisableCrossDeviceResume": {
     "Content": "Cross-Device Resume",
     "Description": "This tweak controls the Resume function in Windows 11 24H2 and later, which allows you to resume an activity from a mobile device and vice-versa.",
     "category": "Customize Preferences",
