@@ -132,7 +132,7 @@ function Invoke-MicrowinGetIso {
         if (!$downloadFromGitHub) {
             # only show the message to people who did check the box to download from github, if you check the box
             # you consent to downloading it, no need to show extra dialogs
-            [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it using choco. This might take a long time.")
+            [System.Windows.MessageBox]::Show("oscdimg.exe is not found on the system, winutil will now attempt do download and install it using choco. This might take a long time.")
             # the step below needs choco to download oscdimg
             # Install Choco if not already present
             Install-WinUtilChoco
@@ -149,7 +149,7 @@ function Invoke-MicrowinGetIso {
             [System.Windows.MessageBox]::Show($msg)
             return
         } else {
-            [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it from github. This might take a long time.")
+            [System.Windows.MessageBox]::Show("oscdimg.exe is not found on the system, winutil will now attempt do download and install it from github. This might take a long time.")
             Invoke-MicrowinBusyInfo -action "wip" -message "Downloading oscdimg.exe..." -interactive $false
             Microwin-GetOscdimg -oscdimgPath $oscdimgPath
             $oscdImgFound = Test-Path $oscdimgPath -PathType Leaf
