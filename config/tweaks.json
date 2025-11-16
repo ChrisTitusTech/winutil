@@ -3700,7 +3700,7 @@
   },
 
   "WPFToggleMultiplaneOverlay": {
-    "Content": "Multiplane Overlay",
+    "Content": "Disable Multiplane Overlay",
     "Description": "Disable the Multiplane Overlay which can sometimes cause issues with Graphics Cards.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -3712,7 +3712,7 @@
         "Name": "OverlayTestMode",
         "Value": "5",
         "OriginalValue": "<RemoveEntry>",
-        "DefaultState": "true",
+        "DefaultState": "false",
         "Type": "DWord"
       }
     ],
