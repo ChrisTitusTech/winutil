@@ -520,7 +520,7 @@
         "link": "https://emulationstation.org/",
         "winget": "Emulationstation.Emulationstation"
     },
-    "ente-auth": {
+    "enteauth": {
         "category": "Utilities",
         "choco": "ente-auth",
         "content": "Ente Auth",
@@ -1720,7 +1720,7 @@
         "link": "https://bitsum.com/",
         "winget": "BitSum.ProcessLasso"
     },
-    "proton-auth": {
+    "protonauth": {
         "category": "Utilities",
         "choco": "protonauth",
         "content": "Proton Authenticator",
