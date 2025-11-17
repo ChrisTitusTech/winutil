@@ -1720,6 +1720,14 @@
         "link": "https://bitsum.com/",
         "winget": "BitSum.ProcessLasso"
     },
+    "proton-auth": {
+        "category": "Utilities",
+        "choco": "protonauth",
+        "content": "Proton Authenticator",
+        "description": "2FA app from Proton to securely sync and backup 2FA codes.",
+        "link": "https://proton.me/authenticator",
+        "winget": "Proton.ProtonAuthenticator"
+    },
     "spotify": {
         "category": "Multimedia Tools",
         "choco": "spotify",
