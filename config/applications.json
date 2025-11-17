@@ -1728,14 +1728,6 @@
         "link": "https://proton.me/authenticator",
         "winget": "Proton.ProtonAuthenticator"
     },
-    "spotify": {
-        "category": "Multimedia Tools",
-        "choco": "spotify",
-        "content": "Spotify",
-        "description": "Spotify is a digital music service that gives you access to millions of songs, podcasts, and videos from artists all over the world.",
-        "link": "https://www.spotify.com/",
-        "winget": "Spotify.Spotify"
-    },
     "processmonitor": {
         "category": "Microsoft Tools",
         "choco": "procexp",
