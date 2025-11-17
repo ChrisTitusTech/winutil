@@ -1532,11 +1532,11 @@
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/services"
   },
   "WPFTweaksBraveDebloat": {
-    "Content": "Debloat Brave",
+    "Content": "Brave Debloat",
     "Description": "Disables various annoyances like Brave Rewards,Leo AI,Crypto Wallet and VPN",
-    "category": "Essential Tweaks",
+    "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a016_",
+    "Order": "a022_",
     "registry": [
       {
         "Path":"HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
@@ -1569,11 +1569,11 @@
     ]
   },
   "WPFTweaksEdgeDebloat": {
-    "Content": "Debloat Edge",
+    "Content": "Edge Debloat",
     "Description": "Disables various telemetry options, popups, and other annoyances in Edge.",
-    "category": "Essential Tweaks",
+    "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a016_",
+    "Order": "a022_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate",
@@ -2815,7 +2815,7 @@
     "Description": "Blocks ALL Razer Software installations. The hardware works fine without any software. WARNING: this will also block all Windows third-party driver installations.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a032_",
+    "Order": "a021_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
@@ -3039,7 +3039,7 @@
       Copy-Item $hosts \"$hosts.bak\"
       Invoke-WebRequest $hostsUrl -OutFile $hosts
       ipconfig flushdns
-      
+
       Write-Host \"Added Adobe url block list from host file\"
       "
     ],
@@ -3051,7 +3051,7 @@
       Copy-Item $backup $hosts
       Remove-Item $backup
       ipconfig flushdns
-      
+
       Write-Host \"Removed Adobe url block list from host file\"
       "
     ],
@@ -3158,7 +3158,7 @@
     "Description": "To set the IPv4 preference can have latency and security benefits on private networks where IPv6 is not configured.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a023_",
+    "Order": "a024_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
@@ -3175,7 +3175,7 @@
     "Description": "Teredo network tunneling is a ipv6 feature that can cause additional latency, but may cause problems with some games",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a023_",
+    "Order": "a024_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
@@ -3198,7 +3198,7 @@
     "Description": "Disables IPv6.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a023_",
+    "Order": "a024_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
