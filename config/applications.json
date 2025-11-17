@@ -143,6 +143,15 @@
         "link": "https://github.com/sharkdp/bat",
         "winget": "sharkdp.bat"
     },
+    "beeper": {
+        "category": "Communications",
+        "choco": "na",
+        "content": "Beeper",
+        "description": "All your chats in one app",
+        "link": "https://www.beeper.com/",
+        "winget": "Beeper.Beeper"
+    },
+
     "bitwarden": {
         "category": "Utilities",
         "choco": "bitwarden",
