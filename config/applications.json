@@ -520,6 +520,14 @@
         "link": "https://emulationstation.org/",
         "winget": "Emulationstation.Emulationstation"
     },
+    "ente-auth": {
+        "category": "Utilities",
+        "choco": "ente-auth",
+        "content": "Ente Auth",
+        "description": "Ente Auth is a free, cross-platform, end-to-end encrypted authenticator app.",
+        "link": "https://ente.io/auth/",
+        "winget": "ente-io.auth-desktop"
+    },
     "epicgames": {
         "category": "Games",
         "choco": "epicgameslauncher",
