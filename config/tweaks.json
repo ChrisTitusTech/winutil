@@ -63,9 +63,9 @@
   "WPFTweaksLaptopHibernation": {
     "Content": "Set Hibernation as default (good for laptops)",
     "Description": "Most modern laptops have connected standby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399",
-    "category": "Essential Tweaks",
+    "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a014_",
+    "Order": "a027_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\238C9FA8-0AAD-41ED-83F4-97BE242C8F20\\7bc4a2f9-d8fc-4469-b07b-33eb785aaca0",
@@ -107,26 +107,6 @@
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/laptophibernation"
-  },
-  "WPFTweaksHome": {
-    "Content": "Disable Homegroup",
-    "Description": "Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a005_",
-    "service": [
-      {
-        "Name": "HomeGroupListener",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "HomeGroupProvider",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/home"
   },
   "WPFTweaksLoc": {
     "Content": "Disable Location Tracking",
@@ -1552,11 +1532,11 @@
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/services"
   },
   "WPFTweaksBraveDebloat": {
-    "Content": "Debloat Brave",
+    "Content": "Brave Debloat",
     "Description": "Disables various annoyances like Brave Rewards,Leo AI,Crypto Wallet and VPN",
-    "category": "Essential Tweaks",
+    "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a016_",
+    "Order": "a022_",
     "registry": [
       {
         "Path":"HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
@@ -1589,11 +1569,11 @@
     ]
   },
   "WPFTweaksEdgeDebloat": {
-    "Content": "Debloat Edge",
+    "Content": "Edge Debloat",
     "Description": "Disables various telemetry options, popups, and other annoyances in Edge.",
-    "category": "Essential Tweaks",
+    "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a016_",
+    "Order": "a022_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate",
@@ -2323,9 +2303,8 @@
       "Microsoft.MinecraftUWP",
       "Microsoft.GamingServices",
       "Microsoft.GetHelp",
-      "Microsoft.Getstarted",
+      "Microsoft.GetStarted",
       "Microsoft.Messaging",
-      "Microsoft.Microsoft3DViewer",
       "Microsoft.MicrosoftSolitaireCollection",
       "Microsoft.NetworkSpeedTest",
       "Microsoft.News",
@@ -2339,7 +2318,7 @@
       "Microsoft.Wallet",
       "Microsoft.Whiteboard",
       "Microsoft.WindowsAlarms",
-      "microsoft.windowscommunicationsapps",
+      "Microsoft.WindowsCommunicationsApps",
       "Microsoft.WindowsFeedbackHub",
       "Microsoft.WindowsMaps",
       "Microsoft.WindowsSoundRecorder",
@@ -2348,7 +2327,6 @@
       "Microsoft.MixedReality.Portal",
       "Microsoft.ZuneMusic",
       "Microsoft.ZuneVideo",
-      "Microsoft.Getstarted",
       "Microsoft.MicrosoftOfficeHub",
       "MsTeams",
       "*EclipseManager*",
@@ -2370,7 +2348,7 @@
       "*ACGMediaPlayer*",
       "*Netflix*",
       "*OneCalendar*",
-      "*LinkedInforWindows*",
+      "*LinkedInForWindows*",
       "*HiddenCityMysteryofShadows*",
       "*Hulu*",
       "*HiddenCity*",
@@ -2437,40 +2415,23 @@
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a006_",
-    "InvokeScript": [
-      "$path = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\"
-      $name = \"TaskbarEndTask\"
-      $value = 1
-
-      # Ensure the registry key exists
-      if (-not (Test-Path $path)) {
-        New-Item -Path $path -Force | Out-Null
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings",
+        "Name": "TaskbarEndTask",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>"
       }
-
-      # Set the property, creating it if it doesn't exist
-      New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null"
-    ],
-    "UndoScript": [
-      "$path = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\"
-      $name = \"TaskbarEndTask\"
-      $value = 0
-
-      # Ensure the registry key exists
-      if (-not (Test-Path $path)) {
-        New-Item -Path $path -Force | Out-Null
-      }
-
-      # Set the property, creating it if it doesn't exist
-      New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/endtaskontaskbar"
   },
   "WPFTweaksPowershell7": {
     "Content": "Change Windows Terminal default: PowerShell 5 -> PowerShell 7",
     "Description": "This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary",
-    "category": "Essential Tweaks",
+    "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a009_",
+    "Order": "a022_",
     "InvokeScript": [
       "Invoke-WPFTweakPS7 -action \"PS7\""
     ],
@@ -2591,9 +2552,9 @@
   "WPFTweaksRecallOff": {
     "Content": "Disable Recall",
     "Description": "Turn Recall off",
-    "category": "Essential Tweaks",
+    "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a011_",
+    "Order": "a025_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI",
@@ -2819,7 +2780,7 @@
     "Description": "Blocks ALL Razer Software installations. The hardware works fine without any software. WARNING: this will also block all Windows third-party driver installations.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a032_",
+    "Order": "a021_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
@@ -3037,102 +2998,26 @@
     "Order": "a021_",
     "InvokeScript": [
       "
-      # Define the URL of the remote HOSTS file and the local paths
-      $remoteHostsUrl = \"https://raw.githubusercontent.com/Ruddernation-Designs/Adobe-URL-Block-List/master/hosts\"
-      $localHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\hosts\"
-      $tempHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\temp_hosts\"
+      $hostsUrl = \"https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts\"
+      $hosts = \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\"
 
-      # Download the remote HOSTS file to a temporary location
-      try {
-          Invoke-WebRequest -Uri $remoteHostsUrl -OutFile $tempHostsPath
-          Write-Output \"Downloaded the remote HOSTS file to a temporary location.\"
-      } catch {
-          Write-Error \"Failed to download the HOSTS file. Error: $_\"
-      }
+      Copy-Item $hosts \"$hosts.bak\"
+      Invoke-WebRequest $hostsUrl -OutFile $hosts
+      ipconfig flushdns
 
-      # Check if the AdobeNetBlock has already been started
-      try {
-          $localHostsContent = Get-Content $localHostsPath -ErrorAction Stop
-
-          # Check if AdobeNetBlock markers exist
-          $blockStartExists = $localHostsContent -like \"*#AdobeNetBlock-start*\"
-          if ($blockStartExists) {
-              Write-Output \"AdobeNetBlock-start already exists. Skipping addition of new block.\"
-          } else {
-              # Load the new block from the downloaded file
-              $newBlockContent = Get-Content $tempHostsPath -ErrorAction Stop
-              $newBlockContent = $newBlockContent | Where-Object { $_ -notmatch \"^\\s*#\" -and $_ -ne \"\" } # Exclude empty lines and comments
-              $newBlockHeader = \"#AdobeNetBlock-start\"
-              $newBlockFooter = \"#AdobeNetBlock-end\"
-
-              # Combine the contents, ensuring new block is properly formatted
-              $combinedContent = $localHostsContent + $newBlockHeader, $newBlockContent, $newBlockFooter | Out-String
-
-              # Write the combined content back to the original HOSTS file
-              $combinedContent | Set-Content $localHostsPath -Encoding ASCII
-              Write-Output \"Successfully added the AdobeNetBlock.\"
-          }
-      } catch {
-          Write-Error \"Error during processing: $_\"
-      }
-
-      # Clean up temporary file
-      Remove-Item $tempHostsPath -ErrorAction Ignore
-
-      # Flush the DNS resolver cache
-      try {
-          Invoke-Expression \"ipconfig /flushdns\"
-          Write-Output \"DNS cache flushed successfully.\"
-      } catch {
-          Write-Error \"Failed to flush DNS cache. Error: $_\"
-      }
+      Write-Host \"Added Adobe url block list from host file\"
       "
     ],
     "UndoScript": [
       "
-      # Define the local path of the HOSTS file
-      $localHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\hosts\"
+      $hosts = \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\"
+      $backup = \"$hosts.bak\"
 
-      # Load the content of the HOSTS file
-      try {
-          $hostsContent = Get-Content $localHostsPath -ErrorAction Stop
-      } catch {
-          Write-Error \"Failed to load the HOSTS file. Error: $_\"
-          return
-      }
+      Copy-Item $backup $hosts
+      Remove-Item $backup
+      ipconfig flushdns
 
-      # Initialize flags and buffer for new content
-      $recording = $true
-      $newContent = @()
-
-      # Iterate over each line of the HOSTS file
-      foreach ($line in $hostsContent) {
-          if ($line -match \"#AdobeNetBlock-start\") {
-              $recording = $false
-          }
-          if ($recording) {
-              $newContent += $line
-          }
-          if ($line -match \"#AdobeNetBlock-end\") {
-              $recording = $true
-          }
-      }
-
-      # Write the filtered content back to the HOSTS file
-      try {
-          $newContent | Set-Content $localHostsPath -Encoding ASCII
-          Write-Output \"Successfully removed the AdobeNetBlock section from the HOSTS file.\"
-      } catch {
-          Write-Error \"Failed to write back to the HOSTS file. Error: $_\"
-      }
-
-      # Flush the DNS resolver cache
-      try {
-          Invoke-Expression \"ipconfig /flushdns\"
-          Write-Output \"DNS cache flushed successfully.\"
-      } catch {
-          Write-Error \"Failed to flush DNS cache. Error: $_\"
-      }
+      Write-Host \"Removed Adobe url block list from host file\"
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/blockadobenet"
@@ -3181,8 +3066,10 @@
     "panel": "1",
     "Order": "a002_",
     "InvokeScript": [
-      "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
-    Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
+      "
+      Remove-Item -Path \"$Env:Temp\\*\" -Recurse -Force
+      Remove-Item -Path \"$Env:SystemRoot\\Temp\\*\" -Recurse -Force
+      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/deletetempfiles"
   },
@@ -3236,7 +3123,7 @@
     "Description": "To set the IPv4 preference can have latency and security benefits on private networks where IPv6 is not configured.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a023_",
+    "Order": "a024_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
@@ -3253,7 +3140,7 @@
     "Description": "Teredo network tunneling is a ipv6 feature that can cause additional latency, but may cause problems with some games",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a023_",
+    "Order": "a024_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
@@ -3276,7 +3163,7 @@
     "Description": "Disables IPv6.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a023_",
+    "Order": "a024_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
@@ -3510,7 +3397,7 @@
   },
   "WPFToggleSnapFlyout": {
     "Content": "Snap Assist Flyout",
-    "Description": "If enabled then Snap preview is disabled when maximize button is hovered.",
+    "Description": "If disabled then Snap preview is disabled when maximize button is hovered.",
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a107_",
@@ -3665,7 +3552,7 @@
   },
 
   "WPFToggleMultiplaneOverlay": {
-    "Content": "Multiplane Overlay",
+    "Content": "Disable Multiplane Overlay",
     "Description": "Disable the Multiplane Overlay which can sometimes cause issues with Graphics Cards.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -3677,7 +3564,7 @@
         "Name": "OverlayTestMode",
         "Value": "5",
         "OriginalValue": "<RemoveEntry>",
-        "DefaultState": "true",
+        "DefaultState": "false",
         "Type": "DWord"
       }
     ],
@@ -3876,7 +3763,7 @@
     "panel": "1",
     "Order": "a040_",
     "Type": "Combobox",
-    "ComboItems": "Default DHCP Google Cloudflare Cloudflare_Malware Cloudflare_Malware_Adult Open_DNS Quad9 AdGuard_Ads_Trackers AdGuard_Ads_Trackers_Malware_Adult dns0.eu_Open dns0.eu_ZERO dns0.eu_KIDS",
+    "ComboItems": "Default DHCP Google Cloudflare Cloudflare_Malware Cloudflare_Malware_Adult Open_DNS Quad9 AdGuard_Ads_Trackers AdGuard_Ads_Trackers_Malware_Adult",
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/changedns"
   },
   "WPFAddUltPerf": {
@@ -3952,7 +3839,7 @@
       "
     ]
   },
-  "WPFTweaksDisableCrossDeviceResume": {
+  "WPFToggleDisableCrossDeviceResume": {
     "Content": "Cross-Device Resume",
     "Description": "This tweak controls the Resume function in Windows 11 24H2 and later, which allows you to resume an activity from a mobile device and vice-versa.",
     "category": "Customize Preferences",
