@@ -214,6 +214,11 @@
         "OriginalType": "Manual"
       },
       {
+        "Name": "BITS",
+        "StartupType": "AutomaticDelayedStart",
+        "OriginalType": "Automatic"
+      },
+      {
         "Name": "BcastDVRUserService_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -469,6 +474,11 @@
         "OriginalType": "Manual"
       },
       {
+        "Name": "MapsBroker",
+        "StartupType": "AutomaticDelayedStart",
+        "OriginalType": "Automatic"
+      },
+      {
         "Name": "MsKeyboardFilter",
         "StartupType": "Manual",
         "OriginalType": "Disabled"
@@ -642,6 +652,11 @@
         "Name": "SCPolicySvc",
         "StartupType": "Manual",
         "OriginalType": "Manual"
+      },
+      {
+        "Name": "sppsvc",
+        "StartupType": "AutomaticDelayedStart",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "SCardSvr",
@@ -869,6 +884,11 @@
         "OriginalType": "Manual"
       },
       {
+        "Name": "WSearch",
+        "StartupType": "AutomaticDelayedStart",
+        "OriginalType": "Automatic"
+      },
+      {
         "Name": "WbioSrvc",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -887,6 +907,11 @@
         "Name": "WdiSystemHost",
         "StartupType": "Manual",
         "OriginalType": "Manual"
+      },
+      {
+        "Name": "wscsvc",
+        "StartupType": "AutomaticDelayedStart",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "WebClient",
