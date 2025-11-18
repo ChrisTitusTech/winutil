@@ -35,7 +35,7 @@ irm "https://christitus.com/win" | iex
 irm "https://christitus.com/windev" | iex
 ```
 
-If you have Issues, refer to [Known Issues](https://winutil.christitus.com/knownissues/)
+If you have Issues, refer to [Known Issues](https://winutil.christitus.com/knownissues/) or [Create Issue](https://github.com/ChrisTitusTech/winutil/issues)
 
 ## 🎓 Documentation
 
