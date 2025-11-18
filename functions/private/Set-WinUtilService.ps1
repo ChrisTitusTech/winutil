@@ -20,9 +20,7 @@ Function Set-WinUtilService {
     )
     try {
         Write-Host "Setting Service $Name to $StartupType"
-        ###test
-        Write-Host $Name
-        ###test
+
         if ($StartupType -eq "AutomaticDelayedStart") {
             foreach ($StartupType in $StartupTypes) {
                 sc.exe config $Name start=delayed-auto
