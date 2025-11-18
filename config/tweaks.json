@@ -159,11 +159,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "AppIDSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "AppMgmt",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -177,11 +172,6 @@
         "Name": "AppVClient",
         "StartupType": "Disabled",
         "OriginalType": "Disabled"
-      },
-      {
-        "Name": "AppXSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
       },
       {
         "Name": "Appinfo",
@@ -219,11 +209,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "BFE",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
         "Name": "BITS",
         "StartupType": "AutomaticDelayedStart",
         "OriginalType": "Automatic"
@@ -242,11 +227,6 @@
         "Name": "BluetoothUserService_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
-      },
-      {
-        "Name": "BrokerInfrastructure",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
       },
       {
         "Name": "Browser",
@@ -284,19 +264,9 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "ClipSVC",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "ConsentUxUserSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
-      },
-      {
-        "Name": "CoreMessagingRegistrar",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
       },
       {
         "Name": "CredentialEnrollmentManagerUserSvc_*",
@@ -315,11 +285,6 @@
       },
       {
         "Name": "DPS",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "DcomLaunch",
         "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
@@ -384,22 +349,12 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "Dnscache",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
         "Name": "EFS",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "EapHost",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "EntAppSvc",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -474,11 +429,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "LSM",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
         "Name": "LanmanServer",
         "StartupType": "Automatic",
         "OriginalType": "Automatic"
@@ -529,11 +479,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "MpsSvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
         "Name": "MsKeyboardFilter",
         "StartupType": "Manual",
         "OriginalType": "Disabled"
@@ -580,16 +525,6 @@
       },
       {
         "Name": "Netman",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "NgcCtnrSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "NgcSvc",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -709,19 +644,9 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "RpcEptMapper",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
         "Name": "RpcLocator",
         "StartupType": "Manual",
         "OriginalType": "Manual"
-      },
-      {
-        "Name": "RpcSs",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
       },
       {
         "Name": "SCPolicySvc",
@@ -770,16 +695,6 @@
       },
       {
         "Name": "ScDeviceEnum",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "Schedule",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "SecurityHealthService",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -844,11 +759,6 @@
         "OriginalType": "Automatic"
       },
       {
-        "Name": "SystemEventsBroker",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
         "Name": "TapiSrv",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -865,11 +775,6 @@
       },
       {
         "Name": "TieringEngineService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "TimeBrokerSvc",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -1019,11 +924,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "WinHttpAutoProxySvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "WinRM",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -1134,11 +1034,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "embeddedmode",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "fdPHost",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -1147,11 +1042,6 @@
         "Name": "fhsvc",
         "StartupType": "Manual",
         "OriginalType": "Manual"
-      },
-      {
-        "Name": "gpsvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
       },
       {
         "Name": "hidserv",
@@ -1180,16 +1070,6 @@
       },
       {
         "Name": "lmhosts",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "mpssvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "msiserver",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
