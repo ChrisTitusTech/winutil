@@ -1059,11 +1059,6 @@
         "OriginalType": "Automatic"
       },
       {
-        "Name": "WaaSMedicSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "WalletService",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -1085,11 +1080,6 @@
       },
       {
         "Name": "WcsPlugInService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "WdNisSvc",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -1122,11 +1112,6 @@
         "Name": "WiaRpc",
         "StartupType": "Manual",
         "OriginalType": "Manual"
-      },
-      {
-        "Name": "WinDefend",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
       },
       {
         "Name": "WinHttpAutoProxySvc",
