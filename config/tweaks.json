@@ -154,11 +154,6 @@
     "Order": "a014_",
     "service": [
       {
-        "Name": "AJRouter",
-        "StartupType": "Disabled",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "ALG",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -264,11 +259,6 @@
         "OriginalType": "Automatic"
       },
       {
-        "Name": "BthHFSrv",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
         "Name": "CDPSvc",
         "StartupType": "Manual",
         "OriginalType": "Automatic"
@@ -332,11 +322,6 @@
         "Name": "DcomLaunch",
         "StartupType": "Automatic",
         "OriginalType": "Automatic"
-      },
-      {
-        "Name": "DcpSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
       },
       {
         "Name": "DevQueryBroker",
@@ -434,11 +419,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "Fax",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "FontCache",
         "StartupType": "Automatic",
         "OriginalType": "Automatic"
@@ -460,11 +440,6 @@
       },
       {
         "Name": "HvHost",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "IEEtwCollectorService",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -554,11 +529,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "MixedRealityOpenXRSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "MpsSvc",
         "StartupType": "Automatic",
         "OriginalType": "Automatic"
@@ -635,16 +605,6 @@
       },
       {
         "Name": "P9RdrService_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "PNRPAutoReg",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "PNRPsvc",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -849,11 +809,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "SharedRealitySvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "ShellHWDetection",
         "StartupType": "Automatic",
         "OriginalType": "Automatic"
@@ -894,11 +849,6 @@
         "OriginalType": "Automatic"
       },
       {
-        "Name": "TabletInputService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "TapiSrv",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -915,11 +865,6 @@
       },
       {
         "Name": "TieringEngineService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "TimeBroker",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -945,11 +890,6 @@
       },
       {
         "Name": "TrustedInstaller",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "UI0Detect",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -989,22 +929,7 @@
         "OriginalType": "Automatic"
       },
       {
-        "Name": "VGAuthService",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "VMTools",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
         "Name": "VSS",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "VacSvc",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -1029,22 +954,12 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "WMPNetworkSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "WManSvc",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "WPDBusEnum",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "WSService",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -1072,11 +987,6 @@
         "Name": "Wcmsvc",
         "StartupType": "Automatic",
         "OriginalType": "Automatic"
-      },
-      {
-        "Name": "WcsPlugInService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
       },
       {
         "Name": "WdiServiceHost",
@@ -1199,11 +1109,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "diagnosticshub.standardcollector.service",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "diagsvc",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -1299,16 +1204,6 @@
         "OriginalType": "Automatic"
       },
       {
-        "Name": "p2pimsvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "p2psvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "perceptionsimulation",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -1334,19 +1229,9 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "spectrum",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "sppsvc",
         "StartupType": "AutomaticDelayedStart",
         "OriginalType": "Automatic"
-      },
-      {
-        "Name": "ssh-agent",
-        "StartupType": "Disabled",
-        "OriginalType": "Disabled"
       },
       {
         "Name": "svsvc",
@@ -1359,17 +1244,7 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "tiledatamodelsvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
         "Name": "tzautoupdate",
-        "StartupType": "Disabled",
-        "OriginalType": "Disabled"
-      },
-      {
-        "Name": "uhssvc",
         "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
@@ -1382,11 +1257,6 @@
         "Name": "vds",
         "StartupType": "Manual",
         "OriginalType": "Manual"
-      },
-      {
-        "Name": "vm3dservice",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
       },
       {
         "Name": "vmicguestinterface",
@@ -1425,11 +1295,6 @@
       },
       {
         "Name": "vmicvss",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "vmvss",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -1479,22 +1344,12 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "workfolderssvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "wscsvc",
         "StartupType": "AutomaticDelayedStart",
         "OriginalType": "Automatic"
       },
       {
         "Name": "wuauserv",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "wudfsvc",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       }
