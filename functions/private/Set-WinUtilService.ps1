@@ -20,12 +20,21 @@ Function Set-WinUtilService {
     )
     try {
         Write-Host "Setting Service $Name to $StartupType"
-
-        # Check if the service exists
-        $service = Get-Service -Name $Name -ErrorAction Stop
-
-        # Service exists, proceed with changing properties
-        $service | Set-Service -StartupType $StartupType -ErrorAction Stop
+        ###test
+        Write-Host $Name
+        ###test
+        if ($StartupType -eq "AutomaticDelayedStart") {
+            foreach ($StartupType in $StartupTypes) {
+                sc.exe config $Name start=delayed-auto
+            }
+        } else {
+            # Check if the service exists
+            $service = Get-Service -Name $Name -ErrorAction Stop
+            
+            # Service exists, proceed with changing properties
+            $service | Set-Service -StartupType $StartupType -ErrorAction Stop
+        }
+        
     } catch [System.ServiceProcess.ServiceNotFoundException] {
         Write-Warning "Service $Name was not found"
     } catch {
