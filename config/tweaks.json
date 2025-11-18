@@ -824,11 +824,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "Sense",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "SensorDataService",
         "StartupType": "Manual",
         "OriginalType": "Manual"
