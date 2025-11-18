@@ -459,16 +459,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "HomeGroupListener",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "HomeGroupProvider",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "HvHost",
         "StartupType": "Manual",
         "OriginalType": "Manual"
