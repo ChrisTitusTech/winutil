@@ -2927,5 +2927,13 @@
         "description": "The modern, privacy-focused, performance-driven browser built on Firefox",
         "link": "https://zen-browser.app/",
         "winget": "Zen-Team.Zen-Browser"
+    },
+    "Zed": {
+        "category": "Development",
+        "choco": "na",
+        "content": "Zed",
+        "description": "Zed is a modern, high-performance code editor designed from the ground up for speed and collaboration.",
+        "link": "https://zed.dev/",
+        "winget": "Zed.Zed"
     }
 }
