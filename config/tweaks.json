@@ -209,11 +209,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "BITS",
-        "StartupType": "AutomaticDelayedStart",
-        "OriginalType": "Automatic"
-      },
-      {
         "Name": "BTAGService",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -457,11 +452,6 @@
         "Name": "MSiSCSI",
         "StartupType": "Manual",
         "OriginalType": "Manual"
-      },
-      {
-        "Name": "MapsBroker",
-        "StartupType": "AutomaticDelayedStart",
-        "OriginalType": "Automatic"
       },
       {
         "Name": "McpManagementService",
@@ -869,11 +859,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "WSearch",
-        "StartupType": "AutomaticDelayedStart",
-        "OriginalType": "Automatic"
-      },
-      {
         "Name": "WalletService",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -1109,11 +1094,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "sppsvc",
-        "StartupType": "AutomaticDelayedStart",
-        "OriginalType": "Automatic"
-      },
-      {
         "Name": "svsvc",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -1222,11 +1202,6 @@
         "Name": "wmiApSrv",
         "StartupType": "Manual",
         "OriginalType": "Manual"
-      },
-      {
-        "Name": "wscsvc",
-        "StartupType": "AutomaticDelayedStart",
-        "OriginalType": "Automatic"
       },
       {
         "Name": "wuauserv",
