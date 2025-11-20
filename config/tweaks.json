@@ -1675,13 +1675,6 @@
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
-        "Name": "CryptoWalletEnabled",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "<RemoveEntry>"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "WalletDonationEnabled",
         "Type": "DWord",
         "Value": "0",
