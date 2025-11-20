@@ -2927,5 +2927,21 @@
         "description": "The modern, privacy-focused, performance-driven browser built on Firefox",
         "link": "https://zen-browser.app/",
         "winget": "Zen-Team.Zen-Browser"
+    },
+    "faststoneimage": {
+        "category": "Multimedia Tools",
+        "choco": "faststone-image-viewer",
+        "content": "FastStone Image Viewer",
+        "description": "FastStone Image Viewer is a fast, stable, user-friendly image browser, converter and editor.",
+        "link": "https://www.faststone.org/FSViewerDetail.htm",
+        "winget": "FastStone.Viewer"
+    },
+    "screenbox": {
+        "category": "Multimedia Tools",
+        "choco": "na",
+        "content": "Screenbox",
+        "description": "LibVLC-based media player for the Universal Windows Platform",
+        "link": "https://github.com/huynhsontung/Screenbox",
+        "winget": "9NTSNMSVCB5L"
     }
 }
