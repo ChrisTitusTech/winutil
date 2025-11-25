@@ -21,10 +21,6 @@ function Invoke-WinUtilTweaks {
         $KeepServiceStartup = $true
     )
 
-    if ($Checkbox -like "*Toggle*") {
-        $CheckBox = $sync.configs.tweaks.$CheckBox
-    }
-
     Write-Debug "Tweaks: $($CheckBox)"
     if($undo) {
         $Values = @{
