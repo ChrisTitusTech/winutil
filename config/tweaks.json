@@ -2718,8 +2718,8 @@
       Start-Process -FilePath \"$env:SystemRoot\\System32\\OneDriveSetup.exe\" -ArgumentList '/uninstall' -NoNewWindow -Wait
 
       Write-Host \"Removing OneDrive leftovers\"
-      Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:LocalAppData\\Microsoft\\OneDrive\"
-      Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:ProgramData\\Microsoft OneDrive\"
+      Remove-Item -Recurse -Force \"$env:LocalAppData\\Microsoft\\OneDrive\"
+      Remove-Item -Recurse -Force \"$env:ProgramData\\Microsoft OneDrive\"
       "
     ],
     "UndoScript": [
