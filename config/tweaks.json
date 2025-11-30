@@ -2364,7 +2364,7 @@
         Write-Host \"Uninstalling Teams\"
         Start-Process $TeamsPath -ArgumentList -uninstall -wait
 
-        Write-Host \"Removing Teams directory\"
+        Write-Host \"Deleting Teams directory\"
         Remove-Item $TeamsPath -Recurse -Force
       }
       "
