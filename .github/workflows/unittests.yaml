@@ -8,7 +8,7 @@ jobs:
     name: PS Script Analyzer
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - name: lint
       uses: devblackops/github-action-psscriptanalyzer@master
       with:
@@ -22,7 +22,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
 
     - name: Install Pester
       run: |

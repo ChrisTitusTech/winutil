@@ -13,7 +13,7 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: Checkout Sources
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
 
     - name: Compile and Syntaxcheck winutil.ps1
       shell: pwsh
