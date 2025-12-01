@@ -2352,7 +2352,7 @@
     "InvokeScript": [
       "
       $TeamsPath = \"$Env:LocalAppData\\Microsoft\\Teams\\Update.exe\"
-      
+
       if (Test-Path $TeamsPath) {
         Write-Host \"Uninstalling Teams\"
         Start-Process $TeamsPath -ArgumentList -uninstall -wait
