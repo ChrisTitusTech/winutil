@@ -24,8 +24,12 @@ Function Set-WinUtilService {
         # Check if the service exists
         $service = Get-Service -Name $Name -ErrorAction Stop
 
-        # Service exists, proceed with changing properties
-        $service | Set-Service -StartupType $StartupType -ErrorAction Stop
+        # Service exists, proceed with changing properties -- while handling auto delayed start for PWSH 5
+        if (($PSVersionTable.PSVersion.Major -lt 7) -and ($StartupType -eq "AutomaticDelayedStart")) {
+            sc.exe config $Name start=delayed-auto
+        } else {
+            $service | Set-Service -StartupType $StartupType -ErrorAction Stop
+        }
     } catch [System.ServiceProcess.ServiceNotFoundException] {
         Write-Warning "Service $Name was not found"
     } catch {
