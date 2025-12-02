@@ -2558,51 +2558,6 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removecopilot"
   },
-  "WPFTweaksRecallOff": {
-    "Content": "Disable Recall",
-    "Description": "Turn Recall off",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a025_",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI",
-        "Name": "DisableAIDataAnalysis",
-        "Type": "DWord",
-        "Value": "1",
-        "OriginalValue": "<RemoveEntry>"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI",
-        "Name": "AllowRecallEnablement",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "<RemoveEntry>"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\CI\\Policy",
-        "Name": "VerifiedAndReputablePolicyState",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "<RemoveEntry>"
-      }
-    ],
-    "InvokeScript": [
-      "
-      Write-Host \"Disable Recall\"
-      DISM /Online /Disable-Feature /FeatureName:Recall /Quiet /NoRestart
-      Write-Host \"Please restart your computer in order for the changes to be fully applied.\"
-      "
-    ],
-    "UndoScript": [
-      "
-      Write-Host \"Enable Recall\"
-      DISM /Online /Enable-Feature /FeatureName:Recall /Quiet /NoRestart
-      Write-Host \"Please restart your computer in order for the changes to be fully applied.\"
-      "
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/disablerecall"
-  },
   "WPFTweaksDisableLMS1": {
     "Content": "Disable Intel MM (vPro LMS)",
     "Description": "Intel LMS service is always listening on all ports and could be a huge security risk. There is no need to run LMS on home machines and even in the Enterprise there are better solutions.",
