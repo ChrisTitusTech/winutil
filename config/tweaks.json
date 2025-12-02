@@ -2727,6 +2727,7 @@
       "
       $RazerPath = \"C:\\Windows\\Installer\\Razer\"
 
+      New-Item -Path \"C:\\Windows\\Installer\\Razer\" -ItemType directory
       Remove-Item \"$RazerPath\\*\" -Recurse -Force
       icacls $RazerPath /deny \"Everyone:(W)\"
       "
