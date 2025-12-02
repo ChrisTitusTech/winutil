@@ -2727,10 +2727,8 @@
       "
       $RazerPath = \"C:\\Windows\\Installer\\Razer\"
 
-      if (Test-Path $RazerPath) {
-        Remove-Item \"$RazerPath\\*\" -Recurse -Force
-        icacls $RazerPath /deny \"Everyone:(W)\"
-      }
+      Remove-Item \"$RazerPath\\*\" -Recurse -Force
+      icacls $RazerPath /deny \"Everyone:(W)\"
       "
     ],
     "UndoScript": [
