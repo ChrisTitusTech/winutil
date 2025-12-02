@@ -108,7 +108,7 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/laptophibernation"
   },
-  "WPFTweaksLoc": {
+  "WPFTweaksLocation": {
     "Content": "Disable Location Tracking",
     "Description": "Disables Location Tracking...DUH!",
     "category": "Essential Tweaks",
