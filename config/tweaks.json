@@ -2725,7 +2725,7 @@
     ],
     "InvokeScript": [
       "
-      $RazerPath = C:\\Windows\\Installer\\Razer
+      $RazerPath = \"C:\\Windows\\Installer\\Razer\"
 
       if (Test-Path $RazerPath) {
         Remove-Item $RazerPath\\* -Recurse -Force
@@ -2739,7 +2739,7 @@
     ],
     "UndoScript": [
       "
-      icacls C:\\Windows\\Installer\\Razer /remove:d Everyone
+      icacls \"C:\\Windows\\Installer\\Razer\" /remove:d Everyone
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/razerblock"
