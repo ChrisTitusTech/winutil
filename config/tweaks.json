@@ -2728,7 +2728,7 @@
       $RazerPath = \"C:\\Windows\\Installer\\Razer\"
 
       if (Test-Path $RazerPath) {
-        Remove-Item \"$RazerPath\\*\" -Recurse -Force
+        Remove-Item $RazerPath\\* -Recurse -Force
       }
       else {
         New-Item -Path $RazerPath -ItemType Directory
