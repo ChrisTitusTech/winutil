@@ -18,13 +18,8 @@ function Invoke-WinUtilTweaks {
     param(
         $CheckBox,
         $undo = $false,
-        $KeepServiceStartup = $true,
-        [switch]$ApplyToAllUsers
+        $KeepServiceStartup = $true
     )
-
-    if ($Checkbox -contains "Toggle") {
-        $CheckBox = $sync.configs.tweaks.$CheckBox
-    }
 
     Write-Debug "Tweaks: $($CheckBox)"
     if($undo) {
@@ -55,7 +50,7 @@ function Invoke-WinUtilTweaks {
         $sync.configs.tweaks.$CheckBox.service | ForEach-Object {
             $changeservice = $true
 
-        # The check for !($undo) is required, without it the script will throw an error for accessing unavailable memeber, which's the 'OriginalService' Property
+        # The check for !($undo) is required, without it the script will throw an error for accessing unavailable member, which's the 'OriginalService' Property
             if($KeepServiceStartup -AND !($undo)) {
                 try {
                     # Check if the service exists
@@ -78,31 +73,44 @@ function Invoke-WinUtilTweaks {
     if($sync.configs.tweaks.$CheckBox.registry) {
         $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
             Write-Debug "$($psitem.Name) and state is $($psitem.$($values.registry))"
-
-            # If the path targets HKCU and user requested ApplyToAllUsers, iterate through HKEY_USERS and apply to each user's hive
-            if ($ApplyToAllUsers -and ($psitem.Path -imatch "HKCU:" -or $psitem.Path -imatch "HKEY_CURRENT_USER")) {
-                try {
-                    if(!(Test-Path 'HKU:\')) {New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS}
-                    $users = Get-ChildItem -Path HKU:\ | Where-Object { $_.PSChildName -notin @('S-1-5-18','S-1-5-19','S-1-5-20','.DEFAULT') }
-                    foreach ($user in $users) {
-                        $userHive = $user.PSPath -replace '^Registry::',''
-                        # Build a HKU path equivalent to the HKCU path
-                        $relative = $psitem.Path -replace '^(HKCU:|HKEY_CURRENT_USER\\?)',''
-                        $targetPath = "HKU:\$($user.PSChildName)\$relative"
+            
+            # Logic for ApplyToAllUsers feature
+            if ($ApplyToAllUsers -and $psitem.Path -match "^(HKCU:|HKEY_CURRENT_USER)") {
+                # Ensure HKU drive exists if needed
+                if (!(Get-PSDrive -Name HKU -ErrorAction SilentlyContinue)) {
+                    New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
+                }
+                
+                $relativePath = $psitem.Path -replace '^(HKCU:|HKEY_CURRENT_USER\\?)', ''
+                $excludedSIDs = @('S-1-5-18', 'S-1-5-19', 'S-1-5-20', '.DEFAULT')
+                
+                Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\*" -ErrorAction SilentlyContinue |
+                    Where-Object { $_.PSChildName -notin $excludedSIDs -and $_.ProfileImagePath } |
+                    ForEach-Object {
+                        $sid = $_.PSChildName
+                        $ntUserPath = Join-Path $_.ProfileImagePath "NTUSER.DAT"
+                        $needsUnload = !(Test-Path "HKU:\$sid")
+                        
+                        if ($needsUnload -and (Test-Path $ntUserPath)) {
+                            reg load "HKU\$sid" "$ntUserPath" 2>&1 | Out-Null
+                            Start-Sleep -Milliseconds 100
+                        }
+                        
                         try {
-                            if (!(Test-Path $targetPath)) {
-                                New-Item -Path $targetPath -Force | Out-Null
-                            }
+                            $targetPath = "HKU:\$sid\$relativePath"
+                            if (!(Test-Path $targetPath)) { New-Item -Path $targetPath -Force | Out-Null }
                             Set-WinUtilRegistry -Name $psitem.Name -Path $targetPath -Type $psitem.Type -Value $psitem.$($values.registry)
                         } catch {
-                            Write-Warning "Failed to set $targetPath\$($psitem.Name): $_"
+                            Write-Warning "Failed to set registry for SID $sid : $_"
+                        }
+                        
+                        if ($needsUnload) {
+                            [System.GC]::Collect()
+                            reg unload "HKU\$sid" 2>&1 | Out-Null
                         }
                     }
-                } catch {
-                    Write-Warning "Failed enumerating user hives: $_"
-                }
-            }
-            else {
+            } else {
+                # Standard behavior (Original Logic)
                 if (($psitem.Path -imatch "hku") -and !(Get-PSDrive -Name HKU -ErrorAction SilentlyContinue)) {
                     $null = (New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS)
                     if (Get-PSDrive -Name HKU -ErrorAction SilentlyContinue) {
