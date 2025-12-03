@@ -2090,7 +2090,7 @@
   },
   "WPFTweaksDisableEdge": {
     "Content": "Disable Edge",
-    "Description": "Disables Microsoft Edge via the registry and prevents scheduled tasks from running Edge updates.",
+    "Description": "Prevent msedge.exe from running with explorer policies.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a023_",
