@@ -14,7 +14,7 @@ jobs:
       CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Compile project
         shell: pwsh

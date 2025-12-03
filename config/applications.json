@@ -143,6 +143,15 @@
         "link": "https://github.com/sharkdp/bat",
         "winget": "sharkdp.bat"
     },
+    "beeper": {
+        "category": "Communications",
+        "choco": "na",
+        "content": "Beeper",
+        "description": "All your chats in one app",
+        "link": "https://www.beeper.com/",
+        "winget": "Beeper.Beeper"
+    },
+
     "bitwarden": {
         "category": "Utilities",
         "choco": "bitwarden",
@@ -510,6 +519,14 @@
         "description": "Emulation Station is a graphical and themeable emulator front-end that allows you to access all your favorite games in one place.",
         "link": "https://emulationstation.org/",
         "winget": "Emulationstation.Emulationstation"
+    },
+    "enteauth": {
+        "category": "Utilities",
+        "choco": "ente-auth",
+        "content": "Ente Auth",
+        "description": "Ente Auth is a free, cross-platform, end-to-end encrypted authenticator app.",
+        "link": "https://ente.io/auth/",
+        "winget": "ente-io.auth-desktop"
     },
     "epicgames": {
         "category": "Games",
@@ -1703,13 +1720,13 @@
         "link": "https://bitsum.com/",
         "winget": "BitSum.ProcessLasso"
     },
-    "spotify": {
-        "category": "Multimedia Tools",
-        "choco": "spotify",
-        "content": "Spotify",
-        "description": "Spotify is a digital music service that gives you access to millions of songs, podcasts, and videos from artists all over the world.",
-        "link": "https://www.spotify.com/",
-        "winget": "Spotify.Spotify"
+    "protonauth": {
+        "category": "Utilities",
+        "choco": "protonauth",
+        "content": "Proton Authenticator",
+        "description": "2FA app from Proton to securely sync and backup 2FA codes.",
+        "link": "https://proton.me/authenticator",
+        "winget": "Proton.ProtonAuthenticator"
     },
     "processmonitor": {
         "category": "Microsoft Tools",
@@ -2910,5 +2927,13 @@
         "description": "The modern, privacy-focused, performance-driven browser built on Firefox",
         "link": "https://zen-browser.app/",
         "winget": "Zen-Team.Zen-Browser"
+    },
+    "Zed": {
+        "category": "Development",
+        "choco": "na",
+        "content": "Zed",
+        "description": "Zed is a modern, high-performance code editor designed from the ground up for speed and collaboration.",
+        "link": "https://zed.dev/",
+        "winget": "Zed.Zed"
     }
 }
