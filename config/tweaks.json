@@ -2460,23 +2460,6 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/powershell7tele"
   },
-  "WPFTweaksStorage": {
-    "Content": "Disable Storage Sense",
-    "Description": "Storage Sense deletes temp files automatically.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a005_",
-    "registry": [
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy",
-        "Name": "01",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "1"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/storage"
-  },
   "WPFTweaksRemoveCopilot": {
     "Content": "Disable Microsoft Copilot",
     "Description": "Disables MS Copilot AI built into Windows since 23H2.",
