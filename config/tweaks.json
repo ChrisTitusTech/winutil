@@ -2029,10 +2029,6 @@
     ],
     "InvokeScript": [
       "
-      # Group svchost.exe processes
-      $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
-      Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name \"SvcHostSplitThresholdInKB\" -Type DWord -Value $ram -Force
-
       # Disable Defender Auto Sample Submission
       Set-MpPreference -SubmitSamplesConsent 2
       "
