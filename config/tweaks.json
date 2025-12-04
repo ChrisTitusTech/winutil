@@ -2679,12 +2679,15 @@
   },
   "WPFTweaksRemoveOnedrive": {
     "Content": "Remove OneDrive",
-    "Description": "Uninstalls OneDrive than remove leftover folders.",
+    "Description": "Move OneDrive files to User directory than Uninstalls OneDrive and removes leftover folders.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a031_",
     "InvokeScript": [
       "
+      Write-Host \"Copying OneDrive files to user directory\"
+      copy -Path \"C:\\Users\$Username\\OneDrive\\*\" -Destination \"C:\\Users\$Username\"
+      
       Write-Host \"Uninstalling OneDrive\"
       Start-Process \"$env:SystemRoot\\System32\\OneDriveSetup.exe\" -ArgumentList /uninstall -NoNewWindow -Wait
 
