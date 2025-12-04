@@ -2686,7 +2686,7 @@
     "InvokeScript": [
       "
       Write-Host \"Copying OneDrive files to user directory\"
-      copy -Path \"C:\\Users\$Username\\OneDrive\\*\" -Destination \"C:\\Users\$Username\"
+      copy -Path \"$Home\\OneDrive\\*\" -Destination $Home
       
       Write-Host \"Uninstalling OneDrive\"
       Start-Process \"$env:SystemRoot\\System32\\OneDriveSetup.exe\" -ArgumentList /uninstall -NoNewWindow -Wait
@@ -2694,6 +2694,7 @@
       Write-Host \"Removing OneDrive leftovers\"
       Remove-Item \"$env:LocalAppData\\Microsoft\\OneDrive\" -Recurse -Force
       Remove-Item \"$env:ProgramData\\Microsoft OneDrive\" -Recurse -Force
+      Remove-Item $Env:OneDrive -Recurse -Force
       "
     ],
     "UndoScript": [
