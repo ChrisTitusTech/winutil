@@ -2689,7 +2689,7 @@
       copy -Path \"$Home\\OneDrive\\*\" -Destination $Home
       
       Write-Host \"Uninstalling OneDrive\"
-      Start-Process \"$env:SystemRoot\\System32\\OneDriveSetup.exe\" -ArgumentList /uninstall -NoNewWindow -Wait
+      Start-Process \"$env:SystemRoot\\System32\\OneDriveSetup.exe\" -ArgumentList /uninstall
 
       Write-Host \"Removing OneDrive leftovers\"
       Remove-Item \"$env:LocalAppData\\Microsoft\\OneDrive\" -Recurse -Force
@@ -2700,7 +2700,7 @@
     "UndoScript": [
       "
       Write-Host \"Install OneDrive\"
-      Start-Process \"$env:SystemRoot\\System32\\OneDriveSetup.exe\" -NoNewWindow -Wait
+      Start-Process \"$env:SystemRoot\\System32\\OneDriveSetup.exe\"
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removeonedrive"
