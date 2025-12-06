@@ -85,7 +85,7 @@
     "InvokeScript": [
       "
       Write-Host \"Turn on Hibernation\"
-      Start-Process -FilePath powercfg -ArgumentList \"/hibernate on\" -NoNewWindow -Wait
+      powercfg.exe /hibernate on
 
       # Set hibernation as the default action
       Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-ac 60\" -NoNewWindow -Wait
@@ -97,7 +97,7 @@
     "UndoScript": [
       "
       Write-Host \"Turn off Hibernation\"
-      Start-Process -FilePath powercfg -ArgumentList \"/hibernate off\" -NoNewWindow -Wait
+      powercfg.exe /hibernate off
 
       # Set standby to default values
       Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-ac 15\" -NoNewWindow -Wait
