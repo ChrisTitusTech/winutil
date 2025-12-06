@@ -2677,34 +2677,6 @@
       }
     ]
   },
-  "WPFTweaksRemoveOnedrive": {
-    "Content": "Remove OneDrive",
-    "Description": "Moves OneDrive files to Default Home Folders and Uninstalls it.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a031_",
-    "InvokeScript": [
-      "
-      Write-Host \"Copying OneDrive files to user directory\"
-      copy -Path \"$Home\\OneDrive\\*\" -Destination $Home
-      
-      Write-Host \"Uninstalling OneDrive\"
-      Start-Process \"$env:SystemRoot\\System32\\OneDriveSetup.exe\" -ArgumentList /uninstall
-
-      Write-Host \"Removing OneDrive leftovers\"
-      Remove-Item \"$env:LocalAppData\\Microsoft\\OneDrive\" -Recurse -Force
-      Remove-Item \"$env:ProgramData\\Microsoft OneDrive\" -Recurse -Force
-      Remove-Item $Env:OneDrive -Recurse -Force
-      "
-    ],
-    "UndoScript": [
-      "
-      Write-Host \"Install OneDrive\"
-      Start-Process \"$env:SystemRoot\\System32\\OneDriveSetup.exe\"
-      "
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removeonedrive"
-  },
   "WPFTweaksRazerBlock": {
     "Content": "Block Razer Software Installs",
     "Description": "Blocks ALL Razer Software installations. The hardware works fine without any software. WARNING: this will also block all Windows third-party driver installations.",
