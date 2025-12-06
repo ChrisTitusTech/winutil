@@ -88,10 +88,10 @@
       powercfg.exe /hibernate on
 
       # Set hibernation as the default action
-      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-ac 60\" -NoNewWindow -Wait
-      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-dc 60\" -NoNewWindow -Wait
-      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-ac 10\" -NoNewWindow -Wait
-      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-dc 1\" -NoNewWindow -Wait
+      powercfg.exe \"/change standby-timeout-ac 60\"
+      powercfg.exe \"/change standby-timeout-dc 60\"
+      powercfg.exe \"/change monitor-timeout-ac 10\"
+      powercfg.exe \"/change monitor-timeout-dc 1\"
       "
     ],
     "UndoScript": [
@@ -100,10 +100,10 @@
       powercfg.exe /hibernate off
 
       # Set standby to default values
-      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-ac 15\" -NoNewWindow -Wait
-      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-dc 15\" -NoNewWindow -Wait
-      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-ac 15\" -NoNewWindow -Wait
-      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-dc 15\" -NoNewWindow -Wait
+      powercfg.exe \"/change standby-timeout-ac 15\"
+      powercfg.exe \"/change standby-timeout-dc 15\"
+      powercfg.exe \"/change monitor-timeout-ac 15\"
+      powercfg.exe \"/change monitor-timeout-dc 15\"
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/laptophibernation"
