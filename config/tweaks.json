@@ -2112,6 +2112,41 @@
     ],
     "link": ""
   },
+  "WPFTweaksMakeEdgeUninstallable": {
+    "Content": "Make Edge Uninstallable",
+    "Description": "Makes it so you can disable edge via settings",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a023_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Microsoft Edge",
+        "Name": "NoRemove",
+        "Type": "Dword",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
+    ],
+    "InvokeScript": [
+      "
+      $File = \"C:\\Windows\\System32\\IntegratedServicesRegionPolicySet.json\"
+  
+      takeown /f $File
+      icacls $File /grant \"Administrators:(F)\"
+      
+      $FileContent = Get-Content $File
+      $FileContent[7] = $FileContent[7] -replace \"disabled\", \"enabled\"
+      Set-Content $File $FileContent
+      "
+    ],
+    "UndoScript": [
+      "
+      Write-Host \"Install Microsoft Edge\"
+      winget install \"Microsoft.Edge\" --accept-package-agreements --accept-source-agreements
+      "
+    ],
+    "link": ""
+  },
   "WPFTweaksUTC": {
     "Content": "Set Time to UTC (Dual Boot)",
     "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux Systems.",
