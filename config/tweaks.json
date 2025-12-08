@@ -2141,8 +2141,14 @@
     ],
     "UndoScript": [
       "
-      Write-Host \"Install Microsoft Edge\"
-      winget install \"Microsoft.Edge\" --accept-package-agreements --accept-source-agreements
+      $File = \"C:\\Windows\\System32\\IntegratedServicesRegionPolicySet.json\"
+  
+      takeown /f $File
+      icacls $File /grant \"Administrators:(F)\"
+      
+      $FileContent = Get-Content $File
+      $FileContent[7] = $FileContent[7] -replace \"enabled\", \"disabled\"
+      Set-Content $File $FileContent
       "
     ],
     "link": ""
