@@ -2114,7 +2114,7 @@
   },
   "WPFTweaksMakeEdgeUninstallable": {
     "Content": "Make Edge Uninstallable",
-    "Description": "Makes it so you can disable edge via settings",
+    "Description": "Makes it so you can uninstall edge via settings",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a023_",
