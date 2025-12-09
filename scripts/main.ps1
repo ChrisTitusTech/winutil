@@ -454,7 +454,7 @@ $winutildir = @{}
 $winutildir = "$env:LocalAppData\winutil\"
 New-Item $winutildir -ItemType Directory -Force | Out-Null
 
-if (Test-Path "$winutildir\logo.ico\") {
+if (Test-Path "$winutildir\logo.ico") {
     $sync["logorender"] = $winutildir["logo.ico"]
 } else {
     $sync["logorender"] = (Invoke-WinUtilAssets -Type "Logo" -Size 90 -Render)
