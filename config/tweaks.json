@@ -2114,7 +2114,7 @@
   },
   "WPFTweaksMakeEdgeUninstallable": {
     "Content": "Make Edge Uninstallable via settings",
-    "Description": "Makes it so you can uninstall edge via settings even outside the EU (European Union)",
+    "Description": "Makes it so you can uninstall edge via settings > installed apps",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a023_",
