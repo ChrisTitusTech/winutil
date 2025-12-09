@@ -451,7 +451,7 @@ $NavLogoPanel.Children.Add((Invoke-WinUtilAssets -Type "logo" -Size 25)) | Out-N
 $winutildir = @{}
 
 # Set the path for the winutil directory
-$winutildir["path"] = "$env:LOCALAPPDATA\winutil\"
+$winutildir["path"] = "$Env:Temp\winutil\"
 [System.IO.Directory]::CreateDirectory($winutildir["path"]) | Out-Null
 
 $winutildir["logo.ico"] = $winutildir["path"] + "cttlogo.ico"
