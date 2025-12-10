@@ -49,7 +49,7 @@
         "Name": "ShowHibernateOption",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "InvokeScript": [
