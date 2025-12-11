@@ -85,25 +85,25 @@
     "InvokeScript": [
       "
       Write-Host \"Turn on Hibernation\"
-      Start-Process -FilePath powercfg -ArgumentList \"/hibernate on\" -NoNewWindow -Wait
+      powercfg.exe /hibernate on
 
       # Set hibernation as the default action
-      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-ac 60\" -NoNewWindow -Wait
-      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-dc 60\" -NoNewWindow -Wait
-      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-ac 10\" -NoNewWindow -Wait
-      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-dc 1\" -NoNewWindow -Wait
+      powercfg.exe \"/change standby-timeout-ac 60\"
+      powercfg.exe \"/change standby-timeout-dc 60\"
+      powercfg.exe \"/change monitor-timeout-ac 10\"
+      powercfg.exe \"/change monitor-timeout-dc 1\"
       "
     ],
     "UndoScript": [
       "
       Write-Host \"Turn off Hibernation\"
-      Start-Process -FilePath powercfg -ArgumentList \"/hibernate off\" -NoNewWindow -Wait
+      powercfg.exe /hibernate off
 
       # Set standby to default values
-      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-ac 15\" -NoNewWindow -Wait
-      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-dc 15\" -NoNewWindow -Wait
-      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-ac 15\" -NoNewWindow -Wait
-      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-dc 15\" -NoNewWindow -Wait
+      powercfg.exe \"/change standby-timeout-ac 15\"
+      powercfg.exe \"/change standby-timeout-dc 15\"
+      powercfg.exe \"/change monitor-timeout-ac 15\"
+      powercfg.exe \"/change monitor-timeout-dc 15\"
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/laptophibernation"
@@ -2090,7 +2090,7 @@
   },
   "WPFTweaksDisableEdge": {
     "Content": "Disable Edge",
-    "Description": "Disables Microsoft Edge via the registry and prevents scheduled tasks from running Edge updates.",
+    "Description": "Prevent msedge.exe from running with explorer policies.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a023_",
@@ -2109,6 +2109,47 @@
         "Value": "1",
         "OriginalValue": "<RemoveEntry>"
       }
+    ],
+    "link": ""
+  },
+  "WPFTweaksMakeEdgeUninstallable": {
+    "Content": "Make Edge Uninstallable via settings",
+    "Description": "Makes it so you can uninstall edge via settings > installed apps",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a023_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Microsoft Edge",
+        "Name": "NoRemove",
+        "Type": "Dword",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
+    ],
+    "InvokeScript": [
+      "
+      $File = \"C:\\Windows\\System32\\IntegratedServicesRegionPolicySet.json\"
+
+      takeown /f $File
+      icacls $File /grant \"Administrators:(F)\"
+
+      $FileContent = Get-Content $File
+      $FileContent[7] = $FileContent[7] -replace \"disabled\", \"enabled\"
+      Set-Content $File $FileContent
+      "
+    ],
+    "UndoScript": [
+      "
+      $File = \"C:\\Windows\\System32\\IntegratedServicesRegionPolicySet.json\"
+
+      takeown /f $File
+      icacls $File /grant \"Administrators:(F)\"
+
+      $FileContent = Get-Content $File
+      $FileContent[7] = $FileContent[7] -replace \"enabled\", \"disabled\"
+      Set-Content $File $FileContent
+      "
     ],
     "link": ""
   },
@@ -2137,14 +2178,14 @@
     "Order": "a029_",
     "InvokeScript": [
       "
-      REG DELETE \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\" /f
-      REG ADD \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\" /t REG_DWORD /d \"1\"
+      Remove-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\"
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" -Name LaunchTo -Value 1
       "
     ],
     "UndoScript": [
       "
-      REG ADD \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\" /f /ve /t REG_SZ /d \"CLSID_MSGraphHomeFolder\"
-      REG DELETE \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\"
+      New-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\"
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" -Name LaunchTo -Value 0
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removehomegallery"
@@ -2157,14 +2198,12 @@
     "Order": "a030_",
     "InvokeScript": [
       "
-      REG DELETE \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\" /f
-      REG ADD \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\" /t REG_DWORD /d \"1\"
+      Remove-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\"
       "
     ],
     "UndoScript": [
       "
-      REG ADD \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\" /f /ve /t REG_SZ /d \"{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\"
-      REG DELETE \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\"
+      New-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\"
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removehomegallery"
@@ -2463,9 +2502,9 @@
   "WPFTweaksStorage": {
     "Content": "Disable Storage Sense",
     "Description": "Storage Sense deletes temp files automatically.",
-    "category": "Essential Tweaks",
+    "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a005_",
+    "Order": "a025_",
     "registry": [
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy",
@@ -2603,7 +2642,7 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/disablerecall"
   },
-  "WPFTweaksDisableWpbtExecution": {
+  "WPFTweaksWPBT": {
     "Content": "Disable Windows Platform Binary Table (WPBT)",
     "Description": "If enabled then allows your computer vendor to execute a program each time it boots. It enables computer vendors to force install anti-theft software, software drivers, or a software program conveniently. This could also be a security risk.",
     "category": "z__Advanced Tweaks - CAUTION",
@@ -2618,30 +2657,6 @@
         "Type": "DWord"
       }
     ]
-  },
-  "WPFTweaksRemoveOnedrive": {
-    "Content": "Remove OneDrive",
-    "Description": "Moves OneDrive files to Default Home Folders and Uninstalls it.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a031_",
-    "InvokeScript": [
-      "
-      Write-Host \"Uninstalling OneDrive\"
-      Start-Process \"$env:SystemRoot\\System32\\OneDriveSetup.exe\" -ArgumentList /uninstall -NoNewWindow -Wait
-
-      Write-Host \"Removing OneDrive leftovers\"
-      Remove-Item \"$env:LocalAppData\\Microsoft\\OneDrive\" -Recurse -Force
-      Remove-Item \"$env:ProgramData\\Microsoft OneDrive\" -Recurse -Force
-      "
-    ],
-    "UndoScript": [
-      "
-      Write-Host \"Install OneDrive\"
-      Start-Process -FilePath winget -ArgumentList \"install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.OneDrive \" -NoNewWindow -Wait
-      "
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removeonedrive"
   },
   "WPFTweaksRazerBlock": {
     "Content": "Block Razer Software Installs",
@@ -3026,7 +3041,7 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/teredo"
   },
-  "WPFTweaksDisableipsix": {
+  "WPFTweaksDisableIPv6": {
     "Content": "Disable IPv6",
     "Description": "Disables IPv6.",
     "category": "z__Advanced Tweaks - CAUTION",

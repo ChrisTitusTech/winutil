@@ -1000,6 +1000,14 @@
         "link": "https://aws.amazon.com/corretto",
         "winget": "Amazon.Corretto.21.JDK"
     },
+    "java25": {
+        "category": "Development",
+        "choco": "corretto25jdk",
+        "content": "Amazon Corretto 25 (LTS)",
+        "description": "Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK).",
+        "link": "https://aws.amazon.com/corretto",
+        "winget": "Amazon.Corretto.25.JDK"
+    },
     "jdownloader": {
         "category": "Utilities",
         "choco": "jdownloader",

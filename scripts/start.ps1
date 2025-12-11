@@ -80,7 +80,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 $dateTime = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
 
 $logdir = "$env:localappdata\winutil\logs"
-[System.IO.Directory]::CreateDirectory("$logdir") | Out-Null
+New-Item $logdir -ItemType Directory -Force | Out-Null
 Start-Transcript -Path "$logdir\winutil_$dateTime.log" -Append -NoClobber | Out-Null
 
 # Set PowerShell window title
