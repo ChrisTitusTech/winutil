@@ -2130,10 +2130,10 @@
     "InvokeScript": [
       "
       $File = \"C:\\Windows\\System32\\IntegratedServicesRegionPolicySet.json\"
-  
+
       takeown /f $File
       icacls $File /grant \"Administrators:(F)\"
-      
+
       $FileContent = Get-Content $File
       $FileContent[7] = $FileContent[7] -replace \"disabled\", \"enabled\"
       Set-Content $File $FileContent
@@ -2142,10 +2142,10 @@
     "UndoScript": [
       "
       $File = \"C:\\Windows\\System32\\IntegratedServicesRegionPolicySet.json\"
-  
+
       takeown /f $File
       icacls $File /grant \"Administrators:(F)\"
-      
+
       $FileContent = Get-Content $File
       $FileContent[7] = $FileContent[7] -replace \"enabled\", \"disabled\"
       Set-Content $File $FileContent
