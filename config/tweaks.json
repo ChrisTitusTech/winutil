@@ -3099,7 +3099,7 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/teredo"
   },
-  "WPFTweaksDisableipsix": {
+  "WPFTweaksDisableIPv6": {
     "Content": "Disable IPv6",
     "Description": "Disables IPv6.",
     "category": "z__Advanced Tweaks - CAUTION",
