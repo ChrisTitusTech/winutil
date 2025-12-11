@@ -2129,6 +2129,8 @@
     ],
     "InvokeScript": [
       "
+      # TODO: make this dymanicly pull the disable/enable line from the file so we wont rely on edge being in line 8
+      
       $File = \"C:\\Windows\\System32\\IntegratedServicesRegionPolicySet.json\"
 
       takeown /f $File
