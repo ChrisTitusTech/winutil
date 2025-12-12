@@ -219,16 +219,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "BcastDVRUserService_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "BluetoothUserService_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "Browser",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -244,32 +234,12 @@
         "OriginalType": "Automatic"
       },
       {
-        "Name": "CDPUserSvc_*",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
         "Name": "COMSysApp",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
-        "Name": "CaptureService_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "CertPropSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "ConsentUxUserSvc_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "CredentialEnrollmentManagerUserSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -294,27 +264,12 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "DeviceAssociationBrokerSvc_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "DeviceAssociationService",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "DeviceInstall",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "DevicePickerUserSvc_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "DevicesFlowUserSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -340,11 +295,6 @@
       },
       {
         "Name": "DisplayEnhancementService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "DmEnrollmentSvc",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -469,11 +419,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "MessagingService_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "MicrosoftEdgeElevationService",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -482,11 +427,6 @@
         "Name": "MsKeyboardFilter",
         "StartupType": "Manual",
         "OriginalType": "Disabled"
-      },
-      {
-        "Name": "NPSMSvc_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
       },
       {
         "Name": "NaturalAuthentication",
@@ -534,16 +474,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "OneSyncSvc_*",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "P9RdrService_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "PcaSvc",
         "StartupType": "Manual",
         "OriginalType": "Automatic"
@@ -554,22 +484,12 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "PenService_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "PerfHost",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "PhoneSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "PimIndexMaintenanceSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -590,11 +510,6 @@
       },
       {
         "Name": "PrintNotify",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "PrintWorkflowUserSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -799,27 +714,12 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "UdkUserSvc_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "UevAgentService",
         "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
       {
         "Name": "UmRdpService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "UnistoreSvc_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "UserDataSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -959,11 +859,6 @@
         "OriginalType": "Automatic"
       },
       {
-        "Name": "WpnUserService_*",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
         "Name": "XblAuthManager",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -997,11 +892,6 @@
         "Name": "camsvc",
         "StartupType": "Manual",
         "OriginalType": "Manual"
-      },
-      {
-        "Name": "cbdhsvc_*",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
       },
       {
         "Name": "cloudidsvc",
@@ -1202,11 +1092,6 @@
         "Name": "webthreatdefsvc",
         "StartupType": "Manual",
         "OriginalType": "Manual"
-      },
-      {
-        "Name": "webthreatdefusersvc_*",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
       },
       {
         "Name": "wercplsupport",
