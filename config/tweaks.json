@@ -1708,16 +1708,6 @@
     "Order": "a003_",
     "ScheduledTask": [
       {
-        "Name": "Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Application Experience\\ProgramDataUpdater",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
         "Name": "Microsoft\\Windows\\Autochk\\Proxy",
         "State": "Disabled",
         "OriginalState": "Enabled"
@@ -1764,11 +1754,6 @@
       },
       {
         "Name": "Microsoft\\Windows\\Application Experience\\PcaPatchDbTask",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Maps\\MapsUpdateTask",
         "State": "Disabled",
         "OriginalState": "Enabled"
       }
