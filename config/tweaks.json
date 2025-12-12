@@ -3129,8 +3129,8 @@
       "
       $Shell = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\"
       
-      Remove-Item \"$Shell\\BagMRU\" -Recurse
-      Remove-Item \"$Shell\\Bags\\*\" -Recurse
+      Remove-Item \"$Shell\\BagMRU\" -Recurse -Force
+      Remove-Item \"$Shell\\Bags\\*\" -Recurse -Force
       
       New-Item \"$Shell\\Bags\\AllFolders\\Shell\" -Force
       New-ItemProperty -Path \"$Shell\\Bags\\AllFolders\\Shell\" -Name FolderType -Value NotSpecified
@@ -3138,7 +3138,7 @@
     ],
     "UndoScript": [
       "
-      Remove-Item \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\\AllFolders\"
+      Remove-ItemProperty -Path \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\\AllFolders\" -Name FolderType
       "
     ]
   },
