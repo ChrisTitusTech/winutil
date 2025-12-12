@@ -779,11 +779,6 @@
         "OriginalType": "Automatic"
       },
       {
-        "Name": "WaaSMedicSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "WalletService",
         "StartupType": "Manual",
         "OriginalType": "Manual"
