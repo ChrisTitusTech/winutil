@@ -2035,30 +2035,6 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/tele"
   },
-  "WPFTweaksWifi": {
-    "Content": "Disable Wi-Fi Sense",
-    "Description": "Wi-Fi Sense is a spying service that phones home all nearby scanned Wi-Fi networks and your current geographic location.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a005_",
-    "registry": [
-      {
-        "Path": "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowWiFiHotSpotReporting",
-        "Name": "Value",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowAutoConnectToWiFiSenseHotspots",
-        "Name": "Value",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "1"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/wifi"
-  },
   "WPFTweaksDisableEdge": {
     "Content": "Disable Edge",
     "Description": "Prevent msedge.exe from running with explorer policies.",
