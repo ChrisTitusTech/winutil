@@ -2073,7 +2073,7 @@
       }
       
       Checkpoint-Computer -Description \"System Restore Point created by WinUtil\" -RestorePointType \"MODIFY_SETTINGS\"
-      Write-Host -ForegroundColor Green \"System Restore Point Created Successfully\"
+      Write-Host \"System Restore Point Created Successfully\" -ForegroundColor Green
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/restorepoint"
