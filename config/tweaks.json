@@ -2568,51 +2568,6 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removecopilot"
   },
-  "WPFTweaksRecallOff": {
-    "Content": "Disable Recall",
-    "Description": "Turn Recall off",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a025_",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI",
-        "Name": "DisableAIDataAnalysis",
-        "Type": "DWord",
-        "Value": "1",
-        "OriginalValue": "<RemoveEntry>"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI",
-        "Name": "AllowRecallEnablement",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "<RemoveEntry>"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\CI\\Policy",
-        "Name": "VerifiedAndReputablePolicyState",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "<RemoveEntry>"
-      }
-    ],
-    "InvokeScript": [
-      "
-      Write-Host \"Disable Recall\"
-      DISM /Online /Disable-Feature /FeatureName:Recall /Quiet /NoRestart
-      Write-Host \"Please restart your computer in order for the changes to be fully applied.\"
-      "
-    ],
-    "UndoScript": [
-      "
-      Write-Host \"Enable Recall\"
-      DISM /Online /Enable-Feature /FeatureName:Recall /Quiet /NoRestart
-      Write-Host \"Please restart your computer in order for the changes to be fully applied.\"
-      "
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/disablerecall"
-  },
   "WPFTweaksWPBT": {
     "Content": "Disable Windows Platform Binary Table (WPBT)",
     "Description": "If enabled then allows your computer vendor to execute a program each time it boots. It enables computer vendors to force install anti-theft software, software drivers, or a software program conveniently. This could also be a security risk.",
