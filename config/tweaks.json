@@ -85,30 +85,30 @@
     "InvokeScript": [
       "
       Write-Host \"Turn on Hibernation\"
-      Start-Process -FilePath powercfg -ArgumentList \"/hibernate on\" -NoNewWindow -Wait
+      powercfg.exe /hibernate on
 
       # Set hibernation as the default action
-      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-ac 60\" -NoNewWindow -Wait
-      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-dc 60\" -NoNewWindow -Wait
-      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-ac 10\" -NoNewWindow -Wait
-      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-dc 1\" -NoNewWindow -Wait
+      powercfg.exe \"/change standby-timeout-ac 60\"
+      powercfg.exe \"/change standby-timeout-dc 60\"
+      powercfg.exe \"/change monitor-timeout-ac 10\"
+      powercfg.exe \"/change monitor-timeout-dc 1\"
       "
     ],
     "UndoScript": [
       "
       Write-Host \"Turn off Hibernation\"
-      Start-Process -FilePath powercfg -ArgumentList \"/hibernate off\" -NoNewWindow -Wait
+      powercfg.exe /hibernate off
 
       # Set standby to default values
-      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-ac 15\" -NoNewWindow -Wait
-      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-dc 15\" -NoNewWindow -Wait
-      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-ac 15\" -NoNewWindow -Wait
-      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-dc 15\" -NoNewWindow -Wait
+      powercfg.exe \"/change standby-timeout-ac 15\"
+      powercfg.exe \"/change standby-timeout-dc 15\"
+      powercfg.exe \"/change monitor-timeout-ac 15\"
+      powercfg.exe \"/change monitor-timeout-dc 15\"
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/laptophibernation"
   },
-  "WPFTweaksLoc": {
+  "WPFTweaksLocation": {
     "Content": "Disable Location Tracking",
     "Description": "Disables Location Tracking...DUH!",
     "category": "Essential Tweaks",
@@ -1685,7 +1685,7 @@
   },
   "WPFTweaksConsumerFeatures": {
     "Content": "Disable ConsumerFeatures",
-    "Description": "Windows 10 will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link)",
+    "Description": "Windows will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link)",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a003_",
@@ -2029,38 +2029,9 @@
     ],
     "InvokeScript": [
       "
-      bcdedit /set `{current`} bootmenupolicy Legacy | Out-Null
-        If ((get-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\" -Name CurrentBuild).CurrentBuild -lt 22557) {
-            $taskmgr = Start-Process -WindowStyle Hidden -FilePath taskmgr.exe -PassThru
-            Do {
-                Start-Sleep -Milliseconds 100
-                $preferences = Get-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\TaskManager\" -Name \"Preferences\" -ErrorAction SilentlyContinue
-            } Until ($preferences)
-            Stop-Process $taskmgr
-            $preferences.Preferences[28] = 0
-            Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\TaskManager\" -Name \"Preferences\" -Type Binary -Value $preferences.Preferences
-        }
-        Remove-Item -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MyComputer\\NameSpace\\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}\" -Recurse -ErrorAction SilentlyContinue
-
-        # Fix Managed by your organization in Edge if regustry path exists then remove it
-
-        If (Test-Path \"HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\") {
-            Remove-Item -Path \"HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\" -Recurse -ErrorAction SilentlyContinue
-        }
-
-        # Group svchost.exe processes
-        $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
-        Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name \"SvcHostSplitThresholdInKB\" -Type DWord -Value $ram -Force
-
-        $autoLoggerDir = \"$env:PROGRAMDATA\\Microsoft\\Diagnosis\\ETLLogs\\AutoLogger\"
-        If (Test-Path \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\") {
-            Remove-Item \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\"
-        }
-        icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null
-
-        # Disable Defender Auto Sample Submission
-        Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction SilentlyContinue | Out-Null
-        "
+      # Disable Defender Auto Sample Submission
+      Set-MpPreference -SubmitSamplesConsent 2
+      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/tele"
   },
@@ -2090,7 +2061,7 @@
   },
   "WPFTweaksDisableEdge": {
     "Content": "Disable Edge",
-    "Description": "Disables Microsoft Edge via the registry and prevents scheduled tasks from running Edge updates.",
+    "Description": "Prevent msedge.exe from running with explorer policies.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a023_",
@@ -2109,6 +2080,47 @@
         "Value": "1",
         "OriginalValue": "<RemoveEntry>"
       }
+    ],
+    "link": ""
+  },
+  "WPFTweaksMakeEdgeUninstallable": {
+    "Content": "Make Edge Uninstallable via settings",
+    "Description": "Makes it so you can uninstall edge via settings > installed apps",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a023_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Microsoft Edge",
+        "Name": "NoRemove",
+        "Type": "Dword",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
+    ],
+    "InvokeScript": [
+      "
+      $File = \"C:\\Windows\\System32\\IntegratedServicesRegionPolicySet.json\"
+
+      takeown /f $File
+      icacls $File /grant \"Administrators:(F)\"
+
+      $FileContent = Get-Content $File
+      $FileContent[7] = $FileContent[7] -replace \"disabled\", \"enabled\"
+      Set-Content $File $FileContent
+      "
+    ],
+    "UndoScript": [
+      "
+      $File = \"C:\\Windows\\System32\\IntegratedServicesRegionPolicySet.json\"
+
+      takeown /f $File
+      icacls $File /grant \"Administrators:(F)\"
+
+      $FileContent = Get-Content $File
+      $FileContent[7] = $FileContent[7] -replace \"enabled\", \"disabled\"
+      Set-Content $File $FileContent
+      "
     ],
     "link": ""
   },
@@ -2137,14 +2149,14 @@
     "Order": "a029_",
     "InvokeScript": [
       "
-      REG DELETE \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\" /f
-      REG ADD \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\" /t REG_DWORD /d \"1\"
+      Remove-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\"
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" -Name LaunchTo -Value 1
       "
     ],
     "UndoScript": [
       "
-      REG ADD \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\" /f /ve /t REG_SZ /d \"CLSID_MSGraphHomeFolder\"
-      REG DELETE \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\"
+      New-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\"
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" -Name LaunchTo -Value 0
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removehomegallery"
@@ -2157,14 +2169,12 @@
     "Order": "a030_",
     "InvokeScript": [
       "
-      REG DELETE \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\" /f
-      REG ADD \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\" /t REG_DWORD /d \"1\"
+      Remove-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\"
       "
     ],
     "UndoScript": [
       "
-      REG ADD \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\" /f /ve /t REG_SZ /d \"{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\"
-      REG DELETE \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\"
+      New-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\"
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removehomegallery"
@@ -2463,9 +2473,9 @@
   "WPFTweaksStorage": {
     "Content": "Disable Storage Sense",
     "Description": "Storage Sense deletes temp files automatically.",
-    "category": "Essential Tweaks",
+    "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a005_",
+    "Order": "a025_",
     "registry": [
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy",
@@ -2558,65 +2568,7 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removecopilot"
   },
-  "WPFTweaksDisableLMS1": {
-    "Content": "Disable Intel MM (vPro LMS)",
-    "Description": "Intel LMS service is always listening on all ports and could be a huge security risk. There is no need to run LMS on home machines and even in the Enterprise there are better solutions.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a026_",
-    "InvokeScript": [
-      "
-        Write-Host \"Kill LMS\"
-        $serviceName = \"LMS\"
-        Write-Host \"Stopping and disabling service: $serviceName\"
-        Stop-Service -Name $serviceName -Force -ErrorAction SilentlyContinue;
-        Set-Service -Name $serviceName -StartupType Disabled -ErrorAction SilentlyContinue;
-
-        Write-Host \"Removing service: $serviceName\";
-        sc.exe delete $serviceName;
-
-        Write-Host \"Removing LMS driver packages\";
-        $lmsDriverPackages = Get-ChildItem -Path \"C:\\Windows\\System32\\DriverStore\\FileRepository\" -Recurse -Filter \"lms.inf*\";
-        foreach ($package in $lmsDriverPackages) {
-            Write-Host \"Removing driver package: $($package.Name)\";
-            pnputil /delete-driver $($package.Name) /uninstall /force;
-        }
-        if ($lmsDriverPackages.Count -eq 0) {
-            Write-Host \"No LMS driver packages found in the driver store.\";
-        } else {
-            Write-Host \"All found LMS driver packages have been removed.\";
-        }
-
-        Write-Host \"Searching and deleting LMS executable files\";
-        $programFilesDirs = @(\"C:\\Program Files\", \"C:\\Program Files (x86)\");
-        $lmsFiles = @();
-        foreach ($dir in $programFilesDirs) {
-            $lmsFiles += Get-ChildItem -Path $dir -Recurse -Filter \"LMS.exe\" -ErrorAction SilentlyContinue;
-        }
-        foreach ($file in $lmsFiles) {
-            Write-Host \"Taking ownership of file: $($file.FullName)\";
-            & icacls $($file.FullName) /grant Administrators:F /T /C /Q;
-            & takeown /F $($file.FullName) /A /R /D Y;
-            Write-Host \"Deleting file: $($file.FullName)\";
-            Remove-Item $($file.FullName) -Force -ErrorAction SilentlyContinue;
-        }
-        if ($lmsFiles.Count -eq 0) {
-            Write-Host \"No LMS.exe files found in Program Files directories.\";
-        } else {
-            Write-Host \"All found LMS.exe files have been deleted.\";
-        }
-        Write-Host 'Intel LMS vPro service has been disabled, removed, and blocked.';
-       "
-    ],
-    "UndoScript": [
-      "
-      Write-Host \"LMS vPro needs to be redownloaded from intel.com\"
-
-      "
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disablelms1"
-  },
-  "WPFTweaksDisableWpbtExecution": {
+  "WPFTweaksWPBT": {
     "Content": "Disable Windows Platform Binary Table (WPBT)",
     "Description": "If enabled then allows your computer vendor to execute a program each time it boots. It enables computer vendors to force install anti-theft software, software drivers, or a software program conveniently. This could also be a security risk.",
     "category": "z__Advanced Tweaks - CAUTION",
@@ -2631,30 +2583,6 @@
         "Type": "DWord"
       }
     ]
-  },
-  "WPFTweaksRemoveOnedrive": {
-    "Content": "Remove OneDrive",
-    "Description": "Moves OneDrive files to Default Home Folders and Uninstalls it.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a031_",
-    "InvokeScript": [
-      "
-      Write-Host \"Uninstalling OneDrive\"
-      Start-Process \"$env:SystemRoot\\System32\\OneDriveSetup.exe\" -ArgumentList /uninstall -NoNewWindow -Wait
-
-      Write-Host \"Removing OneDrive leftovers\"
-      Remove-Item \"$env:LocalAppData\\Microsoft\\OneDrive\" -Recurse -Force
-      Remove-Item \"$env:ProgramData\\Microsoft OneDrive\" -Recurse -Force
-      "
-    ],
-    "UndoScript": [
-      "
-      Write-Host \"Install OneDrive\"
-      Start-Process -FilePath winget -ArgumentList \"install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.OneDrive \" -NoNewWindow -Wait
-      "
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removeonedrive"
   },
   "WPFTweaksRazerBlock": {
     "Content": "Block Razer Software Installs",
@@ -2680,20 +2608,21 @@
     ],
     "InvokeScript": [
       "
-          $RazerPath = \"C:\\Windows\\Installer\\Razer\"
-          Remove-Item $RazerPath -Recurse -Force
-          New-Item -Path \"C:\\Windows\\Installer\\\" -Name \"Razer\" -ItemType \"directory\"
-          $Acl = Get-Acl $RazerPath
-          $Ar = New-Object System.Security.AccessControl.FileSystemAccessRule(\"NT AUTHORITY\\SYSTEM\",\"Write\",\"ContainerInherit,ObjectInherit\",\"None\",\"Deny\")
-          $Acl.SetAccessRule($Ar)
-          Set-Acl $RazerPath $Acl
+      $RazerPath = \"C:\\Windows\\Installer\\Razer\"
+
+      if (Test-Path $RazerPath) {
+        Remove-Item $RazerPath\\* -Recurse -Force
+      }
+      else {
+        New-Item -Path $RazerPath -ItemType Directory
+      }
+
+      icacls $RazerPath /deny \"Everyone:(W)\"
       "
     ],
     "UndoScript": [
       "
-          $RazerPath = \"C:\\Windows\\Installer\\Razer\"
-          Remove-Item $RazerPath -Recurse -Force
-          New-Item -Path \"C:\\Windows\\Installer\\\" -Name \"Razer\" -ItemType \"directory\"
+      icacls \"C:\\Windows\\Installer\\Razer\" /remove:d Everyone
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/razerblock"
@@ -2721,155 +2650,6 @@
       }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disablenotifications"
-  },
-  "WPFTweaksDebloatAdobe": {
-    "Content": "Adobe Debloat",
-    "Description": "Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a021_",
-    "InvokeScript": [
-      "
-      function CCStopper {
-        $path = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe\"
-
-        # Test if the path exists before proceeding
-        if (Test-Path $path) {
-            Takeown /f $path
-            $acl = Get-Acl $path
-            $acl.SetOwner([System.Security.Principal.NTAccount]\"Administrators\")
-            $acl | Set-Acl $path
-
-            Rename-Item -Path $path -NewName \"Adobe Desktop Service.exe.old\" -Force
-        } else {
-            Write-Host \"Adobe Desktop Service is not in the default location.\"
-        }
-      }
-
-
-      function AcrobatUpdates {
-        # Editing Acrobat Updates. The last folder before the key is dynamic, therefore using a script.
-        # Possible Values for the edited key:
-        # 0 = Do not download or install updates automatically
-        # 2 = Automatically download updates but let the user choose when to install them
-        # 3 = Automatically download and install updates (default value)
-        # 4 = Notify the user when an update is available but don't download or install it automatically
-        #   = It notifies the user using Windows Notifications. It runs on startup without having to have a Service/Acrobat/Reader running, therefore 0 is the next best thing.
-
-        $rootPath = \"HKLM:\\SOFTWARE\\WOW6432Node\\Adobe\\Adobe ARM\\Legacy\\Acrobat\"
-
-        # Get all subkeys under the specified root path
-        $subKeys = Get-ChildItem -Path $rootPath | Where-Object { $_.PSChildName -like \"{*}\" }
-
-        # Loop through each subkey
-        foreach ($subKey in $subKeys) {
-            # Get the full registry path
-            $fullPath = Join-Path -Path $rootPath -ChildPath $subKey.PSChildName
-            try {
-                Set-ItemProperty -Path $fullPath -Name Mode -Value 0
-                Write-Host \"Acrobat Updates have been disabled.\"
-            } catch {
-                Write-Host \"Registry Key for changing Acrobat Updates does not exist in $fullPath\"
-            }
-        }
-      }
-
-      CCStopper
-      AcrobatUpdates
-      "
-    ],
-    "UndoScript": [
-      "
-      function RestoreCCService {
-        $originalPath = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe.old\"
-        $newPath = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe\"
-
-        if (Test-Path -Path $originalPath) {
-            Rename-Item -Path $originalPath -NewName \"Adobe Desktop Service.exe\" -Force
-            Write-Host \"Adobe Desktop Service has been restored.\"
-        } else {
-            Write-Host \"Backup file does not exist. No changes were made.\"
-        }
-      }
-
-      function AcrobatUpdates {
-        # Default Value:
-        # 3 = Automatically download and install updates
-
-        $rootPath = \"HKLM:\\SOFTWARE\\WOW6432Node\\Adobe\\Adobe ARM\\Legacy\\Acrobat\"
-
-        # Get all subkeys under the specified root path
-        $subKeys = Get-ChildItem -Path $rootPath | Where-Object { $_.PSChildName -like \"{*}\" }
-
-        # Loop through each subkey
-        foreach ($subKey in $subKeys) {
-            # Get the full registry path
-            $fullPath = Join-Path -Path $rootPath -ChildPath $subKey.PSChildName
-            try {
-                Set-ItemProperty -Path $fullPath -Name Mode -Value 3
-            } catch {
-                Write-Host \"Registry Key for changing Acrobat Updates does not exist in $fullPath\"
-            }
-        }
-      }
-
-      RestoreCCService
-      AcrobatUpdates
-      "
-    ],
-    "service": [
-      {
-        "Name": "AGSService",
-        "StartupType": "Disabled",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "AGMService",
-        "StartupType": "Disabled",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "AdobeUpdateService",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "Adobe Acrobat Update",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "Adobe Genuine Monitor Service",
-        "StartupType": "Disabled",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "AdobeARMservice",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "Adobe Licensing Console",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "CCXProcess",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "AdobeIPCBroker",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "CoreSync",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/debloatadobe"
   },
   "WPFTweaksBlockAdobeNet": {
     "Content": "Adobe Network Block",
@@ -3039,7 +2819,7 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/teredo"
   },
-  "WPFTweaksDisableipsix": {
+  "WPFTweaksDisableIPv6": {
     "Content": "Disable IPv6",
     "Description": "Disables IPv6.",
     "category": "z__Advanced Tweaks - CAUTION",
