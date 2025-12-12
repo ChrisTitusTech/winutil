@@ -3138,7 +3138,10 @@
     ],
     "UndoScript": [
       "
-      Remove-ItemProperty -Path \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\\AllFolders\" -Name FolderType
+      $Shell = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\"
+
+      New-item \"$Shell\\BagMRU\"
+      Remove-ItemProperty -Path \"$Shell\\Bags\\AllFolders\\Shell\" -Name FolderType
       "
     ]
   },
