@@ -1955,10 +1955,10 @@
       }
     ],
     "InvokeScript": [
-      "Set-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))"
+      "Set-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name UserPreferencesMask -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))"
     ],
     "UndoScript": [
-      "Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\""
+      "Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name UserPreferencesMask"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/display"
   },
@@ -2125,10 +2125,10 @@
     "panel": "1",
     "Order": "a022_",
     "InvokeScript": [
-      "Invoke-WPFTweakPS7 -action \"PS7\""
+      "Invoke-WPFTweakPS7 -action PS7"
     ],
     "UndoScript": [
-      "Invoke-WPFTweakPS7 -action \"PS5\""
+      "Invoke-WPFTweakPS7 -action PS5"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/powershell7"
   },
@@ -2365,9 +2365,9 @@
     "Order": "a027_",
     "InvokeScript": [
       "
-      New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\"
+      New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name InprocServer32 -force -value \"\"
       Write-Host Restarting explorer.exe ...
-      Stop-Process -Name \"explorer\" -Force
+      Stop-Process -Name explorer -Force
       "
     ],
     "UndoScript": [
@@ -2375,7 +2375,7 @@
       Remove-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Recurse -Confirm:$false -Force
       # Restarting Explorer in the Undo Script might not be necessary, as the Registry change without restarting Explorer does work, but just to make sure.
       Write-Host Restarting explorer.exe ...
-      Stop-Process -Name \"explorer\" -Force
+      Stop-Process -Name explorer -Force
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/rightclickmenu"
@@ -2509,10 +2509,10 @@
       }
     ],
     "InvokeScript": [
-      "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
+      "Disable-NetAdapterBinding -Name * -ComponentID ms_tcpip6"
     ],
     "UndoScript": [
-      "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
+      "Enable-NetAdapterBinding -Name * -ComponentID ms_tcpip6"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disableipsix"
   },
@@ -2579,7 +2579,7 @@
       "
       Invoke-WinUtilExplorerUpdate
       if ($sync.ThemeButton.Content -eq [char]0xF08C) {
-        Invoke-WinutilThemeChange -theme \"Auto\"
+        Invoke-WinutilThemeChange -theme Auto
       }
       "
     ],
@@ -2587,7 +2587,7 @@
       "
       Invoke-WinUtilExplorerUpdate
       if ($sync.ThemeButton.Content -eq [char]0xF08C) {
-        Invoke-WinutilThemeChange -theme \"Auto\"
+        Invoke-WinutilThemeChange -theme Auto
       }
       "
     ],
@@ -2749,12 +2749,12 @@
     ],
     "InvokeScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Invoke-WinUtilExplorerUpdate -action restart
       "
     ],
     "UndoScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Invoke-WinUtilExplorerUpdate -action restart
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/snapflyout"
@@ -2778,12 +2778,12 @@
     ],
     "InvokeScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Invoke-WinUtilExplorerUpdate -action restart
       "
     ],
     "UndoScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Invoke-WinUtilExplorerUpdate -action restart
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/snapsuggestion"
@@ -2924,12 +2924,12 @@
     ],
     "InvokeScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Invoke-WinUtilExplorerUpdate -action restart
       "
     ],
     "UndoScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Invoke-WinUtilExplorerUpdate -action restart
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/hiddenfiles"
@@ -2953,12 +2953,12 @@
     ],
     "InvokeScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Invoke-WinUtilExplorerUpdate -action restart
       "
     ],
     "UndoScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Invoke-WinUtilExplorerUpdate -action restart
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/showext"
