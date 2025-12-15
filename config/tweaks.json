@@ -2069,7 +2069,7 @@
     "InvokeScript": [
       "
       if (-not (Get-ComputerRestorePoint)) {
-          Enable-ComputerRestore -Drive $env:SystemDrive
+          Enable-ComputerRestore -Drive $Env:SystemDrive
       }
       
       Checkpoint-Computer -Description \"System Restore Point created by WinUtil\" -RestorePointType MODIFY_SETTINGS
