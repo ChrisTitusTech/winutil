@@ -18,3 +18,4 @@ function Remove-WinUtilAPPX {
     Write-Host "Removing $Name"
     Get-AppxPackage $Name | Remove-AppxPackage -AllUsers
     Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Name | Remove-AppxProvisionedPackage -Online
+}
