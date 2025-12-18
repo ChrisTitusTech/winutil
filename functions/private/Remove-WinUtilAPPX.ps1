@@ -18,7 +18,7 @@ function Remove-WinUtilAPPX {
     try {
         Write-Host "Removing $Name"
         Get-AppxPackage $Name | Remove-AppxPackage -AllUsers
-        Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Name | Remove-AppxProvisionedPackage -Online -AllUsers
+        Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Name | Remove-AppxProvisionedPackage -Online
     } catch [System.Exception] {
         if ($psitem.Exception.Message -like "*The requested operation requires elevation*") {
             Write-Warning "Unable to uninstall $name due to a Security Exception"
