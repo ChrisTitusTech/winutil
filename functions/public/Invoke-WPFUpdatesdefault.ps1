@@ -79,9 +79,9 @@ function Invoke-WPFUpdatesdefault {
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays"
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays"
 
-    Write-Host "==================================================="
-    Write-Host "---  Windows Update Settings Reset to Default   ---"
-    Write-Host "==================================================="
+    Write-Host "===================================================" -ForegroundColor Green
+    Write-Host "---  Windows Update Settings Reset to Default   ---" -ForegroundColor Green
+    Write-Host "===================================================" -ForegroundColor Green
 
     secedit /configure /cfg "$Env:SystemRoot\inf\defltbase.inf" /db defltbase.sdb
 
@@ -103,9 +103,9 @@ function Invoke-WPFUpdatesdefault {
     Remove-Item -Path "HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Policies" -Recurse -Force
     Remove-Item -Path "HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\WindowsStore\WindowsUpdate" -Recurse -Force
 
-    Write-Host "==================================================="
-    Write-Host "---  Windows Local Policies Reset to Default   ---"
-    Write-Host "==================================================="
+    Write-Host "===================================================" -ForegroundColor Green
+    Write-Host "---  Windows Local Policies Reset to Default   ---" -ForegroundColor Green
+    Write-Host "===================================================" -ForegroundColor Green
 
     Write-Host "Note: You must restart your system in order for all changes to take effect." -ForegroundColor Yellow
 }
