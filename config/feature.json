@@ -107,7 +107,7 @@
     "Order": "a018_",
     "feature": [],
     "InvokeScript": [
-      "bcdedit /set {default} bootmenupolicy legacy"
+      "bcdedit /set bootmenupolicy legacy"
     ],
     "link": "https://winutil.christitus.com/dev/features/features/enablelegacyrecovery"
   },
@@ -119,7 +119,7 @@
     "Order": "a019_",
     "feature": [],
     "InvokeScript": [
-    "bcdedit /set {default} bootmenupolicy standard"
+    "bcdedit /set bootmenupolicy standard"
     ],
     "link": "https://winutil.christitus.com/dev/features/features/disablelegacyrecovery"
   },
