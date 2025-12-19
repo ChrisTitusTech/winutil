@@ -72,9 +72,9 @@ function Invoke-WPFUpdatesdisable {
         Get-ScheduledTask -TaskPath $Task | Disable-ScheduledTask -ErrorAction SilentlyContinue
     }
 
-    Write-Host "======================================" -ForegroundColor Green
-    Write-Host "---   Updates Are Disabled" -ForegroundColor Green
-    Write-Host "======================================" -ForegroundColor Green
+    Write-Host "=================================" -ForegroundColor Green
+    Write-Host "---   Updates Are Disabled    ---" -ForegroundColor Green
+    Write-Host "=================================" -ForegroundColor Green
 
     Write-Host "Note: You must restart your system in order for all changes to take effect." -ForegroundColor Yellow
 }
