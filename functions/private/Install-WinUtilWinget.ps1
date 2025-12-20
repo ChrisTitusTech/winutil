@@ -22,6 +22,6 @@ function Install-WinUtilWinget {
         Install-Module "Microsoft.WinGet.Client" -Force
         Repair-WinGetPackageManager
 
-        Write-Host "WinGet repair successful!" -ForegroundColor Green
+        Write-Host "WinGet installed successful!" -ForegroundColor Green
     }
 }
