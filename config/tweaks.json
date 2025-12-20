@@ -2634,14 +2634,10 @@
       }
     ],
     "InvokeScript": [
-      "
-      Invoke-WinUtilExplorerUpdate
-      "
+      "Invoke-WinUtilExplorerUpdate"
     ],
     "UndoScript": [
-      "
-      Invoke-WinUtilExplorerUpdate
-      "
+      "Invoke-WinUtilExplorerUpdate"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/snapflyout"
   },
@@ -2663,14 +2659,10 @@
       }
     ],
     "InvokeScript": [
-      "
-      Invoke-WinUtilExplorerUpdate
-      "
+      "Invoke-WinUtilExplorerUpdate"
     ],
     "UndoScript": [
-      "
-      Invoke-WinUtilExplorerUpdate
-      "
+      "Invoke-WinUtilExplorerUpdate"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/snapsuggestion"
   },
@@ -2809,14 +2801,10 @@
       }
     ],
     "InvokeScript": [
-      "
-      Invoke-WinUtilExplorerUpdate
-      "
+      "Invoke-WinUtilExplorerUpdate"
     ],
     "UndoScript": [
-      "
-      Invoke-WinUtilExplorerUpdate
-      "
+      "Invoke-WinUtilExplorerUpdate"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/hiddenfiles"
   },
@@ -2838,14 +2826,10 @@
       }
     ],
     "InvokeScript": [
-      "
-      Invoke-WinUtilExplorerUpdate
-      "
+      "Invoke-WinUtilExplorerUpdate"
     ],
     "UndoScript": [
-      "
-      Invoke-WinUtilExplorerUpdate
-      "
+      "Invoke-WinUtilExplorerUpdate"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/showext"
   },
