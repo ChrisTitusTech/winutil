@@ -17,8 +17,11 @@ function Install-WinUtilWinget {
         winget upgrade Microsoft.AppInstaller --source winget
     } else {
         Write-Host "`nWinget is not Installed. Installing...`r" -ForegroundColor Red
+        
         Install-PackageProvider -Name NuGet -Force
         Install-Module "Microsoft.WinGet.Client" -Force
         Repair-WinGetPackageManager
+
+        Write-Host "WinGet repair successful!" -ForegroundColor Green
     }
 }
