@@ -203,6 +203,13 @@ public class PowerManagement {
             reg add "HKLM\SYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
         }
 
+        # We have to prepare the target system to accept the diagnostics script
+        reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE"
+        reg add "HKLM\zSOFTWARE\WinUtil" /f
+        reg add "HKLM\zSOFTWARE\WinUtil" /f /v "ToolboxVersion" /t REG_SZ /d "$($sync.version)"
+        reg add "HKLM\zSOFTWARE\WinUtil" /f /v "MicroWinBuildDate" /t REG_SZ /d "$((Get-Date).ToString('yyMMdd-HHmm'))"
+        reg unload HKLM\zSOFTWARE
+
         if ($importVirtIO) {
             Write-Host "Copying VirtIO drivers..."
             Microwin-CopyVirtIO
@@ -301,6 +308,13 @@ public class PowerManagement {
         Write-Host "Copy FirstRun.ps1 into the ISO"
         Copy-Item "$env:temp\FirstStartup.ps1" "$($scratchDir)\Windows\FirstStartup.ps1" -force
         Write-Host "Done copy FirstRun.ps1"
+
+        Write-Host "Create ReportTool"
+        Microwin-NewReportingTool
+        Write-Host "Done create ReportingTool"
+        Write-Host "Copy reportTool.ps1 into the ISO"
+        Copy-Item "$env:temp\reportTool.ps1" "$($scratchDir)\MicroWinReportTool.ps1" -force
+        Write-Host "Done copy reportTool.ps1"
 
         Write-Host "Copy link to winutil.ps1 into the ISO"
         $desktopDir = "$($scratchDir)\Windows\Users\Default\Desktop"
