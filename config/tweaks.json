@@ -2572,14 +2572,10 @@
       }
     ],
     "InvokeScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
+      "Invoke-WinUtilExplorerUpdate"
     ],
     "UndoScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
+      "Invoke-WinUtilExplorerUpdate"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/wpftogglestartmenurecommendations"
   },
@@ -2639,12 +2635,12 @@
     ],
     "InvokeScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Invoke-WinUtilExplorerUpdate
       "
     ],
     "UndoScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Invoke-WinUtilExplorerUpdate
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/snapflyout"
@@ -2668,12 +2664,12 @@
     ],
     "InvokeScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Invoke-WinUtilExplorerUpdate
       "
     ],
     "UndoScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Invoke-WinUtilExplorerUpdate
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/snapsuggestion"
@@ -2814,12 +2810,12 @@
     ],
     "InvokeScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Invoke-WinUtilExplorerUpdate
       "
     ],
     "UndoScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Invoke-WinUtilExplorerUpdate
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/hiddenfiles"
@@ -2843,12 +2839,12 @@
     ],
     "InvokeScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Invoke-WinUtilExplorerUpdate
       "
     ],
     "UndoScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Invoke-WinUtilExplorerUpdate
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/showext"
