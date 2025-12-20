@@ -14,7 +14,7 @@ function Install-WinUtilWinget {
         return
     } elseif ($isWingetInstalled -eq "outdated") {
         Write-Host "`nWinget is Outdated. Updating...`r" -ForegroundColor Yellow
-        winget upgrade Microsoft.AppInstaller --source winget
+        winget upgrade winget
     } else {
         Write-Host "`nWinget is not Installed. Installing...`r" -ForegroundColor Red
         
