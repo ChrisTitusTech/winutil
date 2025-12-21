@@ -43,12 +43,6 @@ function Invoke-WPFUpdatessecurity {
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -Type DWord -Value 365
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays" -Type DWord -Value 4
 
-    $ButtonType = [System.Windows.MessageBoxButton]::OK
-    $MessageboxTitle = "Set Security Updates"
-    $Messageboxbody = ("Recommended Update settings loaded")
-    $MessageIcon = [System.Windows.MessageBoxImage]::Information
-
-    [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
     Write-Host "================================="
     Write-Host "-- Updates Set to Recommended ---"
     Write-Host "================================="
