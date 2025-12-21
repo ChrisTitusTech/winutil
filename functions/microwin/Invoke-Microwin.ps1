@@ -330,7 +330,6 @@ public class PowerManagement {
         New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\OOBE\BYPASSNRO"
 
         Write-Host "Loading registry"
-        reg load HKLM\zCOMPONENTS "$($scratchDir)\Windows\System32\config\COMPONENTS"
         reg load HKLM\zDEFAULT "$($scratchDir)\Windows\System32\config\default"
         reg load HKLM\zNTUSER "$($scratchDir)\Users\Default\ntuser.dat"
         reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE"
@@ -411,7 +410,6 @@ public class PowerManagement {
         Write-Error "An unexpected error occurred: $_"
     } finally {
         Write-Host "Unmounting Registry..."
-        reg unload HKLM\zCOMPONENTS
         reg unload HKLM\zDEFAULT
         reg unload HKLM\zNTUSER
         reg unload HKLM\zSOFTWARE
@@ -476,7 +474,6 @@ public class PowerManagement {
         }
 
         Write-Host "Loading registry..."
-        reg load HKLM\zCOMPONENTS "$($scratchDir)\Windows\System32\config\COMPONENTS" >$null
         reg load HKLM\zDEFAULT "$($scratchDir)\Windows\System32\config\default" >$null
         reg load HKLM\zNTUSER "$($scratchDir)\Users\Default\ntuser.dat" >$null
         reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE" >$null
@@ -498,7 +495,6 @@ public class PowerManagement {
         Write-Error "An unexpected error occurred: $_"
     } finally {
         Write-Host "Unmounting Registry..."
-        reg unload HKLM\zCOMPONENTS
         reg unload HKLM\zDEFAULT
         reg unload HKLM\zNTUSER
         reg unload HKLM\zSOFTWARE
