@@ -208,6 +208,13 @@ public class PowerManagement {
         reg add "HKLM\zSOFTWARE\WinUtil" /f
         reg add "HKLM\zSOFTWARE\WinUtil" /f /v "ToolboxVersion" /t REG_SZ /d "$($sync.version)"
         reg add "HKLM\zSOFTWARE\WinUtil" /f /v "MicroWinBuildDate" /t REG_SZ /d "$((Get-Date).ToString('yyMMdd-HHmm'))"
+
+        # REAL software developers set execution policies to unrestricted but, because we're targeting
+        # mainstream population, we have to lower the level of "riskiness" -- set remotesigned; at least that
+        # lets us run PWSH scripts that WE create. Execution policies don't really make sense anyway if common sense
+        # is lacking.
+        reg add "HKLM\zSOFTWARE\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell" /v "ExecutionPolicy" /t REG_SZ /d "RemoteSigned" /f
+
         reg unload HKLM\zSOFTWARE
 
         if ($importVirtIO) {
