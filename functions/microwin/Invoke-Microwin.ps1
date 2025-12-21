@@ -90,8 +90,11 @@ public class PowerManagement {
         }
     }
 
-    $imgVersion = (Get-WindowsImage -ImagePath $mountDir\sources\install.wim -Index $index).Version
+    $imgVersion = (Get-WindowsImage -ImagePath "$mountDir\sources\install.wim" -Index $index).Version
+    # Windows Setup is the second index in the boot image.
+    $bootVersion = (Get-WindowsImage -ImagePath "$mountDir\sources\boot.wim" -Index 2).Version
     Write-Host "The Windows Image Build Version is: $imgVersion"
+    Write-Host "The WinPE boot image Build Version is: $bootVersion"
 
     # Detect image version to avoid performing MicroWin processing on Windows 8 and earlier
     if ((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,10240,0))) -eq $false) {
@@ -498,6 +501,12 @@ public class PowerManagement {
         reg add "HKLM\zSYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
         # Fix Computer Restarted Unexpectedly Error on New Bare Metal Install
         reg add "HKLM\zSYSTEM\Setup\Status\ChildCompletion" /v "setup.exe" /t REG_DWORD /d 3 /f
+
+        # Force old Setup on 24H2+ WinPE images due to personal preference; it's simply faster and
+        # more reliable than MoSetup. I simply can't stand that new setup system.
+        if ((Microwin-TestCompatibleImage $bootVersion $([System.Version]::new(10,0,26040,0))) -and (Test-Path -Path "$scratchDir\sources\setup.exe" -PathType Leaf)) {
+            reg add "HKLM\zSYSTEM\Setup" /f /v "CmdLine" /t REG_SZ /d "\sources\setup.exe"
+        }
     } catch {
         Write-Error "An unexpected error occurred: $_"
     } finally {
