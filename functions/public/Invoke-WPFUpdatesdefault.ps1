@@ -57,7 +57,7 @@ function Invoke-WPFUpdatesdefault {
         '\Microsoft\WindowsUpdate\*'
 
     foreach ($Task in $Tasks) {
-        Get-ScheduledTask -TaskPath $Task | Enable-ScheduledTask -ErrorAction SilentlyContinue
+        Get-ScheduledTask -TaskPath $Task | Enable-ScheduledTask
     }
 
     Write-Host "Enabling driver offering through Windows Update..."
@@ -90,18 +90,6 @@ function Invoke-WPFUpdatesdefault {
 
     #Using Start-Process because this command takes along time to run
     Start-Process gpupdate -ArgumentList "/force" -WindowStyle Hidden
-
-    Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies" -Recurse -Force
-    Remove-Item -Path "HKCU:\Software\Microsoft\WindowsSelfHost" -Recurse -Force
-    Remove-Item -Path "HKCU:\Software\Policies" -Recurse -Force
-    Remove-Item -Path "HKLM:\Software\Microsoft\Policies" -Recurse -Force
-    Remove-Item -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies" -Recurse -Force
-    Remove-Item -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\WindowsStore\WindowsUpdate" -Recurse -Force
-    Remove-Item -Path "HKLM:\Software\Microsoft\WindowsSelfHost" -Recurse -Force
-    Remove-Item -Path "HKLM:\Software\Policies" -Recurse -Force
-    Remove-Item -Path "HKLM:\Software\WOW6432Node\Microsoft\Policies" -Recurse -Force
-    Remove-Item -Path "HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Policies" -Recurse -Force
-    Remove-Item -Path "HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\WindowsStore\WindowsUpdate" -Recurse -Force
 
     Write-Host "===================================================" -ForegroundColor Green
     Write-Host "---  Windows Local Policies Reset to Default   ---" -ForegroundColor Green
