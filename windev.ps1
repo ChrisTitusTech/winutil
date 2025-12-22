@@ -9,9 +9,5 @@
     Run in Admin Powershell >  ./windev.ps1
 #>
 
-$releases = Invoke-RestMethod 'https://api.github.com/repos/ChrisTitusTech/winutil/releases'
-
-$latestRelease = $releases | Select-Object -First 1
-$latestTag = $latestRelease.tag_name
-
+$latestTag = (Invoke-RestMethod 'https://api.github.com/repos/ChrisTitusTech/winutil/releases')[0].tag_name
 Invoke-RestMethod "https://github.com/ChrisTitusTech/winutil/releases/download/$latestTag/winutil.ps1" | Invoke-Expression
