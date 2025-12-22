@@ -2,7 +2,7 @@
 .SYNOPSIS
     This Script is used as a target for the https://christitus.com/windev alias.
 .DESCRIPTION
-    This Script provides a simple way to always start the bleeding edge release even if it's not yet a full release.
+    This Script provides a simple way to start the bleeding edge release of winutil.
 .EXAMPLE
     irm https://christitus.com/windev | iex
     OR
