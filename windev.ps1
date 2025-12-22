@@ -11,7 +11,7 @@
 
 $releases = Invoke-RestMethod 'https://api.github.com/repos/ChrisTitusTech/winutil/releases'
 
-$latestRelease = $releases | Where-Object { $_.prerelease -eq $true } | Select-Object -First 1
+$latestRelease = $releases | Select-Object -First 1
 $latestTag = $latestRelease.tag_name
 
 Invoke-RestMethod "https://github.com/ChrisTitusTech/winutil/releases/download/$latestTag/winutil.ps1" | Invoke-Expression
