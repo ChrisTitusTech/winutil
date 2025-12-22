@@ -1999,7 +1999,7 @@
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/endtaskontaskbar"
   },
  "WPFTweaksNVME": {
-    "Content": "Enable native nvme support",
+    "Content": "Enable native NVMe support",
     "Description": "Currently only supported on Windows Server 2025",
     "category": "Essential Tweaks",
     "panel": "1",
