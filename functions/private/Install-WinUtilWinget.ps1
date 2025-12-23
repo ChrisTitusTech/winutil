@@ -9,13 +9,7 @@ function Install-WinUtilWinget {
     #>
     $isWingetInstalled = Test-WinUtilPackageManager -winget
     
-    if ($isWingetInstalled -eq "installed") {
-        Write-Host "`nWinget is already installed.`r" -ForegroundColor Green
-        return
-    } elseif ($isWingetInstalled -eq "outdated") {
-        Write-Host "`nWinget is Outdated. Updating...`r" -ForegroundColor Yellow
-        Start-Process winget -ArgumentList "upgrade winget" -Wait -NoNewWindow
-    } else {
+    if (-not ($isWingetInstalled -eq "installed")) {
         Write-Host "`nWinget is not Installed. Installing...`r" -ForegroundColor Red
         
         Install-PackageProvider -Name NuGet -Force
