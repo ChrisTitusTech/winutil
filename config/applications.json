@@ -848,14 +848,6 @@
         "link": "https://gerardog.github.io/gsudo/",
         "winget": "gerardog.gsudo"
     },
-    "guilded": {
-        "category": "Communications",
-        "choco": "na",
-        "content": "Guilded",
-        "description": "Guilded is a communication and productivity platform that includes chat, scheduling, and collaborative tools for gaming and communities.",
-        "link": "https://www.guilded.gg/",
-        "winget": "Guilded.Guilded"
-    },
     "handbrake": {
         "category": "Multimedia Tools",
         "choco": "handbrake",
