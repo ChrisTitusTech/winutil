@@ -2179,7 +2179,7 @@
       icacls \"C:\\Windows\\Installer\\Razer\" /remove:d Everyone
       "
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/razerblock"
+    "link": ""
   },
   "WPFTweaksDisableNotifications": {
     "Content": "Disable Notification Tray/Calendar",
