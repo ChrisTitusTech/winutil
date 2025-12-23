@@ -5,7 +5,7 @@ function Install-WinUtilWinget {
         Installs Winget if not already installed.
 
     .DESCRIPTION
-        This function will install winget if not already installed, and update winget if needed
+        installs winget if needed
     #>
     $isWingetInstalled = Test-WinUtilPackageManager -winget
     
