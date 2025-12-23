@@ -15,7 +15,7 @@ function Install-WinUtilChoco {
         }
         
         Write-Host "Chocolatey is not installed, installing now."
-        Invoke-WebRequest https://community.chocolatey.org/install.ps1 | Invoke-Expression
+        Invoke-WebRequest https://community.chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression
 
     } catch {
         Write-Host "===========================================" -Foregroundcolor Red
