@@ -25,13 +25,57 @@ function Invoke-WPFImpex {
                 "export" { $FileBrowser = New-Object System.Windows.Forms.SaveFileDialog }
                 "import" { $FileBrowser = New-Object System.Windows.Forms.OpenFileDialog }
             }
-            $FileBrowser.InitialDirectory = [Environment]::GetFolderPath('Desktop')
+
+            $userConfigPath = Join-Path $env:LOCALAPPDATA "Winutil\user_config.json"
+            $initialDir = [Environment]::GetFolderPath('Desktop')
+
+            if (Test-Path $userConfigPath) {
+                try {
+                    $userConfig = Get-Content $userConfigPath | ConvertFrom-Json
+                    if ($userConfig.LastImportExportPath -and (Test-Path $userConfig.LastImportExportPath)) {
+                        $initialDir = $userConfig.LastImportExportPath
+                    }
+                } catch {
+                    # Ignore errors reading config
+                }
+            }
+
+            $FileBrowser.InitialDirectory = $initialDir
             $FileBrowser.Filter = "JSON Files (*.json)|*.json"
             $FileBrowser.ShowDialog() | Out-Null
 
             if ($FileBrowser.FileName -eq "") {
                 return $null
             } else {
+                try {
+                    $selectedDir = Split-Path $FileBrowser.FileName -Parent
+                    $configDir = Split-Path $userConfigPath -Parent
+                    if (!(Test-Path $configDir)) {
+                        New-Item -ItemType Directory -Path $configDir -Force | Out-Null
+                    }
+
+                    $configData = @{}
+                    if (Test-Path $userConfigPath) {
+                        try {
+                            $content = Get-Content $userConfigPath -Raw
+                            if ($content) {
+                                $configData = $content | ConvertFrom-Json
+                            }
+                        } catch {}
+                    }
+
+                    if ($configData -is [PSCustomObject]) {
+                        $configData | Add-Member -MemberType NoteProperty -Name "LastImportExportPath" -Value $selectedDir -Force
+                    } else {
+                        $configData = [PSCustomObject]@{
+                            LastImportExportPath = $selectedDir
+                        }
+                    }
+
+                    $configData | ConvertTo-Json | Out-File $userConfigPath -Force
+                } catch {
+                    # Ignore errors saving config
+                }
                 return $FileBrowser.FileName
             }
         } else {
