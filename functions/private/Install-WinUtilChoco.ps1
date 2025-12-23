@@ -10,14 +10,12 @@ function Install-WinUtilChoco {
     try {
         Write-Host "Checking if Chocolatey is Installed..."
 
-        if((Test-WinUtilPackageManager -choco) -eq "installed") {
+        if ((Test-WinUtilPackageManager -choco) -eq "installed") {
             return
         }
-        # Install logic taken from https://chocolatey.org/install#individual
-        Write-Host "Seems Chocolatey is not installed, installing now."
-        Set-ExecutionPolicy Bypass -Scope Process -Force;
-        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072;
-        Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+        
+        Write-Host "Chocolatey is not installed, installing now."
+        Invoke-WebRequest https://community.chocolatey.org/install.ps1 | Invoke-Expression
 
     } catch {
         Write-Host "===========================================" -Foregroundcolor Red
