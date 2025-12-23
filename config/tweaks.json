@@ -1690,7 +1690,7 @@
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
         "Name": "RealTimeIsUniversal",
-        "Type": "DWord",
+        "Type": "QWord",
         "Value": "1",
         "OriginalValue": "0"
       }
