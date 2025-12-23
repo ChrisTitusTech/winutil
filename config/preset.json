@@ -10,8 +10,7 @@
     "WPFTweaksDiskCleanup",
     "WPFTweaksDeleteTempFiles",
     "WPFTweaksEndTaskOnTaskbar",
-    "WPFTweaksRestorePoint",
-    "WPFTweaksPowershell7Tele"
+    "WPFTweaksRestorePoint"
   ],
   "Minimal": [
     "WPFTweaksConsumerFeatures",
