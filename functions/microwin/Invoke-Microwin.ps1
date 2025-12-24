@@ -521,12 +521,27 @@ public class PowerManagement {
 
         Write-Host "Creating ISO image"
 
+        $adkKitsRoot = Microwin-GetKitsRoot -wow64environment $false
+        $adkKitsRoot_WOW64Environ = Microwin-GetKitsRoot -wow64environment $true
+
+        $expectedADKPath = "$($adkKitsRoot)Assessment and Deployment Kit"
+        $expectedADKPath_WOW64Environ = "$($adkKitsRoot_WOW64Environ)Assessment and Deployment Kit"
+
         # if we downloaded oscdimg from github it will be in the temp directory so use it
         # if it is not in temp it is part of ADK and is in global PATH so just set it to oscdimg.exe
         $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
-        $oscdImgFound = Test-Path $oscdimgPath -PathType Leaf
-        if (!$oscdImgFound) {
-            $oscdimgPath = "oscdimg.exe"
+        $oscdImgFound = Test-Path -Path "$oscdimgPath" -PathType Leaf
+        if ((-not ($oscdImgFound)) -and ((Microwin-TestKitsRootPaths -adkKitsRootPath "$expectedADKPath" -adkKitsRootPath_WOW64Environ "$expectedADKPath_WOW64Environ") -eq $true)) {
+            if ($expectedADKPath -ne "Assessment and Deployment Kit") { $peToolsPath = $expectedADKPath }
+            if (($peToolsPath -eq "") -and ($expectedADKPath_WOW64Environ -ne "Assessment and Deployment Kit")) { $peToolsPath = $expectedADKPath_WOW64Environ }
+
+            Write-Host "Using $peToolsPath as the Preinstallation Environment tools path..."
+            # Paths change depending on platform
+            if ([Environment]::Is64BitOperatingSystem) {
+                $oscdimgPath = "$peToolsPath\Deployment Tools\amd64\Oscdimg\oscdimg.exe"
+            } else {
+                $oscdimgPath = "$peToolsPath\Deployment Tools\x86\Oscdimg\oscdimg.exe"
+            }
         }
 
         Write-Host "[INFO] Using oscdimg.exe from: $oscdimgPath"
