@@ -6,4 +6,6 @@ function Invoke-WinUtilUninstallPSProfile {
     else {
         Remove-Item $Profile
     }
+
+    Write-Host "Successfully uninstalled CTT Powershell Profile" -ForegroundColor Green
 }
