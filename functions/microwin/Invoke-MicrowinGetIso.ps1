@@ -122,11 +122,17 @@ function Invoke-MicrowinGetIso {
     Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
     Invoke-MicrowinBusyInfo -action "wip" -message "Checking system requirements..." -interactive $false
 
+    $adkKitsRoot = Microwin-GetKitsRoot -wow64environment $false
+    $adkKitsRoot_WOW64Environ = Microwin-GetKitsRoot -wow64environment $true
+
+    $expectedADKPath = "$($adkKitsRoot)Assessment and Deployment Kit"
+    $expectedADKPath_WOW64Environ = "$($adkKitsRoot_WOW64Environ)Assessment and Deployment Kit"
+
     $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
-    $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg.exe) -or (Test-Path $oscdimgPath -PathType Leaf)
+    $oscdImgFound = [bool] (Microwin-TestKitsRootPaths -adkKitsRootPath "$expectedADKPath" -adkKitsRootPath_WOW64Environ "$expectedADKPath_WOW64Environ") -or (Test-Path $oscdimgPath -PathType Leaf)
     Write-Host "oscdimg.exe on system: $oscdImgFound"
 
-    if (!$oscdImgFound) {
+    if (-not ($oscdImgFound)) {
         $downloadFromGitHub = $sync.WPFMicrowinDownloadFromGitHub.IsChecked
 
         if (!$downloadFromGitHub) {
@@ -162,6 +168,30 @@ function Invoke-MicrowinGetIso {
                 Write-Host "oscdimg.exe was successfully downloaded from github"
             }
         }
+    } elseif (Microwin-TestKitsRootPaths -adkKitsRootPath "$expectedADKPath" -adkKitsRootPath_WOW64Environ "$expectedADKPath_WOW64Environ") {
+        # We have to guess where oscdimg is. We'll check both values...
+        $peToolsPath = ""
+
+        if ($expectedADKPath -ne "Assessment and Deployment Kit") { $peToolsPath = $expectedADKPath }
+        if (($peToolsPath -eq "") -and ($expectedADKPath_WOW64Environ -ne "Assessment and Deployment Kit")) { $peToolsPath = $expectedADKPath_WOW64Environ }
+
+        Write-Host "Using $peToolsPath as the Preinstallation Environment tools path..."
+        # Paths change depending on platform
+        if ([Environment]::Is64BitOperatingSystem) {
+            $oscdimgPath = "$peToolsPath\Deployment Tools\amd64\Oscdimg\oscdimg.exe"
+        } else {
+            $oscdimgPath = "$peToolsPath\Deployment Tools\x86\Oscdimg\oscdimg.exe"
+        }
+
+        # If it's a non-existent file, we won't continue.
+        if (-not (Test-Path -Path "$oscdimgPath" -PathType Leaf)) {
+            $oscdimgFound = $false
+        }
+    }
+
+    if (-not ($oscdimgFound)) {
+        [System.Windows.MessageBox]::Show("oscdimg.exe is not found on the system. Cannot continue.")
+        return
     }
 
     Invoke-MicrowinBusyInfo -action "wip" -message "Checking disk space..." -interactive $false

@@ -90,8 +90,11 @@ public class PowerManagement {
         }
     }
 
-    $imgVersion = (Get-WindowsImage -ImagePath $mountDir\sources\install.wim -Index $index).Version
+    $imgVersion = (Get-WindowsImage -ImagePath "$mountDir\sources\install.wim" -Index $index).Version
+    # Windows Setup is the second index in the boot image.
+    $bootVersion = (Get-WindowsImage -ImagePath "$mountDir\sources\boot.wim" -Index 2).Version
     Write-Host "The Windows Image Build Version is: $imgVersion"
+    Write-Host "The WinPE boot image Build Version is: $bootVersion"
 
     # Detect image version to avoid performing MicroWin processing on Windows 8 and earlier
     if ((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,10240,0))) -eq $false) {
@@ -203,6 +206,20 @@ public class PowerManagement {
             reg add "HKLM\SYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
         }
 
+        # We have to prepare the target system to accept the diagnostics script
+        reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE"
+        reg add "HKLM\zSOFTWARE\WinUtil" /f
+        reg add "HKLM\zSOFTWARE\WinUtil" /f /v "ToolboxVersion" /t REG_SZ /d "$($sync.version)"
+        reg add "HKLM\zSOFTWARE\WinUtil" /f /v "MicroWinBuildDate" /t REG_SZ /d "$((Get-Date).ToString('yyMMdd-HHmm'))"
+
+        # REAL software developers set execution policies to unrestricted but, because we're targeting
+        # mainstream population, we have to lower the level of "riskiness" -- set remotesigned; at least that
+        # lets us run PWSH scripts that WE create. Execution policies don't really make sense anyway if common sense
+        # is lacking.
+        reg add "HKLM\zSOFTWARE\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell" /v "ExecutionPolicy" /t REG_SZ /d "RemoteSigned" /f
+
+        reg unload HKLM\zSOFTWARE
+
         if ($importVirtIO) {
             Write-Host "Copying VirtIO drivers..."
             Microwin-CopyVirtIO
@@ -217,7 +234,10 @@ public class PowerManagement {
         Microwin-RemoveProvisionedPackages -UseCmdlets $true
 
         # Detect Windows 11 24H2 and add dependency to FileExp to prevent Explorer look from going back - thanks @WitherOrNot and @thecatontheceiling
-        if ((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,26100,1))) -eq $true) {
+        # ----- UPDATE UPDATE UPDATE: they fixed this in 10.0.26200.7019. DO NOT DO THIS OTHERWISE IT BREAKS EXPLORER AGAIN BECAUSE THE CHEEKY LITTLE
+        # ----- PoS CHANGED APPRUNTIME.CBS TO APPRUNTIME.CBS.1.6. Thing is, we don't need to patch this in those builds because it no longer breaks
+        # ----- when you don't patch.
+        if (((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,26100,1))) -eq $true) -and ((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,26200,7019))) -eq $false)) {
             try {
                 if (Test-Path "$scratchDir\Windows\SystemApps\MicrosoftWindows.Client.FileExp_cw5n1h2txyewy\appxmanifest.xml" -PathType Leaf) {
                     # Found the culprit. Do the following:
@@ -302,6 +322,13 @@ public class PowerManagement {
         Copy-Item "$env:temp\FirstStartup.ps1" "$($scratchDir)\Windows\FirstStartup.ps1" -force
         Write-Host "Done copy FirstRun.ps1"
 
+        Write-Host "Create ReportTool"
+        Microwin-NewReportingTool
+        Write-Host "Done create ReportingTool"
+        Write-Host "Copy reportTool.ps1 into the ISO"
+        Copy-Item "$env:temp\reportTool.ps1" "$($scratchDir)\MicroWinReportTool.ps1" -force
+        Write-Host "Done copy reportTool.ps1"
+
         Write-Host "Copy link to winutil.ps1 into the ISO"
         $desktopDir = "$($scratchDir)\Windows\Users\Default\Desktop"
         New-Item -ItemType Directory -Force -Path "$desktopDir"
@@ -316,7 +343,6 @@ public class PowerManagement {
         New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\OOBE\BYPASSNRO"
 
         Write-Host "Loading registry"
-        reg load HKLM\zCOMPONENTS "$($scratchDir)\Windows\System32\config\COMPONENTS"
         reg load HKLM\zDEFAULT "$($scratchDir)\Windows\System32\config\default"
         reg load HKLM\zNTUSER "$($scratchDir)\Users\Default\ntuser.dat"
         reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE"
@@ -397,7 +423,6 @@ public class PowerManagement {
         Write-Error "An unexpected error occurred: $_"
     } finally {
         Write-Host "Unmounting Registry..."
-        reg unload HKLM\zCOMPONENTS
         reg unload HKLM\zDEFAULT
         reg unload HKLM\zNTUSER
         reg unload HKLM\zSOFTWARE
@@ -462,7 +487,6 @@ public class PowerManagement {
         }
 
         Write-Host "Loading registry..."
-        reg load HKLM\zCOMPONENTS "$($scratchDir)\Windows\System32\config\COMPONENTS" >$null
         reg load HKLM\zDEFAULT "$($scratchDir)\Windows\System32\config\default" >$null
         reg load HKLM\zNTUSER "$($scratchDir)\Users\Default\ntuser.dat" >$null
         reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE" >$null
@@ -480,11 +504,16 @@ public class PowerManagement {
         reg add "HKLM\zSYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
         # Fix Computer Restarted Unexpectedly Error on New Bare Metal Install
         reg add "HKLM\zSYSTEM\Setup\Status\ChildCompletion" /v "setup.exe" /t REG_DWORD /d 3 /f
+
+        # Force old Setup on 24H2+ WinPE images due to personal preference; it's simply faster and
+        # more reliable than MoSetup. I simply can't stand that new setup system.
+        if ((Microwin-TestCompatibleImage $bootVersion $([System.Version]::new(10,0,26040,0))) -and (Test-Path -Path "$scratchDir\sources\setup.exe" -PathType Leaf)) {
+            reg add "HKLM\zSYSTEM\Setup" /f /v "CmdLine" /t REG_SZ /d "\sources\setup.exe"
+        }
     } catch {
         Write-Error "An unexpected error occurred: $_"
     } finally {
         Write-Host "Unmounting Registry..."
-        reg unload HKLM\zCOMPONENTS
         reg unload HKLM\zDEFAULT
         reg unload HKLM\zNTUSER
         reg unload HKLM\zSOFTWARE
@@ -495,12 +524,27 @@ public class PowerManagement {
 
         Write-Host "Creating ISO image"
 
+        $adkKitsRoot = Microwin-GetKitsRoot -wow64environment $false
+        $adkKitsRoot_WOW64Environ = Microwin-GetKitsRoot -wow64environment $true
+
+        $expectedADKPath = "$($adkKitsRoot)Assessment and Deployment Kit"
+        $expectedADKPath_WOW64Environ = "$($adkKitsRoot_WOW64Environ)Assessment and Deployment Kit"
+
         # if we downloaded oscdimg from github it will be in the temp directory so use it
         # if it is not in temp it is part of ADK and is in global PATH so just set it to oscdimg.exe
         $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
-        $oscdImgFound = Test-Path $oscdimgPath -PathType Leaf
-        if (!$oscdImgFound) {
-            $oscdimgPath = "oscdimg.exe"
+        $oscdImgFound = Test-Path -Path "$oscdimgPath" -PathType Leaf
+        if ((-not ($oscdImgFound)) -and ((Microwin-TestKitsRootPaths -adkKitsRootPath "$expectedADKPath" -adkKitsRootPath_WOW64Environ "$expectedADKPath_WOW64Environ") -eq $true)) {
+            if ($expectedADKPath -ne "Assessment and Deployment Kit") { $peToolsPath = $expectedADKPath }
+            if (($peToolsPath -eq "") -and ($expectedADKPath_WOW64Environ -ne "Assessment and Deployment Kit")) { $peToolsPath = $expectedADKPath_WOW64Environ }
+
+            Write-Host "Using $peToolsPath as the Preinstallation Environment tools path..."
+            # Paths change depending on platform
+            if ([Environment]::Is64BitOperatingSystem) {
+                $oscdimgPath = "$peToolsPath\Deployment Tools\amd64\Oscdimg\oscdimg.exe"
+            } else {
+                $oscdimgPath = "$peToolsPath\Deployment Tools\x86\Oscdimg\oscdimg.exe"
+            }
         }
 
         Write-Host "[INFO] Using oscdimg.exe from: $oscdimgPath"
