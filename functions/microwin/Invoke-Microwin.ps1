@@ -234,7 +234,10 @@ public class PowerManagement {
         Microwin-RemoveProvisionedPackages -UseCmdlets $true
 
         # Detect Windows 11 24H2 and add dependency to FileExp to prevent Explorer look from going back - thanks @WitherOrNot and @thecatontheceiling
-        if ((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,26100,1))) -eq $true) {
+        # ----- UPDATE UPDATE UPDATE: they fixed this in 10.0.26200.7462. DO NOT DO THIS OTHERWISE IT BREAKS EXPLORER AGAIN BECAUSE THE CHEEKY LITTLE
+        # ----- PoS CHANGED APPRUNTIME.CBS TO APPRUNTIME.CBS.1.6. Thing is, we don't need to patch this in those builds because it no longer breaks
+        # ----- when you don't patch.
+        if (((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,26100,1))) -eq $true) -and ((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,26200,7462))) -eq $false)) {
             try {
                 if (Test-Path "$scratchDir\Windows\SystemApps\MicrosoftWindows.Client.FileExp_cw5n1h2txyewy\appxmanifest.xml" -PathType Leaf) {
                     # Found the culprit. Do the following:
