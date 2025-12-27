@@ -2003,7 +2003,7 @@
     "Description": "This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a021_",
+    "Order": "a022_",
     "InvokeScript": [
       "Invoke-WPFTweakPS7 -action \"PS7\""
     ],
