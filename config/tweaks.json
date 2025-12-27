@@ -1722,7 +1722,7 @@
     "Description": "Removes the Gallery from Explorer and sets This PC as default",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a030_",
+    "Order": "a029_",
     "InvokeScript": [
       "
       Remove-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\"
@@ -2127,7 +2127,7 @@
     "Description": "If enabled then allows your computer vendor to execute a program each time it boots. It enables computer vendors to force install anti-theft software, software drivers, or a software program conveniently. This could also be a security risk.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a027_",
+    "Order": "a025_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager",
