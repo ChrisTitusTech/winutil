@@ -3012,7 +3012,7 @@
   "WPFTweaksDisableExplorerAutoDiscovery": {
     "Content": "Disable Explorer Automatic Folder Discovery",
     "Description": "Windows Explorer automatically tries to guess the type of the folder based on its contents, slowing down the browsing experience.",
-    "category": "z__Advanced Tweaks - CAUTION",
+    "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a005_",
     "InvokeScript": [
