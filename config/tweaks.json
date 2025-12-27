@@ -1644,7 +1644,7 @@
     "Description": "Makes it so you can uninstall edge via settings > installed apps",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a023_",
+    "Order": "a027_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Microsoft Edge",
@@ -2003,7 +2003,7 @@
     "Description": "This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a022_",
+    "Order": "a021_",
     "InvokeScript": [
       "Invoke-WPFTweakPS7 -action \"PS7\""
     ],
@@ -2338,7 +2338,7 @@
     "Description": "To set the IPv4 preference can have latency and security benefits on private networks where IPv6 is not configured.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a024_",
+    "Order": "a027_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
