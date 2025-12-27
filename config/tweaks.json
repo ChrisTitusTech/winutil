@@ -88,10 +88,10 @@
       powercfg.exe /hibernate on
 
       # Set hibernation as the default action
-      powercfg.exe \"/change standby-timeout-ac 60\"
-      powercfg.exe \"/change standby-timeout-dc 60\"
-      powercfg.exe \"/change monitor-timeout-ac 10\"
-      powercfg.exe \"/change monitor-timeout-dc 1\"
+      powercfg.exe change standby-timeout-ac 60
+      powercfg.exe change standby-timeout-dc 60
+      powercfg.exe change monitor-timeout-ac 10
+      powercfg.exe change monitor-timeout-dc 1
       "
     ],
     "UndoScript": [
@@ -100,10 +100,10 @@
       powercfg.exe /hibernate off
 
       # Set standby to default values
-      powercfg.exe \"/change standby-timeout-ac 15\"
-      powercfg.exe \"/change standby-timeout-dc 15\"
-      powercfg.exe \"/change monitor-timeout-ac 15\"
-      powercfg.exe \"/change monitor-timeout-dc 15\"
+      powercfg.exe change standby-timeout-ac 15
+      powercfg.exe change standby-timeout-dc 15
+      powercfg.exe change monitor-timeout-ac 15
+      powercfg.exe change monitor-timeout-dc 15
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/laptophibernation"
