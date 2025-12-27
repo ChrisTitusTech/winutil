@@ -1618,7 +1618,7 @@
   "WPFTweaksDisableEdge": {
     "Content": "Disable Edge",
     "Description": "Prevent msedge.exe from running with explorer policies.",
-    "category": "z__Advanced Tweaks - CAUTION",
+    "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a023_",
     "registry": [
@@ -1642,7 +1642,7 @@
   "WPFTweaksMakeEdgeUninstallable": {
     "Content": "Make Edge Uninstallable via settings",
     "Description": "Makes it so you can uninstall edge via settings > installed apps",
-    "category": "z__Advanced Tweaks - CAUTION",
+    "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a023_",
     "registry": [
@@ -2001,7 +2001,7 @@
   "WPFTweaksPowershell7": {
     "Content": "Change Windows Terminal default: PowerShell 5 -> PowerShell 7",
     "Description": "This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary",
-    "category": "z__Advanced Tweaks - CAUTION",
+    "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a022_",
     "InvokeScript": [
@@ -2125,7 +2125,7 @@
   "WPFTweaksWPBT": {
     "Content": "Disable Windows Platform Binary Table (WPBT)",
     "Description": "If enabled then allows your computer vendor to execute a program each time it boots. It enables computer vendors to force install anti-theft software, software drivers, or a software program conveniently. This could also be a security risk.",
-    "category": "z__Advanced Tweaks - CAUTION",
+    "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a027_",
     "registry": [
@@ -2240,7 +2240,7 @@
   "WPFTweaksRightClickMenu": {
     "Content": "Set Classic Right-Click Menu ",
     "Description": "Great Windows 11 tweak to bring back good context menus when right clicking things in explorer.",
-    "category": "z__Advanced Tweaks - CAUTION",
+    "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a027_",
     "InvokeScript": [
@@ -2336,7 +2336,7 @@
   "WPFTweaksIPv46": {
     "Content": "Prefer IPv4 over IPv6",
     "Description": "To set the IPv4 preference can have latency and security benefits on private networks where IPv6 is not configured.",
-    "category": "z__Advanced Tweaks - CAUTION",
+    "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a024_",
     "registry": [
@@ -3012,7 +3012,7 @@
   "WPFTweaksDisableExplorerAutoDiscovery": {
     "Content": "Disable Explorer Automatic Folder Discovery",
     "Description": "Windows Explorer automatically tries to guess the type of the folder based on its contents, slowing down the browsing experience.",
-    "category": "Essential Tweaks",
+    "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a005_",
     "InvokeScript": [
