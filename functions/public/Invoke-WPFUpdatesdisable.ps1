@@ -34,9 +34,8 @@ function Invoke-WPFUpdatesdisable {
         "uhssvc",
         "WaaSMedicSvc"
 
-    Write-Host "Disabling $services..."
-
     foreach ($Service in Get-Service $Services) {
+        Write-Host "Disabled $Service"
         Set-Service -Name $service -StartupType Disabled
     }
 
