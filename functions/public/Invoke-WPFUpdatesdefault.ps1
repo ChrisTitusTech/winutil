@@ -7,7 +7,7 @@ function Invoke-WPFUpdatesdefault {
     #>
     $ErrorActionPreference = 'SilentlyContinue'
 
-    Write-Host "Restoring Windows Update registry settings..." -ForegroundColor Yellow
+    Write-Host "Restoring Windows Update registry settings..." -ForegroundColor Green
 
     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force
 
@@ -17,11 +17,9 @@ function Invoke-WPFUpdatesdefault {
     New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Force
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 1
 
-    Write-Host "Restoring WaaSMedicSvc settings..." -ForegroundColor Yellow
+    Write-Host "Restoring WaaSMedicSvc settings..." -ForegroundColor Green
     Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" -Name "Start" -Type DWord -Value 3
     Remove-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" -Name "FailureActions"
-
-    Write-Host "Restoring update services..." -ForegroundColor Yellow
 
     Write-Host "Restored BITS to Manual"
     Set-Service -Name BITS -StartupType Manual
@@ -35,14 +33,14 @@ function Invoke-WPFUpdatesdefault {
     Write-Host "Restored WaaSMedicSvc to Manual"
     Set-Service -Name WaaSMedicSvc -StartupType Manual
 
-    Write-Host "Restoring renamed update service dlls..." -ForegroundColor Yellow
+    Write-Host "Restoring renamed update service dlls..." -ForegroundColor Green
 
     $Path = "C:\Windows\System32"
 
     Rename-Item -Path "$Path\WaaSMedicSvc.winutil" -NewName "WaaSMedicSvc.dll"
     Rename-Item -Path "$Path\wuaueng.winutil" -NewName "wuaueng.dll"
 
-    Write-Host "Enabling update related scheduled tasks..." -ForegroundColor Yellow
+    Write-Host "Enabling update related scheduled tasks..." -ForegroundColor Green
 
     $Tasks =
         '\Microsoft\Windows\InstallService\*',
