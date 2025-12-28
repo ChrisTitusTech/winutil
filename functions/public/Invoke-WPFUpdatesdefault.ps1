@@ -5,7 +5,6 @@ function Invoke-WPFUpdatesdefault {
         Resets Windows Update settings to default
 
     #>
-
     $ErrorActionPreference = 'SilentlyContinue'
 
     Write-Host "Restoring Windows Update registry settings..." -ForegroundColor Yellow
