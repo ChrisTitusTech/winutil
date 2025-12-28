@@ -29,11 +29,10 @@ function Invoke-WPFUpdatesdisable {
         "BITS",
         "wuauserv",
         "UsoSvc",
-        "uhssvc",
         "WaaSMedicSvc"
 
     foreach ($Service in Get-Service $Services) {
-        Write-Host "Disabled $Service"
+        Write-Host "Disabled $($service.Name)"
         Set-Service -Name $service -StartupType Disabled
     }
 
