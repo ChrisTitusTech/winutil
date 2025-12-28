@@ -33,9 +33,6 @@ function Invoke-WPFUpdatesdefault {
     Write-Host "Restored UsoSvc to Automatic"
     Set-Service -Name UsoSvc -StartupType Automatic
 
-    Write-Host "Restored uhssvc to Disabled"
-    Set-Service -Name uhssvc -StartupType Disabled
-
     Write-Host "Restored WaaSMedicSvc to Manual"
     Set-Service -Name WaaSMedicSvc -StartupType Manual
 
@@ -57,7 +54,7 @@ function Invoke-WPFUpdatesdefault {
         '\Microsoft\WindowsUpdate\*'
 
     foreach ($Task in $Tasks) {
-        Get-ScheduledTask -TaskPath $Task | Enable-ScheduledTask
+        Get-ScheduledTask -TaskPath $Task | Enable-ScheduledTask -ErrorAction SilentlyContinue
     }
 
     Write-Host "Enabling driver offering through Windows Update..."
