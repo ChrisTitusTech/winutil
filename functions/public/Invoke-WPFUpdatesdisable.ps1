@@ -8,6 +8,7 @@ function Invoke-WPFUpdatesdisable {
         Disabling Windows Update is not recommended. This is only for advanced users who know what they are doing.
 
     #>
+    $ErrorActionPreference = 'SilentlyContinue'
 
     Write-Host "Configuring registry settings..." -ForegroundColor Yellow
     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force
