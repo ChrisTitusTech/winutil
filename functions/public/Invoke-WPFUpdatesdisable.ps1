@@ -9,8 +9,6 @@ function Invoke-WPFUpdatesdisable {
 
     #>
 
-    $ErrorActionPreference = 'SilentlyContinue'
-
     Write-Host "Configuring registry settings..." -ForegroundColor Yellow
     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force
 
@@ -68,7 +66,7 @@ function Invoke-WPFUpdatesdisable {
         '\Microsoft\WindowsUpdate\*'
 
     foreach ($Task in $Tasks) {
-        Get-ScheduledTask -TaskPath $Task | Disable-ScheduledTask
+        Get-ScheduledTask -TaskPath $Task | Disable-ScheduledTask -ErrorAction SilentlyContinue
     }
 
     Write-Host "=================================" -ForegroundColor Green
