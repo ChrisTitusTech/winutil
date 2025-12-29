@@ -50,8 +50,7 @@ function Invoke-WPFUpdatesdefault {
 
     secedit /configure /cfg "$Env:SystemRoot\inf\defltbase.inf" /db defltbase.sdb
 
-    Remove-Item "$path\GroupPolicyUsers" -Recurse -Force
-    Remove-Item "$path\GroupPolicy" -Recurse -Force
+    Remove-Item "C:\Windows\System32\\GroupPolicyUsers","C:\Windows\System32\GroupPolicy" -Recurse -Force
 
     Write-Host "===================================================" -ForegroundColor Green
     Write-Host "---  Windows Local Policies Reset to Default   ---" -ForegroundColor Green
