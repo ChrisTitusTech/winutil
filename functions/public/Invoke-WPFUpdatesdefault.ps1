@@ -53,9 +53,6 @@ function Invoke-WPFUpdatesdefault {
     Remove-Item "$path\GroupPolicyUsers" -Recurse -Force
     Remove-Item "$path\GroupPolicy" -Recurse -Force
 
-    Write-Host "Updating group policy editor"
-    gpupdate.exe /force
-
     Write-Host "===================================================" -ForegroundColor Green
     Write-Host "---  Windows Local Policies Reset to Default   ---" -ForegroundColor Green
     Write-Host "===================================================" -ForegroundColor Green
