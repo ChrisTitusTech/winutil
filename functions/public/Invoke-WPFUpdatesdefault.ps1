@@ -33,13 +33,6 @@ function Invoke-WPFUpdatesdefault {
     Write-Host "Restored WaaSMedicSvc to Manual"
     Set-Service -Name WaaSMedicSvc -StartupType Manual
 
-    Write-Host "Restoring renamed update service dlls..." -ForegroundColor Green
-
-    $Path = "C:\Windows\System32"
-
-    Rename-Item -Path "$Path\WaaSMedicSvc.winutil" -NewName "WaaSMedicSvc.dll"
-    Rename-Item -Path "$Path\wuaueng.winutil" -NewName "wuaueng.dll"
-
     Write-Host "Enabling update related scheduled tasks..." -ForegroundColor Green
 
     $Tasks =
