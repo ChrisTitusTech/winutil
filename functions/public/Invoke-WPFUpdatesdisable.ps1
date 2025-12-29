@@ -24,18 +24,17 @@ function Invoke-WPFUpdatesdisable {
     $failureActions = [byte[]](0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x14,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xc0,0xd4,0x01,0x00,0x00,0x00,0x00,0x00,0xe0,0x93,0x04,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00)
     Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" -Name "FailureActions" -Type Binary -Value $failureActions
 
-    Write-Host "Disabling update services..." -ForegroundColor Yellow
+    Write-Host "Disabled BITS Service"
+    Set-Service -Name BITS -StartupType Disabled
 
-    $Services =
-        "BITS",
-        "wuauserv",
-        "UsoSvc",
-        "WaaSMedicSvc"
-
-    foreach ($Service in Get-Service $Services) {
-        Write-Host "Disabled $($service.Name) Service"
-        Set-Service -Name $service -StartupType Disabled
-    }
+    Write-Host "Disabled wuauserv Service"
+    Set-Service -Name wuauserv -StartupType Disabled
+    
+    Write-Host "Disabled UsoSvc Service"
+    Set-Service -Name UsoSvc -StartupType Disabled
+    
+    Write-Host "Disabled WaaSMedicSvc Service"
+    Set-Service -Name WaaSMedicSvc -StartupType Disabled
 
     Write-Host "Cleaning up downloaded update files..." -ForegroundColor Yellow
 
