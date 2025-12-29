@@ -7,19 +7,10 @@ function Invoke-WPFUpdatesdefault {
     #>
     $ErrorActionPreference = 'SilentlyContinue'
 
-    Write-Host "Restoring Windows Update registry settings..." -ForegroundColor Green
+    Write-Host "Removing Windows Update policy settings..." -ForegroundColor Green
 
-    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force
-
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Type DWord -Value 0
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUOptions" -Type DWord -Value 3
-
-    New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Force
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 1
-
-    Write-Host "Restoring WaaSMedicSvc settings..." -ForegroundColor Green
-    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" -Name "Start" -Type DWord -Value 3
-    Remove-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" -Name "FailureActions"
+    Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Recurse -Force
+    Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization" -Recurse -Force
 
     Write-Host "Restored BITS to Manual"
     Set-Service -Name BITS -StartupType Manual
@@ -75,8 +66,8 @@ function Invoke-WPFUpdatesdefault {
     Remove-Item "$path\GroupPolicyUsers" -Recurse -Force
     Remove-Item "$path\GroupPolicy" -Recurse -Force
 
-    #Using Start-Process because this command takes along time to run
-    Start-Process gpupdate -ArgumentList "/force" -WindowStyle Hidden
+    Write-Host "Updating group policy editor"
+    gpupdate.exe /force
 
     Write-Host "===================================================" -ForegroundColor Green
     Write-Host "---  Windows Local Policies Reset to Default   ---" -ForegroundColor Green
