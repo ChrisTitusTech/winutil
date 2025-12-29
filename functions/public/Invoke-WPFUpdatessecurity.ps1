@@ -13,8 +13,6 @@ function Invoke-WPFUpdatessecurity {
 
     #>
 
-    $ErrorActionPreference = 'SilentlyContinue'
-
     Write-Host "Disabling driver offering through Windows Update..."
 
     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Force
