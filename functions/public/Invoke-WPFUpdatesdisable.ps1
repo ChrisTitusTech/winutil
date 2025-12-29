@@ -37,19 +37,6 @@ function Invoke-WPFUpdatesdisable {
         Set-Service -Name $service -StartupType Disabled
     }
 
-    Write-Host "Renaming critical update service dlls..." -ForegroundColor Yellow
-
-    $Path = "C:\Windows\System32"
-
-    takeown /f "$Path\WaaSMedicSvc.dll"
-    takeown /f "$Path\wuaueng.dll"
-
-    icacls "$Path\WaaSMedicSvc.dll" /grant "Administrators:(F)"
-    icacls "$Path\wuaueng.dll" /grant "Administrators:(F)"
-
-    Rename-Item -Path "$Path\WaaSMedicSvc.dll" -NewName "WaaSMedicSvc.winutil"
-    Rename-Item -Path "$Path\wuaueng.dll" -NewName "wuaueng.winutil"
-
     Write-Host "Cleaning up downloaded update files..." -ForegroundColor Yellow
 
     Remove-Item "C:\Windows\SoftwareDistribution\*" -Recurse -Force
