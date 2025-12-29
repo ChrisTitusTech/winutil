@@ -10,7 +10,7 @@ function Invoke-WPFUpdatesdisable {
     #>
     $ErrorActionPreference = 'SilentlyContinue'
 
-    Write-Host "Configuring registry settings..." -ForegroundColor
+    Write-Host "Configuring registry settings..." -ForegroundColor Yellow
     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force
 
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Type DWord -Value 1
