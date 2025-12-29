@@ -10,7 +10,7 @@ function Invoke-WPFUpdatesdisable {
     #>
     $ErrorActionPreference = 'SilentlyContinue'
 
-    Write-Host "Configuring registry settings..." -ForegroundColor Yellow
+    Write-Host "Configuring registry settings..." -ForegroundColor
     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force
 
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Type DWord -Value 1
@@ -18,11 +18,6 @@ function Invoke-WPFUpdatesdisable {
 
     New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Force
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 0
-
-    # Additional registry settings
-    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" -Name "Start" -Type DWord -Value 4
-    $failureActions = [byte[]](0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x14,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xc0,0xd4,0x01,0x00,0x00,0x00,0x00,0x00,0xe0,0x93,0x04,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00)
-    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" -Name "FailureActions" -Type Binary -Value $failureActions
 
     Write-Host "Disabled BITS Service"
     Set-Service -Name BITS -StartupType Disabled
@@ -35,8 +30,6 @@ function Invoke-WPFUpdatesdisable {
     
     Write-Host "Disabled WaaSMedicSvc Service"
     Set-Service -Name WaaSMedicSvc -StartupType Disabled
-
-    Write-Host "Cleaning up downloaded update files..." -ForegroundColor Yellow
 
     Remove-Item "C:\Windows\SoftwareDistribution\*" -Recurse -Force
     Write-Host "Cleared SoftwareDistribution folder"
