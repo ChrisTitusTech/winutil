@@ -1,4 +1,4 @@
-module github.com/Chris-Titus-Docs/Winutil-docs
+module github.com/ChrisTitusTech/WinUtil
 
 go 1.23.3
 
