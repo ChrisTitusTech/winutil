@@ -2001,7 +2001,7 @@
   "WPFTweaksPowershell7": {
     "Content": "Change Windows Terminal default: PowerShell 5 -> PowerShell 7",
     "Description": "This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary",
-    "category": "Essential Tweaks",
+    "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a022_",
     "InvokeScript": [
