@@ -2110,8 +2110,8 @@
     "InvokeScript": [
       "
       Write-Host \"Remove Copilot\"
-      Get-AppxPackage -AllUsers *Copilot* | Remove-AppxPackage -AllUsers
-      Get-AppxPackage -AllUsers Microsoft.MicrosoftOfficeHub | Remove-AppxPackage -AllUsers
+      Get-AppxPackage *Copilot* | Remove-AppxPackage -AllUsers
+      Get-AppxPackage Microsoft.MicrosoftOfficeHub | Remove-AppxPackage -AllUsers
       "
     ],
     "UndoScript": [
