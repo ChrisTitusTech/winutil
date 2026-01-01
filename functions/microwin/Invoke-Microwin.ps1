@@ -190,7 +190,7 @@ public class PowerManagement {
             reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE"
             reg add "HKLM\zSOFTWARE\Microsoft\Active Setup\Installed Components\CMP_NoFla" /f
             reg add "HKLM\zSOFTWARE\Microsoft\Active Setup\Installed Components\CMP_NoFla" /f /ve /t REG_SZ /d "Stop First Logon Animation Process"
-            reg add "HKLM\zSOFTWARE\Microsoft\Active Setup\Installed Components\CMP_NoFla" /f /v StubPath /t REG_EXPAND_SZ /d '""%WINDIR%\System32\cmd.exe"" /C ""taskkill /f /im firstlogonanim.exe""'
+            reg add "HKLM\zSOFTWARE\Microsoft\Active Setup\Installed Components\CMP_NoFla" /f /v StubPath /t REG_EXPAND_SZ /d '\"%WINDIR%\System32\cmd.exe\" /C \"taskkill /f /im firstlogonanim.exe\"'
             reg unload HKLM\zSOFTWARE
         }
 
