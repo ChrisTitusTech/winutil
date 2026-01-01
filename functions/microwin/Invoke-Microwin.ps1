@@ -430,9 +430,45 @@ public class PowerManagement {
         Write-Host "Cleaning up image..."
         dism /English /image:$scratchDir /Cleanup-Image /StartComponentCleanup /ResetBase
         Write-Host "Cleanup complete."
+        $committed = $false
+        $unmounted = $false
+
+        Write-Host "Saving image..."
+
+        try {
+            Save-WindowsImage -Path "$scratchDir"
+            $committed = $true
+        } catch {
+            do {
+                # we'll prevent stuff inside this loop from throwing exceptions and breaking from the loop.
+                try {
+                    Save-WindowsImage -Path "$scratchDir"
+                    $committed = $true
+                } catch {
+                    Write-Host "Commit operation unsuccessful. Trying again after 3 seconds..."
+                    Start-Sleep -Seconds 3
+                }
+            } until ($committed)
+        }
 
         Write-Host "Unmounting image..."
-        Dismount-WindowsImage -Path "$scratchDir" -Save
+
+        try {
+            # because we've already saved the changes earlier, we can safely discard
+            Dismount-WindowsImage -Discard -Path "$scratchDir"
+            $unmounted = $true
+        } catch {
+            do {
+                # we'll prevent stuff inside this loop from throwing exceptions and breaking from the loop.
+                try {
+                    Dismount-WindowsImage -Discard -Path "$scratchDir"
+                    $unmounted = $true
+                } catch {
+                    Write-Host "Unmount operation unsuccessful. Trying again after 3 seconds..."
+                    Start-Sleep -Seconds 3
+                }
+            } until ($unmounted)
+        }
     }
 
     try {
@@ -518,8 +554,45 @@ public class PowerManagement {
         reg unload HKLM\zSOFTWARE
         reg unload HKLM\zSYSTEM
 
+        $committed = $false
+        $unmounted = $false
+
+        Write-Host "Saving image..."
+
+        try {
+            Save-WindowsImage -Path "$scratchDir"
+            $committed = $true
+        } catch {
+            do {
+                # we'll prevent stuff inside this loop from throwing exceptions and breaking from the loop.
+                try {
+                    Save-WindowsImage -Path "$scratchDir"
+                    $committed = $true
+                } catch {
+                    Write-Host "Commit operation unsuccessful. Trying again after 3 seconds..."
+                    Start-Sleep -Seconds 3
+                }
+            } until ($committed)
+        }
+
         Write-Host "Unmounting image..."
-        Dismount-WindowsImage -Path "$scratchDir" -Save
+
+        try {
+            # because we've already saved the changes earlier, we can safely discard
+            Dismount-WindowsImage -Discard -Path "$scratchDir"
+            $unmounted = $true
+        } catch {
+            do {
+                # we'll prevent stuff inside this loop from throwing exceptions and breaking from the loop.
+                try {
+                    Dismount-WindowsImage -Discard -Path "$scratchDir"
+                    $unmounted = $true
+                } catch {
+                    Write-Host "Unmount operation unsuccessful. Trying again after 3 seconds..."
+                    Start-Sleep -Seconds 3
+                }
+            } until ($unmounted)
+        }
 
         Write-Host "Creating ISO image"
 
