@@ -329,11 +329,6 @@ public class PowerManagement {
         Copy-Item "$env:temp\reportTool.ps1" "$($scratchDir)\MicroWinReportTool.ps1" -force
         Write-Host "Done copy reportTool.ps1"
 
-        Write-Host "Copy link to winutil.ps1 into the ISO"
-        $desktopDir = "$($scratchDir)\Windows\Users\Default\Desktop"
-        New-Item -ItemType Directory -Force -Path "$desktopDir"
-        dism /English /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
-
         Write-Host "Copy checkinstall.cmd into the ISO"
         Microwin-NewCheckInstall
         Copy-Item "$env:temp\checkinstall.cmd" "$($scratchDir)\Windows\checkinstall.cmd" -force
