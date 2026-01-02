@@ -136,21 +136,33 @@ function Invoke-MicrowinGetIso {
         $downloadFromGitHub = $sync.WPFMicrowinDownloadFromGitHub.IsChecked
 
         if (!$downloadFromGitHub) {
+            # Because we now detect with ADK kits roots, the ultimate solution is to just grab the deployment tools themselves.
+            # This is only a couple hundred MB. Any deployment kit from 2012 or later is valid, as OSCDIMG has been at version 2.56
+            # since 2012.
+
             # only show the message to people who did check the box to download from github, if you check the box
             # you consent to downloading it, no need to show extra dialogs
-            [System.Windows.MessageBox]::Show("oscdimg.exe is not found on the system, winutil will now attempt do download and install it using choco. This might take a long time.")
-            # the step below needs choco to download oscdimg
-            # Install Choco if not already present
-            Install-WinUtilChoco
-            $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
-            Write-Host "choco on system: $chocoFound"
-            if (!$chocoFound) {
-                [System.Windows.MessageBox]::Show("choco.exe is not found on the system, you need choco to download oscdimg.exe")
+            if (([System.Windows.MessageBox]::Show("OSCDIMG is not found on the system, winutil will now attempt to download and install the deployment tools. This might take a long time. Do you want to proceed?", "Download ADK", [System.Windows.MessageBoxButton]::YesNo)) -ne "Yes") {
+                Invoke-MicrowinBusyInfo -action "done" -message "ADK download cancelled."
                 return
             }
 
-            Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install windows-adk-oscdimg"
-            $msg = "oscdimg is installed, now close, reopen PowerShell terminal and re-launch winutil.ps1"
+            # ADK 10.1.28000.1 download link is the same; no need to guess it
+            $adkDownloadLink = "https://download.microsoft.com/download/615540bc-be0b-433a-b91b-1f2b0642bb24/adk/adksetup.exe"
+            $adkVersion = "10.1.28000.1"
+            Write-Host "Downloading ADK version $adkVersion ..."
+            Invoke-WebRequest -UseBasicParsing -Uri "$adkDownloadLink" -OutFile "$env:TEMP\adksetup.exe"
+
+            if ((-not ($?)) -or (-not (Test-Path -Path "$env:TEMP\adksetup.exe" -PathType Leaf))) {
+                Invoke-MicrowinBusyInfo -action "warning" -message "ADK could not be downloaded."
+                Write-Host "ADK could not be downloaded."
+                return
+            }
+
+            Write-Host "Installing ADK version $adkVersion -- This may take a few minutes..."
+            Start-Process -FilePath "$env:TEMP\adksetup.exe" -ArgumentList "/features OptionId.DeploymentTools /q /ceip off" -Wait
+
+            $msg = "OSCDIMG is installed, now restart this process."
             Invoke-MicrowinBusyInfo -action "done" -message $msg        # We set it to done because it immediately returns from this function
             [System.Windows.MessageBox]::Show($msg)
             return
