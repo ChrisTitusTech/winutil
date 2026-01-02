@@ -591,6 +591,8 @@ public class PowerManagement {
         }
 
         Write-Host "Creating ISO image"
+        
+        $peToolsPath = ""
 
         $adkKitsRoot = Microwin-GetKitsRoot -wow64environment $false
         $adkKitsRoot_WOW64Environ = Microwin-GetKitsRoot -wow64environment $true
