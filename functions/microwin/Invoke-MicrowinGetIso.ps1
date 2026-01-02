@@ -165,6 +165,7 @@ function Invoke-MicrowinGetIso {
             $msg = "OSCDIMG is installed, now restart this process."
             Invoke-MicrowinBusyInfo -action "done" -message $msg        # We set it to done because it immediately returns from this function
             [System.Windows.MessageBox]::Show($msg)
+            Remove-Item -Path "$env:TEMP\adksetup.exe" -Force -ErrorAction SilentlyContinue
             return
         } else {
             [System.Windows.MessageBox]::Show("oscdimg.exe is not found on the system, winutil will now attempt do download and install it from github. This might take a long time.")
