@@ -5,7 +5,7 @@ function MicroWin-BootableUSB {
         [string]$IsoPath
     )
 
-    $TargetDisk = Get-Disk | Where-Object { $_.BusType -eq 'USB' -and $_.OperationalStatus -eq 'Online' } | 
+    $TargetDisk = Get-Disk | Where-Object { $_.BusType -eq 'USB' -and $_.OperationalStatus -eq 'Online' } |
                     Sort-Object Number |
                     Out-GridView -Title "MicroWin: Select Target USB Drive" -OutputMode Single
 
@@ -22,13 +22,13 @@ function MicroWin-BootableUSB {
     $Response = [System.Windows.MessageBox]::Show($msgText, $msgTitle, $msgButton, $msgIcon)
     if ($Response -ne "Yes") {
         Write-Warning "Operation cancelled by user."
-        return 
-    }   
+        return
+    }
 
     try {
         Write-Host "Cleaning Disk $($TargetDisk.Number)..." -ForegroundColor Yellow
         $TargetDisk | Clear-Disk -RemoveData -Confirm:$false
-        $TargetDisk | Initialize-Disk -PartitionStyle GPT -PassThru -ErrorAction SilentlyContinue | Out-Null 
+        $TargetDisk | Initialize-Disk -PartitionStyle GPT -PassThru -ErrorAction SilentlyContinue | Out-Null
 
         Write-Host "Creating NTFS Partition..." -ForegroundColor Yellow
         $Partition = New-Partition -DiskNumber $TargetDisk.Number -UseMaximumSize -AssignDriveLetter
