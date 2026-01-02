@@ -55,6 +55,7 @@ public class PowerManagement {
     Write-Host "Index chosen: '$index' from $($sync.MicrowinWindowsFlavors.SelectedValue)"
 
     $copyToUSB = $sync.WPFMicrowinCopyToUsb.IsChecked
+    $bootable = $sync.WPFMicrowinBootable.IsChecked
     $injectDrivers = $sync.MicrowinInjectDrivers.IsChecked
     $importDrivers = $sync.MicrowinImportDrivers.IsChecked
 
@@ -626,6 +627,12 @@ public class PowerManagement {
             Write-Host "Copying target ISO to the USB drive"
             Microwin-CopyToUSB("$($SaveDialog.FileName)")
             if ($?) { Write-Host "Done Copying target ISO to USB drive!" } else { Write-Host "ISO copy failed." }
+        }
+
+        if ($bootable) {
+            Write-Host "Making Bootable USB drive"
+            Microwin-BootableUSB("$($SaveDialog.FileName)")
+            if ($?) { Write-Host "Done making bootable USB drive!" } else { Write-Host "Bootable USB creation failed." }
         }
 
         Write-Host " _____                       "
