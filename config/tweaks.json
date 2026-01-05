@@ -424,11 +424,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "MsKeyboardFilter",
-        "StartupType": "Manual",
-        "OriginalType": "Disabled"
-      },
-      {
         "Name": "NaturalAuthentication",
         "StartupType": "Manual",
         "OriginalType": "Manual"
