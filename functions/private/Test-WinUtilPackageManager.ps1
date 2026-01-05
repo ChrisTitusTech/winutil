@@ -29,6 +29,7 @@ function Test-WinUtilPackageManager {
             Write-Host "===========================================" -ForegroundColor Red
             $status = "not-installed"
         }
+    }
 
     if ($choco) {
         if (Get-Command choco -ErrorAction SilentlyContinue) {
