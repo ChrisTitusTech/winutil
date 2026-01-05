@@ -18,7 +18,7 @@ function Test-WinUtilPackageManager {
     )
 
     if ($winget) {
-        if (Get-Command winget -ErrorAction Ignore) {
+        if (Get-Command winget -ErrorAction SilentlyContinue) {
             Write-Host "===========================================" -ForegroundColor Green
             Write-Host "---        Winget is installed          ---" -ForegroundColor Green
             Write-Host "===========================================" -ForegroundColor Green
@@ -31,7 +31,7 @@ function Test-WinUtilPackageManager {
         }
 
     if ($choco) {
-        if (Get-Command choco -ErrorAction Ignore) {
+        if (Get-Command choco -ErrorAction SilentlyContinue) {
             Write-Host "===========================================" -ForegroundColor Green
             Write-Host "---      Chocolatey is installed        ---" -ForegroundColor Green
             Write-Host "===========================================" -ForegroundColor Green
