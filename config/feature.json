@@ -21,6 +21,9 @@
     "feature": [
       "Microsoft-Hyper-V-All"
     ],
+    "InvokeScript": [
+      "bcdedit /set hypervisorschedulertype classic"
+    ],
     "link": "https://winutil.christitus.com/dev/features/features/hyperv"
   },
   "WPFFeatureslegacymedia": {
