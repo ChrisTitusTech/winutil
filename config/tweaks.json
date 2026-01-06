@@ -219,11 +219,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "Browser",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "BthAvctpSvc",
         "StartupType": "Automatic",
         "OriginalType": "Automatic"
