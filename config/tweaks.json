@@ -2596,7 +2596,7 @@
       }
     ]
   },
-  "WPFToggleHideSettingsHome": {
+  "WPFToggleHideSettingsAi": {
     "Content": "Remove Settings Ai Page",
     "Description": "Removes the Ai page in the Windows Settings app.",
     "category": "Customize Preferences",
