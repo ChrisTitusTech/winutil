@@ -2596,6 +2596,24 @@
       }
     ]
   },
+  "WPFToggleHideSettingsHome": {
+    "Content": "Remove Settings Ai Page",
+    "Description": "Removes the Ai page in the Windows Settings app.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a105_",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+        "Name": "SettingsPageVisibility",
+        "Type": "String",
+        "Value": "hide:aicomponents",
+        "OriginalValue": "show:aicomponents",
+        "DefaultState": "false"
+      }
+    ]
+  },
   "WPFToggleSnapWindow": {
     "Content": "Snap Window",
     "Description": "If enabled you can align windows by dragging them. | Relogin Required",
