@@ -3,7 +3,6 @@ function Microwin-NewReportingTool {
     # embedding reporting tool with here string
     $reportingTool = @'
     #requires -version 5.0
-    #requires -runasadministrator
 
     function Get-ComputerInventory {
         <#
@@ -25,12 +24,7 @@ function Microwin-NewReportingTool {
 
         $hinv += "`n`n-- Computer System:`n"
 
-        # Computer System information reported:
-        # - Manufacturer
-        # - Model
-        # - System Family
-        # - System SKU Number
-        # - Hypervisor Present
+        # Computer System information
         $hinv += "`n    - Manufacturer: $($computerSystemInformation.Manufacturer)"
         $hinv += "`n    - Model: $($computerSystemInformation.Model)"
         $hinv += "`n    - System Family: $($computerSystemInformation.SystemFamily)"
@@ -39,13 +33,7 @@ function Microwin-NewReportingTool {
 
         $hinv += "`n`n-- Processor:`n"
 
-        # Processor information reported, for each processor:
-        # - Device ID
-        #     - Name
-        #     - Manufacturer
-        #     - Caption
-        #    - Number of Cores (of which Number of Enabled Cores)
-        #     - Number of Total Logical processors
+        # Processor information reported, for each processor
         $processorInformation | Foreach-Object {
             $hinv += "`nFor device ID $($_.DeviceID):"
             $hinv += "`n    - Name: $($_.Name)"
@@ -57,13 +45,7 @@ function Microwin-NewReportingTool {
 
         $hinv += "`n`n-- Memory information:`n"
 
-        # Memory information reported, for each module:
-        # - Module number
-        #     - Bank Label
-        #     - Tag
-        #     - Manufacturer -- this is the reference provided by manufacturer. For example, HMCG88AGBSA092N returns a SK Hynix module
-        #     - Part Number
-        #     - Clock Speed
+        # Memory information reported, for each module
         $moduleNumber = 0
         $memoryInformation | Foreach-Object {
             $hinv += "`nModule number $($moduleNumber):"
@@ -77,15 +59,7 @@ function Microwin-NewReportingTool {
 
         $hinv += "`n`n-- Available Volumes as of reporting tool run time:`n"
 
-        # Disk Volume information reported, for each volume:
-        # - Drive UniqueID
-        #     - Drive Letter
-        #     - Drive Label
-        #     - Drive Type
-        #     - File System type
-        #     - Health Status
-        #     - Total Size
-        #     - Remaining Size (Size Percentage)
+        # Disk Volume information reported, for each volume
         $volumeInformation | Foreach-Object {
             $hinv += "`nFor volume with UniqueID $($_.UniqueId):"
             $hinv += "`n    - Drive Letter: $($_.DriveLetter)"
@@ -99,12 +73,7 @@ function Microwin-NewReportingTool {
 
         $hinv += "`n`n-- BIOS information:`n"
 
-        # BIOS information:
-        # - Manufacturer
-        # - Name
-        # - Caption
-        # - BIOS version
-        # - Serial Number
+        # BIOS information
         $hinv += "`n    - Manufacturer: $($biosInformation.Manufacturer)"
         $hinv += "`n    - Name: $($biosInformation.Name)"
         $hinv += "`n    - Caption: $($biosInformation.Caption)"
@@ -352,6 +321,13 @@ function Microwin-NewReportingTool {
         } catch {
             Write-Host "ZIP file could not be created..."
         }
+    }
+
+    if (([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator) -eq $false)
+    {
+        Write-Host "You need to run this script as an administrator."
+        Read-Host | Out-Null
+        exit 1
     }
 
     $version = "1.0"
