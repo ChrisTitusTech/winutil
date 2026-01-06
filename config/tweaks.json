@@ -1443,9 +1443,9 @@
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Siuf\\Rules",
         "OriginalValue": "<RemoveEntry>",
-        "Name": "PeriodInNanoSeconds",
-        "Value": "<RemoveEntry>",
-        "Type": "QWord"
+        "Name": "NumberOfSIUFInPeriod",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
