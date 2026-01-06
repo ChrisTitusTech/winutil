@@ -2619,7 +2619,7 @@
     "Description": "If enabled you can align windows by dragging them. | Relogin Required",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a107_",
+    "Order": "a106_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2638,7 +2638,7 @@
     "Description": "If disabled then Snap preview is disabled when maximize button is hovered.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a108_",
+    "Order": "a107_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2667,7 +2667,7 @@
     "Description": "If enabled then you will get suggestions to snap other applications in the left over spaces.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a109_",
+    "Order": "a108_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2696,7 +2696,7 @@
     "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a110_",
+    "Order": "a109_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2731,7 +2731,7 @@
     "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a111_",
+    "Order": "a110_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2750,7 +2750,7 @@
     "Description": "If disabled it removes the toggle for new Outlook, disables the new Outlook migration and makes sure the Outlook Application actually uses the old Outlook.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a114_",
+    "Order": "a112_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2794,7 +2794,7 @@
     "Description": "Disable the Multiplane Overlay which can sometimes cause issues with Graphics Cards.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a112_",
+    "Order": "a111_",
     "Type": "Toggle",
     "registry": [
       {
