@@ -21,12 +21,12 @@ weight: 2
     * Select the programs you wish to uninstall.
     * Click the `Uninstall Selected` button to remove the selected programs.
   {{< /tab >}}
-  
+
   {{< tab >}}
     * Click the `Get Installed` button.
     * This will scan for and select all installed programs in Winutil that WinGet supports.
   {{< /tab >}}
-    
+
   {{< tab >}}
     * Click the `Clear Selection` button.
     * This will unselect all checked programs.
