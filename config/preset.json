@@ -5,7 +5,7 @@
     "WPFTweaksDVR",
     "WPFTweaksLocation",
     "WPFTweaksServices",
-    "WPFTweaksTele",
+    "WPFTweaksTelemetry",
     "WPFTweaksDiskCleanup",
     "WPFTweaksDeleteTempFiles",
     "WPFTweaksEndTaskOnTaskbar",
@@ -15,6 +15,6 @@
   "Minimal": [
     "WPFTweaksConsumerFeatures",
     "WPFTweaksServices",
-    "WPFTweaksTele"
+    "WPFTweaksTelemetry"
   ]
 }
