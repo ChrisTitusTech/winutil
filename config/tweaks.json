@@ -1135,21 +1135,21 @@
         "Value": "1",
         "OriginalValue": "<RemoveEntry>"
       },
-            {
+      {
         "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
         "Name": "BraveWalletDisabled",
         "Type": "DWord",
         "Value": "1",
         "OriginalValue": "<RemoveEntry>"
       },
-            {
+      {
         "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
         "Name": "BraveVPNDisabled",
         "Type": "DWord",
         "Value": "1",
         "OriginalValue": "<RemoveEntry>"
       },
-            {
+      {
         "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
         "Name": "BraveAIChatEnabled",
         "Type": "DWord",
