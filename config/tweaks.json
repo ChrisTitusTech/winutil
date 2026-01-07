@@ -1441,13 +1441,6 @@
         "Type": "DWord"
       },
       {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Siuf\\Rules",
-        "OriginalValue": "<RemoveEntry>",
-        "Name": "NumberOfSIUFInPeriod",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
         "OriginalValue": "<RemoveEntry>",
         "Name": "DoNotShowFeedbackNotifications",
