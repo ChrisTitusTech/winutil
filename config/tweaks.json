@@ -1970,20 +1970,6 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/endtaskontaskbar"
   },
-  "WPFTweaksPowershell7": {
-    "Content": "Change Windows Terminal default: PowerShell 5 -> PowerShell 7",
-    "Description": "This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a022_",
-    "InvokeScript": [
-      "Invoke-WPFTweakPS7 -action \"PS7\""
-    ],
-    "UndoScript": [
-      "Invoke-WPFTweakPS7 -action \"PS5\""
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/powershell7"
-  },
   "WPFTweaksPowershell7Tele": {
     "Content": "Disable Powershell 7 Telemetry",
     "Description": "This will create an Environment Variable called 'POWERSHELL_TELEMETRY_OPTOUT' with a value of '1' which will tell Powershell 7 to not send Telemetry Data.",
