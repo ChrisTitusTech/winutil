@@ -6,7 +6,7 @@
     "WPFTweaksDVR",
     "WPFTweaksLocation",
     "WPFTweaksServices",
-    "WPFTweaksTele",
+    "WPFTweaksTelemetry",
     "WPFTweaksDiskCleanup",
     "WPFTweaksDeleteTempFiles",
     "WPFTweaksEndTaskOnTaskbar",
@@ -17,6 +17,6 @@
     "WPFTweaksConsumerFeatures",
     "WPFTweaksDisableExplorerAutoDiscovery",
     "WPFTweaksServices",
-    "WPFTweaksTele"
+    "WPFTweaksTelemetry"
   ]
 }
