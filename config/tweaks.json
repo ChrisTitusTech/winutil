@@ -2347,10 +2347,10 @@
       }
     ],
     "InvokeScript": [
-      "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
+      "Disable-NetAdapterBinding -Name * -ComponentID ms_tcpip6"
     ],
     "UndoScript": [
-      "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
+      "Enable-NetAdapterBinding -Name * -ComponentID ms_tcpip6"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disableipsix"
   },
