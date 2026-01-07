@@ -454,11 +454,6 @@
         "OriginalType": "Disabled"
       },
       {
-        "Name": "Netlogon",
-        "StartupType": "Automatic",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "Netman",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -832,11 +827,6 @@
         "Name": "Winmgmt",
         "StartupType": "Automatic",
         "OriginalType": "Automatic"
-      },
-      {
-        "Name": "WlanSvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Manual"
       },
       {
         "Name": "WpcMonSvc",
