@@ -221,7 +221,7 @@
       {
         "Name": "BthAvctpSvc",
         "StartupType": "Automatic",
-        "OriginalType": "Automatic"
+        "OriginalType": "Manual"
       },
       {
         "Name": "CDPSvc",
@@ -356,7 +356,7 @@
       {
         "Name": "InventorySvc",
         "StartupType": "Manual",
-        "OriginalType": "Manual"
+        "OriginalType": "Automatic"
       },
       {
         "Name": "IpxlatCfgSvc",
@@ -366,7 +366,7 @@
       {
         "Name": "KeyIso",
         "StartupType": "Automatic",
-        "OriginalType": "Automatic"
+        "OriginalType": "Manual"
       },
       {
         "Name": "KtmRm",
@@ -447,11 +447,6 @@
         "Name": "NetTcpPortSharing",
         "StartupType": "Disabled",
         "OriginalType": "Disabled"
-      },
-      {
-        "Name": "Netlogon",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
       },
       {
         "Name": "Netman",
@@ -671,7 +666,7 @@
       {
         "Name": "TermService",
         "StartupType": "Automatic",
-        "OriginalType": "Automatic"
+        "OriginalType": "Manual"
       },
       {
         "Name": "Themes",
@@ -731,7 +726,7 @@
       {
         "Name": "VaultSvc",
         "StartupType": "Automatic",
-        "OriginalType": "Automatic"
+        "OriginalType": "Manual"
       },
       {
         "Name": "W32Time",
@@ -829,11 +824,6 @@
         "OriginalType": "Automatic"
       },
       {
-        "Name": "WlanSvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
         "Name": "WpcMonSvc",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -876,7 +866,7 @@
       {
         "Name": "camsvc",
         "StartupType": "Manual",
-        "OriginalType": "Manual"
+        "OriginalType": "Automatic"
       },
       {
         "Name": "cloudidsvc",
