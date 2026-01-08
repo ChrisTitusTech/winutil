@@ -24,10 +24,10 @@ function Invoke-WPFUpdatesdisable {
 
     Write-Host "Disabled wuauserv Service"
     Set-Service -Name wuauserv -StartupType Disabled
-    
+
     Write-Host "Disabled UsoSvc Service"
     Set-Service -Name UsoSvc -StartupType Disabled
-    
+
     Write-Host "Disabled WaaSMedicSvc Service"
     Set-Service -Name WaaSMedicSvc -StartupType Disabled
 
