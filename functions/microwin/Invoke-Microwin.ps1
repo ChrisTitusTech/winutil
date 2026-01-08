@@ -322,13 +322,6 @@ public class PowerManagement {
         Copy-Item "$env:temp\FirstStartup.ps1" "$($scratchDir)\Windows\FirstStartup.ps1" -force
         Write-Host "Done copy FirstRun.ps1"
 
-        Write-Host "Create ReportTool"
-        Microwin-NewReportingTool
-        Write-Host "Done create ReportingTool"
-        Write-Host "Copy reportTool.ps1 into the ISO"
-        Copy-Item "$env:temp\reportTool.ps1" "$($scratchDir)\MicroWinReportTool.ps1" -force
-        Write-Host "Done copy reportTool.ps1"
-
         Write-Host "Copy checkinstall.cmd into the ISO"
         Microwin-NewCheckInstall
         Copy-Item "$env:temp\checkinstall.cmd" "$($scratchDir)\Windows\checkinstall.cmd" -force
