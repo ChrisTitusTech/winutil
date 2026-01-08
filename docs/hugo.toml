@@ -1,0 +1,109 @@
+baseURL = "https://winutil.christitus.com/"
+languageCode = "en-us"
+title = "Winutil Documentation"
+enableGitInfo = true
+canonifyURLs = true
+
+[[module.mounts]]
+  source = "assets"
+  target = "assets"
+
+[[module.imports]]
+path = "github.com/imfing/hextra"
+
+[[menu.main]]
+name = "Documentation"
+pageRef = "/dev"
+weight = 1
+
+[[menu.main]]
+name = "User Guides"
+pageRef = "/userguide"
+weight = 2
+
+[[menu.main]]
+name = "Contribution Guides"
+pageRef = "CONTRIBUTING.md"
+weight = 3
+
+[[menu.main]]
+name = "FAQ"
+pageRef = "faq.md"
+weight = 4
+
+[[menu.main]]
+name = "Known Issues"
+pageRef = "KnownIssues.md"
+weight = 4
+
+[[menu.main]]
+name = "Search"
+weight = 5
+
+  [menu.main.params]
+  type = "search"
+
+[[menu.main]]
+name = "GitHub"
+weight = 6
+url = "https://github.com/christitustech/Winutil"
+
+  [menu.main.params]
+  icon = "github"
+
+[params]
+description = "Chris Titus Tech's Windows Utility - Install Programs, Tweaks, Fixes, and Updates"
+displayUpdatedDate = true
+dateFormat = "January 2, 2006"
+
+  [params.navbar]
+  displayTitle = false
+  displayLogo = true
+
+    [params.navbar.logo]
+    path = "navlogo.png"
+    dark = "navlogo.png"
+    link = "/"
+    width = 150
+    height = 50
+
+  [params.theme]
+  default = "system"
+  displayToggle = true
+
+  [params.page]
+  width = "wide"
+
+  [params.footer]
+  enable = true
+  displayCopyright = true
+  displayPoweredBy = true
+  width = "normal"
+
+[params.highlight.copy]
+enable = true
+display = "hover"
+
+[menu]
+
+  [[menu.sidebar]]
+  name = "Links"
+  weight = 1
+    [menu.sidebar.params]
+    type = "separator"
+
+  [[menu.sidebar]]
+  name = "Github Repo ↗"
+  url = "https://github.com/ChrisTitusTech/winutil"
+  weight = 2
+
+  [[menu.sidebar]]
+  name = "Discord Server ↗"
+  url = "https://discord.gg/RUbZUZyByQ"
+  weight = 3
+
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true

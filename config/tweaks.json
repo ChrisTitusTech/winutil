@@ -32,7 +32,7 @@
   },
   "WPFTweaksHiber": {
     "Content": "Disable Hibernation",
-    "Description": "Hibernation is really meant for laptops as it saves what's in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don't be like Bob. Bob likes hibernation.",
+    "Description": "Hibernation is really meant for laptops as it saves what's in memory before turning the pc off. It really should never be used",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a005_",
@@ -88,10 +88,10 @@
       powercfg.exe /hibernate on
 
       # Set hibernation as the default action
-      powercfg.exe \"/change standby-timeout-ac 60\"
-      powercfg.exe \"/change standby-timeout-dc 60\"
-      powercfg.exe \"/change monitor-timeout-ac 10\"
-      powercfg.exe \"/change monitor-timeout-dc 1\"
+      powercfg.exe change standby-timeout-ac 60
+      powercfg.exe change standby-timeout-dc 60
+      powercfg.exe change monitor-timeout-ac 10
+      powercfg.exe change monitor-timeout-dc 1
       "
     ],
     "UndoScript": [
@@ -100,10 +100,10 @@
       powercfg.exe /hibernate off
 
       # Set standby to default values
-      powercfg.exe \"/change standby-timeout-ac 15\"
-      powercfg.exe \"/change standby-timeout-dc 15\"
-      powercfg.exe \"/change monitor-timeout-ac 15\"
-      powercfg.exe \"/change monitor-timeout-dc 15\"
+      powercfg.exe change standby-timeout-ac 15
+      powercfg.exe change standby-timeout-dc 15
+      powercfg.exe change monitor-timeout-ac 15
+      powercfg.exe change monitor-timeout-dc 15
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/laptophibernation"
@@ -215,11 +215,6 @@
       },
       {
         "Name": "BTAGService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "Browser",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -1135,21 +1130,21 @@
         "Value": "1",
         "OriginalValue": "<RemoveEntry>"
       },
-            {
+      {
         "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
         "Name": "BraveWalletDisabled",
         "Type": "DWord",
         "Value": "1",
         "OriginalValue": "<RemoveEntry>"
       },
-            {
+      {
         "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
         "Name": "BraveVPNDisabled",
         "Type": "DWord",
         "Value": "1",
         "OriginalValue": "<RemoveEntry>"
       },
-            {
+      {
         "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
         "Name": "BraveAIChatEnabled",
         "Type": "DWord",
@@ -1290,9 +1285,9 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/consumerfeatures"
   },
-  "WPFTweaksTele": {
+  "WPFTweaksTelemetry": {
     "Content": "Disable Telemetry",
-    "Description": "Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser.",
+    "Description": "Disables Microsoft Telemetry...Duh",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a003_",
@@ -1839,7 +1834,7 @@
   },
   "WPFTweaksDeBloat": {
     "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
-    "Description": "USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!",
+    "Description": "USE WITH CAUTION!!! This will remove ALL Microsoft store apps other than the essentials onces.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a028_",
@@ -1932,46 +1927,23 @@
     "panel": "1",
     "Checked": "False",
     "Order": "a001_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore",
+        "Name": "SystemRestorePointCreationFrequency",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1440"
+      }
+    ],
     "InvokeScript": [
       "
-        # Check if System Restore is enabled for the main drive
-        try {
-            # Try getting restore points to check if System Restore is enabled
-            Enable-ComputerRestore -Drive \"$env:SystemDrive\"
-        } catch {
-            Write-Host \"An error occurred while enabling System Restore: $_\"
-        }
+      if (-not (Get-ComputerRestorePoint)) {
+          Enable-ComputerRestore -Drive $Env:SystemDrive
+      }
 
-        # Check if the SystemRestorePointCreationFrequency value exists
-        $exists = Get-ItemProperty -path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -ErrorAction SilentlyContinue
-        if($null -eq $exists) {
-            write-host 'Changing system to allow multiple restore points per day'
-            Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -Value \"0\" -Type DWord -Force -ErrorAction Stop | Out-Null
-        }
-
-        # Attempt to load the required module for Get-ComputerRestorePoint
-        try {
-            Import-Module Microsoft.PowerShell.Management -ErrorAction Stop
-        } catch {
-            Write-Host \"Failed to load the Microsoft.PowerShell.Management module: $_\"
-            return
-        }
-
-        # Get all the restore points for the current day
-        try {
-            $existingRestorePoints = Get-ComputerRestorePoint | Where-Object { $_.CreationTime.Date -eq (Get-Date).Date }
-        } catch {
-            Write-Host \"Failed to retrieve restore points: $_\"
-            return
-        }
-
-        # Check if there is already a restore point created today
-        if ($existingRestorePoints.Count -eq 0) {
-            $description = \"System Restore Point created by WinUtil\"
-
-            Checkpoint-Computer -Description $description -RestorePointType \"MODIFY_SETTINGS\"
-            Write-Host -ForegroundColor Green \"System Restore Point Created Successfully\"
-        }
+      Checkpoint-Computer -Description \"System Restore Point created by WinUtil\" -RestorePointType MODIFY_SETTINGS
+      Write-Host \"System Restore Point Created Successfully\" -ForegroundColor Green
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/restorepoint"
@@ -1992,20 +1964,6 @@
       }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/endtaskontaskbar"
-  },
-  "WPFTweaksPowershell7": {
-    "Content": "Change Windows Terminal default: PowerShell 5 -> PowerShell 7",
-    "Description": "This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a022_",
-    "InvokeScript": [
-      "Invoke-WPFTweakPS7 -action \"PS7\""
-    ],
-    "UndoScript": [
-      "Invoke-WPFTweakPS7 -action \"PS5\""
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/powershell7"
   },
   "WPFTweaksPowershell7Tele": {
     "Content": "Disable Powershell 7 Telemetry",
@@ -2174,7 +2132,7 @@
       icacls \"C:\\Windows\\Installer\\Razer\" /remove:d Everyone
       "
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/razerblock"
+    "link": ""
   },
   "WPFTweaksDisableNotifications": {
     "Content": "Disable Notification Tray/Calendar",
@@ -2384,10 +2342,10 @@
       }
     ],
     "InvokeScript": [
-      "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
+      "Disable-NetAdapterBinding -Name * -ComponentID ms_tcpip6"
     ],
     "UndoScript": [
-      "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
+      "Enable-NetAdapterBinding -Name * -ComponentID ms_tcpip6"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disableipsix"
   },

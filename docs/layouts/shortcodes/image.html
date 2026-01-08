@@ -1,0 +1,114 @@
+{{/*Retrive Passed Shortcode Parameters*/}}
+{{ $src := .Get "src" }}
+{{ $alt := .Get "alt" }}
+
+{{/*Define sizes*/}}
+{{ $Small := 200 }}
+{{ $Medium := 600 }}
+{{ $Large := 1000 }}
+
+{{/*Define Image variables as global variables to make them easily accessible in this shortcode*/}}
+{{ $DarkImage := "" }} {{ $DarkSmallImage := "" }} {{ $DarkMediumImage := "" }} {{ $DarkLargeImage := "" }}
+{{ $LightImage := "" }} {{ $LightSmallImage := "" }} {{ $LightMediumImage := "" }} {{ $LightLargeImage := "" }}
+{{ $SingleImage := "" }} {{ $SingleSmallImage := "" }} {{ $SingleMediumImage := "" }} {{ $SingleLargeImage := "" }}
+
+{{/*Find images and update the previous Single,Dark,Light Images variables*/}}
+{{ with resources.GetMatch (print $src ".jpg") }} {{ $SingleImage = . }} {{ end }}
+{{ with resources.GetMatch (print $src "-Dark" ".jpg") }} {{ $DarkImage = . }} {{ end }}
+{{ with resources.GetMatch (print $src "-Light" ".jpg") }} {{ $LightImage = . }} {{ end }}
+{{ with resources.GetMatch (print $src ".png") }} {{ $SingleImage = . }} {{ end }}
+{{ with resources.GetMatch (print $src "-Dark" ".png") }} {{ $DarkImage = . }} {{ end }}
+{{ with resources.GetMatch (print $src "-Light" ".png") }} {{ $LightImage = . }} {{ end }}
+
+{{/*Applying Image Processing*/}}
+{{ with $SingleImage }}
+    {{ with .Resize (printf "%dx%d webp q50" .Width .Height) }}
+        {{ $SingleImage = . }}
+    {{ end }}
+{{ end }}
+{{ with $DarkImage }}
+    {{ with .Resize (printf "%dx%d webp q50" .Width .Height) }}
+        {{ $DarkImage = . }}
+    {{ end }}
+{{ end }}
+{{ with $LightImage }}
+    {{ with .Resize (printf "%dx%d webp q50" .Width .Height) }}
+        {{ $LightImage = . }}
+    {{ end }}
+{{ end }}
+
+{{/*Make different sized versions to images if applicable*/}}
+{{ with $SingleImage }}
+    {{ if gt (.Width) ($Small) }}
+        {{ with .Resize (printf "%dx" $Small) }}
+            {{ $SingleSmallImage = . }}
+        {{ end }}
+    {{ end }}
+    {{ if gt (.Width) ($Medium) }}
+        {{ with .Resize (printf "%dx" $Medium) }}
+            {{ $SingleMediumImage = . }}
+        {{ end }}
+    {{ end }}
+    {{ if gt (.Width) ($Large) }}
+        {{ with .Resize (printf "%dx" $Large) }}
+            {{ $SingleLargeImage = . }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+{{ with $DarkImage }}
+    {{ if gt (.Width) ($Small) }}
+        {{ with .Resize (printf "%dx" $Small) }}
+            {{ $DarkSmallImage = . }}
+        {{ end }}
+    {{ end }}
+    {{ if gt (.Width) ($Medium) }}
+        {{ with .Resize (printf "%dx" $Medium) }}
+            {{ $DarkMediumImage = . }}
+        {{ end }}
+    {{ end }}
+    {{ if gt (.Width) ($Large) }}
+        {{ with .Resize (printf "%dx" $Large) }}
+            {{ $DarkLargeImage = . }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+{{ with $LightImage }}
+    {{ if gt (.Width) ($Small) }}
+        {{ with .Resize (printf "%dx" $Small) }}
+            {{ $LightSmallImage = . }}
+        {{ end }}
+    {{ end }}
+    {{ if gt (.Width) ($Medium) }}
+        {{ with .Resize (printf "%dx" $Medium) }}
+            {{ $LightMediumImage = . }}
+        {{ end }}
+    {{ end }}
+    {{ if gt (.Width) ($Large) }}
+        {{ with .Resize (printf "%dx" $Large) }}
+            {{ $LightLargeImage = . }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+
+
+{{ if $SingleImage }}
+<picture>
+    {{ with $SingleSmallImage }}<source media='(max-width: {{ printf "%dpx" $Small}})' srcset='{{ .RelPermalink }}'>{{ end }}
+    {{ with $SingleMediumImage }}<source media='(min-width: {{ printf "%dpx" $Small}}) and (max-width: {{ printf "%dpx" $Medium}})' srcset='{{ .RelPermalink }}'>{{ end }}
+    {{ with $SingleLargeImage }}<source media='(min-width: {{ printf "%dpx" $Medium}}) and (max-width: {{ printf "%dpx" $Large}})' srcset='{{ .RelPermalink }}'>{{ end }}
+    {{ with $SingleImage }}<img loading="lazy" src="{{ .RelPermalink }}" Width="{{ .Width }}" height="{{ .Height }}" {{ with $alt }}alt="{{.}}"{{ else }}alt=""{{ end }}/>{{ end }}
+</picture>
+{{ else }}
+<picture>
+    {{ with $DarkSmallImage }}<source media='(max-width: {{ printf "%dpx" $Small}}) and (prefers-color-scheme: dark)' srcset='{{ .RelPermalink }}'>{{ end }}
+    {{ with $DarkMediumImage }}<source media='(min-width: {{ printf "%dpx" $Small}}) and (max-width: {{ printf "%dpx" $Medium}}) and (prefers-color-scheme: dark)' srcset='{{ .RelPermalink }}'>{{ end }}
+    {{ with $DarkLargeImage }}<source media='(min-width: {{ printf "%dpx" $Medium}}) and (max-width: {{ printf "%dpx" $Large}}) and (prefers-color-scheme: dark)' srcset='{{ .RelPermalink }}'>{{ end }}
+    {{ with $DarkImage }}<source media='(prefers-color-scheme: dark)' srcset='{{ .RelPermalink }}'>{{ end }}
+    {{ with $LightSmallImage }}<source media='(max-width: {{ printf "%dpx" $Small}}) and (prefers-color-scheme: light)' srcset='{{ .RelPermalink }}'>{{ end }}
+    {{ with $LightMediumImage }}<source media='(min-width: {{ printf "%dpx" $Small}}) and (max-width: {{ printf "%dpx" $Medium}}) and (prefers-color-scheme: light)' srcset='{{ .RelPermalink }}'>{{ end }}
+    {{ with $LightLargeImage }}<source media='(min-width: {{ printf "%dpx" $Medium}}) and (max-width: {{ printf "%dpx" $Large}}) and (prefers-color-scheme: light)' srcset='{{ .RelPermalink }}'>{{ end }}
+    {{ with $LightImage }}<source media='(prefers-color-scheme: light)' srcset='{{ .RelPermalink }}'>{{ end }}
+    {{ with $LightImage }}<img loading="lazy" src="{{ .RelPermalink }}" Width="{{ .Width }}" height="{{ .Height }}" {{ with $alt }}alt="{{.}}"{{ else }}alt=""{{ end }}/>
+    {{ else with $DarkImage }}<img loading="lazy" src="{{ .RelPermalink }}" Width="{{ .Width }}" height="{{ .Height }}" {{ with $alt }}alt="{{.}}"{{ else }}alt=""{{ end }}/>{{ end }}
+</picture>
+{{ end }}
