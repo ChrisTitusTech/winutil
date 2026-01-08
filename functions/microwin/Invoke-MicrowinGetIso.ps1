@@ -221,23 +221,6 @@ function Invoke-MicrowinGetIso {
     # there is probably a better way of doing this, I don't have time to figure this out
     $sync.MicrowinIsoDrive.Text = $driveLetter
 
-    $mountedISOPath = (Split-Path -Path "$filePath")
-     if ($sync.MicrowinScratchDirBox.Text.Trim() -eq "Scratch") {
-        $sync.MicrowinScratchDirBox.Text =""
-    }
-
-    $UseISOScratchDir = $sync.WPFMicrowinISOScratchDir.IsChecked
-
-    if ($UseISOScratchDir) {
-        $sync.MicrowinScratchDirBox.Text=$mountedISOPath
-    }
-
-    if( -Not $sync.MicrowinScratchDirBox.Text.EndsWith('\') -And  $sync.MicrowinScratchDirBox.Text.Length -gt 1) {
-
-         $sync.MicrowinScratchDirBox.Text = Join-Path   $sync.MicrowinScratchDirBox.Text.Trim() '\'
-
-    }
-
     # Detect if the folders already exist and remove them
     if (($sync.MicrowinMountDir.Text -ne "") -and (Test-Path -Path $sync.MicrowinMountDir.Text)) {
         try {
@@ -256,13 +239,8 @@ function Invoke-MicrowinGetIso {
     $randomMicrowinScratch = "MicrowinScratch_${timestamp}_${randomNumber}"
     $sync.BusyText.Text=" - Mounting"
     Write-Host "Mounting Iso. Please wait."
-    if ($sync.MicrowinScratchDirBox.Text -eq "") {
-        $mountDir = Join-Path $env:TEMP $randomMicrowin
-        $scratchDir = Join-Path $env:TEMP $randomMicrowinScratch
-    } else {
-        $scratchDir = $sync.MicrowinScratchDirBox.Text+"Scratch"
-        $mountDir = $sync.MicrowinScratchDirBox.Text+"micro"
-    }
+    $mountDir = Join-Path $env:TEMP $randomMicrowin
+    $scratchDir = Join-Path $env:TEMP $randomMicrowinScratch
 
     $sync.MicrowinMountDir.Text = $mountDir
     $sync.MicrowinScratchDir.Text = $scratchDir
