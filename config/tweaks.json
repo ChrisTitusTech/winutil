@@ -1436,13 +1436,6 @@
         "Type": "DWord"
       },
       {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Siuf\\Rules",
-        "OriginalValue": "<RemoveEntry>",
-        "Name": "PeriodInNanoSeconds",
-        "Value": "<RemoveEntry>",
-        "Type": "QWord"
-      },
-      {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
         "OriginalValue": "<RemoveEntry>",
         "Name": "DoNotShowFeedbackNotifications",
