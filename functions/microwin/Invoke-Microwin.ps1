@@ -57,10 +57,6 @@ public class PowerManagement {
     $injectDrivers = $sync.MicrowinInjectDrivers.IsChecked
     $importDrivers = $sync.MicrowinImportDrivers.IsChecked
 
-    $WPBT = $sync.MicroWinWPBT.IsChecked
-    $unsupported = $sync.MicroWinUnsupported.IsChecked
-    $skipFla = $sync.MicroWinNoFLA.IsChecked
-
     $importVirtIO = $sync.MicrowinCopyVirtIO.IsChecked
 
     $mountDir = $sync.MicrowinMountDir.Text
@@ -177,33 +173,17 @@ public class PowerManagement {
             }
         }
 
-        if ($WPBT) {
-            Write-Host "Disabling WPBT Execution"
-            reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM"
-            reg add "HKLM\zSYSTEM\ControlSet001\Control\Session Manager" /v DisableWpbtExecution /t REG_DWORD /d 1 /f
-            reg unload HKLM\zSYSTEM
-        }
+        Write-Host "Disabling WPBT Execution"
+        reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM"
+        reg add "HKLM\zSYSTEM\ControlSet001\Control\Session Manager" /v DisableWpbtExecution /t REG_DWORD /d 1 /f
+        reg unload HKLM\zSYSTEM
 
-        if ($skipFla) {
-            Write-Host "Skipping first logon animation..."
-            reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE"
-            reg add "HKLM\zSOFTWARE\Microsoft\Active Setup\Installed Components\CMP_NoFla" /f
-            reg add "HKLM\zSOFTWARE\Microsoft\Active Setup\Installed Components\CMP_NoFla" /f /ve /t REG_SZ /d "Stop First Logon Animation Process"
-            reg add "HKLM\zSOFTWARE\Microsoft\Active Setup\Installed Components\CMP_NoFla" /f /v StubPath /t REG_EXPAND_SZ /d '\"%WINDIR%\System32\cmd.exe\" /C \"taskkill /f /im firstlogonanim.exe\"'
-            reg unload HKLM\zSOFTWARE
-        }
-
-        if ($unsupported) {
-            Write-Host "Bypassing system requirements (locally)"
-            reg add "HKCU\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
-            reg add "HKCU\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
-            reg add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassCPUCheck" /t REG_DWORD /d 1 /f
-            reg add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassRAMCheck" /t REG_DWORD /d 1 /f
-            reg add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassSecureBootCheck" /t REG_DWORD /d 1 /f
-            reg add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassStorageCheck" /t REG_DWORD /d 1 /f
-            reg add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassTPMCheck" /t REG_DWORD /d 1 /f
-            reg add "HKLM\SYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
-        }
+        Write-Host "Skipping first logon animation..."
+        reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE"
+        reg add "HKLM\zSOFTWARE\Microsoft\Active Setup\Installed Components\CMP_NoFla" /f
+        reg add "HKLM\zSOFTWARE\Microsoft\Active Setup\Installed Components\CMP_NoFla" /f /ve /t REG_SZ /d "Stop First Logon Animation Process"
+        reg add "HKLM\zSOFTWARE\Microsoft\Active Setup\Installed Components\CMP_NoFla" /f /v StubPath /t REG_EXPAND_SZ /d '\"%WINDIR%\System32\cmd.exe\" /C \"taskkill /f /im firstlogonanim.exe\"'
+        reg unload HKLM\zSOFTWARE
 
         # We have to prepare the target system to accept the diagnostics script
         reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE"
@@ -479,20 +459,6 @@ public class PowerManagement {
             return
         }
         Write-Host "Windows image completed. Continuing with boot.wim."
-
-        $esd = $sync.MicroWinESD.IsChecked
-        if ($esd) {
-            Write-Host "Converting install image to ESD."
-            try {
-                Export-WindowsImage -SourceImagePath "$mountDir\sources\install.wim" -SourceIndex $index -DestinationImagePath "$mountDir\sources\install.esd" -CompressionType "Recovery"
-                Remove-Item "$mountDir\sources\install.wim"
-                Write-Host "Converted install image to ESD."
-            } catch {
-                Start-Process -FilePath "$env:SystemRoot\System32\dism.exe" -ArgumentList "/export-image /sourceimagefile:`"$mountDir\sources\install.wim`" /sourceindex:1 /destinationimagefile:`"$mountDir\sources\install.esd`" /compress:recovery" -Wait -NoNewWindow
-                Remove-Item "$mountDir\sources\install.wim"
-                Write-Host "Converted install image to ESD."
-            }
-        }
 
         # Next step boot image
         Write-Host "Mounting boot image $mountDir\sources\boot.wim into $scratchDir"
