@@ -1459,7 +1459,6 @@
                             <CheckBox Name="MicrowinCopyVirtIO" Content="Include VirtIO drivers" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="Copy VirtIO Guest Tools drivers to your ISO file. Check this only if you want to use it on QEMU/Proxmox VE"/>
                             <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                             <CheckBox Name="WPFMicrowinCopyToUsb" Content="Copy to Ventoy" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="Copy to USB disk with a label Ventoy"/>
-                            <CheckBox Name="WPFMicrowinBootable" Content="Make Bootable USB" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="Make the USB drive bootable"/>
                             <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                             <TextBlock Margin="6" Padding="1" TextWrapping="Wrap"><Bold>Custom user settings (leave empty for default user)</Bold></TextBlock>
                             <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">User name (20 characters max.):</TextBlock>
