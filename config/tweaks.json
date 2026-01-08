@@ -1973,7 +1973,7 @@
   "WPFTweaksNVME": {
     "Content": "Enable native NVMe support",
     "Description": "Currently only supported on Windows Server 2025",
-    "category": "Essential Tweaks",
+    "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a007_",
     "registry": [
