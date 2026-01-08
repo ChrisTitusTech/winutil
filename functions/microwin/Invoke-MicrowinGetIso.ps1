@@ -133,52 +133,21 @@ function Invoke-MicrowinGetIso {
     Write-Host "oscdimg.exe on system: $oscdImgFound"
 
     if (-not ($oscdImgFound)) {
-        $downloadFromGitHub = $sync.WPFMicrowinDownloadFromGitHub.IsChecked
-
-        if (!$downloadFromGitHub) {
-            # Because we now detect with ADK kits roots, the ultimate solution is to just grab the deployment tools themselves.
-            # This is only a couple hundred MB. Any deployment kit from 2012 or later is valid, as OSCDIMG has been at version 2.56
-            # since 2012.
-
-            # only show the message to people who did check the box to download from github, if you check the box
-            # you consent to downloading it, no need to show extra dialogs
-            if (([System.Windows.MessageBox]::Show("OSCDIMG is not found on the system, winutil will now attempt to download and install the deployment tools. This might take a long time. Do you want to proceed?", "Download ADK", [System.Windows.MessageBoxButton]::YesNo)) -ne "Yes") {
-                Invoke-MicrowinBusyInfo -action "done" -message "ADK download cancelled."
-                return
-            }
-
-            # ADK 10.1.28000.1 download link is the same; no need to guess it
-            $adkDownloadLink = "https://download.microsoft.com/download/615540bc-be0b-433a-b91b-1f2b0642bb24/adk/adksetup.exe"
-            $adkVersion = "10.1.28000.1"
-            Write-Host "Downloading ADK version $adkVersion ..."
-            Invoke-WebRequest -UseBasicParsing -Uri "$adkDownloadLink" -OutFile "$env:TEMP\adksetup.exe"
-
-            if ((-not ($?)) -or (-not (Test-Path -Path "$env:TEMP\adksetup.exe" -PathType Leaf))) {
-                Invoke-MicrowinBusyInfo -action "warning" -message "ADK could not be downloaded."
-                Write-Host "ADK could not be downloaded."
-                return
-            }
-
-            Write-Host "Installing ADK version $adkVersion -- This may take a few minutes..."
-            Start-Process -FilePath "$env:TEMP\adksetup.exe" -ArgumentList "/features OptionId.DeploymentTools /q /ceip off" -Wait
-
-            $msg = "OSCDIMG is installed, now restart this process."
-            Invoke-MicrowinBusyInfo -action "done" -message $msg        # We set it to done because it immediately returns from this function
-            [System.Windows.MessageBox]::Show($msg)
-            Remove-Item -Path "$env:TEMP\adksetup.exe" -Force -ErrorAction SilentlyContinue
-            return
+        # First we try to grab it from github, if not, run the ADK installer.
+        if ((Microwin-GetOscdimg -oscdimgPath $oscdimgPath) -eq $true) {
+            Write-Host "OSCDIMG download succeeded."
         } else {
-            [System.Windows.MessageBox]::Show("oscdimg.exe is not found on the system, winutil will now attempt do download and install it from github. This might take a long time.")
-            Invoke-MicrowinBusyInfo -action "wip" -message "Downloading oscdimg.exe..." -interactive $false
-            Microwin-GetOscdimg -oscdimgPath $oscdimgPath
-            $oscdImgFound = Test-Path $oscdimgPath -PathType Leaf
-            if (!$oscdImgFound) {
-                $msg = "oscdimg was not downloaded can not proceed"
-                Invoke-MicrowinBusyInfo -action "warning" -message $msg
-                [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
+            Write-Host "OSCDIMG could not be downloaded from GitHub. Downloading deployment tools..."
+            if (-not (Microwin-GetAdkDeploymentTools)) {
+                Invoke-MicrowinBusyInfo -action "warning" -message "Neither OSCDIMG nor ADK could be downloaded."
+                Write-Host "Neither OSCDIMG nor ADK could be downloaded."
                 return
             } else {
-                Write-Host "oscdimg.exe was successfully downloaded from github"
+                $msg = "ADK/OSCDIMG is installed, now restart this process."
+                Invoke-MicrowinBusyInfo -action "done" -message $msg        # We set it to done because it immediately returns from this function
+                [System.Windows.MessageBox]::Show($msg)
+                Remove-Item -Path "$env:TEMP\adksetup.exe" -Force -ErrorAction SilentlyContinue
+                return
             }
         }
     } elseif (Microwin-TestKitsRootPaths -adkKitsRootPath "$expectedADKPath" -adkKitsRootPath_WOW64Environ "$expectedADKPath_WOW64Environ") {
