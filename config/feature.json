@@ -100,13 +100,7 @@
     "Order": "a018_",
     "feature": [],
     "InvokeScript": [
-      "
-      If (!(Test-Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood')) {
-            New-Item -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood' -Force | Out-Null
-      }
-      New-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood' -Name 'Enabled' -Type DWord -Value 1 -Force
-      Start-Process -FilePath cmd.exe -ArgumentList '/c bcdedit /Set {Current} BootMenuPolicy Legacy' -Wait
-      "
+      "bcdedit /set bootmenupolicy legacy"
     ],
     "link": "https://winutil.christitus.com/dev/features/features/enablelegacyrecovery"
   },
@@ -118,13 +112,7 @@
     "Order": "a019_",
     "feature": [],
     "InvokeScript": [
-      "
-      If (!(Test-Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood')) {
-            New-Item -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood' -Force | Out-Null
-      }
-      New-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood' -Name 'Enabled' -Type DWord -Value 0 -Force
-      Start-Process -FilePath cmd.exe -ArgumentList '/c bcdedit /Set {Current} BootMenuPolicy Standard' -Wait
-      "
+    "bcdedit /set bootmenupolicy standard"
     ],
     "link": "https://winutil.christitus.com/dev/features/features/disablelegacyrecovery"
   },
