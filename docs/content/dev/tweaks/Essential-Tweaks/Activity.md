@@ -1,7 +1,5 @@
 # Disable Activity History
 
-This erases recent docs, clipboard, and run history.
-
 ```json
   "WPFTweaksActivity": {
     "Content": "Disable Activity History",
