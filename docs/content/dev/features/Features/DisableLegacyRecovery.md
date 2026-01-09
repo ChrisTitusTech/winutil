@@ -9,6 +9,6 @@
     "Order": "a018_",
     "feature": [],
     "InvokeScript": [
-      "bcdedit /set bootmenupolicy legacy"
+      "bcdedit /set bootmenupolicy standard"
     ],
 ```
