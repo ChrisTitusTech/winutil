@@ -2,6 +2,7 @@ baseURL = "https://winutil.christitus.com/"
 languageCode = "en-us"
 title = "Winutil Documentation"
 enableGitInfo = true
+canonifyURLs = true
 
 [[module.mounts]]
   source = "assets"
