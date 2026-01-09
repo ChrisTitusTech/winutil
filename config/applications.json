@@ -2186,7 +2186,7 @@
     },
     "thorium": {
         "category": "Browsers",
-        "choco": "na",
+        "choco": "thorium",
         "content": "Thorium Browser AVX2",
         "description": "Browser built for speed over vanilla chromium. It is built with AVX2 optimizations and is the fastest browser on the market.",
         "link": "https://thorium.rocks/",
