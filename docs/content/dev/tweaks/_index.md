@@ -58,5 +58,4 @@
 
 ### Performance Plans
 
-- [Add and Activate Ultimate Performance Profile](tweaks/performance-plans/addultperf/)
-- [Remove Ultimate Performance Profile](tweaks/performance-plans/removeultperf/)
+- [Add and Remove Ultimate Performance Profile](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Performance-Plans/Profile.md)
