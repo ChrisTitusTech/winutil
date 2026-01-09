@@ -2,10 +2,6 @@
 
 This erases recent docs, clipboard, and run history.
 
-<!-- BEGIN CUSTOM CONTENT -->
-
-<!-- END CUSTOM CONTENT -->
-
 ```json
   "WPFTweaksActivity": {
     "Content": "Disable Activity History",
@@ -43,13 +39,4 @@ This erases recent docs, clipboard, and run history.
 ## Registry Changes
 Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.
 
-
 You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).
-
-<!-- BEGIN SECOND CUSTOM CONTENT -->
-
-<!-- END SECOND CUSTOM CONTENT -->
-
-
-[View the JSON file](https://github.com/ChrisTitusTech/Winutil/tree/main/config/tweaks.json)
-
