@@ -171,6 +171,8 @@ function Invoke-MicrowinGetIso {
         }
     }
 
+    $oscdImgFound = [bool] (Microwin-TestKitsRootPaths -adkKitsRootPath "$expectedADKPath" -adkKitsRootPath_WOW64Environ "$expectedADKPath_WOW64Environ") -or (Test-Path $oscdimgPath -PathType Leaf)
+
     if (-not ($oscdimgFound)) {
         [System.Windows.MessageBox]::Show("oscdimg.exe is not found on the system. Cannot continue.")
         return
