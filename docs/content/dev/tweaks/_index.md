@@ -37,22 +37,22 @@
 
 ### Customize Preferences
 
-- [Bing Search in Start Menu](tweaks/customize-preferences/bingsearch/)
-- [Center Taskbar Items](tweaks/customize-preferences/taskbaralignment/)
-- [Dark Theme for Windows](tweaks/customize-preferences/darkmode/)
-- [Detailed BSoD](tweaks/customize-preferences/detailedbsod/)
-- [Mouse Acceleration](tweaks/customize-preferences/mouseacceleration/)
-- [NumLock on Startup](tweaks/customize-preferences/numlock/)
-- [Search Button in Taskbar](tweaks/customize-preferences/taskbarsearch/)
-- [Show File Extensions](tweaks/customize-preferences/showext/)
-- [Show Hidden Files](tweaks/customize-preferences/hiddenfiles/)
-- [Snap Assist Flyout](tweaks/customize-preferences/snapflyout/)
-- [Snap Assist Suggestion](tweaks/customize-preferences/snapsuggestion/)
-- [Snap Window](tweaks/customize-preferences/snapwindow/)
-- [Sticky Keys](tweaks/customize-preferences/stickykeys/)
-- [Task View Button in Taskbar](tweaks/customize-preferences/taskview/)
-- [Verbose Messages During Logon](tweaks/customize-preferences/verboselogon/)
-- [Widgets Button in Taskbar](tweaks/customize-preferences/taskbarwidgets/)
+- [Bing Search in Start Menu](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/BingSearch.md)
+- [Center Taskbar Items](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/TaskbarAlignment.md)
+- [Dark Theme for Windows](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/DarkMode.md)
+- [Detailed BSoD](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/DetailedBSoD.md)
+- [Mouse Acceleration](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/MouseAcceleration.md)
+- [NumLock on Startup](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/NumLock.md)
+- [Search Button in Taskbar](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/TaskbarSearch.md)
+- [Show File Extensions](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/ShowExt.md)
+- [Show Hidden Files](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/HiddenFiles.md)
+- [Snap Assist Flyout](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/SnapFlyout.md)
+- [Snap Assist Suggestion](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/SnapSuggestion.md)
+- [Snap Window](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/SnapWindow.md)
+- [Sticky Keys](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/StickyKeys.md)
+- [Task View Button in Taskbar](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/TaskView.md)
+- [Verbose Messages During Logon](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/VerboseLogon.md)
+- [Widgets Button in Taskbar](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/TaskbarWidgets.md)
 
 ### Performance Plans
 
