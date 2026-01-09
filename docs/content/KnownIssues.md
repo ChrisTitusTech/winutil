@@ -3,13 +3,6 @@ title: Known Issues
 toc: true
 ---
 
-## Launch Issues
-
-### Blocked by anti-virus
-Windows Security (formerly Defender) and other anti-virus software are known to block the script. The script gets flagged due to the fact that it requires administrator privileges & makes drastic system changes.
-
-To resolve this, allow/whitelist the script in your anti-virus software settings, or temporarily disable real-time protection. Since the project is open source, you may audit the code if security is a concern.
-
 ### Download not working
 If `https://christitus.com/win` is not working, or you want to download the code from GitHub directly, you can use the direct download link:
 
@@ -21,7 +14,7 @@ If you are seeing errors referencing TLS or security, you may be running an olde
 
 ```
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-iex (New-Object Net.WebClient).DownloadString('https://github.com/ChrisTitusTech/Winutil/releases/latest/download/Winutil.ps1')
+iex https://christitus.com/win | iex
 ```
 
 If it still isn't working and you live in India, it might be due to India blocking GitHub's content domain and preventing downloads. See more on [Times of India](https://timesofindia.indiatimes.com/gadgets-news/github-content-domain-blocked-for-these-indian-users-reports/articleshow/96687992.cms).
