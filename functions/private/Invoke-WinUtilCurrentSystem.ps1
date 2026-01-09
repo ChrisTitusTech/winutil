@@ -64,7 +64,11 @@ Function Invoke-WinUtilCurrentSystem {
                         if(test-path $tweak.Path) {
                             $actualValue = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
                             $expectedValue = $tweak.Value
-                            if ($expectedValue -notlike $actualValue) {
+                            if ($expectedValue -eq "<RemoveEntry>") {
+                              if ($null -ne $actualValue) {
+                                $values += $False
+                              }
+                            } elseif ($expectedValue -notlike $actualValue) {
                                 $values += $False
                             }
                         } else {
