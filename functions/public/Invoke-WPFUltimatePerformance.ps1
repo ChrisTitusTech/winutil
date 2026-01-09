@@ -1,4 +1,4 @@
-function Invoke-WPFUltimatePerformance {
+Function Invoke-WPFUltimatePerformance {
     <#
     .SYNOPSIS
         Enables or disables the Ultimate Performance power plan.
