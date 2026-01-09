@@ -56,7 +56,3 @@ The Performance Plans section allows users to manage the Ultimate Performance Pr
 * Enables and activates the Ultimate Performance Profile to enhance system performance by minimizing latency and increasing efficiency.
 #### Remove Ultimate Performance Profile:
 * Deactivates the Ultimate Performance Profile, changing the system to the Balanced Profile.
-
-### Shortcuts
-
-The utility includes a feature to easily create a desktop shortcut, providing quick access to the script.
