@@ -1,6 +1,3 @@
-# Table of Contents
-
-
 ## Tweaks
 
 ### Essential Tweaks
@@ -21,9 +18,7 @@
 - [Run Disk Cleanup](tweaks/essential-tweaks/diskcleanup/)
 - [Set Hibernation as default (good for laptops)](tweaks/essential-tweaks/laptophibernation/)
 - [Set Services to Manual](tweaks/essential-tweaks/services/)
-### Shortcuts
 
-- [Create Winutil Shortcut](tweaks/shortcuts/shortcut/)
 ### Advanced Tweaks (CAUTION)
 
 - [Adobe Network Block](tweaks/z--advanced-tweaks---caution/blockadobenet/)
@@ -41,6 +36,7 @@
 - [Set Classic Right-Click Menu ](tweaks/z--advanced-tweaks---caution/rightclickmenu/)
 - [Set Display for Performance](tweaks/z--advanced-tweaks---caution/display/)
 - [Set Time to UTC (Dual Boot)](tweaks/z--advanced-tweaks---caution/utc/)
+
 ### Customize Preferences
 
 - [Bing Search in Start Menu](tweaks/customize-preferences/bingsearch/)
@@ -59,6 +55,7 @@
 - [Task View Button in Taskbar](tweaks/customize-preferences/taskview/)
 - [Verbose Messages During Logon](tweaks/customize-preferences/verboselogon/)
 - [Widgets Button in Taskbar](tweaks/customize-preferences/taskbarwidgets/)
+
 ### Performance Plans
 
 - [Add and Activate Ultimate Performance Profile](tweaks/performance-plans/addultperf/)
@@ -74,6 +71,7 @@
 - [Set Up Autologin](features/fixes/autologin/)
 - [System Corruption Scan](features/fixes/dism/)
 - [WinGet Reinstall](features/fixes/winget/)
+
 ### Legacy Windows Panels
 
 - [Control Panel](features/legacy-windows-panels/control/)
@@ -84,6 +82,7 @@
 - [Sound Settings](features/legacy-windows-panels/sound/)
 - [System Properties](features/legacy-windows-panels/system/)
 - [User Accounts](features/legacy-windows-panels/user/)
+
 ### Features
 
 - [All .Net Framework (2,3,4)](features/features/dotnet/)
