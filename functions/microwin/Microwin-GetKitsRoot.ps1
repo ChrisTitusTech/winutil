@@ -33,7 +33,7 @@ function Microwin-GetKitsRoot {
     try {
         $adk10KitsRoot = Get-ItemPropertyValue -Path $regPath -Name "KitsRoot10" -ErrorAction Stop
     } catch {
-        Write-Host "Could not find ADK."
+        Write-Debug "Could not find ADK."
     }
 
     return $adk10KitsRoot
