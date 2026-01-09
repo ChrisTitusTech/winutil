@@ -1,34 +1,5 @@
 # Run Tweaks
 
-Last Updated: 2024-08-07
-
-
-> [!NOTE]
-     The Development Documentation is auto generated for every compilation of Winutil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-
-
-<!-- BEGIN CUSTOM CONTENT -->
-
-<!-- END CUSTOM CONTENT -->
-
-<details>
-<summary>Preview Code</summary>
-
-```json
-{
-  "Content": "Run Tweaks",
-  "category": "z__Advanced Tweaks - CAUTION",
-  "panel": "1",
-  "Order": "a041_",
-  "Type": "Button",
-  "link": "https://christitustech.github.io/Winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/button"
-}
-```
-
-</details>
-
-## Function: Invoke-WPFtweaksbutton
-
 ```powershell
 function Invoke-WPFtweaksbutton {
   <#
@@ -87,14 +58,4 @@ function Invoke-WPFtweaksbutton {
     # [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
   }
 }
-
 ```
-
-
-<!-- BEGIN SECOND CUSTOM CONTENT -->
-
-<!-- END SECOND CUSTOM CONTENT -->
-
-
-[View the JSON file](https://github.com/ChrisTitusTech/Winutil/tree/main/config/tweaks.json)
-
