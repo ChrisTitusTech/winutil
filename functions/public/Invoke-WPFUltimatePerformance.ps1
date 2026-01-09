@@ -26,8 +26,10 @@ Function Invoke-WPFUltimatePerformance {
             # Get current plan (the ultimate plan) and switch to Balanced, then remove Ultimate Performance
             powercfg /setactive 381b4222-f694-41f0-9685-ff5bb260df2e
 
-            foreach ($line in powercfg /list | Select-String 'Ultimate Performance') {
-                powercfg /delete ($line.Line.Split()[3])
+            foreach ($line in powercfg /list) {
+                if ($line -like '*Ultimate Performance*') {
+                    powercfg /delete ($line.Split()[3])
+                }
             }
             
             Write-Host "Removed Ultimate Performance power plan" -ForegroundColor Red
