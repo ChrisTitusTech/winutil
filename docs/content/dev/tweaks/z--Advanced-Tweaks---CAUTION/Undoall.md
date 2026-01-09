@@ -1,34 +1,5 @@
 # Undo Selected Tweaks
 
-Last Updated: 2024-08-07
-
-
-> [!NOTE]
-     The Development Documentation is auto generated for every compilation of Winutil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-
-
-<!-- BEGIN CUSTOM CONTENT -->
-
-<!-- END CUSTOM CONTENT -->
-
-<details>
-<summary>Preview Code</summary>
-
-```json
-{
-  "Content": "Undo Selected Tweaks",
-  "category": "z__Advanced Tweaks - CAUTION",
-  "panel": "1",
-  "Order": "a042_",
-  "Type": "Button",
-  "link": "https://christitustech.github.io/Winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Undoall"
-}
-```
-
-</details>
-
-## Function: Invoke-WPFundoall
-
 ```powershell
 function Invoke-WPFundoall {
     <#
@@ -78,14 +49,4 @@ function Invoke-WPFundoall {
 
     }
 }
-
 ```
-
-
-<!-- BEGIN SECOND CUSTOM CONTENT -->
-
-<!-- END SECOND CUSTOM CONTENT -->
-
-
-[View the JSON file](https://github.com/ChrisTitusTech/Winutil/tree/main/config/tweaks.json)
-
