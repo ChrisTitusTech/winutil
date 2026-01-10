@@ -2085,8 +2085,8 @@
         "choco": "synctrayzor",
         "content": "SyncTrayzor",
         "description": "Windows tray utility / filesystem watcher / launcher for Syncthing",
-        "link": "https://github.com/canton7/SyncTrayzor/",
-        "winget": "SyncTrayzor.SyncTrayzor"
+        "link": "https://github.com/GermanCoding/SyncTrayzor",
+        "winget": "GermanCoding.SyncTrayzor"
     },
     "sqlmanagementstudio": {
         "category": "Microsoft Tools",
