@@ -15,7 +15,7 @@ Function Invoke-WPFUltimatePerformance {
 
     switch ($State) {
         "Enable" {
-            if (-not powercfg /list | Select-String 'Ultimate Performance' {
+            if (-not powercfg /list | Select-String 'Ultimate Performance') {
                 powercfg /setactive (powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 | Select-String 'Power Scheme GUID').Line.Split()[3]
                 Write-Host 'Activated Ultimate Performance power plan' -ForegroundColor Green
             }
