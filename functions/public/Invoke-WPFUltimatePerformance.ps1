@@ -24,6 +24,7 @@ Function Invoke-WPFUltimatePerformance {
                     Write-Host 'Ultimate Performance power plan is already enabled' -ForegroundColor Red
                 }
             }
+        }
         "Disable" {
             powercfg /setactive 381b4222-f694-41f0-9685-ff5bb260df2e
 
@@ -32,7 +33,6 @@ Function Invoke-WPFUltimatePerformance {
                     powercfg /delete ($line.Split()[3])
                 }
             }
-            
             Write-Host "Removed Ultimate Performance power plan" -ForegroundColor Red
         }
     }
