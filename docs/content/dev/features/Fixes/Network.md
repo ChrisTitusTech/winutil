@@ -1,36 +1,6 @@
 # Reset Network
 
-Last Updated: 2024-08-07
-
-
-> [!NOTE]
-     The Development Documentation is auto generated for every compilation of Winutil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-
-
-<!-- BEGIN CUSTOM CONTENT -->
-
-<!-- END CUSTOM CONTENT -->
-
-<details>
-<summary>Preview Code</summary>
-
 ```json
-{
-  "Content": "Reset Network",
-  "category": "Fixes",
-  "Order": "a042_",
-  "panel": "1",
-  "Type": "Button",
-  "ButtonWidth": "300",
-  "link": "https://christitustech.github.io/Winutil/dev/features/Fixes/Network"
-}
-```
-
-</details>
-
-## Function: Invoke-WPFFixesNetwork
-
-```powershell
 function Invoke-WPFFixesNetwork {
     <#
 
@@ -41,12 +11,19 @@ function Invoke-WPFFixesNetwork {
 
     Write-Host "Resetting Network with netsh"
 
+    Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo"
     # Reset WinSock catalog to a clean state
     Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winsock", "reset"
+
+    Set-WinUtilTaskbaritem -state "Normal" -value 0.35 -overlay "logo"
     # Resets WinHTTP proxy setting to DIRECT
     Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winhttp", "reset", "proxy"
+
+    Set-WinUtilTaskbaritem -state "Normal" -value 0.7 -overlay "logo"
     # Removes all user configured IP settings
     Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "int", "ip", "reset"
+
+    Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
 
     Write-Host "Process complete. Please reboot your computer."
 
@@ -60,14 +37,4 @@ function Invoke-WPFFixesNetwork {
     Write-Host "-- Network Configuration has been Reset --"
     Write-Host "=========================================="
 }
-
 ```
-
-
-<!-- BEGIN SECOND CUSTOM CONTENT -->
-
-<!-- END SECOND CUSTOM CONTENT -->
-
-
-[View the JSON file](https://github.com/ChrisTitusTech/Winutil/tree/main/config/feature.json)
-

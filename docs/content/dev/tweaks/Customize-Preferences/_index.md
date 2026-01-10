@@ -1,26 +1,18 @@
----
-weight: 3
----
-
-# Table of Contents
-
-## Tweaks
-
 ### Customize Preferences
 
-- [Bing Search in Start Menu](bingsearch/)
-- [Center Taskbar Items](taskbaralignment/)
-- [Dark Theme for Windows](darkmode/)
-- [Detailed BSoD](detailedbsod/)
-- [Mouse Acceleration](mouseacceleration/)
-- [NumLock on Startup](numlock/)
-- [Search Button in Taskbar](taskbarsearch/)
-- [Show File Extensions](showext/)
-- [Show Hidden Files](hiddenfiles/)
-- [Snap Assist Flyout](snapflyout/)
-- [Snap Assist Suggestion](snapsuggestion/)
-- [Snap Window](snapwindow/)
-- [Sticky Keys](stickykeys/)
-- [Task View Button in Taskbar](taskview/)
-- [Verbose Messages During Logon](verboselogon/)
-- [Widgets Button in Taskbar](taskbarwidgets/)
+- [Bing Search in Start Menu](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/BingSearch.md)
+- [Center Taskbar Items](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/TaskbarAlignment.md)
+- [Dark Theme for Windows](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/DarkMode.md)
+- [Detailed BSoD](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/DetailedBSoD.md)
+- [Mouse Acceleration](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/MouseAcceleration.md)
+- [NumLock on Startup](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/NumLock.md)
+- [Search Button in Taskbar](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/TaskbarSearch.md)
+- [Show File Extensions](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/ShowExt.md)
+- [Show Hidden Files](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/HiddenFiles.md)
+- [Snap Assist Flyout](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/SnapFlyout.md)
+- [Snap Assist Suggestion](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/SnapSuggestion.md)
+- [Snap Window](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/SnapWindow.md)
+- [Sticky Keys](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/StickyKeys.md)
+- [Task View Button in Taskbar](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/TaskView.md)
+- [Verbose Messages During Logon](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/VerboseLogon.md)
+- [Widgets Button in Taskbar](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/TaskbarWidgets.md)
