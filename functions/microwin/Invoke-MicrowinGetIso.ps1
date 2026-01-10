@@ -122,46 +122,60 @@ function Invoke-MicrowinGetIso {
     Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
     Invoke-MicrowinBusyInfo -action "wip" -message "Checking system requirements..." -interactive $false
 
+    $adkKitsRoot = Microwin-GetKitsRoot -wow64environment $false
+    $adkKitsRoot_WOW64Environ = Microwin-GetKitsRoot -wow64environment $true
+
+    $expectedADKPath = "$($adkKitsRoot)Assessment and Deployment Kit"
+    $expectedADKPath_WOW64Environ = "$($adkKitsRoot_WOW64Environ)Assessment and Deployment Kit"
+
     $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
-    $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg.exe) -or (Test-Path $oscdimgPath -PathType Leaf)
+    $oscdImgFound = [bool] (Microwin-TestKitsRootPaths -adkKitsRootPath "$expectedADKPath" -adkKitsRootPath_WOW64Environ "$expectedADKPath_WOW64Environ") -or (Test-Path $oscdimgPath -PathType Leaf)
     Write-Host "oscdimg.exe on system: $oscdImgFound"
 
-    if (!$oscdImgFound) {
-        $downloadFromGitHub = $sync.WPFMicrowinDownloadFromGitHub.IsChecked
-
-        if (!$downloadFromGitHub) {
-            # only show the message to people who did check the box to download from github, if you check the box
-            # you consent to downloading it, no need to show extra dialogs
-            [System.Windows.MessageBox]::Show("oscdimg.exe is not found on the system, winutil will now attempt do download and install it using choco. This might take a long time.")
-            # the step below needs choco to download oscdimg
-            # Install Choco if not already present
-            Install-WinUtilChoco
-            $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
-            Write-Host "choco on system: $chocoFound"
-            if (!$chocoFound) {
-                [System.Windows.MessageBox]::Show("choco.exe is not found on the system, you need choco to download oscdimg.exe")
-                return
-            }
-
-            Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install windows-adk-oscdimg"
-            $msg = "oscdimg is installed, now close, reopen PowerShell terminal and re-launch winutil.ps1"
-            Invoke-MicrowinBusyInfo -action "done" -message $msg        # We set it to done because it immediately returns from this function
-            [System.Windows.MessageBox]::Show($msg)
-            return
+    if (-not ($oscdImgFound)) {
+        # First we try to grab it from github, if not, run the ADK installer.
+        if ((Microwin-GetOscdimg -oscdimgPath $oscdimgPath) -eq $true) {
+            Write-Host "OSCDIMG download succeeded."
         } else {
-            [System.Windows.MessageBox]::Show("oscdimg.exe is not found on the system, winutil will now attempt do download and install it from github. This might take a long time.")
-            Invoke-MicrowinBusyInfo -action "wip" -message "Downloading oscdimg.exe..." -interactive $false
-            Microwin-GetOscdimg -oscdimgPath $oscdimgPath
-            $oscdImgFound = Test-Path $oscdimgPath -PathType Leaf
-            if (!$oscdImgFound) {
-                $msg = "oscdimg was not downloaded can not proceed"
-                Invoke-MicrowinBusyInfo -action "warning" -message $msg
-                [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
+            Write-Host "OSCDIMG could not be downloaded from GitHub. Downloading deployment tools..."
+            if (-not (Microwin-GetAdkDeploymentTools)) {
+                Invoke-MicrowinBusyInfo -action "warning" -message "Neither OSCDIMG nor ADK could be downloaded."
+                Write-Host "Neither OSCDIMG nor ADK could be downloaded."
                 return
             } else {
-                Write-Host "oscdimg.exe was successfully downloaded from github"
+                $msg = "ADK/OSCDIMG is installed, now restart this process."
+                Invoke-MicrowinBusyInfo -action "done" -message $msg        # We set it to done because it immediately returns from this function
+                [System.Windows.MessageBox]::Show($msg)
+                Remove-Item -Path "$env:TEMP\adksetup.exe" -Force -ErrorAction SilentlyContinue
+                return
             }
         }
+    } elseif (Microwin-TestKitsRootPaths -adkKitsRootPath "$expectedADKPath" -adkKitsRootPath_WOW64Environ "$expectedADKPath_WOW64Environ") {
+        # We have to guess where oscdimg is. We'll check both values...
+        $peToolsPath = ""
+
+        if ($expectedADKPath -ne "Assessment and Deployment Kit") { $peToolsPath = $expectedADKPath }
+        if (($peToolsPath -eq "") -and ($expectedADKPath_WOW64Environ -ne "Assessment and Deployment Kit")) { $peToolsPath = $expectedADKPath_WOW64Environ }
+
+        Write-Host "Using $peToolsPath as the Preinstallation Environment tools path..."
+        # Paths change depending on platform
+        if ([Environment]::Is64BitOperatingSystem) {
+            $oscdimgPath = "$peToolsPath\Deployment Tools\amd64\Oscdimg\oscdimg.exe"
+        } else {
+            $oscdimgPath = "$peToolsPath\Deployment Tools\x86\Oscdimg\oscdimg.exe"
+        }
+
+        # If it's a non-existent file, we won't continue.
+        if (-not (Test-Path -Path "$oscdimgPath" -PathType Leaf)) {
+            $oscdimgFound = $false
+        }
+    }
+
+    $oscdImgFound = [bool] (Microwin-TestKitsRootPaths -adkKitsRootPath "$expectedADKPath" -adkKitsRootPath_WOW64Environ "$expectedADKPath_WOW64Environ") -or (Test-Path $oscdimgPath -PathType Leaf)
+
+    if (-not ($oscdimgFound)) {
+        [System.Windows.MessageBox]::Show("oscdimg.exe is not found on the system. Cannot continue.")
+        return
     }
 
     Invoke-MicrowinBusyInfo -action "wip" -message "Checking disk space..." -interactive $false
@@ -209,23 +223,6 @@ function Invoke-MicrowinGetIso {
     # there is probably a better way of doing this, I don't have time to figure this out
     $sync.MicrowinIsoDrive.Text = $driveLetter
 
-    $mountedISOPath = (Split-Path -Path "$filePath")
-     if ($sync.MicrowinScratchDirBox.Text.Trim() -eq "Scratch") {
-        $sync.MicrowinScratchDirBox.Text =""
-    }
-
-    $UseISOScratchDir = $sync.WPFMicrowinISOScratchDir.IsChecked
-
-    if ($UseISOScratchDir) {
-        $sync.MicrowinScratchDirBox.Text=$mountedISOPath
-    }
-
-    if( -Not $sync.MicrowinScratchDirBox.Text.EndsWith('\') -And  $sync.MicrowinScratchDirBox.Text.Length -gt 1) {
-
-         $sync.MicrowinScratchDirBox.Text = Join-Path   $sync.MicrowinScratchDirBox.Text.Trim() '\'
-
-    }
-
     # Detect if the folders already exist and remove them
     if (($sync.MicrowinMountDir.Text -ne "") -and (Test-Path -Path $sync.MicrowinMountDir.Text)) {
         try {
@@ -244,13 +241,8 @@ function Invoke-MicrowinGetIso {
     $randomMicrowinScratch = "MicrowinScratch_${timestamp}_${randomNumber}"
     $sync.BusyText.Text=" - Mounting"
     Write-Host "Mounting Iso. Please wait."
-    if ($sync.MicrowinScratchDirBox.Text -eq "") {
-        $mountDir = Join-Path $env:TEMP $randomMicrowin
-        $scratchDir = Join-Path $env:TEMP $randomMicrowinScratch
-    } else {
-        $scratchDir = $sync.MicrowinScratchDirBox.Text+"Scratch"
-        $mountDir = $sync.MicrowinScratchDirBox.Text+"micro"
-    }
+    $mountDir = Join-Path $env:TEMP $randomMicrowin
+    $scratchDir = Join-Path $env:TEMP $randomMicrowinScratch
 
     $sync.MicrowinMountDir.Text = $mountDir
     $sync.MicrowinScratchDir.Text = $scratchDir

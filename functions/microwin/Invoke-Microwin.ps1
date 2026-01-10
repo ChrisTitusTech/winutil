@@ -54,13 +54,8 @@ public class PowerManagement {
     $index = $sync.MicrowinWindowsFlavors.SelectedValue.Split(":")[0].Trim()
     Write-Host "Index chosen: '$index' from $($sync.MicrowinWindowsFlavors.SelectedValue)"
 
-    $copyToUSB = $sync.WPFMicrowinCopyToUsb.IsChecked
     $injectDrivers = $sync.MicrowinInjectDrivers.IsChecked
     $importDrivers = $sync.MicrowinImportDrivers.IsChecked
-
-    $WPBT = $sync.MicroWinWPBT.IsChecked
-    $unsupported = $sync.MicroWinUnsupported.IsChecked
-    $skipFla = $sync.MicroWinNoFLA.IsChecked
 
     $importVirtIO = $sync.MicrowinCopyVirtIO.IsChecked
 
@@ -90,8 +85,11 @@ public class PowerManagement {
         }
     }
 
-    $imgVersion = (Get-WindowsImage -ImagePath $mountDir\sources\install.wim -Index $index).Version
+    $imgVersion = (Get-WindowsImage -ImagePath "$mountDir\sources\install.wim" -Index $index).Version
+    # Windows Setup is the second index in the boot image.
+    $bootVersion = (Get-WindowsImage -ImagePath "$mountDir\sources\boot.wim" -Index 2).Version
     Write-Host "The Windows Image Build Version is: $imgVersion"
+    Write-Host "The WinPE boot image Build Version is: $bootVersion"
 
     # Detect image version to avoid performing MicroWin processing on Windows 8 and earlier
     if ((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,10240,0))) -eq $false) {
@@ -175,33 +173,31 @@ public class PowerManagement {
             }
         }
 
-        if ($WPBT) {
-            Write-Host "Disabling WPBT Execution"
-            reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM"
-            reg add "HKLM\zSYSTEM\ControlSet001\Control\Session Manager" /v DisableWpbtExecution /t REG_DWORD /d 1 /f
-            reg unload HKLM\zSYSTEM
-        }
+        Write-Host "Disabling WPBT Execution"
+        reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM"
+        reg add "HKLM\zSYSTEM\ControlSet001\Control\Session Manager" /v DisableWpbtExecution /t REG_DWORD /d 1 /f
+        reg unload HKLM\zSYSTEM
 
-        if ($skipFla) {
-            Write-Host "Skipping first logon animation..."
-            reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE"
-            reg add "HKLM\zSOFTWARE\Microsoft\Active Setup\Installed Components\CMP_NoFla" /f
-            reg add "HKLM\zSOFTWARE\Microsoft\Active Setup\Installed Components\CMP_NoFla" /ve /t REG_SZ /d "Stop First Logon Animation Process" /f
-            reg add "HKLM\zSOFTWARE\Microsoft\Active Setup\Installed Components\CMP_NoFla" /v StubPath /t REG_EXPAND_SZ /d '""%WINDIR%\System32\cmd.exe"" /C ""taskkill /f /im firstlogonanim.exe""' /f
-            reg unload HKLM\zSOFTWARE
-        }
+        Write-Host "Skipping first logon animation..."
+        reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE"
+        reg add "HKLM\zSOFTWARE\Microsoft\Active Setup\Installed Components\CMP_NoFla" /f
+        reg add "HKLM\zSOFTWARE\Microsoft\Active Setup\Installed Components\CMP_NoFla" /f /ve /t REG_SZ /d "Stop First Logon Animation Process"
+        reg add "HKLM\zSOFTWARE\Microsoft\Active Setup\Installed Components\CMP_NoFla" /f /v StubPath /t REG_EXPAND_SZ /d '\"%WINDIR%\System32\cmd.exe\" /C \"taskkill /f /im firstlogonanim.exe\"'
+        reg unload HKLM\zSOFTWARE
 
-        if ($unsupported) {
-            Write-Host "Bypassing system requirements (locally)"
-            reg add "HKCU\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
-            reg add "HKCU\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
-            reg add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassCPUCheck" /t REG_DWORD /d 1 /f
-            reg add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassRAMCheck" /t REG_DWORD /d 1 /f
-            reg add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassSecureBootCheck" /t REG_DWORD /d 1 /f
-            reg add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassStorageCheck" /t REG_DWORD /d 1 /f
-            reg add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassTPMCheck" /t REG_DWORD /d 1 /f
-            reg add "HKLM\SYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
-        }
+        # We have to prepare the target system to accept the diagnostics script
+        reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE"
+        reg add "HKLM\zSOFTWARE\WinUtil" /f
+        reg add "HKLM\zSOFTWARE\WinUtil" /f /v "ToolboxVersion" /t REG_SZ /d "$($sync.version)"
+        reg add "HKLM\zSOFTWARE\WinUtil" /f /v "MicroWinBuildDate" /t REG_SZ /d "$((Get-Date).ToString('yyMMdd-HHmm'))"
+
+        # REAL software developers set execution policies to unrestricted but, because we're targeting
+        # mainstream population, we have to lower the level of "riskiness" -- set remotesigned; at least that
+        # lets us run PWSH scripts that WE create. Execution policies don't really make sense anyway if common sense
+        # is lacking.
+        reg add "HKLM\zSOFTWARE\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell" /v "ExecutionPolicy" /t REG_SZ /d "RemoteSigned" /f
+
+        reg unload HKLM\zSOFTWARE
 
         if ($importVirtIO) {
             Write-Host "Copying VirtIO drivers..."
@@ -217,7 +213,10 @@ public class PowerManagement {
         Microwin-RemoveProvisionedPackages -UseCmdlets $true
 
         # Detect Windows 11 24H2 and add dependency to FileExp to prevent Explorer look from going back - thanks @WitherOrNot and @thecatontheceiling
-        if ((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,26100,1))) -eq $true) {
+        # ----- UPDATE UPDATE UPDATE: they fixed this in 10.0.26100.7019. DO NOT DO THIS OTHERWISE IT BREAKS EXPLORER AGAIN BECAUSE THE CHEEKY LITTLE
+        # ----- PoS CHANGED APPRUNTIME.CBS TO APPRUNTIME.CBS.1.6. Thing is, we don't need to patch this in those builds because it no longer breaks
+        # ----- when you don't patch.
+        if (((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,26100,1))) -eq $true) -and ((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,26100,7019))) -eq $false)) {
             try {
                 if (Test-Path "$scratchDir\Windows\SystemApps\MicrosoftWindows.Client.FileExp_cw5n1h2txyewy\appxmanifest.xml" -PathType Leaf) {
                     # Found the culprit. Do the following:
@@ -302,11 +301,6 @@ public class PowerManagement {
         Copy-Item "$env:temp\FirstStartup.ps1" "$($scratchDir)\Windows\FirstStartup.ps1" -force
         Write-Host "Done copy FirstRun.ps1"
 
-        Write-Host "Copy link to winutil.ps1 into the ISO"
-        $desktopDir = "$($scratchDir)\Windows\Users\Default\Desktop"
-        New-Item -ItemType Directory -Force -Path "$desktopDir"
-        dism /English /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
-
         Write-Host "Copy checkinstall.cmd into the ISO"
         Microwin-NewCheckInstall
         Copy-Item "$env:temp\checkinstall.cmd" "$($scratchDir)\Windows\checkinstall.cmd" -force
@@ -316,7 +310,6 @@ public class PowerManagement {
         New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\OOBE\BYPASSNRO"
 
         Write-Host "Loading registry"
-        reg load HKLM\zCOMPONENTS "$($scratchDir)\Windows\System32\config\COMPONENTS"
         reg load HKLM\zDEFAULT "$($scratchDir)\Windows\System32\config\default"
         reg load HKLM\zNTUSER "$($scratchDir)\Users\Default\ntuser.dat"
         reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE"
@@ -375,9 +368,8 @@ public class PowerManagement {
         Write-Host "Disabling Reserved Storage"
         reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager" /v "ShippedWithReserves" /t REG_DWORD /d 0 /f
 
-        Write-Host "Changing theme to dark. This only works on Activated Windows"
-        reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "AppsUseLightTheme" /t REG_DWORD /d 0 /f
-        reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "SystemUsesLightTheme" /t REG_DWORD /d 0 /f
+        Write-Host "Showing file extensions..."
+        reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "HideFileExt" /t REG_DWORD /d 0 /f
 
         if ((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,21996,1))) -eq $false) {
             # We're dealing with Windows 10. Configure sane desktop settings. NOTE: even though stuff to disable News and Interests is there,
@@ -397,7 +389,6 @@ public class PowerManagement {
         Write-Error "An unexpected error occurred: $_"
     } finally {
         Write-Host "Unmounting Registry..."
-        reg unload HKLM\zCOMPONENTS
         reg unload HKLM\zDEFAULT
         reg unload HKLM\zNTUSER
         reg unload HKLM\zSOFTWARE
@@ -406,9 +397,45 @@ public class PowerManagement {
         Write-Host "Cleaning up image..."
         dism /English /image:$scratchDir /Cleanup-Image /StartComponentCleanup /ResetBase
         Write-Host "Cleanup complete."
+        $committed = $false
+        $unmounted = $false
+
+        Write-Host "Saving image..."
+
+        try {
+            Save-WindowsImage -Path "$scratchDir"
+            $committed = $true
+        } catch {
+            do {
+                # we'll prevent stuff inside this loop from throwing exceptions and breaking from the loop.
+                try {
+                    Save-WindowsImage -Path "$scratchDir"
+                    $committed = $true
+                } catch {
+                    Write-Host "Commit operation unsuccessful. Trying again after 3 seconds..."
+                    Start-Sleep -Seconds 3
+                }
+            } until ($committed)
+        }
 
         Write-Host "Unmounting image..."
-        Dismount-WindowsImage -Path "$scratchDir" -Save
+
+        try {
+            # because we've already saved the changes earlier, we can safely discard
+            Dismount-WindowsImage -Discard -Path "$scratchDir"
+            $unmounted = $true
+        } catch {
+            do {
+                # we'll prevent stuff inside this loop from throwing exceptions and breaking from the loop.
+                try {
+                    Dismount-WindowsImage -Discard -Path "$scratchDir"
+                    $unmounted = $true
+                } catch {
+                    Write-Host "Unmount operation unsuccessful. Trying again after 3 seconds..."
+                    Start-Sleep -Seconds 3
+                }
+            } until ($unmounted)
+        }
     }
 
     try {
@@ -433,20 +460,6 @@ public class PowerManagement {
         }
         Write-Host "Windows image completed. Continuing with boot.wim."
 
-        $esd = $sync.MicroWinESD.IsChecked
-        if ($esd) {
-            Write-Host "Converting install image to ESD."
-            try {
-                Export-WindowsImage -SourceImagePath "$mountDir\sources\install.wim" -SourceIndex $index -DestinationImagePath "$mountDir\sources\install.esd" -CompressionType "Recovery"
-                Remove-Item "$mountDir\sources\install.wim"
-                Write-Host "Converted install image to ESD."
-            } catch {
-                Start-Process -FilePath "$env:SystemRoot\System32\dism.exe" -ArgumentList "/export-image /sourceimagefile:`"$mountDir\sources\install.wim`" /sourceindex:1 /destinationimagefile:`"$mountDir\sources\install.esd`" /compress:recovery" -Wait -NoNewWindow
-                Remove-Item "$mountDir\sources\install.wim"
-                Write-Host "Converted install image to ESD."
-            }
-        }
-
         # Next step boot image
         Write-Host "Mounting boot image $mountDir\sources\boot.wim into $scratchDir"
         Mount-WindowsImage -ImagePath "$mountDir\sources\boot.wim" -Index 2 -Path "$scratchDir"
@@ -462,7 +475,6 @@ public class PowerManagement {
         }
 
         Write-Host "Loading registry..."
-        reg load HKLM\zCOMPONENTS "$($scratchDir)\Windows\System32\config\COMPONENTS" >$null
         reg load HKLM\zDEFAULT "$($scratchDir)\Windows\System32\config\default" >$null
         reg load HKLM\zNTUSER "$($scratchDir)\Users\Default\ntuser.dat" >$null
         reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE" >$null
@@ -480,27 +492,86 @@ public class PowerManagement {
         reg add "HKLM\zSYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
         # Fix Computer Restarted Unexpectedly Error on New Bare Metal Install
         reg add "HKLM\zSYSTEM\Setup\Status\ChildCompletion" /v "setup.exe" /t REG_DWORD /d 3 /f
+
+        # Force old Setup on 24H2+ WinPE images due to personal preference; it's simply faster and
+        # more reliable than MoSetup. I simply can't stand that new setup system.
+        if ((Microwin-TestCompatibleImage $bootVersion $([System.Version]::new(10,0,26040,0))) -and (Test-Path -Path "$scratchDir\sources\setup.exe" -PathType Leaf)) {
+            reg add "HKLM\zSYSTEM\Setup" /f /v "CmdLine" /t REG_SZ /d "\sources\setup.exe"
+        }
     } catch {
         Write-Error "An unexpected error occurred: $_"
     } finally {
         Write-Host "Unmounting Registry..."
-        reg unload HKLM\zCOMPONENTS
         reg unload HKLM\zDEFAULT
         reg unload HKLM\zNTUSER
         reg unload HKLM\zSOFTWARE
         reg unload HKLM\zSYSTEM
 
+        $committed = $false
+        $unmounted = $false
+
+        Write-Host "Saving image..."
+
+        try {
+            Save-WindowsImage -Path "$scratchDir"
+            $committed = $true
+        } catch {
+            do {
+                # we'll prevent stuff inside this loop from throwing exceptions and breaking from the loop.
+                try {
+                    Save-WindowsImage -Path "$scratchDir"
+                    $committed = $true
+                } catch {
+                    Write-Host "Commit operation unsuccessful. Trying again after 3 seconds..."
+                    Start-Sleep -Seconds 3
+                }
+            } until ($committed)
+        }
+
         Write-Host "Unmounting image..."
-        Dismount-WindowsImage -Path "$scratchDir" -Save
+
+        try {
+            # because we've already saved the changes earlier, we can safely discard
+            Dismount-WindowsImage -Discard -Path "$scratchDir"
+            $unmounted = $true
+        } catch {
+            do {
+                # we'll prevent stuff inside this loop from throwing exceptions and breaking from the loop.
+                try {
+                    Dismount-WindowsImage -Discard -Path "$scratchDir"
+                    $unmounted = $true
+                } catch {
+                    Write-Host "Unmount operation unsuccessful. Trying again after 3 seconds..."
+                    Start-Sleep -Seconds 3
+                }
+            } until ($unmounted)
+        }
 
         Write-Host "Creating ISO image"
+
+        $peToolsPath = ""
+
+        $adkKitsRoot = Microwin-GetKitsRoot -wow64environment $false
+        $adkKitsRoot_WOW64Environ = Microwin-GetKitsRoot -wow64environment $true
+
+        $expectedADKPath = "$($adkKitsRoot)Assessment and Deployment Kit"
+        $expectedADKPath_WOW64Environ = "$($adkKitsRoot_WOW64Environ)Assessment and Deployment Kit"
 
         # if we downloaded oscdimg from github it will be in the temp directory so use it
         # if it is not in temp it is part of ADK and is in global PATH so just set it to oscdimg.exe
         $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
-        $oscdImgFound = Test-Path $oscdimgPath -PathType Leaf
-        if (!$oscdImgFound) {
-            $oscdimgPath = "oscdimg.exe"
+        $oscdImgFound = Test-Path -Path "$oscdimgPath" -PathType Leaf
+        if ((-not ($oscdImgFound)) -and ((Microwin-TestKitsRootPaths -adkKitsRootPath "$expectedADKPath" -adkKitsRootPath_WOW64Environ "$expectedADKPath_WOW64Environ") -eq $true)) {
+            if ($expectedADKPath -ne "Assessment and Deployment Kit") { $peToolsPath = $expectedADKPath }
+            if (($peToolsPath -eq "") -and ($expectedADKPath_WOW64Environ -ne "Assessment and Deployment Kit")) { $peToolsPath = $expectedADKPath_WOW64Environ }
+
+            Write-Host "Using $peToolsPath as the Preinstallation Environment tools path..."
+            # Paths change depending on platform
+            if ([Environment]::Is64BitOperatingSystem) {
+                $oscdimgPath = "$peToolsPath\Deployment Tools\amd64\Oscdimg\oscdimg.exe"
+            } else {
+                $oscdimgPath = "$peToolsPath\Deployment Tools\x86\Oscdimg\oscdimg.exe"
+            }
         }
 
         Write-Host "[INFO] Using oscdimg.exe from: $oscdimgPath"
@@ -510,12 +581,6 @@ public class PowerManagement {
         $LASTEXITCODE = $oscdimgProc.ExitCode
 
         Write-Host "OSCDIMG Error Level : $($oscdimgProc.ExitCode)"
-
-        if ($copyToUSB) {
-            Write-Host "Copying target ISO to the USB drive"
-            Microwin-CopyToUSB("$($SaveDialog.FileName)")
-            if ($?) { Write-Host "Done Copying target ISO to USB drive!" } else { Write-Host "ISO copy failed." }
-        }
 
         Write-Host " _____                       "
         Write-Host "(____ \                      "

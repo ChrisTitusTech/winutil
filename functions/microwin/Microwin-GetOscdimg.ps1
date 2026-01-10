@@ -15,6 +15,10 @@ function Microwin-GetOscdimg {
     $oscdimgPath = "$env:TEMP\oscdimg.exe"
     $downloadUrl = "https://github.com/ChrisTitusTech/winutil/raw/main/releases/oscdimg.exe"
     Invoke-RestMethod -Uri $downloadUrl -OutFile $oscdimgPath
+    if (-not (Test-Path "$oscdimgPath" -PathType Leaf)) {
+        Write-Host "OSCDIMG could not be downloaded."
+        return $false
+    }
     $hashResult = Get-FileHash -Path $oscdimgPath -Algorithm SHA256
     $sha256Hash = $hashResult.Hash
 
@@ -23,7 +27,9 @@ function Microwin-GetOscdimg {
     $expectedHash = "AB9E161049D293B544961BFDF2D61244ADE79376D6423DF4F60BF9B147D3C78D"  # Replace with the actual expected hash
     if ($sha256Hash -eq $expectedHash) {
         Write-Host "Hashes match. File is verified."
+        return $true
     } else {
         Write-Host "Hashes do not match. File may be corrupted or tampered with."
+        return $false
     }
 }
