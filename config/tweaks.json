@@ -32,7 +32,7 @@
   },
   "WPFTweaksHiber": {
     "Content": "Disable Hibernation",
-    "Description": "Hibernation is really meant for laptops as it saves what's in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don't be like Bob. Bob likes hibernation.",
+    "Description": "Hibernation is really meant for laptops as it saves what's in memory before turning the pc off. It really should never be used",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a005_",
@@ -65,7 +65,7 @@
     "Description": "Most modern laptops have connected standby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a027_",
+    "Order": "a030_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\238C9FA8-0AAD-41ED-83F4-97BE242C8F20\\7bc4a2f9-d8fc-4469-b07b-33eb785aaca0",
@@ -88,10 +88,10 @@
       powercfg.exe /hibernate on
 
       # Set hibernation as the default action
-      powercfg.exe \"/change standby-timeout-ac 60\"
-      powercfg.exe \"/change standby-timeout-dc 60\"
-      powercfg.exe \"/change monitor-timeout-ac 10\"
-      powercfg.exe \"/change monitor-timeout-dc 1\"
+      powercfg.exe change standby-timeout-ac 60
+      powercfg.exe change standby-timeout-dc 60
+      powercfg.exe change monitor-timeout-ac 10
+      powercfg.exe change monitor-timeout-dc 1
       "
     ],
     "UndoScript": [
@@ -100,10 +100,10 @@
       powercfg.exe /hibernate off
 
       # Set standby to default values
-      powercfg.exe \"/change standby-timeout-ac 15\"
-      powercfg.exe \"/change standby-timeout-dc 15\"
-      powercfg.exe \"/change monitor-timeout-ac 15\"
-      powercfg.exe \"/change monitor-timeout-dc 15\"
+      powercfg.exe change standby-timeout-ac 15
+      powercfg.exe change standby-timeout-dc 15
+      powercfg.exe change monitor-timeout-ac 15
+      powercfg.exe change monitor-timeout-dc 15
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/laptophibernation"
@@ -219,14 +219,9 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "Browser",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "BthAvctpSvc",
         "StartupType": "Automatic",
-        "OriginalType": "Automatic"
+        "OriginalType": "Manual"
       },
       {
         "Name": "CDPSvc",
@@ -361,7 +356,7 @@
       {
         "Name": "InventorySvc",
         "StartupType": "Manual",
-        "OriginalType": "Manual"
+        "OriginalType": "Automatic"
       },
       {
         "Name": "IpxlatCfgSvc",
@@ -371,7 +366,7 @@
       {
         "Name": "KeyIso",
         "StartupType": "Automatic",
-        "OriginalType": "Automatic"
+        "OriginalType": "Manual"
       },
       {
         "Name": "KtmRm",
@@ -424,11 +419,6 @@
         "OriginalType": "Manual"
       },
       {
-        "Name": "MsKeyboardFilter",
-        "StartupType": "Manual",
-        "OriginalType": "Disabled"
-      },
-      {
         "Name": "NaturalAuthentication",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -457,11 +447,6 @@
         "Name": "NetTcpPortSharing",
         "StartupType": "Disabled",
         "OriginalType": "Disabled"
-      },
-      {
-        "Name": "Netlogon",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
       },
       {
         "Name": "Netman",
@@ -681,7 +666,7 @@
       {
         "Name": "TermService",
         "StartupType": "Automatic",
-        "OriginalType": "Automatic"
+        "OriginalType": "Manual"
       },
       {
         "Name": "Themes",
@@ -741,7 +726,7 @@
       {
         "Name": "VaultSvc",
         "StartupType": "Automatic",
-        "OriginalType": "Automatic"
+        "OriginalType": "Manual"
       },
       {
         "Name": "W32Time",
@@ -839,11 +824,6 @@
         "OriginalType": "Automatic"
       },
       {
-        "Name": "WlanSvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
         "Name": "WpcMonSvc",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -886,7 +866,7 @@
       {
         "Name": "camsvc",
         "StartupType": "Manual",
-        "OriginalType": "Manual"
+        "OriginalType": "Automatic"
       },
       {
         "Name": "cloudidsvc",
@@ -1140,21 +1120,21 @@
         "Value": "1",
         "OriginalValue": "<RemoveEntry>"
       },
-            {
+      {
         "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
         "Name": "BraveWalletDisabled",
         "Type": "DWord",
         "Value": "1",
         "OriginalValue": "<RemoveEntry>"
       },
-            {
+      {
         "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
         "Name": "BraveVPNDisabled",
         "Type": "DWord",
         "Value": "1",
         "OriginalValue": "<RemoveEntry>"
       },
-            {
+      {
         "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
         "Name": "BraveAIChatEnabled",
         "Type": "DWord",
@@ -1168,7 +1148,7 @@
     "Description": "Disables various telemetry options, popups, and other annoyances in Edge.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a022_",
+    "Order": "a026_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate",
@@ -1295,9 +1275,9 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/consumerfeatures"
   },
-  "WPFTweaksTele": {
+  "WPFTweaksTelemetry": {
     "Content": "Disable Telemetry",
-    "Description": "Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser.",
+    "Description": "Disables Microsoft Telemetry...Duh",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a003_",
@@ -1444,13 +1424,6 @@
         "Name": "NumberOfSIUFInPeriod",
         "Value": "0",
         "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Siuf\\Rules",
-        "OriginalValue": "<RemoveEntry>",
-        "Name": "PeriodInNanoSeconds",
-        "Value": "<RemoveEntry>",
-        "Type": "QWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
@@ -1644,7 +1617,7 @@
     "Description": "Makes it so you can uninstall edge via settings > installed apps",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a023_",
+    "Order": "a026_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Microsoft Edge",
@@ -1685,7 +1658,7 @@
     "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux Systems.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a027_",
+    "Order": "a030_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
@@ -1722,7 +1695,7 @@
     "Description": "Removes the Gallery from Explorer and sets This PC as default",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a030_",
+    "Order": "a029_",
     "InvokeScript": [
       "
       Remove-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\"
@@ -1740,7 +1713,7 @@
     "Description": "Sets the system preferences to performance. You can do this manually with sysdm.cpl as well.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a027_",
+    "Order": "a030_",
     "registry": [
       {
         "Path": "HKCU:\\Control Panel\\Desktop",
@@ -1844,7 +1817,7 @@
   },
   "WPFTweaksDeBloat": {
     "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
-    "Description": "USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!",
+    "Description": "USE WITH CAUTION!!! This will remove ALL Microsoft store apps other than the essentials onces.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a028_",
@@ -1937,46 +1910,23 @@
     "panel": "1",
     "Checked": "False",
     "Order": "a001_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore",
+        "Name": "SystemRestorePointCreationFrequency",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1440"
+      }
+    ],
     "InvokeScript": [
       "
-        # Check if System Restore is enabled for the main drive
-        try {
-            # Try getting restore points to check if System Restore is enabled
-            Enable-ComputerRestore -Drive \"$env:SystemDrive\"
-        } catch {
-            Write-Host \"An error occurred while enabling System Restore: $_\"
-        }
+      if (-not (Get-ComputerRestorePoint)) {
+          Enable-ComputerRestore -Drive $Env:SystemDrive
+      }
 
-        # Check if the SystemRestorePointCreationFrequency value exists
-        $exists = Get-ItemProperty -path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -ErrorAction SilentlyContinue
-        if($null -eq $exists) {
-            write-host 'Changing system to allow multiple restore points per day'
-            Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -Value \"0\" -Type DWord -Force -ErrorAction Stop | Out-Null
-        }
-
-        # Attempt to load the required module for Get-ComputerRestorePoint
-        try {
-            Import-Module Microsoft.PowerShell.Management -ErrorAction Stop
-        } catch {
-            Write-Host \"Failed to load the Microsoft.PowerShell.Management module: $_\"
-            return
-        }
-
-        # Get all the restore points for the current day
-        try {
-            $existingRestorePoints = Get-ComputerRestorePoint | Where-Object { $_.CreationTime.Date -eq (Get-Date).Date }
-        } catch {
-            Write-Host \"Failed to retrieve restore points: $_\"
-            return
-        }
-
-        # Check if there is already a restore point created today
-        if ($existingRestorePoints.Count -eq 0) {
-            $description = \"System Restore Point created by WinUtil\"
-
-            Checkpoint-Computer -Description $description -RestorePointType \"MODIFY_SETTINGS\"
-            Write-Host -ForegroundColor Green \"System Restore Point Created Successfully\"
-        }
+      Checkpoint-Computer -Description \"System Restore Point created by WinUtil\" -RestorePointType MODIFY_SETTINGS
+      Write-Host \"System Restore Point Created Successfully\" -ForegroundColor Green
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/restorepoint"
@@ -1998,26 +1948,12 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/endtaskontaskbar"
   },
-  "WPFTweaksPowershell7": {
-    "Content": "Change Windows Terminal default: PowerShell 5 -> PowerShell 7",
-    "Description": "This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a022_",
-    "InvokeScript": [
-      "Invoke-WPFTweakPS7 -action \"PS7\""
-    ],
-    "UndoScript": [
-      "Invoke-WPFTweakPS7 -action \"PS5\""
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/powershell7"
-  },
   "WPFTweaksPowershell7Tele": {
     "Content": "Disable Powershell 7 Telemetry",
     "Description": "This will create an Environment Variable called 'POWERSHELL_TELEMETRY_OPTOUT' with a value of '1' which will tell Powershell 7 to not send Telemetry Data.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a009_",
+    "Order": "a005_",
     "InvokeScript": [
       "[Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')"
     ],
@@ -2127,7 +2063,7 @@
     "Description": "If enabled then allows your computer vendor to execute a program each time it boots. It enables computer vendors to force install anti-theft software, software drivers, or a software program conveniently. This could also be a security risk.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a027_",
+    "Order": "a025_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager",
@@ -2179,7 +2115,7 @@
       icacls \"C:\\Windows\\Installer\\Razer\" /remove:d Everyone
       "
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/razerblock"
+    "link": ""
   },
   "WPFTweaksDisableNotifications": {
     "Content": "Disable Notification Tray/Calendar",
@@ -2242,7 +2178,7 @@
     "Description": "Great Windows 11 tweak to bring back good context menus when right clicking things in explorer.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a027_",
+    "Order": "a030_",
     "InvokeScript": [
       "
       New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\"
@@ -2338,7 +2274,7 @@
     "Description": "To set the IPv4 preference can have latency and security benefits on private networks where IPv6 is not configured.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a024_",
+    "Order": "a027_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
@@ -2389,10 +2325,10 @@
       }
     ],
     "InvokeScript": [
-      "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
+      "Disable-NetAdapterBinding -Name * -ComponentID ms_tcpip6"
     ],
     "UndoScript": [
-      "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
+      "Enable-NetAdapterBinding -Name * -ComponentID ms_tcpip6"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disableipsix"
   },
