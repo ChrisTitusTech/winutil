@@ -2149,24 +2149,23 @@
     "Order": "a021_",
     "InvokeScript": [
       "
-      $hostsUrl = \"https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts\"
-      $hosts = \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\"
-
-      Copy-Item $hosts \"$hosts.bak\"
+      $hostsUrl = 'https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts'
+      $hosts = '$Env:SystemRoot\\System32\\drivers\\etc\\hosts'
+      
+      Rename-Item $hosts -NewName 'hosts.bak'
       Invoke-WebRequest $hostsUrl -OutFile $hosts
-      ipconfig flushdns
+      ipconfig /flushdns
 
       Write-Host \"Added Adobe url block list from host file\"
       "
     ],
     "UndoScript": [
       "
-      $hosts = \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\"
-      $backup = \"$hosts.bak\"
-
-      Copy-Item $backup $hosts
-      Remove-Item $backup
-      ipconfig flushdns
+      $hosts = '$Env:SystemRoot\\System32\\drivers\\etc\\hosts'
+      
+      Remove-Item $hosts
+      Rename-Item ($hosts + '.bak') -NewName 'hosts'
+      ipconfig /flushdns
 
       Write-Host \"Removed Adobe url block list from host file\"
       "
