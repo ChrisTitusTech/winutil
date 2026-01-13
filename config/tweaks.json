@@ -2151,7 +2151,7 @@
       "
       $hostsUrl = 'https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts'
       $hosts = 'C:\\Windows\\System32\\drivers\\etc\\hosts'
-      
+
       Rename-Item $hosts -NewName 'hosts.bak'
       Invoke-WebRequest $hostsUrl -OutFile $hosts
       ipconfig /flushdns
@@ -2162,7 +2162,7 @@
     "UndoScript": [
       "
       $hosts = 'C:\\Windows\\System32\\drivers\\etc\\hosts'
-      
+
       Remove-Item $hosts
       Rename-Item ($hosts + '.bak') -NewName 'hosts'
       ipconfig /flushdns
