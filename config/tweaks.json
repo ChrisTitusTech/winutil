@@ -1788,13 +1788,6 @@
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
-        "Name": "TaskbarDa",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "OriginalValue": "1",
         "Name": "ShowTaskViewButton",
         "Value": "0",
         "Type": "DWord"
