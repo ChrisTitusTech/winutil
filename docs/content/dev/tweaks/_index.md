@@ -1,6 +1,6 @@
 ### Essential Tweaks
 
-- [Create Restore Point](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/restorepoint.md)
+- [Create Restore Point](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/RestorePoint.md)
 - [Debloat Edge](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/EdgeDebloat.md)
 - [Delete Temporary Files](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/DeleteTempFiles.md)
 - [Disable Activity History](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Activity.md)
@@ -22,12 +22,9 @@
 - [Adobe Network Block](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/BlockAdobeNet.md)
 - [Disable Background Apps](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableBGapps.md)
 - [Disable Fullscreen Optimizations](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableFSO.md)
-- [Disable Intel MM (vPro LMS)](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/)
 - [Disable IPv6](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableIPv6.md)
-- [Disable Microsoft Copilot](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/)
 - [Disable Notification Tray/Calendar](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableNotifications.md)
 - [Disable Teredo](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/Teredo.md)
-- [DNS](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/)
 - [Remove ALL MS Store Apps - NOT RECOMMENDED](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/DeBloat.md)
 - [Remove Gallery from explorer](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveGallery.md)
 - [Remove Home from explorer](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveHome.md)

@@ -2,7 +2,7 @@
 
 ### Essential Tweaks
 
-- [Create Restore Point](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/restorepoint.md)
+- [Create Restore Point](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/RestorePoint.md)
 - [Debloat Edge](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/EdgeDebloat.md)
 - [Delete Temporary Files](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/DeleteTempFiles.md)
 - [Disable Activity History](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Activity.md)
@@ -73,7 +73,7 @@
 
 ### Legacy Windows Panels
 
-- [Control Panel](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Legacy-Windows-Panels/control.md/control.md)
+- [Control Panel](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Legacy-Windows-Panels/control.md)
 - [Network Connections](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Legacy-Windows-Panels/network.md)
 - [Power Panel](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Legacy-Windows-Panels/power.md)
 - [Printer Settings](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Legacy-Windows-Panels/printer.md)
