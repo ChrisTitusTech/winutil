@@ -43,9 +43,6 @@ The utility provides a convenient DNS selection feature, allowing users to choos
 * [**Quad9**](https://quad9.net/): Focuses on security by blocking known malicious domains.
 * [**AdGuard_Ads_Trackers**](https://adguard-dns.io/en/welcome.html) AdGuard DNS will block ads, trackers, or any other DNS requests. Visit website and login for a dashboard, statistics and customize your experience in the server settings.
 * [**AdGuard_Ads_Trackers_Malware_Adult**](https://adguard-dns.io/en/welcome.html) AdGuard DNS will block ads, trackers, adult content, and enable Safe Search and Safe Mode, where possible.
-* [**dns0.eu_Open**](https://www.dns0.eu/) The European public DNS that makes your Internet safer. Offers general-purpose filtering to block malware, phishing, and tracking domains for enhanced privacy and security.
-* [**dns0.eu_ZERO**](https://www.dns0.eu/zero) Provides advanced security with robust filters for highly sensitive environments, blocking high-risk domains using threat intelligence and sophisticated heuristics like Newly Registered Domains (NRD) and Domain Generation Algorithms (DGA).
-* [**dns0.eu_KIDS**](https://www.dns0.eu/kids) A child-safe DNS that blocks adult content, explicit search results, mature videos, dating sites, piracy, and ads, creating a secure internet experience for children on any device or network.
 
 ### Customize Preferences
 
@@ -59,7 +56,3 @@ The Performance Plans section allows users to manage the Ultimate Performance Pr
 * Enables and activates the Ultimate Performance Profile to enhance system performance by minimizing latency and increasing efficiency.
 #### Remove Ultimate Performance Profile:
 * Deactivates the Ultimate Performance Profile, changing the system to the Balanced Profile.
-
-### Shortcuts
-
-The utility includes a feature to easily create a desktop shortcut, providing quick access to the script.

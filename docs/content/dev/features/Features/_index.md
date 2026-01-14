@@ -1,20 +1,11 @@
----
-weight: 3
----
-
-## Features
-
 ### Features
 
-- [All .Net Framework (2,3,4)](dotnet/)
-- [Disable Legacy F8 Boot Recovery](disablelegacyrecovery/)
-- [Disable Search Box Web Suggestions in Registry(explorer restart)](disablesearchsuggestions/)
-- [Enable Daily Registry Backup Task 12.30am](regbackup/)
-- [Enable Legacy F8 Boot Recovery](enablelegacyrecovery/)
-- [Enable Search Box Web Suggestions in Registry(explorer restart)](enablesearchsuggestions/)
-- [HyperV Virtualization](hyperv/)
-- [Install Features](install/)
-- [Legacy Media (WMP, DirectPlay)](legacymedia/)
-- [NFS - Network File System](nfs/)
-- [Windows Sandbox](sandbox/)
-- [Windows Subsystem for Linux](wsl/)
+- [All .Net Framework (2,3,4)](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Features/dotnet.md)
+- [Disable Legacy F8 Boot Recovery](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Features/DisableLegacyRecovery.md)
+- [Enable Legacy F8 Boot Recovery](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Features/EnableLegacyRecovery.md)
+- [Enable Daily Registry Backup Task 12.30am](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Features/RegBackup.md)
+- [HyperV Virtualization](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Features/hyperv.md)
+- [Legacy Media (WMP, DirectPlay)](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Features/legacymedia.md)
+- [NFS - Network File System](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Features/nfs.md)
+- [Windows Sandbox](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Features/Sandbox.md)
+- [Windows Subsystem for Linux](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Features/wsl.md)
