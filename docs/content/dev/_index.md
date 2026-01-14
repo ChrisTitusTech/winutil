@@ -1,23 +1,35 @@
+---
+title: Developer Reference
+weight: 3
+---
+
+> [!NOTE]
+> This section contains technical documentation for developers. For end-user documentation, see the [User Guide](../userguide/).
+
+## Architecture
+
+- [Architecture & Design](architecture/) - Code structure, data flow, and how Winutil works internally
+
 ## Tweaks
 
 ### Essential Tweaks
 
-- [Create Restore Point](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/RestorePoint.md)
-- [Debloat Edge](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/EdgeDebloat.md)
-- [Delete Temporary Files](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/DeleteTempFiles.md)
-- [Disable Activity History](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Activity.md)
-- [Disable ConsumerFeatures](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/ConsumerFeatures.md)
-- [Disable GameDVR](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/GameDVR.md)
-- [Disable Hibernation](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Hibernation.md)
-- [Disable Location Tracking](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Location.md)
-- [Disable Powershell 7 Telemetry](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Powershell7Tele.md)
-- [Disable Storage Sense](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Storage.md)
-- [Disable Telemetry](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Telemetry.md)
-- [Enable End Task With Right Click](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/EndTaskOnTaskbar.md)
-- [Prefer IPv4 over IPv6](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/IPv46.md)
-- [Run Disk Cleanup](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/DiskCleanup.md)
-- [Set Hibernation as default (good for laptops)](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/LaptopHibernation.md)
-- [Set Services to Manual](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Services.md)
+- [Create Restore Point](tweaks/essential-tweaks/restorepoint/)
+- [Debloat Edge](tweaks/essential-tweaks/edgedebloat/)
+- [Delete Temporary Files](tweaks/essential-tweaks/deletetempfiles/)
+- [Disable Activity History](tweaks/essential-tweaks/activity/)
+- [Disable ConsumerFeatures](tweaks/essential-tweaks/consumerfeatures/)
+- [Disable GameDVR](tweaks/essential-tweaks/gamedvr/)
+- [Disable Hibernation](tweaks/essential-tweaks/hibernation/)
+- [Disable Location Tracking](tweaks/essential-tweaks/location/)
+- [Disable Powershell 7 Telemetry](tweaks/essential-tweaks/powershell7tele/)
+- [Disable Storage Sense](tweaks/essential-tweaks/storage/)
+- [Disable Telemetry](tweaks/essential-tweaks/telemetry/)
+- [Enable End Task With Right Click](tweaks/essential-tweaks/endtaskontaskbar/)
+- [Prefer IPv4 over IPv6](tweaks/essential-tweaks/ipv46/)
+- [Run Disk Cleanup](tweaks/essential-tweaks/diskcleanup/)
+- [Set Hibernation as default (good for laptops)](tweaks/essential-tweaks/laptophibernation/)
+- [Set Services to Manual](tweaks/essential-tweaks/services/)
 
 ### Advanced Tweaks (CAUTION)
 
@@ -39,57 +51,57 @@
 
 ### Customize Preferences
 
-- [Bing Search in Start Menu](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/BingSearch.md)
-- [Center Taskbar Items](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/TaskbarAlignment.md)
-- [Dark Theme for Windows](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/DarkMode.md)
-- [Detailed BSoD](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/DetailedBSoD.md)
-- [Mouse Acceleration](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/MouseAcceleration.md)
-- [NumLock on Startup](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/NumLock.md)
-- [Search Button in Taskbar](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/TaskbarSearch.md)
-- [Show File Extensions](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/ShowExt.md)
-- [Show Hidden Files](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/HiddenFiles.md)
-- [Snap Assist Flyout](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/SnapFlyout.md)
-- [Snap Assist Suggestion](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/SnapSuggestion.md)
-- [Snap Window](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/SnapWindow.md)
-- [Sticky Keys](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/StickyKeys.md)
-- [Task View Button in Taskbar](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/TaskView.md)
-- [Verbose Messages During Logon](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/VerboseLogon.md)
-- [Widgets Button in Taskbar](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/TaskbarWidgets.md)
+- [Bing Search in Start Menu](tweaks/customize-preferences/bingsearch/)
+- [Center Taskbar Items](tweaks/customize-preferences/taskbaralignment/)
+- [Dark Theme for Windows](tweaks/customize-preferences/darkmode/)
+- [Detailed BSoD](tweaks/customize-preferences/detailedbsod/)
+- [Mouse Acceleration](tweaks/customize-preferences/mouseacceleration/)
+- [NumLock on Startup](tweaks/customize-preferences/numlock/)
+- [Search Button in Taskbar](tweaks/customize-preferences/taskbarsearch/)
+- [Show File Extensions](tweaks/customize-preferences/showext/)
+- [Show Hidden Files](tweaks/customize-preferences/hiddenfiles/)
+- [Snap Assist Flyout](tweaks/customize-preferences/snapflyout/)
+- [Snap Assist Suggestion](tweaks/customize-preferences/snapsuggestion/)
+- [Snap Window](tweaks/customize-preferences/snapwindow/)
+- [Sticky Keys](tweaks/customize-preferences/stickykeys/)
+- [Task View Button in Taskbar](tweaks/customize-preferences/taskview/)
+- [Verbose Messages During Logon](tweaks/customize-preferences/verboselogon/)
+- [Widgets Button in Taskbar](tweaks/customize-preferences/taskbarwidgets/)
 
 ### Performance Plans
 
-- [Add and Remove Ultimate Performance Profile](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Performance-Plans/Profile.md)
+- [Add and Remove Ultimate Performance Profile](tweaks/performance-plans/profile/)
 
 ## Features
 
 ### Fixes
 
-- [Remove Adobe Creative Cloud](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Fixes/RunAdobeCCCleanerTool.md)
-- [Reset Network](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Fixes/Network.md)
-- [Reset Windows Update](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Fixes/Update.md)
-- [Set Up Autologin](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Fixes/Autologin.md)
-- [System Corruption Scan](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Fixes/CorruptionScan.md)
-- [WinGet Reinstall](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Fixes/Winget.md)
+- [Remove Adobe Creative Cloud](features/fixes/runadobecccl cleanertool/)
+- [Reset Network](features/fixes/network/)
+- [Reset Windows Update](features/fixes/update/)
+- [Set Up Autologin](features/fixes/autologin/)
+- [System Corruption Scan](features/fixes/corruptionscan/)
+- [WinGet Reinstall](features/fixes/winget/)
 
 ### Legacy Windows Panels
 
-- [Control Panel](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Legacy-Windows-Panels/control.md)
-- [Network Connections](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Legacy-Windows-Panels/network.md)
-- [Power Panel](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Legacy-Windows-Panels/power.md)
-- [Printer Settings](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Legacy-Windows-Panels/printer.md)
-- [Region](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Legacy-Windows-Panels/region.md)
-- [Sound Settings](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Legacy-Windows-Panels/sound.md)
-- [System Properties](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Legacy-Windows-Panels/system.md)
-- [User Accounts](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Legacy-Windows-Panels/user.md)
+- [Control Panel](features/legacy-windows-panels/control/)
+- [Network Connections](features/legacy-windows-panels/network/)
+- [Power Panel](features/legacy-windows-panels/power/)
+- [Printer Settings](features/legacy-windows-panels/printer/)
+- [Region](features/legacy-windows-panels/region/)
+- [Sound Settings](features/legacy-windows-panels/sound/)
+- [System Properties](features/legacy-windows-panels/system/)
+- [User Accounts](features/legacy-windows-panels/user/)
 
 ### Features
 
-- [All .Net Framework (2,3,4)](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Features/dotnet.md)
-- [Disable Legacy F8 Boot Recovery](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Features/DisableLegacyRecovery.md)
-- [Enable Legacy F8 Boot Recovery](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Features/EnableLegacyRecovery.md)
-- [Enable Daily Registry Backup Task 12.30am](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Features/RegBackup.md)
-- [HyperV Virtualization](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Features/hyperv.md)
-- [Legacy Media (WMP, DirectPlay)](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Features/legacymedia.md)
-- [NFS - Network File System](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Features/nfs.md)
-- [Windows Sandbox](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Features/Sandbox.md)
-- [Windows Subsystem for Linux](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/features/Features/wsl.md)
+- [All .Net Framework (2,3,4)](features/features/dotnet/)
+- [Disable Legacy F8 Boot Recovery](features/features/disablelegacyrecovery/)
+- [Enable Legacy F8 Boot Recovery](features/features/enablelegacyrecovery/)
+- [Enable Daily Registry Backup Task 12.30am](features/features/regbackup/)
+- [HyperV Virtualization](features/features/hyperv/)
+- [Legacy Media (WMP, DirectPlay)](features/features/legacymedia/)
+- [NFS - Network File System](features/features/nfs/)
+- [Windows Sandbox](features/features/sandbox/)
+- [Windows Subsystem for Linux](features/features/wsl/)
