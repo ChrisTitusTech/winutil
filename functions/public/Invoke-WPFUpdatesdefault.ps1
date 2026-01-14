@@ -34,11 +34,8 @@ function Invoke-WPFUpdatesdefault {
 
     $Tasks =
         '\Microsoft\Windows\InstallService\*',
-        '\Microsoft\Windows\UpdateOrchestrator\*',
-        '\Microsoft\Windows\UpdateAssistant\*',
         '\Microsoft\Windows\WaaSMedic\*',
         '\Microsoft\Windows\WindowsUpdate\*',
-        '\Microsoft\WindowsUpdate\*'
 
     foreach ($Task in $Tasks) {
         Get-ScheduledTask -TaskPath $Task | Enable-ScheduledTask -ErrorAction SilentlyContinue
