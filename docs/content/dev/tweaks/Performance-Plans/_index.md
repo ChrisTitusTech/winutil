@@ -1,12 +1,3 @@
----
-weight: 4
----
-
-# Table of Contents
-
-## Tweaks
-
 ### Performance Plans
 
-- [Add and Activate Ultimate Performance Profile](addultperf/)
-- [Remove Ultimate Performance Profile](removeultperf/)
+- [Add and Remove Ultimate Performance Profile](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Performance-Plans/Profile.md)
