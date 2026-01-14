@@ -1,4 +1,4 @@
-### Advanced Tweaks (CAUTION)BlockAdobeNet.md
+### Advanced Tweaks (CAUTION)
 
 - [Adobe Network Block](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/BlockAdobeNet.md)
 - [Disable Background Apps](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableBGapps.md)
