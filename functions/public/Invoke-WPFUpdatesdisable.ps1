@@ -39,7 +39,7 @@ function Invoke-WPFUpdatesdisable {
     $Tasks =
         '\Microsoft\Windows\InstallService\*',
         '\Microsoft\Windows\WaaSMedic\*',
-        '\Microsoft\Windows\WindowsUpdate\*',
+        '\Microsoft\Windows\WindowsUpdate\*'
 
     foreach ($Task in $Tasks) {
         Get-ScheduledTask -TaskPath $Task | Disable-ScheduledTask -ErrorAction SilentlyContinue
