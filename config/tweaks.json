@@ -2049,8 +2049,6 @@
       Get-AppxPackage -AllUsers *Copilot* | Remove-AppxPackage -AllUsers
       Get-AppxPackage -AllUsers Microsoft.MicrosoftOfficeHub | Remove-AppxPackage -AllUsers
       
-      # Trick Windows into thinking the package is EOL (End of Life) which allows us to uninstall NonRemovable AppxPackages
-      
       $Appx = (Get-AppxPackage MicrosoftWindows.Client.CoreAI).PackageFullName
       $Sid = (Get-LocalUser $Env:UserName).Sid.Value
       
