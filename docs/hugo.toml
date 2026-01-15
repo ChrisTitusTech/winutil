@@ -12,7 +12,7 @@ canonifyURLs = true
 path = "github.com/imfing/hextra"
 
 [[menu.main]]
-name = "Documentation"
+name = "Developer Documentation"
 pageRef = "/dev"
 weight = 1
 

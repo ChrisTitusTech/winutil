@@ -39,9 +39,6 @@ If you have Issues, refer to [Known Issues](https://winutil.christitus.com/known
 
 ## 🎓 Documentation
 
-> [!NOTE]
-> To contribute to the documentation, please visit [WinUtil Docs Repo](https://github.com/Chris-Titus-Docs/winutil-docs) for more info.
-
 ### [WinUtil Official Documentation](https://winutil.christitus.com/)
 
 ### [YouTube Tutorial](https://www.youtube.com/watch?v=6UQZ5oQg8XA)
