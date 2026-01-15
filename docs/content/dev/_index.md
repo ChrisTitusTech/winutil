@@ -1,39 +1,41 @@
-# Table of Contents
+---
+title: Developer Reference
+weight: 3
+---
 
+> [!NOTE]
+> This section contains technical documentation for developers. For end-user documentation, see the [User Guide](../userguide/).
+
+## Architecture
+
+- [Architecture & Design](architecture/) - Code structure, data flow, and how Winutil works internally
 
 ## Tweaks
 
 ### Essential Tweaks
 
-- [Change Windows Terminal default: PowerShell 5 -> PowerShell 7](tweaks/essential-tweaks/powershell7/)
 - [Create Restore Point](tweaks/essential-tweaks/restorepoint/)
 - [Debloat Edge](tweaks/essential-tweaks/edgedebloat/)
 - [Delete Temporary Files](tweaks/essential-tweaks/deletetempfiles/)
-- [Disable Activity History](tweaks/essential-tweaks/ah/)
+- [Disable Activity History](tweaks/essential-tweaks/activity/)
 - [Disable ConsumerFeatures](tweaks/essential-tweaks/consumerfeatures/)
-- [Disable GameDVR](tweaks/essential-tweaks/dvr/)
-- [Disable Hibernation](tweaks/essential-tweaks/hiber/)
-- [Disable Homegroup](tweaks/essential-tweaks/home/)
-- [Disable Location Tracking](tweaks/essential-tweaks/loc/)
+- [Disable GameDVR](tweaks/essential-tweaks/gamedvr/)
+- [Disable Hibernation](tweaks/essential-tweaks/hibernation/)
+- [Disable Location Tracking](tweaks/essential-tweaks/location/)
 - [Disable Powershell 7 Telemetry](tweaks/essential-tweaks/powershell7tele/)
 - [Disable Storage Sense](tweaks/essential-tweaks/storage/)
-- [Disable Telemetry](tweaks/essential-tweaks/tele/)
-- [Disable Wifi-Sense](tweaks/essential-tweaks/wifi/)
+- [Disable Telemetry](tweaks/essential-tweaks/telemetry/)
 - [Enable End Task With Right Click](tweaks/essential-tweaks/endtaskontaskbar/)
 - [Prefer IPv4 over IPv6](tweaks/essential-tweaks/ipv46/)
 - [Run Disk Cleanup](tweaks/essential-tweaks/diskcleanup/)
 - [Set Hibernation as default (good for laptops)](tweaks/essential-tweaks/laptophibernation/)
 - [Set Services to Manual](tweaks/essential-tweaks/services/)
-### Shortcuts
 
-- [Create Winutil Shortcut](tweaks/shortcuts/shortcut/)
 ### Advanced Tweaks (CAUTION)
 
-- [Adobe Debloat](tweaks/z--advanced-tweaks---caution/debloatadobe/)
 - [Adobe Network Block](tweaks/z--advanced-tweaks---caution/blockadobenet/)
 - [Disable Background Apps](tweaks/z--advanced-tweaks---caution/disablebgapps/)
 - [Disable Fullscreen Optimizations](tweaks/z--advanced-tweaks---caution/disablefso/)
-- [Disable Intel MM (vPro LMS)](tweaks/z--advanced-tweaks---caution/disablelms1/)
 - [Disable IPv6](tweaks/z--advanced-tweaks---caution/disableipsix/)
 - [Disable Microsoft Copilot](tweaks/z--advanced-tweaks---caution/removecopilot/)
 - [Disable Notification Tray/Calendar](tweaks/z--advanced-tweaks---caution/disablenotifications/)
@@ -41,12 +43,12 @@
 - [DNS](tweaks/z--advanced-tweaks---caution/changedns/)
 - [Remove ALL MS Store Apps - NOT RECOMMENDED](tweaks/z--advanced-tweaks---caution/debloat/)
 - [Remove Home and Gallery from explorer](tweaks/z--advanced-tweaks---caution/removehomegallery/)
-- [Remove Microsoft Edge](tweaks/z--advanced-tweaks---caution/removeedge/)
-- [Remove OneDrive](tweaks/z--advanced-tweaks---caution/removeonedrive/)
+- [Make Edge Uninstallable](tweaks/z--advanced-tweaks---caution/edgeuninstall/)
 - [Run OO Shutup 10](tweaks/z--advanced-tweaks---caution/oosubutton/)
 - [Set Classic Right-Click Menu ](tweaks/z--advanced-tweaks---caution/rightclickmenu/)
 - [Set Display for Performance](tweaks/z--advanced-tweaks---caution/display/)
 - [Set Time to UTC (Dual Boot)](tweaks/z--advanced-tweaks---caution/utc/)
+
 ### Customize Preferences
 
 - [Bing Search in Start Menu](tweaks/customize-preferences/bingsearch/)
@@ -65,21 +67,22 @@
 - [Task View Button in Taskbar](tweaks/customize-preferences/taskview/)
 - [Verbose Messages During Logon](tweaks/customize-preferences/verboselogon/)
 - [Widgets Button in Taskbar](tweaks/customize-preferences/taskbarwidgets/)
+
 ### Performance Plans
 
-- [Add and Activate Ultimate Performance Profile](tweaks/performance-plans/addultperf/)
-- [Remove Ultimate Performance Profile](tweaks/performance-plans/removeultperf/)
+- [Add and Remove Ultimate Performance Profile](tweaks/performance-plans/profile/)
 
 ## Features
 
 ### Fixes
 
-- [Remove Adobe Creative Cloud](features/fixes/runadobecccleanertool/)
+- [Remove Adobe Creative Cloud](features/fixes/runadobecccl cleanertool/)
 - [Reset Network](features/fixes/network/)
 - [Reset Windows Update](features/fixes/update/)
 - [Set Up Autologin](features/fixes/autologin/)
-- [System Corruption Scan](features/fixes/dism/)
+- [System Corruption Scan](features/fixes/corruptionscan/)
 - [WinGet Reinstall](features/fixes/winget/)
+
 ### Legacy Windows Panels
 
 - [Control Panel](features/legacy-windows-panels/control/)
@@ -90,19 +93,15 @@
 - [Sound Settings](features/legacy-windows-panels/sound/)
 - [System Properties](features/legacy-windows-panels/system/)
 - [User Accounts](features/legacy-windows-panels/user/)
+
 ### Features
 
 - [All .Net Framework (2,3,4)](features/features/dotnet/)
 - [Disable Legacy F8 Boot Recovery](features/features/disablelegacyrecovery/)
-- [Disable Search Box Web Suggestions in Registry(explorer restart)](features/features/disablesearchsuggestions/)
-- [Enable Daily Registry Backup Task 12.30am](features/features/regbackup/)
 - [Enable Legacy F8 Boot Recovery](features/features/enablelegacyrecovery/)
-- [Enable Search Box Web Suggestions in Registry(explorer restart)](features/features/enablesearchsuggestions/)
+- [Enable Daily Registry Backup Task 12.30am](features/features/regbackup/)
 - [HyperV Virtualization](features/features/hyperv/)
-- [Install Features](features/features/install/)
-- [Legacy Media (wmp, directplay)](features/features/legacymedia/)
+- [Legacy Media (WMP, DirectPlay)](features/features/legacymedia/)
 - [NFS - Network File System](features/features/nfs/)
 - [Windows Sandbox](features/features/sandbox/)
 - [Windows Subsystem for Linux](features/features/wsl/)
-
-

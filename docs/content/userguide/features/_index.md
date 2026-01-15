@@ -9,8 +9,6 @@ weight: 4
 * HyperV Virtualization
 * Legacy Media (WMP, DirectPlay)
 * NFS - Network File System
-* Enable Search Box Web Suggestions in Registry (explorer restart)
-* Disables Search Box Web Suggestions in Registry (explorer restart)
 * Enable Daily Registry Backup Task 12:30am
 * Enable Legacy F8 Boot Recovery
 * Disable Legacy F8 Boot Recovery

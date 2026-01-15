@@ -1,29 +1,18 @@
----
-weight: 1
----
-
-# Table of Contents
-
-## Tweaks
-
 ### Essential Tweaks
 
-- [Change Windows Terminal default: PowerShell 5 -> PowerShell 7](powershell7/)
-- [Create Restore Point](restorepoint/)
-- [Debloat Edge](edgedebloat/)
-- [Delete Temporary Files](deletetempfiles/)
-- [Disable Activity History](ah/)
-- [Disable ConsumerFeatures](consumerfeatures/)
-- [Disable GameDVR](dvr/)
-- [Disable Hibernation](hiber/)
-- [Disable Homegroup](home/)
-- [Disable Location Tracking](loc/)
-- [Disable Powershell 7 Telemetry](powershell7tele/)
-- [Disable Storage Sense](storage/)
-- [Disable Telemetry](tele/)
-- [Disable Wifi-Sense](wifi/)
-- [Enable End Task With Right Click](endtaskontaskbar/)
-- [Prefer IPv4 over IPv6](ipv46/)
-- [Run Disk Cleanup](diskcleanup/)
-- [Set Hibernation as default (good for laptops)](laptophibernation/)
-- [Set Services to Manual](services/)
+- [Create Restore Point](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/RestorePoint.md)
+- [Debloat Edge](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/EdgeDebloat.md)
+- [Delete Temporary Files](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/DeleteTempFiles.md)
+- [Disable Activity History](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Activity.md)
+- [Disable ConsumerFeatures](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/ConsumerFeatures.md)
+- [Disable GameDVR](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/GameDVR.md)
+- [Disable Hibernation](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Hibernation.md)
+- [Disable Location Tracking](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Location.md)
+- [Disable Powershell 7 Telemetry](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Powershell7Tele.md)
+- [Disable Storage Sense](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Storage.md)
+- [Disable Telemetry](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Telemetry.md)
+- [Enable End Task With Right Click](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/EndTaskOnTaskbar.md)
+- [Prefer IPv4 over IPv6](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/IPv46.md)
+- [Run Disk Cleanup](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/DiskCleanup.md)
+- [Set Hibernation as default (good for laptops)](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/LaptopHibernation.md)
+- [Set Services to Manual](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Services.md)

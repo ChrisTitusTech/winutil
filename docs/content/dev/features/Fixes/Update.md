@@ -1,36 +1,6 @@
 # Reset Windows Update
 
-Last Updated: 2024-08-07
-
-
-> [!NOTE]
-     The Development Documentation is auto generated for every compilation of Winutil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-
-
-<!-- BEGIN CUSTOM CONTENT -->
-
-<!-- END CUSTOM CONTENT -->
-
-<details>
-<summary>Preview Code</summary>
-
 ```json
-{
-  "Content": "Reset Windows Update",
-  "category": "Fixes",
-  "panel": "1",
-  "Order": "a041_",
-  "Type": "Button",
-  "ButtonWidth": "300",
-  "link": "https://christitustech.github.io/Winutil/dev/features/Fixes/Update"
-}
-```
-
-</details>
-
-## Function: Invoke-WPFFixesUpdate
-
-```powershell
 function Invoke-WPFFixesUpdate {
 
     <#
@@ -39,19 +9,7 @@ function Invoke-WPFFixesUpdate {
         Performs various tasks in an attempt to repair Windows Update
 
     .DESCRIPTION
-        1. (Aggressive Only) Scans the system for corruption using chkdsk, SFC, and DISM
-            Steps:
-                1. Runs chkdsk /scan /perf
-                    /scan - Runs an online scan on the volume
-                    /perf - Uses more system resources to complete a scan as fast as possible
-                2. Runs SFC /scannow
-                    /scannow - Scans integrity of all protected system files and repairs files with problems when possible
-                3. Runs DISM /Online /Cleanup-Image /RestoreHealth
-                    /Online - Targets the running operating system
-                    /Cleanup-Image - Performs cleanup and recovery operations on the image
-                    /RestoreHealth - Scans the image for component store corruption and attempts to repair the corruption using Windows Update
-                4. Runs SFC /scannow
-                    Ran twice in case DISM repaired SFC
+        1. (Aggressive Only) Scans the system for corruption using the Invoke-WPFSystemRepair function
         2. Stops Windows Update Services
         3. Remove the QMGR Data file, which stores BITS jobs
         4. (Aggressive Only) Renames the DataStore and CatRoot2 folders
@@ -75,108 +33,13 @@ function Invoke-WPFFixesUpdate {
     param($Aggressive = $false)
 
     Write-Progress -Id 0 -Activity "Repairing Windows Update" -PercentComplete 0
+    Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
+    Write-Host "Starting Windows Update Repair..."
     # Wait for the first progress bar to show, otherwise the second one won't show
     Start-Sleep -Milliseconds 200
 
     if ($Aggressive) {
-        # Scan system for corruption
-        Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Scanning for corruption..." -PercentComplete 0
-        Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running chkdsk..." -PercentComplete 0
-        # 2>&1 redirects stdout, alowing iteration over the output
-        chkdsk.exe /scan /perf 2>&1 | ForEach-Object {
-            # Write stdout to the Verbose stream
-            Write-Verbose $_
-
-            # Get the index of the total percentage
-            $index = $_.IndexOf("Total:")
-            if (
-                # If the percent is found
-                ($percent = try {(
-                    $_.Substring(
-                        $index + 6,
-                        $_.IndexOf("%", $index) - $index - 6
-                    )
-                ).Trim()} catch {0}) `
-                <# And the current percentage is greater than the previous one #>`
-                -and $percent -gt $oldpercent
-            ) {
-                # Update the progress bar
-                $oldpercent = $percent
-                Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running chkdsk... ($percent%)" -PercentComplete $percent
-            }
-        }
-
-        Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running SFC..." -PercentComplete 0
-        $oldpercent = 0
-        # SFC has a bug when redirected which causes it to output only when the stdout buffer is full, causing the progress bar to move in chunks
-        sfc /scannow 2>&1 | ForEach-Object {
-            # Write stdout to the Verbose stream
-            Write-Verbose $_
-
-            # Filter for lines that contain a percentage that is greater than the previous one
-            if (
-                (
-                    # Use a different method to get the percentage that accounts for SFC's Unicode output
-                    [int]$percent = try {(
-                        (
-                            $_.Substring(
-                                $_.IndexOf("n") + 2,
-                                $_.IndexOf("%") - $_.IndexOf("n") - 2
-                            ).ToCharArray() | Where-Object {$_}
-                        ) -join ''
-                    ).TrimStart()} catch {0}
-                ) -and $percent -gt $oldpercent
-            ) {
-                # Update the progress bar
-                $oldpercent = $percent
-                Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running SFC... ($percent%)" -PercentComplete $percent
-            }
-        }
-
-        Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running DISM..." -PercentComplete 0
-        $oldpercent = 0
-        DISM /Online /Cleanup-Image /RestoreHealth | ForEach-Object {
-            # Write stdout to the Verbose stream
-            Write-Verbose $_
-
-            # Filter for lines that contain a percentage that is greater than the previous one
-            if (
-                ($percent = try {
-                    [int]($_ -replace "\[" -replace "=" -replace " " -replace "%" -replace "\]")
-                } catch {0}) `
-                -and $percent -gt $oldpercent
-            ) {
-                # Update the progress bar
-                $oldpercent = $percent
-                Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running DISM... ($percent%)" -PercentComplete $percent
-            }
-        }
-
-        Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running SFC again..." -PercentComplete 0
-        $oldpercent = 0
-        sfc /scannow 2>&1 | ForEach-Object {
-            # Write stdout to the Verbose stream
-            Write-Verbose $_
-
-            # Filter for lines that contain a percentage that is greater than the previous one
-            if (
-                (
-                    [int]$percent = try {(
-                        (
-                            $_.Substring(
-                                $_.IndexOf("n") + 2,
-                                $_.IndexOf("%") - $_.IndexOf("n") - 2
-                            ).ToCharArray() | Where-Object {$_}
-                        ) -join ''
-                    ).TrimStart()} catch {0}
-                ) -and $percent -gt $oldpercent
-            ) {
-                # Update the progress bar
-                $oldpercent = $percent
-                Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running SFC... ($percent%)" -PercentComplete $percent
-            }
-        }
-        Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Completed" -PercentComplete 100
+        Invoke-WPFSystemRepair
     }
 
 
@@ -220,9 +83,9 @@ function Invoke-WPFFixesUpdate {
         # Reset the Security Descriptors on the Windows Update Services
         Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Resetting the WU Service Security Descriptors..." -PercentComplete 25
         Write-Progress -Id 4 -ParentId 0 -Activity "Resetting the WU Service Security Descriptors" -Status "Resetting the BITS Security Descriptor..." -PercentComplete 0
-        Start-Process -NoNewWindow -FilePath "sc.exe" -ArgumentList "sdset", "bits", "D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)"
+        Start-Process -NoNewWindow -FilePath "sc.exe" -ArgumentList "sdset", "bits", "D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)" -Wait
         Write-Progress -Id 4 -ParentId 0 -Activity "Resetting the WU Service Security Descriptors" -Status "Resetting the wuauserv Security Descriptor..." -PercentComplete 50
-        Start-Process -NoNewWindow -FilePath "sc.exe" -ArgumentList "sdset", "wuauserv", "D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)"
+        Start-Process -NoNewWindow -FilePath "sc.exe" -ArgumentList "sdset", "wuauserv", "D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)" -Wait
         Write-Progress -Id 4 -ParentId 0 -Activity "Resetting the WU Service Security Descriptors" -Status "Completed" -PercentComplete 100
     }
 
@@ -254,19 +117,53 @@ function Invoke-WPFFixesUpdate {
     if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate") {
         Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Removing WSUS client settings..." -PercentComplete 60
         Write-Progress -Id 6 -ParentId 0 -Activity "Removing WSUS client settings" -PercentComplete 0
-        Start-Process -NoNewWindow -FilePath "REG" -ArgumentList "DELETE", "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate", "/v", "AccountDomainSid", "/f" -RedirectStandardError $true
-        Start-Process -NoNewWindow -FilePath "REG" -ArgumentList "DELETE", "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate", "/v", "PingID", "/f" -RedirectStandardError $true
-        Start-Process -NoNewWindow -FilePath "REG" -ArgumentList "DELETE", "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate", "/v", "SusClientId", "/f" -RedirectStandardError $true
+        Start-Process -NoNewWindow -FilePath "REG" -ArgumentList "DELETE", "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate", "/v", "AccountDomainSid", "/f" -RedirectStandardError "NUL"
+        Start-Process -NoNewWindow -FilePath "REG" -ArgumentList "DELETE", "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate", "/v", "PingID", "/f" -RedirectStandardError "NUL"
+        Start-Process -NoNewWindow -FilePath "REG" -ArgumentList "DELETE", "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate", "/v", "SusClientId", "/f" -RedirectStandardError "NUL"
         Write-Progress -Id 6 -ParentId 0 -Activity "Removing WSUS client settings" -Status "Completed" -PercentComplete 100
     }
+
+    # Remove Group Policy Windows Update settings
+    Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Removing Group Policy Windows Update settings..." -PercentComplete 60
+    Write-Progress -Id 7 -ParentId 0 -Activity "Removing Group Policy Windows Update settings" -PercentComplete 0
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -ErrorAction SilentlyContinue
+    Write-Host "Defaulting driver offering through Windows Update..."
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Name "PreventDeviceMetadataFromNetwork" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontPromptForWindowsUpdate" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontSearchWindowsUpdate" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DriverUpdateWizardWuSearchEnabled" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -ErrorAction SilentlyContinue
+    Write-Host "Defaulting Windows Update automatic restart..."
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -ErrorAction SilentlyContinue
+    Write-Host "Clearing ANY Windows Update Policy settings..."
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "BranchReadinessLevel" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays" -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies" -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKCU:\Software\Microsoft\WindowsSelfHost" -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKCU:\Software\Policies" -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKLM:\Software\Microsoft\Policies" -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies" -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\WindowsStore\WindowsUpdate" -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKLM:\Software\Microsoft\WindowsSelfHost" -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKLM:\Software\Policies" -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKLM:\Software\WOW6432Node\Microsoft\Policies" -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Policies" -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\WindowsStore\WindowsUpdate" -Recurse -Force -ErrorAction SilentlyContinue
+    Start-Process -NoNewWindow -FilePath "secedit" -ArgumentList "/configure", "/cfg", "$env:windir\inf\defltbase.inf", "/db", "defltbase.sdb", "/verbose" -Wait
+    Start-Process -NoNewWindow -FilePath "cmd.exe" -ArgumentList "/c RD /S /Q $env:WinDir\System32\GroupPolicyUsers" -Wait
+    Start-Process -NoNewWindow -FilePath "cmd.exe" -ArgumentList "/c RD /S /Q $env:WinDir\System32\GroupPolicy" -Wait
+    Start-Process -NoNewWindow -FilePath "gpupdate" -ArgumentList "/force" -Wait
+    Write-Progress -Id 7 -ParentId 0 -Activity "Removing Group Policy Windows Update settings" -Status "Completed" -PercentComplete 100
 
 
     # Reset WinSock
     Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Resetting WinSock..." -PercentComplete 65
     Write-Progress -Id 7 -ParentId 0 -Activity "Resetting WinSock" -Status "Resetting WinSock..." -PercentComplete 0
-    Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winsock", "reset" -RedirectStandardOutput $true
-    Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winhttp", "reset", "proxy" -RedirectStandardOutput $true
-    Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "int", "ip", "reset" -RedirectStandardOutput $true
+    Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winsock", "reset"
+    Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winhttp", "reset", "proxy"
+    Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "int", "ip", "reset"
     Write-Progress -Id 7 -ParentId 0 -Activity "Resetting WinSock" -Status "Completed" -PercentComplete 100
 
 
@@ -295,10 +192,17 @@ function Invoke-WPFFixesUpdate {
     # Force Windows Update to check for updates
     Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Forcing discovery..." -PercentComplete 95
     Write-Progress -Id 10 -ParentId 0 -Activity "Forcing discovery" -Status "Forcing discovery..." -PercentComplete 0
-    (New-Object -ComObject Microsoft.Update.AutoUpdate).DetectNow()
+    try {
+        (New-Object -ComObject Microsoft.Update.AutoUpdate).DetectNow()
+    } catch {
+        Set-WinUtilTaskbaritem -state "Error" -overlay "warning"
+        Write-Warning "Failed to create Windows Update COM object: $_"
+    }
     Start-Process -NoNewWindow -FilePath "wuauclt" -ArgumentList "/resetauthorization", "/detectnow"
     Write-Progress -Id 10 -ParentId 0 -Activity "Forcing discovery" -Status "Completed" -PercentComplete 100
     Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Completed" -PercentComplete 100
+
+    Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
 
     $ButtonType = [System.Windows.MessageBoxButton]::OK
     $MessageboxTitle = "Reset Windows Update "
@@ -317,7 +221,7 @@ function Invoke-WPFFixesUpdate {
     Write-Progress -Id 3 -Activity "Renaming/Removing Files" -Completed
     Write-Progress -Id 4 -Activity "Resetting the WU Service Security Descriptors" -Completed
     Write-Progress -Id 5 -Activity "Reregistering DLLs" -Completed
-    Write-Progress -Id 6 -Activity "Removing WSUS client settings" -Completed
+    Write-Progress -Id 6 -Activity "Removing Group Policy Windows Update settings" -Completed
     Write-Progress -Id 7 -Activity "Resetting WinSock" -Completed
     Write-Progress -Id 8 -Activity "Deleting BITS jobs" -Completed
     Write-Progress -Id 9 -Activity "Starting Windows Update Services" -Completed
@@ -325,12 +229,3 @@ function Invoke-WPFFixesUpdate {
 }
 
 ```
-
-
-<!-- BEGIN SECOND CUSTOM CONTENT -->
-
-<!-- END SECOND CUSTOM CONTENT -->
-
-
-[View the JSON file](https://github.com/ChrisTitusTech/Winutil/tree/main/config/feature.json)
-
