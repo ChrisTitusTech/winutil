@@ -2140,6 +2140,37 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disablenotifications"
   },
+  "WPFTweaksDisableDefender": {
+    "Content": "Disable Windows Defender (Security) --- Not Recommended",
+    "Description": "Disable Windows Defender (Security)",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a026_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows Defender",
+        "Name": "DisableAntiSpyware",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows Defender",
+        "Name": "DisableAntiVirus",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows Defender",
+        "Name": "ServiceKeepAlive",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disablenotifications"
+  },
   "WPFTweaksBlockAdobeNet": {
     "Content": "Adobe Network Block",
     "Description": "Reduce user interruptions by selectively blocking connections to Adobe's activation and telemetry servers. Credit: Ruddernation-Designs",
