@@ -76,7 +76,7 @@ weight: 3
 
 ### Fixes
 
-- [Remove Adobe Creative Cloud](features/fixes/runadobecccl cleanertool/)
+- [Remove Adobe Creative Cloud](features/fixes/RunAdobeCCCleanerTool/)
 - [Reset Network](features/fixes/network/)
 - [Reset Windows Update](features/fixes/update/)
 - [Set Up Autologin](features/fixes/autologin/)
