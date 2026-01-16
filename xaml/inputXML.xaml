@@ -1350,40 +1350,10 @@
                         HorizontalAlignment="Stretch">
                     <StackPanel Name="MicrowinMain" Background="{DynamicResource MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="0" Grid.Row="0">
                         <StackPanel Name="MicrowinISOPanel" Background="Transparent" SnapsToDevicePixels="True" Margin="1">
-                            <CheckBox x:Name="WPFMicrowinDownloadFromGitHub" Content="Download oscdimg.exe from CTT GitHub repo" IsChecked="True" Margin="{DynamicResource MicrowinCheckBoxMargin}" />
                             <TextBlock Margin="5" Padding="1" TextWrapping="Wrap" Foreground="{DynamicResource ComboBoxForegroundColor}">
                                 Choose a Windows ISO file that you've downloaded <LineBreak/>
                                 Check the status in the console
                             </TextBlock>
-                            <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
-                            <TextBlock Margin="5" Padding="1" TextWrapping="Wrap" Foreground="{DynamicResource ComboBoxForegroundColor}" ToolTip="Scratch directories act as a custom destination for image files"><Bold>Scratch directory settings (optional)</Bold></TextBlock>
-                            <CheckBox x:Name="WPFMicrowinISOScratchDir" Content="Use ISO directory for ScratchDir " IsChecked="False" Margin="{DynamicResource MicrowinCheckBoxMargin}"
-                                ToolTip="Check this to use the path of the ISO file you specify as a scratch directory" />
-                            <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" /> <!-- Takes the remaining space -->
-                                <ColumnDefinition Width="30" /> <!-- Fixed width for Button -->
-                            </Grid.ColumnDefinitions>
-                                <TextBox Name="MicrowinScratchDirBox" Background="Transparent" BorderBrush="{DynamicResource MainForegroundColor}"
-                                        Text="Scratch"
-                                        Margin="2"
-                                        IsReadOnly="False"
-                                        ToolTip="Specify an alternate path for the scratch directory"
-                                        Grid.Column="0"
-                                        VerticalAlignment="Center"
-                                        Foreground="{DynamicResource LabelboxForegroundColor}">
-                                </TextBox>
-                                <Button Name="MicrowinScratchDirBT"
-                                    Width="Auto"
-                                    Height="Auto"
-                                    Grid.Column="1"
-                                    Margin="2"
-                                    Padding="1"  VerticalAlignment="Center">
-                                    <Button.Content>
-                                    ...
-                                    </Button.Content>
-                                </Button>
-                            </Grid>
                             <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                             <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderBrush="{DynamicResource MainForegroundColor}"
                                 Text="ISO location will be printed here"
@@ -1458,8 +1428,6 @@
                             <CheckBox Name="MicrowinImportDrivers" Content="Import drivers from current system" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="Export all third-party drivers from your system and inject them to the MicroWin image"/>
                             <CheckBox Name="MicrowinCopyVirtIO" Content="Include VirtIO drivers" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="Copy VirtIO Guest Tools drivers to your ISO file. Check this only if you want to use it on QEMU/Proxmox VE"/>
                             <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
-                            <CheckBox Name="WPFMicrowinCopyToUsb" Content="Copy to Ventoy" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="Copy to USB disk with a label Ventoy"/>
-                            <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                             <TextBlock Margin="6" Padding="1" TextWrapping="Wrap"><Bold>Custom user settings (leave empty for default user)</Bold></TextBlock>
                             <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">User name (20 characters max.):</TextBlock>
                             <TextBox Name="MicrowinUserName" Background="Transparent" BorderThickness="1" BorderBrush="{DynamicResource MainForegroundColor}"
@@ -1477,11 +1445,6 @@
                                 Foreground="{DynamicResource LabelboxForegroundColor}"
                             />
                             <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
-                            <TextBlock Margin="6" Padding="1" TextWrapping="Wrap"><Bold>Tweaks (leave empty for default settings)</Bold></TextBlock>
-                            <CheckBox Name="MicroWinWPBT" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="If enabled then allows your computer vendor to execute a program each time it boots. It enables computer vendors to force install anti-theft software, software drivers, or a software program conveniently. This could also be a security risk."><AccessText TextWrapping="Wrap" Text="Disable Windows Platform Binary Table (WPBT) (ADVANCED TWEAK)" /></CheckBox>
-                            <CheckBox Name="MicroWinUnsupported" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="If enabled then it will allow you to upgrade your PC to Windows 11 if your PC does not support Windows 11 yet. This is good for if you do not have a USB and want to upgrade to Windows 11 on unsupported hardware."><AccessText TextWrapping="Wrap" Text="Allow this PC to upgrade to Windows 11" /></CheckBox>
-                            <CheckBox Name="MicroWinESD" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="The ESD file format compresses the installation image even further, therefore reducing ISO file sizes a little more. Select this if you have a small USB."><AccessText TextWrapping="Wrap" Text="Convert this image to ESD (This will take longer)" /></CheckBox>
-                            <CheckBox Name="MicroWinNoFLA" Margin="{DynamicResource MicrowinCheckBoxMargin}" IsChecked="True" ToolTip="The First Logon Animation is an animation that is played when a user logs on for the first time. It can artificially increase wait times. Select this option to automatically close the first logon animation and reach the desktop quicker (additional system preparation will still be done)"><AccessText TextWrapping="Wrap" Text="Skip First Logon Animation" /></CheckBox>
                             <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">WinUtil configuration file (JSON)</TextBlock>
                             <Grid>
                             <Grid.ColumnDefinitions>
@@ -1564,6 +1527,7 @@
                                 <Bold>MicroWin features:</Bold><LineBreak/>
                                 - Remove Telemetry and Tracking <LineBreak/>
                                 - Fast Install using either the "User" local account or the account of your choosing <LineBreak/>
+                                - Bypasses Windows 11 System Requirements on unsupported computers <LineBreak/>
                                 - No internet requirement for install <LineBreak/>
                                 - Apps debloat <LineBreak/>
                                 <LineBreak/>
