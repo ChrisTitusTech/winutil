@@ -2141,7 +2141,7 @@
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disablenotifications"
   },
   "WPFTweaksDisableDefender": {
-    "Content": "Disable Windows Defender (Security) --- Not Recommended",
+    "Content": "Disable Windows Defender (Security) - Not Recommended",
     "Description": "Disable Windows Defender (Security)",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
