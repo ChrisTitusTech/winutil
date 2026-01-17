@@ -41,7 +41,7 @@ Function Install-WinUtilProgramWinget {
         $arguments = if ($Action -eq "Install") {
             "install $commonArguments --accept-source-agreements --accept-package-agreements --source winget"
         } else {
-            "uninstall $commonArguments"
+            "uninstall $commonArguments --source winget"
         }
 
         $processParams = @{
