@@ -2378,10 +2378,12 @@
 
       $DISABLED = 1
 
+      # Set-ItemProperty wrapper to run as TrustedInstaller since Administrators
+      # only have read access to the specific key by default.
       function setKeyValueAsTI {
         param(
           [string]$registryPath,
-          $value
+          $value 
         )
 
         $COMMAND = \"Set-ItemProperty -Path 'Registry::$registryPath' -Name 'EnabledState' -Value $value -Type DWord -Force -ErrorAction Stop\"
@@ -2399,7 +2401,7 @@
 
         Unregister-ScheduledTask -TaskName \"ti\" -Confirm:$false
         if ($elapsed -ge $TIMEOUT) {
-          Write-Error \"Could not set key value as TrustedInstaller\"
+          throw \"Could not set key value for '$registryPath' as TrustedInstaller\"
         }
       }
 
@@ -2411,8 +2413,11 @@
       if ($configurationPriority) {
         Write-Host \"Override found at: $($configurationPriority)\"
         $targetPath = Join-Path $configurationPriority $FEATURE_ID
+        
         setKeyValueAsTI -registryPath $targetPath -value $DISABLED
-        \"New start menu layout disabled\", \"Please restart your computer for the changes to apply!\" | Write-Host
+
+        Write-Host \"New start menu layout disabled\"
+        Write-Host \"Please restart your computer for the changes to apply!\" -Foreground Yellow
       } else {
         Write-Error \"Feature override not present\"
       }
@@ -2425,6 +2430,8 @@
 
       $ENABLED = 2
 
+      # Set-ItemProperty wrapper to run as TrustedInstaller since Administrators
+      # only have read access to the specific key by default.
       function setKeyValueAsTI {
         param(
           [string]$registryPath,
@@ -2446,7 +2453,7 @@
 
         Unregister-ScheduledTask -TaskName \"ti\" -Confirm:$false
         if ($elapsed -ge $TIMEOUT) {
-          Write-Error \"Could not set key value as TrustedInstaller\"
+          throw \"Could not set key value for '$registryPath' as TrustedInstaller\"
         }
       }
 
@@ -2458,8 +2465,11 @@
       if ($configurationPriority) {
         Write-Host \"Override found at: $($configurationPriority)\"
         $targetPath = Join-Path $configurationPriority $FEATURE_ID
+
         setKeyValueAsTI -registryPath $targetPath -value $ENABLED
-        \"New start menu layout re-enabled\", \"Please restart your computer for the changes to apply!\" | Write-Host
+
+        Write-Host \"New start menu layout re-enabled\"
+        Write-Host \"Please restart your computer for the changes to apply!\" -Foreground Yellow
       } else {
         Write-Error \"Feature override not present\"
       }
