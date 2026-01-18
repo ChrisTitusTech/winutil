@@ -18,7 +18,7 @@
       Remove-Item \"$Env:LocalAppData\\Microsoft\\OneDrive\" -Recurse -Force
       Remove-Item \"C:\\ProgramData\\Microsoft OneDrive\" -Recurse -Force
 
-      # Grant back permission to remove OneDrive folder
+      # Grant back permission to accses OneDrive folder
       icacls $Env:OneDrive /grant \"Administrators:(D,DC)\"
       "
     ],
