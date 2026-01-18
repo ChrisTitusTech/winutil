@@ -150,13 +150,7 @@ try {
 Write-Progress -Activity "Validating" -Completed
 
 if ($run) {
-    $script = "& '$workingdir\$scriptname' $Arguments"
-
-    $powershellcmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
-    $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { $powershellcmd }
-
-    Start-Process $processCmd -ArgumentList "$powershellcmd -NoProfile -Command $script"
-
+    .\Winutil.ps1
     break
 }
 Pop-Location
