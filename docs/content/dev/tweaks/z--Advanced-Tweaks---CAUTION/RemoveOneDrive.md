@@ -10,10 +10,12 @@
       "
       # Deny permission to remove OneDrive folder
       icacls $Env:OneDrive /deny \"Administrators:(D,DC)\"
-      
+
+      Write-Host \"Uninstalling OneDrive...\"
       Start-Process 'C:\\Windows\\System32\\OneDriveSetup.exe' -ArgumentList '/uninstall' -Wait
       
       # Some of OneDrive files use explorer so we need to restart it so we can remove the files and stop a onedrive process
+      Write-Host \"Removing leftover OneDrive Files...\"
       Stop-Process -Name FileCoAuth,Explorer
       Remove-Item \"$Env:LocalAppData\\Microsoft\\OneDrive\" -Recurse -Force
       Remove-Item \"C:\\ProgramData\\Microsoft OneDrive\" -Recurse -Force
@@ -23,6 +25,9 @@
       "
     ],
     "UndoScript": [
-      "winget install Microsoft.Onedrive --source winget"
+      "
+      Write-Host \"Installing OneDrive\"
+      winget install Microsoft.Onedrive --source winget
+      "
     ],
 ```
