@@ -1809,14 +1809,14 @@
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/display"
   },
   "WPFTweaksDeBloat": {
-    "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
-    "Description": "USE WITH CAUTION!!! This will remove ALL Microsoft store apps.",
+    "Content": "Remove ALL MS Store Apps - Not Recommended",
+    "Description": "This will remove All Microsoft store apps.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a028_",
     "InvokeScript": [
       "
-      Get-AppxPackage -AllUsers | Where SignatureKind -match Store | Remove-AppxPackage -AllUsers
+      Get-AppxPackage | Where SignatureKind -match Store | Remove-AppxPackage
       
       $TeamsPath = \"$Env:LocalAppData\\Microsoft\\Teams\\Update.exe\"
 
