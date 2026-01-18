@@ -1,7 +1,7 @@
 # Disable Windows Defender (Security) - Not Recommended
 ```json
 "WPFTweaksDisableDefender": {
-    "Content": "Disable Windows Defender (Security) --- Not Recommended",
+    "Content": "Disable Windows Defender (Security) - Not Recommended",
     "Description": "Disable Windows Defender (Security)",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
