@@ -9,16 +9,17 @@
     "InvokeScript": [
       "
       # Deny permission to remove OneDrive folder
-      icacls $Env:OneDrive /deny "Administrators:(D,DC)"
+      icacls $Env:OneDrive /deny \"Administrators:(D,DC)\"
       
       Start-Process 'C:\\Windows\\System32\\OneDriveSetup.exe' -ArgumentList '/uninstall' -Wait
       
-      # Some of OneDrive files use explorer so we need to restart it so we can remove the files
-      Stop-Process -Name explorer
+      # Some of OneDrive files use explorer so we need to restart it so we can remove the files and stop a onedrive process
+      Stop-Process -Name FileCoAuth,Explorer
       Remove-Item \"$Env:LocalAppData\\Microsoft\\OneDrive\" -Recurse -Force
+      Remove-Item \"C:\ProgramData\Microsoft OneDrive\" -Recurse -Force
 
       # Grant back permission to remove OneDrive folder
-      icacls $Env:OneDrive /grant "Administrators:(D,DC)"
+      icacls $Env:OneDrive /grant \"Administrators:(D,DC)\"
       "
     ],
     "UndoScript": [
