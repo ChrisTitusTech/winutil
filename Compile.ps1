@@ -12,12 +12,8 @@ $OFS = "`r`n"
 $scriptname = "winutil.ps1"
 $workingdir = $PSScriptRoot
 
-Push-Location
-Set-Location $workingdir
-
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
-$sync.PSScriptRoot = $workingdir
 $sync.configs = @{}
 
 function Update-Progress {
@@ -144,7 +140,6 @@ try {
 } catch {
     Write-Warning "Syntax Validation for 'winutil.ps1' has failed"
     Write-Host "$($Error[0])" -ForegroundColor Red
-    Pop-Location # Restore previous location before exiting...
     exit 1
 }
 Write-Progress -Activity "Validating" -Completed
@@ -153,4 +148,3 @@ if ($run) {
     .\Winutil.ps1 $Arguments
     break
 }
-Pop-Location
