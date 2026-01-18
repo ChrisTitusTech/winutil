@@ -1,4 +1,4 @@
-# Disable Windows Defender (Security) --- Not Recommended
+# Disable Windows Defender (Security) - Not Recommended
 ```json
 "WPFTweaksDisableDefender": {
     "Content": "Disable Windows Defender (Security) --- Not Recommended",
