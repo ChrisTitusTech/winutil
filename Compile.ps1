@@ -150,7 +150,7 @@ try {
 Write-Progress -Activity "Validating" -Completed
 
 if ($run) {
-    .\Winutil.ps1 $Arguments
+    $workingdir\$scriptname $Arguments
     break
 }
 Pop-Location
