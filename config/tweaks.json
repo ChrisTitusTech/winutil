@@ -1670,6 +1670,32 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/utc"
   },
+  "WPFTweaksRemoveOneDrive": {
+    "Content": "Remove OneDrive",
+    "Description": "Denys permission to remove onedrive user files than uses its own uninstaller to remove it than brings back permissions",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a029_",
+    "InvokeScript": [
+      "
+      # Deny permission to remove OneDrive folder
+      icacls $Env:OneDrive /deny "Administrators:(D,DC)"
+      
+      Start-Process 'C:\\Windows\\System32\\OneDriveSetup.exe' -ArgumentList '/uninstall' -Wait
+      
+      # Some of OneDrive files use explorer so we need to restart it so we can remove the files
+      Stop-Process -Name explorer
+      Remove-Item \"$Env:LocalAppData\\Microsoft\\OneDrive\" -Recurse -Force
+
+      # Grant back permission to remove OneDrive folder
+      icacls $Env:OneDrive /grant "Administrators:(D,DC)"
+      "
+    ],
+    "UndoScript": [
+      "winget install Microsoft.Onedrive --source winget"
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removeonedrive"
+  },
   "WPFTweaksRemoveHome": {
     "Content": "Remove Home from Explorer",
     "Description": "Removes the Home from Explorer and sets This PC as default",
