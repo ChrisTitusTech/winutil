@@ -1534,28 +1534,14 @@
                                 <LineBreak/>
 
                                 <Bold>INSTRUCTIONS</Bold> <LineBreak/>
-                                - Download a Windows 11 ISO through the following options: <LineBreak/>
-                                    <TextBlock Margin="15,0,0,0" Text="- Select your own ISO: Manually download the latest Windows 11 image from " Foreground="{DynamicResource ComboBoxForegroundColor}"/>
-                                    <TextBlock Name="Win11DownloadLink" Style="{StaticResource HoverTextBlockStyle}" ToolTip="https://www.microsoft.com/software-download/windows11">Microsoft</TextBlock>. <LineBreak/>
-                                    <TextBlock Margin="15,0,0,0" Text="- Get newest ISO automatically: Choose Windows 11 Edition and preferred language." Foreground="{DynamicResource ComboBoxForegroundColor}"/> <LineBreak/>
-                                May take several minutes to process the ISO depending on your machine and connection <LineBreak/>
-                                - Put it somewhere on the C:\ drive so it is easily accessible <LineBreak/>
-                                - Launch WinUtil and MicroWin  <LineBreak/>
-                                - Click on the "Get Windows ISO" button and wait for WinUtil to process the image <LineBreak/>
-                                It will be processed and unpacked which may take some time <LineBreak/>
-                                - Once complete, choose which Windows flavor you want to base your image on <LineBreak/>
-                                - Click the "Start Process" button <LineBreak/>
-                                The process of creating the Windows image may take some time, please check the console and wait for it to say "Done" <LineBreak/>
-                                - Once complete, the target ISO file will be in the directory you have specified <LineBreak/>
-                                - Copy this image to your Ventoy USB Stick, boot to this image, gg
-                                <LineBreak/>
-                                If you are injecting drivers ensure you put all your inf, sys, and dll files for each driver into a separate directory <LineBreak/><LineBreak/>
-                                <Bold>Installing VirtIO drivers</Bold><LineBreak/>
-                                If you plan on using your ISO on QEMU/Proxmox VE, you can bundle VirtIO drivers with your ISO to automatically install drivers. Simply tick the "Include VirtIO drivers" checkbox before starting the process. Then, follow these instructions:<LineBreak/><LineBreak/>
-                                    <TextBlock TextWrapping="WrapWithOverflow" Margin="15,0,0,0" Text="1. Proceed with Setup until you reach the disk selection screen, in which you won't see any drives" Foreground="{DynamicResource ComboBoxForegroundColor}"/><LineBreak/>
-                                    <TextBlock TextWrapping="WrapWithOverflow" Margin="15,0,0,0" Text="2. Click &quot;Load Driver&quot; and click Browse" Foreground="{DynamicResource ComboBoxForegroundColor}"/><LineBreak/>
-                                    <TextBlock TextWrapping="WrapWithOverflow" Margin="15,0,0,0" Text="3. In the folder selection dialog, point to this path: &quot;D:\VirtIO\vioscsi\w11\amd64&quot; (replace amd64 with ARM64 if you are using Windows on ARM, and &quot;D:&quot; with the drive letter of the ISO)" Foreground="{DynamicResource ComboBoxForegroundColor}"/><LineBreak/>
-                                    <TextBlock TextWrapping="WrapWithOverflow" Margin="15,0,0,0" Text="4. Select all drivers that will appear in the list box and click OK" Foreground="{DynamicResource ComboBoxForegroundColor}"/><LineBreak/>
+                                1. Download Windows 11 ISO from <TextBlock Name="Win11DownloadLink" Style="{StaticResource HoverTextBlockStyle}" ToolTip="https://www.microsoft.com/software-download/windows11">Microsoft</TextBlock> directly, or use the "Get newest ISO" option and select your preferred language.<LineBreak/>
+                                2. Click "Get Windows ISO" then select your Windows ISO (may take several minutes depending on your machine and connection)<LineBreak/>
+                                3. Select Windows flavor > Click "Start Process" (may take time, check the console and wait for the "Done" message to appear)<LineBreak/>
+                                4. Finally, write the ISO to a USB drive using your preferred method and boot.<LineBreak/><LineBreak/>
+                                <Bold>Driver Injection:</Bold> <LineBreak/>
+                                Organize drivers in separate folders with .inf, .sys, and .dll files for each device <LineBreak/><LineBreak/>
+                                <Bold>VirtIO Drivers (QEMU/Proxmox):</Bold><LineBreak/>
+                                Check "Include VirtIO drivers" before starting. During setup, select Load Driver > Browse to D:\VirtIO\vioscsi\w11\amd64 (use ARM64 for Windows on ARM) > Select all drivers and click OK<LineBreak/>
                             </TextBlock>
                             <TextBlock Margin="15,0,15,15"
                                 Padding = "1"
