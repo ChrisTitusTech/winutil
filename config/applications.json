@@ -2935,5 +2935,13 @@
         "description": "Zed is a modern, high-performance code editor designed from the ground up for speed and collaboration.",
         "link": "https://zed.dev/",
         "winget": "Zed.Zed"
+    },
+    "WinDirStat": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "WinDirStat",
+        "description": "WinDirStat (Windows Directory Statistics) is a disk usage statistics viewer and cleanup tool for Windows.",
+        "link": "https://windirstat.net/",
+        "winget": "WinDirStat.WinDirStat"
     }
 }
