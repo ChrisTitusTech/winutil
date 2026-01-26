@@ -1,6 +1,6 @@
 function Invoke-WinUtilRemoveEdge {
 
-  $Path = Get-ChildItem "C:\Program Files (x86)\Microsoft\Edge\Application\*Installer\setup.exe"
+  $Path = Get-ChildItem "C:\Program Files (x86)\Microsoft\Edge\Application\*\Installer\setup.exe"
   
   Write-Host "Unlocking The Offical Edge Uninstaller And Removing Microsoft Edge..."
   
