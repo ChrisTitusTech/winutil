@@ -54,7 +54,7 @@ Apply optimizations for performance, privacy, and usability. Choose from preset 
 
 Quick fixes for common Windows problems:
 - Reset network settings
-- Fix Windows Update issues  
+- Fix Windows Update issues
 - Repair system files
 - Access legacy Windows panels
 
@@ -152,7 +152,7 @@ This User Guide covers everything you need to know:
 
 1. **[Getting Started](getting-started/)** - Installation, first run, basic usage
 2. **[Application Store](store/)** - Installing software, using presets
-3. **[Tweaks](tweaks/)** - System optimizations and customizations  
+3. **[Tweaks](tweaks/)** - System optimizations and customizations
 4. **[Features & Fixes](features/)** - Troubleshooting tools and utilities
 5. **[MicroWin](microwin/)** - Creating custom Windows ISOs
 6. **[Updates](updates/)** - Managing Windows Update behavior
