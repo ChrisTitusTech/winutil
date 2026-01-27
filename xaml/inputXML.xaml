@@ -1289,7 +1289,7 @@
                                              Foreground="{DynamicResource MainForegroundColor}">
                                         <Run FontWeight="Bold">Balanced Security Configuration</Run>
                                         <LineBreak/>
-                                         - Feature updates delayed by 2 years
+                                         - Feature updates delayed by 365 days
                                         <LineBreak/>
                                          - Security updates installed after 4 days
                                         <LineBreak/><LineBreak/>

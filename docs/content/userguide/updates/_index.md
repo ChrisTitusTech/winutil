@@ -8,7 +8,7 @@ The utility provides three distinct settings for managing Windows updates: Defau
 ### Security (Recommended) Settings
 - **Description**: This is the recommended setting for all computers.
 - **Update Schedule**:
-    - **Feature Updates**: Delays feature updates by 2 years to avoid potential bugs and instability.
+    - **Feature Updates**: Delays feature updates by 365 days to avoid potential bugs and instability.
     - **Security Updates**: Installs security updates 4 days after their release to ensure system protection against pressing security flaws.
 - **Rationale**:
     - **Feature Updates**: Often introduce new features and bugs; delaying these updates minimizes the risk of system disruptions.
