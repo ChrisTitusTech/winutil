@@ -1591,67 +1591,19 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/tele"
   },
-  "WPFTweaksDisableEdge": {
-    "Content": "Disable Edge",
-    "Description": "Prevent msedge.exe from running with explorer policies.",
+  "WPFTweaksRemoveEdge": {
+    "Content": "Remove Microsoft Edge",
+    "Description": "Unblocks Microsoft Edge uninstaller restrictions than uses that uninstaller to remove Microsoft Edge",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a023_",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\DisallowRun",
-        "Name": "DisableEdge",
-        "Type": "String",
-        "Value": "msedge.exe",
-        "OriginalValue": "<RemoveEntry>"
-      },
-      {
-        "Path": "HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
-        "Name": "DisallowRun",
-        "Type": "DWord",
-        "Value": "1",
-        "OriginalValue": "<RemoveEntry>"
-      }
-    ],
-    "link": ""
-  },
-  "WPFTweaksMakeEdgeUninstallable": {
-    "Content": "Make Edge Uninstallable via settings",
-    "Description": "Makes it so you can uninstall edge via settings > installed apps",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a026_",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Microsoft Edge",
-        "Name": "NoRemove",
-        "Type": "Dword",
-        "Value": "0",
-        "OriginalValue": "1"
-      }
-    ],
+    "Order": "a028_",
     "InvokeScript": [
-      "
-      $File = \"C:\\Windows\\System32\\IntegratedServicesRegionPolicySet.json\"
-
-      takeown /f $File
-      icacls $File /grant \"Administrators:(F)\"
-
-      $FileContent = Get-Content $File
-      $FileContent[7] = $FileContent[7] -replace \"disabled\", \"enabled\"
-      Set-Content $File $FileContent
-      "
+      "Invoke-WinUtilRemoveEdge"
     ],
     "UndoScript": [
       "
-      $File = \"C:\\Windows\\System32\\IntegratedServicesRegionPolicySet.json\"
-
-      takeown /f $File
-      icacls $File /grant \"Administrators:(F)\"
-
-      $FileContent = Get-Content $File
-      $FileContent[7] = $FileContent[7] -replace \"enabled\", \"disabled\"
-      Set-Content $File $FileContent
+      Write-Host 'Installing Microsoft Edge...'
+      winget install Microsoft.Edge --source winget
       "
     ],
     "link": ""
