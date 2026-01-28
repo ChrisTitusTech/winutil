@@ -4,10 +4,10 @@
 - [ ] New feature
 - [ ] Bug fix
 - [ ] Documentation update
-- [ ] Refactoring
 - [ ] Hotfix
-- [ ] Security patch
 - [ ] UI/UX improvement
+
+<!-- This automatically adds labels to your PR based on the selections above. -->
 
 ## Description
 <!--[Provide a detailed explanation of the changes you have made. Include the reasons behind these changes and any relevant context. Link any related issues.]-->
@@ -18,7 +18,5 @@
 
 ## Checklist
 - [ ] My code adheres to the coding and style guidelines of the project.
-- [ ] I have performed a self-review of my own code.
 - [ ] I have commented my code, particularly in hard-to-understand areas.
 - [ ] I have made corresponding changes to the documentation.
-- [ ] My changes generate no errors/warnings/merge conflicts.
