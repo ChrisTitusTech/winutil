@@ -50,26 +50,56 @@ Function Invoke-WinUtilCurrentSystem {
 
             $Config = $psitem.Name
             #WPFEssTweaksTele
-            $registryKeys = $sync.configs.tweaks.$Config.registry
-            $scheduledtaskKeys = $sync.configs.tweaks.$Config.scheduledtask
-            $serviceKeys = $sync.configs.tweaks.$Config.service
+            $entry = $sync.configs.tweaks.$Config
+            $registryKeys = $entry.registry
+            $scheduledtaskKeys = $entry.scheduledtask
+            $serviceKeys = $entry.service
+            $appxKeys = $entry.appx
+            $invokeScript = $entry.InvokeScript
+            $entryType = $entry.Type
 
             if($registryKeys -or $scheduledtaskKeys -or $serviceKeys) {
                 $Values = @()
 
+                if($entryType -eq "Toggle") {
+                    if(-not (Get-WinUtilToggleStatus $Config)) {
+                        $values += $False
+                    }
+                } else {
+                    $registryMatchCount = 0
+                    $registryTotal = 0
 
-                Foreach ($tweaks in $registryKeys) {
-                    Foreach($tweak in $tweaks) {
+                    Foreach ($tweaks in $registryKeys) {
+                        Foreach($tweak in $tweaks) {
+                            $registryTotal++
+                            $regstate = $null
 
-                        if(test-path $tweak.Path) {
-                            $actualValue = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
-                            $expectedValue = $tweak.Value
-                            if ($expectedValue -notlike $actualValue) {
-                                $values += $False
+                            if(Test-Path $tweak.Path) {
+                                $regstate = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
                             }
-                        } else {
-                            $values += $False
+
+                            if($null -eq $regstate) {
+                                switch ($tweak.DefaultState) {
+                                    "true" {
+                                        $regstate = $tweak.Value
+                                    }
+                                    "false" {
+                                        $regstate = $tweak.OriginalValue
+                                    }
+                                    default {
+                                        $regstate = $tweak.OriginalValue
+                                    }
+                                }
+                            }
+
+                            if ($regstate -eq $tweak.Value) {
+                                $registryMatchCount++
+                            }
                         }
+                    }
+
+                    if($registryTotal -gt 0 -and $registryMatchCount -ne $registryTotal) {
+                        $values += $False
                     }
                 }
 
@@ -103,6 +133,10 @@ Function Invoke-WinUtilCurrentSystem {
 
                 if($values -notcontains $false) {
                     Write-Output $Config
+                }
+            } else {
+                if($invokeScript -or $appxKeys) {
+                    Write-Debug "Skipping $Config in Get Installed: no detectable registry, scheduled task, or service state."
                 }
             }
         }
