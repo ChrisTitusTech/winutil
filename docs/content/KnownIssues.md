@@ -22,11 +22,10 @@ If it still isn't working and you live in India, it might be due to India blocki
 
 If you are still having issues, try using a **VPN**, or changing your **DNS provider** to one of following two providers:
 
-|  Provider  | Primary DNS |   Secondary DNS   |
-| :--------: | :---------: | :---------------: |
-| Cloudflare |  `1.1.1.1`  |     `1.0.0.1`     |
-|   Google   |  `8.8.8.8`  |     `8.8.4.4`     |
-|   Quad9    |  `9.9.9.9`  | `149.112.112.112` |
+|  Provider  | Primary DNS | Secondary DNS |
+| :--------: | :---------: | :-----------: |
+| Cloudflare |  `1.1.1.1`  |   `1.0.0.1`   |
+|   Google   |  `8.8.8.8`  |   `8.8.4.4`   |
 
 ### Script blocked by Execution Policy
 
