@@ -96,14 +96,20 @@ If the problem persists after trying these steps, additional troubleshooting is 
 This could be for a number of reasons:
 
 - Turn on fast startup: Press `Windows key`+`R`, then type:
+
   ```bat
   control /name Microsoft.PowerOptions /page pageGlobalSettings
   ```
-- If that doesn't work, disable Hibernation: - Press `Windows Key`+`X` and select _PowerShell (Admin)_ in Windows 10, or `Windows Terminal (Admin)` in Windows 11. - In the PowerShell window, type:
-  `bat
-        powercfg /H off
-        `
-  Related issue: [#69](https://github.com/ChrisTitusTech/Winutil/issues/69)
+
+If that doesn't work, disable Hibernation:
+
+- Press `Windows Key`+`X` and select _PowerShell (Admin)_ in Windows 10, or `Windows Terminal (Admin)` in Windows 11. then type:
+
+```bat
+powercfg /H off
+```
+
+Related issue: [#69](https://github.com/ChrisTitusTech/Winutil/issues/69)
 
 ### Windows Search does not work
 
