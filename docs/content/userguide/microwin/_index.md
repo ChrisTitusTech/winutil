@@ -146,7 +146,7 @@ If you have a Ventoy drive, you can copy your ISO file to it quickly and easily.
 You can learn more about Ventoy drives [here](https://www.ventoy.net/en/index.html).
 
 > [!NOTE]
-> Newer versions of Ventoy may have compatibility issues with MicroWin images.
+> Newer versions of MicroWin images may have compatibility issues with ventoy.
 
 ### Setting up a custom user
 
