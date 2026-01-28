@@ -1,5 +1,9 @@
 name: Label PRs by Type of Change
 
+permissions:
+  pull-requests: write
+  issues: write
+
 on:
   pull_request:
     types: [opened, edited, synchronize]
@@ -7,9 +11,6 @@ on:
 jobs:
   label-pr:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      issues: write
     steps:
       - name: Check PR body for Type of Change
         uses: actions/github-script@v7
