@@ -1,0 +1,19 @@
+{{- $section := .Get "section" | lower -}}
+{{- $pages := slice -}}
+{{- range .Site.RegularPages -}}
+{{- if in .RelPermalink $section -}}
+{{- $pageTitle := .Title -}}
+{{- if eq $pageTitle "" -}}
+  {{- $pageTitle = .File.BaseFileName | humanize | title -}}
+{{- end -}}
+{{- if findRE "^# .+" .RawContent -}}
+  {{- $pageTitle = replaceRE "(?s)^# (.+?)\\n.*" "$1" .RawContent -}}
+{{- end -}}
+{{- $pages = $pages | append (dict "title" $pageTitle "url" .RelPermalink) -}}
+{{- end -}}
+{{- end -}}
+<ul>
+{{- range sort $pages "title" "asc" }}
+<li><a href="{{ .url }}">{{ .title }}</a></li>
+{{- end }}
+</ul>
