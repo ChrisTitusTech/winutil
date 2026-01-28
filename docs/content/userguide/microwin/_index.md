@@ -52,7 +52,7 @@ To successfully use MicroWin with your Windows image, you need the following:
 
 ### Choosing your index
 
-By default, MicroWin will target the Pro edition of Windows. The Pro edition is a good baseline for IT administrators **and** end-users, due to the inclusion of Group Policy, the ability to join domains, and more things that you can't find with the Home edition. For more information, check out [this comparison chart](https://en.wikipedia.org/wiki/Windows_11#Comparison_chart).
+By default, MicroWin will target the Pro edition of Windows. The Pro edition is a good baseline for IT administrators **and** end-users, due to the inclusion of Group Policy, the ability to join domains, and more things that you can't find with the Home edition. For more information, check out [this comparison chart](https://en.wikipedia.org/wiki/Windows_11_version_history).
 
 Obviously, you should pick the edition of Windows for which you have a license. To change the edition to process, select the drop-down menu under "Choose Windows SKU" and select your edition.
 
