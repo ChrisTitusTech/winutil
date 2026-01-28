@@ -912,6 +912,14 @@
         "link": "https://www.cpuid.com/softwares/hwmonitor.html",
         "winget": "CPUID.HWMonitor"
     },
+    "imhex": {
+        "category": "Development",
+        "choco": "na",
+        "content": "ImHex (Hex Editor)",
+        "description": "A modern, featureful Hex Editor for Reverse Engineers and Developers.",
+        "link": "https://imhex.werwolv.net/",
+        "winget": "WerWolv.ImHex"
+    },
     "imageglass": {
         "category": "Multimedia Tools",
         "choco": "imageglass",
