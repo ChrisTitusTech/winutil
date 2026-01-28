@@ -105,9 +105,9 @@ If that doesn't work, disable Hibernation:
 
 - Press `Windows Key`+`X` and select _PowerShell (Admin)_ in Windows 10, or `Windows Terminal (Admin)` in Windows 11. then type:
 
-```bat
-powercfg /H off
-```
+  ```bat
+  powercfg /H off
+  ```
 
 Related issue: [#69](https://github.com/ChrisTitusTech/Winutil/issues/69)
 
@@ -120,7 +120,9 @@ Enable Background Apps. Related issues: [#69](https://github.com/ChrisTitusTech/
 Set the Xbox Accessory Management Service to Automatic:
 
 ```
+
 Get-Service -Name "XboxGipSvc" | Set-Service -StartupType Automatic
+
 ```
 
 Related issue: [#198](https://github.com/ChrisTitusTech/Winutil/issues/198)
@@ -135,6 +137,9 @@ Launch the Script and click _Enable Action Center_.
   ```bat
   control /name Microsoft.FolderOptions
   ```
+
+````
+
 - Change the _Open File Explorer to_ option to _This PC_.
 
 ### Battery drains too fast
@@ -227,3 +232,4 @@ These troubleshooting steps are generic, but should help in most situations. You
 - Background applications that use CPU and memory, make lots of or large network requests, read/write to disk frequently, or that keep your PC awake when it could be conserving energy are the next major concern. Avoid installing programs you don't need, only use programs you trust, and configure applications to use as little power and run as infrequently as possible.
 - Windows performs a lot of tasks that may affect battery life by default. Changing settings, stopping scheduled tasks, and disabling features can help the system stay in lower power states to conserve battery.
 - Bad chargers, inconsistent power input, and high temperatures will cause batteries to degrade and discharge faster. Use trusted high-quality chargers, ensure input power is steady, clean any fans or airflow ports, and keep the battery/PC cool.
+````
