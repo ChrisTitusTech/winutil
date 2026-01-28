@@ -1140,6 +1140,13 @@
         "Type": "DWord",
         "Value": "0",
         "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "Name": "BraveStatsPingEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "<RemoveEntry>"
       }
     ]
   },
@@ -1162,6 +1169,13 @@
         "Name": "PersonalizationReportingEnabled",
         "Type": "DWord",
         "Value": "0",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "ofefcgjbeghpigppfmkologfjadafddi",
+        "Type": "String",
+        "Value": "1",
         "OriginalValue": "<RemoveEntry>"
       },
       {
@@ -1638,7 +1652,7 @@
 
       Write-Host \"Uninstalling OneDrive...\"
       Start-Process 'C:\\Windows\\System32\\OneDriveSetup.exe' -ArgumentList '/uninstall' -Wait
-      
+
       # Some of OneDrive files use explorer, and OneDrive uses FileCoAuth
       Write-Host \"Removing leftover OneDrive Files...\"
       Stop-Process -Name FileCoAuth,Explorer
@@ -2028,10 +2042,10 @@
       Write-Host \"Remove Copilot\"
       Get-AppxPackage -AllUsers *Copilot* | Remove-AppxPackage -AllUsers
       Get-AppxPackage -AllUsers Microsoft.MicrosoftOfficeHub | Remove-AppxPackage -AllUsers
-      
+
       $Appx = (Get-AppxPackage MicrosoftWindows.Client.CoreAI).PackageFullName
       $Sid = (Get-LocalUser $Env:UserName).Sid.Value
-      
+
       New-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Appx\\AppxAllUserStore\\EndOfLife\\$Sid\\$Appx\" -Force
       Remove-AppxPackage $Appx
       "
@@ -2140,7 +2154,7 @@
 
       Copy-Item $hosts \"$hosts.bak\"
       Invoke-WebRequest $hostsUrl -OutFile $hosts
-      ipconfig flushdns
+      ipconfig /flushdns
 
       Write-Host \"Added Adobe url block list from host file\"
       "
@@ -2152,7 +2166,7 @@
 
       Copy-Item $backup $hosts
       Remove-Item $backup
-      ipconfig flushdns
+      ipconfig /flushdns
 
       Write-Host \"Removed Adobe url block list from host file\"
       "
