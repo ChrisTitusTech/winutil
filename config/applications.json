@@ -552,6 +552,14 @@
         "link": "https://espanso.org/",
         "winget": "Espanso.Espanso"
     },
+    "ffmpeg": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "eibol.FFmpegBatchAVConverter",
+        "description": "FFmpeg Batch AV Converter is a universal audio and video encoder, that allows to use the full potential of ffmpeg command line with a few mouse clicks in a convenient GUI with drag and drop, progress information.",
+        "link": "https://ffmpeg-batch.sourceforge.io/",
+        "winget": "eibol.FFmpegBatchAVConverter"
+    },
     "falkon": {
         "category": "Browsers",
         "choco": "falkon",
@@ -911,6 +919,14 @@
         "description": "HWMonitor is a hardware monitoring program that reads PC systems main health sensors.",
         "link": "https://www.cpuid.com/softwares/hwmonitor.html",
         "winget": "CPUID.HWMonitor"
+    },
+    "imhex": {
+        "category": "Development",
+        "choco": "na",
+        "content": "ImHex (Hex Editor)",
+        "description": "A modern, featureful Hex Editor for Reverse Engineers and Developers.",
+        "link": "https://imhex.werwolv.net/",
+        "winget": "WerWolv.ImHex"
     },
     "imageglass": {
         "category": "Multimedia Tools",
