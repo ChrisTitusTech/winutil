@@ -113,16 +113,14 @@ Related issue: [#69](https://github.com/ChrisTitusTech/Winutil/issues/69)
 
 ### Windows Search does not work
 
-Enable Background Apps. Related issues: [#69](https://github.com/ChrisTitusTech/Winutil/issues/69) [95](https://github.com/ChrisTitusTech/Winutil/issues/95) [#232](https://github.com/ChrisTitusTech/Winutil/issues/232)
+Enable Background Apps. Related issues: [#69](https://github.com/ChrisTitusTech/Winutil/issues/69) [#95](https://github.com/ChrisTitusTech/Winutil/issues/95) [#232](https://github.com/ChrisTitusTech/Winutil/issues/232)
 
 ### Xbox Game Bar Activation Broken
 
 Set the Xbox Accessory Management Service to Automatic:
 
-```
-
+```powershell
 Get-Service -Name "XboxGipSvc" | Set-Service -StartupType Automatic
-
 ```
 
 Related issue: [#198](https://github.com/ChrisTitusTech/Winutil/issues/198)
@@ -134,11 +132,10 @@ Launch the Script and click _Enable Action Center_.
 ### Explorer (file browser) no longer launches
 
 - Press `Windows key`+`R` then type:
+
   ```bat
   control /name Microsoft.FolderOptions
   ```
-
-````
 
 - Change the _Open File Explorer to_ option to _This PC_.
 
@@ -232,4 +229,3 @@ These troubleshooting steps are generic, but should help in most situations. You
 - Background applications that use CPU and memory, make lots of or large network requests, read/write to disk frequently, or that keep your PC awake when it could be conserving energy are the next major concern. Avoid installing programs you don't need, only use programs you trust, and configure applications to use as little power and run as infrequently as possible.
 - Windows performs a lot of tasks that may affect battery life by default. Changing settings, stopping scheduled tasks, and disabling features can help the system stay in lower power states to conserve battery.
 - Bad chargers, inconsistent power input, and high temperatures will cause batteries to degrade and discharge faster. Use trusted high-quality chargers, ensure input power is steady, clean any fans or airflow ports, and keep the battery/PC cool.
-````
