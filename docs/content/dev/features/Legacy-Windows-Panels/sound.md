@@ -1,6 +1,6 @@
 # Sound Settings
 
-```json
+```powershell
 function Invoke-WPFControlPanel {
     <#
 

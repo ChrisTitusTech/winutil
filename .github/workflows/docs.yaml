@@ -7,7 +7,7 @@ on:
     branches:
       - main
     paths:
-      - 'docs/**' # ONLY triggers if files in the 'docs' folder are changed
+      - "docs/**" # ONLY triggers if files in the 'docs' folder are changed
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -34,7 +34,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      HUGO_VERSION: 0.145.0
+      HUGO_VERSION: 0.147.7
       HUGO_ENVIRONMENT: production
       TZ: America/Chicago
     steps:
@@ -59,8 +59,7 @@ jobs:
           path: |
             ${{ runner.temp }}/hugo_cache
           key: hugo-${{ github.run_id }}
-          restore-keys:
-            hugo-
+          restore-keys: hugo-
       - name: Build with Hugo
         run: |
           hugo \

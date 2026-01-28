@@ -1,6 +1,6 @@
 # Reset Windows Update
 
-```json
+```powershell
 function Invoke-WPFFixesUpdate {
 
     <#

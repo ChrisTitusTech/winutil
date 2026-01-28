@@ -1,6 +1,6 @@
 # System Properties
 
-```json
+```powershell
 function Invoke-WPFControlPanel {
     <#
 

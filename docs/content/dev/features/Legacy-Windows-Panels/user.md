@@ -1,6 +1,6 @@
 # User Accounts
 
-```json
+```powershell
 function Invoke-WPFControlPanel {
     <#
 

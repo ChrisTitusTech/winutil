@@ -1,6 +1,6 @@
 # Network Connections
 
-```json
+```powershell
 function Invoke-WPFControlPanel {
     <#
 

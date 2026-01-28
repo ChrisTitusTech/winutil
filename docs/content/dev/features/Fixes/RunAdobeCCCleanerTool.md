@@ -1,6 +1,6 @@
 # Remove Adobe Creative Cloud
 
-```json
+```powershell
 function Invoke-WPFRunAdobeCCCleanerTool {
     <#
     .SYNOPSIS

@@ -1,6 +1,6 @@
 # Region
 
-```json
+```powershell
 function Invoke-WPFControlPanel {
     <#
 

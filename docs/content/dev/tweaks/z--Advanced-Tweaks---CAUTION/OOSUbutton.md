@@ -1,6 +1,6 @@
 # Run OO Shutup 10
 
-```json
+```powershell
 function Invoke-WPFOOSU {
     <#
     .SYNOPSIS

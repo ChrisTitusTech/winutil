@@ -23,19 +23,19 @@ From this screen, you'll have to do one of the following:
 {{< image src="images/microwin/microwin-downloader" >}}
 
 > [!NOTE]
-When downloading your ISO file, network conditions (such as speed and location) can affect the time you have to wait for the download to complete and the availability of such download.
+> When downloading your ISO file, network conditions (such as speed and location) can affect the time you have to wait for the download to complete and the availability of such download.
 
 ### Compatibility
 
 You may be wondering if your Windows image is compatible with the MicroWin process. Because of this, we present to you a compatibility list:
 
-| Version | Compatible? |
-|:--|:--|
-| Windows 7 | ❌ Not supported |
-| Windows 8 | ❌ Not supported |
-| Windows 8.1 | ❌ Not supported |
-| Windows 10 | ℹ️ Only the latest versions are supported, and you will not get the full experience |
-| Windows 11 | 👍 Supported (21H2-24H2) |
+| Version     | Compatible?                                            |
+| :---------- | :----------------------------------------------------- |
+| Windows 7   | ❌ Not supported                                       |
+| Windows 8   | ❌ Not supported                                       |
+| Windows 8.1 | ❌ Not supported                                       |
+| Windows 10  | ❌ Not supported, But may work on the latest versions. |
+| Windows 11  | 👍 Supported (21H2-25H2)                               |
 
 After getting information about your ISO file, you will see the following screen:
 
@@ -45,14 +45,14 @@ After getting information about your ISO file, you will see the following screen
 
 To successfully use MicroWin with your Windows image, you need the following:
 
-- **The latest versions of Windows 10, or Windows 11**
+- **The latest versions of Windows 11**
 - **Enough space**. We recommend having, at least, double the size of your ISO file. However, you may need more if you want to inject drivers
 
 ## Options
 
 ### Choosing your index
 
-By default, MicroWin will target the Pro edition of Windows. The Pro edition is a good baseline for IT administrators **and** end-users, due to the inclusion of Group Policy, the ability to join domains, and more things that you can't find with the Home edition. For more information, check out [this comparison chart](https://en.wikipedia.org/wiki/Windows_10_editions#Comparison_chart).
+By default, MicroWin will target the Pro edition of Windows. The Pro edition is a good baseline for IT administrators **and** end-users, due to the inclusion of Group Policy, the ability to join domains, and more things that you can't find with the Home edition. For more information, check out [this comparison chart](https://en.wikipedia.org/wiki/Windows_11_version_history).
 
 Obviously, you should pick the edition of Windows for which you have a license. To change the edition to process, select the drop-down menu under "Choose Windows SKU" and select your edition.
 
@@ -67,7 +67,7 @@ If you want to use MicroWin on a real system, you may want to include the driver
 - **Injecting VirtIO drivers:** if you plan on using the target Windows image with QEMU/Proxmox VE, or any UI that uses it (like `virt-manager` on Linux), you can automatically download the VirtIO driver ISO and put its contents into your ISO file
 
 > [!NOTE]
-Injecting VirtIO drivers is only supported on v25.01.11 and later
+> Injecting VirtIO drivers is only supported on v25.01.11 and later
 
 Of course, you can continue without setting up drivers. Simply leave the options blank and continue with the process.
 
@@ -145,6 +145,9 @@ If you have a Ventoy drive, you can copy your ISO file to it quickly and easily.
 
 You can learn more about Ventoy drives [here](https://www.ventoy.net/en/index.html).
 
+> [!NOTE]
+> Newer versions of MicroWin images may have compatibility issues with ventoy.
+
 ### Setting up a custom user
 
 If you want to set up a custom user, effectively creating a completely unattended installation, you can set up a user name and password:
@@ -152,7 +155,7 @@ If you want to set up a custom user, effectively creating a completely unattende
 {{< image src="images/microwin/microwin-customuser" >}}
 
 > [!NOTE]
-To set up a custom user, you need to specify its name, which cannot surpass 20 characters. Otherwise, a user named "User" will be created. However, you don't need to set up a password. If you leave the password box blank, you can take advantage of auto-logons, but **do what you think it's best for your use case**.
+> To set up a custom user, you need to specify its name, which cannot surpass 20 characters. Otherwise, a user named "User" will be created. However, you don't need to set up a password. If you leave the password box blank, you can take advantage of auto-logons, but **do what you think it's best for your use case**.
 
 After configuring all your desired settings, click "Start the process" and specify the location of your ISO file.
 

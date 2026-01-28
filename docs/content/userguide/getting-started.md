@@ -11,7 +11,7 @@ Winutil is a powerful Windows utility that helps you optimize, customize, and ma
 
 Before running Winutil, ensure your system meets these requirements:
 
-- **Operating System**: Windows 10 (version 1809 or later) or Windows 11
+- **Operating System**: Windows 10 (Latest Version) or Windows 11
 - **PowerShell**: Version 5.1 or later (included by default in Windows 10/11)
 - **Administrator Access**: Required for system-level changes
 - **Internet Connection**: Required for downloading applications and updates
@@ -26,17 +26,20 @@ Winutil doesn't require traditional installation. It runs directly from PowerShe
 There are several ways to open PowerShell with admin rights:
 
 **Method 1: Start Menu (Recommended)**
+
 1. Right-click on the Windows Start button
 2. Select "Windows PowerShell (Admin)" on Windows 10
 3. Or select "Terminal (Admin)" on Windows 11
 
 **Method 2: Search Method**
+
 1. Press the `Windows` key
 2. Type "PowerShell" or "Terminal"
 3. Press `Ctrl + Shift + Enter` to launch as administrator
 4. Or right-click and select "Run as administrator"
 
 **Method 3: Run Dialog**
+
 1. Press `Windows + R`
 2. Type `powershell`
 3. Press `Ctrl + Shift + Enter`
@@ -46,11 +49,13 @@ There are several ways to open PowerShell with admin rights:
 Once PowerShell is open with administrator privileges, run one of these commands:
 
 **Stable Release (Recommended for most users)**
+
 ```powershell
 irm "https://christitus.com/win" | iex
 ```
 
 **Development Branch (For testing latest features)**
+
 ```powershell
 irm "https://christitus.com/windev" | iex
 ```
@@ -61,6 +66,7 @@ irm "https://christitus.com/windev" | iex
 ### Step 3: Wait for Winutil to Load
 
 The first time you run Winutil, it may take a few moments to:
+
 - Download the latest version
 - Initialize the interface
 - Load all features and settings
@@ -80,6 +86,7 @@ On your first run, you may be prompted to configure WinGet (Windows Package Mana
 Winutil opens with a clean, tabbed interface:
 
 **Main Tabs**:
+
 - **Install**: Browse and install applications
 - **Tweaks**: Apply system optimizations and customizations
 - **Config**: Access system tools and utilities
@@ -121,12 +128,14 @@ For a better Windows experience without risks:
 ### Installing Applications
 
 **Single Application**:
+
 1. Open **Install** tab
 2. Search for the application name
 3. Check the box next to it
 4. Click "Install Selected"
 
 **Multiple Applications**:
+
 1. Check multiple application boxes
 2. All checked apps will install in sequence
 3. Progress is shown in the bottom panel
@@ -134,16 +143,19 @@ For a better Windows experience without risks:
 ### Applying Tweaks
 
 **Essential Tweaks** (Safe for all users):
+
 1. Go to **Tweaks** tab
 2. Select from Essential Tweaks section
 3. Click "Run Tweaks"
 
 **Advanced Tweaks** (Use with caution):
+
 1. Only modify if you understand the implications
 2. Always create a restore point first
 3. Review documentation for each tweak
 
 **Undoing Tweaks**:
+
 1. Select the same tweaks you applied
 2. Click "Undo Selected Tweaks"
 3. System will revert to previous state
@@ -183,6 +195,7 @@ Winutil offers several preset configurations:
 ## Safety Tips
 
 ✅ **DO**:
+
 - Create restore points before major changes
 - Read tweak descriptions before applying
 - Start with Essential Tweaks
@@ -190,6 +203,7 @@ Winutil offers several preset configurations:
 - Back up important data
 
 ❌ **DON'T**:
+
 - Apply all tweaks at once without understanding them
 - Skip creating restore points
 - Use Advanced Tweaks without research
@@ -203,11 +217,13 @@ Winutil offers several preset configurations:
 **If the download fails**:
 
 1. Try the direct GitHub link:
+
 ```powershell
 irm https://github.com/ChrisTitusTech/Winutil/releases/latest/download/Winutil.ps1 | iex
 ```
 
 2. Force TLS 1.2 (for older Windows versions):
+
 ```powershell
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 irm "https://christitus.com/win" | iex
@@ -260,14 +276,14 @@ If you need assistance:
 
 ## Quick Reference Card
 
-| Task | Location | Action |
-|------|----------|--------|
-| Install Apps | Install Tab | Check boxes → Install Selected |
-| Apply Tweaks | Tweaks Tab | Select tweaks → Run Tweaks |
-| Undo Tweaks | Tweaks Tab | Select tweaks → Undo Selected Tweaks |
-| Create Restore Point | Tweaks Tab | Essential Tweaks section |
-| Fix Network | Config Tab | Fixes → Reset Network |
-| Change DNS | Tweaks Tab | DNS section |
-| Open Control Panel | Config Tab | Legacy Windows Panels |
+| Task                 | Location    | Action                               |
+| -------------------- | ----------- | ------------------------------------ |
+| Install Apps         | Install Tab | Check boxes → Install Selected       |
+| Apply Tweaks         | Tweaks Tab  | Select tweaks → Run Tweaks           |
+| Undo Tweaks          | Tweaks Tab  | Select tweaks → Undo Selected Tweaks |
+| Create Restore Point | Tweaks Tab  | Essential Tweaks section             |
+| Fix Network          | Config Tab  | Fixes → Reset Network                |
+| Change DNS           | Tweaks Tab  | DNS section                          |
+| Open Control Panel   | Config Tab  | Legacy Windows Panels                |
 
 Happy optimizing! 🚀
