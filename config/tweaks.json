@@ -2148,10 +2148,24 @@
     "Order": "a026_",
     "registry": [
       {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\MsMpEng.exe",
-        "Name": "Debugger",
-        "Type": "String",
-        "Value": "cmd.exe /c exit",
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows Defender",
+        "Name": "DisableAntiSpyware",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows Defender",
+        "Name": "DisableAntiVirus",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows Defender",
+        "Name": "ServiceKeepAlive",
+        "Type": "DWord",
+        "Value": "1",
         "OriginalValue": "<RemoveEntry>"
       }
     ],
