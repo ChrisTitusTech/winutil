@@ -1,7 +1,7 @@
 name: Label PRs by Type of Change
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, edited, synchronize]
 
 jobs:
