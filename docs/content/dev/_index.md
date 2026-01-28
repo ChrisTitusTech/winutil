@@ -45,6 +45,7 @@ weight: 3
 - [Remove Home and Gallery from explorer](tweaks/z--advanced-tweaks---caution/removehomegallery/)
 - [Make Edge Uninstallable](tweaks/z--advanced-tweaks---caution/edgeuninstall/)
 - [Run OO Shutup 10](tweaks/z--advanced-tweaks---caution/oosubutton/)
+- [Remove OneDrive](tweaks/z--advanced-tweaks---caution//removeonedrive)
 - [Set Classic Right-Click Menu ](tweaks/z--advanced-tweaks---caution/rightclickmenu/)
 - [Set Display for Performance](tweaks/z--advanced-tweaks---caution/display/)
 - [Set Time to UTC (Dual Boot)](tweaks/z--advanced-tweaks---caution/utc/)

@@ -1584,71 +1584,26 @@
       "
       # Disable Defender Auto Sample Submission
       Set-MpPreference -SubmitSamplesConsent 2
+
+      $Memory = (Get-CimInstance Win32_PhysicalMemory | Measure-Object Capacity -Sum).Sum / 1KB
+      Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value $Memory
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/tele"
   },
-  "WPFTweaksDisableEdge": {
-    "Content": "Disable Edge",
-    "Description": "Prevent msedge.exe from running with explorer policies.",
+  "WPFTweaksRemoveEdge": {
+    "Content": "Remove Microsoft Edge",
+    "Description": "Unblocks Microsoft Edge uninstaller restrictions than uses that uninstaller to remove Microsoft Edge",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a023_",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\DisallowRun",
-        "Name": "DisableEdge",
-        "Type": "String",
-        "Value": "msedge.exe",
-        "OriginalValue": "<RemoveEntry>"
-      },
-      {
-        "Path": "HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
-        "Name": "DisallowRun",
-        "Type": "DWord",
-        "Value": "1",
-        "OriginalValue": "<RemoveEntry>"
-      }
-    ],
-    "link": ""
-  },
-  "WPFTweaksMakeEdgeUninstallable": {
-    "Content": "Make Edge Uninstallable via settings",
-    "Description": "Makes it so you can uninstall edge via settings > installed apps",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a026_",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Microsoft Edge",
-        "Name": "NoRemove",
-        "Type": "Dword",
-        "Value": "0",
-        "OriginalValue": "1"
-      }
-    ],
+    "Order": "a028_",
     "InvokeScript": [
-      "
-      $File = \"C:\\Windows\\System32\\IntegratedServicesRegionPolicySet.json\"
-
-      takeown /f $File
-      icacls $File /grant \"Administrators:(F)\"
-
-      $FileContent = Get-Content $File
-      $FileContent[7] = $FileContent[7] -replace \"disabled\", \"enabled\"
-      Set-Content $File $FileContent
-      "
+      "Invoke-WinUtilRemoveEdge"
     ],
     "UndoScript": [
       "
-      $File = \"C:\\Windows\\System32\\IntegratedServicesRegionPolicySet.json\"
-
-      takeown /f $File
-      icacls $File /grant \"Administrators:(F)\"
-
-      $FileContent = Get-Content $File
-      $FileContent[7] = $FileContent[7] -replace \"enabled\", \"disabled\"
-      Set-Content $File $FileContent
+      Write-Host 'Installing Microsoft Edge...'
+      winget install Microsoft.Edge --source winget
       "
     ],
     "link": ""
@@ -1663,12 +1618,44 @@
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
         "Name": "RealTimeIsUniversal",
-        "Type": "DWord",
+        "Type": "QWord",
         "Value": "1",
         "OriginalValue": "0"
       }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/utc"
+  },
+  "WPFTweaksRemoveOneDrive": {
+    "Content": "Remove OneDrive",
+    "Description": "Denys permission to remove onedrive user files than uses its own uninstaller to remove it than brings back permissions",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a029_",
+    "InvokeScript": [
+      "
+      # Deny permission to remove OneDrive folder
+      icacls $Env:OneDrive /deny \"Administrators:(D,DC)\"
+
+      Write-Host \"Uninstalling OneDrive...\"
+      Start-Process 'C:\\Windows\\System32\\OneDriveSetup.exe' -ArgumentList '/uninstall' -Wait
+      
+      # Some of OneDrive files use explorer, and OneDrive uses FileCoAuth
+      Write-Host \"Removing leftover OneDrive Files...\"
+      Stop-Process -Name FileCoAuth,Explorer
+      Remove-Item \"$Env:LocalAppData\\Microsoft\\OneDrive\" -Recurse -Force
+      Remove-Item \"C:\\ProgramData\\Microsoft OneDrive\" -Recurse -Force
+
+      # Grant back permission to accses OneDrive folder
+      icacls $Env:OneDrive /grant \"Administrators:(D,DC)\"
+      "
+    ],
+    "UndoScript": [
+      "
+      Write-Host \"Installing OneDrive\"
+      winget install Microsoft.Onedrive --source winget
+      "
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removeonedrive"
   },
   "WPFTweaksRemoveHome": {
     "Content": "Remove Home from Explorer",

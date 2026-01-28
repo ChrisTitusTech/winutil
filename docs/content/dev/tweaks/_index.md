@@ -29,6 +29,7 @@
 - [Remove Gallery from explorer](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveGallery.md)
 - [Remove Home from explorer](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveHome.md)
 - [Run OO Shutup 10](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/OOSUbutton.md)
+- [Remove OneDrive](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveOneDrive.md)
 - [Set Classic Right-Click Menu](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/RightClickMenu.md)
 - [Set Display for Performance](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/Display.md)
 - [Set Time to UTC (Dual Boot)](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/UTC.md)
