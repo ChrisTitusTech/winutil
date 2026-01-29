@@ -48,6 +48,7 @@ weight: 3
 - [Remove OneDrive](tweaks/z--advanced-tweaks---caution//removeonedrive)
 - [Set Classic Right-Click Menu ](tweaks/z--advanced-tweaks---caution/rightclickmenu/)
 - [Set Display for Performance](tweaks/z--advanced-tweaks---caution/display/)
+- [Disable GameDVR](tweaks/z--Advanced-Tweaks---CAUTION/gamedvr)
 - [Set Time to UTC (Dual Boot)](tweaks/z--advanced-tweaks---caution/utc/)
 
 ### Customize Preferences
