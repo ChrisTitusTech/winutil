@@ -2,7 +2,6 @@
 
 - [Adobe Network Block](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/BlockAdobeNet.md)
 - [Disable Background Apps](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableBGapps.md)
-- [Disable Defender](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableDefender.md)
 - [Disable Fullscreen Optimizations](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableFSO.md)
 - [Disable IPv6](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableIPv6.md)
 - [Disable Notification Tray/Calendar](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableNotifications.md)
