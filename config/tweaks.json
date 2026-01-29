@@ -1148,7 +1148,8 @@
         "Value": "0",
         "OriginalValue": "<RemoveEntry>"
       }
-    ]
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/bravedebloat"
   },
   "WPFTweaksEdgeDebloat": {
     "Content": "Edge Debloat",
