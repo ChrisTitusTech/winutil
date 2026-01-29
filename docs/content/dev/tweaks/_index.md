@@ -5,6 +5,7 @@
 - [Delete Temporary Files](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/DeleteTempFiles.md)
 - [Disable Activity History](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Activity.md)
 - [Disable ConsumerFeatures](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/ConsumerFeatures.md)
+- [Disable GameDVR](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/GameDVR.md)
 - [Disable Hibernation](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Hibernation.md)
 - [Disable Location Tracking](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Location.md)
 - [Disable Powershell 7 Telemetry](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Powershell7Tele.md)
@@ -31,7 +32,6 @@
 - [Remove OneDrive](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveOneDrive.md)
 - [Set Classic Right-Click Menu](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/RightClickMenu.md)
 - [Set Display for Performance](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/Display.md)
-- [Disable GameDVR](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/GameDVR.md)
 - [Set Time to UTC (Dual Boot)](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/UTC.md)
 
 ### Customize Preferences
