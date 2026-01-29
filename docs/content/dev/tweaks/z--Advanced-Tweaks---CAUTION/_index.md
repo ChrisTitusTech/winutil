@@ -14,4 +14,5 @@
 - [Remove OneDrive](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveOneDrive.md)
 - [Set Classic Right-Click Menu](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/RightClickMenu.md)
 - [Set Display for Performance](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/Display.md)
+- [Disable GameDVR](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/GameDVR.md)
 - [Set Time to UTC (Dual Boot)](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/UTC.md)
