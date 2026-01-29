@@ -77,7 +77,7 @@ dateFormat = "January 2, 2006"
   [params.footer]
   enable = true
   displayCopyright = true
-  displayPoweredBy = true
+  displayPoweredBy = false
   width = "normal"
 
 [params.highlight.copy]
