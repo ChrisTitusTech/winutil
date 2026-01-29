@@ -1,58 +1,20 @@
+---
+weight: 2
+title: "Tweaks"
+---
+
 ### Essential Tweaks
 
-- [Create Restore Point](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/RestorePoint.md)
-- [Debloat Edge](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/EdgeDebloat.md)
-- [Delete Temporary Files](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/DeleteTempFiles.md)
-- [Disable Activity History](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Activity.md)
-- [Disable ConsumerFeatures](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/ConsumerFeatures.md)
-- [Disable GameDVR](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/GameDVR.md)
-- [Disable Hibernation](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Hibernation.md)
-- [Disable Location Tracking](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Location.md)
-- [Disable Powershell 7 Telemetry](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Powershell7Tele.md)
-- [Disable Storage Sense](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Storage.md)
-- [Disable Telemetry](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Telemetry.md)
-- [Enable End Task With Right Click](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/EndTaskOnTaskbar.md)
-- [Prefer IPv4 over IPv6](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/IPv46.md)
-- [Run Disk Cleanup](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/DiskCleanup.md)
-- [Set Hibernation as default (good for laptops)](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/LaptopHibernation.md)
-- [Set Services to Manual](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Essential-Tweaks/Services.md)
+{{< autolinks section="dev/tweaks/essential-tweaks" >}}
 
 ### Advanced Tweaks (CAUTION)
 
-- [Adobe Network Block](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/BlockAdobeNet.md)
-- [Disable Background Apps](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableBGapps.md)
-- [Disable Fullscreen Optimizations](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableFSO.md)
-- [Disable IPv6](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableIPv6.md)
-- [Disable Notification Tray/Calendar](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableNotifications.md)
-- [Disable Teredo](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/Teredo.md)
-- [Remove ALL MS Store Apps - NOT RECOMMENDED](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/DeBloat.md)
-- [Remove Gallery from explorer](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveGallery.md)
-- [Remove Home from explorer](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveHome.md)
-- [Run OO Shutup 10](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/OOSUbutton.md)
-- [Remove OneDrive](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveOneDrive.md)
-- [Set Classic Right-Click Menu](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/RightClickMenu.md)
-- [Set Display for Performance](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/Display.md)
-- [Set Time to UTC (Dual Boot)](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/UTC.md)
+{{< autolinks section="dev/tweaks/z--advanced-tweaks---caution" >}}
 
 ### Customize Preferences
 
-- [Bing Search in Start Menu](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/BingSearch.md)
-- [Center Taskbar Items](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/TaskbarAlignment.md)
-- [Dark Theme for Windows](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/DarkMode.md)
-- [Detailed BSoD](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/DetailedBSoD.md)
-- [Mouse Acceleration](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/MouseAcceleration.md)
-- [NumLock on Startup](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/NumLock.md)
-- [Search Button in Taskbar](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/TaskbarSearch.md)
-- [Show File Extensions](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/ShowExt.md)
-- [Show Hidden Files](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/HiddenFiles.md)
-- [Snap Assist Flyout](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/SnapFlyout.md)
-- [Snap Assist Suggestion](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/SnapSuggestion.md)
-- [Snap Window](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/SnapWindow.md)
-- [Sticky Keys](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/StickyKeys.md)
-- [Task View Button in Taskbar](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/TaskView.md)
-- [Verbose Messages During Logon](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/VerboseLogon.md)
-- [Widgets Button in Taskbar](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Customize-Preferences/TaskbarWidgets.md)
+{{< autolinks section="dev/tweaks/customize-preferences" >}}
 
 ### Performance Plans
 
-- [Add and Remove Ultimate Performance Profile](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/Performance-Plans/Profile.md)
+{{< autolinks section="dev/tweaks/performance-plans" >}}

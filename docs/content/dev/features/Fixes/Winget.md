@@ -1,6 +1,6 @@
 # WinGet Reinstall
 
-```json
+```powershell
 function Invoke-WPFFixesWinget {
 
     <#

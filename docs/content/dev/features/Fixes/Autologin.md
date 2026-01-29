@@ -1,6 +1,6 @@
 # Set Up Autologin
 
-```json
+```powershell
 function Invoke-WPFPanelAutologin {
     <#
 
