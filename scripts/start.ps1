@@ -44,6 +44,10 @@ $sync.currentTab = "Install"
 $sync.selectedAppsStackPanel
 $sync.selectedAppsPopup
 
+# This fixes (Script won't run #1994)
+if ($ExecutionContext.SessionState.LanguageMode -notmatch 'FullLanguage') {
+    $ExecutionContext.SessionState.LanguageMode = "FullLanguage"
+}
 
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Output "Winutil needs to be run as Administrator. Attempting to relaunch."
