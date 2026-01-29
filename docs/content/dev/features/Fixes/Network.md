@@ -1,6 +1,6 @@
 # Reset Network
 
-```json
+```powershell
 function Invoke-WPFFixesNetwork {
     <#
 

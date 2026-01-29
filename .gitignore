@@ -56,3 +56,8 @@ winutil.ps1
 binary/
 
 .preprocessor_hashes.json
+
+# Hugo Files
+docs/public/
+docs/.hugo_build.lock
+docs/resources/
