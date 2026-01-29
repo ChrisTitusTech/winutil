@@ -4,15 +4,16 @@ categories:
     labels:
       - 'feature'
       - 'enhancement'
+      - 'new feature'
   - title: '🐛 Bug Fixes'
     labels:
-      - 'fix'
+      - 'hotfix'
       - 'bugfix'
       - 'bug'
   - title: '📚 Documentation'
     label: 'documentation'
-  - title: '🔒 Security'
-    label: 'security'
+  - title: '🎨 UI/UX Improvements'
+    label: 'ui update'
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 template: |
   ## Changes
@@ -31,7 +32,7 @@ autolabeler:
       - '/fix\/.+/'
     title:
       - '/fix/i'
-  - label: 'enhancement'
+  - label: 'new feature'
     branch:
       - '/feature\/.+/'
     body:
@@ -40,9 +41,6 @@ autolabeler:
     files:
       - '**/*.md'
       - 'docs/**/*'
-  - label: 'security'
-    branch:
-      - '/security\/.+/'
 replacers:
   - search: /"/g
     replace: ''
