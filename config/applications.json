@@ -1968,6 +1968,14 @@
         "link": "https://github.com/n0-computer/sendme/",
         "winget": "n0-computer.sendme"
     },
+    "systeminformer": {
+        "category": "Development",
+        "choco": "na",
+        "content": "System Informer",
+        "description": "A free, powerful, multi-purpose tool that helps you monitor system resources, debug software and detect malware.",
+        "link": "https://systeminformer.com/",
+        "winget": "WinsiderSS.SystemInformer"
+    },
     "sidequest": {
         "category": "Games",
         "choco": "sidequest",
