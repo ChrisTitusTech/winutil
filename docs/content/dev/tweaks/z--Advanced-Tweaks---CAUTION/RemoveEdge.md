@@ -19,7 +19,7 @@
     ],
 ```
 # Function
-```json
+```powershell
 function Invoke-WinUtilRemoveEdge {
   Write-Host "Unlocking The Offical Edge Uninstaller And Removing Microsoft Edge..."
 

@@ -1,6 +1,6 @@
 # Remove Ultimate Performance Profile
 
-```json
+```powershell
 Function Invoke-WPFUltimatePerformance {
     <#
 
