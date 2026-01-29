@@ -1,6 +1,6 @@
 # System Corruption Scan
 
-```json
+```powershell
 function Invoke-WPFSystemRepair {
     <#
     .SYNOPSIS

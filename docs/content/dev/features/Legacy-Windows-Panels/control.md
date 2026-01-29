@@ -1,6 +1,6 @@
 # Control Panel
 
-```json
+```powershell
 function Invoke-WPFControlPanel {
     <#
 

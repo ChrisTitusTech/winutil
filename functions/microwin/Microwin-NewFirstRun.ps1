@@ -66,6 +66,11 @@ function Microwin-NewFirstRun {
 
     }
 
+    if ((Get-BitLockerVolume -MountPoint $Env:SystemDrive).ProtectionStatus -eq 'On') {
+        Write-Host "Disabling BitLocker..."
+        Disable-BitLocker -MountPoint $Env:SystemDrive
+    }
+
     # Get BCD entries and set bootmgr timeout accordingly
     try
     {
