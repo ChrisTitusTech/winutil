@@ -35,7 +35,6 @@ weight: 3
 
 - [Adobe Network Block](tweaks/z--advanced-tweaks---caution/blockadobenet/)
 - [Disable Background Apps](tweaks/z--advanced-tweaks---caution/disablebgapps/)
-- [Disable Defender](tweaks/z--advanced-tweaks---caution/disabledefender)
 - [Disable Fullscreen Optimizations](tweaks/z--advanced-tweaks---caution/disablefso/)
 - [Disable IPv6](tweaks/z--advanced-tweaks---caution/disableipsix/)
 - [Disable Microsoft Copilot](tweaks/z--advanced-tweaks---caution/removecopilot/)
