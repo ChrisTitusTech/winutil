@@ -1592,6 +1592,14 @@
         "link": "https://owncloud.com/desktop-app/",
         "winget": "ownCloud.ownCloudDesktop"
     },
+    "processexplorer": {
+        "category": "Multimedia Tools",
+        "choco": "na",
+        "content": "Process Explorer",
+        "description": "Process Explorer is a task manager and system monitor.",
+        "link": "https://learn.microsoft.com/sysinternals/downloads/process-explorer",
+        "winget": "Microsoft.Sysinternals.ProcessExplorer"
+    },
     "Paintdotnet": {
         "category": "Multimedia Tools",
         "choco": "paint.net",
