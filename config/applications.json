@@ -1592,6 +1592,14 @@
         "link": "https://owncloud.com/desktop-app/",
         "winget": "ownCloud.ownCloudDesktop"
     },
+    "policyplus": {
+        "category": "Multimedia Tools",
+        "choco": "na",
+        "content": "Policy Plus",
+        "description": "Local Group Policy Editor plus more, for all Windows editions.",
+        "link": "https://github.com/Fleex255/PolicyPlus",
+        "winget": "Fleex255.PolicyPlus"
+    },
     "processexplorer": {
         "category": "Multimedia Tools",
         "choco": "na",
