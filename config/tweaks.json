@@ -2072,7 +2072,8 @@
         "OriginalValue": "<RemoveEntry>",
         "Type": "DWord"
       }
-    ]
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/wpbt"
   },
   "WPFTweaksRazerBlock": {
     "Content": "Block Razer Software Installs",
@@ -2115,7 +2116,7 @@
       icacls \"C:\\Windows\\Installer\\Razer\" /remove:d Everyone
       "
     ],
-    "link": ""
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/razerblock"
   },
   "WPFTweaksDisableNotifications": {
     "Content": "Disable Notification Tray/Calendar",
