@@ -3,7 +3,7 @@ title: "Enable Legacy F8 Boot Recovery"
 description: ""
 ---
 ```json
-"WPFFeatureEnableLegacyRecovery": {
+  "WPFFeatureEnableLegacyRecovery": {
     "Content": "Enable Legacy F8 Boot Recovery",
     "Description": "Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
     "category": "Features",

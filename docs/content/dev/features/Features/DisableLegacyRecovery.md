@@ -11,6 +11,6 @@ description: ""
     "Order": "a019_",
     "feature": [],
     "InvokeScript": [
-      "bcdedit /set bootmenupolicy standard"
+    "bcdedit /set bootmenupolicy standard"
     ],
 ```
