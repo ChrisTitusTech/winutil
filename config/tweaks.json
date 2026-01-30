@@ -1620,7 +1620,7 @@
       winget install Microsoft.Edge --source winget
       "
     ],
-    "link": ""
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removeedge"
   },
   "WPFTweaksUTC": {
     "Content": "Set Time to UTC (Dual Boot)",
