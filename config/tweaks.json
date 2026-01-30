@@ -28,7 +28,7 @@
         "OriginalValue": "<RemoveEntry>"
       }
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/ah"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/activity"
   },
   "WPFTweaksHiber": {
     "Content": "Disable Hibernation",
@@ -58,7 +58,7 @@
     "UndoScript": [
       "powercfg.exe /hibernate on"
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/hiber"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/hibernation"
   },
   "WPFTweaksLaptopHibernation": {
     "Content": "Set Hibernation as default (good for laptops)",
@@ -144,7 +144,7 @@
         "OriginalValue": "1"
       }
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/loc"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/location"
   },
   "WPFTweaksServices": {
     "Content": "Set Services to Manual",
@@ -1603,7 +1603,7 @@
       Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value $Memory
       "
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/tele"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/telemetry"
   },
   "WPFTweaksRemoveEdge": {
     "Content": "Remove Microsoft Edge",
@@ -1689,7 +1689,7 @@
       Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" -Name LaunchTo -Value 0
       "
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removehomegallery"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removehome"
   },
   "WPFTweaksRemoveGallery": {
     "Content": "Remove Gallery from explorer",
@@ -1707,7 +1707,7 @@
       New-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\"
       "
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removehomegallery"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removegallery"
   },
   "WPFTweaksDisplay": {
     "Content": "Set Display for Performance",
@@ -2267,7 +2267,7 @@
         "Type": "DWord"
       }
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/dvr"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/gamedvr"
   },
   "WPFTweaksIPv46": {
     "Content": "Prefer IPv4 over IPv6",
@@ -2330,7 +2330,7 @@
     "UndoScript": [
       "Enable-NetAdapterBinding -Name * -ComponentID ms_tcpip6"
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disableipsix"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disableipv6"
   },
   "WPFTweaksDisableBGapps": {
     "Content": "Disable Background Apps",
