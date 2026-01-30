@@ -1,17 +1,8 @@
+---
+weight: 2
+title: "Advanced Tweaks (CAUTION)"
+---
+
 ### Advanced Tweaks (CAUTION)
 
-- [Adobe Network Block](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/BlockAdobeNet.md)
-- [Disable Background Apps](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableBGapps.md)
-- [Disable Fullscreen Optimizations](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableFSO.md)
-- [Disable IPv6](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableIPv6.md)
-- [Disable Notification Tray/Calendar](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableNotifications.md)
-- [Disable Teredo](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/Teredo.md)
-- [Remove ALL MS Store Apps - NOT RECOMMENDED](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/DeBloat.md)
-- [Remove Gallery from explorer](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveGallery.md)
-- [Remove Home from explorer](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveHome.md)
-- [Make Edge Uninstallable](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/EdgeUninstall.md)
-- [Run OO Shutup 10](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/OOSUbutton.md)
-- [Remove OneDrive](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveOneDrive.md)
-- [Set Classic Right-Click Menu](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/RightClickMenu.md)
-- [Set Display for Performance](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/Display.md)
-- [Set Time to UTC (Dual Boot)](https://github.com/ChrisTitusTech/winutil/blob/main/docs/content/dev/tweaks/z--Advanced-Tweaks---CAUTION/UTC.md)
+{{< autolinks section="dev/tweaks/z--advanced-tweaks---caution" >}}
