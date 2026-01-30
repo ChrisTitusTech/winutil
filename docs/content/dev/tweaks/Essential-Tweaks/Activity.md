@@ -1,8 +1,7 @@
 ---
 title: Activity History
-description: Erases recent docs, clipboard, and run history
+description: ""
 ---
-
 ## code we use:
 
 ```json

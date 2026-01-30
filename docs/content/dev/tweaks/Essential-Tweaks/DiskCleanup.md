@@ -1,5 +1,7 @@
-# Run Disk Cleanup
-
+---
+title: "Run Disk Cleanup"
+description: ""
+---
 ```json
   "WPFTweaksDiskCleanup": {
     "Content": "Run Disk Cleanup",

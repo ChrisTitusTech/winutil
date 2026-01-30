@@ -1,5 +1,7 @@
-# Set Services to Manual
-
+---
+title: "Set Services to Manual"
+description: ""
+---
 ```json
 "WPFTweaksServices": {
     "Content": "Set Services to Manual",

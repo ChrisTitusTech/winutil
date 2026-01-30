@@ -1,5 +1,7 @@
-# Search Button in Taskbar
-
+---
+title: "Search Button in Taskbar"
+description: ""
+---
 ```json
 "WPFToggleTaskbarSearch": {
     "Content": "Search Button in Taskbar",

@@ -1,5 +1,7 @@
-# Snap Window
-
+---
+title: "Snap Window"
+description: ""
+---
 ```json
 "WPFToggleSnapWindow": {
     "Content": "Snap Window",

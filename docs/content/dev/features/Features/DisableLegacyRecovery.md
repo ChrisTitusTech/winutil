@@ -1,5 +1,7 @@
-# Disable Legacy F8 Boot Recovery
-
+---
+title: "Disable Legacy F8 Boot Recovery"
+description: ""
+---
 ```json
 "WPFFeatureEnableLegacyRecovery": {
     "Content": "Enable Legacy F8 Boot Recovery",
