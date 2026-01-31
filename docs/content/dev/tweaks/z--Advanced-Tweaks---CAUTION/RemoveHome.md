@@ -1,5 +1,7 @@
-# Remove Home from explorer
-
+---
+title: "Remove Home from explorer"
+description: ""
+---
 ```json
 "WPFTweaksRemoveHome": {
     "Content": "Remove Home from Explorer",

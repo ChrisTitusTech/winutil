@@ -1,5 +1,7 @@
-# Disable Teredo
-
+---
+title: "Disable Teredo"
+description: ""
+---
 ```json
 "WPFTweaksTeredo": {
     "Content": "Disable Teredo",

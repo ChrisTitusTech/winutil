@@ -1,5 +1,7 @@
-# Disable Hibernation
-
+---
+title: "Disable Hibernation"
+description: ""
+---
 ```json
 "WPFTweaksHiber": {
     "Content": "Disable Hibernation",

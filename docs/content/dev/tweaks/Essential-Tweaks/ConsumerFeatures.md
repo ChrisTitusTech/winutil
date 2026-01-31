@@ -1,5 +1,7 @@
-# Disable ConsumerFeatures
-
+---
+title: "Disable ConsumerFeatures"
+description: ""
+---
 ```json
   "WPFTweaksConsumerFeatures": {
     "Content": "Disable ConsumerFeatures",

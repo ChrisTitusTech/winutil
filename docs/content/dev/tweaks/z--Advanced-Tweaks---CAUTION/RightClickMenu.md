@@ -1,5 +1,7 @@
-# Set Classic Right-Click Menu
-
+---
+title: "Set Classic Right-Click Menu"
+description: ""
+---
 ```json
 "WPFTweaksRightClickMenu": {
     "Content": "Set Classic Right-Click Menu ",

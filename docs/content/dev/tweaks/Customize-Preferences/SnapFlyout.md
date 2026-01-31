@@ -1,5 +1,7 @@
-# Snap Assist Flyout
-
+---
+title: "Snap Assist Flyout"
+description: ""
+---
 ```json
 "WPFToggleSnapFlyout": {
     "Content": "Snap Assist Flyout",

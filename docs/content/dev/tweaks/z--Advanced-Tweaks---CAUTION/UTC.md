@@ -1,5 +1,7 @@
-# Set Time to UTC (Dual Boot)
-
+---
+title: "Set Time to UTC (Dual Boot)"
+description: ""
+---
 ```json
 "WPFTweaksUTC": {
     "Content": "Set Time to UTC (Dual Boot)",

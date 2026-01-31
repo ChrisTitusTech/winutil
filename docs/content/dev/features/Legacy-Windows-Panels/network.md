@@ -1,5 +1,7 @@
-# Network Connections
-
+---
+title: "Network Connections"
+description: ""
+---
 ```powershell
 function Invoke-WPFControlPanel {
     <#

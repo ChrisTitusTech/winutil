@@ -1,5 +1,7 @@
-# Sound Settings
-
+---
+title: "Sound Settings"
+description: ""
+---
 ```powershell
 function Invoke-WPFControlPanel {
     <#

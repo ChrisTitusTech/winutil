@@ -1,5 +1,7 @@
-# Bing Search in Start Menu
-
+---
+title: "Bing Search in Start Menu"
+description: ""
+---
 ```json
 "WPFToggleBingSearch": {
     "Content": "Bing Search in Start Menu",

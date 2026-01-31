@@ -1,5 +1,7 @@
-# Mouse Acceleration
-
+---
+title: "Mouse Acceleration"
+description: ""
+---
 ```json
 "WPFToggleMouseAcceleration": {
     "Content": "Mouse Acceleration",

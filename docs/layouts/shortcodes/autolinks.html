@@ -6,14 +6,12 @@
 {{- if eq $pageTitle "" -}}
   {{- $pageTitle = .File.BaseFileName | humanize | title -}}
 {{- end -}}
-{{- if findRE "^# .+" .RawContent -}}
-  {{- $pageTitle = replaceRE "(?s)^# (.+?)\\n.*" "$1" .RawContent -}}
-{{- end -}}
-{{- $pages = $pages | append (dict "title" $pageTitle "url" .RelPermalink) -}}
+{{- $pageDesc := .Description -}}
+{{- $pages = $pages | append (dict "title" $pageTitle "description" $pageDesc "url" .RelPermalink) -}}
 {{- end -}}
 {{- end -}}
 <ul>
 {{- range sort $pages "title" "asc" }}
-<li><a href="{{ .url }}">{{ .title }}</a></li>
+<li><a href="{{ .url }}">{{ .title }}</a>{{ with .description }} - {{ . }}{{ end }}</li>
 {{- end }}
 </ul>

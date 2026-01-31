@@ -1,5 +1,7 @@
-# Disable Storage Sense
-
+---
+title: "Disable Storage Sense"
+description: ""
+---
 ```json
 "WPFTweaksStorage": {
     "Content": "Disable Storage Sense",

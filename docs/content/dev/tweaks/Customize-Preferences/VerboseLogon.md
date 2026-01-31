@@ -1,5 +1,7 @@
-# Verbose Messages During Logon
-
+---
+title: "Verbose Messages During Logon"
+description: ""
+---
 ```json
 "WPFToggleVerboseLogon": {
     "Content": "Verbose Messages During Logon",

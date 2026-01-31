@@ -1,5 +1,7 @@
-# Snap Assist Suggestion
-
+---
+title: "Snap Assist Suggestion"
+description: ""
+---
 ```json
 "WPFToggleSnapSuggestion": {
     "Content": "Snap Assist Suggestion",
