@@ -44,6 +44,9 @@
 
       # Disable (Connected User Experiences and Telemetry) Service
       Set-Service -Name diagtrack -StartupType Disabled
+
+      # Disable (Windows Error Reporting Manager) Service
+      Set-Service -Name wermgr -StartupType Disabled
       
       $Memory = (Get-CimInstance Win32_PhysicalMemory | Measure-Object Capacity -Sum).Sum / 1KB
       Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value $Memory
@@ -56,6 +59,9 @@
 
       # Enable (Connected User Experiences and Telemetry) Service
       Set-Service -Name diagtrack -StartupType Automatic
+
+      # Enable (Windows Error Reporting Manager) Service
+      Set-Service -Name wermgr -StartupType Automatic
       "
     ],
 ```
