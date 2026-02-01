@@ -1337,6 +1337,15 @@
       Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value $Memory
       "
     ],
+    "UndoScript": [
+      "
+      # Enable Defender Auto Sample Submission
+      Set-MpPreference -SubmitSamplesConsent 1
+
+      # Enable (Connected User Experiences and Telemetry) Service
+      Set-Service -Name diagtrack -StartupType Automatic
+      "
+    ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/telemetry"
   },
   "WPFTweaksRemoveEdge": {
