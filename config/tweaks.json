@@ -1302,6 +1302,27 @@
         "Value": "0",
         "Type": "DWord"
         "OriginalValue": "<RemoveEntry>",
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "Name": "ContentDeliveryAllowed",
+        "Value": "0",
+        "Type": "DWord"
+        "OriginalValue": "1",
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "Name": "SubscribedContent-338389Enabled",
+        "Value": "0",
+        "Type": "DWord"
+        "OriginalValue": "1",
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "Name": "SubscribedContent-338387Enabled",
+        "Value": "0",
+        "Type": "DWord"
+        "OriginalValue": "1",
       }
     ],
     "InvokeScript": [
