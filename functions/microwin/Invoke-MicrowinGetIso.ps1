@@ -21,6 +21,8 @@ function Invoke-MicrowinGetIso {
     Write-Host "/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | "
     Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
 
+    $tempDir = [IO.Path]::GetTempPath().TrimEnd("\")
+
     if ($sync["ISOmanual"].IsChecked) {
         # Open file dialog to let user choose the ISO file
         Invoke-MicrowinBusyInfo -action "wip" -message "Please select an ISO file..." -interactive $true
@@ -64,7 +66,7 @@ function Invoke-MicrowinGetIso {
         Invoke-MicrowinBusyInfo -action "wip" -message "Downloading Fido script..." -interactive $false
         Invoke-WebRequest "https://github.com/pbatard/Fido/raw/master/Fido.ps1" -OutFile $fidopath
 
-        Set-Location -Path $env:temp
+        Set-Location -Path "$tempDir"
         # Detect if the first option ("System language") has been selected and get a Fido-approved language from the current culture
         $lang = if ($sync["ISOLanguage"].SelectedIndex -eq 0) {
             Microwin-GetLangFromCulture -langName (Get-Culture).Name
@@ -84,7 +86,7 @@ function Invoke-MicrowinGetIso {
             [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
             return
         }
-        Set-Location $originalLocation
+        Set-Location "$originalLocation"
         # Use the FullName property to only grab the file names. Using this property is necessary as, without it, you're passing the usual output of Get-ChildItem
         # to the variable, and let's be honest, that does NOT exist in the file system
         $filePath = (Get-ChildItem -Path "$env:temp" -Filter "Win11*.iso").FullName | Sort-Object LastWriteTime -Descending | Select-Object -First 1
@@ -128,7 +130,7 @@ function Invoke-MicrowinGetIso {
     $expectedADKPath = "$($adkKitsRoot)Assessment and Deployment Kit"
     $expectedADKPath_WOW64Environ = "$($adkKitsRoot_WOW64Environ)Assessment and Deployment Kit"
 
-    $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
+    $oscdimgPath = "$tempDir\oscdimg.exe"
     $oscdImgFound = [bool] (Microwin-TestKitsRootPaths -adkKitsRootPath "$expectedADKPath" -adkKitsRootPath_WOW64Environ "$expectedADKPath_WOW64Environ") -or (Test-Path $oscdimgPath -PathType Leaf)
     Write-Host "oscdimg.exe on system: $oscdImgFound"
 
@@ -241,8 +243,8 @@ function Invoke-MicrowinGetIso {
     $randomMicrowinScratch = "MicrowinScratch_${timestamp}_${randomNumber}"
     $sync.BusyText.Text=" - Mounting"
     Write-Host "Mounting Iso. Please wait."
-    $mountDir = Join-Path $env:TEMP $randomMicrowin
-    $scratchDir = Join-Path $env:TEMP $randomMicrowinScratch
+    $mountDir = "$tempDir\$randomMicrowin"
+    $scratchDir = "$tempDir\$randomMicrowinScratch"
 
     $sync.MicrowinMountDir.Text = $mountDir
     $sync.MicrowinScratchDir.Text = $scratchDir

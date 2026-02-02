@@ -557,9 +557,11 @@ public class PowerManagement {
         $expectedADKPath = "$($adkKitsRoot)Assessment and Deployment Kit"
         $expectedADKPath_WOW64Environ = "$($adkKitsRoot_WOW64Environ)Assessment and Deployment Kit"
 
+        $tempDir = [IO.Path]::GetTempPath().TrimEnd("\")
+
         # if we downloaded oscdimg from github it will be in the temp directory so use it
         # if it is not in temp it is part of ADK and is in global PATH so just set it to oscdimg.exe
-        $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
+        $oscdimgPath = "$tempDir\oscdimg.exe"
         $oscdImgFound = Test-Path -Path "$oscdimgPath" -PathType Leaf
         if ((-not ($oscdImgFound)) -and ((Microwin-TestKitsRootPaths -adkKitsRootPath "$expectedADKPath" -adkKitsRootPath_WOW64Environ "$expectedADKPath_WOW64Environ") -eq $true)) {
             if ($expectedADKPath -ne "Assessment and Deployment Kit") { $peToolsPath = $expectedADKPath }
