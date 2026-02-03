@@ -12,7 +12,9 @@ function Microwin-GetOscdimg {
         [string]$oscdimgPath
     )
 
-    $oscdimgPath = "$env:TEMP\oscdimg.exe"
+    $tempDir = [IO.Path]::GetTempPath().TrimEnd("\")
+
+    $oscdimgPath = "$tempDir\oscdimg.exe"
     $downloadUrl = "https://github.com/ChrisTitusTech/winutil/raw/main/releases/oscdimg.exe"
     Invoke-RestMethod -Uri $downloadUrl -OutFile $oscdimgPath
     if (-not (Test-Path "$oscdimgPath" -PathType Leaf)) {

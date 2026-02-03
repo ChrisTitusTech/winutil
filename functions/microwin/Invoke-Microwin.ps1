@@ -11,6 +11,8 @@ function Invoke-Microwin {
         return
     }
 
+    $tempDir = [IO.Path]::GetTempPath().TrimEnd("\")
+
     # Define the constants for Windows API
 Add-Type @"
 using System;
@@ -136,8 +138,8 @@ public class PowerManagement {
 
         if ($importDrivers) {
             Write-Host "Exporting drivers from active installation..."
-            if (Test-Path "$env:TEMP\DRV_EXPORT") {
-                Remove-Item "$env:TEMP\DRV_EXPORT" -Recurse -Force
+            if (Test-Path "$tempDir\DRV_EXPORT") {
+                Remove-Item "$tempDir\DRV_EXPORT" -Recurse -Force
             }
             if (($injectDrivers -and (Test-Path "$($sync.MicrowinDriverLocation.Text)"))) {
                 Write-Host "Using specified driver source..."
@@ -149,16 +151,16 @@ public class PowerManagement {
                     Write-Host "Failed to export drivers."
                 }
             } else {
-                New-Item -Path "$env:TEMP\DRV_EXPORT" -ItemType Directory -Force
-                dism /english /online /export-driver /destination="$env:TEMP\DRV_EXPORT" | Out-Host
+                New-Item -Path "$tempDir\DRV_EXPORT" -ItemType Directory -Force
+                dism /english /online /export-driver /destination="$tempDir\DRV_EXPORT" | Out-Host
                 if ($?) {
                     Write-Host "Adding exported drivers..."
-                    dism /english /image="$scratchDir" /add-driver /driver="$env:TEMP\DRV_EXPORT" /recurse | Out-Host
+                    dism /english /image="$scratchDir" /add-driver /driver="$tempDir\DRV_EXPORT" /recurse | Out-Host
                 } else {
                     Write-Host "Failed to export drivers. Continuing without importing them..."
                 }
-                if (Test-Path "$env:TEMP\DRV_EXPORT") {
-                    Remove-Item "$env:TEMP\DRV_EXPORT" -Recurse -Force
+                if (Test-Path "$tempDir\DRV_EXPORT") {
+                    Remove-Item "$tempDir\DRV_EXPORT" -Recurse -Force
                 }
             }
         }
@@ -289,21 +291,21 @@ public class PowerManagement {
         Write-Host "Done Create unattend.xml"
         Write-Host "Copy unattend.xml file into the ISO"
         New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\Panther"
-        Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\Panther\unattend.xml" -force
+        Copy-Item "$tempDir\unattend.xml" "$($scratchDir)\Windows\Panther\unattend.xml" -force
         New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\Sysprep"
-        Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\System32\Sysprep\unattend.xml" -force
+        Copy-Item "$tempDir\unattend.xml" "$($scratchDir)\Windows\System32\Sysprep\unattend.xml" -force
         Write-Host "Done Copy unattend.xml"
 
         Write-Host "Create FirstRun"
         Microwin-NewFirstRun
         Write-Host "Done create FirstRun"
         Write-Host "Copy FirstRun.ps1 into the ISO"
-        Copy-Item "$env:temp\FirstStartup.ps1" "$($scratchDir)\Windows\FirstStartup.ps1" -force
+        Copy-Item "$tempDir\FirstStartup.ps1" "$($scratchDir)\Windows\FirstStartup.ps1" -force
         Write-Host "Done copy FirstRun.ps1"
 
         Write-Host "Copy checkinstall.cmd into the ISO"
         Microwin-NewCheckInstall
-        Copy-Item "$env:temp\checkinstall.cmd" "$($scratchDir)\Windows\checkinstall.cmd" -force
+        Copy-Item "$tempDir\checkinstall.cmd" "$($scratchDir)\Windows\checkinstall.cmd" -force
         Write-Host "Done copy checkinstall.cmd"
 
         Write-Host "Creating a directory that allows to bypass Wifi setup"
@@ -556,8 +558,6 @@ public class PowerManagement {
 
         $expectedADKPath = "$($adkKitsRoot)Assessment and Deployment Kit"
         $expectedADKPath_WOW64Environ = "$($adkKitsRoot_WOW64Environ)Assessment and Deployment Kit"
-
-        $tempDir = [IO.Path]::GetTempPath().TrimEnd("\")
 
         # if we downloaded oscdimg from github it will be in the temp directory so use it
         # if it is not in temp it is part of ADK and is in global PATH so just set it to oscdimg.exe

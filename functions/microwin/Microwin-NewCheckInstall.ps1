@@ -1,5 +1,7 @@
 function Microwin-NewCheckInstall {
 
+    $tempDir = [IO.Path]::GetTempPath().TrimEnd("\")
+
     # using here string to embed firstrun
     $checkInstall = @'
     @echo off
@@ -69,5 +71,5 @@ function Microwin-NewCheckInstall {
         echo %HOMEDRIVE%\windows\LogFirstRun.txt does not exist
     )
 '@
-    $checkInstall | Out-File -FilePath "$env:temp\checkinstall.cmd" -Force -Encoding Ascii
+    $checkInstall | Out-File -FilePath "$tempDir\checkinstall.cmd" -Force -Encoding Ascii
 }

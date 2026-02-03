@@ -1,5 +1,7 @@
 function Microwin-NewUnattend {
 
+    $tempDir = [IO.Path]::GetTempPath().TrimEnd("\")
+
     param (
         [Parameter(Mandatory, Position = 0)] [string]$userName,
         [Parameter(Position = 1)] [string]$userPassword
@@ -323,5 +325,5 @@ function Microwin-NewUnattend {
     }
 
     # Save unattended answer file with UTF-8 encoding
-    $unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force -Encoding utf8
+    $unattend | Out-File -FilePath "$tempDir\unattend.xml" -Force -Encoding utf8
 }

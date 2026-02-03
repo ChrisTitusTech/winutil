@@ -60,7 +60,7 @@ function Invoke-MicrowinGetIso {
 
         # Auto download newest ISO
         # Credit: https://github.com/pbatard/Fido
-        $fidopath = "$env:temp\Fido.ps1"
+        $fidopath = "$tempDir\Fido.ps1"
         $originalLocation = $PSScriptRoot
 
         Invoke-MicrowinBusyInfo -action "wip" -message "Downloading Fido script..." -interactive $false
@@ -89,14 +89,14 @@ function Invoke-MicrowinGetIso {
         Set-Location "$originalLocation"
         # Use the FullName property to only grab the file names. Using this property is necessary as, without it, you're passing the usual output of Get-ChildItem
         # to the variable, and let's be honest, that does NOT exist in the file system
-        $filePath = (Get-ChildItem -Path "$env:temp" -Filter "Win11*.iso").FullName | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+        $filePath = (Get-ChildItem -Path "$tempDir" -Filter "Win11*.iso").FullName | Sort-Object LastWriteTime -Descending | Select-Object -First 1
         $fileName = [IO.Path]::GetFileName("$filePath")
 
         if (($targetFolder -ne "") -and (Test-Path "$targetFolder"))
         {
             try
             {
-                # "Let it download to $env:TEMP and then we **move** it to the file path." - CodingWonders
+                # "Let it download to $tempDir and then we **move** it to the file path." - CodingWonders
                 $destinationFilePath = "$targetFolder\$fileName"
                 Write-Host "Moving ISO file. Please wait..."
                 Move-Item -Path "$filePath" -Destination "$destinationFilePath" -Force
@@ -104,7 +104,7 @@ function Invoke-MicrowinGetIso {
             }
             catch
             {
-                $msg = "Unable to move the ISO file to the location you specified. The downloaded ISO is in the `"$env:TEMP`" folder"
+                $msg = "Unable to move the ISO file to the location you specified. The downloaded ISO is in the `"$tempDir`" folder"
                 Write-Host $msg
                 Write-Host "Error information: $($_.Exception.Message)" -ForegroundColor Yellow
                 Invoke-MicrowinBusyInfo -action "warning" -message $msg
@@ -148,7 +148,7 @@ function Invoke-MicrowinGetIso {
                 $msg = "ADK/OSCDIMG is installed, now restart this process."
                 Invoke-MicrowinBusyInfo -action "done" -message $msg        # We set it to done because it immediately returns from this function
                 [System.Windows.MessageBox]::Show($msg)
-                Remove-Item -Path "$env:TEMP\adksetup.exe" -Force -ErrorAction SilentlyContinue
+                Remove-Item -Path "$tempDir\adksetup.exe" -Force -ErrorAction SilentlyContinue
                 return
             }
         }

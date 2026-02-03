@@ -1,5 +1,7 @@
 function Microwin-NewFirstRun {
 
+    $tempDir = [IO.Path]::GetTempPath().TrimEnd("\")
+
     # using here string to embed firstrun
     $firstRun = @'
     # Set the global error action preference to continue
@@ -148,5 +150,5 @@ public class Win32 {
     }
 
 '@
-    $firstRun | Out-File -FilePath "$env:temp\FirstStartup.ps1" -Force
+    $firstRun | Out-File -FilePath "$tempDir\FirstStartup.ps1" -Force
 }
