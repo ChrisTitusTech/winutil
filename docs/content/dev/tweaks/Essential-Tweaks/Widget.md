@@ -17,7 +17,7 @@
     "UndoScript": [
       "
       Write-Host \"Restoring widgets AppxPackages\"
-      Add-AppxPackage -DisableDevelopmentMode -Register "C:\Program Files\WindowsApps\Microsoft.WidgetsPlatformRuntime*\AppxManifest.xml"
+      Add-AppxPackage -DisableDevelopmentMode -Register \"C:\\Program Files\\WindowsApps\\Microsoft.WidgetsPlatformRuntime*\\AppxManifest.xml\"
       "
     ],
 ```
