@@ -133,6 +133,7 @@ try {
 Write-Progress -Activity "Validating" -Completed
 
 if ($run) {
+    Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
     .\Winutil.ps1 $Arguments
     break
 }
