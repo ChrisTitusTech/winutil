@@ -27,4 +27,10 @@
       sc.exe delete OneSyncSvc
       "
     ],
+    "UndoScript": [
+      "
+      Write-Host \"Installing OneDrive\"
+      winget install Microsoft.Onedrive --source winget
+      "
+    ],
 ```
