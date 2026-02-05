@@ -107,8 +107,8 @@
                                     BorderBrush="{DynamicResource MainForegroundColor}"
                                     Background="{DynamicResource ButtonBackgroundColor}"
                                     BorderThickness="1"
-                                    Width="16"
-                                    Height="16"
+                                    Width="12"
+                                    Height="12"
                                     CornerRadius="2"/>
                             <Path x:Name="CheckMark"
                                   Stroke="{DynamicResource ToggleButtonOnColor}"
