@@ -18,6 +18,7 @@
       "
       Write-Host \"Restoring widgets AppxPackages\"
       Add-AppxPackage -DisableDevelopmentMode -Register \"C:\\Program Files\\WindowsApps\\Microsoft.WidgetsPlatformRuntime*\\AppxManifest.xml\"
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
       "
     ],
 ```
