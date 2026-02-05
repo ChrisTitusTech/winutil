@@ -14,7 +14,7 @@ jobs:
       contents: none
     steps:
     - name: Close inactive issues
-      uses: actions/stale@v8
+      uses: actions/stale@v10
       with:
         # A list of labels to reference when looking through issues,
         # and only when one (or even more) of these labels are found..
