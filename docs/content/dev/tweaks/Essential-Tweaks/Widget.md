@@ -11,12 +11,13 @@
       "
       Get-AppxPackage Microsoft.WidgetsPlatformRuntime -AllUsers | Remove-AppxPackage -AllUsers
       Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Write-Host \"Removed widgets\"
       "
     ],
     "UndoScript": [
       "
-      Write-Host \"Restoring widgets Microsoft Store Required\"
-      start ms-windows-store://pdp/?productid=9MSSGKG348SP
+      Write-Host \"Restoring widgets AppxPackages\"
+      Add-AppxPackage -DisableDevelopmentMode -Register "C:\Program Files\WindowsApps\Microsoft.WidgetsPlatformRuntime*\AppxManifest.xml"
       "
     ],
 ```
