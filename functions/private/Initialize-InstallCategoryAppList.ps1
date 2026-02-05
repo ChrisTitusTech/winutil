@@ -44,7 +44,7 @@ function Initialize-InstallCategoryAppList {
         foreach ($category in $($appsByCategory.Keys | Sort-Object)) {
             Add-Category -Category $category -TargetElement $TargetElement
             $wrapPanel = New-Object Windows.Controls.WrapPanel
-            $wrapPanel.Orientation = "Horizontal"
+            $wrapPanel.Orientation = "Vertical"
             $wrapPanel.HorizontalAlignment = "Stretch"
             $wrapPanel.VerticalAlignment = "Center"
             $wrapPanel.Margin = New-Object Windows.Thickness(0, 0, 0, 20)

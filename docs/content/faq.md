@@ -297,5 +297,5 @@ Can't find your answer? Try these resources:
 
 ---
 
-**Last Updated**: January 2026  
+**Last Updated**: January 2026
 **Found this helpful?** Consider starring the project on [GitHub](https://github.com/ChrisTitusTech/winutil)!

@@ -18,7 +18,7 @@ jobs:
           script: |
             const prBody = context.payload.pull_request.body || '';
             const labelsToAdd = [];
-            
+
             if (/\[x\]\s*New feature/i.test(prBody)) {
               labelsToAdd.push('new feature');
             }
@@ -34,7 +34,7 @@ jobs:
             if (/\[x\]\s*UI\/UX improvement/i.test(prBody)) {
               labelsToAdd.push('ui update');
             }
-            
+
             if (labelsToAdd.length > 0) {
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
