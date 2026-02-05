@@ -1661,6 +1661,9 @@
 
       # Grant back permission to accses OneDrive folder
       icacls $Env:OneDrive /grant \"Administrators:(D,DC)\"
+
+      # Remove OneSyncSvc
+      sc.exe delete OneSyncSvc
       "
     ],
     "UndoScript": [
