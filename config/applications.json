@@ -1600,6 +1600,14 @@
         "link": "https://github.com/Fleex255/PolicyPlus",
         "winget": "Fleex255.PolicyPlus"
     },
+    "potplayer": {
+        "category": "Multimedia Tools",
+        "choco": "na",
+        "content": "PotPlayer",
+        "description": "PotPlayer is a free Windows media player with wide format support, high performance, built-in codecs, and extensive customization options.",
+        "link": "https://potplayer.tv/",
+        "winget": "Daum.PotPlayer"
+    },
     "processexplorer": {
         "category": "Multimedia Tools",
         "choco": "na",
