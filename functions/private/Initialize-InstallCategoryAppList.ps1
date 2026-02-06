@@ -15,22 +15,6 @@ function Initialize-InstallCategoryAppList {
             $TargetElement,
             $Apps
         )
-        function Add-Category {
-            param(
-                [string]$Category,
-                [Windows.Controls.ItemsControl]$TargetElement
-            )
-
-            $toggleButton = New-Object Windows.Controls.Label
-            $toggleButton.Content = "$Category"
-            $toggleButton.Tag = "CategoryToggleButton"
-            $toggleButton.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "HeaderFontSize")
-            $toggleButton.SetResourceReference([Windows.Controls.Control]::FontFamilyProperty, "HeaderFontFamily")
-            $sync.$Category = $toggleButton
-
-            $null = $TargetElement.Items.Add($toggleButton)
-        }
-
 
         # Pre-group apps by category
         $appsByCategory = @{}
@@ -42,17 +26,71 @@ function Initialize-InstallCategoryAppList {
             $appsByCategory[$category] += $appKey
         }
         foreach ($category in $($appsByCategory.Keys | Sort-Object)) {
-            Add-Category -Category $category -TargetElement $TargetElement
+            # Create a container for category label + apps
+            $categoryContainer = New-Object Windows.Controls.StackPanel
+            $categoryContainer.Orientation = "Vertical"
+            $categoryContainer.Margin = New-Object Windows.Thickness(0, 0, 0, 0)
+            $categoryContainer.HorizontalAlignment = [Windows.HorizontalAlignment]::Stretch
+
+            # Bind Width to the ItemsControl's ActualWidth to force full-row layout in WrapPanel
+            $binding = New-Object Windows.Data.Binding
+            $binding.Path = New-Object Windows.PropertyPath("ActualWidth")
+            $binding.RelativeSource = New-Object Windows.Data.RelativeSource([Windows.Data.RelativeSourceMode]::FindAncestor, [Windows.Controls.ItemsControl], 1)
+            [void][Windows.Data.BindingOperations]::SetBinding($categoryContainer, [Windows.FrameworkElement]::WidthProperty, $binding)
+
+            # Add category label to container
+            $toggleButton = New-Object Windows.Controls.Label
+            $toggleButton.Content = "- $Category"
+            $toggleButton.Tag = "CategoryToggleButton"
+            $toggleButton.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "HeaderFontSize")
+            $toggleButton.SetResourceReference([Windows.Controls.Control]::FontFamilyProperty, "HeaderFontFamily")
+            $toggleButton.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "LabelboxForegroundColor")
+            $toggleButton.Cursor = [System.Windows.Input.Cursors]::Hand
+            $toggleButton.HorizontalAlignment = [Windows.HorizontalAlignment]::Stretch
+            $sync.$Category = $toggleButton
+
+            # Add click handler to toggle category visibility
+            $toggleButton.Add_MouseLeftButtonUp({
+                param($sender, $e)
+
+                # Find the parent StackPanel (categoryContainer)
+                $categoryContainer = $sender.Parent
+                if ($categoryContainer -and $categoryContainer.Children.Count -ge 2) {
+                    # The WrapPanel is the second child
+                    $wrapPanel = $categoryContainer.Children[1]
+
+                    # Toggle visibility
+                    if ($wrapPanel.Visibility -eq [Windows.Visibility]::Visible) {
+                        $wrapPanel.Visibility = [Windows.Visibility]::Collapsed
+                        # Change - to +
+                        $sender.Content = $sender.Content -replace "^- ", "+ "
+                    } else {
+                        $wrapPanel.Visibility = [Windows.Visibility]::Visible
+                        # Change + to -
+                        $sender.Content = $sender.Content -replace "^\+ ", "- "
+                    }
+                }
+            })
+
+            $null = $categoryContainer.Children.Add($toggleButton)
+
+            # Add wrap panel for apps to container
             $wrapPanel = New-Object Windows.Controls.WrapPanel
             $wrapPanel.Orientation = "Horizontal"
-            $wrapPanel.HorizontalAlignment = "Stretch"
-            $wrapPanel.VerticalAlignment = "Center"
-            $wrapPanel.Margin = New-Object Windows.Thickness(0, 0, 0, 20)
+            $wrapPanel.HorizontalAlignment = "Left"
+            $wrapPanel.VerticalAlignment = "Top"
+            $wrapPanel.Margin = New-Object Windows.Thickness(0, 0, 0, 0)
             $wrapPanel.Visibility = [Windows.Visibility]::Visible
             $wrapPanel.Tag = "CategoryWrapPanel_$category"
-            $null = $TargetElement.Items.Add($wrapPanel)
-            $appsByCategory[$category] |Sort-Object | ForEach-Object {
-                $sync.$_ =  $(Initialize-InstallAppEntry -TargetElement $wrapPanel -AppKey $_)
+
+            $null = $categoryContainer.Children.Add($wrapPanel)
+
+            # Add the entire category container to the target element
+            $null = $TargetElement.Items.Add($categoryContainer)
+
+            # Add apps to the wrap panel
+            $appsByCategory[$category] | Sort-Object | ForEach-Object {
+                $sync.$_ = $(Initialize-InstallAppEntry -TargetElement $wrapPanel -AppKey $_)
             }
         }
     }

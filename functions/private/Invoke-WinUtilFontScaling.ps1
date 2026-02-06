@@ -53,7 +53,6 @@ function Invoke-WinUtilFontScaling {
         "CustomDialogWidth",
         "CustomDialogHeight",
         "CustomDialogLogoSize",
-        "MicroWinLogoSize",
         "ToolTipWidth"
     )
 

@@ -1,8 +1,8 @@
 {
     "shared":{
-        "AppEntryWidth":  "130",
+        "AppEntryWidth":  "200",
         "AppEntryFontSize":  "11",
-        "AppEntryMargin":  "1,1,1,1",
+        "AppEntryMargin":  "1,0,1,0",
         "AppEntryBorderThickness":  "0",
         "CustomDialogFontSize":       "12",
         "CustomDialogFontSizeHeader": "14",
@@ -25,8 +25,6 @@
         "IconButtonSize":   "35",
         "SettingsIconFontSize":   "18",
         "CloseIconFontSize":      "18",
-        "MicroWinLogoSize": "10",
-        "MicrowinCheckBoxMargin": "-10,5,0,0",
         "GroupBorderBackgroundColor":  "#232629",
         "ButtonFontSize":   "12",
         "ButtonFontFamily": "Arial",
@@ -60,7 +58,6 @@
         "ScrollBarHoverColor": "#5A5D62",
         "ScrollBarDraggingColor": "#6A6D72",
 
-        "MicrowinBusyColor": "#2e77ff",
         "ProgressBarForegroundColor": "#2e77ff",
         "ProgressBarBackgroundColor": "Transparent",
         "ProgressBarTextColor": "#232629",
@@ -91,7 +88,7 @@
         "AppInstallOverlayBackgroundColor":"#2E3135",
         "ComboBoxForegroundColor":  "#F7F7F7",
         "ComboBoxBackgroundColor":  "#1E3747",
-        "LabelboxForegroundColor":  "#0567ff",
+        "LabelboxForegroundColor":  "#5bdcff",
         "MainForegroundColor":  "#F7F7F7",
         "MainBackgroundColor":  "#232629",
         "LabelBackgroundColor":  "#232629",
@@ -101,7 +98,6 @@
         "ScrollBarHoverColor": "#3B4252",
         "ScrollBarDraggingColor": "#5E81AC",
 
-        "MicrowinBusyColor": "#2e77ff",
         "ProgressBarForegroundColor": "#222222",
         "ProgressBarBackgroundColor": "Transparent",
         "ProgressBarTextColor": "#232629",
