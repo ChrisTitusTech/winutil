@@ -1,6 +1,32 @@
 Function Invoke-WinUtilCurrentSystem {
     param([string]$CheckBox)
 
+    if ($CheckBox -eq "choco") {
+        $apps = (choco list --local-only | Select-String -Pattern "^\S+").Matches.Value
+        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object { $_ -like "WPFInstall*" }
+
+        $sync.GetEnumerator() | Where-Object { $_.Key -in $filter } | ForEach-Object {
+            $dependencies = @($sync.configs.applications.$($_.Key).choco -split ";")
+            if ($dependencies | ForEach-Object { $_ -in $apps } | Where-Object { $_ }) { Write-Output $_.Name }
+        }
+    }
+
+    if ($CheckBox -eq "winget") {
+        $orig = [Console]::OutputEncoding
+        [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
+        $Sync.InstalledPrograms = winget list -s winget | Select-Object -Skip 3 |
+            ConvertFrom-String -PropertyNames "Name","Id","Version","Available" -Delimiter '\s{2,}'
+        [Console]::OutputEncoding = $orig
+
+        $installedIds = $sync.InstalledPrograms.Id | ForEach-Object { $_.Trim().ToLower() }
+        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object { $_ -like "WPFInstall*" }
+
+        $sync.GetEnumerator() | Where-Object { $_.Key -in $filter } | ForEach-Object {
+            $dependencies = @($sync.configs.applications.$($_.Key).winget -split ";") | ForEach-Object { $_.Trim().ToLower() }
+            if ($dependencies | ForEach-Object { $_ -in $installedIds } | Where-Object { $_ }) { Write-Output $_.Name }
+        }
+    }
+
     if ($CheckBox -eq "tweaks") {
         if (!(Test-Path 'HKU:\')) { New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null }
         $ScheduledTasks = Get-ScheduledTask
