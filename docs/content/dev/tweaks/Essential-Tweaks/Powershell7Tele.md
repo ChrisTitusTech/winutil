@@ -1,5 +1,7 @@
-# Disable Powershell 7 Telemetry
-
+---
+title: "Disable Powershell 7 Telemetry"
+description: ""
+---
 ```json
 "WPFTweaksPowershell7Tele": {
     "Content": "Disable Powershell 7 Telemetry",

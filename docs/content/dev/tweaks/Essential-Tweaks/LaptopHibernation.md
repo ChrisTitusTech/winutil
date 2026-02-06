@@ -1,5 +1,7 @@
-# Set Hibernation as default (good for laptops)
-
+---
+title: "Set Hibernation as default (good for laptops)"
+description: ""
+---
 ```json
 "WPFTweaksLaptopHibernation": {
     "Content": "Set Hibernation as default (good for laptops)",

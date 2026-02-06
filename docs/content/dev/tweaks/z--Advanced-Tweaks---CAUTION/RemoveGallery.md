@@ -1,5 +1,7 @@
-# Remove Gallery from explorer
-
+---
+title: "Remove Gallery from explorer"
+description: ""
+---
 ```json
 "WPFTweaksRemoveGallery": {
     "Content": "Remove Gallery from explorer",

@@ -1,5 +1,7 @@
-# Disable IPv6
-
+---
+title: "Disable IPv6"
+description: ""
+---
 ```json
 "WPFTweaksDisableIPv6": {
     "Content": "Disable IPv6",

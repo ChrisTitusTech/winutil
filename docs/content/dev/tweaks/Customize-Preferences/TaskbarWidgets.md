@@ -1,5 +1,7 @@
-# Widgets Button in Taskbar
-
+---
+title: "Widgets Button in Taskbar"
+description: ""
+---
 ```json
  "WPFToggleTaskbarWidgets": {
     "Content": "Widgets Button in Taskbar",

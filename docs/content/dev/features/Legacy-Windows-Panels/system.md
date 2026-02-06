@@ -1,5 +1,7 @@
-# System Properties
-
+---
+title: "System Properties"
+description: ""
+---
 ```powershell
 function Invoke-WPFControlPanel {
     <#

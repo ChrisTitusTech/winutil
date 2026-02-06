@@ -1,5 +1,7 @@
-# Legacy Media (WMP, DirectPlay)
-
+---
+title: "Legacy Media (WMP, DirectPlay)"
+description: ""
+---
 ```json
 "WPFFeatureslegacymedia": {
     "Content": "Legacy Media (WMP, DirectPlay)",

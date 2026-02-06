@@ -1,5 +1,7 @@
-# Disable GameDVR
-
+---
+title: "Disable GameDVR"
+description: ""
+---
 ```json
 "WPFTweaksDVR": {
     "Content": "Disable GameDVR",

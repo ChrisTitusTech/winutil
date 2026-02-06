@@ -1,5 +1,7 @@
-# Dark Theme for Windows
-
+---
+title: "Dark Theme for Windows"
+description: ""
+---
 ```json
 "WPFToggleDarkMode": {
     "Content": "Dark Theme for Windows",

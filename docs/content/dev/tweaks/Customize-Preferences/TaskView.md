@@ -1,5 +1,7 @@
-# Task View Button in Taskbar
-
+---
+title: "Task View Button in Taskbar"
+description: ""
+---
 ```json
 "WPFToggleTaskView": {
     "Content": "Task View Button in Taskbar",

@@ -1,5 +1,7 @@
-# Disable Notification Tray/Calendar
-
+---
+title: "Disable Notification Tray/Calendar"
+description: ""
+---
 ```json
 "WPFTweaksDisableNotifications": {
     "Content": "Disable Notification Tray/Calendar",

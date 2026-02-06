@@ -1,5 +1,7 @@
-# Debloat Edge
-
+---
+title: "Debloat Edge"
+description: ""
+---
 ```json
 "WPFTweaksEdgeDebloat": {
     "Content": "Edge Debloat",

@@ -1,5 +1,7 @@
-# Show File Extensions
-
+---
+title: "Show File Extensions"
+description: ""
+---
 ```json
 "WPFToggleShowExt": {
     "Content": "Show File Extensions",

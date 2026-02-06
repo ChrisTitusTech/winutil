@@ -1,5 +1,7 @@
-# Show Hidden Files
-
+---
+title: "Show Hidden Files"
+description: ""
+---
 ```json
 "WPFToggleHiddenFiles": {
     "Content": "Show Hidden Files",

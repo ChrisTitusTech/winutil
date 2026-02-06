@@ -1,5 +1,7 @@
-# Reset Windows Update
-
+---
+title: "Reset Windows Update"
+description: ""
+---
 ```powershell
 function Invoke-WPFFixesUpdate {
 

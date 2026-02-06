@@ -1,5 +1,7 @@
-# Control Panel
-
+---
+title: "Control Panel"
+description: ""
+---
 ```powershell
 function Invoke-WPFControlPanel {
     <#

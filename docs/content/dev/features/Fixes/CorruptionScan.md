@@ -1,5 +1,7 @@
-# System Corruption Scan
-
+---
+title: "System Corruption Scan"
+description: ""
+---
 ```powershell
 function Invoke-WPFSystemRepair {
     <#

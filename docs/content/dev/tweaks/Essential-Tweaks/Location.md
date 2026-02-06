@@ -1,5 +1,7 @@
-# Disable Location Tracking
-
+---
+title: "Disable Location Tracking"
+description: ""
+---
 ```json
 "WPFTweaksLocation": {
     "Content": "Disable Location Tracking",

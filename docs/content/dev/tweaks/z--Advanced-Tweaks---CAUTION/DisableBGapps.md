@@ -1,5 +1,7 @@
-# Disable Background Apps
-
+---
+title: "Disable Background Apps"
+description: ""
+---
 ```json
 "WPFTweaksDisableBGapps": {
     "Content": "Disable Background Apps",

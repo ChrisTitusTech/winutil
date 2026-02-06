@@ -1,5 +1,7 @@
-# Remove ALL MS Store Apps - NOT RECOMMENDED
-
+---
+title: "Remove ALL MS Store Apps - NOT RECOMMENDED"
+description: ""
+---
 ```json
 "WPFTweaksDeBloat": {
     "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
