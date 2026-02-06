@@ -30,7 +30,7 @@
       "powercfg.exe /hibernate on"
     ],
 ```
-    
+
 ## Registry Changes
 Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.
 

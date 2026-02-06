@@ -13,7 +13,7 @@
 
       Write-Host \"Uninstalling OneDrive...\"
       Start-Process 'C:\\Windows\\System32\\OneDriveSetup.exe' -ArgumentList '/uninstall' -Wait
-      
+
       # Some of OneDrive files use explorer, and OneDrive uses FileCoAuth
       Write-Host \"Removing leftover OneDrive Files...\"
       Stop-Process -Name FileCoAuth,Explorer
