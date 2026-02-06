@@ -56,14 +56,10 @@ function Invoke-WPFButton {
         "WPFWinUtilShortcut" {Invoke-WPFShortcut -ShortcutToAdd "WinUtil" -RunAsAdmin $true}
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
-        "WPFGetIso" {Invoke-MicrowinGetIso}
-        "WPFMicrowin" {Invoke-Microwin}
         "WPFCloseButton" {Invoke-WPFCloseButton}
         "WPFWinUtilInstallPSProfile" {Invoke-WinUtilInstallPSProfile}
         "WPFWinUtilUninstallPSProfile" {Invoke-WinUtilUninstallPSProfile}
         "WPFWinUtilSSHServer" {Invoke-WPFSSHServer}
         "WPFselectedAppsButton" {$sync.selectedAppsPopup.IsOpen = -not $sync.selectedAppsPopup.IsOpen}
-        "WPFMicrowinPanelBack" {Toggle-MicrowinPanel 1}
-        "MicrowinAutoConfigBtn" {Invoke-AutoConfigDialog}
     }
 }
