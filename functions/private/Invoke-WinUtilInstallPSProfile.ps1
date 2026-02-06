@@ -9,7 +9,7 @@ function Invoke-WinUtilInstallPSProfile {
     }
     catch {
         Write-Host "pwsh is not installed... Installing pwsh..."
-        Start-Process winget -ArgumentList 'install pwsh --source winget'
+        Start-Process winget -ArgumentList 'install pwsh --source winget' -NoNewWindow
         Start-Process pwsh -ArgumentList '-Command "irm https://github.com/ChrisTitusTech/powershell-profile/raw/main/setup.ps1 | iex"'
     }
 }
