@@ -272,7 +272,7 @@
   },
   "WPFWinUtilInstallPSProfile": {
     "Content": "Install CTT PowerShell Profile",
-    "category": "Powershell Profile",
+    "category": "Powershell Profile Powershell 7+ Only",
     "panel": "2",
     "Order": "a083_",
     "Type": "Button",
@@ -280,7 +280,7 @@
   },
   "WPFWinUtilUninstallPSProfile": {
     "Content": "Uninstall CTT PowerShell Profile",
-    "category": "Powershell Profile",
+    "category": "Powershell Profile Powershell 7+ Only",
     "panel": "2",
     "Order": "a084_",
     "Type": "Button",
