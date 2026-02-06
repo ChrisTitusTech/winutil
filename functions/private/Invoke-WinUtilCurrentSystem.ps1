@@ -1,4 +1,22 @@
 Function Invoke-WinUtilCurrentSystem {
+
+    <#
+    .SYNOPSIS
+        Checks which tweaks, apps, and programs are currently applied on the system and sets toggles accordingly.
+
+    .EXAMPLE
+        Invoke-WinUtilCurrentSystem -CheckBox "tweaks"
+        Returns all tweak toggles that are currently applied on the system.
+
+    .EXAMPLE
+        Invoke-WinUtilCurrentSystem -CheckBox "choco"
+        Returns all Choco package toggles that are currently installed.
+
+    .EXAMPLE
+        Invoke-WinUtilCurrentSystem -CheckBox "winget"
+        Returns all Winget package toggles that are currently installed.
+    #>
+
     param([string]$CheckBox)
 
     if ($CheckBox -eq "choco") {
