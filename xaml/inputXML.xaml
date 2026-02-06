@@ -23,7 +23,7 @@
         <Setter Property="BorderBrush" Value="{DynamicResource BorderColor}"/>
         <Setter Property="MaxWidth" Value="{DynamicResource ToolTipWidth}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Padding" Value="5"/>
+        <Setter Property="Padding" Value="2"/>
         <Setter Property="FontSize" Value="{DynamicResource FontSize}"/>
         <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
         <!-- This ContentTemplate ensures that the content of the ToolTip wraps text properly for better readability -->
@@ -85,7 +85,7 @@
     <Style x:Key="AppEntryBorderStyle" TargetType="Border">
         <Setter Property="BorderBrush" Value="Gray"/>
         <Setter Property="BorderThickness" Value="{DynamicResource AppEntryBorderThickness}"/>
-        <Setter Property="CornerRadius" Value="5"/>
+        <Setter Property="CornerRadius" Value="2"/>
         <Setter Property="Padding" Value="{DynamicResource AppEntryMargin}"/>
         <Setter Property="Width" Value="{DynamicResource AppEntryWidth}"/>
         <Setter Property="VerticalAlignment" Value="Top"/>
@@ -101,10 +101,30 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBox">
-                    <ContentPresenter Content="{TemplateBinding Content}"
-                                    VerticalAlignment="Center"
-                                    HorizontalAlignment="Left"
-                                    Margin="{TemplateBinding Padding}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Grid Width="16" Height="16" Margin="0,0,8,0">
+                            <Border x:Name="CheckBoxBorder"
+                                    BorderBrush="{DynamicResource MainForegroundColor}"
+                                    Background="{DynamicResource ButtonBackgroundColor}"
+                                    BorderThickness="1"
+                                    Width="12"
+                                    Height="12"
+                                    CornerRadius="2"/>
+                            <Path x:Name="CheckMark"
+                                  Stroke="{DynamicResource ToggleButtonOnColor}"
+                                  StrokeThickness="2"
+                                  Data="M 2 8 L 6 12 L 14 4"
+                                  Visibility="Collapsed"/>
+                        </Grid>
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -163,6 +183,7 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+
 
     </Style>
     <Style TargetType="Button" x:Key="HoverButtonStyle">
@@ -532,7 +553,7 @@
                                                 BorderThickness="1"
                                                 Width="{DynamicResource CheckBoxBulletDecoratorSize *0.85}"
                                                 Height="{DynamicResource CheckBoxBulletDecoratorSize *0.85}"
-                                                Margin="2"
+                                                Margin="1"
                                                 SnapsToDevicePixels="True"/>
                                         <Viewbox x:Name="CheckMarkContainer"
                                                 Width="{DynamicResource CheckBoxBulletDecoratorSize}"

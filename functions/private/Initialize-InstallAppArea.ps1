@@ -41,13 +41,13 @@
         $itemsControl.VerticalAlignment = 'Stretch'
         $scrollViewer.Content = $itemsControl
 
-        # Enable virtualization for the ItemsControl to improve performance (It's hard to test if this is actually working, so if you know what you're doing, please check this)
+        # Use WrapPanel to create dynamic columns based on AppEntryWidth and window width
         $itemsPanelTemplate = New-Object Windows.Controls.ItemsPanelTemplate
-        $factory = New-Object Windows.FrameworkElementFactory ([Windows.Controls.VirtualizingStackPanel])
+        $factory = New-Object Windows.FrameworkElementFactory ([Windows.Controls.WrapPanel])
+        $factory.SetValue([Windows.Controls.WrapPanel]::OrientationProperty, [Windows.Controls.Orientation]::Horizontal)
+        $factory.SetValue([Windows.Controls.WrapPanel]::HorizontalAlignmentProperty, [Windows.HorizontalAlignment]::Left)
         $itemsPanelTemplate.VisualTree = $factory
         $itemsControl.ItemsPanel = $itemsPanelTemplate
-        $itemsControl.SetValue([Windows.Controls.VirtualizingStackPanel]::IsVirtualizingProperty, $true)
-        $itemsControl.SetValue([Windows.Controls.VirtualizingStackPanel]::VirtualizationModeProperty, [Windows.Controls.VirtualizationMode]::Recycling)
 
         # Add the Border containing the App Area to the target Grid
         $targetGrid.Children.Add($Border) | Out-Null

@@ -1,8 +1,8 @@
 {
     "shared":{
-        "AppEntryWidth":  "130",
+        "AppEntryWidth":  "200",
         "AppEntryFontSize":  "11",
-        "AppEntryMargin":  "1,1,1,1",
+        "AppEntryMargin":  "1,0,1,0",
         "AppEntryBorderThickness":  "0",
         "CustomDialogFontSize":       "12",
         "CustomDialogFontSizeHeader": "14",
@@ -88,7 +88,7 @@
         "AppInstallOverlayBackgroundColor":"#2E3135",
         "ComboBoxForegroundColor":  "#F7F7F7",
         "ComboBoxBackgroundColor":  "#1E3747",
-        "LabelboxForegroundColor":  "#0567ff",
+        "LabelboxForegroundColor":  "#5bdcff",
         "MainForegroundColor":  "#F7F7F7",
         "MainBackgroundColor":  "#232629",
         "LabelBackgroundColor":  "#232629",

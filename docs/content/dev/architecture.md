@@ -525,5 +525,5 @@ Outputs `winutil.ps1` in the root directory.
 
 ---
 
-**Last Updated**: January 2026  
+**Last Updated**: January 2026
 **Maintainers**: Chris Titus Tech and contributors
