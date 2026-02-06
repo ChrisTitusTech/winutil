@@ -1,0 +1,89 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Microwin Documentation – Features</title>
+    <link>http://localhost:1313/dev/features/</link>
+    <description>Recent content in Features on Microwin Documentation</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	  <atom:link href="http://localhost:1313/dev/features/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Features</title>
+      <link>http://localhost:1313/dev/features/features/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/dev/features/features/</guid>
+      <description>
+        
+        
+        &lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/features/dotnet/&#34;&gt;All .Net Framework (2,3,4)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/features/disablelegacyrecovery/&#34;&gt;Disable Legacy F8 Boot Recovery&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/features/regbackup/&#34;&gt;Enable Daily Registry Backup Task 12.30am&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/features/enablelegacyrecovery/&#34;&gt;Enable Legacy F8 Boot Recovery&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/features/hyperv/&#34;&gt;HyperV Virtualization&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/features/legacymedia/&#34;&gt;Legacy Media (WMP, DirectPlay)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/features/nfs/&#34;&gt;NFS - Network File System&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/features/sandbox/&#34;&gt;Windows Sandbox&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/features/wsl/&#34;&gt;Windows Subsystem for Linux&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Fixes</title>
+      <link>http://localhost:1313/dev/features/fixes/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/dev/features/fixes/</guid>
+      <description>
+        
+        
+        &lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/fixes/runadobecccleanertool/&#34;&gt;Remove Adobe Creative Cloud&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/fixes/network/&#34;&gt;Reset Network&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/fixes/update/&#34;&gt;Reset Windows Update&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/fixes/autologin/&#34;&gt;Set Up Autologin&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/fixes/corruptionscan/&#34;&gt;System Corruption Scan&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/fixes/winget/&#34;&gt;WinGet Reinstall&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Legacy Windows Panels</title>
+      <link>http://localhost:1313/dev/features/legacy-windows-panels/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/dev/features/legacy-windows-panels/</guid>
+      <description>
+        
+        
+        &lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/legacy-windows-panels/control/&#34;&gt;Control Panel&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/legacy-windows-panels/network/&#34;&gt;Network Connections&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/legacy-windows-panels/power/&#34;&gt;Power Panel&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/legacy-windows-panels/printer/&#34;&gt;Printer Settings&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/legacy-windows-panels/region/&#34;&gt;Region&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/legacy-windows-panels/sound/&#34;&gt;Sound Settings&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/legacy-windows-panels/system/&#34;&gt;System Properties&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/features/legacy-windows-panels/user/&#34;&gt;User Accounts&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

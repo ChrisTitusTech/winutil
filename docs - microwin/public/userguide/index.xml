@@ -1,0 +1,365 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Microwin Documentation – User Guide</title>
+    <link>http://localhost:1313/userguide/</link>
+    <description>Recent content in User Guide on Microwin Documentation</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	  <atom:link href="http://localhost:1313/userguide/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Getting Started with Winutil</title>
+      <link>http://localhost:1313/userguide/getting-started/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/userguide/getting-started/</guid>
+      <description>
+        
+        
+        &lt;h2&gt;Welcome to Winutil!&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;welcome-to-winutil&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#welcome-to-winutil&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Winutil is a powerful Windows utility that helps you optimize, customize, and maintain your Windows system. This guide will walk you through everything you need to get started.&lt;/p&gt;
+&lt;h2&gt;System Requirements&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;system-requirements&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#system-requirements&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Before running Winutil, ensure your system meets these requirements:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Operating System&lt;/strong&gt;: Windows 10 (Latest Version) or Windows 11&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;PowerShell&lt;/strong&gt;: Version 5.1 or later (included by default in Windows 10/11)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Administrator Access&lt;/strong&gt;: Required for system-level changes&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Internet Connection&lt;/strong&gt;: Required for downloading applications and updates&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;.NET Framework&lt;/strong&gt;: Version 4.5 or later (usually pre-installed)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Installation&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;installation&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#installation&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Winutil doesn&amp;rsquo;t require traditional installation. It runs directly from PowerShell as a script.&lt;/p&gt;
+&lt;h3&gt;Step 1: Open PowerShell as Administrator&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;step-1-open-powershell-as-administrator&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#step-1-open-powershell-as-administrator&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;There are several ways to open PowerShell with admin rights:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Method 1: Start Menu (Recommended)&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Right-click on the Windows Start button&lt;/li&gt;
+&lt;li&gt;Select &amp;ldquo;Windows PowerShell (Admin)&amp;rdquo; on Windows 10&lt;/li&gt;
+&lt;li&gt;Or select &amp;ldquo;Terminal (Admin)&amp;rdquo; on Windows 11&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Method 2: Search Method&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Press the &lt;code&gt;Windows&lt;/code&gt; key&lt;/li&gt;
+&lt;li&gt;Type &amp;ldquo;PowerShell&amp;rdquo; or &amp;ldquo;Terminal&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;Press &lt;code&gt;Ctrl + Shift + Enter&lt;/code&gt; to launch as administrator&lt;/li&gt;
+&lt;li&gt;Or right-click and select &amp;ldquo;Run as administrator&amp;rdquo;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Method 3: Run Dialog&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Press &lt;code&gt;Windows + R&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Type &lt;code&gt;powershell&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Press &lt;code&gt;Ctrl + Shift + Enter&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;Step 2: Run the Launch Command&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;step-2-run-the-launch-command&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#step-2-run-the-launch-command&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Once PowerShell is open with administrator privileges, run one of these commands:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Stable Release (Recommended for most users)&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code&#34;&gt;
+
+&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;irm &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://christitus.com/win&amp;#34;&lt;/span&gt; | iex&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx-opacity-0 hx-transition group-hover/code:hx-opacity-100 hx-flex hx-gap-1 hx-absolute hx-m-[11px] hx-right-0 hx-top-0&#34;&gt;
+  &lt;button
+    class=&#34;hextra-code-copy-btn hx-group/copybtn hx-transition-all active:hx-opacity-50 hx-bg-primary-700/5 hx-border hx-border-black/5 hx-text-gray-600 hover:hx-text-gray-900 hx-rounded-md hx-p-1.5 dark:hx-bg-primary-300/10 dark:hx-border-white/10 dark:hx-text-gray-400 dark:hover:hx-text-gray-50&#34;
+    title=&#34;Copy code&#34;
+  &gt;
+    &lt;div class=&#34;copy-icon group-[.copied]/copybtn:hx-hidden hx-pointer-events-none hx-h-4 hx-w-4&#34;&gt;&lt;/div&gt;
+    &lt;div class=&#34;success-icon hx-hidden group-[.copied]/copybtn:hx-block hx-pointer-events-none hx-h-4 hx-w-4&#34;&gt;&lt;/div&gt;
+  &lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;Development Branch (For testing latest features)&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code&#34;&gt;
+
+&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;irm &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://christitus.com/windev&amp;#34;&lt;/span&gt; | iex&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx-opacity-0 hx-transition group-hover/code:hx-opacity-100 hx-flex hx-gap-1 hx-absolute hx-m-[11px] hx-right-0 hx-top-0&#34;&gt;
+  &lt;button
+    class=&#34;hextra-code-copy-btn hx-group/copybtn hx-transition-all active:hx-opacity-50 hx-bg-primary-700/5 hx-border hx-border-black/5 hx-text-gray-600 hover:hx-text-gray-900 hx-rounded-md hx-p-1.5 dark:hx-bg-primary-300/10 dark:hx-border-white/10 dark:hx-text-gray-400 dark:hover:hx-text-gray-50&#34;
+    title=&#34;Copy code&#34;
+  &gt;
+    &lt;div class=&#34;copy-icon group-[.copied]/copybtn:hx-hidden hx-pointer-events-none hx-h-4 hx-w-4&#34;&gt;&lt;/div&gt;
+    &lt;div class=&#34;success-icon hx-hidden group-[.copied]/copybtn:hx-block hx-pointer-events-none hx-h-4 hx-w-4&#34;&gt;&lt;/div&gt;
+  &lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;hx-overflow-x-auto hx-mt-6 hx-flex hx-flex-col hx-rounded-lg hx-border hx-py-4 hx-px-4 contrast-more:hx-border-current contrast-more:dark:hx-border-current hx-border-blue-200 hx-bg-blue-100 hx-text-blue-900 dark:hx-border-blue-200/30 dark:hx-bg-blue-900/30 dark:hx-text-blue-200&#34;&gt;
+  &lt;p class=&#34;hx-flex hx-items-center hx-font-medium&#34;&gt;&lt;svg height=16px class=&#34;hx-inline-block hx-align-middle hx-mr-2&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34; fill=&#34;none&#34; viewBox=&#34;0 0 24 24&#34; stroke-width=&#34;2&#34; stroke=&#34;currentColor&#34; aria-hidden=&#34;true&#34;&gt;&lt;path stroke-linecap=&#34;round&#34; stroke-linejoin=&#34;round&#34; d=&#34;M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z&#34;/&gt;&lt;/svg&gt;Note&lt;/p&gt;
+
+  &lt;div class=&#34;hx-w-full hx-min-w-0 hx-leading-7&#34;&gt;
+    &lt;div class=&#34;hx-mt-6 hx-leading-7 first:hx-mt-0&#34;&gt;&lt;p&gt;The &lt;code&gt;irm&lt;/code&gt; command downloads the script, and &lt;code&gt;iex&lt;/code&gt; executes it. This is safe when downloading from the official source.&lt;/p&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;Step 3: Wait for Winutil to Load&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;step-3-wait-for-winutil-to-load&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#step-3-wait-for-winutil-to-load&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;The first time you run Winutil, it may take a few moments to:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Download the latest version&lt;/li&gt;
+&lt;li&gt;Initialize the interface&lt;/li&gt;
+&lt;li&gt;Load all features and settings&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;First Time Setup&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;first-time-setup&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#first-time-setup&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3&gt;Configure WinGet (If Prompted)&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;configure-winget-if-prompted&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#configure-winget-if-prompted&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;On your first run, you may be prompted to configure WinGet (Windows Package Manager). This is normal.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;When prompted, type &lt;code&gt;Y&lt;/code&gt; and press Enter&lt;/li&gt;
+&lt;li&gt;Accept the terms and conditions&lt;/li&gt;
+&lt;li&gt;This only needs to be done once&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;Understanding the Interface&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;understanding-the-interface&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#understanding-the-interface&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Winutil opens with a clean, tabbed interface:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Main Tabs&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Install&lt;/strong&gt;: Browse and install applications&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Tweaks&lt;/strong&gt;: Apply system optimizations and customizations&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Config&lt;/strong&gt;: Access system tools and utilities&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Updates&lt;/strong&gt;: Manage Windows updates&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;MicroWin&lt;/strong&gt;: Create custom, lightweight Windows ISOs&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Your First Actions&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;your-first-actions&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#your-first-actions&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Here are some recommended first steps for new users:&lt;/p&gt;
+&lt;h3&gt;1. Create a Restore Point&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;1-create-a-restore-point&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#1-create-a-restore-point&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Before making any changes, create a system restore point:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Go to the &lt;strong&gt;Tweaks&lt;/strong&gt; tab&lt;/li&gt;
+&lt;li&gt;Find &amp;ldquo;Create Restore Point&amp;rdquo; under Essential Tweaks&lt;/li&gt;
+&lt;li&gt;Check the box and click &amp;ldquo;Run Tweaks&amp;rdquo;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;This allows you to undo changes if needed.&lt;/p&gt;
+&lt;h3&gt;2. Install Essential Applications&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;2-install-essential-applications&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#2-install-essential-applications&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;Navigate to the &lt;strong&gt;Install&lt;/strong&gt; tab&lt;/li&gt;
+&lt;li&gt;Browse categories or use the search bar&lt;/li&gt;
+&lt;li&gt;Check applications you want to install&lt;/li&gt;
+&lt;li&gt;Click &amp;ldquo;Install Selected&amp;rdquo; at the bottom&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;3. Apply Basic Tweaks&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;3-apply-basic-tweaks&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#3-apply-basic-tweaks&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;For a better Windows experience without risks:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Go to the &lt;strong&gt;Tweaks&lt;/strong&gt; tab&lt;/li&gt;
+&lt;li&gt;Select the &lt;strong&gt;&amp;ldquo;Desktop&amp;rdquo; preset&lt;/strong&gt; for a balanced configuration&lt;/li&gt;
+&lt;li&gt;Review the selected tweaks&lt;/li&gt;
+&lt;li&gt;Click &amp;ldquo;Run Tweaks&amp;rdquo;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;Common Tasks&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;common-tasks&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#common-tasks&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3&gt;Installing Applications&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;installing-applications&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#installing-applications&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Single Application&lt;/strong&gt;:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Open &lt;strong&gt;Install&lt;/strong&gt; tab&lt;/li&gt;
+&lt;li&gt;Search for the application name&lt;/li&gt;
+&lt;li&gt;Check the box next to it&lt;/li&gt;
+&lt;li&gt;Click &amp;ldquo;Install Selected&amp;rdquo;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Multiple Applications&lt;/strong&gt;:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Check multiple application boxes&lt;/li&gt;
+&lt;li&gt;All checked apps will install in sequence&lt;/li&gt;
+&lt;li&gt;Progress is shown in the bottom panel&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;Applying Tweaks&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;applying-tweaks&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#applying-tweaks&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Essential Tweaks&lt;/strong&gt; (Safe for all users):&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Go to &lt;strong&gt;Tweaks&lt;/strong&gt; tab&lt;/li&gt;
+&lt;li&gt;Select from Essential Tweaks section&lt;/li&gt;
+&lt;li&gt;Click &amp;ldquo;Run Tweaks&amp;rdquo;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Advanced Tweaks&lt;/strong&gt; (Use with caution):&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Only modify if you understand the implications&lt;/li&gt;
+&lt;li&gt;Always create a restore point first&lt;/li&gt;
+&lt;li&gt;Review documentation for each tweak&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Undoing Tweaks&lt;/strong&gt;:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Select the same tweaks you applied&lt;/li&gt;
+&lt;li&gt;Click &amp;ldquo;Undo Selected Tweaks&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;System will revert to previous state&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;Using Quick Fixes&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;using-quick-fixes&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#using-quick-fixes&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;For common Windows issues:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Go to &lt;strong&gt;Config&lt;/strong&gt; tab&lt;/li&gt;
+&lt;li&gt;Navigate to &lt;strong&gt;Fixes&lt;/strong&gt; section&lt;/li&gt;
+&lt;li&gt;Select the appropriate fix:
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Reset Network&lt;/strong&gt;: Fixes network connectivity issues&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Reset Windows Update&lt;/strong&gt;: Resolves update problems&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;System Corruption Scan&lt;/strong&gt;: Repairs corrupted system files&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;WinGet Reinstall&lt;/strong&gt;: Fixes package manager issues&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;Changing DNS Servers&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;changing-dns-servers&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#changing-dns-servers&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;For improved privacy and speed:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Go to &lt;strong&gt;Config&lt;/strong&gt; or &lt;strong&gt;Tweaks&lt;/strong&gt; tab&lt;/li&gt;
+&lt;li&gt;Find the DNS section&lt;/li&gt;
+&lt;li&gt;Select a provider:
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Cloudflare&lt;/strong&gt;: Fast and privacy-focused&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Google&lt;/strong&gt;: Reliable and widely used&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Quad9&lt;/strong&gt;: Security-focused with malware blocking&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;AdGuard&lt;/strong&gt;: Blocks ads and trackers&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Click Apply&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;Understanding Presets&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;understanding-presets&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#understanding-presets&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Winutil offers several preset configurations:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Minimal&lt;/strong&gt;: Minimal changes, keeps most Windows features&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Standard&lt;/strong&gt;: Good middle-ground for most users&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Safety Tips&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;safety-tips&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#safety-tips&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;✅ &lt;strong&gt;DO&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Create restore points before major changes&lt;/li&gt;
+&lt;li&gt;Read tweak descriptions before applying&lt;/li&gt;
+&lt;li&gt;Start with Essential Tweaks&lt;/li&gt;
+&lt;li&gt;Keep Windows up to date&lt;/li&gt;
+&lt;li&gt;Back up important data&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;❌ &lt;strong&gt;DON&amp;rsquo;T&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Apply all tweaks at once without understanding them&lt;/li&gt;
+&lt;li&gt;Skip creating restore points&lt;/li&gt;
+&lt;li&gt;Use Advanced Tweaks without research&lt;/li&gt;
+&lt;li&gt;Disable security features unless necessary&lt;/li&gt;
+&lt;li&gt;Run on production systems without testing&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Troubleshooting First Run&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;troubleshooting-first-run&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#troubleshooting-first-run&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3&gt;Script Won&amp;rsquo;t Download&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;script-wont-download&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#script-wont-download&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;If the download fails&lt;/strong&gt;:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Try the direct GitHub link:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code&#34;&gt;
+
+&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;irm https&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;:&lt;/span&gt;//github.com/ChrisTitusTech/Winutil/releases/latest/download/Winutil.ps1 | iex&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx-opacity-0 hx-transition group-hover/code:hx-opacity-100 hx-flex hx-gap-1 hx-absolute hx-m-[11px] hx-right-0 hx-top-0&#34;&gt;
+  &lt;button
+    class=&#34;hextra-code-copy-btn hx-group/copybtn hx-transition-all active:hx-opacity-50 hx-bg-primary-700/5 hx-border hx-border-black/5 hx-text-gray-600 hover:hx-text-gray-900 hx-rounded-md hx-p-1.5 dark:hx-bg-primary-300/10 dark:hx-border-white/10 dark:hx-text-gray-400 dark:hover:hx-text-gray-50&#34;
+    title=&#34;Copy code&#34;
+  &gt;
+    &lt;div class=&#34;copy-icon group-[.copied]/copybtn:hx-hidden hx-pointer-events-none hx-h-4 hx-w-4&#34;&gt;&lt;/div&gt;
+    &lt;div class=&#34;success-icon hx-hidden group-[.copied]/copybtn:hx-block hx-pointer-events-none hx-h-4 hx-w-4&#34;&gt;&lt;/div&gt;
+  &lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;Force TLS 1.2 (for older Windows versions):&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code&#34;&gt;
+
+&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[&lt;span style=&#34;color:#66d9ef&#34;&gt;Net.ServicePointManager&lt;/span&gt;]::SecurityProtocol = [&lt;span style=&#34;color:#66d9ef&#34;&gt;Net.SecurityProtocolType&lt;/span&gt;]::Tls12
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;irm &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://christitus.com/win&amp;#34;&lt;/span&gt; | iex&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx-opacity-0 hx-transition group-hover/code:hx-opacity-100 hx-flex hx-gap-1 hx-absolute hx-m-[11px] hx-right-0 hx-top-0&#34;&gt;
+  &lt;button
+    class=&#34;hextra-code-copy-btn hx-group/copybtn hx-transition-all active:hx-opacity-50 hx-bg-primary-700/5 hx-border hx-border-black/5 hx-text-gray-600 hover:hx-text-gray-900 hx-rounded-md hx-p-1.5 dark:hx-bg-primary-300/10 dark:hx-border-white/10 dark:hx-text-gray-400 dark:hover:hx-text-gray-50&#34;
+    title=&#34;Copy code&#34;
+  &gt;
+    &lt;div class=&#34;copy-icon group-[.copied]/copybtn:hx-hidden hx-pointer-events-none hx-h-4 hx-w-4&#34;&gt;&lt;/div&gt;
+    &lt;div class=&#34;success-icon hx-hidden group-[.copied]/copybtn:hx-block hx-pointer-events-none hx-h-4 hx-w-4&#34;&gt;&lt;/div&gt;
+  &lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;Execution Policy Error&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;execution-policy-error&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#execution-policy-error&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;If you get an execution policy error:&lt;/p&gt;
+&lt;div class=&#34;hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code&#34;&gt;
+
+&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Set-ExecutionPolicy Unrestricted -Scope &lt;span style=&#34;color:#66d9ef&#34;&gt;Process&lt;/span&gt; -Force
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;irm &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://christitus.com/win&amp;#34;&lt;/span&gt; | iex&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx-opacity-0 hx-transition group-hover/code:hx-opacity-100 hx-flex hx-gap-1 hx-absolute hx-m-[11px] hx-right-0 hx-top-0&#34;&gt;
+  &lt;button
+    class=&#34;hextra-code-copy-btn hx-group/copybtn hx-transition-all active:hx-opacity-50 hx-bg-primary-700/5 hx-border hx-border-black/5 hx-text-gray-600 hover:hx-text-gray-900 hx-rounded-md hx-p-1.5 dark:hx-bg-primary-300/10 dark:hx-border-white/10 dark:hx-text-gray-400 dark:hover:hx-text-gray-50&#34;
+    title=&#34;Copy code&#34;
+  &gt;
+    &lt;div class=&#34;copy-icon group-[.copied]/copybtn:hx-hidden hx-pointer-events-none hx-h-4 hx-w-4&#34;&gt;&lt;/div&gt;
+    &lt;div class=&#34;success-icon hx-hidden group-[.copied]/copybtn:hx-block hx-pointer-events-none hx-h-4 hx-w-4&#34;&gt;&lt;/div&gt;
+  &lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;Download Blocked (India/Certain Regions)&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;download-blocked-indiacertain-regions&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#download-blocked-indiacertain-regions&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;If GitHub is blocked in your region:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Use a VPN service&lt;/li&gt;
+&lt;li&gt;Change DNS to Cloudflare (1.1.1.1) or Google (8.8.8.8)&lt;/li&gt;
+&lt;li&gt;Try again&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;Interface Doesn&amp;rsquo;t Appear&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;interface-doesnt-appear&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#interface-doesnt-appear&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;If Winutil downloads but doesn&amp;rsquo;t open:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Check if antivirus is blocking it&lt;/li&gt;
+&lt;li&gt;Ensure you ran PowerShell as administrator&lt;/li&gt;
+&lt;li&gt;Try closing and reopening PowerShell&lt;/li&gt;
+&lt;li&gt;Check Windows Defender exclusions&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;Next Steps&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;next-steps&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#next-steps&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Now that you&amp;rsquo;re set up, explore these guides:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;../store/&#34; &gt;Application Installation Guide&lt;/a&gt; - Learn about installing software&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;../tweaks/&#34; &gt;Tweaks Guide&lt;/a&gt; - Understand system optimizations&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;../microwin/&#34; &gt;MicroWin Guide&lt;/a&gt; - Create custom Windows ISOs&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;../../faq/&#34; &gt;FAQ&lt;/a&gt; - Common questions and answers&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Getting Help&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;getting-help&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#getting-help&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;If you need assistance:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Documentation&lt;/strong&gt;: Browse this documentation site&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Known Issues&lt;/strong&gt;: Check the &lt;a href=&#34;../../knownissues/&#34; &gt;Known Issues&lt;/a&gt; page&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Discord&lt;/strong&gt;: Join the &lt;a href=&#34;https://discord.gg/RUbZUZyByQ&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;community Discord server&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;GitHub Issues&lt;/strong&gt;: Report bugs on &lt;a href=&#34;https://github.com/ChrisTitusTech/winutil/issues&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;YouTube&lt;/strong&gt;: Watch &lt;a href=&#34;https://www.youtube.com/watch?v=6UQZ5oQg8XA&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;video tutorials&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Quick Reference Card&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;quick-reference-card&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#quick-reference-card&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;Task&lt;/th&gt;
+          &lt;th&gt;Location&lt;/th&gt;
+          &lt;th&gt;Action&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;Install Apps&lt;/td&gt;
+          &lt;td&gt;Install Tab&lt;/td&gt;
+          &lt;td&gt;Check boxes → Install Selected&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;Apply Tweaks&lt;/td&gt;
+          &lt;td&gt;Tweaks Tab&lt;/td&gt;
+          &lt;td&gt;Select tweaks → Run Tweaks&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;Undo Tweaks&lt;/td&gt;
+          &lt;td&gt;Tweaks Tab&lt;/td&gt;
+          &lt;td&gt;Select tweaks → Undo Selected Tweaks&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;Create Restore Point&lt;/td&gt;
+          &lt;td&gt;Tweaks Tab&lt;/td&gt;
+          &lt;td&gt;Essential Tweaks section&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;Fix Network&lt;/td&gt;
+          &lt;td&gt;Config Tab&lt;/td&gt;
+          &lt;td&gt;Fixes → Reset Network&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;Change DNS&lt;/td&gt;
+          &lt;td&gt;Tweaks Tab&lt;/td&gt;
+          &lt;td&gt;DNS section&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;Open Control Panel&lt;/td&gt;
+          &lt;td&gt;Config Tab&lt;/td&gt;
+          &lt;td&gt;Legacy Windows Panels&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Happy optimizing! 🚀&lt;/p&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

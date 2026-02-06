@@ -1,6 +1,6 @@
-baseURL = "https://winutil.christitus.com/"
+baseURL = "https://microwin.christitus.com/"
 languageCode = "en-us"
-title = "Winutil Documentation"
+title = "Microwin Documentation"
 enableGitInfo = true
 canonifyURLs = true
 

@@ -1,0 +1,134 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Microwin Documentation – Tweaks</title>
+    <link>http://localhost:1313/dev/tweaks/</link>
+    <description>Recent content in Tweaks on Microwin Documentation</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	  <atom:link href="http://localhost:1313/dev/tweaks/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Essential Tweaks</title>
+      <link>http://localhost:1313/dev/tweaks/essential-tweaks/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/dev/tweaks/essential-tweaks/</guid>
+      <description>
+        
+        
+        &lt;h3&gt;Essential Tweaks&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;essential-tweaks&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#essential-tweaks&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/essential-tweaks/restorepoint/&#34;&gt;Create Restore Point&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/essential-tweaks/edgedebloat/&#34;&gt;Debloat Edge&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/essential-tweaks/deletetempfiles/&#34;&gt;Delete Temporary Files&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/essential-tweaks/activity/&#34;&gt;Disable Activity History&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/essential-tweaks/consumerfeatures/&#34;&gt;Disable ConsumerFeatures&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/essential-tweaks/gamedvr/&#34;&gt;Disable GameDVR&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/essential-tweaks/hibernation/&#34;&gt;Disable Hibernation&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/essential-tweaks/location/&#34;&gt;Disable Location Tracking&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/essential-tweaks/powershell7tele/&#34;&gt;Disable Powershell 7 Telemetry&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/essential-tweaks/storage/&#34;&gt;Disable Storage Sense&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/essential-tweaks/telemetry/&#34;&gt;Disable Telemetry&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/essential-tweaks/endtaskontaskbar/&#34;&gt;Enable End Task With Right Click&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/essential-tweaks/ipv46/&#34;&gt;Prefer IPv4 over IPv6&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/essential-tweaks/diskcleanup/&#34;&gt;Run Disk Cleanup&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/essential-tweaks/laptophibernation/&#34;&gt;Set Hibernation as default (good for laptops)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/essential-tweaks/services/&#34;&gt;Set Services to Manual&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Advanced Tweaks (CAUTION)</title>
+      <link>http://localhost:1313/dev/tweaks/z--advanced-tweaks---caution/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/dev/tweaks/z--advanced-tweaks---caution/</guid>
+      <description>
+        
+        
+        &lt;h3&gt;Advanced Tweaks (CAUTION)&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;advanced-tweaks-caution&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#advanced-tweaks-caution&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/z--advanced-tweaks---caution/blockadobenet/&#34;&gt;Adobe Network Block&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/z--advanced-tweaks---caution/disablebgapps/&#34;&gt;Disable Background Apps&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/z--advanced-tweaks---caution/disablefso/&#34;&gt;Disable Fullscreen Optimizations&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/z--advanced-tweaks---caution/disableipv6/&#34;&gt;Disable IPv6&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/z--advanced-tweaks---caution/disablenotifications/&#34;&gt;Disable Notification Tray/Calendar&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/z--advanced-tweaks---caution/teredo/&#34;&gt;Disable Teredo&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/z--advanced-tweaks---caution/debloat/&#34;&gt;Remove ALL MS Store Apps - NOT RECOMMENDED&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/z--advanced-tweaks---caution/removegallery/&#34;&gt;Remove Gallery from explorer&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/z--advanced-tweaks---caution/removehome/&#34;&gt;Remove Home from explorer&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/z--advanced-tweaks---caution/removeedge/&#34;&gt;Remove Microsoft Edge&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/z--advanced-tweaks---caution/removeonedrive/&#34;&gt;Remove OneDrive&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/z--advanced-tweaks---caution/oosubutton/&#34;&gt;Run OO Shutup 10&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/z--advanced-tweaks---caution/rightclickmenu/&#34;&gt;Set Classic Right-Click Menu&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/z--advanced-tweaks---caution/display/&#34;&gt;Set Display for Performance&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/z--advanced-tweaks---caution/utc/&#34;&gt;Set Time to UTC (Dual Boot)&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Customize Preferences</title>
+      <link>http://localhost:1313/dev/tweaks/customize-preferences/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/dev/tweaks/customize-preferences/</guid>
+      <description>
+        
+        
+        &lt;h3&gt;Customize Preferences&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;customize-preferences&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#customize-preferences&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/customize-preferences/bingsearch/&#34;&gt;Bing Search in Start Menu&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/customize-preferences/taskbaralignment/&#34;&gt;Center Taskbar Items&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/customize-preferences/darkmode/&#34;&gt;Dark Theme for Windows&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/customize-preferences/detailedbsod/&#34;&gt;Detailed BSoD&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/customize-preferences/mouseacceleration/&#34;&gt;Mouse Acceleration&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/customize-preferences/numlock/&#34;&gt;NumLock on Startup&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/customize-preferences/taskbarsearch/&#34;&gt;Search Button in Taskbar&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/customize-preferences/showext/&#34;&gt;Show File Extensions&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/customize-preferences/hiddenfiles/&#34;&gt;Show Hidden Files&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/customize-preferences/snapflyout/&#34;&gt;Snap Assist Flyout&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/customize-preferences/snapsuggestion/&#34;&gt;Snap Assist Suggestion&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/customize-preferences/snapwindow/&#34;&gt;Snap Window&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/customize-preferences/stickykeys/&#34;&gt;Sticky Keys&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/customize-preferences/taskview/&#34;&gt;Task View Button in Taskbar&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/customize-preferences/verboselogon/&#34;&gt;Verbose Messages During Logon&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/customize-preferences/taskbarwidgets/&#34;&gt;Widgets Button in Taskbar&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Performance Plans</title>
+      <link>http://localhost:1313/dev/tweaks/performance-plans/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/dev/tweaks/performance-plans/</guid>
+      <description>
+        
+        
+        &lt;h3&gt;Performance Plans&lt;span class=&#34;hx-absolute -hx-mt-20&#34; id=&#34;performance-plans&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#performance-plans&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/dev/tweaks/performance-plans/profile/&#34;&gt;Remove Ultimate Performance Profile&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

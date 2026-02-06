@@ -1,0 +1,628 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Microwin Documentation – Fixes</title>
+    <link>http://localhost:1313/dev/features/fixes/</link>
+    <description>Recent content in Fixes on Microwin Documentation</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	  <atom:link href="http://localhost:1313/dev/features/fixes/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title></title>
+      <link>http://localhost:1313/dev/features/fixes/autologin/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/dev/features/fixes/autologin/</guid>
+      <description>
+        
+        
+        &lt;h1&gt;Set Up Autologin&lt;/h1&gt;&lt;div class=&#34;hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code&#34;&gt;
+
+&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; Invoke-WPFPanelAutologin {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;#
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;    .&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;SYNOPSIS&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        Enables autologin using Sysinternals Autologon.exe
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;    #&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Official Microsoft recommendation: https://learn.microsoft.com/en-us/sysinternals/downloads/autologon&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Invoke-WebRequest -Uri &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://live.sysinternals.com/Autologon.exe&amp;#34;&lt;/span&gt; -OutFile &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$env:temp&lt;span style=&#34;color:#e6db74&#34;&gt;\autologin.exe&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    cmd /c &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$env:temp&lt;span style=&#34;color:#e6db74&#34;&gt;\autologin.exe&amp;#34;&lt;/span&gt; /accepteula
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx-opacity-0 hx-transition group-hover/code:hx-opacity-100 hx-flex hx-gap-1 hx-absolute hx-m-[11px] hx-right-0 hx-top-0&#34;&gt;
+  &lt;button
+    class=&#34;hextra-code-copy-btn hx-group/copybtn hx-transition-all active:hx-opacity-50 hx-bg-primary-700/5 hx-border hx-border-black/5 hx-text-gray-600 hover:hx-text-gray-900 hx-rounded-md hx-p-1.5 dark:hx-bg-primary-300/10 dark:hx-border-white/10 dark:hx-text-gray-400 dark:hover:hx-text-gray-50&#34;
+    title=&#34;Copy code&#34;
+  &gt;
+    &lt;div class=&#34;copy-icon group-[.copied]/copybtn:hx-hidden hx-pointer-events-none hx-h-4 hx-w-4&#34;&gt;&lt;/div&gt;
+    &lt;div class=&#34;success-icon hx-hidden group-[.copied]/copybtn:hx-block hx-pointer-events-none hx-h-4 hx-w-4&#34;&gt;&lt;/div&gt;
+  &lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>http://localhost:1313/dev/features/fixes/corruptionscan/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/dev/features/fixes/corruptionscan/</guid>
+      <description>
+        
+        
+        &lt;h1&gt;System Corruption Scan&lt;/h1&gt;&lt;div class=&#34;hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code&#34;&gt;
+
+&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; Invoke-WPFSystemRepair {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;#
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;    .&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;SYNOPSIS&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        Checks for system corruption using Chkdsk, SFC, and DISM
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;    .&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;DESCRIPTION&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        1. Chkdsk    - Fixes disk and filesystem corruption
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        2. SFC Run 1 - Fixes system file corruption, and fixes DISM if it was corrupted
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        3. DISM      - Fixes system image corruption, and fixes SFC&amp;#39;s system image if it was corrupted
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        4. SFC Run 2 - Fixes system file corruption, this time with an almost guaranteed uncorrupted system image
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;    #&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; Invoke-Chkdsk {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;#
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        .&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;SYNOPSIS&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;            Runs chkdsk on the system drive
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        .&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;DESCRIPTION&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;            Chkdsk /Scan - Runs an online scan on the system drive, attempts to fix any corruption, and queues other corruption for fixing on reboot
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        #&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;param&lt;/span&gt;(
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            [&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;]$parentProgressId = &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        )
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; -ParentId $parentProgressId -Activity $childProgressBarActivity -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Running chkdsk...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $oldpercent = &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;# 2&amp;gt;&amp;amp;1 redirects stdout, allowing iteration over the output&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        chkdsk.exe /scan /perf &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;&amp;gt;&amp;amp;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; | ForEach-Object {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            Write-Debug $_
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#75715e&#34;&gt;# Regex to match the total percentage regardless of windows locale (it&amp;#39;s always the second percentage in the status output)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ($_ &lt;span style=&#34;color:#f92672&#34;&gt;-match&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;%.*?(\d+)%&amp;#34;&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                [&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;]$percent = $matches[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ($percent &lt;span style=&#34;color:#f92672&#34;&gt;-gt&lt;/span&gt; $oldpercent) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; -Activity $childProgressBarActivity -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Running chkdsk... (&lt;/span&gt;$percent&lt;span style=&#34;color:#e6db74&#34;&gt;%)&amp;#34;&lt;/span&gt; -PercentComplete $percent
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                    $oldpercent = $percent
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; -Activity $childProgressBarActivity -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;chkdsk Completed&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt; -Completed
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; Invoke-SFC {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;#
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        .&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;SYNOPSIS&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;            Runs sfc on the system drive
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        .&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;DESCRIPTION&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;            SFC /ScanNow - Performs a scan of the system files and fixes any corruption
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        .&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;NOTES&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;            ErrorActionPreference is set locally within a script block &amp;amp; {...} to isolate their effects.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;            ErrorActionPreference suppresses false errors caused by sfc.exe output redirection.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;            A bug in SFC output buffering causes progress updates to appear in chunks when redirecting output
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        #&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;param&lt;/span&gt;(
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            [&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;]$parentProgressId = &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        )
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &amp;amp; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            $ErrorActionPreference = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;SilentlyContinue&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; -ParentId $parentProgressId -Activity $childProgressBarActivity -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Running SFC...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            $oldpercent = &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            sfc.exe /scannow &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;&amp;gt;&amp;amp;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; | ForEach-Object {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                Write-Debug $_
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ($_ &lt;span style=&#34;color:#f92672&#34;&gt;-ne&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                    &lt;span style=&#34;color:#75715e&#34;&gt;# sfc.exe /scannow outputs unicode characters, so we directly remove null characters for optimization&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                    $utf8line = $_ &lt;span style=&#34;color:#f92672&#34;&gt;-replace&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;`0&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ($utf8line &lt;span style=&#34;color:#f92672&#34;&gt;-match&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;(\d+)\s*%&amp;#34;&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                        [&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;]$percent = $matches[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ($percent &lt;span style=&#34;color:#f92672&#34;&gt;-gt&lt;/span&gt; $oldpercent) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                            Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; -Activity $childProgressBarActivity -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Running SFC... (&lt;/span&gt;$percent&lt;span style=&#34;color:#e6db74&#34;&gt;%)&amp;#34;&lt;/span&gt; -PercentComplete $percent
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                            $oldpercent = $percent
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; -Activity $childProgressBarActivity -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;SFC Completed&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt; -Completed
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; Invoke-DISM {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;#
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        .&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;SYNOPSIS&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;            Runs DISM on the system drive
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        .&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;DESCRIPTION&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;            DISM                - Fixes system image corruption, and fixes SFC&amp;#39;s system image if it was corrupted
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;              /Online           - Fixes the currently running system image
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;              /Cleanup-Image    - Performs cleanup operations on the image, could remove some unneeded temporary files
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;              /Restorehealth    - Performs a scan of the image and fixes any corruption
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        #&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;param&lt;/span&gt;(
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            [&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;]$parentProgressId = &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        )
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; -ParentId $parentProgressId -Activity $childProgressBarActivity -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Running DISM...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $oldpercent = &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        DISM /Online /Cleanup-Image /RestoreHealth | ForEach-Object {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            Write-Debug $_
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#75715e&#34;&gt;# Filter for lines that contain a percentage that is greater than the previous one&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ($_ &lt;span style=&#34;color:#f92672&#34;&gt;-match&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;(\d+)[.,]\d+%&amp;#34;&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                [&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;]$percent = $matches[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ($percent &lt;span style=&#34;color:#f92672&#34;&gt;-gt&lt;/span&gt; $oldpercent) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                    &lt;span style=&#34;color:#75715e&#34;&gt;# Update the progress bar&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; -Activity $childProgressBarActivity -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Running DISM... (&lt;/span&gt;$percent&lt;span style=&#34;color:#e6db74&#34;&gt;%)&amp;#34;&lt;/span&gt; -PercentComplete $percent
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                    $oldpercent = $percent
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; -Activity $childProgressBarActivity -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;DISM Completed&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt; -Completed
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;try&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Set-WinUtilTaskbaritem -state &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Indeterminate&amp;#34;&lt;/span&gt; -overlay &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;logo&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $childProgressBarActivity = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Scanning for corruption&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Repairing Windows&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;# Step 1: Run chkdsk to fix disk and filesystem corruption before proceeding with system file repairs&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Invoke-Chkdsk
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Repairing Windows&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;25&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;# Step 2: Run SFC to fix system file corruption and ensure DISM can operate correctly&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Invoke-SFC
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Repairing Windows&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;50&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;# Step 3: Run DISM to repair the system image, which SFC relies on for accurate repairs&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Invoke-DISM
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Repairing Windows&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;75&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;# Step 4: Run SFC again to ensure system files are repaired using the now-fixed system image&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Invoke-SFC
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Repairing Windows&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt; -Completed
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Set-WinUtilTaskbaritem -state &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;None&amp;#34;&lt;/span&gt; -overlay &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;checkmark&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    } &lt;span style=&#34;color:#66d9ef&#34;&gt;catch&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Error &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;An error occurred while repairing the system: &lt;/span&gt;$_&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Set-WinUtilTaskbaritem -state &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Error&amp;#34;&lt;/span&gt; -overlay &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;warning&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    } &lt;span style=&#34;color:#66d9ef&#34;&gt;finally&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Host &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;==&amp;gt; Finished System Repair&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Set-WinUtilTaskbaritem -state &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;None&amp;#34;&lt;/span&gt; -overlay &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;checkmark&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx-opacity-0 hx-transition group-hover/code:hx-opacity-100 hx-flex hx-gap-1 hx-absolute hx-m-[11px] hx-right-0 hx-top-0&#34;&gt;
+  &lt;button
+    class=&#34;hextra-code-copy-btn hx-group/copybtn hx-transition-all active:hx-opacity-50 hx-bg-primary-700/5 hx-border hx-border-black/5 hx-text-gray-600 hover:hx-text-gray-900 hx-rounded-md hx-p-1.5 dark:hx-bg-primary-300/10 dark:hx-border-white/10 dark:hx-text-gray-400 dark:hover:hx-text-gray-50&#34;
+    title=&#34;Copy code&#34;
+  &gt;
+    &lt;div class=&#34;copy-icon group-[.copied]/copybtn:hx-hidden hx-pointer-events-none hx-h-4 hx-w-4&#34;&gt;&lt;/div&gt;
+    &lt;div class=&#34;success-icon hx-hidden group-[.copied]/copybtn:hx-block hx-pointer-events-none hx-h-4 hx-w-4&#34;&gt;&lt;/div&gt;
+  &lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>http://localhost:1313/dev/features/fixes/network/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/dev/features/fixes/network/</guid>
+      <description>
+        
+        
+        &lt;h1&gt;Reset Network&lt;/h1&gt;&lt;div class=&#34;hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code&#34;&gt;
+
+&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; Invoke-WPFFixesNetwork {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;#
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;    .&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;SYNOPSIS&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        Resets various network configurations
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;    #&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Host &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Resetting Network with netsh&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Set-WinUtilTaskbaritem -state &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Normal&amp;#34;&lt;/span&gt; -value &lt;span style=&#34;color:#ae81ff&#34;&gt;0.01&lt;/span&gt; -overlay &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;logo&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Reset WinSock catalog to a clean state&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Start-Process -NoNewWindow -FilePath &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;netsh&amp;#34;&lt;/span&gt; -ArgumentList &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;winsock&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;reset&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Set-WinUtilTaskbaritem -state &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Normal&amp;#34;&lt;/span&gt; -value &lt;span style=&#34;color:#ae81ff&#34;&gt;0.35&lt;/span&gt; -overlay &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;logo&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Resets WinHTTP proxy setting to DIRECT&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Start-Process -NoNewWindow -FilePath &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;netsh&amp;#34;&lt;/span&gt; -ArgumentList &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;winhttp&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;reset&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;proxy&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Set-WinUtilTaskbaritem -state &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Normal&amp;#34;&lt;/span&gt; -value &lt;span style=&#34;color:#ae81ff&#34;&gt;0.7&lt;/span&gt; -overlay &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;logo&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Removes all user configured IP settings&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Start-Process -NoNewWindow -FilePath &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;netsh&amp;#34;&lt;/span&gt; -ArgumentList &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;int&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ip&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;reset&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Set-WinUtilTaskbaritem -state &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;None&amp;#34;&lt;/span&gt; -overlay &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;checkmark&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Host &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Process complete. Please reboot your computer.&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $ButtonType = [&lt;span style=&#34;color:#66d9ef&#34;&gt;System.Windows.MessageBoxButton&lt;/span&gt;]::OK
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $MessageboxTitle = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Network Reset &amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $Messageboxbody = (&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Stock settings loaded.&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;`n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; Please reboot your computer&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $MessageIcon = [&lt;span style=&#34;color:#66d9ef&#34;&gt;System.Windows.MessageBoxImage&lt;/span&gt;]::Information
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    [&lt;span style=&#34;color:#66d9ef&#34;&gt;System.Windows.MessageBox&lt;/span&gt;]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Host &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;==========================================&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Host &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;-- Network Configuration has been Reset --&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Host &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;==========================================&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx-opacity-0 hx-transition group-hover/code:hx-opacity-100 hx-flex hx-gap-1 hx-absolute hx-m-[11px] hx-right-0 hx-top-0&#34;&gt;
+  &lt;button
+    class=&#34;hextra-code-copy-btn hx-group/copybtn hx-transition-all active:hx-opacity-50 hx-bg-primary-700/5 hx-border hx-border-black/5 hx-text-gray-600 hover:hx-text-gray-900 hx-rounded-md hx-p-1.5 dark:hx-bg-primary-300/10 dark:hx-border-white/10 dark:hx-text-gray-400 dark:hover:hx-text-gray-50&#34;
+    title=&#34;Copy code&#34;
+  &gt;
+    &lt;div class=&#34;copy-icon group-[.copied]/copybtn:hx-hidden hx-pointer-events-none hx-h-4 hx-w-4&#34;&gt;&lt;/div&gt;
+    &lt;div class=&#34;success-icon hx-hidden group-[.copied]/copybtn:hx-block hx-pointer-events-none hx-h-4 hx-w-4&#34;&gt;&lt;/div&gt;
+  &lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>http://localhost:1313/dev/features/fixes/runadobecccleanertool/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/dev/features/fixes/runadobecccleanertool/</guid>
+      <description>
+        
+        
+        &lt;h1&gt;Remove Adobe Creative Cloud&lt;/h1&gt;&lt;div class=&#34;hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code&#34;&gt;
+
+&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; Invoke-WPFRunAdobeCCCleanerTool {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;#
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;    .&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;SYNOPSIS&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        It removes or fixes problem files and resolves permission issues in registry keys.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;    .&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;DESCRIPTION&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        The Creative Cloud Cleaner tool is a utility for experienced users to clean up corrupted installations.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;    #&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    [&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]$url=&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://swupmf.adobe.com/webfeed/CleanerTool/win/AdobeCreativeCloudCleanerTool.exe&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Host &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;The Adobe Creative Cloud Cleaner tool is hosted at&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Host &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$url&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;try&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;# Don&amp;#39;t show the progress because it will slow down the download speed&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $ProgressPreference=&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;SilentlyContinue&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Invoke-WebRequest -Uri $url -OutFile &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$env:TEMP&lt;span style=&#34;color:#e6db74&#34;&gt;\AdobeCreativeCloudCleanerTool.exe&amp;#34;&lt;/span&gt; -UseBasicParsing -ErrorAction SilentlyContinue -Verbose
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;# Revert back the ProgressPreference variable to the default value since we got the file desired&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $ProgressPreference=&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Continue&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Start-Process -FilePath &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$env:TEMP&lt;span style=&#34;color:#e6db74&#34;&gt;\AdobeCreativeCloudCleanerTool.exe&amp;#34;&lt;/span&gt; -Wait -ErrorAction SilentlyContinue -Verbose
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    } &lt;span style=&#34;color:#66d9ef&#34;&gt;catch&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Error $_.Exception.Message
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    } &lt;span style=&#34;color:#66d9ef&#34;&gt;finally&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (Test-Path -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$env:TEMP&lt;span style=&#34;color:#e6db74&#34;&gt;\AdobeCreativeCloudCleanerTool.exe&amp;#34;&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            Write-Host &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Cleaning up...&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            Remove-Item -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$env:TEMP&lt;span style=&#34;color:#e6db74&#34;&gt;\AdobeCreativeCloudCleanerTool.exe&amp;#34;&lt;/span&gt; -Verbose
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx-opacity-0 hx-transition group-hover/code:hx-opacity-100 hx-flex hx-gap-1 hx-absolute hx-m-[11px] hx-right-0 hx-top-0&#34;&gt;
+  &lt;button
+    class=&#34;hextra-code-copy-btn hx-group/copybtn hx-transition-all active:hx-opacity-50 hx-bg-primary-700/5 hx-border hx-border-black/5 hx-text-gray-600 hover:hx-text-gray-900 hx-rounded-md hx-p-1.5 dark:hx-bg-primary-300/10 dark:hx-border-white/10 dark:hx-text-gray-400 dark:hover:hx-text-gray-50&#34;
+    title=&#34;Copy code&#34;
+  &gt;
+    &lt;div class=&#34;copy-icon group-[.copied]/copybtn:hx-hidden hx-pointer-events-none hx-h-4 hx-w-4&#34;&gt;&lt;/div&gt;
+    &lt;div class=&#34;success-icon hx-hidden group-[.copied]/copybtn:hx-block hx-pointer-events-none hx-h-4 hx-w-4&#34;&gt;&lt;/div&gt;
+  &lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>http://localhost:1313/dev/features/fixes/update/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/dev/features/fixes/update/</guid>
+      <description>
+        
+        
+        &lt;h1&gt;Reset Windows Update&lt;/h1&gt;&lt;div class=&#34;hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code&#34;&gt;
+
+&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; Invoke-WPFFixesUpdate {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;#
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;    .&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;SYNOPSIS&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        Performs various tasks in an attempt to repair Windows Update
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;    .&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;DESCRIPTION&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        1. (Aggressive Only) Scans the system for corruption using the Invoke-WPFSystemRepair function
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        2. Stops Windows Update Services
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        3. Remove the QMGR Data file, which stores BITS jobs
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        4. (Aggressive Only) Renames the DataStore and CatRoot2 folders
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;            DataStore - Contains the Windows Update History and Log Files
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;            CatRoot2 - Contains the Signatures for Windows Update Packages
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        5. Renames the Windows Update Download Folder
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        6. Deletes the Windows Update Log
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        7. (Aggressive Only) Resets the Security Descriptors on the Windows Update Services
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        8. Reregisters the BITS and Windows Update DLLs
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        9. Removes the WSUS client settings
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        10. Resets WinSock
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        11. Gets and deletes all BITS jobs
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        12. Sets the startup type of the Windows Update Services then starts them
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        13. Forces Windows Update to check for updates
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;    .PARAMETER Aggressive
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        If specified, the script will take additional steps to repair Windows Update that are more dangerous, take a significant amount of time, or are generally unnecessary
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;    #&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;param&lt;/span&gt;($Aggressive = $false)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Repairing Windows Update&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Set-WinUtilTaskbaritem -state &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Indeterminate&amp;#34;&lt;/span&gt; -overlay &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;logo&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Host &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Starting Windows Update Repair...&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Wait for the first progress bar to show, otherwise the second one won&amp;#39;t show&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Start-Sleep -Milliseconds &lt;span style=&#34;color:#ae81ff&#34;&gt;200&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ($Aggressive) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Invoke-WPFSystemRepair
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Repairing Windows Update&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Stopping Windows Update Services...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Stop the Windows Update Services&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Stopping Services&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Stopping BITS...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Stop-Service -Name BITS -Force
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Stopping Services&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Stopping wuauserv...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Stop-Service -Name wuauserv -Force
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Stopping Services&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Stopping appidsvc...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;40&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Stop-Service -Name appidsvc -Force
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Stopping Services&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Stopping cryptsvc...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;60&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Stop-Service -Name cryptsvc -Force
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Stopping Services&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Completed&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Remove the QMGR Data file&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Repairing Windows Update&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Renaming/Removing Files...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Renaming/Removing Files&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Removing QMGR Data files...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-Item &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$env:allusersprofile&lt;span style=&#34;color:#e6db74&#34;&gt;\Application Data\Microsoft\Network\Downloader\qmgr*.dat&amp;#34;&lt;/span&gt; -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ($Aggressive) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;# Rename the Windows Update Log and Signature Folders&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Renaming/Removing Files&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Renaming the Windows Update Log, Download, and Signature Folder...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Rename-Item $env:systemroot\SoftwareDistribution\DataStore DataStore.bak -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Rename-Item $env:systemroot\System32\Catroot2 catroot2.bak -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Rename the Windows Update Download Folder&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Renaming/Removing Files&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Renaming the Windows Update Download Folder...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Rename-Item $env:systemroot\SoftwareDistribution\Download Download.bak -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Delete the legacy Windows Update Log&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Renaming/Removing Files&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Removing the old Windows Update log...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;80&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-Item $env:systemroot\WindowsUpdate.log -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Renaming/Removing Files&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Completed&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ($Aggressive) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;# Reset the Security Descriptors on the Windows Update Services&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Repairing Windows Update&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Resetting the WU Service Security Descriptors...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;25&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Resetting the WU Service Security Descriptors&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Resetting the BITS Security Descriptor...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Start-Process -NoNewWindow -FilePath &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;sc.exe&amp;#34;&lt;/span&gt; -ArgumentList &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;sdset&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;bits&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)&amp;#34;&lt;/span&gt; -Wait
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Resetting the WU Service Security Descriptors&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Resetting the wuauserv Security Descriptor...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;50&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Start-Process -NoNewWindow -FilePath &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;sc.exe&amp;#34;&lt;/span&gt; -ArgumentList &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;sdset&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;wuauserv&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)&amp;#34;&lt;/span&gt; -Wait
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Resetting the WU Service Security Descriptors&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Completed&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Reregister the BITS and Windows Update DLLs&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Repairing Windows Update&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Reregistering DLLs...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;40&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $oldLocation = Get-Location
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Set-Location $env:systemroot\system32
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $i = &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $DLLs = @(
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;atl.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;urlmon.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;mshtml.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;shdocvw.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;browseui.dll&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;jscript.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;vbscript.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;scrrun.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;msxml.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;msxml3.dll&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;msxml6.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;actxprxy.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;softpub.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;wintrust.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;dssenh.dll&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;rsaenh.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;gpkcsp.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;sccbase.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;slbcsp.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;cryptdlg.dll&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;oleaut32.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ole32.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;shell32.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;initpki.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;wuapi.dll&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;wuaueng.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;wuaueng1.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;wucltui.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;wups.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;wups2.dll&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;wuweb.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;qmgr.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;qmgrprxy.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;wucltux.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;muweb.dll&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;wuwebv.dll&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    )
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;foreach&lt;/span&gt; ($dll &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; $DLLs) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Reregistering DLLs&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Registering &lt;/span&gt;$dll&lt;span style=&#34;color:#e6db74&#34;&gt;...&amp;#34;&lt;/span&gt; -PercentComplete ($i / $DLLs.Count * &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $i++
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Start-Process -NoNewWindow -FilePath &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;regsvr32.exe&amp;#34;&lt;/span&gt; -ArgumentList &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/s&amp;#34;&lt;/span&gt;, $dll
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Set-Location $oldLocation
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Reregistering DLLs&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Completed&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Remove the WSUS client settings&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (Test-Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate&amp;#34;&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Repairing Windows Update&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Removing WSUS client settings...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;60&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Removing WSUS client settings&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Start-Process -NoNewWindow -FilePath &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;REG&amp;#34;&lt;/span&gt; -ArgumentList &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;DELETE&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/v&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;AccountDomainSid&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/f&amp;#34;&lt;/span&gt; -RedirectStandardError &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;NUL&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Start-Process -NoNewWindow -FilePath &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;REG&amp;#34;&lt;/span&gt; -ArgumentList &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;DELETE&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/v&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;PingID&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/f&amp;#34;&lt;/span&gt; -RedirectStandardError &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;NUL&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Start-Process -NoNewWindow -FilePath &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;REG&amp;#34;&lt;/span&gt; -ArgumentList &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;DELETE&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/v&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;SusClientId&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/f&amp;#34;&lt;/span&gt; -RedirectStandardError &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;NUL&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Removing WSUS client settings&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Completed&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Remove Group Policy Windows Update settings&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Repairing Windows Update&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Removing Group Policy Windows Update settings...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;60&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Removing Group Policy Windows Update settings&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-ItemProperty -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate&amp;#34;&lt;/span&gt; -Name &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ExcludeWUDriversInQualityUpdate&amp;#34;&lt;/span&gt; -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Host &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Defaulting driver offering through Windows Update...&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-ItemProperty -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata&amp;#34;&lt;/span&gt; -Name &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;PreventDeviceMetadataFromNetwork&amp;#34;&lt;/span&gt; -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-ItemProperty -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching&amp;#34;&lt;/span&gt; -Name &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;DontPromptForWindowsUpdate&amp;#34;&lt;/span&gt; -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-ItemProperty -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching&amp;#34;&lt;/span&gt; -Name &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;DontSearchWindowsUpdate&amp;#34;&lt;/span&gt; -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-ItemProperty -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching&amp;#34;&lt;/span&gt; -Name &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;DriverUpdateWizardWuSearchEnabled&amp;#34;&lt;/span&gt; -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-ItemProperty -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate&amp;#34;&lt;/span&gt; -Name &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ExcludeWUDriversInQualityUpdate&amp;#34;&lt;/span&gt; -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Host &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Defaulting Windows Update automatic restart...&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-ItemProperty -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU&amp;#34;&lt;/span&gt; -Name &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;NoAutoRebootWithLoggedOnUsers&amp;#34;&lt;/span&gt; -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-ItemProperty -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU&amp;#34;&lt;/span&gt; -Name &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;AUPowerManagement&amp;#34;&lt;/span&gt; -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Host &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Clearing ANY Windows Update Policy settings...&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-ItemProperty -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings&amp;#34;&lt;/span&gt; -Name &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;BranchReadinessLevel&amp;#34;&lt;/span&gt; -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-ItemProperty -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings&amp;#34;&lt;/span&gt; -Name &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;DeferFeatureUpdatesPeriodInDays&amp;#34;&lt;/span&gt; -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-ItemProperty -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings&amp;#34;&lt;/span&gt; -Name &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;DeferQualityUpdatesPeriodInDays&amp;#34;&lt;/span&gt; -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-Item -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies&amp;#34;&lt;/span&gt; -Recurse -Force -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-Item -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKCU:\Software\Microsoft\WindowsSelfHost&amp;#34;&lt;/span&gt; -Recurse -Force -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-Item -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKCU:\Software\Policies&amp;#34;&lt;/span&gt; -Recurse -Force -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-Item -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\Software\Microsoft\Policies&amp;#34;&lt;/span&gt; -Recurse -Force -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-Item -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies&amp;#34;&lt;/span&gt; -Recurse -Force -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-Item -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\Software\Microsoft\Windows\CurrentVersion\WindowsStore\WindowsUpdate&amp;#34;&lt;/span&gt; -Recurse -Force -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-Item -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\Software\Microsoft\WindowsSelfHost&amp;#34;&lt;/span&gt; -Recurse -Force -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-Item -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\Software\Policies&amp;#34;&lt;/span&gt; -Recurse -Force -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-Item -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\Software\WOW6432Node\Microsoft\Policies&amp;#34;&lt;/span&gt; -Recurse -Force -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-Item -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Policies&amp;#34;&lt;/span&gt; -Recurse -Force -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Remove-Item -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\WindowsStore\WindowsUpdate&amp;#34;&lt;/span&gt; -Recurse -Force -ErrorAction SilentlyContinue
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Start-Process -NoNewWindow -FilePath &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;secedit&amp;#34;&lt;/span&gt; -ArgumentList &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/configure&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/cfg&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$env:windir&lt;span style=&#34;color:#e6db74&#34;&gt;\inf\defltbase.inf&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/db&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;defltbase.sdb&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/verbose&amp;#34;&lt;/span&gt; -Wait
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Start-Process -NoNewWindow -FilePath &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;cmd.exe&amp;#34;&lt;/span&gt; -ArgumentList &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/c RD /S /Q &lt;/span&gt;$env:WinDir&lt;span style=&#34;color:#e6db74&#34;&gt;\System32\GroupPolicyUsers&amp;#34;&lt;/span&gt; -Wait
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Start-Process -NoNewWindow -FilePath &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;cmd.exe&amp;#34;&lt;/span&gt; -ArgumentList &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/c RD /S /Q &lt;/span&gt;$env:WinDir&lt;span style=&#34;color:#e6db74&#34;&gt;\System32\GroupPolicy&amp;#34;&lt;/span&gt; -Wait
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Start-Process -NoNewWindow -FilePath &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;gpupdate&amp;#34;&lt;/span&gt; -ArgumentList &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/force&amp;#34;&lt;/span&gt; -Wait
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Removing Group Policy Windows Update settings&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Completed&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Reset WinSock&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Repairing Windows Update&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Resetting WinSock...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;65&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Resetting WinSock&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Resetting WinSock...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Start-Process -NoNewWindow -FilePath &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;netsh&amp;#34;&lt;/span&gt; -ArgumentList &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;winsock&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;reset&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Start-Process -NoNewWindow -FilePath &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;netsh&amp;#34;&lt;/span&gt; -ArgumentList &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;winhttp&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;reset&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;proxy&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Start-Process -NoNewWindow -FilePath &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;netsh&amp;#34;&lt;/span&gt; -ArgumentList &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;int&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ip&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;reset&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Resetting WinSock&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Completed&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Get and delete all BITS jobs&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Repairing Windows Update&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Deleting BITS jobs...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;75&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Deleting BITS jobs&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Deleting BITS jobs...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Get-BitsTransfer | Remove-BitsTransfer
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Deleting BITS jobs&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Completed&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Change the startup type of the Windows Update Services and start them&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Repairing Windows Update&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Starting Windows Update Services...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;90&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Starting Windows Update Services&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Starting BITS...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Get-Service BITS | Set-Service -StartupType Manual -PassThru | Start-Service
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Starting Windows Update Services&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Starting wuauserv...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;25&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Get-Service wuauserv | Set-Service -StartupType Manual -PassThru | Start-Service
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Starting Windows Update Services&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Starting AppIDSvc...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;50&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# The AppIDSvc service is protected, so the startup type has to be changed in the registry&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Set-ItemProperty -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HKLM:\SYSTEM\CurrentControlSet\Services\AppIDSvc&amp;#34;&lt;/span&gt; -Name &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Start&amp;#34;&lt;/span&gt; -Value &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;3&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;# Manual&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Start-Service AppIDSvc
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Starting Windows Update Services&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Starting CryptSvc...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;75&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Get-Service CryptSvc | Set-Service -StartupType Manual -PassThru | Start-Service
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Starting Windows Update Services&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Completed&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Force Windows Update to check for updates&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Repairing Windows Update&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Forcing discovery...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;95&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Forcing discovery&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Forcing discovery...&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;try&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        (New-Object -ComObject Microsoft.Update.AutoUpdate).DetectNow()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    } &lt;span style=&#34;color:#66d9ef&#34;&gt;catch&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Set-WinUtilTaskbaritem -state &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Error&amp;#34;&lt;/span&gt; -overlay &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;warning&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Warning &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Failed to create Windows Update COM object: &lt;/span&gt;$_&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Start-Process -NoNewWindow -FilePath &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;wuauclt&amp;#34;&lt;/span&gt; -ArgumentList &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/resetauthorization&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/detectnow&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; -ParentId &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Forcing discovery&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Completed&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Repairing Windows Update&amp;#34;&lt;/span&gt; -Status &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Completed&amp;#34;&lt;/span&gt; -PercentComplete &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Set-WinUtilTaskbaritem -state &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;None&amp;#34;&lt;/span&gt; -overlay &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;checkmark&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $ButtonType = [&lt;span style=&#34;color:#66d9ef&#34;&gt;System.Windows.MessageBoxButton&lt;/span&gt;]::OK
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $MessageboxTitle = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Reset Windows Update &amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $Messageboxbody = (&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Stock settings loaded.&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;`n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; Please reboot your computer&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $MessageIcon = [&lt;span style=&#34;color:#66d9ef&#34;&gt;System.Windows.MessageBoxImage&lt;/span&gt;]::Information
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    [&lt;span style=&#34;color:#66d9ef&#34;&gt;System.Windows.MessageBox&lt;/span&gt;]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Host &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;===============================================&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Host &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;-- Reset All Windows Update Settings to Stock -&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Host &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;===============================================&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Remove the progress bars&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Repairing Windows Update&amp;#34;&lt;/span&gt; -Completed
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Scanning for corruption&amp;#34;&lt;/span&gt; -Completed
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Stopping Services&amp;#34;&lt;/span&gt; -Completed
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Renaming/Removing Files&amp;#34;&lt;/span&gt; -Completed
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Resetting the WU Service Security Descriptors&amp;#34;&lt;/span&gt; -Completed
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Reregistering DLLs&amp;#34;&lt;/span&gt; -Completed
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Removing Group Policy Windows Update settings&amp;#34;&lt;/span&gt; -Completed
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Resetting WinSock&amp;#34;&lt;/span&gt; -Completed
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Deleting BITS jobs&amp;#34;&lt;/span&gt; -Completed
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Starting Windows Update Services&amp;#34;&lt;/span&gt; -Completed
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Progress -Id &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; -Activity &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Forcing discovery&amp;#34;&lt;/span&gt; -Completed
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx-opacity-0 hx-transition group-hover/code:hx-opacity-100 hx-flex hx-gap-1 hx-absolute hx-m-[11px] hx-right-0 hx-top-0&#34;&gt;
+  &lt;button
+    class=&#34;hextra-code-copy-btn hx-group/copybtn hx-transition-all active:hx-opacity-50 hx-bg-primary-700/5 hx-border hx-border-black/5 hx-text-gray-600 hover:hx-text-gray-900 hx-rounded-md hx-p-1.5 dark:hx-bg-primary-300/10 dark:hx-border-white/10 dark:hx-text-gray-400 dark:hover:hx-text-gray-50&#34;
+    title=&#34;Copy code&#34;
+  &gt;
+    &lt;div class=&#34;copy-icon group-[.copied]/copybtn:hx-hidden hx-pointer-events-none hx-h-4 hx-w-4&#34;&gt;&lt;/div&gt;
+    &lt;div class=&#34;success-icon hx-hidden group-[.copied]/copybtn:hx-block hx-pointer-events-none hx-h-4 hx-w-4&#34;&gt;&lt;/div&gt;
+  &lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>http://localhost:1313/dev/features/fixes/winget/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/dev/features/fixes/winget/</guid>
+      <description>
+        
+        
+        &lt;h1&gt;WinGet Reinstall&lt;/h1&gt;&lt;div class=&#34;hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code&#34;&gt;
+
+&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; Invoke-WPFFixesWinget {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;#
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;    .&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;SYNOPSIS&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        Fixes Winget by running choco install winget
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;    .&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;DESCRIPTION&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        BravoNorris for the fantastic idea of a button to reinstall winget
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;    #&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Install Choco if not already present&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;try&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Set-WinUtilTaskbaritem -state &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Indeterminate&amp;#34;&lt;/span&gt; -overlay &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;logo&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Host &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;==&amp;gt; Starting Winget Repair&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Install-WinUtilWinget -Force
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    } &lt;span style=&#34;color:#66d9ef&#34;&gt;catch&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Error &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Failed to install winget: &lt;/span&gt;$_&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Set-WinUtilTaskbaritem -state &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Error&amp;#34;&lt;/span&gt; -overlay &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;warning&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    } &lt;span style=&#34;color:#66d9ef&#34;&gt;finally&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Write-Host &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;==&amp;gt; Finished Winget Repair&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Set-WinUtilTaskbaritem -state &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;None&amp;#34;&lt;/span&gt; -overlay &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;checkmark&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx-opacity-0 hx-transition group-hover/code:hx-opacity-100 hx-flex hx-gap-1 hx-absolute hx-m-[11px] hx-right-0 hx-top-0&#34;&gt;
+  &lt;button
+    class=&#34;hextra-code-copy-btn hx-group/copybtn hx-transition-all active:hx-opacity-50 hx-bg-primary-700/5 hx-border hx-border-black/5 hx-text-gray-600 hover:hx-text-gray-900 hx-rounded-md hx-p-1.5 dark:hx-bg-primary-300/10 dark:hx-border-white/10 dark:hx-text-gray-400 dark:hover:hx-text-gray-50&#34;
+    title=&#34;Copy code&#34;
+  &gt;
+    &lt;div class=&#34;copy-icon group-[.copied]/copybtn:hx-hidden hx-pointer-events-none hx-h-4 hx-w-4&#34;&gt;&lt;/div&gt;
+    &lt;div class=&#34;success-icon hx-hidden group-[.copied]/copybtn:hx-block hx-pointer-events-none hx-h-4 hx-w-4&#34;&gt;&lt;/div&gt;
+  &lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>
