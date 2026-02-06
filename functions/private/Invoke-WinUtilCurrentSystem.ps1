@@ -60,17 +60,23 @@ Function Invoke-WinUtilCurrentSystem {
 
                 Foreach ($tweaks in $registryKeys) {
                     Foreach($tweak in $tweaks) {
-
-                        if(test-path $tweak.Path) {
-                            $actualValue = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
+                
+                        if (Test-Path $tweak.Path) {
+                            $actualValue = Get-ItemProperty -Path $tweak.Path -Name $tweak.Name -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
                             $expectedValue = $tweak.Value
+                
                             if ($expectedValue -eq "<RemoveEntry>") {
-                              if ($null -ne $actualValue) {
-                                $values += $False
-                              }
-                            } elseif ($expectedValue -notlike $actualValue) {
+                                if ($null -ne $actualValue) {
+                                    $values += $False
+                                } else {
+                                    $values += $True
+                                }
+                            } elseif ($expectedValue -eq $actualValue) {
+                                $values += $True
+                            } else {
                                 $values += $False
                             }
+                
                         } else {
                             $values += $False
                         }
