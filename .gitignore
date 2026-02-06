@@ -61,3 +61,8 @@ binary/
 docs/public/
 docs/.hugo_build.lock
 docs/resources/
+
+# temporary excludes for docs-microwin 
+docs-microwin/public/
+docs-microwin/.hugo_build.lock
+docs-microwin/resources/
