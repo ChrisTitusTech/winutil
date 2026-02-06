@@ -1,15 +1,8 @@
 function Invoke-WinUtilInstallPSProfile {
 
     if (Test-Path $Profile) {
-        Rename-Item $Profile -NewName ($Profile + '.bak') -Force
+        Rename-Item $Profile -NewName ($Profile + '.bak')
     }
 
-    try {
-        Start-Process pwsh -ArgumentList '-Command "irm https://github.com/ChrisTitusTech/powershell-profile/raw/main/setup.ps1 | iex"'
-    }
-    catch {
-        Write-Host "pwsh is not installed... Installing pwsh..."
-        Start-Process winget -ArgumentList 'install pwsh --source winget' -NoNewWindow
-        Start-Process pwsh -ArgumentList '-Command "irm https://github.com/ChrisTitusTech/powershell-profile/raw/main/setup.ps1 | iex"'
-    }
+    Start-Process pwsh -ArgumentList '-Command "irm https://github.com/ChrisTitusTech/powershell-profile/raw/main/setup.ps1 | iex"'
 }
