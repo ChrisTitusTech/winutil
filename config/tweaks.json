@@ -759,6 +759,11 @@
         "OriginalType": "Manual"
       },
       {
+        "Name": "WSAIFabricSvc",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
         "Name": "WSearch",
         "StartupType": "AutomaticDelayedStart",
         "OriginalType": "Automatic"
