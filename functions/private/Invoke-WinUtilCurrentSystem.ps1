@@ -57,14 +57,13 @@ Function Invoke-WinUtilCurrentSystem {
             if($registryKeys -or $scheduledtaskKeys -or $serviceKeys) {
                 $Values = @()
 
-
                 Foreach ($tweaks in $registryKeys) {
                     Foreach($tweak in $tweaks) {
-                
+
                         if (Test-Path $tweak.Path) {
                             $actualValue = Get-ItemProperty -Path $tweak.Path -Name $tweak.Name -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
                             $expectedValue = $tweak.Value
-                
+
                             if ($expectedValue -eq "<RemoveEntry>") {
                                 if ($null -ne $actualValue) {
                                     $values += $False
@@ -76,7 +75,7 @@ Function Invoke-WinUtilCurrentSystem {
                             } else {
                                 $values += $False
                             }
-                
+
                         } else {
                             $values += $False
                         }
