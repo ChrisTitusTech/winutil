@@ -8,7 +8,7 @@ function Invoke-WinUtilInstallPSProfile {
         Start-Process pwsh -ArgumentList '-Command "irm https://github.com/ChrisTitusTech/powershell-profile/raw/main/setup.ps1 | iex"'
     }
     catch {
-        Write-Host "Installing pwsh"
+        Write-Host "pwsh is not installed... Installing pwsh..."
         winget install pwsh --source winget
         Start-Process pwsh -ArgumentList '-Command "irm https://github.com/ChrisTitusTech/powershell-profile/raw/main/setup.ps1 | iex"'
     }
