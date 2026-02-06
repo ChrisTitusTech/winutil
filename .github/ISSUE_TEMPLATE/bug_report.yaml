@@ -10,7 +10,7 @@ body:
         Thank you for taking the time to report an issue! Please provide as much detail as possible to help us address the problem efficiently.
 
         ## ⚠️ **IMPORTANT**
-        - 🛠️ **Supported environments only:** We only support Windows 11. Custom ISOs that are not made using Microwin are not supported.
+        - 🛠️ **Supported environments only:** We only support Windows 11.
         - 💡 For general questions, use the [Discussions section](https://github.com/Christitustech/winutil/discussions) or join our Community-driven [Discord Server](https://discord.gg/RUbZUZyByQ).
 
   - type: checkboxes
@@ -28,7 +28,7 @@ body:
     id: affected_part
     attributes:
       label: 📜 What part of Winutil are you having issues with?
-      placeholder: "e.g., Microwin, Tweaks, etc."
+      placeholder: "e.g., Tweaks, etc."
     validations:
       required: true
 

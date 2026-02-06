@@ -91,7 +91,6 @@ Winutil opens with a clean, tabbed interface:
 - **Tweaks**: Apply system optimizations and customizations
 - **Config**: Access system tools and utilities
 - **Updates**: Manage Windows updates
-- **MicroWin**: Create custom, lightweight Windows ISOs
 
 ## Your First Actions
 
@@ -261,7 +260,6 @@ Now that you're set up, explore these guides:
 
 - [Application Installation Guide](../store/) - Learn about installing software
 - [Tweaks Guide](../tweaks/) - Understand system optimizations
-- [MicroWin Guide](../microwin/) - Create custom Windows ISOs
 - [FAQ](../../faq/) - Common questions and answers
 
 ## Getting Help
