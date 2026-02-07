@@ -425,12 +425,6 @@ $sync["Form"].Add_Loaded({
 $NavLogoPanel = $sync["Form"].FindName("NavLogoPanel")
 $NavLogoPanel.Children.Add((Invoke-WinUtilAssets -Type "logo" -Size 25)) | Out-Null
 
-# Initialize the hashtable
-$winutildir = @{}
-
-# Set the path for the winutil directory
-$winutildir = "$env:LocalAppData\winutil\"
-New-Item $winutildir -ItemType Directory -Force | Out-Null
 
 if (Test-Path "$winutildir\logo.ico") {
     $sync["logorender"] = "$winutildir\logo.ico"
