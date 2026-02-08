@@ -1,7 +1,7 @@
 # Set Services to Manual
 
 ```json
-"WPFTweaksServices": {
+ "WPFTweaksServices": {
     "Content": "Set Services to Manual",
     "Description": "Turns a bunch of system services to manual that don't need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand.",
     "category": "Essential Tweaks",
@@ -612,6 +612,11 @@
         "Name": "WPDBusEnum",
         "StartupType": "Manual",
         "OriginalType": "Manual"
+      },
+      {
+        "Name": "WSAIFabricSvc",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "WSearch",
