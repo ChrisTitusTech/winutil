@@ -23,6 +23,8 @@ function Invoke-WPFButton {
         "WPFInstall" {Invoke-WPFInstall}
         "WPFUninstall" {Invoke-WPFUnInstall}
         "WPFInstallUpgrade" {Invoke-WPFInstallUpgrade}
+        "WPFCollapseAllCategories" {Invoke-WPFToggleAllCategories -Action "Collapse"}
+        "WPFExpandAllCategories" {Invoke-WPFToggleAllCategories -Action "Expand"}
         "WPFStandard" {Invoke-WPFPresets "Standard" -checkboxfilterpattern "WPFTweak*"}
         "WPFMinimal" {Invoke-WPFPresets "Minimal" -checkboxfilterpattern "WPFTweak*"}
         "WPFClearTweaksSelection" {Invoke-WPFPresets -imported $true -checkboxfilterpattern "WPFTweak*"}
@@ -56,14 +58,10 @@ function Invoke-WPFButton {
         "WPFWinUtilShortcut" {Invoke-WPFShortcut -ShortcutToAdd "WinUtil" -RunAsAdmin $true}
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
-        "WPFGetIso" {Invoke-MicrowinGetIso}
-        "WPFMicrowin" {Invoke-Microwin}
         "WPFCloseButton" {Invoke-WPFCloseButton}
         "WPFWinUtilInstallPSProfile" {Invoke-WinUtilInstallPSProfile}
         "WPFWinUtilUninstallPSProfile" {Invoke-WinUtilUninstallPSProfile}
         "WPFWinUtilSSHServer" {Invoke-WPFSSHServer}
         "WPFselectedAppsButton" {$sync.selectedAppsPopup.IsOpen = -not $sync.selectedAppsPopup.IsOpen}
-        "WPFMicrowinPanelBack" {Toggle-MicrowinPanel 1}
-        "MicrowinAutoConfigBtn" {Invoke-AutoConfigDialog}
     }
 }

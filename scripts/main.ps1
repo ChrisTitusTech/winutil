@@ -19,7 +19,7 @@ $InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionSta
 $InitialSessionState.Variables.Add($hashVars)
 
 # Get every private function and add them to the session state
-$functions = Get-ChildItem function:\ | Where-Object { $_.Name -imatch 'winutil|Microwin|WPF' }
+$functions = Get-ChildItem function:\ | Where-Object { $_.Name -imatch 'winutil|WPF' }
 foreach ($function in $functions) {
     $functionDefinition = Get-Content function:\$($function.name)
     $functionEntry = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $($function.name), $functionDefinition
@@ -247,7 +247,6 @@ $commonKeyEvents = {
             "T" { Invoke-WPFButton "WPFTab2BT"; $keyEventArgs.Handled = $true } # Navigate to Tweaks tab
             "C" { Invoke-WPFButton "WPFTab3BT"; $keyEventArgs.Handled = $true } # Navigate to Config tab
             "U" { Invoke-WPFButton "WPFTab4BT"; $keyEventArgs.Handled = $true } # Navigate to Updates tab
-            "M" { Invoke-WPFButton "WPFTab5BT"; $keyEventArgs.Handled = $true } # Navigate to MicroWin tab
         }
     }
     # Handle Ctrl key combinations for specific actions
@@ -386,27 +385,6 @@ $sync["Form"].Add_ContentRendered({
 
 })
 
-# Add event handlers for the RadioButtons
-$sync["ISOdownloader"].add_Checked({
-    $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Visible
-})
-
-$sync["ISOmanual"].add_Checked({
-    $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Collapsed
-})
-
-$sync["ISOLanguage"].Items.Add("System Language ($(Microwin-GetLangFromCulture -langName $((Get-Culture).Name)))") | Out-Null
-if ($currentCulture -ne "English International") {
-    $sync["ISOLanguage"].Items.Add("English International") | Out-Null
-}
-if ($currentCulture -ne "English") {
-    $sync["ISOLanguage"].Items.Add("English") | Out-Null
-}
-if ($sync["ISOLanguage"].Items.Count -eq 1) {
-    $sync["ISOLanguage"].IsEnabled = $false
-}
-$sync["ISOLanguage"].SelectedIndex = 0
-
 # The SearchBarTimer is used to delay the search operation until the user has stopped typing for a short period
 # This prevents the ui from stuttering when the user types quickly as it dosnt need to update the ui for every keystroke
 
@@ -510,7 +488,6 @@ $sync["AboutMenuItem"].Add_Click({
 Author   : <a href="https://github.com/ChrisTitusTech">@christitustech</a>
 UI       : <a href="https://github.com/MyDrift-user">@MyDrift-user</a>, <a href="https://github.com/Marterich">@Marterich</a>
 Runspace : <a href="https://github.com/DeveloperDurp">@DeveloperDurp</a>, <a href="https://github.com/Marterich">@Marterich</a>
-MicroWin : <a href="https://github.com/KonTy">@KonTy</a>, <a href="https://github.com/CodingWonders">@CodingWonders</a>, <a href="https://github.com/Real-MullaC">@Real-MullaC</a>
 GitHub   : <a href="https://github.com/ChrisTitusTech/winutil">ChrisTitusTech/winutil</a>
 Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sync.version)">$($sync.version)</a>
 "@
