@@ -1,37 +1,29 @@
-# Sample workflow for building and deploying a Hugo site to GitHub Pages
 name: Deploy Hugo site to Pages
 
 on:
-  # Runs on pushes targeting the default branch
   push:
     branches:
       - main
     paths:
-      - "docs/**" # ONLY triggers if files in the 'docs' folder are changed
-
-  # Allows you to run this workflow manually from the Actions tab
+      - "docs/**"
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
-# Default to bash
 defaults:
   run:
     shell: bash
 
 jobs:
-  # Build job
   build:
+    if: github.repository == 'ChrisTitusTech/winutil'
     runs-on: ubuntu-latest
     env:
       HUGO_VERSION: 0.147.7
@@ -81,6 +73,7 @@ jobs:
           path: ./docs/public
 
   deploy:
+    if: github.repository == 'ChrisTitusTech/winutil'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
