@@ -1151,7 +1151,6 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/bravedebloat/"
   },
-  },
   "WPFTweaksEdgeDebloat": {
     "Content": "Edge Debloat",
     "Description": "Disables various telemetry options, popups, and other annoyances in Edge.",
