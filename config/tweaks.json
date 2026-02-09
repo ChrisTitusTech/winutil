@@ -1809,6 +1809,21 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/display"
   },
+  "WPFTweaksXboxRemoval": {
+    "Content": "Remove Xbox & Gaming Components",
+    "Description": "Removes Xbox services, the Xbox app, Game Bar, and related authentication components.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a031_",
+    "appx": [
+      "Microsoft.XboxIdentityProvider",
+      "Microsoft.XboxSpeechToTextOverlay",
+      "Microsoft.GamingApp",
+      "Microsoft.Xbox.TCUI",
+      "Microsoft.XboxGamingOverlay"
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/xboxremoval"
+  },
   "WPFTweaksDeBloat": {
     "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
     "Description": "USE WITH CAUTION!!! This will remove ALL Microsoft store apps other than the essentials onces.",
