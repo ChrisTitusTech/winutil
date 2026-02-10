@@ -2373,105 +2373,31 @@
     "Order": "a027_",
     "InvokeScript": [
       "
-      $FEATURE_ID = \"3036241548\"
-      $BASE_PATH = \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FeatureManagement\\Overrides\"
-
-      $DISABLED = 1
-
-      # Set-ItemProperty wrapper to run as TrustedInstaller since Administrators
-      # only have read access to the specific key by default.
-      function setKeyValueAsTI {
-        param(
-          [string]$registryPath,
-          $value 
-        )
-
-        $COMMAND = \"Set-ItemProperty -Path 'Registry::$registryPath' -Name 'EnabledState' -Value $value -Type DWord -Force -ErrorAction Stop\"
-
-        Register-ScheduledTask -TaskName \"ti\" -Action (New-ScheduledTaskAction -Execute \"powershell\" -Argument \"$COMMAND\") -User 'NT SERVICE\\TrustedInstaller' -Force
-
-        # Let the task run until it is complete or until 10 seconds pass (fail), whichever comes first
-        $TIMEOUT = 10
-        $elapsed = 0
-        Start-ScheduledTask -TaskName \"ti\"
-        while ((Get-ScheduledTask -TaskName \"ti\").state -ne \"Ready\" -and $elapsed -lt $TIMEOUT) {
-          Start-Sleep -Milliseconds 100
-          $elapsed += 0.1
-        }
-
-        Unregister-ScheduledTask -TaskName \"ti\" -Confirm:$false
-        if ($elapsed -ge $TIMEOUT) {
-          throw \"Could not set key value for '$registryPath' as TrustedInstaller\"
-        }
-      }
-
-      # Check if the feature override exists
-      $configurationPriority = Get-ChildItem -Path $BASE_PATH | Where-Object {
-        Test-Path -Path (Join-Path $_.PSPath $FEATURE_ID)
-      }
-
-      if ($configurationPriority) {
-        Write-Host \"Override found at: $($configurationPriority)\"
-        $targetPath = Join-Path $configurationPriority $FEATURE_ID
-        
-        setKeyValueAsTI -registryPath $targetPath -value $DISABLED
-
-        Write-Host \"New start menu layout disabled\"
-        Write-Host \"Please restart your computer for the changes to apply!\" -Foreground Yellow
+      $path = (Get-ChildItem \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FeatureManagement\\Overrides\" | Where-Object { Test-Path (Join-Path $_.PSPath \"3036241548\") })?.PSChildName
+      if ($path) {
+        $cmd = \"Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FeatureManagement\\Overrides\\$path\\3036241548' -Name EnabledState -Value 1 -Type DWord -Force\"
+        Register-ScheduledTask -TaskName \"WinUtilTI\" -Action (New-ScheduledTaskAction -Execute \"powershell\" -Argument \"-Command $cmd\") -User 'NT SERVICE\\TrustedInstaller' -Force | Out-Null
+        Start-ScheduledTask -TaskName \"WinUtilTI\"
+        Start-Sleep -Seconds 1
+        Unregister-ScheduledTask -TaskName \"WinUtilTI\" -Confirm:$false
+        Write-Host \"New start menu layout disabled. Please restart your computer!\" -ForegroundColor Yellow
       } else {
-        Write-Error \"Feature override not present\"
+        Write-Error \"Feature override not found\"
       }
       "
     ],
     "UndoScript": [
       "
-      $FEATURE_ID = \"3036241548\"
-      $BASE_PATH = \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FeatureManagement\\Overrides\"
-
-      $ENABLED = 2
-
-      # Set-ItemProperty wrapper to run as TrustedInstaller since Administrators
-      # only have read access to the specific key by default.
-      function setKeyValueAsTI {
-        param(
-          [string]$registryPath,
-          $value
-        )
-
-        $COMMAND = \"Set-ItemProperty -Path 'Registry::$registryPath' -Name 'EnabledState' -Value $value -Type DWord -Force -ErrorAction Stop\"
-
-        Register-ScheduledTask -TaskName \"ti\" -Action (New-ScheduledTaskAction -Execute \"powershell\" -Argument \"$COMMAND\") -User 'NT SERVICE\\TrustedInstaller' -Force
-
-        # Let the task run until it is complete or until 10 seconds pass (fail), whichever comes first
-        $TIMEOUT = 10
-        $elapsed = 0
-        Start-ScheduledTask -TaskName \"ti\"
-        while ((Get-ScheduledTask -TaskName \"ti\").state -ne \"Ready\" -and $elapsed -lt $TIMEOUT) {
-          Start-Sleep -Milliseconds 100
-          $elapsed += 0.1
-        }
-
-        Unregister-ScheduledTask -TaskName \"ti\" -Confirm:$false
-        if ($elapsed -ge $TIMEOUT) {
-          throw \"Could not set key value for '$registryPath' as TrustedInstaller\"
-        }
-      }
-
-      # Check if the feature override exists
-      $configurationPriority = Get-ChildItem -Path $BASE_PATH | Where-Object {
-        Test-Path -Path (Join-Path $_.PSPath $FEATURE_ID)
-      }
-
-      if ($configurationPriority) {
-        Write-Host \"Override found at: $($configurationPriority)\"
-        $targetPath = Join-Path $configurationPriority $FEATURE_ID
-
-        setKeyValueAsTI -registryPath $targetPath -value $ENABLED
-
-        Write-Host \"New start menu layout re-enabled\"
-        Write-Host \"Please restart your computer for the changes to apply!\" -Foreground Yellow
+      $path = (Get-ChildItem \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FeatureManagement\\Overrides\" | Where-Object { Test-Path (Join-Path $_.PSPath \"3036241548\") })?.PSChildName
+      if ($path) {
+        $cmd = \"Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FeatureManagement\\Overrides\\$path\\3036241548' -Name EnabledState -Value 2 -Type DWord -Force\"
+        Register-ScheduledTask -TaskName \"WinUtilTI\" -Action (New-ScheduledTaskAction -Execute \"powershell\" -Argument \"-Command $cmd\") -User 'NT SERVICE\\TrustedInstaller' -Force | Out-Null
+        Start-ScheduledTask -TaskName \"WinUtilTI\"
+        Start-Sleep -Seconds 1
+        Unregister-ScheduledTask -TaskName \"WinUtilTI\" -Confirm:$false
+        Write-Host \"New start menu layout re-enabled. Please restart your computer!\" -ForegroundColor Yellow
       } else {
-        Write-Error \"Feature override not present\"
+        Write-Error \"Feature override not found\"
       }
       "
     ],
