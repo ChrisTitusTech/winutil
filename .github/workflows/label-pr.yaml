@@ -13,7 +13,7 @@ jobs:
       contents: read  # Often needed for github-script
     steps:
       - name: Check PR body for Type of Change
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const prBody = context.payload.pull_request.body || '';
