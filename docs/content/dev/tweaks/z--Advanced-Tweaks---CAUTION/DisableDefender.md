@@ -6,7 +6,6 @@
     "Description": "Disable Windows Defender (Security)",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a026_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows Defender",
