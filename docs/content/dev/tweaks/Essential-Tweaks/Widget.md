@@ -1,4 +1,7 @@
-# Remove Widgets
+---
+title: "Remove Widgets"
+description: ""
+---
 
 ```json
   "WPFTweaksWidget": {
