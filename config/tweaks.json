@@ -1627,6 +1627,13 @@
         "Name": "RestrictImplicitInkCollection",
         "Value": "1",
         "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Personalization\\Settings",
+        "OriginalValue": "1",
+        "Name": "AcceptedPrivacyPolicy",
+        "Value": "0",
+        "Type": "DWord"
       }
     ],
     "InvokeScript": [
