@@ -12,28 +12,30 @@ description: ""
     "Order": "a027_",
     "InvokeScript": [
       "
-      # This hardcodes version v0.3.4 But updates dont get grabbed from this repo so version v0.3.4 well not change
       Invoke-WebRequest https://github.com/thebookisclosed/ViVe/releases/download/v0.3.4/ViVeTool-v0.3.4-IntelAmd.zip -OutFile ViVeTool.zip
       
       Expand-Archive ViVeTool.zip
       Remove-Item ViVeTool.zip
       
-      .\ViVeTool\ViVeTool.exe /disable /id:47205210
+      ViVeTool\\ViVeTool.exe /disable /id:47205210
       
       Remove-Item ViVeTool -Recurse
+
+      Write-Host 'Old start menu reverted please restart your computer to take effect'
       "
     ],
     "UndoScript": [
       "
-      # This hardcodes version v0.3.4 But updates dont get grabbed from this repo so version v0.3.4 well not change
       Invoke-WebRequest https://github.com/thebookisclosed/ViVe/releases/download/v0.3.4/ViVeTool-v0.3.4-IntelAmd.zip -OutFile ViVeTool.zip
       
       Expand-Archive ViVeTool.zip
       Remove-Item ViVeTool.zip
       
-      .\ViVeTool\ViVeTool.exe /enable /id:47205210
+      ViVeTool\\ViVeTool.exe /enable /id:47205210
       
       Remove-Item ViVeTool -Recurse
+
+      Write-Host 'New start menu reverted please restart your computer to take effect'
       "
     ],
 ```
