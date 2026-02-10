@@ -1,5 +1,7 @@
-# Reset Network
-
+---
+title: "Reset Network"
+description: ""
+---
 ```powershell
 function Invoke-WPFFixesNetwork {
     <#

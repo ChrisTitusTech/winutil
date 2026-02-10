@@ -1,5 +1,7 @@
-# Detailed BSoD
-
+---
+title: "Detailed BSoD"
+description: ""
+---
 ```json
 "WPFToggleDetailedBSoD": {
     "Content": "Detailed BSoD",

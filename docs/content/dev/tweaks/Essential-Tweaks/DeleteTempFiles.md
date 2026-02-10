@@ -1,5 +1,7 @@
-# Delete Temporary Files
-
+---
+title: "Delete Temporary Files"
+description: ""
+---
 ```json
   "WPFTweaksDeleteTempFiles": {
     "Content": "Delete Temporary Files",

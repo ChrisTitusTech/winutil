@@ -1,5 +1,7 @@
-# Disable Fullscreen Optimizations
-
+---
+title: "Disable Fullscreen Optimizations"
+description: ""
+---
 ```json
 "WPFTweaksDisableFSO": {
     "Content": "Disable Fullscreen Optimizations",

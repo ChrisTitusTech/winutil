@@ -1,5 +1,7 @@
-# Remove Microsoft Edge
-
+---
+title: "Remove Microsoft Edge"
+description: ""
+---
 # Json File
 ```json
   "WPFTweaksRemoveEdge": {
