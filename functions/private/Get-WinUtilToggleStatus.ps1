@@ -45,7 +45,7 @@ Function Get-WinUtilToggleStatus {
                 } else {
                     Write-Debug "$($regentry.Name) is false (state: $regstate, value: $($regentry.Value), original: $($regentry.OriginalValue))"
                 }
-                if ($null -eq $regstate) {
+                if (!$regstate) {
                     switch ($regentry.DefaultState) {
                         "true" {
                             $regstate = $regentry.Value
