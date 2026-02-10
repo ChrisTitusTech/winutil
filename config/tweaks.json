@@ -85,6 +85,40 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/widgets"
   },
+  "WPFTweaksRevertStartMenu": {
+    "Content": "Revert the new start menu",
+    "Description": "Uses vivetool to revert the the original start menu from 24h2",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a027_",
+    "InvokeScript": [
+      "
+      # This hardcodes version v0.3.4 But updates dont get grabbed from this repo so version v0.3.4 well not change
+      Invoke-WebRequest https://github.com/thebookisclosed/ViVe/releases/download/v0.3.4/ViVeTool-v0.3.4-IntelAmd.zip -OutFile ViVeTool.zip
+      
+      Expand-Archive ViVeTool.zip
+      Remove-Item ViVeTool.zip
+      
+      .\ViVeTool\ViVeTool.exe /disable /id:47205210
+      
+      Remove-Item ViVeTool -Recurse
+      "
+    ],
+    "UndoScript": [
+      "
+      # This hardcodes version v0.3.4 But updates dont get grabbed from this repo so version v0.3.4 well not change
+      Invoke-WebRequest https://github.com/thebookisclosed/ViVe/releases/download/v0.3.4/ViVeTool-v0.3.4-IntelAmd.zip -OutFile ViVeTool.zip
+      
+      Expand-Archive ViVeTool.zip
+      Remove-Item ViVeTool.zip
+      
+      .\ViVeTool\ViVeTool.exe /enable /id:47205210
+      
+      Remove-Item ViVeTool -Recurse
+      "
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/revertstartmenu"
+  },
   "WPFTweaksLaptopHibernation": {
     "Content": "Set Hibernation as default (good for laptops)",
     "Description": "Most modern laptops have connected standby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399",
