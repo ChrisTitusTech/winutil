@@ -12,7 +12,7 @@
       # Sometimes if you dont stop Widgets Process for removal to work
       Stop-Procces -Name Widgets
       Get-AppxPackage Microsoft.WidgetsPlatformRuntime -AllUsers | Remove-AppxPackage -AllUsers
-      
+
       Invoke-WinUtilExplorerUpdate -action \"restart\"
       Write-Host \"Removed widgets\"
       "

@@ -52,7 +52,6 @@ $excludedFiles += @(
     '.\LICENSE',
     "$preprocessingFilePath",
     '*.png',
-    '*.exe',
     '.\.preprocessor_hashes.json'
 )
 
