@@ -1592,6 +1592,41 @@
         "Name": "ScoobeSystemSettingEnabled",
         "Value": "0",
         "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\CPSS\\Store\\InkingAndTypingPersonalization",
+        "OriginalValue": "1",
+        "Name": "Value",
+        "Value": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\International\\User Profile",
+        "OriginalValue": "0",
+        "Name": "HttpAcceptLanguageOptOut",
+        "Value": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "Name": "Start_TrackProgs",
+        "Value": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\InputPersonalization",
+        "OriginalValue": "0",
+        "Name": "RestrictImplicitTextCollection",
+        "Value": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\InputPersonalization",
+        "OriginalValue": "0",
+        "Name": "RestrictImplicitInkCollection",
+        "Value": "1",
+        "Type": "DWord"
       }
     ],
     "InvokeScript": [
