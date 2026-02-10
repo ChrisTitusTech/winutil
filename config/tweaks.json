@@ -101,6 +101,8 @@
       ViVeTool\\ViVeTool.exe /disable /id:47205210
       
       Remove-Item ViVeTool -Recurse
+
+      Write-Host 'Old start menu reverted please restart your computer to take effect'
       "
     ],
     "UndoScript": [
@@ -113,6 +115,8 @@
       ViVeTool\\ViVeTool.exe /enable /id:47205210
       
       Remove-Item ViVeTool -Recurse
+
+      Write-Host 'New start menu reverted please restart your computer to take effect'
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/revertstartmenu"
