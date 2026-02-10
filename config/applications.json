@@ -2950,6 +2950,6 @@
         "content": "Zed",
         "description": "Zed is a modern, high-performance code editor designed from the ground up for speed and collaboration.",
         "link": "https://zed.dev/",
-        "winget": "Zed.Zed"
+        "winget": "ZedIndustries.Zed"
     }
 }
