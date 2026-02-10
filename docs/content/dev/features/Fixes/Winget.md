@@ -1,5 +1,7 @@
-# WinGet Reinstall
-
+---
+title: "WinGet Reinstall"
+description: ""
+---
 ```powershell
 function Invoke-WPFFixesWinget {
 

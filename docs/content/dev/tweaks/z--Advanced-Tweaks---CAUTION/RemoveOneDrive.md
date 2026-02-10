@@ -1,3 +1,7 @@
+---
+title: "Remove OneDrive"
+description: ""
+---
 # Remove OneDrive
 ```json
   "WPFTweaksRemoveOneDrive": {
@@ -13,7 +17,7 @@
 
       Write-Host \"Uninstalling OneDrive...\"
       Start-Process 'C:\\Windows\\System32\\OneDriveSetup.exe' -ArgumentList '/uninstall' -Wait
-      
+
       # Some of OneDrive files use explorer, and OneDrive uses FileCoAuth
       Write-Host \"Removing leftover OneDrive Files...\"
       Stop-Process -Name FileCoAuth,Explorer
@@ -22,12 +26,18 @@
 
       # Grant back permission to accses OneDrive folder
       icacls $Env:OneDrive /grant \"Administrators:(D,DC)\"
+
+      # Disable OneSyncSvc
+      Set-Service -Name OneSyncSvc -StartupType Disabled
       "
     ],
     "UndoScript": [
       "
       Write-Host \"Installing OneDrive\"
       winget install Microsoft.Onedrive --source winget
+
+      # Enabled OneSyncSvc
+      Set-Service -Name OneSyncSvc -StartupType Enabled
       "
     ],
 ```

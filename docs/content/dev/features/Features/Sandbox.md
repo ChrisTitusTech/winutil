@@ -1,5 +1,7 @@
-# Windows Sandbox
-
+---
+title: "Windows Sandbox"
+description: ""
+---
 ```json
 "WPFFeaturesSandbox": {
     "Content": "Windows Sandbox",

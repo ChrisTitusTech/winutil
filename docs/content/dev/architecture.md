@@ -55,9 +55,6 @@ winutil/
 │   ├── public/                # User-facing functions
 │   │   ├── Initialize-WPFUI.ps1
 │   │   └── ...
-│   └── microwin/              # MicroWin specific functions
-│       ├── Invoke-Microwin.ps1
-│       └── ...
 ├── config/                    # JSON configuration files
 │   ├── applications.json      # Application definitions
 │   ├── tweaks.json           # Tweak definitions
@@ -126,7 +123,6 @@ winutil/
 **Purpose**: WPF GUI layout and design.
 
 **Structure**:
-- TabControl for main tabs (Install, Tweaks, Config, MicroWin)
 - Buttons with event handlers
 - TextBoxes for input
 - CheckBoxes for options
@@ -320,22 +316,6 @@ if (!(Get-Command choco -ErrorAction SilentlyContinue)) {
 choco install $app.choco -y
 ```
 
-## MicroWin Architecture
-
-MicroWin operates in phases:
-
-1. **Mount ISO**: Extract Windows image
-2. **Modify Image**: Remove components, apply tweaks
-3. **Inject Drivers**: Add custom drivers (optional)
-4. **Create Unattend**: Generate automated install configuration
-5. **Rebuild ISO**: Package modified image into new ISO
-
-**Key Files**:
-- `Invoke-Microwin.ps1`: Main orchestration
-- `Microwin-RemovePackages.ps1`: Remove Windows packages
-- `Microwin-RemoveFeatures.ps1`: Disable features
-- `Microwin-NewUnattend.ps1`: Create unattend.xml
-
 ## Error Handling
 
 Winutil uses PowerShell error handling:
@@ -489,7 +469,6 @@ Outputs `winutil.ps1` in the root directory.
 **Optional (auto-installed)**:
 - WinGet (Windows Package Manager)
 - Chocolatey
-- oscdimg.exe (for MicroWin)
 
 ## Performance Considerations
 
@@ -546,5 +525,5 @@ Outputs `winutil.ps1` in the root directory.
 
 ---
 
-**Last Updated**: January 2026  
+**Last Updated**: January 2026
 **Maintainers**: Chris Titus Tech and contributors

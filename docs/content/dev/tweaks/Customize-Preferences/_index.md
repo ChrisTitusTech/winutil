@@ -1,6 +1,7 @@
 ---
-weight: 3
 title: "Customize Preferences"
+weight: 3
+toc: false
 ---
 
 ### Customize Preferences

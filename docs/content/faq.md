@@ -128,25 +128,6 @@ Winutil focuses on installation. To uninstall:
 ### Will installed apps auto-update?
 Applications with built-in update mechanisms will auto-update. You can also update them via WinGet/Chocolatey commands or through Winutil's "Upgrade Selected" feature.
 
-## MicroWin
-
-### What is MicroWin?
-MicroWin is a feature that creates custom Windows installation ISOs with bloatware removed, optimizations applied, and unnecessary components stripped out before installation.
-
-### Is MicroWin legal?
-Modifying Windows ISOs is a gray area legally. Use MicroWin for personal/educational purposes. You still need a valid Windows license to use the resulting installation.
-
-### Can I install Windows updates on MicroWin?
-Yes, Windows Update works normally on MicroWin installations. Some removed components may be restored by updates.
-
-### How much smaller is a MicroWin ISO?
-Depends on what you remove. Typically:
-- Standard Windows 11: ~5.5 GB ISO, ~20-25 GB installed
-- MicroWin (aggressive): ~3.5 GB ISO, ~10-15 GB installed
-
-### Will all software work on MicroWin?
-Most desktop applications work fine. Microsoft Store apps won't work if you removed the Store. Some features may be missing if you removed their dependencies.
-
 ## Updates & Maintenance
 
 ### Should I disable Windows Updates?
@@ -277,11 +258,6 @@ Winutil itself uses ~50-100MB while running. Once closed, it's removed from memo
 - Check if antivirus is blocking changes
 - Verify you have ownership of files/registry keys
 
-### "File not found" errors during MicroWin
-- Verify source ISO isn't corrupted
-- Ensure sufficient disk space (20GB+)
-- Check ISO is an official Windows ISO
-
 ### WinGet configuration prompt won't go away
 Type `Y` and press Enter in the PowerShell window. This only happens on first use and configures WinGet for your system.
 
@@ -297,5 +273,5 @@ Can't find your answer? Try these resources:
 
 ---
 
-**Last Updated**: January 2026  
+**Last Updated**: January 2026
 **Found this helpful?** Consider starring the project on [GitHub](https://github.com/ChrisTitusTech/winutil)!

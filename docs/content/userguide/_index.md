@@ -13,7 +13,6 @@ Winutil (Chris Titus Tech's Windows Utility) is a comprehensive PowerShell-based
 - **Apply Tweaks**: Optimize Windows for performance, privacy, and usability
 - **Fix Issues**: Troubleshoot common Windows problems with one-click fixes
 - **Manage Updates**: Control how and when Windows updates install
-- **Create MicroWin**: Build custom, lightweight Windows installation ISOs
 - **Access Tools**: Quick access to Windows panels and utilities
 
 ## Who Should Use Winutil?
@@ -54,17 +53,11 @@ Apply optimizations for performance, privacy, and usability. Choose from preset 
 
 Quick fixes for common Windows problems:
 - Reset network settings
-- Fix Windows Update issues  
+- Fix Windows Update issues
 - Repair system files
 - Access legacy Windows panels
 
 **[Read the Features Guide →](features/)**
-
-### 🪟 MicroWin
-
-Create custom Windows installation ISOs with bloatware removed, optimizations pre-applied, and unnecessary components stripped out.
-
-**[Read the MicroWin Guide →](microwin/)**
 
 ### 🔄 Update Management
 
@@ -94,7 +87,6 @@ Automate Winutil configurations for:
 | Install applications quickly | [Application Store](store/) |
 | Speed up my computer | [Tweaks Guide](tweaks/) |
 | Fix Windows Update problems | [Features - Fixes](features/) |
-| Create a lightweight Windows ISO | [MicroWin](microwin/) |
 | Automate setup for multiple PCs | [Automation](automation/) |
 | Understand what tweaks do | [Tweaks Guide](tweaks/) |
 
@@ -152,9 +144,8 @@ This User Guide covers everything you need to know:
 
 1. **[Getting Started](getting-started/)** - Installation, first run, basic usage
 2. **[Application Store](store/)** - Installing software, using presets
-3. **[Tweaks](tweaks/)** - System optimizations and customizations  
+3. **[Tweaks](tweaks/)** - System optimizations and customizations
 4. **[Features & Fixes](features/)** - Troubleshooting tools and utilities
-5. **[MicroWin](microwin/)** - Creating custom Windows ISOs
 6. **[Updates](updates/)** - Managing Windows Update behavior
 7. **[Automation](automation/)** - Scripting and batch deployments
 

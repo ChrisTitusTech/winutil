@@ -14,8 +14,8 @@ function Set-PackageManagerPreference {
         [PackageManagers]$preferredPackageManager
     )
 
-    $preferencePath = "$env:LOCALAPPDATA\winutil\preferences.ini"
-    $oldChocoPath = "$env:LOCALAPPDATA\winutil\preferChocolatey.ini"
+    $preferencePath = "$winutildir\preferences.ini"
+    $oldChocoPath = "$winutildir\preferChocolatey.ini"
 
     #Try loading from file if no argument given.
     if ($null -eq $preferredPackageManager) {
