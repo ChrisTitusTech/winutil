@@ -118,7 +118,7 @@
       Write-Host 'New start menu reverted please restart your computer to take effect'
       "
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/revertstartmenu"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--Advanced-Tweaks---CAUTION/revertstartmenu"
   },
   "WPFTweaksLaptopHibernation": {
     "Content": "Set Hibernation as default (good for laptops)",
