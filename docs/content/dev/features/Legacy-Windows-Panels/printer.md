@@ -1,5 +1,7 @@
-# Printer Settings
-
+---
+title: "Printer Settings"
+description: ""
+---
 ```powershell
 function Invoke-WPFControlPanel {
     <#

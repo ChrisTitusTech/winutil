@@ -1,5 +1,7 @@
-# Disable Telemetry
-
+---
+title: "Disable Telemetry"
+description: ""
+---
 ```json
 "WPFTweaksTelemetry": {
     "Content": "Disable Telemetry",

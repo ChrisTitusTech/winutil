@@ -1,5 +1,7 @@
-# Enable End Task With Right Click
-
+---
+title: "Enable End Task With Right Click"
+description: ""
+---
 ```json
   "WPFTweaksEndTaskOnTaskbar": {
     "Content": "Enable End Task With Right Click",

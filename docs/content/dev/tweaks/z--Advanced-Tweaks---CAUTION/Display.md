@@ -1,5 +1,7 @@
-# Set Display for Performance
-
+---
+title: "Set Display for Performance"
+description: ""
+---
 ```json
 "WPFTweaksDisplay": {
     "Content": "Set Display for Performance",
