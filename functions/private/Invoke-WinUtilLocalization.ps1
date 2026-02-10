@@ -76,6 +76,10 @@ function Invoke-WinUtilLocalization {
                     "ItalianLanguageMenuItem" { "it-IT" }
                     "PortugueseLanguageMenuItem" { "pt-PT" }
                     "PolishLanguageMenuItem" { "pl-PL" }
+                    "DutchLanguageMenuItem" { "nl-NL" }
+                    "RomanianLanguageMenuItem" { "ro-RO" }
+                    "SwedishLanguageMenuItem" { "sv-SE" }
+                    "CzechLanguageMenuItem" { "cs-CZ" }
                     Default { $null }
                 }
 

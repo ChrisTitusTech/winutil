@@ -80,6 +80,38 @@ function Get-WinUtilFlagIcon {
             <Rectangle Fill="#DC143C" Width="30" Height="10" Canvas.Top="10" />
 '@
         }
+        "nl-NL" {
+            # Red, White, Blue horizontal
+            $shapes = @'
+            <Rectangle Fill="#AE1C28" Width="30" Height="6.66" Canvas.Top="0" />
+            <Rectangle Fill="White" Width="30" Height="6.66" Canvas.Top="6.66" />
+            <Rectangle Fill="#21468B" Width="30" Height="6.66" Canvas.Top="13.32" />
+'@
+        }
+        "ro-RO" {
+            # Blue, Yellow, Red vertical
+            $shapes = @'
+            <Rectangle Fill="#002B7F" Width="10" Height="20" Canvas.Left="0" />
+            <Rectangle Fill="#FCD116" Width="10" Height="20" Canvas.Left="10" />
+            <Rectangle Fill="#CE1126" Width="10" Height="20" Canvas.Left="20" />
+'@
+        }
+        "sv-SE" {
+            # Blue with Yellow Cross
+            $shapes = @'
+            <Rectangle Fill="#006AA7" Width="30" Height="20" />
+            <Rectangle Fill="#FECC00" Width="3.75" Height="20" Canvas.Left="9.375" />
+            <Rectangle Fill="#FECC00" Width="30" Height="4" Canvas.Top="8" />
+'@
+        }
+        "cs-CZ" {
+            # White top, Red bottom, Blue triangle
+            $shapes = @'
+            <Rectangle Fill="White" Width="30" Height="10" Canvas.Top="0" />
+            <Rectangle Fill="#D7141A" Width="30" Height="10" Canvas.Top="10" />
+            <Polygon Fill="#11457E" Points="0,0 15,10 0,20" />
+'@
+        }
         default { return $null }
     }
 

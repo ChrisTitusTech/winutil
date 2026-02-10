@@ -1,0 +1,507 @@
+{
+    "ui": {
+        "tabs": {
+            "Install": "Instalare",
+            "Tweaks": "Optimizări",
+            "Config": "Config",
+            "Updates": "Actualizări"
+        },
+        "navButtons": {
+            "WPFTab1BT": "Instalare",
+            "WPFTab2BT": "Optimizări",
+            "WPFTab3BT": "Config",
+            "WPFTab4BT": "Actualizări"
+        },
+        "menus": {
+            "ImportMenuItem": "Importă",
+            "ExportMenuItem": "Exportă",
+            "AboutMenuItem": "Despre",
+            "SponsorMenuItem": "Sponsori",
+            "AutoThemeMenuItem": "Auto",
+            "DarkThemeMenuItem": "Întunecat",
+            "LightThemeMenuItem": "Luminos",
+            "EnglishLanguageMenuItem": "English",
+            "FrenchLanguageMenuItem": "Français",
+            "SpanishLanguageMenuItem": "Español",
+            "GermanLanguageMenuItem": "Deutsch",
+            "ItalianLanguageMenuItem": "Italiano",
+            "PortugueseLanguageMenuItem": "Português",
+            "PolishLanguageMenuItem": "Polski",
+            "DutchLanguageMenuItem": "Nederlands",
+            "RomanianLanguageMenuItem": "Română",
+            "SwedishLanguageMenuItem": "Svenska",
+            "CzechLanguageMenuItem": "Čeština"
+        },
+        "tooltips": {
+            "ImportMenuItem": "Importă configurația dintr-un fișier exportat.",
+            "ExportMenuItem": "Exportă elementele selectate și copiază comanda în clipboard.",
+            "AutoThemeMenuItem": "Folosește tema sistemului",
+            "DarkThemeMenuItem": "Folosește tema întunecată",
+            "LightThemeMenuItem": "Folosește tema luminoasă",
+            "ThemeButton": "Selectează o temă pentru stilul textului",
+            "FontScalingButton": "Ajustează mărimea fontului pentru accesibilitate",
+            "LanguageButton": "Schimbă limba / Change Language"
+        },
+        "buttons": {
+            "WPFstandard": " Standard ",
+            "WPFminimal": " Minimal ",
+            "WPFClearTweaksSelection": " Șterge ",
+            "WPFGetInstalledTweaks": " Instalate ",
+            "WPFTweaksbutton": "Rulează optimizările",
+            "WPFUndoall": "Anulează optimizările selectate",
+            "FontScalingResetButton": "Resetare",
+            "FontScalingApplyButton": "Aplică"
+        },
+        "labels": {
+            "RecommendedSelections": "Selecții recomandate:",
+            "FontScaling": "Mărime font",
+            "Small": "Mic",
+            "Large": "Mare",
+            "SearchBarPlaceholder": "Căutare"
+        },
+        "textblocks": {
+            "TweaksNote": "Notă: Treceți mouse-ul peste elemente pentru o descriere mai bună. Rețineți că multe optimizations vor modifica sistemul în profunzime.\nSelecțiile recomandate sunt pentru utilizatorii normali. Dacă nu sunteți sigur, NU bifați nimic altceva!"
+        },
+        "updates": {
+            "WPFUpdatesdefault": "Setări implicite",
+            "WPFUpdatessecurity": "Setări de securitate",
+            "WPFUpdatesdisable": "Dezactivează toate actualizările",
+            "DefaultTitle": "Configurația implicită Windows Update",
+            "DefaultLine1": " - Nicio modificare la valorile implicite Windows",
+            "DefaultLine2": " - Elimină orice setări personalizate de actualizare",
+            "DefaultNote": "Notă: Această acțiune resetează setările Windows Update la valorile din fabrică. Elimină ORICE politică sau personalizare efectuată asupra Windows Update.",
+            "SecurityTitle": "Configurație de securitate echilibrată",
+            "SecurityLine1": " - Actualizările de caracteristici amânate cu 365 de zile",
+            "SecurityLine2": " - Actualizările de securitate se instalează după 4 zile",
+            "SecurityFeatureUpdates": "Actualizări de caracteristici:",
+            "SecurityFeatureDesc": "Funcții noi și potențiale bug-uri",
+            "SecuritySecurityUpdates": "Actualizări de securitate:",
+            "SecuritySecurityDesc": "Patch-uri de securitate critice",
+            "SecurityNote": "Notă: Se aplică doar sistemelor Pro care pot folosi politici de grup (Group Policy).",
+            "DisableTitle": "!! Nerecomandat !!",
+            "DisableLine1": " - Dezactivează TOATE actualizările Windows",
+            "DisableLine2": " - Crește riscurile de securitate",
+            "DisableLine3": " - Utilizați doar pentru sisteme izolate",
+            "DisableNote": "Atenție: Sistemul vă va fi vulnerabil fără actualizări de securitate."
+        }
+    },
+    "config": {
+        "categories": {
+            "Essential Tweaks": "Optimizări esențiale",
+            "Customize Preferences": "Personalizare preferințe",
+            "Performance Plans": "Planuri de performanță",
+            "z__Advanced Tweaks - CAUTION": "z__Optimizări avansate - ATENȚIE",
+            "Features": "Funcționalități",
+            "Fixes": "Reparații",
+            "Legacy Windows Panels": "Panouri Windows vechi",
+            "Powershell Profile Powershell 7+ Only": "Profil Powershell (Doar PS 7+)",
+            "Remote Access": "Acces de la distanță",
+            "Browsers": "Browsere",
+            "Communications": "Comunicații",
+            "Development": "Dezvoltare",
+            "Document": "Documente",
+            "Games": "Jocuri",
+            "Microsoft Tools": "Unelte Microsoft",
+            "Multimedia Tools": "Unelte Multimedia",
+            "Pro Tools": "Unelte Pro",
+            "Utilities": "Utilitare",
+            "____Actions": "____Acțiuni",
+            "__Package Manager": "__Manager pachete",
+            "__Selection": "__Selecție"
+        },
+        "appnavigation": {
+            "WPFInstall": {
+                "Content": "Instalează/Actualizează aplicații",
+                "Description": "Instalează sau actualizează aplicațiile selectate"
+            },
+            "WPFUninstall": {
+                "Content": "Dezinstalează aplicații",
+                "Description": "Dezinstalează aplicațiile selectate"
+            },
+            "WPFInstallUpgrade": {
+                "Content": "Actualizează toate aplicațiile",
+                "Description": "Actualizează toate aplicațiile la cea mai recentă versiune"
+            },
+            "WingetRadioButton": {
+                "Content": "Winget",
+                "Description": "Folosește Winget pentru managementul pachetelor"
+            },
+            "ChocoRadioButton": {
+                "Content": "Chocolatey",
+                "Description": "Folosește Chocolatey pentru managementul pachetelor"
+            },
+            "WPFCollapseAllCategories": {
+                "Content": "Restrânge toate categoriile",
+                "Description": "Restrânge toate categoriile de aplicații"
+            },
+            "WPFExpandAllCategories": {
+                "Content": "Extinde toate categoriile",
+                "Description": "Extinde toate categoriile de aplicații"
+            },
+            "WPFClearInstallSelection": {
+                "Content": "Șterge selecția",
+                "Description": "Șterge selecția de aplicații"
+            },
+            "WPFGetInstalled": {
+                "Content": "Arată instalatele",
+                "Description": "Afișează aplicațiile instalate"
+            },
+            "WPFselectedAppsButton": {
+                "Content": "Aplicații selectate: {0}",
+                "Description": "Afișează aplicațiile selectate"
+            }
+        },
+        "tweaks": {
+            "WPFTweaksActivity": {
+                "Content": "Dezactivează istoricul activităților",
+                "Description": "Șterge documentele recente, clipboard-ul și istoricul rulărilor."
+            },
+            "WPFTweaksHiber": {
+                "Content": "Dezactivează Hibernarea",
+                "Description": "Hibernarea este destinată laptopurilor pentru a salva memoria înainte de oprire. Nu ar trebui folosită pe desktop-uri."
+            },
+            "WPFTweaksWidget": {
+                "Content": "Elimină Widget-urile",
+                "Description": "Elimină Widget-urile Windows din sistem."
+            },
+            "WPFTweaksLaptopHibernation": {
+                "Content": "Setează Hibernarea ca implicită (pentru laptopuri)",
+                "Description": "Setează Hibernarea ca opțiune de alimentare implicită în loc de sleep."
+            },
+            "WPFTweaksLocation": {
+                "Content": "Dezactivează urmărirea locației",
+                "Description": "Dezactivează urmărirea locației de către Windows."
+            },
+            "WPFTweaksServices": {
+                "Content": "Setează serviciile pe Manual",
+                "Description": "Setează serviciile neesențiale pe pornire manuală."
+            },
+            "WPFTweaksBraveDebloat": {
+                "Content": "Brave Debloat",
+                "Description": "Elimină componentele inutile din Brave."
+            },
+            "WPFTweaksEdgeDebloat": {
+                "Content": "Edge Debloat",
+                "Description": "Elimină bloatware-ul Microsoft Edge."
+            },
+            "WPFTweaksConsumerFeatures": {
+                "Content": "Dezactivează ConsumerFeatures",
+                "Description": "Dezactivează funcțiile pentru consumatori (ex. aplicații sugerate)."
+            },
+            "WPFTweaksTelemetry": {
+                "Content": "Dezactivează Telemetria",
+                "Description": "Dezactivează colectarea datelor și telemetria Windows."
+            },
+            "WPFTweaksRemoveEdge": {
+                "Content": "Elimină Microsoft Edge",
+                "Description": "Elimină Microsoft Edge din sistem."
+            },
+            "WPFTweaksUTC": {
+                "Content": "Setează timpul pe UTC (Dual Boot)",
+                "Description": "Setează ceasul sistemului pe UTC pentru compatibilitate dual-boot."
+            },
+            "WPFTweaksRemoveOneDrive": {
+                "Content": "Elimină OneDrive",
+                "Description": "Elimină Microsoft OneDrive din sistem."
+            },
+            "WPFTweaksRemoveHome": {
+                "Content": "Elimină 'Home' din Explorer",
+                "Description": "Elimină pagina Home din File Explorer."
+            },
+            "WPFTweaksRemoveGallery": {
+                "Content": "Elimină 'Gallery' din explorer",
+                "Description": "Elimină pagina Galerie din File Explorer."
+            },
+            "WPFTweaksDisplay": {
+                "Content": "Ajustează afișajul pentru performanță",
+                "Description": "Ajustează setările de afișare pentru cea mai bună performanță."
+            },
+            "WPFTweaksXboxRemoval": {
+                "Content": "Elimină Xbox și componentele de jocuri",
+                "Description": "Elimină Xbox și componentele de gaming din sistem."
+            },
+            "WPFTweaksDeBloat": {
+                "Content": "Elimină TOATE aplicațiile MS Store - NERECOMANDAT",
+                "Description": "Elimină toate aplicațiile din Microsoft Store. Utilizați cu precauție extremă."
+            },
+            "WPFTweaksRestorePoint": {
+                "Content": "Creează punct de restaurare",
+                "Description": "Creează un punct de restaurare a sistemului înainte de a aplica optimizările."
+            },
+            "WPFTweaksEndTaskOnTaskbar": {
+                "Content": "Activare 'Închide proces' la Click Dreapta",
+                "Description": "Adaugă opțiunea End Task în meniul de click dreapta al taskbar-ului."
+            },
+            "WPFTweaksPowershell7Tele": {
+                "Content": "Dezactivează Telemetria Powershell 7",
+                "Description": "Dezactivează colectarea telemetriei în PowerShell 7."
+            },
+            "WPFTweaksStorage": {
+                "Content": "Dezactivează Storage Sense",
+                "Description": "Dezactivează curățarea automată Windows Storage Sense."
+            },
+            "WPFTweaksRemoveCopilot": {
+                "Content": "Dezactivează Microsoft Copilot",
+                "Description": "Dezactivează asistentul AI Microsoft Copilot."
+            },
+            "WPFTweaksWPBT": {
+                "Content": "Dezactivează Windows Platform Binary Table (WPBT)",
+                "Description": "Dezactivează WPBT care permite OEM-urilor să injecteze software."
+            },
+            "WPFTweaksRazerBlock": {
+                "Content": "Blochează instalările de software Razer",
+                "Description": "Blochează instalările automate de software Razer."
+            },
+            "WPFTweaksDisableNotifications": {
+                "Content": "Dezactivează Notificările/Calendarul",
+                "Description": "Dezactivează zona de notificări și popup-ul calendarului."
+            },
+            "WPFTweaksBlockAdobeNet": {
+                "Content": "Blocare rețea Adobe",
+                "Description": "Blochează conexiunile de rețea Adobe."
+            },
+            "WPFTweaksRightClickMenu": {
+                "Content": "Setează meniul clasic la click dreapta",
+                "Description": "Restaurează meniul contextual clasic Windows."
+            },
+            "WPFTweaksDiskCleanup": {
+                "Content": "Rulează Disk Cleanup",
+                "Description": "Rulează utilitarul Windows Disk Cleanup."
+            },
+            "WPFTweaksDeleteTempFiles": {
+                "Content": "Șterge fișierele temporare",
+                "Description": "Șterge fișierele temporare pentru a elibera spațiu."
+            },
+            "WPFTweaksIPv46": {
+                "Content": "Preferă IPv4 în fața IPv6",
+                "Description": "Configurează sistemul să prefere conexiunile IPv4."
+            },
+            "WPFTweaksTeredo": {
+                "Content": "Dezactivează Teredo",
+                "Description": "Dezactivează protocolul de tunelare Teredo."
+            },
+            "WPFTweaksDisableIPv6": {
+                "Content": "Dezactivează IPv6",
+                "Description": "Dezactivează protocolul de rețea IPv6."
+            },
+            "WPFTweaksDisableBGapps": {
+                "Content": "Dezactivează aplicațiile din fundal",
+                "Description": "Dezactivează execuția aplicațiilor în fundal."
+            },
+            "WPFTweaksDisableFSO": {
+                "Content": "Dezactivează optimizările pe ecran complet",
+                "Description": "Dezactivează optimizările fullscreen pentru o performanță mai bună în jocuri."
+            },
+            "WPFToggleDarkMode": {
+                "Content": "Tema întunecată pentru Windows",
+                "Description": "Activează tema întunecată la nivelul întregului sistem."
+            },
+            "WPFToggleBingSearch": {
+                "Content": "Căutare Bing în meniul de Start",
+                "Description": "Controlează integrarea căutării Bing în meniul Start."
+            },
+            "WPFToggleNumLock": {
+                "Content": "NumLock la pornire",
+                "Description": "Activează NumLock la pornirea sistemului."
+            },
+            "WPFToggleVerboseLogon": {
+                "Content": "Mesaje detaliate la pornire",
+                "Description": "Afișează mesaje detaliate de stare în timpul autentificării."
+            },
+            "WPFToggleStartMenuRecommendations": {
+                "Content": "Recomandări în meniul de Start",
+                "Description": "Controlează recomandările din meniul Start."
+            },
+            "WPFToggleHideSettingsHome": {
+                "Content": "Elimină pagina 'Home' din Setări",
+                "Description": "Elimină pagina principală din setările Windows."
+            },
+            "WPFToggleMouseAcceleration": {
+                "Content": "Accelerația mouse-ului",
+                "Description": "Controlează accelerația indicatorului de mouse."
+            },
+            "WPFToggleStickyKeys": {
+                "Content": "Sticky Keys",
+                "Description": "Controlează funcția de accesibilitate Sticky Keys."
+            },
+            "WPFToggleNewOutlook": {
+                "Content": "Noul Outlook",
+                "Description": "Controlează noua aplicație Outlook."
+            },
+            "WPFToggleMultiplaneOverlay": {
+                "Content": "Dezactivează Multiplane Overlay",
+                "Description": "Dezactivează Multiplane Overlay pentru o compatibilitate mai bună."
+            },
+            "WPFToggleHiddenFiles": {
+                "Content": "Arată fișierele ascunse",
+                "Description": "Afișează fișierele ascunse în File Explorer."
+            },
+            "WPFToggleShowExt": {
+                "Content": "Arată extensiile fișierelor",
+                "Description": "Afișează extensiile fișierelor în File Explorer."
+            },
+            "WPFToggleTaskbarSearch": {
+                "Content": "Butonul căutare în Taskbar",
+                "Description": "Controlează vizibilitatea butonului de căutare în taskbar."
+            },
+            "WPFToggleTaskView": {
+                "Content": "Butonul Task View în Taskbar",
+                "Description": "Controlează vizibilitatea butonului Task View în taskbar."
+            },
+            "WPFToggleTaskbarAlignment": {
+                "Content": "Centrează elementele din Taskbar",
+                "Description": "Aliniază elementele din taskbar pe centru."
+            },
+            "WPFToggleDetailedBSoD": {
+                "Content": "BSoD detaliat",
+                "Description": "Afișează informații detaliate la ecranul albastru de eroare."
+            },
+            "WPFToggleS3Sleep": {
+                "Content": "Sleep S3",
+                "Description": "Controlează starea de sleep S3."
+            },
+            "WPFOOSUbutton": {
+                "Content": "Rulează OO Shutup 10",
+                "Description": "Rulează utitilitatea de confidențialitate O&O ShutUp10."
+            },
+            "WPFchangedns": {
+                "Content": "DNS",
+                "Description": "Schimbă setările serverului DNS."
+            },
+            "WPFAddUltPerf": {
+                "Content": "Adaugă și activează profilul 'Ultimate Performance'",
+                "Description": "Adaugă și activează planul de alimentare Ultimate Performance."
+            },
+            "WPFRemoveUltPerf": {
+                "Content": "Elimină profilul 'Ultimate Performance'",
+                "Description": "Elimină planul de alimentare Ultimate Performance."
+            },
+            "WPFTweaksDisableExplorerAutoDiscovery": {
+                "Content": "Dezactivează detectarea automată a folderelor în Explorer",
+                "Description": "Dezactivează detectarea automată a tipului de folder în Explorer."
+            },
+            "WPFToggleDisableCrossDeviceResume": {
+                "Content": "Continuare între dispozitive",
+                "Description": "Controlează funcția Cross-Device Resume."
+            }
+        },
+        "features": {
+            "WPFFeaturesdotnet": {
+                "Content": "Toate .Net Framework (2,3,4)",
+                "Description": ".NET și .NET Framework este o platformă de dezvoltare Microsoft."
+            },
+            "WPFFeatureshyperv": {
+                "Content": "Virtualizare HyperV",
+                "Description": "Hyper-V este un produs de virtualizare hardware dezvoltat de Microsoft."
+            },
+            "WPFFeatureslegacymedia": {
+                "Content": "Media vechi (WMP, DirectPlay)",
+                "Description": "Componente media vechi (Windows Media Player, DirectPlay)."
+            },
+            "WPFFeaturewsl": {
+                "Content": "Subsistem Windows pentru Linux (WSL)",
+                "Description": "Rulați distribuții Linux direct pe Windows fără VM."
+            },
+            "WPFFeaturenfs": {
+                "Content": "NFS - Network File System",
+                "Description": "Network File System pentru partajarea fișierelor prin rețea."
+            },
+            "WPFFeatureRegBackup": {
+                "Content": "Activare sarcină Backup Registru zilnic (ora 00:30)",
+                "Description": "Creează o sarcină programată pentru backup-ul zilnic al regiștrilor."
+            },
+            "WPFFeatureEnableLegacyRecovery": {
+                "Content": "Activare recuperare boot F8 (clasic)",
+                "Description": "Activează opțiunile de boot F8 clasice."
+            },
+            "WPFFeatureDisableLegacyRecovery": {
+                "Content": "Dezactivare recuperare boot F8 (clasic)",
+                "Description": "Dezactivează opțiunile de boot F8 clasice."
+            },
+            "WPFFeaturesSandbox": {
+                "Content": "Windows Sandbox",
+                "Description": "Un mediu virtual securizat pentru rularea aplicațiilor."
+            },
+            "WPFFeatureInstall": {
+                "Content": "Instalează funcționalități",
+                "Description": "Instalează componentele Windows selectate."
+            },
+            "WPFPanelAutologin": {
+                "Content": "Setează Autentificare Automată",
+                "Description": "Controlează logarea automată pentru utilizatorul curent."
+            },
+            "WPFFixesUpdate": {
+                "Content": "Resetează Windows Update",
+                "Description": "Resetează componentele Windows Update pentru a repara erorile."
+            },
+            "WPFFixesNetwork": {
+                "Content": "Resetează Rețeaua",
+                "Description": "Resetează setările de rețea pentru a repara problemele de conexiune."
+            },
+            "WPFPanelDISM": {
+                "Content": "Scanare corupție sistem (DISM)",
+                "Description": "Scanează și repară fișierele de sistem corupte folosind DISM."
+            },
+            "WPFFixesWinget": {
+                "Content": "Reinstalează WinGet",
+                "Description": "Reinstalează managerul de pachete WinGet."
+            },
+            "WPFRunAdobeCCCleanerTool": {
+                "Content": "Elimină Adobe Creative Cloud",
+                "Description": "Elimină Adobe Creative Cloud și componentele asociate."
+            },
+            "WPFPanelControl": {
+                "Content": "Control Panel",
+                "Description": "Deschide panoul de control clasic."
+            },
+            "WPFPanelComputer": {
+                "Content": "Computer Management",
+                "Description": "Deschide consola Computer Management."
+            },
+            "WPFPanelNetwork": {
+                "Content": "Network Connections",
+                "Description": "Deschide panoul conexiunilor de rețea."
+            },
+            "WPFPanelPower": {
+                "Content": "Power Panel",
+                "Description": "Deschide setările de alimentare."
+            },
+            "WPFPanelPrinter": {
+                "Content": "Printer Panel",
+                "Description": "Deschide panoul imprimantelor."
+            },
+            "WPFPanelRegion": {
+                "Content": "Regiune",
+                "Description": "Deschide setările regionale."
+            },
+            "WPFPanelRestore": {
+                "Content": "Restaurare Windows",
+                "Description": "Deschide panoul System Restore."
+            },
+            "WPFPanelSound": {
+                "Content": "Setări Sunet",
+                "Description": "Deschide setările de sunet."
+            },
+            "WPFPanelSystem": {
+                "Content": "Proprietăți Sistem",
+                "Description": "Deschide dialogul proprietăților de sistem."
+            },
+            "WPFPanelTimedate": {
+                "Content": "Timp și dată",
+                "Description": "Deschide setările de dată și oră."
+            },
+            "WPFWinUtilInstallPSProfile": {
+                "Content": "Instalează Profilul PowerShell CTT",
+                "Description": "Instalează profilul PowerShell Chris Titus Tech."
+            },
+            "WPFWinUtilUninstallPSProfile": {
+                "Content": "Dezinstalează Profilul PowerShell CTT",
+                "Description": "Elimină profilul PowerShell Chris Titus Tech."
+            },
+            "WPFWinUtilSSHServer": {
+                "Content": "Activare Server OpenSSH",
+                "Description": "Activează serverul OpenSSH pentru conexiuni de la distanță."
+            }
+        }
+    }
+}

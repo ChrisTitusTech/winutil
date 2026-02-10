@@ -1,0 +1,507 @@
+{
+    "ui": {
+        "tabs": {
+            "Install": "Installeren",
+            "Tweaks": "Optimalisaties",
+            "Config": "Configuratie",
+            "Updates": "Updates"
+        },
+        "navButtons": {
+            "WPFTab1BT": "Installeren",
+            "WPFTab2BT": "Optimalisaties",
+            "WPFTab3BT": "Configuratie",
+            "WPFTab4BT": "Updates"
+        },
+        "menus": {
+            "ImportMenuItem": "Importeren",
+            "ExportMenuItem": "Exporteren",
+            "AboutMenuItem": "Over",
+            "SponsorMenuItem": "Sponsors",
+            "AutoThemeMenuItem": "Auto",
+            "DarkThemeMenuItem": "Donker",
+            "LightThemeMenuItem": "Licht",
+            "EnglishLanguageMenuItem": "English",
+            "FrenchLanguageMenuItem": "Français",
+            "SpanishLanguageMenuItem": "Español",
+            "GermanLanguageMenuItem": "Deutsch",
+            "ItalianLanguageMenuItem": "Italiano",
+            "PortugueseLanguageMenuItem": "Português",
+            "PolishLanguageMenuItem": "Polski",
+            "DutchLanguageMenuItem": "Nederlands",
+            "RomanianLanguageMenuItem": "Română",
+            "SwedishLanguageMenuItem": "Svenska",
+            "CzechLanguageMenuItem": "Čeština"
+        },
+        "tooltips": {
+            "ImportMenuItem": "Importeer configuratie uit geëxporteerd bestand.",
+            "ExportMenuItem": "Exporteer geselecteerde elementen en kopieer uitvoeringsopdracht naar klembord.",
+            "AutoThemeMenuItem": "Gebruik Systeemthema",
+            "DarkThemeMenuItem": "Gebruik Donker Thema",
+            "LightThemeMenuItem": "Gebruik Licht Thema",
+            "ThemeButton": "Selecteer een thema voor tekststijl",
+            "FontScalingButton": "Pas lettergrootte aan voor toegankelijkheid",
+            "LanguageButton": "Taal wijzigen / Change Language"
+        },
+        "buttons": {
+            "WPFstandard": " Standaard ",
+            "WPFminimal": " Minimaal ",
+            "WPFClearTweaksSelection": " Wissen ",
+            "WPFGetInstalledTweaks": " Geïnstalleerd ",
+            "WPFTweaksbutton": "Optimalisaties uitvoeren",
+            "WPFUndoall": "Ongedaan maken",
+            "FontScalingResetButton": "Reset",
+            "FontScalingApplyButton": "Toepassen"
+        },
+        "labels": {
+            "RecommendedSelections": "Aanbevolen selecties:",
+            "FontScaling": "Lettergrootte",
+            "Small": "Klein",
+            "Large": "Groot",
+            "SearchBarPlaceholder": "Zoeken"
+        },
+        "textblocks": {
+            "TweaksNote": "Let op: Beweeg over items voor een betere beschrijving. Wees voorzichtig, veel van deze aanpassingen wijzigen je systeem ingrijpend.\nAanbevolen selecties zijn voor normale gebruikers. Als je twijfelt, vink dan NIETS anders aan!"
+        },
+        "updates": {
+            "WPFUpdatesdefault": "Standaardinstellingen",
+            "WPFUpdatessecurity": "Beveiligingsinstellingen",
+            "WPFUpdatesdisable": "Schakel alle updates uit",
+            "DefaultTitle": "Standaard Windows Update Configuratie",
+            "DefaultLine1": " - Geen wijzigingen aan Windows-standaardinstellingen",
+            "DefaultLine2": " - Verwijdert alle aangepaste update-instellingen",
+            "DefaultNote": "Opmerking: Dit zet je Windows Update-instellingen terug naar de fabrieksinstellingen. Het verwijdert ELK beleid of aanpassing aan Windows Update.",
+            "SecurityTitle": "Gebalanceerde Beveiligingsconfiguratie",
+            "SecurityLine1": " - Feature-updates uitgesteld met 365 dagen",
+            "SecurityLine2": " - Beveiligingsupdates geïnstalleerd na 4 dagen",
+            "SecurityFeatureUpdates": "Feature-updates:",
+            "SecurityFeatureDesc": "Nieuwe functies en mogelijke bugs",
+            "SecuritySecurityUpdates": "Beveiligingsupdates:",
+            "SecuritySecurityDesc": "Kritieke beveiligingspatches",
+            "SecurityNote": "Opmerking: Dit is alleen van toepassing op Pro-systemen die groepsbeleid kunnen gebruiken.",
+            "DisableTitle": "!! Niet Aanbevolen !!",
+            "DisableLine1": " - Schakelt ALLE Windows Updates uit",
+            "DisableLine2": " - Verhoogt beveiligingsrisico's",
+            "DisableLine3": " - Alleen gebruiken voor geïsoleerde systemen",
+            "DisableNote": "Waarschuwing: Je systeem is kwetsbaar zonder beveiligingsupdates."
+        }
+    },
+    "config": {
+        "categories": {
+            "Essential Tweaks": "Essentiële optimalisaties",
+            "Customize Preferences": "Voorkeuren aanpassen",
+            "Performance Plans": "Prestatieplannen",
+            "z__Advanced Tweaks - CAUTION": "z__Geavanceerde optimalisaties - LET OP",
+            "Features": "Functies",
+            "Fixes": "Oplossingen",
+            "Legacy Windows Panels": "Oude Windows Panelen",
+            "Powershell Profile Powershell 7+ Only": "Powershell Profiel (Alleen PS 7+)",
+            "Remote Access": "Toegang op afstand",
+            "Browsers": "Browsers",
+            "Communications": "Communicatie",
+            "Development": "Ontwikkeling",
+            "Document": "Documenten",
+            "Games": "Games",
+            "Microsoft Tools": "Microsoft Tools",
+            "Multimedia Tools": "Multimedia Tools",
+            "Pro Tools": "Pro Tools",
+            "Utilities": "Hulpprogramma's",
+            "____Actions": "____Acties",
+            "__Package Manager": "__Pakketbeheer",
+            "__Selection": "__Selectie"
+        },
+        "appnavigation": {
+            "WPFInstall": {
+                "Content": "Toepassingen installeren/bijwerken",
+                "Description": "Installeer of werk de geselecteerde toepassingen bij"
+            },
+            "WPFUninstall": {
+                "Content": "Toepassingen verwijderen",
+                "Description": "Verwijder de geselecteerde toepassingen"
+            },
+            "WPFInstallUpgrade": {
+                "Content": "Alle toepassingen bijwerken",
+                "Description": "Werk alle toepassingen bij naar de laatste versie"
+            },
+            "WingetRadioButton": {
+                "Content": "Winget",
+                "Description": "Gebruik Winget voor pakketbeheer"
+            },
+            "ChocoRadioButton": {
+                "Content": "Chocolatey",
+                "Description": "Gebruik Chocolatey for pakketbeheer"
+            },
+            "WPFCollapseAllCategories": {
+                "Content": "Alle categorieën inklappen",
+                "Description": "Klap alle toepassingscategorieën in"
+            },
+            "WPFExpandAllCategories": {
+                "Content": "Alle categorieën uitvouwen",
+                "Description": "Vouw alle toepassingscategorieën uit"
+            },
+            "WPFClearInstallSelection": {
+                "Content": "Selectie wissen",
+                "Description": "Wis de selectie van toepassingen"
+            },
+            "WPFGetInstalled": {
+                "Content": "Geïnstalleerd ophalen",
+                "Description": "Toon geïnstalleerde toepassingen"
+            },
+            "WPFselectedAppsButton": {
+                "Content": "Geselecteerde Apps: {0}",
+                "Description": "Toon de geselecteerde toepassingen"
+            }
+        },
+        "tweaks": {
+            "WPFTweaksActivity": {
+                "Content": "Activiteitengeschiedenis uitschakelen",
+                "Description": "Dit wist recente documenten, klembord en uitvoeringsgeschiedenis."
+            },
+            "WPFTweaksHiber": {
+                "Content": "Sluimerstand uitschakelen",
+                "Description": "Sluimerstand is bedoeld voor laptops om geheugen op te slaan voor het afsluiten. Zou nooit gebruikt moeten worden op vaste PC's."
+            },
+            "WPFTweaksWidget": {
+                "Content": "Widgets verwijderen",
+                "Description": "Verwijdert Windows Widgets van het systeem."
+            },
+            "WPFTweaksLaptopHibernation": {
+                "Content": "Sluimerstand als standaard (goed voor laptops)",
+                "Description": "Stelt sluimerstand in als standaard in plaats van slaapstand."
+            },
+            "WPFTweaksLocation": {
+                "Content": "Locatietracering uitschakelen",
+                "Description": "Schakelt Windows locatietracering uit."
+            },
+            "WPFTweaksServices": {
+                "Content": "Diensten op handmatig zetten",
+                "Description": "Zet niet-essentiële diensten op handmatig opstarten."
+            },
+            "WPFTweaksBraveDebloat": {
+                "Content": "Brave opschonen",
+                "Description": "Verwijdert onnodige Brave-componenten."
+            },
+            "WPFTweaksEdgeDebloat": {
+                "Content": "Edge opschonen",
+                "Description": "Verwijdert Microsoft Edge bloatware."
+            },
+            "WPFTweaksConsumerFeatures": {
+                "Content": "Consumentenfuncties uitschakelen",
+                "Description": "Schakelt Windows consumentenfuncties zoals voorgestelde apps uit."
+            },
+            "WPFTweaksTelemetry": {
+                "Content": "Telemetrie uitschakelen",
+                "Description": "Schakelt Windows gegevensverzameling en telemetrie uit."
+            },
+            "WPFTweaksRemoveEdge": {
+                "Content": "Microsoft Edge verwijderen",
+                "Description": "Verwijdert Microsoft Edge van het systeem."
+            },
+            "WPFTweaksUTC": {
+                "Content": "Tijd op UTC zetten (Dual Boot)",
+                "Description": "Zet de systeemklok op UTC voor dual-boot compatibiliteit."
+            },
+            "WPFTweaksRemoveOneDrive": {
+                "Content": "OneDrive verwijderen",
+                "Description": "Verwijdert Microsoft OneDrive van het systeem."
+            },
+            "WPFTweaksRemoveHome": {
+                "Content": "Startpagina uit Verkenner verwijderen",
+                "Description": "Verwijdert de startpagina uit de Verkenner."
+            },
+            "WPFTweaksRemoveGallery": {
+                "Content": "Galerij uit Verkenner verwijderen",
+                "Description": "Verwijdert de Galerij-pagina uit de Verkenner."
+            },
+            "WPFTweaksDisplay": {
+                "Content": "Weergave voor prestaties",
+                "Description": "Past weergave-instellingen aan voor beste prestaties."
+            },
+            "WPFTweaksXboxRemoval": {
+                "Content": "Xbox & Gaming-componenten verwijderen",
+                "Description": "Verwijdert Xbox- en gaming-componenten van het systeem."
+            },
+            "WPFTweaksDeBloat": {
+                "Content": "ALLE MS Store-apps verwijderen - NIET AANBEVOLEN",
+                "Description": "Verwijdert alle Microsoft Store-toepassingen. Gebruik met uiterste voorzichtigheid."
+            },
+            "WPFTweaksRestorePoint": {
+                "Content": "Herstelpunt maken",
+                "Description": "Maakt een systeemherstelpunt voordat optimalisaties worden toegepast."
+            },
+            "WPFTweaksEndTaskOnTaskbar": {
+                "Content": "Taak beëindigen met rechtsklik inschakelen",
+                "Description": "Voegt optie 'Taak beëindigen' toe aan rechtermuisknopmenu taakbalk."
+            },
+            "WPFTweaksPowershell7Tele": {
+                "Content": "Powershell 7 Telemetrie uitschakelen",
+                "Description": "Schakelt telemetrieverzameling in PowerShell 7 uit."
+            },
+            "WPFTweaksStorage": {
+                "Content": "Opslaginzicht uitschakelen",
+                "Description": "Schakelt automatische opschoning van Windows Opslaginzicht uit."
+            },
+            "WPFTweaksRemoveCopilot": {
+                "Content": "Microsoft Copilot uitschakelen",
+                "Description": "Schakelt de Microsoft Copilot AI-assistent uit."
+            },
+            "WPFTweaksWPBT": {
+                "Content": "Windows Platform Binary Table (WPBT) uitschakelen",
+                "Description": "Schakelt WPBT uit waarmee OEM's software kunnen injecteren."
+            },
+            "WPFTweaksRazerBlock": {
+                "Content": "Razer Software Installs blokkeren",
+                "Description": "Blokkeert automatische Razer-softwareinstallaties."
+            },
+            "WPFTweaksDisableNotifications": {
+                "Content": "Meldingen/Kalender uitschakelen",
+                "Description": "Schakelt het meldingencentrum en de kalender-popup uit."
+            },
+            "WPFTweaksBlockAdobeNet": {
+                "Content": "Adobe Netwerkblokkering",
+                "Description": "Blokkeert Adobe netwerkverbindingen."
+            },
+            "WPFTweaksRightClickMenu": {
+                "Content": "Klassiek rechtsklikmenu instellen",
+                "Description": "Herstelt het klassieke Windows contextmenu."
+            },
+            "WPFTweaksDiskCleanup": {
+                "Content": "Schijfopruiming uitvoeren",
+                "Description": "Voert Windows schijfopruiming uit."
+            },
+            "WPFTweaksDeleteTempFiles": {
+                "Content": "Tijdelijke bestanden verwijderen",
+                "Description": "Verwijdert tijdelijke bestanden om schijfruimte vrij te maken."
+            },
+            "WPFTweaksIPv46": {
+                "Content": "Voorkeur voor IPv4 boven IPv6",
+                "Description": "Configureert het systeem om IPv4-verbindingen te verkiezen."
+            },
+            "WPFTweaksTeredo": {
+                "Content": "Teredo uitschakelen",
+                "Description": "Schakelt Teredo-tunnelingprotocol uit."
+            },
+            "WPFTweaksDisableIPv6": {
+                "Content": "IPv6 uitschakelen",
+                "Description": "Schakelt IPv6-netwerkprotocol uit."
+            },
+            "WPFTweaksDisableBGapps": {
+                "Content": "Achtergrond-apps uitschakelen",
+                "Description": "Schakelt uitvoering van apps op de achtergrond uit."
+            },
+            "WPFTweaksDisableFSO": {
+                "Content": "Volledig scherm optimalisaties uitschakelen",
+                "Description": "Schakelt optimalisaties voor volledig scherm uit voor betere game-prestaties."
+            },
+            "WPFToggleDarkMode": {
+                "Content": "Donker thema voor Windows",
+                "Description": "Schakelt het donkere thema in voor heel Windows."
+            },
+            "WPFToggleBingSearch": {
+                "Content": "Bing Zoeken in Startmenu",
+                "Description": "Beheert Bing zoekintegratie in het Startmenu."
+            },
+            "WPFToggleNumLock": {
+                "Content": "NumLock bij opstarten",
+                "Description": "Schakelt NumLock in bij het opstarten van het systeem."
+            },
+            "WPFToggleVerboseLogon": {
+                "Content": "Gedetailleerde berichten bij aanmelden",
+                "Description": "Toont gedetailleerde statusberichten tijdens het aanmelden."
+            },
+            "WPFToggleStartMenuRecommendations": {
+                "Content": "Aanbevelingen in Startmenu",
+                "Description": "Beheert aanbevelingen in het Startmenu."
+            },
+            "WPFToggleHideSettingsHome": {
+                "Content": "Instellingen Startpagina verwijderen",
+                "Description": "Verwijdert de startpagina uit de Windows instellingen."
+            },
+            "WPFToggleMouseAcceleration": {
+                "Content": "Muisingave versnellen",
+                "Description": "Beheert muisaanwijzerversnelling."
+            },
+            "WPFToggleStickyKeys": {
+                "Content": "Plaktoetsen",
+                "Description": "Beheert Plaktoetsen voor toegankelijkheid."
+            },
+            "WPFToggleNewOutlook": {
+                "Content": "Nieuwe Outlook",
+                "Description": "Beheert de nieuwe Outlook-app."
+            },
+            "WPFToggleMultiplaneOverlay": {
+                "Content": "Multiplane Overlay uitschakelen",
+                "Description": "Schakelt Multiplane Overlay uit voor betere compatibiliteit."
+            },
+            "WPFToggleHiddenFiles": {
+                "Content": "Verborgen bestanden tonen",
+                "Description": "Toont verborgen bestanden in de Verkenner."
+            },
+            "WPFToggleShowExt": {
+                "Content": "Bestandsextensies tonen",
+                "Description": "Toont bestandsextensies in de Verkenner."
+            },
+            "WPFToggleTaskbarSearch": {
+                "Content": "Zoekknop in taakbalk",
+                "Description": "Beheert zichtbaarheid van zoekknop in taakbalk."
+            },
+            "WPFToggleTaskView": {
+                "Content": "Taakweergave-knop in taakbalk",
+                "Description": "Beheert zichtbaarheid van Taakweergave-knop in taakbalk."
+            },
+            "WPFToggleTaskbarAlignment": {
+                "Content": "Taakbalk-items centreren",
+                "Description": "Centreert de uitlijning van taakbalk-items."
+            },
+            "WPFToggleDetailedBSoD": {
+                "Content": "Gedetailleerd BSoD",
+                "Description": "Toont gedetailleerde Blue Screen of Death informatie."
+            },
+            "WPFToggleS3Sleep": {
+                "Content": "S3 Slaapstand",
+                "Description": "Beheert S3 slaapstand."
+            },
+            "WPFOOSUbutton": {
+                "Content": "Voer OO Shutup 10 uit",
+                "Description": "Voert O&O ShutUp10 privacy tool uit."
+            },
+            "WPFchangedns": {
+                "Content": "DNS",
+                "Description": "Wijzig DNS-serverinstellingen."
+            },
+            "WPFAddUltPerf": {
+                "Content": "Ultieme Prestaties profiel toevoegen en activeren",
+                "Description": "Voegt het Ultieme Prestaties energieplan toe en activeert het."
+            },
+            "WPFRemoveUltPerf": {
+                "Content": "Ultieme Prestaties profiel verwijderen",
+                "Description": "Verwijdert het Ultieme Prestaties energieplan."
+            },
+            "WPFTweaksDisableExplorerAutoDiscovery": {
+                "Content": "Automatische mapdetectie uitschakelen",
+                "Description": "Schakelt automatische detectie van maptype in Verkenner uit."
+            },
+            "WPFToggleDisableCrossDeviceResume": {
+                "Content": "Hervatten tussen apparaten",
+                "Description": "Beheert de functie voor hervatten tussen apparaten."
+            }
+        },
+        "features": {
+            "WPFFeaturesdotnet": {
+                "Content": "Alle .Net Framework (2,3,4)",
+                "Description": ".NET en .NET Framework is een ontwikkelaarsplatform voor het bouwen van diverse toepassingen."
+            },
+            "WPFFeatureshyperv": {
+                "Content": "HyperV Virtualisatie",
+                "Description": "Hyper-V is een hardware virtualisatieproduct van Microsoft."
+            },
+            "WPFFeatureslegacymedia": {
+                "Content": "Oude Media (WMP, DirectPlay)",
+                "Description": "Oude mediacomponenten inclusief Windows Media Player en DirectPlay."
+            },
+            "WPFFeaturewsl": {
+                "Content": "Windows Subsystem voor Linux",
+                "Description": "Draai Linux-distributies native op Windows."
+            },
+            "WPFFeaturenfs": {
+                "Content": "NFS - Network File System",
+                "Description": "Network File System voor het delen van bestanden over netwerken."
+            },
+            "WPFFeatureRegBackup": {
+                "Content": "Dagelijkse Registry Backup taak inschakelen",
+                "Description": "Maakt een geplande taak om dagelijks het register te back-uppen."
+            },
+            "WPFFeatureEnableLegacyRecovery": {
+                "Content": "Oude F8 Boot Recovery inschakelen",
+                "Description": "Schakelt de oude F8 herstelopties bij opstarten in."
+            },
+            "WPFFeatureDisableLegacyRecovery": {
+                "Content": "Oude F8 Boot Recovery uitschakelen",
+                "Description": "Schakelt de oude F8 herstelopties bij opstarten uit."
+            },
+            "WPFFeaturesSandbox": {
+                "Content": "Windows Sandbox",
+                "Description": "Een lichte virtuele omgeving voor het veilig uitvoeren van toepassingen."
+            },
+            "WPFFeatureInstall": {
+                "Content": "Functies installeren",
+                "Description": "Installeer geselecteerde Windows-functies."
+            },
+            "WPFPanelAutologin": {
+                "Content": "Autologin instellen",
+                "Description": "Configureer automatisch inloggen voor de huidige gebruiker."
+            },
+            "WPFFixesUpdate": {
+                "Content": "Windows Update resetten",
+                "Description": "Reset Windows Update componenten om updateproblemen op te lossen."
+            },
+            "WPFFixesNetwork": {
+                "Content": "Netwerk resetten",
+                "Description": "Reset netwerkinstellingen om verbindingsproblemen op te lossen."
+            },
+            "WPFPanelDISM": {
+                "Content": "Systeem Corruptie Scan",
+                "Description": "Scant en repareert systeemcorruptie met DISM."
+            },
+            "WPFFixesWinget": {
+                "Content": "WinGet herinstalleren",
+                "Description": "Installeert WinGet pakketbeheerder opnieuw."
+            },
+            "WPFRunAdobeCCCleanerTool": {
+                "Content": "Adobe Creative Cloud verwijderen",
+                "Description": "Verwijdert Adobe Creative Cloud en gerelateerde componenten."
+            },
+            "WPFPanelControl": {
+                "Content": "Configuratiescherm",
+                "Description": "Opent het klassieke configuratiescherm."
+            },
+            "WPFPanelComputer": {
+                "Content": "Computerbeheer",
+                "Description": "Opent de Computerbeheer-console."
+            },
+            "WPFPanelNetwork": {
+                "Content": "Netwerkverbindingen",
+                "Description": "Opent het paneel voor netwerkverbindingen."
+            },
+            "WPFPanelPower": {
+                "Content": "Energiebeheer",
+                "Description": "Opent het paneel voor energie-opties."
+            },
+            "WPFPanelPrinter": {
+                "Content": "Printers en Apparaten",
+                "Description": "Opent het paneel voor printers en apparaten."
+            },
+            "WPFPanelRegion": {
+                "Content": "Regio-instellingen",
+                "Description": "Opent het paneel voor regio-instellingen."
+            },
+            "WPFPanelRestore": {
+                "Content": "Systeemherstel",
+                "Description": "Opent het paneel voor systeemherstel."
+            },
+            "WPFPanelSound": {
+                "Content": "Geluidsinstellingen",
+                "Description": "Opent het paneel voor geluidsinstellingen."
+            },
+            "WPFPanelSystem": {
+                "Content": "Systeemeigenschappen",
+                "Description": "Opent het venster voor systeemeigenschappen."
+            },
+            "WPFPanelTimedate": {
+                "Content": "Tijd en Datum",
+                "Description": "Opent de instellingen voor tijd en datum."
+            },
+            "WPFWinUtilInstallPSProfile": {
+                "Content": "Installeer CTT PowerShell Profiel",
+                "Description": "Installeert het Chris Titus Tech PowerShell-profiel."
+            },
+            "WPFWinUtilUninstallPSProfile": {
+                "Content": "Verwijder CTT PowerShell Profiel",
+                "Description": "Verwijdert het Chris Titus Tech PowerShell-profiel."
+            },
+            "WPFWinUtilSSHServer": {
+                "Content": "Activeer OpenSSH Server",
+                "Description": "Activeert de OpenSSH-server voor externe verbindingen."
+            }
+        }
+    }
+}

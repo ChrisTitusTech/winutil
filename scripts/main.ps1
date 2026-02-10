@@ -582,6 +582,26 @@ $sync["PolishLanguageMenuItem"].Add_Click({
         Invoke-WPFPopup -Action "Hide" -Popups @("Language")
         Invoke-WinUtilLocalization -Language "pl-PL"
     })
+$sync["DutchLanguageMenuItem"].Add_Click({
+        Write-Debug "Dutch language selected"
+        Invoke-WPFPopup -Action "Hide" -Popups @("Language")
+        Invoke-WinUtilLocalization -Language "nl-NL"
+    })
+$sync["RomanianLanguageMenuItem"].Add_Click({
+        Write-Debug "Romanian language selected"
+        Invoke-WPFPopup -Action "Hide" -Popups @("Language")
+        Invoke-WinUtilLocalization -Language "ro-RO"
+    })
+$sync["SwedishLanguageMenuItem"].Add_Click({
+        Write-Debug "Swedish language selected"
+        Invoke-WPFPopup -Action "Hide" -Popups @("Language")
+        Invoke-WinUtilLocalization -Language "sv-SE"
+    })
+$sync["CzechLanguageMenuItem"].Add_Click({
+        Write-Debug "Czech language selected"
+        Invoke-WPFPopup -Action "Hide" -Popups @("Language")
+        Invoke-WinUtilLocalization -Language "cs-CZ"
+    })
 
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript
