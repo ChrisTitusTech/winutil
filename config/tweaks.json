@@ -98,7 +98,7 @@
       Expand-Archive ViVeTool.zip
       Remove-Item ViVeTool.zip
       
-      .\ViVeTool\ViVeTool.exe /disable /id:47205210
+      ViVeTool\\ViVeTool.exe /disable /id:47205210
       
       Remove-Item ViVeTool -Recurse
       "
@@ -110,7 +110,7 @@
       Expand-Archive ViVeTool.zip
       Remove-Item ViVeTool.zip
       
-      .\ViVeTool\ViVeTool.exe /enable /id:47205210
+      ViVeTool\\ViVeTool.exe /enable /id:47205210
       
       Remove-Item ViVeTool -Recurse
       "
