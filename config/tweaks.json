@@ -1597,7 +1597,7 @@
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\CPSS\\Store\\InkingAndTypingPersonalization",
         "OriginalValue": "1",
         "Name": "Value",
-        "Value": "1",
+        "Value": "0",
         "Type": "DWord"
       },
       {
