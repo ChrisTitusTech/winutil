@@ -1,5 +1,5 @@
 ---
-title: "Brave Debloat"
+title: "Debloat Brave"
 description: ""
 ---
 

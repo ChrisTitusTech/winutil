@@ -1,6 +1,7 @@
 ---
-weight: 2
 title: "Advanced Tweaks (CAUTION)"
+weight: 2
+toc: false
 ---
 
 ### Advanced Tweaks (CAUTION)

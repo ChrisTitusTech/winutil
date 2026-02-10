@@ -1,6 +1,7 @@
 ---
-weight: 2
 title: "Tweaks"
+weight: 2
+toc: false
 ---
 
 ### Essential Tweaks
