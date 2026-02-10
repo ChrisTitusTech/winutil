@@ -136,7 +136,7 @@ Function Invoke-WinUtilCurrentSystem {
                 }
             } else {
                 if ($invokeScript -or $appxKeys) {
-                    Write-Debug "Skipping $Config in Show Installed Apps: no detectable registry, scheduled task, or service state."
+                    Write-Debug "Skipping $Config in Get Installed: no detectable registry, scheduled task, or service state."
                 }
             }
         }
