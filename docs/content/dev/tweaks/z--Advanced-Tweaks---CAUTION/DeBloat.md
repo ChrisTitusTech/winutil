@@ -3,7 +3,7 @@
 ```json
   "WPFTweaksDeBloat": {
     "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
-    "Description": "USE WITH CAUTION!!! This will remove ALL Microsoft store apps other than the essentials onces.",
+    "Description": "USE WITH CAUTION!!! This will remove ALL Microsoft store apps other than the essential once.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a028_",
