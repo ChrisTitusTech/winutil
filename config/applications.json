@@ -1609,7 +1609,7 @@
         "winget": "Daum.PotPlayer"
     },
     "processexplorer": {
-        "category": "Multimedia Tools",
+        "category": "Microsoft Tools",
         "choco": "na",
         "content": "Process Explorer",
         "description": "Process Explorer is a task manager and system monitor.",
