@@ -3,9 +3,9 @@ title: "Remove ALL MS Store Apps - NOT RECOMMENDED"
 description: ""
 ---
 ```json
-"WPFTweaksDeBloat": {
+  "WPFTweaksDeBloat": {
     "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
-    "Description": "USE WITH CAUTION!!! This will remove ALL Microsoft store apps other than the essentials ones.",
+    "Description": "USE WITH CAUTION!!! This will remove ALL Microsoft store apps.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a028_",
@@ -20,8 +20,10 @@ description: ""
       "Microsoft.BingFoodAndDrink",
       "Microsoft.BingHealthAndFitness",
       "Microsoft.BingTravel",
-      "Microsoft.MinecraftUWP",
-      "Microsoft.GamingServices",
+      "Clipchamp.Clipchamp",
+      "Microsoft.Todos",
+      "MicrosoftCorporationII.QuickAssist",
+      "Microsoft.MicrosoftStickyNotes",
       "Microsoft.GetHelp",
       "Microsoft.GetStarted",
       "Microsoft.Messaging",
