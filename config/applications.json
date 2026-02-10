@@ -1968,14 +1968,6 @@
         "link": "https://nilesoft.org/",
         "winget": "Nilesoft.Shell"
     },
-    "sendme": {
-        "category": "Multimedia Tools",
-        "choco": "na",
-        "content": "SendMe",
-        "description": "This is an example application using iroh with the iroh-blobs protocol to send files and directories over the internet.",
-        "link": "https://github.com/n0-computer/sendme/",
-        "winget": "n0-computer.sendme"
-    },
     "systeminformer": {
         "category": "Development",
         "choco": "na",
