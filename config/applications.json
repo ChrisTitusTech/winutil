@@ -555,7 +555,7 @@
     "ffmpeg": {
         "category": "Utilities",
         "choco": "na",
-        "content": "FFmpeg Batch AV Converter",
+        "content": "eibol.FFmpegBatchAVConverter",
         "description": "FFmpeg Batch AV Converter is a universal audio and video encoder, that allows to use the full potential of ffmpeg command line with a few mouse clicks in a convenient GUI with drag and drop, progress information.",
         "link": "https://ffmpeg-batch.sourceforge.io/",
         "winget": "eibol.FFmpegBatchAVConverter"
