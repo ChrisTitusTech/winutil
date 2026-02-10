@@ -30,12 +30,23 @@ function Invoke-WPFSelectedAppsUpdate {
     elseif ($type -eq "Remove") {
         $sync.SelectedApps.Remove($appKey)
     }
-    else{
+    else {
         Write-Error "Type: $type not implemented"
     }
 
     $count = $sync.SelectedApps.Count
-    $selectedAppsButton.Content = "Selected Apps: $count"
+    $localizedText = Get-WinUtilLocalizedString -Key "config.appnavigation.WPFselectedAppsButton.Content"
+    if ($localizedText) {
+        try {
+            $selectedAppsButton.Content = $localizedText -f $count
+        }
+        catch {
+            $selectedAppsButton.Content = $localizedText -replace "0", $count
+        }
+    }
+    else {
+        $selectedAppsButton.Content = "Selected Apps: $count"
+    }
     # On every change, remove all entries inside the Popup Menu. This is done, so we can keep the alphabetical order even if elements are selected in a random way
     $sync.selectedAppsstackPanel.Children.Clear()
     $sync.SelectedApps | Foreach-Object { Add-SelectedAppsMenuItem -name $($sync.configs.applicationsHashtable.$_.Content) -key $_ }

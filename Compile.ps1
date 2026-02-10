@@ -18,14 +18,14 @@ $sync.configs = @{}
 
 function Update-Progress {
     param (
-        [Parameter(Mandatory, position=0)]
+        [Parameter(Mandatory, position = 0)]
         [string]$StatusMessage,
 
-        [Parameter(Mandatory, position=1)]
-        [ValidateRange(0,100)]
+        [Parameter(Mandatory, position = 1)]
+        [ValidateRange(0, 100)]
         [int]$Percent,
 
-        [Parameter(position=2)]
+        [Parameter(position = 2)]
         [string]$Activity = "Compiling"
     )
 
@@ -63,15 +63,16 @@ Update-Progress "Pre-req: Allocating Memory" 0
 $script_content = [System.Collections.Generic.List[string]]::new()
 
 Update-Progress "Adding: Version" 10
-$script_content.Add($(Get-Content "scripts\start.ps1").replace('#{replaceme}',"$(Get-Date -Format yy.MM.dd)"))
+$script_content.Add($(Get-Content "scripts\start.ps1").replace('#{replaceme}', "$(Get-Date -Format yy.MM.dd)"))
 
 Update-Progress "Adding: Functions" 20
 Get-ChildItem "functions" -Recurse -File | ForEach-Object {
     $script_content.Add($(Get-Content $psitem.FullName))
-    }
+}
 Update-Progress "Adding: Config *.json" 40
-Get-ChildItem "config" | Where-Object {$psitem.extension -eq ".json"} | ForEach-Object {
-    $json = (Get-Content $psitem.FullName -Raw)
+Get-ChildItem "config" | Where-Object { $psitem.extension -eq ".json" } | ForEach-Object {
+    $json = (Get-Content $psitem.FullName -Raw -Encoding UTF8)
+    $json = [regex]::Replace($json, "[^\u0000-\u007F]", { param($m) "\u{0:x4}" -f [int][char]$m.Value })
     $jsonAsObject = $json | ConvertFrom-Json
 
     # Add 'WPFInstall' as a prefix to every entry-name in 'applications.json' file
@@ -87,9 +88,20 @@ Get-ChildItem "config" | Where-Object {$psitem.extension -eq ".json"} | ForEach-
     $json = @"
 $($jsonAsObject | ConvertTo-Json -Depth 3)
 "@
+    # Re-apply escaping after ConvertTo-Json since it might have unescaped them
+    $json = [regex]::Replace($json, "[^\u0000-\u007F]", { param($m) "\u{0:x4}" -f [int][char]$m.Value })
 
-    $sync.configs.$($psitem.BaseName) = $json | ConvertFrom-Json
     $script_content.Add($(Write-Output "`$sync.configs.$($psitem.BaseName) = @'`r`n$json`r`n'@ `| ConvertFrom-Json" ))
+}
+
+Update-Progress "Adding: Locale files" 50
+$script_content.Add($(Write-Output "`$sync.configs.locales = @{}"))
+$sync.configs.locales = @{}
+Get-ChildItem "config\locales" | Where-Object { $psitem.extension -eq ".json" } | ForEach-Object {
+    $json = (Get-Content $psitem.FullName -Raw -Encoding UTF8)
+    $json = [regex]::Replace($json, "[^\u0000-\u007F]", { param($m) "\u{0:x4}" -f [int][char]$m.Value })
+    $sync.configs.locales[$psitem.BaseName] = $json | ConvertFrom-Json
+    $script_content.Add($(Write-Output "`$sync.configs.locales['$($psitem.BaseName)'] = @'`r`n$json`r`n'@ `| ConvertFrom-Json"))
 }
 
 # Read the entire XAML file as a single string, preserving line breaks
@@ -111,20 +123,22 @@ if ($Debug) {
     $appXamlContent | Out-File -FilePath "xaml\inputApp.xaml" -Encoding ascii
     $tweaksXamlContent | Out-File -FilePath "xaml\inputTweaks.xaml" -Encoding ascii
     $featuresXamlContent | Out-File -FilePath "xaml\inputFeatures.xaml" -Encoding ascii
-} else {
+}
+else {
     Update-Progress "Removing temporary files" 99
     Remove-Item "xaml\inputApp.xaml" -ErrorAction SilentlyContinue
     Remove-Item "xaml\inputTweaks.xaml" -ErrorAction SilentlyContinue
     Remove-Item "xaml\inputFeatures.xaml" -ErrorAction SilentlyContinue
 }
 
-Set-Content -Path "$scriptname" -Value ($script_content -join "`r`n") -Encoding ascii
+Set-Content -Path "$scriptname" -Value ($script_content -join "`r`n") -Encoding UTF8
 Write-Progress -Activity "Compiling" -Completed
 
 Update-Progress -Activity "Validating" -StatusMessage "Checking winutil.ps1 Syntax" -Percent 0
 try {
     Get-Command -Syntax .\winutil.ps1 | Out-Null
-} catch {
+}
+catch {
     Write-Warning "Syntax Validation for 'winutil.ps1' has failed"
     Write-Host "$($Error[0])" -ForegroundColor Red
     exit 1

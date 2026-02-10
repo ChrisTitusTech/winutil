@@ -161,6 +161,7 @@ function Invoke-WPFUIElements {
                         $checkBox.Style = $ColorfulToggleSwitchStyle
 
                         $label = New-Object Windows.Controls.Label
+                        $label.Name = $entryInfo.Name + "Label"
                         $label.Content = $entryInfo.Content
                         $label.ToolTip = $entryInfo.Description
                         $label.HorizontalAlignment = "Left"
@@ -171,18 +172,19 @@ function Invoke-WPFUIElements {
                         $itemsControl.Items.Add($dockPanel) | Out-Null
 
                         $sync[$entryInfo.Name] = $checkBox
+                        $sync[$label.Name] = $label
 
                         $sync[$entryInfo.Name].IsChecked = (Get-WinUtilToggleStatus $entryInfo.Name)
 
                         $sync[$entryInfo.Name].Add_Checked({
-                            [System.Object]$Sender = $args[0]
-                            Invoke-WinUtilTweaks $sender.name
-                        })
+                                [System.Object]$Sender = $args[0]
+                                Invoke-WinUtilTweaks $sender.name
+                            })
 
                         $sync[$entryInfo.Name].Add_Unchecked({
-                            [System.Object]$Sender = $args[0]
-                            Invoke-WinUtiltweaks $sender.name -undo $true
-                        })
+                                [System.Object]$Sender = $args[0]
+                                Invoke-WinUtiltweaks $sender.name -undo $true
+                            })
                     }
 
                     "ToggleButton" {
@@ -195,7 +197,7 @@ function Invoke-WPFUIElements {
                         [System.Windows.Automation.AutomationProperties]::SetName($toggleButton, $entryInfo.Content[0])
 
                         $toggleButton.Tag = @{
-                            contentOn = if ($entryInfo.Content.Count -ge 1) { $entryInfo.Content[0] } else { "" }
+                            contentOn  = if ($entryInfo.Content.Count -ge 1) { $entryInfo.Content[0] } else { "" }
                             contentOff = if ($entryInfo.Content.Count -ge 2) { $entryInfo.Content[1] } else { $contentOn }
                         }
 
@@ -204,12 +206,12 @@ function Invoke-WPFUIElements {
                         $sync[$entryInfo.Name] = $toggleButton
 
                         $sync[$entryInfo.Name].Add_Checked({
-                            $this.Content = $this.Tag.contentOn
-                        })
+                                $this.Content = $this.Tag.contentOn
+                            })
 
                         $sync[$entryInfo.Name].Add_Unchecked({
-                            $this.Content = $this.Tag.contentOff
-                        })
+                                $this.Content = $this.Tag.contentOff
+                            })
                     }
 
                     "Combobox" {
@@ -218,6 +220,7 @@ function Invoke-WPFUIElements {
                         $horizontalStackPanel.Margin = "0,5,0,0"
 
                         $label = New-Object Windows.Controls.Label
+                        $label.Name = $entryInfo.Name + "Label"
                         $label.Content = $entryInfo.Content
                         $label.HorizontalAlignment = "Left"
                         $label.VerticalAlignment = "Center"
@@ -256,13 +259,14 @@ function Invoke-WPFUIElements {
 
                         # Add SelectionChanged event handler to update the text property
                         $comboBox.Add_SelectionChanged({
-                            $selectedItem = $this.SelectedItem
-                            if ($selectedItem) {
-                                $this.Text = $selectedItem.Content
-                            }
-                        })
+                                $selectedItem = $this.SelectedItem
+                                if ($selectedItem) {
+                                    $this.Text = $selectedItem.Content
+                                }
+                            })
 
                         $sync[$entryInfo.Name] = $comboBox
+                        $sync[$label.Name] = $label
                     }
 
                     "Button" {

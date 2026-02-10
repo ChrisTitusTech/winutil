@@ -1116,6 +1116,36 @@
                     </Border>
                 </Popup>
 
+                    <Button Name="LanguageButton"
+                        Style="{StaticResource HoverButtonStyle}"
+                        BorderBrush="Transparent"
+                    Background="{DynamicResource MainBackgroundColor}"
+                    Foreground="{DynamicResource MainForegroundColor}"
+                    FontSize="{DynamicResource SettingsIconFontSize}"
+                    Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="0,0,2,0"
+                    FontFamily="Segoe MDL2 Assets"
+                    Content="&#xE774;"
+                    ToolTip="Change Language / Changer la langue"
+                />
+                    <Popup Name="LanguagePopup"
+                    IsOpen="False"
+                    PlacementTarget="{Binding ElementName=LanguageButton}" Placement="Bottom"
+                    HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <Border Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
+                        <StackPanel Background="{DynamicResource MainBackgroundColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="English" Name="EnglishLanguageMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Français" Name="FrenchLanguageMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Español" Name="SpanishLanguageMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Deutsch" Name="GermanLanguageMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Italiano" Name="ItalianLanguageMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Português" Name="PortugueseLanguageMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Polski" Name="PolishLanguageMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
+                        </StackPanel>
+                    </Border>
+                </Popup>
+
                     <Button Name="SettingsButton"
                         Style="{StaticResource HoverButtonStyle}"
                         BorderBrush="Transparent"
@@ -1213,7 +1243,7 @@
 
                             <Border Grid.ColumnSpan="2" Grid.Row="2" Grid.Column="0" Style="{StaticResource BorderStyle}">
                                 <StackPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left">
-                                    <TextBlock Padding="10">
+                                    <TextBlock Name="TweaksNoteBlock" Padding="10">
                                         Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
                                         <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else!
                                     </TextBlock>
@@ -1262,13 +1292,13 @@
                                     <TextBlock Margin="10"
                                              TextWrapping="Wrap"
                                              Foreground="{DynamicResource MainForegroundColor}">
-                                        <Run FontWeight="Bold">Default Windows Update Configuration</Run>
+                                        <Run Name="UpdateDefaultTitle" FontWeight="Bold">Default Windows Update Configuration</Run>
                                         <LineBreak/>
-                                         - No modifications to Windows defaults
+                                         <Run Name="UpdateDefaultLine1"> - No modifications to Windows defaults</Run>
                                         <LineBreak/>
-                                         - Removes any custom update settings
+                                         <Run Name="UpdateDefaultLine2"> - Removes any custom update settings</Run>
                                         <LineBreak/><LineBreak/>
-                                        <Run FontStyle="Italic" FontSize="11">Note: This resets your Windows Update settings to default out of the box settings. It removes ANY policy or customization that has been done to Windows Update.</Run>
+                                        <Run Name="UpdateDefaultNote" FontStyle="Italic" FontSize="11">Note: This resets your Windows Update settings to default out of the box settings. It removes ANY policy or customization that has been done to Windows Update.</Run>
                                     </TextBlock>
                                 </StackPanel>
                             </Border>
@@ -1284,17 +1314,17 @@
                                     <TextBlock Margin="10"
                                              TextWrapping="Wrap"
                                              Foreground="{DynamicResource MainForegroundColor}">
-                                        <Run FontWeight="Bold">Balanced Security Configuration</Run>
+                                        <Run Name="UpdateSecurityTitle" FontWeight="Bold">Balanced Security Configuration</Run>
                                         <LineBreak/>
-                                         - Feature updates delayed by 365 days
+                                         <Run Name="UpdateSecurityLine1"> - Feature updates delayed by 365 days</Run>
                                         <LineBreak/>
-                                         - Security updates installed after 4 days
+                                         <Run Name="UpdateSecurityLine2"> - Security updates installed after 4 days</Run>
                                         <LineBreak/><LineBreak/>
-                                        <Run FontWeight="SemiBold">Feature Updates:</Run> New features and potential bugs
+                                        <Run Name="UpdateSecurityFeatureTitle" FontWeight="SemiBold">Feature Updates:</Run> <Run Name="UpdateSecurityFeatureText">New features and potential bugs</Run>
                                         <LineBreak/>
-                                        <Run FontWeight="SemiBold">Security Updates:</Run> Critical security patches
-                                    <LineBreak/><LineBreak/>
-                                    <Run FontStyle="Italic" FontSize="11">Note: This only applies to Pro systems that can use group policy.</Run>
+                                        <Run Name="UpdateSecuritySecurityTitle" FontWeight="SemiBold">Security Updates:</Run> <Run Name="UpdateSecuritySecurityText">Critical security patches</Run>
+                                        <LineBreak/><LineBreak/>
+                                        <Run Name="UpdateSecurityNote" FontStyle="Italic" FontSize="11">Note: This only applies to Pro systems that can use group policy.</Run>
                                     </TextBlock>
                                 </StackPanel>
                             </Border>
@@ -1311,15 +1341,15 @@
                                     <TextBlock Margin="10"
                                              TextWrapping="Wrap"
                                              Foreground="{DynamicResource MainForegroundColor}">
-                                        <Run FontWeight="Bold" Foreground="Red">!! Not Recommended !!</Run>
+                                        <Run Name="UpdateDisableTitle" FontWeight="Bold" Foreground="Red">!! Not Recommended !!</Run>
                                         <LineBreak/>
-                                         - Disables ALL Windows Updates
+                                         <Run Name="UpdateDisableLine1"> - Disables ALL Windows Updates</Run>
                                         <LineBreak/>
-                                         - Increases security risks
+                                         <Run Name="UpdateDisableLine2"> - Increases security risks</Run>
                                         <LineBreak/>
-                                         - Only use for isolated systems
+                                         <Run Name="UpdateDisableLine3"> - Only use for isolated systems</Run>
                                         <LineBreak/><LineBreak/>
-                                        <Run FontStyle="Italic" FontSize="11">Warning: Your system will be vulnerable without security updates.</Run>
+                                        <Run Name="UpdateDisableNote" FontStyle="Italic" FontSize="11">Warning: Your system will be vulnerable without security updates.</Run>
                                     </TextBlock>
                                 </StackPanel>
                             </Border>
