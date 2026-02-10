@@ -9,7 +9,6 @@ description: ""
     "Description": "Uses vivetool to revert the the original start menu from 24h2",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a027_",
     "InvokeScript": [
       "
       Invoke-WebRequest https://github.com/thebookisclosed/ViVe/releases/download/v0.3.4/ViVeTool-v0.3.4-IntelAmd.zip -OutFile ViVeTool.zip
