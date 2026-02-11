@@ -1,0 +1,41 @@
+{
+  "_metadata": {
+    "locale": "en",
+    "name": "English",
+    "author": "ChrisTitusTech",
+    "version": "1.0.0",
+    "description": "English is the default language. This file serves as a reference template for translators."
+  },
+  "ui": {
+    "tab_install": "Install",
+    "tab_tweaks": "Tweaks",
+    "tab_config": "Config",
+    "tab_updates": "Updates",
+    "search_tooltip": "Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter",
+    "theme_tooltip": "Change the Winutil UI Theme",
+    "theme_auto": "Auto",
+    "theme_auto_tooltip": "Follow the Windows Theme",
+    "theme_dark": "Dark",
+    "theme_dark_tooltip": "Use Dark Theme",
+    "theme_light": "Light",
+    "theme_light_tooltip": "Use Light Theme",
+    "font_scaling_tooltip": "Adjust Font Scaling for Accessibility",
+    "settings_import": "Import",
+    "settings_import_tooltip": "Import Configuration from exported file.",
+    "settings_export": "Export",
+    "settings_export_tooltip": "Export Selected Elements and copy execution command to clipboard.",
+    "settings_about": "About",
+    "settings_sponsors": "Sponsors",
+    "preset_standard": " Standard ",
+    "preset_minimal": " Minimal ",
+    "preset_clear": " Clear ",
+    "preset_get_installed": " Get Installed ",
+    "tweaks_run": "Run Tweaks",
+    "tweaks_undo": "Undo Selected Tweaks",
+    "updates_default": "Default Settings",
+    "updates_security": "Security Settings",
+    "updates_disable": "Disable All Updates",
+    "language_tooltip": "Change Language",
+    "recommended_selections": "Recommended Selections:"
+  }
+}
