@@ -2,7 +2,7 @@
 title: "Remove Home from explorer"
 description: ""
 ---
-```json
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1518}
 "WPFTweaksRemoveHome": {
     "Content": "Remove Home from Explorer",
     "Description": "Removes the Home from Explorer and sets This PC as default",

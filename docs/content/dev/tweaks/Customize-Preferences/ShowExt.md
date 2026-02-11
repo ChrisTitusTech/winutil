@@ -2,7 +2,7 @@
 title: "Show File Extensions"
 description: ""
 ---
-```json
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2503}
 "WPFToggleShowExt": {
     "Content": "Show File Extensions",
     "Description": "If enabled then File extensions (e.g., .txt, .jpg) are visible.",

@@ -2,7 +2,7 @@
 title: "Windows Subsystem for Linux"
 description: ""
 ---
-```json
+```json {filename="config/feature.json",linenos=inline,linenostart=44}
 "WPFFeaturewsl": {
     "Content": "Windows Subsystem for Linux",
     "Description": "Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting.",

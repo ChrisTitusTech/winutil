@@ -3,7 +3,7 @@ title: "Remove OneDrive"
 description: ""
 ---
 
-```json
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1480}
   "WPFTweaksRemoveOneDrive": {
     "Content": "Remove OneDrive",
     "Description": "Denys permission to remove onedrive user files than uses its own uninstaller to remove it than brings back permissions",

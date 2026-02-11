@@ -2,7 +2,7 @@
 title: "Disable Location Tracking"
 description: ""
 ---
-```json
+```json {filename="config/tweaks.json",linenos=inline,linenostart=136}
 "WPFTweaksLocation": {
     "Content": "Disable Location Tracking",
     "Description": "Disables Location Tracking...DUH!",

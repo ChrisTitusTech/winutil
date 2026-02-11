@@ -2,7 +2,7 @@
 title: "Center Taskbar Items"
 description: ""
 ---
-```json
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2570}
 "WPFToggleTaskbarAlignment": {
     "Content": "Center Taskbar Items",
     "Description": "[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",

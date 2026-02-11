@@ -2,7 +2,7 @@
 title: "Set Services to Manual"
 description: ""
 ---
-```json
+```json {filename="config/tweaks.json",linenos=inline,linenostart=174}
  "WPFTweaksServices": {
     "Content": "Set Services to Manual",
     "Description": "Turns a bunch of system services to manual that don't need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand.",
@@ -967,7 +967,7 @@ description: ""
     ],
 ```
 #Function
-```powershell
+```powershell {filename="functions/private/Set-WinUtilService.ps1",linenos=inline,linenostart=1}
 Function Set-WinUtilService {
     <#
 

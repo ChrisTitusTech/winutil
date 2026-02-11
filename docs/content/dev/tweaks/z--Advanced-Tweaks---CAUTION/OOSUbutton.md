@@ -2,7 +2,7 @@
 title: "Run OO Shutup 10"
 description: ""
 ---
-```powershell
+```powershell {filename="functions/public/Invoke-WPFOOSU.ps1",linenos=inline,linenostart=1}
 function Invoke-WPFOOSU {
     <#
     .SYNOPSIS

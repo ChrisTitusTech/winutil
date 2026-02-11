@@ -3,7 +3,7 @@ title: "Remove Widgets"
 description: ""
 ---
 
-```json
+```json {filename="config/tweaks.json",linenos=inline,linenostart=63}
   "WPFTweaksWidget": {
     "Content": "Remove Widgets",
     "Description": "Removes the annoying widgets in the bottom left of the taskbar",

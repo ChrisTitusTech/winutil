@@ -3,7 +3,7 @@ title: "Remove Microsoft Edge"
 description: ""
 ---
 # Json File
-```json
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1446}
   "WPFTweaksRemoveEdge": {
     "Content": "Remove Microsoft Edge",
     "Description": "Unblocks Microsoft Edge uninstaller restrictions than uses that uninstaller to remove Microsoft Edge",
@@ -20,7 +20,7 @@ description: ""
     ],
 ```
 # Function
-```powershell
+```powershell {filename="functions/public/Invoke-WinUtilRemoveEdge.ps1",linenos=inline,linenostart=1}
 function Invoke-WinUtilRemoveEdge {
   Write-Host "Unlocking The Offical Edge Uninstaller And Removing Microsoft Edge..."
 

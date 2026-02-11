@@ -194,7 +194,7 @@ Update UI
 
 ### applications.json Structure
 
-```json
+```json {filename="config/applications.json"}
 {
   "WPFInstall<AppName>": {
     "category": "Browsers",
@@ -217,7 +217,7 @@ Update UI
 
 ### tweaks.json Structure
 
-```json
+```json {filename="config/tweaks.json"}
 {
   "WPFTweaksTelemetry": {
     "Content": "Disable Telemetry",
@@ -364,7 +364,7 @@ $sync.form.Dispatcher.Invoke([action]{
 ### Adding a New Application
 
 1. Edit `config/applications.json`:
-```json
+```json {filename="config/applications.json"}
 {
   "WPFInstallNewApp": {
     "category": "Utilities",
@@ -382,7 +382,7 @@ $sync.form.Dispatcher.Invoke([action]{
 ### Adding a New Tweak
 
 1. Edit `config/tweaks.json`:
-```json
+```json {filename="config/tweaks.json"}
 {
   "WPFTweaksNewTweak": {
     "Content": "New Tweak",
