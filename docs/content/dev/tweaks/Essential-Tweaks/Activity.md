@@ -2,7 +2,6 @@
 title: Activity History
 description: ""
 ---
-## code we use:
 
 ```json
   "WPFTweaksActivity": {

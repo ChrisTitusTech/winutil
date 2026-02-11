@@ -2,7 +2,7 @@
 title: "Remove OneDrive"
 description: ""
 ---
-# Remove OneDrive
+
 ```json
   "WPFTweaksRemoveOneDrive": {
     "Content": "Remove OneDrive",
