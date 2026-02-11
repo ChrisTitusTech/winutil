@@ -555,7 +555,7 @@
     "ffmpeg": {
         "category": "Utilities",
         "choco": "na",
-        "content": "eibol.FFmpegBatchAVConverter",
+        "content": "FFmpeg Batch AV Converter",
         "description": "FFmpeg Batch AV Converter is a universal audio and video encoder, that allows to use the full potential of ffmpeg command line with a few mouse clicks in a convenient GUI with drag and drop, progress information.",
         "link": "https://ffmpeg-batch.sourceforge.io/",
         "winget": "eibol.FFmpegBatchAVConverter"
@@ -1592,6 +1592,30 @@
         "link": "https://owncloud.com/desktop-app/",
         "winget": "ownCloud.ownCloudDesktop"
     },
+    "policyplus": {
+        "category": "Multimedia Tools",
+        "choco": "na",
+        "content": "Policy Plus",
+        "description": "Local Group Policy Editor plus more, for all Windows editions.",
+        "link": "https://github.com/Fleex255/PolicyPlus",
+        "winget": "Fleex255.PolicyPlus"
+    },
+    "potplayer": {
+        "category": "Multimedia Tools",
+        "choco": "na",
+        "content": "PotPlayer",
+        "description": "PotPlayer is a free Windows media player with wide format support, high performance, built-in codecs, and extensive customization options.",
+        "link": "https://potplayer.tv/",
+        "winget": "Daum.PotPlayer"
+    },
+    "processexplorer": {
+        "category": "Microsoft Tools",
+        "choco": "na",
+        "content": "Process Explorer",
+        "description": "Process Explorer is a task manager and system monitor.",
+        "link": "https://learn.microsoft.com/sysinternals/downloads/process-explorer",
+        "winget": "Microsoft.Sysinternals.ProcessExplorer"
+    },
     "Paintdotnet": {
         "category": "Multimedia Tools",
         "choco": "paint.net",
@@ -1943,6 +1967,14 @@
         "description": "Shell is an expanded context menu tool that adds extra functionality and customization options to the Windows context menu.",
         "link": "https://nilesoft.org/",
         "winget": "Nilesoft.Shell"
+    },
+    "systeminformer": {
+        "category": "Development",
+        "choco": "na",
+        "content": "System Informer",
+        "description": "A free, powerful, multi-purpose tool that helps you monitor system resources, debug software and detect malware.",
+        "link": "https://systeminformer.com/",
+        "winget": "WinsiderSS.SystemInformer"
     },
     "sidequest": {
         "category": "Games",
@@ -2950,6 +2982,6 @@
         "content": "Zed",
         "description": "Zed is a modern, high-performance code editor designed from the ground up for speed and collaboration.",
         "link": "https://zed.dev/",
-        "winget": "Zed.Zed"
+        "winget": "ZedIndustries.Zed"
     }
 }

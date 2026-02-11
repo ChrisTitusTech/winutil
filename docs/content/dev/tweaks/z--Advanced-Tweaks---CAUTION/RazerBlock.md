@@ -1,0 +1,54 @@
+---
+title: "Block Razer Software Installs"
+description: ""
+---
+
+```json
+  "WPFTweaksRazerBlock": {
+    "Content": "Block Razer Software Installs",
+    "Description": "Blocks ALL Razer Software installations. The hardware works fine without any software. WARNING: this will also block all Windows third-party driver installations.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a021_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
+        "Name": "SearchOrderConfig",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Device Installer",
+        "Name": "DisableCoInstallers",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
+    "InvokeScript": [
+      "
+      $RazerPath = \"C:\\Windows\\Installer\\Razer\"
+
+      if (Test-Path $RazerPath) {
+        Remove-Item $RazerPath\\* -Recurse -Force
+      }
+      else {
+        New-Item -Path $RazerPath -ItemType Directory
+      }
+
+      icacls $RazerPath /deny \"Everyone:(W)\"
+      "
+    ],
+    "UndoScript": [
+      "
+      icacls \"C:\\Windows\\Installer\\Razer\" /remove:d Everyone
+      "
+    ],
+```
+
+## Registry Changes
+
+Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.
+
+You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).

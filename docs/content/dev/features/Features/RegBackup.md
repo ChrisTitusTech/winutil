@@ -1,5 +1,7 @@
-# Enable Daily Registry Backup Task 12.30am
-
+---
+title: "Enable Daily Registry Backup Task 12.30am"
+description: ""
+---
 ```json
 "WPFFeatureRegBackup": {
     "Content": "Enable Daily Registry Backup Task 12.30am",

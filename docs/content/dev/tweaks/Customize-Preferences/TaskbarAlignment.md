@@ -1,5 +1,7 @@
-# Center Taskbar Items
-
+---
+title: "Center Taskbar Items"
+description: ""
+---
 ```json
 "WPFToggleTaskbarAlignment": {
     "Content": "Center Taskbar Items",

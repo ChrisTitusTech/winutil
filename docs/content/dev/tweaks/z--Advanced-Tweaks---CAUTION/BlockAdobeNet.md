@@ -1,5 +1,7 @@
-# Adobe Network Block
-
+---
+title: "Adobe Network Block"
+description: ""
+---
 ```json
 "WPFTweaksBlockAdobeNet": {
     "Content": "Adobe Network Block",

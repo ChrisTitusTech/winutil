@@ -1,5 +1,7 @@
-# Remove Adobe Creative Cloud
-
+---
+title: "Remove Adobe Creative Cloud"
+description: ""
+---
 ```powershell
 function Invoke-WPFRunAdobeCCCleanerTool {
     <#

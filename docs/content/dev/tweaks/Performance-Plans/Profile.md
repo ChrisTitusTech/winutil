@@ -1,5 +1,7 @@
-# Remove Ultimate Performance Profile
-
+---
+title: "Remove Ultimate Performance Profile"
+description: ""
+---
 ```powershell
 Function Invoke-WPFUltimatePerformance {
     <#

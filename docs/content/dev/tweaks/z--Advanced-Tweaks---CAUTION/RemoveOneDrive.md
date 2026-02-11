@@ -1,4 +1,8 @@
-# Remove OneDrive
+---
+title: "Remove OneDrive"
+description: ""
+---
+
 ```json
   "WPFTweaksRemoveOneDrive": {
     "Content": "Remove OneDrive",
@@ -22,12 +26,18 @@
 
       # Grant back permission to accses OneDrive folder
       icacls $Env:OneDrive /grant \"Administrators:(D,DC)\"
+
+      # Disable OneSyncSvc
+      Set-Service -Name OneSyncSvc -StartupType Disabled
       "
     ],
     "UndoScript": [
       "
       Write-Host \"Installing OneDrive\"
       winget install Microsoft.Onedrive --source winget
+
+      # Enabled OneSyncSvc
+      Set-Service -Name OneSyncSvc -StartupType Enabled
       "
     ],
 ```
