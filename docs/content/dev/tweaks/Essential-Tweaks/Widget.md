@@ -1,4 +1,7 @@
-# Remove Widgets
+---
+title: "Remove Widgets"
+description: ""
+---
 
 ```json
   "WPFTweaksWidget": {
@@ -10,7 +13,7 @@
     "InvokeScript": [
       "
       # Sometimes if you dont stop Widgets Process for removal to work
-      Stop-Procces -Name Widgets
+      Stop-Process -Name Widgets
       Get-AppxPackage Microsoft.WidgetsPlatformRuntime -AllUsers | Remove-AppxPackage -AllUsers
 
       Invoke-WinUtilExplorerUpdate -action \"restart\"

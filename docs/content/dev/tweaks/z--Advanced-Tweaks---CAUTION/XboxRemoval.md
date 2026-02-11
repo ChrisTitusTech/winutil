@@ -1,4 +1,7 @@
-# Remove Xbox & Gaming Components
+---
+title: "Remove Xbox & Gaming Components"
+description: ""
+---
 
 ```json
   "WPFTweaksXboxRemoval": {
