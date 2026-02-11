@@ -4,7 +4,6 @@
     "Description": "This erases recent docs, clipboard, and run history.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a005_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
@@ -35,7 +34,6 @@
     "Description": "Hibernation is really meant for laptops as it saves what's in memory before turning the pc off. It really should never be used",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a005_",
     "registry": [
       {
         "Path": "HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power",
@@ -65,7 +63,6 @@
     "Description": "Removes the annoying widgets in the bottom left of the taskbar",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a005_",
     "InvokeScript": [
       "
       # Sometimes if you dont stop Widgets Process for removal to work
@@ -85,60 +82,11 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/widgets"
   },
-  "WPFTweaksLaptopHibernation": {
-    "Content": "Set Hibernation as default (good for laptops)",
-    "Description": "Most modern laptops have connected standby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a030_",
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\238C9FA8-0AAD-41ED-83F4-97BE242C8F20\\7bc4a2f9-d8fc-4469-b07b-33eb785aaca0",
-        "OriginalValue": "1",
-        "Name": "Attributes",
-        "Value": "2",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\abfc2519-3608-4c2a-94ea-171b0ed546ab\\94ac6d29-73ce-41a6-809f-6363ba21b47e",
-        "OriginalValue": "0",
-        "Name": "Attributes ",
-        "Value": "2",
-        "Type": "DWord"
-      }
-    ],
-    "InvokeScript": [
-      "
-      Write-Host \"Turn on Hibernation\"
-      powercfg.exe /hibernate on
-
-      # Set hibernation as the default action
-      powercfg.exe change standby-timeout-ac 60
-      powercfg.exe change standby-timeout-dc 60
-      powercfg.exe change monitor-timeout-ac 10
-      powercfg.exe change monitor-timeout-dc 1
-      "
-    ],
-    "UndoScript": [
-      "
-      Write-Host \"Turn off Hibernation\"
-      powercfg.exe /hibernate off
-
-      # Set standby to default values
-      powercfg.exe change standby-timeout-ac 15
-      powercfg.exe change standby-timeout-dc 15
-      powercfg.exe change monitor-timeout-ac 15
-      powercfg.exe change monitor-timeout-dc 15
-      "
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/laptophibernation"
-  },
   "WPFTweaksLocation": {
     "Content": "Disable Location Tracking",
     "Description": "Disables Location Tracking...DUH!",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a005_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location",
@@ -176,7 +124,6 @@
     "Description": "Turns a bunch of system services to manual that don't need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a014_",
     "service": [
       {
         "Name": "ALG",
@@ -1141,7 +1088,6 @@
     "Description": "Disables various annoyances like Brave Rewards,Leo AI,Crypto Wallet and VPN",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a022_",
     "registry": [
       {
         "Path":"HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
@@ -1186,7 +1132,6 @@
     "Description": "Disables various telemetry options, popups, and other annoyances in Edge.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a026_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate",
@@ -1308,7 +1253,6 @@
     "Description": "Windows will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link)",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a003_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
@@ -1325,7 +1269,6 @@
     "Description": "Disables Microsoft Telemetry...Duh",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a003_",
     "registry": [
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo",
@@ -1448,7 +1391,6 @@
     "Description": "Unblocks Microsoft Edge uninstaller restrictions than uses that uninstaller to remove Microsoft Edge",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a028_",
     "InvokeScript": [
       "Invoke-WinUtilRemoveEdge"
     ],
@@ -1465,7 +1407,6 @@
     "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux Systems.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a030_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
@@ -1482,7 +1423,6 @@
     "Description": "Denys permission to remove onedrive user files than uses its own uninstaller to remove it than brings back permissions",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a029_",
     "InvokeScript": [
       "
       # Deny permission to remove OneDrive folder
@@ -1520,7 +1460,6 @@
     "Description": "Removes the Home from Explorer and sets This PC as default",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a029_",
     "InvokeScript": [
       "
       Remove-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\"
@@ -1540,7 +1479,6 @@
     "Description": "Removes the Gallery from Explorer and sets This PC as default",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a029_",
     "InvokeScript": [
       "
       Remove-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\"
@@ -1558,7 +1496,6 @@
     "Description": "Sets the system preferences to performance. You can do this manually with sysdm.cpl as well.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a030_",
     "registry": [
       {
         "Path": "HKCU:\\Control Panel\\Desktop",
@@ -1658,7 +1595,6 @@
     "Description": "Removes Xbox services, the Xbox app, Game Bar, and related authentication components.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a028_",
     "appx": [
       "Microsoft.XboxIdentityProvider",
       "Microsoft.XboxSpeechToTextOverlay",
@@ -1673,7 +1609,6 @@
     "Description": "USE WITH CAUTION!!! This will remove ALL Microsoft store apps.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a028_",
     "appx": [
       "Microsoft.Microsoft3DViewer",
       "Microsoft.AppConnector",
@@ -1764,7 +1699,6 @@
     "category": "Essential Tweaks",
     "panel": "1",
     "Checked": "False",
-    "Order": "a001_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore",
@@ -1791,7 +1725,6 @@
     "Description": "Enables option to end task when right clicking a program in the taskbar",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a006_",
     "registry": [
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings",
@@ -1808,7 +1741,6 @@
     "Description": "This will create an Environment Variable called 'POWERSHELL_TELEMETRY_OPTOUT' with a value of '1' which will tell Powershell 7 to not send Telemetry Data.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a005_",
     "InvokeScript": [
       "[Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')"
     ],
@@ -1822,7 +1754,6 @@
     "Description": "Storage Sense deletes temp files automatically.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a025_",
     "registry": [
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy",
@@ -1839,7 +1770,6 @@
     "Description": "Disables MS Copilot AI built into Windows since 23H2.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a025_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot",
@@ -1925,7 +1855,6 @@
     "Description": "If enabled then allows your computer vendor to execute a program each time it boots. It enables computer vendors to force install anti-theft software, software drivers, or a software program conveniently. This could also be a security risk.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a005_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager",
@@ -1942,7 +1871,6 @@
     "Description": "Blocks ALL Razer Software installations. The hardware works fine without any software. WARNING: this will also block all Windows third-party driver installations.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a021_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
@@ -1985,7 +1913,6 @@
     "Description": "Disables all Notifications INCLUDING Calendar",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a026_",
     "registry": [
       {
         "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer",
@@ -2009,7 +1936,6 @@
     "Description": "Reduce user interruptions by selectively blocking connections to Adobe's activation and telemetry servers. Credit: Ruddernation-Designs",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a021_",
     "InvokeScript": [
       "
       $hostsUrl = \"https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts\"
@@ -2040,7 +1966,6 @@
     "Description": "Great Windows 11 tweak to bring back good context menus when right clicking things in explorer.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a030_",
     "InvokeScript": [
       "
       New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\"
@@ -2063,7 +1988,6 @@
     "Description": "Runs Disk Cleanup on Drive C: and removes old Windows Updates.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a009_",
     "InvokeScript": [
       "
       cleanmgr.exe /d C: /VERYLOWDISK
@@ -2077,7 +2001,6 @@
     "Description": "Erases TEMP Folders",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a002_",
     "InvokeScript": [
       "
       Remove-Item -Path \"$Env:Temp\\*\" -Recurse -Force
@@ -2091,7 +2014,6 @@
     "Description": "To set the IPv4 preference can have latency and security benefits on private networks where IPv6 is not configured.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a027_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
@@ -2108,7 +2030,6 @@
     "Description": "Teredo network tunneling is a ipv6 feature that can cause additional latency, but may cause problems with some games",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a024_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
@@ -2131,7 +2052,6 @@
     "Description": "Disables IPv6.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a024_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
@@ -2154,7 +2074,6 @@
     "Description": "Disables all Microsoft Store apps from running in the background, which has to be done individually since Win11",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a024_",
     "registry": [
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications",
@@ -2171,7 +2090,6 @@
     "Description": "Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a024_",
     "registry": [
       {
         "Path": "HKCU:\\System\\GameConfigStore",
@@ -2188,7 +2106,6 @@
     "Description": "Enable/Disable Dark Mode.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a100_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2231,7 +2148,6 @@
     "Description": "If enable then includes web search results from Bing in your Start Menu search.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a101_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2250,7 +2166,6 @@
     "Description": "Toggle the Num Lock key state when your computer starts.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a102_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2277,7 +2192,6 @@
     "Description": "Show detailed messages during the login process for troubleshooting and diagnostics.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a103_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2296,7 +2210,6 @@
     "Description": "If disabled then you will not see recommendations in the Start Menu.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a104_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2341,7 +2254,6 @@
     "Description": "Removes the Home page in the Windows Settings app.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a105_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2359,7 +2271,6 @@
     "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a109_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2394,7 +2305,6 @@
     "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a110_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2413,7 +2323,6 @@
     "Description": "If disabled it removes the toggle for new Outlook, disables the new Outlook migration and makes sure the Outlook Application actually uses the old Outlook.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a112_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2457,7 +2366,6 @@
     "Description": "Disable the Multiplane Overlay which can sometimes cause issues with Graphics Cards.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a111_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2476,7 +2384,6 @@
     "Description": "If Enabled then Hidden Files will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a200_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2505,7 +2412,6 @@
     "Description": "If enabled then File extensions (e.g., .txt, .jpg) are visible.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a201_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2534,7 +2440,6 @@
     "Description": "If Enabled Search Button will be on the taskbar.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a202_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2553,7 +2458,6 @@
     "Description": "If Enabled then Task View Button in Taskbar will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a203_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2572,7 +2476,6 @@
     "Description": "[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a204_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2591,7 +2494,6 @@
     "Description": "If Enabled then you will see a detailed Blue Screen of Death (BSOD) with more information.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a205_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2618,7 +2520,6 @@
     "Description": "Toggles between Modern Standby and S3 sleep.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a206_",
     "Type": "Toggle",
     "registry": [
       {
@@ -2635,7 +2536,6 @@
     "Content": "Run OO Shutup 10",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a039_",
     "Type": "Button",
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/oosubutton"
   },
@@ -2643,7 +2543,6 @@
     "Content": "DNS",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a040_",
     "Type": "Combobox",
     "ComboItems": "Default DHCP Google Cloudflare Cloudflare_Malware Cloudflare_Malware_Adult Open_DNS Quad9 AdGuard_Ads_Trackers AdGuard_Ads_Trackers_Malware_Adult",
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/changedns"
@@ -2652,7 +2551,6 @@
     "Content": "Add and Activate Ultimate Performance Profile",
     "category": "Performance Plans",
     "panel": "2",
-    "Order": "a080_",
     "Type": "Button",
     "ButtonWidth": "300",
     "link": "https://winutil.christitus.com/dev/tweaks/performance-plans/addultperf"
@@ -2661,7 +2559,6 @@
     "Content": "Remove Ultimate Performance Profile",
     "category": "Performance Plans",
     "panel": "2",
-    "Order": "a081_",
     "Type": "Button",
     "ButtonWidth": "300",
     "link": "https://winutil.christitus.com/dev/tweaks/performance-plans/removeultperf"
@@ -2671,7 +2568,6 @@
     "Description": "Windows Explorer automatically tries to guess the type of the folder based on its contents, slowing down the browsing experience.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a005_",
     "InvokeScript": [
       "
       # Previously detected folders
@@ -2726,7 +2622,6 @@
     "Description": "This tweak controls the Resume function in Windows 11 24H2 and later, which allows you to resume an activity from a mobile device and vice-versa.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a207_",
     "Type": "Toggle",
     "registry": [
       {
