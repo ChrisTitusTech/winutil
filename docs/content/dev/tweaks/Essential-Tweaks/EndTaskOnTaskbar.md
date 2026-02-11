@@ -8,7 +8,6 @@ description: ""
     "Description": "Enables option to end task when right clicking a program in the taskbar",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a006_",
     "registry": [
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings",

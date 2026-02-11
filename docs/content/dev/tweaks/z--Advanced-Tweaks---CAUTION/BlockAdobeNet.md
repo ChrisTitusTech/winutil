@@ -8,7 +8,6 @@ description: ""
     "Description": "Reduce user interruptions by selectively blocking connections to Adobe's activation and telemetry servers. Credit: Ruddernation-Designs",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a021_",
     "InvokeScript": [
       "
       $hostsUrl = \"https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts\"

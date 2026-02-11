@@ -8,7 +8,6 @@ description: ""
     "Description": "If enabled you can align windows by dragging them. | Relogin Required",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a106_",
     "Type": "Toggle",
     "registry": [
       {

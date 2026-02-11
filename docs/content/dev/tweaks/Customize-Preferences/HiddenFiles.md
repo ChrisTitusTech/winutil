@@ -8,7 +8,6 @@ description: ""
     "Description": "If Enabled then Hidden Files will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a200_",
     "Type": "Toggle",
     "registry": [
       {

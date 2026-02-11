@@ -8,7 +8,6 @@ description: ""
     "Description": "Disables all Microsoft Store apps from running in the background, which has to be done individually since Win11",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a024_",
     "registry": [
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications",

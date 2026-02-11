@@ -8,7 +8,6 @@ description: ""
     "Description": "Sets the system preferences to performance. You can do this manually with sysdm.cpl as well.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a030_",
     "registry": [
       {
         "Path": "HKCU:\\Control Panel\\Desktop",

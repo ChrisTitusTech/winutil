@@ -8,7 +8,6 @@ description: ""
     "Description": "If Enabled then Task View Button in Taskbar will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a203_",
     "Type": "Toggle",
     "registry": [
       {

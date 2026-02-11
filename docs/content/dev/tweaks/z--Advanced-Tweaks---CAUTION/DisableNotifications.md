@@ -8,7 +8,6 @@ description: ""
     "Description": "Disables all Notifications INCLUDING Calendar",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a026_",
     "registry": [
       {
         "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer",

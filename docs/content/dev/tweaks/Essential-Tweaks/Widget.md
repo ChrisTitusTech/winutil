@@ -9,7 +9,6 @@ description: ""
     "Description": "Removes the annoying widgets in the bottom left of the taskbar",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a005_",
     "InvokeScript": [
       "
       # Sometimes if you dont stop Widgets Process for removal to work

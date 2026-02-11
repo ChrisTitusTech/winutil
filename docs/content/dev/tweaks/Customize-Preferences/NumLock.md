@@ -8,7 +8,6 @@ description: ""
     "Description": "Toggle the Num Lock key state when your computer starts.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a102_",
     "Type": "Toggle",
     "registry": [
       {

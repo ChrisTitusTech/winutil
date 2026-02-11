@@ -224,7 +224,6 @@ Update UI
     "Description": "Disables Microsoft Telemetry",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a003_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",

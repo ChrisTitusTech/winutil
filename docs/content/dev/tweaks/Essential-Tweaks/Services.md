@@ -8,7 +8,6 @@ description: ""
     "Description": "Turns a bunch of system services to manual that don't need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a014_",
     "service": [
       {
         "Name": "ALG",

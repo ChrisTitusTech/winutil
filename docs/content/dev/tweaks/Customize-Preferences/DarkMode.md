@@ -8,7 +8,6 @@ description: ""
     "Description": "Enable/Disable Dark Mode.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a100_",
     "Type": "Toggle",
     "registry": [
       {

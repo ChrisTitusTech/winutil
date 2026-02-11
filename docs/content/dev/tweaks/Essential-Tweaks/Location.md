@@ -8,7 +8,6 @@ description: ""
     "Description": "Disables Location Tracking...DUH!",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a005_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location",

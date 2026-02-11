@@ -8,7 +8,6 @@ description: ""
     "Description": "Storage Sense deletes temp files automatically.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a025_",
     "registry": [
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy",

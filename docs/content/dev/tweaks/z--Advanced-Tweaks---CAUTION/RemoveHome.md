@@ -8,7 +8,6 @@ description: ""
     "Description": "Removes the Home from Explorer and sets This PC as default",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a029_",
     "InvokeScript": [
       "
       Remove-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\"

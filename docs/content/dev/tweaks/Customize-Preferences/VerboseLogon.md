@@ -8,7 +8,6 @@ description: ""
     "Description": "Show detailed messages during the login process for troubleshooting and diagnostics.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a103_",
     "Type": "Toggle",
     "registry": [
       {

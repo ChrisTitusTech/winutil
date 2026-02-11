@@ -8,7 +8,6 @@ description: ""
     "Description": "Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a024_",
     "registry": [
       {
         "Path": "HKCU:\\System\\GameConfigStore",

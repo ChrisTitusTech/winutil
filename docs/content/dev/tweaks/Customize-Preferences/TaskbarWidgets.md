@@ -8,7 +8,6 @@ description: ""
     "Description": "If Enabled then Widgets Button in Taskbar will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a204_",
     "Type": "Toggle",
     "registry": [
       {

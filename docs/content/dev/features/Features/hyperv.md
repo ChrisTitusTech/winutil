@@ -8,7 +8,6 @@ description: ""
     "Description": "Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines.",
     "category": "Features",
     "panel": "1",
-    "Order": "a011_",
     "feature": [
       "Microsoft-Hyper-V-All"
     ],

@@ -9,7 +9,6 @@ description: ""
     "Description": "Denys permission to remove onedrive user files than uses its own uninstaller to remove it than brings back permissions",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a029_",
     "InvokeScript": [
       "
       # Deny permission to remove OneDrive folder

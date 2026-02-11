@@ -8,7 +8,6 @@ description: ""
     "Description": "[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a204_",
     "Type": "Toggle",
     "registry": [
       {

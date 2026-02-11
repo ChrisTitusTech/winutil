@@ -8,7 +8,6 @@ description: ""
     "Description": "Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803.",
     "category": "Features",
     "panel": "1",
-    "Order": "a017_",
     "feature": [],
     "InvokeScript": [
       "

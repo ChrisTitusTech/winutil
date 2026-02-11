@@ -8,7 +8,6 @@ description: ""
     "Description": "Network File System (NFS) is a mechanism for storing files on a network.",
     "category": "Features",
     "panel": "1",
-    "Order": "a014_",
     "feature": [
       "ServicesForNFS-ClientOnly",
       "ClientForNFS-Infrastructure",

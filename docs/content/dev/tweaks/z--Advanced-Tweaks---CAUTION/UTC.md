@@ -8,7 +8,6 @@ description: ""
     "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux Systems.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a030_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",

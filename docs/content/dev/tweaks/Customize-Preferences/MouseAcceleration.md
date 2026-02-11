@@ -8,7 +8,6 @@ description: ""
     "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a109_",
     "Type": "Toggle",
     "registry": [
       {

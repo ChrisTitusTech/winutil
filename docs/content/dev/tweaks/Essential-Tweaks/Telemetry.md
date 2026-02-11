@@ -8,7 +8,6 @@ description: ""
     "Description": "Disables Microsoft Telemetry...Duh",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a003_",
     "registry": [
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo",

@@ -9,7 +9,6 @@ description: ""
     "category": "Essential Tweaks",
     "panel": "1",
     "Checked": "False",
-    "Order": "a001_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore",

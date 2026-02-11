@@ -9,7 +9,6 @@ description: ""
     "Description": "Unblocks Microsoft Edge uninstaller restrictions than uses that uninstaller to remove Microsoft Edge",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a028_",
     "InvokeScript": [
       "Invoke-WinUtilRemoveEdge"
     ],

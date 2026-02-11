@@ -8,7 +8,6 @@ description: ""
     "Description": "If enabled then you will get suggestions to snap other applications in the left over spaces.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a108_",
     "Type": "Toggle",
     "registry": [
       {

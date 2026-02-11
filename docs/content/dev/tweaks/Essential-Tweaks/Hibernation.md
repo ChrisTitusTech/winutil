@@ -8,7 +8,6 @@ description: ""
     "Description": "Hibernation is really meant for laptops as it saves what's in memory before turning the pc off. It really should never be used",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a005_",
     "registry": [
       {
         "Path": "HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power",

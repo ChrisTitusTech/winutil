@@ -8,7 +8,6 @@ description: ""
     "Description": "Disables various telemetry options, popups, and other annoyances in Edge.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a026_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate",

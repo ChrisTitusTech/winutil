@@ -8,7 +8,6 @@ description: ""
     "Description": "If enabled then File extensions (e.g., .txt, .jpg) are visible.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a201_",
     "Type": "Toggle",
     "registry": [
       {

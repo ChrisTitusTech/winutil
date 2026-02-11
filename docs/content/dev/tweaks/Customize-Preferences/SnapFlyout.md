@@ -8,7 +8,6 @@ description: ""
     "Description": "If disabled then Snap preview is disabled when maximize button is hovered.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a107_",
     "Type": "Toggle",
     "registry": [
       {
