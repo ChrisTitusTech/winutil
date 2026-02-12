@@ -2,13 +2,12 @@
 title: "Show Hidden Files"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2474}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2430}
   "WPFToggleHiddenFiles": {
     "Content": "Show Hidden Files",
     "Description": "If Enabled then Hidden Files will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a200_",
     "Type": "Toggle",
     "registry": [
       {

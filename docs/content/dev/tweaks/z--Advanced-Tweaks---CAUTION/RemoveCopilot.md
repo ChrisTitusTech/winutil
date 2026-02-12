@@ -2,13 +2,12 @@
 title: "Disable Microsoft Copilot"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1837}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1816}
   "WPFTweaksRemoveCopilot": {
     "Content": "Disable Microsoft Copilot",
     "Description": "Disables MS Copilot AI built into Windows since 23H2.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a025_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot",

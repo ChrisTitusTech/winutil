@@ -2,13 +2,12 @@
 title: "Brave Debloat"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1139}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1134}
   "WPFTweaksBraveDebloat": {
     "Content": "Brave Debloat",
     "Description": "Disables various annoyances like Brave Rewards,Leo AI,Crypto Wallet and VPN",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a022_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",

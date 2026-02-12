@@ -2,13 +2,12 @@
 title: "Disable Telemetry"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1323}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1315}
   "WPFTweaksTelemetry": {
     "Content": "Disable Telemetry",
     "Description": "Disables Microsoft Telemetry...Duh",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a003_",
     "registry": [
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo",

@@ -2,14 +2,13 @@
 title: "Create Restore Point"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1761}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1744}
   "WPFTweaksRestorePoint": {
     "Content": "Create Restore Point",
     "Description": "Creates a restore point at runtime in case a revert is needed from WinUtil modifications",
     "category": "Essential Tweaks",
     "panel": "1",
     "Checked": "False",
-    "Order": "a001_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore",

@@ -2,13 +2,12 @@
 title: "Set Display for Performance"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1556}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1542}
   "WPFTweaksDisplay": {
     "Content": "Set Display for Performance",
     "Description": "Sets the system preferences to performance. You can do this manually with sysdm.cpl as well.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a030_",
     "registry": [
       {
         "Path": "HKCU:\\Control Panel\\Desktop",

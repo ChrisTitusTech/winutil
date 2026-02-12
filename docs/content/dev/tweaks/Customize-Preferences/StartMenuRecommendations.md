@@ -2,13 +2,12 @@
 title: "Recommendations in Start Menu"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2294}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2256}
   "WPFToggleStartMenuRecommendations": {
     "Content": "Recommendations in Start Menu",
     "Description": "If disabled then you will not see recommendations in the Start Menu.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a104_",
     "Type": "Toggle",
     "registry": [
       {

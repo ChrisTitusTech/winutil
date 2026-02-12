@@ -2,7 +2,7 @@
 title: "Set Hibernation as default (good for laptops)"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=88}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=85}
   "WPFTweaksLaptopHibernation": {
     "Content": "Set Hibernation as default (good for laptops)",
     "Description": "Most modern laptops have connected standby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399",

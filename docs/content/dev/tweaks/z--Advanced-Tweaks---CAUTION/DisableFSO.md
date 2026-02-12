@@ -2,13 +2,12 @@
 title: "Disable Fullscreen Optimizations"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2169}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2136}
   "WPFTweaksDisableFSO": {
     "Content": "Disable Fullscreen Optimizations",
     "Description": "Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a024_",
     "registry": [
       {
         "Path": "HKCU:\\System\\GameConfigStore",

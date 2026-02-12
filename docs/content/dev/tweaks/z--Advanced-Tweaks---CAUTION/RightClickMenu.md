@@ -2,13 +2,12 @@
 title: "Set Classic Right-Click Menu "
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2038}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2012}
   "WPFTweaksRightClickMenu": {
     "Content": "Set Classic Right-Click Menu ",
     "Description": "Great Windows 11 tweak to bring back good context menus when right clicking things in explorer.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a030_",
     "InvokeScript": [
       "
       New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\"

@@ -2,13 +2,12 @@
 title: "Disable Notification Tray/Calendar"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1983}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1959}
   "WPFTweaksDisableNotifications": {
     "Content": "Disable Notification Tray/Calendar",
     "Description": "Disables all Notifications INCLUDING Calendar",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a026_",
     "registry": [
       {
         "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer",

@@ -2,13 +2,12 @@
 title: "Disable Location Tracking"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=136}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=133}
   "WPFTweaksLocation": {
     "Content": "Disable Location Tracking",
     "Description": "Disables Location Tracking...DUH!",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a005_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location",

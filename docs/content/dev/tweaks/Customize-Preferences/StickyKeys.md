@@ -2,13 +2,12 @@
 title: "Sticky Keys"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2393}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2352}
   "WPFToggleStickyKeys": {
     "Content": "Sticky Keys",
     "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a110_",
     "Type": "Toggle",
     "registry": [
       {

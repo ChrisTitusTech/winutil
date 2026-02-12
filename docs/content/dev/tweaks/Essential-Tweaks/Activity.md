@@ -8,7 +8,6 @@ description: ""
     "Description": "This erases recent docs, clipboard, and run history.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a005_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",

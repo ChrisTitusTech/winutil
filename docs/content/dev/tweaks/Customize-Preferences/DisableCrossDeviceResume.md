@@ -2,13 +2,12 @@
 title: "Cross-Device Resume"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2726}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2670}
   "WPFToggleDisableCrossDeviceResume": {
     "Content": "Cross-Device Resume",
     "Description": "This tweak controls the Resume function in Windows 11 24H2 and later, which allows you to resume an activity from a mobile device and vice-versa.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a207_",
     "Type": "Toggle",
     "registry": [
       {
