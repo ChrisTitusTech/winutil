@@ -25,9 +25,18 @@ Function Get-WinUtilCheckBoxes {
         WPFTweaks     = @()
         WPFFeature    = @()
         WPFInstall    = @()
+        WPFToggle     = @()
     }
 
     $CheckBoxes = $sync.GetEnumerator() | Where-Object { $_.Value -is [System.Windows.Controls.CheckBox] }
+
+    # Collect toggle switch states
+    foreach ($CheckBox in $CheckBoxes) {
+        if ($CheckBox.Key -like "WPFToggle*" -and $CheckBox.Value.IsChecked -eq $true) {
+            $Output["WPFToggle"] += $CheckBox.Key
+            Write-Debug "Adding toggle: $($CheckBox.Key)"
+        }
+    }
 
     # First check and add WPFTweaksRestorePoint if checked
     $RestorePoint = $CheckBoxes | Where-Object { $_.Key -eq 'WPFTweaksRestorePoint' -and $_.Value.IsChecked -eq $true }
