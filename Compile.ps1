@@ -97,11 +97,15 @@ $($jsonAsObject | ConvertTo-Json -Depth 3)
 Update-Progress "Adding: Locale files" 50
 $script_content.Add($(Write-Output "`$sync.configs.locales = @{}"))
 $sync.configs.locales = @{}
-Get-ChildItem "config\locales" | Where-Object { $psitem.extension -eq ".json" } | ForEach-Object {
-    $json = (Get-Content $psitem.FullName -Raw -Encoding UTF8)
+
+# Only bundle en-US as the default fallback
+$defaultLocale = "en-US"
+$localePath = "config\locales\$defaultLocale.json"
+if (Test-Path $localePath) {
+    $json = (Get-Content $localePath -Raw -Encoding UTF8)
     $json = [regex]::Replace($json, "[^\u0000-\u007F]", { param($m) "\u{0:x4}" -f [int][char]$m.Value })
-    $sync.configs.locales[$psitem.BaseName] = $json | ConvertFrom-Json
-    $script_content.Add($(Write-Output "`$sync.configs.locales['$($psitem.BaseName)'] = @'`r`n$json`r`n'@ `| ConvertFrom-Json"))
+    $sync.configs.locales[$defaultLocale] = $json | ConvertFrom-Json
+    $script_content.Add($(Write-Output "`$sync.configs.locales['$defaultLocale'] = @'`r`n$json`r`n'@ `| ConvertFrom-Json"))
 }
 
 # Read the entire XAML file as a single string, preserving line breaks

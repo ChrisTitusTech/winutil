@@ -11,6 +11,9 @@ function Invoke-WinUtilLocalization {
         [string]$Language = "en-US"
     )
 
+    # Ensure the requested language is downloaded/cached
+    Invoke-WinUtilLocaleUpdate -Language $Language
+
     # Load the locale data
     $localeData = $null
     if ($sync.configs.locales -and $sync.configs.locales[$Language]) {

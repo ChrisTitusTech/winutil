@@ -214,8 +214,9 @@ Set-WinUtilTaskbaritem -state "None"
 # Set the titlebar
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version
 
-# Apply initial localization
-Invoke-WinUtilLocalization -Language "en-US"
+# Apply initial localization based on system language
+$systemLanguage = (Get-Culture).Name
+Invoke-WinUtilLocalization -Language $systemLanguage
 
 # Set the commands that will run when the form is closed
 $sync["Form"].Add_Closing({
