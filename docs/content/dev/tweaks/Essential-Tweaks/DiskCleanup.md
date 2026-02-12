@@ -2,13 +2,12 @@
 title: "Run Disk Cleanup"
 description: ""
 ---
-```json
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2034}
   "WPFTweaksDiskCleanup": {
     "Content": "Run Disk Cleanup",
     "Description": "Runs Disk Cleanup on Drive C: and removes old Windows Updates.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a009_",
     "InvokeScript": [
       "
       cleanmgr.exe /d C: /VERYLOWDISK
