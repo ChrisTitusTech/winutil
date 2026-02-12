@@ -2,13 +2,12 @@
 title: "Set Services to Manual"
 description: ""
 ---
-```json
- "WPFTweaksServices": {
+```json {filename="config/tweaks.json",linenos=inline,linenostart=170}
+  "WPFTweaksServices": {
     "Content": "Set Services to Manual",
     "Description": "Turns a bunch of system services to manual that don't need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a014_",
     "service": [
       {
         "Name": "ALG",
@@ -522,7 +521,7 @@ description: ""
       },
       {
         "Name": "TermService",
-        "StartupType": "Automatic",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -582,7 +581,7 @@ description: ""
       },
       {
         "Name": "VaultSvc",
-        "StartupType": "Automatic",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -968,7 +967,7 @@ description: ""
     ],
 ```
 #Function
-```powershell
+```powershell {filename="functions/private/Set-WinUtilService.ps1",linenos=inline,linenostart=1}
 Function Set-WinUtilService {
     <#
 

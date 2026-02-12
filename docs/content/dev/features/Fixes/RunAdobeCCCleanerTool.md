@@ -2,7 +2,7 @@
 title: "Remove Adobe Creative Cloud"
 description: ""
 ---
-```powershell
+```powershell {filename="functions/public/Invoke-WPFRunAdobeCCCleanerTool.ps1",linenos=inline,linenostart=1}
 function Invoke-WPFRunAdobeCCCleanerTool {
     <#
     .SYNOPSIS

@@ -1,5 +1,5 @@
 ---
-title: "Control Panel"
+title: "Time and Date"
 description: ""
 ---
 ```powershell {filename="functions/public/Invoke-WPFControlPanel.ps1",linenos=inline,linenostart=1}

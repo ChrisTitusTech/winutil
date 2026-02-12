@@ -1,21 +1,21 @@
 ---
-title: "Search Button in Taskbar"
+title: "Disable Multiplane Overlay"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2486}
-  "WPFToggleTaskbarSearch": {
-    "Content": "Search Button in Taskbar",
-    "Description": "If Enabled Search Button will be on the taskbar.",
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2412}
+  "WPFToggleMultiplaneOverlay": {
+    "Content": "Disable Multiplane Overlay",
+    "Description": "Disable the Multiplane Overlay which can sometimes cause issues with Graphics Cards.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
     "registry": [
       {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
-        "Name": "SearchboxTaskbarMode",
-        "Value": "1",
-        "OriginalValue": "0",
-        "DefaultState": "true",
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Dwm",
+        "Name": "OverlayTestMode",
+        "Value": "5",
+        "OriginalValue": "<RemoveEntry>",
+        "DefaultState": "false",
         "Type": "DWord"
       }
     ],
