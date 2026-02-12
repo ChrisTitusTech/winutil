@@ -1010,6 +1010,28 @@
 
                 <!-- Buttons Container -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,5,5,5">
+                    <Button Name="LanguageButton"
+                        Style="{StaticResource HoverButtonStyle}"
+                        BorderBrush="Transparent"
+                    Background="{DynamicResource MainBackgroundColor}"
+                    Foreground="{DynamicResource MainForegroundColor}"
+                    FontSize="{DynamicResource SettingsIconFontSize}"
+                    Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="0,0,2,0"
+                    FontFamily="Segoe MDL2 Assets"
+                    Content="&#xE774;"
+                    ToolTip="Change Language"
+                />
+                    <Popup Name="LanguagePopup"
+                    IsOpen="False"
+                    PlacementTarget="{Binding ElementName=LanguageButton}" Placement="Bottom"
+                    HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <Border Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
+                        <StackPanel Name="LanguageStackPanel" Background="{DynamicResource MainBackgroundColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        </StackPanel>
+                    </Border>
+                </Popup>
                     <Button Name="ThemeButton"
                         Style="{StaticResource HoverButtonStyle}"
                         BorderBrush="Transparent"
@@ -1198,7 +1220,7 @@
                             </Grid.RowDefinitions>
 
                             <StackPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Vertical" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="5">
-                                <Label Content="Recommended Selections:" FontSize="{DynamicResource FontSize}" VerticalAlignment="Center" Margin="2"/>
+                                <Label Name="RecommendedSelectionsLabel" Content="Recommended Selections:" FontSize="{DynamicResource FontSize}" VerticalAlignment="Center" Margin="2"/>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,2,0,0">
                                     <Button Name="WPFstandard" Content=" Standard " Margin="2" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
                                     <Button Name="WPFminimal" Content=" Minimal " Margin="2" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>

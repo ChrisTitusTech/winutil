@@ -115,6 +115,7 @@ $sync.Form.Add_Loaded({
 })
 
 Invoke-WinutilThemeChange -init $true
+
 # Load the configuration files
 
 $sync.configs.applicationsHashtable = @{}
@@ -178,6 +179,90 @@ $sync.keys | ForEach-Object {
 
         }
     }
+}
+
+#===========================================================================
+# Initialize language system
+#===========================================================================
+
+$sync.currentLanguage = "en"
+
+$sync["LanguageButton"].Add_Click({
+    Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "Theme" = "Hide"; "FontScaling" = "Hide" }
+    $sync.LanguagePopup.IsOpen = -not $sync.LanguagePopup.IsOpen
+})
+
+$languages = Get-WinUtilAvailableLanguages
+foreach ($lang in $languages) {
+    $menuItem = New-Object Windows.Controls.MenuItem
+    $menuItem.Header = $lang.Name
+    $menuItem.FontSize = $sync.Form.FindResource("ButtonFontSize")
+    $menuItem.Foreground = $sync.Form.FindResource("MainForegroundColor")
+    $menuItem.Tag = $lang.Code
+    $menuItem.Add_Click({
+        $selectedLang = $this.Tag
+        $sync.LanguagePopup.IsOpen = $false
+
+        # Save checkbox states before rebuild (skip Toggle - auto-restored from system state)
+        $checkedItems = @{}
+        foreach ($cn in @("tweaks", "feature")) {
+            foreach ($prop in $sync.configs.$cn.PSObject.Properties) {
+                if ($prop.Value.Type -eq "Toggle") { continue }
+                $ctrl = $sync[$prop.Name]
+                if ($ctrl -and $ctrl.IsChecked) {
+                    $checkedItems[$prop.Name] = $true
+                }
+            }
+        }
+
+        Set-WinUtilLanguage -Language $selectedLang
+        Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
+        Initialize-WPFUI -targetGridName "appscategory"
+        Initialize-WPFUI -targetGridName "appspanel"
+        Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
+        Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
+
+        # Re-bind handlers only for rebuilt config controls (not XAML-defined ones)
+        foreach ($cn in @("appnavigation", "tweaks", "feature")) {
+            foreach ($prop in $sync.configs.$cn.PSObject.Properties) {
+                $ctrl = $sync[$prop.Name]
+                if (-not $ctrl) { continue }
+                $tn = $ctrl.GetType().Name
+                if ($tn -eq "Button" -or $tn -eq "ToggleButton") {
+                    $ctrl.Add_Click({
+                        [System.Object]$Sender = $args[0]
+                        Invoke-WPFButton $Sender.name
+                    })
+                }
+            }
+        }
+
+        # Re-bind TextBlock Link handlers (all are rebuilt, no XAML-defined ones)
+        $sync.keys | ForEach-Object {
+            if ($sync.$psitem -and
+                $sync["$psitem"].GetType().Name -eq "TextBlock" -and
+                $sync["$psitem"].Name.EndsWith("Link")) {
+                $sync["$psitem"].Add_MouseUp({
+                    [System.Object]$Sender = $args[0]
+                    Start-Process $Sender.ToolTip -ErrorAction Stop
+                })
+            }
+        }
+
+        # Re-bind package manager radio buttons and restore preference
+        $sync.ChocoRadioButton.Add_Checked({Set-PackageManagerPreference Choco})
+        $sync.WingetRadioButton.Add_Checked({Set-PackageManagerPreference Winget})
+        switch ($sync["ManagerPreference"]) {
+            "Choco" {$sync.ChocoRadioButton.IsChecked = $true}
+            "Winget" {$sync.WingetRadioButton.IsChecked = $true}
+        }
+
+        # Restore checkbox states
+        foreach ($name in $checkedItems.Keys) {
+            if ($sync[$name]) { $sync[$name].IsChecked = $true }
+        }
+    })
+    $sync.LanguageStackPanel.Children.Add($menuItem)
 }
 
 #===========================================================================
@@ -260,7 +345,7 @@ $commonKeyEvents = {
 $sync["Form"].Add_PreViewKeyDown($commonKeyEvents)
 
 $sync["Form"].Add_MouseLeftButtonDown({
-    Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme", "FontScaling")
+    Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme", "FontScaling", "Language")
     $sync["Form"].DragMove()
 })
 
@@ -278,7 +363,7 @@ $sync["Form"].Add_MouseDoubleClick({
 
 $sync["Form"].Add_Deactivated({
     Write-Debug "WinUtil lost focus"
-    Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme", "FontScaling")
+    Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme", "FontScaling", "Language")
 })
 
 $sync["Form"].Add_ContentRendered({
