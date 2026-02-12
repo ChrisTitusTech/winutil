@@ -2,14 +2,12 @@
 title: "Block Razer Software Installs"
 description: ""
 ---
-
-```json
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1917}
   "WPFTweaksRazerBlock": {
     "Content": "Block Razer Software Installs",
     "Description": "Blocks ALL Razer Software installations. The hardware works fine without any software. WARNING: this will also block all Windows third-party driver installations.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a021_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",

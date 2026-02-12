@@ -1,14 +1,13 @@
 ---
-title: "Debloat Edge"
+title: "Edge Debloat"
 description: ""
 ---
-```json
-"WPFTweaksEdgeDebloat": {
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1178}
+  "WPFTweaksEdgeDebloat": {
     "Content": "Edge Debloat",
     "Description": "Disables various telemetry options, popups, and other annoyances in Edge.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a026_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate",
@@ -22,6 +21,13 @@ description: ""
         "Name": "PersonalizationReportingEnabled",
         "Type": "DWord",
         "Value": "0",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "ofefcgjbeghpigppfmkologfjadafddi",
+        "Type": "String",
+        "Value": "1",
         "OriginalValue": "<RemoveEntry>"
       },
       {
@@ -118,9 +124,8 @@ description: ""
     ],
 ```
 
-</details>
-
 ## Registry Changes
+
 Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.
 
 You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).
