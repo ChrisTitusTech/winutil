@@ -2149,6 +2149,44 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disablefso"
   },
+  "WPFTweaksRevertStartMenu": {
+    "Content": "Revert Start Menu layout",
+    "Description": "Bring back the old Start Menu layout from before the gradual rollout of the new one in 25H2.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a027_",
+    "InvokeScript": [
+      "
+      $path = (Get-ChildItem \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FeatureManagement\\Overrides\" | Where-Object { Test-Path (Join-Path $_.PSPath \"3036241548\") })?.PSChildName
+      if ($path) {
+        $cmd = \"Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FeatureManagement\\Overrides\\$path\\3036241548' -Name EnabledState -Value 1 -Type DWord -Force\"
+        Register-ScheduledTask -TaskName \"WinUtilTI\" -Action (New-ScheduledTaskAction -Execute \"powershell\" -Argument \"-Command $cmd\") -User 'NT SERVICE\\TrustedInstaller' -Force | Out-Null
+        Start-ScheduledTask -TaskName \"WinUtilTI\"
+        Start-Sleep -Seconds 1
+        Unregister-ScheduledTask -TaskName \"WinUtilTI\" -Confirm:$false
+        Write-Host \"New start menu layout disabled. Please restart your computer!\" -ForegroundColor Yellow
+      } else {
+        Write-Error \"Feature override not found\"
+      }
+      "
+    ],
+    "UndoScript": [
+      "
+      $path = (Get-ChildItem \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FeatureManagement\\Overrides\" | Where-Object { Test-Path (Join-Path $_.PSPath \"3036241548\") })?.PSChildName
+      if ($path) {
+        $cmd = \"Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FeatureManagement\\Overrides\\$path\\3036241548' -Name EnabledState -Value 2 -Type DWord -Force\"
+        Register-ScheduledTask -TaskName \"WinUtilTI\" -Action (New-ScheduledTaskAction -Execute \"powershell\" -Argument \"-Command $cmd\") -User 'NT SERVICE\\TrustedInstaller' -Force | Out-Null
+        Start-ScheduledTask -TaskName \"WinUtilTI\"
+        Start-Sleep -Seconds 1
+        Unregister-ScheduledTask -TaskName \"WinUtilTI\" -Confirm:$false
+        Write-Host \"New start menu layout re-enabled. Please restart your computer!\" -ForegroundColor Yellow
+      } else {
+        Write-Error \"Feature override not found\"
+      }
+      "
+    ],
+    "link": ""
+  },
   "WPFToggleDarkMode": {
     "Content": "Dark Theme for Windows",
     "Description": "Enable/Disable Dark Mode.",
