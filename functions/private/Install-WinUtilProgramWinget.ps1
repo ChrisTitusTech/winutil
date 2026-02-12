@@ -88,7 +88,7 @@ Function Install-WinUtilProgramWinget {
         The Winget ID of the Program that should be uninstalled
         #>
         param (
-            [psobject]$Program
+            [string]$Program
         )
 
         try {

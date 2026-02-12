@@ -66,8 +66,21 @@ function Invoke-WPFImpex {
                         Write-Error "Failed to load the JSON file from the specified path or URL: $_"
                         return
                     }
-                    $flattenedJson = $jsonFile.PSObject.Properties.Where({ $_.Name -ne "Install" }).ForEach({ $_.Value })
+                    $flattenedJson = $jsonFile.PSObject.Properties.Where({ $_.Name -ne "Install" -and $_.Name -ne "WPFToggle" }).ForEach({ $_.Value })
                     Invoke-WPFPresets -preset $flattenedJson -imported $true
+
+                    # Restore toggle switch states
+                    $importedToggles = if ($jsonFile.WPFToggle) { $jsonFile.WPFToggle } else { @() }
+                    $allToggles = $sync.GetEnumerator() | Where-Object { $_.Key -like "WPFToggle*" -and $_.Value -is [System.Windows.Controls.CheckBox] }
+                    foreach ($toggle in $allToggles) {
+                        if ($importedToggles -contains $toggle.Key) {
+                            $sync[$toggle.Key].IsChecked = $true
+                            Write-Debug "Restoring toggle: $($toggle.Key) = checked"
+                        } else {
+                            $sync[$toggle.Key].IsChecked = $false
+                            Write-Debug "Restoring toggle: $($toggle.Key) = unchecked"
+                        }
+                    }
                 }
             } catch {
                 Write-Error "An error occurred while importing: $_"

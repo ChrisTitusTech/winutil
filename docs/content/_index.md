@@ -22,5 +22,5 @@ irm "https://christitus.com/win" | iex
 ```
 
 
-> [!NOTE]
+> [!IMPORTANT]
 > Winutil is updated frequently as of the time of writing. Consequently, features and functionalities may evolve, and the documentation may not always reflect the most current images or information.

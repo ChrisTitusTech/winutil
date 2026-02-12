@@ -37,15 +37,20 @@ pageRef = "KnownIssues.md"
 weight = 4
 
 [[menu.main]]
-name = "Search"
+name = "Store"
+url = "https://christitus.com/downloads/"
 weight = 5
+
+[[menu.main]]
+name = "Search"
+weight = 6
 
   [menu.main.params]
   type = "search"
 
 [[menu.main]]
 name = "GitHub"
-weight = 6
+weight = 7
 url = "https://github.com/christitustech/Winutil"
 
   [menu.main.params]

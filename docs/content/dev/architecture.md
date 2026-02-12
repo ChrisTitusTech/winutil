@@ -194,7 +194,7 @@ Update UI
 
 ### applications.json Structure
 
-```json
+```json {filename="config/applications.json"}
 {
   "WPFInstall<AppName>": {
     "category": "Browsers",
@@ -217,14 +217,13 @@ Update UI
 
 ### tweaks.json Structure
 
-```json
+```json {filename="config/tweaks.json"}
 {
   "WPFTweaksTelemetry": {
     "Content": "Disable Telemetry",
     "Description": "Disables Microsoft Telemetry",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a003_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
@@ -365,7 +364,7 @@ $sync.form.Dispatcher.Invoke([action]{
 ### Adding a New Application
 
 1. Edit `config/applications.json`:
-```json
+```json {filename="config/applications.json"}
 {
   "WPFInstallNewApp": {
     "category": "Utilities",
@@ -383,7 +382,7 @@ $sync.form.Dispatcher.Invoke([action]{
 ### Adding a New Tweak
 
 1. Edit `config/tweaks.json`:
-```json
+```json {filename="config/tweaks.json"}
 {
   "WPFTweaksNewTweak": {
     "Content": "New Tweak",
