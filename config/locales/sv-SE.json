@@ -1,0 +1,507 @@
+{
+    "ui": {
+        "tabs": {
+            "Install": "Installera",
+            "Tweaks": "Anpassningar",
+            "Config": "Konfig",
+            "Updates": "Uppdateringar"
+        },
+        "navButtons": {
+            "WPFTab1BT": "Installera",
+            "WPFTab2BT": "Anpassningar",
+            "WPFTab3BT": "Konfig",
+            "WPFTab4BT": "Uppdateringar"
+        },
+        "menus": {
+            "ImportMenuItem": "Importera",
+            "ExportMenuItem": "Exportera",
+            "AboutMenuItem": "Om",
+            "SponsorMenuItem": "Sponsorer",
+            "AutoThemeMenuItem": "Auto",
+            "DarkThemeMenuItem": "Mörkt",
+            "LightThemeMenuItem": "Ljust",
+            "EnglishLanguageMenuItem": "English",
+            "FrenchLanguageMenuItem": "Français",
+            "SpanishLanguageMenuItem": "Español",
+            "GermanLanguageMenuItem": "Deutsch",
+            "ItalianLanguageMenuItem": "Italiano",
+            "PortugueseLanguageMenuItem": "Português",
+            "PolishLanguageMenuItem": "Polski",
+            "DutchLanguageMenuItem": "Nederlands",
+            "RomanianLanguageMenuItem": "Română",
+            "SwedishLanguageMenuItem": "Svenska",
+            "CzechLanguageMenuItem": "Čeština"
+        },
+        "tooltips": {
+            "ImportMenuItem": "Importera konfiguration från exporterad fil.",
+            "ExportMenuItem": "Exportera valda element och kopiera körkommando till urklipp.",
+            "AutoThemeMenuItem": "Använd systemtema",
+            "DarkThemeMenuItem": "Använd mörkt tema",
+            "LightThemeMenuItem": "Använd ljust tema",
+            "ThemeButton": "Välj ett tema för textstil",
+            "FontScalingButton": "Justera typsnittsskala för tillgänglighet",
+            "LanguageButton": "Ändra språk / Change Language"
+        },
+        "buttons": {
+            "WPFstandard": " Standard ",
+            "WPFminimal": " Minimal ",
+            "WPFClearTweaksSelection": " Rensa ",
+            "WPFGetInstalledTweaks": " Visa installerade ",
+            "WPFTweaksbutton": "Kör anpassningar",
+            "WPFUndoall": "Ångra valda anpassningar",
+            "FontScalingResetButton": "Återställ",
+            "FontScalingApplyButton": "Verkställ"
+        },
+        "labels": {
+            "RecommendedSelections": "Rekommenderade val:",
+            "FontScaling": "Typsnittsskala",
+            "Small": "Liten",
+            "Large": "Stor",
+            "SearchBarPlaceholder": "Sök"
+        },
+        "textblocks": {
+            "TweaksNote": "Obs: Håll musen över objekt för en bättre beskrivning. Var försiktig då många av dessa anpassningar kommer att modifiera ditt system kraftigt.\nRekommenderade val är för vanliga användare och om du är osäker, markera INTE något annat!"
+        },
+        "updates": {
+            "WPFUpdatesdefault": "Standardinställningar",
+            "WPFUpdatessecurity": "Säkerhetsinställningar",
+            "WPFUpdatesdisable": "Inaktivera alla uppdateringar",
+            "DefaultTitle": "Standardkonfiguration för Windows Update",
+            "DefaultLine1": " - Inga modifieringar av Windows standardinställningar",
+            "DefaultLine2": " - Tar bort alla anpassade uppdateringsinställningar",
+            "DefaultNote": "Obs: Detta återställer dina Windows Update-inställningar till standardvärden. Det tar bort ALLA policyer eller anpassningar som har gjorts på Windows Update.",
+            "SecurityTitle": "Balanserad säkerhetskonfiguration",
+            "SecurityLine1": " - Funktionsuppdateringar fördröjda med 365 dagar",
+            "SecurityLine2": " - Säkerhetsuppdateringar installerade efter 4 dagar",
+            "SecurityFeatureUpdates": "Funktionsuppdateringar:",
+            "SecurityFeatureDesc": "Nya funktioner och potentiella buggar",
+            "SecuritySecurityUpdates": "Säkerhetsuppdateringar:",
+            "SecuritySecurityDesc": "Kritiska säkerhetspatchar",
+            "SecurityNote": "Obs: Detta gäller endast Pro-system som kan använda gruppolicy.",
+            "DisableTitle": "!! Rekommenderas inte !!",
+            "DisableLine1": " - Inaktiverar ALLA Windows-uppdateringar",
+            "DisableLine2": " - Ökar säkerhetsrisker",
+            "DisableLine3": " - Använd endast för isolerade system",
+            "DisableNote": "Varning: Ditt system kommer att vara sårbart utan säkerhetsuppdateringar."
+        }
+    },
+    "config": {
+        "categories": {
+            "Essential Tweaks": "Viktiga anpassningar",
+            "Customize Preferences": "Anpassa inställningar",
+            "Performance Plans": "Prestandaplaner",
+            "z__Advanced Tweaks - CAUTION": "z__Avancerade anpassningar - VARNING",
+            "Features": "Funktioner",
+            "Fixes": "Fixar",
+            "Legacy Windows Panels": "Äldre Windows-paneler",
+            "Powershell Profile Powershell 7+ Only": "Powershell-profil (Endast PS 7+)",
+            "Remote Access": "Fjärråtkomst",
+            "Browsers": "Webbläsare",
+            "Communications": "Kommunikation",
+            "Development": "Utveckling",
+            "Document": "Dokument",
+            "Games": "Spel",
+            "Microsoft Tools": "Microsoft-verktyg",
+            "Multimedia Tools": "Multimedia-verktyg",
+            "Pro Tools": "Pro-verktyg",
+            "Utilities": "Verktygsprogram",
+            "____Actions": "____Åtgärder",
+            "__Package Manager": "__Pakethanterare",
+            "__Selection": "__Val"
+        },
+        "appnavigation": {
+            "WPFInstall": {
+                "Content": "Installera/Uppgradera program",
+                "Description": "Installera eller uppgradera valda program"
+            },
+            "WPFUninstall": {
+                "Content": "Avinstallera program",
+                "Description": "Avinstallera valda program"
+            },
+            "WPFInstallUpgrade": {
+                "Content": "Uppgradera alla program",
+                "Description": "Uppgradera alla program till senaste versionen"
+            },
+            "WingetRadioButton": {
+                "Content": "Winget",
+                "Description": "Använd Winget för pakethantering"
+            },
+            "ChocoRadioButton": {
+                "Content": "Chocolatey",
+                "Description": "Använd Chocolatey för pakethantering"
+            },
+            "WPFCollapseAllCategories": {
+                "Content": "Fäll ihop alla kategorier",
+                "Description": "Fäll ihop alla programkategorier"
+            },
+            "WPFExpandAllCategories": {
+                "Content": "Expandera alla kategorier",
+                "Description": "Expandera alla programkategorier"
+            },
+            "WPFClearInstallSelection": {
+                "Content": "Rensa val",
+                "Description": "Rensa val av program"
+            },
+            "WPFGetInstalled": {
+                "Content": "Hämta installerade",
+                "Description": "Visa installerade program"
+            },
+            "WPFselectedAppsButton": {
+                "Content": "Valda appar: {0}",
+                "Description": "Visa valda program"
+            }
+        },
+        "tweaks": {
+            "WPFTweaksActivity": {
+                "Content": "Inaktivera aktivitetshistorik",
+                "Description": "Detta rensar senaste dokument, urklipp och körhistorik."
+            },
+            "WPFTweaksHiber": {
+                "Content": "Inaktivera viloläge (Hibernation)",
+                "Description": "Viloläge är avsett för bärbara datorer då det sparar minnet innan avstängning. Bör inte användas på stationära datorer."
+            },
+            "WPFTweaksWidget": {
+                "Content": "Ta bort widgets",
+                "Description": "Tar bort Windows-widgets från systemet."
+            },
+            "WPFTweaksLaptopHibernation": {
+                "Content": "Sätt viloläge som standard (bra för bärbara)",
+                "Description": "Sätter viloläge som standardalternativ istället för strömsparläge."
+            },
+            "WPFTweaksLocation": {
+                "Content": "Inaktivera platsspårning",
+                "Description": "Inaktiverar Windows platsspårning."
+            },
+            "WPFTweaksServices": {
+                "Content": "Sätt tjänster till manuell",
+                "Description": "Sätter icke-viktiga tjänster till manuell start."
+            },
+            "WPFTweaksBraveDebloat": {
+                "Content": "Rensa Brave bloatware",
+                "Description": "Tar bort onödiga Brave-komponenter."
+            },
+            "WPFTweaksEdgeDebloat": {
+                "Content": "Rensa Edge bloatware",
+                "Description": "Tar bort Microsoft Edge bloatware."
+            },
+            "WPFTweaksConsumerFeatures": {
+                "Content": "Inaktivera konsumentfunktioner",
+                "Description": "Inaktiverar konsumentfunktioner som föreslagna appar."
+            },
+            "WPFTweaksTelemetry": {
+                "Content": "Inaktivera telemetri",
+                "Description": "Inaktiverar Windows datainsamling och telemetri."
+            },
+            "WPFTweaksRemoveEdge": {
+                "Content": "Ta bort Microsoft Edge",
+                "Description": "Tar bort Microsoft Edge från systemet."
+            },
+            "WPFTweaksUTC": {
+                "Content": "Sätt tid till UTC (Dual Boot)",
+                "Description": "Sätter systemklockan till UTC för dual-boot-kompatibilitet."
+            },
+            "WPFTweaksRemoveOneDrive": {
+                "Content": "Ta bort OneDrive",
+                "Description": "Tar bort Microsoft OneDrive från systemet."
+            },
+            "WPFTweaksRemoveHome": {
+                "Content": "Ta bort 'Hem' från utforskaren",
+                "Description": "Tar bort hemsidan från Filutforskaren."
+            },
+            "WPFTweaksRemoveGallery": {
+                "Content": "Ta bort 'Galleri' från utforskaren",
+                "Description": "Tar bort gallerisidan från Filutforskaren."
+            },
+            "WPFTweaksDisplay": {
+                "Content": "Optimera skärm för prestanda",
+                "Description": "Justerar skärminställningar för bästa prestanda."
+            },
+            "WPFTweaksXboxRemoval": {
+                "Content": "Ta bort Xbox & spelkomponenter",
+                "Description": "Tar bort Xbox- och spelkomponenter från systemet."
+            },
+            "WPFTweaksDeBloat": {
+                "Content": "Ta bort ALLA MS Store-appar - REKOMMENDERAS INTE",
+                "Description": "Tar bort alla Microsoft Store-program. Använd med extrem försiktighet."
+            },
+            "WPFTweaksRestorePoint": {
+                "Content": "Skapa återställningspunkt",
+                "Description": "Skapar en systemåterställningspunkt innan anpassningar görs."
+            },
+            "WPFTweaksEndTaskOnTaskbar": {
+                "Content": "Aktivera 'Avsluta aktivitet' vid högerklick",
+                "Description": "Lägger till alternativet 'Avsluta aktivitet' i aktivitetsfältets högerklicksmeny."
+            },
+            "WPFTweaksPowershell7Tele": {
+                "Content": "Inaktivera Powershell 7-telemetri",
+                "Description": "Inaktivera telemetriinsamling i PowerShell 7."
+            },
+            "WPFTweaksStorage": {
+                "Content": "Inaktivera Storage Sense",
+                "Description": "Inaktiverar automatisk rensning med Storage Sense."
+            },
+            "WPFTweaksRemoveCopilot": {
+                "Content": "Inaktivera Microsoft Copilot",
+                "Description": "Inaktiverar Microsoft Copilot AI-assistent."
+            },
+            "WPFTweaksWPBT": {
+                "Content": "Inaktivera Windows Platform Binary Table (WPBT)",
+                "Description": "Inaktiverar WPBT som tillåter OEM-tillverkare att injicera programvara."
+            },
+            "WPFTweaksRazerBlock": {
+                "Content": "Blockera installation av Razer-programvara",
+                "Description": "Blockerar automatiska installationer av Razer-programvara."
+            },
+            "WPFTweaksDisableNotifications": {
+                "Content": "Inaktivera meddelandefältet/Kalender",
+                "Description": "Inaktiverar meddelandefeltet och kalender-popupen."
+            },
+            "WPFTweaksBlockAdobeNet": {
+                "Content": "Blockera Adobe-nätverk",
+                "Description": "Blockerar Adobes nätverksanslutningar."
+            },
+            "WPFTweaksRightClickMenu": {
+                "Content": "Använd klassisk högerklicksmeny",
+                "Description": "Återställer den klassiska högerklicksmenyn i Windows."
+            },
+            "WPFTweaksDiskCleanup": {
+                "Content": "Kör diskrensning",
+                "Description": "Kör verktyget för diskrensning."
+            },
+            "WPFTweaksDeleteTempFiles": {
+                "Content": "Ta bort temporära filer",
+                "Description": "Tar bort temporära filer för att frigöra utrymme."
+            },
+            "WPFTweaksIPv46": {
+                "Content": "Föredra IPv4 framför IPv6",
+                "Description": "Konfigurerar systemet att föredra IPv4-anslutningar."
+            },
+            "WPFTweaksTeredo": {
+                "Content": "Inaktivera Teredo",
+                "Description": "Inaktiverar tunnelprotokollet Teredo."
+            },
+            "WPFTweaksDisableIPv6": {
+                "Content": "Inaktivera IPv6",
+                "Description": "Inaktiverar nätverksprotokollet IPv6."
+            },
+            "WPFTweaksDisableBGapps": {
+                "Content": "Inaktivera bakgrundsappar",
+                "Description": "Förhindrar appar från att köras i bakgrunden."
+            },
+            "WPFTweaksDisableFSO": {
+                "Content": "Inaktivera helskärmsoptimeringar",
+                "Description": "Inaktiverar helskärmsoptimeringar för bättre spelprestanda."
+            },
+            "WPFToggleDarkMode": {
+                "Content": "Mörkt tema för Windows",
+                "Description": "Aktiverar mörkt tema i hela Windows."
+            },
+            "WPFToggleBingSearch": {
+                "Content": "Bing-sök i startmenyn",
+                "Description": "Hanterar Bing-sök-integration i startmenyn."
+            },
+            "WPFToggleNumLock": {
+                "Content": "NumLock vid start",
+                "Description": "Aktiverar NumLock vid systemstart."
+            },
+            "WPFToggleVerboseLogon": {
+                "Content": "Utökade meddelanden vid inloggning",
+                "Description": "Visar detaljerade statusmeddelanden vid inloggning."
+            },
+            "WPFToggleStartMenuRecommendations": {
+                "Content": "Rekommendationer i startmenyn",
+                "Description": "Hanterar rekommendationer i startmenyn."
+            },
+            "WPFToggleHideSettingsHome": {
+                "Content": "Ta bort inställningarnas startsida",
+                "Description": "Tar bort startsidan från Windows-inställningar."
+            },
+            "WPFToggleMouseAcceleration": {
+                "Content": "Musacceleration",
+                "Description": "Hanterar musacceleration."
+            },
+            "WPFToggleStickyKeys": {
+                "Content": "Tröga tangenter",
+                "Description": "Hanterar tröga tangenter för tillgänglighet."
+            },
+            "WPFToggleNewOutlook": {
+                "Content": "Nya Outlook",
+                "Description": "Hanterar den nya Outlook-appen."
+            },
+            "WPFToggleMultiplaneOverlay": {
+                "Content": "Inaktivera Multiplane Overlay",
+                "Description": "Inaktiverar Multiplane Overlay för bättre kompatibilitet."
+            },
+            "WPFToggleHiddenFiles": {
+                "Content": "Visa dolda filer",
+                "Description": "Visar dolda filer i Filutforskaren."
+            },
+            "WPFToggleShowExt": {
+                "Content": "Visa filändelser",
+                "Description": "Visar filändelser i Filutforskaren."
+            },
+            "WPFToggleTaskbarSearch": {
+                "Content": "Sökknapp i aktivitetsfältet",
+                "Description": "Hanterar synlighet för sökknappen."
+            },
+            "WPFToggleTaskView": {
+                "Content": "Task View-knapp i aktivitetsfältet",
+                "Description": "Hanterar synlighet för Task View-knappen."
+            },
+            "WPFToggleTaskbarAlignment": {
+                "Content": "Centrera ikoner i aktivitetsfältet",
+                "Description": "Centrerar ikoner i aktivitetsfältet."
+            },
+            "WPFToggleDetailedBSoD": {
+                "Content": "Detaljerad BSoD",
+                "Description": "Visar detaljerad information vid blåskärm."
+            },
+            "WPFToggleS3Sleep": {
+                "Content": "S3-viloläge",
+                "Description": "Hanterar S3-viloläge."
+            },
+            "WPFOOSUbutton": {
+                "Content": "Kör OO Shutup 10",
+                "Description": "Kör integritetsverktyget O&O ShutUp10."
+            },
+            "WPFchangedns": {
+                "Content": "DNS",
+                "Description": "Ändra DNS-inställningar."
+            },
+            "WPFAddUltPerf": {
+                "Content": "Lägg till och aktivera profil för ultimat prestanda",
+                "Description": "Lägger till och aktiverar strömschemat för ultimat prestanda."
+            },
+            "WPFRemoveUltPerf": {
+                "Content": "Ta bort profil för ultimat prestanda",
+                "Description": "Tar bort strömschemat för ultimat prestanda."
+            },
+            "WPFTweaksDisableExplorerAutoDiscovery": {
+                "Content": "Inaktivera automatisk mappidentifiering",
+                "Description": "Inaktiverar automatisk mapptypsidentifiering i utforskaren."
+            },
+            "WPFToggleDisableCrossDeviceResume": {
+                "Content": "Fortsätt på andra enheter",
+                "Description": "Hanterar funktionen för att fortsätta på andra enheter."
+            }
+        },
+        "features": {
+            "WPFFeaturesdotnet": {
+                "Content": "Alla .Net Framework (2,3,4)",
+                "Description": ".NET och .NET Framework är en utvecklarplattform för att bygga program."
+            },
+            "WPFFeatureshyperv": {
+                "Content": "HyperV Virtualisering",
+                "Description": "Hyper-V är en hårdvaruvirtualisering från Microsoft."
+            },
+            "WPFFeatureslegacymedia": {
+                "Content": "Äldre media (WMP, DirectPlay)",
+                "Description": "Äldre mediakomponenter inklusive Windows Media Player och DirectPlay."
+            },
+            "WPFFeaturewsl": {
+                "Content": "Windows Subsystem for Linux (WSL)",
+                "Description": "Kör Linux-distributioner direkt i Windows."
+            },
+            "WPFFeaturenfs": {
+                "Content": "NFS - Network File System",
+                "Description": "Network File System för fildelning över nätverk."
+            },
+            "WPFFeatureRegBackup": {
+                "Content": "Aktivera daglig registerkopiering kl 00:30",
+                "Description": "Skapar en schemalagd aktivitet för att säkerhetskopiera registret dagligen."
+            },
+            "WPFFeatureEnableLegacyRecovery": {
+                "Content": "Aktivera klassisk F8-startåterställning",
+                "Description": "Aktiverar äldre F8-alternativ vid start."
+            },
+            "WPFFeatureDisableLegacyRecovery": {
+                "Content": "Inaktivera klassisk F8-startåterställning",
+                "Description": "Inaktiverar äldre F8-alternativ vid start."
+            },
+            "WPFFeaturesSandbox": {
+                "Content": "Windows Sandbox",
+                "Description": "En lätt virtuell miljö för att säkert köra program."
+            },
+            "WPFFeatureInstall": {
+                "Content": "Installera funktioner",
+                "Description": "Installera valda Windows-funktioner."
+            },
+            "WPFPanelAutologin": {
+                "Content": "Ställ in automatisk inloggning",
+                "Description": "Konfigurera automatisk inloggning för aktuell användare."
+            },
+            "WPFFixesUpdate": {
+                "Content": "Återställ Windows Update",
+                "Description": "Återställer Windows Update-komponenter för att lösa problem."
+            },
+            "WPFFixesNetwork": {
+                "Content": "Återställ nätverk",
+                "Description": "Återställer nätverksinställningar för att lösa anslutningsproblem."
+            },
+            "WPFPanelDISM": {
+                "Content": "Skanna systemfiler (DISM)",
+                "Description": "Skannar och reparerar skadade systemfiler med DISM."
+            },
+            "WPFFixesWinget": {
+                "Content": "Installera om WinGet",
+                "Description": "Installerar om pakethanteraren WinGet."
+            },
+            "WPFRunAdobeCCCleanerTool": {
+                "Content": "Ta bort Adobe Creative Cloud",
+                "Description": "Tar bort Adobe Creative Cloud och relaterade komponenter."
+            },
+            "WPFPanelControl": {
+                "Content": "Kontrollpanelen",
+                "Description": "Öppnar den klassiska kontrollpanelen."
+            },
+            "WPFPanelComputer": {
+                "Content": "Datorhantering",
+                "Description": "Öppnar datorhanteringskonsolen."
+            },
+            "WPFPanelNetwork": {
+                "Content": "Nätverksanslutningar",
+                "Description": "Öppnar panelen för nätverksanslutningar."
+            },
+            "WPFPanelPower": {
+                "Content": "Energialternativ",
+                "Description": "Öppnar energialternativen."
+            },
+            "WPFPanelPrinter": {
+                "Content": "Enheter och skrivare",
+                "Description": "Öppnar enheter och skrivare."
+            },
+            "WPFPanelRegion": {
+                "Content": "Region",
+                "Description": "Öppnar panelen för regionsinställningar."
+            },
+            "WPFPanelRestore": {
+                "Content": "Systemåterställning",
+                "Description": "Öppnar systemåterställning."
+            },
+            "WPFPanelSound": {
+                "Content": "Ljudinställningar",
+                "Description": "Öppnar ljudinställningarna."
+            },
+            "WPFPanelSystem": {
+                "Content": "Systemegenskaper",
+                "Description": "Öppnar dialogrutan för systemegenskaper."
+            },
+            "WPFPanelTimedate": {
+                "Content": "Tid och datum",
+                "Description": "Öppnar inställningarna för datum och tid."
+            },
+            "WPFWinUtilInstallPSProfile": {
+                "Content": "Installera CTT PowerShell-profil",
+                "Description": "Installerar Chris Titus Tech-PowerShell-profilen."
+            },
+            "WPFWinUtilUninstallPSProfile": {
+                "Content": "Ta bort CTT PowerShell-profil",
+                "Description": "Tar bort Chris Titus Tech-PowerShell-profilen."
+            },
+            "WPFWinUtilSSHServer": {
+                "Content": "Aktivera OpenSSH-server",
+                "Description": "Aktiverar OpenSSH-servern för fjärranslutningar."
+            }
+        }
+    }
+}

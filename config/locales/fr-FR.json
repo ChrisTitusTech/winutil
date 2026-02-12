@@ -1,0 +1,503 @@
+{
+    "ui": {
+        "tabs": {
+            "Install": "Installer",
+            "Tweaks": "Ajustements",
+            "Config": "Configuration",
+            "Updates": "Mises à jour"
+        },
+        "navButtons": {
+            "WPFTab1BT": "Installer",
+            "WPFTab2BT": "Ajustements",
+            "WPFTab3BT": "Configuration",
+            "WPFTab4BT": "Mises à jour"
+        },
+        "menus": {
+            "ImportMenuItem": "Importer",
+            "ExportMenuItem": "Exporter",
+            "AboutMenuItem": "À propos",
+            "SponsorMenuItem": "Sponsors",
+            "AutoThemeMenuItem": "Auto",
+            "DarkThemeMenuItem": "Sombre",
+            "LightThemeMenuItem": "Clair",
+            "EnglishLanguageMenuItem": "English",
+            "FrenchLanguageMenuItem": "Français",
+            "SpanishLanguageMenuItem": "Español",
+            "GermanLanguageMenuItem": "Deutsch",
+            "ItalianLanguageMenuItem": "Italiano",
+            "PortugueseLanguageMenuItem": "Português",
+            "PolishLanguageMenuItem": "Polski"
+        },
+        "tooltips": {
+            "ImportMenuItem": "Importer la configuration depuis un fichier exporté.",
+            "ExportMenuItem": "Exporter les éléments sélectionnés et copier la commande d'exécution dans le presse-papiers.",
+            "AutoThemeMenuItem": "Utiliser le thème du système",
+            "DarkThemeMenuItem": "Utiliser le thème sombre",
+            "LightThemeMenuItem": "Utiliser le thème clair",
+            "ThemeButton": "Sélectionner un thème pour le style du texte",
+            "FontScalingButton": "Ajuster la mise à l'échelle de la police pour l'accessibilité",
+            "LanguageButton": "Changer la langue / Change Language"
+        },
+        "buttons": {
+            "WPFstandard": " Standard ",
+            "WPFminimal": " Minimal ",
+            "WPFClearTweaksSelection": " Effacer ",
+            "WPFGetInstalledTweaks": " Installés ",
+            "WPFTweaksbutton": "Appliquer les ajustements",
+            "WPFUndoall": "Annuler les ajustements sélectionnés",
+            "FontScalingResetButton": "Réinitialiser",
+            "FontScalingApplyButton": "Appliquer"
+        },
+        "labels": {
+            "RecommendedSelections": "Sélections recommandées :",
+            "FontScaling": "Mise à l'échelle de la police",
+            "Small": "Petit",
+            "Large": "Grand",
+            "SearchBarPlaceholder": "Rechercher"
+        },
+        "textblocks": {
+            "TweaksNote": "Remarque : Survolez les éléments pour obtenir une meilleure description. Soyez prudent car de nombreux ajustements modifieront fortement votre système.\nLes sélections recommandées sont pour les utilisateurs normaux et si vous n'êtes pas sûr, ne cochez rien d'autre !"
+        },
+        "updates": {
+            "WPFUpdatesdefault": "Paramètres par défaut",
+            "WPFUpdatessecurity": "Paramètres de sécurité",
+            "WPFUpdatesdisable": "Désactiver toutes les mises à jour",
+            "DefaultTitle": "Configuration par défaut de Windows Update",
+            "DefaultLine1": " - Aucune modification des paramètres Windows par défaut",
+            "DefaultLine2": " - Supprime tous les paramètres de mise à jour personnalisés",
+            "DefaultNote": "Remarque : Ceci réinitialise vos paramètres Windows Update aux paramètres d'usine. Cela supprime TOUTE politique ou personnalisation appliquée à Windows Update.",
+            "SecurityTitle": "Configuration de sécurité équilibrée",
+            "SecurityLine1": " - Mises à jour de fonctionnalités retardées de 365 jours",
+            "SecurityLine2": " - Mises à jour de sécurité installées après 4 jours",
+            "SecurityFeatureUpdates": "Mises à jour de fonctionnalités :",
+            "SecurityFeatureDesc": "Nouvelles fonctionnalités et bugs potentiels",
+            "SecuritySecurityUpdates": "Mises à jour de sécurité :",
+            "SecuritySecurityDesc": "Correctifs de sécurité critiques",
+            "SecurityNote": "Remarque : Ceci s'applique uniquement aux systèmes Pro pouvant utiliser les stratégies de groupe.",
+            "DisableTitle": "!! Non recommandé !!",
+            "DisableLine1": " - Désactive TOUTES les mises à jour Windows",
+            "DisableLine2": " - Augmente les risques de sécurité",
+            "DisableLine3": " - À utiliser uniquement pour les systèmes isolés",
+            "DisableNote": "Avertissement : Votre système sera vulnérable sans les mises à jour de sécurité."
+        }
+    },
+    "config": {
+        "categories": {
+            "Essential Tweaks": "Ajustements essentiels",
+            "Customize Preferences": "Personnaliser les préférences",
+            "Performance Plans": "Plans de performance",
+            "z__Advanced Tweaks - CAUTION": "z__Ajustements avancés - ATTENTION",
+            "Features": "Fonctionnalités",
+            "Fixes": "Réparations",
+            "Legacy Windows Panels": "Panneaux Windows classiques",
+            "Powershell Profile Powershell 7+ Only": "Profil PowerShell (PowerShell 7+ uniquement)",
+            "Remote Access": "Accès à distance",
+            "Browsers": "Navigateurs",
+            "Communications": "Communications",
+            "Development": "Développement",
+            "Document": "Documents",
+            "Games": "Jeux",
+            "Microsoft Tools": "Outils Microsoft",
+            "Multimedia Tools": "Outils multimédia",
+            "Pro Tools": "Outils professionnels",
+            "Utilities": "Utilitaires",
+            "____Actions": "____Actions",
+            "__Package Manager": "__Gestionnaire de paquets",
+            "__Selection": "__Sélection"
+        },
+        "appnavigation": {
+            "WPFInstall": {
+                "Content": "Installer/Mettre à jour les applications",
+                "Description": "Installer ou mettre à jour les applications sélectionnées"
+            },
+            "WPFUninstall": {
+                "Content": "Désinstaller les applications",
+                "Description": "Désinstaller les applications sélectionnées"
+            },
+            "WPFInstallUpgrade": {
+                "Content": "Mettre à jour toutes les applications",
+                "Description": "Mettre à jour toutes les applications vers la dernière version"
+            },
+            "WingetRadioButton": {
+                "Content": "Winget",
+                "Description": "Utiliser Winget pour la gestion des paquets"
+            },
+            "ChocoRadioButton": {
+                "Content": "Chocolatey",
+                "Description": "Utiliser Chocolatey pour la gestion des paquets"
+            },
+            "WPFCollapseAllCategories": {
+                "Content": "Réduire toutes les catégories",
+                "Description": "Réduire toutes les catégories d'applications"
+            },
+            "WPFExpandAllCategories": {
+                "Content": "Développer toutes les catégories",
+                "Description": "Développer toutes les catégories d'applications"
+            },
+            "WPFClearInstallSelection": {
+                "Content": "Effacer la sélection",
+                "Description": "Effacer la sélection des applications"
+            },
+            "WPFGetInstalled": {
+                "Content": "Obtenir les installés",
+                "Description": "Afficher les applications installées"
+            },
+            "WPFselectedAppsButton": {
+                "Content": "Apps sélectionnées : 0",
+                "Description": "Afficher les applications sélectionnées"
+            }
+        },
+        "tweaks": {
+            "WPFTweaksActivity": {
+                "Content": "Désactiver l'historique d'activité",
+                "Description": "Supprime les documents récents, le presse-papiers et l'historique d'exécution."
+            },
+            "WPFTweaksHiber": {
+                "Content": "Désactiver l'hibernation",
+                "Description": "L'hibernation est principalement destinée aux ordinateurs portables car elle sauvegarde la mémoire avant l'arrêt. Elle ne devrait vraiment pas être utilisée sur un PC de bureau."
+            },
+            "WPFTweaksWidget": {
+                "Content": "Supprimer les widgets",
+                "Description": "Supprime les widgets Windows du système."
+            },
+            "WPFTweaksLaptopHibernation": {
+                "Content": "Définir l'hibernation par défaut (idéal pour portables)",
+                "Description": "Définit l'hibernation comme option d'alimentation par défaut au lieu de la veille."
+            },
+            "WPFTweaksLocation": {
+                "Content": "Désactiver le suivi de localisation",
+                "Description": "Désactive le suivi de localisation Windows."
+            },
+            "WPFTweaksServices": {
+                "Content": "Définir les services en Manuel",
+                "Description": "Définit les services non essentiels en démarrage manuel."
+            },
+            "WPFTweaksBraveDebloat": {
+                "Content": "Nettoyage de Brave",
+                "Description": "Supprime les composants indésirables de Brave."
+            },
+            "WPFTweaksEdgeDebloat": {
+                "Content": "Nettoyage d'Edge",
+                "Description": "Supprime les composants indésirables de Microsoft Edge."
+            },
+            "WPFTweaksConsumerFeatures": {
+                "Content": "Désactiver les fonctionnalités grand public",
+                "Description": "Désactive les fonctionnalités grand public Windows comme les applications suggérées."
+            },
+            "WPFTweaksTelemetry": {
+                "Content": "Désactiver la télémétrie",
+                "Description": "Désactive la collecte de données et la télémétrie Windows."
+            },
+            "WPFTweaksRemoveEdge": {
+                "Content": "Supprimer Microsoft Edge",
+                "Description": "Supprime Microsoft Edge du système."
+            },
+            "WPFTweaksUTC": {
+                "Content": "Définir l'heure en UTC (Double démarrage)",
+                "Description": "Définit l'horloge système en UTC pour la compatibilité dual-boot."
+            },
+            "WPFTweaksRemoveOneDrive": {
+                "Content": "Supprimer OneDrive",
+                "Description": "Supprime Microsoft OneDrive du système."
+            },
+            "WPFTweaksRemoveHome": {
+                "Content": "Supprimer Accueil de l'Explorateur",
+                "Description": "Supprime la page d'accueil de l'Explorateur de fichiers."
+            },
+            "WPFTweaksRemoveGallery": {
+                "Content": "Supprimer la Galerie de l'Explorateur",
+                "Description": "Supprime la page Galerie de l'Explorateur de fichiers."
+            },
+            "WPFTweaksDisplay": {
+                "Content": "Optimiser l'affichage pour les performances",
+                "Description": "Ajuste les paramètres d'affichage pour de meilleures performances."
+            },
+            "WPFTweaksXboxRemoval": {
+                "Content": "Supprimer Xbox et les composants de jeu",
+                "Description": "Supprime Xbox et les composants de jeu du système."
+            },
+            "WPFTweaksDeBloat": {
+                "Content": "Supprimer TOUTES les apps du MS Store - NON RECOMMANDÉ",
+                "Description": "Supprime toutes les applications du Microsoft Store. À utiliser avec extrême prudence."
+            },
+            "WPFTweaksRestorePoint": {
+                "Content": "Créer un point de restauration",
+                "Description": "Crée un point de restauration système avant d'appliquer les ajustements."
+            },
+            "WPFTweaksEndTaskOnTaskbar": {
+                "Content": "Activer Fin de tâche avec clic droit",
+                "Description": "Ajoute l'option Fin de tâche au menu contextuel de la barre des tâches."
+            },
+            "WPFTweaksPowershell7Tele": {
+                "Content": "Désactiver la télémétrie PowerShell 7",
+                "Description": "Désactive la collecte de télémétrie dans PowerShell 7."
+            },
+            "WPFTweaksStorage": {
+                "Content": "Désactiver l'Assistant Stockage",
+                "Description": "Désactive le nettoyage automatique de l'Assistant Stockage Windows."
+            },
+            "WPFTweaksRemoveCopilot": {
+                "Content": "Désactiver Microsoft Copilot",
+                "Description": "Désactive l'assistant IA Microsoft Copilot."
+            },
+            "WPFTweaksWPBT": {
+                "Content": "Désactiver WPBT (Table binaire de la plateforme Windows)",
+                "Description": "Désactive la WPBT qui permet aux OEM d'injecter des logiciels."
+            },
+            "WPFTweaksRazerBlock": {
+                "Content": "Bloquer les installations Razer",
+                "Description": "Bloque les installations automatiques des logiciels Razer."
+            },
+            "WPFTweaksDisableNotifications": {
+                "Content": "Désactiver les notifications/Calendrier",
+                "Description": "Désactive la zone de notifications et le calendrier contextuel."
+            },
+            "WPFTweaksBlockAdobeNet": {
+                "Content": "Bloquer le réseau Adobe",
+                "Description": "Bloque les connexions réseau d'Adobe."
+            },
+            "WPFTweaksRightClickMenu": {
+                "Content": "Menu clic droit classique",
+                "Description": "Restaure le menu contextuel classique du clic droit Windows."
+            },
+            "WPFTweaksDiskCleanup": {
+                "Content": "Lancer le nettoyage de disque",
+                "Description": "Lance l'utilitaire de nettoyage de disque Windows."
+            },
+            "WPFTweaksDeleteTempFiles": {
+                "Content": "Supprimer les fichiers temporaires",
+                "Description": "Supprime les fichiers temporaires pour libérer de l'espace disque."
+            },
+            "WPFTweaksIPv46": {
+                "Content": "Préférer IPv4 à IPv6",
+                "Description": "Configure le système pour préférer les connexions IPv4."
+            },
+            "WPFTweaksTeredo": {
+                "Content": "Désactiver Teredo",
+                "Description": "Désactive le protocole de tunnelisation Teredo."
+            },
+            "WPFTweaksDisableIPv6": {
+                "Content": "Désactiver IPv6",
+                "Description": "Désactive le protocole réseau IPv6."
+            },
+            "WPFTweaksDisableBGapps": {
+                "Content": "Désactiver les apps en arrière-plan",
+                "Description": "Désactive l'exécution des applications en arrière-plan."
+            },
+            "WPFTweaksDisableFSO": {
+                "Content": "Désactiver les optimisations plein écran",
+                "Description": "Désactive les optimisations plein écran pour de meilleures performances en jeu."
+            },
+            "WPFToggleDarkMode": {
+                "Content": "Thème sombre pour Windows",
+                "Description": "Active le thème sombre dans tout Windows."
+            },
+            "WPFToggleBingSearch": {
+                "Content": "Recherche Bing dans le menu Démarrer",
+                "Description": "Contrôle l'intégration de la recherche Bing dans le menu Démarrer."
+            },
+            "WPFToggleNumLock": {
+                "Content": "Verr. Num au démarrage",
+                "Description": "Active le verrouillage numérique au démarrage du système."
+            },
+            "WPFToggleVerboseLogon": {
+                "Content": "Messages détaillés à la connexion",
+                "Description": "Affiche des messages d'état détaillés lors de la connexion."
+            },
+            "WPFToggleStartMenuRecommendations": {
+                "Content": "Recommandations dans le menu Démarrer",
+                "Description": "Contrôle les recommandations dans le menu Démarrer."
+            },
+            "WPFToggleHideSettingsHome": {
+                "Content": "Supprimer la page d'accueil des Paramètres",
+                "Description": "Supprime la page d'accueil des Paramètres Windows."
+            },
+            "WPFToggleMouseAcceleration": {
+                "Content": "Accélération de la souris",
+                "Description": "Contrôle l'accélération du pointeur de la souris."
+            },
+            "WPFToggleStickyKeys": {
+                "Content": "Touches rémanentes",
+                "Description": "Contrôle la fonctionnalité d'accessibilité Touches rémanentes."
+            },
+            "WPFToggleNewOutlook": {
+                "Content": "Nouveau Outlook",
+                "Description": "Contrôle la nouvelle application Outlook."
+            },
+            "WPFToggleMultiplaneOverlay": {
+                "Content": "Désactiver le Multiplane Overlay",
+                "Description": "Désactive le Multiplane Overlay pour une meilleure compatibilité."
+            },
+            "WPFToggleHiddenFiles": {
+                "Content": "Afficher les fichiers cachés",
+                "Description": "Affiche les fichiers cachés dans l'Explorateur de fichiers."
+            },
+            "WPFToggleShowExt": {
+                "Content": "Afficher les extensions de fichiers",
+                "Description": "Affiche les extensions de fichiers dans l'Explorateur de fichiers."
+            },
+            "WPFToggleTaskbarSearch": {
+                "Content": "Bouton de recherche dans la barre des tâches",
+                "Description": "Contrôle la visibilité du bouton de recherche dans la barre des tâches."
+            },
+            "WPFToggleTaskView": {
+                "Content": "Bouton Vue des tâches dans la barre des tâches",
+                "Description": "Contrôle la visibilité du bouton Vue des tâches dans la barre des tâches."
+            },
+            "WPFToggleTaskbarAlignment": {
+                "Content": "Centrer les éléments de la barre des tâches",
+                "Description": "Centre l'alignement des éléments de la barre des tâches."
+            },
+            "WPFToggleDetailedBSoD": {
+                "Content": "Écran bleu détaillé",
+                "Description": "Affiche des informations détaillées sur l'écran bleu de la mort."
+            },
+            "WPFToggleS3Sleep": {
+                "Content": "Veille S3",
+                "Description": "Contrôle l'état de veille S3."
+            },
+            "WPFOOSUbutton": {
+                "Content": "Lancer OO Shutup 10",
+                "Description": "Lance l'outil de confidentialité O&O ShutUp10."
+            },
+            "WPFchangedns": {
+                "Content": "DNS",
+                "Description": "Modifier les paramètres du serveur DNS."
+            },
+            "WPFAddUltPerf": {
+                "Content": "Ajouter et activer le profil Performance ultime",
+                "Description": "Ajoute et active le plan d'alimentation Performance ultime."
+            },
+            "WPFRemoveUltPerf": {
+                "Content": "Supprimer le profil Performance ultime",
+                "Description": "Supprime le plan d'alimentation Performance ultime."
+            },
+            "WPFTweaksDisableExplorerAutoDiscovery": {
+                "Content": "Désactiver la découverte automatique des dossiers",
+                "Description": "Désactive la découverte automatique du type de dossier dans l'Explorateur."
+            },
+            "WPFToggleDisableCrossDeviceResume": {
+                "Content": "Reprise inter-appareils",
+                "Description": "Contrôle la fonctionnalité de reprise inter-appareils."
+            }
+        },
+        "features": {
+            "WPFFeaturesdotnet": {
+                "Content": "Tous les .Net Framework (2,3,4)",
+                "Description": ".NET et .NET Framework est une plateforme de développement composée d'outils, de langages de programmation et de bibliothèques pour créer de nombreux types d'applications."
+            },
+            "WPFFeatureshyperv": {
+                "Content": "Virtualisation HyperV",
+                "Description": "Hyper-V est un produit de virtualisation matérielle développé par Microsoft qui permet aux utilisateurs de créer et gérer des machines virtuelles."
+            },
+            "WPFFeatureslegacymedia": {
+                "Content": "Médias hérités (WMP, DirectPlay)",
+                "Description": "Composants multimédias hérités incluant Windows Media Player et DirectPlay."
+            },
+            "WPFFeaturewsl": {
+                "Content": "Sous-système Windows pour Linux",
+                "Description": "Exécutez des distributions Linux nativement sur Windows sans machine virtuelle."
+            },
+            "WPFFeaturenfs": {
+                "Content": "NFS - Système de fichiers réseau",
+                "Description": "Système de fichiers réseau pour le partage de fichiers sur le réseau."
+            },
+            "WPFFeatureRegBackup": {
+                "Content": "Activer la sauvegarde quotidienne du registre à 0h30",
+                "Description": "Crée une tâche planifiée pour sauvegarder le registre quotidiennement."
+            },
+            "WPFFeatureEnableLegacyRecovery": {
+                "Content": "Activer la récupération héritée F8",
+                "Description": "Active les options de récupération héritées via la touche F8."
+            },
+            "WPFFeatureDisableLegacyRecovery": {
+                "Content": "Désactiver la récupération héritée F8",
+                "Description": "Désactive les options de récupération héritées via la touche F8."
+            },
+            "WPFFeaturesSandbox": {
+                "Content": "Bac à sable Windows",
+                "Description": "Un environnement virtuel léger pour lancer des applications en toute sécurité."
+            },
+            "WPFFeatureInstall": {
+                "Content": "Installer les fonctionnalités",
+                "Description": "Installe les fonctionnalités Windows sélectionnées."
+            },
+            "WPFPanelAutologin": {
+                "Content": "Configurer la connexion automatique",
+                "Description": "Configure la connexion automatique pour l'utilisateur actuel."
+            },
+            "WPFFixesUpdate": {
+                "Content": "Réinitialiser Windows Update",
+                "Description": "Réinitialise les composants Windows Update pour résoudre les problèmes de mise à jour."
+            },
+            "WPFFixesNetwork": {
+                "Content": "Réinitialiser le réseau",
+                "Description": "Réinitialise les paramètres réseau pour résoudre les problèmes de connectivité."
+            },
+            "WPFPanelDISM": {
+                "Content": "Analyse de corruption système",
+                "Description": "Analyse et répare la corruption des fichiers système avec DISM."
+            },
+            "WPFFixesWinget": {
+                "Content": "Réinstaller WinGet",
+                "Description": "Réinstalle le gestionnaire de paquets WinGet."
+            },
+            "WPFRunAdobeCCCleanerTool": {
+                "Content": "Supprimer Adobe Creative Cloud",
+                "Description": "Supprime Adobe Creative Cloud et les composants associés."
+            },
+            "WPFPanelControl": {
+                "Content": "Panneau de configuration",
+                "Description": "Ouvre le Panneau de configuration classique."
+            },
+            "WPFPanelComputer": {
+                "Content": "Gestion de l'ordinateur",
+                "Description": "Ouvre la console Gestion de l'ordinateur."
+            },
+            "WPFPanelNetwork": {
+                "Content": "Connexions réseau",
+                "Description": "Ouvre le panneau Connexions réseau."
+            },
+            "WPFPanelPower": {
+                "Content": "Options d'alimentation",
+                "Description": "Ouvre le panneau Options d'alimentation."
+            },
+            "WPFPanelPrinter": {
+                "Content": "Imprimantes",
+                "Description": "Ouvre le panneau Imprimantes et périphériques."
+            },
+            "WPFPanelRegion": {
+                "Content": "Région",
+                "Description": "Ouvre le panneau Paramètres régionaux."
+            },
+            "WPFPanelRestore": {
+                "Content": "Restauration Windows",
+                "Description": "Ouvre le panneau Restauration du système."
+            },
+            "WPFPanelSound": {
+                "Content": "Paramètres audio",
+                "Description": "Ouvre le panneau Paramètres audio."
+            },
+            "WPFPanelSystem": {
+                "Content": "Propriétés système",
+                "Description": "Ouvre la boîte de dialogue Propriétés système."
+            },
+            "WPFPanelTimedate": {
+                "Content": "Date et heure",
+                "Description": "Ouvre les paramètres Date et heure."
+            },
+            "WPFWinUtilInstallPSProfile": {
+                "Content": "Installer le profil PowerShell CTT",
+                "Description": "Installe le profil PowerShell Chris Titus Tech."
+            },
+            "WPFWinUtilUninstallPSProfile": {
+                "Content": "Désinstaller le profil PowerShell CTT",
+                "Description": "Supprime le profil PowerShell Chris Titus Tech."
+            },
+            "WPFWinUtilSSHServer": {
+                "Content": "Activer le serveur OpenSSH",
+                "Description": "Active le serveur OpenSSH pour les connexions à distance."
+            }
+        }
+    }
+}

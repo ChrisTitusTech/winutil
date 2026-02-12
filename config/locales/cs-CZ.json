@@ -1,0 +1,507 @@
+{
+    "ui": {
+        "tabs": {
+            "Install": "Instalace",
+            "Tweaks": "Úpravy",
+            "Config": "Konfig",
+            "Updates": "Aktualizace"
+        },
+        "navButtons": {
+            "WPFTab1BT": "Instalace",
+            "WPFTab2BT": "Úpravy",
+            "WPFTab3BT": "Konfig",
+            "WPFTab4BT": "Aktualizace"
+        },
+        "menus": {
+            "ImportMenuItem": "Importovat",
+            "ExportMenuItem": "Exportovat",
+            "AboutMenuItem": "O aplikaci",
+            "SponsorMenuItem": "Sponzoři",
+            "AutoThemeMenuItem": "Auto",
+            "DarkThemeMenuItem": "Tmavý",
+            "LightThemeMenuItem": "Světlý",
+            "EnglishLanguageMenuItem": "English",
+            "FrenchLanguageMenuItem": "Français",
+            "SpanishLanguageMenuItem": "Español",
+            "GermanLanguageMenuItem": "Deutsch",
+            "ItalianLanguageMenuItem": "Italiano",
+            "PortugueseLanguageMenuItem": "Português",
+            "PolishLanguageMenuItem": "Polski",
+            "DutchLanguageMenuItem": "Nederlands",
+            "RomanianLanguageMenuItem": "Română",
+            "SwedishLanguageMenuItem": "Svenska",
+            "CzechLanguageMenuItem": "Čeština"
+        },
+        "tooltips": {
+            "ImportMenuItem": "Importovat konfiguraci z exportovaného souboru.",
+            "ExportMenuItem": "Exportovat vybrané prvky a zkopírovat příkaz do schránky.",
+            "AutoThemeMenuItem": "Použít systémový motiv",
+            "DarkThemeMenuItem": "Použít tmavý motiv",
+            "LightThemeMenuItem": "Použít světlý motiv",
+            "ThemeButton": "Vybrat motiv pro styl textu",
+            "FontScalingButton": "Upravit měřítko písma pro usnadnění přístupu",
+            "LanguageButton": "Změnit jazyk / Change Language"
+        },
+        "buttons": {
+            "WPFstandard": " Standardní ",
+            "WPFminimal": " Minimální ",
+            "WPFClearTweaksSelection": " Vymazat ",
+            "WPFGetInstalledTweaks": " Instalované ",
+            "WPFTweaksbutton": "Spustit úpravy",
+            "WPFUndoall": "Vrátit vybrané úpravy",
+            "FontScalingResetButton": "Resetovat",
+            "FontScalingApplyButton": "Použít"
+        },
+        "labels": {
+            "RecommendedSelections": "Doporučený výběr:",
+            "FontScaling": "Měřítko písma",
+            "Small": "Malé",
+            "Large": "Velké",
+            "SearchBarPlaceholder": "Hledat"
+        },
+        "textblocks": {
+            "TweaksNote": "Poznámka: Po najetí myší na položku se zobrazí podrobný popis. Buďte opatrní, mnoho těchto úprav výrazně mění systém.\nDoporučený výběr je pro běžné uživatele. Pokud si nejste jisti, NEZAŠKRTÁVEJTE nic jiného!"
+        },
+        "updates": {
+            "WPFUpdatesdefault": "Výchozí nastavení",
+            "WPFUpdatessecurity": "Zabezpečené nastavení",
+            "WPFUpdatesdisable": "Zakázat všechny aktualizace",
+            "DefaultTitle": "Výchozí konfigurace Windows Update",
+            "DefaultLine1": " - Žádné změny výchozího nastavení Windows",
+            "DefaultLine2": " - Odstraní veškerá vlastní nastavení aktualizací",
+            "DefaultNote": "Poznámka: Toto resetuje nastavení Windows Update na tovární hodnoty. Odstraní veškeré zásady nebo úpravy provedené ve Windows Update.",
+            "SecurityTitle": "Vyvážená bezpečnostní konfigurace",
+            "SecurityLine1": " - Funkční aktualizace odloženy o 365 dní",
+            "SecurityLine2": " - Bezpečnostní aktualizace instalovány po 4 dnech",
+            "SecurityFeatureUpdates": "Funkční aktualizace:",
+            "SecurityFeatureDesc": "Nové funkce a potenciální chyby",
+            "SecuritySecurityUpdates": "Bezpečnostní aktualizace:",
+            "SecuritySecurityDesc": "Kritické bezpečnostní záplaty",
+            "SecurityNote": "Poznámka: Platí pouze pro systémy Pro, které mohou používat zásady skupiny (GPO).",
+            "DisableTitle": "!! Nedoporučuje se !!",
+            "DisableLine1": " - Zakáže VEŠKERÉ aktualizace Windows",
+            "DisableLine2": " - Zvyšuje bezpečnostní rizika",
+            "DisableLine3": " - Používejte pouze pro izolované systémy",
+            "DisableNote": "Varování: Váš systém bude bez bezpečnostních aktualizací zranitelný."
+        }
+    },
+    "config": {
+        "categories": {
+            "Essential Tweaks": "Základní úpravy",
+            "Customize Preferences": "Přizpůsobení",
+            "Performance Plans": "Plány výkonu",
+            "z__Advanced Tweaks - CAUTION": "z__Pokročilé úpravy - POZOR",
+            "Features": "Funkce",
+            "Fixes": "Opravy",
+            "Legacy Windows Panels": "Starší panely Windows",
+            "Powershell Profile Powershell 7+ Only": "Powershell profil (pouze PS 7+)",
+            "Remote Access": "Vzdálený přístup",
+            "Browsers": "Prohlížeče",
+            "Communications": "Komunikace",
+            "Development": "Vývoj",
+            "Document": "Dokumenty",
+            "Games": "Hry",
+            "Microsoft Tools": "Nástroje Microsoft",
+            "Multimedia Tools": "Multimédia",
+            "Pro Tools": "Pro nástroje",
+            "Utilities": "Nástroje",
+            "____Actions": "____Akce",
+            "__Package Manager": "__Správce balíčků",
+            "__Selection": "__Výběr"
+        },
+        "appnavigation": {
+            "WPFInstall": {
+                "Content": "Instalovat/Aktualizovat aplikace",
+                "Description": "Instalovat nebo aktualizovat vybrané aplikace"
+            },
+            "WPFUninstall": {
+                "Content": "Odinstalovat aplikace",
+                "Description": "Odinstalovat vybrané aplikace"
+            },
+            "WPFInstallUpgrade": {
+                "Content": "Aktualizovat všechny aplikace",
+                "Description": "Aktualizovat všechny aplikace na nejnovější verzi"
+            },
+            "WingetRadioButton": {
+                "Content": "Winget",
+                "Description": "Použít Winget pro správu balíčků"
+            },
+            "ChocoRadioButton": {
+                "Content": "Chocolatey",
+                "Description": "Použít Chocolatey pro správu balíčků"
+            },
+            "WPFCollapseAllCategories": {
+                "Content": "Sbalit všechny kategorie",
+                "Description": "Sbalit všechny kategorie aplikací"
+            },
+            "WPFExpandAllCategories": {
+                "Content": "Rozbalit všechny kategorie",
+                "Description": "Rozbalit všechny kategorie aplikací"
+            },
+            "WPFClearInstallSelection": {
+                "Content": "Vymazat výběr",
+                "Description": "Vymazat výběr aplikací"
+            },
+            "WPFGetInstalled": {
+                "Content": "Získat instalované",
+                "Description": "Zobrazit nainstalované aplikace"
+            },
+            "WPFselectedAppsButton": {
+                "Content": "Vybrané aplikace: {0}",
+                "Description": "Zobrazit vybrané aplikace"
+            }
+        },
+        "tweaks": {
+            "WPFTweaksActivity": {
+                "Content": "Zakázat historii aktivit",
+                "Description": "Tím se vymažou nedávné dokumenty, schránka a historie spouštění."
+            },
+            "WPFTweaksHiber": {
+                "Content": "Zakázat hibernaci",
+                "Description": "Hibernace je určena pro notebooky, protože ukládá paměť před vypnutím. U stolních PC by se neměla používat."
+            },
+            "WPFTweaksWidget": {
+                "Content": "Odebrat widgety",
+                "Description": "Odebere widgety Windows ze systému."
+            },
+            "WPFTweaksLaptopHibernation": {
+                "Content": "Nastavit hibernaci jako výchozí (vhodné pro notebooky)",
+                "Description": "Nastaví hibernaci jako výchozí možnost napájení namísto režimu spánku."
+            },
+            "WPFTweaksLocation": {
+                "Content": "Zakázat sledování polohy",
+                "Description": "Zakáže sledování polohy ve Windows."
+            },
+            "WPFTweaksServices": {
+                "Content": "Nastavit služby na ruční spouštění",
+                "Description": "Nastaví nepodstatné služby na ruční spouštění."
+            },
+            "WPFTweaksBraveDebloat": {
+                "Content": "Brave Debloat",
+                "Description": "Odebere nepotřebné součásti prohlížeče Brave."
+            },
+            "WPFTweaksEdgeDebloat": {
+                "Content": "Edge Debloat",
+                "Description": "Odebere bloatware Microsoft Edge."
+            },
+            "WPFTweaksConsumerFeatures": {
+                "Content": "Zakázat spotřebitelské funkce",
+                "Description": "Zakáže spotřebitelské funkce Windows, jako jsou navrhované aplikace."
+            },
+            "WPFTweaksTelemetry": {
+                "Content": "Zakázat telemetrii",
+                "Description": "Zakáže sběr dat a telemetrii Windows."
+            },
+            "WPFTweaksRemoveEdge": {
+                "Content": "Odebrat Microsoft Edge",
+                "Description": "Odebere Microsoft Edge ze systému."
+            },
+            "WPFTweaksUTC": {
+                "Content": "Nastavit čas na UTC (Dual Boot)",
+                "Description": "Nastaví systémové hodiny na UTC pro kompatibilitu s dual-bootem."
+            },
+            "WPFTweaksRemoveOneDrive": {
+                "Content": "Odebrat OneDrive",
+                "Description": "Odebere Microsoft OneDrive ze systému."
+            },
+            "WPFTweaksRemoveHome": {
+                "Content": "Odebrat 'Domů' z Průzkumníka",
+                "Description": "Odebere domovskou stránku z Průzkumníka souborů."
+            },
+            "WPFTweaksRemoveGallery": {
+                "Content": "Odebrat 'Galerie' z Průzkumníka",
+                "Description": "Odebere stránku Galerie z Průzkumníka souborů."
+            },
+            "WPFTweaksDisplay": {
+                "Content": "Nastavit zobrazení pro výkon",
+                "Description": "Upraví nastavení zobrazení pro nejlepší výkon."
+            },
+            "WPFTweaksXboxRemoval": {
+                "Content": "Odebrat Xbox a herní součásti",
+                "Description": "Odebere Xbox a herní součásti ze systému."
+            },
+            "WPFTweaksDeBloat": {
+                "Content": "Odebrat VŠECHNY aplikace MS Store - NEDOPORUČUJE SE",
+                "Description": "Odebere všechny aplikace Microsoft Store. Používejte s extrémní opatrností."
+            },
+            "WPFTweaksRestorePoint": {
+                "Content": "Vytvořit bod obnovení",
+                "Description": "Vytvoří bod obnovení systému před aplikací úprav."
+            },
+            "WPFTweaksEndTaskOnTaskbar": {
+                "Content": "Povolit 'Ukončit úlohu' pravým kliknutím",
+                "Description": "Přidá možnost Ukončit úlohu do kontextového menu hlavního panelu."
+            },
+            "WPFTweaksPowershell7Tele": {
+                "Content": "Zakázat telemetrii Powershell 7",
+                "Description": "Zakáže sběr telemetrie v PowerShellu 7."
+            },
+            "WPFTweaksStorage": {
+                "Content": "Zakázat Inteligentní úložiště",
+                "Description": "Zakáže automatické čištění Inteligentního úložiště Windows."
+            },
+            "WPFTweaksRemoveCopilot": {
+                "Content": "Zakázat Microsoft Copilot",
+                "Description": "Zakáže AI asistenta Microsoft Copilot."
+            },
+            "WPFTweaksWPBT": {
+                "Content": "Zakázat Windows Platform Binary Table (WPBT)",
+                "Description": "Zakáže WPBT, který umožňuje OEM výrobcům vkládat software."
+            },
+            "WPFTweaksRazerBlock": {
+                "Content": "Blokovat instalace softwaru Razer",
+                "Description": "Blokuje automatické instalace softwaru Razer."
+            },
+            "WPFTweaksDisableNotifications": {
+                "Content": "Zakázat oznamovací oblast/kalendář",
+                "Description": "Zakáže oznamovací oblast a vyskakovací okno kalendáře."
+            },
+            "WPFTweaksBlockAdobeNet": {
+                "Content": "Blokovat síť Adobe",
+                "Description": "Blokuje síťová připojení Adobe."
+            },
+            "WPFTweaksRightClickMenu": {
+                "Content": "Nastavit klasické kontextové menu",
+                "Description": "Obnoví klasické kontextové menu Windows (pravý klik)."
+            },
+            "WPFTweaksDiskCleanup": {
+                "Content": "Spustit čištění disku",
+                "Description": "Spustí nástroj Čištění disku systému Windows."
+            },
+            "WPFTweaksDeleteTempFiles": {
+                "Content": "Smazat dočasné soubory",
+                "Description": "Smaže dočasné soubory pro uvolnění místa na disku."
+            },
+            "WPFTweaksIPv46": {
+                "Content": "Preferovat IPv4 před IPv6",
+                "Description": "Nakonfiguruje systém tak, aby upřednostňoval připojení IPv4."
+            },
+            "WPFTweaksTeredo": {
+                "Content": "Zakázat Teredo",
+                "Description": "Zakáže tunelovací protokol Teredo."
+            },
+            "WPFTweaksDisableIPv6": {
+                "Content": "Zakázat IPv6",
+                "Description": "Zakáže síťový protokol IPv6."
+            },
+            "WPFTweaksDisableBGapps": {
+                "Content": "Zakázat aplikace na pozadí",
+                "Description": "Zakáže spouštění aplikací na pozadí."
+            },
+            "WPFTweaksDisableFSO": {
+                "Content": "Zakázat optimalizace na celou obrazovku",
+                "Description": "Zakáže optimalizace na celou obrazovku pro lepší herní výkon."
+            },
+            "WPFToggleDarkMode": {
+                "Content": "Tmavý motiv Windows",
+                "Description": "Povolí tmavý motiv v celém systému Windows."
+            },
+            "WPFToggleBingSearch": {
+                "Content": "Hledání Bing v nabídce Start",
+                "Description": "Ovládá integraci hledání Bing v nabídce Start."
+            },
+            "WPFToggleNumLock": {
+                "Content": "NumLock při startu",
+                "Description": "Povolí NumLock při spuštění systému."
+            },
+            "WPFToggleVerboseLogon": {
+                "Content": "Podrobné zprávy při přihlašování",
+                "Description": "Zobrazuje podrobné zprávy o stavu během přihlašování."
+            },
+            "WPFToggleStartMenuRecommendations": {
+                "Content": "Doporučení v nabídce Start",
+                "Description": "Ovládá doporučení v nabídce Start."
+            },
+            "WPFToggleHideSettingsHome": {
+                "Content": "Odebrat úvodní stránku Nastavení",
+                "Description": "Odebere úvodní stránku z Nastavení Windows."
+            },
+            "WPFToggleMouseAcceleration": {
+                "Content": "Akcelerace myši",
+                "Description": "Ovládá akceleraci ukazatele myši."
+            },
+            "WPFToggleStickyKeys": {
+                "Content": "Jedním prstem",
+                "Description": "Ovládá funkci Jedním prstem pro usnadnění přístupu."
+            },
+            "WPFToggleNewOutlook": {
+                "Content": "Nový Outlook",
+                "Description": "Ovládá novou aplikaci Outlook."
+            },
+            "WPFToggleMultiplaneOverlay": {
+                "Content": "Zakázat Multiplane Overlay",
+                "Description": "Zakáže Multiplane Overlay pro lepší kompatibilitu."
+            },
+            "WPFToggleHiddenFiles": {
+                "Content": "Zobrazit skryté soubory",
+                "Description": "Zobrazí skryté soubory v Průzkumníku."
+            },
+            "WPFToggleShowExt": {
+                "Content": "Zobrazit přípony souborů",
+                "Description": "Zobrazí přípony souborů v Průzkumníku."
+            },
+            "WPFToggleTaskbarSearch": {
+                "Content": "Tlačítko hledání na hlavním panelu",
+                "Description": "Ovládá viditelnost tlačítka hledání."
+            },
+            "WPFToggleTaskView": {
+                "Content": "Tlačítko Zobrazení úloh na hlavním panelu",
+                "Description": "Ovládá viditelnost tlačítka Zobrazení úloh."
+            },
+            "WPFToggleTaskbarAlignment": {
+                "Content": "Zarovnat ikony hlavního panelu na střed",
+                "Description": "Zarovná ikony hlavního panelu na střed."
+            },
+            "WPFToggleDetailedBSoD": {
+                "Content": "Podrobné BSoD",
+                "Description": "Zobrazuje podrobné informace při 'modré obrazovce smrti'."
+            },
+            "WPFToggleS3Sleep": {
+                "Content": "Režim spánku S3",
+                "Description": "Ovládá stav spánku S3."
+            },
+            "WPFOOSUbutton": {
+                "Content": "Spustit OO Shutup 10",
+                "Description": "Spustí nástroj pro ochranu soukromí O&O ShutUp10."
+            },
+            "WPFchangedns": {
+                "Content": "DNS",
+                "Description": "Změnit nastavení DNS serveru."
+            },
+            "WPFAddUltPerf": {
+                "Content": "Přidat a aktivovat profil Ultimátní výkon",
+                "Description": "Přidá a aktivuje profil napájení Ultimátní výkon."
+            },
+            "WPFRemoveUltPerf": {
+                "Content": "Odebrat profil Ultimátní výkon",
+                "Description": "Odebere profil napájení Ultimátní výkon."
+            },
+            "WPFTweaksDisableExplorerAutoDiscovery": {
+                "Content": "Zakázat automatické rozpoznávání složek v Průzkumníku",
+                "Description": "Zakáže automatické rozpoznávání typu složek v Průzkumníku."
+            },
+            "WPFToggleDisableCrossDeviceResume": {
+                "Content": "Pokračovat na jiných zařízeních",
+                "Description": "Ovládá funkci Pokračovat na jiných zařízeních."
+            }
+        },
+        "features": {
+            "WPFFeaturesdotnet": {
+                "Content": "Všechny .Net Framework (2,3,4)",
+                "Description": ".NET a .NET Framework je vývojářská platforma od Microsoftu."
+            },
+            "WPFFeatureshyperv": {
+                "Content": "Virtualizace HyperV",
+                "Description": "Hyper-V je virtualizační produkt vyvinutý společností Microsoft."
+            },
+            "WPFFeatureslegacymedia": {
+                "Content": "Starší multimédia (WMP, DirectPlay)",
+                "Description": "Starší multimediální součásti včetně Windows Media Playeru a DirectPlay."
+            },
+            "WPFFeaturewsl": {
+                "Content": "Podsystém Windows pro Linux (WSL)",
+                "Description": "Spouštějte Linuxové distribuce nativně ve Windows bez VM."
+            },
+            "WPFFeaturenfs": {
+                "Content": "NFS - Network File System",
+                "Description": "Network File System pro sdílení souborů v síti."
+            },
+            "WPFFeatureRegBackup": {
+                "Content": "Povolit denní zálohování registru v 00:30",
+                "Description": "Vytvoří naplánovanou úlohu pro denní zálohu registru."
+            },
+            "WPFFeatureEnableLegacyRecovery": {
+                "Content": "Povolit klasický F8 boot recovery",
+                "Description": "Povolí klasické spouštěcí možnosti přes klávesu F8."
+            },
+            "WPFFeatureDisableLegacyRecovery": {
+                "Content": "Zakázat klasický F8 boot recovery",
+                "Description": "Zakáže klasické spouštěcí možnosti přes klávesu F8."
+            },
+            "WPFFeaturesSandbox": {
+                "Content": "Windows Sandbox",
+                "Description": "Lehké virtuální prostředí pro bezpečné spouštění aplikací."
+            },
+            "WPFFeatureInstall": {
+                "Content": "Instalovat funkce",
+                "Description": "Instalovat vybrané funkce Windows."
+            },
+            "WPFPanelAutologin": {
+                "Content": "Nastavit automatické přihlašování",
+                "Description": "Nakonfigurovat automatické přihlašování pro aktuálního uživatele."
+            },
+            "WPFFixesUpdate": {
+                "Content": "Resetovat Windows Update",
+                "Description": "Resetuje součásti Windows Update pro opravu chyb."
+            },
+            "WPFFixesNetwork": {
+                "Content": "Resetovat síť",
+                "Description": "Resetuje nastavení sítě pro vyřešení problémů s připojením."
+            },
+            "WPFPanelDISM": {
+                "Content": "Kontrola poškození systému (DISM)",
+                "Description": "Skenuje a opravuje poškozené systémové soubory pomocí nástroje DISM."
+            },
+            "WPFFixesWinget": {
+                "Content": "Přeinstalovat WinGet",
+                "Description": "Přeinstaluje správce balíčků WinGet."
+            },
+            "WPFRunAdobeCCCleanerTool": {
+                "Content": "Odebrat Adobe Creative Cloud",
+                "Description": "Odebere Adobe Creative Cloud a související součásti."
+            },
+            "WPFPanelControl": {
+                "Content": "Ovládací panely",
+                "Description": "Otevře klasické Ovládací panely."
+            },
+            "WPFPanelComputer": {
+                "Content": "Správa počítače",
+                "Description": "Otevře konzolu Správa počítače."
+            },
+            "WPFPanelNetwork": {
+                "Content": "Síťová připojení",
+                "Description": "Otevře panel Síťová připojení."
+            },
+            "WPFPanelPower": {
+                "Content": "Možnosti napájení",
+                "Description": "Otevře panel Možnosti napájení."
+            },
+            "WPFPanelPrinter": {
+                "Content": "Tiskárny a zařízení",
+                "Description": "Otevře panel Tiskárny a zařízení."
+            },
+            "WPFPanelRegion": {
+                "Content": "Oblast",
+                "Description": "Otevře nastavení oblasti."
+            },
+            "WPFPanelRestore": {
+                "Content": "Obnovení systému",
+                "Description": "Otevře panel Obnovení systému."
+            },
+            "WPFPanelSound": {
+                "Content": "Nastavení zvuku",
+                "Description": "Otevře nastavení zvuku."
+            },
+            "WPFPanelSystem": {
+                "Content": "Vlastnosti systému",
+                "Description": "Otevře dialogové okno Vlastnosti systému."
+            },
+            "WPFPanelTimedate": {
+                "Content": "Datum a čas",
+                "Description": "Otevře nastavení data a času."
+            },
+            "WPFWinUtilInstallPSProfile": {
+                "Content": "Instalovat CTT PowerShell profil",
+                "Description": "Nainstaluje PowerShell profil Chris Titus Tech."
+            },
+            "WPFWinUtilUninstallPSProfile": {
+                "Content": "Odinstalovat CTT PowerShell profil",
+                "Description": "Odebere PowerShell profil Chris Titus Tech."
+            },
+            "WPFWinUtilSSHServer": {
+                "Content": "Povolit OpenSSH server",
+                "Description": "Povolí OpenSSH server pro vzdálená připojení."
+            }
+        }
+    }
+}
