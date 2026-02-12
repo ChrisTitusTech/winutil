@@ -3,11 +3,12 @@ title: "Enable Daily Registry Backup Task 12.30am"
 description: ""
 ---
 ```json {filename="config/feature.json",linenos=inline,linenostart=77}
-"WPFFeatureRegBackup": {
+  "WPFFeatureRegBackup": {
     "Content": "Enable Daily Registry Backup Task 12.30am",
     "Description": "Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803.",
     "category": "Features",
     "panel": "1",
+    "Order": "a017_",
     "feature": [],
     "InvokeScript": [
       "

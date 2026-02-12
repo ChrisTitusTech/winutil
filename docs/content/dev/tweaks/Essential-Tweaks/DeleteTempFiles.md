@@ -8,6 +8,7 @@ description: ""
     "Description": "Erases TEMP Folders",
     "category": "Essential Tweaks",
     "panel": "1",
+    "Order": "a002_",
     "InvokeScript": [
       "
       Remove-Item -Path \"$Env:Temp\\*\" -Recurse -Force

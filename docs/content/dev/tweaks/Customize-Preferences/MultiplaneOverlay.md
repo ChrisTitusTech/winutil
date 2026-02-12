@@ -1,22 +1,22 @@
 ---
-title: "Center Taskbar Items"
+title: "Disable Multiplane Overlay"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2570}
-  "WPFToggleTaskbarAlignment": {
-    "Content": "Center Taskbar Items",
-    "Description": "[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2455}
+  "WPFToggleMultiplaneOverlay": {
+    "Content": "Disable Multiplane Overlay",
+    "Description": "Disable the Multiplane Overlay which can sometimes cause issues with Graphics Cards.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a204_",
+    "Order": "a111_",
     "Type": "Toggle",
     "registry": [
       {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "Name": "TaskbarAl",
-        "Value": "1",
-        "OriginalValue": "0",
-        "DefaultState": "true",
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Dwm",
+        "Name": "OverlayTestMode",
+        "Value": "5",
+        "OriginalValue": "<RemoveEntry>",
+        "DefaultState": "false",
         "Type": "DWord"
       }
     ],

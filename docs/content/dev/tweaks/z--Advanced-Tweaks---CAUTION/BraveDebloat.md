@@ -1,17 +1,17 @@
 ---
-title: "Debloat Brave"
+title: "Brave Debloat"
 description: ""
 ---
-
 ```json {filename="config/tweaks.json",linenos=inline,linenostart=1139}
   "WPFTweaksBraveDebloat": {
     "Content": "Brave Debloat",
     "Description": "Disables various annoyances like Brave Rewards,Leo AI,Crypto Wallet and VPN",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
+    "Order": "a022_",
     "registry": [
       {
-        "Path":"HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
         "Name": "BraveRewardsDisabled",
         "Type": "DWord",
         "Value": "1",
@@ -47,3 +47,9 @@ description: ""
       }
     ],
 ```
+
+## Registry Changes
+
+Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.
+
+You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).

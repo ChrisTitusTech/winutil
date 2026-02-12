@@ -8,6 +8,7 @@ description: ""
     "Description": "USE WITH CAUTION!!! This will remove ALL Microsoft store apps.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
+    "Order": "a028_",
     "appx": [
       "Microsoft.Microsoft3DViewer",
       "Microsoft.AppConnector",

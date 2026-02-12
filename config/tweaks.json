@@ -58,7 +58,7 @@
     "UndoScript": [
       "powercfg.exe /hibernate on"
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/hibernation"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/hiber"
   },
   "WPFTweaksWidget": {
     "Content": "Remove Widgets",
@@ -83,7 +83,7 @@
       Invoke-WinUtilExplorerUpdate -action \"restart\"
       "
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/widgets"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/widget"
   },
   "WPFTweaksLaptopHibernation": {
     "Content": "Set Hibernation as default (good for laptops)",
@@ -131,7 +131,7 @@
       powercfg.exe change monitor-timeout-dc 15
       "
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/laptophibernation"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/laptophibernation"
   },
   "WPFTweaksLocation": {
     "Content": "Disable Location Tracking",
@@ -1144,7 +1144,7 @@
     "Order": "a022_",
     "registry": [
       {
-        "Path":"HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
         "Name": "BraveRewardsDisabled",
         "Type": "DWord",
         "Value": "1",
@@ -1179,7 +1179,7 @@
         "OriginalValue": "<RemoveEntry>"
       }
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/bravedebloat/"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/bravedebloat"
   },
   "WPFTweaksEdgeDebloat": {
     "Content": "Edge Debloat",
@@ -1832,7 +1832,7 @@
         "OriginalValue": "1"
       }
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/storage"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/storage"
   },
   "WPFTweaksRemoveCopilot": {
     "Content": "Disable Microsoft Copilot",
@@ -2101,7 +2101,7 @@
         "Type": "DWord"
       }
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/ipv46"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/ipv46"
   },
   "WPFTweaksTeredo": {
     "Content": "Disable Teredo",
@@ -2334,7 +2334,7 @@
       Invoke-WinUtilExplorerUpdate -action \"restart\"
       "
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/wpftogglestartmenurecommendations"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/startmenurecommendations"
   },
   "WPFToggleHideSettingsHome": {
     "Content": "Remove Settings Home Page",
@@ -2352,7 +2352,8 @@
         "OriginalValue": "show:home",
         "DefaultState": "false"
       }
-    ]
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/hidesettingshome"
   },
   "WPFToggleMouseAcceleration": {
     "Content": "Mouse Acceleration",
@@ -2451,7 +2452,6 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/newoutlook"
   },
-
   "WPFToggleMultiplaneOverlay": {
     "Content": "Disable Multiplane Overlay",
     "Description": "Disable the Multiplane Overlay which can sometimes cause issues with Graphics Cards.",
@@ -2469,7 +2469,7 @@
         "Type": "DWord"
       }
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/multplaneoverlay"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/multiplaneoverlay"
   },
   "WPFToggleHiddenFiles": {
     "Content": "Show Hidden Files",
@@ -2629,7 +2629,8 @@
         "DefaultState": "false",
         "Type": "DWord"
       }
-    ]
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/s3sleep"
   },
   "WPFOOSUbutton": {
     "Content": "Run OO Shutup 10",
@@ -2719,7 +2720,8 @@
 
       Write-Host Please sign out and back in, or restart your computer to apply the changes!
       "
-    ]
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/disableexplorerautodiscovery"
   },
   "WPFToggleDisableCrossDeviceResume": {
     "Content": "Cross-Device Resume",
@@ -2737,6 +2739,7 @@
         "DefaultState": "true",
         "Type": "DWord"
       }
-    ]
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/disablecrossdeviceresume"
   }
 }

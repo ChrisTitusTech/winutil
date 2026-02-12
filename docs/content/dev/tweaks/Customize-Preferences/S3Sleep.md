@@ -1,22 +1,22 @@
 ---
-title: "Center Taskbar Items"
+title: "S3 Sleep"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2570}
-  "WPFToggleTaskbarAlignment": {
-    "Content": "Center Taskbar Items",
-    "Description": "[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2616}
+  "WPFToggleS3Sleep": {
+    "Content": "S3 Sleep",
+    "Description": "Toggles between Modern Standby and S3 sleep.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a204_",
+    "Order": "a206_",
     "Type": "Toggle",
     "registry": [
       {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "Name": "TaskbarAl",
-        "Value": "1",
-        "OriginalValue": "0",
-        "DefaultState": "true",
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power",
+        "Name": "PlatformAoAcOverride",
+        "Value": "0",
+        "OriginalValue": "<RemoveEntry>",
+        "DefaultState": "false",
         "Type": "DWord"
       }
     ],
