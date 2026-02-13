@@ -1987,9 +1987,9 @@
     "InvokeScript": [
       "
       $hostsUrl = \"https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts\"
-      $hosts = \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\"
+      $hosts = \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\"
 
-      Copy-Item $hosts \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\\$hosts.bak\"
+      Move-Item $hosts \"$Hosts.bak\"
       Invoke-WebRequest $hostsUrl -OutFile $hosts
       ipconfig /flushdns
 
@@ -1999,9 +1999,8 @@
     "UndoScript": [
       "
       $hosts = \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\"
-      $backup = \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\\$hosts.bak\"
 
-      Remove-Item $hosts
+      Move-Item \"$Hosts.bak\" $hosts
       ipconfig /flushdns
 
       Write-Host \"Removed Adobe url block list from host file\"
