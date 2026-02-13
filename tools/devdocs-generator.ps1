@@ -242,7 +242,7 @@ foreach ($itemName in $tweakNames) {
 
     # Hugo frontmatter
     $title = $item.Content -replace '"', '\"'
-    $content = "---`r`ntitle: `"$title`"`r`ndescription: `"`"`r`n---`r`n"
+    $content = "---`r`ntitle: `"$title`"`r`ndescription: `"`"`r`n---`r`n`r`n"
 
     if ($item.Type -eq "Button") {
         # Button-type tweak: embed the mapped PowerShell function
@@ -315,7 +315,7 @@ foreach ($itemName in $featureNames) {
     }
 
     $title = $item.Content -replace '"', '\"'
-    $content = "---`r`ntitle: `"$title`"`r`ndescription: `"`"`r`n---`r`n"
+    $content = "---`r`ntitle: `"$title`"`r`ndescription: `"`"`r`n---`r`n`r`n"
 
     if ($item.category -eq "Fixes" -or $item.category -eq "Legacy Windows Panels") {
         # Embed the PowerShell function file
