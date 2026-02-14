@@ -181,15 +181,6 @@
     "ButtonWidth": "300",
     "link": "https://winutil.christitus.com/dev/features/fixes/winget"
   },
-  "WPFRunAdobeCCCleanerTool": {
-    "Content": "Remove Adobe Creative Cloud",
-    "category": "Fixes",
-    "panel": "1",
-    "Order": "a045_",
-    "Type": "Button",
-    "ButtonWidth": "300",
-    "link": "https://winutil.christitus.com/dev/features/fixes/runadobecccleanertool"
-  },
   "WPFPanelControl": {
     "Content": "Control Panel",
     "category": "Legacy Windows Panels",
