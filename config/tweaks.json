@@ -65,7 +65,7 @@
     "panel": "1",
     "InvokeScript": [
       "
-      # Sometimes if you dont stop Widgets Process for removal to work
+      # Sometimes if you dont stop the Widgets process the removal may fail
       Stop-Process -Name Widgets
       Get-AppxPackage Microsoft.WidgetsPlatformRuntime -AllUsers | Remove-AppxPackage -AllUsers
 
@@ -76,7 +76,7 @@
     "UndoScript": [
       "
       Write-Host \"Restoring widgets AppxPackages\"
-      Add-AppxPackage -DisableDevelopmentMode -Register \"C:\\Program Files\\WindowsApps\\Microsoft.WidgetsPlatformRuntime*\\AppxManifest.xml\"
+      Add-AppxPackage -Register \"C:\\Program Files\\WindowsApps\\Microsoft.WidgetsPlatformRuntime*\\AppxManifest.xml\" -DisableDevelopmentMode
       Invoke-WinUtilExplorerUpdate -action \"restart\"
       "
     ],
