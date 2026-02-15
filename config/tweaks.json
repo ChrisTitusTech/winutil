@@ -1668,7 +1668,7 @@
 
       foreach ($Package in $Packages) {
         $InstallLocation = (Get-AppxPackage $Package -AllUsers).InstallLocation
-        Add-AppxPackage -Register "$InstallLocation\AppXManifest.xml" -DisableDevelopmentMode
+        Add-AppxPackage -Register '$InstallLocation\\AppXManifest.xml' -DisableDevelopmentMode
       }
       "
     ],
