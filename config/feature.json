@@ -145,15 +145,6 @@
     "ButtonWidth": "300",
     "link": "https://winutil.christitus.com/dev/features/fixes/autologin"
   },
-  "WPFFixesUpdate": {
-    "Content": "Reset Windows Update",
-    "category": "Fixes",
-    "panel": "1",
-    "Order": "a041_",
-    "Type": "Button",
-    "ButtonWidth": "300",
-    "link": "https://winutil.christitus.com/dev/features/fixes/update"
-  },
   "WPFFixesNetwork": {
     "Content": "Reset Network",
     "category": "Fixes",
