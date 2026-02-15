@@ -1643,12 +1643,34 @@
     "Description": "Removes Xbox services, the Xbox app, Game Bar, and related authentication components.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "appx": [
-      "Microsoft.XboxIdentityProvider",
-      "Microsoft.XboxSpeechToTextOverlay",
-      "Microsoft.GamingApp",
-      "Microsoft.Xbox.TCUI",
-      "Microsoft.XboxGamingOverlay"
+    "InvokeScript": [
+      "
+      $Packages =
+          'Microsoft.XboxIdentityProvider',
+          'Microsoft.XboxGamingOverlay',
+          'Microsoft.XboxSpeechToTextOverlay',
+          'Microsoft.Xbox.TCUI',
+          'Microsoft.GamingApp'
+      
+      foreach ($Package in $Packages) {
+          Get-AppxPackage $Package | Remove-AppxPackage
+      }
+      "
+    ],
+    "UndoScript": [
+      "
+      $Packages =
+          'Microsoft.XboxIdentityProvider',
+          'Microsoft.XboxGamingOverlay',
+          'Microsoft.XboxSpeechToTextOverlay',
+          'Microsoft.Xbox.TCUI',
+          'Microsoft.GamingApp'
+
+      foreach ($Package in $Packages) {
+        $InstallLocation = (Get-AppxPackage $Package -AllUsers).InstallLocation
+        Add-AppxPackage -Register "$InstallLocation\AppXManifest.xml" -DisableDevelopmentMode
+      }
+      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/xboxremoval"
   },
