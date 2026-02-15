@@ -51,8 +51,7 @@ $excludedFiles += @(
     '.\.github\CODEOWNERS',
     '.\LICENSE',
     "$preprocessingFilePath",
-    '*.png',
-    '.\.preprocessor_hashes.json'
+    '*.png'
 )
 
 $msg = "Pre-req: Code Formatting"
