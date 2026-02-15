@@ -12,7 +12,7 @@ function Invoke-WPFtweaksbutton {
     return
   }
 
-  $Tweaks = (Get-WinUtilCheckBoxes)["WPFTweaks"]
+  $Tweaks = $sync.selectedTweaks
 
   Set-WinUtilDNS -DNSProvider $sync["WPFchangedns"].text
 
