@@ -56,7 +56,7 @@
     "UndoScript": [
       "powercfg.exe /hibernate on"
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/hibernation"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/hiber"
   },
   "WPFTweaksWidget": {
     "Content": "Remove Widgets",
@@ -80,7 +80,55 @@
       Invoke-WinUtilExplorerUpdate -action \"restart\"
       "
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/widgets"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/widget"
+  },
+  "WPFTweaksLaptopHibernation": {
+    "Content": "Set Hibernation as default (good for laptops)",
+    "Description": "Most modern laptops have connected standby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a030_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\238C9FA8-0AAD-41ED-83F4-97BE242C8F20\\7bc4a2f9-d8fc-4469-b07b-33eb785aaca0",
+        "OriginalValue": "1",
+        "Name": "Attributes",
+        "Value": "2",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\abfc2519-3608-4c2a-94ea-171b0ed546ab\\94ac6d29-73ce-41a6-809f-6363ba21b47e",
+        "OriginalValue": "0",
+        "Name": "Attributes ",
+        "Value": "2",
+        "Type": "DWord"
+      }
+    ],
+    "InvokeScript": [
+      "
+      Write-Host \"Turn on Hibernation\"
+      powercfg.exe /hibernate on
+
+      # Set hibernation as the default action
+      powercfg.exe change standby-timeout-ac 60
+      powercfg.exe change standby-timeout-dc 60
+      powercfg.exe change monitor-timeout-ac 10
+      powercfg.exe change monitor-timeout-dc 1
+      "
+    ],
+    "UndoScript": [
+      "
+      Write-Host \"Turn off Hibernation\"
+      powercfg.exe /hibernate off
+
+      # Set standby to default values
+      powercfg.exe change standby-timeout-ac 15
+      powercfg.exe change standby-timeout-dc 15
+      powercfg.exe change monitor-timeout-ac 15
+      powercfg.exe change monitor-timeout-dc 15
+      "
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/laptophibernation"
   },
   "WPFTweaksLocation": {
     "Content": "Disable Location Tracking",
@@ -1090,7 +1138,7 @@
     "panel": "1",
     "registry": [
       {
-        "Path":"HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
         "Name": "BraveRewardsDisabled",
         "Type": "DWord",
         "Value": "1",
@@ -1125,7 +1173,7 @@
         "OriginalValue": "<RemoveEntry>"
       }
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/bravedebloat/"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/bravedebloat"
   },
   "WPFTweaksEdgeDebloat": {
     "Content": "Edge Debloat",
@@ -1763,7 +1811,7 @@
         "OriginalValue": "1"
       }
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/storage"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/storage"
   },
   "WPFTweaksRemoveCopilot": {
     "Content": "Disable Microsoft Copilot",
@@ -2023,7 +2071,7 @@
         "Type": "DWord"
       }
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/ipv46"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/ipv46"
   },
   "WPFTweaksTeredo": {
     "Content": "Disable Teredo",
@@ -2247,7 +2295,7 @@
       Invoke-WinUtilExplorerUpdate -action \"restart\"
       "
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/wpftogglestartmenurecommendations"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/startmenurecommendations"
   },
   "WPFToggleHideSettingsHome": {
     "Content": "Remove Settings Home Page",
@@ -2264,7 +2312,8 @@
         "OriginalValue": "show:home",
         "DefaultState": "false"
       }
-    ]
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/hidesettingshome"
   },
   "WPFToggleMouseAcceleration": {
     "Content": "Mouse Acceleration",
@@ -2310,7 +2359,7 @@
       {
         "Path": "HKCU:\\Control Panel\\Accessibility\\StickyKeys",
         "Name": "Flags",
-        "Value": "510",
+        "Value": "506",
         "OriginalValue": "58",
         "DefaultState": "true",
         "Type": "DWord"
@@ -2360,7 +2409,6 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/newoutlook"
   },
-
   "WPFToggleMultiplaneOverlay": {
     "Content": "Disable Multiplane Overlay",
     "Description": "Disable the Multiplane Overlay which can sometimes cause issues with Graphics Cards.",
@@ -2377,7 +2425,7 @@
         "Type": "DWord"
       }
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/multplaneoverlay"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/multiplaneoverlay"
   },
   "WPFToggleHiddenFiles": {
     "Content": "Show Hidden Files",
@@ -2487,6 +2535,11 @@
         "Type": "DWord"
       }
     ],
+    "InvokeScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/taskbaralignment"
   },
   "WPFToggleDetailedBSoD": {
@@ -2530,7 +2583,8 @@
         "DefaultState": "false",
         "Type": "DWord"
       }
-    ]
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/s3sleep"
   },
   "WPFOOSUbutton": {
     "Content": "Run OO Shutup 10",
@@ -2615,7 +2669,8 @@
 
       Write-Host Please sign out and back in, or restart your computer to apply the changes!
       "
-    ]
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/disableexplorerautodiscovery"
   },
   "WPFToggleDisableCrossDeviceResume": {
     "Content": "Cross-Device Resume",
@@ -2632,6 +2687,7 @@
         "DefaultState": "true",
         "Type": "DWord"
       }
-    ]
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/disablecrossdeviceresume"
   }
 }

@@ -2,7 +2,7 @@
 title: "Set Up Autologin"
 description: ""
 ---
-```powershell
+```powershell {filename="functions/public/Invoke-WPFPanelAutologin.ps1",linenos=inline,linenostart=1}
 function Invoke-WPFPanelAutologin {
     <#
 

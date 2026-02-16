@@ -2,7 +2,7 @@
 title: "System Corruption Scan"
 description: ""
 ---
-```powershell
+```powershell {filename="functions/public/Invoke-WPFSystemRepair.ps1",linenos=inline,linenostart=1}
 function Invoke-WPFSystemRepair {
     <#
     .SYNOPSIS

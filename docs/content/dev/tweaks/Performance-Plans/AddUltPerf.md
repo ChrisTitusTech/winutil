@@ -1,8 +1,8 @@
 ---
-title: "Remove Ultimate Performance Profile"
+title: "Add and Activate Ultimate Performance Profile"
 description: ""
 ---
-```powershell
+```powershell {filename="functions/public/Invoke-WPFUltimatePerformance.ps1",linenos=inline,linenostart=1}
 Function Invoke-WPFUltimatePerformance {
     <#
 
