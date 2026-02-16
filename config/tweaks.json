@@ -1198,8 +1198,8 @@
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\\ExtensionInstallBlocklist",
         "Name": "1",
-        "Value": "ofefcgjbeghpigppfmkologfjadafddi",
         "Type": "String",
+        "Value": "ofefcgjbeghpigppfmkologfjadafddi",
         "OriginalValue": "<RemoveEntry>"
       },
       {
