@@ -74,7 +74,7 @@
     "Description": "Show the selected applications"
   },
   "WPFToggleFOSSHighlight": {
-    "Content": "Highlight FOSS Apps",
+    "Content": "Highlight FOSS",
     "Category": "__Selection",
     "Type": "Toggle",
     "Checked": true,
