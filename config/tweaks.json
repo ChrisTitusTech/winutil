@@ -65,9 +65,11 @@
     "panel": "1",
     "InvokeScript": [
       "
-      # Sometimes if you dont stop Widgets Process for removal to work
+      # Sometimes if you dont stop the Widgets process the removal may fail
+      
       Stop-Process -Name Widgets
       Get-AppxPackage Microsoft.WidgetsPlatformRuntime -AllUsers | Remove-AppxPackage -AllUsers
+      Get-AppxPackage MicrosoftWindows.Client.WebExperience -AllUsers | Remove-AppxPackage -AllUsers
 
       Invoke-WinUtilExplorerUpdate -action \"restart\"
       Write-Host \"Removed widgets\"
@@ -76,7 +78,10 @@
     "UndoScript": [
       "
       Write-Host \"Restoring widgets AppxPackages\"
-      Add-AppxPackage -DisableDevelopmentMode -Register \"C:\\Program Files\\WindowsApps\\Microsoft.WidgetsPlatformRuntime*\\AppxManifest.xml\"
+      
+      Add-AppxPackage -Register \"C:\\Program Files\\WindowsApps\\Microsoft.WidgetsPlatformRuntime*\\AppxManifest.xml\" -DisableDevelopmentMode
+      Add-AppxPackage -Register \"C:\\Program Files\\WindowsApps\\MicrosoftWindows.Client.WebExperience*\\AppxManifest.xml\" -DisableDevelopmentMode
+      
       Invoke-WinUtilExplorerUpdate -action \"restart\"
       "
     ],
@@ -1196,10 +1201,10 @@
         "OriginalValue": "<RemoveEntry>"
       },
       {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
-        "Name": "ofefcgjbeghpigppfmkologfjadafddi",
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\\ExtensionInstallBlocklist",
+        "Name": "1",
         "Type": "String",
-        "Value": "1",
+        "Value": "ofefcgjbeghpigppfmkologfjadafddi",
         "OriginalValue": "<RemoveEntry>"
       },
       {
@@ -2017,9 +2022,9 @@
     "InvokeScript": [
       "
       $hostsUrl = \"https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts\"
-      $hosts = \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\"
+      $hosts = \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\"
 
-      Copy-Item $hosts \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\\$hosts.bak\"
+      Move-Item $hosts \"$hosts.bak\"
       Invoke-WebRequest $hostsUrl -OutFile $hosts
       ipconfig /flushdns
 
@@ -2028,10 +2033,10 @@
     ],
     "UndoScript": [
       "
-      $hosts = \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\"
-      $backup = \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\\$hosts.bak\"
+      $hosts = \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\"
 
       Remove-Item $hosts
+      Move-Item \"$hosts.bak\" $hosts
       ipconfig /flushdns
 
       Write-Host \"Removed Adobe url block list from host file\"
