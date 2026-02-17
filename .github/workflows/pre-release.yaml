@@ -16,6 +16,25 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v6
 
+      - name: Generate Dev Docs and Update JSON Links
+        shell: pwsh
+        run: |
+          Set-Location tools
+          ./devdocs-generator.ps1
+
+      - name: Commit Updated JSON Links
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add config/tweaks.json config/feature.json
+          $changes = git diff --cached --quiet; if ($LASTEXITCODE -ne 0) {
+            git commit -m "Update documentation links in JSON configs"
+            git push
+          } else {
+            Write-Host "No JSON link changes to commit"
+          }
+
       - name: Compile project
         shell: pwsh
         run: |
