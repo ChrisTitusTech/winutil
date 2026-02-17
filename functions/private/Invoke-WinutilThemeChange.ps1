@@ -174,8 +174,6 @@ function Invoke-WinutilThemeChange {
         }
     }
 
-    }
-
     # Set FOSS Highlight Color
     $fossEnabled = $true
     if ($sync.WPFToggleFOSSHighlight) {
