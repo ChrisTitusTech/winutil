@@ -7,8 +7,7 @@ function Invoke-WPFSystemRepair {
         1. SFC - Fixes system file corruption, and fixes DISM if it was corrupted
         2. DISM - Fixes system image corruption, and fixes SFC's system image if it was corrupted
     #>
-    
-    Start-Process cmd.exe -ArgumentList "/c chkdsk /scan /perf" -NoNewWindow -Wait
+    Start-Process cmd.exe -ArgumentList "/c chkdsk.exe /scan /perf" -NoNewWindow -Wait
     Start-Process cmd.exe -ArgumentList "/c sfc /scannow" -NoNewWindow -Wait
     Start-Process cmd.exe -ArgumentList "/c dism /online /cleanup-image /restorehealth" -NoNewWindow -Wait
 
