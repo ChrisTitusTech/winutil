@@ -1,6 +1,6 @@
 # Import Config Files
 $global:importedconfigs = @{}
-Get-ChildItem .\config | Where-Object {$_.Extension -eq ".json"} | ForEach-Object {
+Get-ChildItem .\config | Where-Object { $_.Extension -eq ".json" } | ForEach-Object {
     $global:importedconfigs[$psitem.BaseName] = Get-Content $psitem.FullName | ConvertFrom-Json
 }
 
@@ -11,15 +11,8 @@ Get-ChildItem .\config | Where-Object {$_.Extension -eq ".json"} | ForEach-Objec
 
 Describe "Config Files" -ForEach @(
     @{
-        name = "applications"
-        config = $('{
-            "winget": "value",
-            "choco": "value",
-            "category": "value",
-            "content": "value",
-            "description": "value",
-            "link": "value"
-          }' | ConvertFrom-Json)
+        name   = "applications"
+        config = $('{"winget": "value", "choco": "value", "category": "value", "content": "value", "description": "value", "link": "value", "origin": "value"}' | ConvertFrom-Json)
     },
     @{
         name = "tweaks"
@@ -51,7 +44,7 @@ Describe "Config Files" -ForEach @(
                 $result | Select-String "WPF*" | should -BeNullOrEmpty
             }
         }
-        if($undo) {
+        if ($undo) {
             It "Tweaks should contain original Value" {
                 $tweaks = $global:importedconfigs.$name | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
                 $result = New-Object System.Collections.Generic.List[System.Object]
@@ -59,22 +52,22 @@ Describe "Config Files" -ForEach @(
                 foreach ($tweak in $tweaks) {
                     $Originals = @(
                         @{
-                            name = "registry"
+                            name  = "registry"
                             value = "OriginalValue"
                         },
                         @{
-                            name = "service"
+                            name  = "service"
                             value = "OriginalType"
                         },
                         @{
-                            name = "ScheduledTask"
+                            name  = "ScheduledTask"
                             value = "OriginalState"
                         }
                     )
                     Foreach ($original in $Originals) {
                         $TotalCount = ($global:importedconfigs.$name.$tweak.$($original.name)).count
-                        $OriginalCount = ($global:importedconfigs.$name.$tweak.$($original.name).$($original.value) | Where-Object {$_}).count
-                        if($TotalCount -ne $OriginalCount) {
+                        $OriginalCount = ($global:importedconfigs.$name.$tweak.$($original.name).$($original.value) | Where-Object { $_ }).count
+                        if ($TotalCount -ne $OriginalCount) {
                             $result.Add("$Tweak,$($original.name)")
                         }
                     }

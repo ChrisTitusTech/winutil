@@ -79,6 +79,7 @@ function Invoke-WPFUIElements {
             Checked     = $entryInfo.Checked
             ButtonWidth = $entryInfo.ButtonWidth
             GroupName   = $entryInfo.GroupName  # Added for RadioButton groupings
+            Origin      = $entryInfo.origin
         }
 
         if (-not $organizedData.ContainsKey($entryObject.Panel)) {
@@ -145,12 +146,13 @@ function Invoke-WPFUIElements {
 
             # Sort entries by type (checkboxes first, then buttons, then comboboxes) and then alphabetically by Content
             $entries = $organizedData[$panelKey][$category] | Sort-Object @{Expression = {
-                switch ($_.Type) {
-                    'Button' { 1 }
-                    'Combobox' { 2 }
-                    default { 0 }
+                    switch ($_.Type) {
+                        'Button' { 1 }
+                        'Combobox' { 2 }
+                        default { 0 }
+                    }
                 }
-            }}, Content
+            }, Content
             foreach ($entryInfo in $entries) {
                 $count++
                 # Create the UI elements based on the entry type
@@ -357,8 +359,6 @@ function Invoke-WPFUIElements {
                             $sync[$textBlock.Name] = $textBlock
                         }
 
-                        $itemsControl.Items.Add($horizontalStackPanel) | Out-Null
-                        $sync[$entryInfo.Name] = $checkBox
                     }
                 }
             }

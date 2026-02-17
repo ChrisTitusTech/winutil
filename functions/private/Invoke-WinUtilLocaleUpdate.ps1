@@ -59,10 +59,6 @@ function Invoke-WinUtilLocaleUpdate {
     # Download from GitHub
     try {
         Write-Host "Downloading locale: $Language..."
-        $json = Invoke-RestMethod -Uri $downloadUrl -Method Get
-
-        # Invoke-RestMethod returns an object if it's JSON, but we might want the raw string to cache it properly or handle it
-        # Actually, let's use Invoke-WebRequest for raw content and then convert
         $response = Invoke-WebRequest -Uri $downloadUrl -UseBasicParsing
         $jsonContent = $response.Content
 
