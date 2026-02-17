@@ -47,13 +47,13 @@ function Initialize-InstallAppEntry {
         $checkBox.Tag = $appKey
         $checkbox.Style = $sync.Form.Resources.AppEntryCheckboxStyle
         $checkbox.Add_Checked({
-            Invoke-WPFSelectedAppsUpdate -type "Add" -checkbox $this
+            Invoke-WPFSelectedCheckboxesUpdate -type "Add" -checkboxName $this.Parent.Tag
             $borderElement = $this.Parent
             $borderElement.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallSelectedColor")
         })
 
         $checkbox.Add_Unchecked({
-            Invoke-WPFSelectedAppsUpdate -type "Remove" -checkbox $this
+            Invoke-WPFSelectedCheckboxesUpdate -type "Remove" -checkboxName $this.Parent.Tag
             $borderElement = $this.Parent
             $borderElement.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallUnselectedColor")
         })
