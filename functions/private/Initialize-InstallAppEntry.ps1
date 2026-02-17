@@ -65,7 +65,7 @@ function Initialize-InstallAppEntry {
 
         # Change color to Green if FOSS
         if ($Apps.$appKey.foss -eq $true) {
-            $appName.Foreground = "#4CAF50"
+            $appName.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "FOSSColor")
             $appName.FontWeight = "Bold"
         }
 
