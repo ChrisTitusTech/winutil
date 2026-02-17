@@ -12,7 +12,7 @@ function Invoke-WPFundoall {
         return
     }
 
-    $tweaks = (Get-WinUtilCheckBoxes)["WPFtweaks"]
+    $tweaks = $sync.selectedTweaks
 
     if ($tweaks.count -eq 0) {
         $msg = "Please check the tweaks you wish to undo."
