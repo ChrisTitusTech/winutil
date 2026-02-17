@@ -60,7 +60,7 @@
         "Description": "Clear the selection of applications"
     },
     "WPFGetInstalled": {
-        "Content": "Get Installed",
+        "Content": "Show Installed Apps",
         "Category": "__Selection",
         "Type": "Button",
         "Order": "4",

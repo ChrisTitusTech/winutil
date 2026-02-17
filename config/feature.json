@@ -112,7 +112,7 @@
     "Order": "a019_",
     "feature": [],
     "InvokeScript": [
-    "bcdedit /set bootmenupolicy standard"
+      "bcdedit /set bootmenupolicy standard"
     ],
     "link": "https://winutil.christitus.com/dev/features/features/disablelegacyrecovery"
   },
@@ -181,15 +181,6 @@
     "ButtonWidth": "300",
     "link": "https://winutil.christitus.com/dev/features/fixes/winget"
   },
-  "WPFRunAdobeCCCleanerTool": {
-    "Content": "Remove Adobe Creative Cloud",
-    "category": "Fixes",
-    "panel": "1",
-    "Order": "a045_",
-    "Type": "Button",
-    "ButtonWidth": "300",
-    "link": "https://winutil.christitus.com/dev/features/fixes/runadobecccleanertool"
-  },
   "WPFPanelControl": {
     "Content": "Control Panel",
     "category": "Legacy Windows Panels",
@@ -252,7 +243,7 @@
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/user"
+    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/sound"
   },
   "WPFPanelSystem": {
     "Content": "System Properties",
@@ -276,7 +267,8 @@
     "panel": "2",
     "Order": "a083_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://winutil.christitus.com/dev/features/powershell-profile-powershell-7--only/installpsprofile"
   },
   "WPFWinUtilUninstallPSProfile": {
     "Content": "Uninstall CTT PowerShell Profile",
@@ -284,7 +276,8 @@
     "panel": "2",
     "Order": "a084_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://winutil.christitus.com/dev/features/powershell-profile-powershell-7--only/uninstallpsprofile"
   },
   "WPFWinUtilSSHServer": {
     "Content": "Enable OpenSSH Server",
@@ -292,6 +285,7 @@
     "panel": "2",
     "Order": "a084_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://winutil.christitus.com/dev/features/remote-access/sshserver"
   }
 }

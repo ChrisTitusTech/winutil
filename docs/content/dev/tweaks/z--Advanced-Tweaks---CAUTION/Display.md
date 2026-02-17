@@ -2,13 +2,12 @@
 title: "Set Display for Performance"
 description: ""
 ---
-```json
-"WPFTweaksDisplay": {
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1542}
+  "WPFTweaksDisplay": {
     "Content": "Set Display for Performance",
     "Description": "Sets the system preferences to performance. You can do this manually with sysdm.cpl as well.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a030_",
     "registry": [
       {
         "Path": "HKCU:\\Control Panel\\Desktop",
@@ -83,13 +82,6 @@ description: ""
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
-        "Name": "TaskbarDa",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "OriginalValue": "1",
         "Name": "ShowTaskViewButton",
         "Value": "0",
         "Type": "DWord"
@@ -111,6 +103,7 @@ description: ""
 ```
 
 ## Registry Changes
+
 Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.
 
 You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).

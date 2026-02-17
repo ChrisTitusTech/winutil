@@ -1,15 +1,13 @@
 ---
-title: Activity History
+title: "Disable Activity History"
 description: ""
 ---
-
-```json
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2}
   "WPFTweaksActivity": {
     "Content": "Disable Activity History",
     "Description": "This erases recent docs, clipboard, and run history.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a005_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",

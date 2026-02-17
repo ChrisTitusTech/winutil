@@ -2,13 +2,12 @@
 title: "Disable Notification Tray/Calendar"
 description: ""
 ---
-```json
-"WPFTweaksDisableNotifications": {
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1959}
+  "WPFTweaksDisableNotifications": {
     "Content": "Disable Notification Tray/Calendar",
     "Description": "Disables all Notifications INCLUDING Calendar",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a026_",
     "registry": [
       {
         "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer",
@@ -28,6 +27,7 @@ description: ""
 ```
 
 ## Registry Changes
+
 Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.
 
 You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).

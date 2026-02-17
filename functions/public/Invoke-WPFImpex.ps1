@@ -44,7 +44,8 @@ function Invoke-WPFImpex {
             try {
                 $Config = ConfigDialog
                 if ($Config) {
-                    $jsonFile = Get-WinUtilCheckBoxes -unCheck $false | ConvertTo-Json
+                    $allConfs = $sync.selectedApps + $sync.selectedTweaks + $sync.selectedToggles + $sync.selectedFeatures
+                    $jsonFile = $allConfs | ConvertTo-Json
                     $jsonFile | Out-File $Config -Force
                     "iex ""& { `$(irm https://christitus.com/win) } -Config '$Config'""" | Set-Clipboard
                 }
@@ -66,8 +67,12 @@ function Invoke-WPFImpex {
                         Write-Error "Failed to load the JSON file from the specified path or URL: $_"
                         return
                     }
-                    $flattenedJson = $jsonFile.PSObject.Properties.Where({ $_.Name -ne "Install" }).ForEach({ $_.Value })
-                    Invoke-WPFPresets -preset $flattenedJson -imported $true
+                    # TODO how to handle old style? detected json type then flatten it in a func?
+                    # $flattenedJson = $jsonFile.PSObject.Properties.Where({ $_.Name -ne "Install" }).ForEach({ $_.Value })
+                    $flattenedJson = $jsonFile
+                    Update-WinUtilSelections -flatJson $flattenedJson
+                    # TODO test with toggles
+                    Reset-WPFCheckBoxes -doToggles $true
                 }
             } catch {
                 Write-Error "An error occurred while importing: $_"

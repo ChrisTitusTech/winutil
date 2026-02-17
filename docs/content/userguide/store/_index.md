@@ -23,7 +23,7 @@ weight: 2
   {{< /tab >}}
 
   {{< tab >}}
-    * Click the `Get Installed` button.
+    * Click the `Show Installed Apps` button.
     * This will scan for and select all installed programs in Winutil that WinGet supports.
   {{< /tab >}}
 
