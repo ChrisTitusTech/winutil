@@ -13,7 +13,8 @@
         "content": "7-Zip",
         "description": "7-Zip is a free and open-source file archiver utility. It supports several compression formats and provides a high compression ratio, making it a popular choice for file compression.",
         "link": "https://www.7-zip.org/",
-        "winget": "7zip.7zip"
+        "winget": "7zip.7zip",
+        "foss": true
     },
     "adobe": {
         "category": "Document",
@@ -37,7 +38,8 @@
         "content": "AFFiNE",
         "description": "AFFiNE is an open source alternative to Notion. Write, draw, plan all at once. Selfhost it to sync across devices.",
         "link": "https://affine.pro/",
-        "winget": "ToEverything.AFFiNE"
+        "winget": "ToEverything.AFFiNE",
+        "foss": true
     },
     "aimp": {
         "category": "Multimedia Tools",
@@ -53,7 +55,8 @@
         "content": "Alacritty Terminal",
         "description": "Alacritty is a fast, cross-platform, and GPU-accelerated terminal emulator. It is designed for performance and aims to be the fastest terminal emulator available.",
         "link": "https://alacritty.org/",
-        "winget": "Alacritty.Alacritty"
+        "winget": "Alacritty.Alacritty",
+        "foss": true
     },
     "anaconda3": {
         "category": "Development",
@@ -69,7 +72,8 @@
         "content": "Angry IP Scanner",
         "description": "Angry IP Scanner is an open-source and cross-platform network scanner. It is used to scan IP addresses and ports, providing information about network connectivity.",
         "link": "https://angryip.org/",
-        "winget": "angryziber.AngryIPScanner"
+        "winget": "angryziber.AngryIPScanner",
+        "foss": true
     },
     "anki": {
         "category": "Document",
@@ -77,7 +81,8 @@
         "content": "Anki",
         "description": "Anki is a flashcard application that helps you memorize information with intelligent spaced repetition.",
         "link": "https://apps.ankiweb.net/",
-        "winget": "Anki.Anki"
+        "winget": "Anki.Anki",
+        "foss": true
     },
     "anydesk": {
         "category": "Utilities",
@@ -93,7 +98,8 @@
         "content": "Audacity",
         "description": "Audacity is a free and open-source audio editing software known for its powerful recording and editing capabilities.",
         "link": "https://www.audacityteam.org/",
-        "winget": "Audacity.Audacity"
+        "winget": "Audacity.Audacity",
+        "foss": true
     },
     "autoruns": {
         "category": "Microsoft Tools",
@@ -117,7 +123,8 @@
         "content": "AutoHotkey",
         "description": "AutoHotkey is a scripting language for Windows that allows users to create custom automation scripts and macros. It is often used for automating repetitive tasks and customizing keyboard shortcuts.",
         "link": "https://www.autohotkey.com/",
-        "winget": "AutoHotkey.AutoHotkey"
+        "winget": "AutoHotkey.AutoHotkey",
+        "foss": true
     },
     "azuredatastudio": {
         "category": "Microsoft Tools",
@@ -133,7 +140,8 @@
         "content": "Barrier",
         "description": "Barrier is an open-source software KVM (keyboard, video, and mouseswitch). It allows users to control multiple computers with a single keyboard and mouse, even if they have different operating systems.",
         "link": "https://github.com/debauchee/barrier",
-        "winget": "DebaucheeOpenSourceGroup.Barrier"
+        "winget": "DebaucheeOpenSourceGroup.Barrier",
+        "foss": true
     },
     "bat": {
         "category": "Utilities",
@@ -141,7 +149,8 @@
         "content": "Bat (Cat)",
         "description": "Bat is a cat command clone with syntax highlighting. It provides a user-friendly and feature-rich alternative to the traditional cat command for viewing and concatenating files.",
         "link": "https://github.com/sharkdp/bat",
-        "winget": "sharkdp.bat"
+        "winget": "sharkdp.bat",
+        "foss": true
     },
     "beeper": {
         "category": "Communications",
@@ -151,14 +160,14 @@
         "link": "https://www.beeper.com/",
         "winget": "Beeper.Beeper"
     },
-
     "bitwarden": {
         "category": "Utilities",
         "choco": "bitwarden",
         "content": "Bitwarden",
         "description": "Bitwarden is an open-source password management solution. It allows users to store and manage their passwords in a secure and encrypted vault, accessible across multiple devices.",
         "link": "https://bitwarden.com/",
-        "winget": "Bitwarden.Bitwarden"
+        "winget": "Bitwarden.Bitwarden",
+        "foss": true
     },
     "bleachbit": {
         "category": "Utilities",
@@ -166,7 +175,8 @@
         "content": "BleachBit",
         "description": "Clean Your System and Free Disk Space",
         "link": "https://www.bleachbit.org/",
-        "winget": "BleachBit.BleachBit"
+        "winget": "BleachBit.BleachBit",
+        "foss": true
     },
     "blender": {
         "category": "Multimedia Tools",
@@ -174,7 +184,8 @@
         "content": "Blender (3D Graphics)",
         "description": "Blender is a powerful open-source 3D creation suite, offering modeling, sculpting, animation, and rendering tools.",
         "link": "https://www.blender.org/",
-        "winget": "BlenderFoundation.Blender"
+        "winget": "BlenderFoundation.Blender",
+        "foss": true
     },
     "brave": {
         "category": "Browsers",
@@ -182,7 +193,8 @@
         "content": "Brave",
         "description": "Brave is a privacy-focused web browser that blocks ads and trackers, offering a faster and safer browsing experience.",
         "link": "https://www.brave.com",
-        "winget": "Brave.Brave"
+        "winget": "Brave.Brave",
+        "foss": true
     },
     "bulkcrapuninstaller": {
         "category": "Utilities",
@@ -190,7 +202,8 @@
         "content": "Bulk Crap Uninstaller",
         "description": "Bulk Crap Uninstaller is a free and open-source uninstaller utility for Windows. It helps users remove unwanted programs and clean up their system by uninstalling multiple applications at once.",
         "link": "https://www.bcuninstaller.com/",
-        "winget": "Klocman.BulkCrapUninstaller"
+        "winget": "Klocman.BulkCrapUninstaller",
+        "foss": true
     },
     "bulkrenameutility": {
         "category": "Utilities",
@@ -214,7 +227,8 @@
         "content": "Calibre",
         "description": "Calibre is a powerful and easy-to-use e-book manager, viewer, and converter.",
         "link": "https://calibre-ebook.com/",
-        "winget": "calibre.calibre"
+        "winget": "calibre.calibre",
+        "foss": true
     },
     "carnac": {
         "category": "Utilities",
@@ -222,7 +236,8 @@
         "content": "Carnac",
         "description": "Carnac is a keystroke visualizer for Windows. It displays keystrokes in an overlay, making it useful for presentations, tutorials, and live demonstrations.",
         "link": "https://carnackeys.com/",
-        "winget": "code52.Carnac"
+        "winget": "code52.Carnac",
+        "foss": true
     },
     "cemu": {
         "category": "Games",
@@ -230,7 +245,8 @@
         "content": "Cemu",
         "description": "Cemu is a highly experimental software to emulate Wii U applications on PC.",
         "link": "https://cemu.info/",
-        "winget": "Cemu.Cemu"
+        "winget": "Cemu.Cemu",
+        "foss": true
     },
     "chatterino": {
         "category": "Communications",
@@ -238,7 +254,8 @@
         "content": "Chatterino",
         "description": "Chatterino is a chat client for Twitch chat that offers a clean and customizable interface for a better streaming experience.",
         "link": "https://www.chatterino.com/",
-        "winget": "ChatterinoTeam.Chatterino"
+        "winget": "ChatterinoTeam.Chatterino",
+        "foss": true
     },
     "chrome": {
         "category": "Browsers",
@@ -254,7 +271,8 @@
         "content": "Chromium",
         "description": "Chromium is the open-source project that serves as the foundation for various web browsers, including Chrome.",
         "link": "https://github.com/Hibbiki/chromium-win64",
-        "winget": "Hibbiki.Chromium"
+        "winget": "Hibbiki.Chromium",
+        "foss": true
     },
     "clementine": {
         "category": "Multimedia Tools",
@@ -262,7 +280,8 @@
         "content": "Clementine",
         "description": "Clementine is a modern music player and library organizer, supporting various audio formats and online radio services.",
         "link": "https://www.clementine-player.org/",
-        "winget": "Clementine.Clementine"
+        "winget": "Clementine.Clementine",
+        "foss": true
     },
     "clink": {
         "category": "Development",
@@ -270,7 +289,8 @@
         "content": "Clink",
         "description": "Clink is a powerful Bash-compatible command-line interface (CLIenhancement for Windows, adding features like syntax highlighting and improved history).",
         "link": "https://mridgers.github.io/clink/",
-        "winget": "chrisant996.Clink"
+        "winget": "chrisant996.Clink",
+        "foss": true
     },
     "clonehero": {
         "category": "Games",
@@ -286,7 +306,8 @@
         "content": "CMake",
         "description": "CMake is an open-source, cross-platform family of tools designed to build, test and package software.",
         "link": "https://cmake.org/",
-        "winget": "Kitware.CMake"
+        "winget": "Kitware.CMake",
+        "foss": true
     },
     "copyq": {
         "category": "Utilities",
@@ -294,7 +315,8 @@
         "content": "CopyQ (Clipboard Manager)",
         "description": "CopyQ is a clipboard manager with advanced features, allowing you to store, edit, and retrieve clipboard history.",
         "link": "https://copyq.readthedocs.io/",
-        "winget": "hluk.CopyQ"
+        "winget": "hluk.CopyQ",
+        "foss": true
     },
     "cpuz": {
         "category": "Utilities",
@@ -310,7 +332,8 @@
         "content": "Crystal Disk Info",
         "description": "Crystal Disk Info is a disk health monitoring tool that provides information about the status and performance of hard drives. It helps users anticipate potential issues and monitor drive health.",
         "link": "https://crystalmark.info/en/software/crystaldiskinfo/",
-        "winget": "CrystalDewWorld.CrystalDiskInfo"
+        "winget": "CrystalDewWorld.CrystalDiskInfo",
+        "foss": true
     },
     "capframex": {
         "category": "Utilities",
@@ -318,7 +341,8 @@
         "content": "CapFrameX",
         "description": "Frametimes capture and analysis tool based on Intel's PresentMon. Overlay provided by Rivatuner Statistics Server.",
         "link": "https://www.capframex.com/",
-        "winget": "CXWorld.CapFrameX"
+        "winget": "CXWorld.CapFrameX",
+        "foss": true
     },
     "crystaldiskmark": {
         "category": "Utilities",
@@ -326,7 +350,8 @@
         "content": "Crystal Disk Mark",
         "description": "Crystal Disk Mark is a disk benchmarking tool that measures the read and write speeds of storage devices. It helps users assess the performance of their hard drives and SSDs.",
         "link": "https://crystalmark.info/en/software/crystaldiskmark/",
-        "winget": "CrystalDewWorld.CrystalDiskMark"
+        "winget": "CrystalDewWorld.CrystalDiskMark",
+        "foss": true
     },
     "darktable": {
         "category": "Multimedia Tools",
@@ -334,7 +359,8 @@
         "content": "darktable",
         "description": "Open-source photo editing tool, offering an intuitive interface, advanced editing capabilities, and a non-destructive workflow for seamless image enhancement.",
         "link": "https://www.darktable.org/install/",
-        "winget": "darktable.darktable"
+        "winget": "darktable.darktable",
+        "foss": true
     },
     "DaxStudio": {
         "category": "Development",
@@ -342,7 +368,8 @@
         "content": "DaxStudio",
         "description": "DAX (Data Analysis eXpressions) Studio is the ultimate tool for executing and analyzing DAX queries against Microsoft Tabular models.",
         "link": "https://daxstudio.org/",
-        "winget": "DaxStudio.DaxStudio"
+        "winget": "DaxStudio.DaxStudio",
+        "foss": true
     },
     "ddu": {
         "category": "Utilities",
@@ -358,7 +385,8 @@
         "content": "Deluge",
         "description": "Deluge is a free and open-source BitTorrent client. It features a user-friendly interface, support for plugins, and the ability to manage torrents remotely.",
         "link": "https://deluge-torrent.org/",
-        "winget": "DelugeTeam.Deluge"
+        "winget": "DelugeTeam.Deluge",
+        "foss": true
     },
     "devtoys": {
         "category": "Utilities",
@@ -366,7 +394,8 @@
         "content": "DevToys",
         "description": "DevToys is a collection of development-related utilities and tools for Windows. It includes tools for file management, code formatting, and productivity enhancements for developers.",
         "link": "https://devtoys.app/",
-        "winget": "DevToys-app.DevToys"
+        "winget": "DevToys-app.DevToys",
+        "foss": true
     },
     "digikam": {
         "category": "Multimedia Tools",
@@ -374,7 +403,8 @@
         "content": "digiKam",
         "description": "digiKam is an advanced open-source photo management software with features for organizing, editing, and sharing photos.",
         "link": "https://www.digikam.org/",
-        "winget": "KDE.digikam"
+        "winget": "KDE.digikam",
+        "foss": true
     },
     "discord": {
         "category": "Communications",
@@ -390,7 +420,8 @@
         "content": "DISMTools",
         "description": "DISMTools is a fast, customizable GUI for the DISM utility, supporting Windows images from Windows 7 onward. It handles installations on any drive, offers project support, and lets users tweak settings like color modes, language, and DISM versions; powered by both native DISM and a managed DISM API.",
         "link": "https://github.com/CodingWonders/DISMTools",
-        "winget": "CodingWondersSoftware.DISMTools.Stable"
+        "winget": "CodingWondersSoftware.DISMTools.Stable",
+        "foss": true
     },
     "ntlite": {
         "category": "Microsoft Tools",
@@ -406,7 +437,8 @@
         "content": "Ditto",
         "description": "Ditto is an extension to the standard windows clipboard.",
         "link": "https://github.com/sabrogden/Ditto",
-        "winget": "Ditto.Ditto"
+        "winget": "Ditto.Ditto",
+        "foss": true
     },
     "dockerdesktop": {
         "category": "Development",
@@ -470,7 +502,8 @@
         "category": "Utilities",
         "content": "Dual Monitor Tools",
         "link": "https://dualmonitortool.sourceforge.net/",
-        "description": "Dual Monitor Tools (DMT) is a FOSS app that allows you to customize the handling of multiple monitors. Useful for fullscreen games and apps that handle a second monitor poorly and can improve your workflow."
+        "description": "Dual Monitor Tools (DMT) is a FOSS app that allows you to customize the handling of multiple monitors. Useful for fullscreen games and apps that handle a second monitor poorly and can improve your workflow.",
+        "foss": true
     },
     "duplicati": {
         "category": "Utilities",
@@ -478,7 +511,8 @@
         "content": "Duplicati",
         "description": "Duplicati is an open-source backup solution that supports encrypted, compressed, and incremental backups. It is designed to securely store data on cloud storage services.",
         "link": "https://www.duplicati.com/",
-        "winget": "Duplicati.Duplicati"
+        "winget": "Duplicati.Duplicati",
+        "foss": true
     },
     "eaapp": {
         "category": "Games",
@@ -494,7 +528,8 @@
         "content": "EarTrumpet (Audio)",
         "description": "EarTrumpet is an audio control app for Windows, providing a simple and intuitive interface for managing sound settings.",
         "link": "https://eartrumpet.app/",
-        "winget": "File-New-Project.EarTrumpet"
+        "winget": "File-New-Project.EarTrumpet",
+        "foss": true
     },
     "edge": {
         "category": "Browsers",
@@ -518,7 +553,8 @@
         "content": "Emulation Station",
         "description": "Emulation Station is a graphical and themeable emulator front-end that allows you to access all your favorite games in one place.",
         "link": "https://emulationstation.org/",
-        "winget": "Emulationstation.Emulationstation"
+        "winget": "Emulationstation.Emulationstation",
+        "foss": true
     },
     "enteauth": {
         "category": "Utilities",
@@ -526,7 +562,8 @@
         "content": "Ente Auth",
         "description": "Ente Auth is a free, cross-platform, end-to-end encrypted authenticator app.",
         "link": "https://ente.io/auth/",
-        "winget": "ente-io.auth-desktop"
+        "winget": "ente-io.auth-desktop",
+        "foss": true
     },
     "epicgames": {
         "category": "Games",
@@ -550,7 +587,8 @@
         "content": "Espanso",
         "description": "Cross-platform and open-source Text Expander written in Rust",
         "link": "https://espanso.org/",
-        "winget": "Espanso.Espanso"
+        "winget": "Espanso.Espanso",
+        "foss": true
     },
     "ffmpeg": {
         "category": "Utilities",
@@ -558,7 +596,8 @@
         "content": "FFmpeg Batch AV Converter",
         "description": "FFmpeg Batch AV Converter is a universal audio and video encoder, that allows to use the full potential of ffmpeg command line with a few mouse clicks in a convenient GUI with drag and drop, progress information.",
         "link": "https://ffmpeg-batch.sourceforge.io/",
-        "winget": "eibol.FFmpegBatchAVConverter"
+        "winget": "eibol.FFmpegBatchAVConverter",
+        "foss": true
     },
     "falkon": {
         "category": "Browsers",
@@ -566,7 +605,8 @@
         "content": "Falkon",
         "description": "Falkon is a lightweight and fast web browser with a focus on user privacy and efficiency.",
         "link": "https://www.falkon.org/",
-        "winget": "KDE.Falkon"
+        "winget": "KDE.Falkon",
+        "foss": true
     },
     "fastfetch": {
         "category": "Utilities",
@@ -574,7 +614,8 @@
         "content": "Fastfetch",
         "description": "Fastfetch is a neofetch-like tool for fetching system information and displaying them in a pretty way",
         "link": "https://github.com/fastfetch-cli/fastfetch/",
-        "winget": "Fastfetch-cli.Fastfetch"
+        "winget": "Fastfetch-cli.Fastfetch",
+        "foss": true
     },
     "ferdium": {
         "category": "Communications",
@@ -582,9 +623,10 @@
         "content": "Ferdium",
         "description": "Ferdium is a messaging application that combines multiple messaging services into a single app for easy management.",
         "link": "https://ferdium.org/",
-        "winget": "Ferdium.Ferdium"
+        "winget": "Ferdium.Ferdium",
+        "foss": true
     },
-    "ffmpeg": {
+    "ffmpeg-full": {
         "category": "Multimedia Tools",
         "choco": "ffmpeg-full",
         "content": "FFmpeg (full)",
@@ -598,7 +640,8 @@
         "content": "File-Converter",
         "description": "File Converter is a very simple tool which allows you to convert and compress one or several file(s) using the context menu in windows explorer.",
         "link": "https://file-converter.io/",
-        "winget": "AdrienAllard.FileConverter"
+        "winget": "AdrienAllard.FileConverter",
+        "foss": true
     },
     "files": {
         "category": "Utilities",
@@ -606,7 +649,8 @@
         "content": "Files",
         "description": "Alternative file explorer.",
         "link": "https://github.com/files-community/Files",
-        "winget": "na"
+        "winget": "na",
+        "foss": true
     },
     "firealpaca": {
         "category": "Multimedia Tools",
@@ -622,7 +666,8 @@
         "content": "Firefox",
         "description": "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions.",
         "link": "https://www.mozilla.org/en-US/firefox/new/",
-        "winget": "Mozilla.Firefox"
+        "winget": "Mozilla.Firefox",
+        "foss": true
     },
     "firefoxesr": {
         "category": "Browsers",
@@ -630,7 +675,8 @@
         "content": "Firefox ESR",
         "description": "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions. Firefox ESR (Extended Support Release) receives major updates every 42 weeks with minor updates such as crash fixes, security fixes and policy updates as needed, but at least every four weeks.",
         "link": "https://www.mozilla.org/en-US/firefox/enterprise/",
-        "winget": "Mozilla.Firefox.ESR"
+        "winget": "Mozilla.Firefox.ESR",
+        "foss": true
     },
     "flameshot": {
         "category": "Multimedia Tools",
@@ -638,7 +684,8 @@
         "content": "Flameshot (Screenshots)",
         "description": "Flameshot is a powerful yet simple to use screenshot software, offering annotation and editing features.",
         "link": "https://flameshot.org/",
-        "winget": "Flameshot.Flameshot"
+        "winget": "Flameshot.Flameshot",
+        "foss": true
     },
     "lightshot": {
         "category": "Multimedia Tools",
@@ -654,7 +701,8 @@
         "content": "Floorp",
         "description": "Floorp is an open-source web browser project that aims to provide a simple and fast browsing experience.",
         "link": "https://floorp.app/",
-        "winget": "Ablaze.Floorp"
+        "winget": "Ablaze.Floorp",
+        "foss": true
     },
     "flow": {
         "category": "Utilities",
@@ -662,7 +710,8 @@
         "content": "Flow launcher",
         "description": "Keystroke launcher for Windows to search, manage and launch files, folders bookmarks, websites and more.",
         "link": "https://www.flowlauncher.com/",
-        "winget": "Flow-Launcher.Flow-Launcher"
+        "winget": "Flow-Launcher.Flow-Launcher",
+        "foss": true
     },
     "flux": {
         "category": "Utilities",
@@ -702,7 +751,8 @@
         "content": "FreeCAD",
         "description": "FreeCAD is a parametric 3D CAD modeler, designed for product design and engineering tasks, with a focus on flexibility and extensibility.",
         "link": "https://www.freecadweb.org/",
-        "winget": "FreeCAD.FreeCAD"
+        "winget": "FreeCAD.FreeCAD",
+        "foss": true
     },
     "fxsound": {
         "category": "Multimedia Tools",
@@ -710,7 +760,8 @@
         "content": "FxSound",
         "description": "FxSound is free open-source software to boost sound quality, volume, and bass. Including an equalizer, effects, and presets for customized audio.",
         "link": "https://www.fxsound.com/",
-        "winget": "FxSound.FxSound"
+        "winget": "FxSound.FxSound",
+        "foss": true
     },
     "fzf": {
         "category": "Utilities",
@@ -718,7 +769,8 @@
         "content": "Fzf",
         "description": "A command-line fuzzy finder",
         "link": "https://github.com/junegunn/fzf/",
-        "winget": "junegunn.fzf"
+        "winget": "junegunn.fzf",
+        "foss": true
     },
     "geforcenow": {
         "category": "Games",
@@ -734,7 +786,8 @@
         "content": "GIMP (Image Editor)",
         "description": "GIMP is a versatile open-source raster graphics editor used for tasks such as photo retouching, image editing, and image composition.",
         "link": "https://www.gimp.org/",
-        "winget": "GIMP.GIMP.3"
+        "winget": "GIMP.GIMP.3",
+        "foss": true
     },
     "git": {
         "category": "Development",
@@ -742,7 +795,8 @@
         "content": "Git",
         "description": "Git is a distributed version control system widely used for tracking changes in source code during software development.",
         "link": "https://git-scm.com/",
-        "winget": "Git.Git"
+        "winget": "Git.Git",
+        "foss": true
     },
     "gitbutler": {
         "category": "Development",
@@ -766,7 +820,8 @@
         "content": "GitHub CLI",
         "description": "GitHub CLI is a command-line tool that simplifies working with GitHub directly from the terminal.",
         "link": "https://cli.github.com/",
-        "winget": "GitHub.cli"
+        "winget": "GitHub.cli",
+        "foss": true
     },
     "githubdesktop": {
         "category": "Development",
@@ -774,7 +829,8 @@
         "content": "GitHub Desktop",
         "description": "GitHub Desktop is a visual Git client that simplifies collaboration on GitHub repositories with an easy-to-use interface.",
         "link": "https://desktop.github.com/",
-        "winget": "GitHub.GitHubDesktop"
+        "winget": "GitHub.GitHubDesktop",
+        "foss": true
     },
     "gitkrakenclient": {
         "category": "Development",
@@ -798,7 +854,8 @@
         "content": "Godot Engine",
         "description": "Godot Engine is a free, open-source 2D and 3D game engine with a focus on usability and flexibility.",
         "link": "https://godotengine.org/",
-        "winget": "GodotEngine.GodotEngine"
+        "winget": "GodotEngine.GodotEngine",
+        "foss": true
     },
     "gog": {
         "category": "Games",
@@ -814,7 +871,8 @@
         "content": "Gitify",
         "description": "GitHub notifications on your menu bar.",
         "link": "https://www.gitify.io/",
-        "winget": "Gitify.Gitify"
+        "winget": "Gitify.Gitify",
+        "foss": true
     },
     "golang": {
         "category": "Development",
@@ -822,7 +880,8 @@
         "content": "Go",
         "description": "Go (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency.",
         "link": "https://go.dev/",
-        "winget": "GoLang.Go"
+        "winget": "GoLang.Go",
+        "foss": true
     },
     "googledrive": {
         "category": "Utilities",
@@ -846,7 +905,8 @@
         "content": "Greenshot (Screenshots)",
         "description": "Greenshot is a light-weight screenshot software tool with built-in image editor and customizable capture options.",
         "link": "https://getgreenshot.org/",
-        "winget": "Greenshot.Greenshot"
+        "winget": "Greenshot.Greenshot",
+        "foss": true
     },
     "gsudo": {
         "category": "Utilities",
@@ -862,7 +922,8 @@
         "content": "HandBrake",
         "description": "HandBrake is an open-source video transcoder, allowing you to convert video from nearly any format to a selection of widely supported codecs.",
         "link": "https://handbrake.fr/",
-        "winget": "HandBrake.HandBrake"
+        "winget": "HandBrake.HandBrake",
+        "foss": true
     },
     "harmonoid": {
         "category": "Multimedia Tools",
@@ -870,7 +931,8 @@
         "content": "Harmonoid",
         "description": "Plays and manages your music library. Looks beautiful and juicy. Playlists, visuals, synced lyrics, pitch shift, volume boost and more.",
         "link": "https://harmonoid.com/",
-        "winget": "Harmonoid.Harmonoid"
+        "winget": "Harmonoid.Harmonoid",
+        "foss": true
     },
     "heidisql": {
         "category": "Pro Tools",
@@ -878,7 +940,8 @@
         "content": "HeidiSQL",
         "description": "HeidiSQL is a powerful and easy-to-use client for MySQL, MariaDB, Microsoft SQL Server, and PostgreSQL databases. It provides tools for database management and development.",
         "link": "https://www.heidisql.com/",
-        "winget": "HeidiSQL.HeidiSQL"
+        "winget": "HeidiSQL.HeidiSQL",
+        "foss": true
     },
     "helix": {
         "category": "Development",
@@ -886,7 +949,8 @@
         "content": "Helix",
         "description": "Helix is a neovim alternative built in rust.",
         "link": "https://helix-editor.com/",
-        "winget": "Helix.Helix"
+        "winget": "Helix.Helix",
+        "foss": true
     },
     "heroiclauncher": {
         "category": "Games",
@@ -894,7 +958,8 @@
         "content": "Heroic Games Launcher",
         "description": "Heroic Games Launcher is an open-source alternative game launcher for Epic Games Store.",
         "link": "https://heroicgameslauncher.com/",
-        "winget": "HeroicGamesLauncher.HeroicGamesLauncher"
+        "winget": "HeroicGamesLauncher.HeroicGamesLauncher",
+        "foss": true
     },
     "hexchat": {
         "category": "Communications",
@@ -902,7 +967,8 @@
         "content": "Hexchat",
         "description": "HexChat is a free, open-source IRC (Internet Relay Chat) client with a graphical interface for easy communication.",
         "link": "https://hexchat.github.io/",
-        "winget": "HexChat.HexChat"
+        "winget": "HexChat.HexChat",
+        "foss": true
     },
     "hwinfo": {
         "category": "Utilities",
@@ -926,7 +992,8 @@
         "content": "ImHex (Hex Editor)",
         "description": "A modern, featureful Hex Editor for Reverse Engineers and Developers.",
         "link": "https://imhex.werwolv.net/",
-        "winget": "WerWolv.ImHex"
+        "winget": "WerWolv.ImHex",
+        "foss": true
     },
     "imageglass": {
         "category": "Multimedia Tools",
@@ -934,7 +1001,8 @@
         "content": "ImageGlass (Image Viewer)",
         "description": "ImageGlass is a versatile image viewer with support for various image formats and a focus on simplicity and speed.",
         "link": "https://imageglass.org/",
-        "winget": "DuongDieuPhap.ImageGlass"
+        "winget": "DuongDieuPhap.ImageGlass",
+        "foss": true
     },
     "imgburn": {
         "category": "Multimedia Tools",
@@ -950,7 +1018,8 @@
         "content": "Inkscape",
         "description": "Inkscape is a powerful open-source vector graphics editor, suitable for tasks such as illustrations, icons, logos, and more.",
         "link": "https://inkscape.org/",
-        "winget": "Inkscape.Inkscape"
+        "winget": "Inkscape.Inkscape",
+        "foss": true
     },
     "itch": {
         "category": "Games",
@@ -958,7 +1027,8 @@
         "content": "Itch.io",
         "description": "Itch.io is a digital distribution platform for indie games and creative projects.",
         "link": "https://itch.io/",
-        "winget": "ItchIo.Itch"
+        "winget": "ItchIo.Itch",
+        "foss": true
     },
     "itunes": {
         "category": "Multimedia Tools",
@@ -974,7 +1044,8 @@
         "content": "Jami",
         "description": "Jami is a secure and privacy-focused communication platform that offers audio and video calls, messaging, and file sharing.",
         "link": "https://jami.net/",
-        "winget": "SFLinux.Jami"
+        "winget": "SFLinux.Jami",
+        "foss": true
     },
     "java8": {
         "category": "Development",
@@ -982,7 +1053,8 @@
         "content": "Amazon Corretto 8 (LTS)",
         "description": "Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK).",
         "link": "https://aws.amazon.com/corretto",
-        "winget": "Amazon.Corretto.8.JDK"
+        "winget": "Amazon.Corretto.8.JDK",
+        "foss": true
     },
     "java11": {
         "category": "Development",
@@ -990,7 +1062,8 @@
         "content": "Amazon Corretto 11 (LTS)",
         "description": "Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK).",
         "link": "https://aws.amazon.com/corretto",
-        "winget": "Amazon.Corretto.11.JDK"
+        "winget": "Amazon.Corretto.11.JDK",
+        "foss": true
     },
     "java17": {
         "category": "Development",
@@ -998,7 +1071,8 @@
         "content": "Amazon Corretto 17 (LTS)",
         "description": "Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK).",
         "link": "https://aws.amazon.com/corretto",
-        "winget": "Amazon.Corretto.17.JDK"
+        "winget": "Amazon.Corretto.17.JDK",
+        "foss": true
     },
     "java21": {
         "category": "Development",
@@ -1006,7 +1080,8 @@
         "content": "Amazon Corretto 21 (LTS)",
         "description": "Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK).",
         "link": "https://aws.amazon.com/corretto",
-        "winget": "Amazon.Corretto.21.JDK"
+        "winget": "Amazon.Corretto.21.JDK",
+        "foss": true
     },
     "java25": {
         "category": "Development",
@@ -1014,7 +1089,8 @@
         "content": "Amazon Corretto 25 (LTS)",
         "description": "Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK).",
         "link": "https://aws.amazon.com/corretto",
-        "winget": "Amazon.Corretto.25.JDK"
+        "winget": "Amazon.Corretto.25.JDK",
+        "foss": true
     },
     "jdownloader": {
         "category": "Utilities",
@@ -1030,7 +1106,8 @@
         "content": "Jellyfin Media Player",
         "description": "Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library.",
         "link": "https://github.com/jellyfin/jellyfin-media-player",
-        "winget": "Jellyfin.JellyfinMediaPlayer"
+        "winget": "Jellyfin.JellyfinMediaPlayer",
+        "foss": true
     },
     "jellyfinserver": {
         "category": "Multimedia Tools",
@@ -1038,7 +1115,8 @@
         "content": "Jellyfin Server",
         "description": "Jellyfin Server is an open-source media server software, allowing you to organize and stream your media library.",
         "link": "https://jellyfin.org/",
-        "winget": "Jellyfin.Server"
+        "winget": "Jellyfin.Server",
+        "foss": true
     },
     "jetbrains": {
         "category": "Development",
@@ -1054,7 +1132,8 @@
         "content": "Joplin (FOSS Notes)",
         "description": "Joplin is an open-source note-taking and to-do application with synchronization capabilities.",
         "link": "https://joplinapp.org/",
-        "winget": "Joplin.Joplin"
+        "winget": "Joplin.Joplin",
+        "foss": true
     },
     "jpegview": {
         "category": "Utilities",
@@ -1062,7 +1141,8 @@
         "content": "JPEG View",
         "description": "JPEGView is a lean, fast and highly configurable viewer/editor for JPEG, BMP, PNG, WEBP, TGA, GIF, JXL, HEIC, HEIF, AVIF and TIFF images with a minimal GUI",
         "link": "https://github.com/sylikc/jpegview",
-        "winget": "sylikc.JPEGView"
+        "winget": "sylikc.JPEGView",
+        "foss": true
     },
     "kdeconnect": {
         "category": "Utilities",
@@ -1070,7 +1150,8 @@
         "content": "KDE Connect",
         "description": "KDE Connect allows seamless integration between your KDE desktop and mobile devices.",
         "link": "https://community.kde.org/KDEConnect",
-        "winget": "KDE.KDEConnect"
+        "winget": "KDE.KDEConnect",
+        "foss": true
     },
     "kdenlive": {
         "category": "Multimedia Tools",
@@ -1078,7 +1159,8 @@
         "content": "Kdenlive (Video Editor)",
         "description": "Kdenlive is an open-source video editing software with powerful features for creating and editing professional-quality videos.",
         "link": "https://kdenlive.org/",
-        "winget": "KDE.Kdenlive"
+        "winget": "KDE.Kdenlive",
+        "foss": true
     },
     "keepass": {
         "category": "Utilities",
@@ -1086,7 +1168,8 @@
         "content": "KeePassXC",
         "description": "KeePassXC is a cross-platform, open-source password manager with strong encryption features.",
         "link": "https://keepassxc.org/",
-        "winget": "KeePassXCTeam.KeePassXC"
+        "winget": "KeePassXCTeam.KeePassXC",
+        "foss": true
     },
     "klite": {
         "category": "Multimedia Tools",
@@ -1102,7 +1185,8 @@
         "content": "Kodi Media Center",
         "description": "Kodi is an open-source media center application that allows you to play and view most videos, music, podcasts, and other digital media files.",
         "link": "https://kodi.tv/",
-        "winget": "XBMCFoundation.Kodi"
+        "winget": "XBMCFoundation.Kodi",
+        "foss": true
     },
     "krita": {
         "category": "Multimedia Tools",
@@ -1110,7 +1194,8 @@
         "content": "Krita (Image Editor)",
         "description": "Krita is a powerful open-source painting application. It is designed for concept artists, illustrators, matte and texture artists, and the VFX industry.",
         "link": "https://krita.org/en/features/",
-        "winget": "KDE.Krita"
+        "winget": "KDE.Krita",
+        "foss": true
     },
     "lazygit": {
         "category": "Development",
@@ -1118,7 +1203,8 @@
         "content": "Lazygit",
         "description": "Simple terminal UI for git commands",
         "link": "https://github.com/jesseduffield/lazygit/",
-        "winget": "JesseDuffield.lazygit"
+        "winget": "JesseDuffield.lazygit",
+        "foss": true
     },
     "libreoffice": {
         "category": "Document",
@@ -1126,7 +1212,8 @@
         "content": "LibreOffice",
         "description": "LibreOffice is a powerful and free office suite, compatible with other major office suites.",
         "link": "https://www.libreoffice.org/",
-        "winget": "TheDocumentFoundation.LibreOffice"
+        "winget": "TheDocumentFoundation.LibreOffice",
+        "foss": true
     },
     "librewolf": {
         "category": "Browsers",
@@ -1134,7 +1221,8 @@
         "content": "LibreWolf",
         "description": "LibreWolf is a privacy-focused web browser based on Firefox, with additional privacy and security enhancements.",
         "link": "https://librewolf-community.gitlab.io/",
-        "winget": "LibreWolf.LibreWolf"
+        "winget": "LibreWolf.LibreWolf",
+        "foss": true
     },
     "linkshellextension": {
         "category": "Utilities",
@@ -1150,7 +1238,8 @@
         "content": "Linphone",
         "description": "Linphone is an open-source voice over IP (VoIPservice that allows for audio and video calls, messaging, and more.",
         "link": "https://www.linphone.org/",
-        "winget": "BelledonneCommunications.Linphone"
+        "winget": "BelledonneCommunications.Linphone",
+        "foss": true
     },
     "livelywallpaper": {
         "category": "Utilities",
@@ -1158,7 +1247,8 @@
         "content": "Lively Wallpaper",
         "description": "Free and open-source software that allows users to set animated desktop wallpapers and screensavers.",
         "link": "https://www.rocksdanister.com/lively/",
-        "winget": "rocksdanister.LivelyWallpaper"
+        "winget": "rocksdanister.LivelyWallpaper",
+        "foss": true
     },
     "localsend": {
         "category": "Utilities",
@@ -1166,7 +1256,8 @@
         "content": "LocalSend",
         "description": "An open source cross-platform alternative to AirDrop.",
         "link": "https://localsend.org/",
-        "winget": "LocalSend.LocalSend"
+        "winget": "LocalSend.LocalSend",
+        "foss": true
     },
     "lockhunter": {
         "category": "Utilities",
@@ -1182,7 +1273,8 @@
         "content": "Logseq",
         "description": "Logseq is a versatile knowledge management and note-taking application designed for the digital thinker. With a focus on the interconnectedness of ideas, Logseq allows users to seamlessly organize their thoughts through a combination of hierarchical outlines and bi-directional linking. It supports both structured and unstructured content, enabling users to create a personalized knowledge graph that adapts to their evolving ideas and insights.",
         "link": "https://logseq.com/",
-        "winget": "Logseq.Logseq"
+        "winget": "Logseq.Logseq",
+        "foss": true
     },
     "malwarebytes": {
         "category": "Utilities",
@@ -1198,7 +1290,8 @@
         "content": "massCode (Snippet Manager)",
         "description": "massCode is a fast and efficient open-source code snippet manager for developers.",
         "link": "https://masscode.io/",
-        "winget": "antonreshetov.massCode"
+        "winget": "antonreshetov.massCode",
+        "foss": true
     },
     "matrix": {
         "category": "Communications",
@@ -1206,7 +1299,8 @@
         "content": "Element",
         "description": "Element is a client for Matrix; an open network for secure, decentralized communication.",
         "link": "https://element.io/",
-        "winget": "Element.Element"
+        "winget": "Element.Element",
+        "foss": true
     },
     "meld": {
         "category": "Utilities",
@@ -1214,7 +1308,8 @@
         "content": "Meld",
         "description": "Meld is a visual diff and merge tool for files and directories.",
         "link": "https://meldmerge.org/",
-        "winget": "Meld.Meld"
+        "winget": "Meld.Meld",
+        "foss": true
     },
     "ModernFlyouts": {
         "category": "Multimedia Tools",
@@ -1222,7 +1317,8 @@
         "content": "Modern Flyouts",
         "description": "An open source, modern, Fluent Design-based set of flyouts for Windows.",
         "link": "https://github.com/ModernFlyouts-Community/ModernFlyouts/",
-        "winget": "ModernFlyouts.ModernFlyouts"
+        "winget": "ModernFlyouts.ModernFlyouts",
+        "foss": true
     },
     "monitorian": {
         "category": "Utilities",
@@ -1230,7 +1326,8 @@
         "content": "Monitorian",
         "description": "Monitorian is a utility for adjusting monitor brightness and contrast on Windows.",
         "link": "https://github.com/emoacht/Monitorian",
-        "winget": "emoacht.Monitorian"
+        "winget": "emoacht.Monitorian",
+        "foss": true
     },
     "moonlight": {
         "category": "Games",
@@ -1238,7 +1335,8 @@
         "content": "Moonlight/GameStream Client",
         "description": "Moonlight/GameStream Client allows you to stream PC games to other devices over your local network.",
         "link": "https://moonlight-stream.org/",
-        "winget": "MoonlightGameStreamingProject.Moonlight"
+        "winget": "MoonlightGameStreamingProject.Moonlight",
+        "foss": true
     },
     "Motrix": {
         "category": "Utilities",
@@ -1246,7 +1344,8 @@
         "content": "Motrix Download Manager",
         "description": "A full-featured download manager.",
         "link": "https://motrix.app/",
-        "winget": "agalwood.Motrix"
+        "winget": "agalwood.Motrix",
+        "foss": true
     },
     "mpchc": {
         "category": "Multimedia Tools",
@@ -1254,7 +1353,8 @@
         "content": "Media Player Classic - Home Cinema",
         "description": "Media Player Classic - Home Cinema (MPC-HC) is a free and open-source video and audio player for Windows. MPC-HC is based on the original Guliverkli project and contains many additional features and bug fixes.",
         "link": "https://github.com/clsid2/mpc-hc/",
-        "winget": "clsid2.mpc-hc"
+        "winget": "clsid2.mpc-hc",
+        "foss": true
     },
     "mremoteng": {
         "category": "Pro Tools",
@@ -1262,7 +1362,8 @@
         "content": "mRemoteNG",
         "description": "mRemoteNG is a free and open-source remote connections manager. It allows you to view and manage multiple remote sessions in a single interface.",
         "link": "https://mremoteng.org/",
-        "winget": "mRemoteNG.mRemoteNG"
+        "winget": "mRemoteNG.mRemoteNG",
+        "foss": true
     },
     "msedgeredirect": {
         "category": "Utilities",
@@ -1270,7 +1371,8 @@
         "content": "MSEdgeRedirect",
         "description": "A Tool to Redirect News, Search, Widgets, Weather, and More to Your Default Browser.",
         "link": "https://github.com/rcmaehl/MSEdgeRedirect",
-        "winget": "rcmaehl.MSEdgeRedirect"
+        "winget": "rcmaehl.MSEdgeRedirect",
+        "foss": true
     },
     "msiafterburner": {
         "category": "Utilities",
@@ -1286,7 +1388,8 @@
         "content": "Mullvad VPN",
         "description": "This is the VPN client software for the Mullvad VPN service.",
         "link": "https://github.com/mullvad/mullvadvpn-app",
-        "winget": "MullvadVPN.MullvadVPN"
+        "winget": "MullvadVPN.MullvadVPN",
+        "foss": true
     },
     "BorderlessGaming": {
         "category": "Utilities",
@@ -1294,7 +1397,8 @@
         "content": "Borderless Gaming",
         "description": "Play your favorite games in a borderless window; no more time consuming alt-tabs.",
         "link": "https://github.com/Codeusa/Borderless-Gaming",
-        "winget": "Codeusa.BorderlessGaming"
+        "winget": "Codeusa.BorderlessGaming",
+        "foss": true
     },
     "EqualizerAPO": {
         "category": "Multimedia Tools",
@@ -1302,7 +1406,8 @@
         "content": "Equalizer APO",
         "description": "Equalizer APO is a parametric / graphic equalizer for Windows.",
         "link": "https://sourceforge.net/projects/equalizerapo",
-        "winget": "na"
+        "winget": "na",
+        "foss": true
     },
     "CompactGUI": {
         "category": "Utilities",
@@ -1310,7 +1415,8 @@
         "content": "Compact GUI",
         "description": "Transparently compress active games and programs using Windows 10/11 APIs",
         "link": "https://github.com/IridiumIO/CompactGUI",
-        "winget": "IridiumIO.CompactGUI"
+        "winget": "IridiumIO.CompactGUI",
+        "foss": true
     },
     "ExifCleaner": {
         "category": "Utilities",
@@ -1318,7 +1424,8 @@
         "content": "ExifCleaner",
         "description": "Desktop app to clean metadata from images, videos, PDFs, and other files.",
         "link": "https://github.com/szTheory/exifcleaner",
-        "winget": "szTheory.exifcleaner"
+        "winget": "szTheory.exifcleaner",
+        "foss": true
     },
     "mullvadbrowser": {
         "category": "Browsers",
@@ -1326,7 +1433,8 @@
         "content": "Mullvad Browser",
         "description": "Mullvad Browser is a privacy-focused web browser, developed in partnership with the Tor Project.",
         "link": "https://mullvad.net/browser",
-        "winget": "MullvadVPN.MullvadBrowser"
+        "winget": "MullvadVPN.MullvadBrowser",
+        "foss": true
     },
     "musescore": {
         "category": "Multimedia Tools",
@@ -1334,7 +1442,8 @@
         "content": "MuseScore",
         "description": "Create, play back and print beautiful sheet music with free and easy to use music notation software MuseScore.",
         "link": "https://musescore.org/en",
-        "winget": "Musescore.Musescore"
+        "winget": "Musescore.Musescore",
+        "foss": true
     },
     "musicbee": {
         "category": "Multimedia Tools",
@@ -1366,7 +1475,8 @@
         "content": "NanaZip",
         "description": "NanaZip is a fast and efficient file compression and decompression tool.",
         "link": "https://github.com/M2Team/NanaZip",
-        "winget": "M2Team.NanaZip"
+        "winget": "M2Team.NanaZip",
+        "foss": true
     },
     "netbird": {
         "category": "Pro Tools",
@@ -1374,7 +1484,8 @@
         "content": "NetBird",
         "description": "NetBird is a Open Source alternative comparable to TailScale that can be connected to a selfhosted Server.",
         "link": "https://netbird.io/",
-        "winget": "netbird"
+        "winget": "netbird",
+        "foss": true
     },
     "naps2": {
         "category": "Document",
@@ -1382,7 +1493,8 @@
         "content": "NAPS2 (Document Scanner)",
         "description": "NAPS2 is a document scanning application that simplifies the process of creating electronic documents.",
         "link": "https://www.naps2.com/",
-        "winget": "Cyanfish.NAPS2"
+        "winget": "Cyanfish.NAPS2",
+        "foss": true
     },
     "neofetchwin": {
         "category": "Utilities",
@@ -1390,7 +1502,8 @@
         "content": "Neofetch",
         "description": "Neofetch is a command-line utility for displaying system information in a visually appealing way.",
         "link": "https://github.com/nepnep39/neofetch-win",
-        "winget": "nepnep.neofetch-win"
+        "winget": "nepnep.neofetch-win",
+        "foss": true
     },
     "neovim": {
         "category": "Development",
@@ -1406,7 +1519,8 @@
         "content": "Nextcloud Desktop",
         "description": "Nextcloud Desktop is the official desktop client for the Nextcloud file synchronization and sharing platform.",
         "link": "https://nextcloud.com/install/#install-clients",
-        "winget": "Nextcloud.NextcloudDesktop"
+        "winget": "Nextcloud.NextcloudDesktop",
+        "foss": true
     },
     "nglide": {
         "category": "Multimedia Tools",
@@ -1422,7 +1536,8 @@
         "content": "Nmap",
         "description": "Nmap (Network Mapper) is an open-source tool for network exploration and security auditing. It discovers devices on a network and provides information about their ports and services.",
         "link": "https://nmap.org/",
-        "winget": "Insecure.Nmap"
+        "winget": "Insecure.Nmap",
+        "foss": true
     },
     "nodejs": {
         "category": "Development",
@@ -1430,7 +1545,8 @@
         "content": "NodeJS",
         "description": "NodeJS is a JavaScript runtime built on Chrome's V8 JavaScript engine for building server-side and networking applications.",
         "link": "https://nodejs.org/",
-        "winget": "OpenJS.NodeJS"
+        "winget": "OpenJS.NodeJS",
+        "foss": true
     },
     "nodejslts": {
         "category": "Development",
@@ -1446,7 +1562,8 @@
         "content": "Nomacs (Image viewer)",
         "description": "Nomacs is a free, open-source image viewer that supports multiple platforms. It features basic image editing capabilities and supports a variety of image formats.",
         "link": "https://nomacs.org/",
-        "winget": "nomacs.nomacs"
+        "winget": "nomacs.nomacs",
+        "foss": true
     },
     "notepadplus": {
         "category": "Document",
@@ -1454,7 +1571,8 @@
         "content": "Notepad++",
         "description": "Notepad++ is a free, open-source code editor and Notepad replacement with support for multiple languages.",
         "link": "https://notepad-plus-plus.org/",
-        "winget": "Notepad++.Notepad++"
+        "winget": "Notepad++.Notepad++",
+        "foss": true
     },
     "nuget": {
         "category": "Microsoft Tools",
@@ -1462,7 +1580,8 @@
         "content": "NuGet",
         "description": "NuGet is a package manager for the .NET framework, enabling developers to manage and share libraries in their .NET applications.",
         "link": "https://www.nuget.org/",
-        "winget": "Microsoft.NuGet"
+        "winget": "Microsoft.NuGet",
+        "foss": true
     },
     "nushell": {
         "category": "Utilities",
@@ -1470,7 +1589,8 @@
         "content": "Nushell",
         "description": "Nushell is a new shell that takes advantage of modern hardware and systems to provide a powerful, expressive, and fast experience.",
         "link": "https://www.nushell.sh/",
-        "winget": "Nushell.Nushell"
+        "winget": "Nushell.Nushell",
+        "foss": true
     },
     "nvclean": {
         "category": "Utilities",
@@ -1486,7 +1606,8 @@
         "content": "Node Version Manager",
         "description": "Node Version Manager (NVM) for Windows allows you to easily switch between multiple Node.js versions.",
         "link": "https://github.com/coreybutler/nvm-windows",
-        "winget": "CoreyButler.NVMforWindows"
+        "winget": "CoreyButler.NVMforWindows",
+        "foss": true
     },
     "obs": {
         "category": "Multimedia Tools",
@@ -1494,7 +1615,8 @@
         "content": "OBS Studio",
         "description": "OBS Studio is a free and open-source software for video recording and live streaming. It supports real-time video/audio capturing and mixing, making it popular among content creators.",
         "link": "https://obsproject.com/",
-        "winget": "OBSProject.OBSStudio"
+        "winget": "OBSProject.OBSStudio",
+        "foss": true
     },
     "obsidian": {
         "category": "Document",
@@ -1510,7 +1632,8 @@
         "content": "Okular",
         "description": "Okular is a versatile document viewer with advanced features.",
         "link": "https://okular.kde.org/",
-        "winget": "KDE.Okular"
+        "winget": "KDE.Okular",
+        "foss": true
     },
     "onedrive": {
         "category": "Microsoft Tools",
@@ -1526,7 +1649,8 @@
         "content": "ONLYOffice Desktop",
         "description": "ONLYOffice Desktop is a comprehensive office suite for document editing and collaboration.",
         "link": "https://www.onlyoffice.com/desktop.aspx",
-        "winget": "ONLYOFFICE.DesktopEditors"
+        "winget": "ONLYOFFICE.DesktopEditors",
+        "foss": true
     },
     "OPAutoClicker": {
         "category": "Utilities",
@@ -1542,7 +1666,8 @@
         "content": "OpenHashTab",
         "description": "OpenHashTab is a shell extension for conveniently calculating and checking file hashes from file properties.",
         "link": "https://github.com/namazso/OpenHashTab/",
-        "winget": "namazso.OpenHashTab"
+        "winget": "namazso.OpenHashTab",
+        "foss": true
     },
     "openrgb": {
         "category": "Utilities",
@@ -1550,7 +1675,8 @@
         "content": "OpenRGB",
         "description": "OpenRGB is an open-source RGB lighting control software designed to manage and control RGB lighting for various components and peripherals.",
         "link": "https://openrgb.org/",
-        "winget": "OpenRGB.OpenRGB"
+        "winget": "OpenRGB.OpenRGB",
+        "foss": true
     },
     "openscad": {
         "category": "Multimedia Tools",
@@ -1558,7 +1684,8 @@
         "content": "OpenSCAD",
         "description": "OpenSCAD is a free and open-source script-based 3D CAD modeler. It is especially useful for creating parametric designs for 3D printing.",
         "link": "https://www.openscad.org/",
-        "winget": "OpenSCAD.OpenSCAD"
+        "winget": "OpenSCAD.OpenSCAD",
+        "foss": true
     },
     "openshell": {
         "category": "Utilities",
@@ -1566,7 +1693,8 @@
         "content": "Open Shell (Start Menu)",
         "description": "Open Shell is a Windows Start Menu replacement with enhanced functionality and customization options.",
         "link": "https://github.com/Open-Shell/Open-Shell-Menu",
-        "winget": "Open-Shell.Open-Shell-Menu"
+        "winget": "Open-Shell.Open-Shell-Menu",
+        "foss": true
     },
     "OpenVPN": {
         "category": "Pro Tools",
@@ -1574,7 +1702,8 @@
         "content": "OpenVPN Connect",
         "description": "OpenVPN Connect is an open-source VPN client that allows you to connect securely to a VPN server. It provides a secure and encrypted connection for protecting your online privacy.",
         "link": "https://openvpn.net/",
-        "winget": "OpenVPNTechnologies.OpenVPNConnect"
+        "winget": "OpenVPNTechnologies.OpenVPNConnect",
+        "foss": true
     },
     "OVirtualBox": {
         "category": "Utilities",
@@ -1582,7 +1711,8 @@
         "content": "Oracle VirtualBox",
         "description": "Oracle VirtualBox is a powerful and free open-source virtualization tool for x86 and AMD64/Intel64 architectures.",
         "link": "https://www.virtualbox.org/",
-        "winget": "Oracle.VirtualBox"
+        "winget": "Oracle.VirtualBox",
+        "foss": true
     },
     "ownclouddesktop": {
         "category": "Utilities",
@@ -1590,7 +1720,8 @@
         "content": "ownCloud Desktop",
         "description": "ownCloud Desktop is the official desktop client for the ownCloud file synchronization and sharing platform.",
         "link": "https://owncloud.com/desktop-app/",
-        "winget": "ownCloud.ownCloudDesktop"
+        "winget": "ownCloud.ownCloudDesktop",
+        "foss": true
     },
     "policyplus": {
         "category": "Multimedia Tools",
@@ -1598,7 +1729,8 @@
         "content": "Policy Plus",
         "description": "Local Group Policy Editor plus more, for all Windows editions.",
         "link": "https://github.com/Fleex255/PolicyPlus",
-        "winget": "Fleex255.PolicyPlus"
+        "winget": "Fleex255.PolicyPlus",
+        "foss": true
     },
     "potplayer": {
         "category": "Multimedia Tools",
@@ -1646,7 +1778,8 @@
         "content": "PDFsam Basic",
         "description": "PDFsam Basic is a free and open-source tool for splitting, merging, and rotating PDF files.",
         "link": "https://pdfsam.org/",
-        "winget": "PDFsam.PDFsam"
+        "winget": "PDFsam.PDFsam",
+        "foss": true
     },
     "peazip": {
         "category": "Utilities",
@@ -1654,7 +1787,8 @@
         "content": "PeaZip",
         "description": "PeaZip is a free, open-source file archiver utility that supports multiple archive formats and provides encryption features.",
         "link": "https://peazip.github.io/",
-        "winget": "Giorgiotani.Peazip"
+        "winget": "Giorgiotani.Peazip",
+        "foss": true
     },
     "piimager": {
         "category": "Utilities",
@@ -1670,7 +1804,8 @@
         "content": "Playnite",
         "description": "Playnite is an open-source video game library manager with one simple goal: To provide a unified interface for all of your games.",
         "link": "https://playnite.link/",
-        "winget": "Playnite.Playnite"
+        "winget": "Playnite.Playnite",
+        "foss": true
     },
     "plex": {
         "category": "Multimedia Tools",
@@ -1694,7 +1829,8 @@
         "content": "Portmaster",
         "description": "Portmaster is a free and open-source application that puts you back in charge over all your computers network connections.",
         "link": "https://safing.io/",
-        "winget": "Safing.Portmaster"
+        "winget": "Safing.Portmaster",
+        "foss": true
     },
     "posh": {
         "category": "Development",
@@ -1702,7 +1838,8 @@
         "content": "Oh My Posh (Prompt)",
         "description": "Oh My Posh is a cross-platform prompt theme engine for any shell.",
         "link": "https://ohmyposh.dev/",
-        "winget": "JanDeDobbeleer.OhMyPosh"
+        "winget": "JanDeDobbeleer.OhMyPosh",
+        "foss": true
     },
     "postman": {
         "category": "Development",
@@ -1734,7 +1871,8 @@
         "content": "PowerShell",
         "description": "PowerShell is a task automation framework and scripting language designed for system administrators, offering powerful command-line capabilities.",
         "link": "https://github.com/PowerShell/PowerShell",
-        "winget": "Microsoft.PowerShell"
+        "winget": "Microsoft.PowerShell",
+        "foss": true
     },
     "powertoys": {
         "category": "Microsoft Tools",
@@ -1742,7 +1880,8 @@
         "content": "PowerToys",
         "description": "PowerToys is a set of utilities for power users to enhance productivity, featuring tools like FancyZones, PowerRename, and more.",
         "link": "https://github.com/microsoft/PowerToys",
-        "winget": "Microsoft.PowerToys"
+        "winget": "Microsoft.PowerToys",
+        "foss": true
     },
     "prismlauncher": {
         "category": "Games",
@@ -1750,7 +1889,8 @@
         "content": "Prism Launcher",
         "description": "Prism Launcher is an Open Source Minecraft launcher with the ability to manage multiple instances, accounts and mods.",
         "link": "https://prismlauncher.org/",
-        "winget": "PrismLauncher.PrismLauncher"
+        "winget": "PrismLauncher.PrismLauncher",
+        "foss": true
     },
     "processlasso": {
         "category": "Utilities",
@@ -1766,7 +1906,8 @@
         "content": "Proton Authenticator",
         "description": "2FA app from Proton to securely sync and backup 2FA codes.",
         "link": "https://proton.me/authenticator",
-        "winget": "Proton.ProtonAuthenticator"
+        "winget": "Proton.ProtonAuthenticator",
+        "foss": true
     },
     "processmonitor": {
         "category": "Microsoft Tools",
@@ -1782,7 +1923,8 @@
         "content": "OrcaSlicer",
         "description": "G-code generator for 3D printers (Bambu, Prusa, Voron, VzBot, RatRig, Creality, etc.)",
         "link": "https://github.com/SoftFever/OrcaSlicer",
-        "winget": "SoftFever.OrcaSlicer"
+        "winget": "SoftFever.OrcaSlicer",
+        "foss": true
     },
     "prucaslicer": {
         "category": "Utilities",
@@ -1790,7 +1932,8 @@
         "content": "PrusaSlicer",
         "description": "PrusaSlicer is a powerful and easy-to-use slicing software for 3D printing with Prusa 3D printers.",
         "link": "https://www.prusa3d.com/prusaslicer/",
-        "winget": "Prusa3d.PrusaSlicer"
+        "winget": "Prusa3d.PrusaSlicer",
+        "foss": true
     },
     "psremoteplay": {
         "category": "Games",
@@ -1806,7 +1949,8 @@
         "content": "PuTTY",
         "description": "PuTTY is a free and open-source terminal emulator, serial console, and network file transfer application. It supports various network protocols such as SSH, Telnet, and SCP.",
         "link": "https://www.chiark.greenend.org.uk/~sgtatham/putty/",
-        "winget": "PuTTY.PuTTY"
+        "winget": "PuTTY.PuTTY",
+        "foss": true
     },
     "python3": {
         "category": "Development",
@@ -1814,7 +1958,8 @@
         "content": "Python3",
         "description": "Python is a versatile programming language used for web development, data analysis, artificial intelligence, and more.",
         "link": "https://www.python.org/",
-        "winget": "Python.Python.3.14"
+        "winget": "Python.Python.3.14",
+        "foss": true
     },
     "qbittorrent": {
         "category": "Utilities",
@@ -1822,7 +1967,8 @@
         "content": "qBittorrent",
         "description": "qBittorrent is a free and open-source BitTorrent client that aims to provide a feature-rich and lightweight alternative to other torrent clients.",
         "link": "https://www.qbittorrent.org/",
-        "winget": "qBittorrent.qBittorrent"
+        "winget": "qBittorrent.qBittorrent",
+        "foss": true
     },
     "transmission": {
         "category": "Utilities",
@@ -1830,7 +1976,8 @@
         "content": "Transmission",
         "description": "Transmission is a cross-platform BitTorrent client that is open source, easy, powerful, and lean.",
         "link": "https://transmissionbt.com/",
-        "winget": "Transmission.Transmission"
+        "winget": "Transmission.Transmission",
+        "foss": true
     },
     "tixati": {
         "category": "Utilities",
@@ -1846,15 +1993,17 @@
         "content": "QTox",
         "description": "QTox is a free and open-source messaging app that prioritizes user privacy and security in its design.",
         "link": "https://qtox.github.io/",
-        "winget": "Tox.qTox"
+        "winget": "Tox.qTox",
+        "foss": true
     },
     "quicklook": {
         "category": "Utilities",
         "choco": "quicklook",
         "content": "Quicklook",
-        "description": "Bring macOS “Quick Look” feature to Windows",
+        "description": "Bring macOS \u201cQuick Look\u201d feature to Windows",
         "link": "https://github.com/QL-Win/QuickLook",
-        "winget": "QL-Win.QuickLook"
+        "winget": "QL-Win.QuickLook",
+        "foss": true
     },
     "rainmeter": {
         "category": "Utilities",
@@ -1862,7 +2011,8 @@
         "content": "Rainmeter",
         "description": "Rainmeter is a desktop customization tool that allows you to create and share customizable skins for your desktop.",
         "link": "https://www.rainmeter.net/",
-        "winget": "Rainmeter.Rainmeter"
+        "winget": "Rainmeter.Rainmeter",
+        "foss": true
     },
     "revo": {
         "category": "Utilities",
@@ -1886,7 +2036,8 @@
         "content": "Revolt",
         "description": "Find your community, connect with the world. Revolt is one of the best ways to stay connected with your friends and community without sacrificing any usability.",
         "link": "https://revolt.chat/",
-        "winget": "Revolt.RevoltDesktop"
+        "winget": "Revolt.RevoltDesktop",
+        "foss": true
     },
     "ripgrep": {
         "category": "Utilities",
@@ -1894,7 +2045,8 @@
         "content": "Ripgrep",
         "description": "Fast and powerful commandline search tool",
         "link": "https://github.com/BurntSushi/ripgrep/",
-        "winget": "BurntSushi.ripgrep.MSVC"
+        "winget": "BurntSushi.ripgrep.MSVC",
+        "foss": true
     },
     "rufus": {
         "category": "Utilities",
@@ -1902,7 +2054,8 @@
         "content": "Rufus Imager",
         "description": "Rufus is a utility that helps format and create bootable USB drives, such as USB keys or pen drives.",
         "link": "https://rufus.ie/",
-        "winget": "Rufus.Rufus"
+        "winget": "Rufus.Rufus",
+        "foss": true
     },
     "rustdesk": {
         "category": "Pro Tools",
@@ -1910,7 +2063,8 @@
         "content": "RustDesk",
         "description": "RustDesk is a free and open-source remote desktop application. It provides a secure way to connect to remote machines and access desktop environments.",
         "link": "https://rustdesk.com/",
-        "winget": "RustDesk.RustDesk"
+        "winget": "RustDesk.RustDesk",
+        "foss": true
     },
     "rustlang": {
         "category": "Development",
@@ -1918,7 +2072,8 @@
         "content": "Rust",
         "description": "Rust is a programming language designed for safety and performance, particularly focused on systems programming.",
         "link": "https://www.rust-lang.org/",
-        "winget": "Rustlang.Rust.MSVC"
+        "winget": "Rustlang.Rust.MSVC",
+        "foss": true
     },
     "sagethumbs": {
         "category": "Utilities",
@@ -1926,7 +2081,8 @@
         "content": "SageThumbs",
         "description": "Provides support for thumbnails in Explorer with more formats.",
         "link": "https://sagethumbs.en.lo4d.com/windows",
-        "winget": "CherubicSoftware.SageThumbs"
+        "winget": "CherubicSoftware.SageThumbs",
+        "foss": true
     },
     "sandboxie": {
         "category": "Utilities",
@@ -1934,7 +2090,8 @@
         "content": "Sandboxie Plus",
         "description": "Sandboxie Plus is a sandbox-based isolation program that provides enhanced security by running applications in an isolated environment.",
         "link": "https://github.com/sandboxie-plus/Sandboxie",
-        "winget": "Sandboxie.Plus"
+        "winget": "Sandboxie.Plus",
+        "foss": true
     },
     "sdio": {
         "category": "Utilities",
@@ -1942,7 +2099,8 @@
         "content": "Snappy Driver Installer Origin",
         "description": "Snappy Driver Installer Origin is a free and open-source driver updater with a vast driver database for Windows.",
         "link": "https://www.glenn.delahoy.com/snappy-driver-installer-origin/",
-        "winget": "GlennDelahoy.SnappyDriverInstallerOrigin"
+        "winget": "GlennDelahoy.SnappyDriverInstallerOrigin",
+        "foss": true
     },
     "session": {
         "category": "Communications",
@@ -1950,7 +2108,8 @@
         "content": "Session",
         "description": "Session is a private and secure messaging app built on a decentralized network for user privacy and data protection.",
         "link": "https://getsession.org/",
-        "winget": "Session.Session"
+        "winget": "Session.Session",
+        "foss": true
     },
     "sharex": {
         "category": "Multimedia Tools",
@@ -1958,7 +2117,8 @@
         "content": "ShareX (Screenshots)",
         "description": "ShareX is a free and open-source screen capture and file sharing tool. It supports various capture methods and offers advanced features for editing and sharing screenshots.",
         "link": "https://getsharex.com/",
-        "winget": "ShareX.ShareX"
+        "winget": "ShareX.ShareX",
+        "foss": true
     },
     "nilesoftShell": {
         "category": "Utilities",
@@ -1974,7 +2134,8 @@
         "content": "System Informer",
         "description": "A free, powerful, multi-purpose tool that helps you monitor system resources, debug software and detect malware.",
         "link": "https://systeminformer.com/",
-        "winget": "WinsiderSS.SystemInformer"
+        "winget": "WinsiderSS.SystemInformer",
+        "foss": true
     },
     "sidequest": {
         "category": "Games",
@@ -1990,7 +2151,8 @@
         "content": "Signal",
         "description": "Signal is a privacy-focused messaging app that offers end-to-end encryption for secure and private communication.",
         "link": "https://signal.org/",
-        "winget": "OpenWhisperSystems.Signal"
+        "winget": "OpenWhisperSystems.Signal",
+        "foss": true
     },
     "signalrgb": {
         "category": "Utilities",
@@ -2006,7 +2168,8 @@
         "content": "simplenote",
         "description": "Simplenote is an easy way to keep notes, lists, ideas and more.",
         "link": "https://simplenote.com/",
-        "winget": "Automattic.Simplenote"
+        "winget": "Automattic.Simplenote",
+        "foss": true
     },
     "simplewall": {
         "category": "Pro Tools",
@@ -2014,7 +2177,8 @@
         "content": "Simplewall",
         "description": "Simplewall is a free and open-source firewall application for Windows. It allows users to control and manage the inbound and outbound network traffic of applications.",
         "link": "https://github.com/henrypp/simplewall",
-        "winget": "Henry++.simplewall"
+        "winget": "Henry++.simplewall",
+        "foss": true
     },
     "slack": {
         "category": "Communications",
@@ -2030,7 +2194,8 @@
         "content": "Spacedrive File Manager",
         "description": "Spacedrive is a file manager that offers cloud storage integration and file synchronization across devices.",
         "link": "https://www.spacedrive.com/",
-        "winget": "spacedrive.Spacedrive"
+        "winget": "spacedrive.Spacedrive",
+        "foss": true
     },
     "spacesniffer": {
         "category": "Utilities",
@@ -2046,7 +2211,8 @@
         "content": "Starship (Shell Prompt)",
         "description": "Starship is a minimal, fast, and customizable prompt for any shell.",
         "link": "https://starship.rs/",
-        "winget": "starship"
+        "winget": "starship",
+        "foss": true
     },
     "steam": {
         "category": "Games",
@@ -2062,7 +2228,8 @@
         "content": "Strawberry (Music Player)",
         "description": "Strawberry is an open-source music player that focuses on music collection management and audio quality. It supports various audio formats and features a clean user interface.",
         "link": "https://www.strawberrymusicplayer.org/",
-        "winget": "StrawberryMusicPlayer.Strawberry"
+        "winget": "StrawberryMusicPlayer.Strawberry",
+        "foss": true
     },
     "stremio": {
         "winget": "Stremio.Stremio",
@@ -2070,7 +2237,8 @@
         "category": "Multimedia Tools",
         "content": "Stremio",
         "link": "https://www.stremio.com/",
-        "description": "Stremio is a media center application that allows users to organize and stream their favorite movies, TV shows, and video content."
+        "description": "Stremio is a media center application that allows users to organize and stream their favorite movies, TV shows, and video content.",
+        "foss": true
     },
     "sublimemerge": {
         "category": "Development",
@@ -2094,7 +2262,8 @@
         "content": "Sumatra PDF",
         "description": "Sumatra PDF is a lightweight and fast PDF viewer with minimalistic design.",
         "link": "https://www.sumatrapdfreader.org/free-pdf-reader.html",
-        "winget": "SumatraPDF.SumatraPDF"
+        "winget": "SumatraPDF.SumatraPDF",
+        "foss": true
     },
     "pdfgear": {
         "category": "Document",
@@ -2110,7 +2279,8 @@
         "content": "Sunshine/GameStream Server",
         "description": "Sunshine is a GameStream server that allows you to remotely play PC games on Android devices, offering low-latency streaming.",
         "link": "https://github.com/LizardByte/Sunshine",
-        "winget": "LizardByte.Sunshine"
+        "winget": "LizardByte.Sunshine",
+        "foss": true
     },
     "superf4": {
         "category": "Utilities",
@@ -2118,7 +2288,8 @@
         "content": "SuperF4",
         "description": "SuperF4 is a utility that allows you to terminate programs instantly by pressing a customizable hotkey.",
         "link": "https://stefansundin.github.io/superf4/",
-        "winget": "StefanSundin.Superf4"
+        "winget": "StefanSundin.Superf4",
+        "foss": true
     },
     "swift": {
         "category": "Development",
@@ -2126,7 +2297,8 @@
         "content": "Swift toolchain",
         "description": "Swift is a general-purpose programming language that's approachable for newcomers and powerful for experts.",
         "link": "https://www.swift.org/",
-        "winget": "Swift.Toolchain"
+        "winget": "Swift.Toolchain",
+        "foss": true
     },
     "synctrayzor": {
         "category": "Utilities",
@@ -2134,7 +2306,8 @@
         "content": "SyncTrayzor",
         "description": "Windows tray utility / filesystem watcher / launcher for Syncthing",
         "link": "https://github.com/GermanCoding/SyncTrayzor",
-        "winget": "GermanCoding.SyncTrayzor"
+        "winget": "GermanCoding.SyncTrayzor",
+        "foss": true
     },
     "sqlmanagementstudio": {
         "category": "Microsoft Tools",
@@ -2150,7 +2323,8 @@
         "content": "Tabby.sh",
         "description": "Tabby is a highly configurable terminal emulator, SSH and serial client for Windows, macOS and Linux",
         "link": "https://tabby.sh/",
-        "winget": "Eugeny.Tabby"
+        "winget": "Eugeny.Tabby",
+        "foss": true
     },
     "tailscale": {
         "category": "Utilities",
@@ -2158,7 +2332,8 @@
         "content": "Tailscale",
         "description": "Tailscale is a secure and easy-to-use VPN solution for connecting your devices and networks.",
         "link": "https://tailscale.com/",
-        "winget": "tailscale.tailscale"
+        "winget": "tailscale.tailscale",
+        "foss": true
     },
     "TcNoAccSwitcher": {
         "category": "Games",
@@ -2166,7 +2341,8 @@
         "content": "TCNO Account Switcher",
         "description": "A Super-fast account switcher for Steam, Battle.net, Epic Games, Origin, Riot, Ubisoft and many others!",
         "link": "https://github.com/TCNOco/TcNo-Acc-Switcher",
-        "winget": "TechNobo.TcNoAccountSwitcher"
+        "winget": "TechNobo.TcNoAccountSwitcher",
+        "foss": true
     },
     "tcpview": {
         "category": "Microsoft Tools",
@@ -2198,7 +2374,8 @@
         "content": "Telegram",
         "description": "Telegram is a cloud-based instant messaging app known for its security features, speed, and simplicity.",
         "link": "https://telegram.org/",
-        "winget": "Telegram.TelegramDesktop"
+        "winget": "Telegram.TelegramDesktop",
+        "foss": true
     },
     "unigram": {
         "category": "Communications",
@@ -2206,7 +2383,8 @@
         "content": "Unigram",
         "description": "Unigram - Telegram for Windows",
         "link": "https://unigramdev.github.io/",
-        "winget": "Telegram.Unigram"
+        "winget": "Telegram.Unigram",
+        "foss": true
     },
     "terminal": {
         "category": "Microsoft Tools",
@@ -2214,7 +2392,8 @@
         "content": "Windows Terminal",
         "description": "Windows Terminal is a modern, fast, and efficient terminal application for command-line users, supporting multiple tabs, panes, and more.",
         "link": "https://aka.ms/terminal",
-        "winget": "Microsoft.WindowsTerminal"
+        "winget": "Microsoft.WindowsTerminal",
+        "foss": true
     },
     "Thonny": {
         "category": "Development",
@@ -2222,7 +2401,8 @@
         "content": "Thonny Python IDE",
         "description": "Python IDE for beginners.",
         "link": "https://github.com/thonny/thonny",
-        "winget": "AivarAnnamaa.Thonny"
+        "winget": "AivarAnnamaa.Thonny",
+        "foss": true
     },
     "MuEditor": {
         "category": "Development",
@@ -2230,7 +2410,8 @@
         "content": "Code With Mu (Mu Editor)",
         "description": "Mu is a Python code editor for beginner programmers",
         "link": "https://codewith.mu/",
-        "winget": "Mu.Mu"
+        "winget": "Mu.Mu",
+        "foss": true
     },
     "thorium": {
         "category": "Browsers",
@@ -2238,7 +2419,8 @@
         "content": "Thorium Browser AVX2",
         "description": "Browser built for speed over vanilla chromium. It is built with AVX2 optimizations and is the fastest browser on the market.",
         "link": "https://thorium.rocks/",
-        "winget": "Alex313031.Thorium.AVX2"
+        "winget": "Alex313031.Thorium.AVX2",
+        "foss": true
     },
     "thunderbird": {
         "category": "Communications",
@@ -2246,7 +2428,8 @@
         "content": "Thunderbird",
         "description": "Mozilla Thunderbird is a free and open-source email client, news client, and chat client with advanced features.",
         "link": "https://www.thunderbird.net/",
-        "winget": "Mozilla.Thunderbird"
+        "winget": "Mozilla.Thunderbird",
+        "foss": true
     },
     "betterbird": {
         "category": "Communications",
@@ -2254,7 +2437,8 @@
         "content": "Betterbird",
         "description": "Betterbird is a fork of Mozilla Thunderbird with additional features and bugfixes.",
         "link": "https://www.betterbird.eu/",
-        "winget": "Betterbird.Betterbird"
+        "winget": "Betterbird.Betterbird",
+        "foss": true
     },
     "tidal": {
         "category": "Multimedia Tools",
@@ -2270,7 +2454,8 @@
         "content": "Tor Browser",
         "description": "Tor Browser is designed for anonymous web browsing, utilizing the Tor network to protect user privacy and security.",
         "link": "https://www.torproject.org/",
-        "winget": "TorProject.TorBrowser"
+        "winget": "TorProject.TorBrowser",
+        "foss": true
     },
     "totalcommander": {
         "category": "Utilities",
@@ -2294,7 +2479,8 @@
         "content": "TranslucentTB",
         "description": "TranslucentTB is a tool that allows you to customize the transparency of the Windows taskbar.",
         "link": "https://github.com/TranslucentTB/TranslucentTB",
-        "winget": "9PF4KZ2VN4W9"
+        "winget": "9PF4KZ2VN4W9",
+        "foss": true
     },
     "twinkletray": {
         "category": "Utilities",
@@ -2302,7 +2488,8 @@
         "content": "Twinkle Tray",
         "description": "Twinkle Tray lets you easily manage the brightness levels of multiple monitors.",
         "link": "https://twinkletray.com/",
-        "winget": "xanderfrangos.twinkletray"
+        "winget": "xanderfrangos.twinkletray",
+        "foss": true
     },
     "ubisoft": {
         "category": "Games",
@@ -2318,7 +2505,8 @@
         "content": "Ungoogled",
         "description": "Ungoogled Chromium is a version of Chromium without Google's integration for enhanced privacy and control.",
         "link": "https://github.com/Eloston/ungoogled-chromium",
-        "winget": "eloston.ungoogled-chromium"
+        "winget": "eloston.ungoogled-chromium",
+        "foss": true
     },
     "unity": {
         "category": "Development",
@@ -2334,7 +2522,8 @@
         "content": "Vagrant",
         "description": "Vagrant is an open-source tool for building and managing virtualized development environments.",
         "link": "https://www.vagrantup.com/",
-        "winget": "Hashicorp.Vagrant"
+        "winget": "Hashicorp.Vagrant",
+        "foss": true
     },
     "vc2015_32": {
         "category": "Microsoft Tools",
@@ -2358,7 +2547,8 @@
         "content": "Ventoy",
         "description": "Ventoy is an open-source tool for creating bootable USB drives. It supports multiple ISO files on a single USB drive, making it a versatile solution for installing operating systems.",
         "link": "https://www.ventoy.net/",
-        "winget": "Ventoy.Ventoy"
+        "winget": "Ventoy.Ventoy",
+        "foss": true
     },
     "vesktop": {
         "category": "Communications",
@@ -2366,7 +2556,8 @@
         "content": "Vesktop",
         "description": "A cross platform electron-based desktop app aiming to give you a snappier Discord experience with Vencord pre-installed.",
         "link": "https://github.com/Vencord/Vesktop",
-        "winget": "Vencord.Vesktop"
+        "winget": "Vencord.Vesktop",
+        "foss": true
     },
     "viber": {
         "category": "Communications",
@@ -2382,7 +2573,8 @@
         "content": "Videomass",
         "description": "Videomass by GianlucaPernigotto is a cross-platform GUI for FFmpeg, streamlining multimedia file processing with batch conversions and user-friendly features.",
         "link": "https://jeanslack.github.io/Videomass/",
-        "winget": "GianlucaPernigotto.Videomass"
+        "winget": "GianlucaPernigotto.Videomass",
+        "foss": true
     },
     "visualstudio": {
         "category": "Development",
@@ -2406,7 +2598,8 @@
         "content": "VLC (Video Player)",
         "description": "VLC Media Player is a free and open-source multimedia player that supports a wide range of audio and video formats. It is known for its versatility and cross-platform compatibility.",
         "link": "https://www.videolan.org/vlc/",
-        "winget": "VideoLAN.VLC"
+        "winget": "VideoLAN.VLC",
+        "foss": true
     },
     "voicemeeter": {
         "category": "Multimedia Tools",
@@ -2438,7 +2631,8 @@
         "content": "VS Code",
         "description": "Visual Studio Code is a free, open-source code editor with support for multiple programming languages.",
         "link": "https://code.visualstudio.com/",
-        "winget": "Microsoft.VisualStudioCode"
+        "winget": "Microsoft.VisualStudioCode",
+        "foss": true
     },
     "vscodium": {
         "category": "Development",
@@ -2446,7 +2640,8 @@
         "content": "VS Codium",
         "description": "VSCodium is a community-driven, freely-licensed binary distribution of Microsoft's VS Code.",
         "link": "https://vscodium.com/",
-        "winget": "VSCodium.VSCodium"
+        "winget": "VSCodium.VSCodium",
+        "foss": true
     },
     "waterfox": {
         "category": "Browsers",
@@ -2454,7 +2649,8 @@
         "content": "Waterfox",
         "description": "Waterfox is a fast, privacy-focused web browser based on Firefox, designed to preserve user choice and privacy.",
         "link": "https://www.waterfox.net/",
-        "winget": "Waterfox.Waterfox"
+        "winget": "Waterfox.Waterfox",
+        "foss": true
     },
     "wazuh": {
         "category": "Utilities",
@@ -2462,7 +2658,8 @@
         "content": "Wazuh.",
         "description": "Wazuh is an open-source security monitoring platform that offers intrusion detection, compliance checks, and log analysis.",
         "link": "https://wazuh.com/",
-        "winget": "Wazuh.WazuhAgent"
+        "winget": "Wazuh.WazuhAgent",
+        "foss": true
     },
     "wezterm": {
         "category": "Development",
@@ -2470,7 +2667,8 @@
         "content": "Wezterm",
         "description": "WezTerm is a powerful cross-platform terminal emulator and multiplexer",
         "link": "https://wezfurlong.org/wezterm/index.html",
-        "winget": "wez.wezterm"
+        "winget": "wez.wezterm",
+        "foss": true
     },
     "windowspchealth": {
         "category": "Utilities",
@@ -2494,7 +2692,8 @@
         "content": "UniGetUI",
         "description": "UniGetUI is a GUI for Winget, Chocolatey, and other Windows CLI package managers.",
         "link": "https://www.marticliment.com/wingetui/",
-        "winget": "MartiCliment.UniGetUI"
+        "winget": "MartiCliment.UniGetUI",
+        "foss": true
     },
     "winmerge": {
         "category": "Document",
@@ -2502,7 +2701,8 @@
         "content": "WinMerge",
         "description": "WinMerge is a visual text file and directory comparison tool for Windows.",
         "link": "https://winmerge.org/",
-        "winget": "WinMerge.WinMerge"
+        "winget": "WinMerge.WinMerge",
+        "foss": true
     },
     "winpaletter": {
         "category": "Utilities",
@@ -2510,7 +2710,8 @@
         "content": "WinPaletter",
         "description": "WinPaletter is a tool for adjusting the color palette of Windows 10, providing customization options for window colors.",
         "link": "https://github.com/Abdelrhman-AK/WinPaletter",
-        "winget": "Abdelrhman-AK.WinPaletter"
+        "winget": "Abdelrhman-AK.WinPaletter",
+        "foss": true
     },
     "winrar": {
         "category": "Utilities",
@@ -2526,7 +2727,8 @@
         "content": "WinSCP",
         "description": "WinSCP is a popular open-source SFTP, FTP, and SCP client for Windows. It allows secure file transfers between a local and a remote computer.",
         "link": "https://winscp.net/",
-        "winget": "WinSCP.WinSCP"
+        "winget": "WinSCP.WinSCP",
+        "foss": true
     },
     "wireguard": {
         "category": "Pro Tools",
@@ -2534,7 +2736,8 @@
         "content": "WireGuard",
         "description": "WireGuard is a fast and modern VPN (Virtual Private Network) protocol. It aims to be simpler and more efficient than other VPN protocols, providing secure and reliable connections.",
         "link": "https://www.wireguard.com/",
-        "winget": "WireGuard.WireGuard"
+        "winget": "WireGuard.WireGuard",
+        "foss": true
     },
     "wireshark": {
         "category": "Pro Tools",
@@ -2542,7 +2745,8 @@
         "content": "Wireshark",
         "description": "Wireshark is a widely-used open-source network protocol analyzer. It allows users to capture and analyze network traffic in real-time, providing detailed insights into network activities.",
         "link": "https://www.wireshark.org/",
-        "winget": "WiresharkFoundation.Wireshark"
+        "winget": "WiresharkFoundation.Wireshark",
+        "foss": true
     },
     "wisetoys": {
         "category": "Utilities",
@@ -2582,7 +2786,8 @@
         "content": "Xtreme Download Manager",
         "description": "Xtreme Download Manager is an advanced download manager with support for various protocols and browsers.*Browser integration deprecated by google store. No official release.*",
         "link": "https://xtremedownloadmanager.com/",
-        "winget": "subhra74.XtremeDownloadManager"
+        "winget": "subhra74.XtremeDownloadManager",
+        "foss": true
     },
     "xeheditor": {
         "category": "Utilities",
@@ -2598,7 +2803,8 @@
         "content": "XEMU",
         "description": "XEMU is an open-source Xbox emulator that allows you to play Xbox games on your PC, aiming for accuracy and compatibility.",
         "link": "https://xemu.app/",
-        "winget": "xemu-project.xemu"
+        "winget": "xemu-project.xemu",
+        "foss": true
     },
     "xnview": {
         "category": "Utilities",
@@ -2614,7 +2820,8 @@
         "content": "Xournal++",
         "description": "Xournal++ is an open-source handwriting notetaking software with PDF annotation capabilities.",
         "link": "https://xournalpp.github.io/",
-        "winget": "Xournal++.Xournal++"
+        "winget": "Xournal++.Xournal++",
+        "foss": true
     },
     "xpipe": {
         "category": "Pro Tools",
@@ -2622,7 +2829,8 @@
         "content": "XPipe",
         "description": "XPipe is an open-source tool for orchestrating containerized applications. It simplifies the deployment and management of containerized services in a distributed environment.",
         "link": "https://xpipe.io/",
-        "winget": "xpipe-io.xpipe"
+        "winget": "xpipe-io.xpipe",
+        "foss": true
     },
     "yarn": {
         "category": "Development",
@@ -2630,7 +2838,8 @@
         "content": "Yarn",
         "description": "Yarn is a fast, reliable, and secure dependency management tool for JavaScript projects.",
         "link": "https://yarnpkg.com/",
-        "winget": "Yarn.Yarn"
+        "winget": "Yarn.Yarn",
+        "foss": true
     },
     "ytdlp": {
         "category": "Multimedia Tools",
@@ -2638,7 +2847,8 @@
         "content": "Yt-dlp",
         "description": "Command-line tool that allows you to download videos from YouTube and other supported sites. It is an improved version of the popular youtube-dl.",
         "link": "https://github.com/yt-dlp/yt-dlp",
-        "winget": "yt-dlp.yt-dlp"
+        "winget": "yt-dlp.yt-dlp",
+        "foss": true
     },
     "zerotierone": {
         "category": "Utilities",
@@ -2654,7 +2864,8 @@
         "content": "Zim Desktop Wiki",
         "description": "Zim Desktop Wiki is a graphical text editor used to maintain a collection of wiki pages.",
         "link": "https://zim-wiki.org/",
-        "winget": "Zimwiki.Zim"
+        "winget": "Zimwiki.Zim",
+        "foss": true
     },
     "znote": {
         "category": "Document",
@@ -2662,7 +2873,8 @@
         "content": "Znote",
         "description": "Znote is a note-taking application.",
         "link": "https://znote.io/",
-        "winget": "alagrede.znote"
+        "winget": "alagrede.znote",
+        "foss": true
     },
     "zoom": {
         "category": "Communications",
@@ -2686,7 +2898,8 @@
         "content": "Zotero",
         "description": "Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share your research materials.",
         "link": "https://www.zotero.org/",
-        "winget": "DigitalScholar.Zotero"
+        "winget": "DigitalScholar.Zotero",
+        "foss": true
     },
     "zoxide": {
         "category": "Utilities",
@@ -2694,7 +2907,8 @@
         "content": "Zoxide",
         "description": "Zoxide is a fast and efficient directory changer (cd) that helps you navigate your file system with ease.",
         "link": "https://github.com/ajeetdsouza/zoxide",
-        "winget": "ajeetdsouza.zoxide"
+        "winget": "ajeetdsouza.zoxide",
+        "foss": true
     },
     "zulip": {
         "category": "Communications",
@@ -2702,7 +2916,8 @@
         "content": "Zulip",
         "description": "Zulip is an open-source team collaboration tool with chat streams for productive and organized communication.",
         "link": "https://zulipchat.com/",
-        "winget": "Zulip.Zulip"
+        "winget": "Zulip.Zulip",
+        "foss": true
     },
     "syncthingtray": {
         "category": "Utilities",
@@ -2710,7 +2925,8 @@
         "content": "Syncthingtray",
         "description": "Might be the alternative for Synctrayzor. Windows tray utility / filesystem watcher / launcher for Syncthing",
         "link": "https://github.com/Martchus/syncthingtray",
-        "winget": "Martchus.syncthingtray"
+        "winget": "Martchus.syncthingtray",
+        "foss": true
     },
     "miniconda": {
         "category": "Development",
@@ -2718,7 +2934,8 @@
         "content": "Miniconda",
         "description": "Miniconda is a free minimal installer for conda. It is a small bootstrap version of Anaconda that includes only conda, Python, the packages they both depend on, and a small number of other useful packages (like pip, zlib, and a few others).",
         "link": "https://docs.conda.io/projects/miniconda",
-        "winget": "Anaconda.Miniconda3"
+        "winget": "Anaconda.Miniconda3",
+        "foss": true
     },
     "pixi": {
         "category": "Development",
@@ -2726,7 +2943,8 @@
         "content": "Pixi",
         "description": "Pixi is a fast software package manager built on top of the existing conda ecosystem. Spins up development environments quickly on Windows, macOS and Linux. Pixi supports Python, R, C/C++, Rust, Ruby, and many other languages.",
         "link": "https://pixi.sh",
-        "winget": "prefix-dev.pixi"
+        "winget": "prefix-dev.pixi",
+        "foss": true
     },
     "temurin": {
         "category": "Development",
@@ -2734,7 +2952,8 @@
         "content": "Eclipse Temurin",
         "description": "Eclipse Temurin is the open source Java SE build based upon OpenJDK.",
         "link": "https://adoptium.net/temurin/",
-        "winget": "EclipseAdoptium.Temurin.21.JDK"
+        "winget": "EclipseAdoptium.Temurin.21.JDK",
+        "foss": true
     },
     "intelpresentmon": {
         "category": "Utilities",
@@ -2742,7 +2961,8 @@
         "content": "Intel-PresentMon",
         "description": "A new gaming performance overlay and telemetry application to monitor and measure your gaming experience.",
         "link": "https://game.intel.com/us/stories/intel-presentmon/",
-        "winget": "Intel.PresentMon.Beta"
+        "winget": "Intel.PresentMon.Beta",
+        "foss": true
     },
     "pyenvwin": {
         "category": "Development",
@@ -2750,7 +2970,8 @@
         "content": "Python Version Manager (pyenv-win)",
         "description": "pyenv for Windows is a simple python version management tool. It lets you easily switch between multiple versions of Python.",
         "link": "https://pyenv-win.github.io/pyenv-win/",
-        "winget": "na"
+        "winget": "na",
+        "foss": true
     },
     "tightvnc": {
         "category": "Utilities",
@@ -2758,7 +2979,8 @@
         "content": "TightVNC",
         "description": "TightVNC is a free and Open Source remote desktop software that lets you access and control a computer over the network. With its intuitive interface, you can interact with the remote screen as if you were sitting in front of it. You can open files, launch applications, and perform other actions on the remote desktop almost as if you were physically there",
         "link": "https://www.tightvnc.com/",
-        "winget": "GlavSoft.TightVNC"
+        "winget": "GlavSoft.TightVNC",
+        "foss": true
     },
     "ultravnc": {
         "category": "Utilities",
@@ -2766,7 +2988,8 @@
         "content": "UltraVNC",
         "description": "UltraVNC is a powerful, easy to use and free - remote pc access software - that can display the screen of another computer (via internet or network) on your own screen. The program allows you to use your mouse and keyboard to control the other PC remotely. It means that you can work on a remote computer, as if you were sitting in front of it, right from your current location.",
         "link": "https://uvnc.com/",
-        "winget": "uvncbvba.UltraVnc"
+        "winget": "uvncbvba.UltraVnc",
+        "foss": true
     },
     "windowsfirewallcontrol": {
         "category": "Utilities",
@@ -2790,7 +3013,8 @@
         "content": "Windows Auto Dark Mode",
         "description": "Automatically switches between the dark and light theme of Windows 10 and Windows 11",
         "link": "https://github.com/AutoDarkMode/Windows-Auto-Night-Mode",
-        "winget": "Armin2208.WindowsAutoNightMode"
+        "winget": "Armin2208.WindowsAutoNightMode",
+        "foss": true
     },
     "AmbieWhiteNoise": {
         "category": "Utilities",
@@ -2798,7 +3022,8 @@
         "content": "Ambie White Noise",
         "description": "Ambie is the ultimate app to help you focus, study, or relax. We use white noise and nature sounds combined with an innovative focus timer to keep you concentrated on doing your best work.",
         "link": "https://ambieapp.com/",
-        "winget": "9P07XNM5CHP0"
+        "winget": "9P07XNM5CHP0",
+        "foss": true
     },
     "magicwormhole": {
         "category": "Utilities",
@@ -2806,7 +3031,8 @@
         "content": "Magic Wormhole",
         "description": "get things from one computer to another, safely",
         "link": "https://github.com/magic-wormhole/magic-wormhole",
-        "winget": "magic-wormhole.magic-wormhole"
+        "winget": "magic-wormhole.magic-wormhole",
+        "foss": true
     },
     "croc": {
         "category": "Utilities",
@@ -2814,7 +3040,8 @@
         "content": "croc",
         "description": "Easily and securely send things from one computer to another.",
         "link": "https://github.com/schollz/croc",
-        "winget": "schollz.croc"
+        "winget": "schollz.croc",
+        "foss": true
     },
     "qgis": {
         "category": "Multimedia Tools",
@@ -2822,7 +3049,8 @@
         "content": "QGIS",
         "description": "QGIS (Quantum GIS) is an open-source Geographic Information System (GIS) software that enables users to create, edit, visualize, analyze, and publish geospatial information on Windows, Mac, and Linux platforms.",
         "link": "https://qgis.org/en/site/",
-        "winget": "OSGeo.QGIS"
+        "winget": "OSGeo.QGIS",
+        "foss": true
     },
     "smplayer": {
         "category": "Multimedia Tools",
@@ -2830,7 +3058,8 @@
         "content": "SMPlayer",
         "description": "SMPlayer is a free media player for Windows and Linux with built-in codecs that can play virtually all video and audio formats.",
         "link": "https://www.smplayer.info",
-        "winget": "SMPlayer.SMPlayer"
+        "winget": "SMPlayer.SMPlayer",
+        "foss": true
     },
     "glazewm": {
         "category": "Utilities",
@@ -2838,7 +3067,8 @@
         "content": "GlazeWM",
         "description": "GlazeWM is a tiling window manager for Windows inspired by i3 and Polybar",
         "link": "https://github.com/glzr-io/glazewm",
-        "winget": "glzr-io.glazewm"
+        "winget": "glzr-io.glazewm",
+        "foss": true
     },
     "fancontrol": {
         "category": "Utilities",
@@ -2846,7 +3076,8 @@
         "content": "FanControl",
         "description": "Fan Control is a free and open-source software that allows the user to control his CPU, GPU and case fans using temperatures.",
         "link": "https://getfancontrol.com/",
-        "winget": "Rem0o.FanControl"
+        "winget": "Rem0o.FanControl",
+        "foss": true
     },
     "fnm": {
         "category": "Development",
@@ -2854,7 +3085,8 @@
         "content": "Fast Node Manager",
         "description": "Fast Node Manager (fnm) allows you to switch your Node version by using the Terminal",
         "link": "https://github.com/Schniz/fnm",
-        "winget": "Schniz.fnm"
+        "winget": "Schniz.fnm",
+        "foss": true
     },
     "Windhawk": {
         "category": "Utilities",
@@ -2870,7 +3102,8 @@
         "content": "ForceAutoHDR",
         "description": "ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry",
         "link": "https://github.com/7gxycn08/ForceAutoHDR",
-        "winget": "ForceAutoHDR.7gxycn08"
+        "winget": "ForceAutoHDR.7gxycn08",
+        "foss": true
     },
     "JoyToKey": {
         "category": "Utilities",
@@ -2884,7 +3117,7 @@
         "category": "Multimedia Tools",
         "choco": "na",
         "content": "NDI Tools",
-        "description":"NDI, or Network Device Interface, is a video connectivity standard that enables multimedia systems to identify and communicate with one another over IP and to encode, transmit, and receive high-quality, low latency, frame-accurate video and audio, and exchange metadata in real-time.",
+        "description": "NDI, or Network Device Interface, is a video connectivity standard that enables multimedia systems to identify and communicate with one another over IP and to encode, transmit, and receive high-quality, low latency, frame-accurate video and audio, and exchange metadata in real-time.",
         "link": "https://ndi.video/",
         "winget": "NDI.NDITools"
     },
@@ -2892,15 +3125,16 @@
         "category": "Multimedia Tools",
         "choco": "na",
         "content": "Kicad",
-        "description":"Kicad is an open-source EDA tool. It's a good starting point for those who want to do electrical design and is even used by professionals in the industry.",
+        "description": "Kicad is an open-source EDA tool. It's a good starting point for those who want to do electrical design and is even used by professionals in the industry.",
         "link": "https://www.kicad.org/",
-        "winget": "KiCad.KiCad"
+        "winget": "KiCad.KiCad",
+        "foss": true
     },
     "dropox": {
         "category": "Utilities",
         "choco": "na",
         "content": "Dropbox",
-        "description":"The Dropbox desktop app! Save hard drive space, share and edit files and send for signature – all without the distraction of countless browser tabs.",
+        "description": "The Dropbox desktop app! Save hard drive space, share and edit files and send for signature \u2013 all without the distraction of countless browser tabs.",
         "link": "https://www.dropbox.com/en_GB/desktop",
         "winget": "Dropbox.Dropbox"
     },
@@ -2908,17 +3142,19 @@
         "category": "Utilities",
         "choco": "ofgb",
         "content": "OFGB (Oh Frick Go Back)",
-        "description":"GUI Tool to remove ads from various places around Windows 11",
+        "description": "GUI Tool to remove ads from various places around Windows 11",
         "link": "https://github.com/xM4ddy/OFGB",
-        "winget": "xM4ddy.OFGB"
+        "winget": "xM4ddy.OFGB",
+        "foss": true
     },
     "PaleMoon": {
         "category": "Browsers",
         "choco": "paleMoon",
         "content": "PaleMoon",
-        "description":"Pale Moon is an Open Source, Goanna-based web browser available for Microsoft Windows and Linux (with other operating systems in development), focusing on efficiency and ease of use.",
+        "description": "Pale Moon is an Open Source, Goanna-based web browser available for Microsoft Windows and Linux (with other operating systems in development), focusing on efficiency and ease of use.",
         "link": "https://www.palemoon.org/download.shtml",
-        "winget": "MoonchildProductions.PaleMoon"
+        "winget": "MoonchildProductions.PaleMoon",
+        "foss": true
     },
     "Shotcut": {
         "category": "Multimedia Tools",
@@ -2926,7 +3162,8 @@
         "content": "Shotcut",
         "description": "Shotcut is a free, open source, cross-platform video editor.",
         "link": "https://shotcut.org/",
-        "winget": "Meltytech.Shotcut"
+        "winget": "Meltytech.Shotcut",
+        "foss": true
     },
     "LenovoLegionToolkit": {
         "category": "Utilities",
@@ -2934,7 +3171,8 @@
         "content": "Lenovo Legion Toolkit",
         "description": "Lenovo Legion Toolkit (LLT) is a open-source utility created for Lenovo Legion (and similar) series laptops, that allows changing a couple of features that are only available in Lenovo Vantage or Legion Zone. It runs no background services, uses less memory, uses virtually no CPU, and contains no telemetry. Just like Lenovo Vantage, this application is Windows only.",
         "link": "https://github.com/BartoszCichecki/LenovoLegionToolkit",
-        "winget": "BartoszCichecki.LenovoLegionToolkit"
+        "winget": "BartoszCichecki.LenovoLegionToolkit",
+        "foss": true
     },
     "PulsarEdit": {
         "category": "Development",
@@ -2942,7 +3180,8 @@
         "content": "Pulsar",
         "description": "A Community-led Hyper-Hackable Text Editor",
         "link": "https://pulsar-edit.dev/",
-        "winget": "Pulsar-Edit.Pulsar"
+        "winget": "Pulsar-Edit.Pulsar",
+        "foss": true
     },
     "Aegisub": {
         "category": "Development",
@@ -2950,7 +3189,8 @@
         "content": "Aegisub",
         "description": "Aegisub is a free, cross-platform open source tool for creating and modifying subtitles. Aegisub makes it quick and easy to time subtitles to audio, and features many powerful tools for styling them, including a built-in real-time video preview.",
         "link": "https://github.com/Aegisub/Aegisub",
-        "winget": "Aegisub.Aegisub"
+        "winget": "Aegisub.Aegisub",
+        "foss": true
     },
     "SubtitleEdit": {
         "category": "Multimedia Tools",
@@ -2958,7 +3198,8 @@
         "content": "Subtitle Edit",
         "description": "Subtitle Edit is a free and open source editor for video subtitles.",
         "link": "https://github.com/SubtitleEdit/subtitleedit",
-        "winget": "Nikse.SubtitleEdit"
+        "winget": "Nikse.SubtitleEdit",
+        "foss": true
     },
     "Fork": {
         "category": "Development",
@@ -2974,7 +3215,8 @@
         "content": "Zen Browser",
         "description": "The modern, privacy-focused, performance-driven browser built on Firefox",
         "link": "https://zen-browser.app/",
-        "winget": "Zen-Team.Zen-Browser"
+        "winget": "Zen-Team.Zen-Browser",
+        "foss": true
     },
     "Zed": {
         "category": "Development",
@@ -2982,6 +3224,7 @@
         "content": "Zed",
         "description": "Zed is a modern, high-performance code editor designed from the ground up for speed and collaboration.",
         "link": "https://zed.dev/",
-        "winget": "ZedIndustries.Zed"
+        "winget": "ZedIndustries.Zed",
+        "foss": true
     }
 }
