@@ -54,7 +54,7 @@ function Invoke-WPFSelectedCheckboxesUpdate{
         "Tweaks" {
             if ($type -eq "Add") {
                 if (!$sync.selectedTweaks.Contains($appKey) {
-                    $sysync.selectedTweaks.Add($appKey)
+                    $sync.selectedTweaks.Add($appKey)
                 }
             }
             else{
