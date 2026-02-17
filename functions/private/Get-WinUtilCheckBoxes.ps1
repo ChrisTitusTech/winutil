@@ -61,8 +61,8 @@ Function Get-WinUtilCheckBoxes {
                     "Install" {
                         # Get the winget value
                         [PsCustomObject]@{
-                            winget="$($sync.configs.applications.$($CheckBox.Name).winget)";
-                            choco="$($sync.configs.applications.$($CheckBox.Name).choco)";
+                            winget="$($sync.configs.applications.$($CheckBox.Value.Tag).winget)";
+                            choco="$($sync.configs.applications.$($CheckBox.Value.Tag).choco)";
                         }
 
                     }
@@ -75,8 +75,8 @@ Function Get-WinUtilCheckBoxes {
                     $Output[$group] = @()
                 }
                 if ($group -eq "Install") {
-                    $Output["WPFInstall"] += $CheckBox.Name
-                    Write-Debug "Adding: $($CheckBox.Name) under: WPFInstall"
+                    $Output["WPFInstall"] += $CheckBox.Value.Tag
+                    Write-Debug "Adding: $($CheckBox.Value.Tag) under: WPFInstall"
                 }
 
                 Write-Debug "Adding: $($feature) under: $($group)"

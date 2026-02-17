@@ -41,7 +41,10 @@ function Initialize-InstallAppEntry {
         })
 
         $checkBox = New-Object Windows.Controls.CheckBox
-        $checkBox.Name = $appKey
+        # Sanitize the name for WPF
+        $checkBox.Name = $appKey -replace '-', '_'
+        # Store the original appKey in Tag
+        $checkBox.Tag = $appKey
         $checkbox.Style = $sync.Form.Resources.AppEntryCheckboxStyle
         $checkbox.Add_Checked({
             Invoke-WPFSelectedAppsUpdate -type "Add" -checkbox $this
@@ -60,35 +63,14 @@ function Initialize-InstallAppEntry {
         $appName.Style = $sync.Form.Resources.AppEntryNameStyle
         $appName.Text = $Apps.$appKey.content
 
+        # Change color to Green if FOSS
+        if ($Apps.$appKey.foss -eq $true) {
+            $appName.Foreground = "#4CAF50"
+            $appName.FontWeight = "Bold"
+        }
 
         # Add the name to the Checkbox
-        if ($Apps.$appKey.foss -eq $true) {
-            $stackPanel = New-Object Windows.Controls.StackPanel
-            $stackPanel.Orientation = "Horizontal"
-
-            $stackPanel.Children.Add($appName) | Out-Null
-
-            $fossBorder = New-Object Windows.Controls.Border
-            $fossBorder.CornerRadius = "2"
-            $fossBorder.Background = "#4CAF50" # Green
-            $fossBorder.Margin = "5,0,0,0"
-            $fossBorder.Padding = "3,0,3,0"
-            $fossBorder.VerticalAlignment = "Center"
-
-            $fossTextBlock = New-Object Windows.Controls.TextBlock
-            $fossTextBlock.Text = "FOSS"
-            $fossTextBlock.Foreground = "White"
-            $fossTextBlock.FontSize = 10
-            $fossTextBlock.FontWeight = "Bold"
-            $fossTextBlock.VerticalAlignment = "Center"
-
-            $fossBorder.Child = $fossTextBlock
-            $stackPanel.Children.Add($fossBorder) | Out-Null
-
-            $checkBox.Content = $stackPanel
-        } else {
-            $checkBox.Content = $appName
-        }
+        $checkBox.Content = $appName
 
         # Add accessibility properties to make the elements screen reader friendly
         $checkBox.SetValue([Windows.Automation.AutomationProperties]::NameProperty, $Apps.$appKey.content)
