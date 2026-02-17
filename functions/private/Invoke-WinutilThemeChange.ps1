@@ -174,6 +174,18 @@ function Invoke-WinutilThemeChange {
         }
     }
 
+    # Set FOSS Highlight Color
+    $fossEnabled = $true
+    if ($sync.WPFToggleFOSSHighlight) {
+        $fossEnabled = $sync.WPFToggleFOSSHighlight.IsChecked
+    }
+
+    if ($fossEnabled) {
+         $sync.Form.Resources["FOSSColor"] = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(76, 175, 80)) # #4CAF50
+    } else {
+         $sync.Form.Resources["FOSSColor"] = $sync.Form.Resources["MainForegroundColor"]
+    }
+
     # Update the theme selector button with the appropriate icon
     $ThemeButton = $sync.Form.FindName("ThemeButton")
     $ThemeButton.Content = [string]$themeButtonIcon
