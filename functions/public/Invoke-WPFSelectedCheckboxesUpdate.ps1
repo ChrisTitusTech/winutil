@@ -35,8 +35,8 @@ function Invoke-WPFSelectedCheckboxesUpdate{
     switch ($group) {
         "Install" {
             if ($type -eq "Add") {
-               if (!$sync.selectedApps.Contains($cbkey)) {
-                    $sync.selectedApps.Add($cbkey)
+               if (!$sync.selectedApps.Contains($appKey)) {
+                    $sync.selectedApps.Add($appKey)
                     # The List type needs to be specified again, because otherwise Sort-Object will convert the list to a string if there is only a single entry
                     [System.Collections.Generic.List[pscustomobject]]$sync.selectedApps = $sync.SelectedApps | Sort-Object
                 }
@@ -53,8 +53,8 @@ function Invoke-WPFSelectedCheckboxesUpdate{
         }
         "Tweaks" {
             if ($type -eq "Add") {
-                if (!$sync.selectedTweaks.Contains($cbkey)) {
-                    $sync.selectedTweaks.Add($cbkey)
+                if (!$sync.selectedTweaks.Contains($appKey) {
+                    $sysync.selectedTweaks.Add($appKey)
                 }
             }
             else{
@@ -63,8 +63,8 @@ function Invoke-WPFSelectedCheckboxesUpdate{
         }
         "Toggle" {
             if ($type -eq "Add") {
-                if (!$sync.selectedToggles.Contains($cbkey)) {
-                    $sync.selectedToggles.Add($cbkey)
+                if (!$sync.selectedToggles.Contains($appKey)) {
+                    $sync.selectedToggles.Add($appKey)
                 }
             }
             else{
@@ -73,8 +73,8 @@ function Invoke-WPFSelectedCheckboxesUpdate{
         }
         "Feature" {
             if ($type -eq "Add") {
-                if (!$sync.selectedFeatures.Contains($cbkey)) {
-                    $sync.selectedFeatures.Add($cbkey)
+                if (!$sync.selectedFeatures.Contains($appKey)) {
+                    $sync.selectedFeatures.Add($appKey)
                 }
             }
             else{
