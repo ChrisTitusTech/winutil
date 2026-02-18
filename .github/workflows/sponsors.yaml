@@ -22,7 +22,6 @@ jobs:
       - name: Create Pull Request 🚀
         uses: peter-evans/create-pull-request@v6
         with:
-          token: ${{ secrets.PAT }}
           commit-message: 'Update sponsors in README'
           title: 'chore: Update Sponsors README'
           body: 'Automated update of sponsors section'
