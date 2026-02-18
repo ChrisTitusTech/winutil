@@ -1635,12 +1635,33 @@
     "Description": "Removes Xbox services, the Xbox app, Game Bar, and related authentication components.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "appx": [
-      "Microsoft.XboxIdentityProvider",
-      "Microsoft.XboxSpeechToTextOverlay",
-      "Microsoft.GamingApp",
-      "Microsoft.Xbox.TCUI",
-      "Microsoft.XboxGamingOverlay"
+    "InvokeScript": [
+      "
+      Write-Host \"Removing Xbox Packages...\"
+
+      Get-AppxPackage Microsoft.XboxIdentityProvider -AllUsers | Remove-AppxPackage -AllUsers
+      Get-AppxPackage Microsoft.XboxSpeechToTextOverlay -AllUsers | Remove-AppxPackage -AllUsers
+      Get-AppxPackage Microsoft.GamingApp -AllUsers | Remove-AppxPackage -AllUsers
+      Get-AppxPackage Microsoft.Xbox.TCUI -AllUsers | Remove-AppxPackage -AllUsers
+      Get-AppxPackage Microsoft.XboxGamingOverlay -AllUsers | Remove-AppxPackage -AllUsers
+
+      Get-ProvisionedAppPackage -Online | Where-Object DisplayName -eq Microsoft.GamingApp | Remove-ProvisionedAppPackage -Online
+      Get-ProvisionedAppPackage -Online | Where-Object DisplayName -eq Microsoft.Xbox.TCUI | Remove-ProvisionedAppPackage -Online
+      Get-ProvisionedAppPackage -Online | Where-Object DisplayName -eq Microsoft.XboxGamingOverlay | Remove-ProvisionedAppPackage -Online
+      Get-ProvisionedAppPackage -Online | Where-Object DisplayName -eq Microsoft.XboxIdentityProvider | Remove-ProvisionedAppPackage -Online
+      Get-ProvisionedAppPackage -Online | Where-Object DisplayName -eq Microsoft.XboxSpeechToTextOverlay | Remove-ProvisionedAppPackage -Online
+      "
+    ],
+    "UndoScript": [
+      "
+      Write-Host \"Restoring Xbox Packages...\"
+
+      Add-AppxPackage -Register \"C:\\Program Files\\WindowsApps\\Microsoft.GamingApp*\\AppxManifest.xml\" -DisableDevelopmentMode
+      Add-AppxPackage -Register \"C:\\Program Files\\WindowsApps\\Microsoft.Xbox.TCUI*\\AppxManifest.xml\" -DisableDevelopmentMode
+      Add-AppxPackage -Register \"C:\\Program Files\\WindowsApps\\Microsoft.XboxGamingOverlay*\\AppxManifest.xml\" -DisableDevelopmentMode
+      Add-AppxPackage -Register \"C:\\Program Files\\WindowsApps\\Microsoft.XboxIdentityProvider*\\AppxManifest.xml\" -DisableDevelopmentMode
+      Add-AppxPackage -Register \"C:\\Program Files\\WindowsApps\\Microsoft.XboxSpeechToTextOverlay*\\AppxManifest.xml\" -DisableDevelopmentMode
+      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/xboxremoval"
   },
