@@ -5,6 +5,7 @@ on:
     - cron: 30 15 * * 0-6
 permissions:
   contents: write
+  pull-requests: write
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -22,6 +23,7 @@ jobs:
       - name: Create Pull Request 🚀
         uses: peter-evans/create-pull-request@v6
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: 'Update sponsors in README'
           title: 'chore: Update Sponsors README'
           body: 'Automated update of sponsors section'
