@@ -14,8 +14,8 @@ description: ""
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore",
         "Name": "SystemRestorePointCreationFrequency",
-        "Type": "DWord",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "1440"
       }
     ],

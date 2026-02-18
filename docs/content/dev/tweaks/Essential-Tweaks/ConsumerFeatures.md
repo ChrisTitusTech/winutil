@@ -12,10 +12,10 @@ description: ""
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-        "OriginalValue": "<RemoveEntry>",
         "Name": "DisableWindowsConsumerFeatures",
         "Value": "1",
-        "Type": "DWord"
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
 ```

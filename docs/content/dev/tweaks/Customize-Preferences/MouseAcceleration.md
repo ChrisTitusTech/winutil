@@ -15,25 +15,25 @@ description: ""
         "Path": "HKCU:\\Control Panel\\Mouse",
         "Name": "MouseSpeed",
         "Value": "1",
+        "Type": "DWord",
         "OriginalValue": "0",
-        "DefaultState": "true",
-        "Type": "DWord"
+        "DefaultState": "true"
       },
       {
         "Path": "HKCU:\\Control Panel\\Mouse",
         "Name": "MouseThreshold1",
         "Value": "6",
+        "Type": "DWord",
         "OriginalValue": "0",
-        "DefaultState": "true",
-        "Type": "DWord"
+        "DefaultState": "true"
       },
       {
         "Path": "HKCU:\\Control Panel\\Mouse",
         "Name": "MouseThreshold2",
         "Value": "10",
+        "Type": "DWord",
         "OriginalValue": "0",
-        "DefaultState": "true",
-        "Type": "DWord"
+        "DefaultState": "true"
       }
     ],
 ```
