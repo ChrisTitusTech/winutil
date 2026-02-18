@@ -68,9 +68,9 @@ graph TD
 ### Fork the Repo
 * Fork the WinUtil Repository [here](https://github.com/ChrisTitusTech/winutil) to create a copy that will be available in your repository list.
 
-![Fork Image](assets/Fork-Button-Dark.png#only-dark#gh-dark-mode-only)
+![Fork Image](/docs/assets/images/Fork-Button-Dark.png#gh-dark-mode-only)
 
-![Fork Image](assets/Fork-Button-Light.png#only-light#gh-light-mode-only)
+![Fork Image](/docs/assets/images/Fork-Button-Light.png#only-light#gh-light-mode-only)
 
 ### Clone the Fork
 !!! tip
