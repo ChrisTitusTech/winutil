@@ -2,6 +2,7 @@
   "Standard": [
     "WPFTweaksActivity",
     "WPFTweaksConsumerFeatures",
+    "WPFTweaksDisableExplorerAutoDiscovery",
     "WPFTweaksWPBT",
     "WPFTweaksDVR",
     "WPFTweaksLocation",
