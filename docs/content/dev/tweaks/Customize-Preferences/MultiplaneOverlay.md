@@ -15,9 +15,9 @@ description: ""
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Dwm",
         "Name": "OverlayTestMode",
         "Value": "5",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>",
-        "DefaultState": "false",
-        "Type": "DWord"
+        "DefaultState": "false"
       }
     ],
 ```

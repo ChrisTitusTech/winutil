@@ -14,8 +14,8 @@ description: ""
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
         "Name": "SettingsPageVisibility",
-        "Type": "String",
         "Value": "hide:home",
+        "Type": "String",
         "OriginalValue": "show:home",
         "DefaultState": "false"
       }

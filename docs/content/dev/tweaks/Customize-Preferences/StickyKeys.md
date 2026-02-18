@@ -15,9 +15,9 @@ description: ""
         "Path": "HKCU:\\Control Panel\\Accessibility\\StickyKeys",
         "Name": "Flags",
         "Value": "506",
+        "Type": "DWord",
         "OriginalValue": "58",
-        "DefaultState": "true",
-        "Type": "DWord"
+        "DefaultState": "true"
       }
     ],
 ```

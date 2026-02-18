@@ -14,8 +14,8 @@ description: ""
         "Path": "HKCU:\\System\\GameConfigStore",
         "Name": "GameDVR_DXGIHonorFSEWindowsCompatible",
         "Value": "1",
-        "OriginalValue": "0",
-        "Type": "DWord"
+        "Type": "DWord",
+        "OriginalValue": "0"
       }
     ],
 ```
