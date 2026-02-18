@@ -33,7 +33,7 @@ jobs:
           branch: sponsors-update
           delete-branch: true
           labels: automated
-      
+
       - name: Check outputs
         run: |
           echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
