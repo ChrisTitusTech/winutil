@@ -23,6 +23,7 @@ jobs:
           file: 'README.md'
 
       - name: Create Pull Request 🚀
+        id: cpr
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -32,3 +33,8 @@ jobs:
           branch: sponsors-update
           delete-branch: true
           labels: automated
+      
+      - name: Check outputs
+        run: |
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
