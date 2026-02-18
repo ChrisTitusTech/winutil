@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Generate Sponsors 💖
         uses: JamesIves/github-sponsors-readme-action@v1
