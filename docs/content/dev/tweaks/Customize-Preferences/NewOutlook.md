@@ -3,7 +3,7 @@ title: "New Outlook"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2362}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2361}
   "WPFToggleNewOutlook": {
     "Content": "New Outlook",
     "Description": "If disabled it removes the toggle for new Outlook, disables the new Outlook migration and makes sure the Outlook Application actually uses the old Outlook.",

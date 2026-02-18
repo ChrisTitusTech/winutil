@@ -78,7 +78,6 @@ description: ""
       $Sid = (Get-LocalUser $Env:UserName).Sid.Value
       New-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Appx\\AppxAllUserStore\\EndOfLife\\$Sid\\$Appx\" -Force
       Remove-AppxPackage $Appx
-      }
       "
     ],
     "UndoScript": [
