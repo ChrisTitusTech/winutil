@@ -2,7 +2,8 @@
 title: "Set Services to Manual"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=170}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=162}
   "WPFTweaksServices": {
     "Content": "Set Services to Manual",
     "Description": "Turns a bunch of system services to manual that don't need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand.",

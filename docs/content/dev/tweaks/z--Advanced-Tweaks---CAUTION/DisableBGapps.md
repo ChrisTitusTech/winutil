@@ -2,7 +2,8 @@
 title: "Disable Background Apps"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2120}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2112}
   "WPFTweaksDisableBGapps": {
     "Content": "Disable Background Apps",
     "Description": "Disables all Microsoft Store apps from running in the background, which has to be done individually since Win11",

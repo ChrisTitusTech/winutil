@@ -2,7 +2,8 @@
 title: "Disable Microsoft Copilot"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1816}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1808}
   "WPFTweaksRemoveCopilot": {
     "Content": "Disable Microsoft Copilot",
     "Description": "Disables MS Copilot AI built into Windows since 23H2.",
@@ -72,11 +73,11 @@ description: ""
       Get-AppxPackage -AllUsers *Copilot* | Remove-AppxPackage -AllUsers
       Get-AppxPackage -AllUsers Microsoft.MicrosoftOfficeHub | Remove-AppxPackage -AllUsers
 
-      $Appx = (Get-AppxPackage *MicrosoftWindows.Client.CoreAI*).PackageFullName
-      if ($Appx) {
-          $Sid = (Get-LocalUser $Env:UserName).Sid.Value
-          New-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Appx\\AppxAllUserStore\\EndOfLife\\$Sid\\$Appx\" -Force
-          Remove-AppxPackage $Appx
+      $Appx = (Get-AppxPackage MicrosoftWindows.Client.CoreAI).PackageFullName
+      
+      $Sid = (Get-LocalUser $Env:UserName).Sid.Value
+      New-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Appx\\AppxAllUserStore\\EndOfLife\\$Sid\\$Appx\" -Force
+      Remove-AppxPackage $Appx
       }
       "
     ],

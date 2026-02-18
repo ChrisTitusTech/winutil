@@ -2,7 +2,8 @@
 title: "Sticky Keys"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2352}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2344}
   "WPFToggleStickyKeys": {
     "Content": "Sticky Keys",
     "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
@@ -13,7 +14,7 @@ description: ""
       {
         "Path": "HKCU:\\Control Panel\\Accessibility\\StickyKeys",
         "Name": "Flags",
-        "Value": "510",
+        "Value": "506",
         "OriginalValue": "58",
         "DefaultState": "true",
         "Type": "DWord"
