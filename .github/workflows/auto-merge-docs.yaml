@@ -21,7 +21,7 @@ jobs:
         run: gh pr review "$PR_NUMBER" --approve
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.AUTO_MERGE }}
       
       - name: Enable auto-merge
         run: gh pr merge "$PR_NUMBER" --squash --auto
