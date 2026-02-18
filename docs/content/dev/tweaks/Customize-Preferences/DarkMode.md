@@ -15,17 +15,17 @@ description: ""
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
         "Name": "AppsUseLightTheme",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "1",
-        "DefaultState": "false",
-        "Type": "DWord"
+        "DefaultState": "false"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
         "Name": "SystemUsesLightTheme",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "1",
-        "DefaultState": "false",
-        "Type": "DWord"
+        "DefaultState": "false"
       }
     ],
     "InvokeScript": [

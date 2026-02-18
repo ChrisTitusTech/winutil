@@ -15,17 +15,17 @@ description: ""
         "Path": "HKU:\\.Default\\Control Panel\\Keyboard",
         "Name": "InitialKeyboardIndicators",
         "Value": "2",
+        "Type": "DWord",
         "OriginalValue": "0",
-        "DefaultState": "false",
-        "Type": "DWord"
+        "DefaultState": "false"
       },
       {
         "Path": "HKCU:\\Control Panel\\Keyboard",
         "Name": "InitialKeyboardIndicators",
         "Value": "2",
+        "Type": "DWord",
         "OriginalValue": "0",
-        "DefaultState": "false",
-        "Type": "DWord"
+        "DefaultState": "false"
       }
     ],
 ```

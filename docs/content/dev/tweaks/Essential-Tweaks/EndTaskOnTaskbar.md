@@ -13,8 +13,8 @@ description: ""
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings",
         "Name": "TaskbarEndTask",
-        "Type": "DWord",
         "Value": "1",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       }
     ],
