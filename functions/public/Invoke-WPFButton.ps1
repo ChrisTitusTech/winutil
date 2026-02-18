@@ -18,6 +18,31 @@ function Invoke-WPFButton {
         Set-WinUtilProgressBar  -label "" -percent 0
     }
 
+    # Check if button is defined in feature config with function or InvokeScript
+    if ($sync.configs.feature.$Button) {
+        $buttonConfig = $sync.configs.feature.$Button
+
+        # If button has a function defined, call it
+        if ($buttonConfig.function) {
+            $functionName = $buttonConfig.function
+            if (Get-Command $functionName -ErrorAction SilentlyContinue) {
+                & $functionName
+                return
+            }
+        }
+
+        # If button has InvokeScript defined, execute the scripts
+        if ($buttonConfig.InvokeScript -and $buttonConfig.InvokeScript.Count -gt 0) {
+            foreach ($script in $buttonConfig.InvokeScript) {
+                if (-not [string]::IsNullOrWhiteSpace($script)) {
+                    Invoke-Expression $script
+                }
+            }
+            return
+        }
+    }
+
+    # Fallback to hard-coded switch for buttons not in feature.json
     Switch -Wildcard ($Button) {
         "WPFTab?BT" {Invoke-WPFTab $Button}
         "WPFInstall" {Invoke-WPFInstall}
@@ -34,34 +59,14 @@ function Invoke-WPFButton {
         "WPFAddUltPerf" {Invoke-WPFUltimatePerformance -State "Enable"}
         "WPFRemoveUltPerf" {Invoke-WPFUltimatePerformance -State "Disable"}
         "WPFundoall" {Invoke-WPFundoall}
-        "WPFFeatureInstall" {Invoke-WPFFeatureInstall}
-        "WPFPanelDISM" {Invoke-WPFSystemRepair}
-        "WPFPanelAutologin" {Invoke-WPFPanelAutologin}
-        "WPFPanelComputer" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelControl" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelNetwork" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelPower" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelPrinter" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelRegion" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelRestore" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelSound" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelSystem" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelTimedate" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelUser" {Invoke-WPFControlPanel -Panel $button}
         "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}
-        "WPFFixesUpdate" {Invoke-WPFFixesUpdate}
-        "WPFFixesWinget" {Invoke-WPFFixesWinget}
         "WPFRunAdobeCCCleanerTool" {Invoke-WPFRunAdobeCCCleanerTool}
-        "WPFFixesNetwork" {Invoke-WPFFixesNetwork}
         "WPFUpdatesdisable" {Invoke-WPFUpdatesdisable}
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
         "WPFWinUtilShortcut" {Invoke-WPFShortcut -ShortcutToAdd "WinUtil" -RunAsAdmin $true}
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
-        "WPFCloseButton" {Invoke-WPFCloseButton}
-        "WPFWinUtilInstallPSProfile" {Invoke-WinUtilInstallPSProfile}
-        "WPFWinUtilUninstallPSProfile" {Invoke-WinUtilUninstallPSProfile}
-        "WPFWinUtilSSHServer" {Invoke-WPFSSHServer}
+        "WPFCloseButton" {$sync.Form.Close(); Write-Host "Bye bye!"}
         "WPFselectedAppsButton" {$sync.selectedAppsPopup.IsOpen = -not $sync.selectedAppsPopup.IsOpen}
         "WPFToggleFOSSHighlight" {
             if ($sync.WPFToggleFOSSHighlight.IsChecked) {

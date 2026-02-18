@@ -52,7 +52,7 @@ jobs:
         run: |
           Set-Location tools
           ./devdocs-generator.ps1
-      
+
       - name: Create Pull Request 🚀
         id: cpr
         uses: peter-evans/create-pull-request@v6
@@ -66,12 +66,12 @@ jobs:
           labels: |
             automated
             documentation
-      
+
       - name: Check outputs
         run: |
           echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
           echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
-      
+
       - name: Install Node.js dependencies
         run: "cd docs && [[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true"
       - name: Cache Restore
