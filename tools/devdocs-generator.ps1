@@ -269,14 +269,7 @@ foreach ($itemName in $tweakNames) {
             $content += "You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).`r`n"
         }
 
-        # Service function reference
-        if ($item.service -and $functionFiles.ContainsKey("Set-WinUtilService")) {
-            $svcFunc = $functionFiles["Set-WinUtilService"]
-            $content += "#Function`r`n"
-            $content += "``````powershell {filename=`"$($svcFunc.RelativePath)`",linenos=inline,linenostart=1}`r`n"
-            $content += $svcFunc.Content + "`r`n"
-            $content += "```````r`n"
-        }
+
     }
 
     Set-Content -Path $filename -Value $content -Encoding utf8 -NoNewline
@@ -317,9 +310,9 @@ foreach ($itemName in $featureNames) {
     $title = $item.Content -replace '"', '\"'
     $content = "---`r`ntitle: `"$title`"`r`ndescription: `"`"`r`n---`r`n`r`n"
 
-    if ($item.category -eq "Fixes" -or $item.category -eq "Legacy Windows Panels") {
-        # Embed the PowerShell function file
-        $funcName = $buttonFunctionMap[$itemName]
+    if ($item.category -eq "Fixes") {
+        # Fixes: embed the PowerShell function file only
+        $funcName = if ($item.function) { $item.function } else { $buttonFunctionMap[$itemName] }
         if ($funcName -and $functionFiles.ContainsKey($funcName)) {
             $func = $functionFiles[$funcName]
             $content += "``````powershell {filename=`"$($func.RelativePath)`",linenos=inline,linenostart=1}`r`n"
