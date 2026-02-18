@@ -7,11 +7,12 @@ description: "How the devdocs-generator.ps1 script works"
 
 The `devdocs-generator.ps1` script automatically generates Hugo-compatible markdown files for the development documentation. It pulls content directly from the JSON config files and PowerShell function files so the docs never go out of sync.
 
-## When Does It Run?
+## When Does it Run?
 
-- Automatically in CI via the GitHub Actions `docs.yaml` workflow before Hugo builds the site
-- Triggered when any of these change: `docs/**`, `config/tweaks.json`, `config/feature.json`, `functions/**`
-- Can also be run manually with `workflow_dispatch`
+- Automatically triggered by the `docs.yaml` GitHub Actions workflow, which generates the `.md` files, commits them back to the repo, and then triggers Hugo to build the site
+- Automatically runs during the pre-release workflow, committing the updated `"link"` properties back to the JSON config files
+- Watches `docs/**`, `config/tweaks.json`, `config/feature.json`, and `functions/**` for changes
+- Supports manual runs via `workflow_dispatch`
 
 ## What Does It Do?
 
@@ -25,6 +26,7 @@ The `devdocs-generator.ps1` script automatically generates Hugo-compatible markd
 
 - Adds or updates a `"link"` property on every entry in both JSON config files
 - Each link points to that entry's documentation page on the Hugo site
+- The updated links are automatically committed back to the JSON config files as part of the pre-release workflow
 
 ### 3. Cleans Up Old Docs
 
@@ -58,7 +60,7 @@ For each entry in `feature.json` that belongs to a documented category:
 The script generates docs for entries in these categories:
 
 - Essential Tweaks
-- z__Advanced Tweaks - CAUTION
+- z--Advanced-Tweaks---CAUTION
 - Customize Preferences
 - Performance Plans
 - Features
@@ -84,17 +86,20 @@ docs/content/dev/
 
 The script strips common prefixes from the JSON key names using the pattern `WPF(WinUtil|Toggle|Features?|Tweaks?|Panel|Fix(es)?)?`. For example:
 
-| JSON Key | Generated File |
-|---|---|
-| `WPFTweaksHiber` | `Hiber.md` |
-| `WPFTweaksDeBloat` | `DeBloat.md` |
-| `WPFFeatureshyperv` | `hyperv.md` |
-| `WPFPanelDISM` | `DISM.md` |
+| JSON Key            | Generated File |
+| ------------------- | -------------- |
+| `WPFTweaksHiber`    | `Hiber.md`     |
+| `WPFTweaksDeBloat`  | `DeBloat.md`   |
+| `WPFFeatureshyperv` | `hyperv.md`    |
+| `WPFPanelDISM`      | `DISM.md`      |
 
 ## Key Points
 
 - The JSON config files are the single source of truth
 - Manual edits to generated `.md` files will be overwritten on the next run
-- The script does not touch `_index.md` files or `architecture.md`
+- The script does not modify `_index.md` or `architecture.md`
+  — do not delete `_index.md` or `architecture.md`, as they will need to be recreated manually.
 - Category directories are created automatically if they don't exist
 - The `"link"` property added to JSON entries is excluded from the displayed code blocks
+- The `docs` workflow generates the `.md` files and commits them back to the repo before Hugo builds the site
+- The `pre-release` workflow generates the `"link"` properties and commits them back to the repo

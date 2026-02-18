@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -50,6 +50,17 @@ jobs:
         run: |
           Set-Location tools
           ./devdocs-generator.ps1
+      - name: Commit generated docs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/content/dev/
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "regenerated dev docs from workflow"
+            git push
+          fi
       - name: Install Node.js dependencies
         run: "cd docs && [[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true"
       - name: Cache Restore
