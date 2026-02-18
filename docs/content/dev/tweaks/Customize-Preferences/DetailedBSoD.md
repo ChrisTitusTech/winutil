@@ -15,17 +15,17 @@ description: ""
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\CrashControl",
         "Name": "DisplayParameters",
         "Value": "1",
+        "Type": "DWord",
         "OriginalValue": "0",
-        "DefaultState": "false",
-        "Type": "DWord"
+        "DefaultState": "false"
       },
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\CrashControl",
         "Name": "DisableEmoticon",
         "Value": "1",
+        "Type": "DWord",
         "OriginalValue": "0",
-        "DefaultState": "false",
-        "Type": "DWord"
+        "DefaultState": "false"
       }
     ],
 ```
