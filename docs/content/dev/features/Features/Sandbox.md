@@ -2,6 +2,7 @@
 title: "Windows Sandbox"
 description: ""
 ---
+
 ```json {filename="config/feature.json",linenos=inline,linenostart=119}
   "WPFFeaturesSandbox": {
     "Content": "Windows Sandbox",

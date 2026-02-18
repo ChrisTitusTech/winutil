@@ -120,7 +120,7 @@
       Write-Host 'New start menu reverted please restart your computer to take effect'
       "
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/z--Advanced-Tweaks---CAUTION/revertstartmenu"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/revertstartmenu"
   },
   "WPFTweaksLocation": {
     "Content": "Disable Location Tracking",

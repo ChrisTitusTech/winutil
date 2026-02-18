@@ -2,7 +2,8 @@
 title: "Edge Debloat"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1178}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1170}
   "WPFTweaksEdgeDebloat": {
     "Content": "Edge Debloat",
     "Description": "Disables various telemetry options, popups, and other annoyances in Edge.",
@@ -24,10 +25,10 @@ description: ""
         "OriginalValue": "<RemoveEntry>"
       },
       {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
-        "Name": "ofefcgjbeghpigppfmkologfjadafddi",
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\\ExtensionInstallBlocklist",
+        "Name": "1",
         "Type": "String",
-        "Value": "1",
+        "Value": "ofefcgjbeghpigppfmkologfjadafddi",
         "OriginalValue": "<RemoveEntry>"
       },
       {

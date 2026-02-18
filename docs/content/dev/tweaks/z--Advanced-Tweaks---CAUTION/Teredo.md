@@ -2,7 +2,8 @@
 title: "Disable Teredo"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2076}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2068}
   "WPFTweaksTeredo": {
     "Content": "Disable Teredo",
     "Description": "Teredo network tunneling is a ipv6 feature that can cause additional latency, but may cause problems with some games",
