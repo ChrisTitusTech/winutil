@@ -40,7 +40,8 @@ function Invoke-WPFToggleAllCategories {
                 # Update the label to show the correct state
                 $categoryLabel = $categoryContainer.Children[0]
                 if ($categoryLabel.Content -like "$sourcePrefix*") {
-                    $categoryLabel.Content = $categoryLabel.Content -replace "^$sourcePrefix ", "$targetPrefix "
+                    $escapedSourcePrefix = [regex]::Escape($sourcePrefix)
+                    $categoryLabel.Content = $categoryLabel.Content -replace "^$escapedSourcePrefix ", "$targetPrefix "
                 }
             }
         }
