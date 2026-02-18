@@ -58,27 +58,6 @@ function Invoke-Preprocessing {
     ForEach ($excludedFile in $ExcludedFiles) {
         $InternalExcludedFiles.Add($excludedFile) | Out-Null
     }
-    
-    # Validate the ExcludedItems List before continuing on
-    if ($ExcludedFiles.Count -gt 0) {
-        ForEach ($excludedFile in $ExcludedFiles) {
-            $filePath = "$(($WorkingDir -replace ('\\$', '')) + '\' + ($excludedFile -replace ('\.\\', '')))"
-            # Only attempt to create the directory if the excludedFile ends with '\'
-            if ($excludedFile -match '\\$' -and -not (Test-Path "$filePath")) {
-                New-Item -Path "$filePath" -ItemType Directory -Force | Out-Null
-            }
-            $files = Get-ChildItem -Recurse -Path "$filePath" -File -Force
-            if ($files.Count -gt 0) {
-                ForEach ($file in $files) {
-                    $InternalExcludedFiles.Add("$($file.FullName)") | Out-Null
-                }
-            } else { $failedFilesList += "'$filePath', " }
-        }
-        $failedFilesList = $failedFilesList -replace (',\s*$', '')
-        if ((-not $failedFilesList -eq "")) {
-            Write-Warning "[Invoke-Preprocessing] One or more File Paths and/or File Patterns were not found: $failedFilesList"
-        }
-    }
 
     # Get Files List
     [System.Collections.ArrayList]$files = Get-ChildItem -LiteralPath $WorkingDir -Recurse -Exclude $InternalExcludedFiles -File -Force
