@@ -63,7 +63,9 @@ jobs:
           body: 'Automated update of generated documentation from JSON sources'
           branch: docs-update
           delete-branch: true
-          labels: automated
+          labels: |
+            automated
+            documentation
       
       - name: Check outputs
         run: |
