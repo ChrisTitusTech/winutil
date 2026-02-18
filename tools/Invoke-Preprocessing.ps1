@@ -58,7 +58,7 @@ function Invoke-Preprocessing {
     ForEach ($excludedFile in $ExcludedFiles) {
         $InternalExcludedFiles.Add($excludedFile) | Out-Null
     }
-    
+
     # Validate the ExcludedItems List before continuing on
     if ($ExcludedFiles.Count -gt 0) {
         ForEach ($excludedFile in $ExcludedFiles) {
@@ -75,9 +75,6 @@ function Invoke-Preprocessing {
             } else { $failedFilesList += "'$filePath', " }
         }
         $failedFilesList = $failedFilesList -replace (',\s*$', '')
-        if ((-not $failedFilesList -eq "")) {
-            Write-Warning "[Invoke-Preprocessing] One or more File Paths and/or File Patterns were not found: $failedFilesList"
-        }
     }
 
     # Get Files List
