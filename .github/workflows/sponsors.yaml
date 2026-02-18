@@ -19,9 +19,13 @@ jobs:
           token: ${{ secrets.PAT }}
           file: 'README.md'
 
-      - name: Deploy to GitHub Pages 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Create Pull Request 🚀
+        uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.PAT }}
-          branch: main
-          folder: '.'
+          commit-message: 'Update sponsors in README'
+          title: 'chore: Update Sponsors README'
+          body: 'Automated update of sponsors section'
+          branch: sponsors-update
+          delete-branch: true
+          labels: automated
