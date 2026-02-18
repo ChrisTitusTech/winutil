@@ -13,8 +13,8 @@ description: ""
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
         "Name": "RealTimeIsUniversal",
-        "Type": "QWord",
         "Value": "1",
+        "Type": "QWord",
         "OriginalValue": "0"
       }
     ],

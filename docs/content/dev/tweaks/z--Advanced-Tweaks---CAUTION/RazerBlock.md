@@ -14,15 +14,15 @@ description: ""
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
         "Name": "SearchOrderConfig",
         "Value": "0",
-        "OriginalValue": "1",
-        "Type": "DWord"
+        "Type": "DWord",
+        "OriginalValue": "1"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Device Installer",
         "Name": "DisableCoInstallers",
         "Value": "1",
-        "OriginalValue": "0",
-        "Type": "DWord"
+        "Type": "DWord",
+        "OriginalValue": "0"
       }
     ],
     "InvokeScript": [
