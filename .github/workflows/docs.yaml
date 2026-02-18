@@ -58,7 +58,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "chore: regenerate dev docs [skip ci]"
+            git commit -m "regenerated dev docs from workflow"
             git push
           fi
       - name: Install Node.js dependencies
