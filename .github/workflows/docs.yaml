@@ -15,6 +15,7 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  pull-requests: write
 
 concurrency:
   group: "pages"
@@ -50,17 +51,24 @@ jobs:
         run: |
           Set-Location tools
           ./devdocs-generator.ps1
-      - name: Commit generated docs
+      
+      - name: Create Pull Request 🚀
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'Update generated documentation'
+          title: 'chore: Update Generated Dev Docs'
+          body: 'Automated update of generated documentation from JSON sources'
+          branch: docs-update
+          delete-branch: true
+          labels: automated
+      
+      - name: Check outputs
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/content/dev/
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "regenerated dev docs from workflow"
-            git push
-          fi
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
+      
       - name: Install Node.js dependencies
         run: "cd docs && [[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true"
       - name: Cache Restore
