@@ -2,7 +2,8 @@
 title: "S3 Sleep"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2566}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2563}
   "WPFToggleS3Sleep": {
     "Content": "S3 Sleep",
     "Description": "Toggles between Modern Standby and S3 sleep.",

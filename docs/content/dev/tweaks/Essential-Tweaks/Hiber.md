@@ -2,6 +2,7 @@
 title: "Disable Hibernation"
 description: ""
 ---
+
 ```json {filename="config/tweaks.json",linenos=inline,linenostart=32}
   "WPFTweaksHiber": {
     "Content": "Disable Hibernation",

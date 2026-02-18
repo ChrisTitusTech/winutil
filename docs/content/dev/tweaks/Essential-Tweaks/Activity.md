@@ -2,6 +2,7 @@
 title: "Disable Activity History"
 description: ""
 ---
+
 ```json {filename="config/tweaks.json",linenos=inline,linenostart=2}
   "WPFTweaksActivity": {
     "Content": "Disable Activity History",

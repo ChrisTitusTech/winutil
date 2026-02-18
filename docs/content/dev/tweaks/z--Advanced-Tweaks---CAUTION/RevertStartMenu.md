@@ -3,7 +3,7 @@ title: "Revert the new start menu"
 description: ""
 ---
 
-```json
+```json {filename="config/tweaks.json",linenos=inline,linenostart=90}
   "WPFTweaksRevertStartMenu": {
     "Content": "Revert the new start menu",
     "Description": "Uses vivetool to revert the the original start menu from 24h2",
@@ -16,7 +16,7 @@ description: ""
       Expand-Archive ViVeTool.zip
       Remove-Item ViVeTool.zip
       
-      ViVeTool\\ViVeTool.exe /disable /id:47205210
+      Start-Process 'ViVeTool\\ViVeTool.exe' -ArgumentList '/disable /id:47205210' -Wait -NoNewWindow
       
       Remove-Item ViVeTool -Recurse
 
@@ -30,7 +30,7 @@ description: ""
       Expand-Archive ViVeTool.zip
       Remove-Item ViVeTool.zip
       
-      ViVeTool\\ViVeTool.exe /enable /id:47205210
+      Start-Process 'ViVeTool\\ViVeTool.exe' -ArgumentList '/enable /id:47205210' -Wait -NoNewWindow
       
       Remove-Item ViVeTool -Recurse
 

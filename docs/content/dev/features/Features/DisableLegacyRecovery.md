@@ -2,6 +2,7 @@
 title: "Disable Legacy F8 Boot Recovery"
 description: ""
 ---
+
 ```json {filename="config/feature.json",linenos=inline,linenostart=107}
   "WPFFeatureDisableLegacyRecovery": {
     "Content": "Disable Legacy F8 Boot Recovery",

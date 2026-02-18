@@ -2,7 +2,8 @@
 title: "Block Razer Software Installs"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1917}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1909}
   "WPFTweaksRazerBlock": {
     "Content": "Block Razer Software Installs",
     "Description": "Blocks ALL Razer Software installations. The hardware works fine without any software. WARNING: this will also block all Windows third-party driver installations.",

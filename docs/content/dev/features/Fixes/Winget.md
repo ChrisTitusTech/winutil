@@ -2,6 +2,7 @@
 title: "WinGet Reinstall"
 description: ""
 ---
+
 ```powershell {filename="functions/public/Invoke-WPFFixesWinget.ps1",linenos=inline,linenostart=1}
 function Invoke-WPFFixesWinget {
 
