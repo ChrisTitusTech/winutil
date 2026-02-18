@@ -2,7 +2,7 @@ name: Auto-merge Docs PRs
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened]
     branches:
       - main
 
@@ -14,6 +14,9 @@ jobs:
       pull-requests: write
       contents: write
     steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      
       - name: Auto-approve PR
         run: gh pr review "$PR_NUMBER" --approve
         env:
