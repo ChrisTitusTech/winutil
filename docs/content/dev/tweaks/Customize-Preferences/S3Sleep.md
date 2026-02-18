@@ -15,9 +15,9 @@ description: ""
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power",
         "Name": "PlatformAoAcOverride",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>",
-        "DefaultState": "false",
-        "Type": "DWord"
+        "DefaultState": "false"
       }
     ],
 ```

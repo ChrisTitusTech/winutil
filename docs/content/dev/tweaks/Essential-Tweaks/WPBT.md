@@ -14,8 +14,8 @@ description: ""
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager",
         "Name": "DisableWpbtExecution",
         "Value": "1",
-        "OriginalValue": "<RemoveEntry>",
-        "Type": "DWord"
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
 ```

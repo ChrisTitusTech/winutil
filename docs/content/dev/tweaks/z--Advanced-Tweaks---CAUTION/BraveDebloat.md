@@ -13,36 +13,36 @@ description: ""
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
         "Name": "BraveRewardsDisabled",
-        "Type": "DWord",
         "Value": "1",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
         "Name": "BraveWalletDisabled",
-        "Type": "DWord",
         "Value": "1",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
         "Name": "BraveVPNDisabled",
-        "Type": "DWord",
         "Value": "1",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
         "Name": "BraveAIChatEnabled",
-        "Type": "DWord",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
         "Name": "BraveStatsPingEnabled",
-        "Type": "DWord",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       }
     ],
