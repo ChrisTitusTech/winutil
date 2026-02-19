@@ -3243,5 +3243,14 @@
         "content": "LLVM",
         "link": "https://llvm.org",
         "foss": true
+    },
+    "NASM": {
+        "category": "Development",
+        "choco": "nasm",
+        "winget": "NASM.NASM",
+        "description": "A powerful assembler for the x86 platform.",
+        "content": "NASM",
+        "link": "https://nasm.us",
+        "foss": true
     }
 }
