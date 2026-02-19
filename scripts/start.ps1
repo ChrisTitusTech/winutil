@@ -94,8 +94,6 @@ $dateTime = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
 $winutildir = "$env:LocalAppData\winutil"
 New-Item $winutildir -ItemType Directory -Force | Out-Null
 
-# TODO move config loading here? or to start of main?
-
 $logdir = "$winutildir\logs"
 New-Item $logdir -ItemType Directory -Force | Out-Null
 Start-Transcript -Path "$logdir\winutil_$dateTime.log" -Append -NoClobber | Out-Null
