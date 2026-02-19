@@ -88,6 +88,7 @@ New-Item $winutildir -ItemType Directory -Force | Out-Null
 
 $logdir = "$winutildir\logs"
 New-Item $logdir -ItemType Directory -Force | Out-Null
+New-Item "$winutildir\locales" -ItemType Directory -Force | Out-Null
 Start-Transcript -Path "$logdir\winutil_$dateTime.log" -Append -NoClobber | Out-Null
 
 # Set PowerShell window title

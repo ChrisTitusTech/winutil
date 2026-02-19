@@ -1,0 +1,433 @@
+﻿{
+  "_metadata": {
+    "locale": "zh-TW",
+    "name": "繁體中文",
+    "version": "1.0.0",
+    "description": "Traditional Chinese translation for WinUtil"
+  },
+  "ui": {
+    "tab_install": "安裝",
+    "tab_tweaks": "調整",
+    "tab_config": "設定",
+    "tab_updates": "更新",
+    "search_tooltip": "按 Ctrl-F 並輸入應用程式名稱以篩選下方清單。按 Esc 重置篩選",
+    "theme_tooltip": "變更 Winutil 介面主題",
+    "theme_auto": "自動",
+    "theme_auto_tooltip": "跟隨 Windows 主題",
+    "theme_dark": "深色",
+    "theme_dark_tooltip": "使用深色主題",
+    "theme_light": "淺色",
+    "theme_light_tooltip": "使用淺色主題",
+    "font_scaling_tooltip": "調整字體縮放以提高無障礙存取性",
+    "settings_import": "匯入",
+    "settings_import_tooltip": "從匯出的檔案匯入設定",
+    "settings_export": "匯出",
+    "settings_export_tooltip": "匯出選取的項目並複製執行命令到剪貼簿",
+    "settings_about": "關於",
+    "settings_sponsors": "贊助者",
+    "preset_standard": " 標準 ",
+    "preset_minimal": " 精簡 ",
+    "preset_clear": " 清除 ",
+    "preset_get_installed": " 取得已安裝 ",
+    "tweaks_run": "執行調整",
+    "tweaks_undo": "復原所選調整",
+    "updates_default": "預設設定",
+    "updates_security": "安全性設定",
+    "updates_disable": "停用所有更新",
+    "language_tooltip": "變更語言",
+    "recommended_selections": "建議選項："
+  },
+  "categories": {
+    "____Actions": "____操作",
+    "__Package Manager": "__套件管理器",
+    "__Selection": "__選擇",
+    "Essential Tweaks": "基本調整",
+    "Customize Preferences": "自訂偏好設定",
+    "Performance Plans": "效能計畫",
+    "z__Advanced Tweaks - CAUTION": "z__進階調整 - 注意",
+    "Features": "功能",
+    "Fixes": "修復",
+    "Legacy Windows Panels": "傳統 Windows 面板",
+    "Powershell Profile Powershell 7+ Only": "PowerShell 設定檔（僅限 7+）",
+    "Remote Access": "遠端存取",
+    "Browsers": "瀏覽器",
+    "Communications": "通訊軟體",
+    "Development": "開發工具",
+    "Document": "文件工具",
+    "Games": "遊戲",
+    "Microsoft Tools": "Microsoft 工具",
+    "Multimedia Tools": "多媒體工具",
+    "Pro Tools": "專業工具",
+    "Utilities": "工具程式"
+  },
+  "appnavigation": {
+    "WPFInstall": {
+      "Content": "安裝/升級應用程式",
+      "Description": "安裝或升級選取的應用程式"
+    },
+    "WPFUninstall": {
+      "Content": "解除安裝應用程式",
+      "Description": "解除安裝選取的應用程式"
+    },
+    "WPFInstallUpgrade": {
+      "Content": "升級所有應用程式",
+      "Description": "升級所有應用程式至最新版本"
+    },
+    "WingetRadioButton": {
+      "Content": "Winget",
+      "Description": "使用 Winget 套件管理"
+    },
+    "ChocoRadioButton": {
+      "Content": "Chocolatey",
+      "Description": "使用 Chocolatey 套件管理"
+    },
+    "WPFCollapseAllCategories": {
+      "Content": "收合所有分類",
+      "Description": "收合所有應用程式分類"
+    },
+    "WPFExpandAllCategories": {
+      "Content": "展開所有分類",
+      "Description": "展開所有應用程式分類"
+    },
+    "WPFClearInstallSelection": {
+      "Content": "清除選取",
+      "Description": "清除應用程式選取"
+    },
+    "WPFGetInstalled": {
+      "Content": "取得已安裝",
+      "Description": "顯示已安裝的應用程式"
+    },
+    "WPFselectedAppsButton": {
+      "Content": "已選取應用程式: 0",
+      "Description": "顯示已選取的應用程式"
+    }
+  },
+  "tweaks": {
+    "WPFTweaksActivity": {
+      "Content": "停用活動歷程記錄",
+      "Description": "清除最近的文件、剪貼簿和執行歷程記錄。"
+    },
+    "WPFTweaksHiber": {
+      "Content": "停用休眠",
+      "Description": "休眠主要適用於筆電，會在關機前將記憶體內容儲存到磁碟。一般不建議使用。"
+    },
+    "WPFTweaksWidget": {
+      "Content": "移除小工具",
+      "Description": "移除工作列上的小工具。"
+    },
+    "WPFTweaksLaptopHibernation": {
+      "Content": "設定休眠為預設（適用筆電）",
+      "Description": "大多數現代筆電啟用了連線待命模式會耗盡電池，此設定將休眠設為預設以節省電力。"
+    },
+    "WPFTweaksLocation": {
+      "Content": "停用位置追蹤",
+      "Description": "停用位置追蹤服務。"
+    },
+    "WPFTweaksServices": {
+      "Content": "設定服務為手動",
+      "Description": "將不需要持續執行的系統服務設為手動，需要時會自動啟動，相當安全。"
+    },
+    "WPFTweaksBraveDebloat": {
+      "Content": "Brave 去臃腫化",
+      "Description": "停用 Brave 獎勵、Leo AI、加密錢包和 VPN 等功能。"
+    },
+    "WPFTweaksEdgeDebloat": {
+      "Content": "Edge 去臃腫化",
+      "Description": "停用 Edge 中的遙測選項、彈出視窗和其他干擾功能。"
+    },
+    "WPFTweaksConsumerFeatures": {
+      "Content": "停用消費者功能",
+      "Description": "Windows 將不會自動安裝遊戲、第三方應用程式或 Store 連結。某些預設應用程式可能無法使用。"
+    },
+    "WPFTweaksTelemetry": {
+      "Content": "停用遙測",
+      "Description": "停用 Microsoft 遙測資料收集。"
+    },
+    "WPFTweaksRemoveEdge": {
+      "Content": "移除 Microsoft Edge",
+      "Description": "解除 Edge 解除安裝限制，然後使用其自帶的解除安裝程式移除。"
+    },
+    "WPFTweaksUTC": {
+      "Content": "設定時間為 UTC（雙系統開機）",
+      "Description": "雙系統開機必備，修正與 Linux 系統的時間同步問題。"
+    },
+    "WPFTweaksRemoveOneDrive": {
+      "Content": "移除 OneDrive",
+      "Description": "使用 OneDrive 自帶的解除安裝程式移除。"
+    },
+    "WPFTweaksRemoveHome": {
+      "Content": "移除檔案總管首頁",
+      "Description": "從檔案總管移除首頁，並將「本機」設為預設。"
+    },
+    "WPFTweaksRemoveGallery": {
+      "Content": "移除檔案總管圖庫",
+      "Description": "從檔案總管移除圖庫，並將「本機」設為預設。"
+    },
+    "WPFTweaksDisplay": {
+      "Content": "設定顯示效能最佳化",
+      "Description": "將系統偏好設定設為效能優先。也可透過 sysdm.cpl 手動設定。"
+    },
+    "WPFTweaksXboxRemoval": {
+      "Content": "移除 Xbox 與遊戲元件",
+      "Description": "移除 Xbox 服務、Xbox 應用程式、Game Bar 和相關驗證元件。"
+    },
+    "WPFTweaksDeBloat": {
+      "Content": "移除所有 MS Store 應用程式 - 不建議",
+      "Description": "謹慎使用！這會移除所有 Microsoft Store 應用程式。"
+    },
+    "WPFTweaksRestorePoint": {
+      "Content": "建立還原點",
+      "Description": "建立系統還原點，以便在需要時復原 WinUtil 的修改。"
+    },
+    "WPFTweaksEndTaskOnTaskbar": {
+      "Content": "啟用右鍵結束工作",
+      "Description": "啟用在工作列上右鍵點擊程式時的「結束工作」選項。"
+    },
+    "WPFTweaksPowershell7Tele": {
+      "Content": "停用 PowerShell 7 遙測",
+      "Description": "建立環境變數告知 PowerShell 7 不要傳送遙測資料。"
+    },
+    "WPFTweaksStorage": {
+      "Content": "停用儲存空間感知器",
+      "Description": "儲存空間感知器會自動刪除暫存檔案。"
+    },
+    "WPFTweaksRemoveCopilot": {
+      "Content": "停用 Microsoft Copilot",
+      "Description": "停用 Windows 23H2 以來內建的 MS Copilot AI。"
+    },
+    "WPFTweaksWPBT": {
+      "Content": "停用 Windows Platform Binary Table (WPBT)",
+      "Description": "啟用時允許電腦廠商在每次開機時執行程式，可能是安全風險。"
+    },
+    "WPFTweaksRazerBlock": {
+      "Content": "封鎖 Razer 軟體安裝",
+      "Description": "封鎖所有 Razer 軟體安裝。警告：這也會封鎖所有第三方驅動程式安裝。"
+    },
+    "WPFTweaksDisableNotifications": {
+      "Content": "停用通知匣/日曆",
+      "Description": "停用所有通知，包括日曆。"
+    },
+    "WPFTweaksBlockAdobeNet": {
+      "Content": "封鎖 Adobe 網路連線",
+      "Description": "選擇性封鎖 Adobe 啟用和遙測伺服器的連線。"
+    },
+    "WPFTweaksRightClickMenu": {
+      "Content": "設定傳統右鍵選單",
+      "Description": "恢復 Windows 11 的傳統右鍵選單。"
+    },
+    "WPFTweaksDiskCleanup": {
+      "Content": "執行磁碟清理",
+      "Description": "在 C: 磁碟執行磁碟清理並移除舊的 Windows 更新。"
+    },
+    "WPFTweaksDeleteTempFiles": {
+      "Content": "刪除暫存檔案",
+      "Description": "清除暫存資料夾。"
+    },
+    "WPFTweaksIPv46": {
+      "Content": "IPv4 優先於 IPv6",
+      "Description": "在未設定 IPv6 的私人網路上，設定 IPv4 優先可改善延遲和安全性。"
+    },
+    "WPFTweaksTeredo": {
+      "Content": "停用 Teredo",
+      "Description": "Teredo 網路隧道是 IPv6 功能，可能造成額外延遲，但停用可能影響某些遊戲。"
+    },
+    "WPFTweaksDisableIPv6": {
+      "Content": "停用 IPv6",
+      "Description": "停用 IPv6。"
+    },
+    "WPFTweaksDisableBGapps": {
+      "Content": "停用背景應用程式",
+      "Description": "停用所有 Microsoft Store 應用程式在背景執行。"
+    },
+    "WPFTweaksDisableFSO": {
+      "Content": "停用全螢幕最佳化",
+      "Description": "在所有應用程式中停用全螢幕最佳化。注意：這會停用獨佔全螢幕的色彩管理。"
+    },
+    "WPFToggleDarkMode": {
+      "Content": "Windows 深色主題",
+      "Description": "啟用/停用深色模式。"
+    },
+    "WPFToggleBingSearch": {
+      "Content": "開始選單 Bing 搜尋",
+      "Description": "啟用時會在開始選單搜尋中包含 Bing 網頁搜尋結果。"
+    },
+    "WPFToggleNumLock": {
+      "Content": "開機時啟用 NumLock",
+      "Description": "切換電腦啟動時 Num Lock 鍵的狀態。"
+    },
+    "WPFToggleVerboseLogon": {
+      "Content": "詳細登入訊息",
+      "Description": "在登入過程中顯示詳細訊息，用於疑難排解。"
+    },
+    "WPFToggleStartMenuRecommendations": {
+      "Content": "開始選單建議",
+      "Description": "停用後開始選單中不會顯示建議。"
+    },
+    "WPFToggleHideSettingsHome": {
+      "Content": "移除設定首頁",
+      "Description": "移除 Windows 設定應用程式中的首頁。"
+    },
+    "WPFToggleMouseAcceleration": {
+      "Content": "滑鼠加速",
+      "Description": "啟用時游標移動受實體滑鼠移動速度影響。"
+    },
+    "WPFToggleStickyKeys": {
+      "Content": "相黏鍵",
+      "Description": "協助行動不便使用者的無障礙功能。"
+    },
+    "WPFToggleNewOutlook": {
+      "Content": "新版 Outlook",
+      "Description": "停用時移除新版 Outlook 切換開關並確保使用舊版 Outlook。"
+    },
+    "WPFToggleMultiplaneOverlay": {
+      "Content": "停用多平面覆蓋",
+      "Description": "停用多平面覆蓋，有時可能導致顯示卡問題。"
+    },
+    "WPFToggleHiddenFiles": {
+      "Content": "顯示隱藏檔案",
+      "Description": "啟用時會顯示隱藏檔案。"
+    },
+    "WPFToggleShowExt": {
+      "Content": "顯示副檔名",
+      "Description": "啟用時會顯示副檔名（如 .txt、.jpg）。"
+    },
+    "WPFToggleTaskbarSearch": {
+      "Content": "工作列搜尋按鈕",
+      "Description": "啟用時工作列上會顯示搜尋按鈕。"
+    },
+    "WPFToggleTaskView": {
+      "Content": "工作列工作檢視按鈕",
+      "Description": "啟用時工作列上會顯示工作檢視按鈕。"
+    },
+    "WPFToggleTaskbarAlignment": {
+      "Content": "工作列項目置中",
+      "Description": "[Windows 11] 啟用時工作列項目置中顯示，否則靠左顯示。"
+    },
+    "WPFToggleDetailedBSoD": {
+      "Content": "詳細藍色當機畫面",
+      "Description": "啟用時會顯示包含更多資訊的詳細藍色當機畫面。"
+    },
+    "WPFToggleS3Sleep": {
+      "Content": "S3 睡眠",
+      "Description": "在現代待命和 S3 睡眠之間切換。"
+    },
+    "WPFOOSUbutton": {
+      "Content": "執行 OO Shutup 10"
+    },
+    "WPFchangedns": {
+      "Content": "DNS 設定"
+    },
+    "WPFAddUltPerf": {
+      "Content": "新增並啟用極致效能計畫"
+    },
+    "WPFRemoveUltPerf": {
+      "Content": "移除極致效能計畫"
+    },
+    "WPFTweaksDisableExplorerAutoDiscovery": {
+      "Content": "停用檔案總管自動探索資料夾",
+      "Description": "檔案總管會自動根據內容猜測資料夾類型，導致瀏覽速度變慢。"
+    },
+    "WPFToggleDisableCrossDeviceResume": {
+      "Content": "跨裝置繼續",
+      "Description": "控制 Windows 11 24H2 的繼續功能，允許從行動裝置繼續作業。"
+    }
+  },
+  "feature": {
+    "WPFFeaturesdotnet": {
+      "Content": "所有 .NET Framework (2,3,4)",
+      "Description": ".NET 和 .NET Framework 是由工具、程式語言和程式庫組成的開發平台。"
+    },
+    "WPFFeatureshyperv": {
+      "Content": "Hyper-V 虛擬化",
+      "Description": "Hyper-V 是 Microsoft 的硬體虛擬化產品，可建立和管理虛擬機器。"
+    },
+    "WPFFeatureslegacymedia": {
+      "Content": "舊版媒體 (WMP, DirectPlay)",
+      "Description": "啟用舊版 Windows 的傳統媒體程式。"
+    },
+    "WPFFeaturewsl": {
+      "Content": "Windows 子系統 Linux 版",
+      "Description": "允許 Linux 程式在 Windows 上原生執行，無需虛擬機器或雙系統開機。"
+    },
+    "WPFFeaturenfs": {
+      "Content": "NFS 網路檔案系統",
+      "Description": "網路檔案系統 (NFS) 是在網路上儲存檔案的機制。"
+    },
+    "WPFFeatureRegBackup": {
+      "Content": "啟用每日登錄備份 (凌晨 12:30)",
+      "Description": "啟用每日登錄備份，此功能在 Windows 10 1803 中被停用。"
+    },
+    "WPFFeatureEnableLegacyRecovery": {
+      "Content": "啟用舊版 F8 開機修復",
+      "Description": "啟用進階開機選項畫面，以進階疑難排解模式啟動 Windows。"
+    },
+    "WPFFeatureDisableLegacyRecovery": {
+      "Content": "停用舊版 F8 開機修復",
+      "Description": "停用進階開機選項畫面。"
+    },
+    "WPFFeaturesSandbox": {
+      "Content": "Windows 沙盒",
+      "Description": "輕量級虛擬機器，提供暫時性桌面環境以安全隔離執行應用程式。"
+    },
+    "WPFFeatureInstall": {
+      "Content": "安裝功能"
+    },
+    "WPFPanelAutologin": {
+      "Content": "設定自動登入"
+    },
+    "WPFFixesUpdate": {
+      "Content": "重設 Windows Update"
+    },
+    "WPFFixesNetwork": {
+      "Content": "重設網路"
+    },
+    "WPFPanelDISM": {
+      "Content": "系統損毀掃描"
+    },
+    "WPFFixesWinget": {
+      "Content": "重新安裝 WinGet"
+    },
+    "WPFRunAdobeCCCleanerTool": {
+      "Content": "移除 Adobe Creative Cloud"
+    },
+    "WPFPanelControl": {
+      "Content": "控制台"
+    },
+    "WPFPanelComputer": {
+      "Content": "電腦管理"
+    },
+    "WPFPanelNetwork": {
+      "Content": "網路連線"
+    },
+    "WPFPanelPower": {
+      "Content": "電源選項"
+    },
+    "WPFPanelPrinter": {
+      "Content": "印表機"
+    },
+    "WPFPanelRegion": {
+      "Content": "地區設定"
+    },
+    "WPFPanelRestore": {
+      "Content": "Windows 還原"
+    },
+    "WPFPanelSound": {
+      "Content": "音效設定"
+    },
+    "WPFPanelSystem": {
+      "Content": "系統內容"
+    },
+    "WPFPanelTimedate": {
+      "Content": "日期和時間"
+    },
+    "WPFWinUtilInstallPSProfile": {
+      "Content": "安裝 CTT PowerShell 設定檔"
+    },
+    "WPFWinUtilUninstallPSProfile": {
+      "Content": "移除 CTT PowerShell 設定檔"
+    },
+    "WPFWinUtilSSHServer": {
+      "Content": "啟用 OpenSSH 伺服器"
+    }
+  }
+}

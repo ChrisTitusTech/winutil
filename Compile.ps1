@@ -43,6 +43,7 @@ $excludedFiles = @()
 # Add directories only if they exist
 if (Test-Path '.\.git\') { $excludedFiles += '.\.git\' }
 if (Test-Path '.\binary\') { $excludedFiles += '.\binary\' }
+if (Test-Path '.\locales\') { $excludedFiles += '.\locales\' }
 
 # Add files that should always be excluded
 $excludedFiles += @(
@@ -92,6 +93,23 @@ $($jsonAsObject | ConvertTo-Json -Depth 3)
     $script_content.Add($(Write-Output "`$sync.configs.$($psitem.BaseName) = @'`r`n$json`r`n'@ `| ConvertFrom-Json" ))
 }
 
+Update-Progress "Adding: Locale files" 50
+$script_content.Add(
+    "`$sync.configs.locales = @{}"
+)
+$manifestPath = "locales\manifest.json"
+if (Test-Path $manifestPath) {
+    $manifestContent = [System.IO.File]::ReadAllText(
+        (Resolve-Path $manifestPath).Path,
+        [System.Text.Encoding]::UTF8
+    )
+    $script_content.Add($(Write-Output (
+        "`$sync.configs.localeManifest = @'`r`n" +
+        "$manifestContent`r`n" +
+        "'@ | ConvertFrom-Json"
+    )))
+}
+
 # Read the entire XAML file as a single string, preserving line breaks
 $xaml = Get-Content "$workingdir\xaml\inputXML.xaml" -Raw
 
@@ -118,7 +136,12 @@ if ($Debug) {
     Remove-Item "xaml\inputFeatures.xaml" -ErrorAction SilentlyContinue
 }
 
-Set-Content -Path "$scriptname" -Value ($script_content -join "`r`n") -Encoding ascii
+$utf8Bom = New-Object System.Text.UTF8Encoding $true
+[System.IO.File]::WriteAllText(
+    (Join-Path $PWD $scriptname),
+    ($script_content -join "`r`n"),
+    $utf8Bom
+)
 Write-Progress -Activity "Compiling" -Completed
 
 Update-Progress -Activity "Validating" -StatusMessage "Checking winutil.ps1 Syntax" -Percent 0
