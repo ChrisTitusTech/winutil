@@ -35,7 +35,6 @@ $ExecutionContext.SessionState.LanguageMode
 ```
 If it returns `ConstrainedLanguage`, you may need to switch to `FullLanguage` mode or run the script in a session with administrative privileges. Be aware that some security policies may enforce Constrained Language Mode, especially in corporate or managed environments.
 
-
 ### Script blocked by Execution Policy
 
 1. Ensure you are running PowerShell as admin: Press `Windows Key`+`X` and select _PowerShell (Admin)_ in Windows 10, or `Windows Terminal (Admin)` in Windows 11.
