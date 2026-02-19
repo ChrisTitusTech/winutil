@@ -163,7 +163,16 @@ $documentedCategories = @(
     "Performance Plans",
     "Features",
     "Fixes",
-    "Legacy Windows Panels"
+    "Legacy Windows Panels",
+    "Powershell Profile Powershell 7+ Only",
+    "Remote Access"
+)
+
+# Categories whose Button entries should embed the PowerShell function (not raw JSON)
+$functionEmbedCategories = @(
+    "Fixes",
+    "Powershell Profile Powershell 7+ Only",
+    "Remote Access"
 )
 
 # --- Load data ---
@@ -310,8 +319,8 @@ foreach ($itemName in $featureNames) {
     $title = $item.Content -replace '"', '\"'
     $content = "---`r`ntitle: `"$title`"`r`ndescription: `"`"`r`n---`r`n`r`n"
 
-    if ($item.category -eq "Fixes") {
-        # Fixes: embed the PowerShell function file only
+    if ($item.category -in $functionEmbedCategories) {
+        # Button-driven categories: embed the PowerShell function file
         $funcName = if ($item.function) { $item.function } else { $buttonFunctionMap[$itemName] }
         if ($funcName -and $functionFiles.ContainsKey($funcName)) {
             $func = $functionFiles[$funcName]
