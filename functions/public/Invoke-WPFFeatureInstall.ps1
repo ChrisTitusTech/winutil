@@ -12,21 +12,25 @@ function Invoke-WPFFeatureInstall {
         return
     }
 
-    $Features = $sync.selectedFeatures
-
-    Invoke-WPFRunspace -ArgumentList $Features -DebugPreference $DebugPreference -ScriptBlock {
-        param($Features, $DebugPreference)
+    $handle = Invoke-WPFRunspace -ScriptBlock {
+        $Features = $sync.selectedFeatures
         $sync.ProcessRunning = $true
         if ($Features.count -eq 1) {
-            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
+            Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" }
         } else {
-            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
+            Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" }
         }
 
-        Invoke-WinUtilFeatureInstall $Features
+        $x = 0
+
+        $Features | ForEach-Object {
+            Invoke-WinUtilFeatureInstall $Feature
+            $X++
+            Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -value ($x/$CheckBox.Count) }
+        }
 
         $sync.ProcessRunning = $false
-        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
+        Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" }
 
         Write-Host "==================================="
         Write-Host "---   Features are Installed    ---"

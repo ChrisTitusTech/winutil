@@ -9,12 +9,16 @@
 param (
     [switch]$Debug,
     [string]$Config,
-    [switch]$Run
+    [switch]$Run,
+    [switch]$Noui
 )
 
 # Set DebugPreference based on the -Debug switch
 if ($Debug) {
     $DebugPreference = "Continue"
+}
+else {
+    $DebugPreference = "SilentlyContinue"
 }
 
 if ($Config) {
@@ -24,8 +28,12 @@ if ($Config) {
 $PARAM_RUN = $false
 # Handle the -Run switch
 if ($Run) {
-    Write-Host "Running config file tasks..."
     $PARAM_RUN = $true
+}
+
+$PARAM_NOUI = $false
+if ($Noui) {
+    $PARAM_NOUI = $true
 }
 
 # Load DLLs
@@ -85,6 +93,8 @@ $dateTime = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
 # Set the path for the winutil directory
 $winutildir = "$env:LocalAppData\winutil"
 New-Item $winutildir -ItemType Directory -Force | Out-Null
+
+# TODO move config loading here? or to start of main?
 
 $logdir = "$winutildir\logs"
 New-Item $logdir -ItemType Directory -Force | Out-Null

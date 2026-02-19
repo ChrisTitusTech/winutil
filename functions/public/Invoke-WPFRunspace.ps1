@@ -27,8 +27,7 @@ function Invoke-WPFRunspace {
     Param (
         $ScriptBlock,
         $ArgumentList,
-        $ParameterList,
-        $DebugPreference
+        $ParameterList
     )
 
     # Create a PowerShell instance
@@ -41,7 +40,7 @@ function Invoke-WPFRunspace {
     foreach ($parameter in $ParameterList) {
         $script:powershell.AddParameter($parameter[0], $parameter[1])
     }
-    $script:powershell.AddArgument($DebugPreference)  # Pass DebugPreference to the script block
+
     $script:powershell.RunspacePool = $sync.runspace
 
     # Execute the RunspacePool
