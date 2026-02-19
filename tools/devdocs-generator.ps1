@@ -1,9 +1,7 @@
 <#
     .DESCRIPTION
-    Generates Hugo-compatible markdown files for the development documentation
-    based on config/tweaks.json and config/feature.json.
-    Each JSON entry gets its own .md file with the raw JSON snippet or PowerShell function embedded.
-    Called by the GitHub Actions docs workflow before Hugo build.
+    Generates Hugo markdown docs from config/tweaks.json and config/feature.json.
+    Run by the GitHub Actions docs workflow before Hugo build.
 #>
 
 function Update-Progress {
@@ -18,11 +16,7 @@ function Update-Progress {
 }
 
 function Get-RawJsonBlock {
-    <#
-        .SYNOPSIS
-        Extracts the raw JSON text for a specific item from a JSON file's lines.
-        Returns the line number and raw text, excluding the "link" property and closing brace.
-    #>
+    # Returns the raw JSON text and 1-based start line for an item, excluding the "link" property.
     param (
         [Parameter(Mandatory)]
         [string]$ItemName,
@@ -32,13 +26,12 @@ function Get-RawJsonBlock {
     )
 
     $escapedName = [regex]::Escape($ItemName)
-    $startIndex = -1
+    $startIndex  = -1
     $startIndent = ""
 
-    # Find the line containing "ItemName": {
     for ($i = 0; $i -lt $JsonLines.Count; $i++) {
         if ($JsonLines[$i] -match "^(\s*)`"$escapedName`"\s*:\s*\{") {
-            $startIndex = $i
+            $startIndex  = $i
             $startIndent = $matches[1]
             break
         }
@@ -49,9 +42,8 @@ function Get-RawJsonBlock {
         return $null
     }
 
-    # Find the closing } at the same indentation level
     $escapedIndent = [regex]::Escape($startIndent)
-    $endIndex = -1
+    $endIndex      = -1
     for ($i = ($startIndex + 1); $i -lt $JsonLines.Count; $i++) {
         if ($JsonLines[$i] -match "^$escapedIndent\}") {
             $endIndex = $i
@@ -64,7 +56,7 @@ function Get-RawJsonBlock {
         return $null
     }
 
-    # Walk backwards from closing brace to exclude "link" property and empty lines
+    # Strip trailing "link" property and blank lines before returning
     $lastContentIndex = $endIndex - 1
     while ($lastContentIndex -gt $startIndex) {
         $trimmed = $JsonLines[$lastContentIndex].Trim()
@@ -75,28 +67,21 @@ function Get-RawJsonBlock {
         }
     }
 
-    $rawLines = $JsonLines[$startIndex..$lastContentIndex]
-    $rawText = $rawLines -join "`r`n"
-
     return @{
-        LineNumber = $startIndex + 1  # 1-based
-        RawText    = $rawText
+        LineNumber = $startIndex + 1
+        RawText    = ($JsonLines[$startIndex..$lastContentIndex] -join "`r`n")
     }
 }
 
 function Get-ButtonFunctionMapping {
-    <#
-        .SYNOPSIS
-        Parses Invoke-WPFButton.ps1 to build a hashtable mapping button names to function names.
-    #>
+    # Parses Invoke-WPFButton.ps1 and returns a hashtable of button name -> function name.
     param (
         [Parameter(Mandatory)]
         [string]$ButtonFilePath
     )
 
     $mapping = @{}
-    $lines = Get-Content -Path $ButtonFilePath
-    foreach ($line in $lines) {
+    foreach ($line in (Get-Content -Path $ButtonFilePath)) {
         if ($line -match '^\s*"(\w+)"\s*\{(Invoke-\w+)') {
             $mapping[$matches[1]] = $matches[2]
         }
@@ -105,11 +90,8 @@ function Get-ButtonFunctionMapping {
 }
 
 function Add-LinkAttributeToJson {
-    <#
-        .SYNOPSIS
-        Updates the "link" property on each top-level entry in a JSON config file
-        to point to the corresponding documentation page URL.
-    #>
+    # Updates only the "link" property for each entry in a JSON config file.
+    # Reads via ConvertFrom-Json for metadata, then edits lines directly to avoid reformatting.
     param (
         [Parameter(Mandatory)]
         [string]$JsonFilePath,
@@ -119,43 +101,85 @@ function Add-LinkAttributeToJson {
         [string]$ItemNameToCut
     )
 
-    $jsonText = Get-Content -Path $JsonFilePath -Raw
-    $jsonData = $jsonText | ConvertFrom-Json
+    $jsonData = Get-Content -Path $JsonFilePath -Raw | ConvertFrom-Json
+    $lines    = [System.Collections.Generic.List[string]](Get-Content -Path $JsonFilePath)
 
     foreach ($item in $jsonData.PSObject.Properties) {
-        $itemName = $item.Name
-        $itemDetails = $item.Value
-        $category = $itemDetails.category -replace '[^a-zA-Z0-9]', '-'
+        $itemName    = $item.Name
+        $category    = $item.Value.category -replace '[^a-zA-Z0-9]', '-'
         $displayName = $itemName -replace $ItemNameToCut, ''
-        $docLink = "$UrlPrefix/$($category.ToLower())/$($displayName.ToLower())"
+        $newLink     = "$UrlPrefix/$($category.ToLower())/$($displayName.ToLower())"
+        $escapedName = [regex]::Escape($itemName)
 
-        $itemDetails | Add-Member -NotePropertyName "link" -NotePropertyValue $docLink -Force
+        # Find item start line
+        $startIdx = -1
+        for ($i = 0; $i -lt $lines.Count; $i++) {
+            if ($lines[$i] -match "^\s*`"$escapedName`"\s*:\s*\{") {
+                $startIdx = $i
+                break
+            }
+        }
+        if ($startIdx -eq -1) { continue }
+
+        # Derive indentation: propIndent is one level deeper than the item start.
+        # Used to target only top-level properties and skip nested object braces.
+        $null          = $lines[$startIdx] -match '^(\s*)'
+        $propIndent    = $matches[1] + '  '
+        $propIndentLen = $propIndent.Length
+        $escapedPropIndent = [regex]::Escape($propIndent)
+
+        # Scan forward: update existing "link" or find the closing brace to insert one.
+        # Closing brace is matched by indent <= propIndentLen to handle inconsistent formatting.
+        $linkUpdated   = $false
+        $closeBraceIdx = -1
+        for ($j = $startIdx + 1; $j -lt $lines.Count; $j++) {
+            if ($lines[$j] -match "^$escapedPropIndent`"link`"\s*:") {
+                $lines[$j] = $lines[$j] -replace '"link"\s*:\s*"[^"]*"', "`"link`": `"$newLink`""
+                $linkUpdated = $true
+                break
+            }
+            if ($lines[$j] -match '^\s*\}') {
+                $null = $lines[$j] -match '^(\s*)'
+                if ($matches[1].Length -le $propIndentLen) {
+                    $closeBraceIdx = $j
+                    break
+                }
+            }
+        }
+
+        if (-not $linkUpdated -and $closeBraceIdx -ne -1) {
+            # Insert "link" before the closing brace
+            $prevPropIdx = $closeBraceIdx - 1
+            while ($prevPropIdx -gt $startIdx -and $lines[$prevPropIdx].Trim() -eq '') { $prevPropIdx-- }
+
+            if ($lines[$prevPropIdx] -notmatch ',\s*$') {
+                $lines[$prevPropIdx] = $lines[$prevPropIdx].TrimEnd() + ','
+            }
+            $lines.Insert($closeBraceIdx, "$propIndent`"link`": `"$newLink`"")
+        }
     }
 
-    $jsonText = ($jsonData | ConvertTo-Json -Depth 100).replace('\n', "`n").replace('\r', "`r")
-    Set-Content -Path $JsonFilePath -Value $jsonText -Encoding utf8
+    Set-Content -Path $JsonFilePath -Value $lines -Encoding utf8
 }
 
 # ==============================================================================
-# Main Script
+# Main
 # ==============================================================================
 
-# Use PSScriptRoot if available (running as a script file), otherwise assume CWD is tools/
 $scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { (Get-Location).Path }
-$repoRoot = Resolve-Path "$scriptDir/.."
+$repoRoot  = Resolve-Path "$scriptDir/.."
 
-# Paths
-$tweaksJsonPath    = "$repoRoot/config/tweaks.json"
-$featuresJsonPath  = "$repoRoot/config/feature.json"
-$tweaksOutputDir   = "$repoRoot/docs/content/dev/tweaks"
-$featuresOutputDir = "$repoRoot/docs/content/dev/features"
+$tweaksJsonPath      = "$repoRoot/config/tweaks.json"
+$featuresJsonPath    = "$repoRoot/config/feature.json"
+$tweaksOutputDir     = "$repoRoot/docs/content/dev/tweaks"
+$featuresOutputDir   = "$repoRoot/docs/content/dev/features"
 $publicFunctionsDir  = "$repoRoot/functions/public"
 $privateFunctionsDir = "$repoRoot/functions/private"
 
 $itemnametocut = 'WPF(WinUtil|Toggle|Features?|Tweaks?|Panel|Fix(es)?)?'
-$baseUrl = "https://winutil.christitus.com"
+$baseUrl       = "https://winutil.christitus.com"
 
-# Categories that should have generated documentation
+# Categories with generated docs
 $documentedCategories = @(
     "Essential Tweaks",
     "z__Advanced Tweaks - CAUTION",
@@ -163,49 +187,44 @@ $documentedCategories = @(
     "Performance Plans",
     "Features",
     "Fixes",
-    "Legacy Windows Panels"
+    "Legacy Windows Panels",
+    "Powershell Profile Powershell 7+ Only",
+    "Remote Access"
 )
 
-# --- Load data ---
+# Categories where Button entries embed a PS function instead of raw JSON
+$functionEmbedCategories = @(
+    "Fixes",
+    "Powershell Profile Powershell 7+ Only",
+    "Remote Access"
+)
 
 Update-Progress "Loading JSON files" 10
-$tweaks   = Get-Content -Path $tweaksJsonPath  -Raw | ConvertFrom-Json
+$tweaks   = Get-Content -Path $tweaksJsonPath   -Raw | ConvertFrom-Json
 $features = Get-Content -Path $featuresJsonPath -Raw | ConvertFrom-Json
-
-# --- Load function files (content + relative path) ---
 
 Update-Progress "Loading function files" 20
 $functionFiles = @{}
-Get-ChildItem -Path $publicFunctionsDir -Filter *.ps1 | ForEach-Object {
-    $functionFiles[$_.BaseName] = @{
-        Content      = (Get-Content -Path $_.FullName -Raw).TrimEnd()
-        RelativePath = "functions/public/$($_.Name)"
-    }
+Get-ChildItem -Path $publicFunctionsDir  -Filter *.ps1 | ForEach-Object {
+    $functionFiles[$_.BaseName] = @{ Content = (Get-Content -Path $_.FullName -Raw).TrimEnd(); RelativePath = "functions/public/$($_.Name)" }
 }
 Get-ChildItem -Path $privateFunctionsDir -Filter *.ps1 | ForEach-Object {
-    $functionFiles[$_.BaseName] = @{
-        Content      = (Get-Content -Path $_.FullName -Raw).TrimEnd()
-        RelativePath = "functions/private/$($_.Name)"
-    }
+    $functionFiles[$_.BaseName] = @{ Content = (Get-Content -Path $_.FullName -Raw).TrimEnd(); RelativePath = "functions/private/$($_.Name)" }
 }
-
-# --- Build button-to-function mapping ---
 
 Update-Progress "Building button-to-function mapping" 30
 $buttonFunctionMap = Get-ButtonFunctionMapping -ButtonFilePath "$publicFunctionsDir/Invoke-WPFButton.ps1"
 
-# --- Update link attributes in JSON files ---
-
 Update-Progress "Updating documentation links in JSON" 40
 Add-LinkAttributeToJson -JsonFilePath $tweaksJsonPath   -UrlPrefix "$baseUrl/dev/tweaks"   -ItemNameToCut $itemnametocut
-Add-LinkAttributeToJson -JsonFilePath $featuresJsonPath  -UrlPrefix "$baseUrl/dev/features" -ItemNameToCut $itemnametocut
+Add-LinkAttributeToJson -JsonFilePath $featuresJsonPath -UrlPrefix "$baseUrl/dev/features" -ItemNameToCut $itemnametocut
 
-# Reload JSON lines after link update (so line numbers are accurate)
+# Reload lines after link update so line numbers in docs are accurate
 $tweaksLines   = Get-Content -Path $tweaksJsonPath
 $featuresLines = Get-Content -Path $featuresJsonPath
 
 # ==============================================================================
-# Clean up old generated .md files (keep _index.md)
+# Clean up old generated .md files (preserve _index.md)
 # ==============================================================================
 
 Update-Progress "Cleaning up old generated docs" 45
@@ -221,9 +240,9 @@ foreach ($dir in @($tweaksOutputDir, $featuresOutputDir)) {
 
 Update-Progress "Generating tweak documentation" 50
 
-$tweakNames = $tweaks.PSObject.Properties.Name
+$tweakNames  = $tweaks.PSObject.Properties.Name
 $totalTweaks = $tweakNames.Count
-$tweakCount = 0
+$tweakCount  = 0
 
 foreach ($itemName in $tweakNames) {
     $item = $tweaks.$itemName
@@ -236,25 +255,20 @@ foreach ($itemName in $tweakNames) {
     $categoryDir = "$tweaksOutputDir/$category"
     $filename    = "$categoryDir/$displayName.md"
 
-    if (-Not (Test-Path -Path $categoryDir)) {
-        New-Item -ItemType Directory -Path $categoryDir | Out-Null
-    }
+    if (-Not (Test-Path -Path $categoryDir)) { New-Item -ItemType Directory -Path $categoryDir | Out-Null }
 
-    # Hugo frontmatter
-    $title = $item.Content -replace '"', '\"'
+    $title   = $item.Content -replace '"', '\"'
     $content = "---`r`ntitle: `"$title`"`r`ndescription: `"`"`r`n---`r`n`r`n"
 
     if ($item.Type -eq "Button") {
-        # Button-type tweak: embed the mapped PowerShell function
         $funcName = $buttonFunctionMap[$itemName]
         if ($funcName -and $functionFiles.ContainsKey($funcName)) {
-            $func = $functionFiles[$funcName]
+            $func     = $functionFiles[$funcName]
             $content += "``````powershell {filename=`"$($func.RelativePath)`",linenos=inline,linenostart=1}`r`n"
             $content += $func.Content + "`r`n"
             $content += "```````r`n"
         }
     } else {
-        # Standard tweak: embed raw JSON block
         $jsonBlock = Get-RawJsonBlock -ItemName $itemName -JsonLines $tweaksLines
         if ($jsonBlock) {
             $content += "``````json {filename=`"config/tweaks.json`",linenos=inline,linenostart=$($jsonBlock.LineNumber)}`r`n"
@@ -262,27 +276,16 @@ foreach ($itemName in $tweakNames) {
             $content += "```````r`n"
         }
 
-        # Registry Changes section
         if ($item.registry) {
             $content += "`r`n## Registry Changes`r`n`r`n"
             $content += "Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.`r`n`r`n"
             $content += "You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).`r`n"
         }
-
-        # Service function reference
-        if ($item.service -and $functionFiles.ContainsKey("Set-WinUtilService")) {
-            $svcFunc = $functionFiles["Set-WinUtilService"]
-            $content += "#Function`r`n"
-            $content += "``````powershell {filename=`"$($svcFunc.RelativePath)`",linenos=inline,linenostart=1}`r`n"
-            $content += $svcFunc.Content + "`r`n"
-            $content += "```````r`n"
-        }
     }
 
     Set-Content -Path $filename -Value $content -Encoding utf8 -NoNewline
 
-    $percent = 50 + [int](($tweakCount / $totalTweaks) * 20)
-    if ($percent -gt 70) { $percent = 70 }
+    $percent = [Math]::Min(70, 50 + [int](($tweakCount / $totalTweaks) * 20))
     Update-Progress "Generating tweak documentation ($tweakCount/$totalTweaks)" $percent
 }
 
@@ -292,17 +295,15 @@ foreach ($itemName in $tweakNames) {
 
 Update-Progress "Generating feature documentation" 70
 
-$featureNames = $features.PSObject.Properties.Name
+$featureNames  = $features.PSObject.Properties.Name
 $totalFeatures = $featureNames.Count
-$featureCount = 0
+$featureCount  = 0
 
 foreach ($itemName in $featureNames) {
     $item = $features.$itemName
     $featureCount++
 
     if ($item.category -notin $documentedCategories) { continue }
-
-    # Skip pure UI buttons that don't need docs
     if ($itemName -eq "WPFFeatureInstall") { continue }
 
     $category    = $item.category -replace '[^a-zA-Z0-9]', '-'
@@ -310,24 +311,20 @@ foreach ($itemName in $featureNames) {
     $categoryDir = "$featuresOutputDir/$category"
     $filename    = "$categoryDir/$displayName.md"
 
-    if (-Not (Test-Path -Path $categoryDir)) {
-        New-Item -ItemType Directory -Path $categoryDir | Out-Null
-    }
+    if (-Not (Test-Path -Path $categoryDir)) { New-Item -ItemType Directory -Path $categoryDir | Out-Null }
 
-    $title = $item.Content -replace '"', '\"'
+    $title   = $item.Content -replace '"', '\"'
     $content = "---`r`ntitle: `"$title`"`r`ndescription: `"`"`r`n---`r`n`r`n"
 
-    if ($item.category -eq "Fixes" -or $item.category -eq "Legacy Windows Panels") {
-        # Embed the PowerShell function file
-        $funcName = $buttonFunctionMap[$itemName]
+    if ($item.category -in $functionEmbedCategories) {
+        $funcName = if ($item.function) { $item.function } else { $buttonFunctionMap[$itemName] }
         if ($funcName -and $functionFiles.ContainsKey($funcName)) {
-            $func = $functionFiles[$funcName]
+            $func     = $functionFiles[$funcName]
             $content += "``````powershell {filename=`"$($func.RelativePath)`",linenos=inline,linenostart=1}`r`n"
             $content += $func.Content + "`r`n"
             $content += "```````r`n"
         }
     } else {
-        # Features category: embed raw JSON block
         $jsonBlock = Get-RawJsonBlock -ItemName $itemName -JsonLines $featuresLines
         if ($jsonBlock) {
             $content += "``````json {filename=`"config/feature.json`",linenos=inline,linenostart=$($jsonBlock.LineNumber)}`r`n"
@@ -338,8 +335,7 @@ foreach ($itemName in $featureNames) {
 
     Set-Content -Path $filename -Value $content -Encoding utf8 -NoNewline
 
-    $percent = 70 + [int](($featureCount / $totalFeatures) * 20)
-    if ($percent -gt 90) { $percent = 90 }
+    $percent = [Math]::Min(90, 70 + [int](($featureCount / $totalFeatures) * 20))
     Update-Progress "Generating feature documentation ($featureCount/$totalFeatures)" $percent
 }
 
