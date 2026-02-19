@@ -7,15 +7,9 @@
 #>
 
 param (
-    [switch]$Debug,
     [string]$Config,
     [switch]$Run
 )
-
-# Set DebugPreference based on the -Debug switch
-if ($Debug) {
-    $DebugPreference = "Continue"
-}
 
 if ($Config) {
     $PARAM_CONFIG = $Config
