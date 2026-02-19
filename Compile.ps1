@@ -94,20 +94,21 @@ $($jsonAsObject | ConvertTo-Json -Depth 3)
 }
 
 Update-Progress "Adding: Locale files" 50
-$localeJson = @{}
-if (Test-Path "locales") {
-    Get-ChildItem "locales" -Filter "*.json" | ForEach-Object {
-        $localeContent = [System.IO.File]::ReadAllText(
-            $_.FullName,
-            [System.Text.Encoding]::UTF8
-        )
-        $localeJson[$_.BaseName] = $localeContent |
-            ConvertFrom-Json
-    }
+$script_content.Add(
+    "`$sync.configs.locales = @{}"
+)
+$manifestPath = "locales\manifest.json"
+if (Test-Path $manifestPath) {
+    $manifestContent = [System.IO.File]::ReadAllText(
+        (Resolve-Path $manifestPath).Path,
+        [System.Text.Encoding]::UTF8
+    )
+    $script_content.Add($(Write-Output (
+        "`$sync.configs.localeManifest = @'`r`n" +
+        "$manifestContent`r`n" +
+        "'@ | ConvertFrom-Json"
+    )))
 }
-$localeEmbedJson = $localeJson |
-    ConvertTo-Json -Depth 5
-$script_content.Add($(Write-Output "`$sync.configs.locales = @'`r`n$localeEmbedJson`r`n'@ | ConvertFrom-Json"))
 
 # Read the entire XAML file as a single string, preserving line breaks
 $xaml = Get-Content "$workingdir\xaml\inputXML.xaml" -Raw

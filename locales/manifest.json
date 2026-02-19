@@ -1,0 +1,7 @@
+{
+  "baseUrl": "https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/locales/",
+  "languages": [
+    { "code": "en", "name": "English", "embedded": true },
+    { "code": "zh-TW", "name": "繁體中文", "version": "1.0.0" }
+  ]
+}
