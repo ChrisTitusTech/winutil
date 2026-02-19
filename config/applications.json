@@ -496,6 +496,14 @@
         "link": "https://dotnet.microsoft.com/download/dotnet/9.0",
         "winget": "Microsoft.DotNet.DesktopRuntime.9"
     },
+    "dotnet10": {
+        "category": "Microsoft Tools",
+        "choco": "dotnet-10.0-runtime",
+        "content": ".NET Desktop Runtime 10",
+        "description": ".NET Desktop Runtime 10 is a runtime environment required for running applications developed with .NET 10.",
+        "link": "https://dotnet.microsoft.com/download/dotnet/10.0",
+        "winget": "Microsoft.DotNet.DesktopRuntime.10"
+    },
     "dmt": {
         "winget": "GNE.DualMonitorTools",
         "choco": "dual-monitor-tools",
@@ -3225,6 +3233,24 @@
         "description": "Zed is a modern, high-performance code editor designed from the ground up for speed and collaboration.",
         "link": "https://zed.dev/",
         "winget": "ZedIndustries.Zed",
+        "foss": true
+    },
+    "LLLVM": {
+        "category": "Development",
+        "choco": "llvm",
+        "winget": "LLVM.LLVM",
+        "description": "A collection of modular and reusable compiler and toolchain technologies.",
+        "content": "LLVM",
+        "link": "https://llvm.org",
+        "foss": true
+    },
+    "NASM": {
+        "category": "Development",
+        "choco": "nasm",
+        "winget": "NASM.NASM",
+        "description": "A powerful assembler for the x86 platform.",
+        "content": "NASM",
+        "link": "https://nasm.us",
         "foss": true
     }
 }
