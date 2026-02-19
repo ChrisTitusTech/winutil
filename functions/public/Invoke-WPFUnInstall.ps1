@@ -32,8 +32,8 @@ function Invoke-WPFUnInstall {
 
     $ManagerPreference = $sync["ManagerPreference"]
 
-    Invoke-WPFRunspace -ParameterList @(("PackagesToUninstall", $PackagesToUninstall),("ManagerPreference", $ManagerPreference)) -DebugPreference $DebugPreference -ScriptBlock {
-        param($PackagesToUninstall, $ManagerPreference, $DebugPreference)
+    Invoke-WPFRunspace -ParameterList @(("PackagesToUninstall", $PackagesToUninstall),("ManagerPreference", $ManagerPreference)) -ScriptBlock {
+        param($PackagesToUninstall, $ManagerPreference)
 
         $packagesSorted = Get-WinUtilSelectedPackages -PackageList $PackagesToUninstall -Preference $ManagerPreference
         $packagesWinget = $packagesSorted[[PackageManagers]::Winget]
@@ -54,12 +54,12 @@ function Invoke-WPFUnInstall {
             Write-Host "==========================================="
             Write-Host "--       Uninstalls have finished       ---"
             Write-Host "==========================================="
-            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
+            Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" }
         } catch {
             Write-Host "==========================================="
             Write-Host "Error: $_"
             Write-Host "==========================================="
-            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -overlay "warning" })
+           Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Error" -overlay "warning" }
         }
         $sync.ProcessRunning = $False
 

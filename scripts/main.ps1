@@ -13,10 +13,14 @@ $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
 
 # Create a new session state for parsing variables into our runspace
 $hashVars = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'sync',$sync,$Null
+$debugVar = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'DebugPreference',$DebugPreference,$Null
+$uiVar = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'PARAM_NOUI',$PARAM_NOUI,$Null
 $InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
 
 # Add the variable to the session state
 $InitialSessionState.Variables.Add($hashVars)
+$InitialSessionState.Variables.Add($debugVar)
+$InitialSessionState.Variables.Add($uiVar)
 
 # Get every private function and add them to the session state
 $functions = Get-ChildItem function:\ | Where-Object { $_.Name -imatch 'winutil|WPF' }
@@ -53,6 +57,42 @@ class ChocoFailedInstall : Exception {
 class GenericException : Exception {
     [string]$additionalData
     GenericException($Message) : base($Message) {}
+}
+
+# Load the configuration files
+
+$sync.configs.applicationsHashtable = @{}
+$sync.configs.applications.PSObject.Properties | ForEach-Object {
+    $sync.configs.applicationsHashtable[$_.Name] = $_.Value
+}
+
+Set-PackageManagerPreference
+
+if ($PARAM_NOUI) {
+    Show-CTTLogo
+    if ($PARAM_CONFIG -and -not [string]::IsNullOrWhiteSpace($PARAM_CONFIG)) {
+        Write-Host "Running config file tasks..."
+        Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
+        if ($PARAM_RUN) {
+            Invoke-WinUtilAutoRun
+        }
+        else {
+            Write-Host "Did you forget to add '--Run'?";
+        }
+        $sync.runspace.Dispose()
+        $sync.runspace.Close()
+        [System.GC]::Collect()
+        Stop-Transcript
+        exit 1
+    }
+    else {
+        Write-Host "Cannot automatically run without a config file provided."
+        $sync.runspace.Dispose()
+        $sync.runspace.Close()
+        [System.GC]::Collect()
+        Stop-Transcript
+        exit 1
+    }
 }
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
@@ -115,12 +155,7 @@ $sync.Form.Add_Loaded({
 })
 
 Invoke-WinutilThemeChange -init $true
-# Load the configuration files
 
-$sync.configs.applicationsHashtable = @{}
-$sync.configs.applications.PSObject.Properties | ForEach-Object {
-    $sync.configs.applicationsHashtable[$_.Name] = $_.Value
-}
 
 # Now call the function with the final merged config
 Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
@@ -144,7 +179,6 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
 #Persist Package Manager preference across winutil restarts
 $sync.ChocoRadioButton.Add_Checked({Set-PackageManagerPreference Choco})
 $sync.WingetRadioButton.Add_Checked({Set-PackageManagerPreference Winget})
-Set-PackageManagerPreference
 
 switch ($sync["ManagerPreference"]) {
     "Choco" {$sync.ChocoRadioButton.IsChecked = $true; break}
@@ -341,45 +375,11 @@ $sync["Form"].Add_ContentRendered({
 
     $sync["Form"].Focus()
 
-    # maybe this is not the best place to load and execute config file?
-    # maybe community can help?
-    if ($PARAM_CONFIG -and -not [string]::IsNullOrWhiteSpace($PARAM_CONFIG)) {
+   if ($PARAM_CONFIG -and -not [string]::IsNullOrWhiteSpace($PARAM_CONFIG)) {
+        Write-Host "Running config file tasks..."
         Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
         if ($PARAM_RUN) {
-            # Wait for any existing process to complete before starting
-            while ($sync.ProcessRunning) {
-                Start-Sleep -Seconds 5
-            }
-            Start-Sleep -Seconds 5
-
-            Write-Host "Applying tweaks..."
-            if (-not $sync.ProcessRunning) {
-                Invoke-WPFtweaksbutton
-                while ($sync.ProcessRunning) {
-                    Start-Sleep -Seconds 5
-                }
-            }
-            Start-Sleep -Seconds 5
-
-            Write-Host "Installing features..."
-            if (-not $sync.ProcessRunning) {
-                Invoke-WPFFeatureInstall
-                while ($sync.ProcessRunning) {
-                    Start-Sleep -Seconds 5
-                }
-            }
-            Start-Sleep -Seconds 5
-
-            Write-Host "Installing applications..."
-            if (-not $sync.ProcessRunning) {
-                Invoke-WPFInstall
-                while ($sync.ProcessRunning) {
-                    Start-Sleep -Seconds 1
-                }
-            }
-            Start-Sleep -Seconds 5
-
-            Write-Host "Done."
+            Invoke-WinUtilAutoRun
         }
     }
 

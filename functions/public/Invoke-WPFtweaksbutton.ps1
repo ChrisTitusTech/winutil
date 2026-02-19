@@ -25,30 +25,27 @@ function Invoke-WPFtweaksbutton {
   Write-Debug "Number of tweaks to process: $($Tweaks.Count)"
 
   # The leading "," in the ParameterList is necessary because we only provide one argument and powershell cannot be convinced that we want a nested loop with only one argument otherwise
-  Invoke-WPFRunspace -ParameterList @(,("tweaks",$tweaks)) -DebugPreference $DebugPreference -ScriptBlock {
-    param(
-      $tweaks,
-      $DebugPreference
-      )
+  $handle = Invoke-WPFRunspace -ParameterList @(,("tweaks",$tweaks)) -ScriptBlock {
+    param($tweaks)
     Write-Debug "Inside Number of tweaks to process: $($Tweaks.Count)"
 
     $sync.ProcessRunning = $true
 
     if ($Tweaks.count -eq 1) {
-        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
+        Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" }
     } else {
-        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
+        Invoke-WPFUIThread -ScriptBlock{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" }
     }
     # Execute other selected tweaks
 
     for ($i = 0; $i -lt $Tweaks.Count; $i++) {
       Set-WinUtilProgressBar -Label "Applying $($tweaks[$i])" -Percent ($i / $tweaks.Count * 100)
       Invoke-WinUtilTweaks $tweaks[$i]
-      $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($i/$Tweaks.Count) })
+      Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -value ($i/$Tweaks.Count) }
     }
     Set-WinUtilProgressBar -Label "Tweaks finished" -Percent 100
     $sync.ProcessRunning = $false
-    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
+    Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" }
     Write-Host "================================="
     Write-Host "--     Tweaks are Finished    ---"
     Write-Host "================================="

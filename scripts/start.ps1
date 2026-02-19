@@ -9,12 +9,16 @@
 param (
     [switch]$Debug,
     [string]$Config,
-    [switch]$Run
+    [switch]$Run,
+    [switch]$Noui
 )
 
 # Set DebugPreference based on the -Debug switch
 if ($Debug) {
     $DebugPreference = "Continue"
+}
+else {
+    $DebugPreference = "SilentlyContinue"
 }
 
 if ($Config) {
@@ -24,8 +28,12 @@ if ($Config) {
 $PARAM_RUN = $false
 # Handle the -Run switch
 if ($Run) {
-    Write-Host "Running config file tasks..."
     $PARAM_RUN = $true
+}
+
+$PARAM_NOUI = $false
+if ($Noui) {
+    $PARAM_NOUI = $true
 }
 
 # Load DLLs
