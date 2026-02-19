@@ -3234,5 +3234,14 @@
         "link": "https://zed.dev/",
         "winget": "ZedIndustries.Zed",
         "foss": true
+    },
+    "LLLVM": {
+        "category": "Development",
+        "choco": "llvm",
+        "winget": "LLVM.LLVM",
+        "description": "A collection of modular and reusable compiler and toolchain technologies.",
+        "content": "LLVM",
+        "link": "https://llvm.org",
+        "foss": true
     }
 }
