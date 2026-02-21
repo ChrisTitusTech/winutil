@@ -2,6 +2,7 @@ function Invoke-WPFSystemRepair {
     <#
     .SYNOPSIS
         Checks for system corruption using SFC, and DISM
+        Checks for disk failure using Chkdsk
 
     .DESCRIPTION
         1. Chkdsk - Checks for disk errors, which can cause system file corruption and notifies of early disk failure
