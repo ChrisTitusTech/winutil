@@ -532,5 +532,44 @@ $sync["FontScalingApplyButton"].Add_Click({
     Invoke-WPFPopup -Action "Hide" -Popups @("FontScaling")
 })
 
+# ── Win11ISO Tab button handlers ──────────────────────────────────────────────
+
+$sync["WPFWin11ISOBrowseButton"].Add_Click({
+    Write-Debug "WPFWin11ISOBrowseButton clicked"
+    Invoke-WinUtilISOBrowse
+})
+
+$sync["WPFWin11ISODownloadLink"].Add_Click({
+    Write-Debug "WPFWin11ISODownloadLink clicked"
+    Start-Process "https://www.microsoft.com/software-download/windows11"
+})
+
+$sync["WPFWin11ISOMountButton"].Add_Click({
+    Write-Debug "WPFWin11ISOMountButton clicked"
+    Invoke-WinUtilISOMountAndVerify
+})
+
+$sync["WPFWin11ISOModifyButton"].Add_Click({
+    Write-Debug "WPFWin11ISOModifyButton clicked"
+    Invoke-WinUtilISOModify
+})
+
+$sync["WPFWin11ISOExportButton"].Add_Click({
+    Write-Debug "WPFWin11ISOExportButton clicked"
+    Invoke-WinUtilISOExport
+})
+
+$sync["WPFWin11ISORefreshUSBButton"].Add_Click({
+    Write-Debug "WPFWin11ISORefreshUSBButton clicked"
+    Invoke-WinUtilISORefreshUSBDrives
+})
+
+$sync["WPFWin11ISOWriteUSBButton"].Add_Click({
+    Write-Debug "WPFWin11ISOWriteUSBButton clicked"
+    Invoke-WinUtilISOWriteUSB
+})
+
+# ──────────────────────────────────────────────────────────────────────────────
+
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript

@@ -1342,6 +1342,294 @@
             <TabItem Header="Win11ISO" Visibility="Collapsed" Name="WPFTab5">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="{DynamicResource TabContentMargin}">
                     <Grid Background="Transparent" Name="Win11ISOPanel">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>  <!-- Step 1: Select ISO -->
+                            <RowDefinition Height="Auto"/>  <!-- Step 2: Mount & Verify -->
+                            <RowDefinition Height="Auto"/>  <!-- Step 3: Modify install.wim -->
+                            <RowDefinition Height="Auto"/>  <!-- Step 4: Output Options -->
+                            <RowDefinition Height="Auto"/>  <!-- Log / Status -->
+                        </Grid.RowDefinitions>
+
+                        <!-- ═══════════════════════════════════════════════════════════ -->
+                        <!-- STEP 1 : Select Windows 11 ISO                             -->
+                        <!-- ═══════════════════════════════════════════════════════════ -->
+                        <Border Grid.Row="0" Style="{StaticResource BorderStyle}">
+                            <Grid Margin="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Left: File Selector -->
+                                <StackPanel Grid.Column="0" Margin="5,5,15,5">
+                                    <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="Bold"
+                                               Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,8">
+                                        Step 1 — Select Windows 11 ISO
+                                    </TextBlock>
+                                    <TextBlock FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}"
+                                               TextWrapping="Wrap" Margin="0,0,0,12">
+                                        Browse to your locally saved Windows 11 ISO file. Only official ISOs
+                                        downloaded from Microsoft are supported.
+                                    </TextBlock>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox Grid.Column="0"
+                                                 Name="WPFWin11ISOPath"
+                                                 IsReadOnly="True"
+                                                 VerticalAlignment="Center"
+                                                 Padding="6,4"
+                                                 Margin="0,0,6,0"
+                                                 Text="No ISO selected..."
+                                                 Foreground="{DynamicResource MainForegroundColor}"
+                                                 Background="{DynamicResource MainBackgroundColor}"/>
+                                        <Button Grid.Column="1"
+                                                Name="WPFWin11ISOBrowseButton"
+                                                Content="Browse…"
+                                                Width="Auto" Padding="12,0"
+                                                Height="{DynamicResource ButtonHeight}"/>
+                                    </Grid>
+                                    <TextBlock Name="WPFWin11ISOFileInfo"
+                                               FontSize="{DynamicResource FontSize}"
+                                               Foreground="{DynamicResource MainForegroundColor}"
+                                               Margin="0,8,0,0"
+                                               TextWrapping="Wrap"
+                                               Visibility="Collapsed"/>
+                                </StackPanel>
+
+                                <!-- Right: Download guidance -->
+                                <Border Grid.Column="1"
+                                        Background="{DynamicResource MainBackgroundColor}"
+                                        BorderBrush="{DynamicResource BorderColor}"
+                                        BorderThickness="1" CornerRadius="5"
+                                        Margin="5" Padding="15">
+                                    <StackPanel>
+                                        <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="Bold"
+                                                   Foreground="OrangeRed" Margin="0,0,0,10">
+                                            ⚠  You must use an official Microsoft ISO
+                                        </TextBlock>
+                                        <TextBlock FontSize="{DynamicResource FontSize}"
+                                                   Foreground="{DynamicResource MainForegroundColor}"
+                                                   TextWrapping="Wrap" Margin="0,0,0,8">
+                                            Download the Windows 11 ISO directly from Microsoft.com.
+                                            Third-party, pre-modified, or unofficial images are not supported
+                                            and may produce broken results.
+                                        </TextBlock>
+                                        <TextBlock FontSize="{DynamicResource FontSize}"
+                                                   Foreground="{DynamicResource MainForegroundColor}"
+                                                   TextWrapping="Wrap" Margin="0,0,0,6">
+                                            On the Microsoft download page, choose:
+                                        </TextBlock>
+                                        <TextBlock FontSize="{DynamicResource FontSize}"
+                                                   Foreground="{DynamicResource MainForegroundColor}"
+                                                   TextWrapping="Wrap" Margin="12,0,0,12">
+                                            • Edition  : Windows 11
+                                            <LineBreak/>• Language : your preferred language
+                                            <LineBreak/>• Architecture : 64-bit (x64)
+                                        </TextBlock>
+                                        <Button Name="WPFWin11ISODownloadLink"
+                                                Content="Open Microsoft Download Page"
+                                                HorizontalAlignment="Left"
+                                                Width="Auto" Padding="12,0"
+                                                Height="{DynamicResource ButtonHeight}"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <!-- ═══════════════════════════════════════════════════════════ -->
+                        <!-- STEP 2 : Mount & Verify ISO                                -->
+                        <!-- ═══════════════════════════════════════════════════════════ -->
+                        <Border Grid.Row="1"
+                                Name="WPFWin11ISOMountSection"
+                                Style="{StaticResource BorderStyle}"
+                                Visibility="Collapsed">
+                            <Grid Margin="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" Margin="0,0,20,0" VerticalAlignment="Top">
+                                    <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="Bold"
+                                               Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,8">
+                                        Step 2 — Mount &amp; Verify ISO
+                                    </TextBlock>
+                                    <TextBlock FontSize="{DynamicResource FontSize}"
+                                               Foreground="{DynamicResource MainForegroundColor}"
+                                               TextWrapping="Wrap" Margin="0,0,0,12" MaxWidth="320">
+                                        Mount the ISO and confirm it contains a valid Windows 11
+                                        install.wim before any modifications are made.
+                                    </TextBlock>
+                                    <Button Name="WPFWin11ISOMountButton"
+                                            Content="Mount &amp; Verify ISO"
+                                            HorizontalAlignment="Left"
+                                            Width="Auto" Padding="12,0"
+                                            Height="{DynamicResource ButtonHeight}"/>
+                                </StackPanel>
+
+                                <!-- Verification results panel -->
+                                <Border Grid.Column="1"
+                                        Name="WPFWin11ISOVerifyResultPanel"
+                                        Background="{DynamicResource MainBackgroundColor}"
+                                        BorderBrush="{DynamicResource BorderColor}"
+                                        BorderThickness="1" CornerRadius="5"
+                                        Padding="12" Margin="0,0,0,0"
+                                        Visibility="Collapsed">
+                                    <StackPanel>
+                                        <TextBlock Name="WPFWin11ISOMountDriveLetter"
+                                                   FontSize="{DynamicResource FontSize}"
+                                                   Foreground="{DynamicResource MainForegroundColor}"
+                                                   Margin="0,0,0,4"/>
+                                        <TextBlock Name="WPFWin11ISOArchLabel"
+                                                   FontSize="{DynamicResource FontSize}"
+                                                   Foreground="{DynamicResource MainForegroundColor}"
+                                                   Margin="0,0,0,4"/>
+                                        <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="Bold"
+                                                   Foreground="{DynamicResource MainForegroundColor}"
+                                                   Margin="0,6,0,4">
+                                            Available Editions:
+                                        </TextBlock>
+                                        <TextBlock Name="WPFWin11ISOEditionList"
+                                                   FontSize="{DynamicResource FontSize}"
+                                                   Foreground="{DynamicResource MainForegroundColor}"
+                                                   TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <!-- ═══════════════════════════════════════════════════════════ -->
+                        <!-- STEP 3 : Modify install.wim                                -->
+                        <!-- ═══════════════════════════════════════════════════════════ -->
+                        <Border Grid.Row="2"
+                                Name="WPFWin11ISOModifySection"
+                                Style="{StaticResource BorderStyle}"
+                                Visibility="Collapsed">
+                            <StackPanel Margin="5">
+                                <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="Bold"
+                                           Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,8">
+                                    Step 3 — Modify install.wim
+                                </TextBlock>
+                                <TextBlock FontSize="{DynamicResource FontSize}"
+                                           Foreground="{DynamicResource MainForegroundColor}"
+                                           TextWrapping="Wrap" Margin="0,0,0,12">
+                                    The ISO contents will be extracted to a temporary working directory,
+                                    install.wim will be modified (components removed, tweaks applied),
+                                    and the result will be repackaged. This process may take several minutes
+                                    depending on your hardware.
+                                </TextBlock>
+                                <Button Name="WPFWin11ISOModifyButton"
+                                        Content="Run install.wim Modification"
+                                        HorizontalAlignment="Left"
+                                        Width="Auto" Padding="12,0"
+                                        Height="{DynamicResource ButtonHeight}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- ═══════════════════════════════════════════════════════════ -->
+                        <!-- STEP 4 : Output Options                                    -->
+                        <!-- ═══════════════════════════════════════════════════════════ -->
+                        <Border Grid.Row="3"
+                                Name="WPFWin11ISOOutputSection"
+                                Style="{StaticResource BorderStyle}"
+                                Visibility="Collapsed">
+                            <StackPanel Margin="5">
+                                <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="Bold"
+                                           Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,12">
+                                    Step 4 — Output: What would you like to do with the modified ISO?
+                                </TextBlock>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Option 1: Export to ISO -->
+                                    <Border Grid.Column="0" Style="{StaticResource BorderStyle}">
+                                        <StackPanel>
+                                            <Button Name="WPFWin11ISOExportButton"
+                                                    Content="1 — Export to ISO"
+                                                    HorizontalAlignment="Stretch"
+                                                    Width="Auto" Padding="12,0"
+                                                    Height="{DynamicResource ButtonHeight}"
+                                                    Margin="0,0,0,10"/>
+                                            <TextBlock FontSize="{DynamicResource FontSize}"
+                                                       Foreground="{DynamicResource MainForegroundColor}"
+                                                       TextWrapping="Wrap">
+                                                Save the modified content as a new bootable ISO file.
+                                                You can store it, use it in a virtual machine, or later
+                                                burn it to USB with any tool of your choice.
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- Option 2: Erase & Write to USB -->
+                                    <Border Grid.Column="1" Style="{StaticResource BorderStyle}">
+                                        <StackPanel>
+                                            <!-- USB drive selector row -->
+                                            <Grid Margin="0,0,0,8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ComboBox Grid.Column="0"
+                                                          Name="WPFWin11ISOUSBDriveComboBox"
+                                                          Foreground="{DynamicResource MainForegroundColor}"
+                                                          Background="{DynamicResource MainBackgroundColor}"
+                                                          VerticalAlignment="Center"
+                                                          Margin="0,0,6,0"/>
+                                                <Button Grid.Column="1"
+                                                        Name="WPFWin11ISORefreshUSBButton"
+                                                        Content="↻ Refresh"
+                                                        Width="Auto" Padding="8,0"
+                                                        Height="{DynamicResource ButtonHeight}"/>
+                                            </Grid>
+                                            <Button Name="WPFWin11ISOWriteUSBButton"
+                                                    Content="2 — Erase &amp; Write to USB"
+                                                    Foreground="OrangeRed"
+                                                    HorizontalAlignment="Stretch"
+                                                    Width="Auto" Padding="12,0"
+                                                    Height="{DynamicResource ButtonHeight}"
+                                                    Margin="0,0,0,10"/>
+                                            <TextBlock FontSize="{DynamicResource FontSize}"
+                                                       Foreground="{DynamicResource MainForegroundColor}"
+                                                       TextWrapping="Wrap">
+                                                <Run FontWeight="Bold" Foreground="OrangeRed">!! All data on the selected USB drive will be erased !!</Run>
+                                                <LineBreak/>
+                                                Select a removable USB drive above, then click the button
+                                                to write the modified Windows 11 installation directly to it.
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- ═══════════════════════════════════════════════════════════ -->
+                        <!-- Status / Log Output                                        -->
+                        <!-- ═══════════════════════════════════════════════════════════ -->
+                        <Border Grid.Row="4" Style="{StaticResource BorderStyle}">
+                            <StackPanel>
+                                <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="Bold"
+                                           Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,6">
+                                    Status Log
+                                </TextBlock>
+                                <TextBox Name="WPFWin11ISOStatusLog"
+                                         IsReadOnly="True"
+                                         TextWrapping="Wrap"
+                                         VerticalScrollBarVisibility="Auto"
+                                         Height="140" Padding="6"
+                                         Background="{DynamicResource MainBackgroundColor}"
+                                         Foreground="{DynamicResource MainForegroundColor}"
+                                         BorderBrush="{DynamicResource BorderColor}"
+                                         BorderThickness="1"
+                                         Text="Ready. Please select a Windows 11 ISO to begin."/>
+                            </StackPanel>
+                        </Border>
+
                     </Grid>
                 </ScrollViewer>
             </TabItem>
