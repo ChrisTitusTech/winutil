@@ -4,7 +4,6 @@
     "Description": ".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications.",
     "category": "Features",
     "panel": "1",
-    "Order": "a010_",
     "feature": [
       "NetFx4-AdvSrvs",
       "NetFx3"
@@ -17,7 +16,6 @@
     "Description": "Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines.",
     "category": "Features",
     "panel": "1",
-    "Order": "a011_",
     "feature": [
       "Microsoft-Hyper-V-All"
     ],
@@ -31,7 +29,6 @@
     "Description": "Enables legacy programs from previous versions of windows",
     "category": "Features",
     "panel": "1",
-    "Order": "a012_",
     "feature": [
       "WindowsMediaPlayer",
       "MediaPlayback",
@@ -46,7 +43,6 @@
     "Description": "Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting.",
     "category": "Features",
     "panel": "1",
-    "Order": "a020_",
     "feature": [
       "VirtualMachinePlatform",
       "Microsoft-Windows-Subsystem-Linux"
@@ -59,7 +55,6 @@
     "Description": "Network File System (NFS) is a mechanism for storing files on a network.",
     "category": "Features",
     "panel": "1",
-    "Order": "a014_",
     "feature": [
       "ServicesForNFS-ClientOnly",
       "ClientForNFS-Infrastructure",
@@ -79,7 +74,6 @@
     "Description": "Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803.",
     "category": "Features",
     "panel": "1",
-    "Order": "a017_",
     "feature": [],
     "InvokeScript": [
       "
@@ -97,7 +91,6 @@
     "Description": "Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
     "category": "Features",
     "panel": "1",
-    "Order": "a018_",
     "feature": [],
     "InvokeScript": [
       "bcdedit /set bootmenupolicy legacy"
@@ -109,7 +102,6 @@
     "Description": "Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
     "category": "Features",
     "panel": "1",
-    "Order": "a019_",
     "feature": [],
     "InvokeScript": [
       "bcdedit /set bootmenupolicy standard"
@@ -121,7 +113,6 @@
     "Description": "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation.",
     "category": "Features",
     "panel": "1",
-    "Order": "a021_",
     "feature": [
       "Containers-DisposableClientVM"
     ],
@@ -131,54 +122,54 @@
     "Content": "Install Features",
     "category": "Features",
     "panel": "1",
-    "Order": "a060_",
     "Type": "Button",
     "ButtonWidth": "300",
+    "function": "Invoke-WPFFeatureInstall",
     "link": "https://winutil.christitus.com/dev/features/features/install"
   },
   "WPFPanelAutologin": {
     "Content": "Set Up Autologin",
     "category": "Fixes",
-    "Order": "a040_",
     "panel": "1",
     "Type": "Button",
     "ButtonWidth": "300",
+    "function": "Invoke-WPFPanelAutologin",
     "link": "https://winutil.christitus.com/dev/features/fixes/autologin"
   },
   "WPFFixesUpdate": {
     "Content": "Reset Windows Update",
     "category": "Fixes",
     "panel": "1",
-    "Order": "a041_",
     "Type": "Button",
     "ButtonWidth": "300",
+    "function": "Invoke-WPFFixesUpdate",
     "link": "https://winutil.christitus.com/dev/features/fixes/update"
   },
   "WPFFixesNetwork": {
     "Content": "Reset Network",
     "category": "Fixes",
-    "Order": "a042_",
     "panel": "1",
     "Type": "Button",
     "ButtonWidth": "300",
+    "function": "Invoke-WPFFixesNetwork",
     "link": "https://winutil.christitus.com/dev/features/fixes/network"
   },
   "WPFPanelDISM": {
     "Content": "System Corruption Scan",
     "category": "Fixes",
     "panel": "1",
-    "Order": "a043_",
     "Type": "Button",
     "ButtonWidth": "300",
+    "function": "Invoke-WPFSystemRepair",
     "link": "https://winutil.christitus.com/dev/features/fixes/dism"
   },
   "WPFFixesWinget": {
     "Content": "WinGet Reinstall",
     "category": "Fixes",
     "panel": "1",
-    "Order": "a044_",
     "Type": "Button",
     "ButtonWidth": "300",
+    "function": "Invoke-WPFFixesWinget",
     "link": "https://winutil.christitus.com/dev/features/fixes/winget"
   },
   "WPFPanelControl": {
@@ -187,6 +178,9 @@
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
+    "InvokeScript": [
+      "control"
+    ],
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/control"
   },
   "WPFPanelComputer": {
@@ -195,6 +189,9 @@
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
+    "InvokeScript": [
+      "compmgmt.msc"
+    ],
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/computer"
   },
   "WPFPanelNetwork": {
@@ -203,6 +200,9 @@
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
+    "InvokeScript": [
+      "ncpa.cpl"
+    ],
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/network"
   },
   "WPFPanelPower": {
@@ -211,6 +211,9 @@
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
+    "InvokeScript": [
+      "powercfg.cpl"
+    ],
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/power"
   },
   "WPFPanelPrinter": {
@@ -219,6 +222,9 @@
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
+    "InvokeScript": [
+      "Start-Process 'shell:::{A8A91A66-3A7D-4424-8D24-04E180695C7A}'"
+    ],
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/printer"
   },
   "WPFPanelRegion": {
@@ -227,6 +233,9 @@
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
+    "InvokeScript": [
+      "intl.cpl"
+    ],
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/region"
   },
   "WPFPanelRestore": {
@@ -235,6 +244,9 @@
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
+    "InvokeScript": [
+      "rstrui.exe"
+    ],
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/restore"
   },
   "WPFPanelSound": {
@@ -243,6 +255,9 @@
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
+    "InvokeScript": [
+      "mmsys.cpl"
+    ],
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/sound"
   },
   "WPFPanelSystem": {
@@ -251,6 +266,9 @@
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
+    "InvokeScript": [
+      "sysdm.cpl"
+    ],
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/system"
   },
   "WPFPanelTimedate": {
@@ -259,33 +277,36 @@
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
+    "InvokeScript": [
+      "timedate.cpl"
+    ],
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/timedate"
   },
   "WPFWinUtilInstallPSProfile": {
     "Content": "Install CTT PowerShell Profile",
     "category": "Powershell Profile Powershell 7+ Only",
     "panel": "2",
-    "Order": "a083_",
     "Type": "Button",
     "ButtonWidth": "300",
+    "function": "Invoke-WinUtilInstallPSProfile",
     "link": "https://winutil.christitus.com/dev/features/powershell-profile-powershell-7--only/installpsprofile"
   },
   "WPFWinUtilUninstallPSProfile": {
     "Content": "Uninstall CTT PowerShell Profile",
     "category": "Powershell Profile Powershell 7+ Only",
     "panel": "2",
-    "Order": "a084_",
     "Type": "Button",
     "ButtonWidth": "300",
+    "function": "Invoke-WinUtilUninstallPSProfile",
     "link": "https://winutil.christitus.com/dev/features/powershell-profile-powershell-7--only/uninstallpsprofile"
   },
   "WPFWinUtilSSHServer": {
     "Content": "Enable OpenSSH Server",
     "category": "Remote Access",
     "panel": "2",
-    "Order": "a084_",
     "Type": "Button",
     "ButtonWidth": "300",
+    "function": "Invoke-WPFSSHServer",
     "link": "https://winutil.christitus.com/dev/features/remote-access/sshserver"
   }
 }
