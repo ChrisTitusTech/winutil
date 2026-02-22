@@ -6,7 +6,7 @@ function Invoke-WPFSSHServer {
 
   #>
 
-    Invoke-WPFRunspace -DebugPreference $DebugPreference -ScriptBlock {
+    Invoke-WPFRunspace -ScriptBlock {
 
         Invoke-WinUtilSSHServer
 
