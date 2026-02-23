@@ -453,10 +453,20 @@ $scripts = @(
         reg.exe delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v DisableWindowsUpdateAccess /f;
     };
     {
+        $recallFeature = Get-WindowsOptionalFeature -Online -ErrorAction SilentlyContinue | Where-Object { $_.State -eq 'Enabled' -and $_.FeatureName -like 'Recall' };
+        if( $recallFeature ) {
+            Disable-WindowsOptionalFeature -Online -FeatureName 'Recall' -Remove -ErrorAction SilentlyContinue;
+        }
+    };
+    {
         try {
-            if( (Get-WindowsOptionalFeature -Online | Where-Object { $_.State -eq 'Enabled' -and $_.FeatureName -like 'Recall' }).Count -gt 0 ) {
-                Disable-WindowsOptionalFeature -Online -FeatureName 'Recall' -Remove;
-            }
+            $viveDir = Join-Path $env:TEMP 'ViVeTool';
+            $viveZip = Join-Path $env:TEMP 'ViVeTool.zip';
+            Invoke-WebRequest 'https://github.com/thebookisclosed/ViVe/releases/download/v0.3.4/ViVeTool-v0.3.4-IntelAmd.zip' -OutFile $viveZip;
+            Expand-Archive -Path $viveZip -DestinationPath $viveDir -Force;
+            Remove-Item -Path $viveZip -Force;
+            Start-Process -FilePath (Join-Path $viveDir 'ViVeTool.exe') -ArgumentList '/disable /id:47205210' -Wait -NoNewWindow;
+            Remove-Item -Path $viveDir -Recurse -Force;
         } catch {}
     };
     {
@@ -465,11 +475,9 @@ $scripts = @(
         }
     };
     {
-        try {
-            if( (bcdedit | Select-String 'path').Count -eq 2 ) {
-                bcdedit /set `{bootmgr`} timeout 0;
-            }
-        } catch {}
+        if( (bcdedit | Select-String 'path').Count -eq 2 ) {
+            bcdedit /set `{bootmgr`} timeout 0;
+        }
     };
 );
 
