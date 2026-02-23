@@ -255,6 +255,10 @@ function Invoke-WinUtilISOScript {
     _ISOScript-SetReg 'HKLM\zSOFTWARE\Policies\Microsoft\Edge'                   'HubsSidebarEnabled'        'REG_DWORD' '0'
     _ISOScript-SetReg 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\Explorer'       'DisableSearchBoxSuggestions' 'REG_DWORD' '1'
 
+    & $Log "Disabling Windows Update during OOBE (re-enabled on first logon via FirstLogon.ps1)..."
+    _ISOScript-SetReg 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU' 'NoAutoUpdate'              'REG_DWORD' '1'
+    _ISOScript-SetReg 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\WindowsUpdate'    'DisableWindowsUpdateAccess' 'REG_DWORD' '1'
+
     & $Log "Preventing installation of Teams..."
     _ISOScript-SetReg 'HKLM\zSOFTWARE\Policies\Microsoft\Teams' 'DisableInstallation' 'REG_DWORD' '1'
 
@@ -281,5 +285,13 @@ function Invoke-WinUtilISOScript {
     Remove-Item "$tasksPath\Microsoft\Windows\Windows Error Reporting\QueueReporting"                  -Force -ErrorAction SilentlyContinue
 
     & $Log "Scheduled task files deleted."
-}
 
+    # ═════════════════════════════════════════════════════════════════════════
+    #  6. Remove ISO support folder (fresh-install only; not needed)
+    # ═════════════════════════════════════════════════════════════════════════
+    if ($ISOContentsDir -and (Test-Path $ISOContentsDir)) {
+        & $Log "Removing ISO support\ folder..."
+        Remove-Item -Path (Join-Path $ISOContentsDir "support") -Recurse -Force -ErrorAction SilentlyContinue
+        & $Log "ISO support\ folder removed."
+    }
+}

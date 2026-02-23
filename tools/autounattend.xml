@@ -1,239 +1,499 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    Windows 11 Unattended Installation Answer File
-    ================================================
-    UNIVERSAL — no modification required before use.
-
-    What this file does automatically:
-      • Installs "Windows 11 Pro" from any standard Microsoft ISO
-      • Bypasses the Microsoft-account OOBE requirement (local account)
-      • Skips the EULA, wireless, and privacy nag screens
-      • Leaves timezone, language, region, and user account to the user
-        at the two short OOBE screens that remain
-
-    What the user is prompted for during first-run (OOBE):
-      1. Region / Language / Keyboard  (one screen)
-      2. Who will use this PC?         (local account name + password)
-
-    Timezone is set to UTC and can be adjusted after login.
-    Computer name is auto-generated; rename at any time.
-
-    Tested against: Windows 11 Home / Pro / Home Single Language (amd64)
-    Pass order:     windowsPE → specialize → oobeSystem
--->
-<unattend xmlns="urn:schemas-microsoft-com:unattend">
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         PASS 1 — windowsPE
-         Runs inside the installer environment before the OS is laid down.
-         Handles disk layout and image selection only.
-         Locale is intentionally omitted so the installer inherits the
-         language of whichever ISO is being used.
-    ═══════════════════════════════════════════════════════════════════════ -->
+<unattend xmlns="urn:schemas-microsoft-com:unattend" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+    <!--https://schneegans.de/windows/unattend-generator/?LanguageMode=Interactive&ProcessorArchitecture=amd64&BypassRequirementsCheck=true&ComputerNameMode=Random&CompactOsMode=Default&TimeZoneMode=Implicit&PartitionMode=Interactive&DiskAssertionMode=Skip&WindowsEditionMode=Interactive&InstallFromMode=Automatic&PEMode=Default&UserAccountMode=InteractiveLocal&PasswordExpirationMode=Unlimited&LockoutMode=Default&HideFiles=Hidden&ClassicContextMenu=true&LaunchToThisPC=true&ShowEndTask=true&TaskbarSearch=Hide&TaskbarIconsMode=Empty&DisableWidgets=true&LeftTaskbar=true&HideTaskViewButton=true&StartTilesMode=Default&StartPinsMode=Empty&EnableLongPaths=true&HideEdgeFre=true&DisableEdgeStartupBoost=true&DeleteWindowsOld=true&EffectsMode=Default&DeleteEdgeDesktopIcon=true&DesktopIconsMode=Default&StartFoldersMode=Default&WifiMode=Skip&ExpressSettings=DisableAll&LockKeysMode=Configure&CapsLockInitial=Off&CapsLockBehavior=Toggle&NumLockInitial=On&NumLockBehavior=Toggle&ScrollLockInitial=Off&ScrollLockBehavior=Toggle&StickyKeysMode=Disabled&ColorMode=Custom&SystemColorTheme=Dark&AppsColorTheme=Dark&AccentColor=%230078d4&WallpaperMode=Default&LockScreenMode=Default&WdacMode=Skip&AppLockerMode=Skip-->
+    <settings pass="offlineServicing"></settings>
     <settings pass="windowsPE">
-
-        <!-- Setup / image selection -->
-        <component name="Microsoft-Windows-Setup"
-                   processorArchitecture="amd64"
-                   publicKeyToken="31bf3856ad364e35"
-                   language="neutral"
-                   versionScope="nonSxS"
-                   xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-
-            <!-- Disable dynamic updates during setup (keeps installation offline/fast) -->
-            <DynamicUpdate>
-                <Enable>false</Enable>
-            </DynamicUpdate>
-
-            <ImageInstall>
-                <OSImage>
-                    <!-- CompactOS saves ~1.5 GB but is slower on spinning drives -->
-                    <Compact>false</Compact>
-                    <WillShowUI>OnError</WillShowUI>
-                    <InstallFrom>
-                        <!--
-                            Select the edition by NAME rather than by index number.
-                            Index numbers vary between ISO builds; the name is stable.
-                            Change "Windows 11 Pro" to "Windows 11 Home" etc. if your
-                            ISO only contains that edition.  To choose interactively,
-                            delete this entire <InstallFrom> block.
-                        -->
-                        <MetaData wcm:action="add">
-                            <Key>/IMAGE/NAME</Key>
-                            <Value>Windows 11 Pro</Value>
-                        </MetaData>
-                    </InstallFrom>
-                    <!-- InstallTo is omitted — the Windows installer will prompt
-                         the user to select the destination disk and partition.  -->
-                </OSImage>
-            </ImageInstall>
-
+        <component name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
             <UserData>
-                <AcceptEula>true</AcceptEula>
                 <ProductKey>
-                    <!--
-                        Leave <Key> absent to use an existing digital licence or
-                        to be prompted for one after setup.
-
-                        Generic setup keys (allow setup to proceed; do NOT activate):
-                          Home                   : YTMG3-N6DKC-DKB77-7M9GH-8HVX7
-                          Home Single Language   : 7HNRX-D7KGG-3K4RQ-4WPJ4-YTDFH
-                          Pro                    : VK7JG-NPHTM-C97JM-9MPGT-3V66T
-                          Education              : YNMGQ-8RYV3-4PGQ3-C8XTP-7CFBY
-                          Enterprise             : XGVPP-NMH47-7TTHJ-W3FW7-8HV2C
-                    -->
-                    <WillShowUI>OnError</WillShowUI>
+                    <Key>00000-00000-00000-00000-00000</Key>
+                    <WillShowUI>Always</WillShowUI>
                 </ProductKey>
+                <AcceptEula>true</AcceptEula>
             </UserData>
-
+            <UseConfigurationSet>false</UseConfigurationSet>
+            <RunSynchronous>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>1</Order>
+                    <Path>reg.exe add "HKLM\SYSTEM\Setup\LabConfig" /v BypassTPMCheck /t REG_DWORD /d 1 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>2</Order>
+                    <Path>reg.exe add "HKLM\SYSTEM\Setup\LabConfig" /v BypassSecureBootCheck /t REG_DWORD /d 1 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>3</Order>
+                    <Path>reg.exe add "HKLM\SYSTEM\Setup\LabConfig" /v BypassRAMCheck /t REG_DWORD /d 1 /f</Path>
+                </RunSynchronousCommand>
+            </RunSynchronous>
         </component>
     </settings>
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         PASS 2 — specialize
-         First boot into the installed OS.
-         Machine-level settings that do not vary by user or region.
-    ═══════════════════════════════════════════════════════════════════════ -->
+    <settings pass="generalize"></settings>
     <settings pass="specialize">
-
-        <component name="Microsoft-Windows-Shell-Setup"
-                   processorArchitecture="amd64"
-                   publicKeyToken="31bf3856ad364e35"
-                   language="neutral"
-                   versionScope="nonSxS"
-                   xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-
-            <!-- Auto-generate a unique computer name. Rename anytime:
-                 Settings › System › About › Rename this PC               -->
-            <ComputerName>*</ComputerName>
-
-            <!--
-                UTC is the only timezone that is correct everywhere on Earth
-                without knowing where the machine will be used.
-                Windows will auto-adjust to local time once the user sets their
-                region, or they can change it in Settings › Time & Language.
-            -->
-            <TimeZone>UTC</TimeZone>
-
-            <!-- Suppress the Teams/Chat auto-install prompt during setup -->
-            <ConfigureChatAutoInstall>false</ConfigureChatAutoInstall>
-
+        <component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+            <RunSynchronous>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>1</Order>
+                    <Path>powershell.exe -WindowStyle "Normal" -NoProfile -Command "$xml = [xml]::new(); $xml.Load('C:\Windows\Panther\unattend.xml'); $sb = [scriptblock]::Create( $xml.unattend.Extensions.ExtractScript ); Invoke-Command -ScriptBlock $sb -ArgumentList $xml;"</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>2</Order>
+                    <Path>powershell.exe -WindowStyle "Normal" -ExecutionPolicy "Unrestricted" -NoProfile -File "C:\Windows\Setup\Scripts\Specialize.ps1"</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>3</Order>
+                    <Path>reg.exe load "HKU\DefaultUser" "C:\Users\Default\NTUSER.DAT"</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>4</Order>
+                    <Path>powershell.exe -WindowStyle "Normal" -ExecutionPolicy "Unrestricted" -NoProfile -File "C:\Windows\Setup\Scripts\DefaultUser.ps1"</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>5</Order>
+                    <Path>reg.exe unload "HKU\DefaultUser"</Path>
+                </RunSynchronousCommand>
+            </RunSynchronous>
         </component>
-
-        <!-- Reduce telemetry to the minimum permitted by the licence.
-             0 = Security (Enterprise/Education only; treated as 1 on other SKUs)
-             1 = Basic / Required diagnostic data  ← effective minimum for Home/Pro -->
-        <component name="Microsoft-Windows-SQMAPI"
-                   processorArchitecture="amd64"
-                   publicKeyToken="31bf3856ad364e35"
-                   language="neutral"
-                   versionScope="nonSxS"
-                   xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-            <CEIPEnabled>0</CEIPEnabled>
-        </component>
-
     </settings>
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         PASS 3 — oobeSystem
-         Out-of-Box Experience (first-run wizard).
-
-         Screens shown to the user (everything else is suppressed):
-           ① Region / Language / Keyboard layout  — user picks their locale
-           ② Create a local account               — user picks name + password
-
-         Screens suppressed automatically:
-           • EULA
-           • "Sign in with Microsoft" / online account
-           • Wi-Fi selection (can be done after login)
-           • "Let Microsoft and apps use your location", Cortana, etc.
-
-         Locale settings are intentionally omitted here so that Windows
-         applies whatever the user selects on screen ①.
-    ═══════════════════════════════════════════════════════════════════════ -->
+    <settings pass="auditSystem"></settings>
+    <settings pass="auditUser"></settings>
     <settings pass="oobeSystem">
-
-        <component name="Microsoft-Windows-Shell-Setup"
-                   processorArchitecture="amd64"
-                   publicKeyToken="31bf3856ad364e35"
-                   language="neutral"
-                   versionScope="nonSxS"
-                   xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-
+        <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
             <OOBE>
-                <!-- Suppress the licence agreement — already accepted in windowsPE -->
-                <HideEULAPage>true</HideEULAPage>
-
-                <!-- KEEP false — this is the screen where the user creates   -->
-                <!-- their local account (name + password).  Setting it true  -->
-                <!-- would skip account creation entirely, leaving only the   -->
-                <!-- built-in Administrator account.                          -->
-                <HideLocalAccountScreen>false</HideLocalAccountScreen>
-
-                <!-- Suppress "Sign in with Microsoft" screens.
-                     The user goes straight to local account creation.        -->
-                <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
-
-                <!-- Skip Wi-Fi setup — can be connected after first login    -->
-                <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
-
-                <!-- Suppress the privacy / recommended-settings nag screen   -->
                 <ProtectYourPC>3</ProtectYourPC>
+                <HideEULAPage>true</HideEULAPage>
+                <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
+                <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
             </OOBE>
-
-            <!--
-                UserAccounts and AutoLogon are intentionally absent.
-                The user creates their own account on the OOBE screen above.
-                This is the safest and most universally applicable approach:
-                no hardcoded credentials ship inside the answer file.
-
-                If you want to pre-create an account instead, add:
-
-                <UserAccounts>
-                    <LocalAccounts>
-                        <LocalAccount wcm:action="add">
-                            <Name>YourUsername</Name>
-                            <Password>
-                                <Value>YourPassword</Value>
-                                <PlainText>true</PlainText>
-                            </Password>
-                            <DisplayName>Your Full Name</DisplayName>
-                            <Group>Administrators</Group>
-                        </LocalAccount>
-                    </LocalAccounts>
-                </UserAccounts>
-                <AutoLogon>
-                    <Enabled>true</Enabled>
-                    <LogonCount>1</LogonCount>
-                    <Username>YourUsername</Username>
-                    <Password>
-                        <Value>YourPassword</Value>
-                        <PlainText>true</PlainText>
-                    </Password>
-                </AutoLogon>
-
-                And set HideLocalAccountScreen to true above.
-            -->
-
-            <!--
-                Optional: run a script on first logon.
-                Uncomment and adjust the path/command as needed.
-
-                <FirstLogonCommands>
-                    <SynchronousCommand wcm:action="add">
-                        <Order>1</Order>
-                        <CommandLine>powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://christitus.com/win | iex"</CommandLine>
-                        <Description>Launch WinUtil post-install</Description>
-                        <RequiresUserInput>false</RequiresUserInput>
-                    </SynchronousCommand>
-                </FirstLogonCommands>
-            -->
-
+            <FirstLogonCommands>
+                <SynchronousCommand wcm:action="add">
+                    <Order>1</Order>
+                    <CommandLine>powershell.exe -WindowStyle "Normal" -ExecutionPolicy "Unrestricted" -NoProfile -File "C:\Windows\Setup\Scripts\FirstLogon.ps1"</CommandLine>
+                </SynchronousCommand>
+            </FirstLogonCommands>
         </component>
     </settings>
+    <Extensions xmlns="https://schneegans.de/windows/unattend-generator/">
+        <ExtractScript>
+param(
+    [xml]$Document
+);
 
+foreach( $file in $Document.unattend.Extensions.File ) {
+    $path = [System.Environment]::ExpandEnvironmentVariables( $file.GetAttribute( 'path' ) );
+    mkdir -Path( $path | Split-Path -Parent ) -ErrorAction 'SilentlyContinue';
+    $encoding = switch( [System.IO.Path]::GetExtension( $path ) ) {
+        { $_ -in '.ps1', '.xml' } { [System.Text.Encoding]::UTF8; }
+        { $_ -in '.reg', '.vbs', '.js' } { [System.Text.UnicodeEncoding]::new( $false, $true ); }
+        default { [System.Text.Encoding]::Default; }
+    };
+    $bytes = $encoding.GetPreamble() + $encoding.GetBytes( $file.InnerText.Trim() );
+    [System.IO.File]::WriteAllBytes( $path, $bytes );
+}
+        </ExtractScript>
+        <File path="C:\Windows\Setup\Scripts\TaskbarLayoutModification.xml">
+&lt;LayoutModificationTemplate xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification" xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout" xmlns:start="http://schemas.microsoft.com/Start/2014/StartLayout" xmlns:taskbar="http://schemas.microsoft.com/Start/2014/TaskbarLayout" Version="1"&gt;
+    &lt;CustomTaskbarLayoutCollection PinListPlacement="Replace"&gt;
+        &lt;defaultlayout:TaskbarLayout&gt;
+            &lt;taskbar:TaskbarPinList&gt;
+                &lt;taskbar:DesktopApp DesktopApplicationLinkPath="#leaveempty" /&gt;
+            &lt;/taskbar:TaskbarPinList&gt;
+        &lt;/defaultlayout:TaskbarLayout&gt;
+    &lt;/CustomTaskbarLayoutCollection&gt;
+&lt;/LayoutModificationTemplate&gt;
+        </File>
+        <File path="C:\Windows\Setup\Scripts\UnlockStartLayout.vbs">
+HKU = &amp;H80000003
+Set reg = GetObject("winmgmts://./root/default:StdRegProv")
+Set fso = CreateObject("Scripting.FileSystemObject")
+
+If reg.EnumKey(HKU, "", sids) = 0 Then
+    If Not IsNull(sids) Then
+        For Each sid In sids
+            key = sid + "\Software\Policies\Microsoft\Windows\Explorer"
+            name = "LockedStartLayout"
+            If reg.GetDWORDValue(HKU, key, name, existing) = 0 Then
+                reg.SetDWORDValue HKU, key, name, 0
+            End If
+        Next
+    End If
+End If
+        </File>
+        <File path="C:\Windows\Setup\Scripts\UnlockStartLayout.xml">
+&lt;Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task"&gt;
+    &lt;Triggers&gt;
+        &lt;EventTrigger&gt;
+            &lt;Enabled&gt;true&lt;/Enabled&gt;
+            &lt;Subscription&gt;&amp;lt;QueryList&amp;gt;&amp;lt;Query Id="0" Path="Application"&amp;gt;&amp;lt;Select Path="Application"&amp;gt;*[System[Provider[@Name='UnattendGenerator'] and EventID=1]]&amp;lt;/Select&amp;gt;&amp;lt;/Query&amp;gt;&amp;lt;/QueryList&amp;gt;&lt;/Subscription&gt;
+        &lt;/EventTrigger&gt;
+    &lt;/Triggers&gt;
+    &lt;Principals&gt;
+        &lt;Principal id="Author"&gt;
+            &lt;UserId&gt;S-1-5-18&lt;/UserId&gt;
+            &lt;RunLevel&gt;LeastPrivilege&lt;/RunLevel&gt;
+        &lt;/Principal&gt;
+    &lt;/Principals&gt;
+    &lt;Settings&gt;
+        &lt;MultipleInstancesPolicy&gt;IgnoreNew&lt;/MultipleInstancesPolicy&gt;
+        &lt;DisallowStartIfOnBatteries&gt;false&lt;/DisallowStartIfOnBatteries&gt;
+        &lt;StopIfGoingOnBatteries&gt;false&lt;/StopIfGoingOnBatteries&gt;
+        &lt;AllowHardTerminate&gt;true&lt;/AllowHardTerminate&gt;
+        &lt;StartWhenAvailable&gt;false&lt;/StartWhenAvailable&gt;
+        &lt;RunOnlyIfNetworkAvailable&gt;false&lt;/RunOnlyIfNetworkAvailable&gt;
+        &lt;IdleSettings&gt;
+            &lt;StopOnIdleEnd&gt;true&lt;/StopOnIdleEnd&gt;
+            &lt;RestartOnIdle&gt;false&lt;/RestartOnIdle&gt;
+        &lt;/IdleSettings&gt;
+        &lt;AllowStartOnDemand&gt;true&lt;/AllowStartOnDemand&gt;
+        &lt;Enabled&gt;true&lt;/Enabled&gt;
+        &lt;Hidden&gt;false&lt;/Hidden&gt;
+        &lt;RunOnlyIfIdle&gt;false&lt;/RunOnlyIfIdle&gt;
+        &lt;WakeToRun&gt;false&lt;/WakeToRun&gt;
+        &lt;ExecutionTimeLimit&gt;PT72H&lt;/ExecutionTimeLimit&gt;
+        &lt;Priority&gt;7&lt;/Priority&gt;
+    &lt;/Settings&gt;
+    &lt;Actions Context="Author"&gt;
+        &lt;Exec&gt;
+            &lt;Command&gt;C:\Windows\System32\wscript.exe&lt;/Command&gt;
+            &lt;Arguments&gt;C:\Windows\Setup\Scripts\UnlockStartLayout.vbs&lt;/Arguments&gt;
+        &lt;/Exec&gt;
+    &lt;/Actions&gt;
+&lt;/Task&gt;
+        </File>
+        <File path="C:\Windows\Setup\Scripts\SetStartPins.ps1">
+$json = '{"pinnedList":[]}';
+if( [System.Environment]::OSVersion.Version.Build -lt 20000 ) {
+    return;
+}
+$key = 'Registry::HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Start';
+New-Item -Path $key -ItemType 'Directory' -ErrorAction 'SilentlyContinue';
+Set-ItemProperty -LiteralPath $key -Name 'ConfigureStartPins' -Value $json -Type 'String';
+        </File>
+        <File path="C:\Windows\Setup\Scripts\SetColorTheme.ps1">
+$lightThemeSystem = 0;
+$lightThemeApps = 0;
+$accentColorOnStart = 0;
+$enableTransparency = 0;
+$htmlAccentColor = '#0078D4';
+&amp; {
+    $params = @{
+        LiteralPath = 'Registry::HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize';
+        Force = $true;
+        Type = 'DWord';
+    };
+    Set-ItemProperty @params -Name 'SystemUsesLightTheme' -Value $lightThemeSystem;
+    Set-ItemProperty @params -Name 'AppsUseLightTheme' -Value $lightThemeApps;
+    Set-ItemProperty @params -Name 'ColorPrevalence' -Value $accentColorOnStart;
+    Set-ItemProperty @params -Name 'EnableTransparency' -Value $enableTransparency;
+};
+&amp; {
+    Add-Type -AssemblyName 'System.Drawing';
+    $accentColor = [System.Drawing.ColorTranslator]::FromHtml( $htmlAccentColor );
+
+    function ConvertTo-DWord {
+        param(
+            [System.Drawing.Color]
+            $Color
+        );
+
+        [byte[]]$bytes = @(
+            $Color.R;
+            $Color.G;
+            $Color.B;
+            $Color.A;
+        );
+        return [System.BitConverter]::ToUInt32( $bytes, 0);
+    }
+
+    $startColor = [System.Drawing.Color]::FromArgb( 0xD2, $accentColor );
+    Set-ItemProperty -LiteralPath 'Registry::HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Accent' -Name 'StartColorMenu' -Value( ConvertTo-DWord -Color $accentColor ) -Type 'DWord' -Force;
+    Set-ItemProperty -LiteralPath 'Registry::HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Accent' -Name 'AccentColorMenu' -Value( ConvertTo-DWord -Color $accentColor ) -Type 'DWord' -Force;
+    Set-ItemProperty -LiteralPath 'Registry::HKCU\Software\Microsoft\Windows\DWM' -Name 'AccentColor' -Value( ConvertTo-DWord -Color $accentColor ) -Type 'DWord' -Force;
+    $params = @{
+        LiteralPath = 'Registry::HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Accent';
+        Name = 'AccentPalette';
+    };
+    $palette = Get-ItemPropertyValue @params;
+    $index = 20;
+    $palette[ $index++ ] = $accentColor.R;
+    $palette[ $index++ ] = $accentColor.G;
+    $palette[ $index++ ] = $accentColor.B;
+    $palette[ $index++ ] = $accentColor.A;
+    Set-ItemProperty @params -Value $palette -Type 'Binary' -Force;
+};
+        </File>
+        <File path="C:\Windows\Setup\Scripts\Specialize.ps1">
+$scripts = @(
+    {
+        reg.exe add "HKLM\SYSTEM\Setup\MoSetup" /v AllowUpgradesWithUnsupportedTPMOrCPU /t REG_DWORD /d 1 /f;
+    };
+    {
+        net.exe accounts /maxpwage:UNLIMITED;
+    };
+    {
+        reg.exe add "HKLM\Software\Policies\Microsoft\Windows\CloudContent" /v "DisableCloudOptimizedContent" /t REG_DWORD /d 1 /f;
+        [System.Diagnostics.EventLog]::CreateEventSource( 'UnattendGenerator', 'Application' );
+    };
+    {
+        Register-ScheduledTask -TaskName 'UnlockStartLayout' -Xml $( Get-Content -LiteralPath 'C:\Windows\Setup\Scripts\UnlockStartLayout.xml' -Raw );
+    };
+    {
+        reg.exe add "HKLM\SYSTEM\CurrentControlSet\Control\FileSystem" /v LongPathsEnabled /t REG_DWORD /d 1 /f
+    };
+    {
+        Remove-Item -LiteralPath 'C:\Users\Public\Desktop\Microsoft Edge.lnk' -ErrorAction 'SilentlyContinue' -Verbose;
+    };
+    {
+        reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Dsh" /v AllowNewsAndInterests /t REG_DWORD /d 0 /f;
+    };
+    {
+        reg.exe add "HKLM\Software\Policies\Microsoft\Edge" /v HideFirstRunExperience /t REG_DWORD /d 1 /f;
+    };
+    {
+        reg.exe add "HKLM\Software\Policies\Microsoft\Edge\Recommended" /v BackgroundModeEnabled /t REG_DWORD /d 0 /f;
+        reg.exe add "HKLM\Software\Policies\Microsoft\Edge\Recommended" /v StartupBoostEnabled /t REG_DWORD /d 0 /f;
+    };
+    {
+        &amp; 'C:\Windows\Setup\Scripts\SetStartPins.ps1';
+    };
+    {
+        reg.exe add "HKU\.DEFAULT\Control Panel\Accessibility\StickyKeys" /v Flags /t REG_SZ /d 10 /f;
+    };
+    {
+        reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v NoAutoUpdate /t REG_DWORD /d 1 /f;
+        reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v DisableWindowsUpdateAccess /t REG_DWORD /d 1 /f;
+    };
+);
+
+&amp; {
+  [float]$complete = 0;
+  [float]$increment = 100 / $scripts.Count;
+  foreach( $script in $scripts ) {
+    Write-Progress -Id 0 -Activity 'Running scripts to customize your Windows installation. Do not close this window.' -PercentComplete $complete;
+    '*** Will now execute command &#xAB;{0}&#xBB;.' -f $(
+      $str = $script.ToString().Trim() -replace '\s+', ' ';
+      $max = 100;
+      if( $str.Length -le $max ) {
+        $str;
+      } else {
+        $str.Substring( 0, $max - 1 ) + '&#x2026;';
+      }
+    );
+    $start = [datetime]::Now;
+    &amp; $script;
+    '*** Finished executing command after {0:0} ms.' -f [datetime]::Now.Subtract( $start ).TotalMilliseconds;
+    "`r`n" * 3;
+    $complete += $increment;
+  }
+} *&gt;&amp;1 | Out-String -Width 1KB -Stream &gt;&gt; "C:\Windows\Setup\Scripts\Specialize.log";
+        </File>
+        <File path="C:\Windows\Setup\Scripts\UserOnce.ps1">
+$scripts = @(
+    {
+        [System.Diagnostics.EventLog]::WriteEntry( 'UnattendGenerator', "User '$env:USERNAME' has requested to unlock the Start menu layout.", [System.Diagnostics.EventLogEntryType]::Information, 1 );
+    };
+    {
+        Remove-Item -Path "${env:USERPROFILE}\Desktop\*.lnk" -Force -ErrorAction 'SilentlyContinue';
+        Remove-Item -Path "$env:HOMEDRIVE\Users\Default\Desktop\*.lnk" -Force -ErrorAction 'SilentlyContinue';
+    };
+    {
+        $taskbarPath = "$env:AppData\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar";
+        if( Test-Path $taskbarPath ) {
+            Get-ChildItem -Path $taskbarPath -File | Remove-Item -Force;
+        }
+        Remove-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband' -Name 'FavoritesRemovedChanges' -Force -ErrorAction 'SilentlyContinue';
+        Remove-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband' -Name 'FavoritesChanges' -Force -ErrorAction 'SilentlyContinue';
+        Remove-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband' -Name 'Favorites' -Force -ErrorAction 'SilentlyContinue';
+    };
+    {
+        reg.exe add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /ve /f;
+    };
+    {
+        Set-ItemProperty -LiteralPath 'Registry::HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'LaunchTo' -Type 'DWord' -Value 1;
+    };
+    {
+        Set-ItemProperty -LiteralPath 'Registry::HKCU\Software\Microsoft\Windows\CurrentVersion\Search' -Name 'SearchboxTaskbarMode' -Type 'DWord' -Value 0;
+    };
+    {
+        &amp; 'C:\Windows\Setup\Scripts\SetColorTheme.ps1';
+    };
+    {
+        reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.Suggested" /f;
+        reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.Suggested" /v Enabled /t REG_DWORD /d 0 /f;
+        reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.StartupApp" /f;
+        reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.StartupApp" /v Enabled /t REG_DWORD /d 0 /f;
+        reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Microsoft.SkyDrive.Desktop" /f;
+        reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Microsoft.SkyDrive.Desktop" /v Enabled /t REG_DWORD /d 0 /f;
+        reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.AccountHealth" /f;
+        reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.AccountHealth" /v Enabled /t REG_DWORD /d 0 /f;
+    };
+    {
+        reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Start" /v AllAppsViewMode /t REG_DWORD /d 2 /f;
+        reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v Start_IrisRecommendations /t REG_DWORD /d 0 /f;
+        reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v Start_AccountNotifications /t REG_DWORD /d 0 /f;
+        reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Start" /v ShowAllPinsList /t REG_DWORD /d 0 /f;
+        reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Start" /v ShowFrequentList /t REG_DWORD /d 0 /f;
+        reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Start" /v ShowRecentList /t REG_DWORD /d 0 /f;
+        reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v Start_TrackDocs /t REG_DWORD /d 0 /f;
+    };
+    {
+        Add-Type -TypeDefinition @"
+using System;
+using System.Runtime.InteropServices;
+public class Win32Broadcast {
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
+    public static extern IntPtr SendMessageTimeout(
+        IntPtr hWnd,
+        uint Msg,
+        IntPtr wParam,
+        string lParam,
+        uint fuFlags,
+        uint uTimeout,
+        out IntPtr lpdwResult);
+}
+"@;
+        [Win32Broadcast]::SendMessageTimeout( [IntPtr]0xffff, 0x1A, [IntPtr]::Zero, 'ImmersiveColorSet', 0x2, 100, [ref]([IntPtr]::Zero) );
+    };
+    {
+        Get-Process -Name 'explorer' -ErrorAction 'SilentlyContinue' | Where-Object -FilterScript {
+            $_.SessionId -eq ( Get-Process -Id $PID ).SessionId;
+        } | Stop-Process -Force;
+    };
+);
+
+&amp; {
+  [float]$complete = 0;
+  [float]$increment = 100 / $scripts.Count;
+  foreach( $script in $scripts ) {
+    Write-Progress -Id 0 -Activity 'Running scripts to configure this user account. Do not close this window.' -PercentComplete $complete;
+    '*** Will now execute command &#xAB;{0}&#xBB;.' -f $(
+      $str = $script.ToString().Trim() -replace '\s+', ' ';
+      $max = 100;
+      if( $str.Length -le $max ) {
+        $str;
+      } else {
+        $str.Substring( 0, $max - 1 ) + '&#x2026;';
+      }
+    );
+    $start = [datetime]::Now;
+    &amp; $script;
+    '*** Finished executing command after {0:0} ms.' -f [datetime]::Now.Subtract( $start ).TotalMilliseconds;
+    "`r`n" * 3;
+    $complete += $increment;
+  }
+} *&gt;&amp;1 | Out-String -Width 1KB -Stream &gt;&gt; "$env:TEMP\UserOnce.log";
+        </File>
+        <File path="C:\Windows\Setup\Scripts\DefaultUser.ps1">
+$scripts = @(
+    {
+        reg.exe add "HKU\DefaultUser\Software\Policies\Microsoft\Windows\Explorer" /v "StartLayoutFile" /t REG_SZ /d "C:\Windows\Setup\Scripts\TaskbarLayoutModification.xml" /f;
+        reg.exe add "HKU\DefaultUser\Software\Policies\Microsoft\Windows\Explorer" /v "LockedStartLayout" /t REG_DWORD /d 1 /f;
+    };
+    {
+        reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v ShowTaskViewButton /t REG_DWORD /d 0 /f;
+    };
+    {
+        reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v TaskbarAl /t REG_DWORD /d 0 /f;
+    };
+    {
+        foreach( $root in 'Registry::HKU\.DEFAULT', 'Registry::HKU\DefaultUser' ) {
+          Set-ItemProperty -LiteralPath "$root\Control Panel\Keyboard" -Name 'InitialKeyboardIndicators' -Type 'String' -Value 2 -Force;
+        }
+    };
+    {
+        reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings" /v TaskbarEndTask /t REG_DWORD /d 1 /f;
+    };
+    {
+        reg.exe add "HKU\DefaultUser\Control Panel\Accessibility\StickyKeys" /v Flags /t REG_SZ /d 10 /f;
+    };
+    {
+        reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\DWM" /v ColorPrevalence /t REG_DWORD /d 0 /f;
+    };
+    {
+        reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\RunOnce" /v "UnattendedSetup" /t REG_SZ /d "powershell.exe -WindowStyle \""Normal\"" -ExecutionPolicy \""Unrestricted\"" -NoProfile -File \""C:\Windows\Setup\Scripts\UserOnce.ps1\""" /f;
+    };
+);
+
+&amp; {
+  [float]$complete = 0;
+  [float]$increment = 100 / $scripts.Count;
+  foreach( $script in $scripts ) {
+    Write-Progress -Id 0 -Activity 'Running scripts to modify the default user&#x2019;&#x2019;s registry hive. Do not close this window.' -PercentComplete $complete;
+    '*** Will now execute command &#xAB;{0}&#xBB;.' -f $(
+      $str = $script.ToString().Trim() -replace '\s+', ' ';
+      $max = 100;
+      if( $str.Length -le $max ) {
+        $str;
+      } else {
+        $str.Substring( 0, $max - 1 ) + '&#x2026;';
+      }
+    );
+    $start = [datetime]::Now;
+    &amp; $script;
+    '*** Finished executing command after {0:0} ms.' -f [datetime]::Now.Subtract( $start ).TotalMilliseconds;
+    "`r`n" * 3;
+    $complete += $increment;
+  }
+} *&gt;&amp;1 | Out-String -Width 1KB -Stream &gt;&gt; "C:\Windows\Setup\Scripts\DefaultUser.log";
+        </File>
+        <File path="C:\Windows\Setup\Scripts\FirstLogon.ps1">
+$scripts = @(
+    {
+        cmd.exe /c "rmdir C:\Windows.old";
+    };
+    {
+        Remove-Item -LiteralPath @(
+          'C:\Windows\Panther\unattend.xml';
+          'C:\Windows\Panther\unattend-original.xml';
+          'C:\Windows\Setup\Scripts\Wifi.xml';
+        ) -Force -ErrorAction 'SilentlyContinue' -Verbose;
+    };
+    {
+        reg.exe delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v NoAutoUpdate /f;
+        reg.exe delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v DisableWindowsUpdateAccess /f;
+    };
+    {
+        try {
+            if( (Get-WindowsOptionalFeature -Online | Where-Object { $_.State -eq 'Enabled' -and $_.FeatureName -like 'Recall' }).Count -gt 0 ) {
+                Disable-WindowsOptionalFeature -Online -FeatureName 'Recall' -Remove;
+            }
+        } catch {}
+    };
+    {
+        if( (Get-BitLockerVolume -MountPoint $Env:SystemDrive).ProtectionStatus -eq 'On' ) {
+            Disable-BitLocker -MountPoint $Env:SystemDrive;
+        }
+    };
+    {
+        try {
+            if( (bcdedit | Select-String 'path').Count -eq 2 ) {
+                bcdedit /set `{bootmgr`} timeout 0;
+            }
+        } catch {}
+    };
+);
+
+&amp; {
+  [float]$complete = 0;
+  [float]$increment = 100 / $scripts.Count;
+  foreach( $script in $scripts ) {
+    Write-Progress -Id 0 -Activity 'Running scripts to finalize your Windows installation. Do not close this window.' -PercentComplete $complete;
+    '*** Will now execute command &#xAB;{0}&#xBB;.' -f $(
+      $str = $script.ToString().Trim() -replace '\s+', ' ';
+      $max = 100;
+      if( $str.Length -le $max ) {
+        $str;
+      } else {
+        $str.Substring( 0, $max - 1 ) + '&#x2026;';
+      }
+    );
+    $start = [datetime]::Now;
+    &amp; $script;
+    '*** Finished executing command after {0:0} ms.' -f [datetime]::Now.Subtract( $start ).TotalMilliseconds;
+    "`r`n" * 3;
+    $complete += $increment;
+  }
+} *&gt;&amp;1 | Out-String -Width 1KB -Stream &gt;&gt; "C:\Windows\Setup\Scripts\FirstLogon.log";
+        </File>
+    </Extensions>
 </unattend>

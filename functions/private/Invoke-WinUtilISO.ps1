@@ -269,6 +269,17 @@ function Invoke-WinUtilISOModify {
                 $sync["WPFWin11ISOModifySection"].Visibility  = "Collapsed"
                 $expandedHeight = [Math]::Max(400, $sync.Window.ActualHeight - 100)
                 $sync["WPFWin11ISOStatusLog"].Height = $expandedHeight
+                $sync["Win11ISOLogExpanded"] = $true
+                # Register the resize handler once so the log tracks window resizes
+                if (-not $sync["Win11ISOResizeHandlerAdded"]) {
+                    $sync.Window.add_SizeChanged({
+                        if ($sync["Win11ISOLogExpanded"]) {
+                            $sync["WPFWin11ISOStatusLog"].Height = [Math]::Max(400, $sync.Window.ActualHeight - 100)
+                            $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
+                        }
+                    })
+                    $sync["Win11ISOResizeHandlerAdded"] = $true
+                }
             })
 
             # ── 1. Create working directory structure ──
@@ -303,11 +314,38 @@ function Invoke-WinUtilISOModify {
             Log "Applying WinUtil modifications to install.wim..."
             Invoke-WinUtilISOScript -ScratchDir $mountDir -ISOContentsDir $isoContents -AutoUnattendXml $autounattendContent -Log { param($m) Log $m }
 
+            # ── 4b. DISM component store cleanup ──
+            # /ResetBase removes all superseded component versions from WinSxS,
+            # which is the single largest space saving possible (typically 300–800 MB).
+            # This must be done while the image is still mounted.
+            SetProgress "Cleaning up component store (WinSxS)..." 56
+            Log "Running DISM component store cleanup (/ResetBase)..."
+            & dism /English "/image:$mountDir" /Cleanup-Image /StartComponentCleanup /ResetBase | ForEach-Object { Log $_ }
+            Log "Component store cleanup complete."
+
             # ── 5. Save and dismount the WIM ──
             SetProgress "Saving modified install.wim..." 65
-            Log "Dismounting and saving install.wim..."
+            Log "Dismounting and saving install.wim. This will take several minutes..."
             Dismount-WindowsImage -Path $mountDir -Save -ErrorAction Stop | Out-Null
             Log "install.wim saved."
+
+            # ── 5b. Strip unused editions — export only the selected index ──
+            # A standard multi-edition install.wim can be 4–5 GB; exporting a
+            # single index typically drops it to ~3 GB, saving 1–2 GB in the ISO.
+            SetProgress "Removing unused editions from install.wim..." 70
+            Log "Exporting edition '$selectedEditionName' (Index $selectedWimIndex) to a single-edition install.wim..."
+            $exportWim = Join-Path $isoContents "sources\install_export.wim"
+            Export-WindowsImage `
+                -SourceImagePath $localWim `
+                -SourceIndex     $selectedWimIndex `
+                -DestinationImagePath $exportWim `
+                -ErrorAction Stop | Out-Null
+            Remove-Item -Path $localWim -Force
+            Rename-Item -Path $exportWim -NewName "install.wim" -Force
+            # Update local path so later steps (e.g. ISO build) reference the new file
+            $localWim = Join-Path $isoContents "sources\install.wim"
+            Log "Unused editions removed.  install.wim now contains only '$selectedEditionName'."
+
             SetProgress "Dismounting source ISO..." 80
 
             # ── 6. Dismount the original ISO ──
@@ -388,6 +426,7 @@ function Invoke-WinUtilISOModify {
                     $sync["WPFWin11ISOMountSection"].Visibility  = "Visible"
                     $sync["WPFWin11ISOModifySection"].Visibility = "Visible"
                 }
+                $sync["Win11ISOLogExpanded"] = $false
                 $sync["WPFWin11ISOStatusLog"].Height = 140
             })
         }
