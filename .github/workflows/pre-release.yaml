@@ -24,6 +24,7 @@ jobs:
           ./devdocs-generator.ps1
 
       - name: Create Pull Request for Updated JSON Links
+        id: cpr
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.AUTO_MERGE }}
@@ -38,6 +39,12 @@ jobs:
           labels: |
             automated
             documentation
+
+      - name: Check outputs
+        shell: bash
+        run: |
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
 
       - name: Compile project
         shell: pwsh
