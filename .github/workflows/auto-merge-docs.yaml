@@ -18,6 +18,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Auto-approve PR
+        if: github.event.pull_request.user.login == 'github-actions[bot]'
         run: gh pr review "$PR_NUMBER" --approve
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
