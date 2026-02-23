@@ -85,7 +85,7 @@ function Invoke-WinUtilISOScript {
     function Set-ISOScriptReg {
         param ([string]$path, [string]$name, [string]$type, [string]$value)
         try {
-            & reg add $path /v $name /t $type /d $value /f | Out-Null
+            & reg add $path /v $name /t $type /d $value /f
             & $Log "Set registry value: $path\$name"
         } catch {
             & $Log "Error setting registry value: $_"
@@ -95,7 +95,7 @@ function Invoke-WinUtilISOScript {
     function Remove-ISOScriptReg {
         param ([string]$path)
         try {
-            & reg delete $path /f | Out-Null
+            & reg delete $path /f
             & $Log "Removed registry key: $path"
         } catch {
             & $Log "Error removing registry key: $_"
@@ -155,7 +155,7 @@ function Invoke-WinUtilISOScript {
         'MicrosoftCorporationII.MicrosoftFamily',
         'MicrosoftCorporationII.QuickAssist',
         'MSTeams',
-        'MicrosoftTeams',
+        'MicrosoftTeams'
     )
 
     $packagesToRemove = $packages | Where-Object {
@@ -184,11 +184,11 @@ function Invoke-WinUtilISOScript {
     #  4. Registry tweaks
     # ═════════════════════════════════════════════════════════════════════════
     & $Log "Loading offline registry hives..."
-    reg load HKLM\zCOMPONENTS "$ScratchDir\Windows\System32\config\COMPONENTS" | Out-Null
-    reg load HKLM\zDEFAULT    "$ScratchDir\Windows\System32\config\default"    | Out-Null
-    reg load HKLM\zNTUSER     "$ScratchDir\Users\Default\ntuser.dat"            | Out-Null
-    reg load HKLM\zSOFTWARE   "$ScratchDir\Windows\System32\config\SOFTWARE"   | Out-Null
-    reg load HKLM\zSYSTEM     "$ScratchDir\Windows\System32\config\SYSTEM"     | Out-Null
+    reg load HKLM\zCOMPONENTS "$ScratchDir\Windows\System32\config\COMPONENTS"
+    reg load HKLM\zDEFAULT    "$ScratchDir\Windows\System32\config\default"
+    reg load HKLM\zNTUSER     "$ScratchDir\Users\Default\ntuser.dat"
+    reg load HKLM\zSOFTWARE   "$ScratchDir\Windows\System32\config\SOFTWARE"
+    reg load HKLM\zSYSTEM     "$ScratchDir\Windows\System32\config\SYSTEM"
 
     & $Log "Bypassing system requirements..."
     Set-ISOScriptReg 'HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache' 'SV1' 'REG_DWORD' '0'
@@ -300,11 +300,11 @@ function Invoke-WinUtilISOScript {
     Set-ISOScriptReg 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\Windows Mail' 'PreventRun' 'REG_DWORD' '1'
 
     & $Log "Unloading offline registry hives..."
-    reg unload HKLM\zCOMPONENTS | Out-Null
-    reg unload HKLM\zDEFAULT    | Out-Null
-    reg unload HKLM\zNTUSER     | Out-Null
-    reg unload HKLM\zSOFTWARE   | Out-Null
-    reg unload HKLM\zSYSTEM     | Out-Null
+    reg unload HKLM\zCOMPONENTS
+    reg unload HKLM\zDEFAULT
+    reg unload HKLM\zNTUSER
+    reg unload HKLM\zSOFTWARE
+    reg unload HKLM\zSYSTEM
 
     # ═════════════════════════════════════════════════════════════════════════
     #  5. Delete scheduled task definition files
