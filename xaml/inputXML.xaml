@@ -970,11 +970,11 @@
                         </TextBlock>
                     </ToggleButton.Content>
                 </ToggleButton>
-                <ToggleButton Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="{DynamicResource TabButtonWidth}"
+                <ToggleButton Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="Auto" MinWidth="{DynamicResource TabButtonWidth}"
                     Background="{DynamicResource ButtonWin11ISOBackgroundColor}" Foreground="{DynamicResource ButtonWin11ISOForegroundColor}" FontWeight="Bold" Name="WPFTab5BT">
                     <ToggleButton.Content>
                         <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonWin11ISOForegroundColor}">
-                            <Underline>W</Underline>in11ISO
+                            <Underline>W</Underline>in11 Creator
                         </TextBlock>
                     </ToggleButton.Content>
                 </ToggleButton>
@@ -1367,10 +1367,13 @@
                                         Step 1 - Select Windows 11 ISO
                                     </TextBlock>
                                     <TextBlock FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}"
-                                               TextWrapping="Wrap" Margin="0,0,0,12">
+                                               TextWrapping="Wrap" Margin="0,0,0,6">
                                         Browse to your locally saved Windows 11 ISO file. Only official ISOs
-                                        downloaded from Microsoft are supported. This is only meant for FRESH
-                                        and NEW Windows installs.
+                                        downloaded from Microsoft are supported.
+                                    </TextBlock>
+                                    <TextBlock FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}"
+                                               TextWrapping="Wrap" Margin="0,0,0,12" FontStyle="Italic">
+                                        <Run FontWeight="Bold">NOTE:</Run> This is only meant for Fresh and New Windows installs.
                                     </TextBlock>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -1538,8 +1541,7 @@
                         <!-- ═══════════════════════════════════════════════════════════ -->
                         <Border Grid.Row="3"
                                 Name="WPFWin11ISOOutputSection"
-                                Style="{StaticResource BorderStyle}"
-                                Visibility="Collapsed">
+                                Style="{StaticResource BorderStyle}">
                             <StackPanel Margin="5">
                                 <!-- Header row: title + Clean & Reset button -->
                                 <Grid Margin="0,0,0,12">
