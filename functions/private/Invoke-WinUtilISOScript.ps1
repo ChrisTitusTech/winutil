@@ -32,6 +32,12 @@ function Invoke-WinUtilISOScript {
     #>
     param (
         [Parameter(Mandatory)][string]$ScratchDir,
+        # Root directory of the extracted ISO contents. When supplied, autounattend.xml
+        # is written here so Windows Setup picks it up automatically at boot.
+        [string]$ISOContentsDir = "",
+        # Autounattend XML content. In compiled winutil.ps1 this comes from the embedded
+        # $WinUtilAutounattendXml here-string; in dev mode it is read from tools\autounattend.xml.
+        [string]$AutoUnattendXml = "",
         [scriptblock]$Log = { param($m) Write-Output $m }
     )
 
@@ -131,11 +137,6 @@ function Invoke-WinUtilISOScript {
     # ═════════════════════════════════════════════════════════════════════════
     & $Log "Removing Edge..."
     Remove-Item -Path "$ScratchDir\Program Files (x86)\Microsoft\Edge"       -Recurse -Force -ErrorAction SilentlyContinue
-    Remove-Item -Path "$ScratchDir\Program Files (x86)\Microsoft\EdgeUpdate"  -Recurse -Force -ErrorAction SilentlyContinue
-    Remove-Item -Path "$ScratchDir\Program Files (x86)\Microsoft\EdgeCore"    -Recurse -Force -ErrorAction SilentlyContinue
-    & takeown /f "$ScratchDir\Windows\System32\Microsoft-Edge-Webview" /r | Out-Null
-    & icacls    "$ScratchDir\Windows\System32\Microsoft-Edge-Webview" /grant "$($adminGroup.Value):(F)" /T /C | Out-Null
-    Remove-Item -Path "$ScratchDir\Windows\System32\Microsoft-Edge-Webview"   -Recurse -Force -ErrorAction SilentlyContinue
 
     # ═════════════════════════════════════════════════════════════════════════
     #  3. Remove OneDrive
@@ -195,9 +196,23 @@ function Invoke-WinUtilISOScript {
     & $Log "Enabling local accounts on OOBE..."
     _ISOScript-SetReg 'HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\OOBE' 'BypassNRO' 'REG_DWORD' '1'
 
-    $sysprepDest = "$ScratchDir\Windows\System32\Sysprep\autounattend.xml"
-    Set-Content -Path $sysprepDest -Value $WinUtilAutounattendXml -Encoding UTF8 -Force
-    & $Log "Written autounattend.xml to Sysprep directory."
+    if ($AutoUnattendXml) {
+        # ── Place autounattend.xml inside the WIM (Sysprep) ──────────────────
+        $sysprepDest = "$ScratchDir\Windows\System32\Sysprep\autounattend.xml"
+        Set-Content -Path $sysprepDest -Value $AutoUnattendXml -Encoding UTF8 -Force
+        & $Log "Written autounattend.xml to Sysprep directory."
+
+        # ── Place autounattend.xml at the ISO / USB root ──────────────────────
+        # Windows Setup reads this file first (before booting into the OS),
+        # which is what drives the local-account / OOBE bypass at install time.
+        if ($ISOContentsDir -and (Test-Path $ISOContentsDir)) {
+            $isoDest = Join-Path $ISOContentsDir "autounattend.xml"
+            Set-Content -Path $isoDest -Value $AutoUnattendXml -Encoding UTF8 -Force
+            & $Log "Written autounattend.xml to ISO root ($isoDest)."
+        }
+    } else {
+        & $Log "Warning: autounattend.xml content is empty — skipping OOBE bypass file."
+    }
 
     & $Log "Disabling reserved storage..."
     _ISOScript-SetReg 'HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager' 'ShippedWithReserves' 'REG_DWORD' '0'

@@ -554,9 +554,16 @@ $sync["WPFWin11ISOModifyButton"].Add_Click({
     Invoke-WinUtilISOModify
 })
 
-$sync["WPFWin11ISOExportButton"].Add_Click({
-    Write-Debug "WPFWin11ISOExportButton clicked"
+$sync["WPFWin11ISOChooseISOButton"].Add_Click({
+    Write-Debug "WPFWin11ISOChooseISOButton clicked"
+    $sync["WPFWin11ISOOptionUSB"].Visibility = "Collapsed"
     Invoke-WinUtilISOExport
+})
+
+$sync["WPFWin11ISOChooseUSBButton"].Add_Click({
+    Write-Debug "WPFWin11ISOChooseUSBButton clicked"
+    $sync["WPFWin11ISOOptionUSB"].Visibility = "Visible"
+    Invoke-WinUtilISORefreshUSBDrives
 })
 
 $sync["WPFWin11ISORefreshUSBButton"].Add_Click({
@@ -567,6 +574,11 @@ $sync["WPFWin11ISORefreshUSBButton"].Add_Click({
 $sync["WPFWin11ISOWriteUSBButton"].Add_Click({
     Write-Debug "WPFWin11ISOWriteUSBButton clicked"
     Invoke-WinUtilISOWriteUSB
+})
+
+$sync["WPFWin11ISOCleanResetButton"].Add_Click({
+    Write-Debug "WPFWin11ISOCleanResetButton clicked"
+    Invoke-WinUtilISOCleanAndReset
 })
 
 # ──────────────────────────────────────────────────────────────────────────────
