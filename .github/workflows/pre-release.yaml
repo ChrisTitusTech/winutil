@@ -52,6 +52,13 @@ jobs:
           echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
           echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
 
+      - name: Enable Auto Merge
+        if: steps.cpr.outputs.pull-request-number != ''
+        shell: bash
+        run: gh pr merge --auto --squash "${{ steps.cpr.outputs.pull-request-number }}"
+        env:
+          GH_TOKEN: ${{ secrets.AUTO_MERGE }}
+
       - name: Set Version to Todays Date
         id: extract_version
         run: |
