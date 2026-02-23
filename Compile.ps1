@@ -103,6 +103,20 @@ $xaml
 '@
 "@)
 
+Update-Progress "Adding: autounattend.xml" 95
+$autounattendRaw = Get-Content "$workingdir\tools\autounattend.xml" -Raw
+# Strip XML comments (<!-- ... -->, including multi-line)
+$autounattendRaw = [regex]::Replace($autounattendRaw, '<!--.*?-->', '', [System.Text.RegularExpressions.RegexOptions]::Singleline)
+# Drop blank lines and trim trailing whitespace per line
+$autounattendXml = ($autounattendRaw -split "`r?`n" |
+    Where-Object { $_.Trim() -ne '' } |
+    ForEach-Object { $_.TrimEnd() }) -join "`r`n"
+$script_content.Add(@"
+`$WinUtilAutounattendXml = @'
+$autounattendXml
+'@
+"@)
+
 $script_content.Add($(Get-Content "scripts\main.ps1"))
 
 Update-Progress "Removing temporary files" 99

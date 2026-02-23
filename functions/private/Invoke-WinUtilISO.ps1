@@ -178,9 +178,27 @@ function Invoke-WinUtilISOModify {
     $runspace.SessionStateProxy.SetVariable("wimPath",      $wimPath)
     $runspace.SessionStateProxy.SetVariable("workDir",      $workDir)
 
+    # Serialize functions so they are available inside the runspace
+    $isoScriptFuncDef = "function Invoke-WinUtilISOScript {`n" + `
+        ${function:Invoke-WinUtilISOScript}.ToString() + "`n}"
+    $runspace.SessionStateProxy.SetVariable("isoScriptFuncDef", $isoScriptFuncDef)
+
+    $win11ISOLogFuncDef = "function Write-Win11ISOLog {`n" + `
+        ${function:Write-Win11ISOLog}.ToString() + "`n}"
+    $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef", $win11ISOLogFuncDef)
+
+    $refreshUSBFuncDef = "function Invoke-WinUtilISORefreshUSBDrives {`n" + `
+        ${function:Invoke-WinUtilISORefreshUSBDrives}.ToString() + "`n}"
+    $runspace.SessionStateProxy.SetVariable("refreshUSBFuncDef", $refreshUSBFuncDef)
+
     $script = [Management.Automation.PowerShell]::Create()
     $script.Runspace = $runspace
     $script.AddScript({
+
+        # Import helper functions into this runspace
+        . ([scriptblock]::Create($isoScriptFuncDef))
+        . ([scriptblock]::Create($win11ISOLogFuncDef))
+        . ([scriptblock]::Create($refreshUSBFuncDef))
 
         function Log($msg) {
             $ts = (Get-Date).ToString("HH:mm:ss")
@@ -192,7 +210,9 @@ function Invoke-WinUtilISOModify {
 
         function SetProgress($label, $pct) {
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                Set-WinUtilProgressBar -Label $label -Percent $pct
+                $sync.progressBarTextBlock.Text    = $label
+                $sync.progressBarTextBlock.ToolTip = $label
+                $sync.ProgressBar.Value            = [Math]::Max($pct, 5)
             })
         }
 
@@ -225,22 +245,9 @@ function Invoke-WinUtilISOModify {
             Mount-WindowsImage -ImagePath $localWim -Index 1 -Path $mountDir -ErrorAction Stop | Out-Null
             SetProgress "Modifying install.wim..." 45
 
-            # ════════════════════════════════════════════════════════
-            #  >>>  YOUR MODIFICATION LOGIC GOES HERE  <<<
-            #
-            #  Examples (uncomment or extend as needed):
-            #
-            #  Remove-WindowsPackage  -Path $mountDir -PackageName "Microsoft-Windows-…"
-            #  Disable-WindowsOptionalFeature -Path $mountDir -FeatureName "…"
-            #  Copy-Item "C:\path\to\custom.xml" "$mountDir\Windows\Panther\unattend.xml"
-            #  reg load "HKLM\OFFLINE" "$mountDir\Windows\System32\config\SOFTWARE"
-            #  … registry tweaks …
-            #  reg unload "HKLM\OFFLINE"
-            #
-            # ════════════════════════════════════════════════════════
-
-            Log "Applying modifications to install.wim... (placeholder)"
-            Start-Sleep -Seconds 2   # replace with actual modification calls
+            # ── Apply all WinUtil modifications via Invoke-WinUtilISOScript ──
+            Log "Applying WinUtil modifications to install.wim..."
+            Invoke-WinUtilISOScript -ScratchDir $mountDir -Log { param($m) Log $m }
 
             # ── 5. Save and dismount the WIM ──
             SetProgress "Saving modified install.wim..." 65
@@ -277,7 +284,9 @@ function Invoke-WinUtilISOModify {
         finally {
             Start-Sleep -Milliseconds 800
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                Set-WinUtilProgressBar -Label "" -Percent 0
+                $sync.progressBarTextBlock.Text = ""
+                $sync.progressBarTextBlock.ToolTip = ""
+                $sync.ProgressBar.Value = 0
                 $sync["WPFWin11ISOModifyButton"].IsEnabled = $true
             })
         }
@@ -458,7 +467,9 @@ function Invoke-WinUtilISOWriteUSB {
         }
         function SetProgress($label, $pct) {
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                Set-WinUtilProgressBar -Label $label -Percent $pct
+                $sync.progressBarTextBlock.Text    = $label
+                $sync.progressBarTextBlock.ToolTip = $label
+                $sync.ProgressBar.Value            = [Math]::Max($pct, 5)
             })
         }
 
@@ -549,7 +560,9 @@ exit
         finally {
             Start-Sleep -Milliseconds 800
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                Set-WinUtilProgressBar -Label "" -Percent 0
+                $sync.progressBarTextBlock.Text = ""
+                $sync.progressBarTextBlock.ToolTip = ""
+                $sync.ProgressBar.Value = 0
                 $sync["WPFWin11ISOWriteUSBButton"].IsEnabled = $true
             })
         }
