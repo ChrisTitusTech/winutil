@@ -267,14 +267,14 @@ function Invoke-WinUtilISOModify {
                 $sync["WPFWin11ISOSelectSection"].Visibility  = "Collapsed"
                 $sync["WPFWin11ISOMountSection"].Visibility   = "Collapsed"
                 $sync["WPFWin11ISOModifySection"].Visibility  = "Collapsed"
-                $expandedHeight = [Math]::Max(400, $sync.Window.ActualHeight - 100)
+                $expandedHeight = [Math]::Max(400, $sync["Form"].ActualHeight - 100)
                 $sync["WPFWin11ISOStatusLog"].Height = $expandedHeight
                 $sync["Win11ISOLogExpanded"] = $true
                 # Register the resize handler once so the log tracks window resizes
                 if (-not $sync["Win11ISOResizeHandlerAdded"]) {
-                    $sync.Window.add_SizeChanged({
+                    $sync["Form"].add_SizeChanged({
                         if ($sync["Win11ISOLogExpanded"]) {
-                            $sync["WPFWin11ISOStatusLog"].Height = [Math]::Max(400, $sync.Window.ActualHeight - 100)
+                            $sync["WPFWin11ISOStatusLog"].Height = [Math]::Max(400, $sync["Form"].ActualHeight - 100)
                             $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
                         }
                     })
