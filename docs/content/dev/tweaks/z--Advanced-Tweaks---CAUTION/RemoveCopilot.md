@@ -74,7 +74,7 @@ description: ""
       Get-AppxPackage -AllUsers Microsoft.MicrosoftOfficeHub | Remove-AppxPackage -AllUsers
 
       $Appx = (Get-AppxPackage MicrosoftWindows.Client.CoreAI).PackageFullName
-      
+
       $Sid = (Get-LocalUser $Env:UserName).Sid.Value
       New-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Appx\\AppxAllUserStore\\EndOfLife\\$Sid\\$Appx\" -Force
       Remove-AppxPackage $Appx

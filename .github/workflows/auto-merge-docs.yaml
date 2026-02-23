@@ -16,13 +16,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      
+
       - name: Auto-approve PR
         run: gh pr review "$PR_NUMBER" --approve
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           GH_TOKEN: ${{ secrets.AUTO_MERGE }}
-      
+
       - name: Enable auto-merge
         run: gh pr merge "$PR_NUMBER" --squash --auto --delete-branch
         env:
