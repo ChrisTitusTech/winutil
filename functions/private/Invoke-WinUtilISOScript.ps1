@@ -1,29 +1,65 @@
 function Invoke-WinUtilISOScript {
     <#
     .SYNOPSIS
-        Applies the standard WinUtil modifications to a mounted Windows 11 install.wim image.
+        Applies WinUtil modifications to a mounted Windows 11 install.wim image.
 
     .DESCRIPTION
-        Removes bloatware AppX packages, Edge, OneDrive, applies privacy/telemetry
-        registry tweaks, disables sponsored-app delivery, bypasses hardware checks,
-        copies autounattend.xml for local-account OOBE, and deletes unwanted
-        scheduled-task definition files — all against an already-mounted WIM image.
+        Performs the following operations against an already-mounted WIM image:
+
+        1. Removes provisioned AppX bloatware packages via DISM.
+        2. Deletes Microsoft Edge program files.
+        3. Removes OneDriveSetup.exe from the system image.
+        4. Loads offline registry hives (COMPONENTS, DEFAULT, NTUSER, SOFTWARE, SYSTEM)
+           and applies the following tweaks:
+             - Bypasses hardware requirement checks (CPU, RAM, SecureBoot, Storage, TPM).
+             - Disables sponsored-app delivery and ContentDeliveryManager features.
+             - Enables local-account OOBE path (BypassNRO).
+             - Writes autounattend.xml to the Sysprep directory inside the WIM and,
+               optionally, to the ISO/USB root so Windows Setup picks it up at boot.
+             - Disables reserved storage.
+             - Disables BitLocker device encryption.
+             - Hides the Chat (Teams) taskbar icon.
+             - Removes Edge uninstall registry entries.
+             - Disables OneDrive folder backup (KFM).
+             - Disables telemetry, advertising ID, and input personalization.
+             - Blocks post-install delivery of DevHome, Outlook, and Teams.
+             - Disables Windows Copilot.
+             - Disables Windows Update during OOBE.
+        5. Deletes unwanted scheduled-task XML definition files (CEIP, Appraiser, etc.).
+        6. Removes the support\ folder from the ISO contents directory (if supplied).
 
         Mounting and dismounting the WIM is the responsibility of the caller
-        (e.g. Invoke-WinUtilISOModify).
+        (e.g. Invoke-WinUtilISO).
 
     .PARAMETER ScratchDir
-        Full path to the directory where the Windows image is currently mounted
-        (the "scratchdir").  Example: C:\Temp\WinUtil_Win11ISO_20260222\wim_mount
+        Mandatory. Full path to the directory where the Windows image is currently mounted.
+        Example: C:\Users\USERNAME\AppData\Local\Temp\WinUtil_Win11ISO_20260222\wim_mount
+
+    .PARAMETER ISOContentsDir
+        Optional. Root directory of the extracted ISO contents.
+        When supplied, autounattend.xml is also written here so Windows Setup picks it
+        up automatically at boot, and the support\ folder is deleted from that location.
+
+    .PARAMETER AutoUnattendXml
+        Optional. Full XML content for autounattend.xml.
+        In compiled winutil.ps1 this is the embedded $WinUtilAutounattendXml here-string;
+        in dev mode it is read from tools\autounattend.xml.
+        If empty, the OOBE bypass file is skipped and a warning is logged.
 
     .PARAMETER Log
         Optional ScriptBlock used for progress/status logging.
         Receives a single [string] message argument.
-        Defaults to Write-Output when not supplied.
+        Defaults to { param($m) Write-Output $m } when not supplied.
 
     .EXAMPLE
         Invoke-WinUtilISOScript -ScratchDir "C:\Temp\wim_mount"
-        Invoke-WinUtilISOScript -ScratchDir $mountDir -Log { param($m) Write-Host $m }
+
+    .EXAMPLE
+        Invoke-WinUtilISOScript `
+            -ScratchDir      $mountDir `
+            -ISOContentsDir  $isoRoot `
+            -AutoUnattendXml (Get-Content .\tools\autounattend.xml -Raw) `
+            -Log             { param($m) Write-Host $m }
 
     .NOTES
         Author  : Chris Titus @christitustech
@@ -114,14 +150,12 @@ function Invoke-WinUtilISOScript {
         'Microsoft.WindowsFeedbackHub',
         'Microsoft.WindowsMaps',
         'Microsoft.WindowsSoundRecorder',
-        'Microsoft.WindowsTerminal',
         'Microsoft.ZuneMusic',
         'Microsoft.ZuneVideo',
         'MicrosoftCorporationII.MicrosoftFamily',
         'MicrosoftCorporationII.QuickAssist',
         'MSTeams',
         'MicrosoftTeams',
-        'Microsoft.549981C3F5F10'
     )
 
     $packagesToRemove = $packages | Where-Object {
