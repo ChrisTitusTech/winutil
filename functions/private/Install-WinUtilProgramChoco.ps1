@@ -113,7 +113,7 @@ function Install-WinUtilProgramChoco {
             [int]$totalPrograms
         )
         $progressState = if ($currentIndex -eq $totalPrograms) { "Normal" } else { "Error" }
-        $sync.form.Dispatcher.Invoke([action] { Set-WinUtilTaskbaritem -state $progressState -value ($currentIndex / $totalPrograms) })
+        Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state $progressState -value ($currentIndex / $totalPrograms) }
     }
 
     function Install-ChocoPackage {
@@ -234,7 +234,7 @@ function Install-WinUtilProgramChoco {
     for ($currentIndex = 0; $currentIndex -lt $totalPrograms; $currentIndex++) {
         $Program = $Programs[$currentIndex]
         Set-WinUtilProgressBar -label "$Action $($Program)" -percent ($currentIndex / $totalPrograms * 100)
-        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($currentIndex / $totalPrograms)})
+        Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -value ($currentIndex / $totalPrograms)}
 
         switch ($Action) {
             "Install" {

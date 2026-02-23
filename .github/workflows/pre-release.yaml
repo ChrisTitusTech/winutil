@@ -3,6 +3,7 @@ name: Pre-Release WinUtil
 permissions:
   contents: write
   actions: read
+  pull-requests: write
 
 on:
   workflow_dispatch: # Manual trigger added
@@ -22,24 +23,34 @@ jobs:
           Set-Location tools
           ./devdocs-generator.ps1
 
-      - name: Commit Updated JSON Links
-        shell: pwsh
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add config/tweaks.json config/feature.json
-          $changes = git diff --cached --quiet; if ($LASTEXITCODE -ne 0) {
-            git commit -m "Update documentation links in JSON configs"
-            git push
-          } else {
-            Write-Host "No JSON link changes to commit"
-          }
-
       - name: Compile project
         shell: pwsh
         run: |
           Set-ExecutionPolicy Bypass -Scope Process -Force; ./Compile.ps1
         continue-on-error: false # Directly fail the job on error, removing the need for a separate check
+
+      - name: Create Pull Request for Updated JSON Links
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.AUTO_MERGE }}
+          commit-message: 'chore: Update documentation links in JSON configs'
+          title: 'chore: Update Generated Dev Docs'
+          body: 'Automated update of documentation links in JSON configs from pre-release build'
+          branch: docs-update
+          delete-branch: true
+          add-paths: |
+            config/tweaks.json
+            config/feature.json
+          labels: |
+            automated
+            documentation
+
+      - name: Check outputs
+        shell: bash
+        run: |
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
 
       - name: Set Version to Todays Date
         id: extract_version
