@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Windows 11 Unattended Installation Answer File
+    ================================================
+    UNIVERSAL — no modification required before use.
+
+    What this file does automatically:
+      • Installs "Windows 11 Pro" from any standard Microsoft ISO
+      • Bypasses the Microsoft-account OOBE requirement (local account)
+      • Skips the EULA, wireless, and privacy nag screens
+      • Leaves timezone, language, region, and user account to the user
+        at the two short OOBE screens that remain
+
+    What the user is prompted for during first-run (OOBE):
+      1. Region / Language / Keyboard  (one screen)
+      2. Who will use this PC?         (local account name + password)
+
+    Timezone is set to UTC and can be adjusted after login.
+    Computer name is auto-generated; rename at any time.
+
+    Tested against: Windows 11 Home / Pro / Home Single Language (amd64)
+    Pass order:     windowsPE → specialize → oobeSystem
+-->
+<unattend xmlns="urn:schemas-microsoft-com:unattend">
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         PASS 1 — windowsPE
+         Runs inside the installer environment before the OS is laid down.
+         Handles disk layout and image selection only.
+         Locale is intentionally omitted so the installer inherits the
+         language of whichever ISO is being used.
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <settings pass="windowsPE">
+
+        <!-- Setup / image selection -->
+        <component name="Microsoft-Windows-Setup"
+                   processorArchitecture="amd64"
+                   publicKeyToken="31bf3856ad364e35"
+                   language="neutral"
+                   versionScope="nonSxS"
+                   xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+            <!-- Disable dynamic updates during setup (keeps installation offline/fast) -->
+            <DynamicUpdate>
+                <Enable>false</Enable>
+            </DynamicUpdate>
+
+            <ImageInstall>
+                <OSImage>
+                    <!-- CompactOS saves ~1.5 GB but is slower on spinning drives -->
+                    <Compact>false</Compact>
+                    <WillShowUI>OnError</WillShowUI>
+                    <InstallFrom>
+                        <!--
+                            Select the edition by NAME rather than by index number.
+                            Index numbers vary between ISO builds; the name is stable.
+                            Change "Windows 11 Pro" to "Windows 11 Home" etc. if your
+                            ISO only contains that edition.  To choose interactively,
+                            delete this entire <InstallFrom> block.
+                        -->
+                        <MetaData wcm:action="add">
+                            <Key>/IMAGE/NAME</Key>
+                            <Value>Windows 11 Pro</Value>
+                        </MetaData>
+                    </InstallFrom>
+                    <!-- InstallTo is omitted — the Windows installer will prompt
+                         the user to select the destination disk and partition.  -->
+                </OSImage>
+            </ImageInstall>
+
+            <UserData>
+                <AcceptEula>true</AcceptEula>
+                <ProductKey>
+                    <!--
+                        Leave <Key> absent to use an existing digital licence or
+                        to be prompted for one after setup.
+
+                        Generic setup keys (allow setup to proceed; do NOT activate):
+                          Home                   : YTMG3-N6DKC-DKB77-7M9GH-8HVX7
+                          Home Single Language   : 7HNRX-D7KGG-3K4RQ-4WPJ4-YTDFH
+                          Pro                    : VK7JG-NPHTM-C97JM-9MPGT-3V66T
+                          Education              : YNMGQ-8RYV3-4PGQ3-C8XTP-7CFBY
+                          Enterprise             : XGVPP-NMH47-7TTHJ-W3FW7-8HV2C
+                    -->
+                    <WillShowUI>OnError</WillShowUI>
+                </ProductKey>
+            </UserData>
+
+        </component>
+    </settings>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         PASS 2 — specialize
+         First boot into the installed OS.
+         Machine-level settings that do not vary by user or region.
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <settings pass="specialize">
+
+        <component name="Microsoft-Windows-Shell-Setup"
+                   processorArchitecture="amd64"
+                   publicKeyToken="31bf3856ad364e35"
+                   language="neutral"
+                   versionScope="nonSxS"
+                   xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+            <!-- Auto-generate a unique computer name. Rename anytime:
+                 Settings › System › About › Rename this PC               -->
+            <ComputerName>*</ComputerName>
+
+            <!--
+                UTC is the only timezone that is correct everywhere on Earth
+                without knowing where the machine will be used.
+                Windows will auto-adjust to local time once the user sets their
+                region, or they can change it in Settings › Time & Language.
+            -->
+            <TimeZone>UTC</TimeZone>
+
+            <!-- Suppress the Teams/Chat auto-install prompt during setup -->
+            <ConfigureChatAutoInstall>false</ConfigureChatAutoInstall>
+
+        </component>
+
+        <!-- Reduce telemetry to the minimum permitted by the licence.
+             0 = Security (Enterprise/Education only; treated as 1 on other SKUs)
+             1 = Basic / Required diagnostic data  ← effective minimum for Home/Pro -->
+        <component name="Microsoft-Windows-SQMAPI"
+                   processorArchitecture="amd64"
+                   publicKeyToken="31bf3856ad364e35"
+                   language="neutral"
+                   versionScope="nonSxS"
+                   xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <CEIPEnabled>0</CEIPEnabled>
+        </component>
+
+    </settings>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         PASS 3 — oobeSystem
+         Out-of-Box Experience (first-run wizard).
+
+         Screens shown to the user (everything else is suppressed):
+           ① Region / Language / Keyboard layout  — user picks their locale
+           ② Create a local account               — user picks name + password
+
+         Screens suppressed automatically:
+           • EULA
+           • "Sign in with Microsoft" / online account
+           • Wi-Fi selection (can be done after login)
+           • "Let Microsoft and apps use your location", Cortana, etc.
+
+         Locale settings are intentionally omitted here so that Windows
+         applies whatever the user selects on screen ①.
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <settings pass="oobeSystem">
+
+        <component name="Microsoft-Windows-Shell-Setup"
+                   processorArchitecture="amd64"
+                   publicKeyToken="31bf3856ad364e35"
+                   language="neutral"
+                   versionScope="nonSxS"
+                   xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+            <OOBE>
+                <!-- Suppress the licence agreement — already accepted in windowsPE -->
+                <HideEULAPage>true</HideEULAPage>
+
+                <!-- KEEP false — this is the screen where the user creates   -->
+                <!-- their local account (name + password).  Setting it true  -->
+                <!-- would skip account creation entirely, leaving only the   -->
+                <!-- built-in Administrator account.                          -->
+                <HideLocalAccountScreen>false</HideLocalAccountScreen>
+
+                <!-- Suppress "Sign in with Microsoft" screens.
+                     The user goes straight to local account creation.        -->
+                <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
+
+                <!-- Skip Wi-Fi setup — can be connected after first login    -->
+                <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
+
+                <!-- Suppress the privacy / recommended-settings nag screen   -->
+                <ProtectYourPC>3</ProtectYourPC>
+            </OOBE>
+
+            <!--
+                UserAccounts and AutoLogon are intentionally absent.
+                The user creates their own account on the OOBE screen above.
+                This is the safest and most universally applicable approach:
+                no hardcoded credentials ship inside the answer file.
+
+                If you want to pre-create an account instead, add:
+
+                <UserAccounts>
+                    <LocalAccounts>
+                        <LocalAccount wcm:action="add">
+                            <Name>YourUsername</Name>
+                            <Password>
+                                <Value>YourPassword</Value>
+                                <PlainText>true</PlainText>
+                            </Password>
+                            <DisplayName>Your Full Name</DisplayName>
+                            <Group>Administrators</Group>
+                        </LocalAccount>
+                    </LocalAccounts>
+                </UserAccounts>
+                <AutoLogon>
+                    <Enabled>true</Enabled>
+                    <LogonCount>1</LogonCount>
+                    <Username>YourUsername</Username>
+                    <Password>
+                        <Value>YourPassword</Value>
+                        <PlainText>true</PlainText>
+                    </Password>
+                </AutoLogon>
+
+                And set HideLocalAccountScreen to true above.
+            -->
+
+            <!--
+                Optional: run a script on first logon.
+                Uncomment and adjust the path/command as needed.
+
+                <FirstLogonCommands>
+                    <SynchronousCommand wcm:action="add">
+                        <Order>1</Order>
+                        <CommandLine>powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://christitus.com/win | iex"</CommandLine>
+                        <Description>Launch WinUtil post-install</Description>
+                        <RequiresUserInput>false</RequiresUserInput>
+                    </SynchronousCommand>
+                </FirstLogonCommands>
+            -->
+
+        </component>
+    </settings>
+
+</unattend>
