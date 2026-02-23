@@ -53,12 +53,12 @@ jobs:
           Set-Location tools
           ./devdocs-generator.ps1
 
-      - name: Create Pull Request 🚀
+      - name: Create Pull Request
         id: cpr
         uses: peter-evans/create-pull-request@v6
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'Update generated documentation'
+          token: ${{ secrets.AUTO_MERGE }}
+          commit-message: 'chore: Update generated dev docs'
           title: 'chore: Update Generated Dev Docs'
           body: 'Automated update of generated documentation from JSON sources'
           branch: docs-update
@@ -66,11 +66,6 @@ jobs:
           labels: |
             automated
             documentation
-
-      - name: Check outputs
-        run: |
-          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
-          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
 
       - name: Install Node.js dependencies
         run: "cd docs && [[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true"
