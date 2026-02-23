@@ -14,6 +14,7 @@ function Write-Win11ISOLog {
         } else {
             $sync["WPFWin11ISOStatusLog"].Text += "`n[$timestamp] $Message"
         }
+        $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
         $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
     })
 }
@@ -249,6 +250,7 @@ function Invoke-WinUtilISOModify {
             $ts = (Get-Date).ToString("HH:mm:ss")
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 $sync["WPFWin11ISOStatusLog"].Text += "`n[$ts] $msg"
+                $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
                 $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
             })
         }
@@ -275,6 +277,7 @@ function Invoke-WinUtilISOModify {
                     $sync["Form"].add_SizeChanged({
                         if ($sync["Win11ISOLogExpanded"]) {
                             $sync["WPFWin11ISOStatusLog"].Height = [Math]::Max(400, $sync["Form"].ActualHeight - 100)
+                            $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
                             $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
                         }
                     })
@@ -665,6 +668,7 @@ function Invoke-WinUtilISOWriteUSB {
             $ts = (Get-Date).ToString("HH:mm:ss")
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 $sync["WPFWin11ISOStatusLog"].Text += "`n[$ts] $msg"
+                $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
                 $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
             })
         }
