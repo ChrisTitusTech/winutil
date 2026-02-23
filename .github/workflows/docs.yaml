@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
   pull-requests: write
@@ -47,6 +47,7 @@ jobs:
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
+        
       - name: Generate Dev Docs from JSON
         shell: pwsh
         run: |
@@ -63,6 +64,10 @@ jobs:
           body: 'Automated update of generated documentation from JSON sources'
           branch: docs-update
           delete-branch: true
+          add-paths: |
+            docs/content/dev/
+            config/tweaks.json
+            config/feature.json
           labels: |
             automated
             documentation
