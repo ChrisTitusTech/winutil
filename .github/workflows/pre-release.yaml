@@ -23,6 +23,12 @@ jobs:
           Set-Location tools
           ./devdocs-generator.ps1
 
+      - name: Compile project
+        shell: pwsh
+        run: |
+          Set-ExecutionPolicy Bypass -Scope Process -Force; ./Compile.ps1
+        continue-on-error: false # Directly fail the job on error, removing the need for a separate check
+
       - name: Create Pull Request for Updated JSON Links
         id: cpr
         uses: peter-evans/create-pull-request@v6
@@ -45,12 +51,6 @@ jobs:
         run: |
           echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
           echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
-
-      - name: Compile project
-        shell: pwsh
-        run: |
-          Set-ExecutionPolicy Bypass -Scope Process -Force; ./Compile.ps1
-        continue-on-error: false # Directly fail the job on error, removing the need for a separate check
 
       - name: Set Version to Todays Date
         id: extract_version
