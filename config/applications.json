@@ -3242,7 +3242,7 @@
         "description": "FilePilot is a modern, fast file explorer for Windows with tabs, dual-pane, and advanced file management. Can be set as the default Windows Explorer replacement.",
         "link": "https://filepilot.tech/",
         "winget": "Voidstar.FilePilot"
-    }
+    },
     "LLLVM": {
         "category": "Development",
         "choco": "llvm",
