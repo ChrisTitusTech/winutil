@@ -8,7 +8,7 @@ on:
 
 jobs:
   auto-merge:
-    if: github.event.pull_request.head.ref == 'docs-update' && (github.event.pull_request.user.login == 'ChrisTitusTech' || github.event.pull_request.user.login == 'github-actions[bot]')
+    if: github.event.pull_request.head.ref == 'docs-update' && github.event.pull_request.user.login == 'github-actions[bot]'
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
