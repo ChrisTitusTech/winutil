@@ -1529,7 +1529,7 @@
                                     depending on your hardware.
                                 </TextBlock>
                                 <Button Name="WPFWin11ISOModifyButton"
-                                        Content="Run install.wim Modification"
+                                        Content="Run Windows ISO Modification and Creator"
                                         HorizontalAlignment="Left"
                                         Width="Auto" Padding="12,0"
                                         Height="{DynamicResource ButtonHeight}"/>
