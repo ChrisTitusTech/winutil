@@ -25,7 +25,7 @@ jobs:
           GH_TOKEN: ${{ secrets.AUTO_MERGE }}
 
       - name: Enable auto-merge
-        run: gh pr merge "$PR_NUMBER" --squash --auto --delete-branch
+        run: gh pr merge "$PR_NUMBER" --squash --delete-branch
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
