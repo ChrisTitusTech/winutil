@@ -66,7 +66,7 @@
     "InvokeScript": [
       "
       # Sometimes if you dont stop the Widgets process the removal may fail
-      
+
       Stop-Process -Name Widgets
       Get-AppxPackage Microsoft.WidgetsPlatformRuntime -AllUsers | Remove-AppxPackage -AllUsers
       Get-AppxPackage MicrosoftWindows.Client.WebExperience -AllUsers | Remove-AppxPackage -AllUsers
@@ -78,10 +78,10 @@
     "UndoScript": [
       "
       Write-Host \"Restoring widgets AppxPackages\"
-      
+
       Add-AppxPackage -Register \"C:\\Program Files\\WindowsApps\\Microsoft.WidgetsPlatformRuntime*\\AppxManifest.xml\" -DisableDevelopmentMode
       Add-AppxPackage -Register \"C:\\Program Files\\WindowsApps\\MicrosoftWindows.Client.WebExperience*\\AppxManifest.xml\" -DisableDevelopmentMode
-      
+
       Invoke-WinUtilExplorerUpdate -action \"restart\"
       "
     ],
@@ -95,12 +95,12 @@
     "InvokeScript": [
       "
       Invoke-WebRequest https://github.com/thebookisclosed/ViVe/releases/download/v0.3.4/ViVeTool-v0.3.4-IntelAmd.zip -OutFile ViVeTool.zip
-      
+
       Expand-Archive ViVeTool.zip
       Remove-Item ViVeTool.zip
-      
+
       Start-Process 'ViVeTool\\ViVeTool.exe' -ArgumentList '/disable /id:47205210' -Wait -NoNewWindow
-      
+
       Remove-Item ViVeTool -Recurse
 
       Write-Host 'Old start menu reverted please restart your computer to take effect'
@@ -109,12 +109,12 @@
     "UndoScript": [
       "
       Invoke-WebRequest https://github.com/thebookisclosed/ViVe/releases/download/v0.3.4/ViVeTool-v0.3.4-IntelAmd.zip -OutFile ViVeTool.zip
-      
+
       Expand-Archive ViVeTool.zip
       Remove-Item ViVeTool.zip
-      
+
       Start-Process 'ViVeTool\\ViVeTool.exe' -ArgumentList '/enable /id:47205210' -Wait -NoNewWindow
-      
+
       Remove-Item ViVeTool -Recurse
 
       Write-Host 'New start menu reverted please restart your computer to take effect'
@@ -1875,7 +1875,7 @@
       Get-AppxPackage -AllUsers Microsoft.MicrosoftOfficeHub | Remove-AppxPackage -AllUsers
 
       $Appx = (Get-AppxPackage MicrosoftWindows.Client.CoreAI).PackageFullName
-      
+
       $Sid = (Get-LocalUser $Env:UserName).Sid.Value
       New-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Appx\\AppxAllUserStore\\EndOfLife\\$Sid\\$Appx\" -Force
       Remove-AppxPackage $Appx
@@ -1907,7 +1907,7 @@
   },
   "WPFTweaksRazerBlock": {
     "Content": "Block Razer Software Installs",
-    "Description": "Blocks ALL Razer Software installations. The hardware works fine without any software. WARNING: this will also block all Windows third-party driver installations.",
+    "Description": "Blocks ALL Razer Software installations. The hardware works fine without any software.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [

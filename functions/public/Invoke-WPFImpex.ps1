@@ -71,8 +71,10 @@ function Invoke-WPFImpex {
                     # $flattenedJson = $jsonFile.PSObject.Properties.Where({ $_.Name -ne "Install" }).ForEach({ $_.Value })
                     $flattenedJson = $jsonFile
                     Update-WinUtilSelections -flatJson $flattenedJson
-                    # TODO test with toggles
-                    Reset-WPFCheckBoxes -doToggles $true
+
+                    if (!$PARAM_NOUI) {
+                        Reset-WPFCheckBoxes -doToggles $true
+                    }
                 }
             } catch {
                 Write-Error "An error occurred while importing: $_"
