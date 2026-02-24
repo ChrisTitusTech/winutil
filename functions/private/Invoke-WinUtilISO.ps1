@@ -124,7 +124,15 @@ function Invoke-WinUtilISOMountAndVerify {
                 [void]$sync["WPFWin11ISOEditionComboBox"].Items.Add("$($img.ImageIndex): $($img.ImageName)")
             }
             if ($sync["WPFWin11ISOEditionComboBox"].Items.Count -gt 0) {
-                $sync["WPFWin11ISOEditionComboBox"].SelectedIndex = 0
+                # Default to Windows 11 Pro; fall back to first item if not found
+                $proIndex = -1
+                for ($i = 0; $i -lt $sync["WPFWin11ISOEditionComboBox"].Items.Count; $i++) {
+                    if ($sync["WPFWin11ISOEditionComboBox"].Items[$i] -match "Windows 11 Pro(?![\w ])") {
+                        $proIndex = $i
+                        break
+                    }
+                }
+                $sync["WPFWin11ISOEditionComboBox"].SelectedIndex = if ($proIndex -ge 0) { $proIndex } else { 0 }
             }
         })
         $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Visible"
@@ -513,11 +521,17 @@ function Invoke-WinUtilISOExport {
 
     $outputISO = $dlg.FileName
     Write-Win11ISOLog "Exporting to ISO: $outputISO"
+
     Set-WinUtilProgressBar -Label "Building ISO..." -Percent 10
 
-    # Locate oscdimg.exe (Windows ADK)
+    # Locate oscdimg.exe (Windows ADK or winget per-user install)
     $oscdimg = Get-ChildItem "C:\Program Files (x86)\Windows Kits" -Recurse -Filter "oscdimg.exe" -ErrorAction SilentlyContinue |
                Select-Object -First 1 -ExpandProperty FullName
+    if (-not $oscdimg) {
+        $oscdimg = Get-ChildItem "$env:LOCALAPPDATA\Microsoft\WinGet\Packages" -Recurse -Filter "oscdimg.exe" -ErrorAction SilentlyContinue |
+                   Where-Object { $_.FullName -match 'Microsoft\.OSCDIMG' } |
+                   Select-Object -First 1 -ExpandProperty FullName
+    }
 
     if (-not $oscdimg) {
         Write-Win11ISOLog "oscdimg.exe not found.  Attempting to install via winget..."
@@ -526,8 +540,9 @@ function Invoke-WinUtilISOExport {
             $winget = Get-Command winget -ErrorAction Stop
             $result = & $winget install -e --id Microsoft.OSCDIMG --accept-package-agreements --accept-source-agreements 2>&1
             Write-Win11ISOLog "winget output: $result"
-            # Re-scan for oscdimg after install
-            $oscdimg = Get-ChildItem "C:\Program Files (x86)\Windows Kits" -Recurse -Filter "oscdimg.exe" -ErrorAction SilentlyContinue |
+            # Re-scan after install
+            $oscdimg = Get-ChildItem "$env:LOCALAPPDATA\Microsoft\WinGet\Packages" -Recurse -Filter "oscdimg.exe" -ErrorAction SilentlyContinue |
+                       Where-Object { $_.FullName -match 'Microsoft\.OSCDIMG' } |
                        Select-Object -First 1 -ExpandProperty FullName
         } catch {
             Write-Win11ISOLog "winget not available or install failed: $_"
@@ -559,7 +574,31 @@ function Invoke-WinUtilISOExport {
 
     try {
         Write-Win11ISOLog "Running oscdimg..."
-        $proc = Start-Process -FilePath $oscdimg -ArgumentList $oscdimgArgs -Wait -PassThru -NoNewWindow
+        $psi = [System.Diagnostics.ProcessStartInfo]::new()
+        $psi.FileName               = $oscdimg
+        $psi.Arguments              = $oscdimgArgs -join " "
+        $psi.RedirectStandardOutput = $true
+        $psi.RedirectStandardError  = $true
+        $psi.UseShellExecute        = $false
+        $psi.CreateNoWindow         = $true
+
+        $proc = [System.Diagnostics.Process]::new()
+        $proc.StartInfo = $psi
+        $proc.Start() | Out-Null
+
+        # Stream stdout and stderr line-by-line to the status log
+        $stdoutTask = $proc.StandardOutput.ReadToEndAsync()
+        $stderrTask = $proc.StandardError.ReadToEndAsync()
+        $proc.WaitForExit()
+        [System.Threading.Tasks.Task]::WaitAll($stdoutTask, $stderrTask)
+
+        foreach ($line in ($stdoutTask.Result -split "`r?`n")) {
+            if ($line.Trim()) { Write-Win11ISOLog $line }
+        }
+        foreach ($line in ($stderrTask.Result -split "`r?`n")) {
+            if ($line.Trim()) { Write-Win11ISOLog "[stderr]$line" }
+        }
+
         if ($proc.ExitCode -eq 0) {
             Set-WinUtilProgressBar -Label "ISO exported ✔" -Percent 100
             Write-Win11ISOLog "ISO exported successfully: $outputISO"
