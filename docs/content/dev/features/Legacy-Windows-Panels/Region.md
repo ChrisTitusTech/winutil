@@ -3,31 +3,14 @@ title: "Region"
 description: ""
 ---
 
-```powershell {filename="functions/public/Invoke-WPFControlPanel.ps1",linenos=inline,linenostart=1}
-function Invoke-WPFControlPanel {
-    <#
-
-    .SYNOPSIS
-        Opens the requested legacy panel
-
-    .PARAMETER Panel
-        The panel to open
-
-    #>
-    param($Panel)
-
-    switch ($Panel) {
-        "WPFPanelControl" {control}
-        "WPFPanelComputer" {compmgmt.msc}
-        "WPFPanelNetwork" {ncpa.cpl}
-        "WPFPanelPower"   {powercfg.cpl}
-        "WPFPanelPrinter" {Start-Process "shell:::{A8A91A66-3A7D-4424-8D24-04E180695C7A}"}
-        "WPFPanelRegion"  {intl.cpl}
-        "WPFPanelRestore"  {rstrui.exe}
-        "WPFPanelSound"   {mmsys.cpl}
-        "WPFPanelSystem"  {sysdm.cpl}
-        "WPFPanelTimedate" {timedate.cpl}
-        "WPFPanelUser"    {control userpasswords2}
-    }
-}
+```json {filename="config/feature.json",linenos=inline,linenostart=230}
+  "WPFPanelRegion": {
+    "Content": "Region",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "InvokeScript": [
+      "intl.cpl"
+    ],
 ```

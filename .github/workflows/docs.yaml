@@ -56,7 +56,7 @@ jobs:
 
       - name: Create Pull Request
         id: cpr
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.AUTO_MERGE }}
           commit-message: 'chore: Update generated dev docs'
