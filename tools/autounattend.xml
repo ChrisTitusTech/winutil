@@ -449,8 +449,17 @@ $scripts = @(
         ) -Force -ErrorAction 'SilentlyContinue' -Verbose;
     };
     {
-        reg.exe delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v NoAutoUpdate /f;
-        reg.exe delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v DisableWindowsUpdateAccess /f;
+        reg.exe delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v NoAutoUpdate              /f;
+        reg.exe delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v AUOptions                 /f;
+        reg.exe delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v UseWUServer               /f;
+        reg.exe delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate"    /v DisableWindowsUpdateAccess /f;
+        reg.exe delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate"    /v WUServer                  /f;
+        reg.exe delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate"    /v WUStatusServer            /f;
+        reg.exe delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" /v DODownloadMode /f;
+        reg.exe add "HKLM\SYSTEM\CurrentControlSet\Services\BITS"         /v Start /t REG_DWORD /d 3 /f;
+        reg.exe add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv"     /v Start /t REG_DWORD /d 3 /f;
+        reg.exe add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc"       /v Start /t REG_DWORD /d 2 /f;
+        reg.exe add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v Start /t REG_DWORD /d 3 /f;
     };
     {
         $recallFeature = Get-WindowsOptionalFeature -Online -ErrorAction SilentlyContinue | Where-Object { $_.State -eq 'Enabled' -and $_.FeatureName -like 'Recall' };
