@@ -7,9 +7,8 @@ function Invoke-WinUtilISOScript {
         Performs the following operations against an already-mounted WIM image:
 
         1. Removes provisioned AppX bloatware packages via DISM.
-        2. Deletes Microsoft Edge program files.
-        3. Removes OneDriveSetup.exe from the system image.
-        4. Loads offline registry hives (COMPONENTS, DEFAULT, NTUSER, SOFTWARE, SYSTEM)
+        2. Removes OneDriveSetup.exe from the system image.
+        3. Loads offline registry hives (COMPONENTS, DEFAULT, NTUSER, SOFTWARE, SYSTEM)
            and applies the following tweaks:
              - Bypasses hardware requirement checks (CPU, RAM, SecureBoot, Storage, TPM).
              - Disables sponsored-app delivery and ContentDeliveryManager features.
@@ -19,14 +18,13 @@ function Invoke-WinUtilISOScript {
              - Disables reserved storage.
              - Disables BitLocker device encryption.
              - Hides the Chat (Teams) taskbar icon.
-             - Removes Edge uninstall registry entries.
              - Disables OneDrive folder backup (KFM).
              - Disables telemetry, advertising ID, and input personalization.
              - Blocks post-install delivery of DevHome, Outlook, and Teams.
              - Disables Windows Copilot.
              - Disables Windows Update during OOBE.
-        5. Deletes unwanted scheduled-task XML definition files (CEIP, Appraiser, etc.).
-        6. Removes the support\ folder from the ISO contents directory (if supplied).
+        4. Deletes unwanted scheduled-task XML definition files (CEIP, Appraiser, etc.).
+        5. Removes the support\ folder from the ISO contents directory (if supplied).
 
         Mounting and dismounting the WIM is the responsibility of the caller
         (e.g. Invoke-WinUtilISO).
@@ -167,13 +165,7 @@ function Invoke-WinUtilISOScript {
     }
 
     # ═════════════════════════════════════════════════════════════════════════
-    #  2. Remove Edge
-    # ═════════════════════════════════════════════════════════════════════════
-    & $Log "Removing Edge..."
-    Remove-Item -Path "$ScratchDir\Program Files (x86)\Microsoft\Edge"       -Recurse -Force -ErrorAction SilentlyContinue
-
-    # ═════════════════════════════════════════════════════════════════════════
-    #  3. Remove OneDrive
+    #  2. Remove OneDrive
     # ═════════════════════════════════════════════════════════════════════════
     & $Log "Removing OneDrive..."
     & takeown /f "$ScratchDir\Windows\System32\OneDriveSetup.exe" | Out-Null
@@ -181,7 +173,7 @@ function Invoke-WinUtilISOScript {
     Remove-Item -Path "$ScratchDir\Windows\System32\OneDriveSetup.exe" -Force -ErrorAction SilentlyContinue
 
     # ═════════════════════════════════════════════════════════════════════════
-    #  4. Registry tweaks
+    #  3. Registry tweaks
     # ═════════════════════════════════════════════════════════════════════════
     & $Log "Loading offline registry hives..."
     reg load HKLM\zCOMPONENTS "$ScratchDir\Windows\System32\config\COMPONENTS"
@@ -258,10 +250,6 @@ function Invoke-WinUtilISOScript {
     Set-ISOScriptReg 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\Windows Chat' 'ChatIcon' 'REG_DWORD' '3'
     Set-ISOScriptReg 'HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' 'TaskbarMn' 'REG_DWORD' '0'
 
-    & $Log "Removing Edge registry entries..."
-    Remove-ISOScriptReg 'HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge'
-    Remove-ISOScriptReg 'HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update'
-
     & $Log "Disabling OneDrive folder backup..."
     Set-ISOScriptReg 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\OneDrive' 'DisableFileSyncNGSC' 'REG_DWORD' '1'
 
@@ -307,7 +295,7 @@ function Invoke-WinUtilISOScript {
     reg unload HKLM\zSYSTEM
 
     # ═════════════════════════════════════════════════════════════════════════
-    #  5. Delete scheduled task definition files
+    #  4. Delete scheduled task definition files
     # ═════════════════════════════════════════════════════════════════════════
     & $Log "Deleting scheduled task definition files..."
     $tasksPath = "$ScratchDir\Windows\System32\Tasks"
@@ -321,7 +309,7 @@ function Invoke-WinUtilISOScript {
     & $Log "Scheduled task files deleted."
 
     # ═════════════════════════════════════════════════════════════════════════
-    #  6. Remove ISO support folder (fresh-install only; not needed)
+    #  5. Remove ISO support folder (fresh-install only; not needed)
     # ═════════════════════════════════════════════════════════════════════════
     if ($ISOContentsDir -and (Test-Path $ISOContentsDir)) {
         & $Log "Removing ISO support\ folder..."
