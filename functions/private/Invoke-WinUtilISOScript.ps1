@@ -5,10 +5,12 @@ function Invoke-WinUtilISOScript {
 
     .DESCRIPTION
         Removes AppX bloatware and OneDrive, injects hardware drivers (NVMe, Precision
-        Touchpad/HID, and network) exported from the running system, applies offline
-        registry tweaks (hardware bypass, privacy, OOBE, telemetry, update suppression),
-        deletes CEIP/WU scheduled-task definition files, and optionally drops
-        autounattend.xml and removes the support\ folder from the ISO contents directory.
+        Touchpad/HID, and network) exported from the running system, optionally injects
+        extended Storage & Network drivers from the ChrisTitusTech/storage-lan-drivers
+        repository (requires git, installed via winget if absent), applies offline registry
+        tweaks (hardware bypass, privacy, OOBE, telemetry, update suppression), deletes
+        CEIP/WU scheduled-task definition files, and optionally drops autounattend.xml and
+        removes the support\ folder from the ISO contents directory.
         Mounting/dismounting the WIM is the caller's responsibility (e.g. Invoke-WinUtilISO).
 
     .PARAMETER ScratchDir
@@ -44,7 +46,7 @@ function Invoke-WinUtilISOScript {
     .NOTES
         Author  : Chris Titus @christitustech
         GitHub  : https://github.com/ChrisTitusTech
-        Version : 26.02.25
+        Version : 26.02.25b
     #>
     param (
         [Parameter(Mandatory)][string]$ScratchDir,
@@ -177,11 +179,62 @@ function Invoke-WinUtilISOScript {
             }
         }
 
-        & $Log "Driver injection complete — $injected driver package(s) added."
+        & $Log "Driver injection complete - $injected driver package(s) added."
     } catch {
         & $Log "Error during driver export/injection: $_"
     } finally {
         Remove-Item -Path $driverExportRoot -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    # ── 2b. Optional: extended Storage & Network drivers from community repo ──
+    $extDriverChoice = [System.Windows.MessageBox]::Show(
+        "Would you like to inject extended Storage and Network drivers?`n`n" +
+        "This clones github.com/ChrisTitusTech/storage-lan-drivers and injects all " +
+        "drivers from that repository into the image.`n`n" +
+        "Git will be installed via winget if it is not already present.",
+        "Extended Drivers", "YesNo", "Question")
+
+    if ($extDriverChoice -eq 'Yes') {
+        & $Log "Extended driver injection requested."
+
+        # Ensure git is available
+        $gitCmd = Get-Command git -ErrorAction SilentlyContinue
+        if (-not $gitCmd) {
+            & $Log "Git not found — installing via winget..."
+            winget install --id Git.Git -e --source winget `
+                --accept-package-agreements --accept-source-agreements | Out-Null
+            # Refresh PATH so git is visible in this session
+            $env:PATH = [System.Environment]::GetEnvironmentVariable('PATH', 'Machine') + ';' +
+                        [System.Environment]::GetEnvironmentVariable('PATH', 'User')
+            $gitCmd = Get-Command git -ErrorAction SilentlyContinue
+        }
+
+        if (-not $gitCmd) {
+            & $Log "Warning: git could not be found after install attempt — skipping extended drivers."
+        } else {
+            $extRepoDir = Join-Path $env:TEMP "WinUtil_ExtDrivers_$(Get-Random)"
+            try {
+                & $Log "Cloning storage-lan-drivers repository..."
+                & git clone --depth 1 `
+                    "https://github.com/ChrisTitusTech/storage-lan-drivers" `
+                    $extRepoDir 2>&1 | ForEach-Object { & $Log "  git: $_" }
+
+                if (Test-Path $extRepoDir) {
+                    & $Log "Injecting extended drivers into image (this may take several minutes)..."
+                    & dism /English "/image:$ScratchDir" /Add-Driver "/Driver:$extRepoDir" /Recurse 2>&1 |
+                        ForEach-Object { & $Log "  dism: $_" }
+                    & $Log "Extended driver injection complete."
+                } else {
+                    & $Log "Warning: repository clone directory not found — skipping extended drivers."
+                }
+            } catch {
+                & $Log "Error during extended driver injection: $_"
+            } finally {
+                Remove-Item -Path $extRepoDir -Recurse -Force -ErrorAction SilentlyContinue
+            }
+        }
+    } else {
+        & $Log "Extended driver injection skipped."
     }
 
     # ═════════════════════════════════════════════════════════════════════════

@@ -141,12 +141,14 @@ exit
             # ── Phase 3: Create partitions via diskpart ──────────────────────────
             # "create partition efi" is not supported on removable media.
             # A single FAT32 primary partition is all that is needed for a UEFI-
-            # bootable Windows install USB – the firmware locates \EFI\Boot\bootx64.efi
+            # bootable Windows install USB - the firmware locates \EFI\Boot\bootx64.efi
             # on any FAT32 volume regardless of GPT partition type.
+            # FAT32 label limit is 11 chars; "W11-yyMMdd" = 10, fits without trimming.
+            $volLabel = "W11-" + (Get-Date).ToString('yyMMdd')
             $dpScript2 = @"
 select disk $diskNum
 create partition primary
-format quick fs=fat32 label="WINPE"
+format quick fs=fat32 label="$volLabel"
 exit
 "@
             $dpFile2 = Join-Path $env:TEMP "winutil_diskpart2_$(Get-Random).txt"
