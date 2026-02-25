@@ -189,10 +189,10 @@ function Invoke-WinUtilISOScript {
     # ── 2b. Optional: extended Storage & Network drivers from community repo ──
     $extDriverChoice = [System.Windows.MessageBox]::Show(
         "Would you like to add extended Storage and Network drivers?`n`n" +
-        "This installs EVERY Storage and Networking device driver" +
+        "This installs EVERY Storage and Networking device driver " +
         "in EXISTANCE into the image. (~1000 drivers)`n`n" +
         "No Wireless drivers only Ethernet, use for stubborn systems " +
-        "with unsupported NVMe or Ethernet controllers." +,
+        "with unsupported NVMe or Ethernet controllers.",
         "Extended Drivers", "YesNo", "Question")
 
     if ($extDriverChoice -eq 'Yes') {
