@@ -80,47 +80,48 @@ function Invoke-WinUtilISOScript {
         }
     }
 
-    # Returns the full paths of every exported .inf whose online driver class
-    # matches one of the supplied class names.
-    function Get-ExportedInfPaths {
+    # Copies driver package folders (one per exported .inf) whose online class
+    # matches any of the supplied class names into a new temp staging directory.
+    # Returns the staging directory path — caller must delete it when done.
+    # Using a staging dir lets DISM inject all drivers in a single /Recurse
+    # call instead of one DISM process launch per .inf file.
+    function New-DriverStagingDir {
         param ([string]$ExportRoot, [string[]]$Classes)
+        $stagingDir = Join-Path $env:TEMP "WinUtil_DriverStage_$(Get-Random)"
+        New-Item -Path $stagingDir -ItemType Directory -Force | Out-Null
         Get-WindowsDriver -Online |
             Where-Object { $_.ClassName -in $Classes } |
             ForEach-Object { [IO.Path]::GetFileNameWithoutExtension($_.OriginalFileName) } |
             Select-Object -Unique |
             ForEach-Object {
                 Get-ChildItem -Path $ExportRoot -Filter "$_.inf" -Recurse -ErrorAction SilentlyContinue |
-                    Select-Object -ExpandProperty FullName
+                    Select-Object -ExpandProperty DirectoryName -Unique |
+                    ForEach-Object {
+                        # Each exported driver lives in its own sub-folder;
+                        # copy that folder (with its binary files) into staging.
+                        $dest = Join-Path $stagingDir (Split-Path $_ -Leaf)
+                        Copy-Item -Path $_ -Destination $dest -Recurse -Force -ErrorAction SilentlyContinue
+                    }
             }
+        return $stagingDir
     }
 
-    # Injects drivers into a DISM-mounted image.  Pass either a list of .inf
-    # paths via -InfPaths, or a driver folder via -DriverDir (uses /Recurse).
+    # Injects all drivers from $DriverDir into a DISM-mounted image in one call.
     function Add-DriversToImage {
         param (
             [string]$MountPath,
-            [string[]]$InfPaths,
             [string]$DriverDir,
             [string]$Label = "image",
             [scriptblock]$Logger
         )
-        if ($DriverDir) {
-            & dism /English "/image:$MountPath" /Add-Driver "/Driver:$DriverDir" /Recurse 2>&1 |
-                ForEach-Object { & $Logger "  dism[$Label]: $_" }
-        } else {
-            foreach ($inf in $InfPaths) {
-                & dism /English "/image:$MountPath" /Add-Driver "/Driver:$inf" 2>&1 |
-                    ForEach-Object { & $Logger "  dism[$Label]: $_" }
-            }
-        }
+        & dism /English "/image:$MountPath" /Add-Driver "/Driver:$DriverDir" /Recurse 2>&1 |
+            ForEach-Object { & $Logger "  dism[$Label]: $_" }
     }
 
-    # Mounts boot.wim index 2, injects drivers, saves, and dismounts.
-    # Pass either -InfPaths (individual .inf files) or -DriverDir (/Recurse).
+    # Mounts boot.wim index 2, injects all drivers from $DriverDir, saves, dismounts.
     function Invoke-BootWimInject {
         param (
             [string]$BootWimPath,
-            [string[]]$InfPaths,
             [string]$DriverDir,
             [scriptblock]$Logger
         )
@@ -130,7 +131,7 @@ function Invoke-WinUtilISOScript {
         try {
             & $Logger "Mounting boot.wim (index 2 — Windows Setup) for driver injection..."
             Mount-WindowsImage -ImagePath $BootWimPath -Index 2 -Path $mountDir -ErrorAction Stop | Out-Null
-            Add-DriversToImage -MountPath $mountDir -InfPaths $InfPaths -DriverDir $DriverDir -Label "boot" -Logger $Logger
+            Add-DriversToImage -MountPath $mountDir -DriverDir $DriverDir -Label "boot" -Logger $Logger
             & $Logger "Saving boot.wim..."
             Dismount-WindowsImage -Path $mountDir -Save -ErrorAction Stop | Out-Null
             & $Logger "boot.wim driver injection complete."
@@ -219,19 +220,22 @@ function Invoke-WinUtilISOScript {
     try {
         Export-WindowsDriver -Online -Destination $driverExportRoot | Out-Null
 
+        # Stage matching driver folders then do a single DISM /Recurse call.
         # install.wim: SCSIAdapter + HIDClass + Net
-        $installInfs = Get-ExportedInfPaths -ExportRoot $driverExportRoot -Classes @('SCSIAdapter','HIDClass','Net')
-        & $Log "Injecting $(@($installInfs).Count) driver package(s) into install.wim..."
-        Add-DriversToImage -MountPath $ScratchDir -InfPaths $installInfs -Label "install" -Logger $Log
+        $installStage = New-DriverStagingDir -ExportRoot $driverExportRoot -Classes @('SCSIAdapter','HIDClass','Net')
+        & $Log "Injecting staged drivers into install.wim (single DISM call)..."
+        Add-DriversToImage -MountPath $ScratchDir -DriverDir $installStage -Label "install" -Logger $Log
+        Remove-Item -Path $installStage -Recurse -Force -ErrorAction SilentlyContinue
         & $Log "install.wim driver injection complete."
 
         # boot.wim: SCSIAdapter + Net only (HID not needed in WinPE)
         if ($ISOContentsDir -and (Test-Path $ISOContentsDir)) {
             $bootWim = Join-Path $ISOContentsDir "sources\boot.wim"
             if (Test-Path $bootWim) {
-                $bootInfs = Get-ExportedInfPaths -ExportRoot $driverExportRoot -Classes @('SCSIAdapter','Net')
-                & $Log "Injecting $(@($bootInfs).Count) driver package(s) into boot.wim..."
-                Invoke-BootWimInject -BootWimPath $bootWim -InfPaths $bootInfs -Logger $Log
+                $bootStage = New-DriverStagingDir -ExportRoot $driverExportRoot -Classes @('SCSIAdapter','Net')
+                & $Log "Injecting staged drivers into boot.wim (single DISM call)..."
+                Invoke-BootWimInject -BootWimPath $bootWim -DriverDir $bootStage -Logger $Log
+                Remove-Item -Path $bootStage -Recurse -Force -ErrorAction SilentlyContinue
             } else {
                 & $Log "Warning: boot.wim not found — skipping boot.wim driver injection."
             }
