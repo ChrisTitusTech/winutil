@@ -376,6 +376,7 @@ function Invoke-WinUtilISOModify {
             # the UI thread here.
             $sync["WPFWin11ISOOutputSection"].Dispatcher.Invoke([action]{
                 $sync["WPFWin11ISOOutputSection"].Visibility = "Visible"
+                $sync["WPFWin11ISOStatusLog"].Height = 300
             })
         }
         catch {
@@ -480,12 +481,13 @@ function Invoke-WinUtilISOCheckExistingWork {
     $sync["WPFWin11ISOMountSection"].Visibility  = "Collapsed"
     $sync["WPFWin11ISOModifySection"].Visibility = "Collapsed"
     $sync["WPFWin11ISOOutputSection"].Visibility = "Visible"
+    $sync["WPFWin11ISOStatusLog"].Height = 300
 
     # Notify via the status log
     $dirName  = $existingWorkDir.Name
     $modified = $existingWorkDir.LastWriteTime.ToString("yyyy-MM-dd HH:mm")
     Write-Win11ISOLog "Existing working directory found: $($existingWorkDir.FullName)"
-    Write-Win11ISOLog "Last modified: $modified  —  Skipping Steps 1-3 and resuming at Step 4."
+    Write-Win11ISOLog "Last modified: $modified - Skipping Steps 1-3 and resuming at Step 4."
     Write-Win11ISOLog "Click 'Clean & Reset' if you want to start over with a new ISO."
 
     [System.Windows.MessageBox]::Show(
@@ -498,6 +500,8 @@ function Invoke-WinUtilISOCleanAndReset {
     .SYNOPSIS
         Deletes the temporary working directory created during ISO modification
         and resets the entire ISO UI back to its initial state (Step 1 only).
+        Deletion runs in a background runspace so the UI stays responsive and
+        progress is reported to the user.
     #>
 
     $workDir = $sync["Win11ISOWorkDir"]
@@ -507,37 +511,126 @@ function Invoke-WinUtilISOCleanAndReset {
             "This will delete the temporary working directory:`n`n$workDir`n`nAnd reset the interface back to the start.`n`nContinue?",
             "Clean & Reset", "YesNo", "Warning")
         if ($confirm -ne "Yes") { return }
-
-        try {
-            Write-Win11ISOLog "Deleting temp directory: $workDir"
-            Remove-Item -Path $workDir -Recurse -Force -ErrorAction Stop
-            Write-Win11ISOLog "Temp directory deleted."
-        } catch {
-            Write-Win11ISOLog "WARNING: could not fully delete temp directory: $_"
-        }
     }
 
-    # Clear all stored ISO state
-    $sync["Win11ISOWorkDir"]     = $null
-    $sync["Win11ISOContentsDir"] = $null
-    $sync["Win11ISOImagePath"]   = $null
-    $sync["Win11ISODriveLetter"] = $null
-    $sync["Win11ISOWimPath"]     = $null
-    $sync["Win11ISOImageInfo"]   = $null
-    $sync["Win11ISOUSBDisks"]    = $null
+    # Disable button so it cannot be clicked twice
+    $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $false
 
-    # Reset the UI to the initial state
-    $sync["WPFWin11ISOPath"].Text                     = "No ISO selected..."
-    $sync["WPFWin11ISOFileInfo"].Visibility            = "Collapsed"
-    $sync["WPFWin11ISOVerifyResultPanel"].Visibility   = "Collapsed"
-    $sync["WPFWin11ISOOptionUSB"].Visibility           = "Collapsed"
-    $sync["WPFWin11ISOOutputSection"].Visibility       = "Collapsed"
-    $sync["WPFWin11ISOModifySection"].Visibility       = "Collapsed"
-    $sync["WPFWin11ISOMountSection"].Visibility        = "Collapsed"
-    $sync["WPFWin11ISOSelectSection"].Visibility       = "Visible"
-    $sync["WPFWin11ISOStatusLog"].Text                 = "Ready. Please select a Windows 11 ISO to begin."
-    $sync["WPFWin11ISOStatusLog"].Height               = 140
-    $sync["WPFWin11ISOModifyButton"].IsEnabled         = $true
+    $runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
+    $runspace.ApartmentState = "STA"
+    $runspace.ThreadOptions  = "ReuseThread"
+    $runspace.Open()
+    $runspace.SessionStateProxy.SetVariable("sync",    $sync)
+    $runspace.SessionStateProxy.SetVariable("workDir", $workDir)
+
+    $script = [Management.Automation.PowerShell]::Create()
+    $script.Runspace = $runspace
+    $script.AddScript({
+
+        function Log($msg) {
+            $ts = (Get-Date).ToString("HH:mm:ss")
+            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+                $sync["WPFWin11ISOStatusLog"].Text += "`n[$ts] $msg"
+                $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
+                $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
+            })
+        }
+        function SetProgress($label, $pct) {
+            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+                $sync.progressBarTextBlock.Text    = $label
+                $sync.progressBarTextBlock.ToolTip = $label
+                $sync.ProgressBar.Value            = [Math]::Max($pct, 5)
+            })
+        }
+
+        try {
+            if ($workDir -and (Test-Path $workDir)) {
+                Log "Scanning files to delete in: $workDir"
+                SetProgress "Scanning files..." 5
+
+                $allItems  = @(Get-ChildItem -Path $workDir -Recurse -Force -ErrorAction SilentlyContinue)
+                $total     = $allItems.Count
+                $deleted   = 0
+
+                Log "Found $total items to delete."
+
+                # Delete files first, then directories (deepest first)
+                $files = $allItems | Where-Object { -not $_.PSIsContainer }
+                $dirs  = $allItems | Where-Object {   $_.PSIsContainer   } |
+                         Sort-Object { $_.FullName.Length } -Descending
+
+                foreach ($f in $files) {
+                    try { Remove-Item -Path $f.FullName -Force -ErrorAction Stop } catch {}
+                    $deleted++
+                    $pct = [math]::Round(($deleted / [Math]::Max($total,1)) * 85) + 5
+                    SetProgress "Deleting files... ($deleted / $total)" $pct
+                }
+
+                foreach ($d in $dirs) {
+                    try { Remove-Item -Path $d.FullName -Force -Recurse -ErrorAction Stop } catch {}
+                    $deleted++
+                    $pct = [math]::Round(($deleted / [Math]::Max($total,1)) * 85) + 5
+                    SetProgress "Removing directories... ($deleted / $total)" $pct
+                }
+
+                # Remove the root work directory itself
+                try { Remove-Item -Path $workDir -Force -Recurse -ErrorAction Stop } catch {}
+
+                if (Test-Path $workDir) {
+                    Log "WARNING: some items could not be deleted in $workDir"
+                } else {
+                    Log "Temp directory deleted successfully."
+                }
+            } else {
+                Log "No temp directory found — resetting UI."
+            }
+
+            SetProgress "Resetting UI..." 95
+            Log "Resetting interface..."
+
+            # ── Full UI reset on the dispatcher thread ──────────────────────
+            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+                # Clear stored state
+                $sync["Win11ISOWorkDir"]     = $null
+                $sync["Win11ISOContentsDir"] = $null
+                $sync["Win11ISOImagePath"]   = $null
+                $sync["Win11ISODriveLetter"] = $null
+                $sync["Win11ISOWimPath"]     = $null
+                $sync["Win11ISOImageInfo"]   = $null
+                $sync["Win11ISOUSBDisks"]    = $null
+
+                # Reset UI elements
+                $sync["WPFWin11ISOPath"].Text                     = "No ISO selected..."
+                $sync["WPFWin11ISOFileInfo"].Visibility            = "Collapsed"
+                $sync["WPFWin11ISOVerifyResultPanel"].Visibility   = "Collapsed"
+                $sync["WPFWin11ISOOptionUSB"].Visibility           = "Collapsed"
+                $sync["WPFWin11ISOOutputSection"].Visibility       = "Collapsed"
+                $sync["WPFWin11ISOModifySection"].Visibility       = "Collapsed"
+                $sync["WPFWin11ISOMountSection"].Visibility        = "Collapsed"
+                $sync["WPFWin11ISOSelectSection"].Visibility       = "Visible"
+                $sync["WPFWin11ISOModifyButton"].IsEnabled         = $true
+                $sync["WPFWin11ISOCleanResetButton"].IsEnabled     = $true
+
+                $sync.progressBarTextBlock.Text    = ""
+                $sync.progressBarTextBlock.ToolTip = ""
+                $sync.ProgressBar.Value            = 0
+
+                $sync["WPFWin11ISOStatusLog"].Height = 140
+                $sync["WPFWin11ISOStatusLog"].Text   = "Ready. Please select a Windows 11 ISO to begin."
+            })
+        }
+        catch {
+            Log "ERROR during Clean & Reset: $_"
+            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+                $sync.progressBarTextBlock.Text    = ""
+                $sync.progressBarTextBlock.ToolTip = ""
+                $sync.ProgressBar.Value            = 0
+                $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $true
+            })
+        }
+    }) | Out-Null
+
+    $script.BeginInvoke() | Out-Null
 }
 
 function Invoke-WinUtilISOExport {
