@@ -34,6 +34,7 @@ New to Winutil? Start here:
 2. **[Application Store](store/)** - Learn to install software easily
 3. **[Tweaks Guide](tweaks/)** - Optimize your system
 4. **[Features & Fixes](features/)** - Troubleshoot common issues
+5. **[Win11 Creator](win11Creator/)** - Build a custom debloated Windows 11 ISO
 
 ## Main Features
 
@@ -79,6 +80,12 @@ Automate Winutil configurations for:
 
 **[Read the Automation Guide →](automation/)**
 
+### 💿 Windows 11 Creator
+
+Build a custom Windows 11 ISO with bloatware removed, telemetry disabled, and hardware requirement checks bypassed — then export it as an ISO file or write it directly to a USB drive.
+
+**[Read the Win11 Creator Guide →](win11Creator/)**
+
 ## Quick Links
 
 | I want to... | Go to... |
@@ -89,6 +96,7 @@ Automate Winutil configurations for:
 | Fix Windows Update problems | [Features - Fixes](features/) |
 | Automate setup for multiple PCs | [Automation](automation/) |
 | Understand what tweaks do | [Tweaks Guide](tweaks/) |
+| Build a custom Windows 11 ISO | [Win11 Creator](win11Creator/) |
 
 ## Safety and Best Practices
 
@@ -146,6 +154,7 @@ This User Guide covers everything you need to know:
 2. **[Application Store](store/)** - Installing software, using presets
 3. **[Tweaks](tweaks/)** - System optimizations and customizations
 4. **[Features & Fixes](features/)** - Troubleshooting tools and utilities
+5. **[Win11 Creator](win11Creator/)** - Build a custom debloated Windows 11 ISO
 6. **[Updates](updates/)** - Managing Windows Update behavior
 7. **[Automation](automation/)** - Scripting and batch deployments
 
