@@ -200,23 +200,24 @@ exit
                     New-Item -ItemType Directory -Path (Split-Path $splitDest) -Force | Out-Null
                     Split-WindowsImage -ImagePath $installWim `
                                        -SplitImagePath $splitDest `
-                                       -FileSize 3800 -CheckIntegrity | Out-Null
+                                       -FileSize 3800 -CheckIntegrity
                     Log "install.wim split complete."
 
                     # Copy everything else (exclude install.wim)
+                    Log "Copying remaining files to USB..."
                     $robocopyArgs = @($contentsDir, $usbDrive, "/E", "/XF", "install.wim", "/NFL", "/NDL", "/NJH", "/NJS")
-                    & robocopy @robocopyArgs | Out-Null
+                    & robocopy @robocopyArgs
                 } else {
-                    & robocopy $contentsDir $usbDrive /E /NFL /NDL /NJH /NJS | Out-Null
+                    & robocopy $contentsDir $usbDrive /E /NFL /NDL /NJH /NJS
                 }
             } else {
-                & robocopy $contentsDir $usbDrive /E /NFL /NDL /NJH /NJS | Out-Null
+                & robocopy $contentsDir $usbDrive /E /NFL /NDL /NJH /NJS
             }
 
             SetProgress "Finalising USB drive..." 90
             Log "Files copied to USB."
 
-            SetProgress "USB write complete ✔" 100
+            SetProgress "USB write complete" 100
             Log "USB drive is ready for use."
 
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{

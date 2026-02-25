@@ -273,22 +273,46 @@
         <Style TargetType="ComboBox">
             <Setter Property="Foreground" Value="{DynamicResource ComboBoxForegroundColor}" />
             <Setter Property="Background" Value="{DynamicResource ComboBoxBackgroundColor}" />
+            <Setter Property="MinWidth"   Value="{DynamicResource ButtonWidth}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBox">
                         <Grid>
-                            <ToggleButton x:Name="ToggleButton"
-                                          Background="{TemplateBinding Background}"
-                                          BorderBrush="{TemplateBinding Background}"
-                                          BorderThickness="0"
-                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                          ClickMode="Press">
-                                <TextBlock Text="{TemplateBinding SelectionBoxItem}"
-                                           Foreground="{TemplateBinding Foreground}"
-                                           Background="Transparent"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"
-                                           />
-                            </ToggleButton>
+                            <!-- Outer border gives the combo a visible box -->
+                            <Border x:Name="OuterBorder"
+                                    BorderBrush="{DynamicResource BorderColor}"
+                                    BorderThickness="1"
+                                    CornerRadius="{DynamicResource ButtonCornerRadius}"
+                                    Background="{TemplateBinding Background}">
+                                <ToggleButton x:Name="ToggleButton"
+                                              Background="Transparent"
+                                              BorderThickness="0"
+                                              IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                              ClickMode="Press">
+                                    <!-- Text + arrow laid out in a two-column Grid -->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0"
+                                                   Text="{TemplateBinding SelectionBoxItem}"
+                                                   Foreground="{TemplateBinding Foreground}"
+                                                   Background="Transparent"
+                                                   HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                   Margin="6,3,2,3"/>
+                                        <!-- Scalable vector chevron -->
+                                        <Path Grid.Column="1"
+                                              Data="M 0,0 L 8,0 L 4,5 Z"
+                                              Fill="{TemplateBinding Foreground}"
+                                              Width="8" Height="5"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Center"
+                                              Stretch="Uniform"
+                                              Margin="4,0,6,0"/>
+                                    </Grid>
+                                </ToggleButton>
+                            </Border>
                             <Popup x:Name="Popup"
                                    IsOpen="{TemplateBinding IsDropDownOpen}"
                                    Placement="Bottom"
@@ -297,11 +321,11 @@
                                    PopupAnimation="Slide">
                                 <Border x:Name="DropDownBorder"
                                         Background="{TemplateBinding Background}"
-                                        BorderBrush="{TemplateBinding Foreground}"
+                                        BorderBrush="{DynamicResource BorderColor}"
                                         BorderThickness="1"
                                         CornerRadius="4">
                                     <ScrollViewer>
-                                        <ItemsPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
+                                        <ItemsPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,2"/>
                                     </ScrollViewer>
                                 </Border>
                             </Popup>
@@ -1501,8 +1525,7 @@
                                                   FontSize="{DynamicResource FontSize}"
                                                   Foreground="{DynamicResource MainForegroundColor}"
                                                   Background="{DynamicResource MainBackgroundColor}"
-                                                  BorderBrush="{DynamicResource BorderColor}"
-                                                  HorizontalAlignment="Stretch"
+                                                  HorizontalAlignment="Left"
                                                   Margin="0,0,0,0"/>
                                     </StackPanel>
                                 </Border>
