@@ -562,15 +562,21 @@ function Invoke-WinUtilISOCleanAndReset {
                 foreach ($f in $files) {
                     try { Remove-Item -Path $f.FullName -Force -ErrorAction Stop } catch {}
                     $deleted++
-                    $pct = [math]::Round(($deleted / [Math]::Max($total,1)) * 85) + 5
-                    SetProgress "Deleting files... ($deleted / $total)" $pct
+                    if ($deleted % 100 -eq 0 -or $deleted -eq $files.Count) {
+                        $pct = [math]::Round(($deleted / [Math]::Max($total,1)) * 85) + 5
+                        SetProgress "Deleting files... ($deleted / $total)" $pct
+                        Log "Deleting files... $deleted of $total"
+                    }
                 }
 
                 foreach ($d in $dirs) {
                     try { Remove-Item -Path $d.FullName -Force -Recurse -ErrorAction Stop } catch {}
                     $deleted++
-                    $pct = [math]::Round(($deleted / [Math]::Max($total,1)) * 85) + 5
-                    SetProgress "Removing directories... ($deleted / $total)" $pct
+                    if ($deleted % 50 -eq 0 -or $deleted -eq $total) {
+                        $pct = [math]::Round(($deleted / [Math]::Max($total,1)) * 85) + 5
+                        SetProgress "Removing directories... ($deleted / $total)" $pct
+                        Log "Removing directories... $deleted of $total"
+                    }
                 }
 
                 # Remove the root work directory itself

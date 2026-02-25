@@ -4,30 +4,12 @@ function Invoke-WinUtilISOScript {
         Applies WinUtil modifications to a mounted Windows 11 install.wim image.
 
     .DESCRIPTION
-        Performs the following operations against an already-mounted WIM image:
-
-        1. Removes provisioned AppX bloatware packages via DISM.
-        2. Removes OneDriveSetup.exe from the system image.
-        3. Loads offline registry hives (COMPONENTS, DEFAULT, NTUSER, SOFTWARE, SYSTEM)
-           and applies the following tweaks:
-             - Bypasses hardware requirement checks (CPU, RAM, SecureBoot, Storage, TPM).
-             - Disables sponsored-app delivery and ContentDeliveryManager features.
-             - Enables local-account OOBE path (BypassNRO).
-             - Writes autounattend.xml to the Sysprep directory inside the WIM and,
-               optionally, to the ISO/USB root so Windows Setup picks it up at boot.
-             - Disables reserved storage.
-             - Disables BitLocker device encryption.
-             - Hides the Chat (Teams) taskbar icon.
-             - Disables OneDrive folder backup (KFM).
-             - Disables telemetry, advertising ID, and input personalization.
-             - Blocks post-install delivery of DevHome, Outlook, and Teams.
-             - Disables Windows Copilot.
-             - Disables Windows Update during OOBE.
-        4. Deletes unwanted scheduled-task XML definition files (CEIP, Appraiser, etc.).
-        5. Removes the support\ folder from the ISO contents directory (if supplied).
-
-        Mounting and dismounting the WIM is the responsibility of the caller
-        (e.g. Invoke-WinUtilISO).
+        Removes AppX bloatware and OneDrive, injects hardware drivers (NVMe, Precision
+        Touchpad/HID, and network) exported from the running system, applies offline
+        registry tweaks (hardware bypass, privacy, OOBE, telemetry, update suppression),
+        deletes CEIP/WU scheduled-task definition files, and optionally drops
+        autounattend.xml and removes the support\ folder from the ISO contents directory.
+        Mounting/dismounting the WIM is the caller's responsibility (e.g. Invoke-WinUtilISO).
 
     .PARAMETER ScratchDir
         Mandatory. Full path to the directory where the Windows image is currently mounted.
@@ -62,15 +44,11 @@ function Invoke-WinUtilISOScript {
     .NOTES
         Author  : Chris Titus @christitustech
         GitHub  : https://github.com/ChrisTitusTech
-        Version : 26.02.22
+        Version : 26.02.25
     #>
     param (
         [Parameter(Mandatory)][string]$ScratchDir,
-        # Root directory of the extracted ISO contents. When supplied, autounattend.xml
-        # is written here so Windows Setup picks it up automatically at boot.
         [string]$ISOContentsDir = "",
-        # Autounattend XML content. In compiled winutil.ps1 this comes from the embedded
-        # $WinUtilAutounattendXml here-string; in dev mode it is read from tools\autounattend.xml.
         [string]$AutoUnattendXml = "",
         [scriptblock]$Log = { param($m) Write-Output $m }
     )
@@ -164,7 +142,50 @@ function Invoke-WinUtilISOScript {
     }
 
     # ═════════════════════════════════════════════════════════════════════════
-    #  2. Remove OneDrive
+    #  2. Inject hardware drivers (NVMe / Trackpad / Network)
+    # ═════════════════════════════════════════════════════════════════════════
+    & $Log "Exporting hardware drivers from running system (NVMe, HID/Trackpad, Network)..."
+
+    $driverExportRoot = Join-Path $env:TEMP "WinUtil_DriverExport_$(Get-Random)"
+    New-Item -Path $driverExportRoot -ItemType Directory -Force | Out-Null
+
+    try {
+        # Export every online driver to the temp folder.
+        # Export-WindowsDriver creates one sub-folder per .inf package.
+        Export-WindowsDriver -Online -Destination $driverExportRoot | Out-Null
+
+        # Driver classes to inject:
+        #   SCSIAdapter - NVMe / AHCI storage controllers
+        #   HIDClass    - Precision Touchpad and HID devices
+        #   Net         - Ethernet and Wi-Fi adapters
+        $targetClasses = @('SCSIAdapter', 'HIDClass', 'Net')
+
+        $targetInfBases = Get-WindowsDriver -Online |
+            Where-Object { $_.ClassName -in $targetClasses } |
+            ForEach-Object { [IO.Path]::GetFileNameWithoutExtension($_.OriginalFileName) } |
+            Select-Object -Unique
+
+        $injected = 0
+        foreach ($infBase in $targetInfBases) {
+            $infFile = Get-ChildItem -Path $driverExportRoot -Filter "$infBase.inf" `
+                           -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+            if ($infFile) {
+                & dism /English "/image:$ScratchDir" /Add-Driver "/Driver:$($infFile.FullName)"
+                $injected++
+            } else {
+                & $Log "Warning: exported .inf not found for '$infBase' — skipped."
+            }
+        }
+
+        & $Log "Driver injection complete — $injected driver package(s) added."
+    } catch {
+        & $Log "Error during driver export/injection: $_"
+    } finally {
+        Remove-Item -Path $driverExportRoot -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    # ═════════════════════════════════════════════════════════════════════════
+    #  3. Remove OneDrive
     # ═════════════════════════════════════════════════════════════════════════
     & $Log "Removing OneDrive..."
     & takeown /f "$ScratchDir\Windows\System32\OneDriveSetup.exe" | Out-Null
@@ -172,7 +193,7 @@ function Invoke-WinUtilISOScript {
     Remove-Item -Path "$ScratchDir\Windows\System32\OneDriveSetup.exe" -Force -ErrorAction SilentlyContinue
 
     # ═════════════════════════════════════════════════════════════════════════
-    #  3. Registry tweaks
+    #  4. Registry tweaks
     # ═════════════════════════════════════════════════════════════════════════
     & $Log "Loading offline registry hives..."
     reg load HKLM\zCOMPONENTS "$ScratchDir\Windows\System32\config\COMPONENTS"
@@ -305,7 +326,7 @@ function Invoke-WinUtilISOScript {
     reg unload HKLM\zSYSTEM
 
     # ═════════════════════════════════════════════════════════════════════════
-    #  4. Delete scheduled task definition files
+    #  5. Delete scheduled task definition files
     # ═════════════════════════════════════════════════════════════════════════
     & $Log "Deleting scheduled task definition files..."
     $tasksPath = "$ScratchDir\Windows\System32\Tasks"
@@ -325,7 +346,7 @@ function Invoke-WinUtilISOScript {
     & $Log "Scheduled task files deleted."
 
     # ═════════════════════════════════════════════════════════════════════════
-    #  5. Remove ISO support folder (fresh-install only; not needed)
+    #  6. Remove ISO support folder (fresh-install only; not needed)
     # ═════════════════════════════════════════════════════════════════════════
     if ($ISOContentsDir -and (Test-Path $ISOContentsDir)) {
         & $Log "Removing ISO support\ folder..."
