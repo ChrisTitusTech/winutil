@@ -17,7 +17,7 @@ function Invoke-WinUtilISORefreshUSBDrives {
 
     foreach ($disk in $removable) {
         $sizeGB    = [math]::Round($disk.Size / 1GB, 1)
-        $label     = "Disk $($disk.Number): $($disk.FriendlyName)  [$sizeGB GB]  — $($disk.PartitionStyle)"
+        $label     = "Disk $($disk.Number): $($disk.FriendlyName)  [$sizeGB GB] - $($disk.PartitionStyle)"
         $combo.Items.Add($label)
     }
     $combo.SelectedIndex = 0
@@ -38,7 +38,7 @@ function Invoke-WinUtilISOWriteUSB {
 
     if (-not $contentsDir -or -not (Test-Path $contentsDir)) {
         [System.Windows.MessageBox]::Show(
-            "No modified ISO content found.  Please complete Steps 1–3 first.",
+            "No modified ISO content found.  Please complete Steps 1-3 first.",
             "Not Ready", "OK", "Warning")
         return
     }
@@ -107,28 +107,54 @@ function Invoke-WinUtilISOWriteUSB {
                 return $null
             }
 
-            # ── Diskpart script: clean + GPT + format only (no assign) ──────────
-            # We intentionally omit "assign" here and let PowerShell assign letters
-            # explicitly below.  diskpart's "assign" can silently fail on drives that
-            # previously had letter bindings still present in the registry, which is
-            # the root cause of the "could not locate partition" error.
-            $dpScript = @"
+            # ── Phase 1: Clean the disk via diskpart ────────────────────────────
+            # Only run "clean" here.  "convert gpt" in diskpart requires the disk to
+            # already be MBR; after a clean the disk is RAW, so convert gpt fails on
+            # many systems.  We use Initialize-Disk (which accepts RAW disks) instead.
+            $dpScript1 = @"
 select disk $diskNum
 clean
-convert gpt
-create partition efi size=512
-format quick fs=fat32 label="SYSTEM"
+exit
+"@
+            $dpFile1 = Join-Path $env:TEMP "winutil_diskpart_$(Get-Random).txt"
+            $dpScript1 | Set-Content -Path $dpFile1 -Encoding ASCII
+            Log "Running diskpart clean on Disk $diskNum..."
+            $dpOut1 = diskpart /s $dpFile1 2>&1
+            Remove-Item $dpFile1 -Force -ErrorAction SilentlyContinue
+            $dpOut1 | Where-Object { $_ -match '\S' } | ForEach-Object { Log "  diskpart: $_" }
+
+            # ── Phase 2: Initialize as GPT via PowerShell ────────────────────────
+            # After "clean", Windows may still see the disk as initialized (stale
+            # metadata).  Initialize-Disk only accepts RAW disks; Set-Disk handles
+            # already-initialized (MBR/GPT) disks with no partitions.  Try both.
+            Start-Sleep -Seconds 2
+            Update-Disk -Number $diskNum -ErrorAction SilentlyContinue
+            $diskObj = Get-Disk -Number $diskNum -ErrorAction Stop
+            if ($diskObj.PartitionStyle -eq 'RAW') {
+                Initialize-Disk -Number $diskNum -PartitionStyle GPT -ErrorAction Stop
+                Log "Disk $diskNum initialized as GPT."
+            } else {
+                Set-Disk -Number $diskNum -PartitionStyle GPT -ErrorAction Stop
+                Log "Disk $diskNum converted to GPT (was $($diskObj.PartitionStyle))."
+            }
+
+            # ── Phase 3: Create partitions via diskpart ──────────────────────────
+            # "create partition efi" is not supported on removable media.
+            # A single FAT32 primary partition is all that is needed for a UEFI-
+            # bootable Windows install USB – the firmware locates \EFI\Boot\bootx64.efi
+            # on any FAT32 volume regardless of GPT partition type.
+            $dpScript2 = @"
+select disk $diskNum
 create partition primary
 format quick fs=fat32 label="WINPE"
 exit
 "@
-            $dpFile = Join-Path $env:TEMP "winutil_diskpart_$(Get-Random).txt"
-            $dpScript | Set-Content -Path $dpFile -Encoding ASCII
-            Log "Running diskpart on Disk $diskNum..."
-            $dpOut = diskpart /s $dpFile 2>&1
-            Remove-Item $dpFile -Force -ErrorAction SilentlyContinue
-            # Log diskpart output for diagnostics
-            $dpOut | Where-Object { $_ -match '\S' } | ForEach-Object { Log "  diskpart: $_" }
+            $dpFile2 = Join-Path $env:TEMP "winutil_diskpart2_$(Get-Random).txt"
+            $dpScript2 | Set-Content -Path $dpFile2 -Encoding ASCII
+            Log "Creating partitions on Disk $diskNum..."
+            $dpOut2 = diskpart /s $dpFile2 2>&1
+            Remove-Item $dpFile2 -Force -ErrorAction SilentlyContinue
+            $dpOut2 | Where-Object { $_ -match '\S' } | ForEach-Object { Log "  diskpart: $_" }
 
             SetProgress "Assigning drive letters..." 30
             Start-Sleep -Seconds 3   # allow Windows to settle after partition creation
@@ -169,7 +195,7 @@ exit
                 $wimSizeMB = [math]::Round((Get-Item $installWim).Length / 1MB)
                 if ($wimSizeMB -gt 3800) {
                     # FAT32 limit – split with DISM
-                    Log "install.wim is $wimSizeMB MB – splitting for FAT32 compatibility..."
+                    Log "install.wim is $wimSizeMB MB - splitting for FAT32 compatibility...This will take several minutes."
                     $splitDest = Join-Path $usbDrive "sources\install.swm"
                     New-Item -ItemType Directory -Path (Split-Path $splitDest) -Force | Out-Null
                     Split-WindowsImage -ImagePath $installWim `

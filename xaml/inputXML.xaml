@@ -1353,7 +1353,7 @@
                         <!-- ═══════════════════════════════════════════════════════════ -->
                         <!-- STEP 1 : Select Windows 11 ISO                             -->
                         <!-- ═══════════════════════════════════════════════════════════ -->
-                        <Border Grid.Row="0" Name="WPFWin11ISOSelectSection" Style="{StaticResource BorderStyle}">
+                        <Border Grid.Row="0" Name="WPFWin11ISOSelectSection" Style="{StaticResource BorderStyle}" HorizontalAlignment="Left" MinWidth="{DynamicResource ButtonWidth}">
                             <Grid Margin="5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -1449,7 +1449,8 @@
                         <Border Grid.Row="1"
                                 Name="WPFWin11ISOMountSection"
                                 Style="{StaticResource BorderStyle}"
-                                Visibility="Collapsed">
+                                Visibility="Collapsed"
+                                HorizontalAlignment="Left" MinWidth="{DynamicResource ButtonWidth}">
                             <Grid Margin="5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
@@ -1514,7 +1515,8 @@
                         <Border Grid.Row="2"
                                 Name="WPFWin11ISOModifySection"
                                 Style="{StaticResource BorderStyle}"
-                                Visibility="Collapsed">
+                                Visibility="Collapsed"
+                                HorizontalAlignment="Left" MinWidth="{DynamicResource ButtonWidth}">
                             <StackPanel Margin="5">
                                 <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="Bold"
                                            Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,8">
@@ -1542,7 +1544,8 @@
                         <Border Grid.Row="3"
                                 Name="WPFWin11ISOOutputSection"
                                 Style="{StaticResource BorderStyle}"
-                                Visibility="Collapsed">
+                                Visibility="Collapsed"
+                                HorizontalAlignment="Left" MinWidth="{DynamicResource ButtonWidth}">
                             <StackPanel Margin="5">
                                 <!-- Header row: title + Clean & Reset button -->
                                 <Grid Margin="0,0,0,12">
