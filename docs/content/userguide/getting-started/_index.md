@@ -1,5 +1,5 @@
 ---
-title: Getting Started with Winutil
+title: Getting Started
 weight: 1
 ---
 
@@ -258,7 +258,7 @@ If Winutil downloads but doesn't open:
 
 Now that you're set up, explore these guides:
 
-- [Application Installation Guide](../store/) - Learn about installing software
+- [Application Installation Guide](../application/) - Learn about installing software
 - [Tweaks Guide](../tweaks/) - Understand system optimizations
 - [FAQ](../../faq/) - Common questions and answers
 

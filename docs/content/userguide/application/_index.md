@@ -1,5 +1,5 @@
 ---
-title: Store
+title: Applications
 weight: 2
 ---
 
