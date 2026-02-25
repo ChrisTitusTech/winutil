@@ -261,6 +261,7 @@ function Invoke-WinUtilISOModify {
                 $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
                 $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
             })
+            Add-Content -Path (Join-Path $workDir "WinUtil_Win11ISO.log") -Value "[$ts] $msg" -ErrorAction SilentlyContinue
         }
 
         function SetProgress($label, $pct) {
@@ -534,6 +535,7 @@ function Invoke-WinUtilISOCleanAndReset {
                 $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
                 $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
             })
+            Add-Content -Path (Join-Path $workDir "WinUtil_Win11ISO.log") -Value "[$ts] $msg" -ErrorAction SilentlyContinue
         }
         function SetProgress($label, $pct) {
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
