@@ -47,7 +47,7 @@ jobs:
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
-        
+
       - name: Generate Dev Docs from JSON
         shell: pwsh
         run: |

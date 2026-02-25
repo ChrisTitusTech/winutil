@@ -534,6 +534,11 @@ $sync["FontScalingApplyButton"].Add_Click({
 
 # ── Win11ISO Tab button handlers ──────────────────────────────────────────────
 
+# Check for an existing working directory each time the Win11ISO tab is opened
+$sync["WPFTab5BT"].Add_Click({
+    Invoke-WinUtilISOCheckExistingWork
+})
+
 $sync["WPFWin11ISOBrowseButton"].Add_Click({
     Write-Debug "WPFWin11ISOBrowseButton clicked"
     Invoke-WinUtilISOBrowse

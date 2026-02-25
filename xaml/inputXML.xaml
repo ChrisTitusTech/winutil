@@ -1541,7 +1541,8 @@
                         <!-- ═══════════════════════════════════════════════════════════ -->
                         <Border Grid.Row="3"
                                 Name="WPFWin11ISOOutputSection"
-                                Style="{StaticResource BorderStyle}">
+                                Style="{StaticResource BorderStyle}"
+                                Visibility="Collapsed">
                             <StackPanel Margin="5">
                                 <!-- Header row: title + Clean & Reset button -->
                                 <Grid Margin="0,0,0,12">
@@ -1579,7 +1580,7 @@
                                             Height="{DynamicResource ButtonHeight}"/>
                                     <Button Grid.Column="2"
                                             Name="WPFWin11ISOChooseUSBButton"
-                                            Content="Write Directly to a USB Drive  (erases drive)"
+                                            Content="Write Directly to a USB Drive (ERASES DRIVE)"
                                             Foreground="OrangeRed"
                                             HorizontalAlignment="Stretch"
                                             Width="Auto" Padding="12,0"
@@ -1613,7 +1614,7 @@
                                                       Margin="0,0,6,0"/>
                                             <Button Grid.Column="1"
                                                     Name="WPFWin11ISORefreshUSBButton"
-                                                    Content="↻ Refresh"
+                                                    Content="Refresh"
                                                     Width="Auto" Padding="8,0"
                                                     Height="{DynamicResource ButtonHeight}"/>
                                         </Grid>
