@@ -45,6 +45,12 @@ function Invoke-WPFImpex {
                 $Config = ConfigDialog
                 if ($Config) {
                     $allConfs = ($sync.selectedApps + $sync.selectedTweaks + $sync.selectedToggles + $sync.selectedFeatures) | ForEach-Object { [string]$_ }
+                    if (-not $allConfs) {
+                        [System.Windows.MessageBox]::Show(
+                            "No settings are selected to export. Please select at least one app, tweak, toggle, or feature before exporting.",
+                            "Nothing to Export", "OK", "Warning")
+                        return
+                    }
                     $jsonFile = $allConfs | ConvertTo-Json
                     $jsonFile | Out-File $Config -Force
                     "iex ""& { `$(irm https://christitus.com/win) } -Config '$Config'""" | Set-Clipboard
@@ -70,6 +76,13 @@ function Invoke-WPFImpex {
                     # TODO how to handle old style? detected json type then flatten it in a func?
                     # $flattenedJson = $jsonFile.PSObject.Properties.Where({ $_.Name -ne "Install" }).ForEach({ $_.Value })
                     $flattenedJson = $jsonFile
+
+                    if (-not $flattenedJson) {
+                        [System.Windows.MessageBox]::Show(
+                            "The selected file contains no settings to import. No changes have been made.",
+                            "Empty Configuration", "OK", "Warning")
+                        return
+                    }
 
                     # Clear all existing selections before importing so the import replaces
                     # the current state rather than merging with it
