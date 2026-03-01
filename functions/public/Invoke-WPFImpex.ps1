@@ -70,6 +70,14 @@ function Invoke-WPFImpex {
                     # TODO how to handle old style? detected json type then flatten it in a func?
                     # $flattenedJson = $jsonFile.PSObject.Properties.Where({ $_.Name -ne "Install" }).ForEach({ $_.Value })
                     $flattenedJson = $jsonFile
+
+                    # Clear all existing selections before importing so the import replaces
+                    # the current state rather than merging with it
+                    $sync.selectedApps = [System.Collections.Generic.List[string]]::new()
+                    $sync.selectedTweaks = [System.Collections.Generic.List[string]]::new()
+                    $sync.selectedToggles = [System.Collections.Generic.List[string]]::new()
+                    $sync.selectedFeatures = [System.Collections.Generic.List[string]]::new()
+
                     Update-WinUtilSelections -flatJson $flattenedJson
 
                     if (!$PARAM_NOUI) {
