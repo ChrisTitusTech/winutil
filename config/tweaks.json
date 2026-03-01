@@ -2202,7 +2202,7 @@
   },
   "WPFToggleStandbyFix": {
     "Content": "Modern Standby fix",
-    "Description": "Disable network connection during S0 sleep. if network connectibity is turned on during S0 sleep it could cause overheating on modern laptops",
+    "Description": "Disable network connection during S0 sleep. If network connectivity is turned on during S0 sleep it could cause overheating on modern laptops",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
