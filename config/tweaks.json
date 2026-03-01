@@ -2200,6 +2200,24 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/bingsearch"
   },
+  "WPFToggleStandbyFix": {
+    "Content": "Modern Standby fix",
+    "Description": "Disable network connection during S0 sleep. if network connectibity is turned on during S0 sleep it could cause overheating on modern laptops",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Power\\PowerSettings\\f15576e8-98b7-4186-b944-eafa664402d9",
+        "Name": "ACSettingIndex",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>",
+        "DefaultState": "true"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/standbyfix"
+  },
   "WPFToggleNumLock": {
     "Content": "NumLock on Startup",
     "Description": "Toggle the Num Lock key state when your computer starts.",
