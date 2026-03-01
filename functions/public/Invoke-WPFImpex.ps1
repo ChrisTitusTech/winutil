@@ -44,7 +44,7 @@ function Invoke-WPFImpex {
             try {
                 $Config = ConfigDialog
                 if ($Config) {
-                    $allConfs = $sync.selectedApps + $sync.selectedTweaks + $sync.selectedToggles + $sync.selectedFeatures
+                    $allConfs = ($sync.selectedApps + $sync.selectedTweaks + $sync.selectedToggles + $sync.selectedFeatures) | ForEach-Object { [string]$_ }
                     $jsonFile = $allConfs | ConvertTo-Json
                     $jsonFile | Out-File $Config -Force
                     "iex ""& { `$(irm https://christitus.com/win) } -Config '$Config'""" | Set-Clipboard

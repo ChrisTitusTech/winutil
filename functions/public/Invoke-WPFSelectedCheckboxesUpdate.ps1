@@ -38,7 +38,7 @@ function Invoke-WPFSelectedCheckboxesUpdate{
                if (!$sync.selectedApps.Contains($appKey)) {
                     $sync.selectedApps.Add($appKey)
                     # The List type needs to be specified again, because otherwise Sort-Object will convert the list to a string if there is only a single entry
-                    [System.Collections.Generic.List[pscustomobject]]$sync.selectedApps = $sync.SelectedApps | Sort-Object
+                    [System.Collections.Generic.List[string]]$sync.selectedApps = $sync.SelectedApps | Sort-Object
                 }
             }
             else{
