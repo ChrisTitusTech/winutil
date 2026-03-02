@@ -19,7 +19,7 @@ function Invoke-WPFInstall {
         return
     }
 
-    $ManagerPreference = $sync["ManagerPreference"]
+    $ManagerPreference = $sync.preferences.packagemanager
 
     $handle = Invoke-WPFRunspace -ParameterList @(("PackagesToInstall", $PackagesToInstall),("ManagerPreference", $ManagerPreference)) -ScriptBlock {
         param($PackagesToInstall, $ManagerPreference)

@@ -37,6 +37,7 @@ $sync.PSScriptRoot = $PSScriptRoot
 $sync.version = "#{replaceme}"
 $sync.configs = @{}
 $sync.Buttons = [System.Collections.Generic.List[PSObject]]::new()
+$sync.preferences = @{}
 $sync.ProcessRunning = $false
 $sync.selectedApps = [System.Collections.Generic.List[string]]::new()
 $sync.selectedTweaks = [System.Collections.Generic.List[string]]::new()

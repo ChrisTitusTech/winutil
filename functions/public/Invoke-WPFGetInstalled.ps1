@@ -18,7 +18,7 @@ function Invoke-WPFGetInstalled {
     if (($sync.ChocoRadioButton.IsChecked -eq $false) -and ((Test-WinUtilPackageManager -winget) -eq "not-installed") -and $checkbox -eq "winget") {
         return
     }
-    $managerPreference = $sync["ManagerPreference"]
+    $managerPreference = $sync.preferences.packagemanager
 
     Invoke-WPFRunspace -ParameterList @(("managerPreference", $managerPreference),("checkbox", $checkbox)) -ScriptBlock {
         param (
