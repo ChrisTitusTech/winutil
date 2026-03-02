@@ -549,6 +549,38 @@ function Invoke-WinUtilISOCleanAndReset {
         }
 
         try {
+            # ── Dismount any WIM images still mounted under workDir ──────────────
+            if ($workDir) {
+                $mountDir = Join-Path $workDir "wim_mount"
+                try {
+                    $mountedImages = Get-WindowsImage -Mounted -ErrorAction SilentlyContinue |
+                                     Where-Object { $_.Path -like "$workDir*" }
+                    if ($mountedImages) {
+                        foreach ($img in $mountedImages) {
+                            Log "Dismounting WIM at: $($img.Path) (discarding changes)..."
+                            SetProgress "Dismounting WIM image..." 3
+                            Dismount-WindowsImage -Path $img.Path -Discard -ErrorAction Stop | Out-Null
+                            Log "WIM dismounted successfully."
+                        }
+                    } else {
+                        # Fallback: run dism /Cleanup-Wim in case metadata is corrupt
+                        # and Get-WindowsImage cannot enumerate the stuck mount
+                        if (Test-Path $mountDir) {
+                            Log "No mounted WIM reported by Get-WindowsImage, running DISM /Cleanup-Wim as a precaution..."
+                            SetProgress "Running DISM cleanup..." 3
+                            & dism /English /Cleanup-Wim 2>&1 | ForEach-Object { Log $_ }
+                        }
+                    }
+                } catch {
+                    Log "Warning: could not dismount WIM cleanly, attempting DISM /Cleanup-Wim fallback: $_"
+                    try {
+                        & dism /English /Cleanup-Wim 2>&1 | ForEach-Object { Log $_ }
+                    } catch {
+                        Log "Warning: DISM /Cleanup-Wim also failed: $_"
+                    }
+                }
+            }
+
             if ($workDir -and (Test-Path $workDir)) {
                 Log "Scanning files to delete in: $workDir"
                 SetProgress "Scanning files..." 5
@@ -565,22 +597,24 @@ function Invoke-WinUtilISOCleanAndReset {
                          Sort-Object { $_.FullName.Length } -Descending
 
                 foreach ($f in $files) {
-                    try { Remove-Item -Path $f.FullName -Force -ErrorAction Stop } catch {}
+                    Log "Deleting file: $($f.FullName)"
+                    try { Remove-Item -Path $f.FullName -Force -ErrorAction Stop } catch { Log "  WARNING: could not delete file: $_" }
                     $deleted++
                     if ($deleted % 100 -eq 0 -or $deleted -eq $files.Count) {
                         $pct = [math]::Round(($deleted / [Math]::Max($total,1)) * 85) + 5
                         SetProgress "Deleting files... ($deleted / $total)" $pct
-                        Log "Deleting files... $deleted of $total"
+                        Log "Progress: $deleted of $total items processed."
                     }
                 }
 
                 foreach ($d in $dirs) {
-                    try { Remove-Item -Path $d.FullName -Force -Recurse -ErrorAction Stop } catch {}
+                    Log "Removing directory: $($d.FullName)"
+                    try { Remove-Item -Path $d.FullName -Force -Recurse -ErrorAction Stop } catch { Log "  WARNING: could not remove directory: $_" }
                     $deleted++
                     if ($deleted % 50 -eq 0 -or $deleted -eq $total) {
                         $pct = [math]::Round(($deleted / [Math]::Max($total,1)) * 85) + 5
                         SetProgress "Removing directories... ($deleted / $total)" $pct
-                        Log "Removing directories... $deleted of $total"
+                        Log "Progress: $deleted of $total items processed."
                     }
                 }
 
@@ -772,4 +806,3 @@ function Invoke-WinUtilISOExport {
         Set-WinUtilProgressBar -Label "" -Percent 0
     }
 }
-
