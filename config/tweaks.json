@@ -1,7 +1,7 @@
 {
   "WPFTweaksActivity": {
     "Content": "Disable Activity History",
-    "Description": "This erases recent docs, clipboard, and run history.",
+    "Description": "Erases recent docs, clipboard, and run history.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
@@ -60,7 +60,7 @@
   },
   "WPFTweaksWidget": {
     "Content": "Remove Widgets",
-    "Description": "Removes the annoying widgets in the bottom left of the taskbar.",
+    "Description": "Removes the annoying widgets in the bottom left of the Taskbar.",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
@@ -1646,7 +1646,7 @@
   },
   "WPFTweaksDeBloat": {
     "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
-    "Description": "USE WITH CAUTION!!! This will remove ALL Microsoft store apps.",
+    "Description": "USE WITH CAUTION!!! This will remove ALL Microsoft Store apps.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "appx": [
@@ -1778,7 +1778,7 @@
   },
   "WPFTweaksPowershell7Tele": {
     "Content": "Disable Powershell 7 Telemetry",
-    "Description": "This will create an Environment Variable called 'POWERSHELL_TELEMETRY_OPTOUT' with a value of '1' which will tell Powershell 7 to not send Telemetry Data.",
+    "Description": "Creates an Environment Variable called 'POWERSHELL_TELEMETRY_OPTOUT' with a value of '1' which will tell PowerShell 7 to not send Telemetry Data.",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
@@ -1972,7 +1972,7 @@
   },
   "WPFTweaksBlockAdobeNet": {
     "Content": "Adobe Network Block",
-    "Description": "Reduce user interruptions by selectively blocking connections to Adobe's activation and telemetry servers. Credit: Ruddernation-Designs",
+    "Description": "Reduces user interruptions by selectively blocking connections to Adobe's activation and telemetry servers. Credit: Ruddernation-Designs",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -2110,7 +2110,7 @@
   },
   "WPFTweaksDisableBGapps": {
     "Content": "Disable Background Apps",
-    "Description": "Disables all Microsoft Store apps from running in the background, which has to be done individually since Win11.",
+    "Description": "Disables all Microsoft Store apps from running in the background, which has to be done individually since Windows 11.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -2308,7 +2308,7 @@
   },
   "WPFToggleMouseAcceleration": {
     "Content": "Mouse Acceleration",
-    "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
+    "Description": "If enabled, then Cursor movement is affected by the speed of your physical mouse movements.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2342,7 +2342,7 @@
   },
   "WPFToggleStickyKeys": {
     "Content": "Sticky Keys",
-    "Description": "If enabled, Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
+    "Description": "If enabled, Sticky Keys is activated. Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2615,7 +2615,7 @@
   },
   "WPFTweaksDisableExplorerAutoDiscovery": {
     "Content": "Disable Explorer Automatic Folder Discovery",
-    "Description": "Windows Explorer automatically tries to guess the type of the folder based on its contents, slowing down the browsing experience. WARNING! Will disable file explorer grouping.",
+    "Description": "Windows Explorer automatically tries to guess the type of the folder based on its contents, slowing down the browsing experience. WARNING! Will disable File Explorer grouping.",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
