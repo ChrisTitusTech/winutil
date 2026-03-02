@@ -32,17 +32,17 @@ function Invoke-WPFPresets {
         $CheckBoxesToCheck = $sync.configs.preset.$preset
     }
 
-    # clear out the filtered pattern
-    if (!$preset) {
-        switch ($checkboxfilterpattern) {
-            "WPFTweak*" { $sync.selectedTweaks = [System.Collections.Generic.List[string]]::new() }
-            "WPFInstall*" { $sync.selectedApps = [System.Collections.Generic.List[string]]::new() }
-            "WPFeatures" { $sync.selectedFeatures = [System.Collections.Generic.List[string]]::new() }
-            "WPFToggle" { $sync.selectedToggles = [System.Collections.Generic.List[string]]::new() }
-            default {}
-        }
+    # clear out the filtered pattern so applying a preset replaces the current
+    # state rather than merging with it
+    switch ($checkboxfilterpattern) {
+        "WPFTweak*" { $sync.selectedTweaks = [System.Collections.Generic.List[string]]::new() }
+        "WPFInstall*" { $sync.selectedApps = [System.Collections.Generic.List[string]]::new() }
+        "WPFeatures" { $sync.selectedFeatures = [System.Collections.Generic.List[string]]::new() }
+        "WPFToggle" { $sync.selectedToggles = [System.Collections.Generic.List[string]]::new() }
+        default {}
     }
-    else {
+
+    if ($preset) {
         Update-WinUtilSelections -flatJson $CheckBoxesToCheck
     }
 

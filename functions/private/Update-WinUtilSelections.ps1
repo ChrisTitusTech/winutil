@@ -14,7 +14,9 @@ function Update-WinUtilSelections {
 
     Write-Debug "JSON to import: $($flatJson)"
 
-    foreach ($cbkey in $flatJson) {
+    foreach ($item in $flatJson) {
+        # Ensure each item is treated as a string to handle PSCustomObject from JSON deserialization
+        $cbkey = [string]$item
         $group = if ($cbkey.StartsWith("WPFInstall")) { "Install" }
                     elseif ($cbkey.StartsWith("WPFTweaks")) { "Tweaks" }
                     elseif ($cbkey.StartsWith("WPFToggle")) { "Toggle" }
@@ -26,7 +28,7 @@ function Update-WinUtilSelections {
                 if (!$sync.selectedApps.Contains($cbkey)) {
                     $sync.selectedApps.Add($cbkey)
                     # The List type needs to be specified again, because otherwise Sort-Object will convert the list to a string if there is only a single entry
-                    [System.Collections.Generic.List[pscustomobject]]$sync.selectedApps = $sync.SelectedApps | Sort-Object
+                    [System.Collections.Generic.List[string]]$sync.selectedApps = $sync.SelectedApps | Sort-Object
                 }
             }
             "Tweaks" {
