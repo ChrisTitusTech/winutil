@@ -3,7 +3,7 @@ title: "Show Hidden Files"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2421}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2439}
   "WPFToggleHiddenFiles": {
     "Content": "Show Hidden Files",
     "Description": "If Enabled then Hidden Files will be shown.",

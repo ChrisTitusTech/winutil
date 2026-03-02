@@ -1,22 +1,22 @@
 ---
-title: "Sticky Keys"
+title: "Modern Standby fix"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2361}
-  "WPFToggleStickyKeys": {
-    "Content": "Sticky Keys",
-    "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2203}
+  "WPFToggleStandbyFix": {
+    "Content": "Modern Standby fix",
+    "Description": "Disable network connection during S0 sleep. If network connectivity is turned on during S0 sleep it could cause overheating on modern laptops",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
     "registry": [
       {
-        "Path": "HKCU:\\Control Panel\\Accessibility\\StickyKeys",
-        "Name": "Flags",
-        "Value": "506",
+        "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Power\\PowerSettings\\f15576e8-98b7-4186-b944-eafa664402d9",
+        "Name": "ACSettingIndex",
+        "Value": "0",
         "Type": "DWord",
-        "OriginalValue": "58",
+        "OriginalValue": "<RemoveEntry>",
         "DefaultState": "true"
       }
     ],
