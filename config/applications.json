@@ -105,7 +105,7 @@
         "category": "Microsoft Tools",
         "choco": "autoruns",
         "content": "Autoruns",
-        "description": "This utility shows you what programs are configured to run during system bootup or login",
+        "description": "This utility shows you what programs are configured to run during system bootup or login.",
         "link": "https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns",
         "winget": "Microsoft.Sysinternals.Autoruns"
     },
@@ -156,7 +156,7 @@
         "category": "Communications",
         "choco": "na",
         "content": "Beeper",
-        "description": "All your chats in one app",
+        "description": "All your chats in one app.",
         "link": "https://www.beeper.com/",
         "winget": "Beeper.Beeper"
     },
@@ -173,7 +173,7 @@
         "category": "Utilities",
         "choco": "bleachbit",
         "content": "BleachBit",
-        "description": "Clean Your System and Free Disk Space",
+        "description": "Clean Your System and Free Disk Space.",
         "link": "https://www.bleachbit.org/",
         "winget": "BleachBit.BleachBit",
         "foss": true
@@ -620,7 +620,7 @@
         "category": "Utilities",
         "choco": "na",
         "content": "Fastfetch",
-        "description": "Fastfetch is a neofetch-like tool for fetching system information and displaying them in a pretty way",
+        "description": "Fastfetch is a neofetch-like tool for fetching system information and displaying them in a pretty way.",
         "link": "https://github.com/fastfetch-cli/fastfetch/",
         "winget": "Fastfetch-cli.Fastfetch",
         "foss": true
@@ -775,7 +775,7 @@
         "category": "Utilities",
         "choco": "fzf",
         "content": "Fzf",
-        "description": "A command-line fuzzy finder",
+        "description": "A command-line fuzzy finder.",
         "link": "https://github.com/junegunn/fzf/",
         "winget": "junegunn.fzf",
         "foss": true
@@ -895,7 +895,7 @@
         "category": "Utilities",
         "choco": "googledrive",
         "content": "Google Drive",
-        "description": "File syncing across devices all tied to your google account",
+        "description": "File syncing across devices all tied to your google account.",
         "link": "https://www.google.com/drive/",
         "winget": "Google.GoogleDrive"
     },
@@ -1147,7 +1147,7 @@
         "category": "Utilities",
         "choco": "jpegview",
         "content": "JPEG View",
-        "description": "JPEGView is a lean, fast and highly configurable viewer/editor for JPEG, BMP, PNG, WEBP, TGA, GIF, JXL, HEIC, HEIF, AVIF and TIFF images with a minimal GUI",
+        "description": "JPEGView is a lean, fast and highly configurable viewer/editor for JPEG, BMP, PNG, WEBP, TGA, GIF, JXL, HEIC, HEIF, AVIF and TIFF images with a minimal GUI.",
         "link": "https://github.com/sylikc/jpegview",
         "winget": "sylikc.JPEGView",
         "foss": true
@@ -1209,7 +1209,7 @@
         "category": "Development",
         "choco": "lazygit",
         "content": "Lazygit",
-        "description": "Simple terminal UI for git commands",
+        "description": "Simple terminal UI for git commands.",
         "link": "https://github.com/jesseduffield/lazygit/",
         "winget": "JesseDuffield.lazygit",
         "foss": true
@@ -1473,7 +1473,7 @@
         "category": "Multimedia Tools",
         "choco": "tagscanner",
         "content": "TagScanner (Tag Scanner)",
-        "description": "TagScanner is a powerful tool for organizing and managing your music collection",
+        "description": "TagScanner is a powerful tool for organizing and managing your music collection.",
         "link": "https://www.xdlab.ru/en/",
         "winget": "SergeySerkov.TagScanner"
     },
@@ -1929,7 +1929,7 @@
         "category": "Utilities",
         "choco": "orcaslicer",
         "content": "OrcaSlicer",
-        "description": "G-code generator for 3D printers (Bambu, Prusa, Voron, VzBot, RatRig, Creality, etc.)",
+        "description": "G-code generator for 3D printers (Bambu, Prusa, Voron, VzBot, RatRig, Creality, etc.).",
         "link": "https://github.com/SoftFever/OrcaSlicer",
         "winget": "SoftFever.OrcaSlicer",
         "foss": true
@@ -2008,7 +2008,7 @@
         "category": "Utilities",
         "choco": "quicklook",
         "content": "Quicklook",
-        "description": "Bring macOS \u201cQuick Look\u201d feature to Windows",
+        "description": "Bring macOS \u201cQuick Look\u201d feature to Windows.",
         "link": "https://github.com/QL-Win/QuickLook",
         "winget": "QL-Win.QuickLook",
         "foss": true
@@ -2051,7 +2051,7 @@
         "category": "Utilities",
         "choco": "ripgrep",
         "content": "Ripgrep",
-        "description": "Fast and powerful commandline search tool",
+        "description": "Fast and powerful commandline search tool.",
         "link": "https://github.com/BurntSushi/ripgrep/",
         "winget": "BurntSushi.ripgrep.MSVC",
         "foss": true
@@ -2209,7 +2209,7 @@
         "category": "Utilities",
         "choco": "spacesniffer",
         "content": "SpaceSniffer",
-        "description": "A tool application that lets you understand how folders and files are structured on your disks",
+        "description": "A tool application that lets you understand how folders and files are structured on your disks.",
         "link": "http://www.uderzo.it/main_products/space_sniffer/",
         "winget": "UderzoSoftware.SpaceSniffer"
     },
@@ -2312,7 +2312,7 @@
         "category": "Utilities",
         "choco": "synctrayzor",
         "content": "SyncTrayzor",
-        "description": "Windows tray utility / filesystem watcher / launcher for Syncthing",
+        "description": "Windows tray utility / filesystem watcher / launcher for Syncthing.",
         "link": "https://github.com/GermanCoding/SyncTrayzor",
         "winget": "GermanCoding.SyncTrayzor",
         "foss": true
@@ -2329,7 +2329,7 @@
         "category": "Utilities",
         "choco": "tabby",
         "content": "Tabby.sh",
-        "description": "Tabby is a highly configurable terminal emulator, SSH and serial client for Windows, macOS and Linux",
+        "description": "Tabby is a highly configurable terminal emulator, SSH and serial client for Windows, macOS and Linux.",
         "link": "https://tabby.sh/",
         "winget": "Eugeny.Tabby",
         "foss": true
@@ -2389,7 +2389,7 @@
         "category": "Communications",
         "choco": "na",
         "content": "Unigram",
-        "description": "Unigram - Telegram for Windows",
+        "description": "Unigram - Telegram for Windows.",
         "link": "https://unigramdev.github.io/",
         "winget": "Telegram.Unigram",
         "foss": true
@@ -2416,7 +2416,7 @@
         "category": "Development",
         "choco": "na",
         "content": "Code With Mu (Mu Editor)",
-        "description": "Mu is a Python code editor for beginner programmers",
+        "description": "Mu is a Python code editor for beginner programmers.",
         "link": "https://codewith.mu/",
         "winget": "Mu.Mu",
         "foss": true
@@ -2673,7 +2673,7 @@
         "category": "Development",
         "choco": "wezterm",
         "content": "Wezterm",
-        "description": "WezTerm is a powerful cross-platform terminal emulator and multiplexer",
+        "description": "WezTerm is a powerful cross-platform terminal emulator and multiplexer.",
         "link": "https://wezfurlong.org/wezterm/index.html",
         "winget": "wez.wezterm",
         "foss": true
@@ -2768,7 +2768,7 @@
         "category": "Utilities",
         "choco": "TeraCopy",
         "content": "TeraCopy",
-        "description": "Copy your files faster and more securely",
+        "description": "Copy your files faster and more securely.",
         "link": "https://codesector.com/teracopy",
         "winget": "CodeSector.TeraCopy"
     },
@@ -2792,7 +2792,7 @@
         "category": "Utilities",
         "choco": "xdm",
         "content": "Xtreme Download Manager",
-        "description": "Xtreme Download Manager is an advanced download manager with support for various protocols and browsers.*Browser integration deprecated by google store. No official release.*",
+        "description": "Xtreme Download Manager is an advanced download manager with support for various protocols and browsers. *Browser integration deprecated by google store. No official release.*",
         "link": "https://xtremedownloadmanager.com/",
         "winget": "subhra74.XtremeDownloadManager",
         "foss": true
@@ -2896,7 +2896,7 @@
         "category": "Utilities",
         "choco": "na",
         "content": "ZoomIt",
-        "description": "A screen zoom, annotation, and recording tool for technical presentations and demos",
+        "description": "A screen zoom, annotation, and recording tool for technical presentations and demos.",
         "link": "https://learn.microsoft.com/en-us/sysinternals/downloads/zoomit",
         "winget": "Microsoft.Sysinternals.ZoomIt"
     },
@@ -2931,7 +2931,7 @@
         "category": "Utilities",
         "choco": "syncthingtray",
         "content": "Syncthingtray",
-        "description": "Might be the alternative for Synctrayzor. Windows tray utility / filesystem watcher / launcher for Syncthing",
+        "description": "Might be the alternative for Synctrayzor. Windows tray utility / filesystem watcher / launcher for Syncthing.",
         "link": "https://github.com/Martchus/syncthingtray",
         "winget": "Martchus.syncthingtray",
         "foss": true
@@ -2985,7 +2985,7 @@
         "category": "Utilities",
         "choco": "TightVNC",
         "content": "TightVNC",
-        "description": "TightVNC is a free and Open Source remote desktop software that lets you access and control a computer over the network. With its intuitive interface, you can interact with the remote screen as if you were sitting in front of it. You can open files, launch applications, and perform other actions on the remote desktop almost as if you were physically there",
+        "description": "TightVNC is a free and Open Source remote desktop software that lets you access and control a computer over the network. With its intuitive interface, you can interact with the remote screen as if you were sitting in front of it. You can open files, launch applications, and perform other actions on the remote desktop almost as if you were physically there.",
         "link": "https://www.tightvnc.com/",
         "winget": "GlavSoft.TightVNC",
         "foss": true
@@ -3019,7 +3019,7 @@
         "category": "Utilities",
         "choco": "auto-dark-mode",
         "content": "Windows Auto Dark Mode",
-        "description": "Automatically switches between the dark and light theme of Windows 10 and Windows 11",
+        "description": "Automatically switches between the dark and light theme of Windows 10 and Windows 11.",
         "link": "https://github.com/AutoDarkMode/Windows-Auto-Night-Mode",
         "winget": "Armin2208.WindowsAutoNightMode",
         "foss": true
@@ -3037,7 +3037,7 @@
         "category": "Utilities",
         "choco": "magic-wormhole",
         "content": "Magic Wormhole",
-        "description": "get things from one computer to another, safely",
+        "description": "get things from one computer to another, safely.",
         "link": "https://github.com/magic-wormhole/magic-wormhole",
         "winget": "magic-wormhole.magic-wormhole",
         "foss": true
@@ -3073,7 +3073,7 @@
         "category": "Utilities",
         "choco": "na",
         "content": "GlazeWM",
-        "description": "GlazeWM is a tiling window manager for Windows inspired by i3 and Polybar",
+        "description": "GlazeWM is a tiling window manager for Windows inspired by i3 and Polybar.",
         "link": "https://github.com/glzr-io/glazewm",
         "winget": "glzr-io.glazewm",
         "foss": true
@@ -3091,7 +3091,7 @@
         "category": "Development",
         "choco": "fnm",
         "content": "Fast Node Manager",
-        "description": "Fast Node Manager (fnm) allows you to switch your Node version by using the Terminal",
+        "description": "Fast Node Manager (fnm) allows you to switch your Node version by using the Terminal.",
         "link": "https://github.com/Schniz/fnm",
         "winget": "Schniz.fnm",
         "foss": true
@@ -3100,7 +3100,7 @@
         "category": "Utilities",
         "choco": "windhawk",
         "content": "Windhawk",
-        "description": "The customization marketplace for Windows programs",
+        "description": "The customization marketplace for Windows programs.",
         "link": "https://windhawk.net",
         "winget": "RamenSoftware.Windhawk"
     },
@@ -3108,7 +3108,7 @@
         "category": "Utilities",
         "choco": "na",
         "content": "ForceAutoHDR",
-        "description": "ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry",
+        "description": "ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry.",
         "link": "https://github.com/7gxycn08/ForceAutoHDR",
         "winget": "ForceAutoHDR.7gxycn08",
         "foss": true
@@ -3117,7 +3117,7 @@
         "category": "Utilities",
         "choco": "joytokey",
         "content": "JoyToKey",
-        "description": "enables PC game controllers to emulate the keyboard and mouse input",
+        "description": "enables PC game controllers to emulate the keyboard and mouse input.",
         "link": "https://joytokey.net/en/",
         "winget": "JTKsoftware.JoyToKey"
     },
