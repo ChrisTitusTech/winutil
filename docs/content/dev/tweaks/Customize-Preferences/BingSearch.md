@@ -6,7 +6,7 @@ description: ""
 ```json {filename="config/tweaks.json",linenos=inline,linenostart=2185}
   "WPFToggleBingSearch": {
     "Content": "Bing Search in Start Menu",
-    "Description": "If enable then includes web search results from Bing in your Start Menu search.",
+    "Description": "If enabled, Bing web search results will be included in your Start Menu search.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
