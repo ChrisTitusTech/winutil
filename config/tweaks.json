@@ -89,7 +89,7 @@
   },
   "WPFTweaksRevertStartMenu": {
     "Content": "Revert the new start menu",
-    "Description": "Uses vivetool to revert the the original start menu from 24H2.",
+    "Description": "Uses vivetool to revert to the original start menu from 24H2.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -124,7 +124,7 @@
   },
   "WPFTweaksLocation": {
     "Content": "Disable Location Tracking",
-    "Description": "Disables Location Tracking...DUH!",
+    "Description": "Disables Location Tracking.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
@@ -1306,7 +1306,7 @@
   },
   "WPFTweaksTelemetry": {
     "Content": "Disable Telemetry",
-    "Description": "Disables Microsoft Telemetry...Duh",
+    "Description": "Disables Microsoft Telemetry.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
@@ -1428,7 +1428,7 @@
   },
   "WPFTweaksRemoveEdge": {
     "Content": "Remove Microsoft Edge",
-    "Description": "Unblocks Microsoft Edge uninstaller restrictions than uses that uninstaller to remove Microsoft Edge.",
+    "Description": "Unblocks Microsoft Edge uninstaller restrictions then uses that uninstaller to remove Microsoft Edge.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -1460,7 +1460,7 @@
   },
   "WPFTweaksRemoveOneDrive": {
     "Content": "Remove OneDrive",
-    "Description": "Denies permission to remove OneDrive user files than uses its own uninstaller to remove it than brings back permissions.",
+    "Description": "Denies permission to remove OneDrive user files, then uses its own uninstaller to remove it and restores the original permission afterward.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -1891,7 +1891,7 @@
   },
   "WPFTweaksWPBT": {
     "Content": "Disable Windows Platform Binary Table (WPBT)",
-    "Description": "If enabled then allows your computer vendor to execute a program each time it boots. It enables computer vendors to force install anti-theft software, software drivers, or a software program conveniently. This could also be a security risk.",
+    "Description": "If enabled, WPBT allows your computer vendor to execute programs at boot time, such as anti-theft software, software drivers, as well as force install software without user consent. Poses potential security risk.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
@@ -2001,8 +2001,8 @@
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/blockadobenet"
   },
   "WPFTweaksRightClickMenu": {
-    "Content": "Set Classic Right-Click Menu ",
-    "Description": "Great Windows 11 tweak to bring back good context menus when right clicking things in explorer.",
+    "Content": "Set Classic Right-Click Menu",
+    "Description": "Restores the classic context menu when right-clicking in File Explorer, replacing the simplified Windows 11 version.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -2037,7 +2037,7 @@
   },
   "WPFTweaksDeleteTempFiles": {
     "Content": "Delete Temporary Files",
-    "Description": "Erases TEMP Folders",
+    "Description": "Erases TEMP Folders.",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
@@ -2050,7 +2050,7 @@
   },
   "WPFTweaksIPv46": {
     "Content": "Prefer IPv4 over IPv6",
-    "Description": "To set the IPv4 preference can have latency and security benefits on private networks where IPv6 is not configured.",
+    "Description": "Setting the IPv4 preference can have latency and security benefits on private networks where IPv6 is not configured.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -2184,7 +2184,7 @@
   },
   "WPFToggleBingSearch": {
     "Content": "Bing Search in Start Menu",
-    "Description": "If enable then includes web search results from Bing in your Start Menu search.",
+    "Description": "If enabled, Bing web search results will be included in your Start Menu search.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2201,7 +2201,7 @@
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/bingsearch"
   },
   "WPFToggleNumLock": {
-    "Content": "NumLock on Startup",
+    "Content": "Num Lock on Startup",
     "Description": "Toggle the Num Lock key state when your computer starts.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -2246,7 +2246,7 @@
   },
   "WPFToggleStartMenuRecommendations": {
     "Content": "Recommendations in Start Menu",
-    "Description": "If disabled then you will not see recommendations in the Start Menu. WARNING: This will also disable Windows Spotlight on your Lock Screen as a side effect.",
+    "Description": "If disabled, then you will not see recommendations in the Start Menu. WARNING: This will also disable Windows Spotlight on your Lock Screen as a side effect.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2342,7 +2342,7 @@
   },
   "WPFToggleStickyKeys": {
     "Content": "Sticky Keys",
-    "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
+    "Description": "If enabled, Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2360,7 +2360,7 @@
   },
   "WPFToggleNewOutlook": {
     "Content": "New Outlook",
-    "Description": "If disabled it removes the toggle for new Outlook, disables the new Outlook migration and makes sure the Outlook Application actually uses the old Outlook.",
+    "Description": "If disabled, it removes the new Outlook toggle, disables the new Outlook migration, and ensures the classic Outlook application is used.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2420,7 +2420,7 @@
   },
   "WPFToggleHiddenFiles": {
     "Content": "Show Hidden Files",
-    "Description": "If Enabled then Hidden Files will be shown.",
+    "Description": "If enabled, Hidden Files will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2448,7 +2448,7 @@
   },
   "WPFToggleShowExt": {
     "Content": "Show File Extensions",
-    "Description": "If enabled then File extensions (e.g., .txt, .jpg) are visible.",
+    "Description": "If enabled, File extensions (e.g., .txt, .jpg) are visible.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2476,7 +2476,7 @@
   },
   "WPFToggleTaskbarSearch": {
     "Content": "Search Button in Taskbar",
-    "Description": "If Enabled Search Button will be on the taskbar.",
+    "Description": "If enabled, Search Button will be on the Taskbar.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2494,7 +2494,7 @@
   },
   "WPFToggleTaskView": {
     "Content": "Task View Button in Taskbar",
-    "Description": "If Enabled then Task View Button in Taskbar will be shown.",
+    "Description": "If enabled, Task View Button in Taskbar will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2512,7 +2512,7 @@
   },
   "WPFToggleTaskbarAlignment": {
     "Content": "Center Taskbar Items",
-    "Description": "[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
+    "Description": "[Windows 11] If enabled, the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2540,7 +2540,7 @@
   },
   "WPFToggleDetailedBSoD": {
     "Content": "Detailed BSoD",
-    "Description": "If Enabled then you will see a detailed Blue Screen of Death (BSOD) with more information.",
+    "Description": "If enabled, you will see a detailed Blue Screen of Death (BSOD) with more information.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
