@@ -66,7 +66,7 @@ $sync.configs.applications.PSObject.Properties | ForEach-Object {
     $sync.configs.applicationsHashtable[$_.Name] = $_.Value
 }
 
-Set-PackageManagerPreference
+Set-Preferences
 
 if ($PARAM_NOUI) {
     Show-CTTLogo
@@ -154,7 +154,7 @@ $sync.Form.Add_Loaded({
     })
 })
 
-Invoke-WinutilThemeChange -init $true
+Invoke-WinutilThemeChange -theme $sync.preferences.theme
 
 
 # Now call the function with the final merged config
@@ -177,10 +177,16 @@ Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "feat
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
 
 #Persist Package Manager preference across winutil restarts
-$sync.ChocoRadioButton.Add_Checked({Set-PackageManagerPreference Choco})
-$sync.WingetRadioButton.Add_Checked({Set-PackageManagerPreference Winget})
+$sync.ChocoRadioButton.Add_Checked({
+    $sync.preferences.packagemanager = [PackageManagers]::Choco
+    Set-Preferences -save
+})
+$sync.WingetRadioButton.Add_Checked({
+    $sync.preferences.packagemanager = [PackageManagers]::Winget
+    Set-Preferences -save
+})
 
-switch ($sync["ManagerPreference"]) {
+switch ($sync.preferences.packagemanager) {
     "Choco" {$sync.ChocoRadioButton.IsChecked = $true; break}
     "Winget" {$sync.WingetRadioButton.IsChecked = $true; break}
 }

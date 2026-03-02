@@ -30,7 +30,7 @@ function Invoke-WPFUnInstall {
 
     if($confirm -eq "No") {return}
 
-    $ManagerPreference = $sync["ManagerPreference"]
+    $ManagerPreference = $sync.preferences.packagemanager
 
     Invoke-WPFRunspace -ParameterList @(("PackagesToUninstall", $PackagesToUninstall),("ManagerPreference", $ManagerPreference)) -ScriptBlock {
         param($PackagesToUninstall, $ManagerPreference)
