@@ -1,7 +1,7 @@
 {
   "WPFTweaksActivity": {
     "Content": "Disable Activity History",
-    "Description": "This erases recent docs, clipboard, and run history.",
+    "Description": "Erases recent docs, clipboard, and run history.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
@@ -31,7 +31,7 @@
   },
   "WPFTweaksHiber": {
     "Content": "Disable Hibernation",
-    "Description": "Hibernation is really meant for laptops as it saves what's in memory before turning the pc off. It really should never be used",
+    "Description": "Hibernation is really meant for laptops as it saves what's in memory before turning the PC off. It really should never be used.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
@@ -60,7 +60,7 @@
   },
   "WPFTweaksWidget": {
     "Content": "Remove Widgets",
-    "Description": "Removes the annoying widgets in the bottom left of the taskbar",
+    "Description": "Removes the annoying widgets in the bottom left of the Taskbar.",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
@@ -89,7 +89,7 @@
   },
   "WPFTweaksRevertStartMenu": {
     "Content": "Revert the new start menu",
-    "Description": "Uses vivetool to revert the the original start menu from 24h2",
+    "Description": "Uses vivetool to revert to the original start menu from 24H2.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -124,7 +124,7 @@
   },
   "WPFTweaksLocation": {
     "Content": "Disable Location Tracking",
-    "Description": "Disables Location Tracking...DUH!",
+    "Description": "Disables Location Tracking.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
@@ -1125,7 +1125,7 @@
   },
   "WPFTweaksBraveDebloat": {
     "Content": "Brave Debloat",
-    "Description": "Disables various annoyances like Brave Rewards,Leo AI,Crypto Wallet and VPN",
+    "Description": "Disables various annoyances like Brave Rewards, Leo AI, Crypto Wallet and VPN.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -1290,7 +1290,7 @@
   },
   "WPFTweaksConsumerFeatures": {
     "Content": "Disable ConsumerFeatures",
-    "Description": "Windows will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link)",
+    "Description": "Windows will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link).",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
@@ -1306,7 +1306,7 @@
   },
   "WPFTweaksTelemetry": {
     "Content": "Disable Telemetry",
-    "Description": "Disables Microsoft Telemetry...Duh",
+    "Description": "Disables Microsoft Telemetry.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
@@ -1428,7 +1428,7 @@
   },
   "WPFTweaksRemoveEdge": {
     "Content": "Remove Microsoft Edge",
-    "Description": "Unblocks Microsoft Edge uninstaller restrictions than uses that uninstaller to remove Microsoft Edge",
+    "Description": "Unblocks Microsoft Edge uninstaller restrictions then uses that uninstaller to remove Microsoft Edge.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -1460,7 +1460,7 @@
   },
   "WPFTweaksRemoveOneDrive": {
     "Content": "Remove OneDrive",
-    "Description": "Denys permission to remove onedrive user files than uses its own uninstaller to remove it than brings back permissions",
+    "Description": "Denies permission to remove OneDrive user files, then uses its own uninstaller to remove it and restores the original permission afterward.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -1497,7 +1497,7 @@
   },
   "WPFTweaksRemoveHome": {
     "Content": "Remove Home from Explorer",
-    "Description": "Removes the Home from Explorer and sets This PC as default",
+    "Description": "Removes the Home from Explorer and sets This PC as default.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -1516,7 +1516,7 @@
   },
   "WPFTweaksRemoveGallery": {
     "Content": "Remove Gallery from explorer",
-    "Description": "Removes the Gallery from Explorer and sets This PC as default",
+    "Description": "Removes the Gallery from Explorer and sets This PC as default.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -1646,7 +1646,7 @@
   },
   "WPFTweaksDeBloat": {
     "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
-    "Description": "USE WITH CAUTION!!! This will remove ALL Microsoft store apps.",
+    "Description": "USE WITH CAUTION!!! This will remove ALL Microsoft Store apps.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "appx": [
@@ -1735,7 +1735,7 @@
   },
   "WPFTweaksRestorePoint": {
     "Content": "Create Restore Point",
-    "Description": "Creates a restore point at runtime in case a revert is needed from WinUtil modifications",
+    "Description": "Creates a restore point at runtime in case a revert is needed from WinUtil modifications.",
     "category": "Essential Tweaks",
     "panel": "1",
     "Checked": "False",
@@ -1762,7 +1762,7 @@
   },
   "WPFTweaksEndTaskOnTaskbar": {
     "Content": "Enable End Task With Right Click",
-    "Description": "Enables option to end task when right clicking a program in the taskbar",
+    "Description": "Enables option to end task when right clicking a program in the taskbar.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
@@ -1778,7 +1778,7 @@
   },
   "WPFTweaksPowershell7Tele": {
     "Content": "Disable Powershell 7 Telemetry",
-    "Description": "This will create an Environment Variable called 'POWERSHELL_TELEMETRY_OPTOUT' with a value of '1' which will tell Powershell 7 to not send Telemetry Data.",
+    "Description": "Creates an Environment Variable called 'POWERSHELL_TELEMETRY_OPTOUT' with a value of '1' which will tell PowerShell 7 to not send Telemetry Data.",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
@@ -1891,7 +1891,7 @@
   },
   "WPFTweaksWPBT": {
     "Content": "Disable Windows Platform Binary Table (WPBT)",
-    "Description": "If enabled then allows your computer vendor to execute a program each time it boots. It enables computer vendors to force install anti-theft software, software drivers, or a software program conveniently. This could also be a security risk.",
+    "Description": "If enabled, WPBT allows your computer vendor to execute programs at boot time, such as anti-theft software, software drivers, as well as force install software without user consent. Poses potential security risk.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
@@ -1949,7 +1949,7 @@
   },
   "WPFTweaksDisableNotifications": {
     "Content": "Disable Notification Tray/Calendar",
-    "Description": "Disables all Notifications INCLUDING Calendar",
+    "Description": "Disables all Notifications INCLUDING Calendar.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -1972,7 +1972,7 @@
   },
   "WPFTweaksBlockAdobeNet": {
     "Content": "Adobe Network Block",
-    "Description": "Reduce user interruptions by selectively blocking connections to Adobe's activation and telemetry servers. Credit: Ruddernation-Designs",
+    "Description": "Reduces user interruptions by selectively blocking connections to Adobe's activation and telemetry servers. Credit: Ruddernation-Designs",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -2001,8 +2001,8 @@
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/blockadobenet"
   },
   "WPFTweaksRightClickMenu": {
-    "Content": "Set Classic Right-Click Menu ",
-    "Description": "Great Windows 11 tweak to bring back good context menus when right clicking things in explorer.",
+    "Content": "Set Classic Right-Click Menu",
+    "Description": "Restores the classic context menu when right-clicking in File Explorer, replacing the simplified Windows 11 version.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -2037,7 +2037,7 @@
   },
   "WPFTweaksDeleteTempFiles": {
     "Content": "Delete Temporary Files",
-    "Description": "Erases TEMP Folders",
+    "Description": "Erases TEMP Folders.",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
@@ -2050,7 +2050,7 @@
   },
   "WPFTweaksIPv46": {
     "Content": "Prefer IPv4 over IPv6",
-    "Description": "To set the IPv4 preference can have latency and security benefits on private networks where IPv6 is not configured.",
+    "Description": "Setting the IPv4 preference can have latency and security benefits on private networks where IPv6 is not configured.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -2066,7 +2066,7 @@
   },
   "WPFTweaksTeredo": {
     "Content": "Disable Teredo",
-    "Description": "Teredo network tunneling is a ipv6 feature that can cause additional latency, but may cause problems with some games",
+    "Description": "Teredo network tunneling is a IPv6 feature that can cause additional latency, but may cause problems with some games.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -2110,7 +2110,7 @@
   },
   "WPFTweaksDisableBGapps": {
     "Content": "Disable Background Apps",
-    "Description": "Disables all Microsoft Store apps from running in the background, which has to be done individually since Win11",
+    "Description": "Disables all Microsoft Store apps from running in the background, which has to be done individually since Windows 11.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -2126,7 +2126,7 @@
   },
   "WPFTweaksDisableFSO": {
     "Content": "Disable Fullscreen Optimizations",
-    "Description": "Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen",
+    "Description": "Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -2184,7 +2184,7 @@
   },
   "WPFToggleBingSearch": {
     "Content": "Bing Search in Start Menu",
-    "Description": "If enable then includes web search results from Bing in your Start Menu search.",
+    "Description": "If enabled, Bing web search results will be included in your Start Menu search.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2219,7 +2219,7 @@
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/standbyfix"
   },
   "WPFToggleNumLock": {
-    "Content": "NumLock on Startup",
+    "Content": "Num Lock on Startup",
     "Description": "Toggle the Num Lock key state when your computer starts.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -2264,7 +2264,7 @@
   },
   "WPFToggleStartMenuRecommendations": {
     "Content": "Recommendations in Start Menu",
-    "Description": "If disabled then you will not see recommendations in the Start Menu. WARNING: This will also disable Windows Spotlight on your Lock Screen as a side effect.",
+    "Description": "If disabled, then you will not see recommendations in the Start Menu. WARNING: This will also disable Windows Spotlight on your Lock Screen as a side effect.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2308,7 +2308,7 @@
   },
   "WPFToggleHideSettingsHome": {
     "Content": "Remove Settings Home Page",
-    "Description": "Removes the Home page in the Windows Settings app.",
+    "Description": "Removes the Home Page in the Windows Settings app.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2326,7 +2326,7 @@
   },
   "WPFToggleMouseAcceleration": {
     "Content": "Mouse Acceleration",
-    "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
+    "Description": "If enabled, the Cursor movement is affected by the speed of your physical mouse movements.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2360,7 +2360,7 @@
   },
   "WPFToggleStickyKeys": {
     "Content": "Sticky Keys",
-    "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
+    "Description": "If enabled, Sticky Keys is activated. Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2378,7 +2378,7 @@
   },
   "WPFToggleNewOutlook": {
     "Content": "New Outlook",
-    "Description": "If disabled it removes the toggle for new Outlook, disables the new Outlook migration and makes sure the Outlook Application actually uses the old Outlook.",
+    "Description": "If disabled, it removes the new Outlook toggle, disables the new Outlook migration, and ensures the classic Outlook application is used.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2438,7 +2438,7 @@
   },
   "WPFToggleHiddenFiles": {
     "Content": "Show Hidden Files",
-    "Description": "If Enabled then Hidden Files will be shown.",
+    "Description": "If enabled, Hidden Files will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2466,7 +2466,7 @@
   },
   "WPFToggleShowExt": {
     "Content": "Show File Extensions",
-    "Description": "If enabled then File extensions (e.g., .txt, .jpg) are visible.",
+    "Description": "If enabled, File extensions (e.g., .txt, .jpg) are visible.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2494,7 +2494,7 @@
   },
   "WPFToggleTaskbarSearch": {
     "Content": "Search Button in Taskbar",
-    "Description": "If Enabled Search Button will be on the taskbar.",
+    "Description": "If enabled, Search Button will be on the Taskbar.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2512,7 +2512,7 @@
   },
   "WPFToggleTaskView": {
     "Content": "Task View Button in Taskbar",
-    "Description": "If Enabled then Task View Button in Taskbar will be shown.",
+    "Description": "If enabled, Task View Button in Taskbar will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2530,7 +2530,7 @@
   },
   "WPFToggleTaskbarAlignment": {
     "Content": "Center Taskbar Items",
-    "Description": "[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
+    "Description": "[Windows 11] If enabled, the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2558,7 +2558,7 @@
   },
   "WPFToggleDetailedBSoD": {
     "Content": "Detailed BSoD",
-    "Description": "If Enabled then you will see a detailed Blue Screen of Death (BSOD) with more information.",
+    "Description": "If enabled, you will see a detailed Blue Screen of Death (BSOD) with more information.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2584,7 +2584,7 @@
   },
   "WPFToggleS3Sleep": {
     "Content": "S3 Sleep",
-    "Description": "Toggles between Modern Standby and S3 sleep.",
+    "Description": "Toggles between Modern Standby and S3 Sleep.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2633,7 +2633,7 @@
   },
   "WPFTweaksDisableExplorerAutoDiscovery": {
     "Content": "Disable Explorer Automatic Folder Discovery",
-    "Description": "Windows Explorer automatically tries to guess the type of the folder based on its contents, slowing down the browsing experience. WARNING! Will disable file explorer grouping",
+    "Description": "Windows Explorer automatically tries to guess the type of the folder based on its contents, slowing down the browsing experience. WARNING! Will disable File Explorer grouping.",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
