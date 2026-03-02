@@ -223,6 +223,8 @@ function Invoke-WinUtilISOModify {
     $runspace.ApartmentState = "STA"
     $runspace.ThreadOptions  = "ReuseThread"
     $runspace.Open()
+    $injectDrivers = $sync["WPFWin11ISOInjectDrivers"].IsChecked -eq $true
+
     $runspace.SessionStateProxy.SetVariable("sync",                $sync)
     $runspace.SessionStateProxy.SetVariable("isoPath",             $isoPath)
     $runspace.SessionStateProxy.SetVariable("driveLetter",         $driveLetter)
@@ -231,6 +233,7 @@ function Invoke-WinUtilISOModify {
     $runspace.SessionStateProxy.SetVariable("selectedWimIndex",    $selectedWimIndex)
     $runspace.SessionStateProxy.SetVariable("selectedEditionName", $selectedEditionName)
     $runspace.SessionStateProxy.SetVariable("autounattendContent", $autounattendContent)
+    $runspace.SessionStateProxy.SetVariable("injectDrivers",       $injectDrivers)
 
     # Serialize functions so they are available inside the runspace
     $isoScriptFuncDef = "function Invoke-WinUtilISOScript {`n" + `
@@ -324,7 +327,7 @@ function Invoke-WinUtilISOModify {
 
             # ── Apply all WinUtil modifications via Invoke-WinUtilISOScript ──
             Log "Applying WinUtil modifications to install.wim..."
-            Invoke-WinUtilISOScript -ScratchDir $mountDir -ISOContentsDir $isoContents -AutoUnattendXml $autounattendContent -Log { param($m) Log $m }
+            Invoke-WinUtilISOScript -ScratchDir $mountDir -ISOContentsDir $isoContents -AutoUnattendXml $autounattendContent -InjectCurrentSystemDrivers $injectDrivers -Log { param($m) Log $m }
 
             # ── 4b. DISM component store cleanup ──
             # /ResetBase removes all superseded component versions from WinSxS,

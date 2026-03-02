@@ -4,13 +4,12 @@ function Invoke-WinUtilISOScript {
         Applies WinUtil modifications to a mounted Windows 11 install.wim image.
 
     .DESCRIPTION
-        Removes AppX bloatware and OneDrive, injects hardware drivers (NVMe, Precision
-        Touchpad/HID, and network) exported from the running system, optionally injects
-        extended Storage & Network drivers from the ChrisTitusTech/storage-lan-drivers
-        repository (requires git, installed via winget if absent), applies offline registry
-        tweaks (hardware bypass, privacy, OOBE, telemetry, update suppression), deletes
-        CEIP/WU scheduled-task definition files, and optionally writes autounattend.xml to
-        the ISO root and removes the support\ folder from the ISO contents directory.
+        Removes AppX bloatware and OneDrive, optionally injects all drivers exported from
+        the running system into install.wim and boot.wim (controlled by the
+        -InjectCurrentSystemDrivers switch), applies offline registry tweaks (hardware
+        bypass, privacy, OOBE, telemetry, update suppression), deletes CEIP/WU
+        scheduled-task definition files, and optionally writes autounattend.xml to the ISO
+        root and removes the support\ folder from the ISO contents directory.
 
         All setup scripts embedded in the autounattend.xml <Extensions><File> nodes
         (Specialize.ps1, DefaultUser.ps1, FirstLogon.ps1, UserOnce.ps1, etc.) are written
@@ -38,6 +37,11 @@ function Invoke-WinUtilISOScript {
         in dev mode it is read from tools\autounattend.xml.
         If empty, the OOBE bypass file is skipped and a warning is logged.
 
+    .PARAMETER InjectCurrentSystemDrivers
+        Optional. When $true, exports all drivers from the running system and injects
+        them into install.wim and boot.wim index 2 (Windows Setup PE).
+        Defaults to $false — no drivers are injected.
+
     .PARAMETER Log
         Optional ScriptBlock used for progress/status logging.
         Receives a single [string] message argument.
@@ -62,6 +66,7 @@ function Invoke-WinUtilISOScript {
         [Parameter(Mandatory)][string]$ScratchDir,
         [string]$ISOContentsDir = "",
         [string]$AutoUnattendXml = "",
+        [bool]$InjectCurrentSystemDrivers = $false,
         [scriptblock]$Log = { param($m) Write-Output $m }
     )
 
@@ -88,32 +93,6 @@ function Invoke-WinUtilISOScript {
         } catch {
             & $Log "Error removing registry key: $_"
         }
-    }
-
-    # Copies driver package folders (one per exported .inf) whose online class
-    # matches any of the supplied class names into a new temp staging directory.
-    # Returns the staging directory path — caller must delete it when done.
-    # Using a staging dir lets DISM inject all drivers in a single /Recurse
-    # call instead of one DISM process launch per .inf file.
-    function New-DriverStagingDir {
-        param ([string]$ExportRoot, [string[]]$Classes)
-        $stagingDir = Join-Path $env:TEMP "WinUtil_DriverStage_$(Get-Random)"
-        New-Item -Path $stagingDir -ItemType Directory -Force | Out-Null
-        Get-WindowsDriver -Online |
-            Where-Object { $_.ClassName -in $Classes } |
-            ForEach-Object { [IO.Path]::GetFileNameWithoutExtension($_.OriginalFileName) } |
-            Select-Object -Unique |
-            ForEach-Object {
-                Get-ChildItem -Path $ExportRoot -Filter "$_.inf" -Recurse -ErrorAction SilentlyContinue |
-                    Select-Object -ExpandProperty DirectoryName -Unique |
-                    ForEach-Object {
-                        # Each exported driver lives in its own sub-folder;
-                        # copy that folder (with its binary files) into staging.
-                        $dest = Join-Path $stagingDir (Split-Path $_ -Leaf)
-                        Copy-Item -Path $_ -Destination $dest -Recurse -Force -ErrorAction SilentlyContinue
-                    }
-            }
-        return $stagingDir
     }
 
     # Injects all drivers from $DriverDir into a DISM-mounted image in one call.
@@ -217,104 +196,41 @@ function Invoke-WinUtilISOScript {
     }
 
     # ═════════════════════════════════════════════════════════════════════════
-    #  2. Inject hardware drivers (NVMe / Trackpad / Network)
-    #     Injected into BOTH install.wim (OS) AND boot.wim index 2 (Setup).
-    #     Without storage drivers in boot.wim, Windows Setup cannot see the
-    #     target disk on systems with unsupported NVMe / SATA controllers.
+    #  2. Inject current system drivers (optional)
+    #     Enabled by the "Inject current system drivers" checkbox at the
+    #     Mount & Verify step.  Exports ALL drivers from the running system
+    #     and injects them into install.wim AND boot.wim index 2 so Windows
+    #     Setup can see the target disk on systems with unsupported NVMe or
+    #     SATA controllers.
     # ═════════════════════════════════════════════════════════════════════════
-    & $Log "Exporting hardware drivers from running system (NVMe, HID/Trackpad, Network)..."
+    if ($InjectCurrentSystemDrivers) {
+        & $Log "Exporting all drivers from running system..."
+        $driverExportRoot = Join-Path $env:TEMP "WinUtil_DriverExport_$(Get-Random)"
+        New-Item -Path $driverExportRoot -ItemType Directory -Force | Out-Null
+        try {
+            Export-WindowsDriver -Online -Destination $driverExportRoot | Out-Null
 
-    $driverExportRoot = Join-Path $env:TEMP "WinUtil_DriverExport_$(Get-Random)"
-    New-Item -Path $driverExportRoot -ItemType Directory -Force | Out-Null
+            & $Log "Injecting current system drivers into install.wim..."
+            Add-DriversToImage -MountPath $ScratchDir -DriverDir $driverExportRoot -Label "install" -Logger $Log
+            & $Log "install.wim driver injection complete."
 
-    try {
-        Export-WindowsDriver -Online -Destination $driverExportRoot | Out-Null
-
-        # Stage matching driver folders then do a single DISM /Recurse call.
-        # install.wim: SCSIAdapter + HIDClass + Net
-        $installStage = New-DriverStagingDir -ExportRoot $driverExportRoot -Classes @('SCSIAdapter','HIDClass','Net')
-        & $Log "Injecting staged drivers into install.wim (single DISM call)..."
-        Add-DriversToImage -MountPath $ScratchDir -DriverDir $installStage -Label "install" -Logger $Log
-        Remove-Item -Path $installStage -Recurse -Force -ErrorAction SilentlyContinue
-        & $Log "install.wim driver injection complete."
-
-        # boot.wim: SCSIAdapter + Net only (HID not needed in WinPE)
-        if ($ISOContentsDir -and (Test-Path $ISOContentsDir)) {
-            $bootWim = Join-Path $ISOContentsDir "sources\boot.wim"
-            if (Test-Path $bootWim) {
-                $bootStage = New-DriverStagingDir -ExportRoot $driverExportRoot -Classes @('SCSIAdapter','Net')
-                & $Log "Injecting staged drivers into boot.wim (single DISM call)..."
-                Invoke-BootWimInject -BootWimPath $bootWim -DriverDir $bootStage -Logger $Log
-                Remove-Item -Path $bootStage -Recurse -Force -ErrorAction SilentlyContinue
-            } else {
-                & $Log "Warning: boot.wim not found — skipping boot.wim driver injection."
-            }
-        }
-    } catch {
-        & $Log "Error during driver export/injection: $_"
-    } finally {
-        Remove-Item -Path $driverExportRoot -Recurse -Force -ErrorAction SilentlyContinue
-    }
-
-    # ── 2c. Optional: extended Storage & Network drivers from community repo ──
-    $extDriverChoice = [System.Windows.MessageBox]::Show(
-        "Would you like to add extended Storage and Network drivers?`n`n" +
-        "This installs EVERY Storage and Networking device driver " +
-        "in EXISTANCE into the image. (~1000 drivers)`n`n" +
-        "No Wireless drivers only Ethernet, use for stubborn systems " +
-        "with unsupported NVMe or Ethernet controllers.",
-        "Extended Drivers", "YesNo", "Question")
-
-    if ($extDriverChoice -eq 'Yes') {
-        & $Log "Extended driver injection requested."
-
-        # Ensure git is available
-        $gitCmd = Get-Command git -ErrorAction SilentlyContinue
-        if (-not $gitCmd) {
-            & $Log "Git not found — installing via winget..."
-            winget install --id Git.Git -e --source winget `
-                --accept-package-agreements --accept-source-agreements | Out-Null
-            # Refresh PATH so git is visible in this session
-            $env:PATH = [System.Environment]::GetEnvironmentVariable('PATH', 'Machine') + ';' +
-                        [System.Environment]::GetEnvironmentVariable('PATH', 'User')
-            $gitCmd = Get-Command git -ErrorAction SilentlyContinue
-        }
-
-        if (-not $gitCmd) {
-            & $Log "Warning: git could not be found after install attempt — skipping extended drivers."
-        } else {
-            $extRepoDir = Join-Path $env:TEMP "WinUtil_ExtDrivers_$(Get-Random)"
-            try {
-                & $Log "Cloning storage-lan-drivers repository..."
-                & git clone --depth 1 `
-                    "https://github.com/ChrisTitusTech/storage-lan-drivers" `
-                    $extRepoDir 2>&1 | ForEach-Object { & $Log "  git: $_" }
-
-                if (Test-Path $extRepoDir) {
-                    & $Log "Injecting extended drivers into install.wim (this may take several minutes)..."
-                    Add-DriversToImage -MountPath $ScratchDir -DriverDir $extRepoDir -Label "install" -Logger $Log
-                    & $Log "Extended driver injection into install.wim complete."
-
-                    if ($ISOContentsDir -and (Test-Path $ISOContentsDir)) {
-                        $bootWimExt = Join-Path $ISOContentsDir "sources\boot.wim"
-                        if (Test-Path $bootWimExt) {
-                            & $Log "Injecting extended drivers into boot.wim..."
-                            Invoke-BootWimInject -BootWimPath $bootWimExt -DriverDir $extRepoDir -Logger $Log
-                        } else {
-                            & $Log "Warning: boot.wim not found — skipping extended driver injection into boot.wim."
-                        }
-                    }
+            # Also inject into boot.wim so Windows Setup can see the target disk.
+            if ($ISOContentsDir -and (Test-Path $ISOContentsDir)) {
+                $bootWim = Join-Path $ISOContentsDir "sources\boot.wim"
+                if (Test-Path $bootWim) {
+                    & $Log "Injecting current system drivers into boot.wim..."
+                    Invoke-BootWimInject -BootWimPath $bootWim -DriverDir $driverExportRoot -Logger $Log
                 } else {
-                    & $Log "Warning: repository clone directory not found — skipping extended drivers."
+                    & $Log "Warning: boot.wim not found — skipping boot.wim driver injection."
                 }
-            } catch {
-                & $Log "Error during extended driver injection: $_"
-            } finally {
-                Remove-Item -Path $extRepoDir -Recurse -Force -ErrorAction SilentlyContinue
             }
+        } catch {
+            & $Log "Error during driver export/injection: $_"
+        } finally {
+            Remove-Item -Path $driverExportRoot -Recurse -Force -ErrorAction SilentlyContinue
         }
     } else {
-        & $Log "Extended driver injection skipped."
+        & $Log "Driver injection skipped."
     }
 
     # ═════════════════════════════════════════════════════════════════════════

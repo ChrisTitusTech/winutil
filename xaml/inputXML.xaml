@@ -1494,6 +1494,13 @@
                                             HorizontalAlignment="Left"
                                             Width="Auto" Padding="12,0"
                                             Height="{DynamicResource ButtonHeight}"/>
+                                    <CheckBox Name="WPFWin11ISOInjectDrivers"
+                                              Content="Inject current system drivers"
+                                              FontSize="{DynamicResource FontSize}"
+                                              Foreground="{DynamicResource MainForegroundColor}"
+                                              IsChecked="False"
+                                              Margin="0,8,0,0"
+                                              ToolTip="Exports all drivers from this machine and injects them into install.wim and boot.wim. Recommended for systems with unsupported NVMe or network controllers."/>
                                 </StackPanel>
 
                                 <!-- Verification results panel -->
