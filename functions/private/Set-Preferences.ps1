@@ -55,20 +55,20 @@ function Set-Preferences{
             }
         }
 
-        # convert packagemanager to enum
-        if ($sync.preferences.packagemanager -eq "Choco") {
-            $sync.preferences.packagemanager = [PackageManagers]::Choco
-        }
-        elseif ($sync.preferences.packagemanager -eq "Winget") {
-            $sync.preferences.packagemanager = [PackageManagers]::Winget
-        }
-
         # write defaults in case preferences dont exist
         if ($null -eq $sync.preferences.theme) {
             $sync.preferences.theme = "Auto"
         }
         if ($null -eq $sync.preferences.packagemanager) {
             $sync.preferences.packagemanager = "Winget"
+        }
+
+        # convert packagemanager to enum
+        if ($sync.preferences.packagemanager -eq "Choco") {
+            $sync.preferences.packagemanager = [PackageManagers]::Choco
+        }
+        elseif ($sync.preferences.packagemanager -eq "Winget") {
+            $sync.preferences.packagemanager = [PackageManagers]::Winget
         }
     }
 
