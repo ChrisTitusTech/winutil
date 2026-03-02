@@ -6,7 +6,7 @@ description: ""
 ```json {filename="config/tweaks.json",linenos=inline,linenostart=2495}
   "WPFToggleTaskbarSearch": {
     "Content": "Search Button in Taskbar",
-    "Description": "If Enabled Search Button will be on the taskbar.",
+    "Description": "If enabled, Search Button will be on the Taskbar.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",

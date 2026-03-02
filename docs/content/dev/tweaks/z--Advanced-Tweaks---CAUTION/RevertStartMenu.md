@@ -6,7 +6,7 @@ description: ""
 ```json {filename="config/tweaks.json",linenos=inline,linenostart=90}
   "WPFTweaksRevertStartMenu": {
     "Content": "Revert the new start menu",
-    "Description": "Uses vivetool to revert the the original start menu from 24h2",
+    "Description": "Uses vivetool to revert to the original start menu from 24H2.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
