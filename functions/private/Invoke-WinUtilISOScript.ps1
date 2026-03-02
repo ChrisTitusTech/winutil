@@ -11,41 +11,31 @@ function Invoke-WinUtilISOScript {
         scheduled-task definition files, and optionally writes autounattend.xml to the ISO
         root and removes the support\ folder from the ISO contents directory.
 
-        All setup scripts embedded in the autounattend.xml <Extensions><File> nodes
-        (Specialize.ps1, DefaultUser.ps1, FirstLogon.ps1, UserOnce.ps1, etc.) are written
-        directly into the WIM at their target paths under C:\Windows\Setup\Scripts\.  This
-        pre-staging is necessary because Windows Setup strips unrecognised-namespace XML
-        elements — including the Schneegans <Extensions> block — when copying the answer
-        file to %WINDIR%\Panther\unattend.xml.  Without pre-staging the [scriptblock] that
-        tries to extract scripts from the Panther copy receives $null, no scripts reach
-        disk, and both the specialize-pass actions and FirstLogonCommands silently fail.
+        All setup scripts embedded in the autounattend.xml <Extensions><File> nodes are
+        written directly into the WIM at their target paths under C:\Windows\Setup\Scripts\
+        to ensure they survive Windows Setup stripping unrecognised-namespace XML elements
+        from the Panther copy of the answer file.
 
         Mounting/dismounting the WIM is the caller's responsibility (e.g. Invoke-WinUtilISO).
 
     .PARAMETER ScratchDir
         Mandatory. Full path to the directory where the Windows image is currently mounted.
-        Example: C:\Users\USERNAME\AppData\Local\Temp\WinUtil_Win11ISO_20260222\wim_mount
 
     .PARAMETER ISOContentsDir
-        Optional. Root directory of the extracted ISO contents.
-        When supplied, autounattend.xml is also written here so Windows Setup picks it
-        up automatically at boot, and the support\ folder is deleted from that location.
+        Optional. Root directory of the extracted ISO contents. When supplied,
+        autounattend.xml is written here and the support\ folder is removed.
 
     .PARAMETER AutoUnattendXml
-        Optional. Full XML content for autounattend.xml.
-        In compiled winutil.ps1 this is the embedded $WinUtilAutounattendXml here-string;
-        in dev mode it is read from tools\autounattend.xml.
-        If empty, the OOBE bypass file is skipped and a warning is logged.
+        Optional. Full XML content for autounattend.xml. If empty, the OOBE bypass
+        file is skipped and a warning is logged.
 
     .PARAMETER InjectCurrentSystemDrivers
         Optional. When $true, exports all drivers from the running system and injects
         them into install.wim and boot.wim index 2 (Windows Setup PE).
-        Defaults to $false — no drivers are injected.
+        Defaults to $false.
 
     .PARAMETER Log
-        Optional ScriptBlock used for progress/status logging.
-        Receives a single [string] message argument.
-        Defaults to { param($m) Write-Output $m } when not supplied.
+        Optional ScriptBlock for progress/status logging. Receives a single [string] argument.
 
     .EXAMPLE
         Invoke-WinUtilISOScript -ScratchDir "C:\Temp\wim_mount"
@@ -70,11 +60,9 @@ function Invoke-WinUtilISOScript {
         [scriptblock]$Log = { param($m) Write-Output $m }
     )
 
-    # ── Resolve admin group name (for takeown / icacls) ──────────────────────
     $adminSID   = New-Object System.Security.Principal.SecurityIdentifier('S-1-5-32-544')
     $adminGroup = $adminSID.Translate([System.Security.Principal.NTAccount])
 
-    # ── Local helpers ─────────────────────────────────────────────────────────
     function Set-ISOScriptReg {
         param ([string]$path, [string]$name, [string]$type, [string]$value)
         try {
@@ -95,30 +83,19 @@ function Invoke-WinUtilISOScript {
         }
     }
 
-    # Injects all drivers from $DriverDir into a DISM-mounted image in one call.
     function Add-DriversToImage {
-        param (
-            [string]$MountPath,
-            [string]$DriverDir,
-            [string]$Label = "image",
-            [scriptblock]$Logger
-        )
+        param ([string]$MountPath, [string]$DriverDir, [string]$Label = "image", [scriptblock]$Logger)
         & dism /English "/image:$MountPath" /Add-Driver "/Driver:$DriverDir" /Recurse 2>&1 |
             ForEach-Object { & $Logger "  dism[$Label]: $_" }
     }
 
-    # Mounts boot.wim index 2, injects all drivers from $DriverDir, saves, dismounts.
     function Invoke-BootWimInject {
-        param (
-            [string]$BootWimPath,
-            [string]$DriverDir,
-            [scriptblock]$Logger
-        )
+        param ([string]$BootWimPath, [string]$DriverDir, [scriptblock]$Logger)
         Set-ItemProperty -Path $BootWimPath -Name IsReadOnly -Value $false -ErrorAction SilentlyContinue
         $mountDir = Join-Path $env:TEMP "WinUtil_BootMount_$(Get-Random)"
         New-Item -Path $mountDir -ItemType Directory -Force | Out-Null
         try {
-            & $Logger "Mounting boot.wim (index 2 — Windows Setup) for driver injection..."
+            & $Logger "Mounting boot.wim (index 2) for driver injection..."
             Mount-WindowsImage -ImagePath $BootWimPath -Index 2 -Path $mountDir -ErrorAction Stop | Out-Null
             Add-DriversToImage -MountPath $mountDir -DriverDir $DriverDir -Label "boot" -Logger $Logger
             & $Logger "Saving boot.wim..."
@@ -132,15 +109,11 @@ function Invoke-WinUtilISOScript {
         }
     }
 
-    # ═════════════════════════════════════════════════════════════════════════
-    #  1. Remove provisioned AppX packages
-    # ═════════════════════════════════════════════════════════════════════════
+    # ── 1. Remove provisioned AppX packages ──────────────────────────────────
     & $Log "Removing provisioned AppX packages..."
 
     $packages = & dism /English "/image:$ScratchDir" /Get-ProvisionedAppxPackages |
-        ForEach-Object {
-            if ($_ -match 'PackageName : (.*)') { $matches[1] }
-        }
+        ForEach-Object { if ($_ -match 'PackageName : (.*)') { $matches[1] } }
 
     $packagePrefixes = @(
         'AppUp.IntelManagementandSecurityStatus',
@@ -187,22 +160,10 @@ function Invoke-WinUtilISOScript {
         'MicrosoftTeams'
     )
 
-    $packagesToRemove = $packages | Where-Object {
-        $pkg = $_
-        $packagePrefixes | Where-Object { $pkg -like "*$_*" }
-    }
-    foreach ($package in $packagesToRemove) {
-        & dism /English "/image:$ScratchDir" /Remove-ProvisionedAppxPackage "/PackageName:$package"
-    }
+    $packages | Where-Object { $pkg = $_; $packagePrefixes | Where-Object { $pkg -like "*$_*" } } |
+        ForEach-Object { & dism /English "/image:$ScratchDir" /Remove-ProvisionedAppxPackage "/PackageName:$_" }
 
-    # ═════════════════════════════════════════════════════════════════════════
-    #  2. Inject current system drivers (optional)
-    #     Enabled by the "Inject current system drivers" checkbox at the
-    #     Mount & Verify step.  Exports ALL drivers from the running system
-    #     and injects them into install.wim AND boot.wim index 2 so Windows
-    #     Setup can see the target disk on systems with unsupported NVMe or
-    #     SATA controllers.
-    # ═════════════════════════════════════════════════════════════════════════
+    # ── 2. Inject current system drivers (optional) ───────────────────────────
     if ($InjectCurrentSystemDrivers) {
         & $Log "Exporting all drivers from running system..."
         $driverExportRoot = Join-Path $env:TEMP "WinUtil_DriverExport_$(Get-Random)"
@@ -214,7 +175,6 @@ function Invoke-WinUtilISOScript {
             Add-DriversToImage -MountPath $ScratchDir -DriverDir $driverExportRoot -Label "install" -Logger $Log
             & $Log "install.wim driver injection complete."
 
-            # Also inject into boot.wim so Windows Setup can see the target disk.
             if ($ISOContentsDir -and (Test-Path $ISOContentsDir)) {
                 $bootWim = Join-Path $ISOContentsDir "sources\boot.wim"
                 if (Test-Path $bootWim) {
@@ -233,17 +193,13 @@ function Invoke-WinUtilISOScript {
         & $Log "Driver injection skipped."
     }
 
-    # ═════════════════════════════════════════════════════════════════════════
-    #  3. Remove OneDrive
-    # ═════════════════════════════════════════════════════════════════════════
+    # ── 3. Remove OneDrive ────────────────────────────────────────────────────
     & $Log "Removing OneDrive..."
     & takeown /f "$ScratchDir\Windows\System32\OneDriveSetup.exe" | Out-Null
     & icacls    "$ScratchDir\Windows\System32\OneDriveSetup.exe" /grant "$($adminGroup.Value):(F)" /T /C | Out-Null
     Remove-Item -Path "$ScratchDir\Windows\System32\OneDriveSetup.exe" -Force -ErrorAction SilentlyContinue
 
-    # ═════════════════════════════════════════════════════════════════════════
-    #  4. Registry tweaks
-    # ═════════════════════════════════════════════════════════════════════════
+    # ── 4. Registry tweaks ────────────────────────────────────────────────────
     & $Log "Loading offline registry hives..."
     reg load HKLM\zCOMPONENTS "$ScratchDir\Windows\System32\config\COMPONENTS"
     reg load HKLM\zDEFAULT    "$ScratchDir\Windows\System32\config\default"
@@ -292,19 +248,6 @@ function Invoke-WinUtilISOScript {
     Set-ISOScriptReg 'HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\OOBE' 'BypassNRO' 'REG_DWORD' '1'
 
     if ($AutoUnattendXml) {
-        # ── Pre-stage embedded setup scripts directly into the WIM ────────────
-        # The autounattend.xml (Schneegans generator format) embeds all setup
-        # scripts as <Extensions><File> nodes.  The specialize-pass command that
-        # is supposed to extract them reads C:\Windows\Panther\unattend.xml, but
-        # Windows Setup strips unrecognised-namespace elements (including the
-        # entire <Extensions> block) when it copies the answer file to that path.
-        # As a result [scriptblock]::Create($null) throws, no scripts are written
-        # to C:\Windows\Setup\Scripts\, Specialize.ps1 and DefaultUser.ps1 never
-        # run, and FirstLogon.ps1 is absent so FirstLogonCommands silently fails.
-        #
-        # Writing the scripts directly into the WIM guarantees they are present
-        # on the target drive after Windows Setup applies the image, regardless
-        # of whether the Panther extraction step succeeds.
         try {
             $xmlDoc = [xml]::new()
             $xmlDoc.LoadXml($AutoUnattendXml)
@@ -315,24 +258,18 @@ function Invoke-WinUtilISOScript {
             $fileNodes = $xmlDoc.SelectNodes("//sg:File", $nsMgr)
             if ($fileNodes -and $fileNodes.Count -gt 0) {
                 foreach ($fileNode in $fileNodes) {
-                    # Paths in the XML are absolute Windows paths (e.g. C:\Windows\Setup\Scripts\…).
-                    # Strip the drive-letter prefix so we can root them under $ScratchDir.
                     $absPath  = $fileNode.GetAttribute("path")
                     $relPath  = $absPath -replace '^[A-Za-z]:[/\\]', ''
                     $destPath = Join-Path $ScratchDir $relPath
-                    $destDir  = Split-Path $destPath -Parent
+                    New-Item -Path (Split-Path $destPath -Parent) -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
 
-                    New-Item -Path $destDir -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
-
-                    # Match the encoding logic used by the original ExtractScript.
                     $ext = [IO.Path]::GetExtension($destPath).ToLower()
                     $encoding = switch ($ext) {
-                        { $_ -in '.ps1', '.xml' } { [System.Text.Encoding]::UTF8 }
+                        { $_ -in '.ps1', '.xml' }        { [System.Text.Encoding]::UTF8 }
                         { $_ -in '.reg', '.vbs', '.js' } { [System.Text.UnicodeEncoding]::new($false, $true) }
-                        default { [System.Text.Encoding]::Default }
+                        default                          { [System.Text.Encoding]::Default }
                     }
-                    $bytes = $encoding.GetPreamble() + $encoding.GetBytes($fileNode.InnerText.Trim())
-                    [System.IO.File]::WriteAllBytes($destPath, $bytes)
+                    [System.IO.File]::WriteAllBytes($destPath, ($encoding.GetPreamble() + $encoding.GetBytes($fileNode.InnerText.Trim())))
                     & $Log "Pre-staged setup script: $relPath"
                 }
             } else {
@@ -342,9 +279,6 @@ function Invoke-WinUtilISOScript {
             & $Log "Warning: could not pre-stage setup scripts from autounattend.xml: $_"
         }
 
-        # ── Place autounattend.xml at the ISO / USB root ──────────────────────
-        # Windows Setup reads this file first (before booting into the OS),
-        # which is what drives the local-account / OOBE bypass at install time.
         if ($ISOContentsDir -and (Test-Path $ISOContentsDir)) {
             $isoDest = Join-Path $ISOContentsDir "autounattend.xml"
             Set-Content -Path $isoDest -Value $AutoUnattendXml -Encoding UTF8 -Force
@@ -387,8 +321,8 @@ function Invoke-WinUtilISOScript {
     Remove-ISOScriptReg 'HKLM\zSOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\DevHomeUpdate'
 
     & $Log "Disabling Copilot..."
-    Set-ISOScriptReg 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\WindowsCopilot' 'TurnOffWindowsCopilot'    'REG_DWORD' '1'
-    Set-ISOScriptReg 'HKLM\zSOFTWARE\Policies\Microsoft\Edge'                   'HubsSidebarEnabled'        'REG_DWORD' '0'
+    Set-ISOScriptReg 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\WindowsCopilot' 'TurnOffWindowsCopilot'      'REG_DWORD' '1'
+    Set-ISOScriptReg 'HKLM\zSOFTWARE\Policies\Microsoft\Edge'                   'HubsSidebarEnabled'          'REG_DWORD' '0'
     Set-ISOScriptReg 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\Explorer'       'DisableSearchBoxSuggestions' 'REG_DWORD' '1'
 
     & $Log "Disabling Windows Update during OOBE (re-enabled on first logon via FirstLogon.ps1)..."
@@ -419,12 +353,9 @@ function Invoke-WinUtilISOScript {
     reg unload HKLM\zSOFTWARE
     reg unload HKLM\zSYSTEM
 
-    # ═════════════════════════════════════════════════════════════════════════
-    #  5. Delete scheduled task definition files
-    # ═════════════════════════════════════════════════════════════════════════
+    # ── 5. Delete scheduled task definition files ─────────────────────────────
     & $Log "Deleting scheduled task definition files..."
     $tasksPath = "$ScratchDir\Windows\System32\Tasks"
-
     Remove-Item "$tasksPath\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" -Force -ErrorAction SilentlyContinue
     Remove-Item "$tasksPath\Microsoft\Windows\Customer Experience Improvement Program"                  -Recurse -Force -ErrorAction SilentlyContinue
     Remove-Item "$tasksPath\Microsoft\Windows\Application Experience\ProgramDataUpdater"               -Force -ErrorAction SilentlyContinue
@@ -436,12 +367,9 @@ function Invoke-WinUtilISOScript {
     Remove-Item "$tasksPath\Microsoft\Windows\WaaSMedic"                                               -Recurse -Force -ErrorAction SilentlyContinue
     Remove-Item "$tasksPath\Microsoft\Windows\WindowsUpdate"                                           -Recurse -Force -ErrorAction SilentlyContinue
     Remove-Item "$tasksPath\Microsoft\WindowsUpdate"                                                   -Recurse -Force -ErrorAction SilentlyContinue
-
     & $Log "Scheduled task files deleted."
 
-    # ═════════════════════════════════════════════════════════════════════════
-    #  6. Remove ISO support folder (fresh-install only; not needed)
-    # ═════════════════════════════════════════════════════════════════════════
+    # ── 6. Remove ISO support folder ─────────────────────────────────────────
     if ($ISOContentsDir -and (Test-Path $ISOContentsDir)) {
         & $Log "Removing ISO support\ folder..."
         Remove-Item -Path (Join-Path $ISOContentsDir "support") -Recurse -Force -ErrorAction SilentlyContinue

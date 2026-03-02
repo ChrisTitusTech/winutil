@@ -278,7 +278,6 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBox">
                         <Grid>
-                            <!-- Outer border gives the combo a visible box -->
                             <Border x:Name="OuterBorder"
                                     BorderBrush="{DynamicResource BorderColor}"
                                     BorderThickness="1"
@@ -289,7 +288,6 @@
                                               BorderThickness="0"
                                               IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                               ClickMode="Press">
-                                    <!-- Text + arrow laid out in a two-column Grid -->
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
@@ -301,7 +299,6 @@
                                                    Background="Transparent"
                                                    HorizontalAlignment="Left" VerticalAlignment="Center"
                                                    Margin="6,3,2,3"/>
-                                        <!-- Scalable vector chevron -->
                                         <Path Grid.Column="1"
                                               Data="M 0,0 L 8,0 L 4,5 Z"
                                               Fill="{TemplateBinding Foreground}"

@@ -535,10 +535,7 @@ $sync["FontScalingApplyButton"].Add_Click({
 # ── Win11ISO Tab button handlers ──────────────────────────────────────────────
 
 $sync["WPFTab5BT"].Add_Click({
-    $sync["Form"].Dispatcher.BeginInvoke(
-        [System.Windows.Threading.DispatcherPriority]::Background,
-        [action]{ Invoke-WinUtilISOCheckExistingWork }
-    ) | Out-Null
+    $sync["Form"].Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{ Invoke-WinUtilISOCheckExistingWork }) | Out-Null
 })
 
 $sync["WPFWin11ISOBrowseButton"].Add_Click({
