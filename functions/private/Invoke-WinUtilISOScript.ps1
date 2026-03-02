@@ -9,8 +9,18 @@ function Invoke-WinUtilISOScript {
         extended Storage & Network drivers from the ChrisTitusTech/storage-lan-drivers
         repository (requires git, installed via winget if absent), applies offline registry
         tweaks (hardware bypass, privacy, OOBE, telemetry, update suppression), deletes
-        CEIP/WU scheduled-task definition files, and optionally drops autounattend.xml and
-        removes the support\ folder from the ISO contents directory.
+        CEIP/WU scheduled-task definition files, and optionally writes autounattend.xml to
+        the ISO root and removes the support\ folder from the ISO contents directory.
+
+        All setup scripts embedded in the autounattend.xml <Extensions><File> nodes
+        (Specialize.ps1, DefaultUser.ps1, FirstLogon.ps1, UserOnce.ps1, etc.) are written
+        directly into the WIM at their target paths under C:\Windows\Setup\Scripts\.  This
+        pre-staging is necessary because Windows Setup strips unrecognised-namespace XML
+        elements — including the Schneegans <Extensions> block — when copying the answer
+        file to %WINDIR%\Panther\unattend.xml.  Without pre-staging the [scriptblock] that
+        tries to extract scripts from the Panther copy receives $null, no scripts reach
+        disk, and both the specialize-pass actions and FirstLogonCommands silently fail.
+
         Mounting/dismounting the WIM is the caller's responsibility (e.g. Invoke-WinUtilISO).
 
     .PARAMETER ScratchDir
@@ -46,7 +56,7 @@ function Invoke-WinUtilISOScript {
     .NOTES
         Author  : Chris Titus @christitustech
         GitHub  : https://github.com/ChrisTitusTech
-        Version : 26.02.25b
+        Version : 26.03.02
     #>
     param (
         [Parameter(Mandatory)][string]$ScratchDir,
@@ -366,10 +376,55 @@ function Invoke-WinUtilISOScript {
     Set-ISOScriptReg 'HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\OOBE' 'BypassNRO' 'REG_DWORD' '1'
 
     if ($AutoUnattendXml) {
-        # ── Place autounattend.xml inside the WIM (Sysprep) ──────────────────
-        $sysprepDest = "$ScratchDir\Windows\System32\Sysprep\autounattend.xml"
-        Set-Content -Path $sysprepDest -Value $AutoUnattendXml -Encoding UTF8 -Force
-        & $Log "Written autounattend.xml to Sysprep directory."
+        # ── Pre-stage embedded setup scripts directly into the WIM ────────────
+        # The autounattend.xml (Schneegans generator format) embeds all setup
+        # scripts as <Extensions><File> nodes.  The specialize-pass command that
+        # is supposed to extract them reads C:\Windows\Panther\unattend.xml, but
+        # Windows Setup strips unrecognised-namespace elements (including the
+        # entire <Extensions> block) when it copies the answer file to that path.
+        # As a result [scriptblock]::Create($null) throws, no scripts are written
+        # to C:\Windows\Setup\Scripts\, Specialize.ps1 and DefaultUser.ps1 never
+        # run, and FirstLogon.ps1 is absent so FirstLogonCommands silently fails.
+        #
+        # Writing the scripts directly into the WIM guarantees they are present
+        # on the target drive after Windows Setup applies the image, regardless
+        # of whether the Panther extraction step succeeds.
+        try {
+            $xmlDoc = [xml]::new()
+            $xmlDoc.LoadXml($AutoUnattendXml)
+
+            $nsMgr = New-Object System.Xml.XmlNamespaceManager($xmlDoc.NameTable)
+            $nsMgr.AddNamespace("sg", "https://schneegans.de/windows/unattend-generator/")
+
+            $fileNodes = $xmlDoc.SelectNodes("//sg:File", $nsMgr)
+            if ($fileNodes -and $fileNodes.Count -gt 0) {
+                foreach ($fileNode in $fileNodes) {
+                    # Paths in the XML are absolute Windows paths (e.g. C:\Windows\Setup\Scripts\…).
+                    # Strip the drive-letter prefix so we can root them under $ScratchDir.
+                    $absPath  = $fileNode.GetAttribute("path")
+                    $relPath  = $absPath -replace '^[A-Za-z]:[/\\]', ''
+                    $destPath = Join-Path $ScratchDir $relPath
+                    $destDir  = Split-Path $destPath -Parent
+
+                    New-Item -Path $destDir -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
+
+                    # Match the encoding logic used by the original ExtractScript.
+                    $ext = [IO.Path]::GetExtension($destPath).ToLower()
+                    $encoding = switch ($ext) {
+                        { $_ -in '.ps1', '.xml' } { [System.Text.Encoding]::UTF8 }
+                        { $_ -in '.reg', '.vbs', '.js' } { [System.Text.UnicodeEncoding]::new($false, $true) }
+                        default { [System.Text.Encoding]::Default }
+                    }
+                    $bytes = $encoding.GetPreamble() + $encoding.GetBytes($fileNode.InnerText.Trim())
+                    [System.IO.File]::WriteAllBytes($destPath, $bytes)
+                    & $Log "Pre-staged setup script: $relPath"
+                }
+            } else {
+                & $Log "Warning: no <Extensions><File> nodes found in autounattend.xml — setup scripts not pre-staged."
+            }
+        } catch {
+            & $Log "Warning: could not pre-stage setup scripts from autounattend.xml: $_"
+        }
 
         # ── Place autounattend.xml at the ISO / USB root ──────────────────────
         # Windows Setup reads this file first (before booting into the OS),
