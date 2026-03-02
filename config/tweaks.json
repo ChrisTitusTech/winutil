@@ -31,7 +31,7 @@
   },
   "WPFTweaksHiber": {
     "Content": "Disable Hibernation",
-    "Description": "Hibernation is really meant for laptops as it saves what's in memory before turning the pc off. It really should never be used",
+    "Description": "Hibernation is really meant for laptops as it saves what's in memory before turning the PC off. It really should never be used.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
@@ -60,7 +60,7 @@
   },
   "WPFTweaksWidget": {
     "Content": "Remove Widgets",
-    "Description": "Removes the annoying widgets in the bottom left of the taskbar",
+    "Description": "Removes the annoying widgets in the bottom left of the taskbar.",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
@@ -89,7 +89,7 @@
   },
   "WPFTweaksRevertStartMenu": {
     "Content": "Revert the new start menu",
-    "Description": "Uses vivetool to revert the the original start menu from 24h2",
+    "Description": "Uses vivetool to revert the the original start menu from 24H2.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -1125,7 +1125,7 @@
   },
   "WPFTweaksBraveDebloat": {
     "Content": "Brave Debloat",
-    "Description": "Disables various annoyances like Brave Rewards,Leo AI,Crypto Wallet and VPN",
+    "Description": "Disables various annoyances like Brave Rewards, Leo AI, Crypto Wallet and VPN.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -1290,7 +1290,7 @@
   },
   "WPFTweaksConsumerFeatures": {
     "Content": "Disable ConsumerFeatures",
-    "Description": "Windows will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link)",
+    "Description": "Windows will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link).",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
@@ -1428,7 +1428,7 @@
   },
   "WPFTweaksRemoveEdge": {
     "Content": "Remove Microsoft Edge",
-    "Description": "Unblocks Microsoft Edge uninstaller restrictions than uses that uninstaller to remove Microsoft Edge",
+    "Description": "Unblocks Microsoft Edge uninstaller restrictions than uses that uninstaller to remove Microsoft Edge.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -1460,7 +1460,7 @@
   },
   "WPFTweaksRemoveOneDrive": {
     "Content": "Remove OneDrive",
-    "Description": "Denys permission to remove onedrive user files than uses its own uninstaller to remove it than brings back permissions",
+    "Description": "Denies permission to remove OneDrive user files than uses its own uninstaller to remove it than brings back permissions.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -1497,7 +1497,7 @@
   },
   "WPFTweaksRemoveHome": {
     "Content": "Remove Home from Explorer",
-    "Description": "Removes the Home from Explorer and sets This PC as default",
+    "Description": "Removes the Home from Explorer and sets This PC as default.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -1516,7 +1516,7 @@
   },
   "WPFTweaksRemoveGallery": {
     "Content": "Remove Gallery from explorer",
-    "Description": "Removes the Gallery from Explorer and sets This PC as default",
+    "Description": "Removes the Gallery from Explorer and sets This PC as default.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -1735,7 +1735,7 @@
   },
   "WPFTweaksRestorePoint": {
     "Content": "Create Restore Point",
-    "Description": "Creates a restore point at runtime in case a revert is needed from WinUtil modifications",
+    "Description": "Creates a restore point at runtime in case a revert is needed from WinUtil modifications.",
     "category": "Essential Tweaks",
     "panel": "1",
     "Checked": "False",
@@ -1762,7 +1762,7 @@
   },
   "WPFTweaksEndTaskOnTaskbar": {
     "Content": "Enable End Task With Right Click",
-    "Description": "Enables option to end task when right clicking a program in the taskbar",
+    "Description": "Enables option to end task when right clicking a program in the taskbar.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
@@ -1949,7 +1949,7 @@
   },
   "WPFTweaksDisableNotifications": {
     "Content": "Disable Notification Tray/Calendar",
-    "Description": "Disables all Notifications INCLUDING Calendar",
+    "Description": "Disables all Notifications INCLUDING Calendar.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -2066,7 +2066,7 @@
   },
   "WPFTweaksTeredo": {
     "Content": "Disable Teredo",
-    "Description": "Teredo network tunneling is a ipv6 feature that can cause additional latency, but may cause problems with some games",
+    "Description": "Teredo network tunneling is a IPv6 feature that can cause additional latency, but may cause problems with some games.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -2110,7 +2110,7 @@
   },
   "WPFTweaksDisableBGapps": {
     "Content": "Disable Background Apps",
-    "Description": "Disables all Microsoft Store apps from running in the background, which has to be done individually since Win11",
+    "Description": "Disables all Microsoft Store apps from running in the background, which has to be done individually since Win11.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -2126,7 +2126,7 @@
   },
   "WPFTweaksDisableFSO": {
     "Content": "Disable Fullscreen Optimizations",
-    "Description": "Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen",
+    "Description": "Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -2290,7 +2290,7 @@
   },
   "WPFToggleHideSettingsHome": {
     "Content": "Remove Settings Home Page",
-    "Description": "Removes the Home page in the Windows Settings app.",
+    "Description": "Removes the Home Page in the Windows Settings app.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2566,7 +2566,7 @@
   },
   "WPFToggleS3Sleep": {
     "Content": "S3 Sleep",
-    "Description": "Toggles between Modern Standby and S3 sleep.",
+    "Description": "Toggles between Modern Standby and S3 Sleep.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2615,7 +2615,7 @@
   },
   "WPFTweaksDisableExplorerAutoDiscovery": {
     "Content": "Disable Explorer Automatic Folder Discovery",
-    "Description": "Windows Explorer automatically tries to guess the type of the folder based on its contents, slowing down the browsing experience. WARNING! Will disable file explorer grouping",
+    "Description": "Windows Explorer automatically tries to guess the type of the folder based on its contents, slowing down the browsing experience. WARNING! Will disable file explorer grouping.",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
