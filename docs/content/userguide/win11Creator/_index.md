@@ -8,14 +8,14 @@ weight: 5
 Winutil includes a built-in **Win11 Creator** tool that lets you take any official Windows 11 ISO and produce a customized, debloated version — with telemetry removed, hardware requirement checks bypassed, and local account setup enabled out of the box. You can export the result as a new ISO file or write it directly to a USB drive.
 
 > [!IMPORTANT]
-> You need a valid Windows 11 ISO before starting. Download one from [Microsoft's official site](https://www.microsoft.com/en-us/software-download/windows11) or use [UUP Dump](https://uupdump.net/). The process uses ~10–15 GB of temporary disk space, so make sure you have room.
+> You need an **official Windows 11 ISO** from [Microsoft's website](https://www.microsoft.com/en-us/software-download/windows11) before starting. Custom, modified, or non-official ISOs are not supported. The process uses ~10–15 GB of temporary disk space, so make sure you have room.
 
 ---
 
-### Step 1 — Select Your ISO
+### Step 1 — Select Your Official Windows 11 ISO
 
 1. Open Winutil and go to the **Win11 Creator** tab.
-2. Click **Browse** and select your Windows 11 ISO file (must be 4 GB or larger).
+2. Click **Browse** and select your **official Windows 11 ISO file** from Microsoft (must be 4 GB or larger). Custom or modified ISOs are not supported.
 3. The file path and size will appear on screen once selected.
 
 ---
@@ -35,14 +35,31 @@ Winutil includes a built-in **Win11 Creator** tool that lets you take any offici
 
 Click **Run Windows ISO Modification and Creator** to start the customization process. Winutil will:
 
+**App & Component Removal:**
 - **Remove 40+ bloat apps** — Clipchamp, Teams, Copilot, Dev Home, new Outlook, Bing apps, Solitaire, and more
 - **Delete OneDrive setup** from the image
-- **Apply registry tweaks** — disables telemetry, advertising ID, tailored experiences, and cloud content features
+
+**System Customization:**
 - **Bypass hardware checks** — removes TPM, Secure Boot, CPU, and RAM requirement enforcement so the ISO installs on unsupported hardware
 - **Enable local account setup** — injects an `autounattend.xml` that skips the Microsoft account screen during OOBE
+- **Disable BitLocker and device encryption** — removes startup overhead
+- **Disable Chat icon** — removes chat taskbar button
 - **Strip unused editions** — keeps only your selected edition, saving 1–2 GB per removed edition
 - **Clean the component store** — runs DISM cleanup to reclaim another 300–800 MB
+
+**Privacy & Telemetry Tweaks:**
+- **Disable telemetry** — advertising ID, tailored experiences, input personalization, speech online privacy
+- **Disable cloud content features** — app suggestions, Microsoft Store recommendations
 - **Remove telemetry scheduled tasks** — CEIP, Appraiser, WaaSMedic, and others
+- **Disable OneDrive folder backup** — prevents automatic backups to cloud
+- **Prevent DevHome and Outlook post-setup installation**
+- **Prevent Teams installation** — blocks auto-install after OOBE
+- **Prevent new Outlook Mail app installation**
+- **Disable Windows Update during OOBE** — re-enabled automatically on first login
+- **Disable Copilot and search box suggestions**
+
+**Optional: Driver Injection**
+- If enabled, injects all drivers from your current system into the install.wim and boot.wim — useful for offline installations on machines with missing drivers. This is an optional checkbox in Step 3.
 
 A live log shows progress as each step completes. This stage takes **10–30 minutes** depending on your disk speed — the WIM dismount near the end is the slowest part, so don't close Winutil while it's running.
 
@@ -94,9 +111,9 @@ When you install Windows 11 from your modified ISO:
 - **No Microsoft account required** — create a local account directly during setup
 - **No hardware checks** — installs on machines without TPM 2.0, Secure Boot, or supported CPUs
 - **Dark mode enabled by default**
-- **Empty taskbar and Start Menu** — no pinned apps
-- **Windows Update re-enabled automatically** after first login (it's paused during OOBE to prevent interruption)
-- **BitLocker disabled**, Recall disabled, desktop shortcuts removed
+- **Empty taskbar and Start Menu** — no pinned apps, Chat icon removed
+- **Windows Update disabled during OOBE** — automatically re-enabled on first login to prevent setup interruptions
+- **BitLocker disabled** — removes startup overhead on first boot
 
 ---
 
