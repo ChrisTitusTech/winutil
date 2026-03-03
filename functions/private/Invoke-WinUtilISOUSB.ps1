@@ -113,7 +113,7 @@ function Invoke-WinUtilISOWriteUSB {
             # Phase 3: Create FAT32 partition via diskpart
             $volLabel = "W11-" + (Get-Date).ToString('yyMMdd')
             $dpFile2  = Join-Path $env:TEMP "winutil_diskpart2_$(Get-Random).txt"
-            "select disk $diskNum`ncreate partition primary`nformat quick fs=fat32 label=`"$volLabel`"`nexit" |
+            "select disk $diskNum`ncreate partition primary`nformat quick fs=exfat label=`"$volLabel`"`nexit" |
                 Set-Content -Path $dpFile2 -Encoding ASCII
             Log "Creating partitions on Disk $diskNum..."
             diskpart /s $dpFile2 2>&1 | Where-Object { $_ -match '\S' } | ForEach-Object { Log "  diskpart: $_" }
@@ -146,24 +146,8 @@ function Invoke-WinUtilISOWriteUSB {
             Log "USB data partition: $usbDrive"
             SetProgress "Copying Windows 11 files to USB..." 45
 
-            # Copy files; split install.wim if > 4 GB (FAT32 limit)
-            $installWim = Join-Path $contentsDir "sources\install.wim"
-            if (Test-Path $installWim) {
-                $wimSizeMB = [math]::Round((Get-Item $installWim).Length / 1MB)
-                if ($wimSizeMB -gt 3800) {
-                    Log "install.wim is $wimSizeMB MB - splitting for FAT32 compatibility... This will take several minutes."
-                    $splitDest = Join-Path $usbDrive "sources\install.swm"
-                    New-Item -ItemType Directory -Path (Split-Path $splitDest) -Force | Out-Null
-                    Split-WindowsImage -ImagePath $installWim -SplitImagePath $splitDest -FileSize 3800 -CheckIntegrity
-                    Log "install.wim split complete."
-                    Log "Copying remaining files to USB..."
-                    & robocopy $contentsDir $usbDrive /E /XF install.wim /NFL /NDL /NJH /NJS
-                } else {
-                    & robocopy $contentsDir $usbDrive /E /NFL /NDL /NJH /NJS
-                }
-            } else {
-                & robocopy $contentsDir $usbDrive /E /NFL /NDL /NJH /NJS
-            }
+            # Copy files (exFAT supports files > 4 GB, no splitting needed)
+            & robocopy $contentsDir $usbDrive /E /NFL /NDL /NJH /NJS
 
             SetProgress "Finalising USB drive..." 90
             Log "Files copied to USB."
