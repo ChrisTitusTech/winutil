@@ -1,12 +1,13 @@
 function Invoke-WinUtilISORefreshUSBDrives {
     $combo    = $sync["WPFWin11ISOUSBDriveComboBox"]
-    $removable = Get-Disk | Where-Object { $_.BusType -eq "USB" } | Sort-Object Number
+    $removable = @(Get-Disk | Where-Object { $_.BusType -eq "USB" } | Sort-Object Number)
 
     $combo.Items.Clear()
 
     if ($removable.Count -eq 0) {
         $combo.Items.Add("No USB drives detected")
         $combo.SelectedIndex = 0
+        $sync["Win11ISOUSBDisks"] = @()
         Write-Win11ISOLog "No USB drives detected."
         return
     }
@@ -29,13 +30,24 @@ function Invoke-WinUtilISOWriteUSB {
         return
     }
 
-    $selectedIndex = $sync["WPFWin11ISOUSBDriveComboBox"].SelectedIndex
-    if ($selectedIndex -lt 0 -or -not $usbDisks -or $selectedIndex -ge $usbDisks.Count) {
+    $combo = $sync["WPFWin11ISOUSBDriveComboBox"]
+    $selectedIndex = $combo.SelectedIndex
+    $selectedItemText = [string]$combo.SelectedItem
+    $usbDisks = @($usbDisks)
+
+    $targetDisk = $null
+    if ($selectedIndex -ge 0 -and $selectedIndex -lt $usbDisks.Count) {
+        $targetDisk = $usbDisks[$selectedIndex]
+    } elseif ($selectedItemText -match 'Disk\s+(\d+):') {
+        $selectedDiskNum = [int]$matches[1]
+        $targetDisk = $usbDisks | Where-Object { $_.Number -eq $selectedDiskNum } | Select-Object -First 1
+    }
+
+    if (-not $targetDisk) {
         [System.Windows.MessageBox]::Show("Please select a USB drive from the dropdown.", "No Drive Selected", "OK", "Warning")
         return
     }
 
-    $targetDisk = $usbDisks[$selectedIndex]
     $diskNum    = $targetDisk.Number
     $sizeGB     = [math]::Round($targetDisk.Size / 1GB, 1)
 
