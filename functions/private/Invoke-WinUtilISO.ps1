@@ -178,19 +178,16 @@ function Invoke-WinUtilISOModify {
     $runspace.SessionStateProxy.SetVariable("autounattendContent", $autounattendContent)
     $runspace.SessionStateProxy.SetVariable("injectDrivers",       $injectDrivers)
 
-    $isoScriptFuncDef   = "function Invoke-WinUtilISOScript {`n"         + ${function:Invoke-WinUtilISOScript}.ToString()         + "`n}"
-    $win11ISOLogFuncDef = "function Write-Win11ISOLog {`n"               + ${function:Write-Win11ISOLog}.ToString()               + "`n}"
-    $refreshUSBFuncDef  = "function Invoke-WinUtilISORefreshUSBDrives {`n" + ${function:Invoke-WinUtilISORefreshUSBDrives}.ToString() + "`n}"
+    $isoScriptFuncDef   = "function Invoke-WinUtilISOScript {`n" + ${function:Invoke-WinUtilISOScript}.ToString() + "`n}"
+    $win11ISOLogFuncDef = "function Write-Win11ISOLog {`n"       + ${function:Write-Win11ISOLog}.ToString()       + "`n}"
     $runspace.SessionStateProxy.SetVariable("isoScriptFuncDef",   $isoScriptFuncDef)
     $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef", $win11ISOLogFuncDef)
-    $runspace.SessionStateProxy.SetVariable("refreshUSBFuncDef",  $refreshUSBFuncDef)
 
     $script = [Management.Automation.PowerShell]::Create()
     $script.Runspace = $runspace
     $script.AddScript({
         . ([scriptblock]::Create($isoScriptFuncDef))
         . ([scriptblock]::Create($win11ISOLogFuncDef))
-        . ([scriptblock]::Create($refreshUSBFuncDef))
 
         function Log($msg) {
             $ts = (Get-Date).ToString("HH:mm:ss")
@@ -215,19 +212,6 @@ function Invoke-WinUtilISOModify {
                 $sync["WPFWin11ISOSelectSection"].Visibility = "Collapsed"
                 $sync["WPFWin11ISOMountSection"].Visibility  = "Collapsed"
                 $sync["WPFWin11ISOModifySection"].Visibility = "Collapsed"
-                $expandedHeight = [Math]::Max(400, $sync["Form"].ActualHeight - 100)
-                $sync["WPFWin11ISOStatusLog"].Height = $expandedHeight
-                $sync["Win11ISOLogExpanded"] = $true
-                if (-not $sync["Win11ISOResizeHandlerAdded"]) {
-                    $sync["Form"].add_SizeChanged({
-                        if ($sync["Win11ISOLogExpanded"]) {
-                            $sync["WPFWin11ISOStatusLog"].Height = [Math]::Max(400, $sync["Form"].ActualHeight - 100)
-                            $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
-                            $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
-                        }
-                    })
-                    $sync["Win11ISOResizeHandlerAdded"] = $true
-                }
             })
 
             Log "Creating working directory: $workDir"
@@ -283,7 +267,6 @@ function Invoke-WinUtilISOModify {
 
             $sync["WPFWin11ISOOutputSection"].Dispatcher.Invoke([action]{
                 $sync["WPFWin11ISOOutputSection"].Visibility = "Visible"
-                $sync["WPFWin11ISOStatusLog"].Height = 300
             })
         } catch {
             Log "ERROR during modification: $_"
@@ -330,8 +313,6 @@ function Invoke-WinUtilISOModify {
                     $sync["WPFWin11ISOMountSection"].Visibility  = "Visible"
                     $sync["WPFWin11ISOModifySection"].Visibility = "Visible"
                 }
-                $sync["Win11ISOLogExpanded"] = $false
-                $sync["WPFWin11ISOStatusLog"].Height = 140
             })
         }
     }) | Out-Null
@@ -357,7 +338,6 @@ function Invoke-WinUtilISOCheckExistingWork {
     $sync["WPFWin11ISOMountSection"].Visibility  = "Collapsed"
     $sync["WPFWin11ISOModifySection"].Visibility = "Collapsed"
     $sync["WPFWin11ISOOutputSection"].Visibility = "Visible"
-    $sync["WPFWin11ISOStatusLog"].Height         = 300
 
     $modified = $existingWorkDir.LastWriteTime.ToString("yyyy-MM-dd HH:mm")
     Write-Win11ISOLog "Existing working directory found: $($existingWorkDir.FullName)"
@@ -498,7 +478,6 @@ function Invoke-WinUtilISOCleanAndReset {
                 $sync.progressBarTextBlock.ToolTip = ""
                 $sync.ProgressBar.Value            = 0
 
-                $sync["WPFWin11ISOStatusLog"].Height = 140
                 $sync["WPFWin11ISOStatusLog"].Text   = "Ready. Please select a Windows 11 ISO to begin."
             })
         } catch {
@@ -596,23 +575,6 @@ function Invoke-WinUtilISOExport {
             })
         }
 
-        # Expand the log to fill the screen while oscdimg runs
-        $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-            $expandedHeight = [Math]::Max(400, $sync["Form"].ActualHeight - 100)
-            $sync["WPFWin11ISOStatusLog"].Height = $expandedHeight
-            $sync["Win11ISOLogExpanded"] = $true
-            if (-not $sync["Win11ISOResizeHandlerAdded"]) {
-                $sync["Form"].add_SizeChanged({
-                    if ($sync["Win11ISOLogExpanded"]) {
-                        $sync["WPFWin11ISOStatusLog"].Height = [Math]::Max(400, $sync["Form"].ActualHeight - 100)
-                        $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
-                        $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
-                    }
-                })
-                $sync["Win11ISOResizeHandlerAdded"] = $true
-            }
-        })
-
         try {
             Write-Win11ISOLog "Exporting to ISO: $outputISO"
             SetProgress "Building ISO..." 10
@@ -645,7 +607,7 @@ function Invoke-WinUtilISOExport {
             # Flush any stderr after process exits
             $stderr = $proc.StandardError.ReadToEnd()
             foreach ($line in ($stderr -split "`r?`n")) {
-                if ($line.Trim()) { Write-Win11ISOLog "[stderr] $line" }
+                if ($line.Trim()) { Write-Win11ISOLog "[stderr]$line" }
             }
 
             if ($proc.ExitCode -eq 0) {
@@ -673,8 +635,6 @@ function Invoke-WinUtilISOExport {
                 $sync.progressBarTextBlock.Text    = ""
                 $sync.progressBarTextBlock.ToolTip = ""
                 $sync.ProgressBar.Value            = 0
-                $sync["Win11ISOLogExpanded"] = $false
-                $sync["WPFWin11ISOStatusLog"].Height = 300
                 $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $true
             })
         }

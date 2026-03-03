@@ -1361,20 +1361,17 @@
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Win11ISO" Visibility="Collapsed" Name="WPFTab5">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="{DynamicResource TabContentMargin}">
-                    <Grid Background="Transparent" Name="Win11ISOPanel">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>  <!-- Step 1: Select ISO -->
-                            <RowDefinition Height="Auto"/>  <!-- Step 2: Mount & Verify -->
-                            <RowDefinition Height="Auto"/>  <!-- Step 3: Modify install.wim -->
-                            <RowDefinition Height="Auto"/>  <!-- Step 4: Output Options -->
-                            <RowDefinition Height="Auto"/>  <!-- Log / Status -->
-                        </Grid.RowDefinitions>
+                <Grid Name="Win11ISOPanel" Margin="{DynamicResource TabContentMargin}" Background="Transparent">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>  <!-- Steps 1-4 -->
+                        <RowDefinition Height="*"/>     <!-- Log / Status -->
+                    </Grid.RowDefinitions>
 
-                        <!-- ═══════════════════════════════════════════════════════════ -->
-                        <!-- STEP 1 : Select Windows 11 ISO                             -->
-                        <!-- ═══════════════════════════════════════════════════════════ -->
-                        <Grid Grid.Row="0" Name="WPFWin11ISOSelectSection" Margin="5" HorizontalAlignment="Left" MinWidth="{DynamicResource ButtonWidth}">
+                    <!-- Steps 1-4 -->
+                    <StackPanel Grid.Row="0">
+
+                            <!-- ─── STEP 1 : Select Windows 11 ISO ─────────────── -->
+                            <Grid Name="WPFWin11ISOSelectSection" Margin="5" HorizontalAlignment="Left" MinWidth="{DynamicResource ButtonWidth}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
@@ -1460,16 +1457,13 @@
                                                 Height="{DynamicResource ButtonHeight}"/>
                                     </StackPanel>
                                 </Border>
-                        </Grid>
+                            </Grid>
 
-                        <!-- ═══════════════════════════════════════════════════════════ -->
-                        <!-- STEP 2 : Mount & Verify ISO                                -->
-                        <!-- ═══════════════════════════════════════════════════════════ -->
-                        <Grid Grid.Row="1"
-                              Name="WPFWin11ISOMountSection"
-                              Margin="5"
-                              Visibility="Collapsed"
-                              HorizontalAlignment="Left" MinWidth="{DynamicResource ButtonWidth}">
+                            <!-- ─── STEP 2 : Mount & Verify ISO ──────────────────── -->
+                            <Grid Name="WPFWin11ISOMountSection"
+                                  Margin="5"
+                                  Visibility="Collapsed"
+                                  HorizontalAlignment="Left" MinWidth="{DynamicResource ButtonWidth}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
@@ -1530,16 +1524,13 @@
                                                   Margin="0,0,0,0"/>
                                     </StackPanel>
                                 </Border>
-                        </Grid>
+                            </Grid>
 
-                        <!-- ═══════════════════════════════════════════════════════════ -->
-                        <!-- STEP 3 : Modify install.wim                                -->
-                        <!-- ═══════════════════════════════════════════════════════════ -->
-                        <StackPanel Grid.Row="2"
-                                    Name="WPFWin11ISOModifySection"
-                                    Margin="5"
-                                    Visibility="Collapsed"
-                                    HorizontalAlignment="Left" MinWidth="{DynamicResource ButtonWidth}">
+                            <!-- ─── STEP 3 : Modify install.wim ───────────────────── -->
+                            <StackPanel Name="WPFWin11ISOModifySection"
+                                        Margin="5"
+                                        Visibility="Collapsed"
+                                        HorizontalAlignment="Left" MinWidth="{DynamicResource ButtonWidth}">
                                 <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="Bold"
                                            Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,8">
                                     Step 3 - Modify install.wim
@@ -1557,16 +1548,13 @@
                                         HorizontalAlignment="Left"
                                         Width="Auto" Padding="12,0"
                                         Height="{DynamicResource ButtonHeight}"/>
-                        </StackPanel>
+                            </StackPanel>
 
-                        <!-- ═══════════════════════════════════════════════════════════ -->
-                        <!-- STEP 4 : Output Options                                    -->
-                        <!-- ═══════════════════════════════════════════════════════════ -->
-                        <StackPanel Grid.Row="3"
-                                    Name="WPFWin11ISOOutputSection"
-                                    Margin="5"
-                                    Visibility="Collapsed"
-                                    HorizontalAlignment="Left" MinWidth="{DynamicResource ButtonWidth}">
+                            <!-- ─── STEP 4 : Output Options ───────────────────────── -->
+                            <StackPanel Name="WPFWin11ISOOutputSection"
+                                        Margin="5"
+                                        Visibility="Collapsed"
+                                        HorizontalAlignment="Left" MinWidth="{DynamicResource ButtonWidth}">
                                 <!-- Header row: title + Clean & Reset button -->
                                 <Grid Margin="0,0,0,12">
                                     <Grid.ColumnDefinitions>
@@ -1650,31 +1638,37 @@
                                                 Margin="0,0,0,10"/>
                                     </StackPanel>
                                 </Border>
-
-                        </StackPanel>
-
-                        <!-- ═══════════════════════════════════════════════════════════ -->
-                        <!-- Status / Log Output                                        -->
-                        <!-- ═══════════════════════════════════════════════════════════ -->
-                        <StackPanel Grid.Row="4" Margin="5">
-                                <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="Bold"
-                                           Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,6">
-                                    Status Log
-                                </TextBlock>
-                                <TextBox Name="WPFWin11ISOStatusLog"
-                                         IsReadOnly="True"
-                                         TextWrapping="Wrap"
-                                         VerticalScrollBarVisibility="Auto"
-                                         Height="140" Padding="6"
-                                         Background="{DynamicResource MainBackgroundColor}"
-                                         Foreground="{DynamicResource MainForegroundColor}"
-                                         BorderBrush="{DynamicResource BorderColor}"
-                                         BorderThickness="1"
-                                         Text="Ready. Please select a Windows 11 ISO to begin."/>
                             </StackPanel>
 
+                    </StackPanel>
+
+                    <!-- Status Log (fills remaining height) -->
+                    <Grid Grid.Row="1" Margin="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0"
+                                   FontSize="{DynamicResource FontSize}" FontWeight="Bold"
+                                   Foreground="{DynamicResource MainForegroundColor}"
+                                   Margin="0,0,0,4">
+                            Status Log
+                        </TextBlock>
+                        <TextBox Grid.Row="1"
+                                 Name="WPFWin11ISOStatusLog"
+                                 IsReadOnly="True"
+                                 TextWrapping="Wrap"
+                                 VerticalScrollBarVisibility="Visible"
+                                 VerticalAlignment="Stretch"
+                                 Padding="6"
+                                 Background="{DynamicResource MainBackgroundColor}"
+                                 Foreground="{DynamicResource MainForegroundColor}"
+                                 BorderBrush="{DynamicResource BorderColor}"
+                                 BorderThickness="1"
+                                 Text="Ready. Please select a Windows 11 ISO to begin."/>
                     </Grid>
-                </ScrollViewer>
+
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>
