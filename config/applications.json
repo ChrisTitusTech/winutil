@@ -221,6 +221,14 @@
         "link": "https://www.advancedrenamer.com/",
         "winget": "HulubuluSoftware.AdvancedRenamer"
     },
+    "citrixworkspaceapp": {
+        "category": "Utilities",
+        "choco": "citrix-workspace",
+        "content": "Citrix Workspace app",
+        "description": "a secure, unified client application that provides instant access to virtual desktops, SaaS, web, and Windows apps from any device (Windows, macOS, Linux, iOS, Android) or browser.",
+        "link": "https://www.citrix.com/downloads/workspace-app/",
+        "winget": "Citrix.Workspace",
+    },
     "calibre": {
         "category": "Document",
         "choco": "calibre",
@@ -1779,6 +1787,14 @@
         "description": "Parsec is a low-latency, high-quality remote desktop sharing application for collaborating and gaming across devices.",
         "link": "https://parsec.app/",
         "winget": "Parsec.Parsec"
+    },
+    "pdf-xchange": {
+        "category": "Document",
+        "choco": "pdfxchangeeditor",
+        "content": "PDF-XChangeEditor",
+        "description": "a comprehensive Windows-based software suite and editor for creating, viewing, editing, annotating, and signing PDF files.",
+        "link": "https://www.pdf-xchange.com/",
+        "winget": "TrackerSoftware.PDF-XChangeEditor"
     },
     "pdf24creator": {
         "category": "Document",
