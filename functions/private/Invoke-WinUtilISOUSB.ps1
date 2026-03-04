@@ -136,6 +136,7 @@ function Invoke-WinUtilISOWriteUSB {
             @(
                 "select disk $diskNum"
                 $createPartitionCommand
+                "select partition 1"
                 "format quick fs=fat32 label=`"$volLabel`""
                 "exit"
             ) | Set-Content -Path $dpFile2 -Encoding ASCII
