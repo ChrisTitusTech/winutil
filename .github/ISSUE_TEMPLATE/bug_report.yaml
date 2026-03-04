@@ -24,11 +24,16 @@ body:
     validations:
       required: true
 
-  - type: input
+  - type: dropdown
     id: affected_part
     attributes:
-      label: 📜 What part of Winutil are you having issues with?
-      placeholder: "e.g., Tweaks, etc."
+      label: What part of Winutil are you having issues with?
+      options:
+        - Program Install Tab
+        - Tweaks Tab
+        - Config Tab
+        - Updates Tab
+        - Win11 Creator Tab
     validations:
       required: true
 
@@ -40,23 +45,7 @@ body:
       required: true
 
   - type: textarea
-    id: steps_to_reproduce
-    attributes:
-      label: 🔄 Steps to reproduce the issue.
-      placeholder: "e.g., Step 1: ..., Step 2: ..."
-    validations:
-      required: true
-
-  - type: textarea
     id: error_output
     attributes:
-      label: ❌ Paste the full error output (if available).
+      label: ❌ Paste the full error output (if available) or Screenshot.
       placeholder: "Include any relevant logs or error messages."
-
-  - type: textarea
-    id: additional_context
-    attributes:
-      label: 🖼️ Additional context.
-      placeholder: "Include screenshots, code blocks (use triple backticks ```), or any other relevant information."
-    validations:
-      required: false
