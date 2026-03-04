@@ -1284,6 +1284,14 @@
         "winget": "Logseq.Logseq",
         "foss": true
     },
+    "logitechghub": {
+        "category": "Utilities",
+        "choco": "lghub",
+        "content": "Logitech G Hub",
+        "description": "Official software for managing Logitech gaming peripherals (mice, keyboards, headsets, lighting profiles, etc.).",
+        "link": "https://www.logitechg.com/en-us/software/ghub",
+        "winget": "Logitech.GHUB"
+    },
     "malwarebytes": {
         "category": "Utilities",
         "choco": "malwarebytes",
@@ -3145,6 +3153,14 @@
         "description": "The Dropbox desktop app! Save hard drive space, share and edit files and send for signature \u2013 all without the distraction of countless browser tabs.",
         "link": "https://www.dropbox.com/en_GB/desktop",
         "winget": "Dropbox.Dropbox"
+    },
+    "Overwolf": {
+        "category": "Games",
+        "choco": "overwolf",
+        "content": "Overwolf",
+        "description": "Popular platform for game overlays and companion apps (mod managers, trackers, etc.), widely used by gamers.",
+        "link": "https://www.overwolf.com/app/overwolf-curseforge",
+        "winget": "Overwolf.CurseForge"
     },
     "OFGB": {
         "category": "Utilities",
