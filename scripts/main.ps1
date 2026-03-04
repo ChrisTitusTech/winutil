@@ -15,12 +15,14 @@ $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
 $hashVars = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'sync',$sync,$Null
 $debugVar = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'DebugPreference',$DebugPreference,$Null
 $uiVar = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'PARAM_NOUI',$PARAM_NOUI,$Null
+$offlineVar = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'PARAM_OFFLINE',$PARAM_OFFLINE,$Null
 $InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
 
 # Add the variable to the session state
 $InitialSessionState.Variables.Add($hashVars)
 $InitialSessionState.Variables.Add($debugVar)
 $InitialSessionState.Variables.Add($uiVar)
+$InitialSessionState.Variables.Add($offlineVar)
 
 # Get every private function and add them to the session state
 $functions = Get-ChildItem function:\ | Where-Object { $_.Name -imatch 'winutil|WPF' }
@@ -350,11 +352,10 @@ $sync["Form"].Add_ContentRendered({
         Write-Debug "Unable to retrieve information about the primary monitor."
     }
 
-    # Check internet connectivity and disable install tab if offline
-    #$isOnline = Test-WinUtilInternetConnection
-    $isOnline = $true # Temporarily force online mode until we can resolve false negatives
+    if ($PARAM_OFFLINE) {
+        # Show offline banner
+        $sync.WPFOfflineBanner.Visibility = [System.Windows.Visibility]::Visible
 
-    if (-not $isOnline) {
         # Disable the install tab
         $sync.WPFTab1BT.IsEnabled = $false
         $sync.WPFTab1BT.Opacity = 0.5
