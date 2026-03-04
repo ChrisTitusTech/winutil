@@ -353,6 +353,9 @@ $sync["Form"].Add_ContentRendered({
     }
 
     if ($PARAM_OFFLINE) {
+        # Show offline banner
+        $sync.WPFOfflineBanner.Visibility = [System.Windows.Visibility]::Visible
+
         # Disable the install tab
         $sync.WPFTab1BT.IsEnabled = $false
         $sync.WPFTab1BT.Opacity = 0.5
