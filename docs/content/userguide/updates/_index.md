@@ -1,3 +1,8 @@
+---
+title: Updates
+weight: 5
+---
+
 The utility provides three distinct settings for managing Windows updates: Default (Out of Box) Settings, Security (Recommended) Settings, and Disable ALL Updates (NOT RECOMMENDED!). Each setting offers a different approach to handling updates, catering to various user needs and preferences.
 
 ### Default (Out of Box) Settings
