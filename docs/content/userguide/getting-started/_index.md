@@ -198,12 +198,90 @@ Winutil offers several preset configurations:
 - Create restore points before major changes
 - Read tweak descriptions before applying
 - Start with Essential Tweaks
-- Test changes on non-critical systems first
-- Keep backups of important data
+- Keep Windows up to date
+- Back up important data
 
 ❌ **DON'T**:
 
-- Apply all tweaks without understanding them
+- Apply all tweaks at once without understanding them
 - Skip creating restore points
-- Disable security features unnecessarily
-- Use on production systems without testing
+- Use Advanced Tweaks without research
+- Disable security features unless necessary
+- Run on production systems without testing
+
+## Troubleshooting First Run
+
+### Script Won't Download
+
+**If the download fails**:
+
+1. Try the direct GitHub link:
+
+```powershell
+irm https://github.com/ChrisTitusTech/Winutil/releases/latest/download/Winutil.ps1 | iex
+```
+
+2. Force TLS 1.2 (for older Windows versions):
+
+```powershell
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+irm "https://christitus.com/win" | iex
+```
+
+### Execution Policy Error
+
+If you get an execution policy error:
+
+```powershell
+Set-ExecutionPolicy Unrestricted -Scope Process -Force
+irm "https://christitus.com/win" | iex
+```
+
+### Download Blocked (India/Certain Regions)
+
+If GitHub is blocked in your region:
+
+1. Use a VPN service
+2. Change DNS to Cloudflare (1.1.1.1) or Google (8.8.8.8)
+3. Try again
+
+### Interface Doesn't Appear
+
+If Winutil downloads but doesn't open:
+
+1. Check if antivirus is blocking it
+2. Ensure you ran PowerShell as administrator
+3. Try closing and reopening PowerShell
+4. Check Windows Defender exclusions
+
+## Next Steps
+
+Now that you're set up, explore these guides:
+
+- [Application Installation Guide](../application/) - Learn about installing software
+- [Tweaks Guide](../tweaks/) - Understand system optimizations
+- [FAQ](../../faq/) - Common questions and answers
+
+## Getting Help
+
+If you need assistance:
+
+- **Documentation**: Browse this documentation site
+- **Known Issues**: Check the [Known Issues](../../knownissues/) page
+- **Discord**: Join the [community Discord server](https://discord.gg/RUbZUZyByQ)
+- **GitHub Issues**: Report bugs on [GitHub](https://github.com/ChrisTitusTech/winutil/issues)
+- **YouTube**: Watch [video tutorials](https://www.youtube.com/watch?v=6UQZ5oQg8XA)
+
+## Quick Reference Card
+
+| Task                 | Location    | Action                               |
+| -------------------- | ----------- | ------------------------------------ |
+| Install Apps         | Install Tab | Check boxes → Install Selected       |
+| Apply Tweaks         | Tweaks Tab  | Select tweaks → Run Tweaks           |
+| Undo Tweaks          | Tweaks Tab  | Select tweaks → Undo Selected Tweaks |
+| Create Restore Point | Tweaks Tab  | Essential Tweaks section             |
+| Fix Network          | Config Tab  | Fixes → Reset Network                |
+| Change DNS           | Tweaks Tab  | DNS section                          |
+| Open Control Panel   | Config Tab  | Legacy Windows Panels                |
+
+Happy optimizing! 🚀
