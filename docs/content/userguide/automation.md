@@ -1,6 +1,6 @@
 ---
 title: Automation
-weight: 6
+weight: 7
 ---
 
 Automation option in winutil allows you to run winutil from a config file,

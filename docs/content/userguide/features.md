@@ -1,6 +1,6 @@
 ---
 title: Features
-weight: 4
+weight: 5
 ---
 
 * Install the most used **Windows Features** by checking the checkbox and clicking "Install Features" to install them.

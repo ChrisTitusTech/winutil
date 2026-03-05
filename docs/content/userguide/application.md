@@ -1,6 +1,6 @@
 ---
 title: Applications
-weight: 2
+weight: 3
 ---
 
 {{< tabs >}}

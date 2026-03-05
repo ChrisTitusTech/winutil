@@ -1,6 +1,6 @@
 ---
 title: Win 11 Creator
-weight: 5
+weight: 8
 ---
 
 ## Using Winutil's Win11 Creator

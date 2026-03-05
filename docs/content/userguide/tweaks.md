@@ -1,6 +1,6 @@
 ---
 title: Tweaks
-weight: 3
+weight: 4
 ---
 
 {{< image src="images/Tweaks-Tab" alt="Image of Tweaks Tab" >}}
@@ -46,7 +46,7 @@ The utility provides a convenient DNS selection feature, allowing users to choos
 
 ### Customize Preferences
 
-The Customize Preferences section allows users to personalize their Windows experience by toggling various visual and functional features. These preferences are designed to enhance usability and tailor the system to the user’s specific needs and preferences.
+The Customize Preferences section allows users to personalize their Windows experience by toggling various visual and functional features. These preferences are designed to enhance usability and tailor the system to the user's specific needs and preferences.
 
 ### Performance Plans
 
