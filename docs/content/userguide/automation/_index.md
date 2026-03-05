@@ -3,10 +3,11 @@ title: Automation
 weight: 7
 ---
 
-Automation option in winutil allows you to run winutil from a config file,
-you can get your own config file inside winutil by clicking the gear icon on the top right and clicking export and saving it as a file
+The Automation option in Winutil allows you to run Winutil from an exported config file.
 
-you can automate winutil launch with this command
+You can create your own config in the app by clicking the gear icon in the top-right corner, then choosing Export and saving the file.
+
+You can automate Winutil launch with this command:
 ```powershell
-& ([ScriptBlock]::Create((irm "https://christitus.com/win"))) -Config C:\Path\To\Config -Run
+& ([ScriptBlock]::Create((irm "https://christitus.com/win"))) -Config "C:\Path\To\Config.json" -Run
 ```

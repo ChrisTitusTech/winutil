@@ -40,7 +40,7 @@ Click **Run Windows ISO Modification and Creator** to start the customization pr
 - **Delete OneDrive setup** from the image
 
 **System Customization:**
-- **Bypass hardware checks** — removes TPM, Secure Boot, CPU, and RAM requirement enforcement so the ISO installs on unsupported hardware
+- **Bypass hardware checks** — removes TPM, Secure Boot, CPU, RAM, and storage requirement enforcement so the ISO installs on unsupported hardware
 - **Enable local account setup** — injects an `autounattend.xml` that skips the Microsoft account screen during OOBE
 - **Disable BitLocker and device encryption** — removes startup overhead
 - **Disable Chat icon** — removes chat taskbar button
@@ -161,7 +161,7 @@ A list of the best free and open source tools for downloading, creating and flas
 ---
 
 > [!TIP]
-> Already have a Windows 11 ISO? Skip the third-party tools and use Winutil's built-in **[Win11 Creator](#using-winutilss-win11-creator)** at the top of this page.
+> Already have a Windows 11 ISO? Skip the third-party tools and use Winutil's built-in **[Win11 Creator](#using-winutils-win11-creator)** at the top of this page.
 
 > [!NOTE]
 > Always download Windows ISOs from official Microsoft sources or trusted tools like Rufus/UUP Dump to avoid tampered images.

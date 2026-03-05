@@ -6,7 +6,7 @@ weight: 3
 {{< tabs >}}
 
   {{< tab name="Installation & Updates" selected=true >}}
-    * Choose the programs you want to install or upgrade.
+    * Choose the applications you want to install or upgrade.
         * For programs not currently installed, this action will install them.
         * For programs already installed, this action will update them to the latest version.
     * Click the `Install/Upgrade Selected` button to start the installation or upgrade process.
@@ -24,7 +24,7 @@ weight: 3
 
   {{< tab name="Get Installed" >}}
     * Click the `Show Installed Apps` button.
-    * This will scan for and select all installed programs in Winutil that WinGet supports.
+    * This scans for and selects installed applications supported by WinGet.
   {{< /tab >}}
 
   {{< tab name="Clear Selection" >}}
