@@ -15,10 +15,10 @@ If you are seeing errors referencing TLS or security, you may be running an olde
 
 ```
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-iex https://christitus.com/win | iex
+irm https://christitus.com/win | iex
 ```
 
-If it still isn't working and you live in India, it might be due to India blocking GitHub's content domain and preventing downloads. See more on [Times of India](https://timesofindia.indiatimes.com/gadgets-news/github-content-domain-blocked-for-these-indian-users-reports/articleshow/96687992.cms).
+If it still isn't working in your region, it may be due to temporary ISP or network filtering of GitHub content domains. This has been reported by some users in India in the past. See: [Times of India](https://timesofindia.indiatimes.com/gadgets-news/github-content-domain-blocked-for-these-indian-users-reports/articleshow/96687992.cms).
 
 If you are still having issues, try using a **VPN**, or changing your **DNS provider** to one of following two providers:
 
@@ -37,7 +37,7 @@ If it returns `ConstrainedLanguage`, you may need to switch to `FullLanguage` mo
 
 ### Script blocked by Execution Policy
 
-1. Ensure you are running PowerShell as admin: Press `Windows Key`+`X` and select _PowerShell (Admin)_ in Windows 10, or `Windows Terminal (Admin)` in Windows 11.
+1. Ensure you are running PowerShell as admin: Press `Windows key`+`X` and select _PowerShell (Admin)_ in Windows 10, or `Windows Terminal (Admin)` in Windows 11.
 2. In the PowerShell window, type this to allow unsigned code to execute and run the installation script:
 
    ```
@@ -65,7 +65,7 @@ This could be for a number of reasons:
 
 If that doesn't work, disable Hibernation:
 
-- Press `Windows Key`+`X` and select _PowerShell (Admin)_ in Windows 10, or `Windows Terminal (Admin)` in Windows 11. then type:
+- Press `Windows key`+`X` and select _PowerShell (Admin)_ in Windows 10, or `Windows Terminal (Admin)` in Windows 11, then type:
 
   ```bat
   powercfg /H off
@@ -89,11 +89,11 @@ Related issue: [#198](https://github.com/ChrisTitusTech/Winutil/issues/198)
 
 ### Windows 11: Quick Settings no longer works
 
-Launch the Script and click _Enable Action Center_.
+Launch the script and click _Enable Action Center_.
 
 ### Explorer (file browser) no longer launches
 
-- Press `Windows key`+`R` then type:
+- Press `Windows key`+`R`, then type:
 
   ```bat
   control /name Microsoft.FolderOptions
@@ -106,7 +106,7 @@ Launch the Script and click _Enable Action Center_.
 If you're using a laptop or tablet and find your battery drains too fast, please try the below troubleshooting steps, and report the results back to the Winutil community.
 
 1. **Check Battery Health:**
-   - Press `Windows Key`+`X` and select _PowerShell (Admin)_ in Windows 10, or `Windows Terminal (Admin)` in Windows 11.
+   - Press `Windows key`+`X` and select _PowerShell (Admin)_ in Windows 10, or `Windows Terminal (Admin)` in Windows 11.
    - Run the following command to generate a battery report:
      ```powershell
      powercfg /batteryreport /output "C:\battery_report.html"
@@ -114,7 +114,7 @@ If you're using a laptop or tablet and find your battery drains too fast, please
    - Open the generated HTML report to review information about battery health and usage. A battery with poor health may hold less charge, discharge faster, or cause other issues.
 
 2. **Review Power Settings:**
-   - Open the Settings app, and go to _System_ > _Power & sleep_.
+   - Open Settings and go to _System_ > _Power & battery_ (Windows 11) or _System_ > _Power & sleep_ (Windows 10).
    - Adjust power plan settings based on your preferences and usage patterns.
    - Click on _Additional power settings_ to access advanced power settings that may help.
 
@@ -128,7 +128,7 @@ If you're using a laptop or tablet and find your battery drains too fast, please
    - Ensure graphics, chipset, and other essential drivers are up to date.
 
 5. **Check for Windows Updates:**
-   - Open the Settings app, and go to _Update & Security_ > _Windows Update_.
+   - Open Settings and go to _Windows Update_ (Windows 11) or _Update & Security_ > _Windows Update_ (Windows 10).
    - Check for and install any available updates for your operating system.
 
 6. **Reduce Screen Brightness:**
@@ -144,11 +144,11 @@ If you're using a laptop or tablet and find your battery drains too fast, please
    - Review the list of apps and their power usage. Disable or uninstall any you don't need.
 
 9. **Check Background Apps:**
-   - Open the Settings app, and go to _Privacy_ > _Background apps_.
+   - Review background app permissions in Settings (location varies by Windows version and app type).
    - Disable or uninstall unnecessary apps running in the background.
 
 10. **Use `powercfg` for Analysis:**
-    - Press `Windows Key`+`X` and select _PowerShell (Admin)_ in Windows 10, or `Windows Terminal (Admin)` in Windows 11.
+   - Press `Windows key`+`X` and select _PowerShell (Admin)_ in Windows 10, or `Windows Terminal (Admin)` in Windows 11.
     - Run the following command to analyze energy usage and generate a report:
       ```powershell
       powercfg /energy /output "C:\energy_report.html"
@@ -161,7 +161,7 @@ If you're using a laptop or tablet and find your battery drains too fast, please
     - Look for events with the source _Power-Troubleshooter_ to identify power-related events. These may highlight battery, input power, and other issues.
 
 12. **Check Wake-up Sources:**
-    - Press `Windows Key`+`X` and select _PowerShell (Admin)_ in Windows 10, or `Windows Terminal (Admin)` in Windows 11.
+   - Press `Windows key`+`X` and select _PowerShell (Admin)_ in Windows 10, or `Windows Terminal (Admin)` in Windows 11.
     - Use the command `powercfg /requests` to identify processes preventing sleep.
     - Use the command `powercfg /waketimers` to view active wake timers.
     - Check Task Scheduler to see if any of the discovered processes are scheduled to start on boot or at regular intervals.
@@ -172,7 +172,7 @@ If you're using a laptop or tablet and find your battery drains too fast, please
     - Consider reconfiguring, closing, disabling, or uninstalling applications that use a lot of resources.
 
 14. **Disable Activity History:**
-    - Open the Settings app, and go to _Privacy_ > _Activity history_.
+   - Open Settings and go to _Privacy & security_ > _Activity history_ (Windows 11) or _Privacy_ > _Activity history_ (Windows 10).
     - Turn off _Let Windows collect my activities from this PC_.
 
 15. **Prevent Network Adapters From Waking PC:**
