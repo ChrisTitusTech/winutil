@@ -3,31 +3,31 @@ title: Applications
 weight: 2
 ---
 
-{{< tabs items="Installation & Updates,Upgrade All,Uninstall,Get Installed,Clear Selection" defaultIndex="0" >}}
+{{< tabs >}}
 
-  {{< tab >}}
+  {{< tab name="Installation & Updates" selected=true >}}
     * Choose the programs you want to install or upgrade.
         * For programs not currently installed, this action will install them.
         * For programs already installed, this action will update them to the latest version.
     * Click the `Install/Upgrade Selected` button to start the installation or upgrade process.
   {{< /tab >}}
 
-  {{< tab >}}
+  {{< tab name="Upgrade All" >}}
     * Simply press the `Upgrade All` button.
     * This will upgrade all applicable programs that are installed without the need for individual selection.
   {{< /tab >}}
 
-  {{< tab >}}
+  {{< tab name="Uninstall" >}}
     * Select the programs you wish to uninstall.
     * Click the `Uninstall Selected` button to remove the selected programs.
   {{< /tab >}}
 
-  {{< tab >}}
+  {{< tab name="Get Installed" >}}
     * Click the `Show Installed Apps` button.
     * This will scan for and select all installed programs in Winutil that WinGet supports.
   {{< /tab >}}
 
-  {{< tab >}}
+  {{< tab name="Clear Selection" >}}
     * Click the `Clear Selection` button.
     * This will unselect all checked programs.
   {{< /tab >}}

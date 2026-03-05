@@ -69,9 +69,9 @@ A live log shows progress as each step completes. This stage takes **10–30 min
 
 Once modification is complete, choose how to save your image:
 
-{{< tabs items="Save as ISO,Write to USB" defaultIndex="0" >}}
+{{< tabs >}}
 
-  {{< tab >}}
+  {{< tab name="Save as ISO" selected=true >}}
   1. Click **Save as an ISO File**.
   2. Choose a save location (defaults to your Desktop as `Win11_Modified_yyyyMMdd.iso`).
   3. Winutil builds a dual BIOS/UEFI bootable ISO using `oscdimg.exe`.
@@ -82,7 +82,7 @@ Once modification is complete, choose how to save your image:
   **Typical output size:** 2.5–3.5 GB (down from 5–6 GB original)
   {{< /tab >}}
 
-  {{< tab >}}
+  {{< tab name="Write to USB" >}}
   1. Click **Write Directly to a USB Drive**.
   2. Select your USB drive from the dropdown (click **Refresh** if it doesn't appear).
   3. Click **Erase & Write to USB** and confirm the warning — **all data on the drive will be permanently erased**.
