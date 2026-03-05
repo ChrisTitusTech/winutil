@@ -2608,13 +2608,21 @@
         "winget": "GianlucaPernigotto.Videomass",
         "foss": true
     },
-    "visualstudio": {
+    "visualstudio2022": {
         "category": "Development",
         "choco": "visualstudio2022community",
         "content": "Visual Studio 2022",
         "description": "Visual Studio 2022 is an integrated development environment (IDE) for building, debugging, and deploying applications.",
         "link": "https://visualstudio.microsoft.com/",
         "winget": "Microsoft.VisualStudio.2022.Community"
+    },
+    "visualstudio2026": {
+        "category": "Development",
+        "choco": "visualstudio2026community",
+        "content": "Visual Studio 2026",
+        "description": "Visual Studio 2026 is an integrated development environment (IDE) for building, debugging, and deploying applications.",
+        "link": "https://visualstudio.microsoft.com/",
+        "winget": "Microsoft.VisualStudio.2026.Community"
     },
     "vivaldi": {
         "category": "Browsers",
