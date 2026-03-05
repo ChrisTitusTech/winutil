@@ -29,14 +29,23 @@ function Set-WinUtilScheduledTask {
             Enable-ScheduledTask -TaskName $Name -ErrorAction Stop
         }
     } catch [System.Exception] {
-        if($psitem.Exception.Message -like "*The system cannot find the file specified*") {
+        if ($_.Exception -and $_.Exception.Message -like "*The system cannot find the file specified*") {
             Write-Warning "Scheduled Task $name was not Found"
         } else {
             Write-Warning "Unable to set $Name due to unhandled exception"
-            Write-Warning $psitem.Exception.Message
+            if ($_.Exception -and -not [string]::IsNullOrWhiteSpace($_.Exception.Message)) {
+                Write-Warning $_.Exception.Message
+            }
         }
     } catch {
         Write-Warning "Unable to run script for $name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
+        if ($_.Exception) {
+            if (-not [string]::IsNullOrWhiteSpace($_.Exception.Message)) {
+                Write-Warning $_.Exception.Message
+            }
+            if (-not [string]::IsNullOrWhiteSpace($_.Exception.StackTrace)) {
+                Write-Warning $_.Exception.StackTrace
+            }
+        }
     }
 }

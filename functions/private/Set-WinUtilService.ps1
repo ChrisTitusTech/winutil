@@ -34,7 +34,14 @@ Function Set-WinUtilService {
         Write-Warning "Service $Name was not found"
     } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $_.Exception.Message
+        if ($_.Exception) {
+            if (-not [string]::IsNullOrWhiteSpace($_.Exception.Message)) {
+                Write-Warning $_.Exception.Message
+            }
+            if (-not [string]::IsNullOrWhiteSpace($_.Exception.StackTrace)) {
+                Write-Warning $_.Exception.StackTrace
+            }
+        }
     }
 
 }

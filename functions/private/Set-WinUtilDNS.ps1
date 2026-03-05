@@ -28,6 +28,13 @@ function Set-WinUtilDNS {
         }
     } catch {
         Write-Warning "Unable to set DNS Provider due to an unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
+        if ($_.Exception) {
+            if (-not [string]::IsNullOrWhiteSpace($_.Exception.Message)) {
+                Write-Warning $_.Exception.Message
+            }
+            if (-not [string]::IsNullOrWhiteSpace($_.Exception.StackTrace)) {
+                Write-Warning $_.Exception.StackTrace
+            }
+        }
     }
 }

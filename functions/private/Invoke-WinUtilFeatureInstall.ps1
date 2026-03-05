@@ -16,13 +16,20 @@ function Invoke-WinUtilFeatureInstall {
                 Write-Host "Installing $feature"
                 Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart
             } catch {
-                if ($CheckBox.Exception.Message -like "*requires elevation*") {
+                if ($_.Exception -and $_.Exception.Message -like "*requires elevation*") {
                     Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
                     Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Error" }
                 } else {
 
                     Write-Warning "Unable to Install $feature due to unhandled exception"
-                    Write-Warning $CheckBox.Exception.StackTrace
+                    if ($_.Exception) {
+                        if (-not [string]::IsNullOrWhiteSpace($_.Exception.Message)) {
+                            Write-Warning $_.Exception.Message
+                        }
+                        if (-not [string]::IsNullOrWhiteSpace($_.Exception.StackTrace)) {
+                            Write-Warning $_.Exception.StackTrace
+                        }
+                    }
                 }
             }
         }
@@ -35,13 +42,20 @@ function Invoke-WinUtilFeatureInstall {
                 Write-Host "Running Script for $CheckBox"
                 Invoke-Command $scriptblock -ErrorAction stop
             } catch {
-                if ($CheckBox.Exception.Message -like "*requires elevation*") {
+                if ($_.Exception -and $_.Exception.Message -like "*requires elevation*") {
                     Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
                     Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Error" }
                 } else {
                     Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Error" }
                     Write-Warning "Unable to Install $feature due to unhandled exception"
-                    Write-Warning $CheckBox.Exception.StackTrace
+                    if ($_.Exception) {
+                        if (-not [string]::IsNullOrWhiteSpace($_.Exception.Message)) {
+                            Write-Warning $_.Exception.Message
+                        }
+                        if (-not [string]::IsNullOrWhiteSpace($_.Exception.StackTrace)) {
+                            Write-Warning $_.Exception.StackTrace
+                        }
+                    }
                 }
             }
         }

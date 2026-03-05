@@ -46,11 +46,22 @@ function Set-WinUtilRegistry {
     } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
     } catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
+        Write-Warning $_.Exception.ErrorRecord
     } catch [System.UnauthorizedAccessException] {
-       Write-Warning $psitem.Exception.Message
+       if ($_.Exception -and -not [string]::IsNullOrWhiteSpace($_.Exception.Message)) {
+           Write-Warning $_.Exception.Message
+       } else {
+           Write-Warning "Unauthorized access while setting $Path\$Name"
+       }
     } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
+        if ($_.Exception) {
+            if (-not [string]::IsNullOrWhiteSpace($_.Exception.Message)) {
+                Write-Warning $_.Exception.Message
+            }
+            if (-not [string]::IsNullOrWhiteSpace($_.Exception.StackTrace)) {
+                Write-Warning $_.Exception.StackTrace
+            }
+        }
     }
 }
