@@ -17,7 +17,7 @@ function Invoke-WPFFixesWinget {
     try {
         Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
         Write-Host "==> Starting Winget Repair"
-        Install-WinUtilWinget -Force
+        Install-WinUtilWinget
     } catch {
         Write-Error "Failed to install winget: $_"
         Set-WinUtilTaskbaritem -state "Error" -overlay "warning"
