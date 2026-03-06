@@ -20,6 +20,15 @@ description: ""
         "DefaultState": "true"
       }
     ],
+    "UndoScript": [
+      "
+      $SearchPath = Get-Item -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search'
+
+      If ($SearchPath.GetValue('CortanaConsent') -ne $null) {
+        Remove-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search' -Name 'CortanaConsent'
+      }
+      "
+    ],
 ```
 
 ## Registry Changes
