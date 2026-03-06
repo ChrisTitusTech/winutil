@@ -30,7 +30,7 @@ jobs:
     if: github.repository == 'ChrisTitusTech/winutil'
     runs-on: ubuntu-latest
     env:
-      HUGO_VERSION: 0.147.7
+      HUGO_VERSION: 0.156.0
       HUGO_ENVIRONMENT: production
       TZ: America/Chicago
     steps:

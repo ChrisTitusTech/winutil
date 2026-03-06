@@ -1,6 +1,6 @@
 ---
 title: Getting Started
-weight: 1
+weight: 2
 ---
 
 ## Welcome to Winutil!
@@ -111,7 +111,7 @@ This allows you to undo changes if needed.
 1. Navigate to the **Install** tab
 2. Browse categories or use the search bar
 3. Check applications you want to install
-4. Click "Install Selected" at the bottom
+4. Click "Install/Upgrade Selected" at the bottom
 
 ### 3. Apply Basic Tweaks
 
@@ -131,7 +131,7 @@ For a better Windows experience without risks:
 1. Open **Install** tab
 2. Search for the application name
 3. Check the box next to it
-4. Click "Install Selected"
+4. Click "Install/Upgrade Selected"
 
 **Multiple Applications**:
 
@@ -239,7 +239,7 @@ irm "https://christitus.com/win" | iex
 
 ### Download Blocked (India/Certain Regions)
 
-If GitHub is blocked in your region:
+If downloads are blocked in your region:
 
 1. Use a VPN service
 2. Change DNS to Cloudflare (1.1.1.1) or Google (8.8.8.8)
@@ -258,7 +258,7 @@ If Winutil downloads but doesn't open:
 
 Now that you're set up, explore these guides:
 
-- [Application Installation Guide](../application/) - Learn about installing software
+- [Application Guide](../application/) - Learn about installing, upgrading, and uninstalling software
 - [Tweaks Guide](../tweaks/) - Understand system optimizations
 - [FAQ](../../faq/) - Common questions and answers
 
@@ -276,7 +276,8 @@ If you need assistance:
 
 | Task                 | Location    | Action                               |
 | -------------------- | ----------- | ------------------------------------ |
-| Install Apps         | Install Tab | Check boxes → Install Selected       |
+| Install or upgrade apps | Install Tab | Check boxes → Install/Upgrade Selected |
+| Uninstall apps       | Install Tab | Check boxes → Uninstall Selected     |
 | Apply Tweaks         | Tweaks Tab  | Select tweaks → Run Tweaks           |
 | Undo Tweaks          | Tweaks Tab  | Select tweaks → Undo Selected Tweaks |
 | Create Restore Point | Tweaks Tab  | Essential Tweaks section             |
