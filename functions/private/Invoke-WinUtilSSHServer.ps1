@@ -77,5 +77,7 @@ function Invoke-WinUtilSSHServer {
     }
     Write-Host "OpenSSH server was successfully enabled."
     Write-Host "The config file can be located at C:\ProgramData\ssh\sshd_config "
-    Write-Host "Add your public keys to this file -> $authorizedKeysPath"
+    Write-Host "Add your public keys to one of these files:"
+    Write-Host "  Administrators: C:\ProgramData\ssh\administrators_authorized_key"
+    Write-Host "  Non-Admins: $authorizedKeysPath"
 }
