@@ -1644,6 +1644,16 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/xboxremoval"
   },
+  "WPFTweaksM365Debloat": {
+    "Content": "M365 Debloat (ODT)",
+    "Description": "Uses Office Deployment Tool to remove selected Microsoft 365 apps: Skype for Business, Teams, OneDrive, Outlook, Publisher, Access, OneNote, and Bing integration.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "InvokeScript": [
+      "Invoke-WinUtilM365Debloat"
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/m365debloat"
+  },
   "WPFTweaksDeBloat": {
     "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
     "Description": "USE WITH CAUTION!!! This will remove ALL Microsoft Store apps.",
