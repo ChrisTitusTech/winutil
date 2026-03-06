@@ -416,7 +416,7 @@
         "foss": true
     },
     "cursor": {
-        "category": "AI-Automation",
+        "category": "Development",
         "choco": "cursoride",
         "content": "Cursor",
         "description": "AI-powered code editor (VS Code-based) with agentic coding features and integrated AI assistance for development workflows.",
