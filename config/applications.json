@@ -136,7 +136,7 @@
         "winget": "Microsoft.Sysinternals.RDCMan"
     },
     "autohotkey": {
-        "category": "AI-Automation",
+        "category": "Utilities",
         "choco": "autohotkey",
         "content": "AutoHotkey",
         "description": "AutoHotkey is a scripting language for Windows that allows users to create custom automation scripts and macros. It is often used for automating repetitive tasks and customizing keyboard shortcuts.",
