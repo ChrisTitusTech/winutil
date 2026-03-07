@@ -1635,6 +1635,15 @@
     "Description": "Removes Xbox services, the Xbox app, Game Bar, and related authentication components.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
+    "registry": [
+      {
+        "Path": "KCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\GameDVR",
+        "Name": "AppCaptureEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1"
+      }
+    ],
     "appx": [
       "Microsoft.XboxIdentityProvider",
       "Microsoft.XboxSpeechToTextOverlay",
