@@ -1638,7 +1638,7 @@
     "registry": [
       {
         "Path": "KCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\GameDVR",
-        "Name": "AppCaptureEnabled ",
+        "Name": "AppCaptureEnabled",
         "Value": "0",
         "Type": "DWord",
         "OriginalValue": "1"
