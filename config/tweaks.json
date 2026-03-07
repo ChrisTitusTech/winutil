@@ -1644,14 +1644,12 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/xboxremoval"
   },
-  "WPFTweaksM365Debloat": {
-    "Content": "M365 Debloat (ODT)",
-    "Description": "Uses Office Deployment Tool to remove selected Microsoft 365 apps: Skype for Business, Teams, OneDrive, Outlook, Publisher, Access, OneNote, and Bing integration.",
-    "category": "z__Advanced Tweaks - CAUTION",
+  "WPFSimpleM365Button": {
+    "Content": "Simple M365 (Word, Excel, PPT)",
+    "Description": "Runs a dedicated Microsoft 365 nuke-and-pave that keeps only Word, Excel, and PowerPoint.",
+    "category": "z__Advanced Tweaks - CAUTION__M365 Business Tweaks",
     "panel": "1",
-    "InvokeScript": [
-      "Invoke-WinUtilM365Debloat"
-    ],
+    "Type": "Button",
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/m365debloat"
   },
   "WPFTweaksDeBloat": {

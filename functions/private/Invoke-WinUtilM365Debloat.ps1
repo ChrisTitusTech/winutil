@@ -1,192 +1,253 @@
-function Invoke-WinUtilM365Debloat {
+function Invoke-WinUtilSimpleM365 {
     <#
     .SYNOPSIS
-        Removes selected Microsoft 365 apps using Office Deployment Tool.
-
+        Performs a surgical installation of Microsoft 365, leaving only Word, Excel, and PowerPoint.
     .DESCRIPTION
-        Detects installed Click-to-Run Office product and architecture, downloads Office
-        Deployment Tool (winget with web fallback), then runs ODT configure with ExcludeApp entries.
+        Wraps the transformation logic in a WPF-compatible runspace via Invoke-WPFRunspace.
+        The ODT download URL is resolved dynamically at runtime from Microsoft's redirect service.
     #>
 
-    $ErrorActionPreference = "Stop"
+    $ScriptBlock = {
+        param($sync)
 
-    function Get-WinUtilWingetPath {
-        $cmd = Get-Command winget -ErrorAction SilentlyContinue
-        if ($cmd -and $cmd.Source) {
-            return $cmd.Source
-        }
+        $ErrorActionPreference = "Continue"
+        Add-Type -AssemblyName PresentationFramework
 
-        $candidates = @(
-            "$env:ProgramFiles\WindowsApps\Microsoft.DesktopAppInstaller*_x64__8wekyb3d8bbwe\winget.exe",
-            "$env:ProgramFiles\WindowsApps\Microsoft.DesktopAppInstaller*_x86__8wekyb3d8bbwe\winget.exe",
-            "$env:LOCALAPPDATA\Microsoft\WindowsApps\winget.exe"
-        )
+        Write-Host "--- Simple M365 Transformation Start ---" -ForegroundColor Cyan
 
-        foreach ($pattern in $candidates) {
-            $match = Get-ChildItem -Path $pattern -ErrorAction SilentlyContinue |
-                Sort-Object LastWriteTime -Descending |
-                Select-Object -First 1
-
-            if ($match) {
-                return $match.FullName
+        # ── Helper: popup notice (WPF dispatcher-aware) ──────────────────
+        function Show-Notice {
+            param([string]$Message, [string]$Title = "Simple M365")
+            if ($sync -and $sync.form -and $sync.form.Dispatcher) {
+                $null = $sync.form.Dispatcher.Invoke([Action]{
+                    [System.Windows.MessageBox]::Show(
+                        $Message, $Title,
+                        [System.Windows.MessageBoxButton]::OK,
+                        [System.Windows.MessageBoxImage]::Information
+                    )
+                })
+            } elseif ($Host.Name -match "ConsoleHost") {
+                Read-Host "Press Enter to continue"
             }
         }
 
-        return $null
-    }
+        # ── Helper: resolve ODT URL via fwlink redirect (no scraping) ────────
+        function Resolve-OdtDownloadUrl {
+            try {
+                $fwlink = "https://go.microsoft.com/fwlink/p/?LinkID=626065"
+                $req = [System.Net.HttpWebRequest]::Create($fwlink)
+                $req.Method          = "HEAD"
+                $req.AllowAutoRedirect = $false
+                $req.UserAgent       = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+                $req.Timeout         = 10000
 
-    function Get-WinUtilOdtUrl {
-        $odtUrlFileRaw = "https://raw.githubusercontent.com/szymon-tulodziecki/M365-Debloater/main/odt_url.txt"
-        try {
-            $response = Invoke-WebRequest -Uri $odtUrlFileRaw -UseBasicParsing
-            return [string]$response.Content
-        } catch {
+                $resp     = $req.GetResponse()
+                $location = $resp.Headers["Location"]
+                $resp.Close()
+
+                if ($location) {
+                    Write-Host "   Resolved ODT URL: $location" -ForegroundColor Gray
+                    return $location
+                }
+                Write-Warning "fwlink redirect returned no Location header."
+            }
+            catch {
+                Write-Warning "URL resolution failed: $($_.Exception.Message)"
+            }
             return $null
         }
-    }
 
-    $productIdMap = @{
-        "O365ProPlusRetail" = "O365ProPlusRetail"
-        "O365BusinessRetail" = "O365BusinessRetail"
-        "ProPlus2019Retail" = "ProPlus2019Retail"
-        "ProPlus2024Volume" = "ProPlus2024Volume"
-    }
+        # ── Helper: locate winget.exe ─────────────────────────────────────
+        function Get-WingetPath {
+            $cmd = Get-Command winget -ErrorAction SilentlyContinue
+            if ($cmd -and $cmd.Source) { return $cmd.Source }
 
-    # Matches the app mapping from the M365 Debloater implementation.
-    $excludeAppIds = @(
-        "Lync",
-        "Teams",
-        "OneDrive",
-        "Outlook",
-        "Publisher",
-        "Access",
-        "OneNote",
-        "Bing"
-    )
+            $patterns = @(
+                "$env:ProgramFiles\WindowsApps\Microsoft.DesktopAppInstaller*_x64__8wekyb3d8bbwe\winget.exe",
+                "$env:ProgramFiles\WindowsApps\Microsoft.DesktopAppInstaller*_x86__8wekyb3d8bbwe\winget.exe",
+                "$env:LOCALAPPDATA\Microsoft\WindowsApps\winget.exe"
+            )
 
-    $detectedProductId = "O365BusinessRetail"
-    $detectedArch = "64"
-    $regPath = "HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration"
-
-    if (-not (Test-Path $regPath)) {
-        Write-Warning "Microsoft 365 Click-to-Run was not detected on this system."
-        return
-    }
-
-    try {
-        $releaseIds = [string](Get-ItemPropertyValue -Path $regPath -Name "ProductReleaseIds" -ErrorAction SilentlyContinue)
-        $platform = [string](Get-ItemPropertyValue -Path $regPath -Name "Platform" -ErrorAction SilentlyContinue)
-        $version = [string](Get-ItemPropertyValue -Path $regPath -Name "VersionToReport" -ErrorAction SilentlyContinue)
-
-        if ($platform -and $platform.Equals("x86", [System.StringComparison]::OrdinalIgnoreCase)) {
-            $detectedArch = "32"
-        }
-
-        foreach ($key in $productIdMap.Keys) {
-            if ($releaseIds -and $releaseIds.IndexOf($key, [System.StringComparison]::OrdinalIgnoreCase) -ge 0) {
-                $detectedProductId = $productIdMap[$key]
-                break
+            foreach ($pattern in $patterns) {
+                $hit = Get-ChildItem -Path $pattern -ErrorAction SilentlyContinue |
+                       Sort-Object LastWriteTime -Descending |
+                       Select-Object -First 1
+                if ($hit) { return $hit.FullName }
             }
+            return $null
         }
 
-        Write-Host "Detected M365 product: $detectedProductId | $platform | v$version"
-    } catch {
-        Write-Warning "Office detection from registry failed. Falling back to defaults."
-    }
-
-    $odtDir = Join-Path $env:TEMP "odt"
-    $odtDownloadDir = Join-Path $env:TEMP "WinUtil-M365\odt-download"
-    $xmlPath = Join-Path $env:TEMP "winutil_m365_odt_config.xml"
-    $wingetPath = $null
-    $downloadedExe = $null
-
-    try {
-        Write-Host "Preparing Office Deployment Tool..."
-
-        if (Test-Path $odtDir) {
-            Remove-Item -Path $odtDir -Recurse -Force -ErrorAction SilentlyContinue
+        # ── 1. Registry detection ─────────────────────────────────────────
+        $regPath = "HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration"
+        if (-not (Test-Path $regPath)) {
+            Write-Warning "Microsoft 365 Click-to-Run not found in registry."
+            Show-Notice "Microsoft 365 Click-to-Run configuration was not found in the registry."
+            return
         }
 
-        if (Test-Path $odtDownloadDir) {
-            Remove-Item -Path $odtDownloadDir -Recurse -Force -ErrorAction SilentlyContinue
-        }
+        $officeConfig = Get-ItemProperty $regPath
+        $arch = if ($officeConfig.Platform -eq "x86") { "32" } else { "64" }
+        $prodId = $null
 
-        New-Item -ItemType Directory -Path $odtDir -Force | Out-Null
-        New-Item -ItemType Directory -Path $odtDownloadDir -Force | Out-Null
-
-        $wingetPath = Get-WinUtilWingetPath
-        if ($wingetPath) {
-            Write-Host "Downloading ODT using winget..."
-            & $wingetPath download --id Microsoft.Office.DeploymentTool --location $odtDownloadDir --accept-source-agreements --accept-package-agreements | Out-Null
-
-            if ($LASTEXITCODE -eq 0) {
-                $downloadedExe = Get-ChildItem -Path $odtDownloadDir -Filter "officedeploymenttool*.exe" |
-                    Sort-Object LastWriteTime -Descending |
-                    Select-Object -First 1
-            } else {
-                Write-Warning "winget download failed with exit code: $LASTEXITCODE. Falling back to direct download."
-            }
+        $releaseIds = [string]$officeConfig.ProductReleaseIds
+        if (-not [string]::IsNullOrWhiteSpace($releaseIds)) {
+            $prodId = $releaseIds.Split(',')[0].Trim()
         } else {
-            Write-Warning "winget.exe was not found. Falling back to direct download."
+            @(
+                "O365ProPlusRetail","O365BusinessRetail",
+                "ProPlus2019Retail","ProPlus2021Retail","ProPlus2024Volume"
+            ) | Where-Object {
+                $officeConfig.PSObject.Properties.Name -contains $_ -or
+                $officeConfig.PSObject.Properties.Name -contains "$_.ExcludedApps"
+            } | Select-Object -First 1 | ForEach-Object { $prodId = $_ }
         }
 
-        if (-not $downloadedExe) {
-            $odtUrlRaw = Get-WinUtilOdtUrl
-            $odtUrl = if ($odtUrlRaw) { $odtUrlRaw.Trim() } else { "" }
-            if ([string]::IsNullOrWhiteSpace($odtUrl)) {
-                throw "Could not resolve ODT download URL from odt_url.txt"
+        if ([string]::IsNullOrWhiteSpace($prodId)) {
+            Write-Warning "Unable to determine Product ID."
+            Show-Notice "Unable to determine Product ID from Click-to-Run configuration."
+            return
+        }
+
+        Write-Host "Detected: $prodId | $arch-bit" -ForegroundColor Gray
+
+        # ── 2. Prepare working directory ──────────────────────────────────
+        $odtDir          = Join-Path $env:TEMP "SimpleM365"
+        $odtSetupPath    = Join-Path $odtDir "setup.exe"
+        $odtInstallerPath = Join-Path $odtDir "odt_installer.exe"
+        $xmlPath         = Join-Path $odtDir "simple.xml"
+
+        if (Test-Path $odtDir) { Remove-Item $odtDir -Recurse -Force -ErrorAction SilentlyContinue }
+        New-Item -Path $odtDir -ItemType Directory -Force | Out-Null
+
+        # ── 3. Kill stale Office processes & reset service ────────────────
+        Write-Host "-> Stopping stale Office processes..." -ForegroundColor Yellow
+        @("setup","OfficeClickToRun","OfficeC2RClient","AppVShNotify") | ForEach-Object {
+            if (Get-Process $_ -ErrorAction SilentlyContinue) {
+                Stop-Process -Name $_ -Force -ErrorAction SilentlyContinue
+                Write-Host "   Stopped: $_" -ForegroundColor Gray
             }
+        }
+        Restart-Service "ClickToRunSvc" -Force -ErrorAction SilentlyContinue
+        Start-Sleep -Seconds 3
 
-            $fallbackExe = Join-Path $odtDownloadDir "officedeploymenttool.exe"
-            Write-Host "Downloading ODT from URL fallback..."
-            Invoke-WebRequest -Uri $odtUrl -OutFile $fallbackExe -UseBasicParsing
-            $downloadedExe = Get-Item -Path $fallbackExe -ErrorAction Stop
+        # ── 4. Resolve & download ODT (no hardcoded version URLs) ─────────
+        Write-Host "-> Resolving ODT download URL..." -ForegroundColor Yellow
+        $odtUrl = Resolve-OdtDownloadUrl
+
+        $downloadSucceeded = $false
+
+        if ($odtUrl) {
+            try {
+                Write-Host "-> Downloading ODT from: $odtUrl" -ForegroundColor Gray
+                Invoke-WebRequest -Uri $odtUrl -OutFile $odtInstallerPath `
+                    -UseBasicParsing -UserAgent "Mozilla/5.0" -ErrorAction Stop
+
+                $f = Get-Item $odtInstallerPath -ErrorAction SilentlyContinue
+                if ($f -and $f.Length -ge 1MB) { $downloadSucceeded = $true }
+                else { Write-Warning "Downloaded file too small or missing." }
+            }
+            catch { Write-Warning "Download failed: $($_.Exception.Message)" }
         }
 
-        Start-Process -FilePath $downloadedExe.FullName -ArgumentList "/extract:`"$odtDir`" /quiet" -Wait
+        # Winget fallback (also dynamic – winget resolves the version itself)
+        if (-not $downloadSucceeded) {
+            $wingetPath = Get-WingetPath
+            if ($wingetPath) {
+                Write-Host "-> Trying winget fallback..." -ForegroundColor Yellow
+                try {
+                    & $wingetPath download `
+                        --id Microsoft.OfficeDeploymentTool --exact `
+                        --source winget --download-directory $odtDir `
+                        --accept-source-agreements --accept-package-agreements | Out-Null
 
-        $odtSetupPath = Join-Path $odtDir "setup.exe"
+                    $hit = Get-ChildItem $odtDir -Filter "*.exe" -ErrorAction SilentlyContinue |
+                           Where-Object { $_.Name -ne "setup.exe" } |
+                           Sort-Object LastWriteTime -Descending |
+                           Select-Object -First 1
+
+                    if ($hit) {
+                        Copy-Item $hit.FullName $odtInstallerPath -Force
+                        $downloadSucceeded = $true
+                    } else { throw "winget produced no installer." }
+                }
+                catch { Write-Warning "winget fallback failed: $($_.Exception.Message)" }
+            }
+        }
+
+        if (-not $downloadSucceeded) {
+            Show-Notice "Failed to download the Office Deployment Tool. Check your network connection."
+            return
+        }
+
+        # ── 5. Extract setup.exe ──────────────────────────────────────────
+        Write-Host "-> Extracting setup.exe..." -ForegroundColor Gray
+        try {
+            Start-Process -FilePath $odtInstallerPath `
+                -ArgumentList "/extract:`"$odtDir`" /quiet" -Wait -ErrorAction Stop
+        }
+        catch {
+            Show-Notice "Extraction failed. The ODT installer may be blocked by antivirus."
+            return
+        }
+
         if (-not (Test-Path $odtSetupPath)) {
-            throw "setup.exe was not found after ODT extraction."
+            Show-Notice "setup.exe was not extracted. Check $odtDir for details."
+            return
         }
 
-        Write-Host "Generating ODT configuration..."
-        $excludeAppXml = ($excludeAppIds | ForEach-Object {
-            "      <ExcludeApp ID=`"$_`" />"
-        }) -join "`r`n"
-
+        # ── 6. Generate XML ───────────────────────────────────────────────
         $xmlContent = @"
 <Configuration>
-  <Add OfficeClientEdition="$detectedArch" Channel="Current">
-    <Product ID="$detectedProductId">
+  <Remove All="TRUE" />
+  <Add OfficeClientEdition="$arch" Channel="Current" MigrateArch="TRUE">
+    <Product ID="$prodId">
       <Language ID="MatchOS" />
-$excludeAppXml
+      <ExcludeApp ID="Access" />
+      <ExcludeApp ID="Groove" />
+      <ExcludeApp ID="Lync" />
+      <ExcludeApp ID="OneDrive" />
+      <ExcludeApp ID="OneNote" />
+      <ExcludeApp ID="Outlook" />
+      <ExcludeApp ID="Publisher" />
+      <ExcludeApp ID="Teams" />
+      <ExcludeApp ID="Bing" />
     </Product>
   </Add>
-  <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
-  <Display Level="None" AcceptEULA="TRUE" />
+  <Display Level="Full" AcceptEULA="TRUE" />
 </Configuration>
 "@
 
-        Set-Content -Path $xmlPath -Value $xmlContent -Encoding ascii
+        Write-Host "-> Writing XML configuration..." -ForegroundColor Gray
+        [System.IO.File]::WriteAllText($xmlPath, $xmlContent, [System.Text.Encoding]::ASCII)
 
-        Write-Host "Running ODT configuration..."
-        $odtProcess = Start-Process -FilePath $odtSetupPath -ArgumentList "/configure `"$xmlPath`"" -Wait -PassThru
+        # ── 7. Run ODT ────────────────────────────────────────────────────
+        Write-Host "-> Running ODT configure pass..." -ForegroundColor Green
+        try {
+            $p = Start-Process -FilePath $odtSetupPath `
+                     -ArgumentList "/configure `"$xmlPath`"" `
+                     -PassThru -WindowStyle Normal
+            Write-Host "   ODT PID: $($p.Id) — waiting..." -ForegroundColor Gray
+            $p.WaitForExit()
+            Write-Host "   Exit code: $($p.ExitCode)" -ForegroundColor Cyan
 
-        if ($odtProcess.ExitCode -ne 0) {
-            throw "ODT exited with code: $($odtProcess.ExitCode)"
+            if ($p.ExitCode -eq 0) {
+                Write-Host "Success! Clean Word + Excel + PowerPoint installed." -ForegroundColor Green
+            } else {
+                Write-Warning "ODT failed (exit $($p.ExitCode)). Inspect $odtDir."
+            }
         }
+        catch { Write-Warning "Critical error: $($_.Exception.Message)" }
 
-        Write-Host "Microsoft 365 debloat finished successfully. A reboot is recommended." -ForegroundColor Green
-    } catch {
-        Write-Warning "M365 debloat failed: $($_.Exception.Message)"
-    } finally {
-        if (Test-Path $xmlPath) {
-            Remove-Item -Path $xmlPath -Force -ErrorAction SilentlyContinue
-        }
-
-        if (Test-Path $odtDownloadDir) {
-            Remove-Item -Path $odtDownloadDir -Recurse -Force -ErrorAction SilentlyContinue
-        }
+        Write-Host "`n--- Done. Files remain in $odtDir ---" -ForegroundColor Cyan
+        Show-Notice "Simple M365 finished. Files are in $odtDir"
     }
+
+    # ── Kick off in a WPF-compatible runspace ─────────────────────────────
+    Invoke-WPFRunspace -ScriptBlock $ScriptBlock -ParameterList @(
+        ,@("sync", $sync)
+    )
+}
+
+function Invoke-WinUtilM365Debloat {
+    Invoke-WinUtilSimpleM365
 }

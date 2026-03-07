@@ -241,6 +241,7 @@ function Invoke-WPFUIElements {
                         $label.HorizontalAlignment = "Left"
                         $label.VerticalAlignment = "Center"
                         $label.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
+                        $label.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "MainForegroundColor")
                         $label.UseLayoutRounding = $true
                         $horizontalStackPanel.Children.Add($label) | Out-Null
 
@@ -252,6 +253,7 @@ function Invoke-WPFUIElements {
                         $comboBox.VerticalAlignment = "Center"
                         $comboBox.SetResourceReference([Windows.Controls.Control]::MarginProperty, "ButtonMargin")
                         $comboBox.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
+                        $comboBox.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "MainForegroundColor")
                         $comboBox.UseLayoutRounding = $true
                         [System.Windows.Automation.AutomationProperties]::SetName($comboBox, $entryInfo.Content)
 
@@ -259,6 +261,7 @@ function Invoke-WPFUIElements {
                             $comboBoxItem = New-Object Windows.Controls.ComboBoxItem
                             $comboBoxItem.Content = $comboitem
                             $comboBoxItem.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
+                            $comboBoxItem.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "MainForegroundColor")
                             $comboBoxItem.UseLayoutRounding = $true
                             $comboBox.Items.Add($comboBoxItem) | Out-Null
                         }
