@@ -103,12 +103,23 @@ function Invoke-WinUtilISOWriteUSB {
         try {
             SetProgress "Formatting USB drive..." 10
 
-            # Phase 1: Clean disk via diskpart
+            # Phase 1: Clean disk via diskpart (retry once if the drive is not yet ready)
             $dpFile1 = Join-Path $env:TEMP "winutil_diskpart_$(Get-Random).txt"
             "select disk $diskNum`nclean`nexit" | Set-Content -Path $dpFile1 -Encoding ASCII
             Log "Running diskpart clean on Disk $diskNum..."
-            diskpart /s $dpFile1 2>&1 | Where-Object { $_ -match '\S' } | ForEach-Object { Log "  diskpart: $_" }
+            $dpCleanOut = diskpart /s $dpFile1 2>&1
+            $dpCleanOut | Where-Object { $_ -match '\S' } | ForEach-Object { Log "  diskpart: $_" }
             Remove-Item $dpFile1 -Force -ErrorAction SilentlyContinue
+
+            if (($dpCleanOut -join ' ') -match 'device is not ready') {
+                Log "Disk $diskNum was not ready; waiting 5 seconds and retrying clean..."
+                Start-Sleep -Seconds 5
+                Update-Disk -Number $diskNum -ErrorAction SilentlyContinue
+                $dpFile1b = Join-Path $env:TEMP "winutil_diskpart_$(Get-Random).txt"
+                "select disk $diskNum`nclean`nexit" | Set-Content -Path $dpFile1b -Encoding ASCII
+                diskpart /s $dpFile1b 2>&1 | Where-Object { $_ -match '\S' } | ForEach-Object { Log "  diskpart: $_" }
+                Remove-Item $dpFile1b -Force -ErrorAction SilentlyContinue
+            }
 
             # Phase 2: Initialize as GPT
             Start-Sleep -Seconds 2
@@ -122,7 +133,8 @@ function Invoke-WinUtilISOWriteUSB {
                 Log "Disk $diskNum converted to GPT (was $($diskObj.PartitionStyle))."
             }
 
-            # Phase 3: Create FAT32 partition via diskpart
+            # Phase 3: Create FAT32 partition via diskpart, then format with Format-Volume
+            # (diskpart's 'format' command can fail with "no volume selected" on fresh/never-formatted drives)
             $volLabel = "W11-" + (Get-Date).ToString('yyMMdd')
             $dpFile2  = Join-Path $env:TEMP "winutil_diskpart2_$(Get-Random).txt"
             $maxFat32PartitionMB = 32768
@@ -136,27 +148,37 @@ function Invoke-WinUtilISOWriteUSB {
             @(
                 "select disk $diskNum"
                 $createPartitionCommand
-                "format quick fs=fat32 label=`"$volLabel`""
                 "exit"
             ) | Set-Content -Path $dpFile2 -Encoding ASCII
             Log "Creating partitions on Disk $diskNum..."
             diskpart /s $dpFile2 2>&1 | Where-Object { $_ -match '\S' } | ForEach-Object { Log "  diskpart: $_" }
             Remove-Item $dpFile2 -Force -ErrorAction SilentlyContinue
 
-            SetProgress "Assigning drive letters..." 30
+            SetProgress "Formatting USB partition..." 25
             Start-Sleep -Seconds 3
             Update-Disk -Number $diskNum -ErrorAction SilentlyContinue
 
             $partitions = Get-Partition -DiskNumber $diskNum -ErrorAction Stop
-            Log "Partitions on Disk $diskNum after format: $($partitions.Count)"
+            Log "Partitions on Disk $diskNum after creation: $($partitions.Count)"
             foreach ($p in $partitions) {
                 Log "  Partition $($p.PartitionNumber)  Type=$($p.Type)  Letter=$($p.DriveLetter)  Size=$([math]::Round($p.Size/1MB))MB"
             }
 
             $winpePart = $partitions | Where-Object { $_.Type -eq "Basic" } | Select-Object -Last 1
             if (-not $winpePart) {
-                throw "Could not find the WINPE (Basic) partition on Disk $diskNum after format."
+                throw "Could not find the Basic partition on Disk $diskNum after creation."
             }
+
+            # Format using Format-Volume (reliable on fresh drives; diskpart format fails
+            # with 'no volume selected' when the partition has never been formatted before)
+            Log "Formatting Partition $($winpePart.PartitionNumber) as FAT32 (label: $volLabel)..."
+            Get-Partition -DiskNumber $diskNum -PartitionNumber $winpePart.PartitionNumber |
+                Format-Volume -FileSystem FAT32 -NewFileSystemLabel $volLabel -Force -Confirm:$false | Out-Null
+            Log "Partition $($winpePart.PartitionNumber) formatted as FAT32."
+
+            SetProgress "Assigning drive letters..." 30
+            Start-Sleep -Seconds 2
+            Update-Disk -Number $diskNum -ErrorAction SilentlyContinue
 
             try { Remove-PartitionAccessPath -DiskNumber $diskNum -PartitionNumber $winpePart.PartitionNumber -AccessPath "$($winpePart.DriveLetter):" -ErrorAction SilentlyContinue } catch {}
             $usbLetter = Get-FreeDriveLetter
@@ -166,6 +188,12 @@ function Invoke-WinUtilISOWriteUSB {
             Start-Sleep -Seconds 2
 
             $usbDrive = "${usbLetter}:"
+            $retries = 0
+            while (-not (Test-Path $usbDrive) -and $retries -lt 6) {
+                $retries++
+                Log "Waiting for $usbDrive to become accessible (attempt $retries/6)..."
+                Start-Sleep -Seconds 2
+            }
             if (-not (Test-Path $usbDrive)) { throw "Drive $usbDrive is not accessible after letter assignment." }
             Log "USB data partition: $usbDrive"
 

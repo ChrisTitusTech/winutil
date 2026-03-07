@@ -1,6 +1,6 @@
 ---
 title: Win 11 Creator
-weight: 5
+weight: 8
 ---
 
 ## Using Winutil's Win11 Creator
@@ -40,7 +40,7 @@ Click **Run Windows ISO Modification and Creator** to start the customization pr
 - **Delete OneDrive setup** from the image
 
 **System Customization:**
-- **Bypass hardware checks** — removes TPM, Secure Boot, CPU, and RAM requirement enforcement so the ISO installs on unsupported hardware
+- **Bypass hardware checks** — removes TPM, Secure Boot, CPU, RAM, and storage requirement enforcement so the ISO installs on unsupported hardware
 - **Enable local account setup** — injects an `autounattend.xml` that skips the Microsoft account screen during OOBE
 - **Disable BitLocker and device encryption** — removes startup overhead
 - **Disable Chat icon** — removes chat taskbar button
@@ -69,9 +69,9 @@ A live log shows progress as each step completes. This stage takes **10–30 min
 
 Once modification is complete, choose how to save your image:
 
-{{< tabs items="Save as ISO,Write to USB" defaultIndex="0" >}}
+{{< tabs >}}
 
-  {{< tab >}}
+  {{< tab name="Save as ISO" selected=true >}}
   1. Click **Save as an ISO File**.
   2. Choose a save location (defaults to your Desktop as `Win11_Modified_yyyyMMdd.iso`).
   3. Winutil builds a dual BIOS/UEFI bootable ISO using `oscdimg.exe`.
@@ -82,7 +82,7 @@ Once modification is complete, choose how to save your image:
   **Typical output size:** 2.5–3.5 GB (down from 5–6 GB original)
   {{< /tab >}}
 
-  {{< tab >}}
+  {{< tab name="Write to USB" >}}
   1. Click **Write Directly to a USB Drive**.
   2. Select your USB drive from the dropdown (click **Refresh** if it doesn't appear).
   3. Click **Erase & Write to USB** and confirm the warning — **all data on the drive will be permanently erased**.
@@ -161,7 +161,7 @@ A list of the best free and open source tools for downloading, creating and flas
 ---
 
 > [!TIP]
-> Already have a Windows 11 ISO? Skip the third-party tools and use Winutil's built-in **[Win11 Creator](#using-winutilss-win11-creator)** at the top of this page.
+> Already have a Windows 11 ISO? Skip the third-party tools and use Winutil's built-in **[Win11 Creator](#using-winutils-win11-creator)** at the top of this page.
 
 > [!NOTE]
 > Always download Windows ISOs from official Microsoft sources or trusted tools like Rufus/UUP Dump to avoid tampered images.

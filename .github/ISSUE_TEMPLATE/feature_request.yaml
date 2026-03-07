@@ -13,45 +13,10 @@ body:
         - 🛠️ **Supported environments only:** We only support Windows 11.
         - 💡 For general questions, use the [Discussions section](https://github.com/Christitustech/winutil/discussions) or join our Community-driven [Discord Server](https://discord.gg/RUbZUZyByQ).
 
-  - type: checkboxes
-    attributes:
-      label: ⚙️ Issue Checklist
-      options:
-        - label: I have read the guidelines.
-        - label: I checked for duplicate issues.
-        - label: I searched for existing discussions.
-        - label: I checked for an existing pull request that addresses this request.
-    validations:
-      required: true
-
-  - type: textarea
-    id: problem_statement
-    attributes:
-      label: ❓ Is your feature request related to a problem?
-      placeholder: "Provide a clear and concise description of the issue you're facing. Example: 'I'm always frustrated when [...]'"
-    validations:
-      required: false
-
   - type: textarea
     id: proposed_solution
     attributes:
       label: 💡 Describe the solution you'd like
-      placeholder: "Provide a clear and concise description of what you want to happen."
+      placeholder: "Provide a clear and concise description."
     validations:
       required: true
-
-  - type: textarea
-    id: alternatives
-    attributes:
-      label: 🔄 Describe alternatives you've considered
-      placeholder: "Provide details on any alternative solutions or features you've thought about."
-    validations:
-      required: false
-
-  - type: textarea
-    id: additional_context
-    attributes:
-      label: 🖼️ Additional context
-      placeholder: "Include screenshots, code blocks (use triple backticks ```), or any other relevant information."
-    validations:
-      required: false

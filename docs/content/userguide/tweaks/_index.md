@@ -1,6 +1,6 @@
 ---
 title: Tweaks
-weight: 3
+weight: 4
 ---
 
 {{< image src="images/Tweaks-Tab" alt="Image of Tweaks Tab" >}}
@@ -21,10 +21,10 @@ Essential Tweaks are modifications and optimizations that are generally safe for
 ### Advanced Tweaks (CAUTION)
 Advanced Tweaks are intended for experienced users who have a solid understanding of their system and the potential implications of making deep-level changes. These tweaks involve more significant alterations to the operating system and can provide substantial customization. However, they also carry a higher risk of causing system instability or unintended side effects if not implemented correctly. Users who choose to apply Advanced Tweaks should proceed with caution, ensuring they have adequate knowledge and backups in place to recover if something goes wrong. These tweaks are not recommended for novice users or those unfamiliar with the inner workings of their operating system.
 
-### O&O Shutup
+### O&O ShutUp10++
 
 
-[O&O ShutUp10++](https://www.oo-software.com/en/shutup10) can be launched from Winutil with only one button click. It is a free privacy tool for Windows that lets users easily manage their privacy settings. It disables telemetry, controls updates, and manages app permissions to enhance security and privacy. The tool offers recommended settings for optimal privacy with just a few clicks.
+[O&O ShutUp10++](https://www.oo-software.com/en/shutup10) can be launched from Winutil with one click. It is a free privacy tool for Windows that helps users manage telemetry, update behavior, and app permission settings.
 
 {{< youtube id=3HvNr8eMcv0 loading=lazy >}}
 
@@ -46,11 +46,11 @@ The utility provides a convenient DNS selection feature, allowing users to choos
 
 ### Customize Preferences
 
-The Customize Preferences section allows users to personalize their Windows experience by toggling various visual and functional features. These preferences are designed to enhance usability and tailor the system to the user’s specific needs and preferences.
+The Customize Preferences section allows users to personalize their Windows experience by toggling visual and functional settings.
 
 ### Performance Plans
 
-The Performance Plans section allows users to manage the Ultimate Performance Profile on their system. This feature is designed to optimize the system for maximum performance.
+The Performance Plans section allows users to manage the Ultimate Performance Profile for maximum performance.
 
 #### Add and activate the Ultimate Performance Profile:
 * Enables and activates the Ultimate Performance Profile to enhance system performance by minimizing latency and increasing efficiency.

@@ -12,29 +12,48 @@ canonifyURLs = true
 path = "github.com/imfing/hextra"
 
 [[menu.main]]
-name = "Developer Documentation"
-pageRef = "/dev"
+identifier = "userguide"
+name = "User Guides"
+pageRef = "/userguide"
 weight = 1
 
 [[menu.main]]
-name = "User Guides"
-pageRef = "/userguide"
+identifier = "documentation"
+name = "Developer Documentation"
 weight = 2
 
 [[menu.main]]
+identifier = "contribution-guides"
 name = "Contribution Guides"
 pageRef = "CONTRIBUTING.md"
+weight = 1
+parent = "documentation"
+
+[[menu.main]]
+identifier = "developer-documentation"
+name = "Developer Docs"
+pageRef = "/dev"
+weight = 2
+parent = "documentation"
+
+[[menu.main]]
+identifier = "help"
+name = "Help"
 weight = 3
 
 [[menu.main]]
+identifier = "faq"
 name = "FAQ"
 pageRef = "faq.md"
-weight = 4
+weight = 1
+parent = "help"
 
 [[menu.main]]
+identifier = "known-issues"
 name = "Known Issues"
 pageRef = "KnownIssues.md"
-weight = 4
+weight = 2
+parent = "help"
 
 [[menu.main]]
 name = "Store"

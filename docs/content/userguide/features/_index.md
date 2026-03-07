@@ -1,12 +1,12 @@
 ---
 title: Features
-weight: 4
+weight: 5
 ---
 
-* Install the most used **Windows Features** by checking the checkbox and clicking "Install Features" to install them.
+Install common **Windows Features** by selecting the feature checkboxes and clicking **Install Features**.
 
-* All .Net Frameworks (2, 3, 4)
-* HyperV Virtualization
+* All .NET Frameworks (2, 3, 4)
+* Hyper-V Virtualization
 * Legacy Media (WMP, DirectPlay)
 * NFS - Network File System
 * Enable Daily Registry Backup Task 12:30am
@@ -16,7 +16,7 @@ weight: 4
 * Windows Sandbox
 
 ### Fixes
-* Quick fixes for your system if you are having issues.
+Quick fixes for common system problems.
 
 * Set Up Autologin
 * Reset Windows Update
@@ -28,6 +28,7 @@ weight: 4
 ### Legacy Windows Panels
 
 Open old-school Windows panels directly from Winutil. Following Panels are available:
+Open classic Windows panels directly from Winutil. Available panels include:
 
 * Control Panel
 * Network Connections
@@ -39,4 +40,4 @@ Open old-school Windows panels directly from Winutil. Following Panels are avail
 
 ### Remote Access
 
-Enables OpenSSH server on your windows machine.
+Enables an OpenSSH server on your Windows machine.

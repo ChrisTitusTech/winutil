@@ -31,7 +31,7 @@ Winutil is designed for:
 New to Winutil? Start here:
 
 1. **[Getting Started Guide](getting-started/)** - Installation and first steps
-2. **[Application Store](application/)** - Learn to install software easily
+2. **[Applications Guide](application/)** - Learn to install, upgrade, and uninstall software
 3. **[Tweaks Guide](tweaks/)** - Optimize your system
 4. **[Features & Fixes](features/)** - Troubleshoot common issues
 5. **[Win11 Creator](win11Creator/)** - Build a custom debloated Windows 11 ISO
@@ -42,7 +42,7 @@ New to Winutil? Start here:
 
 Browse and install hundreds of popular applications with a single click. No more hunting for download links or dealing with installer bloat.
 
-**[Read the Store Guide →](application/)**
+**[Read the Applications Guide →](application/)**
 
 ### ⚙️ System Tweaks
 
@@ -91,7 +91,7 @@ Build a custom Windows 11 ISO with bloatware removed, telemetry disabled, and ha
 | I want to... | Go to... |
 |--------------|----------|
 | Install Winutil for the first time | [Getting Started](getting-started/) |
-| Install applications quickly | [Application Store](application/) |
+| Install, upgrade, or uninstall apps | [Applications Guide](application/) |
 | Speed up my computer | [Tweaks Guide](tweaks/) |
 | Fix Windows Update problems | [Features - Fixes](features/) |
 | Automate setup for multiple PCs | [Automation](automation/) |
@@ -151,7 +151,7 @@ Want to help improve Winutil?
 This User Guide covers everything you need to know:
 
 1. **[Getting Started](getting-started/)** - Installation, first run, basic usage
-2. **[Application Store](application/)** - Installing software, using presets
+2. **[Applications](application/)** - Installing, upgrading, and uninstalling software
 3. **[Tweaks](tweaks/)** - System optimizations and customizations
 4. **[Features & Fixes](features/)** - Troubleshooting tools and utilities
 5. **[Win11 Creator](win11Creator/)** - Build a custom debloated Windows 11 ISO
