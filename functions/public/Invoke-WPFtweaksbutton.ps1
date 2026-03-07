@@ -43,7 +43,6 @@ function Invoke-WPFtweaksbutton {
       Invoke-WinUtilTweaks $tweaks[$i]
       Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -value ($i/$Tweaks.Count) }
     }
-
     Set-WinUtilProgressBar -Label "Tweaks finished" -Percent 100
     $sync.ProcessRunning = $false
     Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" }
