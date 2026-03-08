@@ -128,10 +128,10 @@
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
-      "icacls '$Env:LocalAppData\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db' /deny Everyone:F"
+      "icacls \"$Env:LocalAppData\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db\" /deny Everyone:F"
     ],
     "UndoScript": [
-      "icacls '$Env:LocalAppData\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db' /grant Everyone:F"
+      "icacls \"$Env:LocalAppData\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db\" /grant Everyone:F"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/widget"
   },
