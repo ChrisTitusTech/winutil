@@ -49,8 +49,25 @@ function Invoke-WinUtilISOMountAndVerify {
     Set-WinUtilProgressBar -Label "Mounting ISO..." -Percent 10
 
     try {
-        $diskImage   = Mount-DiskImage -ImagePath $isoPath -PassThru -ErrorAction Stop
-        $driveLetter = ($diskImage | Get-Volume).DriveLetter + ":"
+        Mount-DiskImage -ImagePath $isoPath -ErrorAction Stop | Out-Null
+
+        # Mount-DiskImage returns before Windows assigns a drive letter; retry until available.
+        $volume = $null
+        1..10 | ForEach-Object {
+            $v = Get-DiskImage -ImagePath $isoPath | Get-Volume
+            if ($v.DriveLetter) { $volume = $v; return }
+            Start-Sleep -Milliseconds 500
+        }
+
+        if (-not $volume.DriveLetter) {
+            Dismount-DiskImage -ImagePath $isoPath | Out-Null
+            Write-Win11ISOLog "ERROR: Could not determine the mounted drive letter."
+            [System.Windows.MessageBox]::Show("The ISO was mounted but Windows did not assign a drive letter.`n`nPlease try again.", "Mount Failed", "OK", "Error")
+            Set-WinUtilProgressBar -Label "" -Percent 0
+            return
+        }
+
+        $driveLetter = $volume.DriveLetter + ":"
         Write-Win11ISOLog "Mounted at drive $driveLetter"
 
         Set-WinUtilProgressBar -Label "Verifying ISO contents..." -Percent 30
