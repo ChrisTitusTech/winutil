@@ -221,6 +221,14 @@
         "link": "https://www.advancedrenamer.com/",
         "winget": "HulubuluSoftware.AdvancedRenamer"
     },
+    "citrixworkspaceapp": {
+        "category": "Utilities",
+        "choco": "citrix-workspace",
+        "content": "Citrix Workspace app",
+        "description": "a secure, unified client application that provides instant access to virtual desktops, SaaS, web, and Windows apps from any device (Windows, macOS, Linux, iOS, Android) or browser.",
+        "link": "https://www.citrix.com/downloads/workspace-app/",
+        "winget": "Citrix.Workspace",
+    },
     "calibre": {
         "category": "Document",
         "choco": "calibre",
@@ -1284,6 +1292,14 @@
         "winget": "Logseq.Logseq",
         "foss": true
     },
+    "logitechghub": {
+        "category": "Utilities",
+        "choco": "lghub",
+        "content": "Logitech G Hub",
+        "description": "Official software for managing Logitech gaming peripherals (mice, keyboards, headsets, lighting profiles, etc.).",
+        "link": "https://www.logitechg.com/en-us/software/ghub",
+        "winget": "Logitech.GHUB"
+    },
     "malwarebytes": {
         "category": "Utilities",
         "choco": "malwarebytes",
@@ -1771,6 +1787,14 @@
         "description": "Parsec is a low-latency, high-quality remote desktop sharing application for collaborating and gaming across devices.",
         "link": "https://parsec.app/",
         "winget": "Parsec.Parsec"
+    },
+    "pdf-xchange": {
+        "category": "Document",
+        "choco": "pdfxchangeeditor",
+        "content": "PDF-XChangeEditor",
+        "description": "a comprehensive Windows-based software suite and editor for creating, viewing, editing, annotating, and signing PDF files.",
+        "link": "https://www.pdf-xchange.com/",
+        "winget": "TrackerSoftware.PDF-XChangeEditor"
     },
     "pdf24creator": {
         "category": "Document",
@@ -2584,13 +2608,21 @@
         "winget": "GianlucaPernigotto.Videomass",
         "foss": true
     },
-    "visualstudio": {
+    "visualstudio2022": {
         "category": "Development",
         "choco": "visualstudio2022community",
         "content": "Visual Studio 2022",
         "description": "Visual Studio 2022 is an integrated development environment (IDE) for building, debugging, and deploying applications.",
         "link": "https://visualstudio.microsoft.com/",
         "winget": "Microsoft.VisualStudio.2022.Community"
+    },
+    "visualstudio2026": {
+        "category": "Development",
+        "choco": "visualstudio2026community",
+        "content": "Visual Studio 2026",
+        "description": "Visual Studio 2026 is an integrated development environment (IDE) for building, debugging, and deploying applications.",
+        "link": "https://visualstudio.microsoft.com/",
+        "winget": "Microsoft.VisualStudio.2026.Community"
     },
     "vivaldi": {
         "category": "Browsers",
@@ -3145,6 +3177,14 @@
         "description": "The Dropbox desktop app! Save hard drive space, share and edit files and send for signature \u2013 all without the distraction of countless browser tabs.",
         "link": "https://www.dropbox.com/en_GB/desktop",
         "winget": "Dropbox.Dropbox"
+    },
+    "Overwolf": {
+        "category": "Games",
+        "choco": "overwolf",
+        "content": "Overwolf",
+        "description": "Popular platform for game overlays and companion apps (mod managers, trackers, etc.), widely used by gamers.",
+        "link": "https://www.overwolf.com/app/overwolf-curseforge",
+        "winget": "Overwolf.CurseForge"
     },
     "OFGB": {
         "category": "Utilities",
