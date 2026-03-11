@@ -27,7 +27,3 @@ If your PowerShell session is running in **Constrained Language Mode**, some scr
 $ExecutionContext.SessionState.LanguageMode
 ```
 If it returns `ConstrainedLanguage`, you may need to switch to `FullLanguage` mode or run the script in a session with administrative privileges. Be aware that some security policies may enforce Constrained Language Mode, especially in corporate or managed environments.
-
-## Windows Version
-
-Just keep in mind that we only support Windows 11. If you have a version specific issues with WinUtil, we highly recommend switching to Windows 11 using the WinUtil "Win11 Creator" or by using the Media Creation Tool and choosing to flash it to your USB.
