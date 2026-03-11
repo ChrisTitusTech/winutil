@@ -3,6 +3,8 @@ title: Applications
 weight: 3
 ---
 
+Use the **Install** tab to install, upgrade, and uninstall supported applications through WinGet and Chocolatey.
+
 {{< tabs >}}
 
   {{< tab name="Installation & Updates" selected=true >}}

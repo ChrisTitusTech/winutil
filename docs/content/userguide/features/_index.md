@@ -3,7 +3,11 @@ title: Features
 weight: 5
 ---
 
-Install common **Windows Features** by selecting the feature checkboxes and clicking **Install Features**.
+Use the **Features** and **Fixes** sections to install optional Windows components and run common repair tasks.
+
+## Windows Features
+
+Install common **Windows features** by selecting the feature checkboxes and clicking **Install Features**.
 
 * All .NET Frameworks (2, 3, 4)
 * Hyper-V Virtualization
@@ -15,8 +19,9 @@ Install common **Windows Features** by selecting the feature checkboxes and clic
 * Windows Subsystem for Linux
 * Windows Sandbox
 
-### Fixes
-Quick fixes for common system problems.
+## Fixes
+
+Use these one-click fixes for common system problems.
 
 * Set Up Autologin
 * Reset Windows Update
@@ -25,7 +30,7 @@ Quick fixes for common system problems.
 * WinGet Reinstall
 * Remove Adobe Creative Cloud
 
-### Legacy Windows Panels
+## Legacy Windows Panels
 
 Open old-school Windows panels directly from Winutil. Available panels include:
 
@@ -37,6 +42,6 @@ Open old-school Windows panels directly from Winutil. Available panels include:
 * System Properties
 * User Accounts
 
-### Remote Access
+## Remote Access
 
-Enables an OpenSSH server on your Windows machine.
+Enable an OpenSSH server on your Windows machine for remote access.

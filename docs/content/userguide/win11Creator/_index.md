@@ -1,11 +1,11 @@
 ---
-title: Win 11 Creator
+title: Win11 Creator
 weight: 8
 ---
 
 ## Using Winutil's Win11 Creator
 
-Winutil includes a built-in **Win11 Creator** tool that lets you take any official Windows 11 ISO and produce a customized, debloated version — with telemetry removed, hardware requirement checks bypassed, and local account setup enabled out of the box. You can export the result as a new ISO file or write it directly to a USB drive.
+Winutil includes a built-in **Win11 Creator** tool that lets you take an official Windows 11 ISO and produce a customized, debloated version. The resulting image can remove telemetry, bypass hardware requirement checks, and enable local account setup out of the box. You can export the result as a new ISO file or write it directly to a USB drive.
 
 > [!IMPORTANT]
 > You need an **official Windows 11 ISO** from [Microsoft's website](https://www.microsoft.com/en-us/software-download/windows11) before starting. Custom, modified, or non-official ISOs are not supported. The process uses ~10–15 GB of temporary disk space, so make sure you have room.
@@ -61,7 +61,7 @@ Click **Run Windows ISO Modification and Creator** to start the customization pr
 **Optional: Driver Injection**
 - If enabled, injects all drivers from your current system into the install.wim and boot.wim — useful for offline installations on machines with missing drivers. This is an optional checkbox in Step 3.
 
-A live log shows progress as each step completes. This stage takes **10–30 minutes** depending on your disk speed — the WIM dismount near the end is the slowest part, so don't close Winutil while it's running.
+A live log shows progress as each step completes. This stage usually takes **10–30 minutes** depending on disk speed. The WIM dismount near the end is the slowest part, so do not close Winutil while it is running.
 
 ---
 
@@ -100,7 +100,7 @@ Once modification is complete, choose how to save your image:
 
 ### Step 5 — Clean Up (Optional)
 
-Click **Clean & Reset** to delete the temporary working directory (~10–15 GB) and reset the tool back to its initial state, ready for a new ISO. You'll be asked to confirm before anything is deleted.
+Click **Clean & Reset** to delete the temporary working directory (~10–15 GB) and return the tool to its initial state, ready for a new ISO. You will be asked to confirm before anything is deleted.
 
 ---
 
@@ -129,7 +129,7 @@ When you install Windows 11 from your modified ISO:
 
 ---
 
-A list of the best free and open source tools for downloading, creating and flashing Windows ISOs.
+Below is a list of free and open-source tools for downloading, creating, and flashing Windows ISOs.
 
 ## Download Windows ISOs
 
