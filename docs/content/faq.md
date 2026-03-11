@@ -197,7 +197,7 @@ Yes, Winutil works with Windows 10/11 LTSC editions. Some applications may not b
 Yes, but check your organization's policies first. Some tweaks may conflict with group policies or corporate requirements.
 
 ### How do I automate Winutil for multiple PCs?
-See the [Automation Guide](userguide/automation/) for details on:
+See the [Automation Guide](/userguide/automation/) for details on:
 - Configuration files
 - PowerShell parameters
 - Batch deployment
@@ -210,7 +210,7 @@ Yes! Contributions are welcome:
 - Improve documentation
 - Help others in Discord
 
-See the [Contributing Guide](contributing/) for details.
+See the [Contributing Guide](/contributing/) for details.
 
 ## Privacy & Security
 
@@ -269,8 +269,8 @@ Type `Y` and press Enter in the PowerShell window. This only happens on first us
 
 Can't find your answer? Try these resources:
 
-- **[Known Issues](knownissues/)** - Check if it's a known problem
-- **[User Guide](userguide/)** - Comprehensive documentation
+- **[Known Issues](/knownissues/)** - Check if it's a known problem
+- **[User Guide](/userguide/)** - Comprehensive documentation
 - **[Discord Community](https://discord.gg/RUbZUZyByQ)** - Get help from other users
 - **[GitHub Issues](https://github.com/ChrisTitusTech/winutil/issues)** - Report bugs
 - **[YouTube Tutorial](https://www.youtube.com/watch?v=6UQZ5oQg8XA)** - Video walkthrough
