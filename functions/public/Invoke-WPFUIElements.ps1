@@ -193,13 +193,19 @@ function Invoke-WPFUIElements {
                             $sync[$entryInfo.Name].Add_Checked({
                                 [System.Object]$Sender = $args[0]
                                 Invoke-WPFSelectedCheckboxesUpdate -type "Add" -checkboxName $Sender.name
-                                Invoke-WinUtilTweaks $Sender.name
+                                # Skip applying tweaks while an import is restoring toggle states
+                                if (-not $sync.ImportInProgress) {
+                                    Invoke-WinUtilTweaks $Sender.name
+                                }
                             })
 
                             $sync[$entryInfo.Name].Add_Unchecked({
                                 [System.Object]$Sender = $args[0]
                                 Invoke-WPFSelectedCheckboxesUpdate -type "Remove" -checkboxName $Sender.name
-                                Invoke-WinUtiltweaks $Sender.name -undo $true
+                                # Skip undoing tweaks while an import is restoring toggle states
+                                if (-not $sync.ImportInProgress) {
+                                    Invoke-WinUtiltweaks $Sender.name -undo $true
+                                }
                             })
                         }
                     }
