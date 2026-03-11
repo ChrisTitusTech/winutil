@@ -3,7 +3,7 @@ title: "Set Display for Performance"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1534}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1547}
   "WPFTweaksDisplay": {
     "Content": "Set Display for Performance",
     "Description": "Sets the system preferences to performance. You can do this manually with sysdm.cpl as well.",

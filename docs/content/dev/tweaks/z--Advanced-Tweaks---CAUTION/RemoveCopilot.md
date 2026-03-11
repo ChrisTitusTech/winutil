@@ -3,7 +3,7 @@ title: "Disable Microsoft Copilot"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1808}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1821}
   "WPFTweaksRemoveCopilot": {
     "Content": "Disable Microsoft Copilot",
     "Description": "Disables MS Copilot AI built into Windows since 23H2.",
