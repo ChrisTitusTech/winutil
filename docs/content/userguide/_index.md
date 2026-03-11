@@ -3,7 +3,10 @@ title: User Guide
 weight: 2
 ---
 
-Welcome to the official User Guide for **Winutil**, your all-in-one Windows toolkit!
+Welcome to the official User Guide for **Winutil**, your all-in-one Windows toolkit.
+
+> [!IMPORTANT]
+> Windows 10 is not supported by Winutil. Windows 10 reached end of support on **October 14, 2025**.
 
 ## What is Winutil?
 
@@ -19,12 +22,12 @@ Winutil (Chris Titus Tech's Windows Utility) is a comprehensive PowerShell-based
 
 Winutil is designed for:
 
-- **Home Users**: Wanting to optimize their personal PCs
-- **Power Users**: Needing fine-grained control over Windows
-- **IT Professionals**: Managing multiple systems efficiently
-- **Gamers**: Optimizing systems for gaming performance
-- **Privacy-Conscious Users**: Reducing telemetry and data collection
-- **Developers**: Setting up clean development environments
+- **Home Users**: People who want to optimize their personal PCs
+- **Power Users**: Users who want fine-grained control over Windows
+- **IT Professionals**: Teams managing multiple systems efficiently
+- **Gamers**: Users optimizing systems for gaming performance
+- **Privacy-Conscious Users**: People reducing telemetry and data collection
+- **Developers**: Users setting up clean development environments
 
 ## Getting Started
 
@@ -82,7 +85,7 @@ Automate Winutil configurations for:
 
 ### 💿 Windows 11 Creator
 
-Build a custom Windows 11 ISO with bloatware removed, telemetry disabled, and hardware requirement checks bypassed — then export it as an ISO file or write it directly to a USB drive.
+Build a custom Windows 11 ISO with bloatware removed, telemetry disabled, and hardware requirement checks bypassed. You can then export it as an ISO file or write it directly to a USB drive.
 
 **[Read the Win11 Creator Guide →](win11Creator/)**
 
@@ -117,15 +120,15 @@ Before using Winutil:
 
 ## System Requirements
 
-- **Operating System**: Windows 10 (1809+) or Windows 11
-- **PowerShell**: Version 5.1 or later (included in Windows)
+- **Operating System**: Windows 11
+- **PowerShell**: Version 5.1 or later (included in Windows 11)
 - **Permissions**: Administrator access required
 - **Internet**: Required for downloading apps and updates
 - **.NET Framework**: 4.5+ (usually pre-installed)
 
 ## Getting Help
 
-Need assistance?
+Need help?
 
 - **📖 Documentation**: You're reading it! Use the navigation menu
 - **❓ FAQ**: Check [Frequently Asked Questions](../faq/)
@@ -164,4 +167,4 @@ Watch the complete Winutil overview:
 
 {{< youtube id=6UQZ5oQg8XA loading=lazy >}}
 
-Ready to get started? Head to the **[Getting Started Guide](getting-started/)** now!
+Ready to get started? Head to the **[Getting Started Guide](getting-started/)**.
