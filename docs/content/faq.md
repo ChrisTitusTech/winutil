@@ -5,6 +5,10 @@ toc: true
 
 ## General Questions
 
+### Is Windows 10 still supported?
+No. Windows 10 is no longer supported by Winutil because it reached end of support on **October 14, 2025**.
+Winutil is focused on Windows 11.
+
 ### How do I uninstall Winutil?
 You do not have to uninstall Winutil. As it is a script you run from PowerShell, it only loads into your RAM. This means as soon as you close Winutil, it will be cleared from your system. Winutil doesn't install itself permanently on your computer.
 

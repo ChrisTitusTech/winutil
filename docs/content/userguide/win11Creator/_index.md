@@ -136,7 +136,7 @@ A list of the best free and open source tools for downloading, creating and flas
 | Tool | Description | Website |
 |------|-------------|---------|
 | **[UUP Dump](https://uupdump.net/)** | Download Windows UUP files directly from Microsoft's servers and convert them into a clean ISO — great for getting the latest builds | [uupdump.net](https://uupdump.net/) |
-| **[Microsoft Media Creation Tool](https://www.microsoft.com/en-us/software-download/windows11)** | Microsoft's official tool for downloading and creating Windows 10/11 installation media | [microsoft.com](https://www.microsoft.com/en-us/software-download/windows11) |
+| **[Microsoft Media Creation Tool](https://www.microsoft.com/en-us/software-download/windows11)** | Microsoft's official tool for downloading and creating Windows 11 installation media | [microsoft.com](https://www.microsoft.com/en-us/software-download/windows11) |
 
 
 ## Customize Windows ISOs

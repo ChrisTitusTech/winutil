@@ -11,8 +11,11 @@ Winutil is a powerful Windows utility that helps you optimize, customize, and ma
 
 Before running Winutil, ensure your system meets these requirements:
 
-- **Operating System**: Windows 10 (Latest Version) or Windows 11
-- **PowerShell**: Version 5.1 or later (included by default in Windows 10/11)
+> [!IMPORTANT]
+> Windows 10 is not supported by Winutil. Windows 10 reached end of support on **October 14, 2025**.
+
+- **Operating System**: Windows 11
+- **PowerShell**: Version 5.1 or later (included by default in Windows 11)
 - **Administrator Access**: Required for system-level changes
 - **Internet Connection**: Required for downloading applications and updates
 - **.NET Framework**: Version 4.5 or later (usually pre-installed)
@@ -28,8 +31,7 @@ There are several ways to open PowerShell with admin rights:
 **Method 1: Start Menu (Recommended)**
 
 1. Right-click on the Windows Start button
-2. Select "Windows PowerShell (Admin)" on Windows 10
-3. Or select "Terminal (Admin)" on Windows 11
+2. Select "Terminal (Admin)"
 
 **Method 2: Search Method**
 
@@ -221,7 +223,7 @@ Winutil offers several preset configurations:
 irm https://github.com/ChrisTitusTech/Winutil/releases/latest/download/Winutil.ps1 | iex
 ```
 
-2. Force TLS 1.2 (for older Windows versions):
+2. Force TLS 1.2:
 
 ```powershell
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12

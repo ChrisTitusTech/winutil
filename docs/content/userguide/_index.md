@@ -117,7 +117,7 @@ Before using Winutil:
 
 ## System Requirements
 
-- **Operating System**: Windows 10 (1809+) or Windows 11
+- **Operating System**: Windows 11
 - **PowerShell**: Version 5.1 or later (included in Windows)
 - **Permissions**: Administrator access required
 - **Internet**: Required for downloading apps and updates
