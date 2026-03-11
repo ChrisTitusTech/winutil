@@ -73,9 +73,8 @@ function Invoke-WPFImpex {
                         Write-Error "Failed to load the JSON file from the specified path or URL: $_"
                         return
                     }
-                    # TODO how to handle old style? detected json type then flatten it in a func?
-                    # $flattenedJson = $jsonFile.PSObject.Properties.Where({ $_.Name -ne "Install" }).ForEach({ $_.Value })
-                    $flattenedJson = $jsonFile
+
+                    $flattenedJson = $jsonFile | Where-Object { $_ -and $_.ToString().Trim() -ne "" }
 
                     if (-not $flattenedJson) {
                         [System.Windows.MessageBox]::Show(
