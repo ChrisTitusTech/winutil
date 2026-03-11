@@ -77,7 +77,7 @@ If you applied a tweak and it breaks something, you can revert it:
 1. Open Winutil again
 2. Go to the **Tweaks** tab
 3. Select the same tweak you applied
-4. Click **"Undo Selected Tweaks"**
+4. Click **Undo Selected Tweaks**
 5. The system will revert to the previous state
 
 Alternatively, use System Restore if you created a restore point.
@@ -119,8 +119,8 @@ Yes! Check the boxes for all applications you want, then click "Install Selected
 
 ### WinGet isn't working. How do I fix it?
 1. Go to the **Config** tab
-2. Find **Fixes** section
-3. Click **"WinGet Reinstall"**
+2. Find the **Fixes** section
+3. Click **WinGet Reinstall**
 4. Wait for completion
 5. Try installing applications again
 
@@ -145,8 +145,8 @@ Generally, **no**. Security updates are important. However, you might:
 
 ### How do I re-enable updates after disabling them?
 1. Open Winutil
-2. Go to **Updates** tab
-3. Click **"Enable Updates"**
+2. Go to the **Updates** tab
+3. Click **Enable Updates**
 4. Updates will resume normally
 
 ### What's the difference between "Security Updates Only" and "Disable Updates"?
@@ -176,7 +176,7 @@ Troubleshooting steps:
 ### Network tweaks broke my internet connection
 1. Open Winutil
 2. Go to **Config** > **Fixes**
-3. Click **"Reset Network"**
+3. Click **Reset Network**
 4. Restart your computer
 5. Connection should be restored
 
@@ -184,7 +184,7 @@ Troubleshooting steps:
 Undo the tweaks that might have affected those features:
 1. Reopen Winutil
 2. Select the tweaks you applied
-3. Click "Undo Selected Tweaks"
+3. Click **Undo Selected Tweaks**
 
 If that doesn't work, use System Restore to revert to a previous state.
 

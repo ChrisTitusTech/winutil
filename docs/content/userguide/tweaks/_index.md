@@ -6,14 +6,14 @@ weight: 4
 {{< image src="images/Tweaks-Tab" alt="Image of Tweaks Tab" >}}
 
 ### Run Tweaks
-* **Open Tweaks Tab**: Navigate to the 'Tweaks' tab in the application.
+* **Open the Tweaks tab**: Navigate to the **Tweaks** tab in the application.
 * **Select Tweaks**: Choose the tweaks you want to apply. You can use the presets available at the top for convenience.
-* **Run Tweaks**: After selecting the desired tweaks, click the 'Run Tweaks' button at the bottom of the screen.
+* **Run Tweaks**: After selecting the desired tweaks, click **Run Tweaks** at the bottom of the screen.
 
 ### Undo Tweaks
-* **Open Tweaks Tab**: Go to the 'Tweaks' tab located next to 'Install'.
+* **Open the Tweaks tab**: Go to the **Tweaks** tab located next to **Install**.
 * **Select Tweaks to Remove**: Choose the tweaks you want to disable or remove.
-* **Undo Tweaks**: Click the 'Undo Selected Tweaks' button at the bottom of the screen to apply the changes.
+* **Undo Tweaks**: Click **Undo Selected Tweaks** at the bottom of the screen to apply the changes.
 
 ### Essential Tweaks
 Essential Tweaks are modifications and optimizations that are generally safe for most users to implement. These tweaks are designed to enhance system performance, improve privacy, and reduce unnecessary system activities. They are considered low-risk and are recommended for users who want to ensure their system runs smoothly and efficiently without delving too deeply into complex configurations. The goal of Essential Tweaks is to provide noticeable improvements with minimal risk, making them suitable for a wide range of users, including those who may not have advanced technical knowledge.

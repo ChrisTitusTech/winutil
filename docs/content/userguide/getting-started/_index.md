@@ -104,7 +104,7 @@ Before making any changes, create a system restore point:
 
 1. Go to the **Tweaks** tab
 2. Find "Create Restore Point" under Essential Tweaks
-3. Check the box and click "Run Tweaks"
+3. Check the box and click **Run Tweaks**
 
 This gives you a rollback point if needed.
 
@@ -122,7 +122,7 @@ For a better Windows experience with minimal risk:
 1. Go to the **Tweaks** tab
 2. Select the **"Desktop" preset** for a balanced configuration
 3. Review the selected tweaks
-4. Click "Run Tweaks"
+4. Click **Run Tweaks**
 
 ## Common Tasks
 
@@ -147,7 +147,7 @@ For a better Windows experience with minimal risk:
 
 1. Go to the **Tweaks** tab
 2. Select from the Essential Tweaks section
-3. Click "Run Tweaks"
+3. Click **Run Tweaks**
 
 **Advanced Tweaks** (Use with caution):
 
@@ -158,7 +158,7 @@ For a better Windows experience with minimal risk:
 **Undoing Tweaks**:
 
 1. Select the same tweaks you applied
-2. Click "Undo Selected Tweaks"
+2. Click **Undo Selected Tweaks**
 3. The system reverts to the previous state
 
 ### Using Quick Fixes
@@ -177,7 +177,7 @@ For common Windows issues:
 
 For improved privacy and speed:
 
-1. Go to **Config** or **Tweaks** tab
+1. Go to the **Config** tab or the **Tweaks** tab
 2. Find the DNS section
 3. Select a provider:
    - **Cloudflare**: Fast and privacy-focused
