@@ -5,6 +5,9 @@ weight: 2
 
 Welcome to the official User Guide for **Winutil**, your all-in-one Windows toolkit!
 
+> [!IMPORTANT]
+> Windows 10 is not supported by Winutil. Windows 10 reached end of support on **October 14, 2025**.
+
 ## What is Winutil?
 
 Winutil (Chris Titus Tech's Windows Utility) is a comprehensive PowerShell-based tool that helps you:
@@ -118,7 +121,7 @@ Before using Winutil:
 ## System Requirements
 
 - **Operating System**: Windows 11
-- **PowerShell**: Version 5.1 or later (included in Windows)
+- **PowerShell**: Version 5.1 or later (included in Windows 11)
 - **Permissions**: Administrator access required
 - **Internet**: Required for downloading apps and updates
 - **.NET Framework**: 4.5+ (usually pre-installed)

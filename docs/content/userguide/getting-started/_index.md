@@ -260,7 +260,7 @@ If Winutil downloads but doesn't open:
 
 Now that you're set up, explore these guides:
 
-- [Application Guide](../application/) - Learn about installing, upgrading, and uninstalling software
+- [Applications Guide](../application/) - Learn about installing, upgrading, and uninstalling software
 - [Tweaks Guide](../tweaks/) - Understand system optimizations
 - [FAQ](../../faq/) - Common questions and answers
 
@@ -287,4 +287,4 @@ If you need assistance:
 | Change DNS           | Tweaks Tab  | DNS section                          |
 | Open Control Panel   | Config Tab  | Legacy Windows Panels                |
 
-Happy optimizing! 🚀
+Happy optimizing!

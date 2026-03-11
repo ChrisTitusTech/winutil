@@ -27,8 +27,7 @@ Quick fixes for common system problems.
 
 ### Legacy Windows Panels
 
-Open old-school Windows panels directly from Winutil. Following Panels are available:
-Open classic Windows panels directly from Winutil. Available panels include:
+Open old-school Windows panels directly from Winutil. Available panels include:
 
 * Control Panel
 * Network Connections
