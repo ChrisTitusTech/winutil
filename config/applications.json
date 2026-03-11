@@ -41,6 +41,15 @@
         "winget": "ToEverything.AFFiNE",
         "foss": true
     },
+    "ai-as-workspace": {
+        "category": "AI-Automation",
+        "choco": "na",
+        "content": "AI as Workspace",
+        "description": "Workspace-style AI chat client with multiple workspaces, plugins, and local-first design; open-source (BSD-3-Clause).",
+        "link": "https://aiaw.app/",
+        "winget": "NitroRCr.AIasWorkspace",
+        "foss": true
+    },
     "aimp": {
         "category": "Multimedia Tools",
         "choco": "aimp",
@@ -92,6 +101,15 @@
         "link": "https://anydesk.com/",
         "winget": "AnyDesk.AnyDesk"
     },
+    "anythingllm": {
+        "category": "AI-Automation",
+        "choco": "na",
+        "content": "AnythingLLM",
+        "description": "Desktop AI application for chat with documents (RAG) and agent workflows; offers a Windows installer and an open-source codebase.",
+        "link": "https://anythingllm.com/",
+        "winget": "na",
+        "foss": true
+    },
     "audacity": {
         "category": "Multimedia Tools",
         "choco": "audacity",
@@ -125,6 +143,15 @@
         "link": "https://www.autohotkey.com/",
         "winget": "AutoHotkey.AutoHotkey",
         "foss": true
+    },
+    "autoit": {
+        "category": "AI-Automation",
+        "choco": "autoit.install",
+        "content": "AutoIt",
+        "description": "Windows GUI automation scripting tool (freeware) used to automate keystrokes, mouse actions, and window/control interactions.",
+        "link": "https://www.autoitscript.com/site/autoit/",
+        "winget": "na",
+        "foss": false
     },
     "azuredatastudio": {
         "category": "Microsoft Tools",
@@ -213,6 +240,15 @@
         "link": "https://www.bulkrenameutility.co.uk",
         "winget": "TGRMNSoftware.BulkRenameUtility"
     },
+    "buzz": {
+        "category": "AI-Automation",
+        "choco": "na",
+        "content": "Buzz",
+        "description": "Offline audio transcription and translation desktop app powered by Whisper, packaged for Windows and available via WinGet.",
+        "link": "https://github.com/chidiwilliams/buzz",
+        "winget": "ChidiWilliams.Buzz",
+        "foss": true
+    },
     "AdvancedRenamer": {
         "category": "Utilities",
         "choco": "advanced-renamer",
@@ -220,6 +256,14 @@
         "description": "Advanced Renamer is a program for renaming multiple files and folders at once. By configuring renaming methods the names can be manipulated in various ways.",
         "link": "https://www.advancedrenamer.com/",
         "winget": "HulubuluSoftware.AdvancedRenamer"
+    },
+    "citrixworkspaceapp": {
+        "category": "Utilities",
+        "choco": "citrix-workspace",
+        "content": "Citrix Workspace app",
+        "description": "a secure, unified client application that provides instant access to virtual desktops, SaaS, web, and Windows apps from any device (Windows, macOS, Linux, iOS, Android) or browser.",
+        "link": "https://www.citrix.com/downloads/workspace-app/",
+        "winget": "Citrix.Workspace",
     },
     "calibre": {
         "category": "Document",
@@ -248,6 +292,14 @@
         "winget": "Cemu.Cemu",
         "foss": true
     },
+    "chatgpt": {
+        "category": "AI-Automation",
+        "choco": "na",
+        "content": "ChatGPT",
+        "description": "ChatGPT desktop app provides direct access to OpenAI's conversational AI assistant for writing, analysis, and productivity tasks.",
+        "link": "https://openai.com/chatgpt/desktop/",
+        "winget": "OpenAI.ChatGPT"
+    },
     "chatterino": {
         "category": "Communications",
         "choco": "chatterino",
@@ -273,6 +325,24 @@
         "link": "https://github.com/Hibbiki/chromium-win64",
         "winget": "Hibbiki.Chromium",
         "foss": true
+    },
+    "claude": {
+        "category": "AI-Automation",
+        "choco": "claude",
+        "content": "Claude",
+        "description": "Anthropic's Claude desktop application for Windows, designed for focused AI-assisted work and chat.",
+        "link": "https://claude.ai/",
+        "winget": "Anthropic.Claude",
+        "foss": false
+    },
+    "claude-code": {
+        "category": "AI-Automation",
+        "choco": "claude-code",
+        "content": "Claude Code",
+        "description": "Anthropic's agentic coding tool for the terminal/IDE workflows, available on Windows and distributed via WinGet.",
+        "link": "https://code.claude.com/",
+        "winget": "Anthropic.ClaudeCode",
+        "foss": false
     },
     "clementine": {
         "category": "Multimedia Tools",
@@ -353,6 +423,15 @@
         "winget": "CrystalDewWorld.CrystalDiskMark",
         "foss": true
     },
+    "cursor": {
+        "category": "Development",
+        "choco": "cursoride",
+        "content": "Cursor",
+        "description": "AI-powered code editor (VS Code-based) with agentic coding features and integrated AI assistance for development workflows.",
+        "link": "https://cursor.com/",
+        "winget": "Anysphere.Cursor",
+        "foss": false
+    },
     "darktable": {
         "category": "Multimedia Tools",
         "choco": "darktable",
@@ -378,6 +457,15 @@
         "description": "Display Driver Uninstaller (DDU) is a tool for completely uninstalling graphics drivers from NVIDIA, AMD, and Intel. It is useful for troubleshooting graphics driver-related issues.",
         "link": "https://www.wagnardsoft.com/display-driver-uninstaller-DDU-",
         "winget": "Wagnardsoft.DisplayDriverUninstaller"
+    },
+    "deepl": {
+        "category": "AI-Automation",
+        "choco": "deepl",
+        "content": "DeepL",
+        "description": "DeepL desktop translation and writing assistant for Windows, including shortcuts and in-app writing improvement features.",
+        "link": "https://www.deepl.com/en/windows-app",
+        "winget": "DeepL.DeepL",
+        "foss": false
     },
     "deluge": {
         "category": "Utilities",
@@ -831,6 +919,15 @@
         "winget": "GitHub.cli",
         "foss": true
     },
+    "github-copilot-cli": {
+        "category": "AI-Automation",
+        "choco": "na",
+        "content": "GitHub Copilot CLI",
+        "description": "GitHub Copilot experience for the command line: natural-language assistance for commands and development tasks; distributed via WinGet.",
+        "link": "https://github.com/github/copilot-cli",
+        "winget": "GitHub.Copilot",
+        "foss": false
+    },
     "githubdesktop": {
         "category": "Development",
         "choco": "git;github-desktop",
@@ -898,6 +995,15 @@
         "description": "File syncing across devices all tied to your Google account.",
         "link": "https://www.google.com/drive/",
         "winget": "Google.GoogleDrive"
+    },
+    "gpt4all": {
+        "category": "AI-Automation",
+        "choco": "gpt4all",
+        "content": "GPT4All",
+        "description": "Open-source desktop application to run LLMs locally with an emphasis on privacy (MIT-licensed codebase).",
+        "link": "https://nomic.ai/gpt4all",
+        "winget": "nomic.gpt4all",
+        "foss": true
     },
     "gpuz": {
         "category": "Utilities",
@@ -1053,6 +1159,15 @@
         "description": "Jami is a secure and privacy-focused communication platform that offers audio and video calls, messaging, and file sharing.",
         "link": "https://jami.net/",
         "winget": "SFLinux.Jami",
+        "foss": true
+    },
+    "jan": {
+        "category": "AI-Automation",
+        "choco": "jan",
+        "content": "Jan",
+        "description": "Open-source ChatGPT alternative that runs on your computer (offline-first desktop AI assistant / local model runner).",
+        "link": "https://jan.ai/",
+        "winget": "Jan.Jan",
         "foss": true
     },
     "java8": {
@@ -1258,6 +1373,15 @@
         "winget": "rocksdanister.LivelyWallpaper",
         "foss": true
     },
+    "lm-studio": {
+        "category": "AI-Automation",
+        "choco": "lm-studio",
+        "content": "LM Studio",
+        "description": "Desktop app to discover, download, and run local LLMs on your machine, with a built-in chat UI and local inference tooling.",
+        "link": "https://lmstudio.ai/",
+        "winget": "ElementLabs.LMStudio",
+        "foss": false
+    },
     "localsend": {
         "category": "Utilities",
         "choco": "localsend.install",
@@ -1283,6 +1407,14 @@
         "link": "https://logseq.com/",
         "winget": "Logseq.Logseq",
         "foss": true
+    },
+    "logitechghub": {
+        "category": "Utilities",
+        "choco": "lghub",
+        "content": "Logitech G Hub",
+        "description": "Official software for managing Logitech gaming peripherals (mice, keyboards, headsets, lighting profiles, etc.).",
+        "link": "https://www.logitechg.com/en-us/software/ghub",
+        "winget": "Logitech.GHUB"
     },
     "malwarebytes": {
         "category": "Utilities",
@@ -1318,6 +1450,24 @@
         "link": "https://meldmerge.org/",
         "winget": "Meld.Meld",
         "foss": true
+    },
+     "microsoft-aishell": {
+        "category": "AI-Automation",
+        "choco": "na",
+        "content": "Microsoft AI Shell",
+        "description": "CLI shell that connects to AI assistance providers ('agents') for command-line productivity; distributed via WinGet.",
+        "link": "https://github.com/PowerShell/AIShell",
+        "winget": "Microsoft.AIShell",
+        "foss": true
+    },
+    "microsoft-copilot": {
+        "category": "AI-Automation",
+        "choco": "na",
+        "content": "Microsoft Copilot",
+        "description": "Microsoft Copilot desktop app for Windows (consumer Copilot), distributed via Microsoft Store and commonly installed via its Store ID.",
+        "link": "https://apps.microsoft.com/detail/9nht9rb2f4hd",
+        "winget": "9NHT9RB2F4HD",
+        "foss": false
     },
     "ModernFlyouts": {
         "category": "Multimedia Tools",
@@ -1643,6 +1793,15 @@
         "winget": "KDE.Okular",
         "foss": true
     },
+    "ollama": {
+        "category": "AI-Automation",
+        "choco": "na",
+        "content": "Ollama",
+        "description": "Ollama lets you run and manage local large language models on your desktop.",
+        "link": "https://ollama.com/",
+        "winget": "Ollama.Ollama",
+        "foss": true
+    },
     "onedrive": {
         "category": "Microsoft Tools",
         "choco": "onedrive",
@@ -1748,6 +1907,15 @@
         "link": "https://potplayer.tv/",
         "winget": "Daum.PotPlayer"
     },
+    "power-automate-desktop": {
+        "category": "AI-Automation",
+        "choco": "na",
+        "content": "Power Automate for desktop",
+        "description": "Microsoft's Windows RPA tool for building desktop flows to automate repetitive tasks across apps and services.",
+        "link": "https://powerautomate.microsoft.com/desktop/",
+        "winget": "na",
+        "foss": false
+    },
     "processexplorer": {
         "category": "Microsoft Tools",
         "choco": "na",
@@ -1771,6 +1939,14 @@
         "description": "Parsec is a low-latency, high-quality remote desktop sharing application for collaborating and gaming across devices.",
         "link": "https://parsec.app/",
         "winget": "Parsec.Parsec"
+    },
+    "pdf-xchange": {
+        "category": "Document",
+        "choco": "pdfxchangeeditor",
+        "content": "PDF-XChangeEditor",
+        "description": "a comprehensive Windows-based software suite and editor for creating, viewing, editing, annotating, and signing PDF files.",
+        "link": "https://www.pdf-xchange.com/",
+        "winget": "TrackerSoftware.PDF-XChangeEditor"
     },
     "pdf24creator": {
         "category": "Document",
@@ -2584,13 +2760,21 @@
         "winget": "GianlucaPernigotto.Videomass",
         "foss": true
     },
-    "visualstudio": {
+    "visualstudio2022": {
         "category": "Development",
         "choco": "visualstudio2022community",
         "content": "Visual Studio 2022",
         "description": "Visual Studio 2022 is an integrated development environment (IDE) for building, debugging, and deploying applications.",
         "link": "https://visualstudio.microsoft.com/",
         "winget": "Microsoft.VisualStudio.2022.Community"
+    },
+    "visualstudio2026": {
+        "category": "Development",
+        "choco": "visualstudio2026community",
+        "content": "Visual Studio 2026",
+        "description": "Visual Studio 2026 is an integrated development environment (IDE) for building, debugging, and deploying applications.",
+        "link": "https://visualstudio.microsoft.com/",
+        "winget": "Microsoft.VisualStudio.2026.Community"
     },
     "vivaldi": {
         "category": "Browsers",
@@ -3145,6 +3329,14 @@
         "description": "The Dropbox desktop app! Save hard drive space, share and edit files and send for signature \u2013 all without the distraction of countless browser tabs.",
         "link": "https://www.dropbox.com/en_GB/desktop",
         "winget": "Dropbox.Dropbox"
+    },
+    "Overwolf": {
+        "category": "Games",
+        "choco": "overwolf",
+        "content": "Overwolf",
+        "description": "Popular platform for game overlays and companion apps (mod managers, trackers, etc.), widely used by gamers.",
+        "link": "https://www.overwolf.com/app/overwolf-curseforge",
+        "winget": "Overwolf.CurseForge"
     },
     "OFGB": {
         "category": "Utilities",

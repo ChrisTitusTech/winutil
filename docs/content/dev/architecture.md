@@ -611,7 +611,7 @@ Outputs `winutil.ps1` in the root directory.
 **Required**:
 - PowerShell 5.1+
 - .NET Framework 4.5+
-- Windows 10 1809+
+- Windows 11
 
 **Optional (auto-installed)**:
 - WinGet (Windows Package Manager)
