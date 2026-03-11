@@ -230,6 +230,9 @@ irm https://github.com/ChrisTitusTech/Winutil/releases/latest/download/Winutil.p
 irm "https://christitus.com/win" | iex
 ```
 
+> [!NOTE]
+> On Windows 11, you usually do not need the TLS 1.2 command. Use it only if you hit download or security protocol errors.
+
 ### Execution Policy Error
 
 If you get an execution policy error:
