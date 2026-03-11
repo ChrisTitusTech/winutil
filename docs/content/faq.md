@@ -10,7 +10,7 @@ No. Windows 10 is no longer supported by Winutil because it reached end of suppo
 Winutil is focused on Windows 11.
 
 ### How do I uninstall Winutil?
-You do not have to uninstall Winutil. As it is a script you run from PowerShell, it only loads into your RAM. This means as soon as you close Winutil, it will be cleared from your system. Winutil doesn't install itself permanently on your computer.
+You do not need to uninstall Winutil. Because it runs as a PowerShell script, it is loaded into memory only while it is open. Once you close it, it is removed from memory and does not remain installed on your system.
 
 ### Is Winutil safe to use?
 Yes, Winutil is open source and the code is publicly available on GitHub. Thousands of users run it daily. However, like any system modification tool, you should:
@@ -48,11 +48,14 @@ Try these solutions in order:
    irm https://github.com/ChrisTitusTech/Winutil/releases/latest/download/Winutil.ps1 | iex
    ```
 
-2. **Force TLS 1.2** (for older Windows):
+2. **Force TLS 1.2**:
    ```powershell
    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
    irm "https://christitus.com/win" | iex
    ```
+
+   > [!NOTE]
+   > On Windows 11, you usually do not need the TLS 1.2 command. Use it only if you hit download or security protocol errors.
 
 3. **Change DNS** to Cloudflare (1.1.1.1) or Google (8.8.8.8)
 
@@ -97,7 +100,7 @@ Alternatively, use System Restore if you created a restore point.
 Start with Essential Tweaks. Only use Advanced Tweaks if you understand the implications.
 
 ### Will tweaks survive Windows Updates?
-Most tweaks persist through updates, but some may be reset by major Windows updates (feature updates). You may need to reapply certain tweaks after major updates.
+Most tweaks persist through updates, but some may be reset by major Windows feature updates. You may need to reapply certain tweaks afterward.
 
 ### Can I create my own tweak presets?
 Currently, Winutil uses predefined presets (Desktop, Laptop, Minimal, Standard). Custom presets aren't directly supported in the GUI, but you can script your preferred configuration.
@@ -194,7 +197,7 @@ Yes, Winutil works on Windows Server editions, though some features may not be a
 Yes, Winutil works with Windows 10/11 LTSC editions. Some applications may not be available depending on your configuration.
 
 ### Can I use Winutil in a corporate/enterprise environment?
-Yes, but check your organization's policies first. Some tweaks may conflict with group policies or corporate requirements.
+Yes, but check your organization's policies first. Some tweaks may conflict with Group Policy or other corporate requirements.
 
 ### How do I automate Winutil for multiple PCs?
 See the [Automation Guide](/userguide/automation/) for details on:
@@ -243,7 +246,7 @@ Tweaks can improve performance by:
 - Cleaning temporary files
 - Optimizing startup programs
 
-Results vary based on your system and which tweaks you apply.
+Results vary depending on your system and which tweaks you apply.
 
 ### What's the best preset for gaming?
 Use the **Desktop** preset, then additionally apply:
@@ -253,7 +256,7 @@ Use the **Desktop** preset, then additionally apply:
 - Set display for performance (Advanced)
 
 ### How much RAM does Winutil use?
-Winutil itself uses ~50-100MB while running. Once closed, it's removed from memory.
+Winutil itself uses about 50-100 MB while running. Once closed, it is removed from memory.
 
 ## Error Messages
 
