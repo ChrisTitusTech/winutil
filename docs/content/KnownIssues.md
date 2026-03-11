@@ -30,4 +30,4 @@ If it returns `ConstrainedLanguage`, you may need to switch to `FullLanguage` mo
 
 ## Windows Version
 
-Just keep in mind that we only support Windows 11. If you have version-specific issues with WinUtil, we highly recommend switching to Windows 11 using the WinUtil "Win11 Creator" or by using the Media Creation Tool and choosing to flash it to your USB.
+Just keep in mind that we only support Windows 11. If you have a version specific issues with WinUtil, we highly recommend switching to Windows 11 using the WinUtil "Win11 Creator" or by using the Media Creation Tool and choosing to flash it to your USB.
