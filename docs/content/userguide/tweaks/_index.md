@@ -6,14 +6,14 @@ weight: 4
 {{< image src="images/Tweaks-Tab" alt="Image of Tweaks Tab" >}}
 
 ### Run Tweaks
-* **Open Tweaks Tab**: Navigate to the 'Tweaks' tab in the application.
+* **Open the Tweaks tab**: Navigate to the **Tweaks** tab in the application.
 * **Select Tweaks**: Choose the tweaks you want to apply. You can use the presets available at the top for convenience.
-* **Run Tweaks**: After selecting the desired tweaks, click the 'Run Tweaks' button at the bottom of the screen.
+* **Run Tweaks**: After selecting the desired tweaks, click **Run Tweaks** at the bottom of the screen.
 
 ### Undo Tweaks
-* **Open Tweaks Tab**: Go to the 'Tweaks' tab located next to 'Install'.
+* **Open the Tweaks tab**: Go to the **Tweaks** tab located next to **Install**.
 * **Select Tweaks to Remove**: Choose the tweaks you want to disable or remove.
-* **Undo Tweaks**: Click the 'Undo Selected Tweaks' button at the bottom of the screen to apply the changes.
+* **Undo Tweaks**: Click **Undo Selected Tweaks** at the bottom of the screen to apply the changes.
 
 ### Essential Tweaks
 Essential Tweaks are modifications and optimizations that are generally safe for most users to implement. These tweaks are designed to enhance system performance, improve privacy, and reduce unnecessary system activities. They are considered low-risk and are recommended for users who want to ensure their system runs smoothly and efficiently without delving too deeply into complex configurations. The goal of Essential Tweaks is to provide noticeable improvements with minimal risk, making them suitable for a wide range of users, including those who may not have advanced technical knowledge.
@@ -22,8 +22,6 @@ Essential Tweaks are modifications and optimizations that are generally safe for
 Advanced Tweaks are intended for experienced users who have a solid understanding of their system and the potential implications of making deep-level changes. These tweaks involve more significant alterations to the operating system and can provide substantial customization. However, they also carry a higher risk of causing system instability or unintended side effects if not implemented correctly. Users who choose to apply Advanced Tweaks should proceed with caution, ensuring they have adequate knowledge and backups in place to recover if something goes wrong. These tweaks are not recommended for novice users or those unfamiliar with the inner workings of their operating system.
 
 ### O&O ShutUp10++
-
-
 [O&O ShutUp10++](https://www.oo-software.com/en/shutup10) can be launched from Winutil with one click. It is a free privacy tool for Windows that helps users manage telemetry, update behavior, and app permission settings.
 
 {{< youtube id=3HvNr8eMcv0 loading=lazy >}}
@@ -41,8 +39,8 @@ The utility provides a convenient DNS selection feature, allowing users to choos
 * [**Cloudflare_Malware_Adult**](https://developers.cloudflare.com/1.1.1.1/setup/#:~:text=Use%20the%20following%20DNS%20resolvers%20to%20block%20malware%20and%20adult%20content%3A): Blocks both malware and adult content, offering more comprehensive filtering.
 * [**Open_DNS**](https://www.opendns.com/setupguide/#familyshield): Offers customizable filtering and enhanced security features.
 * [**Quad9**](https://quad9.net/): Focuses on security by blocking known malicious domains.
-* [**AdGuard_Ads_Trackers**](https://adguard-dns.io/en/welcome.html) AdGuard DNS will block ads, trackers, or any other DNS requests. Visit website and login for a dashboard, statistics and customize your experience in the server settings.
-* [**AdGuard_Ads_Trackers_Malware_Adult**](https://adguard-dns.io/en/welcome.html) AdGuard DNS will block ads, trackers, adult content, and enable Safe Search and Safe Mode, where possible.
+* [**AdGuard_Ads_Trackers**](https://adguard-dns.io/en/welcome.html): AdGuard DNS blocks ads, trackers, and other unwanted DNS requests. Visit the website and sign in for a dashboard, statistics, and additional server-side customization.
+* [**AdGuard_Ads_Trackers_Malware_Adult**](https://adguard-dns.io/en/welcome.html): AdGuard DNS blocks ads, trackers, malware, and adult content, and enables Safe Search and Safe Mode where possible.
 
 ### Customize Preferences
 
