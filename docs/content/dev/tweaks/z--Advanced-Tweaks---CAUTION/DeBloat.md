@@ -3,7 +3,7 @@ title: "Remove ALL MS Store Apps - NOT RECOMMENDED"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1660}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1669}
   "WPFTweaksDeBloat": {
     "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
     "Description": "USE WITH CAUTION!!! This will remove ALL Microsoft Store apps.",
