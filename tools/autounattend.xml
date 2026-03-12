@@ -434,14 +434,13 @@ $scripts = @(
         reg.exe add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv"     /v Start /t REG_DWORD /d 3 /f;
         reg.exe add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc"       /v Start /t REG_DWORD /d 2 /f;
         reg.exe add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v Start /t REG_DWORD /d 3 /f;
-
+    };
+    {
         reg.exe add "HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Education" /f;
-        reg.exe add "HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Education" /v IsEducationEnvironment /t REG_DWORD /d 1 /f;
-        
-        reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer" /f;
-        reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer" /v HideRecommendedSection /t REG_DWORD /d 1 /f;
-        
         reg.exe add "HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Start" /f;
+        reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer" /f;
+        reg.exe add "HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Education" /v IsEducationEnvironment /t REG_DWORD /d 1 /f;
+        reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer" /v HideRecommendedSection /t REG_DWORD /d 1 /f;
         reg.exe add "HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Start" /v HideRecommendedSection /t REG_DWORD /d 1 /f;
     };
     {
@@ -451,7 +450,6 @@ $scripts = @(
         }
     };
     {
-    
         $viveDir = Join-Path $env:TEMP 'ViVeTool';
         $viveZip = Join-Path $env:TEMP 'ViVeTool.zip';
         Invoke-WebRequest 'https://github.com/thebookisclosed/ViVe/releases/download/v0.3.4/ViVeTool-v0.3.4-IntelAmd.zip' -OutFile $viveZip;
