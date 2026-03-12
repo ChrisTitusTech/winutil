@@ -1,13 +1,13 @@
 ---
-title: "Revert the new start menu"
+title: "Revert Start Menu layout"
 description: ""
 ---
 
 ```json {filename="config/tweaks.json",linenos=inline,linenostart=90}
   "WPFTweaksRevertStartMenu": {
-    "Content": "Revert the new start menu",
-    "Description": "Uses vivetool to revert to the original start menu from 24H2.",
-    "category": "z__Advanced Tweaks - CAUTION",
+    "Content": "Revert Start Menu layout",
+    "Description": "Bring back the old Start Menu layout from before the gradual rollout of the new one in 25H2.",
+    "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
       "

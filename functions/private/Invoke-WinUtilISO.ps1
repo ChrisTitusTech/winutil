@@ -49,8 +49,13 @@ function Invoke-WinUtilISOMountAndVerify {
     Set-WinUtilProgressBar -Label "Mounting ISO..." -Percent 10
 
     try {
-        $diskImage   = Mount-DiskImage -ImagePath $isoPath -PassThru -ErrorAction Stop
-        $driveLetter = ($diskImage | Get-Volume).DriveLetter + ":"
+        Mount-DiskImage -ImagePath $isoPath -ErrorAction Stop | Out-Null
+
+        do {
+            Start-Sleep -Milliseconds 500
+        } until ((Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter)
+
+        $driveLetter = (Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter + ":"
         Write-Win11ISOLog "Mounted at drive $driveLetter"
 
         Set-WinUtilProgressBar -Label "Verifying ISO contents..." -Percent 30
@@ -144,6 +149,7 @@ function Invoke-WinUtilISOModify {
     Write-Win11ISOLog "Selected edition: $selectedEditionName (Index $selectedWimIndex)"
 
     $sync["WPFWin11ISOModifyButton"].IsEnabled = $false
+    $sync["Win11ISOModifying"] = $true
 
     $existingWorkDir = Get-Item -Path (Join-Path $env:TEMP "WinUtil_Win11ISO*") -ErrorAction SilentlyContinue |
         Where-Object { $_.PSIsContainer } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
@@ -303,6 +309,7 @@ function Invoke-WinUtilISOModify {
             })
         } finally {
             Start-Sleep -Milliseconds 800
+            $sync["Win11ISOModifying"] = $false
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 $sync.progressBarTextBlock.Text    = ""
                 $sync.progressBarTextBlock.ToolTip = ""
@@ -322,6 +329,11 @@ function Invoke-WinUtilISOModify {
 
 function Invoke-WinUtilISOCheckExistingWork {
     if ($sync["Win11ISOContentsDir"] -and (Test-Path $sync["Win11ISOContentsDir"])) { return }
+
+    # Check if ISO modification is currently in progress
+    if ($sync["Win11ISOModifying"]) {
+        return
+    }
 
     $existingWorkDir = Get-Item -Path (Join-Path $env:TEMP "WinUtil_Win11ISO*") -ErrorAction SilentlyContinue |
         Where-Object { $_.PSIsContainer } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
