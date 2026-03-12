@@ -3,7 +3,7 @@ title: "Disable Multiplane Overlay"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2421}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2443}
   "WPFToggleMultiplaneOverlay": {
     "Content": "Disable Multiplane Overlay",
     "Description": "Disable the Multiplane Overlay which can sometimes cause issues with Graphics Cards.",

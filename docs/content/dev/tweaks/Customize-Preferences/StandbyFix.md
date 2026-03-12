@@ -3,7 +3,7 @@ title: "Modern Standby fix"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2203}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2225}
   "WPFToggleStandbyFix": {
     "Content": "Modern Standby fix",
     "Description": "Disable network connection during S0 sleep. If network connectivity is turned on during S0 sleep it could cause overheating on modern laptops",
