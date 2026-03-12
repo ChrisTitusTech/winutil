@@ -88,9 +88,9 @@
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/widget"
   },
   "WPFTweaksRevertStartMenu": {
-    "Content": "Revert the new start menu",
-    "Description": "Uses vivetool to revert to the original start menu from 24H2.",
-    "category": "z__Advanced Tweaks - CAUTION",
+    "Content": "Revert Start Menu layout",
+    "Description": "Bring back the old Start Menu layout from before the gradual rollout of the new one in 25H2.",
+    "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
       "
