@@ -28,6 +28,24 @@ $ExecutionContext.SessionState.LanguageMode
 ```
 If it returns `ConstrainedLanguage`, you may need to switch to `FullLanguage` mode or run the script in a session with administrative privileges. Be aware that some security policies may enforce Constrained Language Mode, especially in corporate or managed environments.
 
+**If the download fails**:
+
+1. Try the direct GitHub link:
+
+```powershell
+irm https://github.com/ChrisTitusTech/Winutil/releases/latest/download/Winutil.ps1 | iex
+```
+
+2. Force TLS 1.2:
+
+```powershell
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+irm "https://christitus.com/win" | iex
+```
+
+> [!NOTE]
+> On Windows 11, you usually do not need the TLS 1.2 command. Use it only if you hit download or security protocol errors.
+
 ### Execution Policy Error
 
 If you see an execution policy error when running the downloaded script, you can allow the current session to run unsigned scripts with this command:
