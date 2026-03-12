@@ -49,8 +49,13 @@ function Invoke-WinUtilISOMountAndVerify {
     Set-WinUtilProgressBar -Label "Mounting ISO..." -Percent 10
 
     try {
-        $diskImage   = Mount-DiskImage -ImagePath $isoPath -PassThru -ErrorAction Stop
-        $driveLetter = ($diskImage | Get-Volume).DriveLetter + ":"
+        Mount-DiskImage -ImagePath $isoPath -ErrorAction Stop | Out-Null
+
+        do {
+            Start-Sleep -Milliseconds 500
+        } until ((Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter)
+
+        $driveLetter = (Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter + ":"
         Write-Win11ISOLog "Mounted at drive $driveLetter"
 
         Set-WinUtilProgressBar -Label "Verifying ISO contents..." -Percent 30
