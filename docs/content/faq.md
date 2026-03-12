@@ -17,7 +17,7 @@ Yes, Winutil is open source and the code is publicly available on GitHub. Thousa
 - Run it as Administrator (required)
 - Create a restore point before major changes
 - Understand what tweaks you're applying
-- Download only from official sources
+- Download only from [official sources](https://github.com/ChrisTitusTech/winutil/)
 
 ### Do I need to keep running Winutil?
 No. Once you've applied tweaks or installed applications, you can close Winutil. Changes persist after closing. You only need to run Winutil again when you want to make additional changes or undo tweaks.
@@ -28,7 +28,7 @@ No. Once you've applied tweaks or installed applications, you can close Winutil.
 - **Initial run**: Yes, to download the latest script
 
 ### How often is Winutil updated?
-Winutil is actively maintained with frequent updates. New features, bug fixes, and application additions are released regularly. The script auto-downloads the latest version each time you run it.
+Winutil for the most part is updated everyday we have over 200 contributors working on the project
 
 ## Installation & Running
 
@@ -83,27 +83,16 @@ If you applied a tweak and it breaks something, you can revert it:
 Alternatively, use System Restore if you created a restore point.
 
 ### Which tweaks are safe to apply?
-**Safe for everyone (Essential Tweaks)**:
-- Disable Telemetry
-- Disable Activity History
-- Disable Location Tracking
-- Delete Temporary Files
-- Run Disk Cleanup
-- Create Restore Point
 
-**Caution needed (Advanced Tweaks)**:
-- Remove Microsoft Store
-- Disable Windows Defender
-- Remove all bloatware
-- Disable system services
+All tweaks inside of the (Essential Tweaks) category should be safe to run for everyone
 
-Start with Essential Tweaks. Only use Advanced Tweaks if you understand the implications.
+Tweaks in the (Advanced Tweaks) category should only be ran by advance users
 
 ### Will tweaks survive Windows Updates?
 Most tweaks persist through updates, but some may be reset by major Windows feature updates. You may need to reapply certain tweaks afterward.
 
 ### Can I create my own tweak presets?
-Currently, Winutil uses predefined presets (Desktop, Laptop, Minimal, Standard). Custom presets aren't directly supported in the GUI, but you can script your preferred configuration.
+Currently, Winutil uses predefined presets (Standard, Minimal). Custom presets aren't directly supported in the GUI, but you can script your preferred configuration.
 
 ### What's the difference between Essential and Advanced tweaks?
 - **Essential Tweaks**: Safe for most users, improve performance/privacy with minimal risk
@@ -114,23 +103,12 @@ Currently, Winutil uses predefined presets (Desktop, Laptop, Minimal, Standard).
 ### How does Winutil install applications?
 Winutil uses Windows Package Manager (WinGet) and Chocolatey to automate installations. It downloads applications from official sources and installs them silently without bloatware.
 
-### Can I install multiple applications at once?
-Yes! Check the boxes for all applications you want, then click "Install Selected". They'll install sequentially.
-
 ### WinGet isn't working. How do I fix it?
 1. Go to the **Config** tab
 2. Find the **Fixes** section
 3. Click **WinGet Reinstall**
 4. Wait for completion
 5. Try installing applications again
-
-### Do installed applications have bloatware or bundled software?
-No. WinGet and Chocolatey install clean versions of applications without bundled offers, toolbars, or bloatware.
-
-### Can I uninstall applications through Winutil?
-Winutil focuses on installation. To uninstall:
-- Use Windows Settings > Apps > Installed Apps
-- Or use the application's built-in uninstaller
 
 ### Will installed apps auto-update?
 Applications with built-in update mechanisms will auto-update. You can also update them via WinGet/Chocolatey commands or through Winutil's "Upgrade Selected" feature.
@@ -146,7 +124,7 @@ Generally, **no**. Security updates are important. However, you might:
 ### How do I re-enable updates after disabling them?
 1. Open Winutil
 2. Go to the **Updates** tab
-3. Click **Enable Updates**
+3. Click **Default Updates**
 4. Updates will resume normally
 
 ### What's the difference between "Security Updates Only" and "Disable Updates"?
@@ -228,35 +206,11 @@ It disables:
 - Usage statistics
 - Error reporting (optional)
 
-### Is it safe to disable Windows Defender?
-**Generally not recommended**. Only disable Defender if:
-- You have alternative antivirus installed
-- You understand the security risks
-- You're in a controlled/isolated environment
-
-### Will removing Microsoft Store affect security updates?
-No, Windows security updates are independent of the Microsoft Store.
-
 ## Performance
 
 ### Will Winutil make my PC faster?
-Tweaks can improve performance by:
-- Reducing background processes
-- Disabling unnecessary services
-- Cleaning temporary files
-- Optimizing startup programs
 
-Results vary depending on your system and which tweaks you apply.
-
-### What's the best preset for gaming?
-Use the **Desktop** preset, then additionally apply:
-- Disable GameDVR
-- Ultimate Performance power plan
-- Disable fullscreen optimizations (Advanced)
-- Set display for performance (Advanced)
-
-### How much RAM does Winutil use?
-Winutil itself uses about 50-100 MB while running. Once closed, it is removed from memory.
+For the most part no, You shouldn't expect to gain more performance by running any scripts on Windows
 
 ## Error Messages
 
@@ -264,9 +218,6 @@ Winutil itself uses about 50-100 MB while running. Once closed, it is removed fr
 - Ensure PowerShell is running as Administrator
 - Check if antivirus is blocking changes
 - Verify you have ownership of files/registry keys
-
-### WinGet configuration prompt won't go away
-Type `Y` and press Enter in the PowerShell window. This only happens on first use and configures WinGet for your system.
 
 ## Still Need Help?
 
