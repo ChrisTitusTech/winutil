@@ -90,7 +90,7 @@
   "WPFTweaksRevertStartMenu": {
     "Content": "Revert Start Menu layout",
     "Description": "Bring back the old Start Menu layout from before the gradual rollout of the new one in 25H2.",
-    "category": "z__Advanced Tweaks - CAUTION",
+    "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
       "
