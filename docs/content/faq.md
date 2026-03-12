@@ -223,12 +223,6 @@ It disables:
 - Usage statistics
 - Error reporting (optional)
 
-### Is it safe to disable Windows Defender?
-**Generally not recommended**. Only disable Defender if:
-- You have alternative antivirus installed
-- You understand the security risks
-- You're in a controlled/isolated environment
-
 ### Will removing Microsoft Store affect security updates?
 No, Windows security updates are independent of the Microsoft Store.
 
@@ -264,4 +258,3 @@ Can't find your answer? Try these resources:
 - **[Discord Community](https://discord.gg/RUbZUZyByQ)** - Get help from other users
 - **[GitHub Issues](https://github.com/ChrisTitusTech/winutil/issues)** - Report bugs
 - **[YouTube Tutorial](https://www.youtube.com/watch?v=6UQZ5oQg8XA)** - Video walkthrough
-
