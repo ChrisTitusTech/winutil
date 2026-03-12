@@ -420,7 +420,7 @@ $scripts = @(
           'C:\Windows\Panther\unattend-original.xml';
           'C:\Windows\Setup\Scripts\Wifi.xml';
           'C:\Windows.old';
-        ) -Force -ErrorAction 'SilentlyContinue';
+        ) -Recurse -Force -ErrorAction 'SilentlyContinue';
     };
     {
         reg.exe delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v NoAutoUpdate              /f;
