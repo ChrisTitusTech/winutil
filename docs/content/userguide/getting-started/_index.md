@@ -196,7 +196,7 @@ Winutil offers several preset configurations:
 
 ### Script Won't Download
 
-If you can any errors when running winutil please refer to [Known Issues](/knownissues/) page
+If you get any errors when running winutil please refer to [Known Issues](/knownissues/) page
 
 ## Next Steps
 
