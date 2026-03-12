@@ -113,7 +113,7 @@ This gives you a rollback point if needed.
 For a better Windows experience with minimal risk:
 
 1. Go to the **Tweaks** tab
-2. Select the **"Desktop" preset** for a balanced configuration
+2. Select the **Standard** for a balanced configuration
 3. Review the selected tweaks
 4. Click **Run Tweaks**
 
