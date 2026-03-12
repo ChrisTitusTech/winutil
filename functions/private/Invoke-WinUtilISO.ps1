@@ -144,6 +144,7 @@ function Invoke-WinUtilISOModify {
     Write-Win11ISOLog "Selected edition: $selectedEditionName (Index $selectedWimIndex)"
 
     $sync["WPFWin11ISOModifyButton"].IsEnabled = $false
+    $sync["Win11ISOModifying"] = $true
 
     $existingWorkDir = Get-Item -Path (Join-Path $env:TEMP "WinUtil_Win11ISO*") -ErrorAction SilentlyContinue |
         Where-Object { $_.PSIsContainer } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
@@ -303,6 +304,7 @@ function Invoke-WinUtilISOModify {
             })
         } finally {
             Start-Sleep -Milliseconds 800
+            $sync["Win11ISOModifying"] = $false
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 $sync.progressBarTextBlock.Text    = ""
                 $sync.progressBarTextBlock.ToolTip = ""
@@ -322,6 +324,11 @@ function Invoke-WinUtilISOModify {
 
 function Invoke-WinUtilISOCheckExistingWork {
     if ($sync["Win11ISOContentsDir"] -and (Test-Path $sync["Win11ISOContentsDir"])) { return }
+
+    # Check if ISO modification is currently in progress
+    if ($sync["Win11ISOModifying"]) {
+        return
+    }
 
     $existingWorkDir = Get-Item -Path (Join-Path $env:TEMP "WinUtil_Win11ISO*") -ErrorAction SilentlyContinue |
         Where-Object { $_.PSIsContainer } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
