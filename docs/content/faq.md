@@ -28,7 +28,9 @@ No. Once you've applied tweaks or installed applications, you can close Winutil.
 - **Initial run**: Yes, to download the latest script
 
 ### How often is Winutil updated?
-Winutil for the most part is updated everyday we have over 200 contributors working on the project
+
+1. I new main release of winutil gets released every month
+2, Everyday people contribute and request changes to winutil
 
 ## Installation & Running
 
