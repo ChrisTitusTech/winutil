@@ -327,7 +327,6 @@ function Invoke-WinUtilISOCheckExistingWork {
 
     # Check if ISO modification is currently in progress
     if ($sync["Win11ISOModifying"]) {
-        Write-Win11ISOLog "ISO modification in progress - ignoring tab switch"
         return
     }
 
