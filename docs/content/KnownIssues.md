@@ -27,3 +27,23 @@ If your PowerShell session is running in **Constrained Language Mode**, some scr
 $ExecutionContext.SessionState.LanguageMode
 ```
 If it returns `ConstrainedLanguage`, you may need to switch to `FullLanguage` mode or run the script in a session with administrative privileges. Be aware that some security policies may enforce Constrained Language Mode, especially in corporate or managed environments.
+
+### Execution Policy Error
+
+If you see an execution policy error when running the downloaded script, you can allow the current session to run unsigned scripts with this command:
+
+```powershell
+Set-ExecutionPolicy Unrestricted -Scope Process -Force
+irm "https://christitus.com/win" | iex
+```
+
+This only changes the policy for the current PowerShell process and is safe for one-off runs.
+
+### Interface Doesn't Appear
+
+If Winutil downloads but the GUI does not open or appear, try these steps:
+
+1. Check if your antivirus or Windows Defender is blocking the script — add an exclusion if necessary.
+2. Ensure you launched PowerShell / Terminal as **Administrator**.
+3. Close and reopen PowerShell, then run the launch command again.
+4. If the script still doesn't show, try running the script in a visible PowerShell window (avoid background/silent shells) to observe output and errors.

@@ -17,7 +17,7 @@ Yes, Winutil is open source and the code is publicly available on GitHub. Thousa
 - Run it as Administrator (required)
 - Create a restore point before major changes
 - Understand what tweaks you're applying
-- Download only from official sources
+- Download only from [official sources](https://github.com/ChrisTitusTech/winutil/)
 
 ### Do I need to keep running Winutil?
 No. Once you've applied tweaks or installed applications, you can close Winutil. Changes persist after closing. You only need to run Winutil again when you want to make additional changes or undo tweaks.
@@ -91,19 +91,13 @@ Alternatively, use System Restore if you created a restore point.
 - Run Disk Cleanup
 - Create Restore Point
 
-**Caution needed (Advanced Tweaks)**:
-- Remove Microsoft Store
-- Disable Windows Defender
-- Remove all bloatware
-- Disable system services
-
-Start with Essential Tweaks. Only use Advanced Tweaks if you understand the implications.
+**(Advanced Tweaks)** should only be ran by advance users.
 
 ### Will tweaks survive Windows Updates?
 Most tweaks persist through updates, but some may be reset by major Windows feature updates. You may need to reapply certain tweaks afterward.
 
 ### Can I create my own tweak presets?
-Currently, Winutil uses predefined presets (Desktop, Laptop, Minimal, Standard). Custom presets aren't directly supported in the GUI, but you can script your preferred configuration.
+Currently, Winutil uses predefined presets (Standard, Minimal). Custom presets aren't directly supported in the GUI, but you can script your preferred configuration.
 
 ### What's the difference between Essential and Advanced tweaks?
 - **Essential Tweaks**: Safe for most users, improve performance/privacy with minimal risk
@@ -128,9 +122,10 @@ Yes! Check the boxes for all applications you want, then click "Install Selected
 No. WinGet and Chocolatey install clean versions of applications without bundled offers, toolbars, or bloatware.
 
 ### Can I uninstall applications through Winutil?
-Winutil focuses on installation. To uninstall:
-- Use Windows Settings > Apps > Installed Apps
-- Or use the application's built-in uninstaller
+Winutil primarily focuses on installing and managing applications rather than providing a full GUI for uninstalling every program. To remove applications you can:
+- Use Windows Settings > Apps > Installed apps to uninstall programs.
+- Use package manager commands in PowerShell (for example `winget uninstall <package>` or `choco uninstall <package>`).
+- Some packages installed by Winutil (AppX/MSIX) include removal helpers; check the app entry or use Winutil's remove helpers when available.
 
 ### Will installed apps auto-update?
 Applications with built-in update mechanisms will auto-update. You can also update them via WinGet/Chocolatey commands or through Winutil's "Upgrade Selected" feature.
@@ -146,7 +141,7 @@ Generally, **no**. Security updates are important. However, you might:
 ### How do I re-enable updates after disabling them?
 1. Open Winutil
 2. Go to the **Updates** tab
-3. Click **Enable Updates**
+3. Click **Default Updates**
 4. Updates will resume normally
 
 ### What's the difference between "Security Updates Only" and "Disable Updates"?
@@ -240,13 +235,7 @@ No, Windows security updates are independent of the Microsoft Store.
 ## Performance
 
 ### Will Winutil make my PC faster?
-Tweaks can improve performance by:
-- Reducing background processes
-- Disabling unnecessary services
-- Cleaning temporary files
-- Optimizing startup programs
-
-Results vary depending on your system and which tweaks you apply.
+For the most part no, You shouldn't expect to gain more performance by running any scripts on Windows.
 
 ### What's the best preset for gaming?
 Use the **Desktop** preset, then additionally apply:
@@ -265,8 +254,6 @@ Winutil itself uses about 50-100 MB while running. Once closed, it is removed fr
 - Check if antivirus is blocking changes
 - Verify you have ownership of files/registry keys
 
-### WinGet configuration prompt won't go away
-Type `Y` and press Enter in the PowerShell window. This only happens on first use and configures WinGet for your system.
 
 ## Still Need Help?
 
@@ -278,7 +265,3 @@ Can't find your answer? Try these resources:
 - **[GitHub Issues](https://github.com/ChrisTitusTech/winutil/issues)** - Report bugs
 - **[YouTube Tutorial](https://www.youtube.com/watch?v=6UQZ5oQg8XA)** - Video walkthrough
 
----
-
-**Last Updated**: January 2026
-**Found this helpful?** Consider starring the project on [GitHub](https://github.com/ChrisTitusTech/winutil)!
