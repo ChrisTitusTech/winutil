@@ -6,20 +6,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        ## ⚠️ **IMPORTANT**
-        - 🛠️ **Supported environments only:** We only support Windows 11.
-        - 💡 For general questions, use the [Discussions section](https://github.com/Christitustech/winutil/discussions) or join our Community-driven [Discord Server](https://discord.gg/RUbZUZyByQ).
-
-  - type: checkboxes
-    attributes:
-      label: ⚙️ Issue Checklist
-      options:
-        - label: I have read the guidelines.
-        - label: I checked for duplicate issues.
-        - label: I searched for existing discussions.
-        - label: I checked for an existing pull request that addresses this issue.
-    validations:
-      required: true
+        - Remember, we only support Windows 11. If you encounter problems on Windows 10, please consider upgrading to Windows 11.
+        - For general questions, join our Community-driven [Discord Server](https://discord.gg/RUbZUZyByQ).
 
   - type: dropdown
     id: affected_part
@@ -32,17 +20,17 @@ body:
         - Updates Tab
         - Win11 Creator Tab
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: issue_description
     attributes:
-      label: 📝 Provide a clear and concise description of the issue.
+      label: Provide a clear and concise description of the issue.
     validations:
       required: true
 
   - type: textarea
     id: error_output
     attributes:
-      label: ❌ Paste the full error output (if available) or Screenshot.
+      label: Paste the full error output (if available) or Screenshot.
       placeholder: "Include any relevant logs or error messages."
