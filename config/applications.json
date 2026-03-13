@@ -1424,6 +1424,15 @@
         "link": "https://www.malwarebytes.com/",
         "winget": "Malwarebytes.Malwarebytes"
     },
+    "mpc-qt": {
+        "category": "Multimedia Tools",
+        "choco": "mediainfo",
+        "content": "mpc-qt",
+        "description": "MPC-HC (Media Player Classic Home Cinema) is considered by many to be the quintessential media player for the Windows desktop. MPC-QT (Media Player Classic Qute Theater) aims to reproduce most of the interface and functionality of MPC-HC while using libmpv to play video instead of DirectShow.",
+        "link": "https://github.com/mpc-qt/mpc-qt",
+        "winget": "mpc-qt.mpc-qt"
+        "foss": true
+    },
     "masscode": {
         "category": "Document",
         "choco": "na",
@@ -1897,6 +1906,15 @@
         "description": "Local Group Policy Editor plus more, for all Windows editions.",
         "link": "https://github.com/Fleex255/PolicyPlus",
         "winget": "Fleex255.PolicyPlus",
+        "foss": true
+    },
+    "qview": {
+        "category": "Multimedia Tools",
+        "choco": "na",
+        "content": "qView",
+        "description": "qView is an image viewer designed with minimalism and usability in mind.",
+        "link": "https://github.com/jurplel/qView",
+        "winget": "jurplel.qView",
         "foss": true
     },
     "potplayer": {
