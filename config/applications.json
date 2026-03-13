@@ -1430,7 +1430,7 @@
         "content": "mpc-qt",
         "description": "MPC-HC (Media Player Classic Home Cinema) is considered by many to be the quintessential media player for the Windows desktop. MPC-QT (Media Player Classic Qute Theater) aims to reproduce most of the interface and functionality of MPC-HC while using libmpv to play video instead of DirectShow.",
         "link": "https://github.com/mpc-qt/mpc-qt",
-        "winget": "mpc-qt.mpc-qt"
+        "winget": "mpc-qt.mpc-qt",
         "foss": true
     },
     "masscode": {
