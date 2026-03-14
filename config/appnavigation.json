@@ -21,13 +21,13 @@
         "Description": "Upgrade all applications to the latest version"
     },
     "WingetRadioButton": {
-        "Content": "Winget",
+        "Content": "WinGet",
         "Category": "__Package Manager",
         "Type": "RadioButton",
         "GroupName": "PackageManagerGroup",
         "Checked": true,
         "Order": "1",
-        "Description": "Use Winget for package management"
+        "Description": "Use WinGet for package management"
     },
     "ChocoRadioButton": {
         "Content": "Chocolatey",

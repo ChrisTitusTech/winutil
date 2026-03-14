@@ -205,7 +205,7 @@ function Install-WinUtilProgramChoco {
         Write-Host "Searching for metapackages of $Program (.install or .portable)"
         $chocoPackages = ((choco list | Select-String -Pattern "$Program(\.install|\.portable)?").Matches.Value) -join " "
         if ($chocoPackages) {
-            Write-Host "Starting uninstallation of $chocoPackages with Chocolatey."
+            Write-Host "Starting uninstallation of $chocoPackages with Chocolatey..."
             try {
                 $uninstallStatusCode = Invoke-ChocoCommand "uninstall $chocoPackages -y"
                 Write-Host "$Program" $(if ($uninstallStatusCode -eq 0) { "uninstalled successfully." } else { "failed to uninstall." })

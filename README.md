@@ -50,9 +50,9 @@ If you have Issues, refer to [Known Issues](https://winutil.christitus.com/known
 > [!NOTE]
 > Winutil is a relatively large script, so it's split into multiple files which're combined into a single `.ps1` file using a custom compiler. This makes maintaining the project a lot easier.
 
-Get a copy of the source code, this can be done using GitHub UI (`Code -> Download ZIP`), or by cloning (downloading) the repo using git.
+Get a copy of the source code. This can be done using GitHub UI (`Code -> Download ZIP`), or by cloning (downloading) the repo using git.
 
-If git is installed, run the following commands under a PowerShell window to clone and move into project's directory:
+If git is installed, run the following commands under a PowerShell window to clone and move into the project's directory:
 ```ps1
 git clone --depth 1 "https://github.com/ChrisTitusTech/winutil.git"
 cd winutil
@@ -63,10 +63,10 @@ To build the project, run the Compile Script under a PowerShell window (admin pe
 .\Compile.ps1
 ```
 
-You'll see a new file named `winutil.ps1`, which's created by `Compile.ps1` script, now you can run it as admin and a new window will popup, enjoy your own compiled version of WinUtil :)
+You'll see a new file named `winutil.ps1`, which was created by `Compile.ps1` script. Now you can run it as admin, and a new window will pop up. Enjoy your own compiled version of WinUtil :)
 
 > [!TIP]
-> For more info on using WinUtil and how to develop for it, please consider reading [the Contribution Guidelines](https://winutil.christitus.com/contributing/), if you don't know where to start, or have questions, you can ask over on our [Discord Community Server](https://discord.gg/RUbZUZyByQ) and active project members will answer when they can.
+> For more info on using WinUtil and how to develop for it, please consider reading [the Contribution Guidelines](https://winutil.christitus.com/contributing/). If you don't know where to start, or have questions, you can ask over on our [Discord Community Server](https://discord.gg/RUbZUZyByQ), and active project members will answer when they can.
 
 ## 💖 Support
 - To morally and mentally support the project, make sure to leave a ⭐️!

@@ -12,7 +12,7 @@ Winutil is a powerful Windows utility that helps you optimize, customize, and ma
 Before running Winutil, ensure your system meets these requirements:
 
 > [!IMPORTANT]
-> Windows 10 is not supported by Winutil. Windows 10 reached end of support on **October 14, 2025**.
+> Windows 10 is not supported by Winutil. Windows 10 reached the end of support on **October 14, 2025**.
 
 - **Operating System**: Windows 11
 - **PowerShell**: Version 5.1 or later (included by default in Windows 11)
@@ -254,7 +254,7 @@ If downloads are blocked in your region:
 
 If Winutil downloads but doesn't open:
 
-1. Check if antivirus is blocking it
+1. Check if the antivirus is blocking it
 2. Ensure you ran PowerShell as administrator
 3. Try closing and reopening PowerShell
 4. Check Windows Defender exclusions

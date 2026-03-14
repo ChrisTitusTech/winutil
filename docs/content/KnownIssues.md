@@ -13,7 +13,7 @@ irm https://github.com/ChrisTitusTech/Winutil/releases/latest/download/Winutil.p
 
 If it still isn't working in your region, it may be due to temporary ISP or network filtering of GitHub content domains. This has been reported by some users in India in the past. See: [Times of India](https://timesofindia.indiatimes.com/gadgets-news/github-content-domain-blocked-for-these-indian-users-reports/articleshow/96687992.cms).
 
-If you are still having issues, try using a **VPN**, or changing your **DNS provider** to one of following two providers:
+If you are still having issues, try using a **VPN**, or changing your **DNS provider** to one of the following two providers:
 
 |  Provider  | Primary DNS | Secondary DNS |
 | :--------: | :---------: | :-----------: |

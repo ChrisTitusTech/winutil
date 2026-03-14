@@ -145,7 +145,7 @@ The **Win11 Creator** is a specialized subsystem within Winutil that creates cus
 
 - `Invoke-WinUtilISOScript.ps1`: Applies modifications to mounted install.wim
   - Removes provisioned AppX packages (40+ bloatware apps)
-  - Injects drivers (optional) from current system
+  - Injects drivers (optional) from the current system
   - Removes OneDrive setup files
   - Applies offline registry tweaks (hardware bypass, privacy, telemetry, OOBE)
   - Deletes telemetry scheduled task definitions
@@ -167,7 +167,7 @@ Invoke-WinUtilISOMountAndVerify
     ├─ Extract available editions (Home, Pro, Enterprise, etc.)
     └─ Store ISO path, drive letter, WIM path, image info in $sync
     ↓
-User optionally enables Driver Injection checkbox
+User optionally enables the Driver Injection checkbox
     ↓
 Invoke-WinUtilISOModify (runs in background runspace)
     ├─ Create work directory: ~WinUtil_Win11ISO_[timestamp]
@@ -183,7 +183,7 @@ Invoke-WinUtilISOModify (runs in background runspace)
     │   ├─ Pre-stage setup scripts from autounattend.xml to C:\Windows\Setup\Scripts\
     │   └─ Unload registry hives
     ├─ DISM /Cleanup-Image /StartComponentCleanup /ResetBase (saves 300-800 MB)
-    ├─ Dismount and save modified install.wim (~10+ minutes, slowest step)
+    ├─ Dismount and save the modified install.wim (~10+ minutes, slowest step)
     ├─ Export selected edition only (removes all other editions, saves 1-2 GB each)
     ├─ Dismount source ISO
     └─ Report completion, enable export options
@@ -218,7 +218,7 @@ Invoke-WinUtilISOCleanAndReset (optional)
 - Prevents redundant modifications
 
 **Modification Safety**:
-- All registry changes are documented in script (reversible)
+- All registry changes are documented in a script (reversible)
 - Original ISO never modified; only working copy
 - Logged to `WinUtil_Win11ISO.log` for debugging
 - DISM handles image dismount with automatic cleanup on error
@@ -256,7 +256,7 @@ The `Invoke-WinUtilISOScript` function applies **50+ offline registry tweaks**:
 
 **System Features**:
 - Disable BitLocker and device encryption
-- Disable Chat icon from taskbar
+- Disable Chat icon from the Taskbar
 - Disable OneDrive folder backup
 - Disable Copilot
 - Disable Windows Update during OOBE (re-enabled at first login)
@@ -287,7 +287,7 @@ Get-WinUtilCheckBoxes → Retrieves selected apps
     ↓
 For each selected app:
     ↓
-Check if WinGet/Choco installed
+Check if WinGet/Choco is installed
     ↓
 Install-WinUtilWinget/Choco (if needed)
     ↓
@@ -333,7 +333,7 @@ Retrieve "OriginalState" from tweak definition
     ↓
 Invoke-WPFUndoTweak → Restore original values
     ↓
-Remove from applied tweaks log
+Remove from the applied tweaks log
     ↓
 Update UI
 ```
@@ -525,7 +525,7 @@ $sync.form.Dispatcher.Invoke([action]{
 ```
 
 2. Recompile: `.\Compile.ps1`
-3. The app appears automatically in Install tab
+3. The app appears automatically in the Install tab
 
 ### Adding a New Tweak
 
@@ -550,7 +550,7 @@ $sync.form.Dispatcher.Invoke([action]{
 ```
 
 2. Recompile: `.\Compile.ps1`
-3. Tweak appears in Tweaks tab
+3. Tweak appears in the Tweaks tab
 
 ### Adding a New Function
 
