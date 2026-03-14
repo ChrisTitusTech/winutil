@@ -2570,6 +2570,14 @@
         "link": "https://www.teamviewer.com/",
         "winget": "TeamViewer.TeamViewer"
     },
+    "teamspeak3": {
+        "category": "Utilities",
+        "choco": "teamspeak",
+        "content": "TeamSpeak 3",
+        "description": "TEAMSPEAK. YOUR TEAM. YOUR RULES. Use crystal clear sound to communicate with your team mates cross-platform with military-grade security, lag-free performance & unparalleled reliability and uptime.",
+        "link": "https://www.teamspeak.com/",
+        "winget": "TeamSpeakSystems.TeamSpeakClient"
+    },
     "telegram": {
         "category": "Communications",
         "choco": "telegram",
