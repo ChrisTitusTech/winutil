@@ -48,22 +48,23 @@ There are several ways to open PowerShell with admin rights:
 
 ### Step 2: Run the Launch Command
 
-Once PowerShell is open with administrator privileges, run one of these commands:
+With PowerShell running as Administrator, run one of the following commands depending on the release channel you want.
 
-**Stable Release (Recommended for most users)**
+**Stable release (recommended)**
 
 ```powershell
 irm "https://christitus.com/win" | iex
 ```
 
-**Development Branch (For testing latest features)**
+**Development branch (bleeding edge — for testing only)**
 
 ```powershell
 irm "https://christitus.com/windev" | iex
 ```
 
 > [!NOTE]
-> The `irm` command downloads the script, and `iex` executes it. This is safe when downloading from the official source.
+> - The `irm` command downloads the script, and `iex` executes it. This is safe when downloading from the official source.
+> - The development branch may contain experimental changes and should only be used for testing on non-production systems.
 
 ### Step 3: Wait for Winutil to Load
 
