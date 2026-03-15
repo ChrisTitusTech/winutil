@@ -34,6 +34,7 @@ if ($Offline) {
 }
 
 if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)) {
+    Write-Output "Winutil needs to be run as Administrator. Attempting to relaunch."
     $command = if ($PSCommandPath) { "$PSCommandPath" "$args" } else { "irm https://christitus.com/win | iex" }
 
     if (Get-Command wt -ErrorAction SilentlyContinue) {
