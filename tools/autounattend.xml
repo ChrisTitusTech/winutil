@@ -333,27 +333,7 @@ $scripts = @(
         reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v Start_TrackDocs /t REG_DWORD /d 0 /f;
     };
     {
-        Add-Type -TypeDefinition @"
-using System;
-using System.Runtime.InteropServices;
-public class Win32Broadcast {
-    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
-    public static extern IntPtr SendMessageTimeout(
-        IntPtr hWnd,
-        uint Msg,
-        IntPtr wParam,
-        string lParam,
-        uint fuFlags,
-        uint uTimeout,
-        out IntPtr lpdwResult);
-}
-"@;
-        [Win32Broadcast]::SendMessageTimeout( [IntPtr]0xffff, 0x1A, [IntPtr]::Zero, 'ImmersiveColorSet', 0x2, 100, [ref]([IntPtr]::Zero) );
-    };
-    {
-        Get-Process -Name 'explorer' -ErrorAction 'SilentlyContinue' | Where-Object -FilterScript {
-            $_.SessionId -eq ( Get-Process -Id $PID ).SessionId;
-        } | Stop-Process -Force;
+        Restart-Computer -Force;
     };
 );
 
@@ -435,14 +415,12 @@ $scripts = @(
         <File path="C:\Windows\Setup\Scripts\FirstLogon.ps1">
 $scripts = @(
     {
-        cmd.exe /c "rmdir C:\Windows.old";
-    };
-    {
         Remove-Item -LiteralPath @(
           'C:\Windows\Panther\unattend.xml';
           'C:\Windows\Panther\unattend-original.xml';
           'C:\Windows\Setup\Scripts\Wifi.xml';
-        ) -Force -ErrorAction 'SilentlyContinue' -Verbose;
+          'C:\Windows.old';
+        ) -Recurse -Force -ErrorAction 'SilentlyContinue';
     };
     {
         reg.exe delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v NoAutoUpdate              /f;
@@ -458,21 +436,27 @@ $scripts = @(
         reg.exe add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v Start /t REG_DWORD /d 3 /f;
     };
     {
+        reg.exe add "HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Education" /f;
+        reg.exe add "HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Start" /f;
+        reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer" /f;
+        reg.exe add "HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Education" /v IsEducationEnvironment /t REG_DWORD /d 1 /f;
+        reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer" /v HideRecommendedSection /t REG_DWORD /d 1 /f;
+        reg.exe add "HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Start" /v HideRecommendedSection /t REG_DWORD /d 1 /f;
+    };
+    {
         $recallFeature = Get-WindowsOptionalFeature -Online -ErrorAction SilentlyContinue | Where-Object { $_.State -eq 'Enabled' -and $_.FeatureName -like 'Recall' };
         if( $recallFeature ) {
             Disable-WindowsOptionalFeature -Online -FeatureName 'Recall' -Remove -ErrorAction SilentlyContinue;
         }
     };
     {
-        try {
-            $viveDir = Join-Path $env:TEMP 'ViVeTool';
-            $viveZip = Join-Path $env:TEMP 'ViVeTool.zip';
-            Invoke-WebRequest 'https://github.com/thebookisclosed/ViVe/releases/download/v0.3.4/ViVeTool-v0.3.4-IntelAmd.zip' -OutFile $viveZip;
-            Expand-Archive -Path $viveZip -DestinationPath $viveDir -Force;
-            Remove-Item -Path $viveZip -Force;
-            Start-Process -FilePath (Join-Path $viveDir 'ViVeTool.exe') -ArgumentList '/disable /id:47205210' -Wait -NoNewWindow;
-            Remove-Item -Path $viveDir -Recurse -Force;
-        } catch {}
+        $viveDir = Join-Path $env:TEMP 'ViVeTool';
+        $viveZip = Join-Path $env:TEMP 'ViVeTool.zip';
+        Invoke-WebRequest 'https://github.com/thebookisclosed/ViVe/releases/download/v0.3.4/ViVeTool-v0.3.4-IntelAmd.zip' -OutFile $viveZip;
+        Expand-Archive -Path $viveZip -DestinationPath $viveDir -Force;
+        Remove-Item -Path $viveZip -Force;
+        Start-Process -FilePath (Join-Path $viveDir 'ViVeTool.exe') -ArgumentList '/disable /id:47205210' -Wait -NoNewWindow;
+        Remove-Item -Path $viveDir -Recurse -Force;
     };
     {
         if( (Get-BitLockerVolume -MountPoint $Env:SystemDrive).ProtectionStatus -eq 'On' ) {
