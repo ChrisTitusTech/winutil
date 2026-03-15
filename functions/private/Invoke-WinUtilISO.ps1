@@ -151,14 +151,16 @@ function Invoke-WinUtilISOModify {
     $sync["WPFWin11ISOModifyButton"].IsEnabled = $false
     $sync["Win11ISOModifying"] = $true
 
-    $existingWorkDir = Get-Item -Path (Join-Path $env:TEMP "WinUtil_Win11ISO*") -ErrorAction SilentlyContinue |
+    $tempdir = [System.IO.Path]::GetTempPath()
+
+    $existingWorkDir = Get-Item -Path (Join-Path $tempdir "WinUtil_Win11ISO*") -ErrorAction SilentlyContinue |
         Where-Object { $_.PSIsContainer } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
 
     $workDir = if ($existingWorkDir) {
         Write-Win11ISOLog "Reusing existing temp directory: $($existingWorkDir.FullName)"
         $existingWorkDir.FullName
     } else {
-        Join-Path $env:TEMP "WinUtil_Win11ISO_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+        Join-Path $tempdir "WinUtil_Win11ISO_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
     }
 
     $autounattendContent = if ($WinUtilAutounattendXml) {
@@ -335,7 +337,7 @@ function Invoke-WinUtilISOCheckExistingWork {
         return
     }
 
-    $existingWorkDir = Get-Item -Path (Join-Path $env:TEMP "WinUtil_Win11ISO*") -ErrorAction SilentlyContinue |
+    $existingWorkDir = Get-Item -Path (Join-Path $tempdir "WinUtil_Win11ISO*") -ErrorAction SilentlyContinue |
         Where-Object { $_.PSIsContainer } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
 
     if (-not $existingWorkDir) { return }
