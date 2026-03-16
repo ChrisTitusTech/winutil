@@ -2033,6 +2033,24 @@
         "link": "https://www.postman.com/",
         "winget": "Postman.Postman"
     },
+    "insomnia": {
+        "category": "Development",
+        "choco": "insomnia-rest-api-client",
+        "content": "Insomnia",
+        "description": "Insomnia is a cross-platform client for API development.",
+        "link": "https://insomnia.rest/",
+        "winget": "Insomnia.Insomnia",
+        "foss": true
+    },
+    "bruno": {
+        "category": "Development",
+        "choco": "bruno",
+        "content": "Bruno",
+        "description": "Bruno is a free, open-source API client for developers.",
+        "link": "https://github.com/usebruno/bruno",
+        "winget": "Bruno.Bruno",
+        "foss": true
+    },
     "powerautomate": {
         "category": "Microsoft Tools",
         "choco": "powerautomatedesktop",
@@ -2117,6 +2135,15 @@
         "description": "PrusaSlicer is a powerful and easy-to-use slicing software for 3D printing with Prusa 3D printers.",
         "link": "https://www.prusa3d.com/prusaslicer/",
         "winget": "Prusa3d.PrusaSlicer",
+        "foss": true
+    },
+    "bambustudio": {
+        "category": "Utilities",
+        "choco": "bambustudio",
+        "content": "Bambu Studio",
+        "description": "Bambu Studio is a comprehensive slicing software for 3D printing with Bambu 3D printers.",
+        "link": "https://bambulab.com/download/studio",
+        "winget": "Bambulab.BambuStudio",
         "foss": true
     },
     "psremoteplay": {
@@ -2413,6 +2440,15 @@
         "description": "Strawberry is an open-source music player that focuses on music collection management and audio quality. It supports various audio formats and features a clean user interface.",
         "link": "https://www.strawberrymusicplayer.org/",
         "winget": "StrawberryMusicPlayer.Strawberry",
+        "foss": true
+    },
+    "strawberryperl": {
+        "category": "Development",
+        "choco": "strawberryperl",
+        "content": "Strawberry Perl",
+        "description": "Strawberry Perl is a distribution of the Perl programming language for Windows.",
+        "link": "https://strawberryperl.com/",
+        "winget": "StrawberryPerl.StrawberryPerl",
         "foss": true
     },
     "stremio": {
@@ -2981,6 +3017,14 @@
         "winget": "subhra74.XtremeDownloadManager",
         "foss": true
     },
+    "idm": {
+        "category": "Utilities",
+        "choco": "internet-download-manager",
+        "content": "Internet Download Manager",
+        "description": "Internet Download Manager is an advanced download manager with support for various protocols and browsers that allows you to download files faster and more efficiently.",
+        "link": "https://www.internetdownloadmanager.com/",
+        "winget": "Tonec.InternetDownloadManager"
+    },
     "xeheditor": {
         "category": "Utilities",
         "choco": "HxD",
@@ -3443,6 +3487,31 @@
         "description": "A powerful assembler for the x86 platform.",
         "content": "NASM",
         "link": "https://nasm.us",
+        "foss": true
+    },
+    "steelseriesgg": {
+        "category": "Utilities",
+        "choco": "steelseries-engine",
+        "description": "SteelSeries software to control your gaming hardware.",
+        "content": "SteelSeries GG",
+        "link": "https://nasm.us",
+        "winget": "SteelSeries.GG"
+    },
+    "mamp": {
+        "category": "Development",
+        "choco": "mamp",
+        "description": "MAMP is a free, local server environment.",
+        "content": "MAMP (MAMP Pro)",
+        "link": "https://www.mamp.info/",
+        "winget": "MAMP.MAMP"
+    },
+    "xampp81": {
+        "category": "Development",
+        "choco": "xampp-81",
+        "description": "XAMPP is a completely free, easy to install Apache distribution containing MariaDB, PHP, and Perl.",
+        "content": "XAMPP 8.1",
+        "link": "https://www.apachefriends.org/index.html",
+        "winget": "ApacheFriends.Xampp.8.1",
         "foss": true
     }
 }
