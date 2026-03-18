@@ -17,7 +17,7 @@ Yes, Winutil is open source and the code is publicly available on GitHub. Thousa
 - Run it as Administrator (required)
 - Create a restore point before major changes
 - Understand what tweaks you're applying
-- Download only from [official sources](https://github.com/ChrisTitusTech/winutil/)
+- Run only from [official source](https://github.com/ChrisTitusTech/winutil/)
 
 ### Do I need to keep running Winutil?
 No. Once you've applied tweaks or installed applications, you can close Winutil. Changes persist after closing. You only need to run Winutil again when you want to make additional changes or undo tweaks.
