@@ -229,7 +229,13 @@ No, Windows security updates are independent of the Microsoft Store.
 ## Performance
 
 ### Will Winutil make my PC faster?
-For the most part no, You shouldn't expect to gain more performance by running any scripts on Windows.
+Tweaks can improve performance by:
+- Reducing background processes
+- Disabling unnecessary services
+- Cleaning temporary files
+- Optimizing startup programs
+
+Results may vary depending on your system.
 
 ### What's the best preset for gaming?
 Use the **Desktop** preset, then additionally apply:
