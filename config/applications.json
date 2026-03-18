@@ -2884,7 +2884,7 @@
         "content": "UniGetUI",
         "description": "UniGetUI is a GUI for Winget, Chocolatey, and other Windows CLI package managers.",
         "link": "https://www.marticliment.com/wingetui/",
-        "winget": "MartiCliment.UniGetUI",
+        "winget": "Devolutions.UniGetUI",
         "foss": true
     },
     "winmerge": {
