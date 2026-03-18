@@ -50,7 +50,7 @@ If you have Issues, refer to [Known Issues](https://winutil.christitus.com/known
 > [!NOTE]
 > Winutil is a relatively large script, so it's split into multiple files which're combined into a single `.ps1` file using a custom compiler. This makes maintaining the project a lot easier.
 
-Get a copy of the source code. This can be done using GitHub UI (`Code -> Download ZIP`), or by cloning (downloading) the repo using git.
+Get a copy of the source code. This can be done using GitHub UI (**Code** > **Download ZIP**), or by cloning (downloading) the repo using git.
 
 If git is installed, run the following commands under a PowerShell window to clone and move into the project's directory:
 ```ps1
