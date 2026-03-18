@@ -25,7 +25,7 @@ No. Once you've applied tweaks or installed applications, you can close Winutil.
 ### Does Winutil require internet access?
 - **For downloading**: Yes, installing applications requires internet
 - **For tweaks**: No, most tweaks work offline
-- **Initial run**: Yes, to download the latest script
+- **Initial run**: Yes, to run the latest script
 
 ### How often is Winutil updated?
 Winutil is actively maintained with frequent updates. New features, bug fixes, and application additions are released regularly. The script auto-downloads the latest version each time you run it.
