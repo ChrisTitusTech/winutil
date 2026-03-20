@@ -2,10 +2,11 @@
 title: "Show Hidden Files"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2430}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2461}
   "WPFToggleHiddenFiles": {
     "Content": "Show Hidden Files",
-    "Description": "If Enabled then Hidden Files will be shown.",
+    "Description": "If enabled, Hidden Files will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -14,9 +15,9 @@ description: ""
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "Name": "Hidden",
         "Value": "1",
+        "Type": "DWord",
         "OriginalValue": "0",
-        "DefaultState": "false",
-        "Type": "DWord"
+        "DefaultState": "false"
       }
     ],
     "InvokeScript": [

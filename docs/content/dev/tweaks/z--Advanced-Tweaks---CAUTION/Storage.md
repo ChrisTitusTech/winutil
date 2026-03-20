@@ -2,7 +2,8 @@
 title: "Disable Storage Sense"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1800}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1814}
   "WPFTweaksStorage": {
     "Content": "Disable Storage Sense",
     "Description": "Storage Sense deletes temp files automatically.",
@@ -12,8 +13,8 @@ description: ""
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy",
         "Name": "01",
-        "Type": "DWord",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "1"
       }
     ],

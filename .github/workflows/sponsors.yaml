@@ -5,6 +5,7 @@ on:
     - cron: 30 15 * * 0-6
 permissions:
   contents: write
+  pull-requests: write
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -12,6 +13,8 @@ jobs:
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Generate Sponsors 💖
         uses: JamesIves/github-sponsors-readme-action@v1
@@ -19,8 +22,19 @@ jobs:
           token: ${{ secrets.PAT }}
           file: 'README.md'
 
-      - name: Deploy to GitHub Pages 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Create Pull Request 🚀
+        id: cpr
+        uses: peter-evans/create-pull-request@v8
         with:
-          branch: main
-          folder: '.'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'Update sponsors in README'
+          title: 'chore: Update Sponsors README'
+          body: 'Automated update of sponsors section'
+          branch: sponsors-update
+          delete-branch: true
+          labels: automated
+
+      - name: Check outputs
+        run: |
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"

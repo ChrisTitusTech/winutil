@@ -2,10 +2,11 @@
 title: "Disable Fullscreen Optimizations"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2136}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2149}
   "WPFTweaksDisableFSO": {
     "Content": "Disable Fullscreen Optimizations",
-    "Description": "Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen",
+    "Description": "Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -13,8 +14,8 @@ description: ""
         "Path": "HKCU:\\System\\GameConfigStore",
         "Name": "GameDVR_DXGIHonorFSEWindowsCompatible",
         "Value": "1",
-        "OriginalValue": "0",
-        "Type": "DWord"
+        "Type": "DWord",
+        "OriginalValue": "0"
       }
     ],
 ```

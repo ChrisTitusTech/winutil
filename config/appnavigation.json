@@ -72,5 +72,13 @@
         "Type": "Button",
         "Order": "5",
         "Description": "Show the selected applications"
+    },
+    "WPFToggleFOSSHighlight": {
+        "Content": "Highlight FOSS",
+        "Category": "__Selection",
+        "Type": "Toggle",
+        "Checked": true,
+        "Order": "6",
+        "Description": "Toggle the green highlight for FOSS applications"
     }
 }

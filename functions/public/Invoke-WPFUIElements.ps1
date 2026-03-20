@@ -176,18 +176,38 @@ function Invoke-WPFUIElements {
                         $itemsControl.Items.Add($dockPanel) | Out-Null
 
                         $sync[$entryInfo.Name] = $checkBox
+                        if ($entryInfo.Name -eq "WPFToggleFOSSHighlight") {
+                             if ($entryInfo.Checked -eq $true) {
+                                 $sync[$entryInfo.Name].IsChecked = $true
+                             }
 
-                        $sync[$entryInfo.Name].IsChecked = (Get-WinUtilToggleStatus $entryInfo.Name)
+                             $sync[$entryInfo.Name].Add_Checked({
+                                 Invoke-WPFButton -Button "WPFToggleFOSSHighlight"
+                             })
+                             $sync[$entryInfo.Name].Add_Unchecked({
+                                 Invoke-WPFButton -Button "WPFToggleFOSSHighlight"
+                             })
+                        } else {
+                            $sync[$entryInfo.Name].IsChecked = (Get-WinUtilToggleStatus $entryInfo.Name)
 
-                        $sync[$entryInfo.Name].Add_Checked({
-                            [System.Object]$Sender = $args[0]
-                            Invoke-WinUtilTweaks $sender.name
-                        })
+                            $sync[$entryInfo.Name].Add_Checked({
+                                [System.Object]$Sender = $args[0]
+                                Invoke-WPFSelectedCheckboxesUpdate -type "Add" -checkboxName $Sender.name
+                                # Skip applying tweaks while an import is restoring toggle states
+                                if (-not $sync.ImportInProgress) {
+                                    Invoke-WinUtilTweaks $Sender.name
+                                }
+                            })
 
-                        $sync[$entryInfo.Name].Add_Unchecked({
-                            [System.Object]$Sender = $args[0]
-                            Invoke-WinUtiltweaks $sender.name -undo $true
-                        })
+                            $sync[$entryInfo.Name].Add_Unchecked({
+                                [System.Object]$Sender = $args[0]
+                                Invoke-WPFSelectedCheckboxesUpdate -type "Remove" -checkboxName $Sender.name
+                                # Skip undoing tweaks while an import is restoring toggle states
+                                if (-not $sync.ImportInProgress) {
+                                    Invoke-WinUtiltweaks $Sender.name -undo $true
+                                }
+                            })
+                        }
                     }
 
                     "ToggleButton" {
@@ -355,6 +375,16 @@ function Invoke-WPFUIElements {
 
                         $itemsControl.Items.Add($horizontalStackPanel) | Out-Null
                         $sync[$entryInfo.Name] = $checkBox
+
+                        $sync[$entryInfo.Name].Add_Checked({
+                            [System.Object]$Sender = $args[0]
+                            Invoke-WPFSelectedCheckboxesUpdate -type "Add" -checkboxName $Sender.name
+                        })
+
+                        $sync[$entryInfo.Name].Add_Unchecked({
+                            [System.Object]$Sender = $args[0]
+                            Invoke-WPFSelectedCheckboxesUpdate -type "Remove" -checkbox $Sender.name
+                        })
                     }
                 }
             }

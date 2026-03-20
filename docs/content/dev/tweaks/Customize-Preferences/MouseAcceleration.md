@@ -2,10 +2,11 @@
 title: "Mouse Acceleration"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2318}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2349}
   "WPFToggleMouseAcceleration": {
     "Content": "Mouse Acceleration",
-    "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
+    "Description": "If enabled, the Cursor movement is affected by the speed of your physical mouse movements.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -14,25 +15,25 @@ description: ""
         "Path": "HKCU:\\Control Panel\\Mouse",
         "Name": "MouseSpeed",
         "Value": "1",
+        "Type": "DWord",
         "OriginalValue": "0",
-        "DefaultState": "true",
-        "Type": "DWord"
+        "DefaultState": "true"
       },
       {
         "Path": "HKCU:\\Control Panel\\Mouse",
         "Name": "MouseThreshold1",
         "Value": "6",
+        "Type": "DWord",
         "OriginalValue": "0",
-        "DefaultState": "true",
-        "Type": "DWord"
+        "DefaultState": "true"
       },
       {
         "Path": "HKCU:\\Control Panel\\Mouse",
         "Name": "MouseThreshold2",
         "Value": "10",
+        "Type": "DWord",
         "OriginalValue": "0",
-        "DefaultState": "true",
-        "Type": "DWord"
+        "DefaultState": "true"
       }
     ],
 ```

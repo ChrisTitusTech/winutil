@@ -8,20 +8,14 @@ function Invoke-WinutilThemeChange {
         modifying various UI elements such as colors, margins, corner radii, font families, etc.
         If the '-init' switch is used, it initializes the theme based on the system's current dark mode setting.
 
-    .PARAMETER init
-        A switch parameter. If set to $true, the function initializes the theme based on the system’s current dark mode setting.
-
     .EXAMPLE
         Invoke-WinutilThemeChange
         # Toggles the theme between 'Light' and 'Dark'.
 
-    .EXAMPLE
-        Invoke-WinutilThemeChange -init
-        # Initializes the theme based on the system's dark mode and applies the shared theme.
+
     #>
     param (
-        [switch]$init = $false,
-        [string]$theme
+        [string]$theme = "Auto"
     )
 
     function Set-WinutilTheme {
@@ -129,49 +123,43 @@ function Invoke-WinutilThemeChange {
         }
     }
 
-    $LightPreferencePath = "$winutildir\LightTheme.ini"
-    $DarkPreferencePath = "$winutildir\DarkTheme.ini"
+    $sync.preferences.theme = $theme
+    Set-Preferences -save
+    Set-WinutilTheme -currentTheme "shared"
 
-    if ($init) {
-        Set-WinutilTheme -currentTheme "shared"
-        if (Test-Path $LightPreferencePath) {
-            $theme = "Light"
-        }
-        elseif (Test-Path $DarkPreferencePath) {
-            $theme = "Dark"
-        }
-        else {
-            $theme = "Auto"
-        }
-    }
-
-    switch ($theme) {
+    switch ($sync.preferences.theme) {
         "Auto" {
             $systemUsesDarkMode = Get-WinUtilToggleStatus WPFToggleDarkMode
             if ($systemUsesDarkMode) {
-                Set-WinutilTheme  -currentTheme "Dark"
+                $theme = "Dark"
             }
             else{
-                Set-WinutilTheme  -currentTheme "Light"
+                $theme = "Light"
             }
 
-
+            Set-WinutilTheme -currentTheme $theme
             $themeButtonIcon = [char]0xF08C
-            Remove-Item $LightPreferencePath -Force -ErrorAction SilentlyContinue
-            Remove-Item $DarkPreferencePath -Force -ErrorAction SilentlyContinue
         }
         "Dark" {
-            Set-WinutilTheme  -currentTheme $theme
+            Set-WinutilTheme -currentTheme $sync.preferences.theme
             $themeButtonIcon = [char]0xE708
-            $null = New-Item $DarkPreferencePath -Force
-            Remove-Item $LightPreferencePath -Force -ErrorAction SilentlyContinue
            }
         "Light" {
-            Set-WinutilTheme  -currentTheme $theme
+            Set-WinutilTheme -currentTheme $sync.preferences.theme
             $themeButtonIcon = [char]0xE706
-            $null = New-Item $LightPreferencePath -Force
-            Remove-Item $DarkPreferencePath -Force -ErrorAction SilentlyContinue
         }
+    }
+
+    # Set FOSS Highlight Color
+    $fossEnabled = $true
+    if ($sync.WPFToggleFOSSHighlight) {
+        $fossEnabled = $sync.WPFToggleFOSSHighlight.IsChecked
+    }
+
+    if ($fossEnabled) {
+         $sync.Form.Resources["FOSSColor"] = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(76, 175, 80)) # #4CAF50
+    } else {
+         $sync.Form.Resources["FOSSColor"] = $sync.Form.Resources["MainForegroundColor"]
     }
 
     # Update the theme selector button with the appropriate icon

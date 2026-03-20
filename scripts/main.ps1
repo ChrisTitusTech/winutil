@@ -13,10 +13,16 @@ $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
 
 # Create a new session state for parsing variables into our runspace
 $hashVars = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'sync',$sync,$Null
+$debugVar = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'DebugPreference',$DebugPreference,$Null
+$uiVar = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'PARAM_NOUI',$PARAM_NOUI,$Null
+$offlineVar = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'PARAM_OFFLINE',$PARAM_OFFLINE,$Null
 $InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
 
 # Add the variable to the session state
 $InitialSessionState.Variables.Add($hashVars)
+$InitialSessionState.Variables.Add($debugVar)
+$InitialSessionState.Variables.Add($uiVar)
+$InitialSessionState.Variables.Add($offlineVar)
 
 # Get every private function and add them to the session state
 $functions = Get-ChildItem function:\ | Where-Object { $_.Name -imatch 'winutil|WPF' }
@@ -53,6 +59,42 @@ class ChocoFailedInstall : Exception {
 class GenericException : Exception {
     [string]$additionalData
     GenericException($Message) : base($Message) {}
+}
+
+# Load the configuration files
+
+$sync.configs.applicationsHashtable = @{}
+$sync.configs.applications.PSObject.Properties | ForEach-Object {
+    $sync.configs.applicationsHashtable[$_.Name] = $_.Value
+}
+
+Set-Preferences
+
+if ($PARAM_NOUI) {
+    Show-CTTLogo
+    if ($PARAM_CONFIG -and -not [string]::IsNullOrWhiteSpace($PARAM_CONFIG)) {
+        Write-Host "Running config file tasks..."
+        Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
+        if ($PARAM_RUN) {
+            Invoke-WinUtilAutoRun
+        }
+        else {
+            Write-Host "Did you forget to add '--Run'?";
+        }
+        $sync.runspace.Dispose()
+        $sync.runspace.Close()
+        [System.GC]::Collect()
+        Stop-Transcript
+        exit 1
+    }
+    else {
+        Write-Host "Cannot automatically run without a config file provided."
+        $sync.runspace.Dispose()
+        $sync.runspace.Close()
+        [System.GC]::Collect()
+        Stop-Transcript
+        exit 1
+    }
 }
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
@@ -114,13 +156,8 @@ $sync.Form.Add_Loaded({
     })
 })
 
-Invoke-WinutilThemeChange -init $true
-# Load the configuration files
+Invoke-WinutilThemeChange -theme $sync.preferences.theme
 
-$sync.configs.applicationsHashtable = @{}
-$sync.configs.applications.PSObject.Properties | ForEach-Object {
-    $sync.configs.applicationsHashtable[$_.Name] = $_.Value
-}
 
 # Now call the function with the final merged config
 Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
@@ -142,11 +179,16 @@ Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "feat
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
 
 #Persist Package Manager preference across winutil restarts
-$sync.ChocoRadioButton.Add_Checked({Set-PackageManagerPreference Choco})
-$sync.WingetRadioButton.Add_Checked({Set-PackageManagerPreference Winget})
-Set-PackageManagerPreference
+$sync.ChocoRadioButton.Add_Checked({
+    $sync.preferences.packagemanager = [PackageManagers]::Choco
+    Set-Preferences -save
+})
+$sync.WingetRadioButton.Add_Checked({
+    $sync.preferences.packagemanager = [PackageManagers]::Winget
+    Set-Preferences -save
+})
 
-switch ($sync["ManagerPreference"]) {
+switch ($sync.preferences.packagemanager) {
     "Choco" {$sync.ChocoRadioButton.IsChecked = $true; break}
     "Winget" {$sync.WingetRadioButton.IsChecked = $true; break}
 }
@@ -247,6 +289,7 @@ $commonKeyEvents = {
             "T" { Invoke-WPFButton "WPFTab2BT"; $keyEventArgs.Handled = $true } # Navigate to Tweaks tab
             "C" { Invoke-WPFButton "WPFTab3BT"; $keyEventArgs.Handled = $true } # Navigate to Config tab
             "U" { Invoke-WPFButton "WPFTab4BT"; $keyEventArgs.Handled = $true } # Navigate to Updates tab
+            "W" { Invoke-WPFButton "WPFTab5BT"; $keyEventArgs.Handled = $true } # Navigate to Win11ISO tab
         }
     }
     # Handle Ctrl key combinations for specific actions
@@ -309,11 +352,10 @@ $sync["Form"].Add_ContentRendered({
         Write-Debug "Unable to retrieve information about the primary monitor."
     }
 
-    # Check internet connectivity and disable install tab if offline
-    #$isOnline = Test-WinUtilInternetConnection
-    $isOnline = $true # Temporarily force online mode until we can resolve false negatives
+    if ($PARAM_OFFLINE) {
+        # Show offline banner
+        $sync.WPFOfflineBanner.Visibility = [System.Windows.Visibility]::Visible
 
-    if (-not $isOnline) {
         # Disable the install tab
         $sync.WPFTab1BT.IsEnabled = $false
         $sync.WPFTab1BT.Opacity = 0.5
@@ -341,45 +383,11 @@ $sync["Form"].Add_ContentRendered({
 
     $sync["Form"].Focus()
 
-    # maybe this is not the best place to load and execute config file?
-    # maybe community can help?
-    if ($PARAM_CONFIG -and -not [string]::IsNullOrWhiteSpace($PARAM_CONFIG)) {
+   if ($PARAM_CONFIG -and -not [string]::IsNullOrWhiteSpace($PARAM_CONFIG)) {
+        Write-Host "Running config file tasks..."
         Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
         if ($PARAM_RUN) {
-            # Wait for any existing process to complete before starting
-            while ($sync.ProcessRunning) {
-                Start-Sleep -Seconds 5
-            }
-            Start-Sleep -Seconds 5
-
-            Write-Host "Applying tweaks..."
-            if (-not $sync.ProcessRunning) {
-                Invoke-WPFtweaksbutton
-                while ($sync.ProcessRunning) {
-                    Start-Sleep -Seconds 5
-                }
-            }
-            Start-Sleep -Seconds 5
-
-            Write-Host "Installing features..."
-            if (-not $sync.ProcessRunning) {
-                Invoke-WPFFeatureInstall
-                while ($sync.ProcessRunning) {
-                    Start-Sleep -Seconds 5
-                }
-            }
-            Start-Sleep -Seconds 5
-
-            Write-Host "Installing applications..."
-            if (-not $sync.ProcessRunning) {
-                Invoke-WPFInstall
-                while ($sync.ProcessRunning) {
-                    Start-Sleep -Seconds 1
-                }
-            }
-            Start-Sleep -Seconds 5
-
-            Write-Host "Done."
+            Invoke-WinUtilAutoRun
         }
     }
 
@@ -479,13 +487,18 @@ $sync["AboutMenuItem"].Add_Click({
     Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
 
     $authorInfo = @"
-Author   : <a href="https://github.com/ChrisTitusTech">@christitustech</a>
+Author   : <a href="https://github.com/ChrisTitusTech">@ChrisTitusTech</a>
 UI       : <a href="https://github.com/MyDrift-user">@MyDrift-user</a>, <a href="https://github.com/Marterich">@Marterich</a>
 Runspace : <a href="https://github.com/DeveloperDurp">@DeveloperDurp</a>, <a href="https://github.com/Marterich">@Marterich</a>
 GitHub   : <a href="https://github.com/ChrisTitusTech/winutil">ChrisTitusTech/winutil</a>
 Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sync.version)">$($sync.version)</a>
 "@
     Show-CustomDialog -Title "About" -Message $authorInfo
+})
+$sync["DocumentationMenuItem"].Add_Click({
+    Write-Debug "Documentation clicked"
+    Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
+    Start-Process "https://winutil.christitus.com/"
 })
 $sync["SponsorMenuItem"].Add_Click({
     Write-Debug "Sponsors clicked"
@@ -530,6 +543,61 @@ $sync["FontScalingApplyButton"].Add_Click({
     Invoke-WinUtilFontScaling -ScaleFactor $scaleFactor
     Invoke-WPFPopup -Action "Hide" -Popups @("FontScaling")
 })
+
+# ── Win11ISO Tab button handlers ──────────────────────────────────────────────
+
+$sync["WPFTab5BT"].Add_Click({
+    $sync["Form"].Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{ Invoke-WinUtilISOCheckExistingWork }) | Out-Null
+})
+
+$sync["WPFWin11ISOBrowseButton"].Add_Click({
+    Write-Debug "WPFWin11ISOBrowseButton clicked"
+    Invoke-WinUtilISOBrowse
+})
+
+$sync["WPFWin11ISODownloadLink"].Add_Click({
+    Write-Debug "WPFWin11ISODownloadLink clicked"
+    Start-Process "https://www.microsoft.com/software-download/windows11"
+})
+
+$sync["WPFWin11ISOMountButton"].Add_Click({
+    Write-Debug "WPFWin11ISOMountButton clicked"
+    Invoke-WinUtilISOMountAndVerify
+})
+
+$sync["WPFWin11ISOModifyButton"].Add_Click({
+    Write-Debug "WPFWin11ISOModifyButton clicked"
+    Invoke-WinUtilISOModify
+})
+
+$sync["WPFWin11ISOChooseISOButton"].Add_Click({
+    Write-Debug "WPFWin11ISOChooseISOButton clicked"
+    $sync["WPFWin11ISOOptionUSB"].Visibility = "Collapsed"
+    Invoke-WinUtilISOExport
+})
+
+$sync["WPFWin11ISOChooseUSBButton"].Add_Click({
+    Write-Debug "WPFWin11ISOChooseUSBButton clicked"
+    $sync["WPFWin11ISOOptionUSB"].Visibility = "Visible"
+    Invoke-WinUtilISORefreshUSBDrives
+})
+
+$sync["WPFWin11ISORefreshUSBButton"].Add_Click({
+    Write-Debug "WPFWin11ISORefreshUSBButton clicked"
+    Invoke-WinUtilISORefreshUSBDrives
+})
+
+$sync["WPFWin11ISOWriteUSBButton"].Add_Click({
+    Write-Debug "WPFWin11ISOWriteUSBButton clicked"
+    Invoke-WinUtilISOWriteUSB
+})
+
+$sync["WPFWin11ISOCleanResetButton"].Add_Click({
+    Write-Debug "WPFWin11ISOCleanResetButton clicked"
+    Invoke-WinUtilISOCleanAndReset
+})
+
+# ──────────────────────────────────────────────────────────────────────────────
 
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript

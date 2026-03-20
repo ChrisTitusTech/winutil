@@ -3,7 +3,10 @@ title: User Guide
 weight: 2
 ---
 
-Welcome to the official User Guide for **Winutil**, your all-in-one Windows toolkit!
+Welcome to the official User Guide for **Winutil**, your all-in-one Windows toolkit.
+
+> [!IMPORTANT]
+> Windows 10 is not supported by Winutil. Windows 10 reached end of support on **October 14, 2025**.
 
 ## What is Winutil?
 
@@ -19,21 +22,22 @@ Winutil (Chris Titus Tech's Windows Utility) is a comprehensive PowerShell-based
 
 Winutil is designed for:
 
-- **Home Users**: Wanting to optimize their personal PCs
-- **Power Users**: Needing fine-grained control over Windows
-- **IT Professionals**: Managing multiple systems efficiently
-- **Gamers**: Optimizing systems for gaming performance
-- **Privacy-Conscious Users**: Reducing telemetry and data collection
-- **Developers**: Setting up clean development environments
+- **Home Users**: People who want to optimize their personal PCs
+- **Power Users**: Users who want fine-grained control over Windows
+- **IT Professionals**: Teams managing multiple systems efficiently
+- **Gamers**: Users optimizing systems for gaming performance
+- **Privacy-Conscious Users**: People reducing telemetry and data collection
+- **Developers**: Users setting up clean development environments
 
 ## Getting Started
 
 New to Winutil? Start here:
 
 1. **[Getting Started Guide](getting-started/)** - Installation and first steps
-2. **[Application Store](store/)** - Learn to install software easily
+2. **[Applications Guide](application/)** - Learn to install, upgrade, and uninstall software
 3. **[Tweaks Guide](tweaks/)** - Optimize your system
 4. **[Features & Fixes](features/)** - Troubleshoot common issues
+5. **[Win11 Creator](win11Creator/)** - Build a custom debloated Windows 11 ISO
 
 ## Main Features
 
@@ -41,7 +45,7 @@ New to Winutil? Start here:
 
 Browse and install hundreds of popular applications with a single click. No more hunting for download links or dealing with installer bloat.
 
-**[Read the Store Guide →](store/)**
+**[Read the Applications Guide →](application/)**
 
 ### ⚙️ System Tweaks
 
@@ -79,16 +83,23 @@ Automate Winutil configurations for:
 
 **[Read the Automation Guide →](automation/)**
 
+### 💿 Windows 11 Creator
+
+Build a custom Windows 11 ISO with bloatware removed, telemetry disabled, and hardware requirement checks bypassed. You can then export it as an ISO file or write it directly to a USB drive.
+
+**[Read the Win11 Creator Guide →](win11Creator/)**
+
 ## Quick Links
 
 | I want to... | Go to... |
 |--------------|----------|
 | Install Winutil for the first time | [Getting Started](getting-started/) |
-| Install applications quickly | [Application Store](store/) |
+| Install, upgrade, or uninstall apps | [Applications Guide](application/) |
 | Speed up my computer | [Tweaks Guide](tweaks/) |
 | Fix Windows Update problems | [Features - Fixes](features/) |
 | Automate setup for multiple PCs | [Automation](automation/) |
 | Understand what tweaks do | [Tweaks Guide](tweaks/) |
+| Build a custom Windows 11 ISO | [Win11 Creator](win11Creator/) |
 
 ## Safety and Best Practices
 
@@ -109,15 +120,15 @@ Before using Winutil:
 
 ## System Requirements
 
-- **Operating System**: Windows 10 (1809+) or Windows 11
-- **PowerShell**: Version 5.1 or later (included in Windows)
+- **Operating System**: Windows 11
+- **PowerShell**: Version 5.1 or later (included in Windows 11)
 - **Permissions**: Administrator access required
 - **Internet**: Required for downloading apps and updates
 - **.NET Framework**: 4.5+ (usually pre-installed)
 
 ## Getting Help
 
-Need assistance?
+Need help?
 
 - **📖 Documentation**: You're reading it! Use the navigation menu
 - **❓ FAQ**: Check [Frequently Asked Questions](../faq/)
@@ -143,9 +154,10 @@ Want to help improve Winutil?
 This User Guide covers everything you need to know:
 
 1. **[Getting Started](getting-started/)** - Installation, first run, basic usage
-2. **[Application Store](store/)** - Installing software, using presets
+2. **[Applications](application/)** - Installing, upgrading, and uninstalling software
 3. **[Tweaks](tweaks/)** - System optimizations and customizations
 4. **[Features & Fixes](features/)** - Troubleshooting tools and utilities
+5. **[Win11 Creator](win11Creator/)** - Build a custom debloated Windows 11 ISO
 6. **[Updates](updates/)** - Managing Windows Update behavior
 7. **[Automation](automation/)** - Scripting and batch deployments
 
@@ -155,4 +167,4 @@ Watch the complete Winutil overview:
 
 {{< youtube id=6UQZ5oQg8XA loading=lazy >}}
 
-Ready to get started? Head to the **[Getting Started Guide](getting-started/)** now!
+Ready to get started? Head to the **[Getting Started Guide](getting-started/)**.

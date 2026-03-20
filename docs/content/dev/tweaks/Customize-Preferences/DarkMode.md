@@ -2,7 +2,8 @@
 title: "Dark Theme for Windows"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2152}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2165}
   "WPFToggleDarkMode": {
     "Content": "Dark Theme for Windows",
     "Description": "Enable/Disable Dark Mode.",
@@ -14,17 +15,17 @@ description: ""
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
         "Name": "AppsUseLightTheme",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "1",
-        "DefaultState": "false",
-        "Type": "DWord"
+        "DefaultState": "false"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
         "Name": "SystemUsesLightTheme",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "1",
-        "DefaultState": "false",
-        "Type": "DWord"
+        "DefaultState": "false"
       }
     ],
     "InvokeScript": [

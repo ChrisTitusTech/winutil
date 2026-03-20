@@ -10,46 +10,40 @@ function Invoke-WinUtilFeatureInstall {
         $CheckBox
     )
 
-    $x = 0
+    if($sync.configs.feature.$CheckBox.feature) {
+        Foreach( $feature in $sync.configs.feature.$CheckBox.feature ) {
+            try {
+                Write-Host "Installing $feature"
+                Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart
+            } catch {
+                if ($CheckBox.Exception.Message -like "*requires elevation*") {
+                    Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
+                    Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Error" }
+                } else {
 
-    $CheckBox | ForEach-Object {
-        if($sync.configs.feature.$psitem.feature) {
-            Foreach( $feature in $sync.configs.feature.$psitem.feature ) {
-                try {
-                    Write-Host "Installing $feature"
-                    Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart
-                } catch {
-                    if ($psitem.Exception.Message -like "*requires elevation*") {
-                        Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
-                        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
-                    } else {
-
-                        Write-Warning "Unable to Install $feature due to unhandled exception"
-                        Write-Warning $psitem.Exception.StackTrace
-                    }
+                    Write-Warning "Unable to Install $feature due to unhandled exception"
+                    Write-Warning $CheckBox.Exception.StackTrace
                 }
             }
         }
-        if($sync.configs.feature.$psitem.InvokeScript) {
-            Foreach( $script in $sync.configs.feature.$psitem.InvokeScript ) {
-                try {
-                    $Scriptblock = [scriptblock]::Create($script)
+    }
+    if($sync.configs.feature.$CheckBox.InvokeScript) {
+        Foreach( $script in $sync.configs.feature.$CheckBox.InvokeScript ) {
+            try {
+                $Scriptblock = [scriptblock]::Create($script)
 
-                    Write-Host "Running Script for $psitem"
-                    Invoke-Command $scriptblock -ErrorAction stop
-                } catch {
-                    if ($psitem.Exception.Message -like "*requires elevation*") {
-                        Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
-                        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
-                    } else {
-                        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
-                        Write-Warning "Unable to Install $feature due to unhandled exception"
-                        Write-Warning $psitem.Exception.StackTrace
-                    }
+                Write-Host "Running Script for $CheckBox"
+                Invoke-Command $scriptblock -ErrorAction stop
+            } catch {
+                if ($CheckBox.Exception.Message -like "*requires elevation*") {
+                    Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
+                    Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Error" }
+                } else {
+                    Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Error" }
+                    Write-Warning "Unable to Install $feature due to unhandled exception"
+                    Write-Warning $CheckBox.Exception.StackTrace
                 }
             }
         }
-        $X++
-        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$CheckBox.Count) })
     }
 }

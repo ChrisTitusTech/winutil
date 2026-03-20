@@ -18,15 +18,15 @@ function Invoke-WPFGetInstalled {
     if (($sync.ChocoRadioButton.IsChecked -eq $false) -and ((Test-WinUtilPackageManager -winget) -eq "not-installed") -and $checkbox -eq "winget") {
         return
     }
-    $managerPreference = $sync["ManagerPreference"]
+    $managerPreference = $sync.preferences.packagemanager
 
-    Invoke-WPFRunspace -ParameterList @(("managerPreference", $managerPreference),("checkbox", $checkbox)) -DebugPreference $DebugPreference -ScriptBlock {
+    Invoke-WPFRunspace -ParameterList @(("managerPreference", $managerPreference),("checkbox", $checkbox)) -ScriptBlock {
         param (
             [string]$checkbox,
             [PackageManagers]$managerPreference
         )
         $sync.ProcessRunning = $true
-        $sync.form.Dispatcher.Invoke([action] { Set-WinUtilTaskbaritem -state "Indeterminate" })
+        Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Indeterminate" }
 
         if ($checkbox -eq "winget") {
             Write-Host "Getting Installed Programs..."
@@ -48,6 +48,6 @@ function Invoke-WPFGetInstalled {
 
         Write-Host "Done..."
         $sync.ProcessRunning = $false
-        $sync.form.Dispatcher.Invoke([action] { Set-WinUtilTaskbaritem -state "None" })
+        Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "None" }
     }
 }

@@ -2,10 +2,11 @@
 title: "Recommendations in Start Menu"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2256}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2287}
   "WPFToggleStartMenuRecommendations": {
     "Content": "Recommendations in Start Menu",
-    "Description": "If disabled then you will not see recommendations in the Start Menu.",
+    "Description": "If disabled, then you will not see recommendations in the Start Menu. WARNING: This will also disable Windows Spotlight on your Lock Screen as a side effect.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -14,25 +15,25 @@ description: ""
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\Start",
         "Name": "HideRecommendedSection",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "1",
-        "DefaultState": "true",
-        "Type": "DWord"
+        "DefaultState": "true"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\Education",
         "Name": "IsEducationEnvironment",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "1",
-        "DefaultState": "true",
-        "Type": "DWord"
+        "DefaultState": "true"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer",
         "Name": "HideRecommendedSection",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "1",
-        "DefaultState": "true",
-        "Type": "DWord"
+        "DefaultState": "true"
       }
     ],
     "InvokeScript": [

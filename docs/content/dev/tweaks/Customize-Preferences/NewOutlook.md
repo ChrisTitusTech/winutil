@@ -2,10 +2,11 @@
 title: "New Outlook"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2370}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2401}
   "WPFToggleNewOutlook": {
     "Content": "New Outlook",
-    "Description": "If disabled it removes the toggle for new Outlook, disables the new Outlook migration and makes sure the Outlook Application actually uses the old Outlook.",
+    "Description": "If disabled, it removes the new Outlook toggle, disables the new Outlook migration, and ensures the classic Outlook application is used.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -14,33 +15,33 @@ description: ""
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Office\\16.0\\Outlook\\Preferences",
         "Name": "UseNewOutlook",
         "Value": "1",
+        "Type": "DWord",
         "OriginalValue": "0",
-        "DefaultState": "true",
-        "Type": "DWord"
+        "DefaultState": "true"
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Office\\16.0\\Outlook\\Options\\General",
         "Name": "HideNewOutlookToggle",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "1",
-        "DefaultState": "true",
-        "Type": "DWord"
+        "DefaultState": "true"
       },
       {
         "Path": "HKCU:\\Software\\Policies\\Microsoft\\Office\\16.0\\Outlook\\Options\\General",
         "Name": "DoNewOutlookAutoMigration",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "0",
-        "DefaultState": "false",
-        "Type": "DWord"
+        "DefaultState": "false"
       },
       {
         "Path": "HKCU:\\Software\\Policies\\Microsoft\\Office\\16.0\\Outlook\\Preferences",
         "Name": "NewOutlookMigrationUserSetting",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>",
-        "DefaultState": "true",
-        "Type": "DWord"
+        "DefaultState": "true"
       }
     ],
 ```

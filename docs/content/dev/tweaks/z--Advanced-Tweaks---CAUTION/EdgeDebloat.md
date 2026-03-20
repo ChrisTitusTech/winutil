@@ -2,7 +2,8 @@
 title: "Edge Debloat"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1178}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1183}
   "WPFTweaksEdgeDebloat": {
     "Content": "Edge Debloat",
     "Description": "Disables various telemetry options, popups, and other annoyances in Edge.",
@@ -12,113 +13,113 @@ description: ""
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate",
         "Name": "CreateDesktopShortcutDefault",
-        "Type": "DWord",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "PersonalizationReportingEnabled",
-        "Type": "DWord",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },
       {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
-        "Name": "ofefcgjbeghpigppfmkologfjadafddi",
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\\ExtensionInstallBlocklist",
+        "Name": "1",
+        "Value": "ofefcgjbeghpigppfmkologfjadafddi",
         "Type": "String",
-        "Value": "1",
         "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "ShowRecommendationsEnabled",
-        "Type": "DWord",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "HideFirstRunExperience",
-        "Type": "DWord",
         "Value": "1",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "UserFeedbackAllowed",
-        "Type": "DWord",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "ConfigureDoNotTrack",
-        "Type": "DWord",
         "Value": "1",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "AlternateErrorPagesEnabled",
-        "Type": "DWord",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "EdgeCollectionsEnabled",
-        "Type": "DWord",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "EdgeShoppingAssistantEnabled",
-        "Type": "DWord",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "MicrosoftEdgeInsiderPromotionEnabled",
-        "Type": "DWord",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "ShowMicrosoftRewards",
-        "Type": "DWord",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "WebWidgetAllowed",
-        "Type": "DWord",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "DiagnosticData",
-        "Type": "DWord",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "EdgeAssetDeliveryServiceEnabled",
-        "Type": "DWord",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "WalletDonationEnabled",
-        "Type": "DWord",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       }
     ],

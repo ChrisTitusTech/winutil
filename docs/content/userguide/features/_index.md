@@ -1,12 +1,16 @@
 ---
 title: Features
-weight: 4
+weight: 5
 ---
 
-* Install the most used **Windows Features** by checking the checkbox and clicking "Install Features" to install them.
+Use the **Features** and **Fixes** sections to install optional Windows components and run common repair tasks.
 
-* All .Net Frameworks (2, 3, 4)
-* HyperV Virtualization
+## Windows Features
+
+Install common **Windows features** by selecting the feature checkboxes and clicking **Install Features**.
+
+* All .NET Frameworks (2, 3, 4)
+* Hyper-V Virtualization
 * Legacy Media (WMP, DirectPlay)
 * NFS - Network File System
 * Enable Daily Registry Backup Task 12:30am
@@ -15,8 +19,9 @@ weight: 4
 * Windows Subsystem for Linux
 * Windows Sandbox
 
-### Fixes
-* Quick fixes for your system if you are having issues.
+## Fixes
+
+Use these one-click fixes for common system problems.
 
 * Set Up Autologin
 * Reset Windows Update
@@ -25,9 +30,9 @@ weight: 4
 * WinGet Reinstall
 * Remove Adobe Creative Cloud
 
-### Legacy Windows Panels
+## Legacy Windows Panels
 
-Open old-school Windows panels directly from Winutil. Following Panels are available:
+Open old-school Windows panels directly from Winutil. Available panels include:
 
 * Control Panel
 * Network Connections
@@ -37,6 +42,6 @@ Open old-school Windows panels directly from Winutil. Following Panels are avail
 * System Properties
 * User Accounts
 
-### Remote Access
+## Remote Access
 
-Enables OpenSSH server on your windows machine.
+Enable an OpenSSH server on your Windows machine for remote access.

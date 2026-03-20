@@ -2,7 +2,8 @@
 title: "Set Time to UTC (Dual Boot)"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1453}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1458}
   "WPFTweaksUTC": {
     "Content": "Set Time to UTC (Dual Boot)",
     "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux Systems.",
@@ -12,8 +13,8 @@ description: ""
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
         "Name": "RealTimeIsUniversal",
-        "Type": "QWord",
         "Value": "1",
+        "Type": "QWord",
         "OriginalValue": "0"
       }
     ],

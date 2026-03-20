@@ -2,7 +2,8 @@
 title: "Verbose Messages During Logon"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2238}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2269}
   "WPFToggleVerboseLogon": {
     "Content": "Verbose Messages During Logon",
     "Description": "Show detailed messages during the login process for troubleshooting and diagnostics.",
@@ -14,9 +15,9 @@ description: ""
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
         "Name": "VerboseStatus",
         "Value": "1",
+        "Type": "DWord",
         "OriginalValue": "0",
-        "DefaultState": "false",
-        "Type": "DWord"
+        "DefaultState": "false"
       }
     ],
 ```

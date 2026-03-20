@@ -2,19 +2,20 @@
 title: "Disable ConsumerFeatures"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1299}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1304}
   "WPFTweaksConsumerFeatures": {
     "Content": "Disable ConsumerFeatures",
-    "Description": "Windows will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link)",
+    "Description": "Windows will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link).",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-        "OriginalValue": "<RemoveEntry>",
         "Name": "DisableWindowsConsumerFeatures",
         "Value": "1",
-        "Type": "DWord"
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
 ```

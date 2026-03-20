@@ -2,25 +2,26 @@
 title: "Disable Hibernation"
 description: ""
 ---
+
 ```json {filename="config/tweaks.json",linenos=inline,linenostart=32}
   "WPFTweaksHiber": {
     "Content": "Disable Hibernation",
-    "Description": "Hibernation is really meant for laptops as it saves what's in memory before turning the pc off. It really should never be used",
+    "Description": "Hibernation is really meant for laptops as it saves what's in memory before turning the PC off. It really should never be used.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
       {
         "Path": "HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power",
         "Name": "HibernateEnabled",
-        "Type": "DWord",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "1"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FlyoutMenuSettings",
         "Name": "ShowHibernateOption",
-        "Type": "DWord",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "1"
       }
     ],

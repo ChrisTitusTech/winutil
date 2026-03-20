@@ -2,6 +2,7 @@
 title: "Remove Ultimate Performance Profile"
 description: ""
 ---
+
 ```powershell {filename="functions/public/Invoke-WPFUltimatePerformance.ps1",linenos=inline,linenostart=1}
 Function Invoke-WPFUltimatePerformance {
     <#

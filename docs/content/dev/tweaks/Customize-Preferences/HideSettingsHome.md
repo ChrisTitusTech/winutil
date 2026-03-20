@@ -2,10 +2,11 @@
 title: "Remove Settings Home Page"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2300}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2331}
   "WPFToggleHideSettingsHome": {
     "Content": "Remove Settings Home Page",
-    "Description": "Removes the Home page in the Windows Settings app.",
+    "Description": "Removes the Home Page in the Windows Settings app.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -13,8 +14,8 @@ description: ""
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
         "Name": "SettingsPageVisibility",
-        "Type": "String",
         "Value": "hide:home",
+        "Type": "String",
         "OriginalValue": "show:home",
         "DefaultState": "false"
       }

@@ -41,16 +41,19 @@ function Initialize-InstallAppEntry {
         })
 
         $checkBox = New-Object Windows.Controls.CheckBox
-        $checkBox.Name = $appKey
+        # Sanitize the name for WPF
+        $checkBox.Name = $appKey -replace '-', '_'
+        # Store the original appKey in Tag
+        $checkBox.Tag = $appKey
         $checkbox.Style = $sync.Form.Resources.AppEntryCheckboxStyle
         $checkbox.Add_Checked({
-            Invoke-WPFSelectedAppsUpdate -type "Add" -checkbox $this
+            Invoke-WPFSelectedCheckboxesUpdate -type "Add" -checkboxName $this.Parent.Tag
             $borderElement = $this.Parent
             $borderElement.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallSelectedColor")
         })
 
         $checkbox.Add_Unchecked({
-            Invoke-WPFSelectedAppsUpdate -type "Remove" -checkbox $this
+            Invoke-WPFSelectedCheckboxesUpdate -type "Remove" -checkboxName $this.Parent.Tag
             $borderElement = $this.Parent
             $borderElement.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallUnselectedColor")
         })
@@ -59,6 +62,12 @@ function Initialize-InstallAppEntry {
         $appName = New-Object Windows.Controls.TextBlock
         $appName.Style = $sync.Form.Resources.AppEntryNameStyle
         $appName.Text = $Apps.$appKey.content
+
+        # Change color to Green if FOSS
+        if ($Apps.$appKey.foss -eq $true) {
+            $appName.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "FOSSColor")
+            $appName.FontWeight = "Bold"
+        }
 
         # Add the name to the Checkbox
         $checkBox.Content = $appName

@@ -2,10 +2,11 @@
 title: "Block Razer Software Installs"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1917}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1930}
   "WPFTweaksRazerBlock": {
     "Content": "Block Razer Software Installs",
-    "Description": "Blocks ALL Razer Software installations. The hardware works fine without any software. WARNING: this will also block all Windows third-party driver installations.",
+    "Description": "Blocks ALL Razer Software installations. The hardware works fine without any software.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -13,15 +14,15 @@ description: ""
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
         "Name": "SearchOrderConfig",
         "Value": "0",
-        "OriginalValue": "1",
-        "Type": "DWord"
+        "Type": "DWord",
+        "OriginalValue": "1"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Device Installer",
         "Name": "DisableCoInstallers",
         "Value": "1",
-        "OriginalValue": "0",
-        "Type": "DWord"
+        "Type": "DWord",
+        "OriginalValue": "0"
       }
     ],
     "InvokeScript": [

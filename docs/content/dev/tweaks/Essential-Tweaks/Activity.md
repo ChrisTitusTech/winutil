@@ -2,32 +2,33 @@
 title: "Disable Activity History"
 description: ""
 ---
+
 ```json {filename="config/tweaks.json",linenos=inline,linenostart=2}
   "WPFTweaksActivity": {
     "Content": "Disable Activity History",
-    "Description": "This erases recent docs, clipboard, and run history.",
+    "Description": "Erases recent docs, clipboard, and run history.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
         "Name": "EnableActivityFeed",
-        "Type": "DWord",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
         "Name": "PublishUserActivities",
-        "Type": "DWord",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
         "Name": "UploadUserActivities",
-        "Type": "DWord",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       }
     ],

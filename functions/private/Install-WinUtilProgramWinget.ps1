@@ -117,7 +117,7 @@ Function Install-WinUtilProgramWinget {
         $Program = $Programs[$i]
         $result = $false
         Set-WinUtilProgressBar -label "$Action $($Program)" -percent ($i / $count * 100)
-        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($i / $count)})
+        Invoke-WPFUIThread -ScriptBlock{ Set-WinUtilTaskbaritem -value ($i / $count)}
 
         $result = switch ($Action) {
             "Install" {Invoke-Install -Program $Program}

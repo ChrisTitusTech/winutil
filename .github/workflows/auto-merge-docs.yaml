@@ -1,0 +1,31 @@
+name: Auto-merge Docs PRs
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+
+jobs:
+  auto-merge:
+    if: github.event.pull_request.head.ref == 'docs-update' && (github.event.pull_request.user.login == 'ChrisTitusTech' || github.event.pull_request.user.login == 'github-actions[bot]')
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Auto-approve PR
+        if: github.event.pull_request.user.login == 'github-actions[bot]'
+        run: gh pr review "$PR_NUMBER" --approve
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GH_TOKEN: ${{ secrets.AUTO_MERGE }}
+
+      - name: Enable auto-merge
+        run: gh pr merge "$PR_NUMBER" --squash --delete-branch --admin
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GH_TOKEN: ${{ secrets.AUTO_MERGE }}

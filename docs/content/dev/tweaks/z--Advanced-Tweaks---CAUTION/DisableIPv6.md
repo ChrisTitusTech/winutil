@@ -2,7 +2,8 @@
 title: "Disable IPv6"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2098}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2111}
   "WPFTweaksDisableIPv6": {
     "Content": "Disable IPv6",
     "Description": "Disables IPv6.",
@@ -13,8 +14,8 @@ description: ""
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
         "Name": "DisabledComponents",
         "Value": "255",
-        "OriginalValue": "0",
-        "Type": "DWord"
+        "Type": "DWord",
+        "OriginalValue": "0"
       }
     ],
     "InvokeScript": [

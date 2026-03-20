@@ -2,10 +2,11 @@
 title: "Prefer IPv4 over IPv6"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2060}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2073}
   "WPFTweaksIPv46": {
     "Content": "Prefer IPv4 over IPv6",
-    "Description": "To set the IPv4 preference can have latency and security benefits on private networks where IPv6 is not configured.",
+    "Description": "Setting the IPv4 preference can have latency and security benefits on private networks where IPv6 is not configured.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -13,8 +14,8 @@ description: ""
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
         "Name": "DisabledComponents",
         "Value": "32",
-        "OriginalValue": "0",
-        "Type": "DWord"
+        "Type": "DWord",
+        "OriginalValue": "0"
       }
     ],
 ```

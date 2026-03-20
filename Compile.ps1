@@ -1,5 +1,4 @@
 param (
-    [switch]$Debug,
     [switch]$Run,
     [string]$Arguments
 )
@@ -104,19 +103,26 @@ $xaml
 '@
 "@)
 
+Update-Progress "Adding: autounattend.xml" 95
+$autounattendRaw = Get-Content "$workingdir\tools\autounattend.xml" -Raw
+# Strip XML comments (<!-- ... -->, including multi-line)
+$autounattendRaw = [regex]::Replace($autounattendRaw, '<!--.*?-->', '', [System.Text.RegularExpressions.RegexOptions]::Singleline)
+# Drop blank lines and trim trailing whitespace per line
+$autounattendXml = ($autounattendRaw -split "`r?`n" |
+    Where-Object { $_.Trim() -ne '' } |
+    ForEach-Object { $_.TrimEnd() }) -join "`r`n"
+$script_content.Add(@"
+`$WinUtilAutounattendXml = @'
+$autounattendXml
+'@
+"@)
+
 $script_content.Add($(Get-Content "scripts\main.ps1"))
 
-if ($Debug) {
-    Update-Progress "Writing debug files" 95
-    $appXamlContent | Out-File -FilePath "xaml\inputApp.xaml" -Encoding ascii
-    $tweaksXamlContent | Out-File -FilePath "xaml\inputTweaks.xaml" -Encoding ascii
-    $featuresXamlContent | Out-File -FilePath "xaml\inputFeatures.xaml" -Encoding ascii
-} else {
-    Update-Progress "Removing temporary files" 99
-    Remove-Item "xaml\inputApp.xaml" -ErrorAction SilentlyContinue
-    Remove-Item "xaml\inputTweaks.xaml" -ErrorAction SilentlyContinue
-    Remove-Item "xaml\inputFeatures.xaml" -ErrorAction SilentlyContinue
-}
+Update-Progress "Removing temporary files" 99
+Remove-Item "xaml\inputApp.xaml" -ErrorAction SilentlyContinue
+Remove-Item "xaml\inputTweaks.xaml" -ErrorAction SilentlyContinue
+Remove-Item "xaml\inputFeatures.xaml" -ErrorAction SilentlyContinue
 
 Set-Content -Path "$scriptname" -Value ($script_content -join "`r`n") -Encoding ascii
 Write-Progress -Activity "Compiling" -Completed

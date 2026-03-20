@@ -6,7 +6,7 @@ Function Invoke-WinUtilCurrentSystem {
         Checks to see what tweaks have already been applied and what programs are installed, and checks the according boxes
 
     .EXAMPLE
-        Get-WinUtilCheckBoxes "WPFInstall"
+        InvokeWinUtilCurrentSystem -Checkbox "winget"
 
     #>
 

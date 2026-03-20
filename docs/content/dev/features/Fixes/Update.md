@@ -2,6 +2,7 @@
 title: "Reset Windows Update"
 description: ""
 ---
+
 ```powershell {filename="functions/public/Invoke-WPFFixesUpdate.ps1",linenos=inline,linenostart=1}
 function Invoke-WPFFixesUpdate {
 

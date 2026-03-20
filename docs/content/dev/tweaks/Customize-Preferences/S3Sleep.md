@@ -2,10 +2,11 @@
 title: "S3 Sleep"
 description: ""
 ---
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2566}
+
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2607}
   "WPFToggleS3Sleep": {
     "Content": "S3 Sleep",
-    "Description": "Toggles between Modern Standby and S3 sleep.",
+    "Description": "Toggles between Modern Standby and S3 Sleep.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -14,9 +15,9 @@ description: ""
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power",
         "Name": "PlatformAoAcOverride",
         "Value": "0",
+        "Type": "DWord",
         "OriginalValue": "<RemoveEntry>",
-        "DefaultState": "false",
-        "Type": "DWord"
+        "DefaultState": "false"
       }
     ],
 ```
