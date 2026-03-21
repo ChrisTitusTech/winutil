@@ -263,7 +263,7 @@
         "content": "Citrix Workspace app",
         "description": "a secure, unified client application that provides instant access to virtual desktops, SaaS, web, and Windows apps from any device (Windows, macOS, Linux, iOS, Android) or browser.",
         "link": "https://www.citrix.com/downloads/workspace-app/",
-        "winget": "Citrix.Workspace",
+        "winget": "Citrix.Workspace"
     },
     "calibre": {
         "category": "Document",
