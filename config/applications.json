@@ -610,6 +610,14 @@
         "winget": "Duplicati.Duplicati",
         "foss": true
     },
+    "ecm": {
+        "category": "Utilities",
+        "choco": "ecm",
+        "content": "Easy Context Menu",
+        "description": "Easy Context Menu (ECM) lets you add a variety of useful commands and tweaks to the Desktop, My Computer, Drives, File and Folder right-click context menus. This enables you to access the most used Windows components quickly and easily. Simply check the box next to the items you wish to add. Once added, just right click and the select the component shortcut to launch it. Easy Context Menu is both portable and freeware.",
+        "link": "https://www.sordum.org/7615/easy-context-menu-v1-6/",
+        "winget": "sordum.EasyContextMenu"
+    },
     "eaapp": {
         "category": "Games",
         "choco": "ea-app",
