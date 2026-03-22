@@ -263,7 +263,7 @@
         "content": "Citrix Workspace app",
         "description": "a secure, unified client application that provides instant access to virtual desktops, SaaS, web, and Windows apps from any device (Windows, macOS, Linux, iOS, Android) or browser.",
         "link": "https://www.citrix.com/downloads/workspace-app/",
-        "winget": "Citrix.Workspace",
+        "winget": "Citrix.Workspace"
     },
     "calibre": {
         "category": "Document",
@@ -3347,6 +3347,24 @@
         "winget": "xM4ddy.OFGB",
         "foss": true
     },
+    "Opera": {
+        "category": "Browsers",
+        "choco": "opera",
+        "content": "Opera",
+        "description": "The Opera browser includes everything you need for private, safe, and efficient browsing, along with a variety of unique features to enhance your capabilities online.",
+        "link": "https://www.opera.com",
+        "winget": "Opera.Opera",
+        "foss": false
+    },
+    "OperaGX": {
+        "category": "Browsers",
+        "choco": "opera-gx",
+        "content": "Opera GX",
+        "description": "Opera GX is a special version of the Opera browser which, on top of Opera’s great features for privacy, security and efficiency, includes special features designed to complement gaming.",
+        "link": "https://www.opera.com/gx",
+        "winget": "Opera.OperaGX",
+        "foss": false
+    },
     "PaleMoon": {
         "category": "Browsers",
         "choco": "paleMoon",
@@ -3443,6 +3461,24 @@
         "description": "A powerful assembler for the x86 platform.",
         "content": "NASM",
         "link": "https://nasm.us",
+        "foss": true
+    },
+    "Ruby": {
+        "category": "Development",
+        "choco": "ruby",
+        "winget": "RubyInstallerTeam.RubyWithDevkit.3.4",
+        "description": "A Ruby language execution environment with a MSYS2 installation.",
+        "content": "Ruby",
+        "link": "https://rubyinstaller.org/",
+        "foss": true
+    },
+    "Lua": {
+        "category": "Development",
+        "choco": "lua",
+        "winget": "rjpcomputing.luaforwindows",
+        "description": "A 'batteries included environment' for the Lua scripting language on Windows.",
+        "content": "Lua",
+        "link": "https://github.com/rjpcomputing/luaforwindows",
         "foss": true
     }
 }
