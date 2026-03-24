@@ -91,6 +91,15 @@ $($jsonAsObject | ConvertTo-Json -Depth 3)
     $script_content.Add($(Write-Output "`$sync.configs.$($psitem.BaseName) = @'`r`n$json`r`n'@ `| ConvertFrom-Json" ))
 }
 
+Update-Progress "Adding: Locale files" 50
+if (Test-Path "config\locales") {
+    Get-ChildItem "config\locales" -Filter "*.json" | ForEach-Object {
+        $json = (Get-Content $psitem.FullName -Raw)
+        $localeName = $psitem.BaseName
+        $script_content.Add($(Write-Output "`$sync.locales['$localeName'] = @'`r`n$json`r`n'@ `| ConvertFrom-Json" ))
+    }
+}
+
 # Read the entire XAML file as a single string, preserving line breaks
 $xaml = Get-Content "$workingdir\xaml\inputXML.xaml" -Raw
 

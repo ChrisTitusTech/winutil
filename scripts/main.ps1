@@ -63,12 +63,15 @@ class GenericException : Exception {
 
 # Load the configuration files
 
+Set-Preferences
+
+# Apply locale translations before building UI data structures
+Invoke-WPFLocalization
+
 $sync.configs.applicationsHashtable = @{}
 $sync.configs.applications.PSObject.Properties | ForEach-Object {
     $sync.configs.applicationsHashtable[$_.Name] = $_.Value
 }
-
-Set-Preferences
 
 if ($PARAM_NOUI) {
     Show-CTTLogo

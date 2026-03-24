@@ -136,7 +136,11 @@ function Invoke-WPFUIElements {
             $count++
 
             $label = New-Object Windows.Controls.Label
-            $label.Content = $category -replace ".*__", ""
+            $categoryDisplay = $category -replace ".*__", ""
+            if ($sync.categoryTranslations -and $sync.categoryTranslations[$categoryDisplay]) {
+                $categoryDisplay = $sync.categoryTranslations[$categoryDisplay]
+            }
+            $label.Content = $categoryDisplay
             $label.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "HeaderFontSize")
             $label.SetResourceReference([Windows.Controls.Control]::FontFamilyProperty, "HeaderFontFamily")
             $label.UseLayoutRounding = $true
