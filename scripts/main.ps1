@@ -306,7 +306,7 @@ $commonKeyEvents = {
 $sync["Form"].Add_PreViewKeyDown($commonKeyEvents)
 
 $sync["Form"].Add_MouseLeftButtonDown({
-    Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme", "FontScaling")
+    Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme", "FontScaling", "Language")
     $sync["Form"].DragMove()
 })
 
@@ -324,7 +324,7 @@ $sync["Form"].Add_MouseDoubleClick({
 
 $sync["Form"].Add_Deactivated({
     Write-Debug "WinUtil lost focus"
-    Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme", "FontScaling")
+    Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme", "FontScaling", "Language")
 })
 
 $sync["Form"].Add_ContentRendered({
@@ -453,7 +453,7 @@ $sync["Form"].Add_Activated({
 
 $sync["ThemeButton"].Add_Click({
     Write-Debug "ThemeButton clicked"
-    Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "Theme" = "Toggle"; "FontScaling" = "Hide" }
+    Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "Theme" = "Toggle"; "FontScaling" = "Hide"; "Language" = "Hide" }
 })
 $sync["AutoThemeMenuItem"].Add_Click({
     Write-Debug "About clicked"
@@ -473,7 +473,7 @@ $sync["LightThemeMenuItem"].Add_Click({
 
 $sync["SettingsButton"].Add_Click({
     Write-Debug "SettingsButton clicked"
-    Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Toggle"; "Theme" = "Hide"; "FontScaling" = "Hide" }
+    Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Toggle"; "Theme" = "Hide"; "FontScaling" = "Hide"; "Language" = "Hide" }
 })
 $sync["ImportMenuItem"].Add_Click({
     Write-Debug "Import clicked"
@@ -525,7 +525,7 @@ $sync["SponsorMenuItem"].Add_Click({
 # Font Scaling Event Handlers
 $sync["FontScalingButton"].Add_Click({
     Write-Debug "FontScalingButton clicked"
-    Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "Theme" = "Hide"; "FontScaling" = "Toggle" }
+    Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "Theme" = "Hide"; "FontScaling" = "Toggle"; "Language" = "Hide" }
 })
 
 $sync["FontScalingSlider"].Add_ValueChanged({
@@ -545,6 +545,29 @@ $sync["FontScalingApplyButton"].Add_Click({
     $scaleFactor = $sync.FontScalingSlider.Value
     Invoke-WinUtilFontScaling -ScaleFactor $scaleFactor
     Invoke-WPFPopup -Action "Hide" -Popups @("FontScaling")
+})
+
+# ── Language Selector Event Handlers ──────────────────────────────────────────
+
+$sync["LanguageButton"].Add_Click({
+    Write-Debug "LanguageButton clicked"
+    Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "Theme" = "Hide"; "FontScaling" = "Hide"; "Language" = "Toggle" }
+})
+
+$sync["LangEnMenuItem"].Add_Click({
+    Write-Debug "Language: English selected"
+    Invoke-WPFPopup -Action "Hide" -Popups @("Language")
+    $sync.preferences.locale = "en"
+    Set-Preferences -save
+    Show-CustomDialog -Title "Language Changed" -Message "Language set to English.<br/>Please restart WinUtil for the change to take effect."
+})
+
+$sync["LangZhTWMenuItem"].Add_Click({
+    Write-Debug "Language: zh-TW selected"
+    Invoke-WPFPopup -Action "Hide" -Popups @("Language")
+    $sync.preferences.locale = "zh-TW"
+    Set-Preferences -save
+    Show-CustomDialog -Title "Language Changed" -Message "語系已切換為繁體中文。<br/>請重新啟動 WinUtil 以套用變更。"
 })
 
 # ── Win11ISO Tab button handlers ──────────────────────────────────────────────
