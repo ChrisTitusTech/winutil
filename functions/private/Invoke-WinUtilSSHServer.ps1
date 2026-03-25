@@ -75,7 +75,19 @@ function Invoke-WinUtilSSHServer {
     } else {
         Write-Host "authorized_keys file already exists at $authorizedKeysPath."
     }
+
+    Write-Host "Configuring sshd_config for standard authorized_keys behavior..."
+    $sshdConfigPath = "C:\ProgramData\ssh\sshd_config"
+
+    $configContent = Get-Content -Path $sshdConfigPath -Raw
+
+    $updatedContent = $configContent -replace '(?m)^(Match Group administrators)$', '# $1'
+    $updatedContent = $updatedContent -replace '(?m)^(\s+AuthorizedKeysFile __PROGRAMDATA__/ssh/administrators_authorized_keys)$', '# $1'
+
+    Set-Content -Path $sshdConfigPath -Value $updatedContent -Force
+    Write-Host "Commented out administrator-specific SSH key configuration in sshd_config"
+
     Write-Host "OpenSSH server was successfully enabled."
-    Write-Host "The config file can be located at C:\ProgramData\ssh\sshd_config "
+    Write-Host "The config file can be located at C:\ProgramData\ssh\sshd_config"
     Write-Host "Add your public keys to this file -> $authorizedKeysPath"
 }
