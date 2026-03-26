@@ -103,7 +103,7 @@
 
       Remove-Item ViVeTool -Recurse
 
-      Write-Host 'Old start menu reverted please restart your computer to take effect'
+      Write-Host 'Old start menu reverted. Please restart your computer to take effect.'
       "
     ],
     "UndoScript": [
@@ -117,7 +117,7 @@
 
       Remove-Item ViVeTool -Recurse
 
-      Write-Host 'New start menu reverted please restart your computer to take effect'
+      Write-Host 'New start menu reverted. Please restart your computer to take effect.'
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/revertstartmenu"
@@ -1457,7 +1457,7 @@
   },
   "WPFTweaksUTC": {
     "Content": "Set Time to UTC (Dual Boot)",
-    "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux Systems.",
+    "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux systems.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -1490,7 +1490,7 @@
       Remove-Item \"$Env:LocalAppData\\Microsoft\\OneDrive\" -Recurse -Force
       Remove-Item \"C:\\ProgramData\\Microsoft OneDrive\" -Recurse -Force
 
-      # Grant back permission to accses OneDrive folder
+      # Grant back permission to access OneDrive folder
       icacls $Env:OneDrive /grant \"Administrators:(D,DC)\"
 
       # Disable OneSyncSvc
@@ -1528,7 +1528,7 @@
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removehome"
   },
   "WPFTweaksRemoveGallery": {
-    "Content": "Remove Gallery from explorer",
+    "Content": "Remove Gallery from Explorer",
     "Description": "Removes the Gallery from Explorer and sets This PC as default.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
@@ -1799,7 +1799,7 @@
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/endtaskontaskbar"
   },
   "WPFTweaksPowershell7Tele": {
-    "Content": "Disable Powershell 7 Telemetry",
+    "Content": "Disable PowerShell 7 Telemetry",
     "Description": "Creates an Environment Variable called 'POWERSHELL_TELEMETRY_OPTOUT' with a value of '1' which will tell PowerShell 7 to not send Telemetry Data.",
     "category": "Essential Tweaks",
     "panel": "1",
@@ -2088,7 +2088,7 @@
   },
   "WPFTweaksTeredo": {
     "Content": "Disable Teredo",
-    "Description": "Teredo network tunneling is a IPv6 feature that can cause additional latency, but may cause problems with some games.",
+    "Description": "Teredo network tunneling is an IPv6 feature that can cause additional latency, but may cause problems with some games.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -2224,7 +2224,7 @@
   },
   "WPFToggleStandbyFix": {
     "Content": "Modern Standby fix",
-    "Description": "Disable network connection during S0 sleep. If network connectivity is turned on during S0 sleep it could cause overheating on modern laptops",
+    "Description": "Disable network connection during S0 Sleep. If network connectivity is turned on during S0 Sleep it could cause overheating on modern laptops.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",

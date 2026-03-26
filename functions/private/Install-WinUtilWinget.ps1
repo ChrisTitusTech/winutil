@@ -2,10 +2,10 @@ function Install-WinUtilWinget {
     <#
 
     .SYNOPSIS
-        Installs Winget if not already installed.
+        Installs WinGet if not already installed.
 
     .DESCRIPTION
-        installs winget if needed
+        installs winGet if needed
     #>
     if ((Test-WinUtilPackageManager -winget) -eq "installed") {
         return

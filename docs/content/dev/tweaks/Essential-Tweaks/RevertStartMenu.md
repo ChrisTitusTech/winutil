@@ -20,7 +20,7 @@ description: ""
 
       Remove-Item ViVeTool -Recurse
 
-      Write-Host 'Old start menu reverted please restart your computer to take effect'
+      Write-Host 'Old start menu reverted. Please restart your computer to take effect.'
       "
     ],
     "UndoScript": [
@@ -34,7 +34,7 @@ description: ""
 
       Remove-Item ViVeTool -Recurse
 
-      Write-Host 'New start menu reverted please restart your computer to take effect'
+      Write-Host 'New start menu reverted. Please restart your computer to take effect.'
       "
     ],
 ```

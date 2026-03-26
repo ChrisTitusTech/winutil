@@ -21,7 +21,7 @@ function Invoke-WinUtilScript {
     )
 
     try {
-        Write-Host "Running Script for $name"
+        Write-Host "Running Script for $Name"
         Invoke-Command $scriptblock -ErrorAction Stop
     } catch [System.Management.Automation.CommandNotFoundException] {
         Write-Warning "The specified command was not found."
@@ -37,7 +37,7 @@ function Invoke-WinUtilScript {
         Write-Warning $PSItem.Exception.message
     } catch {
         # Generic catch block to handle any other type of exception
-        Write-Warning "Unable to run script for $name due to unhandled exception"
+        Write-Warning "Unable to run script for $Name due to unhandled exception."
         Write-Warning $psitem.Exception.StackTrace
     }
 

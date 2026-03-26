@@ -133,7 +133,7 @@ function Invoke-WinUtilISOModify {
 
     if (-not $isoPath) {
         [System.Windows.MessageBox]::Show(
-            "No verified ISO found.  Please complete Steps 1 and 2 first.",
+            "No verified ISO found. Please complete Steps 1 and 2 first.",
             "Not Ready", "OK", "Warning")
         return
     }
@@ -416,12 +416,12 @@ function Invoke-WinUtilISOCleanAndReset {
                             Log "WIM dismounted successfully."
                         }
                     } elseif (Test-Path $mountDir) {
-                        Log "No mounted WIM reported by Get-WindowsImage, running DISM /Cleanup-Wim as a precaution..."
+                        Log "No mounted WIM reported by Get-WindowsImage. Running DISM /Cleanup-Wim as a precaution..."
                         SetProgress "Running DISM cleanup..." 3
                         & dism /English /Cleanup-Wim 2>&1 | ForEach-Object { Log $_ }
                     }
                 } catch {
-                    Log "Warning: could not dismount WIM cleanly, attempting DISM /Cleanup-Wim fallback: $_"
+                    Log "Warning: could not dismount WIM cleanly. Attempting DISM /Cleanup-Wim fallback: $_"
                     try { & dism /English /Cleanup-Wim 2>&1 | ForEach-Object { Log $_ } }
                     catch { Log "Warning: DISM /Cleanup-Wim also failed: $_" }
                 }
