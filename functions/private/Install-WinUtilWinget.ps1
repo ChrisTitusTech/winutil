@@ -2,16 +2,16 @@ function Install-WinUtilWinget {
     <#
 
     .SYNOPSIS
-        Installs Winget if not already installed.
+        Installs WinGet if not already installed.
 
     .DESCRIPTION
-        installs winget if needed
+        installs winGet if needed
     #>
     if ((Test-WinUtilPackageManager -winget) -eq "installed") {
         return
     }
 
-    Write-Host "Winget is not Installed. Installing." -ForegroundColor Red
+    Write-Host "WinGet is not installed. Installing now..." -ForegroundColor Red
     Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
 
     Install-PackageProvider -Name NuGet -Force

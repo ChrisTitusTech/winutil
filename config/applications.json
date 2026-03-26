@@ -36,7 +36,7 @@
         "category": "Document",
         "choco": "na",
         "content": "AFFiNE",
-        "description": "AFFiNE is an open-source alternative to Notion. Write, draw, plan all at once. Selfhost it to sync across devices.",
+        "description": "AFFiNE is an open-source alternative to Notion. Write, draw, plan all at once. Self-host it to sync across devices.",
         "link": "https://affine.pro/",
         "winget": "ToEverything.AFFiNE",
         "foss": true
@@ -261,7 +261,7 @@
         "category": "Utilities",
         "choco": "citrix-workspace",
         "content": "Citrix Workspace app",
-        "description": "a secure, unified client application that provides instant access to virtual desktops, SaaS, web, and Windows apps from any device (Windows, macOS, Linux, iOS, Android) or browser.",
+        "description": "A secure, unified client application that provides instant access to virtual desktops, SaaS, web, and Windows apps from any device (Windows, macOS, Linux, iOS, Android) or browser.",
         "link": "https://www.citrix.com/downloads/workspace-app/",
         "winget": "Citrix.Workspace"
     },
@@ -357,7 +357,7 @@
         "category": "Development",
         "choco": "clink",
         "content": "Clink",
-        "description": "Clink is a powerful Bash-compatible command-line interface (CLIenhancement for Windows, adding features like syntax highlighting and improved history).",
+        "description": "Clink is a powerful Bash-compatible command-line interface (CLI enhancement for Windows, adding features like syntax highlighting and improved history).",
         "link": "https://mridgers.github.io/clink/",
         "winget": "chrisant996.Clink",
         "foss": true
@@ -523,7 +523,7 @@
         "category": "Utilities",
         "choco": "ditto",
         "content": "Ditto",
-        "description": "Ditto is an extension to the standard windows clipboard.",
+        "description": "Ditto is an extension to the standard Windows Clipboard.",
         "link": "https://github.com/sabrogden/Ditto",
         "winget": "Ditto.Ditto",
         "foss": true
@@ -609,6 +609,14 @@
         "link": "https://www.duplicati.com/",
         "winget": "Duplicati.Duplicati",
         "foss": true
+    },
+    "ecm": {
+        "category": "Utilities",
+        "choco": "ecm",
+        "content": "Easy Context Menu",
+        "description": "Easy Context Menu (ECM) lets you add a variety of useful commands and tweaks to the Desktop, My Computer, Drives, File and Folder right-click context menus. This enables you to access the most used Windows components quickly and easily. Simply check the box next to the items you wish to add. Once added, just right click and the select the component shortcut to launch it. Easy Context Menu is both portable and freeware.",
+        "link": "https://www.sordum.org/7615/easy-context-menu-v1-6/",
+        "winget": "sordum.EasyContextMenu"
     },
     "eaapp": {
         "category": "Games",
@@ -726,7 +734,7 @@
         "category": "Multimedia Tools",
         "choco": "ffmpeg-full",
         "content": "FFmpeg (full)",
-        "description": "FFmpeg is a powerful multimedia processing tool that enables users to convert, edit, and stream audio and video files with a vast range of codecs and formats. | Note: FFmpeg can not be uninstalled using winget.",
+        "description": "FFmpeg is a powerful multimedia processing tool that enables users to convert, edit, and stream audio and video files with a vast range of codecs and formats. | Note: FFmpeg can not be uninstalled using WinGet.",
         "link": "https://ffmpeg.org/",
         "winget": "Gyan.FFmpeg"
     },
@@ -787,7 +795,7 @@
         "category": "Multimedia Tools",
         "choco": "lightshot",
         "content": "Lightshot (Screenshots)",
-        "description": "Ligthshot is an easy-to-use, light-weight screenshot software tool, where you can optionally edit your screenshots using different tools, share them via Internet and/or save to disk, and customize the available options.",
+        "description": "Lightshot is an easy-to-use, light-weight screenshot software tool, where you can optionally edit your screenshots using different tools, share them via Internet and/or save to disk, and customize the available options.",
         "link": "https://app.prntscr.com/",
         "winget": "Skillbrains.Lightshot"
     },
@@ -1359,7 +1367,7 @@
         "category": "Communications",
         "choco": "linphone",
         "content": "Linphone",
-        "description": "Linphone is an open-source voice over IP (VoIPservice that allows for audio and video calls, messaging, and more.",
+        "description": "Linphone is an open-source voice over IP (VoIP) service that allows for audio and video calls, messaging, and more.",
         "link": "https://www.linphone.org/",
         "winget": "BelledonneCommunications.Linphone",
         "foss": true
@@ -1423,6 +1431,15 @@
         "description": "Malwarebytes is an anti-malware software that provides real-time protection against threats.",
         "link": "https://www.malwarebytes.com/",
         "winget": "Malwarebytes.Malwarebytes"
+    },
+    "mpc-qt": {
+        "category": "Multimedia Tools",
+        "choco": "mediainfo",
+        "content": "mpc-qt",
+        "description": "MPC-HC (Media Player Classic Home Cinema) is considered by many to be the quintessential media player for the Windows desktop. MPC-QT (Media Player Classic Qute Theater) aims to reproduce most of the interface and functionality of MPC-HC while using libmpv to play video instead of DirectShow.",
+        "link": "https://github.com/mpc-qt/mpc-qt",
+        "winget": "mpc-qt.mpc-qt",
+        "foss": true
     },
     "masscode": {
         "category": "Document",
@@ -1640,7 +1657,7 @@
         "category": "Pro Tools",
         "choco": "netbird",
         "content": "NetBird",
-        "description": "NetBird is a open-source alternative comparable to TailScale that can be connected to a selfhosted Server.",
+        "description": "NetBird is a open-source alternative comparable to TailScale that can be connected to a self-hosted server.",
         "link": "https://netbird.io/",
         "winget": "netbird",
         "foss": true
@@ -1899,6 +1916,15 @@
         "winget": "Fleex255.PolicyPlus",
         "foss": true
     },
+    "qview": {
+        "category": "Multimedia Tools",
+        "choco": "na",
+        "content": "qView",
+        "description": "qView is an image viewer designed with minimalism and usability in mind.",
+        "link": "https://github.com/jurplel/qView",
+        "winget": "jurplel.qView",
+        "foss": true
+    },
     "potplayer": {
         "category": "Multimedia Tools",
         "choco": "na",
@@ -1944,7 +1970,7 @@
         "category": "Document",
         "choco": "pdfxchangeeditor",
         "content": "PDF-XChangeEditor",
-        "description": "a comprehensive Windows-based software suite and editor for creating, viewing, editing, annotating, and signing PDF files.",
+        "description": "A comprehensive Windows-based software suite and editor for creating, viewing, editing, annotating, and signing PDF files.",
         "link": "https://www.pdf-xchange.com/",
         "winget": "TrackerSoftware.PDF-XChangeEditor"
     },
@@ -2588,6 +2614,14 @@
         "link": "https://www.teamviewer.com/",
         "winget": "TeamViewer.TeamViewer"
     },
+    "teamspeak3": {
+        "category": "Utilities",
+        "choco": "teamspeak",
+        "content": "TeamSpeak 3",
+        "description": "TEAMSPEAK. YOUR TEAM. YOUR RULES. Use crystal clear sound to communicate with your team mates cross-platform with military-grade security, lag-free performance & unparalleled reliability and uptime.",
+        "link": "https://www.teamspeak.com/",
+        "winget": "TeamSpeakSystems.TeamSpeakClient"
+    },
     "telegram": {
         "category": "Communications",
         "choco": "telegram",
@@ -2883,7 +2917,7 @@
     "wazuh": {
         "category": "Utilities",
         "choco": "wazuh-agent",
-        "content": "Wazuh.",
+        "content": "Wazuh",
         "description": "Wazuh is an open-source security monitoring platform that offers intrusion detection, compliance checks, and log analysis.",
         "link": "https://wazuh.com/",
         "winget": "Wazuh.WazuhAgent",
@@ -2918,7 +2952,7 @@
         "category": "Utilities",
         "choco": "wingetui",
         "content": "UniGetUI",
-        "description": "UniGetUI is a GUI for Winget, Chocolatey, and other Windows CLI package managers.",
+        "description": "UniGetUI is a GUI for WinGet, Chocolatey, and other Windows CLI package managers.",
         "link": "https://www.marticliment.com/wingetui/",
         "winget": "MartiCliment.UniGetUI",
         "foss": true
@@ -3405,7 +3439,7 @@
         "category": "Utilities",
         "choco": "na",
         "content": "Lenovo Legion Toolkit",
-        "description": "Lenovo Legion Toolkit (LLT) is a open-source utility created for Lenovo Legion (and similar) series laptops, that allows changing a couple of features that are only available in Lenovo Vantage or Legion Zone. It runs no background services, uses less memory, uses virtually no CPU, and contains no telemetry. Just like Lenovo Vantage, this application is Windows only.",
+        "description": "Lenovo Legion Toolkit (LLT) is a open-source utility created for Lenovo Legion laptops, that allows changing a couple of features that are only available in Lenovo Vantage or Legion Zone. It runs no background services, uses less memory, uses virtually no CPU, and contains no telemetry. Just like Lenovo Vantage, this application is Windows only.",
         "link": "https://github.com/BartoszCichecki/LenovoLegionToolkit",
         "winget": "BartoszCichecki.LenovoLegionToolkit",
         "foss": true

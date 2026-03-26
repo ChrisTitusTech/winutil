@@ -28,10 +28,10 @@ Function Install-WinUtilProgramWinget {
     Invokes the winget.exe with the provided arguments and return the exit code
 
     .PARAMETER wingetId
-    The Id of the Program that Winget should Install/Uninstall
+    The Id of the Program that WinGet should Install/Uninstall
 
     .NOTES
-    Invoke Winget uses the public variable $Action defined outside the function to determine if a Program should be installed or removed
+    Invoke WinGet uses the public variable $Action defined outside the function to determine if a Program should be installed or removed
     #>
         param (
             [string]$wingetId
@@ -61,7 +61,7 @@ Function Install-WinUtilProgramWinget {
     Contains the Install Logic and return code handling from winget
 
     .PARAMETER Program
-    The Winget ID of the Program that should be installed
+    The WinGet ID of the Program that should be installed
     #>
         param (
             [string]$Program
@@ -71,7 +71,7 @@ Function Install-WinUtilProgramWinget {
             Write-Host "$($Program) installed successfully."
             return $true
         } elseif ($status -eq -1978335189) {
-            Write-Host "$($Program) No applicable update found"
+            Write-Host "No applicable update found for $($Program)."
             return $true
         }
 
@@ -82,10 +82,10 @@ Function Install-WinUtilProgramWinget {
     Function Invoke-Uninstall {
         <#
         .SYNOPSIS
-        Contains the Uninstall Logic and return code handling from winget
+        Contains the Uninstall Logic and return code handling from WinGet
 
         .PARAMETER Program
-        The Winget ID of the Program that should be uninstalled
+        The WinGet ID of the Program that should be uninstalled
         #>
         param (
             [string]$Program
@@ -110,7 +110,7 @@ Function Install-WinUtilProgramWinget {
     $failedPackages = @()
 
     Write-Host "==========================================="
-    Write-Host "--    Configuring winget packages       ---"
+    Write-Host "--    Configuring WinGet packages       ---"
     Write-Host "==========================================="
 
     for ($i = 0; $i -lt $count; $i++) {
@@ -130,6 +130,6 @@ Function Install-WinUtilProgramWinget {
         }
     }
 
-    Set-WinUtilProgressBar -label "$($Action)ation done" -percent 100
+    Set-WinUtilProgressBar -label "$($Action) action done." -percent 100
     return $failedPackages
 }

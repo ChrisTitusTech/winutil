@@ -13,7 +13,7 @@ Install common **Windows features** by selecting the feature checkboxes and clic
 * Hyper-V Virtualization
 * Legacy Media (WMP, DirectPlay)
 * NFS - Network File System
-* Enable Daily Registry Backup Task 12:30am
+* Enable Daily Registry Backup Task 12:30 AM
 * Enable Legacy F8 Boot Recovery
 * Disable Legacy F8 Boot Recovery
 * Windows Subsystem for Linux
