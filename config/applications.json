@@ -610,6 +610,14 @@
         "winget": "Duplicati.Duplicati",
         "foss": true
     },
+    "ecm": {
+        "category": "Utilities",
+        "choco": "ecm",
+        "content": "Easy Context Menu",
+        "description": "Easy Context Menu (ECM) lets you add a variety of useful commands and tweaks to the Desktop, My Computer, Drives, File and Folder right-click context menus. This enables you to access the most used Windows components quickly and easily. Simply check the box next to the items you wish to add. Once added, just right click and the select the component shortcut to launch it. Easy Context Menu is both portable and freeware.",
+        "link": "https://www.sordum.org/7615/easy-context-menu-v1-6/",
+        "winget": "sordum.EasyContextMenu"
+    },
     "eaapp": {
         "category": "Games",
         "choco": "ea-app",
@@ -1424,6 +1432,15 @@
         "link": "https://www.malwarebytes.com/",
         "winget": "Malwarebytes.Malwarebytes"
     },
+    "mpc-qt": {
+        "category": "Multimedia Tools",
+        "choco": "mediainfo",
+        "content": "mpc-qt",
+        "description": "MPC-HC (Media Player Classic Home Cinema) is considered by many to be the quintessential media player for the Windows desktop. MPC-QT (Media Player Classic Qute Theater) aims to reproduce most of the interface and functionality of MPC-HC while using libmpv to play video instead of DirectShow.",
+        "link": "https://github.com/mpc-qt/mpc-qt",
+        "winget": "mpc-qt.mpc-qt",
+        "foss": true
+    },
     "masscode": {
         "category": "Document",
         "choco": "na",
@@ -1897,6 +1914,15 @@
         "description": "Local Group Policy Editor plus more, for all Windows editions.",
         "link": "https://github.com/Fleex255/PolicyPlus",
         "winget": "Fleex255.PolicyPlus",
+        "foss": true
+    },
+    "qview": {
+        "category": "Multimedia Tools",
+        "choco": "na",
+        "content": "qView",
+        "description": "qView is an image viewer designed with minimalism and usability in mind.",
+        "link": "https://github.com/jurplel/qView",
+        "winget": "jurplel.qView",
         "foss": true
     },
     "potplayer": {
@@ -2587,6 +2613,14 @@
         "description": "TeamViewer is a popular remote access and support software that allows you to connect to and control remote devices.",
         "link": "https://www.teamviewer.com/",
         "winget": "TeamViewer.TeamViewer"
+    },
+    "teamspeak3": {
+        "category": "Utilities",
+        "choco": "teamspeak",
+        "content": "TeamSpeak 3",
+        "description": "TEAMSPEAK. YOUR TEAM. YOUR RULES. Use crystal clear sound to communicate with your team mates cross-platform with military-grade security, lag-free performance & unparalleled reliability and uptime.",
+        "link": "https://www.teamspeak.com/",
+        "winget": "TeamSpeakSystems.TeamSpeakClient"
     },
     "telegram": {
         "category": "Communications",
