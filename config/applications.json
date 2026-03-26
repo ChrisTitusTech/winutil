@@ -263,7 +263,7 @@
         "content": "Citrix Workspace app",
         "description": "a secure, unified client application that provides instant access to virtual desktops, SaaS, web, and Windows apps from any device (Windows, macOS, Linux, iOS, Android) or browser.",
         "link": "https://www.citrix.com/downloads/workspace-app/",
-        "winget": "Citrix.Workspace",
+        "winget": "Citrix.Workspace"
     },
     "calibre": {
         "category": "Document",
@@ -3479,6 +3479,24 @@
         "description": "A powerful assembler for the x86 platform.",
         "content": "NASM",
         "link": "https://nasm.us",
+        "foss": true
+    },
+    "Ruby": {
+        "category": "Development",
+        "choco": "ruby",
+        "winget": "RubyInstallerTeam.RubyWithDevkit.3.4",
+        "description": "A Ruby language execution environment with a MSYS2 installation.",
+        "content": "Ruby",
+        "link": "https://rubyinstaller.org/",
+        "foss": true
+    },
+    "Lua": {
+        "category": "Development",
+        "choco": "lua",
+        "winget": "rjpcomputing.luaforwindows",
+        "description": "A 'batteries included environment' for the Lua scripting language on Windows.",
+        "content": "Lua",
+        "link": "https://github.com/rjpcomputing/luaforwindows",
         "foss": true
     }
 }

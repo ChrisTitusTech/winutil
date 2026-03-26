@@ -28,7 +28,6 @@ Use these one-click fixes for common system problems.
 * Reset Network
 * System Corruption Scan
 * WinGet Reinstall
-* Remove Adobe Creative Cloud
 
 ## Legacy Windows Panels
 

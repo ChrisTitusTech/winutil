@@ -11,7 +11,7 @@ description: ""
     "panel": "1",
     "registry": [
       {
-        "Path": "KCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\GameDVR",
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\GameDVR",
         "Name": "AppCaptureEnabled",
         "Value": "0",
         "Type": "DWord",
