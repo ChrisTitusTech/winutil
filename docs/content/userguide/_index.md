@@ -6,7 +6,7 @@ weight: 2
 Welcome to the official User Guide for **Winutil**, your all-in-one Windows toolkit.
 
 > [!IMPORTANT]
-> Windows 10 is not supported by Winutil. Windows 10 reached end of support on **October 14, 2025**.
+> Windows 10 is not supported by Winutil. Windows 10 reached the end of support on **October 14, 2025**.
 
 ## What is Winutil?
 

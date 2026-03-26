@@ -14,7 +14,7 @@ Welcome to the official documentation for Winutil, your go-to utility for optimi
 
 ## Running the latest release of Winutil
 
-* You will first need to start a Powershell terminal **as Admin**.
+* You will first need to start a PowerShell terminal **as Admin**.
 * Now you can run the following command:
 
 ```

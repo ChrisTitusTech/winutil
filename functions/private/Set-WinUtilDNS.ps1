@@ -15,7 +15,7 @@ function Set-WinUtilDNS {
     if($DNSProvider -eq "Default") {return}
     try {
         $Adapters = Get-NetAdapter | Where-Object {$_.Status -eq "Up"}
-        Write-Host "Ensuring DNS is set to $DNSProvider on the following interfaces"
+        Write-Host "Ensuring DNS is set to $DNSProvider on the following interfaces:"
         Write-Host $($Adapters | Out-String)
 
         Foreach ($Adapter in $Adapters) {
@@ -27,7 +27,7 @@ function Set-WinUtilDNS {
             }
         }
     } catch {
-        Write-Warning "Unable to set DNS Provider due to an unhandled exception"
+        Write-Warning "Unable to set DNS Provider due to an unhandled exception."
         Write-Warning $psitem.Exception.StackTrace
     }
 }

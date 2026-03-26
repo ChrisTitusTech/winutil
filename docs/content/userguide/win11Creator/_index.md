@@ -59,7 +59,7 @@ Click **Run Windows ISO Modification and Creator** to start the customization pr
 - **Disable Copilot and search box suggestions**
 
 **Optional: Driver Injection**
-- If enabled, injects all drivers from your current system into the install.wim and boot.wim — useful for offline installations on machines with missing drivers. This is an optional checkbox in Step 3.
+- If enabled, it injects all drivers from your current system into the install.wim and boot.wim — useful for offline installations on machines with missing drivers. This is an optional checkbox in Step 3.
 
 A live log shows progress as each step completes. This stage usually takes **10–30 minutes** depending on disk speed. The WIM dismount near the end is the slowest part, so do not close Winutil while it is running.
 
@@ -67,7 +67,7 @@ A live log shows progress as each step completes. This stage usually takes **10�
 
 ### Step 4 — Export Your Result
 
-Once modification is complete, choose how to save your image:
+Once the modification is complete, choose how to save your image:
 
 {{< tabs >}}
 
