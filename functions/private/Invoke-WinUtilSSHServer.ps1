@@ -9,12 +9,12 @@ function Invoke-WinUtilSSHServer {
 
     # Install the OpenSSH Server feature if not already installed
     if ($FeatureName.State -ne "Installed") {
-        Write-Host "Enabling OpenSSH Server"
+        Write-Host "Enabling OpenSSH Server..."
         Add-WindowsCapability -Online -Name $FeatureName.Name
     }
 
     # Sets up the OpenSSH Server service
-    Write-Host "Starting the services"
+    Write-Host "Starting the services..."
     Start-Service -Name sshd
     Set-Service -Name sshd -StartupType Automatic
 
@@ -50,7 +50,7 @@ function Invoke-WinUtilSSHServer {
     }
 
     #Adding Firewall rule for port 22
-    Write-Host "Setting up firewall rules"
+    Write-Host "Setting up firewall rules..."
     $firewallRule = (Get-NetFirewallRule -Name 'sshd').Enabled
     if ($firewallRule) {
         Write-Host "Firewall rule for OpenSSH Server (sshd) already exists."
