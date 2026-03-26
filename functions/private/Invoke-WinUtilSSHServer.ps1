@@ -20,7 +20,7 @@ function Invoke-WinUtilSSHServer {
 
     #Adding Firewall rule for port 22
     Write-Host "Setting up firewall rules"
-    if (-not ((Get-NetFirewallRule -Name 'sshd').Enabled) {
+    if (-not ((Get-NetFirewallRule -Name 'sshd').Enabled)) {
         New-NetFirewallRule -Name sshd -DisplayName 'OpenSSH Server (sshd)' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22
         Write-Host "Firewall rule for OpenSSH Server created and enabled."
     }
