@@ -1503,7 +1503,7 @@
       winget install Microsoft.Onedrive --source winget
 
       # Enabled OneSyncSvc
-      Set-Service -Name OneSyncSvc -StartupType Enabled
+      Set-Service -Name OneSyncSvc -StartupType Automatic
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removeonedrive"
@@ -1650,7 +1650,7 @@
     "panel": "1",
     "registry": [
       {
-        "Path": "KCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\GameDVR",
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\GameDVR",
         "Name": "AppCaptureEnabled",
         "Value": "0",
         "Type": "DWord",
