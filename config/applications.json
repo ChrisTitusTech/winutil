@@ -263,7 +263,7 @@
         "content": "Citrix Workspace app",
         "description": "a secure, unified client application that provides instant access to virtual desktops, SaaS, web, and Windows apps from any device (Windows, macOS, Linux, iOS, Android) or browser.",
         "link": "https://www.citrix.com/downloads/workspace-app/",
-        "winget": "Citrix.Workspace",
+        "winget": "Citrix.Workspace"
     },
     "calibre": {
         "category": "Document",
@@ -2093,6 +2093,42 @@
         "winget": "Proton.ProtonAuthenticator",
         "foss": true
     },
+    "protonmail": {
+        "category": "Communications",
+        "choco": "na",
+        "content": "Proton Mail",
+        "description": "Proton Mail is an end-to-end encrypted email service by Proton, protecting your privacy with zero-access encryption.",
+        "link": "https://proton.me/mail",
+        "winget": "Proton.ProtonMail",
+        "foss": true
+    },
+    "protondrive": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "Proton Drive",
+        "description": "Proton Drive is an end-to-end encrypted Swiss vault for your files that protects your data.",
+        "link": "https://proton.me/drive",
+        "winget": "Proton.ProtonDrive",
+        "foss": true
+    },
+    "protonpass": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "Proton Pass",
+        "description": "Proton Pass is a cloud-based password manager with end-to-end encryption and unique email aliases.",
+        "link": "https://proton.me/pass",
+        "winget": "Proton.ProtonPass",
+        "foss": true
+    },
+    "protonvpn": {
+        "category": "Pro Tools",
+        "choco": "protonvpn",
+        "content": "Proton VPN",
+        "description": "Proton VPN is a no-logs VPN service that protects your privacy online with features like Secure Core and Tor over VPN.",
+        "link": "https://protonvpn.com/",
+        "winget": "Proton.ProtonVPN",
+        "foss": true
+    },
     "processmonitor": {
         "category": "Microsoft Tools",
         "choco": "procexp",
@@ -3443,6 +3479,24 @@
         "description": "A powerful assembler for the x86 platform.",
         "content": "NASM",
         "link": "https://nasm.us",
+        "foss": true
+    },
+    "Ruby": {
+        "category": "Development",
+        "choco": "ruby",
+        "winget": "RubyInstallerTeam.RubyWithDevkit.3.4",
+        "description": "A Ruby language execution environment with a MSYS2 installation.",
+        "content": "Ruby",
+        "link": "https://rubyinstaller.org/",
+        "foss": true
+    },
+    "Lua": {
+        "category": "Development",
+        "choco": "lua",
+        "winget": "rjpcomputing.luaforwindows",
+        "description": "A 'batteries included environment' for the Lua scripting language on Windows.",
+        "content": "Lua",
+        "link": "https://github.com/rjpcomputing/luaforwindows",
         "foss": true
     }
 }
