@@ -12,7 +12,7 @@ function Install-WinUtilWinget {
     }
 
     Write-Host "Winget is not Installed. Installing." -ForegroundColor Red
-    Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+    Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -Force
 
     Install-PackageProvider -Name NuGet -Force
     Install-Module Microsoft.WinGet.Client -Force
