@@ -42,7 +42,7 @@ function Invoke-WinUtilSSHServer {
     } else {
         try {
             Write-Host "ssh-agent is not running. Attempting to restart..."
-            Restart-Service -Name sshd -Force
+            Restart-Service -Name 'ssh-agent' -Force
             Write-Host "ssh-agent has been restarted successfully."
         } catch {
             Write-Host "Failed to restart ssh-agent : $_"
@@ -60,7 +60,7 @@ function Invoke-WinUtilSSHServer {
     }
 
     # Check for the authorized_keys file
-    $sshFolderPath = "$env:HOMEDRIVE\$env:HOMEPATH\.ssh"
+    $sshFolderPath = "$env:USERPROFILE\.ssh"
     $authorizedKeysPath = "$sshFolderPath\authorized_keys"
 
     if (-not (Test-Path -Path $sshFolderPath)) {
@@ -84,8 +84,13 @@ function Invoke-WinUtilSSHServer {
     $updatedContent = $configContent -replace '(?m)^(Match Group administrators)$', '# $1'
     $updatedContent = $updatedContent -replace '(?m)^(\s+AuthorizedKeysFile __PROGRAMDATA__/ssh/administrators_authorized_keys)$', '# $1'
 
-    Set-Content -Path $sshdConfigPath -Value $updatedContent -Force
-    Write-Host "Commented out administrator-specific SSH key configuration in sshd_config"
+    if ($updatedContent -ne $configContent) {
+        Set-Content -Path $sshdConfigPath -Value $updatedContent -Force
+        Write-Host "Commented out administrator-specific SSH key configuration in sshd_config"
+        Restart-Service -Name sshd -Force
+    } else {
+        Write-Host "sshd_config already updated or administrator block not found; no changes made."
+    }
 
     Write-Host "OpenSSH server was successfully enabled."
     Write-Host "The config file can be located at C:\ProgramData\ssh\sshd_config"
