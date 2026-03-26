@@ -14,7 +14,7 @@ function Invoke-WPFInstall {
     }
 
     if ($PackagesToInstall.Count -eq 0) {
-        $WarningMsg = "Please select the program(s) to install or upgrade"
+        $WarningMsg = "Please select the program(s) to install or upgrade."
         [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
