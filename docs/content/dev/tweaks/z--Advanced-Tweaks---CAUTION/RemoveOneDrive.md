@@ -36,7 +36,7 @@ description: ""
       winget install Microsoft.Onedrive --source winget
 
       # Enabled OneSyncSvc
-      Set-Service -Name OneSyncSvc -StartupType Enabled
+      Set-Service -Name OneSyncSvc -StartupType Automatic
       "
     ],
 ```
