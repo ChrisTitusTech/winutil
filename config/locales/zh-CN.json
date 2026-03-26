@@ -1,0 +1,1605 @@
+{
+    "_meta": {
+        "locale": "zh-CN",
+        "name": "简体中文",
+        "generated": "2026-03-27",
+        "generator": "generate-locale.py (Google Translate)",
+        "total_strings": 592
+    },
+    "categories": {
+        "AI-Automation": "人工智能自动化",
+        "Advanced Tweaks - CAUTION": "高级调整 - 注意",
+        "Browsers": "浏览器",
+        "Communications": "通讯",
+        "Customize Preferences": "自定义首选项",
+        "Development": "发展",
+        "Document": "文档",
+        "Essential Tweaks": "基本调整",
+        "Features": "特征",
+        "Fixes": "修复",
+        "Games": "游戏",
+        "Legacy Windows Panels": "旧版 Windows 面板",
+        "Microsoft Tools": "微软工具",
+        "Multimedia Tools": "多媒体工具",
+        "Performance Plans": "绩效计划",
+        "Powershell Profile Powershell 7+ Only": "Powershell 配置文件 仅限 Powershell 7+",
+        "Pro Tools": "专业工具",
+        "Remote Access": "远程访问",
+        "Utilities": "公用事业"
+    },
+    "tweaks": {
+        "WPFTweaksActivity": {
+            "Content": "禁用活动历史记录",
+            "Description": "擦除最近的文档、剪贴板和运行历史记录。"
+        },
+        "WPFTweaksHiber": {
+            "Content": "禁用休眠",
+            "Description": "休眠实际上适用于笔记本电脑，因为它会在关闭电脑之前保存内存中的内容。它真的不应该被使用。"
+        },
+        "WPFTweaksWidget": {
+            "Content": "删除小部件",
+            "Description": "删除任务栏左下角烦人的小部件。"
+        },
+        "WPFTweaksRevertStartMenu": {
+            "Content": "恢复开始菜单布局",
+            "Description": "恢复 25H2 逐步推出新开始菜单布局之前的旧开始菜单布局。"
+        },
+        "WPFTweaksDisableStoreSearch": {
+            "Content": "禁用 Microsoft Store 搜索结果",
+            "Description": "在“开始”菜单中搜索应用程序时，不会显示推荐的 Microsoft Store 应用程序。"
+        },
+        "WPFTweaksLocation": {
+            "Content": "禁用位置跟踪",
+            "Description": "禁用位置跟踪。"
+        },
+        "WPFTweaksServices": {
+            "Content": "将服务设置为手动",
+            "Description": "将一堆不需要一直运行的系统服务转为手动。这是非常无害的，就像需要该服务一样，它只会根据需要启动。"
+        },
+        "WPFTweaksBraveDebloat": {
+            "Content": "勇敢的消肿",
+            "Description": "禁用各种烦恼，例如 Brave Rewards、Leo AI、加密钱包和 VPN。"
+        },
+        "WPFTweaksEdgeDebloat": {
+            "Content": "边缘膨胀",
+            "Description": "禁用 Edge 中的各种遥测选项、弹出窗口和其他烦恼。"
+        },
+        "WPFTweaksConsumerFeatures": {
+            "Content": "禁用消费者功能",
+            "Description": "Windows 不会为登录用户自动安装任何游戏、第三方应用程序或 Windows 应用商店中的应用程序链接。某些默认应用程序将无法访问（例如电话链接）。"
+        },
+        "WPFTweaksTelemetry": {
+            "Content": "禁用遥测",
+            "Description": "禁用 Microsoft 遥测。"
+        },
+        "WPFTweaksRemoveEdge": {
+            "Content": "删除微软边缘",
+            "Description": "取消阻止 Microsoft Edge 卸载程序限制，然后使用该卸载程序删除 Microsoft Edge。"
+        },
+        "WPFTweaksUTC": {
+            "Content": "将时间设置为 UTC（双启动）",
+            "Description": "对于双启动计算机至关重要。修复了与 Linux 系统的时间同步。"
+        },
+        "WPFTweaksRemoveOneDrive": {
+            "Content": "删除 OneDrive",
+            "Description": "拒绝删除 OneDrive 用户文件的权限，然后使用其自己的卸载程序将其删除，然后恢复原始权限。"
+        },
+        "WPFTweaksRemoveHome": {
+            "Content": "从资源管理器中删除主页",
+            "Description": "从资源管理器中删除主页并将此电脑设置为默认值。"
+        },
+        "WPFTweaksRemoveGallery": {
+            "Content": "从资源管理器中删除图库",
+            "Description": "从资源管理器中删除图库并将此电脑设置为默认值。"
+        },
+        "WPFTweaksDisplay": {
+            "Content": "设置性能显示",
+            "Description": "将系统首选项设置为性能。您也可以使用 sysdm.cpl 手动执行此操作。"
+        },
+        "WPFTweaksXboxRemoval": {
+            "Content": "删除 Xbox 和游戏组件",
+            "Description": "删除 Xbox 服务、Xbox 应用程序、游戏栏和相关身份验证组件。"
+        },
+        "WPFTweaksDeBloat": {
+            "Content": "删除所有 MS Store 应用程序 - 不推荐",
+            "Description": "谨慎使用！这将删除所有 Microsoft Store 应用程序。"
+        },
+        "WPFTweaksRestorePoint": {
+            "Content": "创建还原点",
+            "Description": "在运行时创建一个还原点，以防需要从 WinUtil 修改恢复。"
+        },
+        "WPFTweaksEndTaskOnTaskbar": {
+            "Content": "通过右键单击启用结束任务",
+            "Description": "右键单击任务栏中的程序时启用结束任务的选项。"
+        },
+        "WPFTweaksPowershell7Tele": {
+            "Content": "禁用 Powershell 7 遥测",
+            "Description": "创建一个名为“POWERSHELL_TELEMETRY_OPTOUT”的环境变量，其值为“1”，这将告诉 PowerShell 7 不要发送遥测数据。"
+        },
+        "WPFTweaksStorage": {
+            "Content": "禁用存储感知",
+            "Description": "Storage Sense 自动删除临时文件。"
+        },
+        "WPFTweaksRemoveCopilot": {
+            "Content": "禁用 Microsoft Copilot",
+            "Description": "自 23H2 起禁用 Windows 内置的 MS Copilot AI。"
+        },
+        "WPFTweaksWPBT": {
+            "Content": "禁用 Windows 平台二进制表 (WPBT)",
+            "Description": "如果启用，WPBT 允许您的计算机供应商在启动时执行程序，例如防盗软件、软件驱动程序以及在未经用户同意的情况下强制安装软件。带来潜在的安全风险。"
+        },
+        "WPFTweaksRazerBlock": {
+            "Content": "阻止 Razer 软件安装",
+            "Description": "阻止所有 Razer 软件安装。硬件无需任何软件即可正常工作。"
+        },
+        "WPFTweaksDisableNotifications": {
+            "Content": "禁用通知托盘/日历",
+            "Description": "禁用所有通知，包括日历。"
+        },
+        "WPFTweaksBlockAdobeNet": {
+            "Content": "Adobe 网络块",
+            "Description": "通过有选择地阻止与 Adob​​e 激活和遥测服务器的连接来减少用户中断。图片来源：Ruddernation-Designs"
+        },
+        "WPFTweaksRightClickMenu": {
+            "Content": "设置经典右键菜单",
+            "Description": "在文件资源管理器中右键单击时恢复经典上下文菜单，替换简化的 Windows 11 版本。"
+        },
+        "WPFTweaksDiskCleanup": {
+            "Content": "运行磁盘清理",
+            "Description": "在驱动器 C: 上运行磁盘清理并删除旧的 Windows 更新。"
+        },
+        "WPFTweaksDeleteTempFiles": {
+            "Content": "删除临时文件",
+            "Description": "删除 TEMP 文件夹。"
+        },
+        "WPFTweaksIPv46": {
+            "Content": "优先选择 IPv4 而不是 IPv6",
+            "Description": "设置 IPv4 首选项可以在未配置 IPv6 的专用网络上带来延迟和安全优势。"
+        },
+        "WPFTweaksTeredo": {
+            "Content": "禁用 Teredo",
+            "Description": "Teredo 网络隧道是一项 IPv6 功能，可能会导致额外的延迟，但可能会导致某些游戏出现问题。"
+        },
+        "WPFTweaksDisableIPv6": {
+            "Content": "禁用 IPv6",
+            "Description": "禁用 IPv6。"
+        },
+        "WPFTweaksDisableBGapps": {
+            "Content": "禁用后台应用程序",
+            "Description": "禁止所有 Microsoft Store 应用程序在后台运行，从 Windows 11 开始，这必须单独完成。"
+        },
+        "WPFTweaksDisableFSO": {
+            "Content": "禁用全屏优化",
+            "Description": "在所有应用程序中禁用 FSO。注意：这将禁用独占全屏中的颜色管理。"
+        },
+        "WPFToggleDarkMode": {
+            "Content": "Windows 的深色主题",
+            "Description": "启用/禁用深色模式。"
+        },
+        "WPFToggleBingSearch": {
+            "Content": "开始菜单中的 Bing 搜索",
+            "Description": "如果启用，Bing 网络搜索结果将包含在您的“开始”菜单搜索中。"
+        },
+        "WPFToggleStandbyFix": {
+            "Content": "现代待机修复",
+            "Description": "在 S0 睡眠期间禁用网络连接。如果在 S0 睡眠期间打开网络连接，可能会导致现代笔记本电脑过热"
+        },
+        "WPFToggleNumLock": {
+            "Content": "启动时的数字锁定",
+            "Description": "计算机启动时切换 Num Lock 键状态。"
+        },
+        "WPFToggleVerboseLogon": {
+            "Content": "登录期间的详细消息",
+            "Description": "在登录过程中显示详细消息以进行故障排除和诊断。"
+        },
+        "WPFToggleStartMenuRecommendations": {
+            "Content": "开始菜单中的推荐",
+            "Description": "如果禁用，您将不会在“开始”菜单中看到推荐。警告：这还会产生副作用，禁用锁定屏幕上的 Windows Spotlight。"
+        },
+        "WPFToggleHideSettingsHome": {
+            "Content": "删除设置主页",
+            "Description": "删除 Windows 设置应用程序中的主页。"
+        },
+        "WPFToggleMouseAcceleration": {
+            "Content": "鼠标加速",
+            "Description": "如果启用，光标移动会受到物理鼠标移动速度的影响。"
+        },
+        "WPFToggleStickyKeys": {
+            "Content": "粘滞键",
+            "Description": "如果启用，粘滞键将被激活。粘滞键是某些图形用户界面的辅助功能，可帮助身体残疾的用户或帮助用户减少重复性劳损。"
+        },
+        "WPFToggleNewOutlook": {
+            "Content": "新展望",
+            "Description": "如果禁用，它将删除新的 Outlook 切换，禁用新的 Outlook 迁移，并确保使用经典 Outlook 应用程序。"
+        },
+        "WPFToggleMultiplaneOverlay": {
+            "Content": "禁用多平面叠加",
+            "Description": "禁用多平面覆盖，这有时会导致显卡出现问题。"
+        },
+        "WPFToggleHiddenFiles": {
+            "Content": "显示隐藏文件",
+            "Description": "如果启用，将显示隐藏文件。"
+        },
+        "WPFToggleShowExt": {
+            "Content": "显示文件扩展名",
+            "Description": "如果启用，文件扩展名（例如 .txt、.jpg）可见。"
+        },
+        "WPFToggleTaskbarSearch": {
+            "Content": "任务栏中的搜索按钮",
+            "Description": "如果启用，搜索按钮将位于任务栏上。"
+        },
+        "WPFToggleTaskView": {
+            "Content": "任务栏中的任务视图按钮",
+            "Description": "如果启用，任务栏中将显示任务视图按钮。"
+        },
+        "WPFToggleTaskbarAlignment": {
+            "Content": "中心任务栏项目",
+            "Description": "[Windows 11] 如果启用，任务栏项目将显示在中心，否则任务栏项目将显示在左侧。"
+        },
+        "WPFToggleDetailedBSoD": {
+            "Content": "详细的BSoD",
+            "Description": "如果启用，您将看到详细的蓝屏死机 (BSOD) 以及更多信息。"
+        },
+        "WPFToggleS3Sleep": {
+            "Content": "S3睡眠",
+            "Description": "在现代待机和 S3 睡眠之间切换。"
+        },
+        "WPFOOSUbutton": {
+            "Content": "运行 OO 关闭 10"
+        },
+        "WPFchangedns": {
+            "Content": "域名系统"
+        },
+        "WPFAddUltPerf": {
+            "Content": "添加并激活终极性能配置文件"
+        },
+        "WPFRemoveUltPerf": {
+            "Content": "删除终极性能配置文件"
+        },
+        "WPFTweaksDisableExplorerAutoDiscovery": {
+            "Content": "禁用资源管理器自动文件夹发现",
+            "Description": "Windows 资源管理器会自动尝试根据文件夹的内容猜测文件夹的类型，从而降低浏览体验。警告！将禁用文件资源管理器分组。"
+        },
+        "WPFToggleDisableCrossDeviceResume": {
+            "Content": "跨设备简历",
+            "Description": "此调整控制 Windows 11 24H2 及更高版本中的恢复功能，允许您从移动设备恢复活动，反之亦然。"
+        }
+    },
+    "applications": {
+        "1password": {
+            "description": "1Password 是一个密码管理器，可让您安全地存储和管理您的密码。"
+        },
+        "7zip": {
+            "description": "7-Zip 是一个免费的开源文件归档实用程序。它支持多种压缩格式并提供高压缩比，使其成为文件压缩的​​流行选择。"
+        },
+        "adobe": {
+            "description": "Adobe Acrobat Reader 是一款免费的 PDF 查看器，具有查看、打印和注释 PDF 文档的基本功能。"
+        },
+        "advancedip": {
+            "description": "Advanced IP Scanner 是一款快速且易于使用的网络扫描器。它旨在分析​​ LAN 网络并提供有关连接设备的信息。"
+        },
+        "affine": {
+            "description": "AFFiNE 是 Notion 的开源替代品。写、画、计划全部同时进行。自托管它以跨设备同步。"
+        },
+        "ai-as-workspace": {
+            "description": "工作区风格的人工智能聊天客户端，具有多个工作区、插件和本地优先设计；开源（BSD-3 条款）。"
+        },
+        "aimp": {
+            "description": "AIMP 是一款功能丰富的音乐播放器，支持各种音频格式、播放列表和可自定义的用户界面。"
+        },
+        "alacritty": {
+            "description": "Alacritty 是一款快速、跨平台、GPU 加速的终端模拟器。它专为提高性能而设计，旨在成为可用的最快的终端仿真器。"
+        },
+        "anaconda3": {
+            "description": "Anaconda 是用于科学计算的 Python 和 R 编程语言的发行版。"
+        },
+        "angryipscanner": {
+            "description": "Angry IP Scanner 是一款开源、跨平台的网络扫描器。它用于扫描 IP 地址和端口，提供有关网络连接的信息。"
+        },
+        "anki": {
+            "description": "Anki 是一款抽认卡应用程序，可帮助您通过智能间隔重复来记忆信息。"
+        },
+        "anydesk": {
+            "description": "AnyDesk是一款远程桌面软件，使用户能够远程访问和控制计算机。它以其快速连接和低延迟而闻名。"
+        },
+        "anythingllm": {
+            "description": "用于文档聊天 (RAG) 和代理工作流程的桌面 AI 应用程序；提供 Windows 安装程序和开源代码库。"
+        },
+        "audacity": {
+            "description": "Audacity 是一款免费开源音频编辑软件，以其强大的录音和编辑功能而闻名。"
+        },
+        "autoruns": {
+            "description": "该实用程序向您显示哪些程序被配置为在系统启动或登录期间运行。"
+        },
+        "rdcman": {
+            "description": "RDCMan 管理多个远程桌面连接。它对于管理需要定期访问每台计算机（例如自动签入系统和数据中心）的服务器实验室非常有用。"
+        },
+        "autohotkey": {
+            "description": "AutoHotkey 是一种 Windows 脚本语言，允许用户创建自定义自动化脚本和宏。它通常用于自动执行重复性任务和自定义键盘快捷键。"
+        },
+        "autoit": {
+            "description": "Windows GUI 自动化脚本工具（免费软件）用于自动执行击键、鼠标操作和窗口/控件交互。"
+        },
+        "azuredatastudio": {
+            "description": "Azure Data Studio 是一种数据管理工具，使你能够在 Windows、macOS 和 Linux 上使用 SQL Server、Azure SQL DB 和 SQL DW。"
+        },
+        "barrier": {
+            "description": "Barrier 是一款开源软件 KVM（键盘、视频和鼠标开关）。它允许用户使用单个键盘和鼠标控制多台计算机，即使它们具有不同的操作系统。"
+        },
+        "bat": {
+            "description": "Bat 是具有语法高亮显示功能的 cat 命令克隆。它提供了一种用户友好且功能丰富的替代传统 cat 命令的方式来查看和连接文件。"
+        },
+        "beeper": {
+            "description": "您的所有聊天都在一个应用程序中。"
+        },
+        "bitwarden": {
+            "description": "Bitwarden 是一个开源密码管理解决方案。它允许用户在安全加密的保管库中存储和管理密码，并可跨多个设备访问。"
+        },
+        "bleachbit": {
+            "description": "清理您的系统并释放磁盘空间。"
+        },
+        "blender": {
+            "description": "Blender 是一款功能强大的开源 3D 创建套件，提供建模、雕刻、动画和渲染工具。"
+        },
+        "brave": {
+            "description": "Brave 是一款注重隐私的网络浏览器，可以阻止广告和跟踪器，提供更快、更安全的浏览体验。"
+        },
+        "bulkcrapuninstaller": {
+            "description": "Bulk Crap Uninstaller 是一款适用于 Windows 的免费开源卸载程序实用程序。它可以通过一次卸载多个应用程序来帮助用户删除不需要的程序并清理系统。"
+        },
+        "bulkrenameutility": {
+            "description": "批量重命名实用程序允许您根据查找替换、字符位置、字段、序列、正则表达式、EXIF 数据等轻松递归地重命名文件和文件夹。"
+        },
+        "buzz": {
+            "description": "由 Whisper 提供支持的离线音频转录和翻译桌面应用程序，针对 Windows 打包并通过 WinGet 提供。"
+        },
+        "AdvancedRenamer": {
+            "description": "Advanced Renamer 是一个用于一次重命名多个文件和文件夹的程序。通过配置重命名方法，可以通过多种方式操作名称。"
+        },
+        "citrixworkspaceapp": {
+            "description": "安全、统一的客户端应用程序，可从任何设备（Windows、macOS、Linux、iOS、Android）或浏览器即时访问虚拟桌面、SaaS、Web 和 Windows 应用程序。"
+        },
+        "calibre": {
+            "description": "Calibre 是一款功能强大且易于使用的电子书管理器、查看器和转换器。"
+        },
+        "carnac": {
+            "description": "Carnac 是 Windows 下的击键可视化工具。它以叠加方式显示击键，这对于演示、教程和现场演示非常有用。"
+        },
+        "cemu": {
+            "description": "Cemu 是一款高度实验性的软件，用于在 PC 上模拟 Wii U 应用程序。"
+        },
+        "chatgpt": {
+            "description": "ChatGPT 桌面应用程序可直接访问 OpenAI 的对话式 AI 助手，以执行写作、分析和生产力任务。"
+        },
+        "chatterino": {
+            "description": "Chatterino 是 Twitch 聊天的聊天客户端，提供干净且可自定义的界面，以提供更好的流媒体体验。"
+        },
+        "chrome": {
+            "description": "Google Chrome 是一种广泛使用的网络浏览器，以其速度、简单性以及与 Google 服务的无缝集成而闻名。"
+        },
+        "chromium": {
+            "description": "Chromium 是一个开源项目，是各种网络浏览器（包括 Chrome）的基础。"
+        },
+        "claude": {
+            "description": "Anthropic 的 Claude Windows 桌面应用程序，专为专注于人工智能辅助的工作和聊天而设计。"
+        },
+        "claude-code": {
+            "description": "Anthropic 用于终端/IDE 工作流程的代理编码工具，可在 Windows 上使用并通过 WinGet 分发。"
+        },
+        "clementine": {
+            "description": "Clementine 是一款现代音乐播放器和库管理器，支持各种音频格式和在线广播服务。"
+        },
+        "clink": {
+            "description": "Clink 是一个功能强大的 Bash 兼容命令行界面（CLIenhancement for Windows，添加了语法突出显示和改进的历史记录等功能）。"
+        },
+        "clonehero": {
+            "description": "Clone Hero 是一款免费节奏游戏，可以使用任何 5 或 6 按钮吉他控制器来玩。"
+        },
+        "cmake": {
+            "description": "CMake 是一个开源、跨平台的工具系列，旨在构建、测试和打包软件。"
+        },
+        "copyq": {
+            "description": "CopyQ 是一个具有高级功能的剪贴板管理器，允许您存储、编辑和检索剪贴板历史记录。"
+        },
+        "cpuz": {
+            "description": "CPU-Z 是一款适用于 Windows 的系统监控和诊断工具。它提供有关计算机硬件组件的详细信息，包括 CPU、内存和主板。"
+        },
+        "crystaldiskinfo": {
+            "description": "Crystal Disk Info 是一款磁盘健康监控工具，可提供有关硬盘状态和性能的信息。它可以帮助用户预测潜在问题并监控驱动器运行状况。"
+        },
+        "capframex": {
+            "description": "基于 Intel PresentMon 的帧时间捕获和分析工具。由 Rivatuner 统计服务器提供的叠加。"
+        },
+        "crystaldiskmark": {
+            "description": "Crystal Disk Mark 是一款磁盘基准测试工具，用于测量存储设备的读写速度。它可以帮助用户评估硬盘和 SSD 的性能。"
+        },
+        "cursor": {
+            "description": "由 AI 驱动的代码编辑器（基于 VS Code）具有代理编码功能和针对开发工作流程的集成 AI 辅助。"
+        },
+        "darktable": {
+            "description": "开源照片编辑工具，提供直观的界面、高级编辑功能和用于无缝图像增强的非破坏性工作流程。"
+        },
+        "DaxStudio": {
+            "description": "DAX (Data Analysis eXpressions) Studio 是针对 Microsoft 表格模型执行和分析 DAX 查询的终极工具。"
+        },
+        "ddu": {
+            "description": "Display Driver Uninstaller (DDU) 是一款用于彻底卸载 NVIDIA、AMD 和 Intel 显卡驱动程序的工具。它对于解决与图形驱动程序相关的问题非常有用。"
+        },
+        "deepl": {
+            "description": "适用于 Windows 的 DeepL 桌面翻译和写作助手，包括快捷方式和应用内写作改进功能。"
+        },
+        "deluge": {
+            "description": "Deluge 是一款免费、开源的 BitTorrent 客户端。它具有用户友好的界面、对插件的支持以及远程管理种子的能力。"
+        },
+        "devtoys": {
+            "description": "DevToys 是 Windows 上与开发相关的实用程序和工具的集合。它包括用于文件管理、代码格式化和开发人员生产力增强的工具。"
+        },
+        "digikam": {
+            "description": "digiKam 是一款先进的开源照片管理软件，具有组织、编辑和共享照片的功能。"
+        },
+        "discord": {
+            "description": "Discord 是一个流行的通信平台，提供语音、视频和文本聊天功能，专为游戏玩家设计，但被广泛的社区所使用。"
+        },
+        "dismtools": {
+            "description": "DISMTools 是 DISM 实用程序的快速、可自定义 GUI，支持 Windows 7 及以上版本的 Windows 映像。它可以处理任何驱动器上的安装，提供项目支持，并允许用户调整颜色模式、语言和 DISM 版本等设置；由本机 DISM 和托管 DISM API 提供支持。"
+        },
+        "ntlite": {
+            "description": "集成更新、驱动程序、自动化 Windows 和应用程序设置、加速 Windows 部署过程并为下次做好准备。"
+        },
+        "ditto": {
+            "description": "Ditto 是标准 Windows 剪贴板的扩展。"
+        },
+        "dockerdesktop": {
+            "description": "Docker Desktop 是用于容器化应用程序开发和部署的强大工具。"
+        },
+        "dotnet3": {
+            "description": ".NET Desktop Runtime 3.1 是运行使用 .NET Core 3.1 开发的应用程序所需的运行时环境。"
+        },
+        "dotnet5": {
+            "description": ".NET Desktop Runtime 5 是运行使用 .NET 5 开发的应用程序所需的运行时环境。"
+        },
+        "dotnet6": {
+            "description": ".NET Desktop Runtime 6 是运行使用 .NET 6 开发的应用程序所需的运行时环境。"
+        },
+        "dotnet7": {
+            "description": ".NET Desktop Runtime 7 是运行使用 .NET 7 开发的应用程序所需的运行时环境。"
+        },
+        "dotnet8": {
+            "description": ".NET Desktop Runtime 8 是运行使用 .NET 8 开发的应用程序所需的运行时环境。"
+        },
+        "dotnet9": {
+            "description": ".NET Desktop Runtime 9 是运行使用 .NET 9 开发的应用程序所需的运行时环境。"
+        },
+        "dotnet10": {
+            "description": ".NET Desktop Runtime 10 是运行使用 .NET 10 开发的应用程序所需的运行时环境。"
+        },
+        "dmt": {
+            "description": "双显示器工具 (DMT) 是一款 FOSS 应用程序，允许您自定义多个显示器的处理。对于处理第二个显示器效果不佳的全屏游戏和应用程序很有用，可以改善您的工作流程。"
+        },
+        "duplicati": {
+            "description": "Duplicati 是一款开源备份解决方案，支持加密、压缩和增量备份。它旨在将数据安全地存储在云存储服务上。"
+        },
+        "eaapp": {
+            "description": "EA App 是一个访问和玩 Electronic Arts 游戏的平台。"
+        },
+        "eartrumpet": {
+            "description": "EarTrumpet 是一款适用于 Windows 的音频控制应用程序，提供简单直观的界面来管理声音设置。"
+        },
+        "edge": {
+            "description": "Microsoft Edge 是一款基于 Chromium 构建的现代 Web 浏览器，提供性能、安全性以及与 Microsoft 服务的集成。"
+        },
+        "efibooteditor": {
+            "description": "EFI Boot Editor 是一个用于管理系统上的 EFI/UEFI 启动项的工具。它允许您自定义计算机的启动配置。"
+        },
+        "emulationstation": {
+            "description": "Emulation Station 是一款图形化、可主题化的模拟器前端，可让您在一个地方访问所有您喜爱的游戏。"
+        },
+        "enteauth": {
+            "description": "Ente Auth 是一款免费、跨平台、端到端加密验证器应用程序。"
+        },
+        "epicgames": {
+            "description": "Epic Games Launcher 是用于访问和玩 Epic Games Store 游戏的客户端。"
+        },
+        "esearch": {
+            "description": "Everything Search 是一款适用于 Windows 的快速高效的文件搜索实用程序。"
+        },
+        "espanso": {
+            "description": "用 Rust 编写的跨平台开源文本扩展器。"
+        },
+        "ffmpeg": {
+            "description": "FFmpeg Batch AV Converter 是一个通用的音频和视频编码器，允许在方便的 GUI 中点击几下鼠标，使用 ffmpeg 命令行的全部潜力，并提供拖放、进度信息。"
+        },
+        "falkon": {
+            "description": "Falkon 是一款轻量级、快速的网络浏览器，注重用户隐私和效率。"
+        },
+        "fastfetch": {
+            "description": "Fastfetch 是一个类似 neofetch 的工具，用于获取系统信息并以漂亮的方式显示它们。"
+        },
+        "ferdium": {
+            "description": "Ferdium 是一款消息应用程序，它将多个消息服务合并到一个应用程序中，以便于管理。"
+        },
+        "ffmpeg-full": {
+            "description": "FFmpeg 是一款功能强大的多媒体处理工具，使用户能够转换、编辑和流式传输具有多种编解码器和格式的音频和视频文件。 |注意：FFmpeg 无法使用 winget 卸载。"
+        },
+        "fileconverter": {
+            "description": "文件转换器是一个非常简单的工具，它允许您使用 Windows 资源管理器中的上下文菜单转换和压缩一个或多个文件。"
+        },
+        "files": {
+            "description": "替代文件浏览器。"
+        },
+        "firealpaca": {
+            "description": "Fire Alpaca 是一款免费的数字绘画软件，提供了广泛的绘图工具和用户友好的界面。"
+        },
+        "firefox": {
+            "description": "Mozilla Firefox 是一款开源 Web 浏览器，以其自定义选项、隐私功能和扩展而闻名。"
+        },
+        "firefoxesr": {
+            "description": "Mozilla Firefox 是一款开源 Web 浏览器，以其自定义选项、隐私功能和扩展而闻名。 Firefox ESR（扩展支持版本）每 42 周接收一次重大更新，并根据需要接收一些小更新，例如崩溃修复、安全修复和策略更新，但至少每 4 周一次。"
+        },
+        "flameshot": {
+            "description": "Flameshot 是一款功能强大且易于使用的屏幕截图软件，提供注释和编辑功能。"
+        },
+        "lightshot": {
+            "description": "Lightshot 是一款易于使用的轻量级屏幕截图软件工具，您可以选择使用不同的工具编辑屏幕截图、通过互联网共享和/或保存到磁盘，以及自定义可用选项。"
+        },
+        "floorp": {
+            "description": "Floorp 是一个开源网络浏览器项目，旨在提供简单快速的浏览体验。"
+        },
+        "flow": {
+            "description": "适用于 Windows 的按键启动器，用于搜索、管理和启动文件、文件夹、书签、网站等。"
+        },
+        "flux": {
+            "description": "f.lux 可调整屏幕的色温，以减轻夜间使用时的眼睛疲劳。"
+        },
+        "foobar": {
+            "description": "foob​​ar2000 是一款高度可定制和可扩展的 Windows 音乐播放器，以其模块化设计和高级功能而闻名。"
+        },
+        "foxpdfeditor": {
+            "description": "Foxit PDF Editor 是一款功能丰富的 PDF 编辑器和查看器，具有熟悉的功能区风格界面。"
+        },
+        "foxpdfreader": {
+            "description": "Foxit PDF Reader 是一款免费的 PDF 查看器，具有熟悉的功能区风格界面。"
+        },
+        "freecad": {
+            "description": "FreeCAD 是一款参数化 3D CAD 建模器，专为产品设计和工程任务而设计，注重灵活性和可扩展性。"
+        },
+        "fxsound": {
+            "description": "FxSound 是免费的开源软件，可提高音质、音量和低音。包括均衡器、效果和定制音频预设。"
+        },
+        "fzf": {
+            "description": "命令行模糊查找器。"
+        },
+        "geforcenow": {
+            "description": "GeForce NOW 是一项云游戏服务，可让您在设备上玩高质量的 PC 游戏。"
+        },
+        "gimp": {
+            "description": "GIMP 是一种多功能开源光栅图形编辑器，用于照片修饰、图像编辑和图像合成等任务。"
+        },
+        "git": {
+            "description": "Git 是一种分布式版本控制系统，广泛用于跟踪软件开发过程中源代码的更改。"
+        },
+        "gitbutler": {
+            "description": "用于在现有工作流程之上同时分支的 Git 客户端。"
+        },
+        "gitextensions": {
+            "description": "Git Extensions 是 Git 的图形用户界面，提供附加功能以简化源代码管理。"
+        },
+        "githubcli": {
+            "description": "GitHub CLI 是一个命令行工具，可简化直接从终端使用 GitHub 的操作。"
+        },
+        "github-copilot-cli": {
+            "description": "GitHub Copilot 命令行体验：命令和开发任务的自然语言辅助；通过 WinGet 分发。"
+        },
+        "githubdesktop": {
+            "description": "GitHub Desktop 是一个可视化 Git 客户端，通过易于使用的界面简化了 GitHub 存储库上的协作。"
+        },
+        "gitkrakenclient": {
+            "description": "GitKraken 客户端是 Axosoft 推出的一款功能强大的可视化 Git 客户端，可与任何托管环境上的所有 git 存储库配合使用。"
+        },
+        "glaryutilities": {
+            "description": "Glary Utilities 是一款适用于 Windows 的综合系统优化和维护工具。"
+        },
+        "godotengine": {
+            "description": "Godot Engine 是一款免费、开源的 2D 和 3D 游戏引擎，注重可用性和灵活性。"
+        },
+        "gog": {
+            "description": "GOG Galaxy 是一款游戏客户端，提供无 DRM 的游戏、附加内容等。"
+        },
+        "gitify": {
+            "description": "菜单栏上的 GitHub 通知。"
+        },
+        "golang": {
+            "description": "Go（或 Golang）是一种静态类型、编译型编程语言，旨在简单、可靠和高效。"
+        },
+        "googledrive": {
+            "description": "跨设备同步文件均与您的 Google 帐户相关联。"
+        },
+        "gpt4all": {
+            "description": "开源桌面应用程序，用于在本地运行法学硕士，重点关注隐私（麻省理工学院许可的代码库）。"
+        },
+        "gpuz": {
+            "description": "GPU-Z 提供有关显卡和 GPU 的详细信息。"
+        },
+        "greenshot": {
+            "description": "Greenshot 是一款轻量级屏幕截图软件工具，具有内置图像编辑器和可自定义的捕获选项。"
+        },
+        "gsudo": {
+            "description": "Gsudo 是 Windows 的 sudo 实现，允许提升权限执行。"
+        },
+        "handbrake": {
+            "description": "HandBrake 是一款开源视频转码器，允许您将视频从几乎任何格式转换为广泛支持的编解码器。"
+        },
+        "harmonoid": {
+            "description": "播放和管理您的音乐库。看起来又漂亮又多汁。播放列表、视觉效果、同步歌词、音调变换、音量增强等。"
+        },
+        "heidisql": {
+            "description": "HeidiSQL 是一款功能强大且易于使用的 MySQL、MariaDB、Microsoft SQL Server 和 PostgreSQL 数据库客户端。它提供了数据库管理和开发的工具。"
+        },
+        "helix": {
+            "description": "Helix 是用 Rust 构建的 neovim 替代品。"
+        },
+        "heroiclauncher": {
+            "description": "Heroic Games Launcher 是 Epic Games Store 的开源替代游戏启动器。"
+        },
+        "hexchat": {
+            "description": "HexChat 是一款免费、开源的 IRC（互联网中继聊天）客户端，具有图形界面，可轻松沟通。"
+        },
+        "hwinfo": {
+            "description": "HWiNFO 为 Windows 提供全面的硬件信息和诊断。"
+        },
+        "hwmonitor": {
+            "description": "HWMonitor 是一个硬件监控程序，可以读取 PC 系统主要健康传感器。"
+        },
+        "imhex": {
+            "description": "面向逆向工程师和开发人员的现代、功能强大的十六进制编辑器。"
+        },
+        "imageglass": {
+            "description": "ImageGlass 是一款多功能图像查看器，支持各种图像格式并注重简单性和速度。"
+        },
+        "imgburn": {
+            "description": "ImgBurn 是一款轻量级 CD、DVD、HD-DVD 和蓝光刻录应用程序，具有用于创建和刻录光盘映像的高级功能。"
+        },
+        "inkscape": {
+            "description": "Inkscape 是一款功能强大的开源矢量图形编辑器，适用于插图、图标、徽标等任务。"
+        },
+        "itch": {
+            "description": "Itch.io 是一个独立游戏和创意项目的数字发行平台。"
+        },
+        "itunes": {
+            "description": "iTunes 是由 Apple Inc. 开发的媒体播放器、媒体库和在线广播应用程序。"
+        },
+        "jami": {
+            "description": "Jami 是一个安全且注重隐私的通信平台，提供音频和视频通话、消息传递和文件共享。"
+        },
+        "jan": {
+            "description": "在您的计算机上运行的开源 ChatGPT 替代方案（离线优先桌面 AI 助手/本地模型运行器）。"
+        },
+        "java8": {
+            "description": "Amazon Corretto 是开放 Java 开发工具包 (OpenJDK) 的免费、多平台、生产就绪发行版。"
+        },
+        "java11": {
+            "description": "Amazon Corretto 是开放 Java 开发工具包 (OpenJDK) 的免费、多平台、生产就绪发行版。"
+        },
+        "java17": {
+            "description": "Amazon Corretto 是开放 Java 开发工具包 (OpenJDK) 的免费、多平台、生产就绪发行版。"
+        },
+        "java21": {
+            "description": "Amazon Corretto 是开放 Java 开发工具包 (OpenJDK) 的免费、多平台、生产就绪发行版。"
+        },
+        "java25": {
+            "description": "Amazon Corretto 是开放 Java 开发工具包 (OpenJDK) 的免费、多平台、生产就绪发行版。"
+        },
+        "jdownloader": {
+            "description": "JDownloader 是一个功能丰富的下载管理器，支持各种文件托管服务。"
+        },
+        "jellyfinmediaplayer": {
+            "description": "Jellyfin Media Player 是 Jellyfin 媒体服务器的客户端应用程序，提供对媒体库的访问。"
+        },
+        "jellyfinserver": {
+            "description": "Jellyfin Server 是一款开源媒体服务器软件，允许您组织和流式传输您的媒体库。"
+        },
+        "jetbrains": {
+            "description": "Jetbrains Toolbox 是一个可轻松安装和管理 JetBrains 开发人员工具的平台。"
+        },
+        "joplin": {
+            "description": "Joplin 是一款具有同步功能的开源笔记和待办事项应用程序。"
+        },
+        "jpegview": {
+            "description": "JPEGView 是一款精简、快速且高度可配置的查看器/编辑器，适用于 JPEG、BMP、PNG、WEBP、TGA、GIF、JXL、HEIC、HEIF、AVIF 和 TIFF 图像，具有最小的 GUI。"
+        },
+        "kdeconnect": {
+            "description": "KDE Con​​nect 允许 KDE 桌面和移动设备之间的无缝集成。"
+        },
+        "kdenlive": {
+            "description": "Kdenlive 是一款开源视频编辑软件，具有强大的功能，可用于创建和编辑专业品质的视频。"
+        },
+        "keepass": {
+            "description": "KeePassXC 是一款跨平台、开源密码管理器，具有强大的加密功能。"
+        },
+        "klite": {
+            "description": "K-Lite Codec Pack Standard 是音频和视频编解码器及相关工具的集合，为媒体播放提供了必要的组件。"
+        },
+        "kodi": {
+            "description": "Kodi 是一款开源媒体中心应用程序，可让您播放和查看大多数视频、音乐、播客和其他数字媒体文件。"
+        },
+        "krita": {
+            "description": "Krita 是一款功能强大的开源绘画应用程序。它专为概念艺术家、插画家、哑光和纹理艺术家以及视觉特效行业而设计。"
+        },
+        "lazygit": {
+            "description": "git 命令的简单终端 UI。"
+        },
+        "libreoffice": {
+            "description": "LibreOffice 是一款功能强大且免费的办公套件，与其他主要办公套件兼容。"
+        },
+        "librewolf": {
+            "description": "LibreWolf 是一款基于 Firefox 的注重隐私的 Web 浏览器，具有额外的隐私和安全增强功能。"
+        },
+        "linkshellextension": {
+            "description": "链接外壳扩展 (LSE) 提供了硬链接、连接点、卷挂载点、符号链接的创建、利用硬链接或符号链接的文件夹克隆过程以及处理连接点、符号链接和硬链接的复制过程。顾名思义，LSE 是作为 Shell 扩展实现的，可以从 Windows 资源管理器或类似的文件/文件夹管理器访问。"
+        },
+        "linphone": {
+            "description": "Linphone 是一种开源 IP 语音（VoIP 服务），支持音频和视频通话、消息传递等。"
+        },
+        "livelywallpaper": {
+            "description": "免费开源软件，允许用户设置动画桌面壁纸和屏幕保护程序。"
+        },
+        "lm-studio": {
+            "description": "用于在您的计算机上发现、下载和运行本地 LLM 的桌面应用程序，具有内置聊天 UI 和本地推理工具。"
+        },
+        "localsend": {
+            "description": "AirDrop 的开源跨平台替代品。"
+        },
+        "lockhunter": {
+            "description": "LockHunter 是一个免费工具，用于删除被您不知道的东西阻止的文件。"
+        },
+        "logseq": {
+            "description": "Logseq 是一款专为数字思想家设计的多功能知识管理和笔记应用程序。 Logseq 专注于想法的相互关联性，允许用户通过分层大纲和双向链接的组合来无缝组织他们的想法。它支持结构化和非结构化内容，使用户能够创建个性化的知识图谱，以适应他们不断发展的想法和见解。"
+        },
+        "logitechghub": {
+            "description": "用于管理罗技游戏外设（鼠标、键盘、耳机、灯光配置文件等）的官方软件。"
+        },
+        "malwarebytes": {
+            "description": "Malwarebytes 是一款反恶意软件软件，可提供针对威胁的实时保护。"
+        },
+        "masscode": {
+            "description": "MassCode 是一款为开发人员提供的快速高效的开源代码片段管理器。"
+        },
+        "matrix": {
+            "description": "Element 是 Matrix 的客户端；用于安全、去中心化通信的开放网络。"
+        },
+        "meld": {
+            "description": "Meld 是一个用于文件和目录的可视化差异和合并工具。"
+        },
+        "microsoft-aishell": {
+            "description": "连接到 AI 辅助提供商（“代理”）以提高命令行效率的 CLI shell；通过 WinGet 分发。"
+        },
+        "microsoft-copilot": {
+            "description": "适用于 Windows 的 Microsoft Copilot 桌面应用程序（消费者 Copilot），通过 Microsoft Store 分发，通常通过其 Store ID 安装。"
+        },
+        "ModernFlyouts": {
+            "description": "一套适用于 Windows 的开源、现代、基于 Fluent Design 的弹出按钮。"
+        },
+        "monitorian": {
+            "description": "Monitorian 是一个用于在 Windows 上调整显示器亮度和对比度的实用程序。"
+        },
+        "moonlight": {
+            "description": "Moonlight/GameStream 客户端允许您通过本地网络将 PC 游戏流式传输到其他设备。"
+        },
+        "Motrix": {
+            "description": "功能齐全的下载管理器。"
+        },
+        "mpchc": {
+            "description": "Media Player Classic - Home Cinema (MPC-HC) 是一款适用于 Windows 的免费开源视频和音频播放器。 MPC-HC 基于原始 Guliverkli 项目，包含许多附加功能和错误修复。"
+        },
+        "mremoteng": {
+            "description": "mRemoteNG 是一个免费的开源远程连接管理器。它允许您在单个界面中查看和管理多个远程会话。"
+        },
+        "msedgeredirect": {
+            "description": "将新闻、搜索、小部件、天气等重定向到默认浏览器的工具。"
+        },
+        "msiafterburner": {
+            "description": "MSI Afterburner 是一款具有高级功能的显卡超频实用程序。"
+        },
+        "mullvadvpn": {
+            "description": "这是 Mulvad VPN 服务的 VPN 客户端软件。"
+        },
+        "BorderlessGaming": {
+            "description": "在无边框窗口中玩您喜欢的游戏；不再需要花费时间的 alt-tabs。"
+        },
+        "EqualizerAPO": {
+            "description": "均衡器 APO 是一个适用于 Windows 的参数/图形均衡器。"
+        },
+        "CompactGUI": {
+            "description": "使用 Windows 10/11 API 透明地压缩活动游戏和程序"
+        },
+        "ExifCleaner": {
+            "description": "用于清理图像、视频、PDF 和其他文件中的元数据的桌面应用程序。"
+        },
+        "mullvadbrowser": {
+            "description": "Mulvad 浏览器是一款注重隐私的 Web 浏览器，与 Tor 项目合作开发。"
+        },
+        "musescore": {
+            "description": "使用免费且易于使用的乐谱软件 MuseScore 创建、播放和打印精美的乐谱。"
+        },
+        "musicbee": {
+            "description": "MusicBee 是一款可定制的音乐播放器，支持各种音频格式。它包括集成搜索功能、标签编辑等功能。"
+        },
+        "mp3tag": {
+            "description": "Mp3tag 是一个功能强大且易于使用的工具，用于编辑常见音频格式的元数据。"
+        },
+        "tagscanner": {
+            "description": "TagScanner 是一个用于组织和管理音乐收藏的强大工具。"
+        },
+        "nanazip": {
+            "description": "NanaZip 是一款快速高效的文件压缩和解压工具。"
+        },
+        "netbird": {
+            "description": "NetBird 是一个与 TailScale 相当的开源替代方案，可以连接到自托管服务器。"
+        },
+        "naps2": {
+            "description": "NAPS2 是一款文档扫描应用程序，可简化创建电子文档的过程。"
+        },
+        "neofetchwin": {
+            "description": "Neofetch 是一个命令行实用程序，用于以视觉上吸引人的方式显示系统信息。"
+        },
+        "neovim": {
+            "description": "Neovim 是一个高度可扩展的文本编辑器，是对原始 Vim 编辑器的改进。"
+        },
+        "nextclouddesktop": {
+            "description": "Nextcloud Desktop是Nextcloud文件同步和共享平台的官方桌面客户端。"
+        },
+        "nglide": {
+            "description": "nGlide 是一个 3Dfx Voodoo Glide 包装器。它允许您在现代显卡上玩使用 Glide API 的游戏，而无需 3Dfx Voodoo 显卡。"
+        },
+        "nmap": {
+            "description": "Nmap（Network Mapper）是一个用于网络探索和安全审计的开源工具。它发现网络上的设备并提供有关其端口和服务的信息。"
+        },
+        "nodejs": {
+            "description": "NodeJS 是一个基于 Chrome V8 JavaScript 引擎构建的 JavaScript 运行时，用于构建服务器端和网络应用程序。"
+        },
+        "nodejslts": {
+            "description": "NodeJS LTS 为稳定可靠的服务器端 JavaScript 开发提供长期支持版本。"
+        },
+        "nomacs": {
+            "description": "Nomacs 是一个免费的开源图像查看器，支持多个平台。它具有基本的图像编辑功能并支持多种图像格式。"
+        },
+        "notepadplus": {
+            "description": "Notepad++ 是一款免费的开源代码编辑器和记事本替代品，支持多种语言。"
+        },
+        "nuget": {
+            "description": "NuGet 是 .NET 框架的包管理器，使开发人员能够管理和共享其 .NET 应用程序中的库。"
+        },
+        "nushell": {
+            "description": "Nushell 是一种新的 shell，它利用现代硬件和系统来提供强大、富有表现力和快速的体验。"
+        },
+        "nvclean": {
+            "description": "NVCleanstall 是一款旨在自定义 NVIDIA 驱动程序安装的工具，允许高级用户控制安装过程的更多方面。"
+        },
+        "nvm": {
+            "description": "适用于 Windows 的节点版本管理器 (NVM) 允许您在多个 Node.js 版本之间轻松切换。"
+        },
+        "obs": {
+            "description": "OBS Studio 是一款用于视频录制和直播的免费开源软件。它支持实时视频/音频捕获和混合，使其受到内容创作者的欢迎。"
+        },
+        "obsidian": {
+            "description": "Obsidian 是一款功能强大的笔记和知识管理应用程序。"
+        },
+        "okular": {
+            "description": "Okular 是一款具有高级功能的多功能文档查看器。"
+        },
+        "ollama": {
+            "description": "Ollama 允许您在桌面上运行和管理本地大型语言模型。"
+        },
+        "onedrive": {
+            "description": "OneDrive是微软提供的一项云存储服务，允许用户跨设备安全地存储和共享文件。"
+        },
+        "onlyoffice": {
+            "description": "ONLYOffice Desktop 是一款用于文档编辑和协作的综合办公套件。"
+        },
+        "OPAutoClicker": {
+            "description": "功能齐全的自动点击器，具有两种自动点击模式，在动态光标位置或预先指定的位置。"
+        },
+        "openhashtab": {
+            "description": "OpenHashTab 是一个 shell 扩展，用于方便地根据文件属性计算和检查文件哈希值。"
+        },
+        "openrgb": {
+            "description": "OpenRGB 是一款开源 RGB 照明控制软件，旨在管理和控制各种组件和外围设备的 RGB 照明。"
+        },
+        "openscad": {
+            "description": "OpenSCAD 是一款基于脚本的免费开源 3D CAD 建模器。它对于创建 3D 打印的参数化设计特别有用。"
+        },
+        "openshell": {
+            "description": "Open Shell 是 Windows 开始菜单的替代品，具有增强的功能和自定义选项。"
+        },
+        "OpenVPN": {
+            "description": "OpenVPN Connect 是一个开源 VPN 客户端，可让您安全地连接到 VPN 服务器。它提供安全且加密的连接来保护您的在线隐私。"
+        },
+        "OVirtualBox": {
+            "description": "Oracle VirtualBox 是一款功能强大且免费的开源虚拟化工具，适用于 x86 和 AMD64/Intel64 架构。"
+        },
+        "ownclouddesktop": {
+            "description": "ownCloud Desktop是ownCloud文件同步和共享平台的官方桌面客户端。"
+        },
+        "policyplus": {
+            "description": "本地组策略编辑器以及更多功能，适用于所有 Windows 版本。"
+        },
+        "potplayer": {
+            "description": "PotPlayer 是一款免费的 Windows 媒体播放器，具有广泛的格式支持、高性能、内置编解码器和广泛的自定义选项。"
+        },
+        "power-automate-desktop": {
+            "description": "Microsoft 的 Windows RPA 工具，用于构建桌面流程，以自动执行跨应用程序和服务的重复任务。"
+        },
+        "processexplorer": {
+            "description": "Process Explorer 是一个任务管理器和系统监视器。"
+        },
+        "Paintdotnet": {
+            "description": "Paint.NET 是一款适用于 Windows 的免费图像和照片编辑软件。它具有直观的用户界面并支持各种强大的编辑工具。"
+        },
+        "parsec": {
+            "description": "Parsec 是一款低延迟、高质量的远程桌面共享应用程序，用于跨设备协作和游戏。"
+        },
+        "pdf-xchange": {
+            "description": "一款基于 Windows 的综合软件套件和编辑器，用于创建、查看、编辑、注释和签名 PDF 文件。"
+        },
+        "pdf24creator": {
+            "description": "免费且易于使用的在线/桌面 PDF 工具可提高您的工作效率"
+        },
+        "pdfsam": {
+            "description": "PDFsam Basic 是一款免费的开源工具，用于分割、合并和旋转 PDF 文件。"
+        },
+        "peazip": {
+            "description": "PeaZip 是一款免费的开源文件归档实用程序，支持多种归档格式并提供加密功能。"
+        },
+        "piimager": {
+            "description": "Raspberry Pi Imager 是一个实用程序，用于将操作系统映像写入 Raspberry Pi 设备的 SD 卡。"
+        },
+        "playnite": {
+            "description": "Playnite 是一款开源视频游戏库管理器，其目标很简单：为所有游戏提供统一的界面。"
+        },
+        "plex": {
+            "description": "Plex Media Server 是一款媒体服务器软件，可让您组织和流式传输媒体库。它支持各种媒体格式并提供广泛的功能。"
+        },
+        "plexdesktop": {
+            "description": "Windows 版 Plex Desktop 是 Plex Media Server 的前端。"
+        },
+        "Portmaster": {
+            "description": "Portmaster 是一款免费的开源应用程序，可让您重新掌控所有计算机的网络连接。"
+        },
+        "posh": {
+            "description": "Oh My Posh 是适用于任何 shell 的跨平台提示主题引擎。"
+        },
+        "postman": {
+            "description": "Postman 是一个 API 开发协作平台，可以简化 API 开发流程。"
+        },
+        "powerautomate": {
+            "description": "使用 Power Automate Desktop，您可以自动执行桌面和 Web 上的任务。"
+        },
+        "powerbi": {
+            "description": "使用 Power BI Desktop 创建令人惊叹的报告和可视化。它通过直观的报告创作让可视化分析触手可及。拖放即可将内容准确放置在灵活流畅的画布上您想要的位置。当您探索链接的交互式可视化的单一统一视图时，快速发现模式。"
+        },
+        "powershell": {
+            "description": "PowerShell 是一种专为系统管理员设计的任务自动化框架和脚本语言，提供强大的命令行功能。"
+        },
+        "powertoys": {
+            "description": "PowerToys 是一组供高级用户提高工作效率的实用程序，其中包括 FancyZones、PowerRename 等工具。"
+        },
+        "prismlauncher": {
+            "description": "Prism Launcher 是一款开源 Minecraft 启动器，能够管理多个实例、帐户和 mod。"
+        },
+        "processlasso": {
+            "description": "Process Lasso 是一种系统优化和自动化工具，可通过调整进程优先级和 CPU 亲和性来提高系统响应能力和稳定性。"
+        },
+        "protonauth": {
+            "description": "Proton 的 2FA 应用程序可安全同步和备份 2FA 代码。"
+        },
+        "processmonitor": {
+            "description": "SysInternals Process Monitor 是一种高级监视工具，可显示实时文件系统、注册表和进程/线程活动。"
+        },
+        "orcaslicer": {
+            "description": "用于 3D 打印机的 G 代码生成器（Bambu、Prusa、Voron、VzBot、RatRig、Creality 等）。"
+        },
+        "prucaslicer": {
+            "description": "PrusaSlicer 是一款功能强大且易于使用的切片软件，用于使用 Prusa 3D 打印机进行 3D 打印。"
+        },
+        "psremoteplay": {
+            "description": "PS Remote Play 是一款免费应用程序，可让您将游戏从 PlayStation 主机流式传输到 PC 或移动设备。"
+        },
+        "putty": {
+            "description": "PuTTY 是一款免费的开源终端仿真器、串行控制台和网络文件传输应用程序。支持SSH、Telnet、SCP等多种网络协议。"
+        },
+        "python3": {
+            "description": "Python 是一种多功能编程语言，用于 Web 开发、数据分析、人工智能等。"
+        },
+        "qbittorrent": {
+            "description": "qBittorrent 是一款免费开源的 BitTorrent 客户端，旨在为其他 torrent 客户端提供功能丰富且轻量级的替代方案。"
+        },
+        "transmission": {
+            "description": "Transmission 是一款跨平台 BitTorrent 客户端，开源、简单、强大且精益。"
+        },
+        "tixati": {
+            "description": "Tixati 是一个用 C++ 编写的跨平台 BitTorrent 客户端，旨在减少系统资源占用。"
+        },
+        "qtox": {
+            "description": "QTox 是一款免费的开源消息应用程序，在设计中优先考虑用户隐私和安全。"
+        },
+        "quicklook": {
+            "description": "将 macOS“快速查看”功能引入 Windows。"
+        },
+        "rainmeter": {
+            "description": "Rainmeter 是一款桌面自定义工具，可让您为桌面创建和共享可自定义的皮肤。"
+        },
+        "revo": {
+            "description": "Revo Uninstaller 是一款高级卸载程序工具，可帮助您删除不需要的软件并清理系统。"
+        },
+        "WiseProgramUninstaller": {
+            "description": "Wise Program Uninstaller 是卸载 Windows 程序的完美解决方案，使您可以使用其简单且用户友好的界面快速、完整地卸载应用程序。"
+        },
+        "revolt": {
+            "description": "找到您的社区，与世界联系。 Revolt 是在不牺牲任何可用性的情况下与朋友和社区保持联系的最佳方式之一。"
+        },
+        "ripgrep": {
+            "description": "快速而强大的命令行搜索工具。"
+        },
+        "rufus": {
+            "description": "Rufus 是一款实用程序，可帮助格式化和创建可启动 USB 驱动器，例如 USB 密钥或笔式驱动器。"
+        },
+        "rustdesk": {
+            "description": "RustDesk 是一个免费的开源远程桌面应用程序。它提供了一种连接到远程计算机和访问桌面环境的安全方法。"
+        },
+        "rustlang": {
+            "description": "Rust 是一种为安全性和性能而设计的编程语言，特别关注系统编程。"
+        },
+        "sagethumbs": {
+            "description": "提供对资源管理器中更多格式缩略图的支持。"
+        },
+        "sandboxie": {
+            "description": "Sandboxie Plus 是一种基于沙箱的隔离程序，通过在隔离环境中运行应用程序来提供增强的安全性。"
+        },
+        "sdio": {
+            "description": "Snappy Driver Installer Origin 是一款免费的开源驱动程序更新程序，拥有适用于 Windows 的庞大驱动程序数据库。"
+        },
+        "session": {
+            "description": "Session 是一款建立在去中心化网络上的私密且安全的消息传递应用程序，旨在保护用户隐私和数据。"
+        },
+        "sharex": {
+            "description": "ShareX 是一款免费的开源屏幕捕获和文件共享工具。它支持各种捕获方法，并提供编辑和共享屏幕截图的高级功能。"
+        },
+        "nilesoftShell": {
+            "description": "Shell 是一种扩展的上下文菜单工具，可为 Windows 上下文菜单添加额外的功能和自定义选项。"
+        },
+        "systeminformer": {
+            "description": "一款免费、强大的多用途工具，可帮助您监控系统资源、调试软件和检测恶意软件。"
+        },
+        "sidequest": {
+            "description": "SideQuestVR 是一个社区驱动的平台，使用户能够在 Oculus Quest 设备上发现、安装和管理虚拟现实内容。"
+        },
+        "signal": {
+            "description": "Signal 是一款注重隐私的消息传递应用程序，为安全和私密的通信提供端到端加密。"
+        },
+        "signalrgb": {
+            "description": "SignalRGB 可让您通过一款免费应用程序控制和同步您喜爱的 RGB 设备。"
+        },
+        "simplenote": {
+            "description": "Simplenote 是一种保存笔记、列表、想法等的简单方法。"
+        },
+        "simplewall": {
+            "description": "Simplewall 是一款适用于 Windows 的免费开源防火墙应用程序。它允许用户控制和管理应用程序的入站和出站网络流量。"
+        },
+        "slack": {
+            "description": "Slack 是一个协作中心，可连接团队并通过渠道、消息传递和文件共享促进沟通。"
+        },
+        "spacedrive": {
+            "description": "Spacedrive 是一款文件管理器，提供云存储集成和跨设备文件同步。"
+        },
+        "spacesniffer": {
+            "description": "一个工具应用程序，可让您了解文件夹和文件在磁盘上的结构。"
+        },
+        "starship": {
+            "description": "Starship 是适用于任何 shell 的最小、快速且可自定义的提示符。"
+        },
+        "steam": {
+            "description": "Steam 是一个用于购买和玩视频游戏的数字发行平台，提供多人游戏、视频流等。"
+        },
+        "strawberry": {
+            "description": "Strawberry 是一款开源音乐播放器，专注于音乐收藏管理和音频质量。它支持各种音频格式并具有简洁的用户界面。"
+        },
+        "stremio": {
+            "description": "Stremio 是一款媒体中心应用程序，允许用户组织和流式传输他们喜爱的电影、电视节目和视频内容。"
+        },
+        "sublimemerge": {
+            "description": "Sublime Merge 是一个具有先进功能和漂亮界面的 Git 客户端。"
+        },
+        "sublimetext": {
+            "description": "Sublime Text 是一款用于代码、标记和散文的复杂文本编辑器。"
+        },
+        "sumatra": {
+            "description": "Sumatra PDF 是一款轻量级、快速的 PDF 查看器，具有简约的设计。"
+        },
+        "pdfgear": {
+            "description": "PDFgear 是一款适用于 Windows、macOS 和移动设备的全功能 PDF 管理软件，并且完全免费使用。"
+        },
+        "sunshine": {
+            "description": "Sunshine 是一款 GameStream 服务器，可让您在 Android 设备上远程玩 PC 游戏，并提供低延迟流媒体。"
+        },
+        "superf4": {
+            "description": "SuperF4 是一个实用程序，允许您通过按可自定义的热键立即终止程序。"
+        },
+        "swift": {
+            "description": "Swift 是一种通用编程语言，对于新手来说很容易上手，对于专家来说功能强大。"
+        },
+        "synctrayzor": {
+            "description": "Windows 托盘实用程序/文件系统观察程序/Syncthing 启动程序。"
+        },
+        "sqlmanagementstudio": {
+            "description": "SQL Server Management Studio (SSMS) 是一个集成环境，用于管理从 SQL Server 到 Azure SQL 数据库的任何 SQL 基础结构。 SSMS 提供了用于配置、监视和管理 SQL Server 和数据库实例的工具。"
+        },
+        "tabby": {
+            "description": "Tabby 是一款高度可配置的终端仿真器、SSH 和串行客户端，适用于 Windows、macOS 和 Linux。"
+        },
+        "tailscale": {
+            "description": "Tailscale 是一种安全且易于使用的 VPN 解决方案，用于连接您的设备和网络。"
+        },
+        "TcNoAccSwitcher": {
+            "description": "适用于 Steam、Battle.net、Epic Games、Origin、Riot、Ubisoft 等的超快速帐户切换器！"
+        },
+        "tcpview": {
+            "description": "SysInternals TCPView 是一个网络监控工具，可显示系统上所有 TCP 和 UDP 端点的详细列表。"
+        },
+        "teams": {
+            "description": "Microsoft Teams 是一个与 Office 365 集成的协作平台，提供聊天、视频会议、文件共享等功能。"
+        },
+        "teamviewer": {
+            "description": "TeamViewer 是一种流行的远程访问和支持软件，可让您连接和控制远程设备。"
+        },
+        "telegram": {
+            "description": "Telegram 是一款基于云的即时通讯应用程序，以其安全功能、速度和简单性而闻名。"
+        },
+        "unigram": {
+            "description": "Unigram - Windows 版 Telegram。"
+        },
+        "terminal": {
+            "description": "Windows Terminal 是面向命令行用户的现代、快速且高效的终端应用程序，支持多个选项卡、窗格等。"
+        },
+        "Thonny": {
+            "description": "适合初学者的 Python IDE。"
+        },
+        "MuEditor": {
+            "description": "Mu 是一款适合初学者的 Python 代码编辑器。"
+        },
+        "thorium": {
+            "description": "为超越普通 Chromium 的速度而构建的浏览器。它采用 AVX2 优化构建，是市场上最快的浏览器。"
+        },
+        "thunderbird": {
+            "description": "Mozilla Thunderbird 是一款免费、开源的电子邮件客户端、新闻客户端和聊天客户端，具有高级功能。"
+        },
+        "betterbird": {
+            "description": "Betterbird 是 Mozilla Thunderbird 的一个分支，具有附加功能和错误修复。"
+        },
+        "tidal": {
+            "description": "Tidal 是一项音乐流媒体服务，以其高保真音频质量和独家内容而闻名。它提供了大量的歌曲库和精选的播放列表。"
+        },
+        "tor": {
+            "description": "Tor 浏览器专为匿名网页浏览而设计，利用 Tor 网络保护用户隐私和安全。"
+        },
+        "totalcommander": {
+            "description": "Total Commander 是一款适用于 Windows 的文件管理器，为文件管理提供了强大而直观的界面。"
+        },
+        "treesize": {
+            "description": "TreeSize Free 是一个磁盘空间管理器，可帮助您分析和可视化驱动器上的空间使用情况。"
+        },
+        "ttaskbar": {
+            "description": "TranslucentTB 是一个允许您自定义 Windows 任务栏透明度的工具。"
+        },
+        "twinkletray": {
+            "description": "Twinkle Tray 可让您轻松管理多台显示器的亮度级别。"
+        },
+        "ubisoft": {
+            "description": "Ubisoft Connect 是 Ubisoft 的数字发行和在线游戏服务，提供对 Ubisoft 游戏和服务的访问。"
+        },
+        "ungoogled": {
+            "description": "Ungoogled Chromium 是未与 Google 集成的 Chromium 版本，旨在增强隐私和控制。"
+        },
+        "unity": {
+            "description": "Unity 是一个强大的游戏开发平台，用于创建 2D、3D、增强现实和虚拟现实游戏。"
+        },
+        "vagrant": {
+            "description": "Vagrant 是一个用于构建和管理虚拟化开发环境的开源工具。"
+        },
+        "vc2015_32": {
+            "description": "Visual C++ 2015-2022 32 位可再发行软件包安装运行 32 位应用程序所需的 Visual C++ 库的运行时组件。"
+        },
+        "vc2015_64": {
+            "description": "Visual C++ 2015-2022 64 位可再发行软件包安装运行 64 位应用程序所需的 Visual C++ 库的运行时组件。"
+        },
+        "ventoy": {
+            "description": "Ventoy 是一个用于创建可启动 USB 驱动器的开源工具。它支持单个 USB 驱动器上的多个 ISO 文件，使其成为安装操作系统的多功能解决方案。"
+        },
+        "vesktop": {
+            "description": "一款基于电子的跨平台桌面应用程序，旨在通过预安装的 Vencord 为您提供更快的 Discord 体验。"
+        },
+        "viber": {
+            "description": "Viber 是一款免费的消息传递和通话应用程序，具有群聊、视频通话等功能。"
+        },
+        "videomass": {
+            "description": "GianlucaPernigotto 的 Videomass 是 FFmpeg 的跨平台 GUI，通过批量转换和用户友好的功能简化多媒体文件处理。"
+        },
+        "visualstudio2022": {
+            "description": "Visual Studio 2022 是一个用于构建、调试和部署应用程序的集成开发环境 (IDE)。"
+        },
+        "visualstudio2026": {
+            "description": "Visual Studio 2026 是一个用于构建、调试和部署应用程序的集成开发环境 (IDE)。"
+        },
+        "vivaldi": {
+            "description": "Vivaldi 是一款高度可定制的网络浏览器，专注于用户个性化和生产力功能。"
+        },
+        "vlc": {
+            "description": "VLC Media Player 是一款免费的开源多媒体播放器，支持多种音频和视频格式。它以其多功能性和跨平台兼容性而闻名。"
+        },
+        "voicemeeter": {
+            "description": "Voicemeeter 是一个虚拟音频混音器，可让您管理和增强计算机上的音频流。它通常用于音频录制和流媒体目的。"
+        },
+        "VoicemeeterPotato": {
+            "description": "Voicemeeter Potato 是 Voicemeeter 音频混合器应用程序的终极版本，配备虚拟音频设备，可混合和管理来自或发送至任何音频设备或应用程序的任何音频源。"
+        },
+        "vrdesktopstreamer": {
+            "description": "Virtual Desktop Streamer 是一款可让您将桌面屏幕流式传输到 VR 设备的工具。"
+        },
+        "vscode": {
+            "description": "Visual Studio Code 是一款免费的开源代码编辑器，支持多种编程语言。"
+        },
+        "vscodium": {
+            "description": "VSCodium 是 Microsoft VS Code 的社区驱动、免费许可的二进制发行版。"
+        },
+        "waterfox": {
+            "description": "Waterfox 是一款基于 Firefox 的快速、注重隐私的网络浏览器，旨在保护用户的选择和隐私。"
+        },
+        "wazuh": {
+            "description": "Wazuh 是一个开源安全监控平台，提供入侵检测、合规性检查和日志分析。"
+        },
+        "wezterm": {
+            "description": "WezTerm 是一款功能强大的跨平台终端仿真器和多路复用器。"
+        },
+        "windowspchealth": {
+            "description": "Windows PC Health Check 是一款帮助您检查您的电脑是否满足 Windows 11 系统要求的工具。"
+        },
+        "WindowGrid": {
+            "description": "WindowGrid 是一种现代的 Windows 窗口管理程序，允许用户仅使用鼠标即可在动态网格上快速轻松地布局窗口。"
+        },
+        "wingetui": {
+            "description": "UniGetUI 是 Winget、Chocolatey 和其他 Windows CLI 包管理器的 GUI。"
+        },
+        "winmerge": {
+            "description": "WinMerge 是一个适用于 Windows 的可视化文本文件和目录比较工具。"
+        },
+        "winpaletter": {
+            "description": "WinPaletter 是一个用于调整 Windows 10 调色板的工具，提供窗口颜色的自定义选项。"
+        },
+        "winrar": {
+            "description": "WinRAR 是一个功能强大的存档管理器，允许您创建、管理和解压压缩文件。"
+        },
+        "winscp": {
+            "description": "WinSCP 是一款流行的 Windows 开源 SFTP、FTP 和 SCP 客户端。它允许在本地和远程计算机之间安全地传输文件。"
+        },
+        "wireguard": {
+            "description": "WireGuard 是一种快速且现代的 VPN（虚拟专用网络）协议。它的目标是比其他 VPN 协议更简单、更高效，提供安全可靠的连接。"
+        },
+        "wireshark": {
+            "description": "Wireshark 是一种广泛使用的开源网络协议分析器。它允许用户实时捕获和分析网络流量，提供对网络活动的详细见解。"
+        },
+        "wisetoys": {
+            "description": "WiseToys 是一组实用程序和工具，旨在增强和优化您的 Windows 体验。"
+        },
+        "TeraCopy": {
+            "description": "更快、更安全地复制文件。"
+        },
+        "wizfile": {
+            "description": "几乎可以立即按名称查找硬盘上的文件。"
+        },
+        "wiztree": {
+            "description": "WizTree 是一款快速磁盘空间分析器，可帮助您快速找到占用硬盘空间最多的文件和文件夹。"
+        },
+        "xdm": {
+            "description": "Xtreme Download Manager 是一款高级下载管理器，支持各种协议和浏览器。 *谷歌商店已弃用浏览器集成。没有正式发布。*"
+        },
+        "xeheditor": {
+            "description": "HxD 是一个免费的十六进制编辑器，允许您编辑、查看、搜索和分析二进制文件。"
+        },
+        "xemu": {
+            "description": "XEMU 是一款开源 Xbox 模拟器，可让您在 PC 上玩 Xbox 游戏，旨在提高准确性和兼容性。"
+        },
+        "xnview": {
+            "description": "XnView 是一款适用于 Windows 的高效图像查看器、浏览器和转换器。"
+        },
+        "xournal": {
+            "description": "Xournal++是一款开源手写笔记软件，具有PDF注释功能。"
+        },
+        "xpipe": {
+            "description": "XPipe 是一个用于编排容器化应用程序的开源工具。它简化了分布式环境中容器化服务的部署和管理。"
+        },
+        "yarn": {
+            "description": "Yarn 是一种快速、可靠且安全的 JavaScript 项目依赖管理工具。"
+        },
+        "ytdlp": {
+            "description": "命令行工具，允许您从 YouTube 和其他支持的网站下载视频。它是流行的 youtube-dl 的改进版本。"
+        },
+        "zerotierone": {
+            "description": "ZeroTier One 是一种软件定义的网络工具，可让您创建安全且可扩展的网络。"
+        },
+        "zim": {
+            "description": "Zim Desktop Wiki 是一个图形文本编辑器，用于维护 wiki 页面的集合。"
+        },
+        "znote": {
+            "description": "Znote 是一款笔记应用程序。"
+        },
+        "zoom": {
+            "description": "Zoom 是一种流行的视频会议和网络会议服务，适用于在线会议、网络研讨会和协作项目。"
+        },
+        "zoomit": {
+            "description": "用于技术演示和演示的屏幕缩放、注释和记录工具。"
+        },
+        "zotero": {
+            "description": "Zotero 是一款免费且易于使用的工具，可帮助您收集、组织、引用和共享您的研究材料。"
+        },
+        "zoxide": {
+            "description": "Zoxy 是一种快速高效的目录更改器 (cd)，可帮助您轻松导航文件系统。"
+        },
+        "zulip": {
+            "description": "Zulip 是一款开源团队协作工具，具有聊天流，可实现高效且有组织的沟通。"
+        },
+        "syncthingtray": {
+            "description": "可能是 Synctrayzor 的替代品。 Windows 托盘实用程序/文件系统观察程序/Syncthing 启动程序。"
+        },
+        "miniconda": {
+            "description": "Miniconda 是 conda 的免费最小安装程序。它是 Anaconda 的一个小型引导版本，仅​​包含 conda、Python、它们所依赖的包以及少量其他有用的包（例如 pip、zlib 等）。"
+        },
+        "pixi": {
+            "description": "Pixi 是一个构建在现有 conda 生态系统之上的快速软件包管​​理器。在 Windows、macOS 和 Linux 上快速启动开发环境。 Pixi 支持 Python、R、C/C++、Rust、Ruby 和许多其他语言。"
+        },
+        "temurin": {
+            "description": "Eclipse Temurin 是基于 OpenJDK 的开源 Java SE 版本。"
+        },
+        "intelpresentmon": {
+            "description": "一种新的游戏性能叠加和遥测应用程序，用于监控和测量您的游戏体验。"
+        },
+        "pyenvwin": {
+            "description": "pyenv for Windows 是一个简单的 python 版本管理工具。它可以让你轻松地在多个版本的 Python 之间切换。"
+        },
+        "tightvnc": {
+            "description": "TightVNC 是一款免费的开源远程桌面软件，可让您通过网络访问和控制计算机。凭借其直观的界面，您可以与远程屏幕进行交互，就像您坐在它前面一样。您可以在远程桌面上打开文件、启动应用程序以及执行其他操作，就像您亲临现场一样。"
+        },
+        "ultravnc": {
+            "description": "UltraVNC 是一款功能强大、易于使用且免费的远程 PC 访问软件，它可以在您自己的屏幕上显示另一台计算机的屏幕（通过互联网或网络）。该程序允许您使用鼠标和键盘远程控制另一台电脑。这意味着您可以在远程计算机上工作，就好像您坐在当前位置的计算机前面一样。"
+        },
+        "windowsfirewallcontrol": {
+            "description": "Windows 防火墙控制是一个功能强大的工具，它扩展了 Windows 防火墙的功能并提供了新的额外功能，使 Windows 防火墙变得更好。"
+        },
+        "vistaswitcher": {
+            "description": "VistaSwitcher 使您可以更轻松地定位窗口和切换焦点，甚至在多显示器系统上也是如此。切换器窗口包含一个易于阅读的所有正在运行的任务列表，并带有清晰显示的标题和所选任务的全尺寸预览。"
+        },
+        "autodarkmode": {
+            "description": "自动在 Windows 10 和 Windows 11 的深色和浅色主题之间切换。"
+        },
+        "AmbieWhiteNoise": {
+            "description": "Ambie 是帮助您集中注意力、学习或放松的终极应用程序。我们将白噪音和自然声音与创新的专注计时器相结合，让您集中精力做好工作。"
+        },
+        "magicwormhole": {
+            "description": "安全地将东西从一台计算机转移到另一台计算机。"
+        },
+        "croc": {
+            "description": "轻松安全地将内容从一台计算机发送到另一台计算机。"
+        },
+        "qgis": {
+            "description": "QGIS（Quantum GIS）是一款开源地理信息系统（GIS）软件，使用户能够在 Windows、macOS 和 Linux 平台上创建、编辑、可视化、分析和发布地理空间信息。"
+        },
+        "smplayer": {
+            "description": "SMPlayer 是一款适用于 Windows 和 Linux 的免费媒体播放器，具有内置编解码器，几乎可以播放所有视频和音频格式。"
+        },
+        "glazewm": {
+            "description": "GlazeWM 是受 i3 和 Polybar 启发的 Windows 平铺窗口管理器。"
+        },
+        "fancontrol": {
+            "description": "风扇控制是一款免费的开源软件，允许用户使用温度来控制 CPU、GPU 和机箱风扇。"
+        },
+        "fnm": {
+            "description": "快速节点管理器 (fnm) 允许您使用终端切换节点版本。"
+        },
+        "Windhawk": {
+            "description": "Windows 程序的定制市场。"
+        },
+        "ForceAutoHDR": {
+            "description": "ForceAutoHDR 简化了将游戏添加到 Windows 注册表中的 AutoHDR 列表的过程。"
+        },
+        "JoyToKey": {
+            "description": "使 PC 游戏控制器能够模拟键盘和鼠标输入。"
+        },
+        "nditools": {
+            "description": "NDI（网络设备接口）是一种视频连接标准，使多媒体系统能够通过 IP 相互识别和通信，并编码、传输和接收高质量、低延迟、帧精确的视频和音频，并实时交换元数据。"
+        },
+        "kicad": {
+            "description": "Kicad 是一个开源 EDA 工具。对于那些想要进行电气设计的人来说，这是一个很好的起点，甚至被行业内的专业人士使用。"
+        },
+        "dropox": {
+            "description": "Dropbox 桌面应用程序！节省硬盘空间、共享和编辑文件并发送签名 - 所有这些都不会受到无数浏览器选项卡的干扰。"
+        },
+        "Overwolf": {
+            "description": "流行的游戏叠加层和配套应用程序（模组管理器、跟踪器等）平台，被游戏玩家广泛使用。"
+        },
+        "OFGB": {
+            "description": "用于删除 Windows 11 周围各个地方的广告的 GUI 工具"
+        },
+        "PaleMoon": {
+            "description": "Pale Moon 是一款基于 Goanna 的开源 Web 浏览器，适用于 Microsoft Windows 和 Linux（其他操作系统正在开发中），注重效率和易用性。"
+        },
+        "Shotcut": {
+            "description": "Shotcut 是一款免费、开源、跨平台的视频编辑器。"
+        },
+        "LenovoLegionToolkit": {
+            "description": "Lenovo Legion Toolkit (LLT) 是专为 Lenovo Legion（及类似）系列笔记本电脑创建的开源实用程序，允许更改仅在 Lenovo Vantage 或 Legion Zone 中可用的一些功能。它不运行后台服务，使用较少的内存，几乎不使用 CPU，并且不包含遥测数据。就像 Lenovo Vantage 一样，该应用程序仅适用于 Windows。"
+        },
+        "PulsarEdit": {
+            "description": "社区主导的超级可破解文本编辑器"
+        },
+        "Aegisub": {
+            "description": "Aegisub 是一款免费的跨平台开源工具，用于创建和修改字幕。 Aegisub 可以快速轻松地为音频字幕计时，并具有许多强大的工具来设计字幕，包括内置的实时视频预览。"
+        },
+        "SubtitleEdit": {
+            "description": "Subtitle Edit 是一款免费的开源视频字幕编辑器。"
+        },
+        "Fork": {
+            "description": "Fork - 一个快速且友好的 git 客户端。"
+        },
+        "ZenBrowser": {
+            "description": "基于 Firefox 构建的现代、注重隐私、性能驱动的浏览器。"
+        },
+        "Zed": {
+            "description": "Zed 是一款现代化的高性能代码编辑器，专为提高速度和协作而设计。"
+        },
+        "LLLVM": {
+            "description": "模块化且可重用的编译器和工具链技术的集合。"
+        },
+        "NASM": {
+            "description": "适用于 x86 平台的强大汇编器。"
+        }
+    },
+    "feature": {
+        "WPFFeaturesdotnet": {
+            "Content": "所有 .Net 框架 (2,3,4)",
+            "Description": ".NET 和 .NET Framework 是一个开发人员平台，由用于构建许多不同类型的应用程序的工具、编程语言和库组成。"
+        },
+        "WPFFeatureshyperv": {
+            "Content": "HyperV虚拟化",
+            "Description": "Hyper-V是微软开发的硬件虚拟化产品，允许用户创建和管理虚拟机。"
+        },
+        "WPFFeatureslegacymedia": {
+            "Content": "传统媒体（WMP、DirectPlay）",
+            "Description": "启用以前版本的 Windows 中的旧程序。"
+        },
+        "WPFFeaturewsl": {
+            "Content": "Linux 的 Windows 子系统",
+            "Description": "适用于 Linux 的 Windows 子系统是 Windows 的一项可选功能，它允许 Linux 程序在 Windows 上本机运行，无需单独的虚拟机或双启动。"
+        },
+        "WPFFeaturenfs": {
+            "Content": "NFS——网络文件系统",
+            "Description": "网络文件系统 (NFS) 是一种在网络上存储文件的机制。"
+        },
+        "WPFFeatureRegBackup": {
+            "Content": "启用每日注册表备份任务 12.30am",
+            "Description": "启用每日注册表备份，此前 Microsoft 在 Windows 10 1803 中禁用了该功能。"
+        },
+        "WPFFeatureEnableLegacyRecovery": {
+            "Content": "启用旧版 F8 引导恢复",
+            "Description": "启用“高级启动选项”屏幕，让您可以在高级故障排除模式下启动 Windows。"
+        },
+        "WPFFeatureDisableLegacyRecovery": {
+            "Content": "禁用旧版 F8 引导恢复",
+            "Description": "禁用“高级启动选项”屏幕，该屏幕可让您以高级故障排除模式启动 Windows。"
+        },
+        "WPFFeaturesSandbox": {
+            "Content": "Windows沙箱",
+            "Description": "Windows Sandbox 是一种轻量级虚拟机，它提供临时桌面环境以安全地隔离运行应用程序和程序。"
+        },
+        "WPFFeatureInstall": {
+            "Content": "安装功能"
+        },
+        "WPFPanelAutologin": {
+            "Content": "设置自动登录"
+        },
+        "WPFFixesUpdate": {
+            "Content": "重置 Windows 更新"
+        },
+        "WPFFixesNetwork": {
+            "Content": "重置网络"
+        },
+        "WPFPanelDISM": {
+            "Content": "系统损坏扫描"
+        },
+        "WPFFixesWinget": {
+            "Content": "WinGet重新安装"
+        },
+        "WPFPanelControl": {
+            "Content": "控制面板"
+        },
+        "WPFPanelComputer": {
+            "Content": "电脑管理"
+        },
+        "WPFPanelNetwork": {
+            "Content": "网络连接"
+        },
+        "WPFPanelPower": {
+            "Content": "电源面板"
+        },
+        "WPFPanelPrinter": {
+            "Content": "打印机面板"
+        },
+        "WPFPanelRegion": {
+            "Content": "地区"
+        },
+        "WPFPanelRestore": {
+            "Content": "Windows 恢复"
+        },
+        "WPFPanelSound": {
+            "Content": "声音设置"
+        },
+        "WPFPanelSystem": {
+            "Content": "系统属性"
+        },
+        "WPFPanelTimedate": {
+            "Content": "时间和日期"
+        },
+        "WPFWinUtilInstallPSProfile": {
+            "Content": "安装 CTT PowerShell 配置文件"
+        },
+        "WPFWinUtilUninstallPSProfile": {
+            "Content": "卸载 CTT PowerShell 配置文件"
+        },
+        "WPFWinUtilSSHServer": {
+            "Content": "启用 OpenSSH 服务器"
+        }
+    },
+    "appnavigation": {
+        "WPFInstall": {
+            "Content": "安装/升级应用程序",
+            "Description": "安装或升级选定的应用程序"
+        },
+        "WPFUninstall": {
+            "Content": "卸载应用程序",
+            "Description": "卸载选定的应用程序"
+        },
+        "WPFInstallUpgrade": {
+            "Content": "升级所有应用程序",
+            "Description": "将所有应用程序升级到最新版本"
+        },
+        "WingetRadioButton": {
+            "Content": "温盖特",
+            "Description": "使用Winget进行包管理"
+        },
+        "ChocoRadioButton": {
+            "Content": "巧克力味",
+            "Description": "使用 Chocolatey 进行包管理"
+        },
+        "WPFCollapseAllCategories": {
+            "Content": "折叠所有类别",
+            "Description": "折叠所有应用程序类别"
+        },
+        "WPFExpandAllCategories": {
+            "Content": "展开所有类别",
+            "Description": "展开所有应用类别"
+        },
+        "WPFClearInstallSelection": {
+            "Content": "清除选择",
+            "Description": "清除应用程序的选择"
+        },
+        "WPFGetInstalled": {
+            "Content": "显示已安装的应用程序",
+            "Description": "显示已安装的应用程序"
+        },
+        "WPFselectedAppsButton": {
+            "Content": "所选应用程序：0",
+            "Description": "显示选定的应用程序"
+        },
+        "WPFToggleFOSSHighlight": {
+            "Content": "突出显示自由和开源软件",
+            "Description": "切换 FOSS 应用程序的绿色突出显示"
+        }
+    }
+}
