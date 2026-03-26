@@ -10,13 +10,13 @@ function Invoke-WinUtilSSHServer {
         Add-WindowsCapability -Name OpenSSH.Server -Online
     }
 
-    # Sets up the OpenSSH Server service
     Write-Host "Starting the services"
-    Start-Service -Name sshd
-    Set-Service -Name sshd -StartupType Automatic
 
-    Start-Service -Name ssh-agent
+    Set-Service -Name sshd -StartupType Automatic
+    Start-Service -Name sshd
+
     Set-Service -Name ssh-agent -StartupType Automatic
+    Start-Service -Name ssh-agent
 
     #Adding Firewall rule for port 22
     Write-Host "Setting up firewall rules"
