@@ -44,7 +44,7 @@ irm "https://christitus.com/win" | iex
 ```
 
 > [!NOTE]
-> On Windows 11, you usually do not need the TLS 1.2 command. Use it only if you hit download or security protocol errors.
+> On Windows 11, you usually do not need the TLS 1.2 command. Use it only if you encounter download or security protocol errors.
 
 ### Execution Policy Error
 
@@ -59,7 +59,7 @@ This only changes the policy for the current PowerShell process and is safe for 
 
 ### Interface Doesn't Appear
 
-If Winutil downloads but the GUI does not open or appear, try these steps:
+If Winutil downloads, but the GUI does not open or appear, try these steps:
 
 1. Check if your antivirus or Windows Defender is blocking the script — add an exclusion if necessary.
 2. Ensure you launched PowerShell / Terminal as **Administrator**.

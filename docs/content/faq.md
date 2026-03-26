@@ -91,7 +91,7 @@ Alternatively, use System Restore if you created a restore point.
 - Run Disk Cleanup
 - Create Restore Point
 
-**(Advanced Tweaks)** should only be ran by advance users.
+**(Advanced Tweaks)** should only be run by advanced users.
 
 ### Will tweaks survive Windows Updates?
 Most tweaks persist through updates, but some may be reset by major Windows feature updates. You may need to reapply certain tweaks afterwards.
@@ -251,7 +251,7 @@ Winutil itself uses about 50-100 MB while running. Once closed, it is removed fr
 
 ### "Access Denied" errors
 - Ensure PowerShell is running as Administrator
-- Check if antivirus is blocking changes
+- Check if the antivirus is blocking changes
 - Verify you have ownership of files/registry keys
 
 

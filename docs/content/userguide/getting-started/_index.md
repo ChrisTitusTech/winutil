@@ -86,7 +86,7 @@ Winutil opens with a clean, tabbed interface:
 - **Tweaks**: Apply system optimizations and customizations
 - **Config**: Access system tools and utilities
 - **Updates**: Manage Windows updates
-- **Win11 Creator**: Allows user to debloat Win11 iso files.
+- **Win11 Creator**: Allows user to debloat Windows 11 ISO files.
 
 ## Your First Actions
 
@@ -106,7 +106,7 @@ This gives you a rollback point if needed.
 
 1. Navigate to the **Install** tab
 2. Browse categories or use the search bar
-3. Check applications you want to install
+3. Check the applications you want to install
 4. Click "Install/Upgrade Selected" at the bottom
 
 ### 3. Apply Basic Tweaks
@@ -209,7 +209,7 @@ Winutil offers several preset configurations:
 
 ### Script Won't Download
 
-If you get any errors when running winutil please refer to [Known Issues](/knownissues/) page
+If you get any errors when running Winutil please refer to [Known Issues](/knownissues/) page
 
 ## Next Steps
 
