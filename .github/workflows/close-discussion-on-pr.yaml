@@ -18,10 +18,11 @@ jobs:
       - name: Extract Discussion Number & Close If any Were Found
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_BODY: ${{ github.event.pull_request.body }}
         if: github.event.pull_request.merged == true
         id: extract-discussion
         run: |
-          pr_body="${{ github.event.pull_request.body }}"
+          pr_body="${PR_BODY}"
           discussion_ids=$(echo "$pr_body" | grep -oP '(?i)(resolve|fix|close)[s|d]? #\K[0-9]+')
 
           if [ -z "$discussion_ids" ]; then
