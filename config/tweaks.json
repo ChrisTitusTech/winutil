@@ -1667,7 +1667,7 @@
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/xboxremoval"
   },
   "WPFTweaksDeBloat": {
-    "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
+    "Content": "Remove all Microsoft Store Apps",
     "Description": "USE WITH CAUTION!!! This will remove ALL Microsoft Store apps.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
