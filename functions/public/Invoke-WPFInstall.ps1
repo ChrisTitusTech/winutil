@@ -32,7 +32,6 @@ function Invoke-WPFInstall {
         try {
             $sync.ProcessRunning = $true
             if($packagesWinget.Count -gt 0 -and $packagesWinget -ne "0") {
-                Show-WPFInstallAppBusy -text "Installing apps..."
                 Install-WinUtilWinget
                 Install-WinUtilProgramWinget -Action Install -Programs $packagesWinget
             }
@@ -40,7 +39,6 @@ function Invoke-WPFInstall {
                 Install-WinUtilChoco
                 Install-WinUtilProgramChoco -Action Install -Programs $packagesChoco
             }
-            Hide-WPFInstallAppBusy
             Write-Host "==========================================="
             Write-Host "--      Installs have finished          ---"
             Write-Host "==========================================="
