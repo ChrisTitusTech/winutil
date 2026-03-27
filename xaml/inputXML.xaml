@@ -1325,6 +1325,8 @@
                                          - Feature updates delayed by 365 days
                                         <LineBreak/>
                                          - Security updates installed after 4 days
+                                        <LineBreak/>
+                                         - Prevents Windows Update from installing drivers
                                         <LineBreak/><LineBreak/>
                                         <Run FontWeight="SemiBold">Feature Updates:</Run> New features and potential bugs
                                         <LineBreak/>
