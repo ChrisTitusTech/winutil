@@ -91,6 +91,15 @@ $($jsonAsObject | ConvertTo-Json -Depth 3)
     $script_content.Add($(Write-Output "`$sync.configs.$($psitem.BaseName) = @'`r`n$json`r`n'@ `| ConvertFrom-Json" ))
 }
 
+Update-Progress "Adding: Locale files" 50
+if (Test-Path "config\locales") {
+    Get-ChildItem "config\locales" -Filter "*.json" | ForEach-Object {
+        $json = (Get-Content $psitem.FullName -Raw)
+        $localeName = $psitem.BaseName
+        $script_content.Add($(Write-Output "`$sync.locales['$localeName'] = @'`r`n$json`r`n'@ `| ConvertFrom-Json" ))
+    }
+}
+
 # Read the entire XAML file as a single string, preserving line breaks
 $xaml = Get-Content "$workingdir\xaml\inputXML.xaml" -Raw
 
@@ -124,7 +133,7 @@ Remove-Item "xaml\inputApp.xaml" -ErrorAction SilentlyContinue
 Remove-Item "xaml\inputTweaks.xaml" -ErrorAction SilentlyContinue
 Remove-Item "xaml\inputFeatures.xaml" -ErrorAction SilentlyContinue
 
-Set-Content -Path "$scriptname" -Value ($script_content -join "`r`n") -Encoding ascii
+Set-Content -Path "$scriptname" -Value ($script_content -join "`r`n") -Encoding utf8
 Write-Progress -Activity "Compiling" -Completed
 
 Update-Progress -Activity "Validating" -StatusMessage "Checking winutil.ps1 Syntax" -Percent 0

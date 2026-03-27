@@ -62,6 +62,9 @@ function Set-Preferences{
         if ($null -eq $sync.preferences.packagemanager) {
             $sync.preferences.packagemanager = "Winget"
         }
+        if ($null -eq $sync.preferences.locale) {
+            $sync.preferences.locale = "auto"
+        }
 
         # convert packagemanager to enum
         if ($sync.preferences.packagemanager -eq "Choco") {
