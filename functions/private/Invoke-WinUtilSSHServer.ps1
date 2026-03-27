@@ -6,7 +6,7 @@ function Invoke-WinUtilSSHServer {
 
     # Install the OpenSSH Server feature if not already installed
     if ((Get-WindowsCapability -Name OpenSSH.Server -Online).State -ne "Installed") {
-        Write-Host "Enabling OpenSSH Server... This well take a long time"
+        Write-Host "Enabling OpenSSH Server... This will take a long time"
         Add-WindowsCapability -Name OpenSSH.Server -Online
     }
 
