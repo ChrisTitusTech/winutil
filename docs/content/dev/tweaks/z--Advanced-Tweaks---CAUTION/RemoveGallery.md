@@ -1,11 +1,11 @@
 ---
-title: "Remove Gallery from explorer"
+title: "Remove Gallery from Explorer"
 description: ""
 ---
 
 ```json {filename="config/tweaks.json",linenos=inline,linenostart=1530}
   "WPFTweaksRemoveGallery": {
-    "Content": "Remove Gallery from explorer",
+    "Content": "Remove Gallery from Explorer",
     "Description": "Removes the Gallery from Explorer and sets This PC as default.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",

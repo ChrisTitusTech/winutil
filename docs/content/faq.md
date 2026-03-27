@@ -6,26 +6,26 @@ toc: true
 ## General Questions
 
 ### Is Windows 10 still supported?
-No. Windows 10 is no longer supported by Winutil because it reached end of support on **October 14, 2025**.
+No. Windows 10 is no longer supported by Winutil because it reached the end of support on **October 14, 2025**.
 Winutil is focused on Windows 11.
 
 ### How do I uninstall Winutil?
 You do not need to uninstall Winutil. Because it runs as a PowerShell script, it is loaded into memory only while it is open. Once you close it, it is removed from memory and does not remain installed on your system.
 
 ### Is Winutil safe to use?
-Yes, Winutil is open source and the code is publicly available on GitHub. Thousands of users run it daily. However, like any system modification tool, you should:
+Yes, Winutil is open source, and the code is publicly available on GitHub. Thousands of users run it daily. However, like any system modification tool, you should:
 - Run it as Administrator (required)
 - Create a restore point before major changes
 - Understand what tweaks you're applying
-- Download only from official sources
+- Run only from [official source](https://github.com/ChrisTitusTech/winutil/)
 
 ### Do I need to keep running Winutil?
 No. Once you've applied tweaks or installed applications, you can close Winutil. Changes persist after closing. You only need to run Winutil again when you want to make additional changes or undo tweaks.
 
 ### Does Winutil require internet access?
-- **For downloading**: Yes, installing applications requires internet
+- **For downloading**: Yes, installing applications requires the internet
 - **For tweaks**: No, most tweaks work offline
-- **Initial run**: Yes, to download the latest script
+- **Initial run**: Yes, to run the latest script
 
 ### How often is Winutil updated?
 Winutil is actively maintained with frequent updates. New features, bug fixes, and application additions are released regularly. The script auto-downloads the latest version each time you run it.
@@ -55,7 +55,7 @@ Try these solutions in order:
    ```
 
    > [!NOTE]
-   > On Windows 11, you usually do not need the TLS 1.2 command. Use it only if you hit download or security protocol errors.
+   > On Windows 11, you usually do not need the TLS 1.2 command. Use it only if you encounter download or security protocol errors.
 
 3. **Change DNS** to Cloudflare (1.1.1.1) or Google (8.8.8.8)
 
@@ -91,19 +91,13 @@ Alternatively, use System Restore if you created a restore point.
 - Run Disk Cleanup
 - Create Restore Point
 
-**Caution needed (Advanced Tweaks)**:
-- Remove Microsoft Store
-- Disable Windows Defender
-- Remove all bloatware
-- Disable system services
-
-Start with Essential Tweaks. Only use Advanced Tweaks if you understand the implications.
+**(Advanced Tweaks)** should only be run by advanced users.
 
 ### Will tweaks survive Windows Updates?
-Most tweaks persist through updates, but some may be reset by major Windows feature updates. You may need to reapply certain tweaks afterward.
+Most tweaks persist through updates, but some may be reset by major Windows feature updates. You may need to reapply certain tweaks afterwards.
 
 ### Can I create my own tweak presets?
-Currently, Winutil uses predefined presets (Desktop, Laptop, Minimal, Standard). Custom presets aren't directly supported in the GUI, but you can script your preferred configuration.
+Currently, Winutil uses predefined presets (Standard, Minimal). Custom presets aren't directly supported in the GUI, but you can script your preferred configuration.
 
 ### What's the difference between Essential and Advanced tweaks?
 - **Essential Tweaks**: Safe for most users, improve performance/privacy with minimal risk
@@ -128,9 +122,10 @@ Yes! Check the boxes for all applications you want, then click "Install Selected
 No. WinGet and Chocolatey install clean versions of applications without bundled offers, toolbars, or bloatware.
 
 ### Can I uninstall applications through Winutil?
-Winutil focuses on installation. To uninstall:
-- Use Windows Settings > Apps > Installed Apps
-- Or use the application's built-in uninstaller
+Winutil primarily focuses on installing and managing applications rather than providing a full GUI for uninstalling every program. To remove applications you can:
+- Use Windows Settings > Apps > Installed apps to uninstall programs.
+- Use package manager commands in PowerShell (for example `winget uninstall <package>` or `choco uninstall <package>`).
+- Some packages installed by Winutil (AppX/MSIX) include removal helpers; check the app entry or use Winutil's remove helpers when available.
 
 ### Will installed apps auto-update?
 Applications with built-in update mechanisms will auto-update. You can also update them via WinGet/Chocolatey commands or through Winutil's "Upgrade Selected" feature.
@@ -146,7 +141,7 @@ Generally, **no**. Security updates are important. However, you might:
 ### How do I re-enable updates after disabling them?
 1. Open Winutil
 2. Go to the **Updates** tab
-3. Click **Enable Updates**
+3. Click **Default Updates**
 4. Updates will resume normally
 
 ### What's the difference between "Security Updates Only" and "Disable Updates"?
@@ -170,7 +165,7 @@ Troubleshooting steps:
 1. Check your internet connection
 2. Try installing just that one application
 3. Review error messages in the output panel
-4. Check if antivirus is blocking
+4. Check if the antivirus is blocking
 5. Try the WinGet Reinstall fix
 
 ### Network tweaks broke my internet connection
@@ -228,12 +223,6 @@ It disables:
 - Usage statistics
 - Error reporting (optional)
 
-### Is it safe to disable Windows Defender?
-**Generally not recommended**. Only disable Defender if:
-- You have alternative antivirus installed
-- You understand the security risks
-- You're in a controlled/isolated environment
-
 ### Will removing Microsoft Store affect security updates?
 No, Windows security updates are independent of the Microsoft Store.
 
@@ -246,13 +235,13 @@ Tweaks can improve performance by:
 - Cleaning temporary files
 - Optimizing startup programs
 
-Results vary depending on your system and which tweaks you apply.
+Results may vary depending on your system.
 
 ### What's the best preset for gaming?
 Use the **Desktop** preset, then additionally apply:
 - Disable GameDVR
 - Ultimate Performance power plan
-- Disable fullscreen optimizations (Advanced)
+- Disable full-screen optimizations (Advanced)
 - Set display for performance (Advanced)
 
 ### How much RAM does Winutil use?
@@ -262,11 +251,9 @@ Winutil itself uses about 50-100 MB while running. Once closed, it is removed fr
 
 ### "Access Denied" errors
 - Ensure PowerShell is running as Administrator
-- Check if antivirus is blocking changes
+- Check if the antivirus is blocking changes
 - Verify you have ownership of files/registry keys
 
-### WinGet configuration prompt won't go away
-Type `Y` and press Enter in the PowerShell window. This only happens on first use and configures WinGet for your system.
 
 ## Still Need Help?
 
@@ -277,8 +264,3 @@ Can't find your answer? Try these resources:
 - **[Discord Community](https://discord.gg/RUbZUZyByQ)** - Get help from other users
 - **[GitHub Issues](https://github.com/ChrisTitusTech/winutil/issues)** - Report bugs
 - **[YouTube Tutorial](https://www.youtube.com/watch?v=6UQZ5oQg8XA)** - Video walkthrough
-
----
-
-**Last Updated**: January 2026
-**Found this helpful?** Consider starring the project on [GitHub](https://github.com/ChrisTitusTech/winutil)!

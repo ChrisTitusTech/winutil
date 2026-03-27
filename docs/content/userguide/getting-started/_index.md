@@ -12,7 +12,7 @@ Winutil is a powerful Windows utility that helps you optimize, customize, and ma
 Before running Winutil, ensure your system meets these requirements:
 
 > [!IMPORTANT]
-> Windows 10 is not supported by Winutil. Windows 10 reached end of support on **October 14, 2025**.
+> Windows 10 is not supported by Winutil. Windows 10 reached the end of support on **October 14, 2025**.
 
 - **Operating System**: Windows 11
 - **PowerShell**: Version 5.1 or later (included by default in Windows 11)
@@ -48,40 +48,33 @@ There are several ways to open PowerShell with admin rights:
 
 ### Step 2: Run the Launch Command
 
-Once PowerShell is open with administrator privileges, run one of these commands:
+With PowerShell running as Administrator, run one of the following commands depending on the release channel you want.
 
-**Stable Release (Recommended for most users)**
+**Stable release (recommended)**
 
 ```powershell
 irm "https://christitus.com/win" | iex
 ```
 
-**Development Branch (For testing latest features)**
+**Development branch (bleeding edge — for testing only)**
 
 ```powershell
 irm "https://christitus.com/windev" | iex
 ```
 
 > [!NOTE]
-> The `irm` command downloads the script, and `iex` executes it. This is safe when downloading from the official source.
+> - The `irm` command downloads the script, and `iex` executes it. This is safe when downloading from the official source.
+> - The development branch may contain experimental changes and should only be used for testing on non-production systems.
 
 ### Step 3: Wait for Winutil to Load
 
 The first time you run Winutil, it may take a few moments to:
 
-- Download the latest version
+- Run the latest version
 - Initialize the interface
 - Load all features and settings
 
 ## First Time Setup
-
-### Configure WinGet (If Prompted)
-
-On your first run, you may be prompted to configure WinGet (Windows Package Manager). This is normal.
-
-1. When prompted, type `Y` and press Enter
-2. Accept the terms and conditions
-3. This only needs to be done once
 
 ### Understanding the Interface
 
@@ -93,6 +86,7 @@ Winutil opens with a clean, tabbed interface:
 - **Tweaks**: Apply system optimizations and customizations
 - **Config**: Access system tools and utilities
 - **Updates**: Manage Windows updates
+- **Win11 Creator**: Allows user to debloat Windows 11 ISO files.
 
 ## Your First Actions
 
@@ -112,7 +106,7 @@ This gives you a rollback point if needed.
 
 1. Navigate to the **Install** tab
 2. Browse categories or use the search bar
-3. Check applications you want to install
+3. Check the applications you want to install
 4. Click "Install/Upgrade Selected" at the bottom
 
 ### 3. Apply Basic Tweaks
@@ -120,7 +114,7 @@ This gives you a rollback point if needed.
 For a better Windows experience with minimal risk:
 
 1. Go to the **Tweaks** tab
-2. Select the **"Desktop" preset** for a balanced configuration
+2. Select the **Standard** for a balanced configuration
 3. Review the selected tweaks
 4. Click **Run Tweaks**
 
@@ -177,7 +171,7 @@ For common Windows issues:
 
 For improved privacy and speed:
 
-1. Go to the **Config** tab or the **Tweaks** tab
+1. Go to the **Tweaks** tab
 2. Find the DNS section
 3. Select a provider:
    - **Cloudflare**: Fast and privacy-focused
@@ -215,49 +209,7 @@ Winutil offers several preset configurations:
 
 ### Script Won't Download
 
-**If the download fails**:
-
-1. Try the direct GitHub link:
-
-```powershell
-irm https://github.com/ChrisTitusTech/Winutil/releases/latest/download/Winutil.ps1 | iex
-```
-
-2. Force TLS 1.2:
-
-```powershell
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-irm "https://christitus.com/win" | iex
-```
-
-> [!NOTE]
-> On Windows 11, you usually do not need the TLS 1.2 command. Use it only if you hit download or security protocol errors.
-
-### Execution Policy Error
-
-If you get an execution policy error:
-
-```powershell
-Set-ExecutionPolicy Unrestricted -Scope Process -Force
-irm "https://christitus.com/win" | iex
-```
-
-### Download Blocked (India/Certain Regions)
-
-If downloads are blocked in your region:
-
-1. Use a VPN service
-2. Change DNS to Cloudflare (1.1.1.1) or Google (8.8.8.8)
-3. Try again
-
-### Interface Doesn't Appear
-
-If Winutil downloads but doesn't open:
-
-1. Check if antivirus is blocking it
-2. Ensure you ran PowerShell as administrator
-3. Try closing and reopening PowerShell
-4. Check Windows Defender exclusions
+If you get any errors when running Winutil please refer to [Known Issues](/knownissues/) page
 
 ## Next Steps
 

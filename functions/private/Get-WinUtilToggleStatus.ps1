@@ -20,9 +20,9 @@ Function Get-WinUtilToggleStatus {
         if (($ToggleSwitchReg.path -imatch "hku") -and !(Get-PSDrive -Name HKU -ErrorAction SilentlyContinue)) {
             $null = (New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS)
             if (Get-PSDrive -Name HKU -ErrorAction SilentlyContinue) {
-                Write-Debug "HKU drive created successfully"
+                Write-Debug "HKU drive created successfully."
             } else {
-                Write-Debug "Failed to create HKU drive"
+                Write-Debug "Failed to create HKU drive."
             }
         }
     } catch {
