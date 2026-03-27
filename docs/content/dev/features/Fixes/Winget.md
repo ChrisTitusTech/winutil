@@ -9,20 +9,20 @@ function Invoke-WPFFixesWinget {
     <#
 
     .SYNOPSIS
-        Fixes Winget by running choco install winget
+        Fixes WinGet by running `choco install winget`
     .DESCRIPTION
-        BravoNorris for the fantastic idea of a button to reinstall winget
+        BravoNorris for the fantastic idea of a button to reinstall WinGet
     #>
     # Install Choco if not already present
     try {
         Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
-        Write-Host "==> Starting Winget Repair"
+        Write-Host "==> Starting WinGet Repair"
         Install-WinUtilWinget
     } catch {
-        Write-Error "Failed to install winget: $_"
+        Write-Error "Failed to install WinGet: $_"
         Set-WinUtilTaskbaritem -state "Error" -overlay "warning"
     } finally {
-        Write-Host "==> Finished Winget Repair"
+        Write-Host "==> Finished WinGet Repair"
         Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
     }
 

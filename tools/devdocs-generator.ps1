@@ -278,7 +278,7 @@ foreach ($itemName in $tweakNames) {
 
         if ($item.registry) {
             $content += "`r`n## Registry Changes`r`n`r`n"
-            $content += "Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.`r`n`r`n"
+            $content += "Applications and System Components store and retrieve configuration data to modify Windows settings, so we can use the registry to change many settings in one place.`r`n`r`n"
             $content += "You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).`r`n"
         }
     }

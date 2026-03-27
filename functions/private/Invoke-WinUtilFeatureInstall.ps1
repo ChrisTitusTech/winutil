@@ -21,7 +21,7 @@ function Invoke-WinUtilFeatureInstall {
                     Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Error" }
                 } else {
 
-                    Write-Warning "Unable to Install $feature due to unhandled exception"
+                    Write-Warning "Unable to Install $feature due to unhandled exception."
                     Write-Warning $CheckBox.Exception.StackTrace
                 }
             }
@@ -40,7 +40,7 @@ function Invoke-WinUtilFeatureInstall {
                     Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Error" }
                 } else {
                     Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Error" }
-                    Write-Warning "Unable to Install $feature due to unhandled exception"
+                    Write-Warning "Unable to Install $feature due to unhandled exception."
                     Write-Warning $CheckBox.Exception.StackTrace
                 }
             }
