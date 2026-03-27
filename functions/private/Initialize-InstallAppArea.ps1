@@ -50,5 +50,24 @@ function Initialize-InstallAppArea {
     # Add the Border containing the App Area to the target Grid
     $targetGrid.Children.Add($Border) | Out-Null
 
+    # Create progress bar objects (hidden, not displayed as overlay)
+    $progressbar = New-Object Windows.Controls.ProgressBar
+    $progressbar.Name = "ProgressBar"
+    $progressbar.Width = 250
+    $progressbar.Height = 50
+    $sync.ProgressBar = $progressbar
+
+    # Add a TextBlock for the progress bar text
+    $progressBarTextBlock = New-Object Windows.Controls.TextBlock
+    $progressBarTextBlock.Name = "progressBarTextBlock"
+    $progressBarTextBlock.FontWeight = [Windows.FontWeights]::Bold
+    $progressBarTextBlock.FontSize = 16
+    $progressBarTextBlock.Width = $progressbar.Width
+    $progressBarTextBlock.Height = $progressbar.Height
+    $progressBarTextBlock.SetResourceReference([Windows.Controls.TextBlock]::ForegroundProperty, "ProgressBarTextColor")
+    $progressBarTextBlock.TextTrimming = "CharacterEllipsis"
+    $progressBarTextBlock.Background = "Transparent"
+    $sync.progressBarTextBlock = $progressBarTextBlock
+
     return $itemsControl
 }
