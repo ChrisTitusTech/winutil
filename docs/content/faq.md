@@ -6,14 +6,14 @@ toc: true
 ## General Questions
 
 ### Is Windows 10 still supported?
-No. Windows 10 is no longer supported by Winutil because it reached end of support on **October 14, 2025**.
+No. Windows 10 is no longer supported by Winutil because it reached the end of support on **October 14, 2025**.
 Winutil is focused on Windows 11.
 
 ### How do I uninstall Winutil?
 You do not need to uninstall Winutil. Because it runs as a PowerShell script, it is loaded into memory only while it is open. Once you close it, it is removed from memory and does not remain installed on your system.
 
 ### Is Winutil safe to use?
-Yes, Winutil is open source and the code is publicly available on GitHub. Thousands of users run it daily. However, like any system modification tool, you should:
+Yes, Winutil is open source, and the code is publicly available on GitHub. Thousands of users run it daily. However, like any system modification tool, you should:
 - Run it as Administrator (required)
 - Create a restore point before major changes
 - Understand what tweaks you're applying
@@ -23,7 +23,7 @@ Yes, Winutil is open source and the code is publicly available on GitHub. Thousa
 No. Once you've applied tweaks or installed applications, you can close Winutil. Changes persist after closing. You only need to run Winutil again when you want to make additional changes or undo tweaks.
 
 ### Does Winutil require internet access?
-- **For downloading**: Yes, installing applications requires internet
+- **For downloading**: Yes, installing applications requires the internet
 - **For tweaks**: No, most tweaks work offline
 - **Initial run**: Yes, to run the latest script
 
@@ -55,7 +55,7 @@ Try these solutions in order:
    ```
 
    > [!NOTE]
-   > On Windows 11, you usually do not need the TLS 1.2 command. Use it only if you hit download or security protocol errors.
+   > On Windows 11, you usually do not need the TLS 1.2 command. Use it only if you encounter download or security protocol errors.
 
 3. **Change DNS** to Cloudflare (1.1.1.1) or Google (8.8.8.8)
 
@@ -91,10 +91,10 @@ Alternatively, use System Restore if you created a restore point.
 - Run Disk Cleanup
 - Create Restore Point
 
-**(Advanced Tweaks)** should only be ran by advance users.
+**(Advanced Tweaks)** should only be run by advanced users.
 
 ### Will tweaks survive Windows Updates?
-Most tweaks persist through updates, but some may be reset by major Windows feature updates. You may need to reapply certain tweaks afterward.
+Most tweaks persist through updates, but some may be reset by major Windows feature updates. You may need to reapply certain tweaks afterwards.
 
 ### Can I create my own tweak presets?
 Currently, Winutil uses predefined presets (Standard, Minimal). Custom presets aren't directly supported in the GUI, but you can script your preferred configuration.
@@ -165,7 +165,7 @@ Troubleshooting steps:
 1. Check your internet connection
 2. Try installing just that one application
 3. Review error messages in the output panel
-4. Check if antivirus is blocking
+4. Check if the antivirus is blocking
 5. Try the WinGet Reinstall fix
 
 ### Network tweaks broke my internet connection
@@ -241,7 +241,7 @@ Results may vary depending on your system.
 Use the **Desktop** preset, then additionally apply:
 - Disable GameDVR
 - Ultimate Performance power plan
-- Disable fullscreen optimizations (Advanced)
+- Disable full-screen optimizations (Advanced)
 - Set display for performance (Advanced)
 
 ### How much RAM does Winutil use?
@@ -251,7 +251,7 @@ Winutil itself uses about 50-100 MB while running. Once closed, it is removed fr
 
 ### "Access Denied" errors
 - Ensure PowerShell is running as Administrator
-- Check if antivirus is blocking changes
+- Check if the antivirus is blocking changes
 - Verify you have ownership of files/registry keys
 
 

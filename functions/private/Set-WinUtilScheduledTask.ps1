@@ -30,13 +30,13 @@ function Set-WinUtilScheduledTask {
         }
     } catch [System.Exception] {
         if($psitem.Exception.Message -like "*The system cannot find the file specified*") {
-            Write-Warning "Scheduled Task $name was not Found"
+            Write-Warning "Scheduled Task $Name was not found."
         } else {
-            Write-Warning "Unable to set $Name due to unhandled exception"
+            Write-Warning "Unable to set $Name due to unhandled exception."
             Write-Warning $psitem.Exception.Message
         }
     } catch {
-        Write-Warning "Unable to run script for $name due to unhandled exception"
+        Write-Warning "Unable to run script for $name due to unhandled exception."
         Write-Warning $psitem.Exception.StackTrace
     }
 }

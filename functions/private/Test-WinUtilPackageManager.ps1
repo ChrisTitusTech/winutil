@@ -2,10 +2,10 @@ function Test-WinUtilPackageManager {
     <#
 
     .SYNOPSIS
-        Checks if Winget and/or Choco are installed
+        Checks if WinGet and/or Choco are installed
 
     .PARAMETER winget
-        Check if Winget is installed
+        Check if WinGet is installed
 
     .PARAMETER choco
         Check if Chocolatey is installed
@@ -20,12 +20,12 @@ function Test-WinUtilPackageManager {
     if ($winget) {
         if (Get-Command winget -ErrorAction SilentlyContinue) {
             Write-Host "===========================================" -ForegroundColor Green
-            Write-Host "---        Winget is installed          ---" -ForegroundColor Green
+            Write-Host "---        WinGet is installed          ---" -ForegroundColor Green
             Write-Host "===========================================" -ForegroundColor Green
             $status = "installed"
         } else {
             Write-Host "===========================================" -ForegroundColor Red
-            Write-Host "---      Winget is not installed        ---" -ForegroundColor Red
+            Write-Host "---      WinGet is not installed        ---" -ForegroundColor Red
             Write-Host "===========================================" -ForegroundColor Red
             $status = "not-installed"
         }

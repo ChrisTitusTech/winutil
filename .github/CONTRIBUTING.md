@@ -21,7 +21,7 @@
 
 * Pull requests are now handled directly on the **MAIN branch**. This was done since we can now select specific releases to launch via releases in GitHub.
 
-* If you're doing code changes, then you can submit a PR to `main` branch, but I am very selective about these.
+* If you're doing code changes, then you can submit a PR to the `main` branch, but I am very selective about these.
 
 !!! warning "Important"
 
@@ -87,7 +87,7 @@ graph TD
 
 ### Testing your changes
 
-* To test to see if your changes work as intended run following commands in a powershell terminal as admin:
+* To test to see if your changes work as intended, run the following commands in a PowerShell terminal as admin:
 
 * Change the directory where you are running the commands to the forked project.
 * `cd {path to the folder with the compile.ps1}`
@@ -112,6 +112,6 @@ graph TD
 ![Push Commit Image](/docs/assets/images/Push-Commit.png)
 
 ### Making a PR
-* To make a PR on your repo under a new branch linking to the main branch, a button will show and say Preview and Create pull request. Click that button and fill in all the information that is provided on the template. Once all the information is filled in correctly, check your PR to make sure there is not a WinUtil.ps1 file attached to the PR. Once everything is good, make the PR and wait for Chris (the maintainer) to accept or deny your PR. Once it is accepted by Chris, you will be able to see your changes in the "/windev" build.
+* To make a PR on your repo under a new branch linking to the main branch, a button will show and say Preview and Create pull request. Click that button and fill in all the information that is provided on the template. Once all the information is filled in correctly, check your PR to make sure there is no WinUtil.ps1 file attached to the PR. Once everything is good, make the PR and wait for Chris (the maintainer) to accept or deny your PR. Once it is accepted by Chris, you will be able to see your changes in the "/windev" build.
 * If you do not see your feature in the main "/win" build, that is fine. All new changes go into the /windev build to make sure everything is working OK before going fully public.
 * Congratulations! You just submitted your first PR. Thank you so much for contributing to WinUtil.
