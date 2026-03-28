@@ -2953,7 +2953,7 @@
         "choco": "wingetui",
         "content": "UniGetUI",
         "description": "UniGetUI is a GUI for WinGet, Chocolatey, and other Windows CLI package managers.",
-        "link": "https://www.marticliment.com/wingetui/",
+        "link": "https://devolutions.net/unigetui/",
         "winget": "Devolutions.UniGetUI",
         "foss": true
     },
