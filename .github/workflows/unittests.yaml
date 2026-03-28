@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v6
     - name: lint
-      uses: devblackops/github-action-psscriptanalyzer@master
+      uses: devblackops/github-action-psscriptanalyzer@854038567344559afaaa8ccb7a014452b99d86ee # master
       with:
         sendComment: false
         settingsPath: lint/PSScriptAnalyser.ps1
