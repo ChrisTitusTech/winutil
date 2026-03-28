@@ -2725,5 +2725,22 @@
       }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/disablecrossdeviceresume"
+  },
+
+  "WPFTweaksDisableUAC": {
+    "Content": "Disable UAC (Admin Approval Mode)",
+    "Description": "Disables User Account Control (UAC) for all administrators. This automatically runs tasks (like the Win+R Run dialog) with full administrative privileges.[requires restarting Windows] CAUTION: This removes a major security layer and is known to break Microsoft Store apps and built-in Windows features.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+        "Name": "EnableLUA",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disableuac"
   }
 }
