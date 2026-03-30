@@ -694,6 +694,14 @@
         "winget": "Espanso.Espanso",
         "foss": true
     },
+    "faststone": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "FastStone Image Viewer",
+        "description": "An image browser, converter and editor that supports all major graphic formats including BMP, JPEG, JPEG 2000, GIF, PNG, PCX, TIFF, WMF, ICO, TGA and camera raw files. It has a nice array of features such as image viewing, management, comparison, red-eye removal, emailing, resizing, cropping, color adjustments, musical slideshow and much more.",
+        "link": "https://www.faststone.org/",
+        "winget": "FastStone.Viewer"
+    },
     "ffmpeg": {
         "category": "Utilities",
         "choco": "na",
