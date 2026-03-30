@@ -53,7 +53,7 @@ function Reset-WPFCheckBoxes {
 
     # Update Installs tab UI values
     $count = $sync.SelectedApps.Count
-    $sync.WPFselectedAppsButton.Content = "Selected Apps: $count"
+    $sync.WPFselectedAppsButton.Content = (Get-LocalizedString -Key "SelectedAppsLabel" -Language $sync.preferences.language) -f $count
     # On every change, remove all entries inside the Popup Menu. This is done, so we can keep the alphabetical order even if elements are selected in a random way
     $sync.selectedAppsstackPanel.Children.Clear()
     $sync.selectedApps | Foreach-Object { Add-SelectedAppsMenuItem -name $($sync.configs.applicationsHashtable.$_.Content) -key $_ }

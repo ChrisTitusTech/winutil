@@ -3,7 +3,13 @@ function Write-Win11ISOLog {
     $ts = (Get-Date).ToString("HH:mm:ss")
     $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
         $current = $sync["WPFWin11ISOStatusLog"].Text
-        if ($current -eq "Ready. Please select a Windows 11 ISO to begin.") {
+        $defaultStatusTexts = @(
+            "Ready. Please select a Windows 11 ISO to begin.",
+            (Get-LocalizedString -Key "ReadyPleaseSelectISO" -Language "en"),
+            (Get-LocalizedString -Key "ReadyPleaseSelectISO" -Language "es")
+        ) | Select-Object -Unique
+
+        if ($defaultStatusTexts -contains $current) {
             $sync["WPFWin11ISOStatusLog"].Text = "[$ts] $Message"
         } else {
             $sync["WPFWin11ISOStatusLog"].Text += "`n[$ts] $Message"
@@ -17,8 +23,8 @@ function Invoke-WinUtilISOBrowse {
     Add-Type -AssemblyName System.Windows.Forms
 
     $dlg = [System.Windows.Forms.OpenFileDialog]::new()
-    $dlg.Title            = "Select Windows 11 ISO"
-    $dlg.Filter           = "ISO files (*.iso)|*.iso|All files (*.*)|*.*"
+    $dlg.Title            = Get-LocalizedString -Key "SelectWindows11ISO" -Language $sync.preferences.language
+    $dlg.Filter           = Get-LocalizedString -Key "ISOFilesFilter" -Language $sync.preferences.language
     $dlg.InitialDirectory = [System.Environment]::GetFolderPath("Desktop")
 
     if ($dlg.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
@@ -40,8 +46,19 @@ function Invoke-WinUtilISOBrowse {
 function Invoke-WinUtilISOMountAndVerify {
     $isoPath = $sync["WPFWin11ISOPath"].Text
 
-    if ([string]::IsNullOrWhiteSpace($isoPath) -or $isoPath -eq "No ISO selected...") {
-        [System.Windows.MessageBox]::Show("Please select an ISO file first.", "No ISO Selected", "OK", "Warning")
+    $noIsoTexts = @(
+        "No ISO selected...",
+        (Get-LocalizedString -Key "NoISOSelected" -Language "en"),
+        (Get-LocalizedString -Key "NoISOSelected" -Language "es")
+    ) | Select-Object -Unique
+
+    if ([string]::IsNullOrWhiteSpace($isoPath) -or $noIsoTexts -contains $isoPath) {
+        [System.Windows.MessageBox]::Show(
+            (Get-LocalizedString -Key "PleaseSelectISOFirst" -Language $sync.preferences.language),
+            (Get-LocalizedString -Key "NoISOSelectedTitle" -Language $sync.preferences.language),
+            "OK",
+            "Warning"
+        )
         return
     }
 
@@ -65,7 +82,7 @@ function Invoke-WinUtilISOMountAndVerify {
 
         if (-not (Test-Path $wimPath) -and -not (Test-Path $esdPath)) {
             Dismount-DiskImage -ImagePath $isoPath | Out-Null
-            Write-Win11ISOLog "ERROR: install.wim/install.esd not found — not a valid Windows ISO."
+            Write-Win11ISOLog "ERROR: install.wim/install.esd not found - not a valid Windows ISO."
             [System.Windows.MessageBox]::Show(
                 "This does not appear to be a valid Windows ISO.`n`ninstall.wim / install.esd was not found.",
                 "Invalid ISO", "OK", "Error")
@@ -133,7 +150,7 @@ function Invoke-WinUtilISOModify {
 
     if (-not $isoPath) {
         [System.Windows.MessageBox]::Show(
-            "No verified ISO found. Please complete Steps 1 and 2 first.",
+            "No verified ISO found.  Please complete Steps 1 and 2 first.",
             "Not Ready", "OK", "Warning")
         return
     }
@@ -354,7 +371,7 @@ function Invoke-WinUtilISOCheckExistingWork {
     $modified = $existingWorkDir.LastWriteTime.ToString("yyyy-MM-dd HH:mm")
     Write-Win11ISOLog "Existing working directory found: $($existingWorkDir.FullName)"
     Write-Win11ISOLog "Last modified: $modified - Skipping Steps 1-3 and resuming at Step 4."
-    Write-Win11ISOLog "Click 'Clean & Reset' if you want to start over with a new ISO."
+    Write-Win11ISOLog 'Click ''Clean & Reset'' if you want to start over with a new ISO.'
 
     [System.Windows.MessageBox]::Show(
         "A previous WinUtil ISO working directory was found:`n`n$($existingWorkDir.FullName)`n`n(Last modified: $modified)`n`nStep 4 (output options) has been restored so you can save the already-modified image.`n`nClick 'Clean & Reset' in Step 4 if you want to start over.",
@@ -367,7 +384,7 @@ function Invoke-WinUtilISOCleanAndReset {
     if ($workDir -and (Test-Path $workDir)) {
         $confirm = [System.Windows.MessageBox]::Show(
             "This will delete the temporary working directory:`n`n$workDir`n`nAnd reset the interface back to the start.`n`nContinue?",
-            "Clean & Reset", "YesNo", "Warning")
+            ('Clean & Reset'), "YesNo", "Warning")
         if ($confirm -ne "Yes") { return }
     }
 
@@ -416,12 +433,12 @@ function Invoke-WinUtilISOCleanAndReset {
                             Log "WIM dismounted successfully."
                         }
                     } elseif (Test-Path $mountDir) {
-                        Log "No mounted WIM reported by Get-WindowsImage. Running DISM /Cleanup-Wim as a precaution..."
+                        Log "No mounted WIM reported by Get-WindowsImage, running DISM /Cleanup-Wim as a precaution..."
                         SetProgress "Running DISM cleanup..." 3
                         & dism /English /Cleanup-Wim 2>&1 | ForEach-Object { Log $_ }
                     }
                 } catch {
-                    Log "Warning: could not dismount WIM cleanly. Attempting DISM /Cleanup-Wim fallback: $_"
+                    Log "Warning: could not dismount WIM cleanly, attempting DISM /Cleanup-Wim fallback: $_"
                     try { & dism /English /Cleanup-Wim 2>&1 | ForEach-Object { Log $_ } }
                     catch { Log "Warning: DISM /Cleanup-Wim also failed: $_" }
                 }
@@ -460,7 +477,7 @@ function Invoke-WinUtilISOCleanAndReset {
                     Log "Temp directory deleted successfully."
                 }
             } else {
-                Log "No temp directory found — resetting UI."
+                Log "No temp directory found - resetting UI."
             }
 
             SetProgress "Resetting UI..." 95
@@ -475,7 +492,7 @@ function Invoke-WinUtilISOCleanAndReset {
                 $sync["Win11ISOImageInfo"]   = $null
                 $sync["Win11ISOUSBDisks"]    = $null
 
-                $sync["WPFWin11ISOPath"].Text                   = "No ISO selected..."
+                $sync["WPFWin11ISOPath"].Text                   = Get-LocalizedString -Key "NoISOSelected" -Language $sync.preferences.language
                 $sync["WPFWin11ISOFileInfo"].Visibility          = "Collapsed"
                 $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Collapsed"
                 $sync["WPFWin11ISOOptionUSB"].Visibility         = "Collapsed"
@@ -490,7 +507,7 @@ function Invoke-WinUtilISOCleanAndReset {
                 $sync.progressBarTextBlock.ToolTip = ""
                 $sync.ProgressBar.Value            = 0
 
-                $sync["WPFWin11ISOStatusLog"].Text   = "Ready. Please select a Windows 11 ISO to begin."
+                $sync["WPFWin11ISOStatusLog"].Text   = Get-LocalizedString -Key "ReadyPleaseSelectISO" -Language $sync.preferences.language
             })
         } catch {
             Log "ERROR during Clean & Reset: $_"

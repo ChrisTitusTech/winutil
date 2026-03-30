@@ -99,6 +99,54 @@ if ($PARAM_NOUI) {
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
+# Localize common static XAML strings before parsing
+try {
+    $lang = $sync.preferences.language
+    $val = Get-LocalizedString -Key 'ThemeButtonTooltip' -Language $lang
+    if ($val) {
+        $escaped = $val -replace '"','&quot;'
+        $inputXML = $inputXML.Replace('ToolTip="Change the Winutil UI Theme"', 'ToolTip="' + $escaped + '"')
+    }
+
+    $val = Get-LocalizedString -Key 'Auto' -Language $lang
+    if ($val) { $inputXML = $inputXML.Replace('Header="Auto"', 'Header="' + ($val -replace '"','&quot;') + '"') }
+    $val = Get-LocalizedString -Key 'Dark' -Language $lang
+    if ($val) { $inputXML = $inputXML.Replace('Header="Dark"', 'Header="' + ($val -replace '"','&quot;') + '"') }
+    $val = Get-LocalizedString -Key 'Light' -Language $lang
+    if ($val) { $inputXML = $inputXML.Replace('Header="Light"', 'Header="' + ($val -replace '"','&quot;') + '"') }
+
+    $val = Get-LocalizedString -Key 'AutoTooltip' -Language $lang
+    if ($val) { $inputXML = $inputXML.Replace('Content="Follow the Windows Theme"', 'Content="' + ($val -replace '"','&quot;') + '"') }
+    $val = Get-LocalizedString -Key 'DarkTooltip' -Language $lang
+    if ($val) { $inputXML = $inputXML.Replace('Content="Use Dark Theme"', 'Content="' + ($val -replace '"','&quot;') + '"') }
+    $val = Get-LocalizedString -Key 'LightTooltip' -Language $lang
+    if ($val) { $inputXML = $inputXML.Replace('Content="Use Light Theme"', 'Content="' + ($val -replace '"','&quot;') + '"') }
+
+    $val = Get-LocalizedString -Key 'FontScalingTooltip' -Language $lang
+    if ($val) { $inputXML = $inputXML.Replace('ToolTip="Adjust Font Scaling for Accessibility"', 'ToolTip="' + ($val -replace '"','&quot;') + '"') }
+
+    $val = Get-LocalizedString -Key 'SearchTooltip' -Language $lang
+    if ($val) { $inputXML = $inputXML.Replace('ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter"', 'ToolTip="' + ($val -replace '"','&quot;') + '"') }
+
+    $val = Get-LocalizedString -Key 'LanguageLabel' -Language $lang
+    if ($val) { $inputXML = $inputXML.Replace('>Language:</TextBlock>', '>' + ($val -replace '"','&quot;') + '</TextBlock>') }
+
+    $val = Get-LocalizedString -Key 'About' -Language $lang
+    if ($val) { $inputXML = $inputXML.Replace('Header="About"', 'Header="' + ($val -replace '"','&quot;') + '"') }
+
+    $val = Get-LocalizedString -Key 'Documentation' -Language $lang
+    if ($val) { $inputXML = $inputXML.Replace('Header="Documentation"', 'Header="' + ($val -replace '"','&quot;') + '"') }
+
+    $val = Get-LocalizedString -Key 'Sponsors' -Language $lang
+    if ($val) { $inputXML = $inputXML.Replace('Header="Sponsors"', 'Header="' + ($val -replace '"','&quot;') + '"') }
+
+    $val = Get-LocalizedString -Key 'OpenMicrosoftDownloadPage' -Language $lang
+    if ($val) { $inputXML = $inputXML.Replace('Content="Open Microsoft Download Page"', 'Content="' + ($val -replace '"','&quot;') + '"') }
+
+} catch {
+    Write-Debug "XAML localization replacements failed: $_"
+}
+
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
 
@@ -193,34 +241,284 @@ switch ($sync.preferences.packagemanager) {
     "Winget" {$sync.WingetRadioButton.IsChecked = $true; break}
 }
 
-$sync.keys | ForEach-Object {
-    if($sync.$psitem) {
-        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton") {
-            $sync["$psitem"].Add_Click({
-                [System.Object]$Sender = $args[0]
-                Invoke-WPFButton $Sender.name
-            })
+function Set-LocalizedControlValue {
+    param(
+        [Parameter(Mandatory=$true)]$Control,
+        [Parameter(Mandatory=$true)][string]$Property,
+        [Parameter(Mandatory=$true)][string]$Key,
+        [string]$Language
+    )
+
+    if (-not $Control) { return }
+
+    $value = Get-LocalizedString -Key $Key -Language $Language
+    if ($null -eq $value) { return }
+
+    try {
+        switch ($Property) {
+            'Text' { $Control.Text = $value }
+            'Content' { $Control.Content = $value }
+            'Header' { $Control.Header = $value }
+            'ToolTip' { $Control.ToolTip = $value }
         }
+    } catch {
+        Write-Debug "Failed to localize control property $Property using key '$Key': $_"
+    }
+}
 
-        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button") {
-            $sync["$psitem"].Add_Click({
+function Bind-InstallSidebarEvents {
+    param()
+
+    if ($sync.ChocoRadioButton) {
+        $sync.ChocoRadioButton.Add_Checked({
+            $sync.preferences.packagemanager = [PackageManagers]::Choco
+            Set-Preferences -save
+        })
+    }
+
+    if ($sync.WingetRadioButton) {
+        $sync.WingetRadioButton.Add_Checked({
+            $sync.preferences.packagemanager = [PackageManagers]::Winget
+            Set-Preferences -save
+        })
+    }
+
+    switch ($sync.preferences.packagemanager) {
+        "Choco" { if ($sync.ChocoRadioButton) { $sync.ChocoRadioButton.IsChecked = $true } }
+        "Winget" { if ($sync.WingetRadioButton) { $sync.WingetRadioButton.IsChecked = $true } }
+    }
+
+    foreach ($entry in $sync.configs.appnavigation.PSObject.Properties) {
+        $control = $sync[$entry.Name]
+        if ($control -and $control.GetType().Name -eq "Button") {
+            $control.Add_Click({
                 [System.Object]$Sender = $args[0]
-                Invoke-WPFButton $Sender.name
+                Invoke-WPFButton $Sender.Name
             })
-        }
-
-        if ($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "TextBlock") {
-            if ($sync["$psitem"].Name.EndsWith("Link")) {
-                $sync["$psitem"].Add_MouseUp({
-                    [System.Object]$Sender = $args[0]
-                    Start-Process $Sender.ToolTip -ErrorAction Stop
-                    Write-Debug "Opening: $($Sender.ToolTip)"
-                })
-            }
-
         }
     }
 }
+
+function Bind-SharedControlEvents {
+    param()
+
+    $sync.keys | ForEach-Object {
+        if($sync.$psitem) {
+            if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton") {
+                $sync["$psitem"].Add_Click({
+                    [System.Object]$Sender = $args[0]
+                    Invoke-WPFButton $Sender.name
+                })
+            }
+
+            if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button") {
+                $sync["$psitem"].Add_Click({
+                    [System.Object]$Sender = $args[0]
+                    Invoke-WPFButton $Sender.name
+                })
+            }
+
+            if ($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "TextBlock") {
+                if ($sync["$psitem"].Name.EndsWith("Link")) {
+                    $sync["$psitem"].Add_MouseUp({
+                        [System.Object]$Sender = $args[0]
+                        Start-Process $Sender.ToolTip -ErrorAction Stop
+                        Write-Debug "Opening: $($Sender.ToolTip)"
+                    })
+                }
+            }
+        }
+    }
+}
+
+function Refresh-InstallTabUI {
+    param()
+
+    $selectedApps = @($sync.selectedApps)
+    $selectedTweaks = @($sync.selectedTweaks)
+    $selectedFeatures = @($sync.selectedFeatures)
+    $selectedToggles = @($sync.selectedToggles)
+    $highlightFoss = if ($sync.WPFToggleFOSSHighlight) { [bool]$sync.WPFToggleFOSSHighlight.IsChecked } else { $true }
+
+    Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
+    Initialize-WPFUI -targetGridName "appscategory"
+    Initialize-WPFUI -targetGridName "appspanel"
+    Bind-InstallSidebarEvents
+
+    $sync.selectedApps = [System.Collections.Generic.List[string]]::new()
+    foreach ($item in $selectedApps) { [void]$sync.selectedApps.Add([string]$item) }
+    $sync.selectedTweaks = [System.Collections.Generic.List[string]]::new()
+    foreach ($item in $selectedTweaks) { [void]$sync.selectedTweaks.Add([string]$item) }
+    $sync.selectedFeatures = [System.Collections.Generic.List[string]]::new()
+    foreach ($item in $selectedFeatures) { [void]$sync.selectedFeatures.Add([string]$item) }
+    $sync.selectedToggles = [System.Collections.Generic.List[string]]::new()
+    foreach ($item in $selectedToggles) { [void]$sync.selectedToggles.Add([string]$item) }
+
+    Reset-WPFCheckBoxes
+
+    if ($sync.WPFToggleFOSSHighlight) {
+        $sync.WPFToggleFOSSHighlight.IsChecked = $highlightFoss
+    }
+}
+
+function Refresh-PreferencePanelsUI {
+    param()
+
+    Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
+    Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
+    Bind-SharedControlEvents
+    Reset-WPFCheckBoxes -doToggles $true
+}
+
+# Update localized UI elements at runtime
+function Update-LocalizedUI {
+    param()
+    try {
+        $lang = $sync.preferences.language
+        if ($sync.ThemeButton) { $sync.ThemeButton.ToolTip = Get-LocalizedString -Key 'ThemeButtonTooltip' -Language $lang }
+        if ($sync.AutoThemeMenuItem) { $sync.AutoThemeMenuItem.Header = Get-LocalizedString -Key 'Auto' -Language $lang; $sync.AutoThemeMenuItem.ToolTip = Get-LocalizedString -Key 'AutoTooltip' -Language $lang }
+        if ($sync.DarkThemeMenuItem) { $sync.DarkThemeMenuItem.Header = Get-LocalizedString -Key 'Dark' -Language $lang; $sync.DarkThemeMenuItem.ToolTip = Get-LocalizedString -Key 'DarkTooltip' -Language $lang }
+        if ($sync.LightThemeMenuItem) { $sync.LightThemeMenuItem.Header = Get-LocalizedString -Key 'Light' -Language $lang; $sync.LightThemeMenuItem.ToolTip = Get-LocalizedString -Key 'LightTooltip' -Language $lang }
+        if ($sync.FontScalingButton) { $sync.FontScalingButton.ToolTip = Get-LocalizedString -Key 'FontScalingTooltip' -Language $lang }
+        if ($sync.SearchBar) { $sync.SearchBar.ToolTip = Get-LocalizedString -Key 'SearchTooltip' -Language $lang }
+        if ($sync.WPFWin11ISODownloadLink) { $sync.WPFWin11ISODownloadLink.Content = Get-LocalizedString -Key 'OpenMicrosoftDownloadPage' -Language $lang }
+        if ($sync.WPFUpdatesdefault) { $sync.WPFUpdatesdefault.Content = Get-LocalizedString -Key 'DefaultSettings' -Language $lang }
+        if ($sync.WPFUpdatessecurity) { $sync.WPFUpdatessecurity.Content = Get-LocalizedString -Key 'SecuritySettings' -Language $lang }
+        if ($sync.LanguageLabelTextBlock) { $sync.LanguageLabelTextBlock.Text = Get-LocalizedString -Key 'LanguageLabel' -Language $lang }
+        if ($sync.WPFOfflineBannerTextBlock) { $sync.WPFOfflineBannerTextBlock.Text = Get-LocalizedString -Key 'OfflineModeNoInternet' -Language $lang }
+        if ($sync.AboutMenuItem) { $sync.AboutMenuItem.Header = Get-LocalizedString -Key 'About' -Language $lang }
+        if ($sync.DocumentationMenuItem) { $sync.DocumentationMenuItem.Header = Get-LocalizedString -Key 'Documentation' -Language $lang }
+        if ($sync.SponsorMenuItem) { $sync.SponsorMenuItem.Header = Get-LocalizedString -Key 'Sponsors' -Language $lang }
+        if ($sync.ImportMenuItem) { $sync.ImportMenuItem.Header = Get-LocalizedString -Key 'Import' -Language $lang; $sync.ImportMenuItem.ToolTip = Get-LocalizedString -Key 'ImportTooltip' -Language $lang }
+        if ($sync.ExportMenuItem) { $sync.ExportMenuItem.Header = Get-LocalizedString -Key 'Export' -Language $lang; $sync.ExportMenuItem.ToolTip = Get-LocalizedString -Key 'ExportTooltip' -Language $lang }
+
+        if ($sync.WPFTab1) { $sync.WPFTab1.Header = Get-LocalizedString -Key 'InstallTab' -Language $lang }
+        if ($sync.WPFTab2) { $sync.WPFTab2.Header = Get-LocalizedString -Key 'TweaksTab' -Language $lang }
+        if ($sync.WPFTab3) { $sync.WPFTab3.Header = Get-LocalizedString -Key 'ConfigTab' -Language $lang }
+        if ($sync.WPFTab4) { $sync.WPFTab4.Header = Get-LocalizedString -Key 'UpdatesTab' -Language $lang }
+        if ($sync.WPFTab5) { $sync.WPFTab5.Header = Get-LocalizedString -Key 'Win11ISOTab' -Language $lang }
+
+        Set-LocalizedControlValue -Control $sync.WPFTab1BTTextBlock -Property Text -Key 'InstallTab' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFTab2BTTextBlock -Property Text -Key 'TweaksTab' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFTab3BTTextBlock -Property Text -Key 'ConfigTab' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFTab4BTTextBlock -Property Text -Key 'UpdatesTab' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFTab5BTTextBlock -Property Text -Key 'Win11CreatorTab' -Language $lang
+
+        Set-LocalizedControlValue -Control $sync.FontScalingTitleTextBlock -Property Text -Key 'FontScalingTitle' -Language $lang
+        Set-LocalizedControlValue -Control $sync.FontScalingSmallTextBlock -Property Text -Key 'Small' -Language $lang
+        Set-LocalizedControlValue -Control $sync.FontScalingLargeTextBlock -Property Text -Key 'Large' -Language $lang
+        Set-LocalizedControlValue -Control $sync.FontScalingResetButton -Property Content -Key 'Reset' -Language $lang
+        Set-LocalizedControlValue -Control $sync.FontScalingApplyButton -Property Content -Key 'Apply' -Language $lang
+
+        Set-LocalizedControlValue -Control $sync.WPFTweaksRecommendedLabel -Property Content -Key 'RecommendedSelections' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFstandard -Property Content -Key 'Standard' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFminimal -Property Content -Key 'Minimal' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFClearTweaksSelection -Property Content -Key 'Clear' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFGetInstalledTweaks -Property Content -Key 'GetInstalledTweaks' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFTweaksInfoTextBlock -Property Text -Key 'TweaksNote' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFTweaksbutton -Property Content -Key 'RunTweaks' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFUndoall -Property Content -Key 'UndoSelectedTweaks' -Language $lang
+
+        Set-LocalizedControlValue -Control $sync.WPFUpdatesDefaultDescriptionTextBlock -Property Text -Key 'DefaultUpdateDescription' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFUpdatesSecurityDescriptionTextBlock -Property Text -Key 'SecurityUpdateDescription' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFUpdatesdisable -Property Content -Key 'DisableAllUpdates' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFUpdatesDisableDescriptionTextBlock -Property Text -Key 'DisableUpdateDescription' -Language $lang
+
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOStep1TitleTextBlock -Property Text -Key 'Step1SelectWindows11ISO' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOStep1DescriptionTextBlock -Property Text -Key 'Step1SelectWindows11ISODescription' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOStep1NoteTextBlock -Property Text -Key 'Step1SelectWindows11ISONote' -Language $lang
+        if ($sync.WPFWin11ISOPath) {
+            $defaultIsoPathTexts = @(
+                'No ISO selected...',
+                (Get-LocalizedString -Key 'NoISOSelected' -Language 'en'),
+                (Get-LocalizedString -Key 'NoISOSelected' -Language 'es')
+            ) | Select-Object -Unique
+
+            if ($defaultIsoPathTexts -contains $sync.WPFWin11ISOPath.Text) {
+                Set-LocalizedControlValue -Control $sync.WPFWin11ISOPath -Property Text -Key 'NoISOSelected' -Language $lang
+            }
+        }
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOBrowseButton -Property Content -Key 'Browse' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOWarningTitleTextBlock -Property Text -Key 'OfficialISOWarningTitle' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOWarningDescriptionTextBlock -Property Text -Key 'OfficialISOWarningDescription' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOWarningChooseTextBlock -Property Text -Key 'MicrosoftDownloadChoose' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOWarningOptionsTextBlock -Property Text -Key 'MicrosoftDownloadOptions' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOStep2TitleTextBlock -Property Text -Key 'Step2MountVerifyISO' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOStep2DescriptionTextBlock -Property Text -Key 'Step2MountVerifyISODescription' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOMountButton -Property Content -Key 'MountVerifyISO' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOInjectDrivers -Property Content -Key 'InjectCurrentSystemDrivers' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOInjectDrivers -Property ToolTip -Key 'InjectCurrentSystemDriversTooltip' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOEditionLabelTextBlock -Property Text -Key 'SelectEdition' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOStep3TitleTextBlock -Property Text -Key 'Step3ModifyInstallWim' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOStep3DescriptionTextBlock -Property Text -Key 'Step3ModifyInstallWimDescription' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOModifyButton -Property Content -Key 'RunWindowsISOModificationAndCreator' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOStep4TitleTextBlock -Property Text -Key 'Step4OutputTitle' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOCleanResetButton -Property Content -Key 'CleanReset' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOCleanResetButton -Property ToolTip -Key 'CleanResetTooltip' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOChooseISOButton -Property Content -Key 'SaveAsISOFile' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOChooseUSBButton -Property Content -Key 'WriteDirectlyToUSBDrive' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOUSBWarningTextBlock -Property Text -Key 'USBWarning' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISORefreshUSBButton -Property Content -Key 'Refresh' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOWriteUSBButton -Property Content -Key 'EraseWriteToUSB' -Language $lang
+        Set-LocalizedControlValue -Control $sync.WPFWin11ISOStatusLogTitleTextBlock -Property Text -Key 'StatusLog' -Language $lang
+        if ($sync.WPFWin11ISOStatusLog) {
+            $defaultStatusTexts = @(
+                'Ready. Please select a Windows 11 ISO to begin.',
+                (Get-LocalizedString -Key 'ReadyPleaseSelectISO' -Language 'en'),
+                (Get-LocalizedString -Key 'ReadyPleaseSelectISO' -Language 'es')
+            ) | Select-Object -Unique
+
+            if ($defaultStatusTexts -contains $sync.WPFWin11ISOStatusLog.Text) {
+                Set-LocalizedControlValue -Control $sync.WPFWin11ISOStatusLog -Property Text -Key 'ReadyPleaseSelectISO' -Language $lang
+            }
+        }
+
+        # Initialize language combobox selection
+        if ($sync.LanguageComboBox) {
+            foreach ($item in $sync.LanguageComboBox.Items) {
+                if ($item.Tag) {
+                    switch ($item.Tag.ToString().Substring(0,2).ToLower()) {
+                        'en' { $item.Content = Get-LocalizedString -Key 'English' -Language $lang }
+                        'es' { $item.Content = Get-LocalizedString -Key 'Spanish' -Language $lang }
+                    }
+                }
+            }
+
+            $code = $sync.preferences.language
+            for ($i=0; $i -lt $sync.LanguageComboBox.Items.Count; $i++) {
+                $item = $sync.LanguageComboBox.Items[$i]
+                if ($item.Tag -and $item.Tag.ToString().Substring(0,2).ToLower() -eq $code) {
+                    $sync.LanguageComboBox.SelectedIndex = $i; break
+                }
+            }
+        }
+    } catch {
+        Write-Debug "Update-LocalizedUI failed: $_"
+    }
+}
+
+# Wire language selection change to save preferences and refresh UI
+if ($null -ne $sync.LanguageComboBox) {
+    $sync.LanguageComboBox.Add_SelectionChanged({
+        param($sender, $eventArgs)
+        try {
+            $sel = $sender.SelectedItem
+            if ($sel -and $sel.Tag) {
+                $sync.preferences.language = $sel.Tag.ToString().Substring(0,2).ToLower()
+                Set-Preferences -save
+                Refresh-InstallTabUI
+                Refresh-PreferencePanelsUI
+                Update-LocalizedUI
+            }
+        } catch {
+            Write-Debug "Language selection handler failed: $_"
+        }
+    })
+}
+
+# Run initial localized UI update
+Update-LocalizedUI
+Bind-SharedControlEvents
 
 #===========================================================================
 # Setup background config
