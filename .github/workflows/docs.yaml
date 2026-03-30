@@ -46,7 +46,7 @@ jobs:
           persist-credentials: false
       - name: Setup Pages
         id: pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Generate Dev Docs from JSON
         shell: pwsh
