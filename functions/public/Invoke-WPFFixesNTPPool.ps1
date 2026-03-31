@@ -11,6 +11,9 @@ function Invoke-WPFFixesNTPPool {
     Start-Service w32time
     w32tm /config /update /manualpeerlist:"0.pool.ntp.org,0x8" /syncfromflags:MANUAL
 
+    Restart-Service w32time
+    w32tm /resync
+
     Write-Host "================================="
     Write-Host "-- NTP Configuration Complete ---"
     Write-Host "================================="
