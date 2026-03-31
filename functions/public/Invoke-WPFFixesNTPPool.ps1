@@ -9,7 +9,6 @@ function Invoke-WPFFixesNTPPool {
     #>
 
     Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\w32time\Parameters -Name NtpServer -Value pool.ntp.org,0x9
-
     Restart-Service w32time
 
     Write-Host "================================="
