@@ -8,8 +8,8 @@ function Invoke-WPFFixesNTPPool {
         pool.ntp.org for improved time synchronization accuracy and reliability.
     #>
 
-    Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\w32time\Parameters -Name NtpServer -Value pool.ntp.org,0x9
-    Restart-Service w32time
+    Start-Service w32time
+    w32tm /config /update /manualpeerlist:"0.pool.ntp.org,0x8" /syncfromflags:MANUAL
 
     Write-Host "================================="
     Write-Host "-- NTP Configuration Complete ---"
