@@ -28,9 +28,6 @@ function Invoke-WPFUpdatesdisable {
     Write-Host "Disabled UsoSvc Service"
     Set-Service -Name UsoSvc -StartupType Disabled
 
-    Write-Host "Disabled WaaSMedicSvc Service"
-    Set-Service -Name WaaSMedicSvc -StartupType Disabled
-
     Remove-Item "C:\Windows\SoftwareDistribution\*" -Recurse -Force
     Write-Host "Cleared SoftwareDistribution folder"
 
