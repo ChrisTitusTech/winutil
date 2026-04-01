@@ -1566,15 +1566,6 @@
         "winget": "MullvadVPN.MullvadVPN",
         "foss": true
     },
-    "BorderlessGaming": {
-        "category": "Utilities",
-        "choco": "borderlessgaming",
-        "content": "Borderless Gaming",
-        "description": "Play your favorite games in a borderless window; no more time consuming alt-tabs.",
-        "link": "https://github.com/Codeusa/Borderless-Gaming",
-        "winget": "Codeusa.BorderlessGaming",
-        "foss": true
-    },
     "EqualizerAPO": {
         "category": "Multimedia Tools",
         "choco": "equalizerapo",
@@ -2953,8 +2944,8 @@
         "choco": "wingetui",
         "content": "UniGetUI",
         "description": "UniGetUI is a GUI for WinGet, Chocolatey, and other Windows CLI package managers.",
-        "link": "https://www.marticliment.com/wingetui/",
-        "winget": "MartiCliment.UniGetUI",
+        "link": "https://devolutions.net/unigetui/",
+        "winget": "Devolutions.UniGetUI",
         "foss": true
     },
     "winmerge": {
