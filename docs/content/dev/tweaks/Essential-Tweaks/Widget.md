@@ -13,7 +13,7 @@ description: ""
       "
       # Sometimes if you dont stop the Widgets process the removal may fail
 
-      Stop-Process -Name Widgets
+      Get-Process *Widget* | Stop-Process
       Get-AppxPackage Microsoft.WidgetsPlatformRuntime -AllUsers | Remove-AppxPackage -AllUsers
       Get-AppxPackage MicrosoftWindows.Client.WebExperience -AllUsers | Remove-AppxPackage -AllUsers
 

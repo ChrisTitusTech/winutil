@@ -3,7 +3,7 @@ title: "Remove Microsoft Edge"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1442}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1449}
   "WPFTweaksRemoveEdge": {
     "Content": "Remove Microsoft Edge",
     "Description": "Unblocks Microsoft Edge uninstaller restrictions then uses that uninstaller to remove Microsoft Edge.",
