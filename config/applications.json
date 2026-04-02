@@ -1720,7 +1720,8 @@
         "content": "NodeJS LTS",
         "description": "NodeJS LTS provides Long-Term Support releases for stable and reliable server-side JavaScript development.",
         "link": "https://nodejs.org/",
-        "winget": "OpenJS.NodeJS.LTS"
+        "winget": "OpenJS.NodeJS.LTS",
+        "foss": true
     },
     "nomacs": {
         "category": "Multimedia Tools",
