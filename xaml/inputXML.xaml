@@ -1151,6 +1151,38 @@
                     </Border>
                 </Popup>
 
+                    <Button Name="LanguageButton"
+                        Style="{StaticResource HoverButtonStyle}"
+                        BorderBrush="Transparent"
+                    Background="{DynamicResource MainBackgroundColor}"
+                    Foreground="{DynamicResource MainForegroundColor}"
+                    FontSize="{DynamicResource SettingsIconFontSize}"
+                    Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="0,0,2,0"
+                    FontFamily="Segoe MDL2 Assets"
+                    Content="&#xE774;"
+                    ToolTip="Change Language"/>
+                    <Popup Name="LanguagePopup"
+                    IsOpen="False"
+                    PlacementTarget="{Binding ElementName=LanguageButton}" Placement="Bottom"
+                    HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <Border Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
+                        <StackPanel Background="{DynamicResource MainBackgroundColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="English" Name="LangEnMenuItem" Foreground="{DynamicResource MainForegroundColor}">
+                                <MenuItem.ToolTip>
+                                    <ToolTip Content="Use English (Default)"/>
+                                </MenuItem.ToolTip>
+                            </MenuItem>
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="繁體中文" Name="LangZhTWMenuItem" Foreground="{DynamicResource MainForegroundColor}">
+                                <MenuItem.ToolTip>
+                                    <ToolTip Content="Traditional Chinese (Taiwan)"/>
+                                </MenuItem.ToolTip>
+                            </MenuItem>
+                        </StackPanel>
+                    </Border>
+                </Popup>
+
                     <Button Name="SettingsButton"
                         Style="{StaticResource HoverButtonStyle}"
                         BorderBrush="Transparent"

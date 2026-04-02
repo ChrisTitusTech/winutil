@@ -1,0 +1,1605 @@
+{
+    "_meta": {
+        "locale": "es",
+        "name": "Español",
+        "generated": "2026-03-27",
+        "generator": "generate-locale.py (Google Translate)",
+        "total_strings": 592
+    },
+    "categories": {
+        "AI-Automation": "Automatización AI",
+        "Advanced Tweaks - CAUTION": "Ajustes avanzados - PRECAUCIÓN",
+        "Browsers": "Navegadores",
+        "Communications": "Comunicaciones",
+        "Customize Preferences": "Personalizar preferencias",
+        "Development": "Desarrollo",
+        "Document": "Documento",
+        "Essential Tweaks": "Ajustes esenciales",
+        "Features": "Características",
+        "Fixes": "Correcciones",
+        "Games": "Juegos",
+        "Legacy Windows Panels": "Paneles de Windows heredados",
+        "Microsoft Tools": "Herramientas de Microsoft",
+        "Multimedia Tools": "Herramientas multimedia",
+        "Performance Plans": "Planes de desempeño",
+        "Powershell Profile Powershell 7+ Only": "Perfil de Powershell Solo Powershell 7+",
+        "Pro Tools": "Herramientas profesionales",
+        "Remote Access": "Acceso remoto",
+        "Utilities": "Utilidades"
+    },
+    "tweaks": {
+        "WPFTweaksActivity": {
+            "Content": "Deshabilitar el historial de actividad",
+            "Description": "Borra documentos recientes, portapapeles e historial de ejecución."
+        },
+        "WPFTweaksHiber": {
+            "Content": "Deshabilitar la hibernación",
+            "Description": "La hibernación está realmente pensada para portátiles, ya que guarda lo que hay en la memoria antes de apagar la PC. Realmente nunca debería usarse."
+        },
+        "WPFTweaksWidget": {
+            "Content": "Eliminar widgets",
+            "Description": "Elimina los molestos widgets en la parte inferior izquierda de la barra de tareas."
+        },
+        "WPFTweaksRevertStartMenu": {
+            "Content": "Revertir el diseño del menú Inicio",
+            "Description": "Recupera el antiguo diseño del menú Inicio anterior al lanzamiento gradual del nuevo en 25H2."
+        },
+        "WPFTweaksDisableStoreSearch": {
+            "Content": "Deshabilitar los resultados de búsqueda de Microsoft Store",
+            "Description": "No mostrará las aplicaciones recomendadas de Microsoft Store al buscar aplicaciones en el menú Inicio."
+        },
+        "WPFTweaksLocation": {
+            "Content": "Deshabilitar el seguimiento de ubicación",
+            "Description": "Desactiva el seguimiento de ubicación."
+        },
+        "WPFTweaksServices": {
+            "Content": "Establecer servicios en manual",
+            "Description": "Convierte un montón de servicios del sistema en manuales que no necesitan estar ejecutándose todo el tiempo. Esto es bastante inofensivo, ya que si el servicio es necesario, simplemente se iniciará cuando lo solicite."
+        },
+        "WPFTweaksBraveDebloat": {
+            "Content": "Valiente Debloat",
+            "Description": "Desactiva varias molestias como Brave Rewards, Leo AI, Crypto Wallet y VPN."
+        },
+        "WPFTweaksEdgeDebloat": {
+            "Content": "Desinflación de borde",
+            "Description": "Deshabilita varias opciones de telemetría, ventanas emergentes y otras molestias en Edge."
+        },
+        "WPFTweaksConsumerFeatures": {
+            "Content": "Deshabilitar las funciones del consumidor",
+            "Description": "Windows no instalará automáticamente ningún juego, aplicación de terceros o enlace de aplicación de la Tienda Windows para el usuario que haya iniciado sesión. Algunas aplicaciones predeterminadas serán inaccesibles (por ejemplo, Phone Link)."
+        },
+        "WPFTweaksTelemetry": {
+            "Content": "Desactivar telemetría",
+            "Description": "Desactiva la telemetría de Microsoft."
+        },
+        "WPFTweaksRemoveEdge": {
+            "Content": "Quitar Microsoft Edge",
+            "Description": "Desbloquea las restricciones del desinstalador de Microsoft Edge y luego usa ese desinstalador para eliminar Microsoft Edge."
+        },
+        "WPFTweaksUTC": {
+            "Content": "Establecer hora en UTC (arranque dual)",
+            "Description": "Esencial para computadoras con arranque dual. Corrige la sincronización horaria con sistemas Linux."
+        },
+        "WPFTweaksRemoveOneDrive": {
+            "Content": "Quitar OneDrive",
+            "Description": "Niega el permiso para eliminar archivos de usuario de OneDrive, luego usa su propio desinstalador para eliminarlos y luego restaura el permiso original."
+        },
+        "WPFTweaksRemoveHome": {
+            "Content": "Quitar Inicio del Explorador",
+            "Description": "Elimina el Inicio del Explorador y establece Esta PC como predeterminada."
+        },
+        "WPFTweaksRemoveGallery": {
+            "Content": "Eliminar galería del explorador",
+            "Description": "Elimina la Galería del Explorador y establece Esta PC como predeterminada."
+        },
+        "WPFTweaksDisplay": {
+            "Content": "Configurar la pantalla para el rendimiento",
+            "Description": "Establece las preferencias del sistema para el rendimiento. También puedes hacer esto manualmente con sysdm.cpl."
+        },
+        "WPFTweaksXboxRemoval": {
+            "Content": "Quitar componentes de Xbox y juegos",
+            "Description": "Elimina los servicios de Xbox, la aplicación Xbox, la barra de juegos y los componentes de autenticación relacionados."
+        },
+        "WPFTweaksDeBloat": {
+            "Content": "Eliminar TODAS las aplicaciones de MS Store - NO RECOMENDADO",
+            "Description": "UTILIZAR CON PRECAUCIÓN!!! Esto eliminará TODAS las aplicaciones de Microsoft Store."
+        },
+        "WPFTweaksRestorePoint": {
+            "Content": "Crear punto de restauración",
+            "Description": "Crea un punto de restauración en tiempo de ejecución en caso de que sea necesario revertir las modificaciones de WinUtil."
+        },
+        "WPFTweaksEndTaskOnTaskbar": {
+            "Content": "Habilitar finalizar tarea con clic derecho",
+            "Description": "Habilita la opción para finalizar la tarea al hacer clic derecho en un programa en la barra de tareas."
+        },
+        "WPFTweaksPowershell7Tele": {
+            "Content": "Deshabilitar la telemetría de Powershell 7",
+            "Description": "Crea una variable de entorno llamada 'POWERSHELL_TELEMETRY_OPTOUT' con un valor de '1' que le indicará a PowerShell 7 que no envíe datos de telemetría."
+        },
+        "WPFTweaksStorage": {
+            "Content": "Deshabilitar el sentido de almacenamiento",
+            "Description": "Storage Sense elimina archivos temporales automáticamente."
+        },
+        "WPFTweaksRemoveCopilot": {
+            "Content": "Deshabilitar el copiloto de Microsoft",
+            "Description": "Deshabilita MS Copilot AI integrado en Windows desde el 23H2."
+        },
+        "WPFTweaksWPBT": {
+            "Content": "Deshabilitar la tabla binaria de la plataforma Windows (WPBT)",
+            "Description": "Si está habilitado, WPBT le permite al proveedor de su computadora ejecutar programas en el momento del arranque, como software antirrobo, controladores de software, así como forzar la instalación de software sin el consentimiento del usuario. Plantea un riesgo potencial para la seguridad."
+        },
+        "WPFTweaksRazerBlock": {
+            "Content": "Bloquear instalaciones de software Razer",
+            "Description": "Bloquea TODAS las instalaciones del software Razer. El hardware funciona bien sin ningún software."
+        },
+        "WPFTweaksDisableNotifications": {
+            "Content": "Desactivar bandeja de notificaciones/calendario",
+            "Description": "Desactiva todas las notificaciones, INCLUYENDO el calendario."
+        },
+        "WPFTweaksBlockAdobeNet": {
+            "Content": "Bloque de red de Adobe",
+            "Description": "Reduce las interrupciones de los usuarios al bloquear selectivamente las conexiones a los servidores de telemetría y activación de Adobe. Crédito: Ruddernation-Designs"
+        },
+        "WPFTweaksRightClickMenu": {
+            "Content": "Establecer menú contextual clásico",
+            "Description": "Restaura el menú contextual clásico al hacer clic derecho en el Explorador de archivos, reemplazando la versión simplificada de Windows 11."
+        },
+        "WPFTweaksDiskCleanup": {
+            "Content": "Ejecute la limpieza del disco",
+            "Description": "Ejecuta el Liberador de espacio en disco en la unidad C: y elimina las actualizaciones antiguas de Windows."
+        },
+        "WPFTweaksDeleteTempFiles": {
+            "Content": "Eliminar archivos temporales",
+            "Description": "Borra las carpetas TEMP."
+        },
+        "WPFTweaksIPv46": {
+            "Content": "Prefiere IPv4 sobre IPv6",
+            "Description": "Configurar la preferencia IPv4 puede tener beneficios de latencia y seguridad en redes privadas donde IPv6 no está configurado."
+        },
+        "WPFTweaksTeredo": {
+            "Content": "Deshabilitar Teredo",
+            "Description": "El túnel de red Teredo es una característica de IPv6 que puede causar latencia adicional, pero puede causar problemas con algunos juegos."
+        },
+        "WPFTweaksDisableIPv6": {
+            "Content": "Deshabilitar IPv6",
+            "Description": "Desactiva IPv6."
+        },
+        "WPFTweaksDisableBGapps": {
+            "Content": "Deshabilitar aplicaciones en segundo plano",
+            "Description": "Desactiva la ejecución de todas las aplicaciones de Microsoft Store en segundo plano, lo que debe hacerse individualmente desde Windows 11."
+        },
+        "WPFTweaksDisableFSO": {
+            "Content": "Deshabilitar optimizaciones de pantalla completa",
+            "Description": "Desactiva FSO en todas las aplicaciones. NOTA: Esto deshabilitará la Gestión del color en Pantalla completa exclusiva."
+        },
+        "WPFToggleDarkMode": {
+            "Content": "Tema oscuro para Windows",
+            "Description": "Activar/desactivar el modo oscuro."
+        },
+        "WPFToggleBingSearch": {
+            "Content": "Búsqueda de Bing en el menú Inicio",
+            "Description": "Si está habilitado, los resultados de la búsqueda web de Bing se incluirán en la búsqueda del menú Inicio."
+        },
+        "WPFToggleStandbyFix": {
+            "Content": "Solución de espera moderna",
+            "Description": "Deshabilite la conexión de red durante la suspensión S0. Si la conectividad de red está activada durante la suspensión S0, podría causar sobrecalentamiento en las computadoras portátiles modernas."
+        },
+        "WPFToggleNumLock": {
+            "Content": "Bloq Num al iniciar",
+            "Description": "Cambie el estado de la tecla Bloq Num cuando se inicie su computadora."
+        },
+        "WPFToggleVerboseLogon": {
+            "Content": "Mensajes detallados durante el inicio de sesión",
+            "Description": "Muestre mensajes detallados durante el proceso de inicio de sesión para solución de problemas y diagnóstico."
+        },
+        "WPFToggleStartMenuRecommendations": {
+            "Content": "Recomendaciones en el menú Inicio",
+            "Description": "Si está deshabilitado, no verá recomendaciones en el menú Inicio. ADVERTENCIA: Esto también desactivará Windows Spotlight en la pantalla de bloqueo como efecto secundario."
+        },
+        "WPFToggleHideSettingsHome": {
+            "Content": "Eliminar la página de inicio de configuración",
+            "Description": "Elimina la página de inicio en la aplicación Configuración de Windows."
+        },
+        "WPFToggleMouseAcceleration": {
+            "Content": "Aceleración del ratón",
+            "Description": "Si está habilitado, el movimiento del cursor se ve afectado por la velocidad de los movimientos físicos del mouse."
+        },
+        "WPFToggleStickyKeys": {
+            "Content": "Teclas adhesivas",
+            "Description": "Si está habilitado, Sticky Keys se activa. Las teclas adhesivas son una función de accesibilidad de algunas interfaces gráficas de usuario que ayuda a los usuarios con discapacidades físicas o a reducir las lesiones por esfuerzos repetitivos."
+        },
+        "WPFToggleNewOutlook": {
+            "Content": "Nueva perspectiva",
+            "Description": "Si está deshabilitado, elimina la nueva opción de Outlook, deshabilita la nueva migración de Outlook y garantiza que se utilice la aplicación clásica de Outlook."
+        },
+        "WPFToggleMultiplaneOverlay": {
+            "Content": "Deshabilitar la superposición multiplano",
+            "Description": "Desactive la superposición multiplano, que a veces puede causar problemas con las tarjetas gráficas."
+        },
+        "WPFToggleHiddenFiles": {
+            "Content": "Mostrar archivos ocultos",
+            "Description": "Si está habilitado, se mostrarán los archivos ocultos."
+        },
+        "WPFToggleShowExt": {
+            "Content": "Mostrar extensiones de archivo",
+            "Description": "Si está habilitado, las extensiones de archivo (por ejemplo, .txt, .jpg) son visibles."
+        },
+        "WPFToggleTaskbarSearch": {
+            "Content": "Botón de búsqueda en la barra de tareas",
+            "Description": "Si está habilitado, el botón Buscar estará en la barra de tareas."
+        },
+        "WPFToggleTaskView": {
+            "Content": "Botón Ver tareas en la barra de tareas",
+            "Description": "Si está habilitado, se mostrará el botón Vista de tareas en la barra de tareas."
+        },
+        "WPFToggleTaskbarAlignment": {
+            "Content": "Centrar elementos de la barra de tareas",
+            "Description": "[Windows 11] Si está habilitado, los elementos de la barra de tareas se mostrarán en el centro; de lo contrario, los elementos de la barra de tareas se mostrarán a la izquierda."
+        },
+        "WPFToggleDetailedBSoD": {
+            "Content": "BSoD detallado",
+            "Description": "Si está habilitado, verá una pantalla azul de la muerte (BSOD) detallada con más información."
+        },
+        "WPFToggleS3Sleep": {
+            "Content": "T3 Dormir",
+            "Description": "Alterna entre el modo de espera moderno y el modo de suspensión S3."
+        },
+        "WPFOOSUbutton": {
+            "Content": "Ejecutar OO Shutup 10"
+        },
+        "WPFchangedns": {
+            "Content": "DNS"
+        },
+        "WPFAddUltPerf": {
+            "Content": "Agregar y activar el perfil de rendimiento definitivo"
+        },
+        "WPFRemoveUltPerf": {
+            "Content": "Eliminar el perfil de rendimiento definitivo"
+        },
+        "WPFTweaksDisableExplorerAutoDiscovery": {
+            "Content": "Deshabilitar el descubrimiento automático de carpetas del Explorador",
+            "Description": "El Explorador de Windows intenta automáticamente adivinar el tipo de carpeta en función de su contenido, lo que ralentiza la experiencia de navegación. ¡ADVERTENCIA! Deshabilitará la agrupación del Explorador de archivos."
+        },
+        "WPFToggleDisableCrossDeviceResume": {
+            "Content": "Currículum multidispositivo",
+            "Description": "Este ajuste controla la función Reanudar en Windows 11 24H2 y versiones posteriores, que le permite reanudar una actividad desde un dispositivo móvil y viceversa."
+        }
+    },
+    "applications": {
+        "1password": {
+            "description": "1Password es un administrador de contraseñas que te permite almacenar y administrar tus contraseñas de forma segura."
+        },
+        "7zip": {
+            "description": "7-Zip es una utilidad de archivado de archivos gratuita y de código abierto. Admite varios formatos de compresión y proporciona una alta relación de compresión, lo que lo convierte en una opción popular para la compresión de archivos."
+        },
+        "adobe": {
+            "description": "Adobe Acrobat Reader es un visor de PDF gratuito con funciones esenciales para ver, imprimir y anotar documentos PDF."
+        },
+        "advancedip": {
+            "description": "Advanced IP Scanner es un escáner de red rápido y fácil de usar. Está diseñado para analizar redes LAN y proporciona información sobre los dispositivos conectados."
+        },
+        "affine": {
+            "description": "AFFiNE es una alternativa de código abierto a Notion. Escribe, dibuja, planifica todo a la vez. Autoalojalo para sincronizarlo entre dispositivos."
+        },
+        "ai-as-workspace": {
+            "description": "Cliente de chat de IA estilo espacio de trabajo con múltiples espacios de trabajo, complementos y diseño local; de código abierto (BSD-3-Cláusula)."
+        },
+        "aimp": {
+            "description": "AIMP es un reproductor de música con muchas funciones compatible con varios formatos de audio, listas de reproducción y una interfaz de usuario personalizable."
+        },
+        "alacritty": {
+            "description": "Alacritty es un emulador de terminal rápido, multiplataforma y acelerado por GPU. Está diseñado para el rendimiento y pretende ser el emulador de terminal más rápido disponible."
+        },
+        "anaconda3": {
+            "description": "Anaconda es una distribución de los lenguajes de programación Python y R para informática científica."
+        },
+        "angryipscanner": {
+            "description": "Angry IP Scanner es un escáner de red multiplataforma y de código abierto. Se utiliza para escanear direcciones IP y puertos, proporcionando información sobre la conectividad de la red."
+        },
+        "anki": {
+            "description": "Anki es una aplicación de tarjetas didácticas que te ayuda a memorizar información con repetición espaciada inteligente."
+        },
+        "anydesk": {
+            "description": "AnyDesk es un software de escritorio remoto que permite a los usuarios acceder y controlar computadoras de forma remota. Es conocido por su conexión rápida y baja latencia."
+        },
+        "anythingllm": {
+            "description": "Aplicación de escritorio de IA para chatear con documentos (RAG) y flujos de trabajo de agentes; ofrece un instalador de Windows y una base de código de código abierto."
+        },
+        "audacity": {
+            "description": "Audacity es un software de edición de audio gratuito y de código abierto conocido por sus potentes capacidades de grabación y edición."
+        },
+        "autoruns": {
+            "description": "Esta utilidad le muestra qué programas están configurados para ejecutarse durante el inicio o inicio de sesión del sistema."
+        },
+        "rdcman": {
+            "description": "RDCMan gestiona múltiples conexiones de escritorio remoto. Es útil para administrar laboratorios de servidores donde necesita acceso regular a cada máquina, como sistemas de registro automatizados y centros de datos."
+        },
+        "autohotkey": {
+            "description": "AutoHotkey es un lenguaje de programación para Windows que permite a los usuarios crear macros y scripts de automatización personalizados. A menudo se utiliza para automatizar tareas repetitivas y personalizar atajos de teclado."
+        },
+        "autoit": {
+            "description": "Herramienta de secuencias de comandos de automatización de GUI de Windows (software gratuito) que se utiliza para automatizar pulsaciones de teclas, acciones del mouse e interacciones entre ventanas y controles."
+        },
+        "azuredatastudio": {
+            "description": "Azure Data Studio es una herramienta de administración de datos que le permite trabajar con SQL Server, Azure SQL DB y SQL DW desde Windows, macOS y Linux."
+        },
+        "barrier": {
+            "description": "Barrier es un software KVM de código abierto (teclado, vídeo y conmutador de ratón). Permite a los usuarios controlar varias computadoras con un solo teclado y mouse, incluso si tienen diferentes sistemas operativos."
+        },
+        "bat": {
+            "description": "Bat es un clon del comando cat con resaltado de sintaxis. Proporciona una alternativa fácil de usar y rica en funciones al comando cat tradicional para ver y concatenar archivos."
+        },
+        "beeper": {
+            "description": "Todos tus chats en una sola aplicación."
+        },
+        "bitwarden": {
+            "description": "Bitwarden es una solución de gestión de contraseñas de código abierto. Permite a los usuarios almacenar y administrar sus contraseñas en una bóveda segura y cifrada, accesible a través de múltiples dispositivos."
+        },
+        "bleachbit": {
+            "description": "Limpie su sistema y libere espacio en disco."
+        },
+        "blender": {
+            "description": "Blender es una potente suite de creación 3D de código abierto que ofrece herramientas de modelado, escultura, animación y renderizado."
+        },
+        "brave": {
+            "description": "Brave es un navegador web centrado en la privacidad que bloquea anuncios y rastreadores, ofreciendo una experiencia de navegación más rápida y segura."
+        },
+        "bulkcrapuninstaller": {
+            "description": "Bulk Crap Uninstaller es una utilidad de desinstalación gratuita y de código abierto para Windows. Ayuda a los usuarios a eliminar programas no deseados y limpiar su sistema desinstalando varias aplicaciones a la vez."
+        },
+        "bulkrenameutility": {
+            "description": "Bulk Rename Utility le permite cambiar fácilmente el nombre de archivos y carpetas de forma recursiva según búsqueda y reemplazo, ubicación de caracteres, campos, secuencias, expresiones regulares, datos EXIF ​​y más."
+        },
+        "buzz": {
+            "description": "Aplicación de escritorio de traducción y transcripción de audio sin conexión impulsada por Whisper, empaquetada para Windows y disponible a través de WinGet."
+        },
+        "AdvancedRenamer": {
+            "description": "Advanced Renamer es un programa para cambiar el nombre de varios archivos y carpetas a la vez. Al configurar métodos de cambio de nombre, los nombres se pueden manipular de varias maneras."
+        },
+        "citrixworkspaceapp": {
+            "description": "una aplicación cliente unificada y segura que proporciona acceso instantáneo a escritorios virtuales, SaaS, web y aplicaciones de Windows desde cualquier dispositivo (Windows, macOS, Linux, iOS, Android) o navegador."
+        },
+        "calibre": {
+            "description": "Calibre es un administrador, visor y conversor de libros electrónicos potente y fácil de usar."
+        },
+        "carnac": {
+            "description": "Carnac es un visualizador de pulsaciones de teclas para Windows. Muestra las pulsaciones de teclas en una superposición, lo que lo hace útil para presentaciones, tutoriales y demostraciones en vivo."
+        },
+        "cemu": {
+            "description": "Cemu es un software altamente experimental para emular aplicaciones de Wii U en PC."
+        },
+        "chatgpt": {
+            "description": "La aplicación de escritorio ChatGPT proporciona acceso directo al asistente de IA conversacional de OpenAI para tareas de escritura, análisis y productividad."
+        },
+        "chatterino": {
+            "description": "Chatterino es un cliente de chat para Twitch que ofrece una interfaz limpia y personalizable para una mejor experiencia de transmisión."
+        },
+        "chrome": {
+            "description": "Google Chrome es un navegador web ampliamente utilizado conocido por su velocidad, simplicidad e integración perfecta con los servicios de Google."
+        },
+        "chromium": {
+            "description": "Chromium es el proyecto de código abierto que sirve como base para varios navegadores web, incluido Chrome."
+        },
+        "claude": {
+            "description": "La aplicación de escritorio Claude de Anthropic para Windows, diseñada para trabajo y chat enfocados asistidos por IA."
+        },
+        "claude-code": {
+            "description": "La herramienta de codificación agente de Anthropic para los flujos de trabajo de terminal/IDE, disponible en Windows y distribuida a través de WinGet."
+        },
+        "clementine": {
+            "description": "Clementine es un moderno reproductor de música y organizador de bibliotecas que admite varios formatos de audio y servicios de radio en línea."
+        },
+        "clink": {
+            "description": "Clink es una potente interfaz de línea de comandos compatible con Bash (CLIenhancement para Windows, que agrega funciones como resaltado de sintaxis e historial mejorado)."
+        },
+        "clonehero": {
+            "description": "Clone Hero es un juego de ritmo gratuito que se puede jugar con cualquier controlador de guitarra de 5 o 6 botones."
+        },
+        "cmake": {
+            "description": "CMake es una familia de herramientas multiplataforma de código abierto diseñada para crear, probar y empaquetar software."
+        },
+        "copyq": {
+            "description": "CopyQ es un administrador de portapapeles con funciones avanzadas que le permite almacenar, editar y recuperar el historial del portapapeles."
+        },
+        "cpuz": {
+            "description": "CPU-Z es una herramienta de diagnóstico y monitoreo del sistema para Windows. Proporciona información detallada sobre los componentes de hardware de la computadora, incluida la CPU, la memoria y la placa base."
+        },
+        "crystaldiskinfo": {
+            "description": "Crystal Disk Info es una herramienta de monitoreo del estado del disco que proporciona información sobre el estado y el rendimiento de los discos duros. Ayuda a los usuarios a anticipar problemas potenciales y monitorear el estado de la unidad."
+        },
+        "capframex": {
+            "description": "Herramienta de captura y análisis de frametimes basada en PresentMon de Intel. Superposición proporcionada por Rivatuner Statistics Server."
+        },
+        "crystaldiskmark": {
+            "description": "Crystal Disk Mark es una herramienta de evaluación comparativa de discos que mide las velocidades de lectura y escritura de los dispositivos de almacenamiento. Ayuda a los usuarios a evaluar el rendimiento de sus discos duros y SSD."
+        },
+        "cursor": {
+            "description": "Editor de código impulsado por IA (basado en VS Code) con funciones de codificación agente y asistencia de IA integrada para flujos de trabajo de desarrollo."
+        },
+        "darktable": {
+            "description": "Herramienta de edición de fotografías de código abierto que ofrece una interfaz intuitiva, capacidades de edición avanzadas y un flujo de trabajo no destructivo para mejorar las imágenes sin problemas."
+        },
+        "DaxStudio": {
+            "description": "DAX (Data Analysis eXpressions) Studio es la herramienta definitiva para ejecutar y analizar consultas DAX en modelos tabulares de Microsoft."
+        },
+        "ddu": {
+            "description": "Display Driver Uninstaller (DDU) es una herramienta para desinstalar completamente los controladores de gráficos de NVIDIA, AMD e Intel. Es útil para solucionar problemas relacionados con el controlador de gráficos."
+        },
+        "deepl": {
+            "description": "Asistente de traducción y escritura de escritorio de DeepL para Windows, que incluye accesos directos y funciones de mejora de escritura en la aplicación."
+        },
+        "deluge": {
+            "description": "Deluge es un cliente BitTorrent gratuito y de código abierto. Cuenta con una interfaz fácil de usar, soporte para complementos y la capacidad de administrar torrents de forma remota."
+        },
+        "devtoys": {
+            "description": "DevToys es una colección de utilidades y herramientas relacionadas con el desarrollo para Windows. Incluye herramientas para administración de archivos, formateo de código y mejoras de productividad para desarrolladores."
+        },
+        "digikam": {
+            "description": "digiKam es un software avanzado de gestión de fotografías de código abierto con funciones para organizar, editar y compartir fotografías."
+        },
+        "discord": {
+            "description": "Discord es una popular plataforma de comunicación con chat de voz, vídeo y texto, diseñada para jugadores pero utilizada por una amplia gama de comunidades."
+        },
+        "dismtools": {
+            "description": "DISMTools es una GUI rápida y personalizable para la utilidad DISM, que admite imágenes de Windows desde Windows 7 en adelante. Maneja instalaciones en cualquier unidad, ofrece soporte para proyectos y permite a los usuarios modificar configuraciones como modos de color, idioma y versiones DISM; impulsado por DISM nativo y una API DISM administrada."
+        },
+        "ntlite": {
+            "description": "Integre actualizaciones, controladores, automatice la configuración de Windows y aplicaciones, acelere el proceso de implementación de Windows y tenga todo listo para la próxima vez."
+        },
+        "ditto": {
+            "description": "Ditto es una extensión del portapapeles estándar de Windows."
+        },
+        "dockerdesktop": {
+            "description": "Docker Desktop es una poderosa herramienta para el desarrollo e implementación de aplicaciones en contenedores."
+        },
+        "dotnet3": {
+            "description": ".NET Desktop Runtime 3.1 es un entorno de ejecución necesario para ejecutar aplicaciones desarrolladas con .NET Core 3.1."
+        },
+        "dotnet5": {
+            "description": ".NET Desktop Runtime 5 es un entorno de ejecución necesario para ejecutar aplicaciones desarrolladas con .NET 5."
+        },
+        "dotnet6": {
+            "description": ".NET Desktop Runtime 6 es un entorno de ejecución necesario para ejecutar aplicaciones desarrolladas con .NET 6."
+        },
+        "dotnet7": {
+            "description": ".NET Desktop Runtime 7 es un entorno de ejecución necesario para ejecutar aplicaciones desarrolladas con .NET 7."
+        },
+        "dotnet8": {
+            "description": ".NET Desktop Runtime 8 es un entorno de ejecución necesario para ejecutar aplicaciones desarrolladas con .NET 8."
+        },
+        "dotnet9": {
+            "description": ".NET Desktop Runtime 9 es un entorno de ejecución necesario para ejecutar aplicaciones desarrolladas con .NET 9."
+        },
+        "dotnet10": {
+            "description": ".NET Desktop Runtime 10 es un entorno de ejecución necesario para ejecutar aplicaciones desarrolladas con .NET 10."
+        },
+        "dmt": {
+            "description": "Dual Monitor Tools (DMT) es una aplicación FOSS que le permite personalizar el manejo de múltiples monitores. Útil para juegos y aplicaciones en pantalla completa que no manejan bien un segundo monitor y pueden mejorar su flujo de trabajo."
+        },
+        "duplicati": {
+            "description": "Duplicati es una solución de copia de seguridad de código abierto que admite copias de seguridad incrementales, cifradas y comprimidas. Está diseñado para almacenar datos de forma segura en servicios de almacenamiento en la nube."
+        },
+        "eaapp": {
+            "description": "EA App es una plataforma para acceder y jugar juegos de Electronic Arts."
+        },
+        "eartrumpet": {
+            "description": "EarTrumpet es una aplicación de control de audio para Windows que proporciona una interfaz sencilla e intuitiva para gestionar la configuración de sonido."
+        },
+        "edge": {
+            "description": "Microsoft Edge es un navegador web moderno basado en Chromium que ofrece rendimiento, seguridad e integración con los servicios de Microsoft."
+        },
+        "efibooteditor": {
+            "description": "EFI Boot Editor es una herramienta para administrar las entradas de arranque EFI/UEFI en su sistema. Le permite personalizar la configuración de arranque de su computadora."
+        },
+        "emulationstation": {
+            "description": "Emulation Station es una interfaz de emulador gráfica y temática que te permite acceder a todos tus juegos favoritos en un solo lugar."
+        },
+        "enteauth": {
+            "description": "Ente Auth es una aplicación de autenticación cifrada de extremo a extremo, multiplataforma y gratuita."
+        },
+        "epicgames": {
+            "description": "Epic Games Launcher es el cliente para acceder y jugar juegos desde Epic Games Store."
+        },
+        "esearch": {
+            "description": "Everything Search es una utilidad de búsqueda de archivos rápida y eficiente para Windows."
+        },
+        "espanso": {
+            "description": "Text Expander multiplataforma y de código abierto escrito en Rust."
+        },
+        "ffmpeg": {
+            "description": "FFmpeg Batch AV Converter es un codificador universal de audio y video, que permite utilizar todo el potencial de la línea de comandos de ffmpeg con unos pocos clics del mouse en una conveniente GUI con información de progreso de arrastrar y soltar."
+        },
+        "falkon": {
+            "description": "Falkon es un navegador web ligero y rápido centrado en la privacidad y la eficiencia del usuario."
+        },
+        "fastfetch": {
+            "description": "Fastfetch es una herramienta similar a neofetch para recuperar información del sistema y mostrarla de una manera bonita."
+        },
+        "ferdium": {
+            "description": "Ferdium es una aplicación de mensajería que combina múltiples servicios de mensajería en una sola aplicación para una fácil administración."
+        },
+        "ffmpeg-full": {
+            "description": "FFmpeg es una potente herramienta de procesamiento multimedia que permite a los usuarios convertir, editar y transmitir archivos de audio y vídeo con una amplia gama de códecs y formatos. | Nota: FFmpeg no se puede desinstalar usando winget."
+        },
+        "fileconverter": {
+            "description": "File Converter es una herramienta muy sencilla que te permite convertir y comprimir uno o varios archivos utilizando el menú contextual del Explorador de Windows."
+        },
+        "files": {
+            "description": "Explorador de archivos alternativo."
+        },
+        "firealpaca": {
+            "description": "Fire Alpaca es un software de pintura digital gratuito que proporciona una amplia gama de herramientas de dibujo y una interfaz fácil de usar."
+        },
+        "firefox": {
+            "description": "Mozilla Firefox es un navegador web de código abierto conocido por sus opciones de personalización, funciones de privacidad y extensiones."
+        },
+        "firefoxesr": {
+            "description": "Mozilla Firefox es un navegador web de código abierto conocido por sus opciones de personalización, funciones de privacidad y extensiones. Firefox ESR (versión de soporte extendido) recibe actualizaciones importantes cada 42 semanas con actualizaciones menores como correcciones de fallas, correcciones de seguridad y actualizaciones de políticas según sea necesario, pero al menos cada cuatro semanas."
+        },
+        "flameshot": {
+            "description": "Flameshot es un software de captura de pantalla potente pero fácil de usar, que ofrece funciones de anotación y edición."
+        },
+        "lightshot": {
+            "description": "Ligthshot es una herramienta de software de captura de pantalla liviana y fácil de usar, donde opcionalmente puede editar sus capturas de pantalla usando diferentes herramientas, compartirlas a través de Internet y/o guardarlas en el disco, y personalizar las opciones disponibles."
+        },
+        "floorp": {
+            "description": "Floorp es un proyecto de navegador web de código abierto que tiene como objetivo proporcionar una experiencia de navegación sencilla y rápida."
+        },
+        "flow": {
+            "description": "Lanzador de pulsaciones de teclas para Windows para buscar, administrar e iniciar archivos, carpetas, marcadores, sitios web y más."
+        },
+        "flux": {
+            "description": "f.lux ajusta la temperatura del color de la pantalla para reducir la fatiga visual durante el uso nocturno."
+        },
+        "foobar": {
+            "description": "foobar2000 es un reproductor de música extensible y altamente personalizable para Windows, conocido por su diseño modular y funciones avanzadas."
+        },
+        "foxpdfeditor": {
+            "description": "Foxit PDF Editor es un editor y visor de PDF rico en funciones con una interfaz familiar estilo cinta."
+        },
+        "foxpdfreader": {
+            "description": "Foxit PDF Reader es un visor de PDF gratuito con una interfaz familiar en forma de cinta."
+        },
+        "freecad": {
+            "description": "FreeCAD es un modelador CAD 3D paramétrico, diseñado para tareas de ingeniería y diseño de productos, centrándose en la flexibilidad y la extensibilidad."
+        },
+        "fxsound": {
+            "description": "FxSound es un software gratuito de código abierto para mejorar la calidad del sonido, el volumen y los graves. Incluyendo un ecualizador, efectos y ajustes preestablecidos para audio personalizado."
+        },
+        "fzf": {
+            "description": "Un buscador difuso de línea de comandos."
+        },
+        "geforcenow": {
+            "description": "GeForce NOW es un servicio de juegos en la nube que te permite jugar juegos de PC de alta calidad en tu dispositivo."
+        },
+        "gimp": {
+            "description": "GIMP es un editor de gráficos rasterizados versátil de código abierto que se utiliza para tareas como retoque fotográfico, edición de imágenes y composición de imágenes."
+        },
+        "git": {
+            "description": "Git es un sistema de control de versiones distribuido ampliamente utilizado para rastrear cambios en el código fuente durante el desarrollo de software."
+        },
+        "gitbutler": {
+            "description": "Un cliente Git para ramas simultáneas además de su flujo de trabajo existente."
+        },
+        "gitextensions": {
+            "description": "Git Extensions es una interfaz gráfica de usuario para Git que proporciona funciones adicionales para facilitar la gestión del código fuente."
+        },
+        "githubcli": {
+            "description": "GitHub CLI es una herramienta de línea de comandos que simplifica el trabajo con GitHub directamente desde la terminal."
+        },
+        "github-copilot-cli": {
+            "description": "Experiencia GitHub Copilot para la línea de comandos: asistencia en lenguaje natural para comandos y tareas de desarrollo; distribuido a través de WinGet."
+        },
+        "githubdesktop": {
+            "description": "GitHub Desktop es un cliente visual de Git que simplifica la colaboración en los repositorios de GitHub con una interfaz fácil de usar."
+        },
+        "gitkrakenclient": {
+            "description": "GitKraken Client es un potente cliente visual de Git de Axosoft que funciona con TODOS los repositorios de Git en cualquier entorno de hosting."
+        },
+        "glaryutilities": {
+            "description": "Glary Utilities es una herramienta integral de optimización y mantenimiento del sistema para Windows."
+        },
+        "godotengine": {
+            "description": "Godot Engine es un motor de juegos 2D y 3D gratuito y de código abierto centrado en la usabilidad y la flexibilidad."
+        },
+        "gog": {
+            "description": "GOG Galaxy es un cliente de juegos que ofrece juegos sin DRM, contenido adicional y más."
+        },
+        "gitify": {
+            "description": "Notificaciones de GitHub en tu barra de menú."
+        },
+        "golang": {
+            "description": "Go (o Golang) es un lenguaje de programación compilado y tipado estáticamente diseñado para brindar simplicidad, confiabilidad y eficiencia."
+        },
+        "googledrive": {
+            "description": "Sincronización de archivos entre dispositivos, todos vinculados a su cuenta de Google."
+        },
+        "gpt4all": {
+            "description": "Aplicación de escritorio de código abierto para ejecutar LLM localmente con énfasis en la privacidad (código base con licencia MIT)."
+        },
+        "gpuz": {
+            "description": "GPU-Z proporciona información detallada sobre su tarjeta gráfica y GPU."
+        },
+        "greenshot": {
+            "description": "Greenshot es una herramienta de software de captura de pantalla liviana con editor de imágenes incorporado y opciones de captura personalizables."
+        },
+        "gsudo": {
+            "description": "Gsudo es una implementación de sudo para Windows, que permite la ejecución con privilegios elevados."
+        },
+        "handbrake": {
+            "description": "HandBrake es un transcodificador de vídeo de código abierto que le permite convertir vídeo de casi cualquier formato a una selección de códecs ampliamente compatibles."
+        },
+        "harmonoid": {
+            "description": "Reproduce y administra tu biblioteca de música. Luce hermosa y jugosa. Listas de reproducción, imágenes, letras sincronizadas, cambio de tono, aumento de volumen y más."
+        },
+        "heidisql": {
+            "description": "HeidiSQL es un cliente potente y fácil de usar para bases de datos MySQL, MariaDB, Microsoft SQL Server y PostgreSQL. Proporciona herramientas para la gestión y el desarrollo de bases de datos."
+        },
+        "helix": {
+            "description": "Helix es una alternativa a neovim construida en Rust."
+        },
+        "heroiclauncher": {
+            "description": "Heroic Games Launcher es un lanzador de juegos alternativo de código abierto para Epic Games Store."
+        },
+        "hexchat": {
+            "description": "HexChat es un cliente IRC (Internet Relay Chat) gratuito y de código abierto con una interfaz gráfica para facilitar la comunicación."
+        },
+        "hwinfo": {
+            "description": "HWiNFO proporciona información y diagnósticos completos de hardware para Windows."
+        },
+        "hwmonitor": {
+            "description": "HWMonitor es un programa de monitoreo de hardware que lee los principales sensores de salud de los sistemas de PC."
+        },
+        "imhex": {
+            "description": "Un editor hexadecimal moderno y funcional para desarrolladores e ingenieros inversos."
+        },
+        "imageglass": {
+            "description": "ImageGlass es un visor de imágenes versátil compatible con varios formatos de imagen y centrado en la simplicidad y la velocidad."
+        },
+        "imgburn": {
+            "description": "ImgBurn es una aplicación liviana de grabación de CD, DVD, HD-DVD y Blu-ray con funciones avanzadas para crear y grabar imágenes de discos."
+        },
+        "inkscape": {
+            "description": "Inkscape es un potente editor de gráficos vectoriales de código abierto, adecuado para tareas como ilustraciones, iconos, logotipos y más."
+        },
+        "itch": {
+            "description": "Itch.io es una plataforma de distribución digital para juegos independientes y proyectos creativos."
+        },
+        "itunes": {
+            "description": "iTunes es una aplicación de reproductor multimedia, biblioteca multimedia y emisora ​​de radio en línea desarrollada por Apple Inc."
+        },
+        "jami": {
+            "description": "Jami es una plataforma de comunicación segura y centrada en la privacidad que ofrece llamadas de audio y video, mensajería y uso compartido de archivos."
+        },
+        "jan": {
+            "description": "Alternativa ChatGPT de código abierto que se ejecuta en su computadora (asistente de IA de escritorio sin conexión/ejecutor de modelo local)."
+        },
+        "java8": {
+            "description": "Amazon Corretto es una distribución gratuita, multiplataforma y lista para producción del Open Java Development Kit (OpenJDK)."
+        },
+        "java11": {
+            "description": "Amazon Corretto es una distribución gratuita, multiplataforma y lista para producción del Open Java Development Kit (OpenJDK)."
+        },
+        "java17": {
+            "description": "Amazon Corretto es una distribución gratuita, multiplataforma y lista para producción del Open Java Development Kit (OpenJDK)."
+        },
+        "java21": {
+            "description": "Amazon Corretto es una distribución gratuita, multiplataforma y lista para producción del Open Java Development Kit (OpenJDK)."
+        },
+        "java25": {
+            "description": "Amazon Corretto es una distribución gratuita, multiplataforma y lista para producción del Open Java Development Kit (OpenJDK)."
+        },
+        "jdownloader": {
+            "description": "JDownloader es un administrador de descargas rico en funciones compatible con varios servicios de alojamiento de archivos."
+        },
+        "jellyfinmediaplayer": {
+            "description": "Jellyfin Media Player es una aplicación cliente para el servidor de medios Jellyfin que proporciona acceso a su biblioteca multimedia."
+        },
+        "jellyfinserver": {
+            "description": "Jellyfin Server es un software de servidor de medios de código abierto que le permite organizar y transmitir su biblioteca de medios."
+        },
+        "jetbrains": {
+            "description": "Jetbrains Toolbox es una plataforma para una fácil instalación y gestión de las herramientas de desarrollo de JetBrains."
+        },
+        "joplin": {
+            "description": "Joplin es una aplicación de código abierto para tomar notas y tareas pendientes con capacidades de sincronización."
+        },
+        "jpegview": {
+            "description": "JPEGView es un visor/editor sencillo, rápido y altamente configurable para imágenes JPEG, BMP, PNG, WEBP, TGA, GIF, JXL, HEIC, HEIF, AVIF y TIFF con una GUI mínima."
+        },
+        "kdeconnect": {
+            "description": "KDE Connect permite una integración perfecta entre su escritorio KDE y sus dispositivos móviles."
+        },
+        "kdenlive": {
+            "description": "Kdenlive es un software de edición de vídeo de código abierto con potentes funciones para crear y editar vídeos de calidad profesional."
+        },
+        "keepass": {
+            "description": "KeePassXC es un administrador de contraseñas multiplataforma de código abierto con potentes funciones de cifrado."
+        },
+        "klite": {
+            "description": "K-Lite Codec Pack Standard es una colección de códecs de audio y video y herramientas relacionadas, que proporciona componentes esenciales para la reproducción multimedia."
+        },
+        "kodi": {
+            "description": "Kodi es una aplicación de centro multimedia de código abierto que le permite reproducir y ver la mayoría de los vídeos, música, podcasts y otros archivos multimedia digitales."
+        },
+        "krita": {
+            "description": "Krita es una poderosa aplicación de pintura de código abierto. Está diseñado para artistas conceptuales, ilustradores, artistas de mates y texturas y la industria VFX."
+        },
+        "lazygit": {
+            "description": "Interfaz de usuario de terminal simple para comandos de git."
+        },
+        "libreoffice": {
+            "description": "LibreOffice es una suite ofimática potente y gratuita, compatible con otras suites ofimáticas importantes."
+        },
+        "librewolf": {
+            "description": "LibreWolf es un navegador web centrado en la privacidad basado en Firefox, con mejoras adicionales de privacidad y seguridad."
+        },
+        "linkshellextension": {
+            "description": "Link Shell Extension (LSE) permite la creación de enlaces duros, uniones, puntos de montaje de volumen, enlaces simbólicos, un proceso de clonación de carpetas que utiliza enlaces duros o enlaces simbólicos y un proceso de copia que se ocupa de uniones, enlaces simbólicos y enlaces duros. LSE, como su nombre lo indica, se implementa como una extensión de Shell y se accede a ella desde el Explorador de Windows o administradores de archivos/carpetas similares."
+        },
+        "linphone": {
+            "description": "Linphone es un servicio de voz sobre IP (VoIP) de código abierto que permite llamadas de audio y video, mensajería y más."
+        },
+        "livelywallpaper": {
+            "description": "Software gratuito y de código abierto que permite a los usuarios configurar fondos de pantalla animados y protectores de pantalla."
+        },
+        "lm-studio": {
+            "description": "Aplicación de escritorio para descubrir, descargar y ejecutar LLM locales en su máquina, con una interfaz de usuario de chat integrada y herramientas de inferencia local."
+        },
+        "localsend": {
+            "description": "Una alternativa multiplataforma de código abierto a AirDrop."
+        },
+        "lockhunter": {
+            "description": "LockHunter es una herramienta gratuita para eliminar archivos bloqueados por algo que no conoces."
+        },
+        "logseq": {
+            "description": "Logseq es una aplicación versátil de gestión del conocimiento y toma de notas diseñada para el pensador digital. Centrándose en la interconexión de ideas, Logseq permite a los usuarios organizar sus pensamientos sin problemas mediante una combinación de esquemas jerárquicos y enlaces bidireccionales. Admite contenido estructurado y no estructurado, lo que permite a los usuarios crear un gráfico de conocimiento personalizado que se adapta a la evolución de sus ideas y conocimientos."
+        },
+        "logitechghub": {
+            "description": "Software oficial para la gestión de periféricos gaming de Logitech (ratones, teclados, auriculares, perfiles de iluminación, etc.)."
+        },
+        "malwarebytes": {
+            "description": "Malwarebytes es un software antimalware que brinda protección en tiempo real contra amenazas."
+        },
+        "masscode": {
+            "description": "massCode es un administrador de fragmentos de código abierto rápido y eficiente para desarrolladores."
+        },
+        "matrix": {
+            "description": "Element es un cliente de Matrix; una red abierta para una comunicación segura y descentralizada."
+        },
+        "meld": {
+            "description": "Meld es una herramienta visual de comparación y combinación de archivos y directorios."
+        },
+        "microsoft-aishell": {
+            "description": "Shell CLI que se conecta a proveedores de asistencia de IA (\"agentes\") para productividad en la línea de comandos; distribuido a través de WinGet."
+        },
+        "microsoft-copilot": {
+            "description": "Aplicación de escritorio Microsoft Copilot para Windows (Copilot de consumo), distribuida a través de Microsoft Store y comúnmente instalada a través de su ID de tienda."
+        },
+        "ModernFlyouts": {
+            "description": "Un conjunto de menús desplegables para Windows, moderno, de código abierto y basado en Fluent Design."
+        },
+        "monitorian": {
+            "description": "Monitorian es una utilidad para ajustar el brillo y el contraste del monitor en Windows."
+        },
+        "moonlight": {
+            "description": "Moonlight/GameStream Client le permite transmitir juegos de PC a otros dispositivos a través de su red local."
+        },
+        "Motrix": {
+            "description": "Un administrador de descargas con todas las funciones."
+        },
+        "mpchc": {
+            "description": "Media Player Classic - Home Cinema (MPC-HC) es un reproductor de audio y vídeo gratuito y de código abierto para Windows. MPC-HC se basa en el proyecto Guliverkli original y contiene muchas funciones adicionales y correcciones de errores."
+        },
+        "mremoteng": {
+            "description": "mRemoteNG es un administrador de conexiones remotas gratuito y de código abierto. Le permite ver y administrar múltiples sesiones remotas en una única interfaz."
+        },
+        "msedgeredirect": {
+            "description": "Una herramienta para redirigir noticias, búsquedas, widgets, clima y más a su navegador predeterminado."
+        },
+        "msiafterburner": {
+            "description": "MSI Afterburner es una utilidad de overclocking de tarjetas gráficas con funciones avanzadas."
+        },
+        "mullvadvpn": {
+            "description": "Este es el software de cliente VPN para el servicio VPN de Mullvad."
+        },
+        "BorderlessGaming": {
+            "description": "Juega tus juegos favoritos en una ventana sin bordes; No más pestañas alternativas que consumen mucho tiempo."
+        },
+        "EqualizerAPO": {
+            "description": "Equalizer APO es un ecualizador paramétrico/gráfico para Windows."
+        },
+        "CompactGUI": {
+            "description": "Comprima de forma transparente juegos y programas activos utilizando las API de Windows 10/11"
+        },
+        "ExifCleaner": {
+            "description": "Aplicación de escritorio para limpiar metadatos de imágenes, vídeos, archivos PDF y otros archivos."
+        },
+        "mullvadbrowser": {
+            "description": "Mullvad Browser es un navegador web centrado en la privacidad, desarrollado en asociación con Tor Project."
+        },
+        "musescore": {
+            "description": "Cree, reproduzca e imprima hermosas partituras con el software de notación musical MuseScore, gratuito y fácil de usar."
+        },
+        "musicbee": {
+            "description": "MusicBee es un reproductor de música personalizable compatible con varios formatos de audio. Incluye funciones como una función de búsqueda integrada, edición de etiquetas y más."
+        },
+        "mp3tag": {
+            "description": "Mp3tag es una herramienta potente y fácil de usar para editar metadatos de formatos de audio comunes."
+        },
+        "tagscanner": {
+            "description": "TagScanner es una poderosa herramienta para organizar y administrar su colección de música."
+        },
+        "nanazip": {
+            "description": "NanaZip es una herramienta de compresión y descompresión de archivos rápida y eficiente."
+        },
+        "netbird": {
+            "description": "NetBird es una alternativa de código abierto comparable a TailScale que se puede conectar a un servidor autohospedado."
+        },
+        "naps2": {
+            "description": "NAPS2 es una aplicación de escaneo de documentos que simplifica el proceso de creación de documentos electrónicos."
+        },
+        "neofetchwin": {
+            "description": "Neofetch es una utilidad de línea de comandos para mostrar información del sistema de una manera visualmente atractiva."
+        },
+        "neovim": {
+            "description": "Neovim es un editor de texto altamente extensible y una mejora con respecto al editor Vim original."
+        },
+        "nextclouddesktop": {
+            "description": "Nextcloud Desktop es el cliente de escritorio oficial para la plataforma de sincronización e intercambio de archivos Nextcloud."
+        },
+        "nglide": {
+            "description": "nGlide es un envoltorio 3Dfx Voodoo Glide. Te permite jugar juegos que usan Glide API en tarjetas gráficas modernas sin la necesidad de una tarjeta gráfica 3Dfx Voodoo."
+        },
+        "nmap": {
+            "description": "Nmap (Network Mapper) es una herramienta de código abierto para exploración de redes y auditoría de seguridad. Descubre dispositivos en una red y proporciona información sobre sus puertos y servicios."
+        },
+        "nodejs": {
+            "description": "NodeJS es un tiempo de ejecución de JavaScript integrado en el motor JavaScript V8 de Chrome para crear aplicaciones de red y del lado del servidor."
+        },
+        "nodejslts": {
+            "description": "NodeJS LTS proporciona versiones de soporte a largo plazo para un desarrollo de JavaScript del lado del servidor estable y confiable."
+        },
+        "nomacs": {
+            "description": "Nomacs es un visor de imágenes gratuito y de código abierto que admite múltiples plataformas. Cuenta con capacidades básicas de edición de imágenes y admite una variedad de formatos de imagen."
+        },
+        "notepadplus": {
+            "description": "Notepad++ es un editor de código abierto y gratuito que reemplaza al Bloc de notas y admite varios idiomas."
+        },
+        "nuget": {
+            "description": "NuGet es un administrador de paquetes para .NET framework, que permite a los desarrolladores administrar y compartir bibliotecas en sus aplicaciones .NET."
+        },
+        "nushell": {
+            "description": "Nushell es un nuevo shell que aprovecha el hardware y los sistemas modernos para brindar una experiencia poderosa, expresiva y rápida."
+        },
+        "nvclean": {
+            "description": "NVCleanstall es una herramienta diseñada para personalizar las instalaciones de controladores NVIDIA, permitiendo a los usuarios avanzados controlar más aspectos del proceso de instalación."
+        },
+        "nvm": {
+            "description": "Node Version Manager (NVM) para Windows le permite cambiar fácilmente entre múltiples versiones de Node.js."
+        },
+        "obs": {
+            "description": "OBS Studio es un software gratuito y de código abierto para grabación de vídeo y transmisión en vivo. Admite la captura y mezcla de vídeo/audio en tiempo real, lo que lo hace popular entre los creadores de contenido."
+        },
+        "obsidian": {
+            "description": "Obsidian es una potente aplicación para tomar notas y gestionar conocimientos."
+        },
+        "okular": {
+            "description": "Okular es un visor de documentos versátil con funciones avanzadas."
+        },
+        "ollama": {
+            "description": "Ollama le permite ejecutar y administrar modelos de lenguaje locales grandes en su escritorio."
+        },
+        "onedrive": {
+            "description": "OneDrive es un servicio de almacenamiento en la nube proporcionado por Microsoft que permite a los usuarios almacenar y compartir archivos de forma segura entre dispositivos."
+        },
+        "onlyoffice": {
+            "description": "SOLAMENTEOffice Desktop es una suite ofimática integral para edición y colaboración de documentos."
+        },
+        "OPAutoClicker": {
+            "description": "Un autoclicker completo con dos modos de autoclick, en la ubicación dinámica del cursor o en una ubicación preespecificada."
+        },
+        "openhashtab": {
+            "description": "OpenHashTab es una extensión de shell para calcular y verificar cómodamente los hashes de archivos a partir de las propiedades del archivo."
+        },
+        "openrgb": {
+            "description": "OpenRGB es un software de control de iluminación RGB de código abierto diseñado para gestionar y controlar la iluminación RGB para varios componentes y periféricos."
+        },
+        "openscad": {
+            "description": "OpenSCAD es un modelador CAD 3D gratuito y de código abierto. Es especialmente útil para crear diseños paramétricos para impresión 3D."
+        },
+        "openshell": {
+            "description": "Open Shell es un reemplazo del menú Inicio de Windows con funcionalidad mejorada y opciones de personalización."
+        },
+        "OpenVPN": {
+            "description": "OpenVPN Connect es un cliente VPN de código abierto que le permite conectarse de forma segura a un servidor VPN. Proporciona una conexión segura y cifrada para proteger su privacidad en línea."
+        },
+        "OVirtualBox": {
+            "description": "Oracle VirtualBox es una herramienta de virtualización de código abierto potente y gratuita para arquitecturas x86 y AMD64/Intel64."
+        },
+        "ownclouddesktop": {
+            "description": "ownCloud Desktop es el cliente de escritorio oficial para la plataforma de sincronización e intercambio de archivos ownCloud."
+        },
+        "policyplus": {
+            "description": "Editor de políticas de grupo local y más, para todas las ediciones de Windows."
+        },
+        "potplayer": {
+            "description": "PotPlayer es un reproductor multimedia gratuito de Windows compatible con amplio formato, alto rendimiento, códecs integrados y amplias opciones de personalización."
+        },
+        "power-automate-desktop": {
+            "description": "Herramienta RPA de Windows de Microsoft para crear flujos de escritorio para automatizar tareas repetitivas en aplicaciones y servicios."
+        },
+        "processexplorer": {
+            "description": "Process Explorer es un administrador de tareas y monitor del sistema."
+        },
+        "Paintdotnet": {
+            "description": "Paint.NET es un software gratuito de edición de imágenes y fotografías para Windows. Cuenta con una interfaz de usuario intuitiva y admite una amplia gama de potentes herramientas de edición."
+        },
+        "parsec": {
+            "description": "Parsec es una aplicación para compartir escritorio remoto de alta calidad y baja latencia para colaborar y jugar entre dispositivos."
+        },
+        "pdf-xchange": {
+            "description": "un completo paquete de software y editor basado en Windows para crear, ver, editar, anotar y firmar archivos PDF."
+        },
+        "pdf24creator": {
+            "description": "Herramientas PDF de escritorio/en línea gratuitas y fáciles de usar que lo hacen más productivo"
+        },
+        "pdfsam": {
+            "description": "PDFsam Basic es una herramienta gratuita y de código abierto para dividir, fusionar y rotar archivos PDF."
+        },
+        "peazip": {
+            "description": "PeaZip es una utilidad de archivo de archivos gratuita y de código abierto que admite múltiples formatos de archivo y proporciona funciones de cifrado."
+        },
+        "piimager": {
+            "description": "Raspberry Pi Imager es una utilidad para escribir imágenes del sistema operativo en tarjetas SD para dispositivos Raspberry Pi."
+        },
+        "playnite": {
+            "description": "Playnite es un administrador de biblioteca de videojuegos de código abierto con un objetivo simple: proporcionar una interfaz unificada para todos tus juegos."
+        },
+        "plex": {
+            "description": "Plex Media Server es un software de servidor de medios que le permite organizar y transmitir su biblioteca de medios. Admite varios formatos de medios y ofrece una amplia gama de funciones."
+        },
+        "plexdesktop": {
+            "description": "Plex Desktop para Windows es la interfaz de Plex Media Server."
+        },
+        "Portmaster": {
+            "description": "Portmaster es una aplicación gratuita y de código abierto que le permite recuperar el control de todas las conexiones de red de su computadora."
+        },
+        "posh": {
+            "description": "Oh My Posh es un motor de temas rápidos multiplataforma para cualquier shell."
+        },
+        "postman": {
+            "description": "Postman es una plataforma de colaboración para el desarrollo de API que simplifica el proceso de desarrollo de API."
+        },
+        "powerautomate": {
+            "description": "Con Power Automate Desktop puede automatizar tareas tanto en el escritorio como en la Web."
+        },
+        "powerbi": {
+            "description": "Cree impresionantes informes y visualizaciones con Power BI Desktop. Pone análisis visuales a su alcance con creación de informes intuitiva. Arrastre y suelte para colocar el contenido exactamente donde lo desee en el lienzo flexible y fluido. Descubra rápidamente patrones mientras explora una única vista unificada de visualizaciones interactivas vinculadas."
+        },
+        "powershell": {
+            "description": "PowerShell es un marco de automatización de tareas y un lenguaje de secuencias de comandos diseñado para administradores de sistemas que ofrece potentes capacidades de línea de comandos."
+        },
+        "powertoys": {
+            "description": "PowerToys es un conjunto de utilidades para que los usuarios avanzados mejoren la productividad, con herramientas como FancyZones, PowerRename y más."
+        },
+        "prismlauncher": {
+            "description": "Prism Launcher es un lanzador de Minecraft de código abierto con la capacidad de administrar múltiples instancias, cuentas y modificaciones."
+        },
+        "processlasso": {
+            "description": "Process Lasso es una herramienta de automatización y optimización del sistema que mejora la capacidad de respuesta y la estabilidad del sistema ajustando las prioridades de los procesos y las afinidades de la CPU."
+        },
+        "protonauth": {
+            "description": "Aplicación 2FA de Proton para sincronizar y realizar copias de seguridad de códigos 2FA de forma segura."
+        },
+        "processmonitor": {
+            "description": "SysInternals Process Monitor es una herramienta de monitoreo avanzada que muestra el sistema de archivos, el registro y la actividad de procesos/hilos en tiempo real."
+        },
+        "orcaslicer": {
+            "description": "Generador de código G para impresoras 3D (Bambu, Prusa, Voron, VzBot, RatRig, Creality, etc.)."
+        },
+        "prucaslicer": {
+            "description": "PrusaSlicer es un software de corte potente y fácil de usar para impresión 3D con impresoras 3D Prusa."
+        },
+        "psremoteplay": {
+            "description": "PS Remote Play es una aplicación gratuita que te permite transmitir juegos desde tu consola PlayStation a una PC o dispositivo móvil."
+        },
+        "putty": {
+            "description": "PuTTY es un emulador de terminal, una consola en serie y una aplicación de transferencia de archivos en red gratuitos y de código abierto. Admite varios protocolos de red como SSH, Telnet y SCP."
+        },
+        "python3": {
+            "description": "Python es un lenguaje de programación versátil que se utiliza para el desarrollo web, análisis de datos, inteligencia artificial y más."
+        },
+        "qbittorrent": {
+            "description": "qBittorrent es un cliente BitTorrent gratuito y de código abierto que tiene como objetivo proporcionar una alternativa ligera y rica en funciones a otros clientes de torrent."
+        },
+        "transmission": {
+            "description": "Transmission es un cliente BitTorrent multiplataforma que es de código abierto, fácil, potente y sencillo."
+        },
+        "tixati": {
+            "description": "Tixati es un cliente BitTorrent multiplataforma escrito en C++ que ha sido diseñado para consumir pocos recursos del sistema."
+        },
+        "qtox": {
+            "description": "QTox es una aplicación de mensajería gratuita y de código abierto que prioriza la privacidad y seguridad del usuario en su diseño."
+        },
+        "quicklook": {
+            "description": "Lleve la función “Vista rápida” de macOS a Windows."
+        },
+        "rainmeter": {
+            "description": "Rainmeter es una herramienta de personalización de escritorio que le permite crear y compartir máscaras personalizables para su escritorio."
+        },
+        "revo": {
+            "description": "Revo Uninstaller es una herramienta de desinstalación avanzada que le ayuda a eliminar software no deseado y limpiar su sistema."
+        },
+        "WiseProgramUninstaller": {
+            "description": "Wise Program Uninstaller es la solución perfecta para desinstalar programas de Windows, permitiéndote desinstalar aplicaciones de forma rápida y completa utilizando su interfaz sencilla y fácil de usar."
+        },
+        "revolt": {
+            "description": "Encuentra tu comunidad, conéctate con el mundo. Revolt es una de las mejores formas de mantenerte conectado con tus amigos y tu comunidad sin sacrificar la usabilidad."
+        },
+        "ripgrep": {
+            "description": "Herramienta de búsqueda de línea de comandos rápida y potente."
+        },
+        "rufus": {
+            "description": "Rufus es una utilidad que ayuda a formatear y crear unidades USB de arranque, como memorias USB o pendrives."
+        },
+        "rustdesk": {
+            "description": "RustDesk es una aplicación de escritorio remoto gratuita y de código abierto. Proporciona una forma segura de conectarse a máquinas remotas y acceder a entornos de escritorio."
+        },
+        "rustlang": {
+            "description": "Rust es un lenguaje de programación diseñado para la seguridad y el rendimiento, particularmente enfocado a la programación de sistemas."
+        },
+        "sagethumbs": {
+            "description": "Proporciona soporte para miniaturas en Explorer con más formatos."
+        },
+        "sandboxie": {
+            "description": "Sandboxie Plus es un programa de aislamiento basado en espacio aislado que proporciona seguridad mejorada al ejecutar aplicaciones en un entorno aislado."
+        },
+        "sdio": {
+            "description": "Snappy Driver Installer Origin es un actualizador de controladores gratuito y de código abierto con una amplia base de datos de controladores para Windows."
+        },
+        "session": {
+            "description": "Session es una aplicación de mensajería privada y segura construida sobre una red descentralizada para la privacidad del usuario y la protección de datos."
+        },
+        "sharex": {
+            "description": "ShareX es una herramienta gratuita y de código abierto para capturar pantalla y compartir archivos. Admite varios métodos de captura y ofrece funciones avanzadas para editar y compartir capturas de pantalla."
+        },
+        "nilesoftShell": {
+            "description": "Shell es una herramienta de menú contextual ampliado que agrega funcionalidad adicional y opciones de personalización al menú contextual de Windows."
+        },
+        "systeminformer": {
+            "description": "Una herramienta gratuita, potente y multipropósito que le ayuda a monitorear los recursos del sistema, depurar software y detectar malware."
+        },
+        "sidequest": {
+            "description": "SideQuestVR es una plataforma impulsada por la comunidad que permite a los usuarios descubrir, instalar y administrar contenido de realidad virtual en dispositivos Oculus Quest."
+        },
+        "signal": {
+            "description": "Signal es una aplicación de mensajería centrada en la privacidad que ofrece cifrado de extremo a extremo para una comunicación segura y privada."
+        },
+        "signalrgb": {
+            "description": "SignalRGB te permite controlar y sincronizar tus dispositivos RGB favoritos con una aplicación gratuita."
+        },
+        "simplenote": {
+            "description": "Simplenote es una forma sencilla de guardar notas, listas, ideas y más."
+        },
+        "simplewall": {
+            "description": "Simplewall es una aplicación de firewall gratuita y de código abierto para Windows. Permite a los usuarios controlar y gestionar el tráfico de red entrante y saliente de las aplicaciones."
+        },
+        "slack": {
+            "description": "Slack es un centro de colaboración que conecta equipos y facilita la comunicación a través de canales, mensajería y uso compartido de archivos."
+        },
+        "spacedrive": {
+            "description": "Spacedrive es un administrador de archivos que ofrece integración de almacenamiento en la nube y sincronización de archivos entre dispositivos."
+        },
+        "spacesniffer": {
+            "description": "Una aplicación de herramienta que le permite comprender cómo se estructuran las carpetas y archivos en sus discos."
+        },
+        "starship": {
+            "description": "Starship es un mensaje mínimo, rápido y personalizable para cualquier caparazón."
+        },
+        "steam": {
+            "description": "Steam es una plataforma de distribución digital para comprar y jugar videojuegos, que ofrece juegos multijugador, transmisión de video y más."
+        },
+        "strawberry": {
+            "description": "Strawberry es un reproductor de música de código abierto que se centra en la gestión de colecciones de música y la calidad del audio. Admite varios formatos de audio y presenta una interfaz de usuario limpia."
+        },
+        "stremio": {
+            "description": "Stremio es una aplicación de centro multimedia que permite a los usuarios organizar y transmitir sus películas, programas de televisión y contenido de vídeo favoritos."
+        },
+        "sublimemerge": {
+            "description": "Sublime Merge es un cliente Git con funciones avanzadas y una hermosa interfaz."
+        },
+        "sublimetext": {
+            "description": "Sublime Text es un sofisticado editor de texto para código, marcado y prosa."
+        },
+        "sumatra": {
+            "description": "Sumatra PDF es un visor de PDF ligero y rápido con un diseño minimalista."
+        },
+        "pdfgear": {
+            "description": "PDFgear es un software de administración de PDF con todas las funciones para Windows, macOS y dispositivos móviles, y su uso es completamente gratuito."
+        },
+        "sunshine": {
+            "description": "Sunshine es un servidor GameStream que te permite jugar juegos de PC de forma remota en dispositivos Android, ofreciendo transmisión de baja latencia."
+        },
+        "superf4": {
+            "description": "SuperF4 es una utilidad que le permite finalizar programas instantáneamente presionando una tecla de acceso rápido personalizable."
+        },
+        "swift": {
+            "description": "Swift es un lenguaje de programación de propósito general accesible para los recién llegados y potente para los expertos."
+        },
+        "synctrayzor": {
+            "description": "Utilidad de bandeja de Windows/vigilante del sistema de archivos/lanzador para Syncthing."
+        },
+        "sqlmanagementstudio": {
+            "description": "SQL Server Management Studio (SSMS) es un entorno integrado para administrar cualquier infraestructura SQL, desde SQL Server hasta Azure SQL Database. SSMS proporciona herramientas para configurar, monitorear y administrar instancias de SQL Server y bases de datos."
+        },
+        "tabby": {
+            "description": "Tabby es un emulador de terminal, SSH y cliente serie altamente configurable para Windows, macOS y Linux."
+        },
+        "tailscale": {
+            "description": "Tailscale es una solución VPN segura y fácil de usar para conectar sus dispositivos y redes."
+        },
+        "TcNoAccSwitcher": {
+            "description": "¡Un cambio de cuentas súper rápido para Steam, Battle.net, Epic Games, Origin, Riot, Ubisoft y muchos otros!"
+        },
+        "tcpview": {
+            "description": "SysInternals TCPView es una herramienta de monitoreo de red que muestra una lista detallada de todos los puntos finales TCP y UDP en su sistema."
+        },
+        "teams": {
+            "description": "Microsoft Teams es una plataforma de colaboración que se integra con Office 365 y ofrece chat, videoconferencia, uso compartido de archivos y más."
+        },
+        "teamviewer": {
+            "description": "TeamViewer es un popular software de soporte y acceso remoto que le permite conectarse y controlar dispositivos remotos."
+        },
+        "telegram": {
+            "description": "Telegram es una aplicación de mensajería instantánea basada en la nube conocida por sus funciones de seguridad, velocidad y simplicidad."
+        },
+        "unigram": {
+            "description": "Unigram: Telegrama para Windows."
+        },
+        "terminal": {
+            "description": "Windows Terminal es una aplicación de terminal moderna, rápida y eficiente para usuarios de línea de comandos, que admite múltiples pestañas, paneles y más."
+        },
+        "Thonny": {
+            "description": "IDE de Python para principiantes."
+        },
+        "MuEditor": {
+            "description": "Mu es un editor de código Python para programadores principiantes."
+        },
+        "thorium": {
+            "description": "Navegador creado para mayor velocidad que Vanilla Chromium. Está construido con optimizaciones AVX2 y es el navegador más rápido del mercado."
+        },
+        "thunderbird": {
+            "description": "Mozilla Thunderbird es un cliente de correo electrónico, de noticias y de chat gratuito y de código abierto con funciones avanzadas."
+        },
+        "betterbird": {
+            "description": "Betterbird es una bifurcación de Mozilla Thunderbird con funciones adicionales y correcciones de errores."
+        },
+        "tidal": {
+            "description": "Tidal es un servicio de transmisión de música conocido por su calidad de audio de alta fidelidad y contenido exclusivo. Ofrece una amplia biblioteca de canciones y listas de reproducción seleccionadas."
+        },
+        "tor": {
+            "description": "Tor Browser está diseñado para la navegación web anónima, utilizando la red Tor para proteger la privacidad y seguridad del usuario."
+        },
+        "totalcommander": {
+            "description": "Total Commander es un administrador de archivos para Windows que proporciona una interfaz potente e intuitiva para la administración de archivos."
+        },
+        "treesize": {
+            "description": "TreeSize Free es un administrador de espacio en disco que le ayuda a analizar y visualizar el uso del espacio en sus unidades."
+        },
+        "ttaskbar": {
+            "description": "TranslucentTB es una herramienta que te permite personalizar la transparencia de la barra de tareas de Windows."
+        },
+        "twinkletray": {
+            "description": "Twinkle Tray le permite administrar fácilmente los niveles de brillo de varios monitores."
+        },
+        "ubisoft": {
+            "description": "Ubisoft Connect es el servicio de juegos en línea y distribución digital de Ubisoft, que brinda acceso a los juegos y servicios de Ubisoft."
+        },
+        "ungoogled": {
+            "description": "Ungoogled Chromium es una versión de Chromium sin la integración de Google para mejorar la privacidad y el control."
+        },
+        "unity": {
+            "description": "Unity es una potente plataforma de desarrollo de juegos para crear juegos 2D, 3D, de realidad aumentada y de realidad virtual."
+        },
+        "vagrant": {
+            "description": "Vagrant es una herramienta de código abierto para crear y gestionar entornos de desarrollo virtualizados."
+        },
+        "vc2015_32": {
+            "description": "El paquete redistribuible de Visual C++ 2015-2022 de 32 bits instala los componentes de tiempo de ejecución de las bibliotecas de Visual C++ necesarios para ejecutar aplicaciones de 32 bits."
+        },
+        "vc2015_64": {
+            "description": "El paquete redistribuible de Visual C++ 2015-2022 de 64 bits instala los componentes de tiempo de ejecución de las bibliotecas de Visual C++ necesarios para ejecutar aplicaciones de 64 bits."
+        },
+        "ventoy": {
+            "description": "Ventoy es una herramienta de código abierto para crear unidades USB de arranque. Admite múltiples archivos ISO en una sola unidad USB, lo que la convierte en una solución versátil para instalar sistemas operativos."
+        },
+        "vesktop": {
+            "description": "Una aplicación de escritorio multiplataforma basada en electrones que tiene como objetivo brindarte una experiencia de Discord más ágil con Vencord preinstalado."
+        },
+        "viber": {
+            "description": "Viber es una aplicación gratuita de mensajería y llamadas con funciones como chats grupales, videollamadas y más."
+        },
+        "videomass": {
+            "description": "Videomass de GianlucaPernigotto es una GUI multiplataforma para FFmpeg, que agiliza el procesamiento de archivos multimedia con conversiones por lotes y funciones fáciles de usar."
+        },
+        "visualstudio2022": {
+            "description": "Visual Studio 2022 es un entorno de desarrollo integrado (IDE) para crear, depurar e implementar aplicaciones."
+        },
+        "visualstudio2026": {
+            "description": "Visual Studio 2026 es un entorno de desarrollo integrado (IDE) para crear, depurar e implementar aplicaciones."
+        },
+        "vivaldi": {
+            "description": "Vivaldi es un navegador web altamente personalizable que se centra en la personalización del usuario y las funciones de productividad."
+        },
+        "vlc": {
+            "description": "VLC Media Player es un reproductor multimedia gratuito y de código abierto que admite una amplia gama de formatos de audio y vídeo. Es conocido por su versatilidad y compatibilidad multiplataforma."
+        },
+        "voicemeeter": {
+            "description": "Voicemeeter es un mezclador de audio virtual que le permite administrar y mejorar transmisiones de audio en su computadora. Se utiliza comúnmente para fines de grabación y transmisión de audio."
+        },
+        "VoicemeeterPotato": {
+            "description": "Voicemeeter Potato es la versión definitiva de la aplicación Voicemeeter Audio Mixer dotada con un dispositivo de audio virtual para mezclar y administrar cualquier fuente de audio desde o hacia cualquier dispositivo o aplicación de audio."
+        },
+        "vrdesktopstreamer": {
+            "description": "Virtual Desktop Streamer es una herramienta que le permite transmitir la pantalla de su escritorio a dispositivos de realidad virtual."
+        },
+        "vscode": {
+            "description": "Visual Studio Code es un editor de código abierto y gratuito compatible con múltiples lenguajes de programación."
+        },
+        "vscodium": {
+            "description": "VSCodium es una distribución binaria de licencia gratuita impulsada por la comunidad de VS Code de Microsoft."
+        },
+        "waterfox": {
+            "description": "Waterfox es un navegador web rápido y centrado en la privacidad basado en Firefox, diseñado para preservar las opciones y la privacidad del usuario."
+        },
+        "wazuh": {
+            "description": "Wazuh es una plataforma de monitoreo de seguridad de código abierto que ofrece detección de intrusiones, verificaciones de cumplimiento y análisis de registros."
+        },
+        "wezterm": {
+            "description": "WezTerm es un potente emulador y multiplexor de terminal multiplataforma."
+        },
+        "windowspchealth": {
+            "description": "Windows PC Health Check es una herramienta que le ayuda a comprobar si su PC cumple con los requisitos del sistema para Windows 11."
+        },
+        "WindowGrid": {
+            "description": "WindowGrid es un moderno programa de administración de ventanas para Windows que permite al usuario diseñar rápida y fácilmente sus ventanas en una cuadrícula dinámica usando solo el mouse."
+        },
+        "wingetui": {
+            "description": "UniGetUI es una GUI para Winget, Chocolatey y otros administradores de paquetes CLI de Windows."
+        },
+        "winmerge": {
+            "description": "WinMerge es una herramienta visual de comparación de directorios y archivos de texto para Windows."
+        },
+        "winpaletter": {
+            "description": "WinPaletter es una herramienta para ajustar la paleta de colores de Windows 10, brindando opciones de personalización para los colores de las ventanas."
+        },
+        "winrar": {
+            "description": "WinRAR es un potente administrador de archivos que le permite crear, administrar y extraer archivos comprimidos."
+        },
+        "winscp": {
+            "description": "WinSCP es un popular cliente SFTP, FTP y SCP de código abierto para Windows. Permite transferencias seguras de archivos entre una computadora local y una remota."
+        },
+        "wireguard": {
+            "description": "WireGuard es un protocolo VPN (red privada virtual) rápido y moderno. Su objetivo es ser más simple y eficiente que otros protocolos VPN, proporcionando conexiones seguras y confiables."
+        },
+        "wireshark": {
+            "description": "Wireshark es un analizador de protocolos de red de código abierto ampliamente utilizado. Permite a los usuarios capturar y analizar el tráfico de la red en tiempo real, proporcionando información detallada sobre las actividades de la red."
+        },
+        "wisetoys": {
+            "description": "WiseToys es un conjunto de utilidades y herramientas diseñadas para mejorar y optimizar su experiencia con Windows."
+        },
+        "TeraCopy": {
+            "description": "Copie sus archivos de forma más rápida y segura."
+        },
+        "wizfile": {
+            "description": "Encuentre archivos por nombre en sus discos duros casi al instante."
+        },
+        "wiztree": {
+            "description": "WizTree es un analizador rápido de espacio en disco que le ayuda a encontrar rápidamente los archivos y carpetas que consumen más espacio en su disco duro."
+        },
+        "xdm": {
+            "description": "Xtreme Download Manager es un administrador de descargas avanzado compatible con varios protocolos y navegadores. *La integración del navegador está obsoleta en Google Store. Sin publicación oficial.*"
+        },
+        "xeheditor": {
+            "description": "HxD es un editor hexadecimal gratuito que le permite editar, ver, buscar y analizar archivos binarios."
+        },
+        "xemu": {
+            "description": "XEMU es un emulador de Xbox de código abierto que te permite jugar juegos de Xbox en tu PC, buscando precisión y compatibilidad."
+        },
+        "xnview": {
+            "description": "XnView es un visor, navegador y conversor de imágenes eficiente para Windows."
+        },
+        "xournal": {
+            "description": "Xournal++ es un software de código abierto para tomar notas de escritura a mano con capacidades de anotación en PDF."
+        },
+        "xpipe": {
+            "description": "XPipe es una herramienta de código abierto para orquestar aplicaciones en contenedores. Simplifica la implementación y gestión de servicios en contenedores en un entorno distribuido."
+        },
+        "yarn": {
+            "description": "Yarn es una herramienta de gestión de dependencias rápida, confiable y segura para proyectos de JavaScript."
+        },
+        "ytdlp": {
+            "description": "Herramienta de línea de comandos que le permite descargar vídeos de YouTube y otros sitios compatibles. Es una versión mejorada del popular youtube-dl."
+        },
+        "zerotierone": {
+            "description": "ZeroTier One es una herramienta de red definida por software que le permite crear redes seguras y escalables."
+        },
+        "zim": {
+            "description": "Zim Desktop Wiki es un editor de texto gráfico que se utiliza para mantener una colección de páginas wiki."
+        },
+        "znote": {
+            "description": "Znote es una aplicación para tomar notas."
+        },
+        "zoom": {
+            "description": "Zoom es un popular servicio de videoconferencia y conferencia web para reuniones en línea, seminarios web y proyectos colaborativos."
+        },
+        "zoomit": {
+            "description": "Una herramienta de zoom de pantalla, anotaciones y grabación para presentaciones y demostraciones técnicas."
+        },
+        "zotero": {
+            "description": "Zotero es una herramienta gratuita y fácil de usar que le ayudará a recopilar, organizar, citar y compartir sus materiales de investigación."
+        },
+        "zoxide": {
+            "description": "Zoxide es un cambiador de directorios (CD) rápido y eficiente que le ayuda a navegar por su sistema de archivos con facilidad."
+        },
+        "zulip": {
+            "description": "Zulip es una herramienta de colaboración en equipo de código abierto con flujos de chat para una comunicación productiva y organizada."
+        },
+        "syncthingtray": {
+            "description": "Podría ser la alternativa a Synctrayzor. Utilidad de bandeja de Windows/vigilante del sistema de archivos/lanzador para Syncthing."
+        },
+        "miniconda": {
+            "description": "Miniconda es un instalador mínimo gratuito para conda. Es una pequeña versión de arranque de Anaconda que incluye solo conda, Python, los paquetes de los que ambos dependen y una pequeña cantidad de otros paquetes útiles (como pip, zlib y algunos otros)."
+        },
+        "pixi": {
+            "description": "Pixi es un rápido administrador de paquetes de software construido sobre el ecosistema conda existente. Activa rápidamente los entornos de desarrollo en Windows, macOS y Linux. Pixi es compatible con Python, R, C/C++, Rust, Ruby y muchos otros lenguajes."
+        },
+        "temurin": {
+            "description": "Eclipse Temurin es la compilación Java SE de código abierto basada en OpenJDK."
+        },
+        "intelpresentmon": {
+            "description": "Una nueva aplicación de telemetría y superposición de rendimiento de juegos para monitorear y medir su experiencia de juego."
+        },
+        "pyenvwin": {
+            "description": "pyenv para Windows es una sencilla herramienta de gestión de versiones de Python. Le permite cambiar fácilmente entre varias versiones de Python."
+        },
+        "tightvnc": {
+            "description": "TightVNC es un software de escritorio remoto gratuito y de código abierto que le permite acceder y controlar una computadora a través de la red. Con su interfaz intuitiva, podrás interactuar con la pantalla remota como si estuvieras sentado frente a ella. Puede abrir archivos, iniciar aplicaciones y realizar otras acciones en el escritorio remoto casi como si estuviera físicamente allí."
+        },
+        "ultravnc": {
+            "description": "UltraVNC es un software de acceso remoto a PC potente, fácil de usar y gratuito que puede mostrar la pantalla de otra computadora (a través de Internet o red) en su propia pantalla. El programa te permite usar tu mouse y teclado para controlar la otra PC de forma remota. Significa que puedes trabajar en una computadora remota, como si estuvieras sentado frente a ella, directamente desde tu ubicación actual."
+        },
+        "windowsfirewallcontrol": {
+            "description": "Windows Firewall Control es una poderosa herramienta que amplía la funcionalidad del Firewall de Windows y proporciona nuevas características adicionales que mejoran el Firewall de Windows."
+        },
+        "vistaswitcher": {
+            "description": "VistaSwitcher le facilita localizar ventanas y cambiar el enfoque, incluso en sistemas con varios monitores. La ventana del selector consta de una lista fácil de leer de todas las tareas en ejecución con títulos que se muestran claramente y una vista previa en tamaño completo de la tarea seleccionada."
+        },
+        "autodarkmode": {
+            "description": "Cambia automáticamente entre el tema oscuro y claro de Windows 10 y Windows 11."
+        },
+        "AmbieWhiteNoise": {
+            "description": "Ambie es la aplicación definitiva para ayudarte a concentrarte, estudiar o relajarte. Usamos ruido blanco y sonidos de la naturaleza combinados con un innovador temporizador de enfoque para mantenerte concentrado en hacer tu mejor trabajo."
+        },
+        "magicwormhole": {
+            "description": "llevar cosas de una computadora a otra, de forma segura."
+        },
+        "croc": {
+            "description": "Envíe cosas de forma fácil y segura de una computadora a otra."
+        },
+        "qgis": {
+            "description": "QGIS (Quantum GIS) es un software de sistema de información geográfica (GIS) de código abierto que permite a los usuarios crear, editar, visualizar, analizar y publicar información geoespacial en plataformas Windows, macOS y Linux."
+        },
+        "smplayer": {
+            "description": "SMPlayer es un reproductor multimedia gratuito para Windows y Linux con códecs integrados que pueden reproducir prácticamente todos los formatos de vídeo y audio."
+        },
+        "glazewm": {
+            "description": "GlazeWM es un administrador de ventanas en mosaico para Windows inspirado en i3 y Polybar."
+        },
+        "fancontrol": {
+            "description": "Fan Control es un software gratuito y de código abierto que permite al usuario controlar su CPU, GPU y ventiladores de carcasa mediante temperaturas."
+        },
+        "fnm": {
+            "description": "Fast Node Manager (fnm) le permite cambiar su versión de Node usando la terminal."
+        },
+        "Windhawk": {
+            "description": "El mercado de personalización para programas de Windows."
+        },
+        "ForceAutoHDR": {
+            "description": "ForceAutoHDR simplifica el proceso de agregar juegos a la lista AutoHDR en el Registro de Windows."
+        },
+        "JoyToKey": {
+            "description": "Permite que los controladores de juegos de PC emulen la entrada del teclado y el mouse."
+        },
+        "nditools": {
+            "description": "NDI, o Network Device Interface, es un estándar de conectividad de video que permite a los sistemas multimedia identificarse y comunicarse entre sí a través de IP y codificar, transmitir y recibir video y audio de alta calidad, baja latencia y precisión de cuadros, e intercambiar metadatos en tiempo real."
+        },
+        "kicad": {
+            "description": "Kicad es una herramienta EDA de código abierto. Es un buen punto de partida para quienes quieren hacer diseño eléctrico e incluso lo utilizan profesionales de la industria."
+        },
+        "dropox": {
+            "description": "¡La aplicación de escritorio de Dropbox! Ahorre espacio en el disco duro, comparta y edite archivos y envíelos para firmarlos, todo sin la distracción de innumerables pestañas del navegador."
+        },
+        "Overwolf": {
+            "description": "Plataforma popular para superposiciones de juegos y aplicaciones complementarias (administradores de modificaciones, rastreadores, etc.), ampliamente utilizada por los jugadores."
+        },
+        "OFGB": {
+            "description": "Herramienta GUI para eliminar anuncios de varios lugares alrededor de Windows 11"
+        },
+        "PaleMoon": {
+            "description": "Pale Moon es un navegador web de código abierto basado en Goanna disponible para Microsoft Windows y Linux (con otros sistemas operativos en desarrollo), que se centra en la eficiencia y la facilidad de uso."
+        },
+        "Shotcut": {
+            "description": "Shotcut es un editor de vídeo multiplataforma, gratuito y de código abierto."
+        },
+        "LenovoLegionToolkit": {
+            "description": "Lenovo Legion Toolkit (LLT) es una utilidad de código abierto creada para las computadoras portátiles de la serie Lenovo Legion (y similares), que permite cambiar un par de funciones que solo están disponibles en Lenovo Vantage o Legion Zone. No ejecuta servicios en segundo plano, utiliza menos memoria, prácticamente no utiliza CPU y no contiene telemetría. Al igual que Lenovo Vantage, esta aplicación es sólo para Windows."
+        },
+        "PulsarEdit": {
+            "description": "Un editor de texto hiper-hackeable dirigido por la comunidad"
+        },
+        "Aegisub": {
+            "description": "Aegisub es una herramienta gratuita, multiplataforma y de código abierto para crear y modificar subtítulos. Aegisub hace que sea rápido y fácil sincronizar los subtítulos con el audio y presenta muchas herramientas poderosas para diseñarlos, incluida una vista previa de video incorporada en tiempo real."
+        },
+        "SubtitleEdit": {
+            "description": "Subtitle Edit es un editor gratuito y de código abierto para subtítulos de vídeo."
+        },
+        "Fork": {
+            "description": "Fork: un cliente Git rápido y amigable."
+        },
+        "ZenBrowser": {
+            "description": "El navegador moderno, centrado en la privacidad y basado en el rendimiento, creado en Firefox."
+        },
+        "Zed": {
+            "description": "Zed es un editor de código moderno y de alto rendimiento diseñado desde cero para brindar velocidad y colaboración."
+        },
+        "LLLVM": {
+            "description": "Una colección de tecnologías de cadena de herramientas y compiladores modulares y reutilizables."
+        },
+        "NASM": {
+            "description": "Un potente ensamblador para la plataforma x86."
+        }
+    },
+    "feature": {
+        "WPFFeaturesdotnet": {
+            "Content": "Todo .Net Framework (2,3,4)",
+            "Description": ".NET y .NET Framework es una plataforma de desarrollo compuesta por herramientas, lenguajes de programación y bibliotecas para crear muchos tipos diferentes de aplicaciones."
+        },
+        "WPFFeatureshyperv": {
+            "Content": "Virtualización HyperV",
+            "Description": "Hyper-V es un producto de virtualización de hardware desarrollado por Microsoft que permite a los usuarios crear y administrar máquinas virtuales."
+        },
+        "WPFFeatureslegacymedia": {
+            "Content": "Medios heredados (WMP, DirectPlay)",
+            "Description": "Habilita programas heredados de versiones anteriores de Windows."
+        },
+        "WPFFeaturewsl": {
+            "Content": "Subsistema de Windows para Linux",
+            "Description": "El Subsistema de Windows para Linux es una característica opcional de Windows que permite que los programas de Linux se ejecuten de forma nativa en Windows sin la necesidad de una máquina virtual separada o arranque dual."
+        },
+        "WPFFeaturenfs": {
+            "Content": "NFS: sistema de archivos de red",
+            "Description": "Network File System (NFS) es un mecanismo para almacenar archivos en una red."
+        },
+        "WPFFeatureRegBackup": {
+            "Content": "Habilitar la tarea de copia de seguridad del registro diario a las 12:30 a. m.",
+            "Description": "Habilita la copia de seguridad diaria del registro, previamente deshabilitada por Microsoft en Windows 10 1803."
+        },
+        "WPFFeatureEnableLegacyRecovery": {
+            "Content": "Habilitar la recuperación de arranque heredado F8",
+            "Description": "Habilita la pantalla Opciones de arranque avanzadas que le permite iniciar Windows en modos avanzados de solución de problemas."
+        },
+        "WPFFeatureDisableLegacyRecovery": {
+            "Content": "Deshabilitar la recuperación de arranque heredada de F8",
+            "Description": "Deshabilita la pantalla de Opciones de arranque avanzadas que le permite iniciar Windows en modos avanzados de solución de problemas."
+        },
+        "WPFFeaturesSandbox": {
+            "Content": "Zona de pruebas de Windows",
+            "Description": "Windows Sandbox es una máquina virtual liviana que proporciona un entorno de escritorio temporal para ejecutar aplicaciones y programas de forma segura y aislada."
+        },
+        "WPFFeatureInstall": {
+            "Content": "Instalar características"
+        },
+        "WPFPanelAutologin": {
+            "Content": "Configurar el inicio de sesión automático"
+        },
+        "WPFFixesUpdate": {
+            "Content": "Restablecer la actualización de Windows"
+        },
+        "WPFFixesNetwork": {
+            "Content": "Restablecer red"
+        },
+        "WPFPanelDISM": {
+            "Content": "Escaneo de corrupción del sistema"
+        },
+        "WPFFixesWinget": {
+            "Content": "Reinstalación de WinGet"
+        },
+        "WPFPanelControl": {
+            "Content": "Panel de control"
+        },
+        "WPFPanelComputer": {
+            "Content": "Manejo Informático"
+        },
+        "WPFPanelNetwork": {
+            "Content": "Conexiones de red"
+        },
+        "WPFPanelPower": {
+            "Content": "Panel de energía"
+        },
+        "WPFPanelPrinter": {
+            "Content": "Panel de impresora"
+        },
+        "WPFPanelRegion": {
+            "Content": "Región"
+        },
+        "WPFPanelRestore": {
+            "Content": "Restaurar Windows"
+        },
+        "WPFPanelSound": {
+            "Content": "Configuración de sonido"
+        },
+        "WPFPanelSystem": {
+            "Content": "Propiedades del sistema"
+        },
+        "WPFPanelTimedate": {
+            "Content": "Hora y fecha"
+        },
+        "WPFWinUtilInstallPSProfile": {
+            "Content": "Instalar el perfil CTT PowerShell"
+        },
+        "WPFWinUtilUninstallPSProfile": {
+            "Content": "Desinstalar el perfil CTT PowerShell"
+        },
+        "WPFWinUtilSSHServer": {
+            "Content": "Habilitar el servidor OpenSSH"
+        }
+    },
+    "appnavigation": {
+        "WPFInstall": {
+            "Content": "Instalar/actualizar aplicaciones",
+            "Description": "Instalar o actualizar las aplicaciones seleccionadas"
+        },
+        "WPFUninstall": {
+            "Content": "Desinstalar aplicaciones",
+            "Description": "Desinstalar las aplicaciones seleccionadas"
+        },
+        "WPFInstallUpgrade": {
+            "Content": "Actualizar todas las aplicaciones",
+            "Description": "Actualice todas las aplicaciones a la última versión"
+        },
+        "WingetRadioButton": {
+            "Content": "ala",
+            "Description": "Utilice Winget para la gestión de paquetes"
+        },
+        "ChocoRadioButton": {
+            "Content": "chocolateado",
+            "Description": "Utilice Chocolatey para la gestión de paquetes"
+        },
+        "WPFCollapseAllCategories": {
+            "Content": "Contraer todas las categorías",
+            "Description": "Contraer todas las categorías de aplicaciones"
+        },
+        "WPFExpandAllCategories": {
+            "Content": "Expandir todas las categorías",
+            "Description": "Ampliar todas las categorías de aplicaciones"
+        },
+        "WPFClearInstallSelection": {
+            "Content": "Borrar selección",
+            "Description": "Borrar la selección de aplicaciones."
+        },
+        "WPFGetInstalled": {
+            "Content": "Mostrar aplicaciones instaladas",
+            "Description": "Mostrar aplicaciones instaladas"
+        },
+        "WPFselectedAppsButton": {
+            "Content": "Aplicaciones seleccionadas: 0",
+            "Description": "Mostrar las aplicaciones seleccionadas"
+        },
+        "WPFToggleFOSSHighlight": {
+            "Content": "Resalte software libre",
+            "Description": "Alternar el resaltado verde para aplicaciones FOSS"
+        }
+    }
+}
