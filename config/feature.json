@@ -11,6 +11,16 @@
     "InvokeScript": [],
     "link": "https://winutil.christitus.com/dev/features/features/dotnet"
   },
+  "WPFFixesNTPPool": {
+    "Content": "Configure NTP Server",
+    "Description": "Replaces the default Windows NTP server (time.windows.com) with pool.ntp.org for improved time synchronization accuracy and reliability.",
+    "category": "Fixes",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFFixesNTPPool",
+    "link": "https://winutil.christitus.com/dev/features/fixes/ntppool"
+  },
   "WPFFeatureshyperv": {
     "Content": "HyperV Virtualization",
     "Description": "Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines.",
