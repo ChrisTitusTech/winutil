@@ -3,7 +3,7 @@ title: "Windows Restore"
 description: ""
 ---
 
-```json {filename="config/feature.json",linenos=inline,linenostart=241}
+```json {filename="config/feature.json",linenos=inline,linenostart=251}
   "WPFPanelRestore": {
     "Content": "Windows Restore",
     "category": "Legacy Windows Panels",
