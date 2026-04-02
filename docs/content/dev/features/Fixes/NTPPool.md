@@ -10,7 +10,7 @@ function Invoke-WPFFixesNTPPool {
         Configures Windows to use pool.ntp.org for NTP synchronization
 
     .DESCRIPTION
-        Replaces the default Windows NTP server (time.windows.com) with 
+        Replaces the default Windows NTP server (time.windows.com) with
         pool.ntp.org for improved time synchronization accuracy and reliability.
     #>
 
