@@ -3,7 +3,7 @@ title: "Computer Management"
 description: ""
 ---
 
-```json {filename="config/feature.json",linenos=inline,linenostart=186}
+```json {filename="config/feature.json",linenos=inline,linenostart=196}
   "WPFPanelComputer": {
     "Content": "Computer Management",
     "category": "Legacy Windows Panels",
