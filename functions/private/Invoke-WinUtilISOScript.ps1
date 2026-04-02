@@ -181,7 +181,7 @@ function Invoke-WinUtilISOScript {
                     & $Log "Injecting current system drivers into boot.wim..."
                     Invoke-BootWimInject -BootWimPath $bootWim -DriverDir $driverExportRoot -Logger $Log
                 } else {
-                    & $Log "Warning: boot.wim not found — skipping boot.wim driver injection."
+                    & $Log "Warning: boot.wim not found - skipping boot.wim driver injection."
                 }
             }
         } catch {
@@ -276,7 +276,7 @@ function Invoke-WinUtilISOScript {
                     & $Log "Pre-staged setup script: $relPath"
                 }
             } else {
-                & $Log "Warning: no <Extensions><File> nodes found in autounattend.xml — setup scripts not pre-staged."
+                & $Log ('Warning: no <Extensions><File> nodes found in autounattend.xml - setup scripts not pre-staged.')
             }
         } catch {
             & $Log "Warning: could not pre-stage setup scripts from autounattend.xml: $_"
@@ -288,7 +288,7 @@ function Invoke-WinUtilISOScript {
             & $Log "Written autounattend.xml to ISO root ($isoDest)."
         }
     } else {
-        & $Log "Warning: autounattend.xml content is empty — skipping OOBE bypass file."
+        & $Log "Warning: autounattend.xml content is empty - skipping OOBE bypass file."
     }
 
     & $Log "Disabling reserved storage..."
