@@ -37,7 +37,7 @@ New to Winutil? Start here:
 2. **[Applications Guide](application/)** - Learn to install, upgrade, and uninstall software
 3. **[Tweaks Guide](tweaks/)** - Optimize your system
 4. **[Features & Fixes](features/)** - Troubleshoot common issues
-5. **[Win11 Creator](win11Creator/)** - Build a custom debloated Windows 11 ISO
+5. **[Win11 Creator](win11creator/)** - Build a custom debloated Windows 11 ISO
 
 ## Main Features
 
