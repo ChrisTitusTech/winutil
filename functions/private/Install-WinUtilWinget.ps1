@@ -15,5 +15,5 @@ function Install-WinUtilWinget {
 
     Install-PackageProvider -Name NuGet -Force
     Install-Module Microsoft.WinGet.Client -Force
-    Repair-WinGetPackageManager
+    Repair-WinGetPackageManager -AllUsers
 }
