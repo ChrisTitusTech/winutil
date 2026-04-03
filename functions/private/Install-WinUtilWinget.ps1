@@ -14,7 +14,7 @@ function Install-WinUtilWinget {
     Write-Host "WinGet is not installed. Installing now..." -ForegroundColor Red
 
     Install-PackageProvider -Name NuGet -Force
-    Install-Module Microsoft.WinGet.Client -Force
-    Import-Module Microsoft.WinGet.Client
+    Install-Module -Name Microsoft.WinGet.Client -Force
+    Import-Module -Name Microsoft.WinGet.Client
     Repair-WinGetPackageManager -AllUsers
 }
