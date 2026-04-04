@@ -3218,6 +3218,15 @@
         "winget": "Intel.PresentMon.Beta",
         "foss": true
     },
+    "uv": {
+        "category": "Development",
+        "choco": "na",
+        "content": "uv",
+        "description": "uv is a fast Python package and project manager written in Rust.",
+        "link": "https://docs.astral.sh/uv/getting-started/installation/",
+        "winget": "astral-sh.uv",
+        "foss": true
+    },
     "pyenvwin": {
         "category": "Development",
         "choco": "pyenv-win",
