@@ -2762,6 +2762,15 @@
         "link": "https://unity.com/",
         "winget": "Unity.UnityHub"
     },
+    "veravrypt": {
+        "category": "Utilities",
+        "choco": "veracrypt",
+        "content": "VeraCrypt",
+        "description": "Disk encryption with strong security based on TrueCrypt.",
+        "link": "https://github.com/veracrypt/VeraCrypt/",
+        "winget": "IDRIX.VeraCrypt",
+        "foss": true
+    },
     "vagrant": {
         "category": "Development",
         "choco": "vagrant",
