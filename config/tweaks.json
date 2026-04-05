@@ -1690,13 +1690,13 @@
       "Microsoft.WindowsSoundRecorder",
       "Microsoft.MicrosoftStickyNotes",
       "Microsoft.Windows.DevHome",
-      "MSTeams",
       "Microsoft.Paint",
       "Microsoft.OutlookForWindows",
       "Microsoft.WindowsAlarms",
       "Microsoft.StartExperiencesApp",
       "Microsoft.GetHelp",
-      "Microsoft.ZuneMusic"
+      "Microsoft.ZuneMusic",
+      "MSTeams"
     ],
     "InvokeScript": [
       "
