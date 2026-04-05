@@ -28,9 +28,6 @@ function Invoke-WPFUpdatesdefault {
     Start-Service -Name UsoSvc
     Set-Service -Name UsoSvc -StartupType Automatic
 
-    Write-Host "Restored WaaSMedicSvc to Manual"
-    Set-Service -Name WaaSMedicSvc -StartupType Manual
-
     Write-Host "Enabling update related scheduled tasks..." -ForegroundColor Green
 
     $Tasks =
