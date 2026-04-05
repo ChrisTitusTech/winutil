@@ -1679,7 +1679,6 @@
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "appx": [
-      "AppUp.IntelManagementandSecurityStatus",
       "Microsoft.WindowsFeedbackHub",
       "Microsoft.BingNews",
       "Microsoft.BingSearch",
