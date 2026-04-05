@@ -528,7 +528,7 @@ function Invoke-WinUtilISOExport {
 
     $outputISO = $dlg.FileName
 
-    if (-not Get-Command oscdimg) {
+    if (-not (Get-Command oscdimg)) {
         Write-Win11ISOLog "oscdimg.exe not found. Attempting to install via winget..."
 
         Install-WinUtilWinget # Check if winget is installed before proceeding
