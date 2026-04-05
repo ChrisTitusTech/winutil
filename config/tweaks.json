@@ -1681,8 +1681,6 @@
     "appx": [
       "AppUp.IntelManagementandSecurityStatus",
       "Clipchamp.Clipchamp",
-      "DolbyLaboratories.DolbyAccess",
-      "DolbyLaboratories.DolbyDigitalPlusDecoderOEM",
       "Microsoft.AppConnector",
       "Microsoft.BingFinance",
       "Microsoft.BingFoodAndDrink",
@@ -1752,7 +1750,6 @@
       "*Royal Revolt*",
       "*Sway*",
       "*Speed Test*",
-      "*Dolby*",
       "*Viber*",
       "*ACGMediaPlayer*",
       "*Netflix*",
