@@ -528,36 +528,13 @@ function Invoke-WinUtilISOExport {
 
     $outputISO = $dlg.FileName
 
-    # Locate oscdimg.exe (Windows ADK or winget per-user install)
-    $oscdimg = Get-ChildItem "C:\Program Files (x86)\Windows Kits" -Recurse -Filter "oscdimg.exe" -ErrorAction SilentlyContinue |
-               Select-Object -First 1 -ExpandProperty FullName
-    if (-not $oscdimg) {
-        $oscdimg = Get-ChildItem "$env:LOCALAPPDATA\Microsoft\WinGet\Packages" -Recurse -Filter "oscdimg.exe" -ErrorAction SilentlyContinue |
-                   Where-Object { $_.FullName -match 'Microsoft\.OSCDIMG' } |
-                   Select-Object -First 1 -ExpandProperty FullName
-    }
-
-    if (-not $oscdimg) {
+    if (-not Get-Command oscdimg) {
         Write-Win11ISOLog "oscdimg.exe not found. Attempting to install via winget..."
-        try {
-            $winget = Get-Command winget -ErrorAction Stop
-            $result = & $winget install -e --id Microsoft.OSCDIMG --accept-package-agreements --accept-source-agreements 2>&1
-            Write-Win11ISOLog "winget output: $result"
-            $oscdimg = Get-ChildItem "$env:LOCALAPPDATA\Microsoft\WinGet\Packages" -Recurse -Filter "oscdimg.exe" -ErrorAction SilentlyContinue |
-                       Where-Object { $_.FullName -match 'Microsoft\.OSCDIMG' } |
-                       Select-Object -First 1 -ExpandProperty FullName
-        } catch {
-            Write-Win11ISOLog "winget not available or install failed: $_"
-        }
 
-        if (-not $oscdimg) {
-            Write-Win11ISOLog "oscdimg.exe still not found after install attempt."
-            [System.Windows.MessageBox]::Show(
-                "oscdimg.exe could not be found or installed automatically.`n`nPlease install it manually:`n  winget install -e --id Microsoft.OSCDIMG`n`nOr install the Windows ADK from:`nhttps://learn.microsoft.com/windows-hardware/get-started/adk-install",
-                "oscdimg Not Found", "OK", "Warning")
-            return
-        }
-        Write-Win11ISOLog "oscdimg.exe installed successfully."
+        Install-WinUtilWinget # Check if winget is installed before proceeding
+        $result = winget install Microsoft.OSCDIMG --source winget
+
+        Write-Win11ISOLog "winget output: $result"
     }
 
     $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $false
