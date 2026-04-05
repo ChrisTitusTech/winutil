@@ -540,6 +540,9 @@ function Invoke-WinUtilISOExport {
     if (-not $oscdimg) {
         Write-Win11ISOLog "oscdimg.exe not found. Attempting to install via winget..."
         try {
+            # First ensure winget is installed and operational
+            Install-WinUtilWinget
+
             $winget = Get-Command winget -ErrorAction Stop
             $result = & $winget install -e --id Microsoft.OSCDIMG --accept-package-agreements --accept-source-agreements 2>&1
             Write-Win11ISOLog "winget output: $result"
