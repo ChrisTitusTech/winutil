@@ -93,7 +93,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download compiled script
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: winutil-ps1
 
