@@ -1,6 +1,6 @@
 function Invoke-WPFUltimatePerformance {
     param(
-        [switch]$Undo
+        [switch]$Do
     )
 
     if ($Undo) {
@@ -18,7 +18,7 @@ function Invoke-WPFUltimatePerformance {
         ForEach-Object {
             powercfg /delete (($_ -split '\s+')[3])
         }
-        
+
         Write-Host "Ultimate Performance plan was removed." -ForegroundColor Green
     }
 }
