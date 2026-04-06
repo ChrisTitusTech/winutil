@@ -56,8 +56,8 @@ function Invoke-WPFButton {
         "WPFClearInstallSelection" {Invoke-WPFPresets -imported $true -checkboxfilterpattern "WPFInstall*"}
         "WPFtweaksbutton" {Invoke-WPFtweaksbutton}
         "WPFOOSUbutton" {Invoke-WPFOOSU}
-        "WPFAddUltPerf" {Invoke-WPFUltimatePerformance -State "Enable"}
-        "WPFRemoveUltPerf" {Invoke-WPFUltimatePerformance -State "Disable"}
+        "WPFAddUltPerf" {Invoke-WPFUltimatePerformance}
+        "WPFRemoveUltPerf" {Invoke-WPFUltimatePerformance -Undo}
         "WPFundoall" {Invoke-WPFundoall}
         "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}
         "WPFRunAdobeCCCleanerTool" {Invoke-WPFRunAdobeCCCleanerTool}
