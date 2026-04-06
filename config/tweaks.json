@@ -162,7 +162,7 @@
         "Type": "DWord",
         "OriginalValue": "1"
       }
-    ]
+    ],
     "InvokeScript": [
       "Set-Service -Name lfsvc -StartupType Disabled"
     ],
