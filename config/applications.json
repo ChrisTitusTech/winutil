@@ -1038,6 +1038,15 @@
         "link": "https://gerardog.github.io/gsudo/",
         "winget": "gerardog.gsudo"
     },
+    "hugo": {
+        "category": "Utilities",
+        "choco": "hugo-extended",
+        "content": "Hugo",
+        "description": "The world’s fastest framework for building websites.",
+        "link": "https://github.com/gohugoio/hugo/",
+        "winget": "Hugo.Hugo.Extended",
+        "foss": true
+    },
     "handbrake": {
         "category": "Multimedia Tools",
         "choco": "handbrake",
