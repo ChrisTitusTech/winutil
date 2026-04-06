@@ -3,7 +3,7 @@ function Invoke-WPFUltimatePerformance {
         [switch]$Do
     )
 
-    if ($Undo) {
+    if ($Do) {
         if (-not (powercfg /list | Select-String "Ultimate Performance")) {
             powercfg /setactive ((powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61).Split()[3])
             Write-Host "Ultimate Performance plan installed and activated." -ForegroundColor Green
