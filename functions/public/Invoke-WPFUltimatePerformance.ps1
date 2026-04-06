@@ -18,5 +18,7 @@ function Invoke-WPFUltimatePerformance {
         ForEach-Object {
             powercfg /delete (($_ -split '\s+')[3])
         }
+        
+        Write-Host "Ultimate Performance plan was removed." -ForegroundColor Green
     }
 }
