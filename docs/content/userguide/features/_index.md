@@ -1,6 +1,8 @@
 ---
 title: Features
 weight: 5
+prev: /userguide/tweaks/
+next: /userguide/updates/
 ---
 
 Use the **Features** and **Fixes** sections to install optional Windows components and run common repair tasks.

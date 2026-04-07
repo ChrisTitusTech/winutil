@@ -1,6 +1,8 @@
 ---
 title: Getting Started
 weight: 2
+prev: /userguide/
+next: /userguide/application/
 ---
 
 ## Welcome to Winutil!
