@@ -11,7 +11,7 @@ description: ""
     "panel": "1",
     "service": [
       {
-        "Name": "lfsvc ",
+        "Name": "lfsvc",
         "StartupType": "Disable",
         "OriginalType": "Manual"
       }
