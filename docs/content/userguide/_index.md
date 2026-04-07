@@ -31,13 +31,15 @@ Winutil is designed for:
 
 ## Getting Started
 
-New to Winutil? Start here:
+New to Winutil? Follow the guides below in order to get up and running quickly:
 
-1. **[Getting Started Guide](getting-started/)** - Installation and first steps
-2. **[Applications Guide](application/)** - Learn to install, upgrade, and uninstall software
-3. **[Tweaks Guide](tweaks/)** - Optimize your system
-4. **[Features](features/)** - Troubleshoot common issues
-5. **[Win11 Creator](win11creator/)** - Build a custom debloated Windows 11 ISO
+1. **[Getting Started](getting-started/)** - Learn how to launch Winutil and understand the basics.
+2. **[Applications](application/)** - Install, update, and remove apps with ease.
+3. **[Tweaks](tweaks/)** - Apply performance, privacy, and usability improvements.
+4. **[Features](features/)** - Explore built-in tools and common Windows fixes.
+5. **[Updates](updates/)** - Configure how Windows Update behaves on your system.
+6. **[Automation](automation/)** - Automate setups and reuse configurations across PCs.
+7. **[Win11 Creator](win11creator/)** - Build a custom debloated Windows 11 ISO.
 
 ## Main Features
 
@@ -149,22 +151,9 @@ Want to help improve Winutil?
 
 **[Read Contributing Guide →](../contributing/)**
 
-## What's in This Guide?
-
-This User Guide covers everything you need to know:
-
-1. **[Getting Started](getting-started/)** - Installation, first run, basic usage
-2. **[Applications](application/)** - Installing, upgrading, and uninstalling software
-3. **[Tweaks](tweaks/)** - System optimizations and customizations
-4. **[Features](features/)** - Troubleshooting tools and utilities
-5. **[Updates](updates/)** - Managing Windows Update behavior
-6. **[Automation](automation/)** - Scripting and batch deployments
-7. **[Win11 Creator](win11creator/)** - Build a custom debloated Windows 11 ISO
-
 ## Video Tutorial
 
 Watch the complete Winutil overview:
 
 {{< youtube id=6UQZ5oQg8XA loading=lazy >}}
 
-Ready to get started? Head to the **[Getting Started Guide](getting-started/)**.
