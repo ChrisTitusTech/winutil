@@ -50,7 +50,6 @@ function Invoke-WinUtilISOScript {
     .NOTES
         Author  : Chris Titus @christitustech
         GitHub  : https://github.com/ChrisTitusTech
-        Version : 26.03.02
     #>
     param (
         [Parameter(Mandatory)][string]$ScratchDir,
