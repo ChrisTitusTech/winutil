@@ -7,6 +7,10 @@ function Invoke-WPFUltimatePerformance {
         if (-not (powercfg /list | Select-String "ChrisTitus - Ultimate Power Plan")) {
             if (-not (powercfg /list | Select-String "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c")) {
                 powercfg /restoredefaultschemes
+                if (-not (powercfg /list | Select-String "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c")) {
+                    Write-Host "Failed to restore High Performance plan. Default plans do not include high performance. If you are on a laptop, do NOT use High Performance or Ultimate Performance plans." -ForegroundColor Red
+                    return
+                }
             }
             $guid = ((powercfg /duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c) -split '\s+')[3]
             powercfg /changename $guid "ChrisTitus - Ultimate Power Plan"
