@@ -36,7 +36,7 @@ New to Winutil? Start here:
 1. **[Getting Started Guide](getting-started/)** - Installation and first steps
 2. **[Applications Guide](application/)** - Learn to install, upgrade, and uninstall software
 3. **[Tweaks Guide](tweaks/)** - Optimize your system
-4. **[Features & Fixes](features/)** - Troubleshoot common issues
+4. **[Features](features/)** - Troubleshoot common issues
 5. **[Win11 Creator](win11creator/)** - Build a custom debloated Windows 11 ISO
 
 ## Main Features
@@ -87,7 +87,7 @@ Automate Winutil configurations for:
 
 Build a custom Windows 11 ISO with bloatware removed, telemetry disabled, and hardware requirement checks bypassed. You can then export it as an ISO file or write it directly to a USB drive.
 
-**[Read the Win11 Creator Guide →](win11Creator/)**
+**[Read the Win11 Creator Guide →](win11creator/)**
 
 ## Quick Links
 
@@ -96,10 +96,10 @@ Build a custom Windows 11 ISO with bloatware removed, telemetry disabled, and ha
 | Install Winutil for the first time | [Getting Started](getting-started/) |
 | Install, upgrade, or uninstall apps | [Applications Guide](application/) |
 | Speed up my computer | [Tweaks Guide](tweaks/) |
-| Fix Windows Update problems | [Features - Fixes](features/) |
+| Fix Windows Update problems | [Features](features/) |
 | Automate setup for multiple PCs | [Automation](automation/) |
 | Understand what tweaks do | [Tweaks Guide](tweaks/) |
-| Build a custom Windows 11 ISO | [Win11 Creator](win11Creator/) |
+| Build a custom Windows 11 ISO | [Win11 Creator](win11creator/) |
 
 ## Safety and Best Practices
 
@@ -156,10 +156,10 @@ This User Guide covers everything you need to know:
 1. **[Getting Started](getting-started/)** - Installation, first run, basic usage
 2. **[Applications](application/)** - Installing, upgrading, and uninstalling software
 3. **[Tweaks](tweaks/)** - System optimizations and customizations
-4. **[Features & Fixes](features/)** - Troubleshooting tools and utilities
-5. **[Win11 Creator](win11Creator/)** - Build a custom debloated Windows 11 ISO
-6. **[Updates](updates/)** - Managing Windows Update behavior
-7. **[Automation](automation/)** - Scripting and batch deployments
+4. **[Features](features/)** - Troubleshooting tools and utilities
+5. **[Updates](updates/)** - Managing Windows Update behavior
+6. **[Automation](automation/)** - Scripting and batch deployments
+7. **[Win11 Creator](win11creator/)** - Build a custom debloated Windows 11 ISO
 
 ## Video Tutorial
 
