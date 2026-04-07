@@ -91,18 +91,6 @@ Build a custom Windows 11 ISO with bloatware removed, telemetry disabled, and ha
 
 **[Read the Win11 Creator Guide →](win11creator/)**
 
-## Quick Links
-
-| I want to... | Go to... |
-|--------------|----------|
-| Install Winutil for the first time | [Getting Started](getting-started/) |
-| Install, upgrade, or uninstall apps | [Applications Guide](application/) |
-| Speed up my computer | [Tweaks Guide](tweaks/) |
-| Fix Windows Update problems | [Features](features/) |
-| Automate setup for multiple PCs | [Automation](automation/) |
-| Understand what tweaks do | [Tweaks Guide](tweaks/) |
-| Build a custom Windows 11 ISO | [Win11 Creator](win11creator/) |
-
 ## Safety and Best Practices
 
 Before using Winutil:
