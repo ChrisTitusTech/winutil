@@ -1696,6 +1696,7 @@
       "Microsoft.StartExperiencesApp",
       "Microsoft.GetHelp",
       "Microsoft.ZuneMusic",
+      "MicrosoftCorporationII.QuickAssist",
       "MSTeams"
     ],
     "InvokeScript": [
