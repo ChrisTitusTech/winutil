@@ -13,11 +13,7 @@ function Invoke-WPFUltimatePerformance {
         }
     } else {
         powercfg /setactive SCHEME_BALANCED
-
-        foreach ($line in powercfg /list) {
-            if ($line -like '*Ultimate Performance*') {
-                powercfg /delete ($line.Split()[3])
-            }
+        powercfg /delete ((powercfg /list | Select-String 'Ultimate Performance').ToString().Split()[3])
 
         Write-Host "Ultimate Performance plan was removed." -ForegroundColor Red
     }
