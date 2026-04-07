@@ -136,7 +136,6 @@ function Invoke-WinUtilISOScript {
         'Microsoft.Paint',
         'Microsoft.People',
         'Microsoft.PowerAutomateDesktop',
-        'Microsoft.SkypeApp',
         'Microsoft.StartExperiencesApp',
         'Microsoft.Todos',
         'Microsoft.Wallet',
