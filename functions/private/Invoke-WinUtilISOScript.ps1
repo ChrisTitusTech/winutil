@@ -136,14 +136,12 @@ function Invoke-WinUtilISOScript {
         'Microsoft.Todos',
         'Microsoft.Windows.DevHome',
         'Microsoft.Windows.Copilot',
-        'Microsoft.Windows.Teams',
         'microsoft.windowscommunicationsapps',
         'Microsoft.WindowsFeedbackHub',
         'Microsoft.WindowsSoundRecorder',
         'Microsoft.ZuneMusic',
         'MicrosoftCorporationII.QuickAssist',
-        'MSTeams',
-        'MicrosoftTeams'
+        'MSTeams'
     )
 
     $packages | Where-Object { $pkg = $_; $packagePrefixes | Where-Object { $pkg -like "*$_*" } } |
