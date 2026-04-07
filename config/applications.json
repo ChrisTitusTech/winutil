@@ -257,6 +257,15 @@
         "link": "https://www.advancedrenamer.com/",
         "winget": "HulubuluSoftware.AdvancedRenamer"
     },
+    "cryptomator": {
+        "category": "Utilities",
+        "choco": "cryptomator",
+        "content": "Cryptomator",
+        "description": "Cryptomator for Windows, macOS, and Linux: Secure client-side encryption for your cloud storage, ensuring privacy and control over your data.",
+        "link": "https://github.com/cryptomator/cryptomator/",
+        "winget": "Cryptomator.Cryptomator",
+        "foss": true
+    },
     "citrixworkspaceapp": {
         "category": "Utilities",
         "choco": "citrix-workspace",
