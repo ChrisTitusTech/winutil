@@ -12,9 +12,12 @@ function Invoke-WPFUltimatePerformance {
             return
         }
     } else {
-        powercfg /setactive SCHEME_BALANCED
-        powercfg /delete ((powercfg /list | Select-String 'Ultimate Performance').ToString().Split()[3])
-
-        Write-Host "Ultimate Performance plan was removed." -ForegroundColor Red
+        if (powercfg /list | Select-String "Ultimate Performance") {
+            powercfg /setactive SCHEME_BALANCED
+            powercfg /delete ((powercfg /list | Select-String "Ultimate Performance").ToString().Split()[3])
+            Write-Host "Ultimate Performance plan was removed." -ForegroundColor Red
+        } else {
+            Write-Host "Ultimate Performance plan is not installed." -ForegroundColor Yellow
+        }
     }
 }
