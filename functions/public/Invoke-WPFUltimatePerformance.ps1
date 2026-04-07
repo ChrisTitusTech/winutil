@@ -4,20 +4,29 @@ function Invoke-WPFUltimatePerformance {
     )
 
     if ($Do) {
-        if (-not (powercfg /list | Select-String "Ultimate Performance")) {
-            powercfg /setactive ((powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61).Split()[3])
-            Write-Host "Ultimate Performance plan installed and activated." -ForegroundColor Green
+        if (-not (powercfg /list | Select-String "ChrisTitus - Ultimate Power Plan")) {
+            if (-not (powercfg /list | Select-String "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c")) {
+                powercfg /restoredefaultschemes
+            }
+            $guid = ((powercfg /duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c) -split '\s+')[3]
+            powercfg /changename $guid "ChrisTitus - Ultimate Power Plan"
+            powercfg /setactive $guid
+            powercfg /setacvalueindex $guid SUB_PROCESSOR IDLEDISABLE 1
+            powercfg /setacvalueindex $guid 54533251-82be-4824-96c1-47b60b740d00 4d2b0152-7d5c-498b-88e2-34345392a2c5 1
+            powercfg /setacvalueindex $guid SUB_PROCESSOR PROCTHROTTLEMIN 100
+            powercfg /setactive $guid
+            Write-Host "ChrisTitus - Ultimate Power Plan plan installed and activated." -ForegroundColor Green
         } else {
-            Write-Host "Ultimate Performance plan is already installed." -ForegroundColor Red
+            Write-Host "ChrisTitus - Ultimate Power Plan plan is already installed." -ForegroundColor Red
             return
         }
     } else {
-        if (powercfg /list | Select-String "Ultimate Performance") {
+        if (powercfg /list | Select-String "ChrisTitus - Ultimate Power Plan") {
             powercfg /setactive SCHEME_BALANCED
-            powercfg /delete ((powercfg /list | Select-String "Ultimate Performance").ToString().Split()[3])
-            Write-Host "Ultimate Performance plan was removed." -ForegroundColor Red
+            powercfg /delete ((powercfg /list | Select-String "ChrisTitus - Ultimate Power Plan").ToString().Split()[3])
+            Write-Host "ChrisTitus - Ultimate Power Plan plan was removed." -ForegroundColor Red
         } else {
-            Write-Host "Ultimate Performance plan is not installed." -ForegroundColor Yellow
+            Write-Host "ChrisTitus - Ultimate Power Plan plan is not installed." -ForegroundColor Yellow
         }
     }
 }
