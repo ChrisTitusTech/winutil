@@ -116,10 +116,7 @@ function Invoke-WinUtilISOScript {
         ForEach-Object { if ($_ -match 'PackageName : (.*)') { $matches[1] } }
 
     $packagePrefixes = @(
-        'AppUp.IntelManagementandSecurityStatus',
         'Clipchamp.Clipchamp',
-        'DolbyLaboratories.DolbyAccess',
-        'DolbyLaboratories.DolbyDigitalPlusDecoderOEM',
         'Microsoft.BingNews',
         'Microsoft.BingSearch',
         'Microsoft.BingWeather',
@@ -147,15 +144,10 @@ function Invoke-WinUtilISOScript {
         'Microsoft.Windows.Copilot',
         'Microsoft.Windows.Teams',
         'Microsoft.WindowsAlarms',
-        'Microsoft.WindowsCamera',
         'microsoft.windowscommunicationsapps',
         'Microsoft.WindowsFeedbackHub',
-        'Microsoft.WindowsMaps',
         'Microsoft.WindowsSoundRecorder',
         'Microsoft.ZuneMusic',
-        'Microsoft.ZuneVideo',
-        'MicrosoftCorporationII.MicrosoftFamily',
-        'MicrosoftCorporationII.QuickAssist',
         'MSTeams',
         'MicrosoftTeams'
     )
