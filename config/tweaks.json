@@ -140,6 +140,13 @@
     "Description": "Disables Location Tracking.",
     "category": "Essential Tweaks",
     "panel": "1",
+    "service": [
+      {
+        "Name": "lfsvc ",
+        "StartupType": "Disable",
+        "OriginalType": "Manual"
+      }
+    ],
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location",
@@ -162,12 +169,6 @@
         "Type": "DWord",
         "OriginalValue": "1"
       }
-    ],
-    "InvokeScript": [
-      "Set-Service -Name lfsvc -StartupType Disabled"
-    ],
-    "UndoScript": [
-      "Set-Service -Name lfsvc -StartupType Manual"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/location"
   },
