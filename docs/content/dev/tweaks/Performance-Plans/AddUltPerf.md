@@ -4,88 +4,39 @@ description: ""
 ---
 
 ```powershell {filename="functions/public/Invoke-WPFUltimatePerformance.ps1",linenos=inline,linenostart=1}
-Function Invoke-WPFUltimatePerformance {
-    <#
-
-    .SYNOPSIS
-        Enables or disables the Ultimate Performance power scheme based on its GUID.
-
-    .PARAMETER State
-        Specifies whether to "Enable" or "Disable" the Ultimate Performance power scheme.
-
-    #>
+function Invoke-WPFUltimatePerformance {
     param(
-        [Parameter(Mandatory = $true)]
-        [ValidateSet("Enable", "Disable")]
-        [string]$State
+        [switch]$Do
     )
 
-    try {
-        # GUID of the Ultimate Performance power plan
-        $ultimateGUID = "e9a42b02-d5df-448d-aa00-03f14749eb61"
-
-        switch ($State) {
-            "Enable" {
-                # Duplicate the Ultimate Performance power plan using its GUID
-                $duplicateOutput = powercfg /duplicatescheme $ultimateGUID
-
-                $guid = $null
-                $nameFromFile = "ChrisTitus - Ultimate Power Plan"
-                $description = "Ultimate Power Plan, added via WinUtils"
-
-                # Extract the new GUID from the duplicateOutput
-                foreach ($line in $duplicateOutput) {
-                    if ($line -match "\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b") {
-                        $guid = $matches[0]  # $matches[0] will contain the first match, which is the GUID
-                        Write-Output "GUID: $guid has been extracted and stored in the variable."
-                        break
-                    }
-                }
-
-                if (-not $guid) {
-                    Write-Output "No GUID found in the duplicateOutput. Check the output format."
-                    exit 1
-                }
-
-                # Change the name of the power plan and set its description
-                $changeNameOutput = powercfg /changename $guid "$nameFromFile" "$description"
-                Write-Output "The power plan name and description have been changed. Output:"
-                Write-Output $changeNameOutput
-
-                # Set the duplicated Ultimate Performance plan as active
-                $setActiveOutput = powercfg /setactive $guid
-                Write-Output "The power plan has been set as active. Output:"
-                Write-Output $setActiveOutput
-
-                Write-Host "> Ultimate Performance plan installed and set as active."
-            }
-            "Disable" {
-                # Check if the Ultimate Performance plan is installed by GUID
-                $installedPlan = powercfg -list | Select-String -Pattern "ChrisTitus - Ultimate Power Plan"
-
-                if ($installedPlan) {
-                    # Extract the GUID of the installed Ultimate Performance plan
-                    $ultimatePlanGUID = $installedPlan.Line.Split()[3]
-
-                    # Set a different power plan as active before deleting the Ultimate Performance plan
-                    $balancedPlanGUID = "381b4222-f694-41f0-9685-ff5bb260df2e"
-                    powercfg -setactive $balancedPlanGUID
-
-                    # Delete the Ultimate Performance plan by GUID
-                    powercfg -delete $ultimatePlanGUID
-
-                    Write-Host "Ultimate Performance plan has been uninstalled."
-                    Write-Host "> Balanced plan is now active."
-                } else {
-                    Write-Host "Ultimate Performance plan is not installed."
+    if ($Do) {
+        if (-not (powercfg /list | Select-String "ChrisTitus - Ultimate Power Plan")) {
+            if (-not (powercfg /list | Select-String "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c")) {
+                powercfg /restoredefaultschemes
+                if (-not (powercfg /list | Select-String "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c")) {
+                    Write-Host "Failed to restore High Performance plan. Default plans do not include high performance. If you are on a laptop, do NOT use High Performance or Ultimate Performance plans." -ForegroundColor Red
+                    return
                 }
             }
-            default {
-                Write-Host "Invalid state. Please use 'Enable' or 'Disable'."
-            }
+            $guid = ((powercfg /duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c) -split '\s+')[3]
+            powercfg /changename $guid "ChrisTitus - Ultimate Power Plan"
+            powercfg /setacvalueindex $guid SUB_PROCESSOR IDLEDISABLE 1
+            powercfg /setacvalueindex $guid 54533251-82be-4824-96c1-47b60b740d00 4d2b0152-7d5c-498b-88e2-34345392a2c5 1
+            powercfg /setacvalueindex $guid SUB_PROCESSOR PROCTHROTTLEMIN 100
+            powercfg /setactive $guid
+            Write-Host "ChrisTitus - Ultimate Power Plan plan installed and activated." -ForegroundColor Green
+        } else {
+            Write-Host "ChrisTitus - Ultimate Power Plan plan is already installed." -ForegroundColor Red
+            return
         }
-    } catch {
-        Write-Error "Error occurred: $_"
+    } else {
+        if (powercfg /list | Select-String "ChrisTitus - Ultimate Power Plan") {
+            powercfg /setactive SCHEME_BALANCED
+            powercfg /delete ((powercfg /list | Select-String "ChrisTitus - Ultimate Power Plan").ToString().Split()[3])
+            Write-Host "ChrisTitus - Ultimate Power Plan plan was removed." -ForegroundColor Red
+        } else {
+            Write-Host "ChrisTitus - Ultimate Power Plan plan is not installed." -ForegroundColor Yellow
+        }
     }
 }
 ```
