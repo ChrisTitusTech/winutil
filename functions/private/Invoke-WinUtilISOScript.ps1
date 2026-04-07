@@ -121,7 +121,6 @@ function Invoke-WinUtilISOScript {
         'Microsoft.BingSearch',
         'Microsoft.BingWeather',
         'Microsoft.GetHelp',
-        'Microsoft.Getstarted',
         'Microsoft.MicrosoftOfficeHub',
         'Microsoft.MicrosoftSolitaireCollection',
         'Microsoft.MicrosoftStickyNotes',
