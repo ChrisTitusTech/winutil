@@ -141,6 +141,7 @@ function Invoke-WinUtilISOScript {
         'Microsoft.WindowsFeedbackHub',
         'Microsoft.WindowsSoundRecorder',
         'Microsoft.ZuneMusic',
+        'MicrosoftCorporationII.QuickAssist',
         'MSTeams',
         'MicrosoftTeams'
     )
