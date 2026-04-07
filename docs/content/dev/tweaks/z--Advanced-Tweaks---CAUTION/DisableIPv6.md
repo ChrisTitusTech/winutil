@@ -3,7 +3,7 @@ title: "Disable IPv6"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2060}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2012}
   "WPFTweaksDisableIPv6": {
     "Content": "Disable IPv6",
     "Description": "Disables IPv6.",

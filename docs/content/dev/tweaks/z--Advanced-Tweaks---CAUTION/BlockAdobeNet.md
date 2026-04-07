@@ -3,7 +3,7 @@ title: "Adobe Network Block"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1944}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1896}
   "WPFTweaksBlockAdobeNet": {
     "Content": "Adobe Network Block",
     "Description": "Reduces user interruptions by selectively blocking connections to Adobe's activation and telemetry servers. Credit: Ruddernation-Designs",
