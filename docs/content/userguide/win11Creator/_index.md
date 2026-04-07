@@ -1,6 +1,7 @@
 ---
 title: Win11 Creator
 weight: 8
+prev: /userguide/automation/
 ---
 
 ## Using Winutil's Win11 Creator

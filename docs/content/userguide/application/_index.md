@@ -1,6 +1,8 @@
 ---
 title: Applications
 weight: 3
+prev: /userguide/getting-started/
+next: /userguide/tweaks/
 ---
 
 {{< tabs >}}
