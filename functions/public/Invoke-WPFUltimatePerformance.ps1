@@ -14,7 +14,6 @@ function Invoke-WPFUltimatePerformance {
             }
             $guid = ((powercfg /duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c) -split '\s+')[3]
             powercfg /changename $guid "ChrisTitus - Ultimate Power Plan"
-            powercfg /setactive $guid
             powercfg /setacvalueindex $guid SUB_PROCESSOR IDLEDISABLE 1
             powercfg /setacvalueindex $guid 54533251-82be-4824-96c1-47b60b740d00 4d2b0152-7d5c-498b-88e2-34345392a2c5 1
             powercfg /setacvalueindex $guid SUB_PROCESSOR PROCTHROTTLEMIN 100
