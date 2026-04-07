@@ -257,6 +257,15 @@
         "link": "https://www.advancedrenamer.com/",
         "winget": "HulubuluSoftware.AdvancedRenamer"
     },
+    "cryptomator": {
+        "category": "Utilities",
+        "choco": "cryptomator",
+        "content": "Cryptomator",
+        "description": "Cryptomator for Windows, macOS, and Linux: Secure client-side encryption for your cloud storage, ensuring privacy and control over your data.",
+        "link": "https://github.com/cryptomator/cryptomator/",
+        "winget": "Cryptomator.Cryptomator",
+        "foss": true
+    },
     "citrixworkspaceapp": {
         "category": "Utilities",
         "choco": "citrix-workspace",
@@ -1037,6 +1046,15 @@
         "description": "Gsudo is a sudo implementation for Windows, allowing elevated privilege execution.",
         "link": "https://gerardog.github.io/gsudo/",
         "winget": "gerardog.gsudo"
+    },
+    "hugo": {
+        "category": "Utilities",
+        "choco": "hugo-extended",
+        "content": "Hugo",
+        "description": "The world’s fastest framework for building websites.",
+        "link": "https://github.com/gohugoio/hugo/",
+        "winget": "Hugo.Hugo.Extended",
+        "foss": true
     },
     "handbrake": {
         "category": "Multimedia Tools",
@@ -2762,6 +2780,15 @@
         "link": "https://unity.com/",
         "winget": "Unity.UnityHub"
     },
+    "veravrypt": {
+        "category": "Utilities",
+        "choco": "veracrypt",
+        "content": "VeraCrypt",
+        "description": "Disk encryption with strong security based on TrueCrypt.",
+        "link": "https://github.com/veracrypt/VeraCrypt/",
+        "winget": "IDRIX.VeraCrypt",
+        "foss": true
+    },
     "vagrant": {
         "category": "Development",
         "choco": "vagrant",
@@ -3216,6 +3243,15 @@
         "description": "A new gaming performance overlay and telemetry application to monitor and measure your gaming experience.",
         "link": "https://game.intel.com/us/stories/intel-presentmon/",
         "winget": "Intel.PresentMon.Beta",
+        "foss": true
+    },
+    "uv": {
+        "category": "Development",
+        "choco": "na",
+        "content": "uv",
+        "description": "uv is a fast Python package and project manager written in Rust.",
+        "link": "https://docs.astral.sh/uv/getting-started/installation/",
+        "winget": "astral-sh.uv",
         "foss": true
     },
     "pyenvwin": {

@@ -1,6 +1,8 @@
 ---
 title: Tweaks
 weight: 4
+prev: /userguide/application/
+next: /userguide/features/
 ---
 
 {{< image src="images/Tweaks-Tab" alt="Image of Tweaks Tab" >}}

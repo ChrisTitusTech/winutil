@@ -1,6 +1,8 @@
 ---
 title: Updates
 weight: 6
+prev: /userguide/features/
+next: /userguide/automation/
 ---
 
 Winutil provides three update modes so you can choose how aggressively Windows Update is managed on your system:
