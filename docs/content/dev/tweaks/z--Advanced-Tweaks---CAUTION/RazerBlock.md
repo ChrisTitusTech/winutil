@@ -31,8 +31,7 @@ description: ""
 
       if (Test-Path $RazerPath) {
         Remove-Item $RazerPath\\* -Recurse -Force
-      }
-      else {
+      } else {
         New-Item -Path $RazerPath -ItemType Directory
       }
 
