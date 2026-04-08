@@ -1,6 +1,8 @@
 ---
 title: Automation
 weight: 7
+prev: /userguide/updates/
+next: /userguide/win11Creator/
 ---
 
 Use Automation to run Winutil from an exported configuration file.

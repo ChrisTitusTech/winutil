@@ -3,7 +3,7 @@ title: "Detailed BSoD"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2588}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2482}
   "WPFToggleDetailedBSoD": {
     "Content": "Detailed BSoD",
     "Description": "If enabled, you will see a detailed Blue Screen of Death (BSOD) with more information.",

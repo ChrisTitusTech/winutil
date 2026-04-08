@@ -3,7 +3,7 @@ title: "Disable Windows Platform Binary Table (WPBT)"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1921}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1816}
   "WPFTweaksWPBT": {
     "Content": "Disable Windows Platform Binary Table (WPBT)",
     "Description": "If enabled, WPBT allows your computer vendor to execute programs at boot time, such as anti-theft software, software drivers, as well as force install software without user consent. Poses potential security risk.",

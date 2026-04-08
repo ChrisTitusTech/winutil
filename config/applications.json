@@ -257,6 +257,15 @@
         "link": "https://www.advancedrenamer.com/",
         "winget": "HulubuluSoftware.AdvancedRenamer"
     },
+    "cryptomator": {
+        "category": "Utilities",
+        "choco": "cryptomator",
+        "content": "Cryptomator",
+        "description": "Cryptomator for Windows, macOS, and Linux: Secure client-side encryption for your cloud storage, ensuring privacy and control over your data.",
+        "link": "https://github.com/cryptomator/cryptomator/",
+        "winget": "Cryptomator.Cryptomator",
+        "foss": true
+    },
     "citrixworkspaceapp": {
         "category": "Utilities",
         "choco": "citrix-workspace",
@@ -518,6 +527,15 @@
         "description": "Integrate updates, drivers, automate Windows and application setup, speedup Windows deployment process and have it all set for the next time.",
         "link": "https://ntlite.com",
         "winget": "Nlitesoft.NTLite"
+    },
+    "dorion": {
+        "category": "Communications",
+        "choco": "na",
+        "content": "Dorion",
+        "description": "Tiny alternative Discord client with a smaller footprint, snappier startup, themes, plugins and more!",
+        "link": "https://github.com/SpikeHD/Dorion",
+        "winget": "SpikeHD.Dorion",
+        "foss": true
     },
     "ditto": {
         "category": "Utilities",
@@ -1037,6 +1055,15 @@
         "description": "Gsudo is a sudo implementation for Windows, allowing elevated privilege execution.",
         "link": "https://gerardog.github.io/gsudo/",
         "winget": "gerardog.gsudo"
+    },
+    "hugo": {
+        "category": "Utilities",
+        "choco": "hugo-extended",
+        "content": "Hugo",
+        "description": "The world’s fastest framework for building websites.",
+        "link": "https://github.com/gohugoio/hugo/",
+        "winget": "Hugo.Hugo.Extended",
+        "foss": true
     },
     "handbrake": {
         "category": "Multimedia Tools",
@@ -1720,7 +1747,8 @@
         "content": "NodeJS LTS",
         "description": "NodeJS LTS provides Long-Term Support releases for stable and reliable server-side JavaScript development.",
         "link": "https://nodejs.org/",
-        "winget": "OpenJS.NodeJS.LTS"
+        "winget": "OpenJS.NodeJS.LTS",
+        "foss": true
     },
     "nomacs": {
         "category": "Multimedia Tools",
@@ -2761,6 +2789,15 @@
         "link": "https://unity.com/",
         "winget": "Unity.UnityHub"
     },
+    "veravrypt": {
+        "category": "Utilities",
+        "choco": "veracrypt",
+        "content": "VeraCrypt",
+        "description": "Disk encryption with strong security based on TrueCrypt.",
+        "link": "https://github.com/veracrypt/VeraCrypt/",
+        "winget": "IDRIX.VeraCrypt",
+        "foss": true
+    },
     "vagrant": {
         "category": "Development",
         "choco": "vagrant",
@@ -3217,6 +3254,15 @@
         "winget": "Intel.PresentMon.Beta",
         "foss": true
     },
+    "uv": {
+        "category": "Development",
+        "choco": "na",
+        "content": "uv",
+        "description": "uv is a fast Python package and project manager written in Rust.",
+        "link": "https://docs.astral.sh/uv/getting-started/installation/",
+        "winget": "astral-sh.uv",
+        "foss": true
+    },
     "pyenvwin": {
         "category": "Development",
         "choco": "pyenv-win",
@@ -3275,7 +3321,7 @@
         "content": "Ambie White Noise",
         "description": "Ambie is the ultimate app to help you focus, study, or relax. We use white noise and nature sounds combined with an innovative focus timer to keep you concentrated on doing your best work.",
         "link": "https://ambieapp.com/",
-        "winget": "9P07XNM5CHP0",
+        "winget": "JeniusApps.Ambie",
         "foss": true
     },
     "magicwormhole": {

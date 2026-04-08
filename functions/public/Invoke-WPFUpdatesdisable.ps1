@@ -26,6 +26,7 @@ function Invoke-WPFUpdatesdisable {
     Set-Service -Name wuauserv -StartupType Disabled
 
     Write-Host "Disabled UsoSvc Service"
+    Stop-Service -Name UsoSvc -Force
     Set-Service -Name UsoSvc -StartupType Disabled
 
     Remove-Item "C:\Windows\SoftwareDistribution\*" -Recurse -Force

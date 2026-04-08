@@ -24,7 +24,7 @@ function Invoke-WPFFeatureInstall {
         $x = 0
 
         $Features | ForEach-Object {
-            Invoke-WinUtilFeatureInstall $Feature
+            Invoke-WinUtilFeatureInstall $_
             $X++
             Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -value ($x/$CheckBox.Count) }
         }

@@ -3,7 +3,7 @@ title: "Block Razer Software Installs"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1937}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1832}
   "WPFTweaksRazerBlock": {
     "Content": "Block Razer Software Installs",
     "Description": "Blocks ALL Razer Software installations. The hardware works fine without any software.",
@@ -31,8 +31,7 @@ description: ""
 
       if (Test-Path $RazerPath) {
         Remove-Item $RazerPath\\* -Recurse -Force
-      }
-      else {
+      } else {
         New-Item -Path $RazerPath -ItemType Directory
       }
 

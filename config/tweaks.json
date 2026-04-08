@@ -140,6 +140,13 @@
     "Description": "Disables Location Tracking.",
     "category": "Essential Tweaks",
     "panel": "1",
+    "service": [
+      {
+        "Name": "lfsvc",
+        "StartupType": "Disable",
+        "OriginalType": "Manual"
+      }
+    ],
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location",
@@ -151,13 +158,6 @@
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Sensor\\Overrides\\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}",
         "Name": "SensorPermissionState",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\lfsvc\\Service\\Configuration",
-        "Name": "Status",
         "Value": "0",
         "Type": "DWord",
         "OriginalValue": "1"
@@ -1674,78 +1674,30 @@
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/xboxremoval"
   },
   "WPFTweaksDeBloat": {
-    "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
-    "Description": "USE WITH CAUTION!!! This will remove ALL Microsoft Store apps.",
+    "Content": "Remove Unwanted Pre-Installed Apps",
+    "Description": "This will remove a bunch of Windows pre-installed applications which most people dont want on there system.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "appx": [
-      "Microsoft.Microsoft3DViewer",
-      "Microsoft.AppConnector",
-      "Microsoft.BingFinance",
+      "Microsoft.WindowsFeedbackHub",
       "Microsoft.BingNews",
-      "Microsoft.BingSports",
-      "Microsoft.BingTranslator",
+      "Microsoft.BingSearch",
       "Microsoft.BingWeather",
-      "Microsoft.BingFoodAndDrink",
-      "Microsoft.BingHealthAndFitness",
-      "Microsoft.BingTravel",
       "Clipchamp.Clipchamp",
       "Microsoft.Todos",
-      "MicrosoftCorporationII.QuickAssist",
-      "Microsoft.MicrosoftStickyNotes",
-      "Microsoft.GetHelp",
-      "Microsoft.GetStarted",
-      "Microsoft.Messaging",
+      "Microsoft.PowerAutomateDesktop",
       "Microsoft.MicrosoftSolitaireCollection",
-      "Microsoft.NetworkSpeedTest",
-      "Microsoft.News",
-      "Microsoft.Office.Lens",
-      "Microsoft.Office.Sway",
-      "Microsoft.Office.OneNote",
-      "Microsoft.OneConnect",
-      "Microsoft.People",
-      "Microsoft.Print3D",
-      "Microsoft.SkypeApp",
-      "Microsoft.Wallet",
-      "Microsoft.Whiteboard",
-      "Microsoft.WindowsAlarms",
-      "Microsoft.WindowsCommunicationsApps",
-      "Microsoft.WindowsFeedbackHub",
-      "Microsoft.WindowsMaps",
       "Microsoft.WindowsSoundRecorder",
-      "Microsoft.ConnectivityStore",
-      "Microsoft.ScreenSketch",
-      "Microsoft.MixedReality.Portal",
+      "Microsoft.MicrosoftStickyNotes",
+      "Microsoft.Windows.DevHome",
+      "Microsoft.Paint",
+      "Microsoft.OutlookForWindows",
+      "Microsoft.WindowsAlarms",
+      "Microsoft.StartExperiencesApp",
+      "Microsoft.GetHelp",
       "Microsoft.ZuneMusic",
-      "Microsoft.ZuneVideo",
-      "Microsoft.MicrosoftOfficeHub",
-      "MsTeams",
-      "*EclipseManager*",
-      "*ActiproSoftwareLLC*",
-      "*AdobeSystemsIncorporated.AdobePhotoshopExpress*",
-      "*Duolingo-LearnLanguagesforFree*",
-      "*PandoraMediaInc*",
-      "*CandyCrush*",
-      "*BubbleWitch3Saga*",
-      "*Wunderlist*",
-      "*Flipboard*",
-      "*Twitter*",
-      "*Facebook*",
-      "*Royal Revolt*",
-      "*Sway*",
-      "*Speed Test*",
-      "*Dolby*",
-      "*Viber*",
-      "*ACGMediaPlayer*",
-      "*Netflix*",
-      "*OneCalendar*",
-      "*LinkedInForWindows*",
-      "*HiddenCityMysteryofShadows*",
-      "*Hulu*",
-      "*HiddenCity*",
-      "*AdobePhotoshopExpress*",
-      "*HotspotShieldFreeVPN*",
-      "*Microsoft.Advertising.Xaml*"
+      "MicrosoftCorporationII.QuickAssist",
+      "MSTeams"
     ],
     "InvokeScript": [
       "
@@ -1835,84 +1787,27 @@
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/storage"
   },
   "WPFTweaksRemoveCopilot": {
-    "Content": "Disable Microsoft Copilot",
-    "Description": "Disables MS Copilot AI built into Windows since 23H2.",
+    "Content": "Remove Microsoft Copilot",
+    "Description": "Removes Copilot AppXPackages and related ai packages",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot",
-        "Name": "TurnOffWindowsCopilot",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>"
-      },
-      {
-        "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\WindowsCopilot",
-        "Name": "TurnOffWindowsCopilot",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "Name": "ShowCopilotButton",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Shell\\Copilot",
-        "Name": "IsCopilotAvailable",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Shell\\Copilot",
-        "Name": "CopilotDisabledReason",
-        "Value": "IsEnabledForGeographicRegionFailed",
-        "Type": "String",
-        "OriginalValue": "<RemoveEntry>"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\WindowsCopilot",
-        "Name": "AllowCopilotRuntime",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Blocked",
-        "Name": "{CB3B0003-8088-4EDE-8769-8B354AB2FF8C}",
-        "Value": "",
-        "Type": "String",
-        "OriginalValue": "<RemoveEntry>"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Shell\\Copilot\\BingChat",
-        "Name": "IsUserEligible",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>"
-      }
-    ],
     "InvokeScript": [
       "
-      Write-Host \"Remove Copilot\"
       Get-AppxPackage -AllUsers *Copilot* | Remove-AppxPackage -AllUsers
       Get-AppxPackage -AllUsers Microsoft.MicrosoftOfficeHub | Remove-AppxPackage -AllUsers
 
       $Appx = (Get-AppxPackage MicrosoftWindows.Client.CoreAI).PackageFullName
-
       $Sid = (Get-LocalUser $Env:UserName).Sid.Value
+
       New-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Appx\\AppxAllUserStore\\EndOfLife\\$Sid\\$Appx\" -Force
       Remove-AppxPackage $Appx
+
+      Write-Host \"Copilot Removed\"
       "
     ],
     "UndoScript": [
       "
-      Write-Host \"Install Copilot\"
+      Write-Host \"Installing Copilot...\"
       winget install --name Copilot --source msstore --accept-package-agreements --accept-source-agreements --silent
       "
     ],
@@ -1961,8 +1856,7 @@
 
       if (Test-Path $RazerPath) {
         Remove-Item $RazerPath\\* -Recurse -Force
-      }
-      else {
+      } else {
         New-Item -Path $RazerPath -ItemType Directory
       }
 
@@ -2258,7 +2152,7 @@
         "Path": "HKU:\\.Default\\Control Panel\\Keyboard",
         "Name": "InitialKeyboardIndicators",
         "Value": "2",
-        "Type": "DWord",
+        "Type": "String",
         "OriginalValue": "0",
         "DefaultState": "false"
       },
@@ -2266,7 +2160,7 @@
         "Path": "HKCU:\\Control Panel\\Keyboard",
         "Name": "InitialKeyboardIndicators",
         "Value": "2",
-        "Type": "DWord",
+        "Type": "String",
         "OriginalValue": "0",
         "DefaultState": "false"
       }

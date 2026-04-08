@@ -3,7 +3,7 @@ title: "Num Lock on Startup"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2250}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2144}
   "WPFToggleNumLock": {
     "Content": "Num Lock on Startup",
     "Description": "Toggle the Num Lock key state when your computer starts.",
@@ -15,7 +15,7 @@ description: ""
         "Path": "HKU:\\.Default\\Control Panel\\Keyboard",
         "Name": "InitialKeyboardIndicators",
         "Value": "2",
-        "Type": "DWord",
+        "Type": "String",
         "OriginalValue": "0",
         "DefaultState": "false"
       },
@@ -23,7 +23,7 @@ description: ""
         "Path": "HKCU:\\Control Panel\\Keyboard",
         "Name": "InitialKeyboardIndicators",
         "Value": "2",
-        "Type": "DWord",
+        "Type": "String",
         "OriginalValue": "0",
         "DefaultState": "false"
       }

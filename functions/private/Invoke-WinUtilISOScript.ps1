@@ -50,7 +50,6 @@ function Invoke-WinUtilISOScript {
     .NOTES
         Author  : Chris Titus @christitustech
         GitHub  : https://github.com/ChrisTitusTech
-        Version : 26.03.02
     #>
     param (
         [Parameter(Mandatory)][string]$ScratchDir,
@@ -116,48 +115,25 @@ function Invoke-WinUtilISOScript {
         ForEach-Object { if ($_ -match 'PackageName : (.*)') { $matches[1] } }
 
     $packagePrefixes = @(
-        'AppUp.IntelManagementandSecurityStatus',
         'Clipchamp.Clipchamp',
-        'DolbyLaboratories.DolbyAccess',
-        'DolbyLaboratories.DolbyDigitalPlusDecoderOEM',
         'Microsoft.BingNews',
         'Microsoft.BingSearch',
         'Microsoft.BingWeather',
-        'Microsoft.Copilot',
-        'Microsoft.Windows.CrossDevice',
         'Microsoft.GetHelp',
-        'Microsoft.Getstarted',
-        'Microsoft.Microsoft3DViewer',
         'Microsoft.MicrosoftOfficeHub',
         'Microsoft.MicrosoftSolitaireCollection',
         'Microsoft.MicrosoftStickyNotes',
-        'Microsoft.MixedReality.Portal',
-        'Microsoft.MSPaint',
-        'Microsoft.Office.OneNote',
-        'Microsoft.OfficePushNotificationUtility',
         'Microsoft.OutlookForWindows',
         'Microsoft.Paint',
-        'Microsoft.People',
         'Microsoft.PowerAutomateDesktop',
-        'Microsoft.SkypeApp',
         'Microsoft.StartExperiencesApp',
         'Microsoft.Todos',
-        'Microsoft.Wallet',
         'Microsoft.Windows.DevHome',
-        'Microsoft.Windows.Copilot',
-        'Microsoft.Windows.Teams',
-        'Microsoft.WindowsAlarms',
-        'Microsoft.WindowsCamera',
-        'microsoft.windowscommunicationsapps',
         'Microsoft.WindowsFeedbackHub',
-        'Microsoft.WindowsMaps',
         'Microsoft.WindowsSoundRecorder',
         'Microsoft.ZuneMusic',
-        'Microsoft.ZuneVideo',
-        'MicrosoftCorporationII.MicrosoftFamily',
         'MicrosoftCorporationII.QuickAssist',
-        'MSTeams',
-        'MicrosoftTeams'
+        'MSTeams'
     )
 
     $packages | Where-Object { $pkg = $_; $packagePrefixes | Where-Object { $pkg -like "*$_*" } } |
