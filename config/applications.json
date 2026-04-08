@@ -528,6 +528,15 @@
         "link": "https://ntlite.com",
         "winget": "Nlitesoft.NTLite"
     },
+    "dorion": {
+        "category": "Communications",
+        "choco": "na",
+        "content": "Dorion",
+        "description": "Tiny alternative Discord client with a smaller footprint, snappier startup, themes, plugins and more!",
+        "link": "https://github.com/SpikeHD/Dorion",
+        "winget": "SpikeHD.Dorion",
+        "foss": true
+    },
     "ditto": {
         "category": "Utilities",
         "choco": "ditto",
