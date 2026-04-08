@@ -952,7 +952,7 @@
         </Grid.ColumnDefinitions>
         <!-- Offline banner -->
         <Border Name="WPFOfflineBanner" Grid.Row="0" Background="#8B0000" Visibility="Collapsed" Padding="6,4">
-            <TextBlock Text="&#x26A0; Offline Mode - No Internet Connection" Foreground="White" FontWeight="Bold"
+            <TextBlock Name="WPFOfflineBannerTextBlock" Text="&#x26A0; Offline Mode - No Internet Connection" Foreground="White" FontWeight="Bold"
                 HorizontalAlignment="Center" FontSize="13" Background="Transparent"/>
         </Border>
         <Grid Grid.Row="1" Background="{DynamicResource MainBackgroundColor}">
@@ -965,34 +965,34 @@
             <StackPanel Name="NavDockPanel" Orientation="Horizontal" Grid.Column="0" Margin="5,5,10,5">
                 <StackPanel Name="NavLogoPanel" Orientation="Horizontal" HorizontalAlignment="Left" Background="{DynamicResource MainBackgroundColor}" SnapsToDevicePixels="True" Margin="10,0,20,0">
                 </StackPanel>
-                <ToggleButton Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="{DynamicResource TabButtonWidth}"
+                <ToggleButton Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="Auto" MinWidth="{DynamicResource TabButtonWidth}"
                     Background="{DynamicResource ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
                     <ToggleButton.Content>
-                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonInstallForegroundColor}" >
+                        <TextBlock Name="WPFTab1BTTextBlock" FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonInstallForegroundColor}" >
                             <Underline>I</Underline>nstall
                         </TextBlock>
                     </ToggleButton.Content>
                 </ToggleButton>
-                <ToggleButton Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="{DynamicResource TabButtonWidth}"
+                <ToggleButton Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="Auto" MinWidth="{DynamicResource TabButtonWidth}"
                     Background="{DynamicResource ButtonTweaksBackgroundColor}" Foreground="{DynamicResource ButtonTweaksForegroundColor}" FontWeight="Bold" Name="WPFTab2BT">
                     <ToggleButton.Content>
-                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonTweaksForegroundColor}">
+                        <TextBlock Name="WPFTab2BTTextBlock" FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonTweaksForegroundColor}">
                             <Underline>T</Underline>weaks
                         </TextBlock>
                     </ToggleButton.Content>
                 </ToggleButton>
-                <ToggleButton Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="{DynamicResource TabButtonWidth}"
+                <ToggleButton Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="Auto" MinWidth="{DynamicResource TabButtonWidth}"
                     Background="{DynamicResource ButtonConfigBackgroundColor}" Foreground="{DynamicResource ButtonConfigForegroundColor}" FontWeight="Bold" Name="WPFTab3BT">
                     <ToggleButton.Content>
-                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonConfigForegroundColor}">
+                        <TextBlock Name="WPFTab3BTTextBlock" FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonConfigForegroundColor}">
                             <Underline>C</Underline>onfig
                         </TextBlock>
                     </ToggleButton.Content>
                 </ToggleButton>
-                <ToggleButton Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="{DynamicResource TabButtonWidth}"
+                <ToggleButton Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="Auto" MinWidth="{DynamicResource TabButtonWidth}"
                     Background="{DynamicResource ButtonUpdatesBackgroundColor}" Foreground="{DynamicResource ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab4BT">
                     <ToggleButton.Content>
-                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonUpdatesForegroundColor}">
+                        <TextBlock Name="WPFTab4BTTextBlock" FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonUpdatesForegroundColor}">
                             <Underline>U</Underline>pdates
                         </TextBlock>
                     </ToggleButton.Content>
@@ -1000,7 +1000,7 @@
                 <ToggleButton Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="Auto" MinWidth="{DynamicResource TabButtonWidth}"
                     Background="{DynamicResource ButtonWin11ISOBackgroundColor}" Foreground="{DynamicResource ButtonWin11ISOForegroundColor}" FontWeight="Bold" Name="WPFTab5BT">
                     <ToggleButton.Content>
-                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonWin11ISOForegroundColor}">
+                        <TextBlock Name="WPFTab5BTTextBlock" FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonWin11ISOForegroundColor}">
                             <Underline>W</Underline>in11 Creator
                         </TextBlock>
                     </ToggleButton.Content>
@@ -1102,7 +1102,7 @@
                     HorizontalAlignment="Right" VerticalAlignment="Top">
                     <Border Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
                         <StackPanel Background="{DynamicResource MainBackgroundColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinWidth="200">
-                            <TextBlock Text="Font Scaling"
+                            <TextBlock Name="FontScalingTitleTextBlock" Text="Font Scaling"
                                        FontSize="{DynamicResource ButtonFontSize}"
                                        Foreground="{DynamicResource MainForegroundColor}"
                                        HorizontalAlignment="Center"
@@ -1110,7 +1110,7 @@
                                        FontWeight="Bold"/>
                             <Separator Margin="5,0,5,5"/>
                             <StackPanel Orientation="Horizontal" Margin="10,5,10,10">
-                                <TextBlock Text="Small"
+                                <TextBlock Name="FontScalingSmallTextBlock" Text="Small"
                                            FontSize="{DynamicResource ButtonFontSize}"
                                            Foreground="{DynamicResource MainForegroundColor}"
                                            VerticalAlignment="Center"
@@ -1123,7 +1123,7 @@
                                         IsSnapToTickEnabled="True"
                                         Width="120"
                                         VerticalAlignment="Center"/>
-                                <TextBlock Text="Large"
+                                <TextBlock Name="FontScalingLargeTextBlock" Text="Large"
                                            FontSize="{DynamicResource ButtonFontSize}"
                                            Foreground="{DynamicResource MainForegroundColor}"
                                            VerticalAlignment="Center"
@@ -1182,6 +1182,14 @@
                             <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="About" Name="AboutMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
                             <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Documentation" Name="DocumentationMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
                             <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Sponsors" Name="SponsorMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
+                            <Separator/>
+                            <StackPanel Orientation="Horizontal" Margin="8" VerticalAlignment="Center">
+                                <TextBlock Name="LanguageLabelTextBlock" VerticalAlignment="Center" Foreground="{DynamicResource MainForegroundColor}" Margin="4,0,8,0">Language:</TextBlock>
+                                <ComboBox Name="LanguageComboBox" Width="140">
+                                    <ComboBoxItem Tag="en">English</ComboBoxItem>
+                                    <ComboBoxItem Tag="es">Español</ComboBoxItem>
+                                </ComboBox>
+                            </StackPanel>
                         </StackPanel>
                     </Border>
                 </Popup>
@@ -1234,7 +1242,7 @@
                             </Grid.RowDefinitions>
 
                             <StackPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Vertical" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="5">
-                                <Label Content="Recommended Selections:" FontSize="{DynamicResource FontSize}" VerticalAlignment="Center" Margin="2"/>
+                                <Label Name="WPFTweaksRecommendedLabel" Content="Recommended Selections:" FontSize="{DynamicResource FontSize}" VerticalAlignment="Center" Margin="2"/>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,2,0,0">
                                     <Button Name="WPFstandard" Content=" Standard " Margin="2" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
                                     <Button Name="WPFminimal" Content=" Minimal " Margin="2" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
@@ -1249,7 +1257,7 @@
 
                             <Border Grid.ColumnSpan="2" Grid.Row="2" Grid.Column="0" Style="{StaticResource BorderStyle}">
                                 <StackPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left">
-                                    <TextBlock Padding="10">
+                                    <TextBlock Name="WPFTweaksInfoTextBlock" Padding="10">
                                         Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
                                         <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else!
                                     </TextBlock>
@@ -1295,7 +1303,7 @@
                                             Content="Default Settings"
                                             Margin="10,5"
                                             Padding="10"/>
-                                    <TextBlock Margin="10"
+                                    <TextBlock Name="WPFUpdatesDefaultDescriptionTextBlock" Margin="10"
                                              TextWrapping="Wrap"
                                              Foreground="{DynamicResource MainForegroundColor}">
                                         <Run FontWeight="Bold">Default Windows Update Configuration</Run>
@@ -1317,7 +1325,7 @@
                                             Content="Security Settings"
                                             Margin="10,5"
                                             Padding="10"/>
-                                    <TextBlock Margin="10"
+                                    <TextBlock Name="WPFUpdatesSecurityDescriptionTextBlock" Margin="10"
                                              TextWrapping="Wrap"
                                              Foreground="{DynamicResource MainForegroundColor}">
                                         <Run FontWeight="Bold">Balanced Security Configuration</Run>
@@ -1346,7 +1354,7 @@
                                             Foreground="Red"
                                             Margin="10,5"
                                             Padding="10"/>
-                                    <TextBlock Margin="10"
+                                    <TextBlock Name="WPFUpdatesDisableDescriptionTextBlock" Margin="10"
                                              TextWrapping="Wrap"
                                              Foreground="{DynamicResource MainForegroundColor}">
                                         <Run FontWeight="Bold" Foreground="Red">!! Not Recommended !!</Run>
@@ -1388,16 +1396,16 @@
 
                                 <!-- Left: File Selector -->
                                 <StackPanel Grid.Column="0" Margin="5,5,15,5">
-                                    <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="Bold"
+                                    <TextBlock Name="WPFWin11ISOStep1TitleTextBlock" FontSize="{DynamicResource FontSize}" FontWeight="Bold"
                                                Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,8">
                                         Step 1 - Select Windows 11 ISO
                                     </TextBlock>
-                                    <TextBlock FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}"
+                                    <TextBlock Name="WPFWin11ISOStep1DescriptionTextBlock" FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}"
                                                TextWrapping="Wrap" Margin="0,0,0,6">
                                         Browse to your locally saved Windows 11 ISO file. Only official ISOs
                                         downloaded from Microsoft are supported.
                                     </TextBlock>
-                                    <TextBlock FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}"
+                                    <TextBlock Name="WPFWin11ISOStep1NoteTextBlock" FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}"
                                                TextWrapping="Wrap" Margin="0,0,0,12" FontStyle="Italic">
                                         <Run FontWeight="Bold">NOTE:</Run> This is only meant for Fresh and New Windows installs.
                                     </TextBlock>
@@ -1436,23 +1444,23 @@
                                         BorderThickness="1" CornerRadius="5"
                                         Margin="5" Padding="15">
                                     <StackPanel>
-                                        <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="Bold"
+                                        <TextBlock Name="WPFWin11ISOWarningTitleTextBlock" FontSize="{DynamicResource FontSize}" FontWeight="Bold"
                                                    Foreground="OrangeRed" Margin="0,0,0,10">
                                             !!WARNING!! You must use an official Microsoft ISO
                                         </TextBlock>
-                                        <TextBlock FontSize="{DynamicResource FontSize}"
+                                        <TextBlock Name="WPFWin11ISOWarningDescriptionTextBlock" FontSize="{DynamicResource FontSize}"
                                                    Foreground="{DynamicResource MainForegroundColor}"
                                                    TextWrapping="Wrap" Margin="0,0,0,8">
                                             Download the Windows 11 ISO directly from Microsoft.com.
                                             Third-party, pre-modified, or unofficial images are not supported
                                             and may produce broken results.
                                         </TextBlock>
-                                        <TextBlock FontSize="{DynamicResource FontSize}"
+                                        <TextBlock Name="WPFWin11ISOWarningChooseTextBlock" FontSize="{DynamicResource FontSize}"
                                                    Foreground="{DynamicResource MainForegroundColor}"
                                                    TextWrapping="Wrap" Margin="0,0,0,6">
                                             On the Microsoft download page, choose:
                                         </TextBlock>
-                                        <TextBlock FontSize="{DynamicResource FontSize}"
+                                        <TextBlock Name="WPFWin11ISOWarningOptionsTextBlock" FontSize="{DynamicResource FontSize}"
                                                    Foreground="{DynamicResource MainForegroundColor}"
                                                    TextWrapping="Wrap" Margin="12,0,0,12">
                                             - Edition  : Windows 11
@@ -1479,11 +1487,11 @@
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Column="0" Margin="0,0,20,0" VerticalAlignment="Top">
-                                    <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="Bold"
+                                    <TextBlock Name="WPFWin11ISOStep2TitleTextBlock" FontSize="{DynamicResource FontSize}" FontWeight="Bold"
                                                Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,8">
                                         Step 2 - Mount &amp; Verify ISO
                                     </TextBlock>
-                                    <TextBlock FontSize="{DynamicResource FontSize}"
+                                    <TextBlock Name="WPFWin11ISOStep2DescriptionTextBlock" FontSize="{DynamicResource FontSize}"
                                                Foreground="{DynamicResource MainForegroundColor}"
                                                TextWrapping="Wrap" Margin="0,0,0,12" MaxWidth="320">
                                         Mount the ISO and confirm it contains a valid Windows 11
@@ -1520,7 +1528,7 @@
                                                    FontSize="{DynamicResource FontSize}"
                                                    Foreground="{DynamicResource MainForegroundColor}"
                                                    Margin="0,0,0,4"/>
-                                        <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="Bold"
+                                        <TextBlock Name="WPFWin11ISOEditionLabelTextBlock" FontSize="{DynamicResource FontSize}" FontWeight="Bold"
                                                    Foreground="{DynamicResource MainForegroundColor}"
                                                    Margin="0,6,0,4">
                                             Select Edition:
@@ -1540,11 +1548,11 @@
                                         Margin="5"
                                         Visibility="Collapsed"
                                         HorizontalAlignment="Left" MinWidth="{DynamicResource ButtonWidth}">
-                                <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="Bold"
+                                <TextBlock Name="WPFWin11ISOStep3TitleTextBlock" FontSize="{DynamicResource FontSize}" FontWeight="Bold"
                                            Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,8">
                                     Step 3 - Modify install.wim
                                 </TextBlock>
-                                <TextBlock FontSize="{DynamicResource FontSize}"
+                                <TextBlock Name="WPFWin11ISOStep3DescriptionTextBlock" FontSize="{DynamicResource FontSize}"
                                            Foreground="{DynamicResource MainForegroundColor}"
                                            TextWrapping="Wrap" Margin="0,0,0,12">
                                     The ISO contents will be extracted to a temporary working directory,
@@ -1570,7 +1578,7 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" FontSize="{DynamicResource FontSize}" FontWeight="Bold"
+                                    <TextBlock Name="WPFWin11ISOStep4TitleTextBlock" Grid.Column="0" FontSize="{DynamicResource FontSize}" FontWeight="Bold"
                                                Foreground="{DynamicResource MainForegroundColor}"
                                                VerticalAlignment="Center">
                                         Step 4 - Output: What would you like to do with the modified image?
@@ -1613,7 +1621,7 @@
                                         Visibility="Collapsed"
                                         Margin="0,8,0,0">
                                     <StackPanel>
-                                        <TextBlock FontSize="{DynamicResource FontSize}"
+                                        <TextBlock Name="WPFWin11ISOUSBWarningTextBlock" FontSize="{DynamicResource FontSize}"
                                                    Foreground="{DynamicResource MainForegroundColor}"
                                                    TextWrapping="Wrap" Margin="0,0,0,8">
                                             <Run FontWeight="Bold" Foreground="OrangeRed">!! All data on the selected USB drive will be permanently erased !!</Run>
@@ -1657,7 +1665,7 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0"
+                        <TextBlock Name="WPFWin11ISOStatusLogTitleTextBlock" Grid.Row="0"
                                    FontSize="{DynamicResource FontSize}" FontWeight="Bold"
                                    Foreground="{DynamicResource MainForegroundColor}"
                                    Margin="0,0,0,4">

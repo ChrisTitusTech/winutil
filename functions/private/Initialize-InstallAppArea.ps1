@@ -62,7 +62,7 @@
         $sync.InstallAppAreaOverlay = $overlay
 
         $overlayText = New-Object Windows.Controls.TextBlock
-        $overlayText.Text = "Installing apps..."
+        $overlayText.Text = Get-LocalizedString -Key "Installing apps..." -Language $sync.preferences.language
         $overlayText.HorizontalAlignment = 'Center'
         $overlayText.VerticalAlignment = 'Center'
         $overlayText.SetResourceReference([Windows.Controls.TextBlock]::ForegroundProperty, "MainForegroundColor")

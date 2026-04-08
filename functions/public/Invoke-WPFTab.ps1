@@ -28,7 +28,14 @@ function Invoke-WPFTab {
             $sync.$tabNav.Items[$tabNumber].IsSelected = $true
         }
     }
-    $sync.currentTab = $sync.$tabNav.Items[$tabNumber].Header
+    switch ($tabNumber) {
+        0 { $sync.currentTab = "Install" }
+        1 { $sync.currentTab = "Tweaks" }
+        2 { $sync.currentTab = "Config" }
+        3 { $sync.currentTab = "Updates" }
+        4 { $sync.currentTab = "Win11ISO" }
+        default { $sync.currentTab = [string]$sync.$tabNav.Items[$tabNumber].Header }
+    }
 
     # Always reset the filter for the current tab
     if ($sync.currentTab -eq "Install") {

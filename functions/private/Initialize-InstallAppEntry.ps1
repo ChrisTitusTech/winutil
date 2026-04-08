@@ -14,10 +14,13 @@ function Initialize-InstallAppEntry {
         )
 
         # Create the outer Border for the application type
+        $localizedContent = Get-LocalizedString -Key $Apps.$appKey.content -Language $sync.preferences.language
+        $localizedDescription = Get-LocalizedString -Key $Apps.$appKey.description -Language $sync.preferences.language
+
         $border = New-Object Windows.Controls.Border
         $border.Style = $sync.Form.Resources.AppEntryBorderStyle
         $border.Tag = $appKey
-        $border.ToolTip = $Apps.$appKey.description
+        $border.ToolTip = $localizedDescription
         $border.Add_MouseLeftButtonUp({
             $childCheckbox = ($this.Child | Where-Object {$_.Template.TargetType -eq [System.Windows.Controls.Checkbox]})[0]
             $childCheckBox.isChecked = -not $childCheckbox.IsChecked
@@ -61,7 +64,7 @@ function Initialize-InstallAppEntry {
         # Create the TextBlock for the application name
         $appName = New-Object Windows.Controls.TextBlock
         $appName.Style = $sync.Form.Resources.AppEntryNameStyle
-        $appName.Text = $Apps.$appKey.content
+        $appName.Text = $localizedContent
 
         # Change color to Green if FOSS
         if ($Apps.$appKey.foss -eq $true) {
@@ -73,8 +76,8 @@ function Initialize-InstallAppEntry {
         $checkBox.Content = $appName
 
         # Add accessibility properties to make the elements screen reader friendly
-        $checkBox.SetValue([Windows.Automation.AutomationProperties]::NameProperty, $Apps.$appKey.content)
-        $border.SetValue([Windows.Automation.AutomationProperties]::NameProperty, $Apps.$appKey.content)
+        $checkBox.SetValue([Windows.Automation.AutomationProperties]::NameProperty, $localizedContent)
+        $border.SetValue([Windows.Automation.AutomationProperties]::NameProperty, $localizedContent)
 
         $border.Child = $checkBox
         # Add the border to the corresponding Category
