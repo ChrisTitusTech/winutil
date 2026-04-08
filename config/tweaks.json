@@ -2299,6 +2299,24 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/stickykeys"
   },
+  "WPFToggleScrollbars": {
+    "Content": "Always Show Scrollbars",
+    "Description": "If enabled, scrollbars will always be visible. If disabled, Windows will automatically hide scrollbars when not in use.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Accessibility",
+        "Name": "DynamicScrollbars",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/scrollbars"
+  },
   "WPFToggleNewOutlook": {
     "Content": "New Outlook",
     "Description": "If disabled, it removes the new Outlook toggle, disables the new Outlook migration, and ensures the classic Outlook application is used.",
