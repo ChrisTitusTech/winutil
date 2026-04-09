@@ -2649,14 +2649,13 @@
         "link": "https://www.teamviewer.com/",
         "winget": "TeamViewer.TeamViewer"
     },
-    "unigram": {
-        "category": "Communications",
-        "choco": "na",
-        "content": "Unigram",
-        "description": "Unigram - Telegram for Windows.",
-        "link": "https://unigramdev.github.io/",
-        "winget": "Telegram.Unigram",
-        "foss": true
+    "todoist": {
+        "category": "Utilities",
+        "choco": "todolist",
+        "content": "Todoist",
+        "description": "Join 50+ million professionals who simplify work and life with the world’s #1 to-do list app.",
+        "link": "https://www.todoist.com/",
+        "winget": "Doist.Todoist"
     },
     "teamspeak3": {
         "category": "Utilities",
@@ -2675,13 +2674,14 @@
         "winget": "Telegram.TelegramDesktop",
         "foss": true
     },
-    "todoist": {
-        "category": "Utilities",
-        "choco": "todolist",
-        "content": "Todoist",
-        "description": "Join 50+ million professionals who simplify work and life with the world’s #1 to-do list app.",
-        "link": "https://www.todoist.com/",
-        "winget": "Doist.Todoist"
+    "unigram": {
+        "category": "Communications",
+        "choco": "na",
+        "content": "Unigram",
+        "description": "Unigram - Telegram for Windows.",
+        "link": "https://unigramdev.github.io/",
+        "winget": "Telegram.Unigram",
+        "foss": true
     },
     "terminal": {
         "category": "Microsoft Tools",
