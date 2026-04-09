@@ -2649,6 +2649,15 @@
         "link": "https://www.teamviewer.com/",
         "winget": "TeamViewer.TeamViewer"
     },
+    "unigram": {
+        "category": "Communications",
+        "choco": "na",
+        "content": "Unigram",
+        "description": "Unigram - Telegram for Windows.",
+        "link": "https://unigramdev.github.io/",
+        "winget": "Telegram.Unigram",
+        "foss": true
+    },
     "teamspeak3": {
         "category": "Utilities",
         "choco": "teamspeak",
