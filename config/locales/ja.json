@@ -1,0 +1,1605 @@
+{
+    "_meta": {
+        "locale": "ja",
+        "name": "日本語",
+        "generated": "2026-03-27",
+        "generator": "generate-locale.py (Google Translate)",
+        "total_strings": 592
+    },
+    "categories": {
+        "AI-Automation": "AI オートメーション",
+        "Advanced Tweaks - CAUTION": "高度な調整 - 注意",
+        "Browsers": "ブラウザ",
+        "Communications": "コミュニケーション",
+        "Customize Preferences": "環境設定のカスタマイズ",
+        "Development": "発達",
+        "Document": "書類",
+        "Essential Tweaks": "重要な調整",
+        "Features": "特徴",
+        "Fixes": "修正",
+        "Games": "ゲーム",
+        "Legacy Windows Panels": "従来の Windows パネル",
+        "Microsoft Tools": "マイクロソフトツール",
+        "Multimedia Tools": "マルチメディアツール",
+        "Performance Plans": "パフォーマンス計画",
+        "Powershell Profile Powershell 7+ Only": "Powershell プロファイル Powershell 7 以降のみ",
+        "Pro Tools": "プロツール",
+        "Remote Access": "リモートアクセス",
+        "Utilities": "公共事業"
+    },
+    "tweaks": {
+        "WPFTweaksActivity": {
+            "Content": "アクティビティ履歴を無効にする",
+            "Description": "最近のドキュメント、クリップボード、および実行履歴を消去します。"
+        },
+        "WPFTweaksHiber": {
+            "Content": "休止状態を無効にする",
+            "Description": "休止状態は、PC の電源を切る前にメモリ内の内容を保存するため、実際にはラップトップ向けです。本当に絶対に使ってはいけません。"
+        },
+        "WPFTweaksWidget": {
+            "Content": "ウィジェットを削除する",
+            "Description": "タスクバーの左下にある迷惑なウィジェットを削除します。"
+        },
+        "WPFTweaksRevertStartMenu": {
+            "Content": "スタートメニューのレイアウトを元に戻す",
+            "Description": "25H2 に新しいスタート メニューが段階的に公開される前に、古いスタート メニューのレイアウトを戻します。"
+        },
+        "WPFTweaksDisableStoreSearch": {
+            "Content": "Microsoft Storeの検索結果を無効にする",
+            "Description": "スタート メニューでアプリを検索するときに、推奨される Microsoft Store アプリは表示されません。"
+        },
+        "WPFTweaksLocation": {
+            "Content": "位置追跡を無効にする",
+            "Description": "位置追跡を無効にします。"
+        },
+        "WPFTweaksServices": {
+            "Content": "サービスを手動に設定する",
+            "Description": "常時実行する必要のない多数のシステム サービスを手動に切り替えます。サービスが必要な場合は、オンデマンドで開始されるだけなので、これはまったく無害です。"
+        },
+        "WPFTweaksBraveDebloat": {
+            "Content": "ブレイブデブロート",
+            "Description": "Brave Rewards、Leo AI、Crypto Wallet、VPN などのさまざまな迷惑行為を無効にします。"
+        },
+        "WPFTweaksEdgeDebloat": {
+            "Content": "エッジデブロート",
+            "Description": "Edge のさまざまなテレメトリ オプション、ポップアップ、その他の煩わしさを無効にします。"
+        },
+        "WPFTweaksConsumerFeatures": {
+            "Content": "ConsumerFeature を無効にする",
+            "Description": "Windows は、サインインしているユーザーに対して Windows ストアからゲーム、サードパーティ アプリ、またはアプリケーション リンクを自動的にインストールしません。一部のデフォルト アプリはアクセスできなくなります (電話リンクなど)。"
+        },
+        "WPFTweaksTelemetry": {
+            "Content": "テレメトリを無効にする",
+            "Description": "Microsoft テレメトリを無効にします。"
+        },
+        "WPFTweaksRemoveEdge": {
+            "Content": "Microsoft Edgeを削除する",
+            "Description": "Microsoft Edge アンインストーラーの制限を解除し、そのアンインストーラーを使用して Microsoft Edge を削除します。"
+        },
+        "WPFTweaksUTC": {
+            "Content": "時間を UTC に設定 (デュアルブート)",
+            "Description": "デュアルブートのコンピュータには必須です。 Linux システムとの時刻同期を修正します。"
+        },
+        "WPFTweaksRemoveOneDrive": {
+            "Content": "OneDrive を削除する",
+            "Description": "OneDrive ユーザー ファイルを削除するアクセス許可を拒否し、独自のアンインストーラーを使用してファイルを削除し、その後元のアクセス許可を復元します。"
+        },
+        "WPFTweaksRemoveHome": {
+            "Content": "エクスプローラーからホームを削除",
+            "Description": "エクスプローラーからホームを削除し、この PC をデフォルトとして設定します。"
+        },
+        "WPFTweaksRemoveGallery": {
+            "Content": "エクスプローラーからギャラリーを削除する",
+            "Description": "エクスプローラーからギャラリーを削除し、この PC をデフォルトとして設定します。"
+        },
+        "WPFTweaksDisplay": {
+            "Content": "パフォーマンスの表示を設定する",
+            "Description": "システム環境設定をパフォーマンスに設定します。 sysdm.cpl を使用してこれを手動で行うこともできます。"
+        },
+        "WPFTweaksXboxRemoval": {
+            "Content": "Xbox およびゲーム コンポーネントを削除する",
+            "Description": "Xbox サービス、Xbox アプリ、ゲーム バー、および関連する認証コンポーネントを削除します。"
+        },
+        "WPFTweaksDeBloat": {
+            "Content": "すべての MS ストア アプリを削除します - 推奨されません",
+            "Description": "使用には注意してください!!!これにより、すべての Microsoft Store アプリが削除されます。"
+        },
+        "WPFTweaksRestorePoint": {
+            "Content": "復元ポイントの作成",
+            "Description": "WinUtil の変更を元に戻す必要がある場合に備えて、実行時に復元ポイントを作成します。"
+        },
+        "WPFTweaksEndTaskOnTaskbar": {
+            "Content": "右クリックによるタスクの終了を有効にする",
+            "Description": "タスクバーでプログラムを右クリックしたときにタスクを終了するオプションを有効にします。"
+        },
+        "WPFTweaksPowershell7Tele": {
+            "Content": "Powershell 7 テレメトリを無効にする",
+            "Description": "値「1」を持つ「POWERSHELL_TELEMETRY_OPTOUT」という環境変数を作成します。これにより、PowerShell 7 にテレメトリ データを送信しないように指示されます。"
+        },
+        "WPFTweaksStorage": {
+            "Content": "ストレージセンスを無効にする",
+            "Description": "ストレージ センサーは一時ファイルを自動的に削除します。"
+        },
+        "WPFTweaksRemoveCopilot": {
+            "Content": "Microsoft Copilotを無効にする",
+            "Description": "23H2 以降、Windows に組み込まれている MS Copilot AI を無効にします。"
+        },
+        "WPFTweaksWPBT": {
+            "Content": "Windows プラットフォーム バイナリ テーブル (WPBT) を無効にする",
+            "Description": "WPBT を有効にすると、コンピューター ベンダーは起動時に盗難防止ソフトウェア、ソフトウェア ドライバー、およびユーザーの同意なしにソフトウェアの強制インストールなどのプログラムを実行できます。潜在的なセキュリティリスクを引き起こします。"
+        },
+        "WPFTweaksRazerBlock": {
+            "Content": "Razer ソフトウェアのインストールをブロックする",
+            "Description": "すべての Razer ソフトウェアのインストールをブロックします。ハードウェアはソフトウェアなしでも正常に動作します。"
+        },
+        "WPFTweaksDisableNotifications": {
+            "Content": "通知トレイ/カレンダーを無効にする",
+            "Description": "カレンダーを含むすべての通知を無効にします。"
+        },
+        "WPFTweaksBlockAdobeNet": {
+            "Content": "Adobe ネットワークブロック",
+            "Description": "Adobe のアクティベーション サーバーとテレメトリ サーバーへの接続を選択的にブロックすることで、ユーザーの中断を減らします。クレジット: Ruddernation-Designs"
+        },
+        "WPFTweaksRightClickMenu": {
+            "Content": "クラシック右クリックメニューの設定",
+            "Description": "ファイル エクスプローラーで右クリックしたときにクラシック コンテキスト メニューが復元され、簡素化された Windows 11 バージョンが置き換えられます。"
+        },
+        "WPFTweaksDiskCleanup": {
+            "Content": "ディスククリーンアップを実行する",
+            "Description": "ドライブ C: でディスク クリーンアップを実行し、古い Windows Update を削除します。"
+        },
+        "WPFTweaksDeleteTempFiles": {
+            "Content": "一時ファイルの削除",
+            "Description": "TEMP フォルダーを消去します。"
+        },
+        "WPFTweaksIPv46": {
+            "Content": "IPv6 よりも IPv4 を優先する",
+            "Description": "IPv4 設定を設定すると、IPv6 が構成されていないプライベート ネットワークで遅延とセキュリティ上の利点が得られます。"
+        },
+        "WPFTweaksTeredo": {
+            "Content": "Teredo を無効にする",
+            "Description": "Teredo ネットワーク トンネリングは、追加の遅延を引き起こす可能性がある IPv6 機能ですが、一部のゲームでは問題を引き起こす可能性があります。"
+        },
+        "WPFTweaksDisableIPv6": {
+            "Content": "IPv6を無効にする",
+            "Description": "IPv6を無効にします。"
+        },
+        "WPFTweaksDisableBGapps": {
+            "Content": "バックグラウンドアプリを無効にする",
+            "Description": "すべての Microsoft Store アプリがバックグラウンドで実行されるのを無効にします。これは、Windows 11 以降、個別に実行する必要があります。"
+        },
+        "WPFTweaksDisableFSO": {
+            "Content": "全画面最適化を無効にする",
+            "Description": "すべてのアプリケーションで FSO を無効にします。注: これにより、排他的フルスクリーンでのカラー管理が無効になります。"
+        },
+        "WPFToggleDarkMode": {
+            "Content": "Windows用のダークテーマ",
+            "Description": "ダークモードを有効/無効にします。"
+        },
+        "WPFToggleBingSearch": {
+            "Content": "スタート メニューの Bing 検索",
+            "Description": "有効にすると、Bing Web 検索結果がスタート メニューの検索に含まれます。"
+        },
+        "WPFToggleStandbyFix": {
+            "Content": "モダン スタンバイの修正",
+            "Description": "S0 スリープ中のネットワーク接続を無効にします。 S0 スリープ中にネットワーク接続がオンになると、最新のラップトップで過熱が発生する可能性があります"
+        },
+        "WPFToggleNumLock": {
+            "Content": "起動時のNum Lock",
+            "Description": "コンピューターの起動時に Num Lock キーの状態を切り替えます。"
+        },
+        "WPFToggleVerboseLogon": {
+            "Content": "ログオン時の詳細メッセージ",
+            "Description": "トラブルシューティングと診断のために、ログイン プロセス中に詳細なメッセージを表示します。"
+        },
+        "WPFToggleStartMenuRecommendations": {
+            "Content": "スタートメニューのおすすめ",
+            "Description": "無効にすると、スタート メニューに推奨事項が表示されなくなります。警告: これにより、副作用としてロック画面の Windows スポットライトも無効になります。"
+        },
+        "WPFToggleHideSettingsHome": {
+            "Content": "設定ホームページの削除",
+            "Description": "Windows 設定アプリのホームページを削除します。"
+        },
+        "WPFToggleMouseAcceleration": {
+            "Content": "マウスの加速",
+            "Description": "有効にすると、カーソルの移動は物理的なマウスの移動速度の影響を受けます。"
+        },
+        "WPFToggleStickyKeys": {
+            "Content": "スティッキーキー",
+            "Description": "有効にすると、スティッキー キーが有効になります。スティッキー キーは、一部のグラフィカル ユーザー インターフェイスのアクセシビリティ機能であり、身体障害を持つユーザーを支援したり、ユーザーが反復疲労損傷を軽減したりするのに役立ちます。"
+        },
+        "WPFToggleNewOutlook": {
+            "Content": "新しい展望",
+            "Description": "無効にすると、新しい Outlook トグルが削除され、新しい Outlook の移行が無効になり、従来の Outlook アプリケーションが使用されるようになります。"
+        },
+        "WPFToggleMultiplaneOverlay": {
+            "Content": "マルチプレーンオーバーレイを無効にする",
+            "Description": "マルチプレーン オーバーレイを無効にすると、グラフィック カードで問題が発生する場合があります。"
+        },
+        "WPFToggleHiddenFiles": {
+            "Content": "隠しファイルを表示",
+            "Description": "有効にすると、隠しファイルが表示されます。"
+        },
+        "WPFToggleShowExt": {
+            "Content": "ファイル拡張子を表示",
+            "Description": "有効にすると、ファイル拡張子 (.txt、.jpg など) が表示されます。"
+        },
+        "WPFToggleTaskbarSearch": {
+            "Content": "タスクバーの検索ボタン",
+            "Description": "有効にすると、検索ボタンがタスクバーに表示されます。"
+        },
+        "WPFToggleTaskView": {
+            "Content": "タスクバーのタスクビューボタン",
+            "Description": "有効にすると、タスクバーにタスクビューボタンが表示されます。"
+        },
+        "WPFToggleTaskbarAlignment": {
+            "Content": "タスクバー項目を中央に配置",
+            "Description": "[Windows 11] 有効にするとタスクバー項目が中央に表示され、有効にしない場合は左側にタスクバー項目が表示されます。"
+        },
+        "WPFToggleDetailedBSoD": {
+            "Content": "詳細な BSoD",
+            "Description": "有効にすると、詳細なブルー スクリーン (BSOD) と詳細情報が表示されます。"
+        },
+        "WPFToggleS3Sleep": {
+            "Content": "S3 スリープ",
+            "Description": "モダン スタンバイと S3 スリープを切り替えます。"
+        },
+        "WPFOOSUbutton": {
+            "Content": "OO シャットアップ 10 を実行"
+        },
+        "WPFchangedns": {
+            "Content": "DNS"
+        },
+        "WPFAddUltPerf": {
+            "Content": "究極のパフォーマンスプロファイルを追加してアクティブ化する"
+        },
+        "WPFRemoveUltPerf": {
+            "Content": "究極のパフォーマンス プロファイルを削除する"
+        },
+        "WPFTweaksDisableExplorerAutoDiscovery": {
+            "Content": "エクスプローラーの自動フォルダー検出を無効にする",
+            "Description": "Windows エクスプローラーは、フォルダーの内容に基づいてフォルダーの種類を自動的に推測しようとするため、ブラウジング エクスペリエンスが遅くなります。警告！ファイル エクスプローラーのグループ化が無効になります。"
+        },
+        "WPFToggleDisableCrossDeviceResume": {
+            "Content": "クロスデバイス履歴書",
+            "Description": "この調整は、Windows 11 24H2 以降の再開機能を制御します。これにより、モバイル デバイスからアクティビティを再開したり、その逆を行うことができます。"
+        }
+    },
+    "applications": {
+        "1password": {
+            "description": "1Password は、パスワードを安全に保存および管理できるパスワード マネージャーです。"
+        },
+        "7zip": {
+            "description": "7-Zip は、無料のオープンソース ファイル アーカイバ ユーティリティです。複数の圧縮形式をサポートしており、高い圧縮率を提供するため、ファイル圧縮の一般的な選択肢となっています。"
+        },
+        "adobe": {
+            "description": "Adobe Acrobat Reader は、PDF ドキュメントの表示、印刷、注釈付けに必要な機能を備えた無料の PDF ビューアです。"
+        },
+        "advancedip": {
+            "description": "Advanced IP Scanner は、高速で使いやすいネットワーク スキャナーです。 LAN ネットワークを分析し、接続されているデバイスに関する情報を提供するように設計されています。"
+        },
+        "affine": {
+            "description": "AFFiNE は、Notion に代わるオープンソースです。書いたり、描いたり、計画したりすることを一度に行います。デバイス間で同期するにはセルフホストします。"
+        },
+        "ai-as-workspace": {
+            "description": "複数のワークスペース、プラグイン、ローカルファースト設計を備えたワークスペース スタイルの AI チャット クライアント。オープンソース (BSD-3-Clause)。"
+        },
+        "aimp": {
+            "description": "AIMP は、さまざまなオーディオ形式、プレイリスト、カスタマイズ可能なユーザー インターフェイスをサポートする機能が豊富な音楽プレーヤーです。"
+        },
+        "alacritty": {
+            "description": "Alacritty は、高速、クロスプラットフォーム、GPU アクセラレーションのターミナル エミュレーターです。これはパフォーマンスを重視して設計されており、利用可能な中で最速のターミナル エミュレーターになることを目指しています。"
+        },
+        "anaconda3": {
+            "description": "Anaconda は、科学計算用の Python および R プログラミング言語のディストリビューションです。"
+        },
+        "angryipscanner": {
+            "description": "Angry IP Scanner は、オープンソースのクロスプラットフォームのネットワーク スキャナーです。これは、IP アドレスとポートをスキャンして、ネットワーク接続に関する情報を提供するために使用されます。"
+        },
+        "anki": {
+            "description": "Anki は、インテリジェントな間隔で繰り返して情報を記憶するのに役立つフラッシュカード アプリケーションです。"
+        },
+        "anydesk": {
+            "description": "AnyDesk は、ユーザーがコンピュータにリモートでアクセスして制御できるようにするリモート デスクトップ ソフトウェアです。高速接続と低遅延で知られています。"
+        },
+        "anythingllm": {
+            "description": "ドキュメントとのチャット (RAG) およびエージェント ワークフロー用のデスクトップ AI アプリケーション。 Windows インストーラーとオープンソース コードベースを提供します。"
+        },
+        "audacity": {
+            "description": "Audacity は、強力な録音および編集機能で知られる無料のオープンソース オーディオ編集ソフトウェアです。"
+        },
+        "autoruns": {
+            "description": "このユーティリティは、システムの起動時またはログイン時に実行するように構成されているプログラムを表示します。"
+        },
+        "rdcman": {
+            "description": "RDCMan は複数のリモート デスクトップ接続を管理します。自動チェックイン システムやデータ センターなど、各マシンに定期的にアクセスする必要があるサーバー ラボの管理に役立ちます。"
+        },
+        "autohotkey": {
+            "description": "AutoHotkey は、ユーザーがカスタム自動化スクリプトとマクロを作成できるようにする Windows 用のスクリプト言語です。繰り返しのタスクを自動化したり、キーボード ショートカットをカスタマイズしたりするためによく使用されます。"
+        },
+        "autoit": {
+            "description": "キーストローク、マウス操作、ウィンドウ/コントロールの対話を自動化するために使用される Windows GUI 自動化スクリプト ツール (フリーウェア)。"
+        },
+        "azuredatastudio": {
+            "description": "Azure Data Studio は、Windows、macOS、Linux から SQL Server、Azure SQL DB、SQL DW を操作できるようにするデータ管理ツールです。"
+        },
+        "barrier": {
+            "description": "Barrier は、オープンソース ソフトウェア KVM (キーボード、ビデオ、マウス スイッチ) です。これにより、ユーザーは、オペレーティング システムが異なる場合でも、単一のキーボードとマウスで複数のコンピュータを制御できます。"
+        },
+        "bat": {
+            "description": "Bat は、構文の強調表示を備えた cat コマンドのクローンです。これは、ファイルを表示および連結するための従来の cat コマンドに代わる、ユーザーフレンドリーで機能が豊富な代替手段を提供します。"
+        },
+        "beeper": {
+            "description": "すべてのチャットを 1 つのアプリで。"
+        },
+        "bitwarden": {
+            "description": "Bitwarden は、オープンソースのパスワード管理ソリューションです。これにより、ユーザーは複数のデバイスからアクセスできる安全な暗号化された保管庫にパスワードを保存および管理できます。"
+        },
+        "bleachbit": {
+            "description": "システムをクリーンアップし、ディスク領域を解放します。"
+        },
+        "blender": {
+            "description": "Blender は、モデリング、スカルプト、アニメーション、レンダリング ツールを提供する強力なオープンソース 3D 作成スイートです。"
+        },
+        "brave": {
+            "description": "Brave はプライバシーを重視した Web ブラウザで、広告やトラッカーをブロックし、より高速で安全なブラウジング エクスペリエンスを提供します。"
+        },
+        "bulkcrapuninstaller": {
+            "description": "Bulk Crap Uninstaller は、Windows 用の無料のオープンソース アンインストーラー ユーティリティです。複数のアプリケーションを一度にアンインストールすることで、ユーザーが不要なプログラムを削除し、システムをクリーンアップするのに役立ちます。"
+        },
+        "bulkrenameutility": {
+            "description": "Bulk Rename Utility を使用すると、検索置換、文字の位置、フィールド、シーケンス、正規表現、EXIF データなどに基づいて、ファイルやフォルダーの名前を再帰的に簡単に変更できます。"
+        },
+        "buzz": {
+            "description": "Whisper を利用したオフライン音声文字起こしおよび翻訳デスクトップ アプリ。Windows 用にパッケージ化されており、WinGet 経由で入手できます。"
+        },
+        "AdvancedRenamer": {
+            "description": "Advanced Renamer は、複数のファイルやフォルダーの名前を一度に変更するためのプログラムです。名前変更メソッドを構成すると、名前をさまざまな方法で操作できます。"
+        },
+        "citrixworkspaceapp": {
+            "description": "あらゆるデバイス (Windows、macOS、Linux、iOS、Android) またはブラウザーから仮想デスクトップ、SaaS、Web、Windows アプリに瞬時にアクセスできる、安全な統合クライアント アプリケーションです。"
+        },
+        "calibre": {
+            "description": "Calibre は、強力で使いやすい電子書籍マネージャー、ビューア、コンバーターです。"
+        },
+        "carnac": {
+            "description": "Carnac は、Windows 用のキーストローク ビジュアライザーです。キーストロークをオーバーレイで表示するため、プレゼンテーション、チュートリアル、ライブ デモンストレーションに役立ちます。"
+        },
+        "cemu": {
+            "description": "Cemu は、PC 上で Wii U アプリケーションをエミュレートするための非常に実験的なソフトウェアです。"
+        },
+        "chatgpt": {
+            "description": "ChatGPT デスクトップ アプリは、OpenAI の会話型 AI アシスタントに直接アクセスして、執筆、分析、生産性タスクを実行できます。"
+        },
+        "chatterino": {
+            "description": "Chatterino は、ストリーミング体験を向上させるためのクリーンでカスタマイズ可能なインターフェイスを提供する Twitch チャット用のチャット クライアントです。"
+        },
+        "chrome": {
+            "description": "Google Chrome は、速度、シンプルさ、Google サービスとのシームレスな統合で知られる、広く使用されている Web ブラウザです。"
+        },
+        "chromium": {
+            "description": "Chromium は、Chrome を含むさまざまな Web ブラウザの基盤として機能するオープンソース プロジェクトです。"
+        },
+        "claude": {
+            "description": "Anthropic の Windows 用 Claude デスクトップ アプリケーション。AI 支援による集中的な作業とチャット向けに設計されています。"
+        },
+        "claude-code": {
+            "description": "Anthropic のターミナル/IDE ワークフロー用のエージェント コーディング ツール。Windows で利用可能で、WinGet 経由で配布されます。"
+        },
+        "clementine": {
+            "description": "Clementine は、さまざまなオーディオ形式とオンライン ラジオ サービスをサポートする、最新の音楽プレーヤーおよびライブラリ オーガナイザーです。"
+        },
+        "clink": {
+            "description": "Clink は、Bash と互換性のある強力なコマンド ライン インターフェイスです (Windows 用の CLI 拡張機能、構文の強調表示や履歴の改善などの機能が追加されています)。"
+        },
+        "clonehero": {
+            "description": "Clone Hero は、5 または 6 ボタンのギター コントローラーでプレイできる無料のリズム ゲームです。"
+        },
+        "cmake": {
+            "description": "CMake は、ソフトウェアを構築、テスト、パッケージ化するために設計されたオープンソースのクロスプラットフォーム ツール ファミリです。"
+        },
+        "copyq": {
+            "description": "CopyQ は、クリップボード履歴を保存、編集、取得できる高度な機能を備えたクリップボード マネージャーです。"
+        },
+        "cpuz": {
+            "description": "CPU-Z は、Windows 用のシステム監視および診断ツールです。 CPU、メモリ、マザーボードなど、コンピュータのハードウェア コンポーネントに関する詳細情報が提供されます。"
+        },
+        "crystaldiskinfo": {
+            "description": "Crystal Disk Info は、ハード ドライブのステータスとパフォーマンスに関する情報を提供するディスク健全性監視ツールです。これは、ユーザーが潜在的な問題を予測し、ドライブの状態を監視するのに役立ちます。"
+        },
+        "capframex": {
+            "description": "Intel の PresentMon に基づくフレームタイムのキャプチャおよび分析ツール。 Rivatuner Statistics Server によって提供されるオーバーレイ。"
+        },
+        "crystaldiskmark": {
+            "description": "Crystal Disk Mark は、ストレージ デバイスの読み取りおよび書き込み速度を測定するディスク ベンチマーク ツールです。これは、ユーザーがハードドライブと SSD のパフォーマンスを評価するのに役立ちます。"
+        },
+        "cursor": {
+            "description": "AI を活用したコード エディター (VS Code ベース) は、エージェント コーディング機能と開発ワークフローのための統合された AI 支援を備えています。"
+        },
+        "darktable": {
+            "description": "オープンソースの写真編集ツール。直感的なインターフェイス、高度な編集機能、シームレスな画像補正のための非破壊ワークフローを提供します。"
+        },
+        "DaxStudio": {
+            "description": "DAX (Data Analysis eXpressions) Studio は、Microsoft 表形式モデルに対して DAX クエリを実行および分析するための究極のツールです。"
+        },
+        "ddu": {
+            "description": "ディスプレイ ドライバー アンインストーラー (DDU) は、NVIDIA、AMD、Intel のグラフィック ドライバーを完全にアンインストールするためのツールです。これは、グラフィックス ドライバー関連の問題のトラブルシューティングに役立ちます。"
+        },
+        "deepl": {
+            "description": "DeepL デスクトップ翻訳および Windows 用ライティング アシスタント (ショートカットやアプリ内のライティング改善機能を含む)。"
+        },
+        "deluge": {
+            "description": "Deluge は、無料のオープンソース BitTorrent クライアントです。ユーザーフレンドリーなインターフェイス、プラグインのサポート、トレントをリモートで管理する機能が特徴です。"
+        },
+        "devtoys": {
+            "description": "DevToys は、Windows 用の開発関連のユーティリティとツールのコレクションです。これには、開発者向けのファイル管理、コードのフォーマット、生産性向上のためのツールが含まれています。"
+        },
+        "digikam": {
+            "description": "digiKam は、写真を整理、編集、共有する機能を備えた高度なオープンソース写真管理ソフトウェアです。"
+        },
+        "discord": {
+            "description": "Discord は、音声、ビデオ、テキスト チャットを備えた人気のコミュニケーション プラットフォームで、ゲーマー向けに設計されていますが、幅広いコミュニティで使用されています。"
+        },
+        "dismtools": {
+            "description": "DISMTools は、DISM ユーティリティ用の高速でカスタマイズ可能な GUI であり、Windows 7 以降の Windows イメージをサポートします。任意のドライブへのインストールを処理し、プロジェクトのサポートを提供し、ユーザーがカラー モード、言語、DISM バージョンなどの設定を調整できるようにします。ネイティブ DISM とマネージド DISM API の両方を利用します。"
+        },
+        "ntlite": {
+            "description": "更新プログラム、ドライバーを統合し、Windows とアプリケーションのセットアップを自動化し、Windows 導入プロセスを高速化して、次回に備えてすべてを設定します。"
+        },
+        "ditto": {
+            "description": "同様に、標準の Windows クリップボードの拡張機能です。"
+        },
+        "dockerdesktop": {
+            "description": "Docker Desktop は、コンテナ化されたアプリケーションの開発と展開のための強力なツールです。"
+        },
+        "dotnet3": {
+            "description": ".NET Desktop Runtime 3.1 は、.NET Core 3.1 で開発されたアプリケーションを実行するために必要なランタイム環境です。"
+        },
+        "dotnet5": {
+            "description": ".NET Desktop Runtime 5は、.NET 5で開発されたアプリケーションを実行するために必要なランタイム環境です。"
+        },
+        "dotnet6": {
+            "description": ".NET Desktop Runtime 6 は、.NET 6 で開発されたアプリケーションを実行するために必要なランタイム環境です。"
+        },
+        "dotnet7": {
+            "description": ".NET Desktop Runtime 7は、.NET 7で開発されたアプリケーションを実行するために必要なランタイム環境です。"
+        },
+        "dotnet8": {
+            "description": ".NET Desktop Runtime 8は、.NET 8で開発されたアプリケーションを実行するために必要なランタイム環境です。"
+        },
+        "dotnet9": {
+            "description": ".NET Desktop Runtime 9は、.NET 9で開発されたアプリケーションを実行するために必要なランタイム環境です。"
+        },
+        "dotnet10": {
+            "description": ".NET Desktop Runtime 10は、.NET 10で開発されたアプリケーションを実行するために必要なランタイム環境です。"
+        },
+        "dmt": {
+            "description": "デュアル モニター ツール (DMT) は、複数のモニターの処理をカスタマイズできる FOSS アプリです。フルスクリーンのゲームや、セカンド モニターの処理が不十分なアプリに役立ち、ワークフローを改善できます。"
+        },
+        "duplicati": {
+            "description": "Duplicati は、暗号化、圧縮、増分バックアップをサポートするオープンソースのバックアップ ソリューションです。データをクラウド ストレージ サービスに安全に保存するように設計されています。"
+        },
+        "eaapp": {
+            "description": "EA アプリは、エレクトロニック アーツのゲームにアクセスしてプレイするためのプラットフォームです。"
+        },
+        "eartrumpet": {
+            "description": "EarTrumpet は Windows 用のオーディオ コントロール アプリで、サウンド設定を管理するためのシンプルで直感的なインターフェイスを提供します。"
+        },
+        "edge": {
+            "description": "Microsoft Edge は、Chromium 上に構築された最新の Web ブラウザーであり、パフォーマンス、セキュリティ、および Microsoft サービスとの統合を提供します。"
+        },
+        "efibooteditor": {
+            "description": "EFI Boot Editor は、システム上の EFI/UEFI ブート エントリを管理するためのツールです。コンピューターのブート構成をカスタマイズできます。"
+        },
+        "emulationstation": {
+            "description": "Emulation Station は、すべてのお気に入りのゲームに 1 か所からアクセスできる、グラフィカルでテーマのあるエミュレータ フロントエンドです。"
+        },
+        "enteauth": {
+            "description": "Ente Auth は、無料のクロスプラットフォームのエンドツーエンド暗号化認証アプリです。"
+        },
+        "epicgames": {
+            "description": "Epic Games Launcher は、Epic Games ストアのゲームにアクセスしてプレイするためのクライアントです。"
+        },
+        "esearch": {
+            "description": "Everything Search は、Windows 用の高速かつ効率的なファイル検索ユーティリティです。"
+        },
+        "espanso": {
+            "description": "Rust で書かれたクロスプラットフォームかつオープンソースの Text Expander。"
+        },
+        "ffmpeg": {
+            "description": "FFmpeg Batch AV Converter はユニバーサル オーディオおよびビデオ エンコーダで、ドラッグ アンド ドロップや進行状況情報を備えた便利な GUI でマウスを数回クリックするだけで、ffmpeg コマンド ラインの可能性を最大限に活用できます。"
+        },
+        "falkon": {
+            "description": "Falkon は、ユーザーのプライバシーと効率性を重視した軽量で高速な Web ブラウザーです。"
+        },
+        "fastfetch": {
+            "description": "Fastfetch は、システム情報を取得し、それらをきれいな方法で表示するための neofetch に似たツールです。"
+        },
+        "ferdium": {
+            "description": "Ferdium は、複数のメッセージング サービスを 1 つのアプリに組み合わせて管理を容易にするメッセージング アプリケーションです。"
+        },
+        "ffmpeg-full": {
+            "description": "FFmpeg は、ユーザーが幅広いコーデックと形式を使用してオーディオ ファイルとビデオ ファイルを変換、編集、ストリーミングできるようにする強力なマルチメディア処理ツールです。 |注: FFmpeg は、winget を使用してアンインストールすることはできません。"
+        },
+        "fileconverter": {
+            "description": "ファイル コンバーターは、Windows エクスプローラーのコンテキスト メニューを使用して 1 つまたは複数のファイルを変換および圧縮できる非常にシンプルなツールです。"
+        },
+        "files": {
+            "description": "代替ファイルエクスプローラー。"
+        },
+        "firealpaca": {
+            "description": "Fire Alpaca は、幅広い描画ツールとユーザーフレンドリーなインターフェイスを提供する無料のデジタル ペイント ソフトウェアです。"
+        },
+        "firefox": {
+            "description": "Mozilla Firefox は、カスタマイズ オプション、プライバシー機能、拡張機能で知られるオープンソース Web ブラウザです。"
+        },
+        "firefoxesr": {
+            "description": "Mozilla Firefox は、カスタマイズ オプション、プライバシー機能、拡張機能で知られるオープンソース Web ブラウザです。 Firefox ESR (延長サポート リリース) は、42 週間ごとにメジャー アップデートを受け取り、必要に応じてクラッシュ修正、セキュリティ修正、ポリシー更新などのマイナー アップデートを受け取りますが、少なくとも 4 週間ごとに受け取ります。"
+        },
+        "flameshot": {
+            "description": "Flameshot は強力でありながら使いやすいスクリーンショット ソフトウェアであり、注釈と編集機能を提供します。"
+        },
+        "lightshot": {
+            "description": "Ligthshot は、使いやすい軽量のスクリーンショット ソフトウェア ツールです。オプションで、さまざまなツールを使用してスクリーンショットを編集したり、インターネット経由で共有したり、ディスクに保存したり、利用可能なオプションをカスタマイズしたりできます。"
+        },
+        "floorp": {
+            "description": "Floorp は、シンプルで高速なブラウジング エクスペリエンスを提供することを目的としたオープンソースの Web ブラウザ プロジェクトです。"
+        },
+        "flow": {
+            "description": "ファイル、フォルダー、ブックマーク、Web サイトなどを検索、管理、起動する Windows 用のキーストローク ランチャー。"
+        },
+        "flux": {
+            "description": "f.lux は、夜間使用時の目の疲れを軽減するために画面の色温度を調整します。"
+        },
+        "foobar": {
+            "description": "foob​​ar2000 は、モジュール式のデザインと高度な機能で知られる、高度にカスタマイズ可能で拡張可能な Windows 用の音楽プレーヤーです。"
+        },
+        "foxpdfeditor": {
+            "description": "Foxit PDF Editor は、使い慣れたリボン スタイルのインターフェイスを備えた機能豊富な PDF エディターおよびビューアです。"
+        },
+        "foxpdfreader": {
+            "description": "Foxit PDF Reader は、使い慣れたリボン スタイルのインターフェイスを備えた無料の PDF ビューアです。"
+        },
+        "freecad": {
+            "description": "FreeCAD はパラメトリック 3D CAD モデラーであり、柔軟性と拡張性に重点を置き、製品設計およびエンジニアリング作業向けに設計されています。"
+        },
+        "fxsound": {
+            "description": "FxSound は、音質、音量、低音を向上させるための無料のオープンソース ソフトウェアです。カスタマイズされたオーディオ用のイコライザー、エフェクト、プリセットが含まれます。"
+        },
+        "fzf": {
+            "description": "コマンドラインのファジーファインダー。"
+        },
+        "geforcenow": {
+            "description": "GeForce NOW は、デバイスで高品質の PC ゲームをプレイできるクラウド ゲーム サービスです。"
+        },
+        "gimp": {
+            "description": "GIMP は、写真レタッチ、画像編集、画像合成などのタスクに使用される多用途のオープンソース ラスター グラフィック エディターです。"
+        },
+        "git": {
+            "description": "Git は、ソフトウェア開発中にソース コードの変更を追跡するために広く使用されている分散バージョン管理システムです。"
+        },
+        "gitbutler": {
+            "description": "既存のワークフロー上で同時ブランチを行うための Git クライアント。"
+        },
+        "gitextensions": {
+            "description": "Git Extensions は Git のグラフィカル ユーザー インターフェイスであり、ソース コード管理を容易にする追加機能を提供します。"
+        },
+        "githubcli": {
+            "description": "GitHub CLI は、ターミナルから GitHub を直接操作することを簡素化するコマンドライン ツールです。"
+        },
+        "github-copilot-cli": {
+            "description": "コマンド ラインの GitHub Copilot エクスペリエンス: コマンドと開発タスクに対する自然言語支援。 WinGet 経由で配布されます。"
+        },
+        "githubdesktop": {
+            "description": "GitHub Desktop は、使いやすいインターフェイスで GitHub リポジトリでのコラボレーションを簡素化するビジュアル Git クライアントです。"
+        },
+        "gitkrakenclient": {
+            "description": "GitKraken Client は、Axosoft の強力なビジュアル Git クライアントで、あらゆるホスティング環境上のすべての Git リポジトリで動作します。"
+        },
+        "glaryutilities": {
+            "description": "Glary Utilities は、Windows 用の包括的なシステム最適化およびメンテナンス ツールです。"
+        },
+        "godotengine": {
+            "description": "Godot Engine は、使いやすさと柔軟性に重点を置いた、無料のオープンソースの 2D および 3D ゲーム エンジンです。"
+        },
+        "gog": {
+            "description": "GOG Galaxy は、DRM フリーのゲームや追加コンテンツなどを提供するゲーム クライアントです。"
+        },
+        "gitify": {
+            "description": "メニュー バーの GitHub 通知。"
+        },
+        "golang": {
+            "description": "Go (または Golang) は、単純さ、信頼性、効率性を目的に設計された、静的に型指定され、コンパイルされたプログラミング言語です。"
+        },
+        "googledrive": {
+            "description": "デバイス間でのファイルの同期はすべて Google アカウントに関連付けられています。"
+        },
+        "gpt4all": {
+            "description": "プライバシーを重視してローカルで LLM を実行するオープンソースのデスクトップ アプリケーション (MIT ライセンスのコードベース)。"
+        },
+        "gpuz": {
+            "description": "GPU-Z は、グラフィックス カードと GPU に関する詳細情報を提供します。"
+        },
+        "greenshot": {
+            "description": "Greenshot は、組み込みの画像エディターとカスタマイズ可能なキャプチャ オプションを備えた軽量のスクリーンショット ソフトウェア ツールです。"
+        },
+        "gsudo": {
+            "description": "Gsudo は Windows 用の sudo 実装であり、昇格された特権の実行を可能にします。"
+        },
+        "handbrake": {
+            "description": "HandBrake はオープンソースのビデオ トランスコーダで、ビデオをほぼすべての形式から広くサポートされているコーデックに変換できます。"
+        },
+        "harmonoid": {
+            "description": "音楽ライブラリを再生および管理します。見た目も美しく、ジューシーです。プレイリスト、ビジュアル、同期された歌詞、ピッチシフト、ボリュームブーストなど。"
+        },
+        "heidisql": {
+            "description": "HeidiSQL は、MySQL、MariaDB、Microsoft SQL Server、および PostgreSQL データベース用の強力で使いやすいクライアントです。データベースの管理と開発のためのツールを提供します。"
+        },
+        "helix": {
+            "description": "Helix は、Rust で構築された neovim の代替品です。"
+        },
+        "heroiclauncher": {
+            "description": "Heroic Games Launcher は、Epic Games Store 用のオープンソースの代替ゲーム ランチャーです。"
+        },
+        "hexchat": {
+            "description": "HexChat は、コミュニケーションを容易にするグラフィカル インターフェイスを備えた、無料のオープンソース IRC (インターネット リレー チャット) クライアントです。"
+        },
+        "hwinfo": {
+            "description": "HWiNFO は、Windows の包括的なハードウェア情報と診断を提供します。"
+        },
+        "hwmonitor": {
+            "description": "HWMonitor は、PC システムの主要なヘルス センサーを読み取るハードウェア監視プログラムです。"
+        },
+        "imhex": {
+            "description": "リバース エンジニアと開発者向けの最新の機能豊富な Hex エディター。"
+        },
+        "imageglass": {
+            "description": "ImageGlass は、さまざまな画像形式をサポートし、シンプルさと速度に重点を置いた多用途の画像ビューアです。"
+        },
+        "imgburn": {
+            "description": "ImgBurn は、ディスク イメージの作成と書き込みのための高度な機能を備えた軽量の CD、DVD、HD-DVD、および Blu-ray 書き込みアプリケーションです。"
+        },
+        "inkscape": {
+            "description": "Inkscape は、イラスト、アイコン、ロゴなどのタスクに適した強力なオープンソースのベクター グラフィック エディターです。"
+        },
+        "itch": {
+            "description": "Itch.io は、インディーズ ゲームとクリエイティブ プロジェクトのためのデジタル配信プラットフォームです。"
+        },
+        "itunes": {
+            "description": "iTunes は、Apple Inc. によって開発されたメディア プレーヤー、メディア ライブラリ、およびオンライン ラジオ放送アプリケーションです。"
+        },
+        "jami": {
+            "description": "Jami は、音声およびビデオ通話、メッセージング、ファイル共有を提供する、安全でプライバシーを重視した通信プラットフォームです。"
+        },
+        "jan": {
+            "description": "コンピューター上で実行されるオープンソースの ChatGPT 代替品 (オフラインファーストのデスクトップ AI アシスタント/ローカル モデル ランナー)。"
+        },
+        "java8": {
+            "description": "Amazon Corretto は、マルチプラットフォームで本番環境に対応した、Open Java Development Kit (OpenJDK) の無料ディストリビューションです。"
+        },
+        "java11": {
+            "description": "Amazon Corretto は、マルチプラットフォームで本番環境に対応した、Open Java Development Kit (OpenJDK) の無料ディストリビューションです。"
+        },
+        "java17": {
+            "description": "Amazon Corretto は、マルチプラットフォームで本番環境に対応した、Open Java Development Kit (OpenJDK) の無料ディストリビューションです。"
+        },
+        "java21": {
+            "description": "Amazon Corretto は、マルチプラットフォームで本番環境に対応した、Open Java Development Kit (OpenJDK) の無料ディストリビューションです。"
+        },
+        "java25": {
+            "description": "Amazon Corretto は、マルチプラットフォームで本番環境に対応した、Open Java Development Kit (OpenJDK) の無料ディストリビューションです。"
+        },
+        "jdownloader": {
+            "description": "JDownloader は、さまざまなファイル ホスティング サービスをサポートする機能豊富なダウンロード マネージャーです。"
+        },
+        "jellyfinmediaplayer": {
+            "description": "Jellyfin Media Player は、Jellyfin メディア サーバーのクライアント アプリケーションであり、メディア ライブラリへのアクセスを提供します。"
+        },
+        "jellyfinserver": {
+            "description": "Jellyfin Server は、メディア ライブラリを整理してストリーミングできるオープンソースのメディア サーバー ソフトウェアです。"
+        },
+        "jetbrains": {
+            "description": "Jetbrains Toolbox は、JetBrains 開発者ツールを簡単にインストールおよび管理するためのプラットフォームです。"
+        },
+        "joplin": {
+            "description": "Joplin は、同期機能を備えたオープンソースのメモ作成および To Do アプリケーションです。"
+        },
+        "jpegview": {
+            "description": "JPEGView は、最小限の GUI を備えた、JPEG、BMP、PNG、WEBP、TGA、GIF、JXL、HEIC、HEIF、AVIF、および TIFF 画像用の無駄のない高速かつ高度に構成可能なビューア/エディタです。"
+        },
+        "kdeconnect": {
+            "description": "KDE Con​​nect により、KDE ​​デスクトップとモバイル デバイス間のシームレスな統合が可能になります。"
+        },
+        "kdenlive": {
+            "description": "Kdenlive は、プロ品質のビデオを作成および編集するための強力な機能を備えたオープンソースのビデオ編集ソフトウェアです。"
+        },
+        "keepass": {
+            "description": "KeePassXC is a cross-platform, open-source password manager with strong encryption features."
+        },
+        "klite": {
+            "description": "K-Lite Codec Pack Standard は、オーディオおよびビデオ コーデックと関連ツールのコレクションであり、メディア再生に不可欠なコンポーネントを提供します。"
+        },
+        "kodi": {
+            "description": "Kodi は、ほとんどのビデオ、音楽、ポッドキャスト、その他のデジタル メディア ファイルを再生および表示できるオープンソースのメディア センター アプリケーションです。"
+        },
+        "krita": {
+            "description": "Krita は、強力なオープンソース ペイント アプリケーションです。コンセプト アーティスト、イラストレーター、マットおよびテクスチャ アーティスト、VFX 業界向けに設計されています。"
+        },
+        "lazygit": {
+            "description": "git コマンド用のシンプルなターミナル UI。"
+        },
+        "libreoffice": {
+            "description": "LibreOffice は、他の主要なオフィス スイートと互換性のある強力な無料のオフィス スイートです。"
+        },
+        "librewolf": {
+            "description": "LibreWolf は、Firefox をベースとし、プライバシーとセキュリティがさらに強化されたプライバシー重視の Web ブラウザです。"
+        },
+        "linkshellextension": {
+            "description": "Link Shell Extension (LSE) は、ハードリンク、ジャンクション、ボリューム マウントポイント、シンボリック リンクの作成、ハードリンクまたはシンボリック リンクを利用するフォルダー クローン作成プロセス、およびジャンクション、シンボリック リンク、およびハードリンクを処理するコピー プロセスを提供します。 LSE は、その名前が示すように、シェル拡張機能として実装されており、Windows エクスプローラーまたは同様のファイル/フォルダー マネージャーからアクセスされます。"
+        },
+        "linphone": {
+            "description": "Linphone は、オープンソースの Voice over IP (音声通話やビデオ通話、メッセージングなどを可能にする VoIP サービス) です。"
+        },
+        "livelywallpaper": {
+            "description": "ユーザーがアニメーションのデスクトップ壁紙やスクリーンセーバーを設定できる無料のオープンソース ソフトウェア。"
+        },
+        "lm-studio": {
+            "description": "組み込みのチャット UI とローカル推論ツールを備えたデスクトップ アプリ。マシン上でローカル LLM を検出、ダウンロード、実行します。"
+        },
+        "localsend": {
+            "description": "AirDrop に代わるオープンソースのクロスプラットフォーム。"
+        },
+        "lockhunter": {
+            "description": "LockHunter は、不明な何かによってブロックされたファイルを削除する無料のツールです。"
+        },
+        "logseq": {
+            "description": "Logseq は、デジタル思考を持つ人向けに設計された、多用途のナレッジ管理およびメモ作成アプリケーションです。 Logseq は、アイデアの相互接続性に重点を置き、階層的なアウトラインと双方向リンクの組み合わせを通じて、ユーザーが自分の考えをシームレスに整理できるようにします。構造化コンテンツと非構造化コンテンツの両方をサポートし、ユーザーが進化するアイデアや洞察に適応するパーソナライズされたナレッジ グラフを作成できるようにします。"
+        },
+        "logitechghub": {
+            "description": "Logitech ゲーム周辺機器 (マウス、キーボード、ヘッドセット、照明プロファイルなど) を管理するための公式ソフトウェア。"
+        },
+        "malwarebytes": {
+            "description": "Malwarebytes は、脅威に対するリアルタイムの保護を提供するマルウェア対策ソフトウェアです。"
+        },
+        "masscode": {
+            "description": "MassCode は、開発者向けの高速かつ効率的なオープンソース コード スニペット マネージャーです。"
+        },
+        "matrix": {
+            "description": "Element は Matrix のクライアントです。安全な分散型通信のためのオープン ネットワーク。"
+        },
+        "meld": {
+            "description": "Meld は、ファイルとディレクトリの視覚的な差分およびマージ ツールです。"
+        },
+        "microsoft-aishell": {
+            "description": "コマンドラインの生産性を高めるために AI 支援プロバイダー (「エージェント」) に接続する CLI シェル。 WinGet 経由で配布されます。"
+        },
+        "microsoft-copilot": {
+            "description": "Windows 用 Microsoft Copilot デスクトップ アプリ (コンシューマ Copilot)。Microsoft Store 経由で配布され、通常はストア ID を介してインストールされます。"
+        },
+        "ModernFlyouts": {
+            "description": "オープンソースの最新の Fluent Design ベースの Windows 用フライアウト セット。"
+        },
+        "monitorian": {
+            "description": "Monitorian は、Windows 上でモニターの明るさとコントラストを調整するためのユーティリティです。"
+        },
+        "moonlight": {
+            "description": "Moonlight/GameStream クライアントを使用すると、ローカル ネットワーク経由で PC ゲームを他のデバイスにストリーミングできます。"
+        },
+        "Motrix": {
+            "description": "フル機能のダウンロード マネージャー。"
+        },
+        "mpchc": {
+            "description": "Media Player Classic - Home Cinema (MPC-HC) は、Windows 用の無料のオープンソース ビデオおよびオーディオ プレーヤーです。 MPC-HC はオリジナルの Guliverkli プロジェクトに基づいており、多くの追加機能とバグ修正が含まれています。"
+        },
+        "mremoteng": {
+            "description": "mRemoteNG は、無料のオープンソースのリモート接続マネージャーです。これにより、単一のインターフェイスで複数のリモート セッションを表示および管理できます。"
+        },
+        "msedgeredirect": {
+            "description": "ニュース、検索、ウィジェット、天気などをデフォルトのブラウザにリダイレクトするツール。"
+        },
+        "msiafterburner": {
+            "description": "MSI Afterburner は、高度な機能を備えたグラフィックス カード オーバークロック ユーティリティです。"
+        },
+        "mullvadvpn": {
+            "description": "Mullvad VPN サービス用の VPN クライアント ソフトウェアです。"
+        },
+        "BorderlessGaming": {
+            "description": "境界のないウィンドウでお気に入りのゲームをプレイします。時間のかかる Alt-Tab キーを使用する必要はもうありません。"
+        },
+        "EqualizerAPO": {
+            "description": "イコライザー APO は、Windows 用のパラメトリック / グラフィック イコライザーです。"
+        },
+        "CompactGUI": {
+            "description": "Windows 10/11 APIを使用してアクティブなゲームとプログラムを透過的に圧縮します"
+        },
+        "ExifCleaner": {
+            "description": "画像、ビデオ、PDF、その他のファイルからメタデータをクリーンアップするデスクトップ アプリ。"
+        },
+        "mullvadbrowser": {
+            "description": "Mullvad Browser はプライバシーを重視した Web ブラウザであり、Tor プロジェクトと提携して開発されました。"
+        },
+        "musescore": {
+            "description": "無料で使いやすい楽譜作成ソフトウェア MuseScore を使用して、美しい楽譜を作成、再生、印刷します。"
+        },
+        "musicbee": {
+            "description": "MusicBee は、さまざまなオーディオ形式をサポートするカスタマイズ可能な音楽プレーヤーです。統合検索機能、タグ編集などの機能が含まれています。"
+        },
+        "mp3tag": {
+            "description": "Mp3tag は、一般的なオーディオ形式のメタデータを編集するための強力かつ使いやすいツールです。"
+        },
+        "tagscanner": {
+            "description": "TagScanner は、音楽コレクションを整理および管理するための強力なツールです。"
+        },
+        "nanazip": {
+            "description": "NanaZip は、高速かつ効率的なファイル圧縮および解凍ツールです。"
+        },
+        "netbird": {
+            "description": "NetBird は、セルフホスト型サーバーに接続できる、TailScale に相当するオープンソースの代替手段です。"
+        },
+        "naps2": {
+            "description": "NAPS2 は、電子ドキュメントの作成プロセスを簡素化するドキュメント スキャン アプリケーションです。"
+        },
+        "neofetchwin": {
+            "description": "Neofetch は、システム情報を視覚的に魅力的な方法で表示するためのコマンド ライン ユーティリティです。"
+        },
+        "neovim": {
+            "description": "Neovim は拡張性の高いテキスト エディタであり、オリジナルの Vim エディタを改良したものです。"
+        },
+        "nextclouddesktop": {
+            "description": "Nextcloud Desktop は、Nextcloud ファイル同期および共有プラットフォームの公式デスクトップ クライアントです。"
+        },
+        "nglide": {
+            "description": "nGlide は 3Dfx Voodoo Glide ラッパーです。 3Dfx Voodoo グラフィック カードを必要とせずに、最新のグラフィック カードで Glide API を使用するゲームをプレイできるようになります。"
+        },
+        "nmap": {
+            "description": "Nmap (ネットワーク マッパー) は、ネットワーク探索とセキュリティ監査のためのオープンソース ツールです。ネットワーク上のデバイスを検出し、そのポートとサービスに関する情報を提供します。"
+        },
+        "nodejs": {
+            "description": "NodeJS は、サーバーサイドおよびネットワーク アプリケーションを構築するための Chrome の V8 JavaScript エンジン上に構築された JavaScript ランタイムです。"
+        },
+        "nodejslts": {
+            "description": "NodeJS LTS は、安定した信頼性の高いサーバーサイド JavaScript 開発のための長期サポート リリースを提供します。"
+        },
+        "nomacs": {
+            "description": "Nomacs は、複数のプラットフォームをサポートする無料のオープンソース画像ビューアです。基本的な画像編集機能を備えており、さまざまな画像形式をサポートしています。"
+        },
+        "notepadplus": {
+            "description": "Notepad++ は、無料のオープンソース コード エディターであり、複数の言語をサポートするメモ帳の代替品です。"
+        },
+        "nuget": {
+            "description": "NuGet は .NET Framework のパッケージ マネージャーであり、開発者が .NET アプリケーションのライブラリを管理および共有できるようにします。"
+        },
+        "nushell": {
+            "description": "Nushell は、最新のハードウェアとシステムを活用して、強力で表現力豊かな、高速なエクスペリエンスを提供する新しいシェルです。"
+        },
+        "nvclean": {
+            "description": "NVCleanstall は、NVIDIA ドライバーのインストールをカスタマイズするために設計されたツールで、上級ユーザーがインストール プロセスのさまざまな側面を制御できるようにします。"
+        },
+        "nvm": {
+            "description": "Windows 用の Node Version Manager (NVM) を使用すると、複数の Node.js バージョンを簡単に切り替えることができます。"
+        },
+        "obs": {
+            "description": "OBS Studio は、ビデオ録画とライブ ストリーミング用の無料のオープンソース ソフトウェアです。リアルタイムのビデオ/オーディオのキャプチャとミキシングをサポートしているため、コンテンツ クリエーターの間で人気があります。"
+        },
+        "obsidian": {
+            "description": "Obsidian は、強力なメモ作成およびナレッジ管理アプリケーションです。"
+        },
+        "okular": {
+            "description": "Okular は、高度な機能を備えた多用途のドキュメント ビューアです。"
+        },
+        "ollama": {
+            "description": "Ollama を使用すると、ローカルの大規模言語モデルをデスクトップ上で実行および管理できます。"
+        },
+        "onedrive": {
+            "description": "OneDrive は Microsoft が提供するクラウド ストレージ サービスで、ユーザーがデバイス間でファイルを安全に保存および共有できるようにします。"
+        },
+        "onlyoffice": {
+            "description": "ONLYOffice Desktop は、ドキュメントの編集とコラボレーションのための包括的なオフィス スイートです。"
+        },
+        "OPAutoClicker": {
+            "description": "動的カーソル位置または事前に指定した位置での 2 つのオートクリック モードを備えた本格的なオートクリッカー。"
+        },
+        "openhashtab": {
+            "description": "OpenHashTab は、ファイル プロパティからファイル ハッシュを簡単に計算および確認するためのシェル拡張機能です。"
+        },
+        "openrgb": {
+            "description": "OpenRGB は、さまざまなコンポーネントや周辺機器の RGB ライティングを管理および制御するために設計されたオープンソースの RGB ライティング制御ソフトウェアです。"
+        },
+        "openscad": {
+            "description": "OpenSCAD は、無料のオープンソースのスクリプトベースの 3D CAD モデラーです。これは、3D プリント用のパラメトリック デザインを作成する場合に特に役立ちます。"
+        },
+        "openshell": {
+            "description": "Open Shell は、強化された機能とカスタマイズ オプションを備えた Windows スタート メニューの代替品です。"
+        },
+        "OpenVPN": {
+            "description": "OpenVPN Connect は、VPN サーバーに安全に接続できるオープンソース VPN クライアントです。オンライン プライバシーを保護するための安全な暗号化された接続を提供します。"
+        },
+        "OVirtualBox": {
+            "description": "Oracle VirtualBox は、x86 および AMD64/Intel64 アーキテクチャ用の強力な無料のオープンソース仮想化ツールです。"
+        },
+        "ownclouddesktop": {
+            "description": "ownCloud Desktop は、ownCloud ファイル同期および共有プラットフォームの公式デスクトップ クライアントです。"
+        },
+        "policyplus": {
+            "description": "ローカル グループ ポリシー エディターとその他の機能 (すべての Windows エディションに対応)。"
+        },
+        "potplayer": {
+            "description": "PotPlayer は、幅広いフォーマットのサポート、高性能、組み込みコーデック、および広範なカスタマイズ オプションを備えた無料の Windows メディア プレーヤーです。"
+        },
+        "power-automate-desktop": {
+            "description": "Microsoft の Windows RPA ツール。デスクトップ フローを構築して、アプリやサービス全体で反復的なタスクを自動化します。"
+        },
+        "processexplorer": {
+            "description": "Process Explorer は、タスク マネージャーおよびシステム モニターです。"
+        },
+        "Paintdotnet": {
+            "description": "Paint.NET は、Windows 用の無料の画像および写真編集ソフトウェアです。直感的なユーザー インターフェイスが特徴で、強力な編集ツールを幅広くサポートしています。"
+        },
+        "parsec": {
+            "description": "Parsec は、デバイス間でのコラボレーションやゲームを行うための、低遅延、高品質のリモート デスクトップ共有アプリケーションです。"
+        },
+        "pdf-xchange": {
+            "description": "PDF ファイルの作成、表示、編集、注釈付け、署名を行うための包括的な Windows ベースのソフトウェア スイートおよびエディター。"
+        },
+        "pdf24creator": {
+            "description": "生産性を向上させる、無料で使いやすいオンライン/デスクトップ PDF ツール"
+        },
+        "pdfsam": {
+            "description": "PDFsam Basic は、PDF ファイルの分割、結合、回転を行うための無料のオープンソース ツールです。"
+        },
+        "peazip": {
+            "description": "PeaZip は、複数のアーカイブ形式をサポートし、暗号化機能を提供する無料のオープンソース ファイル アーカイバ ユーティリティです。"
+        },
+        "piimager": {
+            "description": "Raspberry Pi Imager は、Raspberry Pi デバイスの SD カードにオペレーティング システム イメージを書き込むためのユーティリティです。"
+        },
+        "playnite": {
+            "description": "Playnite は、すべてのゲームに統一されたインターフェイスを提供するという 1 つのシンプルな目標を持ったオープンソースのビデオ ゲーム ライブラリ マネージャーです。"
+        },
+        "plex": {
+            "description": "Plex Media Server は、メディア ライブラリを整理してストリーミングできるメディア サーバー ソフトウェアです。さまざまなメディア形式をサポートし、幅広い機能を提供します。"
+        },
+        "plexdesktop": {
+            "description": "Plex Desktop for Windows は、Plex Media Server のフロントエンドです。"
+        },
+        "Portmaster": {
+            "description": "Portmaster は、すべてのコンピュータのネットワーク接続を管理できるようにする無料のオープンソース アプリケーションです。"
+        },
+        "posh": {
+            "description": "Oh My Posh は、あらゆるシェルに対応するクロスプラットフォームのプロンプト テーマ エンジンです。"
+        },
+        "postman": {
+            "description": "Postman は、API 開発プロセスを簡素化する API 開発用のコラボレーション プラットフォームです。"
+        },
+        "powerautomate": {
+            "description": "Power Automate Desktop を使用すると、デスクトップ上と Web 上のタスクを自動化できます。"
+        },
+        "powerbi": {
+            "description": "Power BI Desktop を使用して、素晴らしいレポートと視覚化を作成します。直感的なレポート作成により、視覚的な分析をすぐに実行できます。ドラッグ アンド ドロップして、柔軟で流動的なキャンバス上の希望の場所にコンテンツを正確に配置します。リンクされたインタラクティブなビジュアライゼーションの単一の統合ビューを探索しながら、パターンをすばやく発見します。"
+        },
+        "powershell": {
+            "description": "PowerShell は、システム管理者向けに設計されたタスク自動化フレームワークおよびスクリプト言語であり、強力なコマンド ライン機能を提供します。"
+        },
+        "powertoys": {
+            "description": "PowerToys は、生産性を向上させるためのパワー ユーザー向けのユーティリティ セットで、FancyZones、PowerRename などのツールを備えています。"
+        },
+        "prismlauncher": {
+            "description": "Prism Launcher は、複数のインスタンス、アカウント、MOD を管理する機能を備えたオープンソースの Minecraft ランチャーです。"
+        },
+        "processlasso": {
+            "description": "Process Lasso は、プロセスの優先順位と CPU アフィニティを調整することでシステムの応答性と安定性を向上させる、システムの最適化および自動化ツールです。"
+        },
+        "protonauth": {
+            "description": "2FA コードを安全に同期およびバックアップするための Proton の 2FA アプリ。"
+        },
+        "processmonitor": {
+            "description": "SysInternals Process Monitor は、ファイル システム、レジストリ、プロセス/スレッドのアクティビティをリアルタイムで表示する高度な監視ツールです。"
+        },
+        "orcaslicer": {
+            "description": "3D プリンター用の G コード ジェネレーター (Bambu、Prusa、Voron、VzBot、RatRig、Creality など)。"
+        },
+        "prucaslicer": {
+            "description": "PrusaSlicer は、Prusa 3D プリンターで 3D プリントするための強力で使いやすいスライシング ソフトウェアです。"
+        },
+        "psremoteplay": {
+            "description": "PS Remote Playは、PlayStation本体からPCやモバイル機器にゲームをストリーミングできる無料のアプリケーションです。"
+        },
+        "putty": {
+            "description": "PuTTY は、無料のオープンソースのターミナル エミュレーター、シリアル コンソール、およびネットワーク ファイル転送アプリケーションです。 SSH、Telnet、SCP などのさまざまなネットワーク プロトコルをサポートします。"
+        },
+        "python3": {
+            "description": "Python は、Web 開発、データ分析、人工知能などに使用される多用途のプログラミング言語です。"
+        },
+        "qbittorrent": {
+            "description": "qBittorrent は、他の torrent クライアントに代わる機能が豊富で軽量な代替手段を提供することを目的とした、無料のオープンソース BitTorrent クライアントです。"
+        },
+        "transmission": {
+            "description": "Transmission は、オープンソース、簡単、強力、無駄のないクロスプラットフォームの BitTorrent クライアントです。"
+        },
+        "tixati": {
+            "description": "Tixati は、C++ で書かれたクロスプラットフォームの BitTorrent クライアントで、システム リソースを軽くするように設計されています。"
+        },
+        "qtox": {
+            "description": "QTox は、ユーザーのプライバシーとセキュリティを優先して設計された無料のオープンソース メッセージング アプリです。"
+        },
+        "quicklook": {
+            "description": "macOS の「クイック ルック」機能を Windows に導入します。"
+        },
+        "rainmeter": {
+            "description": "Rainmeter は、デスクトップ用のカスタマイズ可能なスキンを作成して共有できるデスクトップ カスタマイズ ツールです。"
+        },
+        "revo": {
+            "description": "Revo Uninstaller は、不要なソフトウェアを削除し、システムをクリーンアップするのに役立つ高度なアンインストーラー ツールです。"
+        },
+        "WiseProgramUninstaller": {
+            "description": "Wise Program Uninstaller は Windows プログラムをアンインストールするための完璧なソリューションであり、シンプルで使いやすいインターフェイスを使用してアプリケーションを迅速かつ完全にアンインストールできます。"
+        },
+        "revolt": {
+            "description": "コミュニティを見つけて世界とつながりましょう。 Revolt は、使いやすさを損なうことなく、友人やコミュニティとのつながりを維持するための最良の方法の 1 つです。"
+        },
+        "ripgrep": {
+            "description": "高速かつ強力なコマンドライン検索ツール。"
+        },
+        "rufus": {
+            "description": "Rufus は、USB キーやペン ドライブなどの起動可能な USB ドライブのフォーマットと作成を支援するユーティリティです。"
+        },
+        "rustdesk": {
+            "description": "RustDesk は、無料のオープンソースのリモート デスクトップ アプリケーションです。リモート マシンに接続し、デスクトップ環境にアクセスするための安全な方法を提供します。"
+        },
+        "rustlang": {
+            "description": "Rust は、安全性とパフォーマンスを考慮して設計されたプログラミング言語で、特にシステム プログラミングに重点を置いています。"
+        },
+        "sagethumbs": {
+            "description": "エクスプローラーでより多くの形式のサムネイルのサポートを提供します。"
+        },
+        "sandboxie": {
+            "description": "Sandboxie Plus は、分離された環境でアプリケーションを実行することでセキュリティを強化するサンドボックス ベースの分離プログラムです。"
+        },
+        "sdio": {
+            "description": "Snappy Driver Installer Origin は、Windows 用の膨大なドライバー データベースを備えた無料のオープンソース ドライバー アップデーターです。"
+        },
+        "session": {
+            "description": "Session は、ユーザーのプライバシーとデータ保護のために分散ネットワーク上に構築されたプライベートで安全なメッセージング アプリです。"
+        },
+        "sharex": {
+            "description": "ShareX は、無料のオープンソースの画面キャプチャおよびファイル共有ツールです。さまざまなキャプチャ方法をサポートし、スクリーンショットを編集および共有するための高度な機能を提供します。"
+        },
+        "nilesoftShell": {
+            "description": "シェルは、Windows コンテキスト メニューに追加機能とカスタマイズ オプションを追加する拡張コンテキスト メニュー ツールです。"
+        },
+        "systeminformer": {
+            "description": "システム リソースの監視、ソフトウェアのデバッグ、マルウェアの検出に役立つ、無料の強力な多目的ツールです。"
+        },
+        "sidequest": {
+            "description": "SideQuestVR は、ユーザーが Oculus Quest デバイス上で仮想現実コンテンツを検出、インストール、管理できるようにするコミュニティ主導のプラットフォームです。"
+        },
+        "signal": {
+            "description": "Signal は、安全でプライベートな通信のためにエンドツーエンドの暗号化を提供する、プライバシーを重視したメッセージング アプリです。"
+        },
+        "signalrgb": {
+            "description": "SignalRGB を使用すると、1 つの無料アプリケーションでお気に入りの RGB デバイスを制御および同期できます。"
+        },
+        "simplenote": {
+            "description": "Simplenote は、メモ、リスト、アイデアなどを保存する簡単な方法です。"
+        },
+        "simplewall": {
+            "description": "Simplewall は、Windows 用の無料のオープンソース ファイアウォール アプリケーションです。これにより、ユーザーはアプリケーションのインバウンドおよびアウトバウンドのネットワーク トラフィックを制御および管理できます。"
+        },
+        "slack": {
+            "description": "Slack は、チームを結び付け、チャネル、メッセージング、ファイル共有を通じてコミュニケーションを促進するコラボレーション ハブです。"
+        },
+        "spacedrive": {
+            "description": "Spacedrive は、クラウド ストレージの統合とデバイス間のファイル同期を提供するファイル マネージャーです。"
+        },
+        "spacesniffer": {
+            "description": "ディスク上のフォルダーとファイルがどのように構成されているかを理解できるツール アプリケーション。"
+        },
+        "starship": {
+            "description": "Starship は、あらゆるシェルに対応する、最小限かつ高速でカスタマイズ可能なプロンプトです。"
+        },
+        "steam": {
+            "description": "Steam はビデオ ゲームを購入してプレイするためのデジタル配信プラットフォームで、マルチプレイヤー ゲームやビデオ ストリーミングなどを提供します。"
+        },
+        "strawberry": {
+            "description": "Strawberry は、音楽コレクションの管理とオーディオ品質に重点を置いたオープンソースの音楽プレーヤーです。さまざまなオーディオ形式をサポートし、すっきりとしたユーザー インターフェイスを備えています。"
+        },
+        "stremio": {
+            "description": "Stremio は、ユーザーがお気に入りの映画、テレビ番組、ビデオ コンテンツを整理してストリーミングできるようにするメディア センター アプリケーションです。"
+        },
+        "sublimemerge": {
+            "description": "Sublime Merge は、高度な機能と美しいインターフェイスを備えた Git クライアントです。"
+        },
+        "sublimetext": {
+            "description": "Sublime Text は、コード、マークアップ、散文用の洗練されたテキスト エディターです。"
+        },
+        "sumatra": {
+            "description": "Sumatra PDF は、ミニマルなデザインを備えた軽量で高速な PDF ビューアです。"
+        },
+        "pdfgear": {
+            "description": "PDFgear は、Windows、macOS、モバイル向けのフル機能を備えた PDF 管理ソフトウェアで、完全に無料で使用できます。"
+        },
+        "sunshine": {
+            "description": "Sunshine は、Android デバイスで PC ゲームをリモートでプレイできるようにする GameStream サーバーで、低遅延のストリーミングを提供します。"
+        },
+        "superf4": {
+            "description": "SuperF4 は、カスタマイズ可能なホットキーを押すことでプログラムを即座に終了できるユーティリティです。"
+        },
+        "swift": {
+            "description": "Swift は、初心者にとって親しみやすく、専門家にとって強力な汎用プログラミング言語です。"
+        },
+        "synctrayzor": {
+            "description": "Syncthing 用の Windows トレイ ユーティリティ / ファイルシステム ウォッチャー / ランチャー。"
+        },
+        "sqlmanagementstudio": {
+            "description": "SQL Server Management Studio (SSMS) は、SQL Server から Azure SQL Database まで、あらゆる SQL インフラストラクチャを管理するための統合環境です。 SSMS は、SQL Server とデータベースのインスタンスを構成、監視、管理するためのツールを提供します。"
+        },
+        "tabby": {
+            "description": "Tabby は、Windows、macOS、Linux 用の高度に構成可能なターミナル エミュレーター、SSH、およびシリアル クライアントです。"
+        },
+        "tailscale": {
+            "description": "Tailscale は、デバイスとネットワークを接続するための安全で使いやすい VPN ソリューションです。"
+        },
+        "TcNoAccSwitcher": {
+            "description": "Steam、Battle.net、Epic Games、Origin、Riot、Ubisoft などの超高速アカウント切り替えツールです。"
+        },
+        "tcpview": {
+            "description": "SysInternals TCPView は、システム上のすべての TCP および UDP エンドポイントの詳細なリストを表示するネットワーク監視ツールです。"
+        },
+        "teams": {
+            "description": "Microsoft Teams は、Office 365 と統合され、チャット、ビデオ会議、ファイル共有などを提供するコラボレーション プラットフォームです。"
+        },
+        "teamviewer": {
+            "description": "TeamViewer は、リモート デバイスに接続して制御できるようにする、人気のあるリモート アクセスおよびサポート ソフトウェアです。"
+        },
+        "telegram": {
+            "description": "Telegram は、セキュリティ機能、速度、シンプルさで知られるクラウドベースのインスタント メッセージング アプリです。"
+        },
+        "unigram": {
+            "description": "Unigram - Windows 用のテレグラム。"
+        },
+        "terminal": {
+            "description": "Windows ターミナルは、コマンド ライン ユーザー向けの最新の高速かつ効率的なターミナル アプリケーションであり、複数のタブやペインなどをサポートしています。"
+        },
+        "Thonny": {
+            "description": "初心者向けの Python IDE。"
+        },
+        "MuEditor": {
+            "description": "Mu は、初心者プログラマー向けの Python コード エディターです。"
+        },
+        "thorium": {
+            "description": "バニラの Chromium を超える速度を実現するために構築されたブラウザ。 AVX2 最適化を使用して構築されており、市場で最速のブラウザーです。"
+        },
+        "thunderbird": {
+            "description": "Mozilla Thunderbird は、高度な機能を備えた無料のオープンソースの電子メール クライアント、ニュース クライアント、チャット クライアントです。"
+        },
+        "betterbird": {
+            "description": "Betterbird は、追加機能とバグ修正を備えた Mozilla Thunderbird のフォークです。"
+        },
+        "tidal": {
+            "description": "Tidal は、高忠実度のオーディオ品質と独占コンテンツで知られる音楽ストリーミング サービスです。膨大な曲のライブラリと厳選されたプレイリストを提供します。"
+        },
+        "tor": {
+            "description": "Tor ブラウザは匿名の Web ブラウジング用に設計されており、Tor ネットワークを利用してユーザーのプライバシーとセキュリティを保護します。"
+        },
+        "totalcommander": {
+            "description": "Total Commander は、ファイル管理のための強力で直感的なインターフェイスを提供する Windows 用のファイル マネージャーです。"
+        },
+        "treesize": {
+            "description": "TreeSize Free は、ドライブ上のスペース使用量を分析して視覚化するのに役立つディスク スペース マネージャーです。"
+        },
+        "ttaskbar": {
+            "description": "TranslucentTB は、Windows タスクバーの透明度をカスタマイズできるツールです。"
+        },
+        "twinkletray": {
+            "description": "Twinkle Tray を使用すると、複数のモニターの輝度レベルを簡単に管理できます。"
+        },
+        "ubisoft": {
+            "description": "Ubisoft Connect は、Ubisoft のデジタル配信およびオンライン ゲーム サービスであり、Ubisoft のゲームやサービスへのアクセスを提供します。"
+        },
+        "ungoogled": {
+            "description": "Ungoogled Chromium は、プライバシーと制御を強化するために Google が統合されていない Chromium のバージョンです。"
+        },
+        "unity": {
+            "description": "Unity は、2D、3D、拡張現実、仮想現実のゲームを作成するための強力なゲーム開発プラットフォームです。"
+        },
+        "vagrant": {
+            "description": "Vagrant は、仮想化開発環境を構築および管理するためのオープンソース ツールです。"
+        },
+        "vc2015_32": {
+            "description": "Visual C++ 2015-2022 32 ビット再頒布可能パッケージは、32 ビット アプリケーションの実行に必要な Visual C++ ライブラリのランタイム コンポーネントをインストールします。"
+        },
+        "vc2015_64": {
+            "description": "Visual C++ 2015-2022 64 ビット再頒布可能パッケージは、64 ビット アプリケーションの実行に必要な Visual C++ ライブラリのランタイム コンポーネントをインストールします。"
+        },
+        "ventoy": {
+            "description": "Ventoy は、起動可能な USB ドライブを作成するためのオープンソース ツールです。単一の USB ドライブ上で複数の ISO ファイルをサポートしているため、オペレーティング システムをインストールするための多用途のソリューションになります。"
+        },
+        "vesktop": {
+            "description": "Vencord がプリインストールされており、よりきびきびとした Discord エクスペリエンスを提供することを目的とした、クロスプラットフォームの電子ベースのデスクトップ アプリです。"
+        },
+        "viber": {
+            "description": "Viber は、グループ チャット、ビデオ通話などの機能を備えた無料のメッセージングおよび通話アプリです。"
+        },
+        "videomass": {
+            "description": "GianlucaPernigotto による Videomass は、FFmpeg 用のクロスプラットフォーム GUI であり、バッチ変換とユーザーフレンドリーな機能によりマルチメディア ファイル処理を合理化します。"
+        },
+        "visualstudio2022": {
+            "description": "Visual Studio 2022 は、アプリケーションの構築、デバッグ、展開のための統合開発環境 (IDE) です。"
+        },
+        "visualstudio2026": {
+            "description": "Visual Studio 2026 は、アプリケーションの構築、デバッグ、展開のための統合開発環境 (IDE) です。"
+        },
+        "vivaldi": {
+            "description": "Vivaldi は、ユーザーのパーソナライゼーションと生産性機能に重点を置いた、高度にカスタマイズ可能な Web ブラウザーです。"
+        },
+        "vlc": {
+            "description": "VLC Media Player は、幅広いオーディオおよびビデオ形式をサポートする無料のオープンソース マルチメディア プレーヤーです。多用途性とクロスプラットフォーム互換性で知られています。"
+        },
+        "voicemeeter": {
+            "description": "Voicemeeter は、コンピュータ上のオーディオ ストリームを管理および強化できる仮想オーディオ ミキサーです。通常、オーディオの録音とストリーミングの目的で使用されます。"
+        },
+        "VoicemeeterPotato": {
+            "description": "Voicemeeter Potato は、あらゆるオーディオ デバイスやアプリケーションとの間であらゆるオーディオ ソースをミキシングおよび管理するための仮想オーディオ デバイスを備えた Voicemeeter オーディオ ミキサー アプリケーションの究極バージョンです。"
+        },
+        "vrdesktopstreamer": {
+            "description": "Virtual Desktop Streamer は、デスクトップ画面を VR デバイスにストリーミングできるツールです。"
+        },
+        "vscode": {
+            "description": "Visual Studio Code は、複数のプログラミング言語をサポートする無料のオープンソース コード エディターです。"
+        },
+        "vscodium": {
+            "description": "VSCodium は、コミュニティ主導の、Microsoft の VS Code の無償ライセンスのバイナリ配布です。"
+        },
+        "waterfox": {
+            "description": "Waterfox は、Firefox をベースにした高速でプライバシーを重視した Web ブラウザで、ユーザーの選択とプライバシーを保護するように設計されています。"
+        },
+        "wazuh": {
+            "description": "Wazuh は、侵入検出、コンプライアンス チェック、ログ分析を提供するオープンソースのセキュリティ監視プラットフォームです。"
+        },
+        "wezterm": {
+            "description": "WezTerm は、強力なクロスプラットフォームのターミナル エミュレータおよびマルチプレクサです。"
+        },
+        "windowspchealth": {
+            "description": "Windows PC ヘルスチェックは、PC が Windows 11 のシステム要件を満たしているかどうかを確認するのに役立つツールです。"
+        },
+        "WindowGrid": {
+            "description": "WindowGrid は Windows 用の最新のウィンドウ管理プログラムで、ユーザーはマウスだけを使用して動的なグリッド上にウィンドウを迅速かつ簡単にレイアウトできます。"
+        },
+        "wingetui": {
+            "description": "UniGetUI は、Winget、Chocolatey、およびその他の Windows CLI パッケージ マネージャー用の GUI です。"
+        },
+        "winmerge": {
+            "description": "WinMerge は、Windows 用のビジュアルなテキスト ファイルとディレクトリの比較ツールです。"
+        },
+        "winpaletter": {
+            "description": "WinPaletter は、Windows 10 のカラー パレットを調整するためのツールで、ウィンドウの色のカスタマイズ オプションを提供します。"
+        },
+        "winrar": {
+            "description": "WinRAR は、圧縮ファイルを作成、管理、抽出できる強力なアーカイブ マネージャーです。"
+        },
+        "winscp": {
+            "description": "WinSCP は、Windows 用の人気のあるオープンソースの SFTP、FTP、および SCP クライアントです。これにより、ローカル コンピューターとリモート コンピューターの間で安全なファイル転送が可能になります。"
+        },
+        "wireguard": {
+            "description": "WireGuard は、高速で最新の VPN (仮想プライベート ネットワーク) プロトコルです。他の VPN プロトコルよりもシンプルかつ効率的であり、安全で信頼性の高い接続を提供することを目的としています。"
+        },
+        "wireshark": {
+            "description": "Wireshark は、広く使用されているオープンソースのネットワーク プロトコル アナライザーです。これにより、ユーザーはネットワーク トラフィックをリアルタイムでキャプチャして分析し、ネットワーク アクティビティに関する詳細な洞察を得ることができます。"
+        },
+        "wisetoys": {
+            "description": "WiseToys は、Windows エクスペリエンスを強化および最適化するために設計されたユーティリティとツールのセットです。"
+        },
+        "TeraCopy": {
+            "description": "ファイルをより速く、より安全にコピーします。"
+        },
+        "wizfile": {
+            "description": "ハードドライブ上のファイルを名前でほぼ瞬時に検索します。"
+        },
+        "wiztree": {
+            "description": "WizTree は、ハード ドライブ上で最も多くのスペースを消費しているファイルやフォルダーをすばやく見つけるのに役立つ高速ディスク スペース アナライザーです。"
+        },
+        "xdm": {
+            "description": "Xtreme Download Manager は、さまざまなプロトコルとブラウザをサポートする高度なダウンロード マネージャーです。 *ブラウザ統合は Google ストアで非推奨になりました。公式リリースはありません。*"
+        },
+        "xeheditor": {
+            "description": "HxD は、バイナリ ファイルを編集、表示、検索、分析できる無料の 16 進エディタです。"
+        },
+        "xemu": {
+            "description": "XEMU は、PC で Xbox ゲームをプレイできるようにするオープンソースの Xbox エミュレータで、精度と互換性を目指しています。"
+        },
+        "xnview": {
+            "description": "XnView は、Windows 用の効率的な画像ビューア、ブラウザ、およびコンバータです。"
+        },
+        "xournal": {
+            "description": "Xournal++ は、PDF 注釈機能を備えたオープンソースの手書きメモ作成ソフトウェアです。"
+        },
+        "xpipe": {
+            "description": "XPipe は、コンテナ化されたアプリケーションをオーケストレーションするためのオープンソース ツールです。これにより、分散環境でのコンテナ化されたサービスの展開と管理が簡素化されます。"
+        },
+        "yarn": {
+            "description": "Yarn は、JavaScript プロジェクト用の高速で信頼性が高く、安全な依存関係管理ツールです。"
+        },
+        "ytdlp": {
+            "description": "YouTube やその他のサポートされているサイトからビデオをダウンロードできるコマンドライン ツール。これは、人気のある youtube-dl の改良版です。"
+        },
+        "zerotierone": {
+            "description": "ZeroTier One は、安全でスケーラブルなネットワークを作成できるソフトウェア デファインド ネットワーク ツールです。"
+        },
+        "zim": {
+            "description": "Zim Desktop Wiki は、Wiki ページのコレクションを管理するために使用されるグラフィカル テキスト エディタです。"
+        },
+        "znote": {
+            "description": "Znote はメモを取るアプリケーションです。"
+        },
+        "zoom": {
+            "description": "Zoom は、オンライン会議、ウェビナー、共同プロジェクトに人気のビデオ会議および Web 会議サービスです。"
+        },
+        "zoomit": {
+            "description": "技術的なプレゼンテーションやデモ用の画面ズーム、注釈、および記録ツール。"
+        },
+        "zotero": {
+            "description": "Zotero は、研究資料の収集、整理、引用、共有に役立つ無料の使いやすいツールです。"
+        },
+        "zoxide": {
+            "description": "Zoxyde は、ファイル システムを簡単に移動できるようにする、高速かつ効率的なディレクトリ チェンジャー (CD) です。"
+        },
+        "zulip": {
+            "description": "Zulip は、生産的で組織的なコミュニケーションを実現するチャット ストリームを備えたオープンソースのチーム コラボレーション ツールです。"
+        },
+        "syncthingtray": {
+            "description": "Synctrayzor の代替となる可能性があります。 Syncthing 用の Windows トレイ ユーティリティ / ファイルシステム ウォッチャー / ランチャー。"
+        },
+        "miniconda": {
+            "description": "Miniconda は、conda 用の無料の最小限のインストーラーです。これは Anaconda の小規模なブートストラップ バージョンで、conda、Python、それらの両方が依存するパッケージ、およびその他の少数の便利なパッケージ (pip、zlib、その他いくつか) のみが含まれています。"
+        },
+        "pixi": {
+            "description": "Pixi は、既存の conda エコシステム上に構築された高速ソフトウェア パッケージ マネージャーです。 Windows、macOS、Linux 上で開発環境を迅速に起動します。 Pixi は、Python、R、C/C++、Rust、Ruby、その他多くの言語をサポートしています。"
+        },
+        "temurin": {
+            "description": "Eclipse Temurin は、OpenJDK をベースにしたオープンソース Java SE ビルドです。"
+        },
+        "intelpresentmon": {
+            "description": "ゲーム体験を監視および測定するための新しいゲーム パフォーマンス オーバーレイおよびテレメトリ アプリケーション。"
+        },
+        "pyenvwin": {
+            "description": "Windows 用 pyenv は、シンプルな Python バージョン管理ツールです。これにより、Python の複数のバージョンを簡単に切り替えることができます。"
+        },
+        "tightvnc": {
+            "description": "TightVNC は、ネットワーク経由でコンピュータにアクセスして制御できる、無料のオープンソース リモート デスクトップ ソフトウェアです。直感的なインターフェイスにより、リモート画面の前に座っているかのようにリモート画面を操作できます。まるで物理的にそこにいるかのように、リモート デスクトップ上でファイルを開いたり、アプリケーションを起動したり、その他のアクションを実行したりできます。"
+        },
+        "ultravnc": {
+            "description": "UltraVNC は、強力で使いやすく、無料のリモート PC アクセス ソフトウェアであり、(インターネットまたはネットワーク経由で) 別のコンピューターの画面を自分の画面に表示できます。このプログラムを使用すると、マウスとキーボードを使用して他の PC をリモート制御できます。これは、現在の場所からリモート コンピューターの前に座っているかのように作業できることを意味します。"
+        },
+        "windowsfirewallcontrol": {
+            "description": "Windows ファイアウォール コントロールは、Windows ファイアウォールの機能を拡張し、Windows ファイアウォールをより優れたものにする新しい追加機能を提供する強力なツールです。"
+        },
+        "vistaswitcher": {
+            "description": "VistaSwitcher を使用すると、マルチモニター システムでもウィンドウを見つけてフォーカスを切り替えることが簡単になります。スイッチャー ウィンドウは、実行中のすべてのタスクの読みやすいリストと、明確に表示されたタイトルと、選択したタスクのフルサイズのプレビューで構成されます。"
+        },
+        "autodarkmode": {
+            "description": "Windows 10 と Windows 11 のダークテーマとライトテーマを自動的に切り替えます。"
+        },
+        "AmbieWhiteNoise": {
+            "description": "Ambie は、集中したり、勉強したり、リラックスしたりするのに役立つ究極のアプリです。ホワイトノイズと自然音を革新的なフォーカスタイマーと組み合わせて使用​​し、最高の仕事に集中できるようにします。"
+        },
+        "magicwormhole": {
+            "description": "あるコンピュータから別のコンピュータに安全に物を移すことができます。"
+        },
+        "croc": {
+            "description": "あるコンピュータから別のコンピュータに簡単かつ安全に送信します。"
+        },
+        "qgis": {
+            "description": "QGIS (Quantum GIS) は、ユーザーが Windows、macOS、および Linux プラットフォーム上で地理空間情報を作成、編集、視覚化、分析、公開できるオープンソースの地理情報システム (GIS) ソフトウェアです。"
+        },
+        "smplayer": {
+            "description": "SMPlayer は、事実上すべてのビデオおよびオーディオ形式を再生できるコーデックを内蔵した Windows および Linux 用の無料メディア プレーヤーです。"
+        },
+        "glazewm": {
+            "description": "GlazeWM は、i3 と Polybar からインスピレーションを得た Windows 用のタイル ウィンドウ マネージャーです。"
+        },
+        "fancontrol": {
+            "description": "Fan Control は、ユーザーが温度を使用して CPU、GPU、ケース ファンを制御できるようにする無料のオープンソース ソフトウェアです。"
+        },
+        "fnm": {
+            "description": "Fast Node Manager (fnm) を使用すると、ターミナルを使用してノードのバージョンを切り替えることができます。"
+        },
+        "Windhawk": {
+            "description": "Windows プログラムのカスタマイズ マーケットプレイス。"
+        },
+        "ForceAutoHDR": {
+            "description": "ForceAutoHDR は、Windows レジストリの AutoHDR リストにゲームを追加するプロセスを簡素化します。"
+        },
+        "JoyToKey": {
+            "description": "PC ゲーム コントローラーでキーボードとマウスの入力をエミュレートできるようにします。"
+        },
+        "nditools": {
+            "description": "NDI (ネットワーク デバイス インターフェイス) は、マルチメディア システムが IP 経由で相互に識別して通信し、高品質、低遅延、フレーム精度のビデオとオーディオをエンコード、送信、受信し、メタデータをリアルタイムで交換できるようにするビデオ接続標準です。"
+        },
+        "kicad": {
+            "description": "Kicad はオープンソースの EDA ツールです。電気設計をしたい人にとっては良い出発点であり、業界の専門家も使用しています。"
+        },
+        "dropox": {
+            "description": "Dropbox デスクトップ アプリです。ハード ドライブのスペースを節約し、ファイルを共有および編集し、署名のために送信します。これらすべてを、無数のブラウザ タブに邪魔されることなく実行できます。"
+        },
+        "Overwolf": {
+            "description": "ゲーム オーバーレイおよびコンパニオン アプリ (MOD マネージャー、トラッカーなど) 用の人気のあるプラットフォームで、ゲーマーに広く使用されています。"
+        },
+        "OFGB": {
+            "description": "Windows 11 のさまざまな場所から広告を削除する GUI ツール"
+        },
+        "PaleMoon": {
+            "description": "Pale Moon は、Microsoft Windows および Linux (開発中のその他のオペレーティング システムも含む) で利用できるオープンソースの Goanna ベースの Web ブラウザであり、効率と使いやすさに重点を置いています。"
+        },
+        "Shotcut": {
+            "description": "Shotcut は、無料のオープンソース、クロスプラットフォームのビデオ エディターです。"
+        },
+        "LenovoLegionToolkit": {
+            "description": "Lenovo Legion Toolkit (LLT) は、Lenovo Legion (および類似の) シリーズのラップトップ用に作成されたオープンソース ユーティリティで、Lenovo Vantage または Legion Zone でのみ利用できるいくつかの機能を変更できます。バックグラウンド サービスは実行されず、メモリ使用量も少なく、CPU も実質的に使用されず、テレメトリも含まれません。 Lenovo Vantage と同様、このアプリケーションは Windows のみです。"
+        },
+        "PulsarEdit": {
+            "description": "コミュニティ主導のハイパーハック可能なテキスト エディター"
+        },
+        "Aegisub": {
+            "description": "Aegisub は、字幕を作成および変更するための無料のクロスプラットフォームのオープンソース ツールです。 Aegisub を使用すると、字幕を音声に合わせるタイミングをすばやく簡単に設定でき、組み込みのリアルタイム ビデオ プレビューなど、字幕をスタイル設定するための強力なツールが多数備えられています。"
+        },
+        "SubtitleEdit": {
+            "description": "Subtitle Edit は、ビデオ字幕用の無料のオープンソース エディタです。"
+        },
+        "Fork": {
+            "description": "Fork - 高速でフレンドリーな Git クライアント。"
+        },
+        "ZenBrowser": {
+            "description": "Firefox 上に構築された、プライバシーを重視したパフォーマンス重視の最新のブラウザー。"
+        },
+        "Zed": {
+            "description": "Zed は、スピードとコラボレーションを第一に考えて設計された最新の高性能コード エディターです。"
+        },
+        "LLLVM": {
+            "description": "モジュール式で再利用可能なコンパイラおよびツールチェーン テクノロジのコレクション。"
+        },
+        "NASM": {
+            "description": "x86 プラットフォーム用の強力なアセンブラ。"
+        }
+    },
+    "feature": {
+        "WPFFeaturesdotnet": {
+            "Content": "すべての .Net Framework (2、3、4)",
+            "Description": ".NET および .NET Framework は、さまざまな種類のアプリケーションを構築するためのツール、プログラミング言語、およびライブラリで構成される開発者プラットフォームです。"
+        },
+        "WPFFeatureshyperv": {
+            "Content": "HyperV仮想化",
+            "Description": "Hyper-V は、ユーザーが仮想マシンを作成および管理できるようにする、Microsoft によって開発されたハードウェア仮想化製品です。"
+        },
+        "WPFFeatureslegacymedia": {
+            "Content": "レガシーメディア (WMP、DirectPlay)",
+            "Description": "以前のバージョンの Windows からのレガシー プログラムを有効にします。"
+        },
+        "WPFFeaturewsl": {
+            "Content": "Linux 用 Windows サブシステム",
+            "Description": "Linux 用 Windows サブシステムは、別の仮想マシンやデュアル ブートを必要とせずに、Linux プログラムを Windows 上でネイティブに実行できるようにする Windows のオプション機能です。"
+        },
+        "WPFFeaturenfs": {
+            "Content": "NFS - ネットワーク ファイル システム",
+            "Description": "ネットワーク ファイル システム (NFS) は、ネットワーク上にファイルを保存するためのメカニズムです。"
+        },
+        "WPFFeatureRegBackup": {
+            "Content": "毎日のレジストリ バックアップ タスクを有効にする 午前 12 時 30 分",
+            "Description": "以前は Windows 10 1803 で Microsoft によって無効にされていた、毎日のレジストリ バックアップを有効にします。"
+        },
+        "WPFFeatureEnableLegacyRecovery": {
+            "Content": "レガシー F8 ブートリカバリを有効にする",
+            "Description": "高度なトラブルシューティング モードで Windows を起動できる [高度なブート オプション] 画面を有効にします。"
+        },
+        "WPFFeatureDisableLegacyRecovery": {
+            "Content": "レガシー F8 ブートリカバリを無効にする",
+            "Description": "Windows を高度なトラブルシューティング モードで起動できるようにする [詳細ブート オプション] 画面を無効にします。"
+        },
+        "WPFFeaturesSandbox": {
+            "Content": "Windows サンドボックス",
+            "Description": "Windows サンドボックスは、アプリケーションやプログラムを分離して安全に実行するための一時的なデスクトップ環境を提供する軽量の仮想マシンです。"
+        },
+        "WPFFeatureInstall": {
+            "Content": "機能のインストール"
+        },
+        "WPFPanelAutologin": {
+            "Content": "自動ログインの設定"
+        },
+        "WPFFixesUpdate": {
+            "Content": "Windowsアップデートをリセットする"
+        },
+        "WPFFixesNetwork": {
+            "Content": "ネットワークをリセットする"
+        },
+        "WPFPanelDISM": {
+            "Content": "システム破損スキャン"
+        },
+        "WPFFixesWinget": {
+            "Content": "WinGet 再インストール"
+        },
+        "WPFPanelControl": {
+            "Content": "コントロールパネル"
+        },
+        "WPFPanelComputer": {
+            "Content": "コンピュータの管理"
+        },
+        "WPFPanelNetwork": {
+            "Content": "ネットワーク接続"
+        },
+        "WPFPanelPower": {
+            "Content": "電源パネル"
+        },
+        "WPFPanelPrinter": {
+            "Content": "プリンターパネル"
+        },
+        "WPFPanelRegion": {
+            "Content": "地域"
+        },
+        "WPFPanelRestore": {
+            "Content": "Windowsの復元"
+        },
+        "WPFPanelSound": {
+            "Content": "サウンド設定"
+        },
+        "WPFPanelSystem": {
+            "Content": "システムのプロパティ"
+        },
+        "WPFPanelTimedate": {
+            "Content": "時刻と日付"
+        },
+        "WPFWinUtilInstallPSProfile": {
+            "Content": "CTT PowerShell プロファイルをインストールする"
+        },
+        "WPFWinUtilUninstallPSProfile": {
+            "Content": "CTT PowerShell プロファイルをアンインストールする"
+        },
+        "WPFWinUtilSSHServer": {
+            "Content": "OpenSSHサーバーを有効にする"
+        }
+    },
+    "appnavigation": {
+        "WPFInstall": {
+            "Content": "アプリケーションのインストール/アップグレード",
+            "Description": "選択したアプリケーションをインストールまたはアップグレードします"
+        },
+        "WPFUninstall": {
+            "Content": "アプリケーションのアンインストール",
+            "Description": "選択したアプリケーションをアンインストールします"
+        },
+        "WPFInstallUpgrade": {
+            "Content": "すべてのアプリケーションをアップグレードする",
+            "Description": "すべてのアプリケーションを最新バージョンにアップグレードする"
+        },
+        "WingetRadioButton": {
+            "Content": "ウィンゲット",
+            "Description": "パッケージ管理には Winget を使用する"
+        },
+        "ChocoRadioButton": {
+            "Content": "チョコレートティ",
+            "Description": "Chocolatey をパッケージ管理に使用する"
+        },
+        "WPFCollapseAllCategories": {
+            "Content": "すべてのカテゴリを折りたたむ",
+            "Description": "すべてのアプリケーション カテゴリを折りたたむ"
+        },
+        "WPFExpandAllCategories": {
+            "Content": "すべてのカテゴリを展開",
+            "Description": "すべてのアプリケーション カテゴリを展開します"
+        },
+        "WPFClearInstallSelection": {
+            "Content": "選択をクリア",
+            "Description": "アプリケーションの選択をクリアします"
+        },
+        "WPFGetInstalled": {
+            "Content": "インストールされているアプリを表示",
+            "Description": "インストールされているアプリケーションを表示する"
+        },
+        "WPFselectedAppsButton": {
+            "Content": "選択したアプリ: 0",
+            "Description": "選択したアプリケーションを表示します"
+        },
+        "WPFToggleFOSSHighlight": {
+            "Content": "FOSSをハイライトする",
+            "Description": "FOSS アプリケーションの緑色のハイライトを切り替えます"
+        }
+    }
+}
