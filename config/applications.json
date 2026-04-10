@@ -1451,6 +1451,15 @@
         "link": "https://www.logitechg.com/en-us/software/ghub",
         "winget": "Logitech.GHUB"
     },
+    "morgen": {
+        "category": "Utilities",
+        "choco": "morgen",
+        "content": "Morgen",
+        "description": "A daily planner that prioritizes your most important to-dos, events, and projects in one app. Get AI-powered recommendations or plan manually.",
+        "link": "https://www.morgen.so/",
+        "winget": "Morgen.Morgen",
+        "foss": false
+    },
     "malwarebytes": {
         "category": "Utilities",
         "choco": "malwarebytes",
@@ -1661,6 +1670,15 @@
         "description": "TagScanner is a powerful tool for organizing and managing your music collection.",
         "link": "https://www.xdlab.ru/en/",
         "winget": "SergeySerkov.TagScanner"
+    },
+    "notion": {
+        "category": "AI-Automation",
+        "choco": "notion",
+        "content": "Notion",
+        "description": "Build Custom Agents, search across all your apps, and automate busywork. The AI workspace where teams get more done, faster.",
+        "link": "https://www.notion.com/",
+        "winget": "Notion.Notion",
+        "foss": false
     },
     "nanazip": {
         "category": "Utilities",
@@ -2632,6 +2650,15 @@
         "description": "TeamViewer is a popular remote access and support software that allows you to connect to and control remote devices.",
         "link": "https://www.teamviewer.com/",
         "winget": "TeamViewer.TeamViewer"
+    },
+    "todoist": {
+        "category": "Utilities",
+        "choco": "todoist-desktop",
+        "content": "Todoist",
+        "description": "Join 50+ million professionals who simplify work and life with the world’s #1 to-do list app.",
+        "link": "https://www.todoist.com/",
+        "winget": "Doist.Todoist",
+        "foss": false
     },
     "teamspeak3": {
         "category": "Utilities",
