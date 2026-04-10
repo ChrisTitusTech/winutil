@@ -1457,7 +1457,8 @@
         "content": "Morgen",
         "description": "A daily planner that prioritizes your most important to-dos, events, and projects in one app. Get AI-powered recommendations or plan manually.",
         "link": "https://www.morgen.so/",
-        "winget": "Morgen.Morgen"
+        "winget": "Morgen.Morgen".
+        "foss": false
     },
     "malwarebytes": {
         "category": "Utilities",
@@ -1676,7 +1677,8 @@
         "content": "Notion",
         "description": "Build Custom Agents, search across all your apps, and automate busywork. The AI workspace where teams get more done, faster.",
         "link": "https://www.notion.com/",
-        "winget": "Notion.Notion"
+        "winget": "Notion.Notion",
+        "foss": false
     },
     "nanazip": {
         "category": "Utilities",
@@ -2655,7 +2657,8 @@
         "content": "Todoist",
         "description": "Join 50+ million professionals who simplify work and life with the world’s #1 to-do list app.",
         "link": "https://www.todoist.com/",
-        "winget": "Doist.Todoist"
+        "winget": "Doist.Todoist",
+        "foss": false
     },
     "teamspeak3": {
         "category": "Utilities",
