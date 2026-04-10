@@ -2185,6 +2185,24 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/verboselogon"
   },
+  "WPFToggleLoginBlur": {
+    "Content": "Acrylic Blur on Login Screen",
+    "Description": "If disabled, the acrylic blur effect will be hidden on the Windows 10/11 login screen background.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+        "Name": "DisableAcrylicBackgroundOnLogon",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "DefaultState": "true"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/loginblur"
+  },
   "WPFToggleStartMenuRecommendations": {
     "Content": "Recommendations in Start Menu",
     "Description": "If disabled, then you will not see recommendations in the Start Menu. WARNING: This will also disable Windows Spotlight on your Lock Screen as a side effect.",
