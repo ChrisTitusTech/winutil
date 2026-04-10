@@ -1457,7 +1457,7 @@
         "content": "Morgen",
         "description": "A daily planner that prioritizes your most important to-dos, events, and projects in one app. Get AI-powered recommendations or plan manually.",
         "link": "https://www.morgen.so/",
-        "winget": "Morgen.Morgen".
+        "winget": "Morgen.Morgen",
         "foss": false
     },
     "malwarebytes": {
