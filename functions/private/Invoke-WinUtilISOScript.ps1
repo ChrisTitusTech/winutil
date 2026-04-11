@@ -169,13 +169,7 @@ function Invoke-WinUtilISOScript {
         & $Log "Driver injection skipped."
     }
 
-    # ── 3. Remove OneDrive ────────────────────────────────────────────────────
-    & $Log "Removing OneDrive..."
-    & takeown /f "$ScratchDir\Windows\System32\OneDriveSetup.exe" | Out-Null
-    & icacls    "$ScratchDir\Windows\System32\OneDriveSetup.exe" /grant "$($adminGroup.Value):(F)" /T /C | Out-Null
-    Remove-Item -Path "$ScratchDir\Windows\System32\OneDriveSetup.exe" -Force -ErrorAction SilentlyContinue
-
-    # ── 4. Registry tweaks ────────────────────────────────────────────────────
+    # ── 3. Registry tweaks ────────────────────────────────────────────────────
     & $Log "Loading offline registry hives..."
     reg load HKLM\zCOMPONENTS "$ScratchDir\Windows\System32\config\COMPONENTS"
     reg load HKLM\zDEFAULT    "$ScratchDir\Windows\System32\config\default"
@@ -329,7 +323,7 @@ function Invoke-WinUtilISOScript {
     reg unload HKLM\zSOFTWARE
     reg unload HKLM\zSYSTEM
 
-    # ── 5. Delete scheduled task definition files ─────────────────────────────
+    # ── 4. Delete scheduled task definition files ─────────────────────────────
     & $Log "Deleting scheduled task definition files..."
     $tasksPath = "$ScratchDir\Windows\System32\Tasks"
     Remove-Item "$tasksPath\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" -Force -ErrorAction SilentlyContinue
@@ -345,7 +339,7 @@ function Invoke-WinUtilISOScript {
     Remove-Item "$tasksPath\Microsoft\WindowsUpdate"                                                   -Recurse -Force -ErrorAction SilentlyContinue
     & $Log "Scheduled task files deleted."
 
-    # ── 6. Remove ISO support folder ─────────────────────────────────────────
+    # ── 5. Remove ISO support folder ─────────────────────────────────────────
     if ($ISOContentsDir -and (Test-Path $ISOContentsDir)) {
         & $Log "Removing ISO support\ folder..."
         Remove-Item -Path (Join-Path $ISOContentsDir "support") -Recurse -Force -ErrorAction SilentlyContinue
