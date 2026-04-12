@@ -3070,15 +3070,6 @@
         "link": "https://wiztreefree.com/",
         "winget": "AntibodySoftware.WizTree"
     },
-    "xdm": {
-        "category": "Utilities",
-        "choco": "xdm",
-        "content": "Xtreme Download Manager",
-        "description": "Xtreme Download Manager is an advanced download manager with support for various protocols and browsers. *Browser integration deprecated by google store. No official release.*",
-        "link": "https://xtremedownloadmanager.com/",
-        "winget": "subhra74.XtremeDownloadManager",
-        "foss": true
-    },
     "xeheditor": {
         "category": "Utilities",
         "choco": "HxD",
