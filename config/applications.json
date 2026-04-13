@@ -319,7 +319,7 @@
         "foss": true
     },
     "chrome": {
-        "category": "",
+        "category": "Browsers",
         "choco": "googlechrome",
         "content": "Chrome",
         "description": "Google Chrome is a widely used web browser known for its speed, simplicity, and seamless integration with Google services.",
