@@ -319,7 +319,7 @@
         "foss": true
     },
     "chrome": {
-        "category": "Browsers",
+        "category": "",
         "choco": "googlechrome",
         "content": "Chrome",
         "description": "Google Chrome is a widely used web browser known for its speed, simplicity, and seamless integration with Google services.",
@@ -1055,6 +1055,15 @@
         "description": "Gsudo is a sudo implementation for Windows, allowing elevated privilege execution.",
         "link": "https://gerardog.github.io/gsudo/",
         "winget": "gerardog.gsudo"
+    },
+    "helium": {
+        "category": "Browsers",
+        "choco": "helium",
+        "content": "Helium",
+        "description": "Private, fast, and honest web browser.",
+        "link": "https://github.com/imputnet/helium/",
+        "winget": "ImputNet.Helium",
+        "foss": true
     },
     "hugo": {
         "category": "Utilities",
