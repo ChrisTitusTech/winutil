@@ -65,7 +65,7 @@
     "panel": "1",
     "InvokeScript": [
       "
-      # Sometimes if you dont stop the Widgets process the removal may fail
+      # Sometimes, if you don't stop the Widgets process, the removal may fail
 
       Get-Process *Widget* | Stop-Process
       Get-AppxPackage Microsoft.WidgetsPlatformRuntime -AllUsers | Remove-AppxPackage -AllUsers
@@ -1675,7 +1675,7 @@
   },
   "WPFTweaksDeBloat": {
     "Content": "Remove Unwanted Pre-Installed Apps",
-    "Description": "This will remove a bunch of Windows pre-installed applications which most people dont want on there system.",
+    "Description": "This will remove a bunch of preinstalled Windows applications that most people don't want on their system.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "appx": [
@@ -2169,7 +2169,7 @@
   },
   "WPFToggleVerboseLogon": {
     "Content": "Verbose Messages During Logon",
-    "Description": "Show detailed messages during the login process for troubleshooting and diagnostics.",
+    "Description": "Show detailed messages during the logon process for troubleshooting and diagnostics.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2249,7 +2249,7 @@
   },
   "WPFToggleMouseAcceleration": {
     "Content": "Mouse Acceleration",
-    "Description": "If enabled, the Cursor movement is affected by the speed of your physical mouse movements.",
+    "Description": "If enabled, cursor movement is affected by the speed of your physical mouse movements.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2283,7 +2283,7 @@
   },
   "WPFToggleStickyKeys": {
     "Content": "Sticky Keys",
-    "Description": "If enabled, Sticky Keys is activated. Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
+    "Description": "If enabled, Sticky Keys is activated. Sticky Keys is an accessibility feature in some graphical user interfaces that helps users with physical disabilities and can reduce repetitive strain injury.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2343,7 +2343,7 @@
   },
   "WPFToggleMultiplaneOverlay": {
     "Content": "Disable Multiplane Overlay",
-    "Description": "Disable the Multiplane Overlay which can sometimes cause issues with Graphics Cards.",
+    "Description": "Disable the Multiplane Overlay, which can sometimes cause issues with graphics cards.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2417,7 +2417,7 @@
   },
   "WPFToggleTaskbarSearch": {
     "Content": "Search Button in Taskbar",
-    "Description": "If enabled, Search Button will be on the Taskbar.",
+    "Description": "If enabled, the Search button will be shown on the taskbar.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2435,7 +2435,7 @@
   },
   "WPFToggleTaskView": {
     "Content": "Task View Button in Taskbar",
-    "Description": "If enabled, Task View Button in Taskbar will be shown.",
+    "Description": "If enabled, the Task View button will be shown on the taskbar.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2453,7 +2453,7 @@
   },
   "WPFToggleTaskbarAlignment": {
     "Content": "Center Taskbar Items",
-    "Description": "[Windows 11] If enabled, the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
+    "Description": "[Windows 11] If enabled, taskbar items will be centered; otherwise, they will be aligned to the left.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -2524,7 +2524,7 @@
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/s3sleep"
   },
   "WPFOOSUbutton": {
-    "Content": "Run OO Shutup 10",
+    "Content": "Run O&O ShutUp 10",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Type": "Button",
@@ -2611,7 +2611,7 @@
   },
   "WPFToggleDisableCrossDeviceResume": {
     "Content": "Cross-Device Resume",
-    "Description": "This tweak controls the Resume function in Windows 11 24H2 and later, which allows you to resume an activity from a mobile device and vice-versa.",
+    "Description": "This tweak controls the Resume function in Windows 11 24H2 and later, which lets you resume an activity from a mobile device and vice versa.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
