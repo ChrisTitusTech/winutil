@@ -22,11 +22,11 @@ If you are still having issues, try using a **VPN**, or changing your **DNS prov
 
 ### Script Won't Run
 
-If your PowerShell session is running in **Constrained Language Mode**, some scripts and commands may fail to execute. To check the current language mode, run:
-```powershell
-$ExecutionContext.SessionState.LanguageMode
-```
-If it returns `ConstrainedLanguage`, you may need to switch to `FullLanguage` mode or run the script in a session with administrative privileges. Be aware that some security policies may enforce Constrained Language Mode, especially in corporate or managed environments.
+If you run WinUtil and get the error:
+
+`"WinUtil is unable to run on your system, PowerShell execution is restricted by security policies,"`
+
+this means that your PowerShell session is in Constrained Language Mode, which prevents WinUtil from running.
 
 **If the download fails**:
 
