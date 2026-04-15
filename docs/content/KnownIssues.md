@@ -26,7 +26,7 @@ If you run WinUtil and get the error:
 
 `"WinUtil is unable to run on your system, powershell execution is restricted by security policies,"`
 
-this means that your PowerShell session is in Constrained Language Mode, which prevents WinUtil from running.
+this means that your PowerShell session is in **Constrained Language Mode**, which prevents WinUtil from running.
 
 **If the download fails**:
 
