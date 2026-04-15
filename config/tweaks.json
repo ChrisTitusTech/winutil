@@ -1894,7 +1894,7 @@
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disablenotifications"
   },
   "WPFTweaksBlockAdobeNet": {
-    "Content": "Adobe URLs Blocklist - Enable",
+    "Content": "Adobe URL Block List - Enable",
     "Description": "Reduces user interruptions by selectively blocking connections to Adobe's activation and telemetry servers. Credit: Ruddernation-Designs",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
