@@ -2063,6 +2063,50 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disablefso"
   },
+  "WPFToggleDisableCrossDeviceResume": {
+    "Content": "Cross-Device Resume",
+    "Description": "This tweak controls the Resume function in Windows 11 24H2 and later, which allows you to resume an activity from a mobile device and vice-versa.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\CrossDeviceResume\\Configuration",
+        "Name": "IsResumeAllowed",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "true"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/disablecrossdeviceresume"
+  },
+  "WPFToggleDetailedBSoD": {
+    "Content": "BSoD Verbose Mode",
+    "Description": "If enabled, you will see a detailed Blue Screen of Death (BSOD) with more information.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\CrashControl",
+        "Name": "DisplayParameters",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\CrashControl",
+        "Name": "DisableEmoticon",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/detailedbsod"
+  },
   "WPFToggleDarkMode": {
     "Content": "Dark Theme for Windows",
     "Description": "Enable/Disable Dark Mode.",
@@ -2105,41 +2149,173 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/darkmode"
   },
-  "WPFToggleBingSearch": {
-    "Content": "Bing Search in Start Menu",
-    "Description": "If enabled, Bing web search results will be included in your Start Menu search.",
+  "WPFToggleShowExt": {
+    "Content": "File Explorer File Extensions",
+    "Description": "If enabled, File extensions (e.g., .txt, .jpg) are visible.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
     "registry": [
       {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
-        "Name": "BingSearchEnabled",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "HideFileExt",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "DefaultState": "false"
+      }
+    ],
+    "InvokeScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
+    "UndoScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/showext"
+  },
+  "WPFToggleHiddenFiles": {
+    "Content": "File Explorer Hidden Files",
+    "Description": "If enabled, Hidden Files will be shown.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "Hidden",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      }
+    ],
+    "InvokeScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
+    "UndoScript": [
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/hiddenfiles"
+  },
+  "WPFToggleVerboseLogon": {
+    "Content": "Logon Verbose Mode",
+    "Description": "Show detailed messages during the login process for troubleshooting and diagnostics.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+        "Name": "VerboseStatus",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/verboselogon"
+  },
+  "WPFToggleNewOutlook": {
+    "Content": "Microsoft Outlook New Version",
+    "Description": "If disabled, it removes the new Outlook toggle, disables the new Outlook migration, and ensures the classic Outlook application is used.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Office\\16.0\\Outlook\\Preferences",
+        "Name": "UseNewOutlook",
         "Value": "1",
         "Type": "DWord",
         "OriginalValue": "0",
         "DefaultState": "true"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/bingsearch"
-  },
-  "WPFToggleStandbyFix": {
-    "Content": "Modern Standby fix",
-    "Description": "Disable network connection during S0 Sleep. If network connectivity is turned on during S0 Sleep it could cause overheating on modern laptops.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
+      },
       {
-        "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Power\\PowerSettings\\f15576e8-98b7-4186-b944-eafa664402d9",
-        "Name": "ACSettingIndex",
+        "Path": "HKCU:\\Software\\Microsoft\\Office\\16.0\\Outlook\\Options\\General",
+        "Name": "HideNewOutlookToggle",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "DefaultState": "true"
+      },
+      {
+        "Path": "HKCU:\\Software\\Policies\\Microsoft\\Office\\16.0\\Outlook\\Options\\General",
+        "Name": "DoNewOutlookAutoMigration",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      },
+      {
+        "Path": "HKCU:\\Software\\Policies\\Microsoft\\Office\\16.0\\Outlook\\Preferences",
+        "Name": "NewOutlookMigrationUserSetting",
         "Value": "0",
         "Type": "DWord",
         "OriginalValue": "<RemoveEntry>",
         "DefaultState": "true"
       }
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/standbyfix"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/newoutlook"
+  },
+  "WPFToggleMultiplaneOverlay": {
+    "Content": "Multiplane Overlay",
+    "Description": "Enable or disable the Multiplane Overlay, which can sometimes cause issues with graphics cards.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Dwm",
+        "Name": "OverlayTestMode",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "5",
+        "DefaultState": "true"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/multiplaneoverlay"
+  },
+  "WPFToggleMouseAcceleration": {
+    "Content": "Mouse Acceleration",
+    "Description": "If enabled, the Cursor movement is affected by the speed of your physical mouse movements.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Mouse",
+        "Name": "MouseSpeed",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "true"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Mouse",
+        "Name": "MouseThreshold1",
+        "Value": "6",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "true"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Mouse",
+        "Name": "MouseThreshold2",
+        "Value": "10",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "true"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/mouseacceleration"
   },
   "WPFToggleNumLock": {
     "Content": "Num Lock on Startup",
@@ -2167,26 +2343,80 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/numlock"
   },
-  "WPFToggleVerboseLogon": {
-    "Content": "Verbose Messages During Logon",
-    "Description": "Show detailed messages during the login process for troubleshooting and diagnostics.",
+  "WPFToggleStandbyFix": {
+    "Content": "S0 Sleep Network Connectivity",
+    "Description": "Enable or disable network connectivity during S0 Sleep.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
     "registry": [
       {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
-        "Name": "VerboseStatus",
+        "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Power\\PowerSettings\\f15576e8-98b7-4186-b944-eafa664402d9",
+        "Name": "ACSettingIndex",
         "Value": "1",
         "Type": "DWord",
         "OriginalValue": "0",
+        "DefaultState": "true"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/standbyfix"
+  },
+  "WPFToggleS3Sleep": {
+    "Content": "S3 Sleep",
+    "Description": "Toggles between Modern Standby and S3 Sleep.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power",
+        "Name": "PlatformAoAcOverride",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>",
         "DefaultState": "false"
       }
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/verboselogon"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/s3sleep"
+  },
+  "WPFToggleHideSettingsHome": {
+    "Content": "Settings Home Page",
+    "Description": "Enable or disable the Home Page in the Windows Settings app.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+        "Name": "SettingsPageVisibility",
+        "Value": "show:home",
+        "Type": "String",
+        "OriginalValue": "hide:home",
+        "DefaultState": "true"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/hidesettingshome"
+  },
+  "WPFToggleBingSearch": {
+    "Content": "Start Menu Bing Search",
+    "Description": "If enabled, Bing web search results will be included in your Start Menu search.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "Name": "BingSearchEnabled",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "true"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/bingsearch"
   },
   "WPFToggleStartMenuRecommendations": {
-    "Content": "Recommendations in Start Menu",
+    "Content": "Start Menu Recommendations",
     "Description": "If disabled, then you will not see recommendations in the Start Menu. WARNING: This will also disable Windows Spotlight on your Lock Screen as a side effect.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -2229,58 +2459,6 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/startmenurecommendations"
   },
-  "WPFToggleHideSettingsHome": {
-    "Content": "Remove Settings Home Page",
-    "Description": "Removes the Home Page in the Windows Settings app.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
-        "Name": "SettingsPageVisibility",
-        "Value": "hide:home",
-        "Type": "String",
-        "OriginalValue": "show:home",
-        "DefaultState": "false"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/hidesettingshome"
-  },
-  "WPFToggleMouseAcceleration": {
-    "Content": "Mouse Acceleration",
-    "Description": "If enabled, the Cursor movement is affected by the speed of your physical mouse movements.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "Name": "MouseSpeed",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "true"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "Name": "MouseThreshold1",
-        "Value": "6",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "true"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "Name": "MouseThreshold2",
-        "Value": "10",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "true"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/mouseacceleration"
-  },
   "WPFToggleStickyKeys": {
     "Content": "Sticky Keys",
     "Description": "If enabled, Sticky Keys is activated. Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
@@ -2299,160 +2477,8 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/stickykeys"
   },
-  "WPFToggleNewOutlook": {
-    "Content": "New Outlook",
-    "Description": "If disabled, it removes the new Outlook toggle, disables the new Outlook migration, and ensures the classic Outlook application is used.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Office\\16.0\\Outlook\\Preferences",
-        "Name": "UseNewOutlook",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "true"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Office\\16.0\\Outlook\\Options\\General",
-        "Name": "HideNewOutlookToggle",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "1",
-        "DefaultState": "true"
-      },
-      {
-        "Path": "HKCU:\\Software\\Policies\\Microsoft\\Office\\16.0\\Outlook\\Options\\General",
-        "Name": "DoNewOutlookAutoMigration",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "false"
-      },
-      {
-        "Path": "HKCU:\\Software\\Policies\\Microsoft\\Office\\16.0\\Outlook\\Preferences",
-        "Name": "NewOutlookMigrationUserSetting",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>",
-        "DefaultState": "true"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/newoutlook"
-  },
-  "WPFToggleMultiplaneOverlay": {
-    "Content": "Disable Multiplane Overlay",
-    "Description": "Disable the Multiplane Overlay which can sometimes cause issues with Graphics Cards.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Dwm",
-        "Name": "OverlayTestMode",
-        "Value": "5",
-        "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>",
-        "DefaultState": "false"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/multiplaneoverlay"
-  },
-  "WPFToggleHiddenFiles": {
-    "Content": "Show Hidden Files",
-    "Description": "If enabled, Hidden Files will be shown.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "Name": "Hidden",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "false"
-      }
-    ],
-    "InvokeScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
-    ],
-    "UndoScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/hiddenfiles"
-  },
-  "WPFToggleShowExt": {
-    "Content": "Show File Extensions",
-    "Description": "If enabled, File extensions (e.g., .txt, .jpg) are visible.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "Name": "HideFileExt",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "1",
-        "DefaultState": "false"
-      }
-    ],
-    "InvokeScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
-    ],
-    "UndoScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/showext"
-  },
-  "WPFToggleTaskbarSearch": {
-    "Content": "Search Button in Taskbar",
-    "Description": "If enabled, Search Button will be on the Taskbar.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
-        "Name": "SearchboxTaskbarMode",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "true"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/taskbarsearch"
-  },
-  "WPFToggleTaskView": {
-    "Content": "Task View Button in Taskbar",
-    "Description": "If enabled, Task View Button in Taskbar will be shown.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "Name": "ShowTaskViewButton",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "true"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/taskview"
-  },
   "WPFToggleTaskbarAlignment": {
-    "Content": "Center Taskbar Items",
+    "Content": "Taskbar Centered Icons",
     "Description": "[Windows 11] If enabled, the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -2479,49 +2505,41 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/taskbaralignment"
   },
-  "WPFToggleDetailedBSoD": {
-    "Content": "Detailed BSoD",
-    "Description": "If enabled, you will see a detailed Blue Screen of Death (BSOD) with more information.",
+  "WPFToggleTaskbarSearch": {
+    "Content": "Taskbar Search Icon",
+    "Description": "If enabled, Search Button will be on the Taskbar.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
     "registry": [
       {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\CrashControl",
-        "Name": "DisplayParameters",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "Name": "SearchboxTaskbarMode",
         "Value": "1",
         "Type": "DWord",
         "OriginalValue": "0",
-        "DefaultState": "false"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\CrashControl",
-        "Name": "DisableEmoticon",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "false"
+        "DefaultState": "true"
       }
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/detailedbsod"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/taskbarsearch"
   },
-  "WPFToggleS3Sleep": {
-    "Content": "S3 Sleep",
-    "Description": "Toggles between Modern Standby and S3 Sleep.",
+  "WPFToggleTaskView": {
+    "Content": "Taskbar Task View Icon",
+    "Description": "If enabled, Task View Button in Taskbar will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
     "registry": [
       {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power",
-        "Name": "PlatformAoAcOverride",
-        "Value": "0",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "ShowTaskViewButton",
+        "Value": "1",
         "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>",
-        "DefaultState": "false"
+        "OriginalValue": "0",
+        "DefaultState": "true"
       }
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/s3sleep"
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/taskview"
   },
   "WPFOOSUbutton": {
     "Content": "OO Shutup 10 - Run",
@@ -2539,7 +2557,7 @@
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/changedns"
   },
   "WPFAddUltPerf": {
-    "Content": "Add and Activate Ultimate Performance Profile",
+    "Content": "Ultimate Performance Profile - Enable",
     "category": "Performance Plans",
     "panel": "2",
     "Type": "Button",
@@ -2547,7 +2565,7 @@
     "link": "https://winutil.christitus.com/dev/tweaks/performance-plans/addultperf"
   },
   "WPFRemoveUltPerf": {
-    "Content": "Remove Ultimate Performance Profile",
+    "Content": "Ultimate Performance Profile - Disable",
     "category": "Performance Plans",
     "panel": "2",
     "Type": "Button",
@@ -2608,23 +2626,5 @@
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/disableexplorerautodiscovery"
-  },
-  "WPFToggleDisableCrossDeviceResume": {
-    "Content": "Cross-Device Resume",
-    "Description": "This tweak controls the Resume function in Windows 11 24H2 and later, which allows you to resume an activity from a mobile device and vice-versa.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\CrossDeviceResume\\Configuration",
-        "Name": "IsResumeAllowed",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "true"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/disablecrossdeviceresume"
   }
 }
