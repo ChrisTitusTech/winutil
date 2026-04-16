@@ -14,12 +14,7 @@ function Invoke-WinUtilAutoRun {
 
     BusyWait
 
-    $dnsProvider = "Default"
-    if ($sync.ContainsKey("WPFchangedns") -and $null -ne $sync["WPFchangedns"] -and -not [string]::IsNullOrWhiteSpace([string]$sync["WPFchangedns"].Text)) {
-        $dnsProvider = [string]$sync["WPFchangedns"].Text
-    }
-
-    if ($sync.selectedTweaks.Count -gt 0 -or $dnsProvider -ne "Default") {
+    if ($sync.selectedTweaks.Count -gt 0) {
         Write-Host "Applying tweaks..."
         Invoke-WPFtweaksbutton
         BusyWait
