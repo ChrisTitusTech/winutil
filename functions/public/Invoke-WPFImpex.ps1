@@ -102,6 +102,10 @@ function Invoke-WPFImpex {
                         } finally {
                             $sync.ImportInProgress = $false
                         }
+
+                        if ($sync.selectedTweaks.Count -gt 0) {
+                            Invoke-WPFtweaksbutton
+                        }
                     }
                 }
             } catch {
