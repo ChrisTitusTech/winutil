@@ -16,7 +16,7 @@ function Invoke-WinUtilAutoRun {
 
     if ($sync.selectedTweaks.Count -gt 0) {
         Write-Host "Applying tweaks..."
-        Invoke-WPFtweaksbutton
+        Invoke-WPFtweaksbutton -DnsProviderOverride "Default"
         BusyWait
     }
 

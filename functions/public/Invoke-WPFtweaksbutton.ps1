@@ -6,6 +6,10 @@ function Invoke-WPFtweaksbutton {
 
   #>
 
+  param(
+    [string]$DnsProviderOverride
+  )
+
   if($sync.ProcessRunning) {
     $msg = "[Invoke-WPFtweaksbutton] Install process is currently running."
     [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
@@ -13,7 +17,7 @@ function Invoke-WPFtweaksbutton {
   }
 
   $Tweaks = $sync.selectedTweaks
-  $dnsProvider = $sync["WPFchangedns"].text
+  $dnsProvider = if ($null -ne $DnsProviderOverride) { $DnsProviderOverride } else { $sync["WPFchangedns"].text }
   $restorePointTweak = "WPFTweaksRestorePoint"
   $restorePointSelected = $Tweaks -contains $restorePointTweak
   $tweaksToRun = @($Tweaks | Where-Object { $_ -ne $restorePointTweak })
