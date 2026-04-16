@@ -12,20 +12,12 @@ function Invoke-WinUtilAutoRun {
             }
     }
 
-    function Get-DnsProviderForAutoRun {
-        if ($sync.ContainsKey("WPFchangedns") -and $null -ne $sync["WPFchangedns"]) {
-            $provider = [string]$sync["WPFchangedns"].Text
-            if (-not [string]::IsNullOrWhiteSpace($provider)) {
-                return $provider
-            }
-        }
-
-        return "Default"
-    }
-
     BusyWait
 
-    $dnsProvider = Get-DnsProviderForAutoRun
+    $dnsProvider = "Default"
+    if ($sync.ContainsKey("WPFchangedns") -and $null -ne $sync["WPFchangedns"] -and -not [string]::IsNullOrWhiteSpace([string]$sync["WPFchangedns"].Text)) {
+        $dnsProvider = [string]$sync["WPFchangedns"].Text
+    }
 
     if ($sync.selectedTweaks.Count -gt 0 -or $dnsProvider -ne "Default") {
         Write-Host "Applying tweaks..."
