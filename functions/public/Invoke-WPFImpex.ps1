@@ -16,7 +16,8 @@ function Invoke-WPFImpex {
     #>
     param(
         $type,
-        $Config = $null
+        $Config = $null,
+        [switch]$RunImportedConfig
     )
 
     function ConfigDialog {
@@ -101,6 +102,16 @@ function Invoke-WPFImpex {
                             Reset-WPFCheckBoxes -doToggles $true
                         } finally {
                             $sync.ImportInProgress = $false
+                        }
+                    }
+
+                    if ($RunImportedConfig) {
+                        if ($PARAM_NOUI) {
+                            Invoke-WinUtilAutoRun
+                        } else {
+                            Invoke-WPFRunspace -ScriptBlock {
+                                Invoke-WinUtilAutoRun
+                            } | Out-Null
                         }
                     }
                 }

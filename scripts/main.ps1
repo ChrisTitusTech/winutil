@@ -475,7 +475,7 @@ $sync["SettingsButton"].Add_Click({
 $sync["ImportMenuItem"].Add_Click({
     Write-Debug "Import clicked"
     Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
-    Invoke-WPFImpex -type "import"
+    Invoke-WPFImpex -type "import" -RunImportedConfig
 })
 $sync["ExportMenuItem"].Add_Click({
     Write-Debug "Export clicked"

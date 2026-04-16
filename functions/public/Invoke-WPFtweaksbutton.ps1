@@ -13,7 +13,13 @@ function Invoke-WPFtweaksbutton {
   }
 
   $Tweaks = $sync.selectedTweaks
-  $dnsProvider = $sync["WPFchangedns"].text
+  $dnsProvider = "Default"
+  if ($sync.ContainsKey("WPFchangedns") -and $null -ne $sync["WPFchangedns"]) {
+    $resolvedDnsProvider = [string]$sync["WPFchangedns"].Text
+    if (-not [string]::IsNullOrWhiteSpace($resolvedDnsProvider)) {
+      $dnsProvider = $resolvedDnsProvider
+    }
+  }
   $restorePointTweak = "WPFTweaksRestorePoint"
   $restorePointSelected = $Tweaks -contains $restorePointTweak
   $tweaksToRun = @($Tweaks | Where-Object { $_ -ne $restorePointTweak })
