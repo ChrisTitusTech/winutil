@@ -1,34 +1,24 @@
 ---
-title: "Show File Extensions"
+title: "Acrylic Blur on Login Screen"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2408}
-  "WPFToggleShowExt": {
-    "Content": "Show File Extensions",
-    "Description": "If enabled, File extensions (e.g., .txt, .jpg) are visible.",
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2188}
+  "WPFToggleLoginBlur": {
+    "Content": "Acrylic Blur on Login Screen",
+    "Description": "If disabled, the acrylic blur effect will be removed on the Windows 10/11 login screen background.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
     "registry": [
       {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "Name": "HideFileExt",
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+        "Name": "DisableAcrylicBackgroundOnLogon",
         "Value": "0",
         "Type": "DWord",
         "OriginalValue": "1",
-        "DefaultState": "false"
+        "DefaultState": "true"
       }
-    ],
-    "InvokeScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
-    ],
-    "UndoScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
     ],
 ```
 
