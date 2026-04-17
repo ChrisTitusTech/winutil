@@ -1,12 +1,12 @@
 ---
-title: "Disable Multiplane Overlay"
+title: "Multiplane Overlay"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2365}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2271}
   "WPFToggleMultiplaneOverlay": {
-    "Content": "Disable Multiplane Overlay",
-    "Description": "Disable the Multiplane Overlay which can sometimes cause issues with Graphics Cards.",
+    "Content": "Multiplane Overlay",
+    "Description": "Enable or disable the Multiplane Overlay, which can sometimes cause issues with graphics cards.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -14,10 +14,10 @@ description: ""
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Dwm",
         "Name": "OverlayTestMode",
-        "Value": "5",
+        "Value": "0",
         "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>",
-        "DefaultState": "false"
+        "OriginalValue": "5",
+        "DefaultState": "true"
       }
     ],
 ```

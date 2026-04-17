@@ -1,5 +1,5 @@
 ---
-title: "Run OO Shutup 10"
+title: "OO Shutup 10 - Run"
 description: ""
 ---
 

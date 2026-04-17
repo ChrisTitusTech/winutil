@@ -1,5 +1,5 @@
 ---
-title: "Configure NTP Server"
+title: "NTP Server - Enable"
 description: ""
 ---
 
