@@ -3,7 +3,7 @@ title: "Remove Microsoft Copilot"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1789}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1792}
   "WPFTweaksRemoveCopilot": {
     "Content": "Remove Microsoft Copilot",
     "Description": "Removes Copilot AppXPackages and related ai packages",
