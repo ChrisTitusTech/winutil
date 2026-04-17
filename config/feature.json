@@ -1,6 +1,6 @@
 {
   "WPFFeaturesdotnet": {
-    "Content": "All .Net Framework (2,3,4)",
+    "Content": ".NET Framework (Versions 2, 3, 4) - Enable",
     "Description": ".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications.",
     "category": "Features",
     "panel": "1",
@@ -12,7 +12,7 @@
     "link": "https://winutil.christitus.com/dev/features/features/dotnet"
   },
   "WPFFixesNTPPool": {
-    "Content": "Configure NTP Server",
+    "Content": "NTP Server - Enable",
     "Description": "Replaces the default Windows NTP server (time.windows.com) with pool.ntp.org for improved time synchronization accuracy and reliability.",
     "category": "Fixes",
     "panel": "1",
@@ -22,7 +22,7 @@
     "link": "https://winutil.christitus.com/dev/features/fixes/ntppool"
   },
   "WPFFeatureshyperv": {
-    "Content": "HyperV Virtualization",
+    "Content": "Hyper-V - Enable",
     "Description": "Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines.",
     "category": "Features",
     "panel": "1",
@@ -35,7 +35,7 @@
     "link": "https://winutil.christitus.com/dev/features/features/hyperv"
   },
   "WPFFeatureslegacymedia": {
-    "Content": "Legacy Media (WMP, DirectPlay)",
+    "Content": "Legacy Media Components (WMP, DirectPlay) - Enable",
     "Description": "Enables legacy programs from previous versions of Windows.",
     "category": "Features",
     "panel": "1",
@@ -49,7 +49,7 @@
     "link": "https://winutil.christitus.com/dev/features/features/legacymedia"
   },
   "WPFFeaturewsl": {
-    "Content": "Windows Subsystem for Linux",
+    "Content": "Windows Subsystem for Linux (WSL) - Enable",
     "Description": "Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting.",
     "category": "Features",
     "panel": "1",
@@ -61,7 +61,7 @@
     "link": "https://winutil.christitus.com/dev/features/features/wsl"
   },
   "WPFFeaturenfs": {
-    "Content": "NFS - Network File System",
+    "Content": "Network File System (NFS) - Enable",
     "Description": "Network File System (NFS) is a mechanism for storing files on a network.",
     "category": "Features",
     "panel": "1",
@@ -80,7 +80,7 @@
     "link": "https://winutil.christitus.com/dev/features/features/nfs"
   },
   "WPFFeatureRegBackup": {
-    "Content": "Enable Daily Registry Backup Task 12.30am",
+    "Content": "Registry Backup (Daily Task 12:30am) - Enable",
     "Description": "Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803.",
     "category": "Features",
     "panel": "1",
@@ -97,7 +97,7 @@
     "link": "https://winutil.christitus.com/dev/features/features/regbackup"
   },
   "WPFFeatureEnableLegacyRecovery": {
-    "Content": "Enable Legacy F8 Boot Recovery",
+    "Content": "Legacy F8 Boot Recovery - Enable",
     "Description": "Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
     "category": "Features",
     "panel": "1",
@@ -108,7 +108,7 @@
     "link": "https://winutil.christitus.com/dev/features/features/enablelegacyrecovery"
   },
   "WPFFeatureDisableLegacyRecovery": {
-    "Content": "Disable Legacy F8 Boot Recovery",
+    "Content": "Legacy F8 Boot Recovery - Disable",
     "Description": "Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
     "category": "Features",
     "panel": "1",
@@ -119,7 +119,7 @@
     "link": "https://winutil.christitus.com/dev/features/features/disablelegacyrecovery"
   },
   "WPFFeaturesSandbox": {
-    "Content": "Windows Sandbox",
+    "Content": "Windows Sandbox - Enable",
     "Description": "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation.",
     "category": "Features",
     "panel": "1",
@@ -129,7 +129,7 @@
     "link": "https://winutil.christitus.com/dev/features/features/sandbox"
   },
   "WPFFeatureInstall": {
-    "Content": "Install Features",
+    "Content": "Run Features",
     "category": "Features",
     "panel": "1",
     "Type": "Button",
@@ -138,7 +138,7 @@
     "link": "https://winutil.christitus.com/dev/features/features/install"
   },
   "WPFPanelAutologin": {
-    "Content": "Set Up Autologin",
+    "Content": "Autologin - Enable",
     "category": "Fixes",
     "panel": "1",
     "Type": "Button",
@@ -147,7 +147,7 @@
     "link": "https://winutil.christitus.com/dev/features/fixes/autologin"
   },
   "WPFFixesUpdate": {
-    "Content": "Reset Windows Update",
+    "Content": "Windows Update - Reset",
     "category": "Fixes",
     "panel": "1",
     "Type": "Button",
@@ -156,7 +156,7 @@
     "link": "https://winutil.christitus.com/dev/features/fixes/update"
   },
   "WPFFixesNetwork": {
-    "Content": "Reset Network",
+    "Content": "Network - Reset",
     "category": "Fixes",
     "panel": "1",
     "Type": "Button",
@@ -165,7 +165,7 @@
     "link": "https://winutil.christitus.com/dev/features/fixes/network"
   },
   "WPFPanelDISM": {
-    "Content": "System Corruption Scan",
+    "Content": "System Corruption Scan - Run",
     "category": "Fixes",
     "panel": "1",
     "Type": "Button",
@@ -174,7 +174,7 @@
     "link": "https://winutil.christitus.com/dev/features/fixes/dism"
   },
   "WPFFixesWinget": {
-    "Content": "WinGet Reinstall",
+    "Content": "WinGet - Reinstall",
     "category": "Fixes",
     "panel": "1",
     "Type": "Button",
@@ -293,7 +293,7 @@
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/timedate"
   },
   "WPFWinUtilInstallPSProfile": {
-    "Content": "Install CTT PowerShell Profile",
+    "Content": "CTT PowerShell Profile - Install",
     "category": "Powershell Profile Powershell 7+ Only",
     "panel": "2",
     "Type": "Button",
@@ -302,7 +302,7 @@
     "link": "https://winutil.christitus.com/dev/features/powershell-profile-powershell-7--only/installpsprofile"
   },
   "WPFWinUtilUninstallPSProfile": {
-    "Content": "Uninstall CTT PowerShell Profile",
+    "Content": "CTT PowerShell Profile - Remove",
     "category": "Powershell Profile Powershell 7+ Only",
     "panel": "2",
     "Type": "Button",
@@ -311,7 +311,7 @@
     "link": "https://winutil.christitus.com/dev/features/powershell-profile-powershell-7--only/uninstallpsprofile"
   },
   "WPFWinUtilSSHServer": {
-    "Content": "Enable OpenSSH Server",
+    "Content": "OpenSSH Server - Enable",
     "category": "Remote Access",
     "panel": "2",
     "Type": "Button",
