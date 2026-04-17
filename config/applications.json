@@ -1745,6 +1745,15 @@
         "winget": "SergeySerkov.TagScanner",
         "foss": false
     },
+    "netspeedtray": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "NetSpeedTray",
+        "description": "A lightweight, open-source network monitor for Windows that displays live upload/download speeds directly on the Taskbar with a native look and feel.",
+        "link": "https://github.com/erez-c137/NetSpeedTray/tree/main/",
+        "winget": "erez-c137.NetSpeedTray",
+        "foss": true
+    },
     "notion": {
         "category": "AI-Automation",
         "choco": "notion",
