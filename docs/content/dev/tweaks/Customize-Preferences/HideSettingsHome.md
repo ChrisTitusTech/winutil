@@ -3,7 +3,7 @@ title: "Remove Settings Home Page"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2250}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2253}
   "WPFToggleHideSettingsHome": {
     "Content": "Remove Settings Home Page",
     "Description": "Removes the Home Page in the Windows Settings app.",

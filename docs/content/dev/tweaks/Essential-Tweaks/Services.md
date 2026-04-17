@@ -966,4 +966,10 @@ description: ""
         "OriginalType": "Manual"
       }
     ],
+    "InvokeScript": [
+      "
+      $Memory = (Get-CimInstance Win32_PhysicalMemory | Measure-Object Capacity -Sum).Sum / 1KB
+      Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value $Memory
+      "
+    ],
 ```
