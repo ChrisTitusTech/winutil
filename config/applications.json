@@ -2043,7 +2043,7 @@
         "foss": true
     },
     "policyplus": {
-        "category": "Multimedia Tools",
+        "category": "Utilities",
         "choco": "na",
         "content": "Policy Plus",
         "description": "Local Group Policy Editor plus more, for all Windows editions.",
