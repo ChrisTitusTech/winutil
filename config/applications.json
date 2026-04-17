@@ -1592,6 +1592,15 @@
         "winget": "XP9CXNGPPJ97XX",
         "foss": false
     },
+    "modrinth": {
+        "category": "Games",
+        "choco": "na",
+        "content": "Modrinth App",
+        "description": "Modrinth App is a desktop application for managing Minecraft mods and modpacks.",
+        "link": "https://modrinth.com/app",
+        "winget": "Modrinth.ModrinthApp",
+        "foss": true
+    },
     "ModernFlyouts": {
         "category": "Multimedia Tools",
         "choco": "modernflyouts",
@@ -3273,6 +3282,15 @@
         "description": "XPipe is an open-source tool for orchestrating containerized applications. It simplifies the deployment and management of containerized services in a distributed environment.",
         "link": "https://xpipe.io/",
         "winget": "xpipe-io.xpipe",
+        "foss": true
+    },
+    "yasb": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "YASB",
+        "description": "YASB (Yet Another Status Bar) is a highly configurable status bar for Windows, written in Python, with support for many widgets, easy theming, and deep customization.",
+        "link": "https://yasb.dev/",
+        "winget": "AmN.yasb",
         "foss": true
     },
     "yarn": {
