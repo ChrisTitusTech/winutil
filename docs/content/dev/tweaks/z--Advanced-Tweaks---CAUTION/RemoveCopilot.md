@@ -1,11 +1,11 @@
 ---
-title: "Remove Microsoft Copilot"
+title: "Microsoft Copilot - Disable"
 description: ""
 ---
 
 ```json {filename="config/tweaks.json",linenos=inline,linenostart=1792}
   "WPFTweaksRemoveCopilot": {
-    "Content": "Remove Microsoft Copilot",
+    "Content": "Microsoft Copilot - Disable",
     "Description": "Removes Copilot AppXPackages and related ai packages",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",

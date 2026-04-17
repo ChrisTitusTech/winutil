@@ -1,11 +1,11 @@
 ---
-title: "Set Classic Right-Click Menu"
+title: "Right-Click Menu Previous Layout - Enable"
 description: ""
 ---
 
 ```json {filename="config/tweaks.json",linenos=inline,linenostart=1929}
   "WPFTweaksRightClickMenu": {
-    "Content": "Set Classic Right-Click Menu",
+    "Content": "Right-Click Menu Previous Layout - Enable",
     "Description": "Restores the classic context menu when right-clicking in File Explorer, replacing the simplified Windows 11 version.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",

@@ -1,5 +1,5 @@
 ---
-title: "Remove Ultimate Performance Profile"
+title: "Ultimate Performance Profile - Disable"
 description: ""
 ---
 

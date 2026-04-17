@@ -1,11 +1,11 @@
 ---
-title: "Show File Extensions"
+title: "File Explorer File Extensions"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2411}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2155}
   "WPFToggleShowExt": {
-    "Content": "Show File Extensions",
+    "Content": "File Explorer File Extensions",
     "Description": "If enabled, File extensions (e.g., .txt, .jpg) are visible.",
     "category": "Customize Preferences",
     "panel": "2",

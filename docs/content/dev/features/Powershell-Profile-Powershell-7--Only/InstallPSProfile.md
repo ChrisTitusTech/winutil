@@ -1,5 +1,5 @@
 ---
-title: "Install CTT PowerShell Profile"
+title: "CTT PowerShell Profile - Install"
 description: ""
 ---
 

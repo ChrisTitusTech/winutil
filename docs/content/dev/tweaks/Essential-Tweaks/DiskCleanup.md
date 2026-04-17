@@ -1,11 +1,11 @@
 ---
-title: "Run Disk Cleanup"
+title: "Disk Cleanup - Run"
 description: ""
 ---
 
 ```json {filename="config/tweaks.json",linenos=inline,linenostart=1951}
   "WPFTweaksDiskCleanup": {
-    "Content": "Run Disk Cleanup",
+    "Content": "Disk Cleanup - Run",
     "Description": "Runs Disk Cleanup on Drive C: and removes old Windows Updates.",
     "category": "Essential Tweaks",
     "panel": "1",

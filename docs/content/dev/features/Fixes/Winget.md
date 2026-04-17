@@ -1,5 +1,5 @@
 ---
-title: "WinGet Reinstall"
+title: "WinGet - Reinstall"
 description: ""
 ---
 

@@ -1,12 +1,12 @@
 ---
-title: "Modern Standby fix"
+title: "S0 Sleep Network Connectivity"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2129}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2349}
   "WPFToggleStandbyFix": {
-    "Content": "Modern Standby fix",
-    "Description": "Disable network connection during S0 Sleep. If network connectivity is turned on during S0 Sleep it could cause overheating on modern laptops.",
+    "Content": "S0 Sleep Network Connectivity",
+    "Description": "Enable or disable network connectivity during S0 Sleep.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -14,9 +14,9 @@ description: ""
       {
         "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Power\\PowerSettings\\f15576e8-98b7-4186-b944-eafa664402d9",
         "Name": "ACSettingIndex",
-        "Value": "0",
+        "Value": "1",
         "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>",
+        "OriginalValue": "0",
         "DefaultState": "true"
       }
     ],
