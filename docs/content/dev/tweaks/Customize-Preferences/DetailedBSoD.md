@@ -1,11 +1,11 @@
 ---
-title: "Detailed BSoD"
+title: "BSoD Verbose Mode"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2482}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2087}
   "WPFToggleDetailedBSoD": {
-    "Content": "Detailed BSoD",
+    "Content": "BSoD Verbose Mode",
     "Description": "If enabled, you will see a detailed Blue Screen of Death (BSOD) with more information.",
     "category": "Customize Preferences",
     "panel": "2",

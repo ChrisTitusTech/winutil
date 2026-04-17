@@ -1106,6 +1106,15 @@
         "winget": "gerardog.gsudo",
         "foss": true
     },
+    "helium": {
+        "category": "Browsers",
+        "choco": "helium",
+        "content": "Helium",
+        "description": "Private, fast, and honest web browser.",
+        "link": "https://github.com/imputnet/helium/",
+        "winget": "ImputNet.Helium",
+        "foss": true
+    },
     "hugo": {
         "category": "Utilities",
         "choco": "hugo-extended",
@@ -1511,6 +1520,15 @@
         "winget": "Logitech.GHUB",
         "foss": false
     },
+    "morgen": {
+        "category": "Utilities",
+        "choco": "morgen",
+        "content": "Morgen",
+        "description": "A daily planner that prioritizes your most important to-dos, events, and projects in one app. Get AI-powered recommendations or plan manually.",
+        "link": "https://www.morgen.so/",
+        "winget": "Morgen.Morgen",
+        "foss": false
+    },
     "malwarebytes": {
         "category": "Utilities",
         "choco": "malwarebytes",
@@ -1573,6 +1591,15 @@
         "link": "https://apps.microsoft.com/detail/xp9cxngppj97xx",
         "winget": "XP9CXNGPPJ97XX",
         "foss": false
+    },
+    "modrinth": {
+        "category": "Games",
+        "choco": "na",
+        "content": "Modrinth App",
+        "description": "Modrinth App is a desktop application for managing Minecraft mods and modpacks.",
+        "link": "https://modrinth.com/app",
+        "winget": "Modrinth.ModrinthApp",
+        "foss": true
     },
     "ModernFlyouts": {
         "category": "Multimedia Tools",
@@ -1725,6 +1752,24 @@
         "description": "TagScanner is a powerful tool for organizing and managing your music collection.",
         "link": "https://www.xdlab.ru/en/",
         "winget": "SergeySerkov.TagScanner",
+        "foss": false
+    },
+    "netspeedtray": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "NetSpeedTray",
+        "description": "A lightweight, open-source network monitor for Windows that displays live upload/download speeds directly on the Taskbar with a native look and feel.",
+        "link": "https://github.com/erez-c137/NetSpeedTray/tree/main/",
+        "winget": "erez-c137.NetSpeedTray",
+        "foss": true
+    },
+    "notion": {
+        "category": "AI-Automation",
+        "choco": "notion",
+        "content": "Notion",
+        "description": "Build Custom Agents, search across all your apps, and automate busywork. The AI workspace where teams get more done, faster.",
+        "link": "https://www.notion.com/",
+        "winget": "Notion.Notion",
         "foss": false
     },
     "nanazip": {
@@ -1998,7 +2043,7 @@
         "foss": true
     },
     "policyplus": {
-        "category": "Multimedia Tools",
+        "category": "Utilities",
         "choco": "na",
         "content": "Policy Plus",
         "description": "Local Group Policy Editor plus more, for all Windows editions.",
@@ -2726,6 +2771,15 @@
         "winget": "TeamViewer.TeamViewer",
         "foss": false
     },
+    "todoist": {
+        "category": "Utilities",
+        "choco": "todoist-desktop",
+        "content": "Todoist",
+        "description": "Join 50+ million professionals who simplify work and life with the world’s #1 to-do list app.",
+        "link": "https://www.todoist.com/",
+        "winget": "Doist.Todoist",
+        "foss": false
+    },
     "teamspeak3": {
         "category": "Utilities",
         "choco": "teamspeak",
@@ -3228,6 +3282,15 @@
         "description": "XPipe is an open-source tool for orchestrating containerized applications. It simplifies the deployment and management of containerized services in a distributed environment.",
         "link": "https://xpipe.io/",
         "winget": "xpipe-io.xpipe",
+        "foss": true
+    },
+    "yasb": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "YASB",
+        "description": "YASB (Yet Another Status Bar) is a highly configurable status bar for Windows, written in Python, with support for many widgets, easy theming, and deep customization.",
+        "link": "https://yasb.dev/",
+        "winget": "AmN.yasb",
         "foss": true
     },
     "yarn": {

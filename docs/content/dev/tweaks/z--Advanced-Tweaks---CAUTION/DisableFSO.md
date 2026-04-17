@@ -1,11 +1,11 @@
 ---
-title: "Disable Fullscreen Optimizations"
+title: "Fullscreen Optimizations - Disable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2050}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2053}
   "WPFTweaksDisableFSO": {
-    "Content": "Disable Fullscreen Optimizations",
+    "Content": "Fullscreen Optimizations - Disable",
     "Description": "Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",

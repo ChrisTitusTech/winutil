@@ -1,5 +1,5 @@
 ---
-title: "Reset Network"
+title: "Network - Reset"
 description: ""
 ---
 

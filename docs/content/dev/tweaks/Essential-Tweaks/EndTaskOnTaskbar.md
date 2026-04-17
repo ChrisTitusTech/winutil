@@ -1,11 +1,11 @@
 ---
-title: "Enable End Task With Right Click"
+title: "End Task With Right Click - Enable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1744}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1747}
   "WPFTweaksEndTaskOnTaskbar": {
-    "Content": "Enable End Task With Right Click",
+    "Content": "End Task With Right Click - Enable",
     "Description": "Enables option to end task when right clicking a program in the taskbar.",
     "category": "Essential Tweaks",
     "panel": "1",

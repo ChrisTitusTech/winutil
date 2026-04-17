@@ -1,5 +1,5 @@
 ---
-title: "Add and Activate Ultimate Performance Profile"
+title: "Ultimate Performance Profile - Enable"
 description: ""
 ---
 
