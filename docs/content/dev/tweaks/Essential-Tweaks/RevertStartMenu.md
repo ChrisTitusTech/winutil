@@ -1,11 +1,11 @@
 ---
-title: "Revert Start Menu layout"
+title: "Start Menu Previous Layout - Enable"
 description: ""
 ---
 
 ```json {filename="config/tweaks.json",linenos=inline,linenostart=90}
   "WPFTweaksRevertStartMenu": {
-    "Content": "Revert Start Menu layout",
+    "Content": "Start Menu Previous Layout - Enable",
     "Description": "Bring back the old Start Menu layout from before the gradual rollout of the new one in 25H2.",
     "category": "Essential Tweaks",
     "panel": "1",

@@ -1,11 +1,11 @@
 ---
-title: "Prefer IPv4 over IPv6"
+title: "IPv6 - Set IPv4 as Preferred"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1974}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1977}
   "WPFTweaksIPv46": {
-    "Content": "Prefer IPv4 over IPv6",
+    "Content": "IPv6 - Set IPv4 as Preferred",
     "Description": "Setting the IPv4 preference can have latency and security benefits on private networks where IPv6 is not configured.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",

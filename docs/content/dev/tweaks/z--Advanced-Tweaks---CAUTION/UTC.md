@@ -1,11 +1,11 @@
 ---
-title: "Set Time to UTC (Dual Boot)"
+title: "Date & Time - Set Time to UTC"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1465}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1468}
   "WPFTweaksUTC": {
-    "Content": "Set Time to UTC (Dual Boot)",
+    "Content": "Date & Time - Set Time to UTC",
     "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux systems.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
