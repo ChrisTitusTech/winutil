@@ -1,5 +1,5 @@
 ---
-title: "Enable OpenSSH Server"
+title: "OpenSSH Server - Enable"
 description: ""
 ---
 

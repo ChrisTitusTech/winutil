@@ -1,11 +1,11 @@
 ---
-title: "Disable Hibernation"
+title: "Hibernation - Disable"
 description: ""
 ---
 
 ```json {filename="config/tweaks.json",linenos=inline,linenostart=32}
   "WPFTweaksHiber": {
-    "Content": "Disable Hibernation",
+    "Content": "Hibernation - Disable",
     "Description": "Hibernation is really meant for laptops as it saves what's in memory before turning the PC off. It really should never be used.",
     "category": "Essential Tweaks",
     "panel": "1",

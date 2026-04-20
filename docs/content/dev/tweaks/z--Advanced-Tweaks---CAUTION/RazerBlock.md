@@ -1,11 +1,11 @@
 ---
-title: "Block Razer Software Installs"
+title: "Razer Software Auto-Install - Disable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1832}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1835}
   "WPFTweaksRazerBlock": {
-    "Content": "Block Razer Software Installs",
+    "Content": "Razer Software Auto-Install - Disable",
     "Description": "Blocks ALL Razer Software installations. The hardware works fine without any software.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",

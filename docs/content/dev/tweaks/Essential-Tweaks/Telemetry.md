@@ -1,11 +1,11 @@
 ---
-title: "Disable Telemetry"
+title: "Telemetry - Disable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1327}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1333}
   "WPFTweaksTelemetry": {
-    "Content": "Disable Telemetry",
+    "Content": "Telemetry - Disable",
     "Description": "Disables Microsoft Telemetry.",
     "category": "Essential Tweaks",
     "panel": "1",
@@ -105,9 +105,6 @@ description: ""
 
       # Disable (Windows Error Reporting Manager) Service
       Set-Service -Name wermgr -StartupType Disabled
-
-      $Memory = (Get-CimInstance Win32_PhysicalMemory | Measure-Object Capacity -Sum).Sum / 1KB
-      Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value $Memory
 
       Remove-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Siuf\\Rules\" -Name PeriodInNanoSeconds
       "

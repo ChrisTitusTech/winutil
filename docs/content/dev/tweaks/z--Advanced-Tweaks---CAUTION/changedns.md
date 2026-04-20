@@ -1,11 +1,11 @@
 ---
-title: "DNS"
+title: "DNS - Set to:"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2533}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2572}
   "WPFchangedns": {
-    "Content": "DNS",
+    "Content": "DNS - Set to:",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Type": "Combobox",
