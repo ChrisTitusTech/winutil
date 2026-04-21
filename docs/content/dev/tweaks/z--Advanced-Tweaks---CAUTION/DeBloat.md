@@ -3,7 +3,7 @@ title: "Unwanted Pre-Installed Apps - Remove"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1679}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=779}
   "WPFTweaksDeBloat": {
     "Content": "Unwanted Pre-Installed Apps - Remove",
     "Description": "This will remove a bunch of Windows pre-installed applications which most people dont want on there system.",
