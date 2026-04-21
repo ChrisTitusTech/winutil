@@ -3,7 +3,7 @@ title: "Taskbar Task View Icon"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2547}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1647}
   "WPFToggleTaskView": {
     "Content": "Taskbar Task View Icon",
     "Description": "If enabled, Task View Button in Taskbar will be shown.",
