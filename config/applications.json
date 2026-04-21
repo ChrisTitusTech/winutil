@@ -467,6 +467,15 @@
         "winget": "Anysphere.Cursor",
         "foss": false
     },
+    "Dangerzone": {
+        "category": "Utilities",
+        "choco": "na",
+        "winget": "FreedomofthePressFoundation.Dangerzone",
+        "description": "Take potentially dangerous PDFs, office documents, or images and convert them to a safe PDF.",
+        "content": "Dangerzone",
+        "link": "https://github.com/freedomofpress/dangerzone",
+        "foss": true
+    },
     "darktable": {
         "category": "Multimedia Tools",
         "choco": "darktable",
