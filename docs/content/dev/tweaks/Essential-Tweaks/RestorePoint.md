@@ -3,7 +3,7 @@ title: "Restore Point - Create"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1720}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=843}
   "WPFTweaksRestorePoint": {
     "Content": "Restore Point - Create",
     "Description": "Creates a restore point at runtime in case a revert is needed from WinUtil modifications.",

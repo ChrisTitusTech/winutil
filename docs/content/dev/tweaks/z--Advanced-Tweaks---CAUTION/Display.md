@@ -3,7 +3,7 @@ title: "Visual Effects - Set to Best Performance"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1557}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=680}
   "WPFTweaksDisplay": {
     "Content": "Visual Effects - Set to Best Performance",
     "Description": "Sets the system preferences to performance. You can do this manually with sysdm.cpl as well.",

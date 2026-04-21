@@ -3,7 +3,7 @@ title: "File Explorer Automatic Folder Discovery - Disable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2596}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1719}
   "WPFTweaksDisableExplorerAutoDiscovery": {
     "Content": "File Explorer Automatic Folder Discovery - Disable",
     "Description": "Windows Explorer automatically tries to guess the type of the folder based on its contents, slowing down the browsing experience. WARNING! Will disable File Explorer grouping.",
