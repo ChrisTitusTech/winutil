@@ -467,15 +467,6 @@
         "winget": "Anysphere.Cursor",
         "foss": false
     },
-    "Dangerzone": {
-        "category": "Utilities",
-        "choco": "na",
-        "winget": "FreedomofthePressFoundation.Dangerzone",
-        "description": "Take potentially dangerous PDFs, office documents, or images and convert them to a safe PDF.",
-        "content": "Dangerzone",
-        "link": "https://github.com/freedomofpress/dangerzone",
-        "foss": true
-    },
     "darktable": {
         "category": "Multimedia Tools",
         "choco": "darktable",
@@ -1249,14 +1240,6 @@
         "link": "https://inkscape.org/",
         "winget": "Inkscape.Inkscape",
         "foss": true
-    },
-    "irfanview": {
-        "category": "Multimedia Tools",
-        "choco": "irfanview",
-        "content": "IrfanView",
-        "description": "IrfanView is a lightweight, fast, and free image viewer and editor. Supports multiple formats, batch processing, and powerful plugins.",
-        "link": "https://irfanview.com/",
-        "winget": "IrfanSkiljan.IrfanView"
     },
     "itch": {
         "category": "Games",
@@ -2660,6 +2643,15 @@
         "content": "Stremio",
         "link": "https://www.stremio.com/",
         "description": "Stremio is a media center application that allows users to organize and stream their favorite movies, TV shows, and video content.",
+        "foss": true
+    },
+    "streamerbot":  {
+        "winget": "streamerbot.streamerbot",
+        "choco": "na",
+        "category": "Utilities",
+        "content": "Streamer.bot",
+        "link": "https://streamer.bot/",
+        "description": "Streamer.bot is a local bot, meaning all connections are made directly from your local PC to any configured external services, such as Twitch, YouTube, etc.",
         "foss": true
     },
     "sublimemerge": {
