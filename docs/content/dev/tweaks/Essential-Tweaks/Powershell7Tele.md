@@ -3,7 +3,7 @@ title: "PowerShell 7 Telemetry - Disable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1763}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=863}
   "WPFTweaksPowershell7Tele": {
     "Content": "PowerShell 7 Telemetry - Disable",
     "Description": "Creates an Environment Variable called 'POWERSHELL_TELEMETRY_OPTOUT' with a value of '1' which will tell PowerShell 7 to not send Telemetry Data.",
