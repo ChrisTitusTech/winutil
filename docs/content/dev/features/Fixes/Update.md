@@ -1,5 +1,5 @@
 ---
-title: "Reset Windows Update"
+title: "Windows Update - Reset"
 description: ""
 ---
 

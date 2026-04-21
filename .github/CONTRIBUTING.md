@@ -21,11 +21,13 @@
 
 * Pull requests are now handled directly on the **MAIN branch**. This was done since we can now select specific releases to launch via releases in GitHub.
 
-* If you're doing code changes, then you can submit a PR to the `main` branch, but I am very selective about these.
+* If you're doing code changes, then you can submit a PR to the `main` branch.
 
 !!! warning "Important"
 
      Do not use a code formatter, make massive amounts of line changes, or make multiple feature changes. EACH FEATURE CHANGE SHOULD BE IT'S OWN PULL REQUEST!
+
+     Do not open a pull request that adds support for other languages to WinUtil for now, until we decide how we want to move forward with language support.
 
 * When creating pull requests, it is essential to thoroughly document all changes made. This includes, but is not limited to, documenting any additions made to the `tweaks` section and corresponding `undo tweak`, so users are able to remove the newly added tweaks if necessary, and comprehensive documentation is required for all code changes. Document your changes and briefly explain why you made your changes in your Pull Request Description. Failure to adhere to this format may result in the denial of the pull request. Additionally, any code lacking sufficient documentation may also be denied.
 

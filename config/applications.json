@@ -5,7 +5,8 @@
         "content": "1Password",
         "description": "1Password is a password manager that allows you to store and manage your passwords securely.",
         "link": "https://1password.com/",
-        "winget": "AgileBits.1Password"
+        "winget": "AgileBits.1Password",
+        "foss": false
     },
     "7zip": {
         "category": "Utilities",
@@ -22,7 +23,8 @@
         "content": "Adobe Acrobat Reader",
         "description": "Adobe Acrobat Reader is a free PDF viewer with essential features for viewing, printing, and annotating PDF documents.",
         "link": "https://www.adobe.com/acrobat/pdf-reader.html",
-        "winget": "Adobe.Acrobat.Reader.64-bit"
+        "winget": "Adobe.Acrobat.Reader.64-bit",
+        "foss": false
     },
     "advancedip": {
         "category": "Pro Tools",
@@ -30,7 +32,8 @@
         "content": "Advanced IP Scanner",
         "description": "Advanced IP Scanner is a fast and easy-to-use network scanner. It is designed to analyze LAN networks and provides information about connected devices.",
         "link": "https://www.advanced-ip-scanner.com/",
-        "winget": "Famatech.AdvancedIPScanner"
+        "winget": "Famatech.AdvancedIPScanner",
+        "foss": false
     },
     "affine": {
         "category": "Document",
@@ -56,7 +59,8 @@
         "content": "AIMP (Music Player)",
         "description": "AIMP is a feature-rich music player with support for various audio formats, playlists, and customizable user interface.",
         "link": "https://www.aimp.ru/",
-        "winget": "AIMP.AIMP"
+        "winget": "AIMP.AIMP",
+        "foss": false
     },
     "alacritty": {
         "category": "Utilities",
@@ -73,7 +77,8 @@
         "content": "Anaconda",
         "description": "Anaconda is a distribution of the Python and R programming languages for scientific computing.",
         "link": "https://www.anaconda.com/products/distribution",
-        "winget": "Anaconda.Anaconda3"
+        "winget": "Anaconda.Anaconda3",
+        "foss": false
     },
     "angryipscanner": {
         "category": "Pro Tools",
@@ -99,7 +104,8 @@
         "content": "AnyDesk",
         "description": "AnyDesk is a remote desktop software that enables users to access and control computers remotely. It is known for its fast connection and low latency.",
         "link": "https://anydesk.com/",
-        "winget": "AnyDesk.AnyDesk"
+        "winget": "AnyDesk.AnyDesk",
+        "foss": false
     },
     "anythingllm": {
         "category": "AI-Automation",
@@ -125,7 +131,8 @@
         "content": "Autoruns",
         "description": "This utility shows you what programs are configured to run during system bootup or login.",
         "link": "https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns",
-        "winget": "Microsoft.Sysinternals.Autoruns"
+        "winget": "Microsoft.Sysinternals.Autoruns",
+        "foss": false
     },
     "rdcman": {
         "category": "Microsoft Tools",
@@ -133,7 +140,8 @@
         "content": "RDCMan",
         "description": "RDCMan manages multiple remote desktop connections. It is useful for managing server labs where you need regular access to each machine such as automated checkin systems and data centers.",
         "link": "https://learn.microsoft.com/en-us/sysinternals/downloads/rdcman",
-        "winget": "Microsoft.Sysinternals.RDCMan"
+        "winget": "Microsoft.Sysinternals.RDCMan",
+        "foss": false
     },
     "autohotkey": {
         "category": "Utilities",
@@ -150,7 +158,7 @@
         "content": "AutoIt",
         "description": "Windows GUI automation scripting tool (freeware) used to automate keystrokes, mouse actions, and window/control interactions.",
         "link": "https://www.autoitscript.com/site/autoit/",
-        "winget": "na",
+        "winget": "AutoIt.AutoIt",
         "foss": false
     },
     "azuredatastudio": {
@@ -159,7 +167,8 @@
         "content": "Microsoft Azure Data Studio",
         "description": "Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.",
         "link": "https://docs.microsoft.com/sql/azure-data-studio/what-is-azure-data-studio",
-        "winget": "Microsoft.AzureDataStudio"
+        "winget": "Microsoft.Azure.DataStudio",
+        "foss": true
     },
     "barrier": {
         "category": "Utilities",
@@ -185,7 +194,8 @@
         "content": "Beeper",
         "description": "All your chats in one app.",
         "link": "https://www.beeper.com/",
-        "winget": "Beeper.Beeper"
+        "winget": "Beeper.Beeper",
+        "foss": false
     },
     "bitwarden": {
         "category": "Utilities",
@@ -238,7 +248,8 @@
         "content": "Bulk Rename Utility",
         "description": "Bulk Rename Utility allows you to easily rename files and folders recursively based upon find-replace, character place, fields, sequences, regular expressions, EXIF data, and more.",
         "link": "https://www.bulkrenameutility.co.uk",
-        "winget": "TGRMNSoftware.BulkRenameUtility"
+        "winget": "TGRMNSoftware.BulkRenameUtility",
+        "foss": false
     },
     "buzz": {
         "category": "AI-Automation",
@@ -255,7 +266,8 @@
         "content": "Advanced Renamer",
         "description": "Advanced Renamer is a program for renaming multiple files and folders at once. By configuring renaming methods the names can be manipulated in various ways.",
         "link": "https://www.advancedrenamer.com/",
-        "winget": "HulubuluSoftware.AdvancedRenamer"
+        "winget": "HulubuluSoftware.AdvancedRenamer",
+        "foss": false
     },
     "cryptomator": {
         "category": "Utilities",
@@ -272,7 +284,8 @@
         "content": "Citrix Workspace app",
         "description": "A secure, unified client application that provides instant access to virtual desktops, SaaS, web, and Windows apps from any device (Windows, macOS, Linux, iOS, Android) or browser.",
         "link": "https://www.citrix.com/downloads/workspace-app/",
-        "winget": "Citrix.Workspace"
+        "winget": "Citrix.Workspace",
+        "foss": false
     },
     "calibre": {
         "category": "Document",
@@ -307,7 +320,8 @@
         "content": "ChatGPT",
         "description": "ChatGPT desktop app provides direct access to OpenAI's conversational AI assistant for writing, analysis, and productivity tasks.",
         "link": "https://openai.com/chatgpt/desktop/",
-        "winget": "OpenAI.ChatGPT"
+        "winget": "9nt1r1c2hh7j",
+        "foss": false
     },
     "chatterino": {
         "category": "Communications",
@@ -324,7 +338,8 @@
         "content": "Chrome",
         "description": "Google Chrome is a widely used web browser known for its speed, simplicity, and seamless integration with Google services.",
         "link": "https://www.google.com/chrome/",
-        "winget": "Google.Chrome"
+        "winget": "Google.Chrome",
+        "foss": false
     },
     "chromium": {
         "category": "Browsers",
@@ -377,7 +392,8 @@
         "content": "Clone Hero",
         "description": "Clone Hero is a free rhythm game, which can be played with any 5 or 6 button guitar controller.",
         "link": "https://clonehero.net/",
-        "winget": "CloneHeroTeam.CloneHero"
+        "winget": "CloneHeroTeam.CloneHero",
+        "foss": false
     },
     "cmake": {
         "category": "Development",
@@ -403,7 +419,8 @@
         "content": "CPU-Z",
         "description": "CPU-Z is a system monitoring and diagnostic tool for Windows. It provides detailed information about the computer's hardware components, including the CPU, memory, and motherboard.",
         "link": "https://www.cpuid.com/softwares/cpu-z.html",
-        "winget": "CPUID.CPU-Z"
+        "winget": "CPUID.CPU-Z",
+        "foss": false
     },
     "crystaldiskinfo": {
         "category": "Utilities",
@@ -465,7 +482,8 @@
         "content": "Display Driver Uninstaller",
         "description": "Display Driver Uninstaller (DDU) is a tool for completely uninstalling graphics drivers from NVIDIA, AMD, and Intel. It is useful for troubleshooting graphics driver-related issues.",
         "link": "https://www.wagnardsoft.com/display-driver-uninstaller-DDU-",
-        "winget": "Wagnardsoft.DisplayDriverUninstaller"
+        "winget": "Wagnardsoft.DisplayDriverUninstaller",
+        "foss": true
     },
     "deepl": {
         "category": "AI-Automation",
@@ -500,7 +518,7 @@
         "content": "digiKam",
         "description": "digiKam is an advanced open-source photo management software with features for organizing, editing, and sharing photos.",
         "link": "https://www.digikam.org/",
-        "winget": "KDE.digikam",
+        "winget": "KDE.digiKam",
         "foss": true
     },
     "discord": {
@@ -509,11 +527,12 @@
         "content": "Discord",
         "description": "Discord is a popular communication platform with voice, video, and text chat, designed for gamers but used by a wide range of communities.",
         "link": "https://discord.com/",
-        "winget": "Discord.Discord"
+        "winget": "Discord.Discord",
+        "foss": false
     },
     "dismtools": {
         "category": "Microsoft Tools",
-        "choco": "na",
+        "choco": "dismtools",
         "content": "DISMTools",
         "description": "DISMTools is a fast, customizable GUI for the DISM utility, supporting Windows images from Windows 7 onward. It handles installations on any drive, offers project support, and lets users tweak settings like color modes, language, and DISM versions; powered by both native DISM and a managed DISM API.",
         "link": "https://github.com/CodingWonders/DISMTools",
@@ -526,7 +545,17 @@
         "content": "NTLite",
         "description": "Integrate updates, drivers, automate Windows and application setup, speedup Windows deployment process and have it all set for the next time.",
         "link": "https://ntlite.com",
-        "winget": "Nlitesoft.NTLite"
+        "winget": "Nlitesoft.NTLite",
+        "foss": false
+    },
+    "dorion": {
+        "category": "Communications",
+        "choco": "dorion",
+        "content": "Dorion",
+        "description": "Tiny alternative Discord client with a smaller footprint, snappier startup, themes, plugins and more!",
+        "link": "https://github.com/SpikeHD/Dorion",
+        "winget": "SpikeHD.Dorion",
+        "foss": true
     },
     "ditto": {
         "category": "Utilities",
@@ -543,7 +572,8 @@
         "content": "Docker Desktop",
         "description": "Docker Desktop is a powerful tool for containerized application development and deployment.",
         "link": "https://www.docker.com/products/docker-desktop",
-        "winget": "Docker.DockerDesktop"
+        "winget": "Docker.DockerDesktop",
+        "foss": false
     },
     "dotnet3": {
         "category": "Microsoft Tools",
@@ -551,7 +581,8 @@
         "content": ".NET Desktop Runtime 3.1",
         "description": ".NET Desktop Runtime 3.1 is a runtime environment required for running applications developed with .NET Core 3.1.",
         "link": "https://dotnet.microsoft.com/download/dotnet/3.1",
-        "winget": "Microsoft.DotNet.DesktopRuntime.3_1"
+        "winget": "Microsoft.DotNet.DesktopRuntime.3_1",
+        "foss": true
     },
     "dotnet5": {
         "category": "Microsoft Tools",
@@ -559,7 +590,8 @@
         "content": ".NET Desktop Runtime 5",
         "description": ".NET Desktop Runtime 5 is a runtime environment required for running applications developed with .NET 5.",
         "link": "https://dotnet.microsoft.com/download/dotnet/5.0",
-        "winget": "Microsoft.DotNet.DesktopRuntime.5"
+        "winget": "Microsoft.DotNet.DesktopRuntime.5",
+        "foss": true
     },
     "dotnet6": {
         "category": "Microsoft Tools",
@@ -567,7 +599,8 @@
         "content": ".NET Desktop Runtime 6",
         "description": ".NET Desktop Runtime 6 is a runtime environment required for running applications developed with .NET 6.",
         "link": "https://dotnet.microsoft.com/download/dotnet/6.0",
-        "winget": "Microsoft.DotNet.DesktopRuntime.6"
+        "winget": "Microsoft.DotNet.DesktopRuntime.6",
+        "foss": true
     },
     "dotnet7": {
         "category": "Microsoft Tools",
@@ -575,7 +608,8 @@
         "content": ".NET Desktop Runtime 7",
         "description": ".NET Desktop Runtime 7 is a runtime environment required for running applications developed with .NET 7.",
         "link": "https://dotnet.microsoft.com/download/dotnet/7.0",
-        "winget": "Microsoft.DotNet.DesktopRuntime.7"
+        "winget": "Microsoft.DotNet.DesktopRuntime.7",
+        "foss": true
     },
     "dotnet8": {
         "category": "Microsoft Tools",
@@ -583,7 +617,8 @@
         "content": ".NET Desktop Runtime 8",
         "description": ".NET Desktop Runtime 8 is a runtime environment required for running applications developed with .NET 8.",
         "link": "https://dotnet.microsoft.com/download/dotnet/8.0",
-        "winget": "Microsoft.DotNet.DesktopRuntime.8"
+        "winget": "Microsoft.DotNet.DesktopRuntime.8",
+        "foss": true
     },
     "dotnet9": {
         "category": "Microsoft Tools",
@@ -591,7 +626,8 @@
         "content": ".NET Desktop Runtime 9",
         "description": ".NET Desktop Runtime 9 is a runtime environment required for running applications developed with .NET 9.",
         "link": "https://dotnet.microsoft.com/download/dotnet/9.0",
-        "winget": "Microsoft.DotNet.DesktopRuntime.9"
+        "winget": "Microsoft.DotNet.DesktopRuntime.9",
+        "foss": true
     },
     "dotnet10": {
         "category": "Microsoft Tools",
@@ -599,7 +635,8 @@
         "content": ".NET Desktop Runtime 10",
         "description": ".NET Desktop Runtime 10 is a runtime environment required for running applications developed with .NET 10.",
         "link": "https://dotnet.microsoft.com/download/dotnet/10.0",
-        "winget": "Microsoft.DotNet.DesktopRuntime.10"
+        "winget": "Microsoft.DotNet.DesktopRuntime.10",
+        "foss": true
     },
     "dmt": {
         "winget": "GNE.DualMonitorTools",
@@ -625,7 +662,8 @@
         "content": "Easy Context Menu",
         "description": "Easy Context Menu (ECM) lets you add a variety of useful commands and tweaks to the Desktop, My Computer, Drives, File and Folder right-click context menus. This enables you to access the most used Windows components quickly and easily. Simply check the box next to the items you wish to add. Once added, just right click and the select the component shortcut to launch it. Easy Context Menu is both portable and freeware.",
         "link": "https://www.sordum.org/7615/easy-context-menu-v1-6/",
-        "winget": "sordum.EasyContextMenu"
+        "winget": "sordum.EasyContextMenu",
+        "foss": false
     },
     "eaapp": {
         "category": "Games",
@@ -633,7 +671,8 @@
         "content": "EA App",
         "description": "EA App is a platform for accessing and playing Electronic Arts games.",
         "link": "https://www.ea.com/ea-app",
-        "winget": "ElectronicArts.EADesktop"
+        "winget": "ElectronicArts.EADesktop",
+        "foss": false
     },
     "eartrumpet": {
         "category": "Multimedia Tools",
@@ -650,7 +689,8 @@
         "content": "Edge",
         "description": "Microsoft Edge is a modern web browser built on Chromium, offering performance, security, and integration with Microsoft services.",
         "link": "https://www.microsoft.com/edge",
-        "winget": "Microsoft.Edge"
+        "winget": "Microsoft.Edge",
+        "foss": false
     },
     "efibooteditor": {
         "category": "Pro Tools",
@@ -658,7 +698,8 @@
         "content": "EFI Boot Editor",
         "description": "EFI Boot Editor is a tool for managing the EFI/UEFI boot entries on your system. It allows you to customize the boot configuration of your computer.",
         "link": "https://www.easyuefi.com/",
-        "winget": "EFIBootEditor.EFIBootEditor"
+        "winget": "EFIBootEditor.EFIBootEditor",
+        "foss": false
     },
     "emulationstation": {
         "category": "Games",
@@ -684,7 +725,8 @@
         "content": "Epic Games Launcher",
         "description": "Epic Games Launcher is the client for accessing and playing games from the Epic Games Store.",
         "link": "https://www.epicgames.com/store/en-US/",
-        "winget": "EpicGames.EpicGamesLauncher"
+        "winget": "EpicGames.EpicGamesLauncher",
+        "foss": false
     },
     "esearch": {
         "category": "Utilities",
@@ -692,7 +734,8 @@
         "content": "Everything Search",
         "description": "Everything Search is a fast and efficient file search utility for Windows.",
         "link": "https://www.voidtools.com/",
-        "winget": "voidtools.Everything"
+        "winget": "voidtools.Everything",
+        "foss": false
     },
     "espanso": {
         "category": "Utilities",
@@ -703,9 +746,9 @@
         "winget": "Espanso.Espanso",
         "foss": true
     },
-    "ffmpeg": {
+    "ffmpeg-batch": {
         "category": "Utilities",
-        "choco": "na",
+        "choco": "ffmpeg-batch",
         "content": "FFmpeg Batch AV Converter",
         "description": "FFmpeg Batch AV Converter is a universal audio and video encoder, that allows to use the full potential of ffmpeg command line with a few mouse clicks in a convenient GUI with drag and drop, progress information.",
         "link": "https://ffmpeg-batch.sourceforge.io/",
@@ -723,7 +766,7 @@
     },
     "fastfetch": {
         "category": "Utilities",
-        "choco": "na",
+        "choco": "fastfetch",
         "content": "Fastfetch",
         "description": "Fastfetch is a neofetch-like tool for fetching system information and displaying them in a pretty way.",
         "link": "https://github.com/fastfetch-cli/fastfetch/",
@@ -739,13 +782,14 @@
         "winget": "Ferdium.Ferdium",
         "foss": true
     },
-    "ffmpeg-full": {
+    "ffmpeg": {
         "category": "Multimedia Tools",
         "choco": "ffmpeg-full",
         "content": "FFmpeg (full)",
         "description": "FFmpeg is a powerful multimedia processing tool that enables users to convert, edit, and stream audio and video files with a vast range of codecs and formats. | Note: FFmpeg can not be uninstalled using WinGet.",
         "link": "https://ffmpeg.org/",
-        "winget": "Gyan.FFmpeg"
+        "winget": "Gyan.FFmpeg",
+        "foss": true
     },
     "fileconverter": {
         "category": "Utilities",
@@ -762,7 +806,7 @@
         "content": "Files",
         "description": "Alternative file explorer.",
         "link": "https://github.com/files-community/Files",
-        "winget": "na",
+        "winget": "FilesCommunity.Files",
         "foss": true
     },
     "firealpaca": {
@@ -771,7 +815,8 @@
         "content": "Fire Alpaca",
         "description": "Fire Alpaca is a free digital painting software that provides a wide range of drawing tools and a user-friendly interface.",
         "link": "https://firealpaca.com/",
-        "winget": "FireAlpaca.FireAlpaca"
+        "winget": "FireAlpaca.FireAlpaca",
+        "foss": false
     },
     "firefox": {
         "category": "Browsers",
@@ -806,11 +851,12 @@
         "content": "Lightshot (Screenshots)",
         "description": "Lightshot is an easy-to-use, light-weight screenshot software tool, where you can optionally edit your screenshots using different tools, share them via Internet and/or save to disk, and customize the available options.",
         "link": "https://app.prntscr.com/",
-        "winget": "Skillbrains.Lightshot"
+        "winget": "Skillbrains.Lightshot",
+        "foss": false
     },
     "floorp": {
         "category": "Browsers",
-        "choco": "na",
+        "choco": "floorp",
         "content": "Floorp",
         "description": "Floorp is an open-source web browser project that aims to provide a simple and fast browsing experience.",
         "link": "https://floorp.app/",
@@ -832,7 +878,8 @@
         "content": "F.lux",
         "description": "f.lux adjusts the color temperature of your screen to reduce eye strain during nighttime use.",
         "link": "https://justgetflux.com/",
-        "winget": "flux.flux"
+        "winget": "flux.flux",
+        "foss": false
     },
     "foobar": {
         "category": "Multimedia Tools",
@@ -840,7 +887,8 @@
         "content": "foobar2000 (Music Player)",
         "description": "foobar2000 is a highly customizable and extensible music player for Windows, known for its modular design and advanced features.",
         "link": "https://www.foobar2000.org/",
-        "winget": "PeterPawlowski.foobar2000"
+        "winget": "PeterPawlowski.foobar2000",
+        "foss": false
     },
     "foxpdfeditor": {
         "category": "Document",
@@ -848,7 +896,8 @@
         "content": "Foxit PDF Editor",
         "description": "Foxit PDF Editor is a feature-rich PDF editor and viewer with a familiar ribbon-style interface.",
         "link": "https://www.foxit.com/pdf-editor/",
-        "winget": "Foxit.PhantomPDF"
+        "winget": "Foxit.PhantomPDF",
+        "foss": false
     },
     "foxpdfreader": {
         "category": "Document",
@@ -856,7 +905,8 @@
         "content": "Foxit PDF Reader",
         "description": "Foxit PDF Reader is a free PDF viewer with a familiar ribbon-style interface.",
         "link": "https://www.foxit.com/pdf-reader/",
-        "winget": "Foxit.FoxitReader"
+        "winget": "Foxit.FoxitReader",
+        "foss": false
     },
     "freecad": {
         "category": "Multimedia Tools",
@@ -891,7 +941,8 @@
         "content": "GeForce NOW",
         "description": "GeForce NOW is a cloud gaming service that allows you to play high-quality PC games on your device.",
         "link": "https://www.nvidia.com/en-us/geforce-now/",
-        "winget": "Nvidia.GeForceNow"
+        "winget": "Nvidia.GeForceNow",
+        "foss": false
     },
     "gimp": {
         "category": "Multimedia Tools",
@@ -913,11 +964,12 @@
     },
     "gitbutler": {
         "category": "Development",
-        "choco": "na",
+        "choco": "gitbutler",
         "content": "Git Butler",
         "description": "A Git client for simultaneous branches on top of your existing workflow.",
         "link": "https://gitbutler.com/",
-        "winget": "GitButler.GitButler"
+        "winget": "GitButler.GitButler",
+        "foss": false
     },
     "gitextensions": {
         "category": "Development",
@@ -925,7 +977,8 @@
         "content": "Git Extensions",
         "description": "Git Extensions is a graphical user interface for Git, providing additional features for easier source code management.",
         "link": "https://gitextensions.github.io/",
-        "winget": "GitExtensionsTeam.GitExtensions"
+        "winget": "GitExtensionsTeam.GitExtensions",
+        "foss": true
     },
     "githubcli": {
         "category": "Development",
@@ -938,7 +991,7 @@
     },
     "github-copilot-cli": {
         "category": "AI-Automation",
-        "choco": "na",
+        "choco": "github-copilot-cli",
         "content": "GitHub Copilot CLI",
         "description": "GitHub Copilot experience for the command line: natural-language assistance for commands and development tasks; distributed via WinGet.",
         "link": "https://github.com/github/copilot-cli",
@@ -960,7 +1013,8 @@
         "content": "GitKraken Client",
         "description": "GitKraken Client is a powerful visual Git client from Axosoft that works with ALL git repositories on any hosting environment.",
         "link": "https://www.gitkraken.com/git-client",
-        "winget": "Axosoft.GitKraken"
+        "winget": "Axosoft.GitKraken",
+        "foss": false
     },
     "glaryutilities": {
         "category": "Utilities",
@@ -968,7 +1022,8 @@
         "content": "Glary Utilities",
         "description": "Glary Utilities is a comprehensive system optimization and maintenance tool for Windows.",
         "link": "https://www.glarysoft.com/glary-utilities/",
-        "winget": "Glarysoft.GlaryUtilities"
+        "winget": "Glarysoft.GlaryUtilities",
+        "foss": false
     },
     "godotengine": {
         "category": "Development",
@@ -985,7 +1040,8 @@
         "content": "GOG Galaxy",
         "description": "GOG Galaxy is a gaming client that offers DRM-free games, additional content, and more.",
         "link": "https://www.gog.com/galaxy",
-        "winget": "GOG.Galaxy"
+        "winget": "GOG.Galaxy",
+        "foss": false
     },
     "gitify": {
         "category": "Development",
@@ -1011,7 +1067,8 @@
         "content": "Google Drive",
         "description": "File syncing across devices all tied to your Google account.",
         "link": "https://www.google.com/drive/",
-        "winget": "Google.GoogleDrive"
+        "winget": "Google.GoogleDrive",
+        "foss": false
     },
     "gpt4all": {
         "category": "AI-Automation",
@@ -1028,7 +1085,8 @@
         "content": "GPU-Z",
         "description": "GPU-Z provides detailed information about your graphics card and GPU.",
         "link": "https://www.techpowerup.com/gpuz/",
-        "winget": "TechPowerUp.GPU-Z"
+        "winget": "TechPowerUp.GPU-Z",
+        "foss": false
     },
     "greenshot": {
         "category": "Multimedia Tools",
@@ -1045,13 +1103,23 @@
         "content": "Gsudo",
         "description": "Gsudo is a sudo implementation for Windows, allowing elevated privilege execution.",
         "link": "https://gerardog.github.io/gsudo/",
-        "winget": "gerardog.gsudo"
+        "winget": "gerardog.gsudo",
+        "foss": true
+    },
+    "helium": {
+        "category": "Browsers",
+        "choco": "helium",
+        "content": "Helium",
+        "description": "Private, fast, and honest web browser.",
+        "link": "https://github.com/imputnet/helium/",
+        "winget": "ImputNet.Helium",
+        "foss": true
     },
     "hugo": {
         "category": "Utilities",
         "choco": "hugo-extended",
         "content": "Hugo",
-        "description": "The world’s fastest framework for building websites.",
+        "description": "The world's fastest framework for building websites.",
         "link": "https://github.com/gohugoio/hugo/",
         "winget": "Hugo.Hugo.Extended",
         "foss": true
@@ -1116,7 +1184,8 @@
         "content": "HWiNFO",
         "description": "HWiNFO provides comprehensive hardware information and diagnostics for Windows.",
         "link": "https://www.hwinfo.com/",
-        "winget": "REALiX.HWiNFO"
+        "winget": "REALiX.HWiNFO",
+        "foss": false
     },
     "hwmonitor": {
         "category": "Utilities",
@@ -1124,11 +1193,12 @@
         "content": "HWMonitor",
         "description": "HWMonitor is a hardware monitoring program that reads PC systems main health sensors.",
         "link": "https://www.cpuid.com/softwares/hwmonitor.html",
-        "winget": "CPUID.HWMonitor"
+        "winget": "CPUID.HWMonitor",
+        "foss": false
     },
     "imhex": {
         "category": "Development",
-        "choco": "na",
+        "choco": "imhex",
         "content": "ImHex (Hex Editor)",
         "description": "A modern, featureful Hex Editor for Reverse Engineers and Developers.",
         "link": "https://imhex.werwolv.net/",
@@ -1150,7 +1220,8 @@
         "content": "ImgBurn",
         "description": "ImgBurn is a lightweight CD, DVD, HD-DVD, and Blu-ray burning application with advanced features for creating and burning disc images.",
         "link": "https://www.imgburn.com/",
-        "winget": "LIGHTNINGUK.ImgBurn"
+        "winget": "LIGHTNINGUK.ImgBurn",
+        "foss": false
     },
     "inkscape": {
         "category": "Multimedia Tools",
@@ -1176,7 +1247,8 @@
         "content": "iTunes",
         "description": "iTunes is a media player, media library, and online radio broadcaster application developed by Apple Inc.",
         "link": "https://www.apple.com/itunes/",
-        "winget": "Apple.iTunes"
+        "winget": "Apple.iTunes",
+        "foss": false
     },
     "jami": {
         "category": "Communications",
@@ -1247,7 +1319,8 @@
         "content": "JDownloader",
         "description": "JDownloader is a feature-rich download manager with support for various file hosting services.",
         "link": "https://jdownloader.org/",
-        "winget": "AppWork.JDownloader"
+        "winget": "AppWork.JDownloader",
+        "foss": true
     },
     "jellyfinmediaplayer": {
         "category": "Multimedia Tools",
@@ -1273,7 +1346,8 @@
         "content": "Jetbrains Toolbox",
         "description": "Jetbrains Toolbox is a platform for easy installation and management of JetBrains developer tools.",
         "link": "https://www.jetbrains.com/toolbox/",
-        "winget": "JetBrains.Toolbox"
+        "winget": "JetBrains.Toolbox",
+        "foss": false
     },
     "joplin": {
         "category": "Document",
@@ -1326,7 +1400,8 @@
         "content": "K-Lite Codec Standard",
         "description": "K-Lite Codec Pack Standard is a collection of audio and video codecs and related tools, providing essential components for media playback.",
         "link": "https://www.codecguide.com/",
-        "winget": "CodecGuide.K-LiteCodecPack.Standard"
+        "winget": "CodecGuide.K-LiteCodecPack.Standard",
+        "foss": false
     },
     "kodi": {
         "category": "Multimedia Tools",
@@ -1379,7 +1454,8 @@
         "content": "Link Shell extension",
         "description": "Link Shell Extension (LSE) provides for the creation of Hardlinks, Junctions, Volume Mountpoints, Symbolic Links, a folder cloning process that utilises Hardlinks or Symbolic Links and a copy process taking care of Junctions, Symbolic Links, and Hardlinks. LSE, as its name implies is implemented as a Shell extension and is accessed from Windows Explorer, or similar file/folder managers.",
         "link": "https://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html",
-        "winget": "HermannSchinagl.LinkShellExtension"
+        "winget": "HermannSchinagl.LinkShellExtension",
+        "foss": false
     },
     "linphone": {
         "category": "Communications",
@@ -1423,7 +1499,8 @@
         "content": "LockHunter",
         "description": "LockHunter is a free tool to delete files blocked by something you do not know.",
         "link": "https://lockhunter.com/",
-        "winget": "CrystalRich.LockHunter"
+        "winget": "CrystalRich.LockHunter",
+        "foss": false
     },
     "logseq": {
         "category": "Document",
@@ -1440,7 +1517,17 @@
         "content": "Logitech G Hub",
         "description": "Official software for managing Logitech gaming peripherals (mice, keyboards, headsets, lighting profiles, etc.).",
         "link": "https://www.logitechg.com/en-us/software/ghub",
-        "winget": "Logitech.GHUB"
+        "winget": "Logitech.GHUB",
+        "foss": false
+    },
+    "morgen": {
+        "category": "Utilities",
+        "choco": "morgen",
+        "content": "Morgen",
+        "description": "A daily planner that prioritizes your most important to-dos, events, and projects in one app. Get AI-powered recommendations or plan manually.",
+        "link": "https://www.morgen.so/",
+        "winget": "Morgen.Morgen",
+        "foss": false
     },
     "malwarebytes": {
         "category": "Utilities",
@@ -1448,7 +1535,8 @@
         "content": "Malwarebytes",
         "description": "Malwarebytes is an anti-malware software that provides real-time protection against threats.",
         "link": "https://www.malwarebytes.com/",
-        "winget": "Malwarebytes.Malwarebytes"
+        "winget": "Malwarebytes.Malwarebytes",
+        "foss": false
     },
     "mpc-qt": {
         "category": "Multimedia Tools",
@@ -1486,7 +1574,7 @@
         "winget": "Meld.Meld",
         "foss": true
     },
-     "microsoft-aishell": {
+    "microsoft-aishell": {
         "category": "AI-Automation",
         "choco": "na",
         "content": "Microsoft AI Shell",
@@ -1500,13 +1588,22 @@
         "choco": "na",
         "content": "Microsoft Copilot",
         "description": "Microsoft Copilot desktop app for Windows (consumer Copilot), distributed via Microsoft Store and commonly installed via its Store ID.",
-        "link": "https://apps.microsoft.com/detail/9nht9rb2f4hd",
-        "winget": "9NHT9RB2F4HD",
+        "link": "https://apps.microsoft.com/detail/xp9cxngppj97xx",
+        "winget": "XP9CXNGPPJ97XX",
         "foss": false
+    },
+    "modrinth": {
+        "category": "Games",
+        "choco": "na",
+        "content": "Modrinth App",
+        "description": "Modrinth App is a desktop application for managing Minecraft mods and modpacks.",
+        "link": "https://modrinth.com/app",
+        "winget": "Modrinth.ModrinthApp",
+        "foss": true
     },
     "ModernFlyouts": {
         "category": "Multimedia Tools",
-        "choco": "na",
+        "choco": "modernflyouts",
         "content": "Modern Flyouts",
         "description": "An open-source, modern, Fluent Design-based set of flyouts for Windows.",
         "link": "https://github.com/ModernFlyouts-Community/ModernFlyouts/",
@@ -1573,7 +1670,8 @@
         "content": "MSI Afterburner",
         "description": "MSI Afterburner is a graphics card overclocking utility with advanced features.",
         "link": "https://www.msi.com/Landing/afterburner",
-        "winget": "Guru3D.Afterburner"
+        "winget": "Guru3D.Afterburner",
+        "foss": false
     },
     "mullvadvpn": {
         "category": "Pro Tools",
@@ -1635,7 +1733,8 @@
         "content": "MusicBee (Music Player)",
         "description": "MusicBee is a customizable music player with support for various audio formats. It includes features like an integrated search function, tag editing, and more.",
         "link": "https://getmusicbee.com/",
-        "winget": "MusicBee.MusicBee"
+        "winget": "9P4CLT2RJ1RS",
+        "foss": false
     },
     "mp3tag": {
         "category": "Multimedia Tools",
@@ -1643,7 +1742,8 @@
         "content": "Mp3tag (Metadata Audio Editor)",
         "description": "Mp3tag is a powerful and yet easy-to-use tool to edit metadata of common audio formats.",
         "link": "https://www.mp3tag.de/en/",
-        "winget": "Mp3tag.Mp3tag"
+        "winget": "FlorianHeidenreich.Mp3tag",
+        "foss": false
     },
     "tagscanner": {
         "category": "Multimedia Tools",
@@ -1651,7 +1751,26 @@
         "content": "TagScanner (Tag Scanner)",
         "description": "TagScanner is a powerful tool for organizing and managing your music collection.",
         "link": "https://www.xdlab.ru/en/",
-        "winget": "SergeySerkov.TagScanner"
+        "winget": "SergeySerkov.TagScanner",
+        "foss": false
+    },
+    "netspeedtray": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "NetSpeedTray",
+        "description": "A lightweight, open-source network monitor for Windows that displays live upload/download speeds directly on the Taskbar with a native look and feel.",
+        "link": "https://github.com/erez-c137/NetSpeedTray/tree/main/",
+        "winget": "erez-c137.NetSpeedTray",
+        "foss": true
+    },
+    "notion": {
+        "category": "AI-Automation",
+        "choco": "notion",
+        "content": "Notion",
+        "description": "Build Custom Agents, search across all your apps, and automate busywork. The AI workspace where teams get more done, faster.",
+        "link": "https://www.notion.com/",
+        "winget": "Notion.Notion",
+        "foss": false
     },
     "nanazip": {
         "category": "Utilities",
@@ -1668,7 +1787,7 @@
         "content": "NetBird",
         "description": "NetBird is a open-source alternative comparable to TailScale that can be connected to a self-hosted server.",
         "link": "https://netbird.io/",
-        "winget": "netbird",
+        "winget": "Netbird.Netbird",
         "foss": true
     },
     "naps2": {
@@ -1695,7 +1814,8 @@
         "content": "Neovim",
         "description": "Neovim is a highly extensible text editor and an improvement over the original Vim editor.",
         "link": "https://neovim.io/",
-        "winget": "Neovim.Neovim"
+        "winget": "Neovim.Neovim",
+        "foss": true
     },
     "nextclouddesktop": {
         "category": "Utilities",
@@ -1712,7 +1832,8 @@
         "content": "nGlide (3dfx compatibility)",
         "description": "nGlide is a 3Dfx Voodoo Glide wrapper. It allows you to play games that use Glide API on modern graphics cards without the need for a 3Dfx Voodoo graphics card.",
         "link": "https://www.zeus-software.com/downloads/nglide",
-        "winget": "ZeusSoftware.nGlide"
+        "winget": "ZeusSoftware.nGlide",
+        "foss": false
     },
     "nmap": {
         "category": "Pro Tools",
@@ -1783,7 +1904,8 @@
         "content": "NVCleanstall",
         "description": "NVCleanstall is a tool designed to customize NVIDIA driver installations, allowing advanced users to control more aspects of the installation process.",
         "link": "https://www.techpowerup.com/nvcleanstall/",
-        "winget": "TechPowerUp.NVCleanstall"
+        "winget": "TechPowerUp.NVCleanstall",
+        "foss": false
     },
     "nvm": {
         "category": "Development",
@@ -1809,7 +1931,8 @@
         "content": "Obsidian",
         "description": "Obsidian is a powerful note-taking and knowledge management application.",
         "link": "https://obsidian.md/",
-        "winget": "Obsidian.Obsidian"
+        "winget": "Obsidian.Obsidian",
+        "foss": false
     },
     "okular": {
         "category": "Document",
@@ -1835,7 +1958,8 @@
         "content": "OneDrive",
         "description": "OneDrive is a cloud storage service provided by Microsoft, allowing users to store and share files securely across devices.",
         "link": "https://onedrive.live.com/",
-        "winget": "Microsoft.OneDrive"
+        "winget": "Microsoft.OneDrive",
+        "foss": false
     },
     "onlyoffice": {
         "category": "Document",
@@ -1852,7 +1976,8 @@
         "content": "OPAutoClicker",
         "description": "A full-fledged autoclicker with two modes of autoclicking, at your dynamic cursor location or at a prespecified location.",
         "link": "https://www.opautoclicker.com",
-        "winget": "OPAutoClicker.OPAutoClicker"
+        "winget": "OPAutoClicker.OPAutoClicker",
+        "foss": false
     },
     "openhashtab": {
         "category": "Utilities",
@@ -1918,7 +2043,7 @@
         "foss": true
     },
     "policyplus": {
-        "category": "Multimedia Tools",
+        "category": "Utilities",
         "choco": "na",
         "content": "Policy Plus",
         "description": "Local Group Policy Editor plus more, for all Windows editions.",
@@ -1928,7 +2053,7 @@
     },
     "qview": {
         "category": "Multimedia Tools",
-        "choco": "na",
+        "choco": "qview",
         "content": "qView",
         "description": "qView is an image viewer designed with minimalism and usability in mind.",
         "link": "https://github.com/jurplel/qView",
@@ -1937,19 +2062,11 @@
     },
     "potplayer": {
         "category": "Multimedia Tools",
-        "choco": "na",
+        "choco": "potplayer",
         "content": "PotPlayer",
         "description": "PotPlayer is a free Windows media player with wide format support, high performance, built-in codecs, and extensive customization options.",
         "link": "https://potplayer.tv/",
-        "winget": "Daum.PotPlayer"
-    },
-    "power-automate-desktop": {
-        "category": "AI-Automation",
-        "choco": "na",
-        "content": "Power Automate for desktop",
-        "description": "Microsoft's Windows RPA tool for building desktop flows to automate repetitive tasks across apps and services.",
-        "link": "https://powerautomate.microsoft.com/desktop/",
-        "winget": "na",
+        "winget": "Daum.PotPlayer",
         "foss": false
     },
     "processexplorer": {
@@ -1958,7 +2075,8 @@
         "content": "Process Explorer",
         "description": "Process Explorer is a task manager and system monitor.",
         "link": "https://learn.microsoft.com/sysinternals/downloads/process-explorer",
-        "winget": "Microsoft.Sysinternals.ProcessExplorer"
+        "winget": "Microsoft.Sysinternals.ProcessExplorer",
+        "foss": false
     },
     "Paintdotnet": {
         "category": "Multimedia Tools",
@@ -1966,7 +2084,8 @@
         "content": "Paint.NET",
         "description": "Paint.NET is a free image and photo editing software for Windows. It features an intuitive user interface and supports a wide range of powerful editing tools.",
         "link": "https://www.getpaint.net/",
-        "winget": "dotPDN.PaintDotNet"
+        "winget": "dotPDN.PaintDotNet",
+        "foss": false
     },
     "parsec": {
         "category": "Utilities",
@@ -1974,7 +2093,8 @@
         "content": "Parsec",
         "description": "Parsec is a low-latency, high-quality remote desktop sharing application for collaborating and gaming across devices.",
         "link": "https://parsec.app/",
-        "winget": "Parsec.Parsec"
+        "winget": "Parsec.Parsec",
+        "foss": false
     },
     "pdf-xchange": {
         "category": "Document",
@@ -1982,7 +2102,8 @@
         "content": "PDF-XChangeEditor",
         "description": "A comprehensive Windows-based software suite and editor for creating, viewing, editing, annotating, and signing PDF files.",
         "link": "https://www.pdf-xchange.com/",
-        "winget": "TrackerSoftware.PDF-XChangeEditor"
+        "winget": "TrackerSoftware.PDF-XChangeEditor",
+        "foss": false
     },
     "pdf24creator": {
         "category": "Document",
@@ -1990,7 +2111,8 @@
         "content": "PDF24 creator",
         "description": "Free and easy-to-use online/desktop PDF tools that make you more productive",
         "link": "https://tools.pdf24.org/en/",
-        "winget": "geeksoftwareGmbH.PDF24Creator"
+        "winget": "geeksoftwareGmbH.PDF24Creator",
+        "foss": false
     },
     "pdfsam": {
         "category": "Document",
@@ -2016,7 +2138,8 @@
         "content": "Raspberry Pi Imager",
         "description": "Raspberry Pi Imager is a utility for writing operating system images to SD cards for Raspberry Pi devices.",
         "link": "https://www.raspberrypi.com/software/",
-        "winget": "RaspberryPiFoundation.RaspberryPiImager"
+        "winget": "RaspberryPiFoundation.RaspberryPiImager",
+        "foss": true
     },
     "playnite": {
         "category": "Games",
@@ -2033,7 +2156,8 @@
         "content": "Plex Media Server",
         "description": "Plex Media Server is a media server software that allows you to organize and stream your media library. It supports various media formats and offers a wide range of features.",
         "link": "https://www.plex.tv/your-media/",
-        "winget": "Plex.PlexMediaServer"
+        "winget": "Plex.PlexMediaServer",
+        "foss": false
     },
     "plexdesktop": {
         "category": "Multimedia Tools",
@@ -2041,7 +2165,8 @@
         "content": "Plex Desktop",
         "description": "Plex Desktop for Windows is the front end for Plex Media Server.",
         "link": "https://www.plex.tv",
-        "winget": "Plex.Plex"
+        "winget": "Plex.Plex",
+        "foss": false
     },
     "Portmaster": {
         "category": "Pro Tools",
@@ -2067,7 +2192,8 @@
         "content": "Postman",
         "description": "Postman is a collaboration platform for API development that simplifies the process of developing APIs.",
         "link": "https://www.postman.com/",
-        "winget": "Postman.Postman"
+        "winget": "Postman.Postman",
+        "foss": false
     },
     "powerautomate": {
         "category": "Microsoft Tools",
@@ -2075,7 +2201,8 @@
         "content": "Power Automate",
         "description": "Using Power Automate Desktop you can automate tasks on the desktop as well as the Web.",
         "link": "https://www.microsoft.com/en-us/power-platform/products/power-automate",
-        "winget": "Microsoft.PowerAutomateDesktop"
+        "winget": "Microsoft.PowerAutomateDesktop",
+        "foss": false
     },
     "powerbi": {
         "category": "Microsoft Tools",
@@ -2083,7 +2210,8 @@
         "content": "Power BI",
         "description": "Create stunning reports and visualizations with Power BI Desktop. It puts visual analytics at your fingertips with intuitive report authoring. Drag-and-drop to place content exactly where you want it on the flexible and fluid canvas. Quickly discover patterns as you explore a single unified view of linked, interactive visualizations.",
         "link": "https://www.microsoft.com/en-us/power-platform/products/power-bi/",
-        "winget": "Microsoft.PowerBI"
+        "winget": "Microsoft.PowerBI",
+        "foss": false
     },
     "powershell": {
         "category": "Microsoft Tools",
@@ -2118,7 +2246,8 @@
         "content": "Process Lasso",
         "description": "Process Lasso is a system optimization and automation tool that improves system responsiveness and stability by adjusting process priorities and CPU affinities.",
         "link": "https://bitsum.com/",
-        "winget": "BitSum.ProcessLasso"
+        "winget": "BitSum.ProcessLasso",
+        "foss": false
     },
     "protonauth": {
         "category": "Utilities",
@@ -2131,7 +2260,7 @@
     },
     "protonmail": {
         "category": "Communications",
-        "choco": "na",
+        "choco": "protonmail",
         "content": "Proton Mail",
         "description": "Proton Mail is an end-to-end encrypted email service by Proton, protecting your privacy with zero-access encryption.",
         "link": "https://proton.me/mail",
@@ -2140,7 +2269,7 @@
     },
     "protondrive": {
         "category": "Utilities",
-        "choco": "na",
+        "choco": "protondrive",
         "content": "Proton Drive",
         "description": "Proton Drive is an end-to-end encrypted Swiss vault for your files that protects your data.",
         "link": "https://proton.me/drive",
@@ -2149,7 +2278,7 @@
     },
     "protonpass": {
         "category": "Utilities",
-        "choco": "na",
+        "choco": "protonpass",
         "content": "Proton Pass",
         "description": "Proton Pass is a cloud-based password manager with end-to-end encryption and unique email aliases.",
         "link": "https://proton.me/pass",
@@ -2171,7 +2300,8 @@
         "content": "SysInternals Process Monitor",
         "description": "SysInternals Process Monitor is an advanced monitoring tool that shows real-time file system, registry, and process/thread activity.",
         "link": "https://docs.microsoft.com/en-us/sysinternals/downloads/procmon",
-        "winget": "Microsoft.Sysinternals.ProcessMonitor"
+        "winget": "Microsoft.Sysinternals.ProcessMonitor",
+        "foss": false
     },
     "orcaslicer": {
         "category": "Utilities",
@@ -2182,13 +2312,13 @@
         "winget": "SoftFever.OrcaSlicer",
         "foss": true
     },
-    "prucaslicer": {
+    "prusaslicer": {
         "category": "Utilities",
         "choco": "prusaslicer",
         "content": "PrusaSlicer",
         "description": "PrusaSlicer is a powerful and easy-to-use slicing software for 3D printing with Prusa 3D printers.",
         "link": "https://www.prusa3d.com/prusaslicer/",
-        "winget": "Prusa3d.PrusaSlicer",
+        "winget": "Prusa3D.PrusaSlicer",
         "foss": true
     },
     "psremoteplay": {
@@ -2197,7 +2327,8 @@
         "content": "PS Remote Play",
         "description": "PS Remote Play is a free application that allows you to stream games from your PlayStation console to a PC or mobile device.",
         "link": "https://remoteplay.dl.playstation.net/remoteplay/lang/gb/",
-        "winget": "PlayStation.PSRemotePlay"
+        "winget": "PlayStation.PSRemotePlay",
+        "foss": false
     },
     "putty": {
         "category": "Pro Tools",
@@ -2241,7 +2372,8 @@
         "content": "Tixati",
         "description": "Tixati is a cross-platform BitTorrent client written in C++ that has been designed to be light on system resources.",
         "link": "https://www.tixati.com/",
-        "winget": "Tixati.Tixati.Portable"
+        "winget": "Tixati.Tixati.Portable",
+        "foss": false
     },
     "qtox": {
         "category": "Communications",
@@ -2256,14 +2388,14 @@
         "category": "Utilities",
         "choco": "quicklook",
         "content": "Quicklook",
-        "description": "Bring macOS \u201cQuick Look\u201d feature to Windows.",
+        "description": "Bring macOS “Quick Look” feature to Windows.",
         "link": "https://github.com/QL-Win/QuickLook",
         "winget": "QL-Win.QuickLook",
         "foss": true
     },
     "rainmeter": {
         "category": "Utilities",
-        "choco": "na",
+        "choco": "rainmeter",
         "content": "Rainmeter",
         "description": "Rainmeter is a desktop customization tool that allows you to create and share customizable skins for your desktop.",
         "link": "https://www.rainmeter.net/",
@@ -2276,7 +2408,8 @@
         "content": "Revo Uninstaller",
         "description": "Revo Uninstaller is an advanced uninstaller tool that helps you remove unwanted software and clean up your system.",
         "link": "https://www.revouninstaller.com/",
-        "winget": "RevoUninstaller.RevoUninstaller"
+        "winget": "RevoUninstaller.RevoUninstaller",
+        "foss": false
     },
     "WiseProgramUninstaller": {
         "category": "Utilities",
@@ -2284,7 +2417,8 @@
         "content": "Wise Program Uninstaller (WiseCleaner)",
         "description": "Wise Program Uninstaller is the perfect solution for uninstalling Windows programs, allowing you to uninstall applications quickly and completely using its simple and user-friendly interface.",
         "link": "https://www.wisecleaner.com/wise-program-uninstaller.html",
-        "winget": "WiseCleaner.WiseProgramUninstaller"
+        "winget": "WiseCleaner.WiseProgramUninstaller",
+        "foss": false
     },
     "revolt": {
         "category": "Communications",
@@ -2382,11 +2516,12 @@
         "content": "Nilesoft Shell",
         "description": "Shell is an expanded context menu tool that adds extra functionality and customization options to the Windows context menu.",
         "link": "https://nilesoft.org/",
-        "winget": "Nilesoft.Shell"
+        "winget": "Nilesoft.Shell",
+        "foss": false
     },
     "systeminformer": {
         "category": "Development",
-        "choco": "na",
+        "choco": "systeminformer",
         "content": "System Informer",
         "description": "A free, powerful, multi-purpose tool that helps you monitor system resources, debug software and detect malware.",
         "link": "https://systeminformer.com/",
@@ -2399,7 +2534,8 @@
         "content": "SideQuestVR",
         "description": "SideQuestVR is a community-driven platform that enables users to discover, install, and manage virtual reality content on Oculus Quest devices.",
         "link": "https://sidequestvr.com/",
-        "winget": "SideQuestVR.SideQuest"
+        "winget": "SideQuestVR.SideQuest",
+        "foss": false
     },
     "signal": {
         "category": "Communications",
@@ -2416,7 +2552,8 @@
         "content": "SignalRGB",
         "description": "SignalRGB lets you control and sync your favorite RGB devices with one free application.",
         "link": "https://www.signalrgb.com/",
-        "winget": "WhirlwindFX.SignalRgb"
+        "winget": "WhirlwindFX.SignalRgb",
+        "foss": false
     },
     "simplenote": {
         "category": "Document",
@@ -2442,7 +2579,8 @@
         "content": "Slack",
         "description": "Slack is a collaboration hub that connects teams and facilitates communication through channels, messaging, and file sharing.",
         "link": "https://slack.com/",
-        "winget": "SlackTechnologies.Slack"
+        "winget": "SlackTechnologies.Slack",
+        "foss": false
     },
     "spacedrive": {
         "category": "Utilities",
@@ -2459,7 +2597,8 @@
         "content": "SpaceSniffer",
         "description": "A tool application that lets you understand how folders and files are structured on your disks.",
         "link": "http://www.uderzo.it/main_products/space_sniffer/",
-        "winget": "UderzoSoftware.SpaceSniffer"
+        "winget": "UderzoSoftware.SpaceSniffer",
+        "foss": false
     },
     "starship": {
         "category": "Development",
@@ -2467,7 +2606,7 @@
         "content": "Starship (Shell Prompt)",
         "description": "Starship is a minimal, fast, and customizable prompt for any shell.",
         "link": "https://starship.rs/",
-        "winget": "starship",
+        "winget": "Starship.Starship",
         "foss": true
     },
     "steam": {
@@ -2476,7 +2615,8 @@
         "content": "Steam",
         "description": "Steam is a digital distribution platform for purchasing and playing video games, offering multiplayer gaming, video streaming, and more.",
         "link": "https://store.steampowered.com/about/",
-        "winget": "Valve.Steam"
+        "winget": "Valve.Steam",
+        "foss": false
     },
     "strawberry": {
         "category": "Multimedia Tools",
@@ -2502,7 +2642,8 @@
         "content": "Sublime Merge",
         "description": "Sublime Merge is a Git client with advanced features and a beautiful interface.",
         "link": "https://www.sublimemerge.com/",
-        "winget": "SublimeHQ.SublimeMerge"
+        "winget": "SublimeHQ.SublimeMerge",
+        "foss": false
     },
     "sublimetext": {
         "category": "Development",
@@ -2510,7 +2651,8 @@
         "content": "Sublime Text",
         "description": "Sublime Text is a sophisticated text editor for code, markup, and prose.",
         "link": "https://www.sublimetext.com/",
-        "winget": "SublimeHQ.SublimeText.4"
+        "winget": "SublimeHQ.SublimeText.4",
+        "foss": false
     },
     "sumatra": {
         "category": "Document",
@@ -2523,11 +2665,12 @@
     },
     "pdfgear": {
         "category": "Document",
-        "choco": "na",
+        "choco": "pdfgear",
         "content": "PDFgear",
         "description": "PDFgear is a piece of full-featured PDF management software for Windows, macOS, and mobile, and it's completely free to use.",
         "link": "https://www.pdfgear.com/",
-        "winget": "PDFgear.PDFgear"
+        "winget": "PDFgear.PDFgear",
+        "foss": false
     },
     "sunshine": {
         "category": "Games",
@@ -2571,7 +2714,8 @@
         "content": "Microsoft SQL Server Management Studio",
         "description": "SQL Server Management Studio (SSMS) is an integrated environment for managing any SQL infrastructure, from SQL Server to Azure SQL Database. SSMS provides tools to configure, monitor, and administer instances of SQL Server and databases.",
         "link": "https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16",
-        "winget": "Microsoft.SQLServerManagementStudio"
+        "winget": "Microsoft.SQLServerManagementStudio",
+        "foss": false
     },
     "tabby": {
         "category": "Utilities",
@@ -2588,7 +2732,7 @@
         "content": "Tailscale",
         "description": "Tailscale is a secure and easy-to-use VPN solution for connecting your devices and networks.",
         "link": "https://tailscale.com/",
-        "winget": "tailscale.tailscale",
+        "winget": "Tailscale.Tailscale",
         "foss": true
     },
     "TcNoAccSwitcher": {
@@ -2606,7 +2750,8 @@
         "content": "SysInternals TCPView",
         "description": "SysInternals TCPView is a network monitoring tool that displays a detailed list of all TCP and UDP endpoints on your system.",
         "link": "https://docs.microsoft.com/en-us/sysinternals/downloads/tcpview",
-        "winget": "Microsoft.Sysinternals.TCPView"
+        "winget": "Microsoft.Sysinternals.TCPView",
+        "foss": false
     },
     "teams": {
         "category": "Communications",
@@ -2614,7 +2759,8 @@
         "content": "Teams",
         "description": "Microsoft Teams is a collaboration platform that integrates with Office 365 and offers chat, video conferencing, file sharing, and more.",
         "link": "https://www.microsoft.com/en-us/microsoft-teams/group-chat-software",
-        "winget": "Microsoft.Teams"
+        "winget": "Microsoft.Teams",
+        "foss": false
     },
     "teamviewer": {
         "category": "Utilities",
@@ -2622,7 +2768,17 @@
         "content": "TeamViewer",
         "description": "TeamViewer is a popular remote access and support software that allows you to connect to and control remote devices.",
         "link": "https://www.teamviewer.com/",
-        "winget": "TeamViewer.TeamViewer"
+        "winget": "TeamViewer.TeamViewer",
+        "foss": false
+    },
+    "todoist": {
+        "category": "Utilities",
+        "choco": "todoist-desktop",
+        "content": "Todoist",
+        "description": "Join 50+ million professionals who simplify work and life with the world’s #1 to-do list app.",
+        "link": "https://www.todoist.com/",
+        "winget": "Doist.Todoist",
+        "foss": false
     },
     "teamspeak3": {
         "category": "Utilities",
@@ -2630,7 +2786,8 @@
         "content": "TeamSpeak 3",
         "description": "TEAMSPEAK. YOUR TEAM. YOUR RULES. Use crystal clear sound to communicate with your team mates cross-platform with military-grade security, lag-free performance & unparalleled reliability and uptime.",
         "link": "https://www.teamspeak.com/",
-        "winget": "TeamSpeakSystems.TeamSpeakClient"
+        "winget": "TeamSpeakSystems.TeamSpeakClient",
+        "foss": false
     },
     "telegram": {
         "category": "Communications",
@@ -2647,7 +2804,7 @@
         "content": "Unigram",
         "description": "Unigram - Telegram for Windows.",
         "link": "https://unigramdev.github.io/",
-        "winget": "Telegram.Unigram",
+        "winget": "9N97ZCKPD60Q",
         "foss": true
     },
     "terminal": {
@@ -2706,11 +2863,12 @@
     },
     "tidal": {
         "category": "Multimedia Tools",
-        "choco": "na",
+        "choco": "tidal",
         "content": "Tidal",
         "description": "Tidal is a music streaming service known for its high-fidelity audio quality and exclusive content. It offers a vast library of songs and curated playlists.",
         "link": "https://tidal.com/",
-        "winget": "9NNCB5BS59PH"
+        "winget": "9NNCB5BS59PH",
+        "foss": false
     },
     "tor": {
         "category": "Browsers",
@@ -2727,7 +2885,8 @@
         "content": "Total Commander",
         "description": "Total Commander is a file manager for Windows that provides a powerful and intuitive interface for file management.",
         "link": "https://www.ghisler.com/",
-        "winget": "Ghisler.TotalCommander"
+        "winget": "Ghisler.TotalCommander",
+        "foss": false
     },
     "treesize": {
         "category": "Utilities",
@@ -2735,7 +2894,8 @@
         "content": "TreeSize Free",
         "description": "TreeSize Free is a disk space manager that helps you analyze and visualize the space usage on your drives.",
         "link": "https://www.jam-software.com/treesize_free/",
-        "winget": "JAMSoftware.TreeSize.Free"
+        "winget": "JAMSoftware.TreeSize.Free",
+        "foss": false
     },
     "ttaskbar": {
         "category": "Utilities",
@@ -2761,7 +2921,8 @@
         "content": "Ubisoft Connect",
         "description": "Ubisoft Connect is Ubisoft's digital distribution and online gaming service, providing access to Ubisoft's games and services.",
         "link": "https://ubisoftconnect.com/",
-        "winget": "Ubisoft.Connect"
+        "winget": "Ubisoft.Connect",
+        "foss": false
     },
     "ungoogled": {
         "category": "Browsers",
@@ -2778,7 +2939,8 @@
         "content": "Unity Game Engine",
         "description": "Unity is a powerful game development platform for creating 2D, 3D, augmented reality, and virtual reality games.",
         "link": "https://unity.com/",
-        "winget": "Unity.UnityHub"
+        "winget": "Unity.UnityHub",
+        "foss": false
     },
     "veravrypt": {
         "category": "Utilities",
@@ -2804,7 +2966,8 @@
         "content": "Visual C++ 2015-2022 32-bit",
         "description": "Visual C++ 2015-2022 32-bit redistributable package installs runtime components of Visual C++ libraries required to run 32-bit applications.",
         "link": "https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads",
-        "winget": "Microsoft.VCRedist.2015+.x86"
+        "winget": "Microsoft.VCRedist.2015+.x86",
+        "foss": false
     },
     "vc2015_64": {
         "category": "Microsoft Tools",
@@ -2812,7 +2975,8 @@
         "content": "Visual C++ 2015-2022 64-bit",
         "description": "Visual C++ 2015-2022 64-bit redistributable package installs runtime components of Visual C++ libraries required to run 64-bit applications.",
         "link": "https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads",
-        "winget": "Microsoft.VCRedist.2015+.x64"
+        "winget": "Microsoft.VCRedist.2015+.x64",
+        "foss": false
     },
     "ventoy": {
         "category": "Pro Tools",
@@ -2838,7 +3002,8 @@
         "content": "Viber",
         "description": "Viber is a free messaging and calling app with features like group chats, video calls, and more.",
         "link": "https://www.viber.com/",
-        "winget": "Rakuten.Viber"
+        "winget": "Rakuten.Viber",
+        "foss": false
     },
     "videomass": {
         "category": "Multimedia Tools",
@@ -2855,7 +3020,8 @@
         "content": "Visual Studio 2022",
         "description": "Visual Studio 2022 is an integrated development environment (IDE) for building, debugging, and deploying applications.",
         "link": "https://visualstudio.microsoft.com/",
-        "winget": "Microsoft.VisualStudio.2022.Community"
+        "winget": "Microsoft.VisualStudio.2022.Community",
+        "foss": false
     },
     "visualstudio2026": {
         "category": "Development",
@@ -2863,7 +3029,8 @@
         "content": "Visual Studio 2026",
         "description": "Visual Studio 2026 is an integrated development environment (IDE) for building, debugging, and deploying applications.",
         "link": "https://visualstudio.microsoft.com/",
-        "winget": "Microsoft.VisualStudio.2026.Community"
+        "winget": "Microsoft.VisualStudio.Community",
+        "foss": false
     },
     "vivaldi": {
         "category": "Browsers",
@@ -2871,7 +3038,8 @@
         "content": "Vivaldi",
         "description": "Vivaldi is a highly customizable web browser with a focus on user personalization and productivity features.",
         "link": "https://vivaldi.com/",
-        "winget": "Vivaldi.Vivaldi"
+        "winget": "Vivaldi.Vivaldi",
+        "foss": false
     },
     "vlc": {
         "category": "Multimedia Tools",
@@ -2888,7 +3056,8 @@
         "content": "Voicemeeter (Audio)",
         "description": "Voicemeeter is a virtual audio mixer that allows you to manage and enhance audio streams on your computer. It is commonly used for audio recording and streaming purposes.",
         "link": "https://voicemeeter.com/",
-        "winget": "VB-Audio.Voicemeeter"
+        "winget": "VB-Audio.Voicemeeter",
+        "foss": false
     },
     "VoicemeeterPotato": {
         "category": "Multimedia Tools",
@@ -2896,7 +3065,8 @@
         "content": "Voicemeeter Potato",
         "description": "Voicemeeter Potato is the ultimate version of the Voicemeeter Audio Mixer Application endowed with Virtual Audio Device to mix and manage any audio sources from or to any audio devices or applications.",
         "link": "https://voicemeeter.com/",
-        "winget": "VB-Audio.Voicemeeter.Potato"
+        "winget": "VB-Audio.Voicemeeter.Potato",
+        "foss": false
     },
     "vrdesktopstreamer": {
         "category": "Games",
@@ -2904,7 +3074,8 @@
         "content": "Virtual Desktop Streamer",
         "description": "Virtual Desktop Streamer is a tool that allows you to stream your desktop screen to VR devices.",
         "link": "https://www.vrdesktop.net/",
-        "winget": "VirtualDesktop.Streamer"
+        "winget": "VirtualDesktop.Streamer",
+        "foss": false
     },
     "vscode": {
         "category": "Development",
@@ -2957,7 +3128,8 @@
         "content": "Windows PC Health Check",
         "description": "Windows PC Health Check is a tool that helps you check if your PC meets the system requirements for Windows 11.",
         "link": "https://support.microsoft.com/en-us/windows/how-to-use-the-pc-health-check-app-9c8abd9b-03ba-4e67-81ef-36f37caa7844",
-        "winget": "Microsoft.WindowsPCHealthCheck"
+        "winget": "Microsoft.WindowsPCHealthCheck",
+        "foss": false
     },
     "WindowGrid": {
         "category": "Utilities",
@@ -2965,7 +3137,8 @@
         "content": "WindowGrid",
         "description": "WindowGrid is a modern window management program for Windows that allows the user to quickly and easily layout their windows on a dynamic grid using just the mouse.",
         "link": "http://windowgrid.net/",
-        "winget": "na"
+        "winget": "na",
+        "foss": false
     },
     "wingetui": {
         "category": "Utilities",
@@ -3000,7 +3173,8 @@
         "content": "WinRAR",
         "description": "WinRAR is a powerful archive manager that allows you to create, manage, and extract compressed files.",
         "link": "https://www.win-rar.com/",
-        "winget": "RARLab.WinRAR"
+        "winget": "RARLab.WinRAR",
+        "foss": false
     },
     "winscp": {
         "category": "Pro Tools",
@@ -3035,7 +3209,8 @@
         "content": "WiseToys",
         "description": "WiseToys is a set of utilities and tools designed to enhance and optimize your Windows experience.",
         "link": "https://toys.wisecleaner.com/",
-        "winget": "WiseCleaner.WiseToys"
+        "winget": "WiseCleaner.WiseToys",
+        "foss": false
     },
     "TeraCopy": {
         "category": "Utilities",
@@ -3043,15 +3218,17 @@
         "content": "TeraCopy",
         "description": "Copy your files faster and more securely.",
         "link": "https://codesector.com/teracopy",
-        "winget": "CodeSector.TeraCopy"
+        "winget": "CodeSector.TeraCopy",
+        "foss": false
     },
     "wizfile": {
         "category": "Utilities",
-        "choco": "na",
+        "choco": "wizfile",
         "content": "WizFile",
         "description": "Find files by name on your hard drives almost instantly.",
         "link": "https://antibody-software.com/wizfile/",
-        "winget": "AntibodySoftware.WizFile"
+        "winget": "AntibodySoftware.WizFile",
+        "foss": false
     },
     "wiztree": {
         "category": "Utilities",
@@ -3059,16 +3236,8 @@
         "content": "WizTree",
         "description": "WizTree is a fast disk space analyzer that helps you quickly find the files and folders consuming the most space on your hard drive.",
         "link": "https://wiztreefree.com/",
-        "winget": "AntibodySoftware.WizTree"
-    },
-    "xdm": {
-        "category": "Utilities",
-        "choco": "xdm",
-        "content": "Xtreme Download Manager",
-        "description": "Xtreme Download Manager is an advanced download manager with support for various protocols and browsers. *Browser integration deprecated by google store. No official release.*",
-        "link": "https://xtremedownloadmanager.com/",
-        "winget": "subhra74.XtremeDownloadManager",
-        "foss": true
+        "winget": "AntibodySoftware.WizTree",
+        "foss": false
     },
     "xeheditor": {
         "category": "Utilities",
@@ -3076,7 +3245,8 @@
         "content": "HxD Hex Editor",
         "description": "HxD is a free hex editor that allows you to edit, view, search, and analyze binary files.",
         "link": "https://mh-nexus.de/en/hxd/",
-        "winget": "MHNexus.HxD"
+        "winget": "MHNexus.HxD",
+        "foss": false
     },
     "xemu": {
         "category": "Games",
@@ -3093,7 +3263,8 @@
         "content": "XnView classic",
         "description": "XnView is an efficient image viewer, browser and converter for Windows.",
         "link": "https://www.xnview.com/en/xnview/",
-        "winget": "XnSoft.XnView.Classic"
+        "winget": "XnSoft.XnView.Classic",
+        "foss": false
     },
     "xournal": {
         "category": "Document",
@@ -3111,6 +3282,15 @@
         "description": "XPipe is an open-source tool for orchestrating containerized applications. It simplifies the deployment and management of containerized services in a distributed environment.",
         "link": "https://xpipe.io/",
         "winget": "xpipe-io.xpipe",
+        "foss": true
+    },
+    "yasb": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "YASB",
+        "description": "YASB (Yet Another Status Bar) is a highly configurable status bar for Windows, written in Python, with support for many widgets, easy theming, and deep customization.",
+        "link": "https://yasb.dev/",
+        "winget": "AmN.yasb",
         "foss": true
     },
     "yarn": {
@@ -3137,7 +3317,8 @@
         "content": "ZeroTier One",
         "description": "ZeroTier One is a software-defined networking tool that allows you to create secure and scalable networks.",
         "link": "https://zerotier.com/",
-        "winget": "ZeroTier.ZeroTierOne"
+        "winget": "ZeroTier.ZeroTierOne",
+        "foss": false
     },
     "zim": {
         "category": "Document",
@@ -3163,15 +3344,17 @@
         "content": "Zoom",
         "description": "Zoom is a popular video conferencing and web conferencing service for online meetings, webinars, and collaborative projects.",
         "link": "https://zoom.us/",
-        "winget": "Zoom.Zoom"
+        "winget": "Zoom.Zoom",
+        "foss": false
     },
     "zoomit": {
         "category": "Utilities",
-        "choco": "na",
+        "choco": "zoomit",
         "content": "ZoomIt",
         "description": "A screen zoom, annotation, and recording tool for technical presentations and demos.",
         "link": "https://learn.microsoft.com/en-us/sysinternals/downloads/zoomit",
-        "winget": "Microsoft.Sysinternals.ZoomIt"
+        "winget": "Microsoft.Sysinternals.ZoomIt",
+        "foss": false
     },
     "zotero": {
         "category": "Document",
@@ -3247,7 +3430,7 @@
     },
     "uv": {
         "category": "Development",
-        "choco": "na",
+        "choco": "uv",
         "content": "uv",
         "description": "uv is a fast Python package and project manager written in Rust.",
         "link": "https://docs.astral.sh/uv/getting-started/installation/",
@@ -3278,7 +3461,7 @@
         "content": "UltraVNC",
         "description": "UltraVNC is a powerful, easy to use and free - remote pc access software - that can display the screen of another computer (via internet or network) on your own screen. The program allows you to use your mouse and keyboard to control the other PC remotely. It means that you can work on a remote computer, as if you were sitting in front of it, right from your current location.",
         "link": "https://uvnc.com/",
-        "winget": "uvncbvba.UltraVnc",
+        "winget": "uvncbvba.UltraVNC",
         "foss": true
     },
     "windowsfirewallcontrol": {
@@ -3287,7 +3470,8 @@
         "content": "Windows Firewall Control",
         "description": "Windows Firewall Control is a powerful tool which extends the functionality of Windows Firewall and provides new extra features which makes Windows Firewall better.",
         "link": "https://www.binisoft.org/wfc",
-        "winget": "BiniSoft.WindowsFirewallControl"
+        "winget": "BiniSoft.WindowsFirewallControl",
+        "foss": false
     },
     "vistaswitcher": {
         "category": "Utilities",
@@ -3295,7 +3479,8 @@
         "content": "VistaSwitcher",
         "description": "VistaSwitcher makes it easier for you to locate windows and switch focus, even on multi-monitor systems. The switcher window consists of an easy-to-read list of all tasks running with clearly shown titles and a full-sized preview of the selected task.",
         "link": "https://www.ntwind.com/freeware/vistaswitcher.html",
-        "winget": "ntwind.VistaSwitcher"
+        "winget": "ntwind.VistaSwitcher",
+        "foss": false
     },
     "autodarkmode": {
         "category": "Utilities",
@@ -3303,7 +3488,7 @@
         "content": "Windows Auto Dark Mode",
         "description": "Automatically switches between the dark and light theme of Windows 10 and Windows 11.",
         "link": "https://github.com/AutoDarkMode/Windows-Auto-Night-Mode",
-        "winget": "Armin2208.WindowsAutoNightMode",
+        "winget": "ArminOsaj.AutoDarkMode",
         "foss": true
     },
     "AmbieWhiteNoise": {
@@ -3353,7 +3538,7 @@
     },
     "glazewm": {
         "category": "Utilities",
-        "choco": "na",
+        "choco": "glazewm",
         "content": "GlazeWM",
         "description": "GlazeWM is a tiling window manager for Windows inspired by i3 and Polybar.",
         "link": "https://github.com/glzr-io/glazewm",
@@ -3384,7 +3569,8 @@
         "content": "Windhawk",
         "description": "The customization marketplace for Windows programs.",
         "link": "https://windhawk.net",
-        "winget": "RamenSoftware.Windhawk"
+        "winget": "RamenSoftware.Windhawk",
+        "foss": true
     },
     "ForceAutoHDR": {
         "category": "Utilities",
@@ -3401,7 +3587,8 @@
         "content": "JoyToKey",
         "description": "Enables PC game controllers to emulate the keyboard and mouse input.",
         "link": "https://joytokey.net/en/",
-        "winget": "JTKsoftware.JoyToKey"
+        "winget": "JTKsoftware.JoyToKey",
+        "foss": false
     },
     "nditools": {
         "category": "Multimedia Tools",
@@ -3409,11 +3596,12 @@
         "content": "NDI Tools",
         "description": "NDI, or Network Device Interface, is a video connectivity standard that enables multimedia systems to identify and communicate with one another over IP and to encode, transmit, and receive high-quality, low latency, frame-accurate video and audio, and exchange metadata in real-time.",
         "link": "https://ndi.video/",
-        "winget": "NDI.NDITools"
+        "winget": "NDI.NDITools",
+        "foss": false
     },
     "kicad": {
         "category": "Multimedia Tools",
-        "choco": "na",
+        "choco": "kicad",
         "content": "Kicad",
         "description": "Kicad is an open-source EDA tool. It's a good starting point for those who want to do electrical design and is even used by professionals in the industry.",
         "link": "https://www.kicad.org/",
@@ -3422,11 +3610,12 @@
     },
     "dropox": {
         "category": "Utilities",
-        "choco": "na",
+        "choco": "dropbox",
         "content": "Dropbox",
-        "description": "The Dropbox desktop app! Save hard drive space, share and edit files and send for signature \u2013 all without the distraction of countless browser tabs.",
+        "description": "The Dropbox desktop app! Save hard drive space, share and edit files and send for signature – all without the distraction of countless browser tabs.",
         "link": "https://www.dropbox.com/en_GB/desktop",
-        "winget": "Dropbox.Dropbox"
+        "winget": "Dropbox.Dropbox",
+        "foss": false
     },
     "Overwolf": {
         "category": "Games",
@@ -3434,7 +3623,8 @@
         "content": "Overwolf",
         "description": "Popular platform for game overlays and companion apps (mod managers, trackers, etc.), widely used by gamers.",
         "link": "https://www.overwolf.com/app/overwolf-curseforge",
-        "winget": "Overwolf.CurseForge"
+        "winget": "Overwolf.CurseForge",
+        "foss": false
     },
     "OFGB": {
         "category": "Utilities",
@@ -3492,7 +3682,7 @@
     },
     "SubtitleEdit": {
         "category": "Multimedia Tools",
-        "choco": "na",
+        "choco": "subtitleedit",
         "content": "Subtitle Edit",
         "description": "Subtitle Edit is a free and open-source editor for video subtitles.",
         "link": "https://github.com/SubtitleEdit/subtitleedit",
@@ -3505,11 +3695,12 @@
         "content": "Fork",
         "description": "Fork - a fast and friendly git client.",
         "link": "https://git-fork.com/",
-        "winget": "Fork.Fork"
+        "winget": "Fork.Fork",
+        "foss": false
     },
     "ZenBrowser": {
         "category": "Browsers",
-        "choco": "na",
+        "choco": "zen-browser",
         "content": "Zen Browser",
         "description": "The modern, privacy-focused, performance-driven browser built on Firefox.",
         "link": "https://zen-browser.app/",
@@ -3518,7 +3709,7 @@
     },
     "Zed": {
         "category": "Development",
-        "choco": "na",
+        "choco": "zed",
         "content": "Zed",
         "description": "Zed is a modern, high-performance code editor designed from the ground up for speed and collaboration.",
         "link": "https://zed.dev/",
@@ -3546,7 +3737,7 @@
     "Ruby": {
         "category": "Development",
         "choco": "ruby",
-        "winget": "RubyInstallerTeam.RubyWithDevkit.3.4",
+        "winget": "RubyInstallerTeam.Ruby.4.0",
         "description": "A Ruby language execution environment with a MSYS2 installation.",
         "content": "Ruby",
         "link": "https://rubyinstaller.org/",

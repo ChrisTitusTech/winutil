@@ -1,11 +1,11 @@
 ---
-title: "New Outlook"
+title: "Microsoft Outlook New Version"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2302}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2229}
   "WPFToggleNewOutlook": {
-    "Content": "New Outlook",
+    "Content": "Microsoft Outlook New Version",
     "Description": "If disabled, it removes the new Outlook toggle, disables the new Outlook migration, and ensures the classic Outlook application is used.",
     "category": "Customize Preferences",
     "panel": "2",

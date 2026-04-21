@@ -1,5 +1,5 @@
 ---
-title: "Uninstall CTT PowerShell Profile"
+title: "CTT PowerShell Profile - Remove"
 description: ""
 ---
 

@@ -1,22 +1,22 @@
 ---
-title: "S0 Sleep Network Connectivity"
+title: "Acrylic Blur on Login Screen"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2349}
-  "WPFToggleStandbyFix": {
-    "Content": "S0 Sleep Network Connectivity",
-    "Description": "Enable or disable network connectivity during S0 Sleep.",
+```json {filename="config/tweaks.json",linenos=inline,linenostart=2421}
+  "WPFToggleLoginBlur": {
+    "Content": "Acrylic Blur on Login Screen",
+    "Description": "If disabled, the acrylic blur effect will be removed on the Windows 10/11 login screen background.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
     "registry": [
       {
-        "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Power\\PowerSettings\\f15576e8-98b7-4186-b944-eafa664402d9",
-        "Name": "ACSettingIndex",
-        "Value": "1",
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+        "Name": "DisableAcrylicBackgroundOnLogon",
+        "Value": "0",
         "Type": "DWord",
-        "OriginalValue": "0",
+        "OriginalValue": "1",
         "DefaultState": "true"
       }
     ],

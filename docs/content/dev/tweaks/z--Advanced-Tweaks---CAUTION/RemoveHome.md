@@ -1,11 +1,11 @@
 ---
-title: "Remove Home from Explorer"
+title: "File Explorer Home - Disable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1518}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1521}
   "WPFTweaksRemoveHome": {
-    "Content": "Remove Home from Explorer",
+    "Content": "File Explorer Home - Disable",
     "Description": "Removes the Home from Explorer and sets This PC as default.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
