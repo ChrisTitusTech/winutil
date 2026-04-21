@@ -260,6 +260,15 @@
         "winget": "ChidiWilliams.Buzz",
         "foss": true
     },
+    "blurautoclicker": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "BlurAutoClicker",
+        "description": "An Auto-clicker with a few advanced features and generally better performance than popular alternatives.",
+        "link": "https://blur009.vercel.app/projects/blur-autoclicker/",
+        "winget": "Blur009.BlurAutoClicker",
+        "foss": true
+    },
     "AdvancedRenamer": {
         "category": "Utilities",
         "choco": "advanced-renamer",
