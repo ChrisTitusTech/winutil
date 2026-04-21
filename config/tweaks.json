@@ -286,6 +286,28 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/bravedebloat"
   },
+  "WPFTweaksDisableWarningForUnsignedRdp": {
+    "Content": "Disable warnings for unsigned RDP files",
+    "Description": "Disables warnings shown when launching unsigned RDP files introduced with the latest Windows 10 and 11 updates.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services\\Client",
+        "Name": "RedirectionWarningDialogVersion",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Terminal Server Client",
+        "Name": "RdpLaunchConsentAccepted",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      }
+    ]
+  },
   "WPFTweaksEdgeDebloat": {
     "Content": "Microsoft Edge - Debloat",
     "Description": "Disables various telemetry options, popups, and other annoyances in Edge.",
