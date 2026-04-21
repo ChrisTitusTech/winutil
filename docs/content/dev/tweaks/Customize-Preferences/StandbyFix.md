@@ -3,7 +3,7 @@ title: "S0 Sleep Network Connectivity"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=2349}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1472}
   "WPFToggleStandbyFix": {
     "Content": "S0 Sleep Network Connectivity",
     "Description": "Enable or disable network connectivity during S0 Sleep.",
