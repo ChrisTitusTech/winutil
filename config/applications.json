@@ -1250,6 +1250,14 @@
         "winget": "Inkscape.Inkscape",
         "foss": true
     },
+    "irfanview": {
+        "category": "Multimedia Tools",
+        "choco": "irfanview",
+        "content": "IrfanView",
+        "description": "IrfanView is a lightweight, fast, and free image viewer and editor. Supports multiple formats, batch processing, and powerful plugins.",
+        "link": "https://irfanview.com/",
+        "winget": "IrfanSkiljan.IrfanView"
+    },
     "itch": {
         "category": "Games",
         "choco": "itch",
