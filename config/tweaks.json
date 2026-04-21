@@ -1391,6 +1391,24 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/newoutlook"
   },
+    "WPFToggleScrollbars": {
+    "Content": "Always Show Scrollbars",
+    "Description": "If enabled, scrollbars will always be visible. If disabled, Windows will automatically hide scrollbars when not in use.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Accessibility",
+        "Name": "DynamicScrollbars",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/scrollbars"
+  },
   "WPFToggleMultiplaneOverlay": {
     "Content": "Multiplane Overlay",
     "Description": "Enable or disable the Multiplane Overlay, which can sometimes cause issues with graphics cards.",
