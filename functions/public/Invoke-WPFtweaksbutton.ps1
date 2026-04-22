@@ -14,14 +14,14 @@ function Invoke-WPFtweaksbutton {
 
   $Tweaks = $sync.selectedTweaks
   $dnsProvider = $sync["WPFchangedns"].text
-  if ($dnsProvider -eq "Default") { $dnsProvider = $null }
+
   $restorePointTweak = "WPFTweaksRestorePoint"
   $restorePointSelected = $Tweaks -contains $restorePointTweak
   $tweaksToRun = @($Tweaks | Where-Object { $_ -ne $restorePointTweak })
   $totalSteps = [Math]::Max($Tweaks.Count, 1)
   $completedSteps = 0
 
-  if (($Tweaks.Count -eq 0) -and (-not $dnsProvider)) {
+  if ($tweaks.count -eq 0 -and $dnsProvider -eq "Default") {
     $sync.ProcessRunning = $false
     return
   }
