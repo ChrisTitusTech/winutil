@@ -76,9 +76,7 @@ if ($PARAM_NOUI) {
         Write-Host "Running config file tasks..."
         Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
         Invoke-WinUtilAutoRun
-        else {
-            Write-Host "Did you forget to add '--Run'?";
-        }
+
         $sync.runspace.Dispose()
         $sync.runspace.Close()
         [System.GC]::Collect()
