@@ -11,17 +11,23 @@ function Invoke-WinUtilAutoRun {
         }
     }
 
-    Write-Host "Applying tweaks..."
-    Invoke-WPFtweaksbutton
-    BusyWait
+    if ($sync.selectedTweaks.Count -gt 0) {
+      Write-Host "Applying tweaks..."
+      Invoke-WPFtweaksbutton
+      BusyWait
+    }
 
-    Write-Host "Applying features..."
-    Invoke-WPFFeatureInstall
-    BusyWait
+    if ($selectedFeatures.Count -eq 0) {
+        Write-Host "Applying features..."
+        Invoke-WPFFeatureInstall
+        BusyWait
+    }
 
-    Write-Host "Installing applications..."
-    Invoke-WPFInstall
-    BusyWait
+    if ($PackagesToInstall.Count -eq 0) {
+        Write-Host "Installing applications..."
+        Invoke-WPFInstall
+        BusyWait
+    }
 
     Write-Host "Done."
 }
