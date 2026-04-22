@@ -40,16 +40,6 @@ function Invoke-WPFtweaksbutton {
     Set-WinUtilProgressBar -Label "Creating restore point" -Percent 0
     Invoke-WinUtilTweaks $restorePointTweak
     $completedSteps = 1
-
-    if ($tweaksToRun.Count -eq 0 -and $dnsProvider -eq "Default") {
-      Set-WinUtilProgressBar -Label "Tweaks finished" -Percent 100
-      $sync.ProcessRunning = $false
-      Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" }
-      Write-Host "================================="
-      Write-Host "--     Tweaks are Finished    ---"
-      Write-Host "================================="
-      return
-    }
   }
 
   # The leading "," in the ParameterList is necessary because we only provide one argument and powershell cannot be convinced that we want a nested loop with only one argument otherwise
