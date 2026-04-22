@@ -1498,9 +1498,9 @@
       {
         "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Power\\PowerSettings\\f15576e8-98b7-4186-b944-eafa664402d9",
         "Name": "ACSettingIndex",
-        "Value": "1",
+        "Value": "0",
         "Type": "DWord",
-        "OriginalValue": "0",
+        "OriginalValue": "1",
         "DefaultState": "true"
       }
     ],
