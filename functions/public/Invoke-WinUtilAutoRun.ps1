@@ -6,10 +6,9 @@ function Invoke-WinUtilAutoRun {
     #>
 
     function BusyWait {
-        Start-Sleep -Seconds 5
         while ($sync.ProcessRunning) {
-                Start-Sleep -Seconds 5
-            }
+            Start-Sleep -Seconds 1
+        }
     }
 
     BusyWait
