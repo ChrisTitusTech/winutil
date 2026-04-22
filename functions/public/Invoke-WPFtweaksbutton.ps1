@@ -21,7 +21,12 @@ function Invoke-WPFtweaksbutton {
   $totalSteps = [Math]::Max($Tweaks.Count, 1)
   $completedSteps = 0
 
-  if ($tweaks.count -eq 0 -and $dnsProvider -eq "Default") {
+  if ($tweaks.count -eq 0) {
+    $sync.ProcessRunning = $false
+    return
+  }
+
+  if (not ($dnsProvider) {
     $sync.ProcessRunning = $false
     return
   }
