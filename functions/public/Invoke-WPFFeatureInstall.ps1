@@ -12,6 +12,11 @@ function Invoke-WPFFeatureInstall {
         return
     }
 
+    if ($selectedFeatures.Count -eq 0) {
+        $sync.ProcessRunning = $false
+        return
+    }
+
     $handle = Invoke-WPFRunspace -ScriptBlock {
         $Features = $sync.selectedFeatures
         $sync.ProcessRunning = $true
