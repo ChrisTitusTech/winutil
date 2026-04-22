@@ -11,8 +11,6 @@ function Invoke-WinUtilAutoRun {
         }
     }
 
-    BusyWait
-
     Write-Host "Applying tweaks..."
     Invoke-WPFtweaksbutton
     BusyWait
