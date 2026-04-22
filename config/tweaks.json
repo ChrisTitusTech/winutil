@@ -287,7 +287,7 @@
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/bravedebloat"
   },
   "WPFTweaksDisableWarningForUnsignedRdp": {
-    "Content": "Disable warnings for unsigned RDP files",
+    "Content": "RDP Unsigned File Warnings - Disable",
     "Description": "Disables warnings shown when launching unsigned RDP files introduced with the latest Windows 10 and 11 updates.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
@@ -1392,7 +1392,7 @@
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/newoutlook"
   },
     "WPFToggleScrollbars": {
-    "Content": "Always Show Scrollbars",
+    "Content": "Scrollbars Always Visible",
     "Description": "If enabled, scrollbars will always be visible. If disabled, Windows will automatically hide scrollbars when not in use.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -1561,7 +1561,7 @@
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/bingsearch"
   },
   "WPFToggleLoginBlur": {
-    "Content": "Acrylic Blur on Login Screen",
+    "Content": "Logon Screen Acrylic Blur",
     "Description": "If disabled, the acrylic blur effect will be removed on the Windows 10/11 login screen background.",
     "category": "Customize Preferences",
     "panel": "2",
