@@ -1,36 +1,21 @@
 function Invoke-WPFInstallUpgrade {
-    <#
-
-    .SYNOPSIS
-        Invokes the function that upgrades all installed programs
-
-    #>
     if ($sync.ChocoRadioButton.IsChecked) {
+        # Ensure Chocolatey is installed before upgrading
         Install-WinUtilChoco
-        $chocoUpgradeStatus = (Start-Process "choco" -ArgumentList "upgrade all -y" -Wait -PassThru -NoNewWindow).ExitCode
-        if ($chocoUpgradeStatus -eq 0) {
-            Write-Host "Upgrade Successful"
-        }
-        else{
-            Write-Host "Error Occurred. Return Code: $chocoUpgradeStatus"
-        }
-    }
-    else{
-        if((Test-WinUtilPackageManager -winget) -eq "not-installed") {
-            return
-        }
 
-        if(Get-WinUtilInstallerProcess -Process $global:WinGetInstall) {
-            $msg = "[Invoke-WPFInstallUpgrade] Install process is currently running. Please check for a powershell window labeled 'Winget Install'"
-            [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-            return
-        }
-
-        Update-WinUtilProgramWinget
+        Start-Process choco -ArgumentList 'upgrade all -y' -Wait -NoNewWindow
 
         Write-Host "==========================================="
         Write-Host "--           Updates started            ---"
-        Write-Host "-- You can close this window if desired ---"
+        Write-Host "==========================================="
+    } else {
+        # Ensure WinGet is installed before upgrading
+        Install-WinUtilWinget
+
+        Start-Process -FilePath winget.exe -ArgumentList 'upgrade --all --silent --include-unknown --accept-source-agreements --accept-package-agreements' -Wait -NoNewWindow
+
+        Write-Host "==========================================="
+        Write-Host "--           Updates started            ---"
         Write-Host "==========================================="
     }
 }
