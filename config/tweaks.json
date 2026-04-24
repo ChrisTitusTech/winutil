@@ -10,7 +10,7 @@
         "Name": "IsBatteryPercentageEnabled",
         "Value": "1",
         "Type": "DWord",
-        "OriginalValue": "0"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/batterypercentage"
