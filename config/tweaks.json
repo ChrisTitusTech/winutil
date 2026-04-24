@@ -1,4 +1,20 @@
 {
+  "WPFTweaksBatteryPercentage": {
+    "Content": "Battery Percentage - Show Numeric",
+    "Description": "Shows numeric battery percentage next to the battery icon in the system tray.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "IsBatteryPercentageEnabled",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/batterypercentage"
+  },
   "WPFTweaksActivity": {
     "Content": "Activity History - Disable",
     "Description": "Erases recent docs, clipboard, and run history.",
