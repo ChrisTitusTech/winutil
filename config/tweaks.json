@@ -1233,7 +1233,7 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/detailedbsod"
   },
-  "WPFTweaksBatteryPercentage": {
+  "WPFToggleBatteryPercentage": {
     "Content": "System Tray Battery Percentage",
     "Description": "If enabled, Shows numeric battery percentage next to the battery icon in the system tray.",
     "category": "Customize Preferences",
