@@ -1960,6 +1960,15 @@
         "winget": "Obsidian.Obsidian",
         "foss": false
     },
+    "OfficeToolPlus": {
+        "category": "Utilities",
+        "choco": "na",
+        "winget": "Yerong.OfficeToolPlus",
+        "description": "Installs specific Office apps. Office Tool Plus is made based on Microsoft Office Deployment Tool",
+        "content": "Office Tool Plus",
+        "link": "https://otp.landian.vip/en-us/",
+        "foss": true
+    },
     "okular": {
         "category": "Document",
         "choco": "okular",
