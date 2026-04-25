@@ -997,7 +997,7 @@
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/razerblock"
   },
   "WPFTweaksDisableNotifications": {
-    "Content": "Notification Tray & Calendar - Disable",
+    "Content": "System Tray Notifications & Calendar - Disable",
     "Description": "Disables all Notifications INCLUDING Calendar.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
