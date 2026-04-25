@@ -30,7 +30,14 @@ body:
       required: true
 
   - type: textarea
+    id: tweaks_applied
+    attributes:
+      label: List the tweaks you applied before the issue occurred.
+    validations:
+      required: false
+
+  - type: textarea
     id: error_output
     attributes:
-      label: Paste the full error output (if available) or Screenshot.
+      label: Paste the full error output (if available) or Screenshot or Video.
       placeholder: "Include any relevant logs or error messages."
