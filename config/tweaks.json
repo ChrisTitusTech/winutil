@@ -1,20 +1,4 @@
 {
-  "WPFTweaksBatteryPercentage": {
-    "Content": "Battery Percentage - Show Numeric",
-    "Description": "Shows numeric battery percentage next to the battery icon in the system tray.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "Name": "IsBatteryPercentageEnabled",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/batterypercentage"
-  },
   "WPFTweaksActivity": {
     "Content": "Activity History - Disable",
     "Description": "Erases recent docs, clipboard, and run history.",
@@ -1248,6 +1232,24 @@
       }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/detailedbsod"
+  },
+  "WPFTweaksBatteryPercentage": {
+    "Content": "System Tray Battery Percentage",
+    "Description": "If enabled, Shows numeric battery percentage next to the battery icon in the system tray.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "IsBatteryPercentageEnabled",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/batterypercentage"
   },
   "WPFToggleDarkMode": {
     "Content": "Dark Theme for Windows",
