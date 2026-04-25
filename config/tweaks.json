@@ -1245,7 +1245,7 @@
         "Name": "IsBatteryPercentageEnabled",
         "Value": "1",
         "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>",
         "DefaultState": "false"
       }
     ],
