@@ -1,5 +1,5 @@
 <!--Before you make this PR have you followed the docs here? - https://winutil.christitus.com/contributing/ -->
-<!--Documentation is auto-generated from configs and functions - no manual doc updates needed -->
+<!--Documentation is auto-generated from configs - no manual documentation updates needed -->
 
 ## Type of Change
 - [ ] New feature
