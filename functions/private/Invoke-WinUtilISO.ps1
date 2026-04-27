@@ -49,7 +49,7 @@ function Invoke-WinUtilISOMountAndVerify {
     Set-WinUtilProgressBar -Label "Mounting ISO..." -Percent 10
 
     try {
-        Mount-DiskImage -ImagePath $isoPath -ErrorAction Stop | Out-Null
+        Mount-DiskImage -ImagePath $isoPath
 
         do {
             Start-Sleep -Milliseconds 500
@@ -64,7 +64,7 @@ function Invoke-WinUtilISOMountAndVerify {
         $esdPath = Join-Path $driveLetter "sources\install.esd"
 
         if (-not (Test-Path $wimPath) -and -not (Test-Path $esdPath)) {
-            Dismount-DiskImage -ImagePath $isoPath | Out-Null
+            Dismount-DiskImage -ImagePath $isoPath
             Write-Win11ISOLog "ERROR: install.wim/install.esd not found — not a valid Windows ISO."
             [System.Windows.MessageBox]::Show(
                 "This does not appear to be a valid Windows ISO.`n`ninstall.wim / install.esd was not found.",
@@ -79,7 +79,7 @@ function Invoke-WinUtilISOMountAndVerify {
         $imageInfo = Get-WindowsImage -ImagePath $activeWim | Select-Object ImageIndex, ImageName
 
         if (-not ($imageInfo | Where-Object { $_.ImageName -match "Windows 11" })) {
-            Dismount-DiskImage -ImagePath $isoPath | Out-Null
+            Dismount-DiskImage -ImagePath $isoPath
             Write-Win11ISOLog "ERROR: No 'Windows 11' edition found in the image."
             [System.Windows.MessageBox]::Show(
                 "No Windows 11 edition was found in this ISO.`n`nOnly official Windows 11 ISOs are supported.",
@@ -151,7 +151,7 @@ function Invoke-WinUtilISOModify {
     $sync["WPFWin11ISOModifyButton"].IsEnabled = $false
     $sync["Win11ISOModifying"] = $true
 
-    $existingWorkDir = Get-Item -Path (Join-Path $env:TEMP "WinUtil_Win11ISO*") -ErrorAction SilentlyContinue |
+    $existingWorkDir = Get-Item -Path (Join-Path $env:TEMP "WinUtil_Win11ISO*") |
         Where-Object { $_.PSIsContainer } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
 
     $workDir = if ($existingWorkDir) {
@@ -202,7 +202,7 @@ function Invoke-WinUtilISOModify {
                 $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
                 $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
             })
-            Add-Content -Path (Join-Path $workDir "WinUtil_Win11ISO.log") -Value "[$ts] $msg" -ErrorAction SilentlyContinue
+            Add-Content -Path (Join-Path $workDir "WinUtil_Win11ISO.log") -Value "[$ts] $msg"
         }
 
         function SetProgress($label, $pct) {
@@ -223,11 +223,11 @@ function Invoke-WinUtilISOModify {
             Log "Creating working directory: $workDir"
             $isoContents = Join-Path $workDir "iso_contents"
             $mountDir    = Join-Path $workDir "wim_mount"
-            New-Item -ItemType Directory -Path $isoContents, $mountDir -Force | Out-Null
+            New-Item -ItemType Directory -Path $isoContents, $mountDir -Force
             SetProgress "Copying ISO contents..." 10
 
             Log "Copying ISO contents from $driveLetter to $isoContents..."
-            & robocopy $driveLetter $isoContents /E /NFL /NDL /NJH /NJS | Out-Null
+            & robocopy $driveLetter $isoContents /E /NFL /NDL /NJH /NJS
             Log "ISO contents copied."
             SetProgress "Mounting install.wim..." 25
 
@@ -236,7 +236,7 @@ function Invoke-WinUtilISOModify {
             Set-ItemProperty -Path $localWim -Name IsReadOnly -Value $false
 
             Log "Mounting install.wim (Index ${selectedWimIndex}: $selectedEditionName) at $mountDir..."
-            Mount-WindowsImage -ImagePath $localWim -Index $selectedWimIndex -Path $mountDir -ErrorAction Stop | Out-Null
+            Mount-WindowsImage -ImagePath $localWim -Index $selectedWimIndex -Path $mountDir
             SetProgress "Modifying install.wim..." 45
 
             Log "Applying WinUtil modifications to install.wim..."
@@ -249,13 +249,13 @@ function Invoke-WinUtilISOModify {
 
             SetProgress "Saving modified install.wim..." 65
             Log "Dismounting and saving install.wim. This will take several minutes..."
-            Dismount-WindowsImage -Path $mountDir -Save -ErrorAction Stop | Out-Null
+            Dismount-WindowsImage -Path $mountDir -Save
             Log "install.wim saved."
 
             SetProgress "Removing unused editions from install.wim..." 70
             Log "Exporting edition '$selectedEditionName' (Index $selectedWimIndex) to a single-edition install.wim..."
             $exportWim = Join-Path $isoContents "sources\install_export.wim"
-            Export-WindowsImage -SourceImagePath $localWim -SourceIndex $selectedWimIndex -DestinationImagePath $exportWim -ErrorAction Stop | Out-Null
+            Export-WindowsImage -SourceImagePath $localWim -SourceIndex $selectedWimIndex -DestinationImagePath $exportWim
             Remove-Item -Path $localWim -Force
             Rename-Item -Path $exportWim -NewName "install.wim" -Force
             $localWim = Join-Path $isoContents "sources\install.wim"
@@ -263,7 +263,7 @@ function Invoke-WinUtilISOModify {
 
             SetProgress "Dismounting source ISO..." 80
             Log "Dismounting original ISO..."
-            Dismount-DiskImage -ImagePath $isoPath | Out-Null
+            Dismount-DiskImage -ImagePath $isoPath
 
             $sync["Win11ISOWorkDir"]     = $workDir
             $sync["Win11ISOContentsDir"] = $isoContents
@@ -279,26 +279,26 @@ function Invoke-WinUtilISOModify {
 
             try {
                 if (Test-Path $mountDir) {
-                    $mountedImages = Get-WindowsImage -Mounted -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $mountDir }
+                    $mountedImages = Get-WindowsImage -Mounted | Where-Object { $_.Path -eq $mountDir }
                     if ($mountedImages) {
                         Log "Cleaning up: dismounting install.wim (discarding changes)..."
-                        Dismount-WindowsImage -Path $mountDir -Discard -ErrorAction SilentlyContinue | Out-Null
+                        Dismount-WindowsImage -Path $mountDir -Discard
                     }
                 }
             } catch { Log "Warning: could not dismount install.wim during cleanup: $_" }
 
             try {
-                $mountedISO = Get-DiskImage -ImagePath $isoPath -ErrorAction SilentlyContinue
+                $mountedISO = Get-DiskImage -ImagePath $isoPath
                 if ($mountedISO -and $mountedISO.Attached) {
                     Log "Cleaning up: dismounting source ISO..."
-                    Dismount-DiskImage -ImagePath $isoPath -ErrorAction SilentlyContinue | Out-Null
+                    Dismount-DiskImage -ImagePath $isoPath
                 }
             } catch { Log "Warning: could not dismount ISO during cleanup: $_" }
 
             try {
                 if (Test-Path $workDir) {
                     Log "Cleaning up: removing temp directory $workDir..."
-                    Remove-Item -Path $workDir -Recurse -Force -ErrorAction SilentlyContinue
+                    Remove-Item -Path $workDir -Recurse -Force
                 }
             } catch { Log "Warning: could not remove temp directory during cleanup: $_" }
 
@@ -322,9 +322,9 @@ function Invoke-WinUtilISOModify {
                 }
             })
         }
-    }) | Out-Null
+    })
 
-    $script.BeginInvoke() | Out-Null
+    $script.BeginInvoke()
 }
 
 function Invoke-WinUtilISOCheckExistingWork {
@@ -335,7 +335,7 @@ function Invoke-WinUtilISOCheckExistingWork {
         return
     }
 
-    $existingWorkDir = Get-Item -Path (Join-Path $env:TEMP "WinUtil_Win11ISO*") -ErrorAction SilentlyContinue |
+    $existingWorkDir = Get-Item -Path (Join-Path $env:TEMP "WinUtil_Win11ISO*") |
         Where-Object { $_.PSIsContainer } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
 
     if (-not $existingWorkDir) { return }
@@ -391,7 +391,7 @@ function Invoke-WinUtilISOCleanAndReset {
                 $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
                 $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
             })
-            Add-Content -Path (Join-Path $workDir "WinUtil_Win11ISO.log") -Value "[$ts] $msg" -ErrorAction SilentlyContinue
+            Add-Content -Path (Join-Path $workDir "WinUtil_Win11ISO.log") -Value "[$ts] $msg"
         }
 
         function SetProgress($label, $pct) {
@@ -406,23 +406,23 @@ function Invoke-WinUtilISOCleanAndReset {
             if ($workDir) {
                 $mountDir = Join-Path $workDir "wim_mount"
                 try {
-                    $mountedImages = Get-WindowsImage -Mounted -ErrorAction SilentlyContinue |
+                    $mountedImages = Get-WindowsImage -Mounted |
                                      Where-Object { $_.Path -like "$workDir*" }
                     if ($mountedImages) {
                         foreach ($img in $mountedImages) {
                             Log "Dismounting WIM at: $($img.Path) (discarding changes)..."
                             SetProgress "Dismounting WIM image..." 3
-                            Dismount-WindowsImage -Path $img.Path -Discard -ErrorAction Stop | Out-Null
+                            Dismount-WindowsImage -Path $img.Path -Discard
                             Log "WIM dismounted successfully."
                         }
                     } elseif (Test-Path $mountDir) {
                         Log "No mounted WIM reported by Get-WindowsImage. Running DISM /Cleanup-Wim as a precaution..."
                         SetProgress "Running DISM cleanup..." 3
-                        & dism /English /Cleanup-Wim 2>&1 | ForEach-Object { Log $_ }
+                        & dism /English /Cleanup-Wim | ForEach-Object { Log $_ }
                     }
                 } catch {
                     Log "Warning: could not dismount WIM cleanly. Attempting DISM /Cleanup-Wim fallback: $_"
-                    try { & dism /English /Cleanup-Wim 2>&1 | ForEach-Object { Log $_ } }
+                    try { & dism /English /Cleanup-Wim | ForEach-Object { Log $_ } }
                     catch { Log "Warning: DISM /Cleanup-Wim also failed: $_" }
                 }
             }
@@ -431,8 +431,8 @@ function Invoke-WinUtilISOCleanAndReset {
                 Log "Scanning files to delete in: $workDir"
                 SetProgress "Scanning files..." 5
 
-                $allFiles = @(Get-ChildItem -Path $workDir -File -Recurse -Force -ErrorAction SilentlyContinue)
-                $allDirs  = @(Get-ChildItem -Path $workDir -Directory -Recurse -Force -ErrorAction SilentlyContinue |
+                $allFiles = @(Get-ChildItem -Path $workDir -File -Recurse -Force)
+                $allDirs  = @(Get-ChildItem -Path $workDir -Directory -Recurse -Force |
                     Sort-Object { $_.FullName.Length } -Descending)
                 $total   = $allFiles.Count
                 $deleted = 0
@@ -440,7 +440,7 @@ function Invoke-WinUtilISOCleanAndReset {
                 Log "Found $total files to delete."
 
                 foreach ($f in $allFiles) {
-                    try { Remove-Item -Path $f.FullName -Force -ErrorAction Stop } catch { Log "WARNING: could not delete $($f.FullName): $_" }
+                    try { Remove-Item -Path $f.FullName -Force } catch { Log "WARNING: could not delete $($f.FullName): $_" }
                     $deleted++
                     if ($deleted % 100 -eq 0 -or $deleted -eq $total) {
                         $pct = [math]::Round(($deleted / [Math]::Max($total, 1)) * 85) + 5
@@ -449,10 +449,10 @@ function Invoke-WinUtilISOCleanAndReset {
                 }
 
                 foreach ($d in $allDirs) {
-                    try { Remove-Item -Path $d.FullName -Force -ErrorAction SilentlyContinue } catch {}
+                    try { Remove-Item -Path $d.FullName -Force } catch {}
                 }
 
-                try { Remove-Item -Path $workDir -Recurse -Force -ErrorAction Stop } catch {}
+                try { Remove-Item -Path $workDir -Recurse -Force } catch {}
 
                 if (Test-Path $workDir) {
                     Log "WARNING: some items could not be deleted in $workDir"
@@ -501,9 +501,9 @@ function Invoke-WinUtilISOCleanAndReset {
                 $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $true
             })
         }
-    }) | Out-Null
+    })
 
-    $script.BeginInvoke() | Out-Null
+    $script.BeginInvoke()
 }
 
 function Invoke-WinUtilISOExport {
@@ -529,10 +529,10 @@ function Invoke-WinUtilISOExport {
     $outputISO = $dlg.FileName
 
     # Locate oscdimg.exe (Windows ADK or winget per-user install)
-    $oscdimg = Get-ChildItem "C:\Program Files (x86)\Windows Kits" -Recurse -Filter "oscdimg.exe" -ErrorAction SilentlyContinue |
+    $oscdimg = Get-ChildItem "C:\Program Files (x86)\Windows Kits" -Recurse -Filter "oscdimg.exe" |
                Select-Object -First 1 -ExpandProperty FullName
     if (-not $oscdimg) {
-        $oscdimg = Get-ChildItem "$env:LOCALAPPDATA\Microsoft\WinGet\Packages" -Recurse -Filter "oscdimg.exe" -ErrorAction SilentlyContinue |
+        $oscdimg = Get-ChildItem "$env:LOCALAPPDATA\Microsoft\WinGet\Packages" -Recurse -Filter "oscdimg.exe" |
                    Where-Object { $_.FullName -match 'Microsoft\.OSCDIMG' } |
                    Select-Object -First 1 -ExpandProperty FullName
     }
@@ -543,10 +543,10 @@ function Invoke-WinUtilISOExport {
             # First ensure winget is installed and operational
             Install-WinUtilWinget
 
-            $winget = Get-Command winget -ErrorAction Stop
-            $result = & $winget install -e --id Microsoft.OSCDIMG --accept-package-agreements --accept-source-agreements 2>&1
+            $winget = Get-Command winget
+            $result = & $winget install -e --id Microsoft.OSCDIMG --accept-package-agreements --accept-source-agreements
             Write-Win11ISOLog "winget output: $result"
-            $oscdimg = Get-ChildItem "$env:LOCALAPPDATA\Microsoft\WinGet\Packages" -Recurse -Filter "oscdimg.exe" -ErrorAction SilentlyContinue |
+            $oscdimg = Get-ChildItem "$env:LOCALAPPDATA\Microsoft\WinGet\Packages" -Recurse -Filter "oscdimg.exe" |
                        Where-Object { $_.FullName -match 'Microsoft\.OSCDIMG' } |
                        Select-Object -First 1 -ExpandProperty FullName
         } catch {
@@ -609,7 +609,7 @@ function Invoke-WinUtilISOExport {
 
             $proc = [System.Diagnostics.Process]::new()
             $proc.StartInfo = $psi
-            $proc.Start() | Out-Null
+            $proc.Start()
 
             # Stream stdout line-by-line as oscdimg runs
             while (-not $proc.StandardOutput.EndOfStream) {
@@ -653,7 +653,7 @@ function Invoke-WinUtilISOExport {
                 $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $true
             })
         }
-    }) | Out-Null
+    })
 
-    $script.BeginInvoke() | Out-Null
+    $script.BeginInvoke()
 }
