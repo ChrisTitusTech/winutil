@@ -84,27 +84,27 @@ function Invoke-WinUtilISOScript {
 
     function Add-DriversToImage {
         param ([string]$MountPath, [string]$DriverDir, [string]$Label = "image", [scriptblock]$Logger)
-        & dism /English "/image:$MountPath" /Add-Driver "/Driver:$DriverDir" /Recurse 2>&1 |
+        & dism /English "/image:$MountPath" /Add-Driver "/Driver:$DriverDir" /Recurse |
             ForEach-Object { & $Logger "  dism[$Label]: $_" }
     }
 
     function Invoke-BootWimInject {
         param ([string]$BootWimPath, [string]$DriverDir, [scriptblock]$Logger)
-        Set-ItemProperty -Path $BootWimPath -Name IsReadOnly -Value $false -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $BootWimPath -Name IsReadOnly -Value $false
         $mountDir = Join-Path $env:TEMP "WinUtil_BootMount_$(Get-Random)"
-        New-Item -Path $mountDir -ItemType Directory -Force | Out-Null
+        New-Item -Path $mountDir -ItemType Directory -Force
         try {
             & $Logger "Mounting boot.wim (index 2) for driver injection..."
-            Mount-WindowsImage -ImagePath $BootWimPath -Index 2 -Path $mountDir -ErrorAction Stop | Out-Null
+            Mount-WindowsImage -ImagePath $BootWimPath -Index 2 -Path $mountDir
             Add-DriversToImage -MountPath $mountDir -DriverDir $DriverDir -Label "boot" -Logger $Logger
             & $Logger "Saving boot.wim..."
-            Dismount-WindowsImage -Path $mountDir -Save -ErrorAction Stop | Out-Null
+            Dismount-WindowsImage -Path $mountDir -Save
             & $Logger "boot.wim driver injection complete."
         } catch {
             & $Logger "Warning: boot.wim driver injection failed: $_"
-            try { Dismount-WindowsImage -Path $mountDir -Discard -ErrorAction SilentlyContinue | Out-Null } catch {}
+            try { Dismount-WindowsImage -Path $mountDir -Discard } catch {}
         } finally {
-            Remove-Item -Path $mountDir -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-Item -Path $mountDir -Recurse -Force
         }
     }
 
@@ -143,9 +143,9 @@ function Invoke-WinUtilISOScript {
     if ($InjectCurrentSystemDrivers) {
         & $Log "Exporting all drivers from running system..."
         $driverExportRoot = Join-Path $env:TEMP "WinUtil_DriverExport_$(Get-Random)"
-        New-Item -Path $driverExportRoot -ItemType Directory -Force | Out-Null
+        New-Item -Path $driverExportRoot -ItemType Directory -Force
         try {
-            Export-WindowsDriver -Online -Destination $driverExportRoot | Out-Null
+            Export-WindowsDriver -Online -Destination $driverExportRoot
 
             & $Log "Injecting current system drivers into install.wim..."
             Add-DriversToImage -MountPath $ScratchDir -DriverDir $driverExportRoot -Label "install" -Logger $Log
@@ -163,7 +163,7 @@ function Invoke-WinUtilISOScript {
         } catch {
             & $Log "Error during driver export/injection: $_"
         } finally {
-            Remove-Item -Path $driverExportRoot -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-Item -Path $driverExportRoot -Recurse -Force
         }
     } else {
         & $Log "Driver injection skipped."
@@ -231,7 +231,7 @@ function Invoke-WinUtilISOScript {
                     $absPath  = $fileNode.GetAttribute("path")
                     $relPath  = $absPath -replace '^[A-Za-z]:[/\\]', ''
                     $destPath = Join-Path $ScratchDir $relPath
-                    New-Item -Path (Split-Path $destPath -Parent) -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
+                    New-Item -Path (Split-Path $destPath -Parent) -ItemType Directory -Force
 
                     $ext = [IO.Path]::GetExtension($destPath).ToLower()
                     $encoding = switch ($ext) {
@@ -326,23 +326,23 @@ function Invoke-WinUtilISOScript {
     # ── 4. Delete scheduled task definition files ─────────────────────────────
     & $Log "Deleting scheduled task definition files..."
     $tasksPath = "$ScratchDir\Windows\System32\Tasks"
-    Remove-Item "$tasksPath\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" -Force -ErrorAction SilentlyContinue
-    Remove-Item "$tasksPath\Microsoft\Windows\Customer Experience Improvement Program"                  -Recurse -Force -ErrorAction SilentlyContinue
-    Remove-Item "$tasksPath\Microsoft\Windows\Application Experience\ProgramDataUpdater"               -Force -ErrorAction SilentlyContinue
-    Remove-Item "$tasksPath\Microsoft\Windows\Chkdsk\Proxy"                                            -Force -ErrorAction SilentlyContinue
-    Remove-Item "$tasksPath\Microsoft\Windows\Windows Error Reporting\QueueReporting"                  -Force -ErrorAction SilentlyContinue
-    Remove-Item "$tasksPath\Microsoft\Windows\InstallService"                                          -Recurse -Force -ErrorAction SilentlyContinue
-    Remove-Item "$tasksPath\Microsoft\Windows\UpdateOrchestrator"                                      -Recurse -Force -ErrorAction SilentlyContinue
-    Remove-Item "$tasksPath\Microsoft\Windows\UpdateAssistant"                                         -Recurse -Force -ErrorAction SilentlyContinue
-    Remove-Item "$tasksPath\Microsoft\Windows\WaaSMedic"                                               -Recurse -Force -ErrorAction SilentlyContinue
-    Remove-Item "$tasksPath\Microsoft\Windows\WindowsUpdate"                                           -Recurse -Force -ErrorAction SilentlyContinue
-    Remove-Item "$tasksPath\Microsoft\WindowsUpdate"                                                   -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item "$tasksPath\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" -Force
+    Remove-Item "$tasksPath\Microsoft\Windows\Customer Experience Improvement Program"                  -Recurse -Force
+    Remove-Item "$tasksPath\Microsoft\Windows\Application Experience\ProgramDataUpdater"               -Force
+    Remove-Item "$tasksPath\Microsoft\Windows\Chkdsk\Proxy"                                            -Force
+    Remove-Item "$tasksPath\Microsoft\Windows\Windows Error Reporting\QueueReporting"                  -Force
+    Remove-Item "$tasksPath\Microsoft\Windows\InstallService"                                          -Recurse -Force
+    Remove-Item "$tasksPath\Microsoft\Windows\UpdateOrchestrator"                                      -Recurse -Force
+    Remove-Item "$tasksPath\Microsoft\Windows\UpdateAssistant"                                         -Recurse -Force
+    Remove-Item "$tasksPath\Microsoft\Windows\WaaSMedic"                                               -Recurse -Force
+    Remove-Item "$tasksPath\Microsoft\Windows\WindowsUpdate"                                           -Recurse -Force
+    Remove-Item "$tasksPath\Microsoft\WindowsUpdate"                                                   -Recurse -Force
     & $Log "Scheduled task files deleted."
 
     # ── 5. Remove ISO support folder ─────────────────────────────────────────
     if ($ISOContentsDir -and (Test-Path $ISOContentsDir)) {
         & $Log "Removing ISO support\ folder..."
-        Remove-Item -Path (Join-Path $ISOContentsDir "support") -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path (Join-Path $ISOContentsDir "support") -Recurse -Force
         & $Log "ISO support\ folder removed."
     }
 }
