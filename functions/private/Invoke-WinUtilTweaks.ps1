@@ -39,12 +39,6 @@ function Invoke-WinUtilTweaks {
             ScriptType = "InvokeScript"
         }
     }
-    if($sync.configs.tweaks.$CheckBox.ScheduledTask) {
-        $sync.configs.tweaks.$CheckBox.ScheduledTask | ForEach-Object {
-            Write-Debug "$($psitem.Name) and state is $($psitem.$($values.ScheduledTask))"
-            Set-WinUtilScheduledTask -Name $psitem.Name -State $psitem.$($values.ScheduledTask)
-        }
-    }
     if($sync.configs.tweaks.$CheckBox.service) {
         Write-Debug "KeepServiceStartup is $KeepServiceStartup"
         $sync.configs.tweaks.$CheckBox.service | ForEach-Object {
