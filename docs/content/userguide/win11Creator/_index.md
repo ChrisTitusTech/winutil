@@ -80,7 +80,7 @@ Once the modification is complete, choose how to save your image:
   > [!NOTE]
   > `oscdimg.exe` (part of the Windows ADK) is required. If it's not found, Winutil will attempt to install it automatically via winget. If that fails, install it manually: `winget install -e --id Microsoft.OSCDIMG`
 
-  
+
   {{< /tab >}}
 
   {{< tab name="Write to USB" >}}
