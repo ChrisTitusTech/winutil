@@ -1,23 +1,23 @@
 ---
-title: "Taskbar Search Icon"
+title: "System Tray Battery Percentage"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1689}
-  "WPFToggleTaskbarSearch": {
-    "Content": "Taskbar Search Icon",
-    "Description": "If enabled, Search Button will be on the Taskbar.",
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1236}
+  "WPFToggleBatteryPercentage": {
+    "Content": "System Tray Battery Percentage",
+    "Description": "If enabled, Shows numeric battery percentage next to the battery icon in the system tray.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
     "registry": [
       {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
-        "Name": "SearchboxTaskbarMode",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "IsBatteryPercentageEnabled",
         "Value": "1",
         "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "true"
+        "OriginalValue": "<RemoveEntry>",
+        "DefaultState": "false"
       }
     ],
 ```
