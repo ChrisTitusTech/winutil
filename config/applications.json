@@ -107,15 +107,6 @@
         "winget": "AnyDesk.AnyDesk",
         "foss": false
     },
-    "anythingllm": {
-        "category": "AI-Automation",
-        "choco": "na",
-        "content": "AnythingLLM",
-        "description": "Desktop AI application for chat with documents (RAG) and agent workflows; offers a Windows installer and an open-source codebase.",
-        "link": "https://anythingllm.com/",
-        "winget": "na",
-        "foss": true
-    },
     "audacity": {
         "category": "Multimedia Tools",
         "choco": "audacity",
