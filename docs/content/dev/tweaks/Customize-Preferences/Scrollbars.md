@@ -1,5 +1,5 @@
 ---
-title: "Always Show Scrollbars"
+title: "Scrollbars Always Visible"
 description: ""
 ---
 
