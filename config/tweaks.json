@@ -287,7 +287,7 @@
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/bravedebloat"
   },
   "WPFTweaksDisableWarningForUnsignedRdp": {
-    "Content": "Disable warnings for unsigned RDP files",
+    "Content": "RDP Unsigned File Warnings - Disable",
     "Description": "Disables warnings shown when launching unsigned RDP files introduced with the latest Windows 10 and 11 updates.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
@@ -997,7 +997,7 @@
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/razerblock"
   },
   "WPFTweaksDisableNotifications": {
-    "Content": "Notification Tray & Calendar - Disable",
+    "Content": "System Tray Notifications & Calendar - Disable",
     "Description": "Disables all Notifications INCLUDING Calendar.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
@@ -1233,6 +1233,24 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/detailedbsod"
   },
+  "WPFToggleBatteryPercentage": {
+    "Content": "System Tray Battery Percentage",
+    "Description": "If enabled, Shows numeric battery percentage next to the battery icon in the system tray.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "IsBatteryPercentageEnabled",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/batterypercentage"
+  },
   "WPFToggleDarkMode": {
     "Content": "Dark Theme for Windows",
     "Description": "Enable/Disable Dark Mode.",
@@ -1392,7 +1410,7 @@
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/newoutlook"
   },
     "WPFToggleScrollbars": {
-    "Content": "Always Show Scrollbars",
+    "Content": "Scrollbars Always Visible",
     "Description": "If enabled, scrollbars will always be visible. If disabled, Windows will automatically hide scrollbars when not in use.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -1561,7 +1579,7 @@
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/bingsearch"
   },
   "WPFToggleLoginBlur": {
-    "Content": "Acrylic Blur on Login Screen",
+    "Content": "Logon Screen Acrylic Blur",
     "Description": "If disabled, the acrylic blur effect will be removed on the Windows 10/11 login screen background.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -1705,7 +1723,7 @@
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/taskview"
   },
   "WPFOOSUbutton": {
-    "Content": "OO Shutup 10 - Run",
+    "Content": "O&O ShutUp10++ - Run",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Type": "Button",
