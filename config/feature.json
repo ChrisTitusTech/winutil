@@ -138,7 +138,7 @@
     "link": "https://winutil.christitus.com/dev/features/features/install"
   },
   "WPFPanelAutologin": {
-    "Content": "Autologin - Enable",
+    "Content": "AutoLogon - Run",
     "category": "Fixes",
     "panel": "1",
     "Type": "Button",

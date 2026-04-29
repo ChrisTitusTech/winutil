@@ -1,11 +1,11 @@
 ---
-title: "Disable warnings for unsigned RDP files"
+title: "RDP Unsigned File Warnings - Disable"
 description: ""
 ---
 
 ```json {filename="config/tweaks.json",linenos=inline,linenostart=289}
   "WPFTweaksDisableWarningForUnsignedRdp": {
-    "Content": "Disable warnings for unsigned RDP files",
+    "Content": "RDP Unsigned File Warnings - Disable",
     "Description": "Disables warnings shown when launching unsigned RDP files introduced with the latest Windows 10 and 11 updates.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
