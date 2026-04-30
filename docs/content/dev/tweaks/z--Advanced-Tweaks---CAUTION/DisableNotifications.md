@@ -3,7 +3,7 @@ title: "System Tray Notifications & Calendar - Disable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=999}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1048}
   "WPFTweaksDisableNotifications": {
     "Content": "System Tray Notifications & Calendar - Disable",
     "Description": "Disables all Notifications INCLUDING Calendar.",

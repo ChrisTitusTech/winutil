@@ -44,6 +44,55 @@ description: ""
         "Value": "0",
         "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "Name": "BraveNewsDisabled",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "Name": "BraveTalkDisabled",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "Name": "TorDisabled",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "Name": "BraveP3AEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "Name": "UrlKeyedAnonymizedDataCollectionEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "Name": "SafeBrowsingExtendedReportingEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "Name": "MetricsReportingEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
 ```
