@@ -25,7 +25,6 @@ function Invoke-WinUtilTweaks {
     if($undo) {
         $Values = @{
             Registry = "OriginalValue"
-            ScheduledTask = "OriginalState"
             Service = "OriginalType"
             ScriptType = "UndoScript"
         }
@@ -33,7 +32,6 @@ function Invoke-WinUtilTweaks {
     } else {
         $Values = @{
             Registry = "Value"
-            ScheduledTask = "State"
             Service = "StartupType"
             OriginalService = "OriginalType"
             ScriptType = "InvokeScript"
