@@ -93,7 +93,7 @@ function Invoke-WinUtilISOWriteUSB {
         }
 
         function Get-FreeDriveLetter {
-            $used = (Get-PSDrive -PSProvider FileSystem -ErrorAction SilentlyContinue).Name
+            $used = (Get-PSDrive -PSProvider FileSystem).Name
             foreach ($c in [char[]](68..90)) {
                 if ($used -notcontains [string]$c) { return $c }
             }
@@ -107,29 +107,29 @@ function Invoke-WinUtilISOWriteUSB {
             $dpFile1 = Join-Path $env:TEMP "winutil_diskpart_$(Get-Random).txt"
             "select disk $diskNum`nclean`nexit" | Set-Content -Path $dpFile1 -Encoding ASCII
             Log "Running diskpart clean on Disk $diskNum..."
-            $dpCleanOut = diskpart /s $dpFile1 2>&1
+            $dpCleanOut = diskpart /s $dpFile1
             $dpCleanOut | Where-Object { $_ -match '\S' } | ForEach-Object { Log "  diskpart: $_" }
-            Remove-Item $dpFile1 -Force -ErrorAction SilentlyContinue
+            Remove-Item $dpFile1 -Force
 
             if (($dpCleanOut -join ' ') -match 'device is not ready') {
                 Log "Disk $diskNum was not ready; waiting 5 seconds and retrying clean..."
                 Start-Sleep -Seconds 5
-                Update-Disk -Number $diskNum -ErrorAction SilentlyContinue
+                Update-Disk -Number $diskNum
                 $dpFile1b = Join-Path $env:TEMP "winutil_diskpart_$(Get-Random).txt"
                 "select disk $diskNum`nclean`nexit" | Set-Content -Path $dpFile1b -Encoding ASCII
-                diskpart /s $dpFile1b 2>&1 | Where-Object { $_ -match '\S' } | ForEach-Object { Log "  diskpart: $_" }
-                Remove-Item $dpFile1b -Force -ErrorAction SilentlyContinue
+                diskpart /s $dpFile1b | Where-Object { $_ -match '\S' } | ForEach-Object { Log "  diskpart: $_" }
+                Remove-Item $dpFile1b -Force
             }
 
             # Phase 2: Initialize as GPT
             Start-Sleep -Seconds 2
-            Update-Disk -Number $diskNum -ErrorAction SilentlyContinue
-            $diskObj = Get-Disk -Number $diskNum -ErrorAction Stop
+            Update-Disk -Number $diskNum
+            $diskObj = Get-Disk -Number $diskNum
             if ($diskObj.PartitionStyle -eq 'RAW') {
-                Initialize-Disk -Number $diskNum -PartitionStyle GPT -ErrorAction Stop
+                Initialize-Disk -Number $diskNum -PartitionStyle GPT
                 Log "Disk $diskNum initialized as GPT."
             } else {
-                Set-Disk -Number $diskNum -PartitionStyle GPT -ErrorAction Stop
+                Set-Disk -Number $diskNum -PartitionStyle GPT
                 Log "Disk $diskNum converted to GPT (was $($diskObj.PartitionStyle))."
             }
 
@@ -138,7 +138,7 @@ function Invoke-WinUtilISOWriteUSB {
             $volLabel = "W11-" + (Get-Date).ToString('yyMMdd')
             $dpFile2  = Join-Path $env:TEMP "winutil_diskpart2_$(Get-Random).txt"
             $maxFat32PartitionMB = 32768
-            $diskSizeMB = [int][Math]::Floor((Get-Disk -Number $diskNum -ErrorAction Stop).Size / 1MB)
+            $diskSizeMB = [int][Math]::Floor((Get-Disk -Number $diskNum).Size / 1MB)
             $createPartitionCommand = "create partition primary"
             if ($diskSizeMB -gt $maxFat32PartitionMB) {
                 $createPartitionCommand = "create partition primary size=$maxFat32PartitionMB"
@@ -151,14 +151,14 @@ function Invoke-WinUtilISOWriteUSB {
                 "exit"
             ) | Set-Content -Path $dpFile2 -Encoding ASCII
             Log "Creating partitions on Disk $diskNum..."
-            diskpart /s $dpFile2 2>&1 | Where-Object { $_ -match '\S' } | ForEach-Object { Log "  diskpart: $_" }
-            Remove-Item $dpFile2 -Force -ErrorAction SilentlyContinue
+            diskpart /s $dpFile2 | Where-Object { $_ -match '\S' } | ForEach-Object { Log "  diskpart: $_" }
+            Remove-Item $dpFile2 -Force
 
             SetProgress "Formatting USB partition..." 25
             Start-Sleep -Seconds 3
-            Update-Disk -Number $diskNum -ErrorAction SilentlyContinue
+            Update-Disk -Number $diskNum
 
-            $partitions = Get-Partition -DiskNumber $diskNum -ErrorAction Stop
+            $partitions = Get-Partition -DiskNumber $diskNum
             Log "Partitions on Disk $diskNum after creation: $($partitions.Count)"
             foreach ($p in $partitions) {
                 Log "  Partition $($p.PartitionNumber)  Type=$($p.Type)  Letter=$($p.DriveLetter)  Size=$([math]::Round($p.Size/1MB))MB"
@@ -173,14 +173,14 @@ function Invoke-WinUtilISOWriteUSB {
             # with 'no volume selected' when the partition has never been formatted before)
             Log "Formatting Partition $($winpePart.PartitionNumber) as FAT32 (label: $volLabel)..."
             Get-Partition -DiskNumber $diskNum -PartitionNumber $winpePart.PartitionNumber |
-                Format-Volume -FileSystem FAT32 -NewFileSystemLabel $volLabel -Force -Confirm:$false | Out-Null
+                Format-Volume -FileSystem FAT32 -NewFileSystemLabel $volLabel -Force -Confirm:$false
             Log "Partition $($winpePart.PartitionNumber) formatted as FAT32."
 
             SetProgress "Assigning drive letters..." 30
             Start-Sleep -Seconds 2
-            Update-Disk -Number $diskNum -ErrorAction SilentlyContinue
+            Update-Disk -Number $diskNum
 
-            try { Remove-PartitionAccessPath -DiskNumber $diskNum -PartitionNumber $winpePart.PartitionNumber -AccessPath "$($winpePart.DriveLetter):" -ErrorAction SilentlyContinue } catch {}
+            try { Remove-PartitionAccessPath -DiskNumber $diskNum -PartitionNumber $winpePart.PartitionNumber -AccessPath "$($winpePart.DriveLetter):" } catch {}
             $usbLetter = Get-FreeDriveLetter
             if (-not $usbLetter) { throw "No free drive letters (D-Z) available to assign to the USB data partition." }
             Set-Partition -DiskNumber $diskNum -PartitionNumber $winpePart.PartitionNumber -NewDriveLetter $usbLetter
@@ -197,9 +197,9 @@ function Invoke-WinUtilISOWriteUSB {
             if (-not (Test-Path $usbDrive)) { throw "Drive $usbDrive is not accessible after letter assignment." }
             Log "USB data partition: $usbDrive"
 
-            $contentSizeBytes = (Get-ChildItem -LiteralPath $contentsDir -File -Recurse -Force -ErrorAction Stop | Measure-Object -Property Length -Sum).Sum
+            $contentSizeBytes = (Get-ChildItem -LiteralPath $contentsDir -File -Recurse -Force | Measure-Object -Property Length -Sum).Sum
             if (-not $contentSizeBytes) { $contentSizeBytes = 0 }
-            $usbVolume = Get-Volume -DriveLetter $usbLetter -ErrorAction Stop
+            $usbVolume = Get-Volume -DriveLetter $usbLetter
             $partitionCapacityBytes = [int64]$usbVolume.Size
             $partitionFreeBytes = [int64]$usbVolume.SizeRemaining
 
@@ -226,7 +226,7 @@ function Invoke-WinUtilISOWriteUSB {
                 if ($wimSizeMB -gt 3800) {
                     Log "install.wim is $wimSizeMB MB - splitting for FAT32 compatibility... This will take several minutes."
                     $splitDest = Join-Path $usbDrive "sources\install.swm"
-                    New-Item -ItemType Directory -Path (Split-Path $splitDest) -Force | Out-Null
+                    New-Item -ItemType Directory -Path (Split-Path $splitDest) -Force
                     Split-WindowsImage -ImagePath $installWim -SplitImagePath $splitDest -FileSize 3800 -CheckIntegrity
                     Log "install.wim split complete."
                     Log "Copying remaining files to USB..."
@@ -262,7 +262,7 @@ function Invoke-WinUtilISOWriteUSB {
                 $sync["WPFWin11ISOWriteUSBButton"].IsEnabled = $true
             })
         }
-    }) | Out-Null
+    })
 
-    $script.BeginInvoke() | Out-Null
+    $script.BeginInvoke()
 }
