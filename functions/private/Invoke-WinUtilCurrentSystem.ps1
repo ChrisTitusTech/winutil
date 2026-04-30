@@ -44,21 +44,18 @@ Function Invoke-WinUtilCurrentSystem {
     if ($CheckBox -eq "tweaks") {
 
         if (!(Test-Path 'HKU:\')) {$null = (New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS)}
-        $ScheduledTasks = Get-ScheduledTask
 
         $sync.configs.tweaks | Get-Member -MemberType NoteProperty | ForEach-Object {
 
             $Config = $psitem.Name
-            #WPFEssTweaksTele
             $entry = $sync.configs.tweaks.$Config
             $registryKeys = $entry.registry
-            $scheduledtaskKeys = $entry.scheduledtask
             $serviceKeys = $entry.service
             $appxKeys = $entry.appx
             $invokeScript = $entry.InvokeScript
             $entryType = $entry.Type
 
-            if ($registryKeys -or $scheduledtaskKeys -or $serviceKeys) {
+            if ($registryKeys -or $serviceKeys) {
                 $Values = @()
 
                 if ($entryType -eq "Toggle") {
@@ -100,20 +97,6 @@ Function Invoke-WinUtilCurrentSystem {
 
                     if ($registryTotal -gt 0 -and $registryMatchCount -ne $registryTotal) {
                         $values += $False
-                    }
-                }
-
-                Foreach ($tweaks in $scheduledtaskKeys) {
-                    Foreach ($tweak in $tweaks) {
-                        $task = $ScheduledTasks | Where-Object {$($psitem.TaskPath + $psitem.TaskName) -like "\$($tweak.name)"}
-
-                        if ($task) {
-                            $actualValue = $task.State
-                            $expectedValue = $tweak.State
-                            if ($expectedValue -ne $actualValue) {
-                                $values += $False
-                            }
-                        }
                     }
                 }
 

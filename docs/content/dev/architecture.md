@@ -380,13 +380,6 @@ Update UI
         "Value": "0",
         "OriginalValue": "1"
       }
-    ],
-    "ScheduledTask": [
-      {
-        "Name": "Microsoft\\Windows\\Autochk\\Proxy",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      }
     ]
   }
 }
@@ -397,7 +390,6 @@ Update UI
 - `Description`: What it does
 - `category`: Essential/Advanced/Customize
 - `registry`: Registry changes to make
-- `ScheduledTask`: Scheduled tasks to modify
 - `service`: Services to change
 - `OriginalValue/State`: For undo functionality
 

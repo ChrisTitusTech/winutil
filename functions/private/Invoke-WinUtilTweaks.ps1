@@ -25,7 +25,6 @@ function Invoke-WinUtilTweaks {
     if($undo) {
         $Values = @{
             Registry = "OriginalValue"
-            ScheduledTask = "OriginalState"
             Service = "OriginalType"
             ScriptType = "UndoScript"
         }
@@ -33,16 +32,9 @@ function Invoke-WinUtilTweaks {
     } else {
         $Values = @{
             Registry = "Value"
-            ScheduledTask = "State"
             Service = "StartupType"
             OriginalService = "OriginalType"
             ScriptType = "InvokeScript"
-        }
-    }
-    if($sync.configs.tweaks.$CheckBox.ScheduledTask) {
-        $sync.configs.tweaks.$CheckBox.ScheduledTask | ForEach-Object {
-            Write-Debug "$($psitem.Name) and state is $($psitem.$($values.ScheduledTask))"
-            Set-WinUtilScheduledTask -Name $psitem.Name -State $psitem.$($values.ScheduledTask)
         }
     }
     if($sync.configs.tweaks.$CheckBox.service) {

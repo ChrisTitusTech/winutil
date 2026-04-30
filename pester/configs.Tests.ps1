@@ -65,10 +65,6 @@ Describe "Config Files" -ForEach @(
                         @{
                             name = "service"
                             value = "OriginalType"
-                        },
-                        @{
-                            name = "ScheduledTask"
-                            value = "OriginalState"
                         }
                     )
                     Foreach ($original in $Originals) {
