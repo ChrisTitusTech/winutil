@@ -206,6 +206,15 @@
         "winget": "Microsoft.DotNet.DesktopRuntime.10",
         "foss": true
     },
+    "eaapp": {
+        "category": "Games",
+        "choco": "ea-app",
+        "content": "EA App",
+        "description": "EA App is a platform for accessing and playing Electronic Arts games.",
+        "link": "https://www.ea.com/ea-app",
+        "winget": "ElectronicArts.EADesktop",
+        "foss": false
+    },
     "edge": {
         "category": "Browsers",
         "choco": "microsoft-edge",
