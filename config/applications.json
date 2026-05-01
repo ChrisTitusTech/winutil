@@ -14,7 +14,7 @@
         "content": "7-Zip",
         "description": "7-Zip is a free and open-source file archiver utility. It supports several compression formats and provides a high compression ratio, making it a popular choice for file compression.",
         "link": "https://www.7-zip.org/",
-        "winget": "7zip.7zip",f
+        "winget": "7zip.7zip",
         "foss": true
     },
     "adobe": {
