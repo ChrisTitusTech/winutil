@@ -152,6 +152,15 @@
         "winget": "CrystalDewWorld.CrystalDiskInfo",
         "foss": true
     },
+    "crystaldiskmark": {
+        "category": "Utilities",
+        "choco": "crystaldiskmark",
+        "content": "Crystal Disk Mark",
+        "description": "Crystal Disk Mark is a disk benchmarking tool that measures the read and write speeds of storage devices. It helps users assess the performance of their hard drives and SSDs.",
+        "link": "https://crystalmark.info/en/software/crystaldiskmark/",
+        "winget": "CrystalDewWorld.CrystalDiskMark",
+        "foss": true
+    },
     "cursor": {
         "category": "Development",
         "choco": "cursoride",
