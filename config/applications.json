@@ -134,6 +134,15 @@
         "winget": "ChatterinoTeam.Chatterino",
         "foss": true
     },
+    "chrome": {
+        "category": "Browsers",
+        "choco": "googlechrome",
+        "content": "Chrome",
+        "description": "Google Chrome is a widely used web browser known for its speed, simplicity, and seamless integration with Google services.",
+        "link": "https://www.google.com/chrome/",
+        "winget": "Google.Chrome",
+        "foss": false
+    },
     "cpuz": {
         "category": "Utilities",
         "choco": "cpu-z",
@@ -151,15 +160,6 @@
         "link": "https://crystalmark.info/en/software/crystaldiskinfo/",
         "winget": "CrystalDewWorld.CrystalDiskInfo",
         "foss": true
-    },
-    "chrome": {
-        "category": "Browsers",
-        "choco": "googlechrome",
-        "content": "Chrome",
-        "description": "Google Chrome is a widely used web browser known for its speed, simplicity, and seamless integration with Google services.",
-        "link": "https://www.google.com/chrome/",
-        "winget": "Google.Chrome",
-        "foss": false
     },
     "cursor": {
         "category": "Development",
