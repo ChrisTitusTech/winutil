@@ -44,15 +44,6 @@
         "winget": "ToEverything.AFFiNE",
         "foss": true
     },
-    "ai-as-workspace": {
-        "category": "AI-Automation",
-        "choco": "na",
-        "content": "AI as Workspace",
-        "description": "Workspace-style AI chat client with multiple workspaces, plugins, and local-first design; open-source (BSD-3-Clause).",
-        "link": "https://aiaw.app/",
-        "winget": "NitroRCr.AIasWorkspace",
-        "foss": true
-    },
     "aimp": {
         "category": "Multimedia Tools",
         "choco": "aimp",
@@ -142,15 +133,6 @@
         "link": "https://www.autohotkey.com/",
         "winget": "AutoHotkey.AutoHotkey",
         "foss": true
-    },
-    "autoit": {
-        "category": "AI-Automation",
-        "choco": "autoit.install",
-        "content": "AutoIt",
-        "description": "Windows GUI automation scripting tool (freeware) used to automate keystrokes, mouse actions, and window/control interactions.",
-        "link": "https://www.autoitscript.com/site/autoit/",
-        "winget": "AutoIt.AutoIt",
-        "foss": false
     },
     "azuredatastudio": {
         "category": "Microsoft Tools",
@@ -242,15 +224,6 @@
         "winget": "TGRMNSoftware.BulkRenameUtility",
         "foss": false
     },
-    "buzz": {
-        "category": "AI-Automation",
-        "choco": "na",
-        "content": "Buzz",
-        "description": "Offline audio transcription and translation desktop app powered by Whisper, packaged for Windows and available via WinGet.",
-        "link": "https://github.com/chidiwilliams/buzz",
-        "winget": "ChidiWilliams.Buzz",
-        "foss": true
-    },
     "blurautoclicker": {
         "category": "Utilities",
         "choco": "na",
@@ -314,15 +287,6 @@
         "winget": "Cemu.Cemu",
         "foss": true
     },
-    "chatgpt": {
-        "category": "AI-Automation",
-        "choco": "na",
-        "content": "ChatGPT",
-        "description": "ChatGPT desktop app provides direct access to OpenAI's conversational AI assistant for writing, analysis, and productivity tasks.",
-        "link": "https://openai.com/chatgpt/desktop/",
-        "winget": "9nt1r1c2hh7j",
-        "foss": false
-    },
     "chatterino": {
         "category": "Communications",
         "choco": "chatterino",
@@ -349,24 +313,6 @@
         "link": "https://github.com/Hibbiki/chromium-win64",
         "winget": "Hibbiki.Chromium",
         "foss": true
-    },
-    "claude": {
-        "category": "AI-Automation",
-        "choco": "claude",
-        "content": "Claude",
-        "description": "Anthropic's Claude desktop application for Windows, designed for focused AI-assisted work and chat.",
-        "link": "https://claude.ai/",
-        "winget": "Anthropic.Claude",
-        "foss": false
-    },
-    "claude-code": {
-        "category": "AI-Automation",
-        "choco": "claude-code",
-        "content": "Claude Code",
-        "description": "Anthropic's agentic coding tool for the terminal/IDE workflows, available on Windows and distributed via WinGet.",
-        "link": "https://code.claude.com/",
-        "winget": "Anthropic.ClaudeCode",
-        "foss": false
     },
     "clementine": {
         "category": "Multimedia Tools",
@@ -493,15 +439,6 @@
         "link": "https://www.wagnardsoft.com/display-driver-uninstaller-DDU-",
         "winget": "Wagnardsoft.DisplayDriverUninstaller",
         "foss": true
-    },
-    "deepl": {
-        "category": "AI-Automation",
-        "choco": "deepl",
-        "content": "DeepL",
-        "description": "DeepL desktop translation and writing assistant for Windows, including shortcuts and in-app writing improvement features.",
-        "link": "https://www.deepl.com/en/windows-app",
-        "winget": "DeepL.DeepL",
-        "foss": false
     },
     "deluge": {
         "category": "Utilities",
@@ -998,15 +935,6 @@
         "winget": "GitHub.cli",
         "foss": true
     },
-    "github-copilot-cli": {
-        "category": "AI-Automation",
-        "choco": "github-copilot-cli",
-        "content": "GitHub Copilot CLI",
-        "description": "GitHub Copilot experience for the command line: natural-language assistance for commands and development tasks; distributed via WinGet.",
-        "link": "https://github.com/github/copilot-cli",
-        "winget": "GitHub.Copilot",
-        "foss": false
-    },
     "githubdesktop": {
         "category": "Development",
         "choco": "git;github-desktop",
@@ -1078,15 +1006,6 @@
         "link": "https://www.google.com/drive/",
         "winget": "Google.GoogleDrive",
         "foss": false
-    },
-    "gpt4all": {
-        "category": "AI-Automation",
-        "choco": "gpt4all",
-        "content": "GPT4All",
-        "description": "Open-source desktop application to run LLMs locally with an emphasis on privacy (MIT-licensed codebase).",
-        "link": "https://nomic.ai/gpt4all",
-        "winget": "nomic.gpt4all",
-        "foss": true
     },
     "gpuz": {
         "category": "Utilities",
@@ -1274,15 +1193,6 @@
         "description": "Jami is a secure and privacy-focused communication platform that offers audio and video calls, messaging, and file sharing.",
         "link": "https://jami.net/",
         "winget": "SFLinux.Jami",
-        "foss": true
-    },
-    "jan": {
-        "category": "AI-Automation",
-        "choco": "jan",
-        "content": "Jan",
-        "description": "Open-source ChatGPT alternative that runs on your computer (offline-first desktop AI assistant / local model runner).",
-        "link": "https://jan.ai/",
-        "winget": "Jan.Jan",
         "foss": true
     },
     "java8": {
@@ -1492,15 +1402,6 @@
         "winget": "rocksdanister.LivelyWallpaper",
         "foss": true
     },
-    "lm-studio": {
-        "category": "AI-Automation",
-        "choco": "lm-studio",
-        "content": "LM Studio",
-        "description": "Desktop app to discover, download, and run local LLMs on your machine, with a built-in chat UI and local inference tooling.",
-        "link": "https://lmstudio.ai/",
-        "winget": "ElementLabs.LMStudio",
-        "foss": false
-    },
     "localsend": {
         "category": "Utilities",
         "choco": "localsend.install",
@@ -1590,24 +1491,6 @@
         "link": "https://meldmerge.org/",
         "winget": "Meld.Meld",
         "foss": true
-    },
-    "microsoft-aishell": {
-        "category": "AI-Automation",
-        "choco": "na",
-        "content": "Microsoft AI Shell",
-        "description": "CLI shell that connects to AI assistance providers ('agents') for command-line productivity; distributed via WinGet.",
-        "link": "https://github.com/PowerShell/AIShell",
-        "winget": "Microsoft.AIShell",
-        "foss": true
-    },
-    "microsoft-copilot": {
-        "category": "AI-Automation",
-        "choco": "na",
-        "content": "Microsoft Copilot",
-        "description": "Microsoft Copilot desktop app for Windows (consumer Copilot), distributed via Microsoft Store and commonly installed via its Store ID.",
-        "link": "https://apps.microsoft.com/detail/xp9cxngppj97xx",
-        "winget": "XP9CXNGPPJ97XX",
-        "foss": false
     },
     "modrinth": {
         "category": "Games",
@@ -1780,15 +1663,6 @@
         "winget": "erez-c137.NetSpeedTray",
         "foss": true
     },
-    "notion": {
-        "category": "AI-Automation",
-        "choco": "notion",
-        "content": "Notion",
-        "description": "Build Custom Agents, search across all your apps, and automate busywork. The AI workspace where teams get more done, faster.",
-        "link": "https://www.notion.com/",
-        "winget": "Notion.Notion",
-        "foss": false
-    },
     "nanazip": {
         "category": "Utilities",
         "choco": "nanazip",
@@ -1958,15 +1832,6 @@
         "description": "Okular is a versatile document viewer with advanced features.",
         "link": "https://okular.kde.org/",
         "winget": "KDE.Okular",
-        "foss": true
-    },
-    "ollama": {
-        "category": "AI-Automation",
-        "choco": "na",
-        "content": "Ollama",
-        "description": "Ollama lets you run and manage local large language models on your desktop.",
-        "link": "https://ollama.com/",
-        "winget": "Ollama.Ollama",
         "foss": true
     },
     "onedrive": {
