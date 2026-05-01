@@ -682,5 +682,436 @@
         "link": "https://www.win-rar.com/",
         "winget": "RARLab.WinRAR",
         "foss": false
+    },
+    "anydesk": {
+        "category": "Utilities",
+        "choco": "anydesk",
+        "content": "AnyDesk",
+        "description": "AnyDesk is a remote desktop software that enables users to access and control computers remotely. It is known for its fast connection and low latency.",
+        "link": "https://anydesk.com/",
+        "winget": "AnyDesk.AnyDesk",
+        "foss": false
+    },
+    "audacity": {
+        "category": "Multimedia Tools",
+        "choco": "audacity",
+        "content": "Audacity",
+        "description": "Audacity is a free and open-source audio editing software known for its powerful recording and editing capabilities.",
+        "link": "https://www.audacityteam.org/",
+        "winget": "Audacity.Audacity",
+        "foss": true
+    },
+    "autoruns": {
+        "category": "Microsoft Tools",
+        "choco": "autoruns",
+        "content": "Autoruns",
+        "description": "This utility shows you what programs are configured to run during system bootup or login.",
+        "link": "https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns",
+        "winget": "Microsoft.Sysinternals.Autoruns",
+        "foss": false
+    },
+    "autohotkey": {
+        "category": "Utilities",
+        "choco": "autohotkey",
+        "content": "AutoHotkey",
+        "description": "AutoHotkey is a scripting language for Windows that allows users to create custom automation scripts and macros. It is often used for automating repetitive tasks and customizing keyboard shortcuts.",
+        "link": "https://www.autohotkey.com/",
+        "winget": "AutoHotkey.AutoHotkey",
+        "foss": true
+    },
+    "blender": {
+        "category": "Multimedia Tools",
+        "choco": "blender",
+        "content": "Blender (3D Graphics)",
+        "description": "Blender is a powerful open-source 3D creation suite, offering modeling, sculpting, animation, and rendering tools.",
+        "link": "https://www.blender.org/",
+        "winget": "BlenderFoundation.Blender",
+        "foss": true
+    },
+    "blurautoclicker": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "BlurAutoClicker",
+        "description": "An Auto-clicker with a few advanced features and generally better performance than popular alternatives.",
+        "link": "https://blur009.vercel.app/projects/blur-autoclicker/",
+        "winget": "Blur009.BlurAutoClicker",
+        "foss": true
+    },
+    "dotnet10": {
+        "category": "Microsoft Tools",
+        "choco": "dotnet-10.0-runtime",
+        "content": ".NET Desktop Runtime 10",
+        "description": ".NET Desktop Runtime 10 is a runtime environment required for running applications developed with .NET 10.",
+        "link": "https://dotnet.microsoft.com/download/dotnet/10.0",
+        "winget": "Microsoft.DotNet.DesktopRuntime.10",
+        "foss": true
+    },
+    "epicgames": {
+        "category": "Games",
+        "choco": "epicgameslauncher",
+        "content": "Epic Games Launcher",
+        "description": "Epic Games Launcher is the client for accessing and playing games from the Epic Games Store.",
+        "link": "https://www.epicgames.com/store/en-US/",
+        "winget": "EpicGames.EpicGamesLauncher",
+        "foss": false
+    },
+    "files": {
+        "category": "Utilities",
+        "choco": "files",
+        "content": "Files",
+        "description": "Alternative file explorer.",
+        "link": "https://github.com/files-community/Files",
+        "winget": "FilesCommunity.Files",
+        "foss": true
+    },
+    "imageglass": {
+        "category": "Multimedia Tools",
+        "choco": "imageglass",
+        "content": "ImageGlass (Image Viewer)",
+        "description": "ImageGlass is a versatile image viewer with support for various image formats and a focus on simplicity and speed.",
+        "link": "https://imageglass.org/",
+        "winget": "DuongDieuPhap.ImageGlass",
+        "foss": true
+    },
+    "irfanview": {
+        "category": "Multimedia Tools",
+        "choco": "irfanview",
+        "content": "IrfanView",
+        "description": "IrfanView is a lightweight, fast, and free image viewer and editor. Supports multiple formats, batch processing, and powerful plugins.",
+        "link": "https://irfanview.com/",
+        "winget": "IrfanSkiljan.IrfanView"
+    },
+    "itch": {
+        "category": "Games",
+        "choco": "itch",
+        "content": "Itch.io",
+        "description": "Itch.io is a digital distribution platform for indie games and creative projects.",
+        "link": "https://itch.io/",
+        "winget": "ItchIo.Itch",
+        "foss": true
+    },
+    "java21": {
+        "category": "Development",
+        "choco": "corretto21jdk",
+        "content": "Amazon Corretto 21 (LTS)",
+        "description": "Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK).",
+        "link": "https://aws.amazon.com/corretto",
+        "winget": "Amazon.Corretto.21.JDK",
+        "foss": true
+    },
+    "java25": {
+        "category": "Development",
+        "choco": "corretto25jdk",
+        "content": "Amazon Corretto 25 (LTS)",
+        "description": "Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK).",
+        "link": "https://aws.amazon.com/corretto",
+        "winget": "Amazon.Corretto.25.JDK",
+        "foss": true
+    },
+    "jetbrains": {
+        "category": "Development",
+        "choco": "jetbrainstoolbox",
+        "content": "Jetbrains Toolbox",
+        "description": "Jetbrains Toolbox is a platform for easy installation and management of JetBrains developer tools.",
+        "link": "https://www.jetbrains.com/toolbox/",
+        "winget": "JetBrains.Toolbox",
+        "foss": false
+    },
+    "lazygit": {
+        "category": "Development",
+        "choco": "lazygit",
+        "content": "Lazygit",
+        "description": "Simple terminal UI for git commands.",
+        "link": "https://github.com/jesseduffield/lazygit/",
+        "winget": "JesseDuffield.lazygit",
+        "foss": true
+    },
+    "modrinth": {
+        "category": "Games",
+        "choco": "na",
+        "content": "Modrinth App",
+        "description": "Modrinth App is a desktop application for managing Minecraft mods and modpacks.",
+        "link": "https://modrinth.com/app",
+        "winget": "Modrinth.ModrinthApp",
+        "foss": true
+    },
+    "msedgeredirect": {
+        "category": "Utilities",
+        "choco": "msedgeredirect",
+        "content": "MSEdgeRedirect",
+        "description": "A Tool to Redirect News, Search, Widgets, Weather, and More to your default browser.",
+        "link": "https://github.com/rcmaehl/MSEdgeRedirect",
+        "winget": "rcmaehl.MSEdgeRedirect",
+        "foss": true
+    },
+    "nodejs": {
+        "category": "Development",
+        "choco": "nodejs",
+        "content": "NodeJS",
+        "description": "NodeJS is a JavaScript runtime built on Chrome's V8 JavaScript engine for building server-side and networking applications.",
+        "link": "https://nodejs.org/",
+        "winget": "OpenJS.NodeJS",
+        "foss": true
+    },
+    "nuget": {
+        "category": "Microsoft Tools",
+        "choco": "nuget.commandline",
+        "content": "NuGet",
+        "description": "NuGet is a package manager for the .NET framework, enabling developers to manage and share libraries in their .NET applications.",
+        "link": "https://www.nuget.org/",
+        "winget": "Microsoft.NuGet",
+        "foss": true
+    },
+    "nvclean": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "NVCleanstall",
+        "description": "NVCleanstall is a tool designed to customize NVIDIA driver installations, allowing advanced users to control more aspects of the installation process.",
+        "link": "https://www.techpowerup.com/nvcleanstall/",
+        "winget": "TechPowerUp.NVCleanstall",
+        "foss": false
+    },
+    "OPAutoClicker": {
+        "category": "Utilities",
+        "choco": "autoclicker",
+        "content": "OPAutoClicker",
+        "description": "A full-fledged autoclicker with two modes of autoclicking, at your dynamic cursor location or at a prespecified location.",
+        "link": "https://www.opautoclicker.com",
+        "winget": "OPAutoClicker.OPAutoClicker",
+        "foss": false
+    },
+    "openrgb": {
+        "category": "Utilities",
+        "choco": "openrgb",
+        "content": "OpenRGB",
+        "description": "OpenRGB is an open-source RGB lighting control software designed to manage and control RGB lighting for various components and peripherals.",
+        "link": "https://openrgb.org/",
+        "winget": "OpenRGB.OpenRGB",
+        "foss": true
+    },
+    "policyplus": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "Policy Plus",
+        "description": "Local Group Policy Editor plus more, for all Windows editions.",
+        "link": "https://github.com/Fleex255/PolicyPlus",
+        "winget": "Fleex255.PolicyPlus",
+        "foss": true
+    },
+    "qview": {
+        "category": "Multimedia Tools",
+        "choco": "qview",
+        "content": "qView",
+        "description": "qView is an image viewer designed with minimalism and usability in mind.",
+        "link": "https://github.com/jurplel/qView",
+        "winget": "jurplel.qView",
+        "foss": true
+    },
+    "processexplorer": {
+        "category": "Microsoft Tools",
+        "choco": "na",
+        "content": "Process Explorer",
+        "description": "Process Explorer is a task manager and system monitor.",
+        "link": "https://learn.microsoft.com/sysinternals/downloads/process-explorer",
+        "winget": "Microsoft.Sysinternals.ProcessExplorer",
+        "foss": false
+    },
+    "Paintdotnet": {
+        "category": "Multimedia Tools",
+        "choco": "paint.net",
+        "content": "Paint.NET",
+        "description": "Paint.NET is a free image and photo editing software for Windows. It features an intuitive user interface and supports a wide range of powerful editing tools.",
+        "link": "https://www.getpaint.net/",
+        "winget": "dotPDN.PaintDotNet",
+        "foss": false
+    },
+    "posh": {
+        "category": "Development",
+        "choco": "oh-my-posh",
+        "content": "Oh My Posh (Prompt)",
+        "description": "Oh My Posh is a cross-platform prompt theme engine for any shell.",
+        "link": "https://ohmyposh.dev/",
+        "winget": "JanDeDobbeleer.OhMyPosh",
+        "foss": true
+    },
+    "prismlauncher": {
+        "category": "Games",
+        "choco": "prismlauncher",
+        "content": "Prism Launcher",
+        "description": "Prism Launcher is an open-source Minecraft launcher with the ability to manage multiple instances, accounts and mods.",
+        "link": "https://prismlauncher.org/",
+        "winget": "PrismLauncher.PrismLauncher",
+        "foss": true
+    },
+    "processmonitor": {
+        "category": "Microsoft Tools",
+        "choco": "procexp",
+        "content": "SysInternals Process Monitor",
+        "description": "SysInternals Process Monitor is an advanced monitoring tool that shows real-time file system, registry, and process/thread activity.",
+        "link": "https://docs.microsoft.com/en-us/sysinternals/downloads/procmon",
+        "winget": "Microsoft.Sysinternals.ProcessMonitor",
+        "foss": false
+    },
+    "python3": {
+        "category": "Development",
+        "choco": "python",
+        "content": "Python3",
+        "description": "Python is a versatile programming language used for web development, data analysis, artificial intelligence, and more.",
+        "link": "https://www.python.org/",
+        "winget": "Python.Python.3.14",
+        "foss": true
+    },
+    "WiseProgramUninstaller": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "Wise Program Uninstaller (WiseCleaner)",
+        "description": "Wise Program Uninstaller is the perfect solution for uninstalling Windows programs, allowing you to uninstall applications quickly and completely using its simple and user-friendly interface.",
+        "link": "https://www.wisecleaner.com/wise-program-uninstaller.html",
+        "winget": "WiseCleaner.WiseProgramUninstaller",
+        "foss": false
+    },
+    "rustdesk": {
+        "category": "Pro Tools",
+        "choco": "rustdesk.portable",
+        "content": "RustDesk",
+        "description": "RustDesk is a free and open-source remote desktop application. It provides a secure way to connect to remote machines and access desktop environments.",
+        "link": "https://rustdesk.com/",
+        "winget": "RustDesk.RustDesk",
+        "foss": true
+    },
+    "rustlang": {
+        "category": "Development",
+        "choco": "rust",
+        "content": "Rust",
+        "description": "Rust is a programming language designed for safety and performance, particularly focused on systems programming.",
+        "link": "https://www.rust-lang.org/",
+        "winget": "Rustlang.Rust.MSVC",
+        "foss": true
+    },
+    "systeminformer": {
+        "category": "Development",
+        "choco": "systeminformer",
+        "content": "System Informer",
+        "description": "A free, powerful, multi-purpose tool that helps you monitor system resources, debug software and detect malware.",
+        "link": "https://systeminformer.com/",
+        "winget": "WinsiderSS.SystemInformer",
+        "foss": true
+    },
+    "signalrgb": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "SignalRGB",
+        "description": "SignalRGB lets you control and sync your favorite RGB devices with one free application.",
+        "link": "https://www.signalrgb.com/",
+        "winget": "WhirlwindFX.SignalRgb",
+        "foss": false
+    },
+    "simplewall": {
+        "category": "Pro Tools",
+        "choco": "simplewall",
+        "content": "Simplewall",
+        "description": "Simplewall is a free and open-source firewall application for Windows. It allows users to control and manage the inbound and outbound network traffic of applications.",
+        "link": "https://github.com/henrypp/simplewall",
+        "winget": "Henry++.simplewall",
+        "foss": true
+    },
+    "sublimetext": {
+        "category": "Development",
+        "choco": "sublimetext4",
+        "content": "Sublime Text",
+        "description": "Sublime Text is a sophisticated text editor for code, markup, and prose.",
+        "link": "https://www.sublimetext.com/",
+        "winget": "SublimeHQ.SublimeText.4",
+        "foss": false
+    },
+    "tcpview": {
+        "category": "Microsoft Tools",
+        "choco": "tcpview",
+        "content": "SysInternals TCPView",
+        "description": "SysInternals TCPView is a network monitoring tool that displays a detailed list of all TCP and UDP endpoints on your system.",
+        "link": "https://docs.microsoft.com/en-us/sysinternals/downloads/tcpview",
+        "winget": "Microsoft.Sysinternals.TCPView",
+        "foss": false
+    },
+    "teamspeak3": {
+        "category": "Utilities",
+        "choco": "teamspeak",
+        "content": "TeamSpeak 3",
+        "description": "TEAMSPEAK. YOUR TEAM. YOUR RULES. Use crystal clear sound to communicate with your team mates cross-platform with military-grade security, lag-free performance & unparalleled reliability and uptime.",
+        "link": "https://www.teamspeak.com/",
+        "winget": "TeamSpeakSystems.TeamSpeakClient",
+        "foss": false
+    },
+    "ttaskbar": {
+        "category": "Utilities",
+        "choco": "translucenttb",
+        "content": "TranslucentTB",
+        "description": "TranslucentTB is a tool that allows you to customize the transparency of the Windows Taskbar.",
+        "link": "https://github.com/TranslucentTB/TranslucentTB",
+        "winget": "CharlesMilette.TranslucentTB",
+        "foss": true
+    },
+    "ubisoft": {
+        "category": "Games",
+        "choco": "ubisoft-connect",
+        "content": "Ubisoft Connect",
+        "description": "Ubisoft Connect is Ubisoft's digital distribution and online gaming service, providing access to Ubisoft's games and services.",
+        "link": "https://ubisoftconnect.com/",
+        "winget": "Ubisoft.Connect",
+        "foss": false
+    },
+    "unity": {
+        "category": "Development",
+        "choco": "unityhub",
+        "content": "Unity Game Engine",
+        "description": "Unity is a powerful game development platform for creating 2D, 3D, augmented reality, and virtual reality games.",
+        "link": "https://unity.com/",
+        "winget": "Unity.UnityHub",
+        "foss": false
+    },
+    "ventoy": {
+        "category": "Pro Tools",
+        "choco": "ventoy",
+        "content": "Ventoy",
+        "description": "Ventoy is an open-source tool for creating bootable USB drives. It supports multiple ISO files on a single USB drive, making it a versatile solution for installing operating systems.",
+        "link": "https://www.ventoy.net/",
+        "winget": "Ventoy.Ventoy",
+        "foss": true
+    },
+    "vscodium": {
+        "category": "Development",
+        "choco": "vscodium",
+        "content": "VS Codium",
+        "description": "VSCodium is a community-driven, freely-licensed binary distribution of Microsoft's VS Code.",
+        "link": "https://vscodium.com/",
+        "winget": "VSCodium.VSCodium",
+        "foss": true
+    },
+    "glazewm": {
+        "category": "Utilities",
+        "choco": "glazewm",
+        "content": "GlazeWM",
+        "description": "GlazeWM is a tiling window manager for Windows inspired by i3 and Polybar.",
+        "link": "https://github.com/glzr-io/glazewm",
+        "winget": "glzr-io.glazewm",
+        "foss": true
+    },
+    "Windhawk": {
+        "category": "Utilities",
+        "choco": "windhawk",
+        "content": "Windhawk",
+        "description": "The customization marketplace for Windows programs.",
+        "link": "https://windhawk.net",
+        "winget": "RamenSoftware.Windhawk",
+        "foss": true
+    },
+    "Zed": {
+        "category": "Development",
+        "choco": "zed",
+        "content": "Zed",
+        "description": "Zed is a modern, high-performance code editor designed from the ground up for speed and collaboration.",
+        "link": "https://zed.dev/",
+        "winget": "ZedIndustries.Zed",
+        "foss": true
     }
 }
