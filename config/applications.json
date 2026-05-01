@@ -1024,6 +1024,15 @@
         "winget": "VSCodium.VSCodium",
         "foss": true
     },
+    "warp": {
+        "category": "Utilities",
+        "choco": "warp",
+        "content": "Warp VPN",
+        "description": "a, free, consumer-focused, VPN-like service built into the 1.1.1.1 app that secures all device traffic, not just DNS queries.",
+        "link": "https://1.1.1.1/",
+        "winget": "Cloudflare.Warp",
+        "foss": false
+    },
     "waterfox": {
         "category": "Browsers",
         "choco": "waterfox",
