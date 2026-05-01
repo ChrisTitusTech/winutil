@@ -14,7 +14,7 @@
         "content": "7-Zip",
         "description": "7-Zip is a free and open-source file archiver utility. It supports several compression formats and provides a high compression ratio, making it a popular choice for file compression.",
         "link": "https://www.7-zip.org/",
-        "winget": "7zip.7zip",
+        "winget": "7zip.7zip",f
         "foss": true
     },
     "adobe": {
@@ -420,6 +420,15 @@
         "link": "https://www.apple.com/itunes/",
         "winget": "Apple.iTunes",
         "foss": false
+    },
+    "java8": {
+        "category": "Development",
+        "choco": "corretto8jdk",
+        "content": "Amazon Corretto 8 (LTS)",
+        "description": "Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK).",
+        "link": "https://aws.amazon.com/corretto",
+        "winget": "Amazon.Corretto.8.JDK",
+        "foss": true
     },
     "java21": {
         "category": "Development",
