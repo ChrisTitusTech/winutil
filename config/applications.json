@@ -26,6 +26,15 @@
         "winget": "Adobe.Acrobat.Reader.64-bit",
         "foss": false
     },
+    "alacritty": {
+        "category": "Utilities",
+        "choco": "alacritty",
+        "content": "Alacritty Terminal",
+        "description": "Alacritty is a fast, cross-platform, and GPU-accelerated terminal emulator. It is designed for performance and aims to be the fastest terminal emulator available.",
+        "link": "https://alacritty.org/",
+        "winget": "Alacritty.Alacritty",
+        "foss": true
+    },
     "angryipscanner": {
         "category": "Pro Tools",
         "choco": "angryip",
