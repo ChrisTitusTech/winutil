@@ -458,42 +458,6 @@
         "winget": "AgileBits.1Password",
         "foss": false
     },
-    "advancedip": {
-        "category": "Pro Tools",
-        "choco": "advanced-ip-scanner",
-        "content": "Advanced IP Scanner",
-        "description": "Advanced IP Scanner is a fast and easy-to-use network scanner. It is designed to analyze LAN networks and provides information about connected devices.",
-        "link": "https://www.advanced-ip-scanner.com/",
-        "winget": "Famatech.AdvancedIPScanner",
-        "foss": false
-    },
-    "angryipscanner": {
-        "category": "Pro Tools",
-        "choco": "angryip",
-        "content": "Angry IP Scanner",
-        "description": "Angry IP Scanner is an open-source and cross-platform network scanner. It is used to scan IP addresses and ports, providing information about network connectivity.",
-        "link": "https://angryip.org/",
-        "winget": "angryziber.AngryIPScanner",
-        "foss": true
-    },
-    "bulkcrapuninstaller": {
-        "category": "Utilities",
-        "choco": "bulk-crap-uninstaller",
-        "content": "Bulk Crap Uninstaller",
-        "description": "Bulk Crap Uninstaller is a free and open-source uninstaller utility for Windows. It helps users remove unwanted programs and clean up their system by uninstalling multiple applications at once.",
-        "link": "https://www.bcuninstaller.com/",
-        "winget": "Klocman.BulkCrapUninstaller",
-        "foss": true
-    },
-    "cryptomator": {
-        "category": "Utilities",
-        "choco": "cryptomator",
-        "content": "Cryptomator",
-        "description": "Cryptomator for Windows, macOS, and Linux: Secure client-side encryption for your cloud storage, ensuring privacy and control over your data.",
-        "link": "https://github.com/cryptomator/cryptomator/",
-        "winget": "Cryptomator.Cryptomator",
-        "foss": true
-    },
     "crystaldiskmark": {
         "category": "Utilities",
         "choco": "crystaldiskmark",
@@ -530,24 +494,6 @@
         "winget": "Dropbox.Dropbox",
         "foss": false
     },
-    "enteauth": {
-        "category": "Utilities",
-        "choco": "ente-auth",
-        "content": "Ente Auth",
-        "description": "Ente Auth is a free, cross-platform, end-to-end encrypted authenticator app.",
-        "link": "https://ente.io/auth/",
-        "winget": "ente-io.auth-desktop",
-        "foss": true
-    },
-    "foxpdfreader": {
-        "category": "Document",
-        "choco": "foxitreader",
-        "content": "Foxit PDF Reader",
-        "description": "Foxit PDF Reader is a free PDF viewer with a familiar ribbon-style interface.",
-        "link": "https://www.foxit.com/pdf-reader/",
-        "winget": "Foxit.FoxitReader",
-        "foss": false
-    },
     "googledrive": {
         "category": "Utilities",
         "choco": "googledrive",
@@ -557,24 +503,6 @@
         "winget": "Google.GoogleDrive",
         "foss": false
     },
-    "helium": {
-        "category": "Browsers",
-        "choco": "helium",
-        "content": "Helium",
-        "description": "Private, fast, and honest web browser.",
-        "link": "https://github.com/imputnet/helium/",
-        "winget": "ImputNet.Helium",
-        "foss": true
-    },
-    "hugo": {
-        "category": "Utilities",
-        "choco": "hugo-extended",
-        "content": "Hugo",
-        "description": "The world's fastest framework for building websites.",
-        "link": "https://github.com/gohugoio/hugo/",
-        "winget": "Hugo.Hugo.Extended",
-        "foss": true
-    },
     "hwinfo": {
         "category": "Utilities",
         "choco": "hwinfo",
@@ -582,15 +510,6 @@
         "description": "HWiNFO provides comprehensive hardware information and diagnostics for Windows.",
         "link": "https://www.hwinfo.com/",
         "winget": "REALiX.HWiNFO",
-        "foss": false
-    },
-    "hwmonitor": {
-        "category": "Utilities",
-        "choco": "hwmonitor",
-        "content": "HWMonitor",
-        "description": "HWMonitor is a hardware monitoring program that reads PC systems main health sensors.",
-        "link": "https://www.cpuid.com/softwares/hwmonitor.html",
-        "winget": "CPUID.HWMonitor",
         "foss": false
     },
     "keepass": {
@@ -638,24 +557,6 @@
         "winget": "Neovim.Neovim",
         "foss": true
     },
-    "netbird": {
-        "category": "Pro Tools",
-        "choco": "netbird",
-        "content": "NetBird",
-        "description": "NetBird is a open-source alternative comparable to TailScale that can be connected to a self-hosted server.",
-        "link": "https://netbird.io/",
-        "winget": "Netbird.Netbird",
-        "foss": true
-    },
-    "nextclouddesktop": {
-        "category": "Utilities",
-        "choco": "nextcloud-client",
-        "content": "Nextcloud Desktop",
-        "description": "Nextcloud Desktop is the official desktop client for the Nextcloud file synchronization and sharing platform.",
-        "link": "https://nextcloud.com/install/#install-clients",
-        "winget": "Nextcloud.NextcloudDesktop",
-        "foss": true
-    },
     "OVirtualBox": {
         "category": "Utilities",
         "choco": "virtualbox",
@@ -665,33 +566,6 @@
         "winget": "Oracle.VirtualBox",
         "foss": true
     },
-    "piimager": {
-        "category": "Utilities",
-        "choco": "rpi-imager",
-        "content": "Raspberry Pi Imager",
-        "description": "Raspberry Pi Imager is a utility for writing operating system images to SD cards for Raspberry Pi devices.",
-        "link": "https://www.raspberrypi.com/software/",
-        "winget": "RaspberryPiFoundation.RaspberryPiImager",
-        "foss": true
-    },
-    "protonauth": {
-        "category": "Utilities",
-        "choco": "protonauth",
-        "content": "Proton Authenticator",
-        "description": "2FA app from Proton to securely sync and backup 2FA codes.",
-        "link": "https://proton.me/authenticator",
-        "winget": "Proton.ProtonAuthenticator",
-        "foss": true
-    },
-    "protondrive": {
-        "category": "Utilities",
-        "choco": "protondrive",
-        "content": "Proton Drive",
-        "description": "Proton Drive is an end-to-end encrypted Swiss vault for your files that protects your data.",
-        "link": "https://proton.me/drive",
-        "winget": "Proton.ProtonDrive",
-        "foss": true
-    },
     "protonmail": {
         "category": "Communications",
         "choco": "protonmail",
@@ -699,15 +573,6 @@
         "description": "Proton Mail is an end-to-end encrypted email service by Proton, protecting your privacy with zero-access encryption.",
         "link": "https://proton.me/mail",
         "winget": "Proton.ProtonMail",
-        "foss": true
-    },
-    "protonpass": {
-        "category": "Utilities",
-        "choco": "protonpass",
-        "content": "Proton Pass",
-        "description": "Proton Pass is a cloud-based password manager with end-to-end encryption and unique email aliases.",
-        "link": "https://proton.me/pass",
-        "winget": "Proton.ProtonPass",
         "foss": true
     },
     "protonvpn": {
@@ -728,15 +593,6 @@
         "winget": "RevoUninstaller.RevoUninstaller",
         "foss": false
     },
-    "sdio": {
-        "category": "Utilities",
-        "choco": "sdio",
-        "content": "Snappy Driver Installer Origin",
-        "description": "Snappy Driver Installer Origin is a free and open-source driver updater with a vast driver database for Windows.",
-        "link": "https://www.glenn.delahoy.com/snappy-driver-installer-origin/",
-        "winget": "GlennDelahoy.SnappyDriverInstallerOrigin",
-        "foss": true
-    },
     "tailscale": {
         "category": "Utilities",
         "choco": "tailscale",
@@ -746,15 +602,6 @@
         "winget": "Tailscale.Tailscale",
         "foss": true
     },
-    "teamspeak3": {
-        "category": "Communications",
-        "choco": "teamspeak",
-        "content": "TeamSpeak 3",
-        "description": "TEAMSPEAK. YOUR TEAM. YOUR RULES. Use crystal clear sound to communicate with your team mates cross-platform with military-grade security, lag-free performance & unparalleled reliability and uptime.",
-        "link": "https://www.teamspeak.com/",
-        "winget": "TeamSpeakSystems.TeamSpeakClient",
-        "foss": false
-    },
     "thunderbird": {
         "category": "Communications",
         "choco": "thunderbird",
@@ -762,15 +609,6 @@
         "description": "Mozilla Thunderbird is a free and open-source email client, news client, and chat client with advanced features.",
         "link": "https://www.thunderbird.net/",
         "winget": "Mozilla.Thunderbird",
-        "foss": true
-    },
-    "tightvnc": {
-        "category": "Utilities",
-        "choco": "TightVNC",
-        "content": "TightVNC",
-        "description": "TightVNC is a free and open-source remote desktop software that lets you access and control a computer over the network. With its intuitive interface, you can interact with the remote screen as if you were sitting in front of it. You can open files, launch applications, and perform other actions on the remote desktop almost as if you were physically there.",
-        "link": "https://www.tightvnc.com/",
-        "winget": "GlavSoft.TightVNC",
         "foss": true
     },
     "veravrypt": {
@@ -782,24 +620,6 @@
         "winget": "IDRIX.VeraCrypt",
         "foss": true
     },
-    "visualstudio2026": {
-        "category": "Development",
-        "choco": "visualstudio2026community",
-        "content": "Visual Studio 2026",
-        "description": "Visual Studio 2026 is an integrated development environment (IDE) for building, debugging, and deploying applications.",
-        "link": "https://visualstudio.microsoft.com/",
-        "winget": "Microsoft.VisualStudio.Community",
-        "foss": false
-    },
-    "wingetui": {
-        "category": "Utilities",
-        "choco": "wingetui",
-        "content": "UniGetUI",
-        "description": "UniGetUI is a GUI for WinGet, Chocolatey, and other Windows CLI package managers.",
-        "link": "https://devolutions.net/unigetui/",
-        "winget": "Devolutions.UniGetUI",
-        "foss": true
-    },
     "winrar": {
         "category": "Utilities",
         "choco": "winrar",
@@ -807,15 +627,6 @@
         "description": "WinRAR is a powerful archive manager that allows you to create, manage, and extract compressed files.",
         "link": "https://www.win-rar.com/",
         "winget": "RARLab.WinRAR",
-        "foss": false
-    },
-    "xeheditor": {
-        "category": "Utilities",
-        "choco": "HxD",
-        "content": "HxD Hex Editor",
-        "description": "HxD is a free hex editor that allows you to edit, view, search, and analyze binary files.",
-        "link": "https://mh-nexus.de/en/hxd/",
-        "winget": "MHNexus.HxD",
         "foss": false
     }
 }
