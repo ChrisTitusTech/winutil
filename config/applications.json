@@ -341,6 +341,15 @@
         "winget": "REALiX.HWiNFO",
         "foss": false
     },
+    "cpuz": {
+        "category": "Utilities",
+        "choco": "cpu-z",
+        "content": "CPU-Z",
+        "description": "CPU-Z is a system monitoring and diagnostic tool for Windows. It provides detailed information about the computer's hardware components, including the CPU, memory, and motherboard.",
+        "link": "https://www.cpuid.com/softwares/cpu-z.html",
+        "winget": "CPUID.CPU-Z",
+        "foss": false
+    },
     "hwmonitor": {
         "category": "Utilities",
         "choco": "hwmonitor",
