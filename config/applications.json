@@ -350,6 +350,15 @@
         "winget": "CPUID.CPU-Z",
         "foss": false
     },
+    "crystaldiskinfo": {
+        "category": "Utilities",
+        "choco": "crystaldiskinfo",
+        "content": "Crystal Disk Info",
+        "description": "Crystal Disk Info is a disk health monitoring tool that provides information about the status and performance of hard drives. It helps users anticipate potential issues and monitor drive health.",
+        "link": "https://crystalmark.info/en/software/crystaldiskinfo/",
+        "winget": "CrystalDewWorld.CrystalDiskInfo",
+        "foss": true
+    },
     "hwmonitor": {
         "category": "Utilities",
         "choco": "hwmonitor",
