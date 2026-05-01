@@ -26,6 +26,15 @@
         "winget": "Bitwarden.Bitwarden",
         "foss": true
     },
+    "bulkcrapuninstaller": {
+        "category": "Utilities",
+        "choco": "bulk-crap-uninstaller",
+        "content": "Bulk Crap Uninstaller",
+        "description": "Bulk Crap Uninstaller is a free and open-source uninstaller utility for Windows. It helps users remove unwanted programs and clean up their system by uninstalling multiple applications at once.",
+        "link": "https://www.bcuninstaller.com/",
+        "winget": "Klocman.BulkCrapUninstaller",
+        "foss": true
+    },
     "brave": {
         "category": "Browsers",
         "choco": "brave",
@@ -43,6 +52,15 @@
         "link": "https://www.google.com/chrome/",
         "winget": "Google.Chrome",
         "foss": false
+    },
+    "helium": {
+        "category": "Browsers",
+        "choco": "helium",
+        "content": "Helium",
+        "description": "Private, fast, and honest web browser.",
+        "link": "https://github.com/imputnet/helium/",
+        "winget": "ImputNet.Helium",
+        "foss": true
     },
     "cpuz": {
         "category": "Utilities",
@@ -71,6 +89,15 @@
         "winget": "Discord.Discord",
         "foss": false
     },
+    "hwmonitor": {
+        "category": "Utilities",
+        "choco": "hwmonitor",
+        "content": "HWMonitor",
+        "description": "HWMonitor is a hardware monitoring program that reads PC systems main health sensors.",
+        "link": "https://www.cpuid.com/softwares/hwmonitor.html",
+        "winget": "CPUID.HWMonitor",
+        "foss": false
+    },
     "dockerdesktop": {
         "category": "Development",
         "choco": "docker-desktop",
@@ -97,6 +124,15 @@
         "link": "https://www.voidtools.com/",
         "winget": "voidtools.Everything",
         "foss": false
+    },
+    "angryipscanner": {
+        "category": "Pro Tools",
+        "choco": "angryip",
+        "content": "Angry IP Scanner",
+        "description": "Angry IP Scanner is an open-source and cross-platform network scanner. It is used to scan IP addresses and ports, providing information about network connectivity.",
+        "link": "https://angryip.org/",
+        "winget": "angryziber.AngryIPScanner",
+        "foss": true
     },
     "firefox": {
         "category": "Browsers",
@@ -386,6 +422,15 @@
         "winget": "Microsoft.VisualStudio.2022.Community",
         "foss": false
     },
+    "visualstudio2026": {
+        "category": "Development",
+        "choco": "visualstudio2026community",
+        "content": "Visual Studio 2026",
+        "description": "Visual Studio 2026 is an integrated development environment (IDE) for building, debugging, and deploying applications.",
+        "link": "https://visualstudio.microsoft.com/",
+        "winget": "Microsoft.VisualStudio.Community",
+        "foss": false
+    },
     "vlc": {
         "category": "Multimedia Tools",
         "choco": "vlc",
@@ -411,6 +456,15 @@
         "description": "WinSCP is a popular open-source SFTP, FTP, and SCP client for Windows. It allows secure file transfers between a local and a remote computer.",
         "link": "https://winscp.net/",
         "winget": "WinSCP.WinSCP",
+        "foss": true
+    },
+    "wingetui": {
+        "category": "Utilities",
+        "choco": "wingetui",
+        "content": "UniGetUI",
+        "description": "UniGetUI is a GUI for WinGet, Chocolatey, and other Windows CLI package managers.",
+        "link": "https://devolutions.net/unigetui/",
+        "winget": "Devolutions.UniGetUI",
         "foss": true
     },
     "wireguard": {
