@@ -26,6 +26,24 @@
         "winget": "Adobe.Acrobat.Reader.64-bit",
         "foss": false
     },
+    "advancedip": {
+        "category": "Pro Tools",
+        "choco": "advanced-ip-scanner",
+        "content": "Advanced IP Scanner",
+        "description": "Advanced IP Scanner is a fast and easy-to-use network scanner. It is designed to analyze LAN networks and provides information about connected devices.",
+        "link": "https://www.advanced-ip-scanner.com/",
+        "winget": "Famatech.AdvancedIPScanner",
+        "foss": false
+    },
+    "alacritty": {
+        "category": "Utilities",
+        "choco": "alacritty",
+        "content": "Alacritty Terminal",
+        "description": "Alacritty is a fast, cross-platform, and GPU-accelerated terminal emulator. It is designed for performance and aims to be the fastest terminal emulator available.",
+        "link": "https://alacritty.org/",
+        "winget": "Alacritty.Alacritty",
+        "foss": true
+    },
     "angryipscanner": {
         "category": "Pro Tools",
         "choco": "angryip",
@@ -33,6 +51,15 @@
         "description": "Angry IP Scanner is an open-source and cross-platform network scanner. It is used to scan IP addresses and ports, providing information about network connectivity.",
         "link": "https://angryip.org/",
         "winget": "angryziber.AngryIPScanner",
+        "foss": true
+    },
+    "anki": {
+        "category": "Document",
+        "choco": "anki",
+        "content": "Anki",
+        "description": "Anki is a flashcard application that helps you memorize information with intelligent spaced repetition.",
+        "link": "https://apps.ankiweb.net/",
+        "winget": "Anki.Anki",
         "foss": true
     },
     "anydesk": {
@@ -123,6 +150,15 @@
         "description": "Chatterino is a chat client for Twitch chat that offers a clean and customizable interface for a better streaming experience.",
         "link": "https://www.chatterino.com/",
         "winget": "ChatterinoTeam.Chatterino",
+        "foss": true
+    },
+    "cmake": {
+        "category": "Development",
+        "choco": "cmake",
+        "content": "CMake",
+        "description": "CMake is an open-source, cross-platform family of tools designed to build, test and package software.",
+        "link": "https://cmake.org/",
+        "winget": "Kitware.CMake",
         "foss": true
     },
     "chrome": {
