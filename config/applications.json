@@ -611,7 +611,7 @@
         "foss": true
     },
     "jellyfinmediaplayer": {
-        "category": "Multimedia Tools",
+        "category": "Selfhosted Tools",
         "choco": "jellyfin-media-player",
         "content": "Jellyfin Media Player",
         "description": "Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library.",
@@ -620,7 +620,7 @@
         "foss": true
     },
     "jellyfinserver": {
-        "category": "Multimedia Tools",
+        "category": "Selfhosted Tools",
         "choco": "jellyfin",
         "content": "Jellyfin Server",
         "description": "Jellyfin Server is an open-source media server software, allowing you to organize and stream your media library.",
@@ -647,7 +647,7 @@
         "foss": true
     },
     "kodi": {
-        "category": "Multimedia Tools",
+        "category": "Selfhosted Tools",
         "choco": "kodi",
         "content": "Kodi Media Center",
         "description": "Kodi is an open-source media center application that allows you to play and view most videos, music, podcasts, and other digital media files.",
@@ -692,7 +692,7 @@
         "foss": true
     },
     "localsend": {
-        "category": "Utilities",
+        "category": "Selfhosted Tools",
         "choco": "localsend.install",
         "content": "LocalSend",
         "description": "An open-source cross-platform alternative to AirDrop.",
@@ -737,7 +737,7 @@
         "foss": true
     },
     "moonlight": {
-        "category": "Games",
+        "category": "Selfhosted Tools",
         "choco": "moonlight-qt",
         "content": "Moonlight/GameStream Client",
         "description": "Moonlight/GameStream Client allows you to stream PC games to other devices over your local network.",
@@ -791,7 +791,7 @@
         "foss": true
     },
     "netbird": {
-        "category": "Pro Tools",
+        "category": "Selfhosted Tools",
         "choco": "netbird",
         "content": "NetBird",
         "description": "NetBird is a open-source alternative comparable to TailScale that can be connected to a self-hosted server.",
@@ -818,7 +818,7 @@
         "foss": true
     },
     "nextclouddesktop": {
-        "category": "Utilities",
+        "category": "Selfhosted Tools",
         "choco": "nextcloud-client",
         "content": "Nextcloud Desktop",
         "description": "Nextcloud Desktop is the official desktop client for the Nextcloud file synchronization and sharing platform.",
@@ -998,7 +998,7 @@
         "foss": true
     },
     "plex": {
-        "category": "Multimedia Tools",
+        "category": "Selfhosted Tools",
         "choco": "plexmediaserver",
         "content": "Plex Media Server",
         "description": "Plex Media Server is a media server software that allows you to organize and stream your media library. It supports various media formats and offers a wide range of features.",
@@ -1007,7 +1007,7 @@
         "foss": false
     },
     "plexdesktop": {
-        "category": "Multimedia Tools",
+        "category": "Selfhosted Tools",
         "choco": "plex",
         "content": "Plex Desktop",
         "description": "Plex Desktop for Windows is the front end for Plex Media Server.",
@@ -1277,7 +1277,7 @@
         "foss": false
     },
     "sunshine": {
-        "category": "Games",
+        "category": "Selfhosted Tools",
         "choco": "sunshine",
         "content": "Sunshine/GameStream Server",
         "description": "Sunshine is a GameStream server that allows you to remotely play PC games on Android devices, offering low-latency streaming.",
@@ -1313,7 +1313,7 @@
         "foss": false
     },
     "teamspeak3": {
-        "category": "Utilities",
+        "category": "Communications",
         "choco": "teamspeak",
         "content": "TeamSpeak 3",
         "description": "TEAMSPEAK. YOUR TEAM. YOUR RULES. Use crystal clear sound to communicate with your team mates cross-platform with military-grade security, lag-free performance & unparalleled reliability and uptime.",
