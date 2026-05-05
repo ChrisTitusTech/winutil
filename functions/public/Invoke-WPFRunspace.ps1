@@ -35,9 +35,7 @@ function Invoke-WPFRunspace {
 
     # Add Scriptblock and Arguments to runspace
     $script:powershell.AddScript($ScriptBlock)
-    if ($PSBoundParameters.ContainsKey('ArgumentList')) {
-        $script:powershell.AddArgument($ArgumentList)
-    }
+    $script:powershell.AddArgument($ArgumentList)
 
     foreach ($parameter in $ParameterList) {
         $script:powershell.AddParameter($parameter[0], $parameter[1])
