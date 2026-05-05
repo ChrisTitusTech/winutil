@@ -4,6 +4,7 @@ function Invoke-WPFInstallUpgrade {
 
         Write-Host "==========================================="
         Write-Host "--           Updates started            ---"
+        Write-Host "-- You can close this window if desired ---"
         Write-Host "==========================================="
 
         Start-Process -FilePath powershell.exe -ArgumentList 'choco upgrade all -y'
