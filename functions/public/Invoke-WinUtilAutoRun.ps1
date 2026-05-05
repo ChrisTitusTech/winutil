@@ -6,29 +6,43 @@ function Invoke-WinUtilAutoRun {
     #>
 
     function BusyWait {
-        Start-Sleep -Milliseconds 100
+        Start-Sleep -Seconds 5
         while ($sync.ProcessRunning) {
-            Start-Sleep -Milliseconds 100
+                Start-Sleep -Seconds 5
+            }
+    }
+
+    BusyWait
+
+    Write-Host "Applying tweaks..."
+    Invoke-WPFtweaksbutton
+    BusyWait
+
+    Write-Host "Applying toggles..."
+    $handle = Invoke-WPFRunspace -ScriptBlock {
+        $Toggles = $sync.selectedToggles
+        Write-Debug "Inside Number of toggles to process: $($Toggles.Count)"
+
+        $sync.ProcessRunning = $true
+
+        for ($i = 0; $i -lt $Tweaks.Count; $i++) {
+            Invoke-WinUtilTweaks $Toggles[$i]
         }
-    }
 
-    if ($sync.selectedTweaks.Count -gt 0) {
-        Write-Host "Applying tweaks..."
-        Invoke-WPFtweaksbutton
-        BusyWait
+        $sync.ProcessRunning = $false
+        Write-Host "================================="
+        Write-Host "--     Toggles are Finished    ---"
+        Write-Host "================================="
     }
+    BusyWait
 
-    if ($sync.selectedFeatures.Count -gt 0) {
-        Write-Host "Applying features..."
-        Invoke-WPFFeatureInstall
-        BusyWait
-    }
+    Write-Host "Applying features..."
+    Invoke-WPFFeatureInstall
+    BusyWait
 
-    if ($sync.selectedApps.Count -gt 0) {
-        Write-Host "Installing applications..."
-        Invoke-WPFInstall
-        BusyWait
-    }
+    Write-Host "Installing applications..."
+    Invoke-WPFInstall
+    BusyWait
 
     Write-Host "Done."
 }
