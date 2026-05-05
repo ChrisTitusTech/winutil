@@ -18,7 +18,7 @@
         "foss": true
     },
     "adobe": {
-        "category": "Document",
+        "category": "Multimedia Tools",
         "choco": "adobereader",
         "content": "Adobe Acrobat Reader",
         "description": "Adobe Acrobat Reader is a free PDF viewer with essential features for viewing, printing, and annotating PDF documents.",
@@ -45,7 +45,7 @@
         "foss": true
     },
     "anki": {
-        "category": "Document",
+        "category": "Multimedia Tools",
         "choco": "anki",
         "content": "Anki",
         "description": "Anki is a flashcard application that helps you memorize information with intelligent spaced repetition.",
@@ -656,7 +656,7 @@
         "foss": true
     },
     "libreoffice": {
-        "category": "Document",
+        "category": "Multimedia Tools",
         "choco": "libreoffice-fresh",
         "content": "LibreOffice",
         "description": "LibreOffice is a powerful and free office suite, compatible with other major office suites.",
@@ -764,7 +764,7 @@
         "foss": true
     },
     "naps2": {
-        "category": "Document",
+        "category": "Multimedia Tools",
         "choco": "naps2",
         "content": "NAPS2 (Document Scanner)",
         "description": "NAPS2 is a document scanning application that simplifies the process of creating electronic documents.",
@@ -818,7 +818,7 @@
         "foss": true
     },
     "notepadplus": {
-        "category": "Document",
+        "category": "Multimedia Tools",
         "choco": "notepadplusplus",
         "content": "Notepad++",
         "description": "Notepad++ is a free, open-source code editor and Notepad replacement with support for multiple languages.",
@@ -854,7 +854,7 @@
         "foss": true
     },
     "obsidian": {
-        "category": "Document",
+        "category": "Multimedia Tools",
         "choco": "obsidian",
         "content": "Obsidian",
         "description": "Obsidian is a powerful note-taking and knowledge management application.",
@@ -872,7 +872,7 @@
         "foss": false
     },
     "onlyoffice": {
-        "category": "Document",
+        "category": "Multimedia Tools",
         "choco": "onlyoffice",
         "content": "ONLYOffice Desktop",
         "description": "ONLYOffice Desktop is a comprehensive office suite for document editing and collaboration.",
