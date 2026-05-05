@@ -55,5 +55,5 @@ function Invoke-WPFRunspace {
         [System.GC]::Collect()
     }
     # Return the handle
-    return $script:handle
+    return $handle
 }
