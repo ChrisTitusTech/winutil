@@ -76,7 +76,9 @@ if ($PARAM_NOUI) {
         Write-Host "Running config file tasks..."
         Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
         if ($PARAM_RUN) {
-            Invoke-WinUtilAutoRun
+            Invoke-WPFRunspace -ScriptBlock {
+                Invoke-WinUtilAutoRun
+            }
         }
         else {
             Write-Host "Did you forget to add '--Run'?";
@@ -387,7 +389,9 @@ $sync["Form"].Add_ContentRendered({
         Write-Host "Running config file tasks..."
         Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
         if ($PARAM_RUN) {
-            Invoke-WinUtilAutoRun
+            Invoke-WPFRunspace -ScriptBlock {
+                Invoke-WinUtilAutoRun
+            }
         }
     }
 
