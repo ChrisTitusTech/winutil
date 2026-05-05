@@ -25,7 +25,7 @@ function Invoke-WinUtilAutoRun {
 
         $sync.ProcessRunning = $true
 
-        for ($i = 0; $i -lt $Tweaks.Count; $i++) {
+        for ($i = 0; $i -lt $Toggles.Count; $i++) {
             Invoke-WinUtilTweaks $Toggles[$i]
         }
 

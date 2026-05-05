@@ -76,9 +76,7 @@ if ($PARAM_NOUI) {
         Write-Host "Running config file tasks..."
         Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
         if ($PARAM_RUN) {
-            Invoke-WPFRunspace -ScriptBlock {
-                Invoke-WinUtilAutoRun
-            }
+            Invoke-WinUtilAutoRun
         }
         else {
             Write-Host "Did you forget to add '--Run'?";
@@ -87,7 +85,7 @@ if ($PARAM_NOUI) {
         $sync.runspace.Close()
         [System.GC]::Collect()
         Stop-Transcript
-        exit 1
+        exit 0
     }
     else {
         Write-Host "Cannot automatically run without a config file provided."
