@@ -35,15 +35,6 @@
         "winget": "Famatech.AdvancedIPScanner",
         "foss": false
     },
-    "alacritty": {
-        "category": "Utilities",
-        "choco": "alacritty",
-        "content": "Alacritty Terminal",
-        "description": "Alacritty is a fast, cross-platform, and GPU-accelerated terminal emulator. It is designed for performance and aims to be the fastest terminal emulator available.",
-        "link": "https://alacritty.org/",
-        "winget": "Alacritty.Alacritty",
-        "foss": true
-    },
     "angryipscanner": {
         "category": "Pro Tools",
         "choco": "angryip",
@@ -198,7 +189,7 @@
         "foss": true
     },
     "cpuz": {
-        "category": "Utilities",
+        "category": "Pro Tools",
         "choco": "cpu-z",
         "content": "CPU-Z",
         "description": "CPU-Z is a system monitoring and diagnostic tool for Windows. It provides detailed information about the computer's hardware components, including the CPU, memory, and motherboard.",
@@ -234,7 +225,7 @@
         "foss": false
     },
     "ddu": {
-        "category": "Utilities",
+        "category": "Pro Tools",
         "choco": "ddu",
         "content": "Display Driver Uninstaller",
         "description": "Display Driver Uninstaller (DDU) is a tool for completely uninstalling graphics drivers from NVIDIA, AMD, and Intel. It is useful for troubleshooting graphics driver-related issues.",
@@ -486,7 +477,7 @@
         "foss": false
     },
     "gpuz": {
-        "category": "Utilities",
+        "category": "Pro Tools",
         "choco": "gpu-z",
         "content": "GPU-Z",
         "description": "GPU-Z provides detailed information about your graphics card and GPU.",
@@ -522,7 +513,7 @@
         "foss": true
     },
     "hwinfo": {
-        "category": "Utilities",
+        "category": "Pro Tools",
         "choco": "hwinfo",
         "content": "HWiNFO",
         "description": "HWiNFO provides comprehensive hardware information and diagnostics for Windows.",
@@ -531,7 +522,7 @@
         "foss": false
     },
     "hwmonitor": {
-        "category": "Utilities",
+        "category": "Pro Tools",
         "choco": "hwmonitor",
         "content": "HWMonitor",
         "description": "HWMonitor is a hardware monitoring program that reads PC systems main health sensors.",
@@ -682,15 +673,6 @@
         "winget": "LibreWolf.LibreWolf",
         "foss": true
     },
-    "livelywallpaper": {
-        "category": "Utilities",
-        "choco": "lively",
-        "content": "Lively Wallpaper",
-        "description": "Free and open-source software that allows users to set animated desktop wallpapers and screensavers.",
-        "link": "https://www.rocksdanister.com/lively/",
-        "winget": "rocksdanister.LivelyWallpaper",
-        "foss": true
-    },
     "localsend": {
         "category": "Selfhosted Tools",
         "choco": "localsend.install",
@@ -699,24 +681,6 @@
         "link": "https://localsend.org/",
         "winget": "LocalSend.LocalSend",
         "foss": true
-    },
-    "logitechghub": {
-        "category": "Utilities",
-        "choco": "lghub",
-        "content": "Logitech G Hub",
-        "description": "Official software for managing Logitech gaming peripherals (mice, keyboards, headsets, lighting profiles, etc.).",
-        "link": "https://www.logitechg.com/en-us/software/ghub",
-        "winget": "Logitech.GHUB",
-        "foss": false
-    },
-    "malwarebytes": {
-        "category": "Utilities",
-        "choco": "malwarebytes",
-        "content": "Malwarebytes",
-        "description": "Malwarebytes is an anti-malware software that provides real-time protection against threats.",
-        "link": "https://www.malwarebytes.com/",
-        "winget": "Malwarebytes.Malwarebytes",
-        "foss": false
     },
     "matrix": {
         "category": "Communications",
@@ -1643,15 +1607,6 @@
         "description": "GlazeWM is a tiling window manager for Windows inspired by i3 and Polybar.",
         "link": "https://github.com/glzr-io/glazewm",
         "winget": "glzr-io.glazewm",
-        "foss": true
-    },
-    "Windhawk": {
-        "category": "Utilities",
-        "choco": "windhawk",
-        "content": "Windhawk",
-        "description": "The customization marketplace for Windows programs.",
-        "link": "https://windhawk.net",
-        "winget": "RamenSoftware.Windhawk",
         "foss": true
     },
     "Overwolf": {
