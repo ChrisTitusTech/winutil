@@ -6,9 +6,7 @@ function Invoke-WPFInstallUpgrade {
         Write-Host "--           Updates started            ---"
         Write-Host "==========================================="
 
-        Invoke-WPFRunspace -ScriptBlock {
-            Start-Process -FilePath choco.exe -ArgumentList 'upgrade all -y' -Wait -NoNewWindow
-        }
+        Start-Process -FilePath powershell.exe -ArgumentList 'choco upgrade all -y'
     } else {
         Install-WinUtilWinget # Ensure WinGet is installed before upgrading
 
@@ -16,8 +14,6 @@ function Invoke-WPFInstallUpgrade {
         Write-Host "--           Updates started            ---"
         Write-Host "==========================================="
 
-        Invoke-WPFRunspace -ScriptBlock {
-            Start-Process -FilePath winget.exe -ArgumentList 'upgrade --all --include-unknown --silent --accept-source-agreements --accept-package-agreements' -Wait -NoNewWindow
-        }
+        Start-Process -FilePath powershell.exe -ArgumentList 'winget upgrade --all --include-unknown --silent --accept-source-agreements --accept-package-agreements'
     }
 }
