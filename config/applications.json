@@ -395,6 +395,15 @@
         "winget": "Mozilla.Firefox.ESR",
         "foss": true
     },
+    "floorp": {
+        "category": "Browsers",
+        "choco": "floorp",
+        "content": "Floorp",
+        "description": "Floorp is an open-source web browser project that aims to provide a simple and fast browsing experience.",
+        "link": "https://floorp.app/",
+        "winget": "Ablaze.Floorp",
+        "foss": true
+    },
     "freecad": {
         "category": "Multimedia Tools",
         "choco": "freecad",
