@@ -53,6 +53,15 @@
         "winget": "angryziber.AngryIPScanner",
         "foss": true
     },
+    "rdcman": {
+        "category": "Microsoft Tools",
+        "choco": "rdcman",
+        "content": "RDCMan",
+        "description": "RDCMan manages multiple remote desktop connections. It is useful for managing server labs where you need regular access to each machine such as automated checkin systems and data centers.",
+        "link": "https://learn.microsoft.com/en-us/sysinternals/downloads/rdcman",
+        "winget": "Microsoft.Sysinternals.RDCMan",
+        "foss": false
+    },
     "anki": {
         "category": "Document",
         "choco": "anki",
@@ -339,6 +348,15 @@
         "description": "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions.",
         "link": "https://www.mozilla.org/en-US/firefox/new/",
         "winget": "Mozilla.Firefox",
+        "foss": true
+    },
+    "firefoxesr": {
+        "category": "Browsers",
+        "choco": "FirefoxESR",
+        "content": "Firefox ESR",
+        "description": "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions. Firefox ESR (Extended Support Release) receives major updates every 42 weeks with minor updates such as crash fixes, security fixes and policy updates as needed, but at least every four weeks.",
+        "link": "https://www.mozilla.org/en-US/firefox/enterprise/",
+        "winget": "Mozilla.Firefox.ESR",
         "foss": true
     },
     "floorp": {
@@ -637,6 +655,15 @@
         "winget": "Modrinth.ModrinthApp",
         "foss": true
     },
+    "moonlight": {
+        "category": "Games",
+        "choco": "moonlight-qt",
+        "content": "Moonlight/GameStream Client",
+        "description": "Moonlight/GameStream Client allows you to stream PC games to other devices over your local network.",
+        "link": "https://moonlight-stream.org/",
+        "winget": "MoonlightGameStreamingProject.Moonlight",
+        "foss": true
+    },
     "msedgeredirect": {
         "category": "Utilities",
         "choco": "msedgeredirect",
@@ -680,6 +707,15 @@
         "description": "NanaZip is a fast and efficient file compression and decompression tool.",
         "link": "https://github.com/M2Team/NanaZip",
         "winget": "M2Team.NanaZip",
+        "foss": true
+    },
+    "netbird": {
+        "category": "Pro Tools",
+        "choco": "netbird",
+        "content": "NetBird",
+        "description": "NetBird is a open-source alternative comparable to TailScale that can be connected to a self-hosted server.",
+        "link": "https://netbird.io/",
+        "winget": "Netbird.Netbird",
         "foss": true
     },
     "neovim": {
@@ -880,6 +916,15 @@
         "winget": "Microsoft.PowerShell",
         "foss": true
     },
+    "putty": {
+        "category": "Pro Tools",
+        "choco": "putty",
+        "content": "PuTTY",
+        "description": "PuTTY is a free and open-source terminal emulator, serial console, and network file transfer application. It supports various network protocols such as SSH, Telnet, and SCP.",
+        "link": "https://www.chiark.greenend.org.uk/~sgtatham/putty/",
+        "winget": "PuTTY.PuTTY",
+        "foss": true
+    },
     "powertoys": {
         "category": "Microsoft Tools",
         "choco": "powertoys",
@@ -1078,6 +1123,15 @@
         "winget": "SublimeHQ.SublimeText.4",
         "foss": false
     },
+    "sunshine": {
+        "category": "Games",
+        "choco": "sunshine",
+        "content": "Sunshine/GameStream Server",
+        "description": "Sunshine is a GameStream server that allows you to remotely play PC games on Android devices, offering low-latency streaming.",
+        "link": "https://github.com/LizardByte/Sunshine",
+        "winget": "LizardByte.Sunshine",
+        "foss": true
+    },
     "tcpview": {
         "category": "Microsoft Tools",
         "choco": "tcpview",
@@ -1240,6 +1294,15 @@
         "winget": "Microsoft.VCRedist.2015+.x64",
         "foss": false
     },
+    "vesktop": {
+        "category": "Communications",
+        "choco": "na",
+        "content": "Vesktop",
+        "description": "A cross platform electron-based desktop app aiming to give you a snappier Discord experience with Vencord pre-installed.",
+        "link": "https://github.com/Vencord/Vesktop",
+        "winget": "Vencord.Vesktop",
+        "foss": true
+    },
     "ventoy": {
         "category": "Pro Tools",
         "choco": "ventoy",
@@ -1329,6 +1392,15 @@
         "link": "https://www.win-rar.com/",
         "winget": "RARLab.WinRAR",
         "foss": false
+    },
+    "winscp": {
+        "category": "Pro Tools",
+        "choco": "winscp",
+        "content": "WinSCP",
+        "description": "WinSCP is a popular open-source SFTP, FTP, and SCP client for Windows. It allows secure file transfers between a local and a remote computer.",
+        "link": "https://winscp.net/",
+        "winget": "WinSCP.WinSCP",
+        "foss": true
     },
     "wireguard": {
         "category": "Pro Tools",
