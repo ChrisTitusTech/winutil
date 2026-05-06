@@ -2437,6 +2437,15 @@
         "winget": "WiseCleaner.WiseProgramUninstaller",
         "foss": false
     },
+    "WiseRegistryCleaner": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "Wise Registry Cleaner (WiseCleaner)",
+        "description": "Clean invalid registry entries, fix Windows registry errors, defragment the Windows registry, and keep your PC running at peak performance.",
+        "link": "https://www.wisecleaner.com/wise-registry-cleaner.html",
+        "winget": "WiseCleaner.WiseRegistryCleaner",
+        "foss": false
+    },
     "revolt": {
         "category": "Communications",
         "choco": "na",
