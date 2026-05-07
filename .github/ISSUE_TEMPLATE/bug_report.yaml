@@ -8,7 +8,13 @@ body:
       value: |
         - Remember, we only support Windows 11. If you encounter problems on Windows 10, please consider upgrading to Windows 11.
         - For general questions, join our Community-driven [Discord Server](https://discord.gg/RUbZUZyByQ).
-
+  
+  - type: checkbox
+    id: read_issues
+    attributes:
+      options:
+        - label: I have read the [known issues](https://winutil.christitus.com/knownissues/)
+  
   - type: dropdown
     id: affected_part
     attributes:
