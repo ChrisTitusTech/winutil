@@ -67,7 +67,7 @@ jobs:
         id: check_user
         if: env.command == 'true'
         run: |
-          ALLOWED_USERS=("ChrisTitusTech" "og-mrk" "Marterich" "MyDrift-user" "Real-MullaC" "CodingWonders" "GabiNun")
+          ALLOWED_USERS=("ChrisTitusTech" "og-mrk" "Marterich" "MyDrift-user" "Real-MullaC" "CodingWonders" "GabiNun2" "FluffyPunk")
           if [[ " ${ALLOWED_USERS[@]} " =~ " ${{ github.event.comment.user.login }} " ]]; then
             echo "user=true" >> $GITHUB_ENV
           else
@@ -75,7 +75,7 @@ jobs:
           fi
 
       - name: Close issue
-        if: env.close_command == 'true'
+        if: env.user == 'true' && env.close_command == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
@@ -88,7 +88,7 @@ jobs:
           fi
 
       - name: Reopen issue
-        if: env.reopen_command == 'true'
+        if: env.user == 'true' && env.reopen_command == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
@@ -97,7 +97,7 @@ jobs:
           gh issue reopen $ISSUE_NUMBER --repo ${{ github.repository }}
 
       - name: Label issue
-        if: env.label_command == 'true'
+        if: env.user == 'true' && env.label_command == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
@@ -106,7 +106,7 @@ jobs:
           gh issue edit $ISSUE_NUMBER --repo ${{ github.repository }} --add-label "${{ env.label_name }}"
 
       - name: Remove labels
-        if: env.unlabel_command == 'true'
+        if: env.user == 'true' && env.unlabel_command == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
