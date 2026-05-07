@@ -12,8 +12,10 @@ body:
   - type: checkboxes
     id: read_issues
     attributes:
+      label: I have read the [known issues](https://winutil.christitus.com/knownissues/)
       options:
-        - label: I have read the [known issues](https://winutil.christitus.com/knownissues/)
+        - label: Yes, I did
+          required: true
   
   - type: dropdown
     id: affected_part
