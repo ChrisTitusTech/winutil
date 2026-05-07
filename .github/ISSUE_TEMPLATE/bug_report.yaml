@@ -9,7 +9,7 @@ body:
         - Remember, we only support Windows 11. If you encounter problems on Windows 10, please consider upgrading to Windows 11.
         - For general questions, join our Community-driven [Discord Server](https://discord.gg/RUbZUZyByQ).
   
-  - type: checkbox
+  - type: checkboxes
     id: read_issues
     attributes:
       options:
