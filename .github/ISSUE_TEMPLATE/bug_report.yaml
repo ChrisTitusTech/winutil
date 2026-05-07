@@ -13,8 +13,9 @@ body:
     id: read_issues
     attributes:
       label: "I have read the known issues"
+      description: "You [better do](https://winutil.christitus.com/knownissues/), cause your issue can be already there
       options:
-        - label: Yes, [I did](https://winutil.christitus.com/knownissues/)
+        - label: Yes, I did
           required: true
   
   - type: dropdown
