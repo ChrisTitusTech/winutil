@@ -67,7 +67,7 @@ jobs:
         id: check_user
         if: env.command == 'true'
         run: |
-          ALLOWED_USERS=("ChrisTitusTech" "og-mrk" "Marterich" "MyDrift-user" "Real-MullaC" "CodingWonders" "GabiNun2")
+          ALLOWED_USERS=("ChrisTitusTech" "og-mrk" "Marterich" "MyDrift-user" "Real-MullaC" "CodingWonders" "GabiNun2" "FluffyPunk")
           if [[ " ${ALLOWED_USERS[@]} " =~ " ${{ github.event.comment.user.login }} " ]]; then
             echo "user=true" >> $GITHUB_ENV
           else
