@@ -12,9 +12,9 @@ body:
   - type: checkboxes
     id: read_issues
     attributes:
-      label: "I have read the [known issues](https://winutil.christitus.com/knownissues/)"
+      label: "I have read the known issues"
       options:
-        - label: "Yes, I did"
+        - label: "Yes, [I did](https://winutil.christitus.com/knownissues/)"
           required: true
   
   - type: dropdown
