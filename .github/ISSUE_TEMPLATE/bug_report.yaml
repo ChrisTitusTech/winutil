@@ -14,7 +14,7 @@ body:
     attributes:
       label: "I have read the known issues"
       options:
-        - label: "Yes, [I did](https://winutil.christitus.com/knownissues/)"
+        - label: Yes, [I did](https://winutil.christitus.com/knownissues/)
           required: true
   
   - type: dropdown
