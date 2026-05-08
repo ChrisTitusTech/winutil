@@ -6,10 +6,10 @@ function Invoke-WPFUltimatePerformance {
     if ($Do) {
         powercfg /restoredefaultschemes
         powercfg /setactive e9a42b02-d5df-448d-aa00-03f14749eb61
-        Write-Host "Ultimate Power Plan plan installed and activated." -ForegroundColor Green
+        [System.Windows.MessageBox]::Show("Ultimate Power Plan installed and activated.")
     } else {
         powercfg /setactive SCHEME_BALANCED
         powercfg /delete e9a42b02-d5df-448d-aa00-03f14749eb61
-        Write-Host "Ultimate Power Plan plan was removed." -ForegroundColor Red
+        [System.Windows.MessageBox]::Show("Ultimate Power Plan plan was removed.")
     }
 }
