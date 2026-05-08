@@ -966,6 +966,22 @@
     "Description": "Removes or disables all ai features and packages",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+        "Name": "SettingsPageVisibility",
+        "Value": "hide:aicomponents",
+        "Type": "String",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\WindowsNotepad",
+        "Name": "DisableAIFeatures",
+        "Value": 1,
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      }
+    ],
     "InvokeScript": [
       "
       $Appx = (Get-AppxPackage MicrosoftWindows.Client.CoreAI).PackageFullName
