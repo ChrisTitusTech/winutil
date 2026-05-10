@@ -11,16 +11,16 @@ function UltimatePerformance {
             powercfg /setacvalueindex $guid SUB_PROCESSOR IDLEDISABLE 1
 
             powercfg /setactive $guid
-            Write-Host "$name enabled"
+            Write-Host "$name enabled" -ForegroundColor Green
         }
     } else {
         if (powercfg /list | Select-String $name) {
-            $guid = (powercfg /list |Select-String $name).ToString().Split()[3]
+            $guid = (powercfg /list | Select-String $name).ToString().Split()[3]
 
             powercfg /setactive SCHEME_BALANCED
             powercfg /delete $guid
 
-            Write-Host "$name removed"
+            Write-Host "$name removed" -ForegroundColor Red
         }
     }
 }
