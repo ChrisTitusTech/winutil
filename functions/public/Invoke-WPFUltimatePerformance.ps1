@@ -1,4 +1,4 @@
-function UltimatePerformance {
+function Invoke-WPFUltimatePerformance {
     param([switch]$Enable)
     $name = "ChrisTitus - Ultimate Power Plan"
 
