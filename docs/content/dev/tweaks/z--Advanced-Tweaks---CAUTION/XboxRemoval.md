@@ -3,7 +3,7 @@ title: "Xbox & Gaming Components - Remove"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=828}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=815}
   "WPFTweaksXboxRemoval": {
     "Content": "Xbox & Gaming Components - Remove",
     "Description": "Removes Xbox services, the Xbox app, Game Bar, and related authentication components.",
