@@ -1672,6 +1672,15 @@
         "winget": "ZedIndustries.Zed",
         "foss": true
     },
+    "deskflow": {
+        "category": "Utilities",
+        "choco": "deskflow",
+        "content": "Deskflow",
+        "description": "Deskflow is a free and open-source software KVM that lets you share a single keyboard and mouse across multiple computers.",
+        "link": "https://github.com/deskflow/deskflow",
+        "winget": "Deskflow.Deskflow",
+        "foss": true
+    },
     "Ruby": {
         "category": "Development",
         "choco": "ruby",
