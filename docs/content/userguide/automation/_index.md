@@ -16,7 +16,7 @@ To create a config file:
 
 Once you have exported a config, launch Winutil with it using this command:
 ```powershell
-& ([ScriptBlock]::Create((irm "https://christitus.com/win"))) -Config "C:\Path\To\Config.json" -Run
+& ([ScriptBlock]::Create((irm "https://christitus.com/win"))) -Config "C:\Path\To\Config.json"
 ```
 
 This is useful for:

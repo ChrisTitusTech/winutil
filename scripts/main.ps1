@@ -75,12 +75,8 @@ if ($PARAM_NOUI) {
     if ($PARAM_CONFIG -and -not [string]::IsNullOrWhiteSpace($PARAM_CONFIG)) {
         Write-Host "Running config file tasks..."
         Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
-        if ($PARAM_RUN) {
-            Invoke-WinUtilAutoRun
-        }
-        else {
-            Write-Host "Did you forget to add '--Run'?";
-        }
+        Invoke-WinUtilAutoRun
+
         $sync.runspace.Dispose()
         $sync.runspace.Close()
         [System.GC]::Collect()
@@ -386,7 +382,7 @@ $sync["Form"].Add_ContentRendered({
    if ($PARAM_CONFIG -and -not [string]::IsNullOrWhiteSpace($PARAM_CONFIG)) {
         Write-Host "Running config file tasks..."
         Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
-        if ($PARAM_RUN) {
+        Invoke-WPFRunspace -ScriptBlock {
             Invoke-WinUtilAutoRun
         }
     }

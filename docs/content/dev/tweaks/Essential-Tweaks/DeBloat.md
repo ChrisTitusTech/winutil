@@ -7,7 +7,7 @@ description: ""
   "WPFTweaksDeBloat": {
     "Content": "Unwanted Pre-Installed Apps - Remove",
     "Description": "This will remove a bunch of Windows pre-installed applications which most people dont want on there system.",
-    "category": "z__Advanced Tweaks - CAUTION",
+    "category": "Essential Tweaks",
     "panel": "1",
     "appx": [
       "Microsoft.WindowsFeedbackHub",
