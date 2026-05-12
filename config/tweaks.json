@@ -999,7 +999,7 @@
       Write-Host \"Windows AI Disabled\"
       "
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/WindowsAI"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/windowsai"
   },
   "WPFTweaksWPBT": {
     "Content": "Windows Platform Binary Table (WPBT) - Disable",

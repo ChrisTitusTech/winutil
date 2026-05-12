@@ -3,7 +3,7 @@ title: "Start Menu Bing Search"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1612}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1625}
   "WPFToggleBingSearch": {
     "Content": "Start Menu Bing Search",
     "Description": "If enabled, Bing web search results will be included in your Start Menu search.",
