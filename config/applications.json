@@ -35,22 +35,22 @@
         "winget": "Famatech.AdvancedIPScanner",
         "foss": false
     },
-    "angryipscanner": {
+    "aimp": {
+        "category": "Multimedia Tools",
+        "choco": "aimp",
+        "content": "AIMP (Music Player)",
+        "description": "AIMP is a feature-rich music player with support for various audio formats, playlists, and customizable user interface.",
+        "link": "https://www.aimp.ru/",
+        "winget": "AIMP.AIMP",
+        "foss": false
+    },
+   "angryipscanner": {
         "category": "Pro Tools",
         "choco": "angryip",
         "content": "Angry IP Scanner",
         "description": "Angry IP Scanner is an open-source and cross-platform network scanner. It is used to scan IP addresses and ports, providing information about network connectivity.",
         "link": "https://angryip.org/",
         "winget": "angryziber.AngryIPScanner",
-        "foss": true
-    },
-    "anki": {
-        "category": "Multimedia Tools",
-        "choco": "anki",
-        "content": "Anki",
-        "description": "Anki is a flashcard application that helps you memorize information with intelligent spaced repetition.",
-        "link": "https://apps.ankiweb.net/",
-        "winget": "Anki.Anki",
         "foss": true
     },
     "anydesk": {
@@ -141,6 +141,15 @@
         "description": "An Auto-clicker with a few advanced features and generally better performance than popular alternatives.",
         "link": "https://blur009.vercel.app/projects/blur-autoclicker/",
         "winget": "Blur009.BlurAutoClicker",
+        "foss": true
+    },
+    "calibre": {
+        "category": "Multimedia Tools",
+        "choco": "calibre",
+        "content": "Calibre",
+        "description": "Calibre is a powerful and easy-to-use e-book manager, viewer, and converter.",
+        "link": "https://calibre-ebook.com/",
+        "winget": "calibre.calibre",
         "foss": true
     },
     "cemu": {
@@ -278,15 +287,6 @@
         "winget": "Microsoft.DotNet.DesktopRuntime.6",
         "foss": true
     },
-    "dotnet7": {
-        "category": "Microsoft Tools",
-        "choco": "dotnet-7.0-runtime",
-        "content": ".NET Desktop Runtime 7",
-        "description": ".NET Desktop Runtime 7 is a runtime environment required for running applications developed with .NET 7.",
-        "link": "https://dotnet.microsoft.com/download/dotnet/7.0",
-        "winget": "Microsoft.DotNet.DesktopRuntime.7",
-        "foss": true
-    },
     "dotnet8": {
         "category": "Microsoft Tools",
         "choco": "dotnet-8.0-runtime",
@@ -368,15 +368,6 @@
         "winget": "FilesCommunity.Files",
         "foss": true
     },
-    "firealpaca": {
-        "category": "Multimedia Tools",
-        "choco": "firealpaca",
-        "content": "Fire Alpaca",
-        "description": "Fire Alpaca is a free digital painting software that provides a wide range of drawing tools and a user-friendly interface.",
-        "link": "https://firealpaca.com/",
-        "winget": "FireAlpaca.FireAlpaca",
-        "foss": false
-    },
     "firefox": {
         "category": "Browsers",
         "choco": "firefox",
@@ -404,14 +395,14 @@
         "winget": "Ablaze.Floorp",
         "foss": true
     },
-    "freecad": {
-        "category": "Multimedia Tools",
-        "choco": "freecad",
-        "content": "FreeCAD",
-        "description": "FreeCAD is a parametric 3D CAD modeler, designed for product design and engineering tasks, with a focus on flexibility and extensibility.",
-        "link": "https://www.freecadweb.org/",
-        "winget": "FreeCAD.FreeCAD",
-        "foss": true
+    "flux": {
+        "category": "Utilities",
+        "choco": "flux",
+        "content": "F.lux",
+        "description": "f.lux adjusts the color temperature of your screen to reduce eye strain during nighttime use.",
+        "link": "https://justgetflux.com/",
+        "winget": "flux.flux",
+        "foss": false
     },
     "geforcenow": {
         "category": "Games",
@@ -447,15 +438,6 @@
         "description": "GitHub Desktop is a visual Git client that simplifies collaboration on GitHub repositories with an easy-to-use interface.",
         "link": "https://desktop.github.com/",
         "winget": "GitHub.GitHubDesktop",
-        "foss": true
-    },
-    "godotengine": {
-        "category": "Development",
-        "choco": "godot",
-        "content": "Godot Engine",
-        "description": "Godot Engine is a free, open-source 2D and 3D game engine with a focus on usability and flexibility.",
-        "link": "https://godotengine.org/",
-        "winget": "GodotEngine.GodotEngine",
         "foss": true
     },
     "gog": {
@@ -512,6 +494,15 @@
         "winget": "Hugo.Hugo.Extended",
         "foss": true
     },
+    "handbrake": {
+        "category": "Multimedia Tools",
+        "choco": "handbrake",
+        "content": "HandBrake",
+        "description": "HandBrake is an open-source video transcoder, allowing you to convert video from nearly any format to a selection of widely supported codecs.",
+        "link": "https://handbrake.fr/",
+        "winget": "HandBrake.HandBrake",
+        "foss": true
+    },
     "heroiclauncher": {
         "category": "Games",
         "choco": "na",
@@ -546,15 +537,6 @@
         "description": "ImageGlass is a versatile image viewer with support for various image formats and a focus on simplicity and speed.",
         "link": "https://imageglass.org/",
         "winget": "DuongDieuPhap.ImageGlass",
-        "foss": true
-    },
-    "inkscape": {
-        "category": "Multimedia Tools",
-        "choco": "inkscape",
-        "content": "Inkscape",
-        "description": "Inkscape is a powerful open-source vector graphics editor, suitable for tasks such as illustrations, icons, logos, and more.",
-        "link": "https://inkscape.org/",
-        "winget": "Inkscape.Inkscape",
         "foss": true
     },
     "irfanview": {
@@ -646,6 +628,15 @@
         "winget": "sylikc.JPEGView",
         "foss": true
     },
+    "klite": {
+        "category": "Multimedia Tools",
+        "choco": "k-litecodecpack-standard",
+        "content": "K-Lite Codec Standard",
+        "description": "K-Lite Codec Pack Standard is a collection of audio and video codecs and related tools, providing essential components for media playback.",
+        "link": "https://www.codecguide.com/",
+        "winget": "CodecGuide.K-LiteCodecPack.Standard",
+        "foss": false
+    },
     "kodi": {
         "category": "Selfhosted Tools",
         "choco": "kodi",
@@ -691,6 +682,15 @@
         "winget": "LocalSend.LocalSend",
         "foss": true
     },
+    "mpc-qt": {
+        "category": "Multimedia Tools",
+        "choco": "mediainfo",
+        "content": "mpc-qt",
+        "description": "MPC-HC (Media Player Classic Home Cinema) is considered by many to be the quintessential media player for the Windows desktop. MPC-QT (Media Player Classic Qute Theater) aims to reproduce most of the interface and functionality of MPC-HC while using libmpv to play video instead of DirectShow.",
+        "link": "https://github.com/mpc-qt/mpc-qt",
+        "winget": "mpc-qt.mpc-qt",
+        "foss": true
+    },
     "matrix": {
         "category": "Communications",
         "choco": "element-desktop",
@@ -716,6 +716,15 @@
         "description": "Moonlight/GameStream Client allows you to stream PC games to other devices over your local network.",
         "link": "https://moonlight-stream.org/",
         "winget": "MoonlightGameStreamingProject.Moonlight",
+        "foss": true
+    },
+    "mpchc": {
+        "category": "Multimedia Tools",
+        "choco": "mpc-hc-clsid2",
+        "content": "Media Player Classic - Home Cinema",
+        "description": "Media Player Classic - Home Cinema (MPC-HC) is a free and open-source video and audio player for Windows. MPC-HC is based on the original Guliverkli project and contains many additional features and bug fixes.",
+        "link": "https://github.com/clsid2/mpc-hc/",
+        "winget": "clsid2.mpc-hc",
         "foss": true
     },
     "msedgeredirect": {
@@ -1186,6 +1195,15 @@
         "winget": "ShareX.ShareX",
         "foss": true
     },
+    "nilesoftShell": {
+        "category": "Utilities",
+        "choco": "nilesoft-shell",
+        "content": "Nilesoft Shell",
+        "description": "Shell is an expanded context menu tool that adds extra functionality and customization options to the Windows context menu.",
+        "link": "https://nilesoft.org/",
+        "winget": "Nilesoft.Shell",
+        "foss": false
+    },
     "systeminformer": {
         "category": "Development",
         "choco": "systeminformer",
@@ -1590,6 +1608,15 @@
         "link": "https://zoom.us/",
         "winget": "Zoom.Zoom",
         "foss": false
+    },
+    "uv": {
+        "category": "Development",
+        "choco": "uv",
+        "content": "uv",
+        "description": "uv is a fast Python package and project manager written in Rust.",
+        "link": "https://docs.astral.sh/uv/getting-started/installation/",
+        "winget": "astral-sh.uv",
+        "foss": true
     },
     "tightvnc": {
         "category": "Utilities",
