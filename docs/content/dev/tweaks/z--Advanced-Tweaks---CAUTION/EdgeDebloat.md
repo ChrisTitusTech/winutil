@@ -3,7 +3,7 @@ title: "Microsoft Edge - Debloat"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=361}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=331}
   "WPFTweaksEdgeDebloat": {
     "Content": "Microsoft Edge - Debloat",
     "Description": "Disables various telemetry options, popups, and other annoyances in Edge.",

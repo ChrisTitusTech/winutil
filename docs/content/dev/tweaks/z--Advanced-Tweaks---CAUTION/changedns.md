@@ -3,7 +3,7 @@ title: "DNS - Set to:"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1781}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1751}
   "WPFchangedns": {
     "Content": "DNS - Set to:",
     "category": "z__Advanced Tweaks - CAUTION",

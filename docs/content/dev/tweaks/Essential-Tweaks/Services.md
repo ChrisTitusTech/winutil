@@ -6,7 +6,7 @@ description: ""
 ```json {filename="config/tweaks.json",linenos=inline,linenostart=175}
   "WPFTweaksServices": {
     "Content": "Services - Set to Manual",
-    "Description": "Turns a bunch of system services to manual that don't need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand.",
+    "Description": "Sets some services to Manual startup and adjusts the SvcHostSplitThresholdInKB registry value to better match system memory, which can significantly reduce the number of svchost.exe processes.",
     "category": "Essential Tweaks",
     "panel": "1",
     "service": [
@@ -26,16 +26,6 @@ description: ""
         "OriginalType": "Automatic"
       },
       {
-        "Name": "RemoteAccess",
-        "StartupType": "Disabled",
-        "OriginalType": "Disabled"
-      },
-      {
-        "Name": "RemoteRegistry",
-        "StartupType": "Disabled",
-        "OriginalType": "Disabled"
-      },
-      {
         "Name": "StorSvc",
         "StartupType": "Manual",
         "OriginalType": "Automatic"
@@ -44,26 +34,6 @@ description: ""
         "Name": "SharedAccess",
         "StartupType": "Disabled",
         "OriginalType": "Automatic"
-      },
-      {
-        "Name": "TermService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "TroubleshootingSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "seclogon",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "ssh-agent",
-        "StartupType": "Disabled",
-        "OriginalType": "Disabled"
       }
     ],
     "InvokeScript": [

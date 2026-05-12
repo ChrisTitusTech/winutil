@@ -3,7 +3,7 @@ title: "Adobe URL Block List - Enable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1071}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1041}
   "WPFTweaksBlockAdobeNet": {
     "Content": "Adobe URL Block List - Enable",
     "Description": "Reduces user interruptions by selectively blocking connections to Adobe's activation and telemetry servers. Credit: Ruddernation-Designs",

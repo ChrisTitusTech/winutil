@@ -3,7 +3,7 @@ title: "File Explorer Home and Gallery - Disable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=693}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=663}
   "WPFTweaksRemoveHome": {
     "Content": "File Explorer Home and Gallery - Disable",
     "Description": "Removes the Home and Gallery from Explorer and sets This PC as default.",
