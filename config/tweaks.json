@@ -691,8 +691,8 @@
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removeonedrive"
   },
   "WPFTweaksRemoveHome": {
-    "Content": "File Explorer Home - Disable",
-    "Description": "Removes the Home from Explorer and sets This PC as default.",
+    "Content": "File Explorer Home and Gallery - Disable",
+    "Description": "Removes the Home and Gallery from Explorer and sets This PC as default.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -712,29 +712,6 @@
       }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removehome"
-  },
-  "WPFTweaksRemoveGallery": {
-    "Content": "File Explorer Gallery - Disable",
-    "Description": "Removes the Gallery from Explorer and sets This PC as default.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Classes\\CLSID\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}",
-        "Name": "System.IsPinnedToNameSpaceTree",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "Name": "LaunchTo",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removegallery"
   },
   "WPFTweaksDisplay": {
     "Content": "Visual Effects - Set to Best Performance",
