@@ -17,7 +17,7 @@ $script.Add(
 
 $script.Add((Get-ChildItem functions -Recurse -File | Get-Content))
 
-Get-ChildItem "config" -Filter *.json | ForEach-Object {
+Get-ChildItem config -Filter *.json | ForEach-Object {
     $obj = Get-Content $_.FullName -Raw | ConvertFrom-Json
 
     if ($_.Name -eq "applications.json") {
@@ -35,7 +35,7 @@ Get-ChildItem "config" -Filter *.json | ForEach-Object {
 }
 
 # Read the entire XAML file as a single string, preserving line breaks
-$xaml = Get-Content "xaml\inputXML.xaml" -Raw
+$xaml = Get-Content xaml\inputXML.xaml -Raw
 $script.Add('$inputXML = @''' + "`n" + $xaml + "`n" + '''@')
 
 $autounattendXml = Get-Content "tools\autounattend.xml" -Raw
