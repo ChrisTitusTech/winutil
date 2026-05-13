@@ -17,7 +17,7 @@ $script.Add(
 
 $script.Add((Get-ChildItem functions -Recurse -File | Get-Content))
 
-Get-ChildItem config -Filter *.json | ForEach-Object {
+Get-ChildItem config | ForEach-Object {
     $obj = Get-Content $_.FullName | ConvertFrom-Json
 
     if ($_.Name -eq "applications.json") {
