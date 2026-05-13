@@ -3,7 +3,7 @@ function Invoke-WinUtilFeatureInstall ($CheckBox) {
     if ($sync.configs.feature.$CheckBox.feature) {
         foreach ($feature in $sync.configs.feature.$CheckBox.feature) {
             Write-Host "Installing $feature"
-            Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart
+            Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart -ErrorAction Stop
         }
     }
 
