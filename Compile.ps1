@@ -20,7 +20,7 @@ $script.Add((Get-ChildItem functions -Recurse -File | Get-Content))
 Get-ChildItem config -Filter *.json | ForEach-Object {
     $obj = Get-Content $_.FullName | ConvertFrom-Json
 
-    if ($_.Name -eq applications.json) {
+    if ($_.Name -eq "applications.json") {
         $fixed = [ordered]@{}
         foreach ($p in $obj.PSObject.Properties) {
             $fixed["WPFInstall$($p.Name)"] = $p.Value
