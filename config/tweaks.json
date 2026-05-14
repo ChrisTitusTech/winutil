@@ -609,7 +609,7 @@
   },
   "WPFTweaksDisableBitLocker": {
     "Content": "BitLocker - Disable",
-    "Description": "Disables BitLocker and it's related service.",
+    "Description": "Disables BitLocker.",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
@@ -617,13 +617,6 @@
     ],
     "UndoScript": [
       "Enable-BitLocker -MountPoint $Env:SystemDrive"
-    ],
-    "service": [
-      {
-        "Name": "BDESVC",
-        "StartupType": "Disabled",
-        "OriginalType": "Manual"
-      }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disablebitlocker"
   },
