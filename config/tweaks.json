@@ -1743,7 +1743,7 @@
   },
   "WPFToggleLongPaths": {
     "Content": "Enable Long Paths",
-    "Description": "Enables support for file paths longer than 260 characters. Requires apps to opt in via their manifest.",
+    "Description": "Enables support for file paths longer than 260 characters.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
