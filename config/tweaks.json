@@ -618,7 +618,7 @@
     "UndoScript": [
       "Enable-BitLocker -MountPoint $Env:SystemDrive"
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disablebitlocker"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/disablebitlocker"
   },
   "WPFTweaksUTC": {
     "Content": "Date & Time - Set Time to UTC",
