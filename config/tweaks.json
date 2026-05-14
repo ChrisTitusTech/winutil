@@ -1741,6 +1741,24 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/taskview"
   },
+  "WPFToggleLongPaths": {
+    "Content": "Enable Long Paths",
+    "Description": "Enables support for file paths longer than 260 characters. Requires apps to opt in via their manifest.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FileSystem",
+        "Name": "LongPathsEnabled",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/longpaths"
+  },
   "WPFOOSUbutton": {
     "Content": "O&O ShutUp10++ - Run",
     "category": "z__Advanced Tweaks - CAUTION",
