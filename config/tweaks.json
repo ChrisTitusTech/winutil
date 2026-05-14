@@ -610,7 +610,7 @@
   "WPFTweaksDisableBitLocker": {
     "Content": "BitLocker - Disable",
     "Description": "Disables BitLocker and it's related service.",
-    "category": "z__Advanced Tweaks - CAUTION",
+    "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
       "Disable-BitLocker -MountPoint $Env:SystemDrive"
