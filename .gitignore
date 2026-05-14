@@ -49,6 +49,8 @@ winutil.ps1
 # temporary excludes for docs
 .github/site/
 
+binary/
+
 # Hugo Files
 docs/public/
 docs/.hugo_build.lock
