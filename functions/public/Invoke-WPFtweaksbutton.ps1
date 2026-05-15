@@ -29,8 +29,6 @@ function Invoke-WPFtweaksbutton {
     return
   }
 
-  Write-Debug "Number of tweaks to process: $($Tweaks.Count)"
-
   if ($restorePointSelected) {
     $sync.ProcessRunning = $true
 
@@ -58,7 +56,6 @@ function Invoke-WPFtweaksbutton {
   # The leading "," in the ParameterList is necessary because we only provide one argument and powershell cannot be convinced that we want a nested loop with only one argument otherwise
   $handle = Invoke-WPFRunspace -ParameterList @(("tweaks", $tweaksToRun), ("dnsProvider", $dnsProvider), ("completedSteps", $completedSteps), ("totalSteps", $totalSteps)) -ScriptBlock {
     param($tweaks, $dnsProvider, $completedSteps, $totalSteps)
-    Write-Debug "Inside Number of tweaks to process: $($Tweaks.Count)"
 
     $sync.ProcessRunning = $true
 
