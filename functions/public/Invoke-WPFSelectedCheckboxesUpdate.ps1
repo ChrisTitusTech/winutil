@@ -85,11 +85,4 @@ function Invoke-WPFSelectedCheckboxesUpdate{
             Write-Host "Unknown group for checkbox: $($appKey)"
         }
     }
-
-    Write-Debug "-------------------------------------"
-    Write-Debug "Selected Apps: $($sync.selectedApps)"
-    Write-Debug "Selected Tweaks: $($sync.selectedTweaks)"
-    Write-Debug "Selected Toggles: $($sync.selectedToggles)"
-    Write-Debug "Selected Features: $($sync.selectedFeatures)"
-    Write-Debug "--------------------------------------"
 }
