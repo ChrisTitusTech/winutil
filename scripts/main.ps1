@@ -210,7 +210,6 @@ $sync.keys | ForEach-Object {
                 $sync["$psitem"].Add_MouseUp({
                     [System.Object]$Sender = $args[0]
                     Start-Process $Sender.ToolTip -ErrorAction Stop
-                    Write-Debug "Opening: $($Sender.ToolTip)"
                 })
             }
 
@@ -316,7 +315,6 @@ $sync["Form"].Add_MouseDoubleClick({
 })
 
 $sync["Form"].Add_Deactivated({
-    Write-Debug "WinUtil lost focus"
     Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme", "FontScaling")
 })
 
@@ -330,23 +328,10 @@ $sync["Form"].Add_ContentRendered({
         $screenWidth = $primaryScreen.Bounds.Width
         $screenHeight = $primaryScreen.Bounds.Height
 
-        # Print the screen size
-        Write-Debug "Primary Monitor Width: $screenWidth pixels"
-        Write-Debug "Primary Monitor Height: $screenHeight pixels"
-
-        # Compare with the primary monitor size
-        if ($sync.Form.ActualWidth -gt $screenWidth -or $sync.Form.ActualHeight -gt $screenHeight) {
-            Write-Debug "The specified width and/or height is greater than the primary monitor size."
-            $sync.Form.Left = 0
-            $sync.Form.Top = 0
-            $sync.Form.Width = $screenWidth
-            $sync.Form.Height = $screenHeight
-        } else {
-            Write-Debug "The specified width and height are within the primary monitor size limits."
-        }
-    } else {
-        Write-Debug "Unable to retrieve information about the primary monitor."
-    }
+        $sync.Form.Left = 0
+        $sync.Form.Top = 0
+        $sync.Form.Width = $screenWidth
+        $sync.Form.Height = $screenHeight
 
     if ($PARAM_OFFLINE) {
         # Show offline banner
@@ -445,41 +430,33 @@ $sync["Form"].Add_Activated({
 })
 
 $sync["ThemeButton"].Add_Click({
-    Write-Debug "ThemeButton clicked"
     Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "Theme" = "Toggle"; "FontScaling" = "Hide" }
 })
 $sync["AutoThemeMenuItem"].Add_Click({
-    Write-Debug "About clicked"
     Invoke-WPFPopup -Action "Hide" -Popups @("Theme")
     Invoke-WinutilThemeChange -theme "Auto"
 })
 $sync["DarkThemeMenuItem"].Add_Click({
-    Write-Debug "Dark Theme clicked"
     Invoke-WPFPopup -Action "Hide" -Popups @("Theme")
     Invoke-WinutilThemeChange -theme "Dark"
 })
 $sync["LightThemeMenuItem"].Add_Click({
-    Write-Debug "Light Theme clicked"
     Invoke-WPFPopup -Action "Hide" -Popups @("Theme")
     Invoke-WinutilThemeChange -theme "Light"
 })
 
 $sync["SettingsButton"].Add_Click({
-    Write-Debug "SettingsButton clicked"
     Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Toggle"; "Theme" = "Hide"; "FontScaling" = "Hide" }
 })
 $sync["ImportMenuItem"].Add_Click({
-    Write-Debug "Import clicked"
     Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
     Invoke-WPFImpex -type "import"
 })
 $sync["ExportMenuItem"].Add_Click({
-    Write-Debug "Export clicked"
     Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
     Invoke-WPFImpex -type "export"
 })
 $sync["AboutMenuItem"].Add_Click({
-    Write-Debug "About clicked"
     Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
 
     $authorInfo = @"
@@ -492,12 +469,10 @@ Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sy
     Show-CustomDialog -Title "About" -Message $authorInfo
 })
 $sync["DocumentationMenuItem"].Add_Click({
-    Write-Debug "Documentation clicked"
     Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
     Start-Process "https://winutil.christitus.com/"
 })
 $sync["SponsorMenuItem"].Add_Click({
-    Write-Debug "Sponsors clicked"
     Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
 
     $authorInfo = @"
@@ -517,7 +492,6 @@ $sync["SponsorMenuItem"].Add_Click({
 
 # Font Scaling Event Handlers
 $sync["FontScalingButton"].Add_Click({
-    Write-Debug "FontScalingButton clicked"
     Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "Theme" = "Hide"; "FontScaling" = "Toggle" }
 })
 
@@ -528,13 +502,11 @@ $sync["FontScalingSlider"].Add_ValueChanged({
 })
 
 $sync["FontScalingResetButton"].Add_Click({
-    Write-Debug "FontScalingResetButton clicked"
     $sync.FontScalingSlider.Value = 1.0
     $sync.FontScalingValue.Text = "100%"
 })
 
 $sync["FontScalingApplyButton"].Add_Click({
-    Write-Debug "FontScalingApplyButton clicked"
     $scaleFactor = $sync.FontScalingSlider.Value
     Invoke-WinUtilFontScaling -ScaleFactor $scaleFactor
     Invoke-WPFPopup -Action "Hide" -Popups @("FontScaling")
@@ -547,49 +519,40 @@ $sync["WPFTab5BT"].Add_Click({
 })
 
 $sync["WPFWin11ISOBrowseButton"].Add_Click({
-    Write-Debug "WPFWin11ISOBrowseButton clicked"
     Invoke-WinUtilISOBrowse
 })
 
 $sync["WPFWin11ISODownloadLink"].Add_Click({
-    Write-Debug "WPFWin11ISODownloadLink clicked"
     Start-Process "https://www.microsoft.com/software-download/windows11"
 })
 
 $sync["WPFWin11ISOMountButton"].Add_Click({
-    Write-Debug "WPFWin11ISOMountButton clicked"
     Invoke-WinUtilISOMountAndVerify
 })
 
 $sync["WPFWin11ISOModifyButton"].Add_Click({
-    Write-Debug "WPFWin11ISOModifyButton clicked"
     Invoke-WinUtilISOModify
 })
 
 $sync["WPFWin11ISOChooseISOButton"].Add_Click({
-    Write-Debug "WPFWin11ISOChooseISOButton clicked"
     $sync["WPFWin11ISOOptionUSB"].Visibility = "Collapsed"
     Invoke-WinUtilISOExport
 })
 
 $sync["WPFWin11ISOChooseUSBButton"].Add_Click({
-    Write-Debug "WPFWin11ISOChooseUSBButton clicked"
     $sync["WPFWin11ISOOptionUSB"].Visibility = "Visible"
     Invoke-WinUtilISORefreshUSBDrives
 })
 
 $sync["WPFWin11ISORefreshUSBButton"].Add_Click({
-    Write-Debug "WPFWin11ISORefreshUSBButton clicked"
     Invoke-WinUtilISORefreshUSBDrives
 })
 
 $sync["WPFWin11ISOWriteUSBButton"].Add_Click({
-    Write-Debug "WPFWin11ISOWriteUSBButton clicked"
     Invoke-WinUtilISOWriteUSB
 })
 
 $sync["WPFWin11ISOCleanResetButton"].Add_Click({
-    Write-Debug "WPFWin11ISOCleanResetButton clicked"
     Invoke-WinUtilISOCleanAndReset
 })
 
