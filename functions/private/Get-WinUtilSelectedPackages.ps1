@@ -21,22 +21,23 @@ function Get-WinUtilSelectedPackages {
     $packages[[PackageManagers]::Choco] = $packagesChoco
 
     foreach ($package in $PackageList) {
-          switch ($Preference) {
-               "Choco" {
-                    if ($package.choco -eq "na") {
-                         $packagesWinget.add($($package.winget))
-                    } else {
-                         $packagesChoco.add($package.choco)
-                    }
-               }
-               "Winget" {
-                    if ($package.winget -eq "na") {
-                         $packagesChoco.add($package.choco)
-                    } else {
-                         $packagesWinget.add($($package.winget))
-                    }
-               }
-          }
-     }
+        switch ($Preference) {
+            "Choco" {
+                if ($package.choco -eq "na") {
+                    $$packagesWinget.add($($package.winget))
+                } else {
+                    $packagesChoco.add($package.choco)
+                }
+            }
+            "Winget" {
+                if ($package.winget -eq "na") {
+                    $packagesChoco.add($package.choco)
+                } else {
+                    $packagesWinget.add($($package.winget))
+                }
+            }
+        }
+    }
+
     return $packages
 }
