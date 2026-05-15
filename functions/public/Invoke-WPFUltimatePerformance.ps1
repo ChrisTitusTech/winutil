@@ -4,7 +4,12 @@ function Invoke-WPFUltimatePerformance {
 
     if ($Enable) {
         if (-not (powercfg /list | Select-String $name)) {
-            $guid = (powercfg /duplicatescheme "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c" | Select-String '[a-f0-9-]{36}').Matches.Value
+            try {
+                $guid = (powercfg /duplicatescheme "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c" | Select-String '[a-f0-9-]{36}').Matches.Value
+            } catch {
+                Write-Host "duplicatescheme failed, if your in a laptop than you can't use $name"
+                return
+            }
 
             powercfg /changename $guid $name
             powercfg /setacvalueindex $guid SUB_PROCESSOR PROCTHROTTLEMIN 100
