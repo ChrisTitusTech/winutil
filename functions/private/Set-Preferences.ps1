@@ -34,7 +34,6 @@ function Set-Preferences{
         $ini = ""
         foreach($key in $sync.preferences.Keys) {
             $pref = "$($key)=$($sync.preferences.$key)"
-            Write-Debug "Saving pref: $($pref)"
             $ini = $ini + $pref + "`r`n"
         }
         $ini | Out-File $iniPath
@@ -49,7 +48,6 @@ function Set-Preferences{
                     $arr = $line -split "=",-2
                     $key = $arr[0] -replace "\s",""
                     $value = $arr[1] -replace "\s",""
-                    Write-Debug "Preference: Key = '$($key)' Value ='$($value)'"
                     $sync.preferences.$key = $value
                 }
             }
