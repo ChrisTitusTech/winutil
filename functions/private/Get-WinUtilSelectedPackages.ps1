@@ -24,7 +24,7 @@ function Get-WinUtilSelectedPackages {
         switch ($Preference) {
             "Choco" {
                 if ($package.choco -eq "na") {
-                    $$packagesWinget.add($($package.winget))
+                    $packagesWinget.add($package.winget)
                 } else {
                     $packagesChoco.add($package.choco)
                 }
@@ -33,7 +33,7 @@ function Get-WinUtilSelectedPackages {
                 if ($package.winget -eq "na") {
                     $packagesChoco.add($package.choco)
                 } else {
-                    $packagesWinget.add($($package.winget))
+                    $packagesWinget.add($package.winget)
                 }
             }
         }
