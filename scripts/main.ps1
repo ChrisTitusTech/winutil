@@ -19,7 +19,6 @@ $InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionSta
 
 # Add the variable to the session state
 $InitialSessionState.Variables.Add($hashVars)
-$InitialSessionState.Variables.Add($debugVar)
 $InitialSessionState.Variables.Add($uiVar)
 $InitialSessionState.Variables.Add($offlineVar)
 
