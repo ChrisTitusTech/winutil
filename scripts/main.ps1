@@ -331,6 +331,7 @@ $sync["Form"].Add_ContentRendered({
         $sync.Form.Top = 0
         $sync.Form.Width = $screenWidth
         $sync.Form.Height = $screenHeight
+    }
 
     if ($PARAM_OFFLINE) {
         # Show offline banner
