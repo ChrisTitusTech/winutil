@@ -45,6 +45,6 @@ $script.Add((Get-Content scripts\main.ps1))
 
 Set-Content -Path winutil.ps1 -Value $script
 
-if ($run) {
+if ($Run) {
     .\Winutil.ps1
 }
