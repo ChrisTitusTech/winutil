@@ -46,7 +46,7 @@ jobs:
             config/feature.json
           labels: |
             automated
-            documentation
+            skip-changelog
 
       - name: Check outputs
         shell: bash
