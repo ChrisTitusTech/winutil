@@ -129,7 +129,7 @@
     "link": "https://winutil.christitus.com/dev/features/features/sandbox"
   },
   "WPFFeatureInstall": {
-    "Content": "Run Features",
+    "Content": "Install Features",
     "category": "Features",
     "panel": "1",
     "Type": "Button",
