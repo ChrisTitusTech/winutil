@@ -96,6 +96,62 @@
     ],
     "link": "https://winutil.christitus.com/dev/features/features/regbackup"
   },
+  "WPFFeatureSysinternalsLiveEnable": {
+    "Content": "Sysinternals Live - Map S: and optional local copy + to PATH",
+    "Description": "Maps \\\\live.sysinternals.com\\tools as drive S: and adds to PATH, so tools are callable directly from the sysinternals-live location.",
+    "category": "Features",
+    "panel": "1",
+    "feature": [],
+    "InvokeScript": [
+      "
+      if (-not (Test-Connection -ComputerName 'live.sysinternals.com' -Count 1 -Quiet -ErrorAction SilentlyContinue)) {
+          Write-Warning 'Cannot reach live.sysinternals.com. Check your network connection. Aborting Sysinternals Live setup.'
+          return
+      }
+      $logonUser = (Get-Process -IncludeUserName -Name explorer | Select-Object -First 1).UserName
+      $username = ($logonUser -split '\\\\') | Select-Object -Last 1
+      $sid = (New-Object System.Security.Principal.NTAccount($logonUser)).Translate([System.Security.Principal.SecurityIdentifier]).Value
+      $regPath = 'Registry::HKEY_USERS\\{0}\\Network\\S' -f $sid
+      New-Item -Path $regPath -Force | Out-Null
+      Set-ItemProperty -Path $regPath -Name 'RemotePath'     -Value '\\\\live.sysinternals.com@SSL\\tools' -Type String
+      Set-ItemProperty -Path $regPath -Name 'UserName'       -Value $username                          -Type String
+      Set-ItemProperty -Path $regPath -Name 'ProviderName'   -Value 'Web Client Network'               -Type String
+      Set-ItemProperty -Path $regPath -Name 'ProviderType'   -Value 0x002E0000                         -Type DWord
+      Set-ItemProperty -Path $regPath -Name 'ConnectionType' -Value 0x00000001                         -Type DWord
+      Set-ItemProperty -Path $regPath -Name 'ConnectFlags'   -Value 0x00000000                         -Type DWord
+      Set-ItemProperty -Path $regPath -Name 'DeferFlags'     -Value 0x00000004                         -Type DWord
+      Add-Type -AssemblyName PresentationFramework -ErrorAction SilentlyContinue
+      $copyChoice = [System.Windows.MessageBox]::Show(\"Also copy Sysinternals tools to C:\\Program Files\\Sysinternals and add it to System PATH?`n`nThe copy may take a couple of minutes.\", \"Sysinternals Live - Local Copy\", [System.Windows.MessageBoxButton]::YesNo, [System.Windows.MessageBoxImage]::Question)
+      if ($copyChoice -eq [System.Windows.MessageBoxResult]::Yes) {
+          $localDest = 'C:\\Program Files\\Sysinternals'
+          New-Item -Path $localDest -ItemType Directory -Force | Out-Null
+          Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\WebClient\\Parameters' -Name 'FileSizeLimitInBytes' -Type DWord -Value 100000000 -Force
+          Restart-Service WebClient -Force
+          Write-Host \"Copying Sysinternals tools to $localDest ...\"
+          net use S: '\\\\live.sysinternals.com@SSL\\tools' /persistent:no 2>&1 | Out-Null
+          if ($LASTEXITCODE -eq 0) {
+              robocopy 'S:\\' $localDest /E /R:2 /W:5 | Out-Null
+              $rcCode = $LASTEXITCODE
+              if ($rcCode -lt 8) {
+                  $machinePath = [Environment]::GetEnvironmentVariable('Path', 'Machine')
+                  if (($machinePath -split ';') -notcontains $localDest) {
+                      [Environment]::SetEnvironmentVariable('Path', $machinePath.TrimEnd(';') + ';' + $localDest, 'Machine')
+                  }
+                  Write-Host \"Copied tools and added $localDest to System PATH.\"
+              } else {
+                  Write-Warning \"robocopy returned exit code $rcCode. Local copy may be incomplete.\"
+              }
+          } else {
+              Write-Warning \"Could not mount \\\\live.sysinternals.com@SSL\\tools to copy. Skipping local copy.\"
+          }
+          Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\WebClient\\Parameters' -Name 'FileSizeLimitInBytes' -Type DWord -Value 50000000 -Force
+      }
+      Stop-Process -Name explorer -Force
+      Write-Host \"Registered S: -> \\\\live.sysinternals.com\\tools for $username and added S:\\ to PATH. Restarting Explorer.\"
+      "
+    ],
+    "link": "https://winutil.christitus.com/dev/features/features/sysinternalsliveenable"
+  },
   "WPFFeatureEnableLegacyRecovery": {
     "Content": "Legacy F8 Boot Recovery - Enable",
     "Description": "Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
