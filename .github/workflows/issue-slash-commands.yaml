@@ -15,101 +15,63 @@ jobs:
       contents: read
 
     steps:
-      - run: echo "command=false" >> $GITHUB_ENV
+      - name: Process slash command
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const allowedUsers = ["ChrisTitusTech", "og-mrk", "Marterich", "MyDrift-user", "Real-MullaC", "CodingWonders", "GabiNun2", "FluffyPunk"];
+            const commenter = context.payload.comment.user.login;
 
-      - name: Check for /label command
-        id: check_label_command
-        run: |
-          if [[ "${{ contains(github.event.comment.body, '/label') }}" == "true" ]]; then
-            echo "command=true" >> $GITHUB_ENV
-            LABEL_NAME=$(echo "${{ github.event.comment.body }}" | awk -F"/label" '/\/label/ { match($2, /'\''([^'\'']*)'\''/, arr); if (arr[1] != "") print arr[1] }')
-            echo "label_command=true" >> $GITHUB_ENV
-            echo "label_name=${LABEL_NAME}" >> $GITHUB_ENV
-          else
-            echo "label_command=false" >> $GITHUB_ENV
-          fi
+            // Authorization check first — before any parsing of comment content
+            if (!allowedUsers.includes(commenter)) {
+              console.log(`User ${commenter} is not in the allowlist. Skipping.`);
+              return;
+            }
 
-      - name: Check for /unlabel command
-        id: check_unlabel_command
-        run: |
-          if [[ "${{ contains(github.event.comment.body, '/unlabel') }}" == "true" ]]; then
-            echo "command=true" >> $GITHUB_ENV
-            UNLABEL_NAME=$(echo "${{ github.event.comment.body }}" | awk -F"/unlabel" '/\/unlabel/ { match($2, /'\''([^'\'']*)'\''/, arr); if (arr[1] != "") print arr[1] }')
-            echo "unlabel_command=true" >> $GITHUB_ENV
-            echo "unlabel_name=${UNLABEL_NAME}" >> $GITHUB_ENV
-          else
-            echo "unlabel_command=false" >> $GITHUB_ENV
-          fi
+            // Read comment body as data, never interpolated into shell
+            const body = context.payload.comment.body;
+            const issueNumber = context.issue.number;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
 
-      - name: Check for /close command
-        id: check_close_command
-        run: |
-          if [[ "${{ contains(github.event.comment.body, '/close') }}" == "true" ]]; then
-            echo "command=true" >> $GITHUB_ENV
-            echo "close_command=true" >> $GITHUB_ENV
-            echo "reopen_command=false" >> $GITHUB_ENV
-          else
-            echo "close_command=false" >> $GITHUB_ENV
-          fi
+            // /label 'name'  or  /label name
+            const labelMatch = body.match(/\/label\s+'([^']+)'|\/label\s+(\S+?)(?:\s|$)/);
+            if (labelMatch) {
+              const labelName = (labelMatch[1] || labelMatch[2]).trim();
+              console.log(`Adding label: ${labelName}`);
+              await github.rest.issues.addLabels({
+                owner, repo, issue_number: issueNumber,
+                labels: [labelName],
+              });
+            }
 
-      - name: Check for /open or /reopen command
-        id: check_reopen_command
-        run: |
-          if [[ "${{ contains(github.event.comment.body, '/open') }}" == "true" ]] || [[ "${{ contains(github.event.comment.body, '/reopen') }}" == "true" ]]; then
-            echo "command=true" >> $GITHUB_ENV
-            echo "reopen_command=true" >> $GITHUB_ENV
-            echo "close_command=false" >> $GITHUB_ENV
-          else
-            echo "reopen_command=false" >> $GITHUB_ENV
-          fi
+            // /unlabel 'name'  or  /unlabel name
+            const unlabelMatch = body.match(/\/unlabel\s+'([^']+)'|\/unlabel\s+(\S+?)(?:\s|$)/);
+            if (unlabelMatch) {
+              const labelName = (unlabelMatch[1] || unlabelMatch[2]).trim();
+              console.log(`Removing label: ${labelName}`);
+              await github.rest.issues.removeLabel({
+                owner, repo, issue_number: issueNumber,
+                name: labelName,
+              });
+            }
 
-      - name: Check if the user is allowed
-        id: check_user
-        if: env.command == 'true'
-        run: |
-          ALLOWED_USERS=("ChrisTitusTech" "og-mrk" "Marterich" "MyDrift-user" "Real-MullaC" "CodingWonders" "GabiNun2" "FluffyPunk")
-          if [[ " ${ALLOWED_USERS[@]} " =~ " ${{ github.event.comment.user.login }} " ]]; then
-            echo "user=true" >> $GITHUB_ENV
-          else
-            exit 0
-          fi
+            // /close  (optionally with 'not planned')
+            if (body.includes('/close')) {
+              const stateReason = body.includes('not planned') ? 'not_planned' : 'completed';
+              console.log(`Closing issue (reason: ${stateReason})`);
+              await github.rest.issues.update({
+                owner, repo, issue_number: issueNumber,
+                state: 'closed',
+                state_reason: stateReason,
+              });
+            }
 
-      - name: Close issue
-        if: env.user == 'true' && env.close_command == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
-        run: |
-          echo Closing the issue...
-          if [[ "${{ contains(github.event.comment.body, 'not planned') }}" == "true" ]]; then
-            gh issue close $ISSUE_NUMBER --repo ${{ github.repository }} --reason 'not planned'
-          else
-            gh issue close $ISSUE_NUMBER --repo ${{ github.repository }}
-          fi
-
-      - name: Reopen issue
-        if: env.user == 'true' && env.reopen_command == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
-        run: |
-          echo Reopening the issue...
-          gh issue reopen $ISSUE_NUMBER --repo ${{ github.repository }}
-
-      - name: Label issue
-        if: env.user == 'true' && env.label_command == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
-        run: |
-          echo Labeling the issue...
-          gh issue edit $ISSUE_NUMBER --repo ${{ github.repository }} --add-label "${{ env.label_name }}"
-
-      - name: Remove labels
-        if: env.user == 'true' && env.unlabel_command == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
-        run: |
-          echo Unlabeling the issue...
-          gh issue edit $ISSUE_NUMBER --repo ${{ github.repository }} --remove-label "${{ env.unlabel_name }}"
+            // /open  or  /reopen
+            if (body.includes('/open') || body.includes('/reopen')) {
+              console.log('Reopening issue');
+              await github.rest.issues.update({
+                owner, repo, issue_number: issueNumber,
+                state: 'open',
+              });
+            }
