@@ -12,8 +12,6 @@ function Update-WinUtilSelections {
         $flatJson
     )
 
-    Write-Debug "JSON to import: $($flatJson)"
-
     foreach ($item in $flatJson) {
         # Ensure each item is treated as a string to handle PSCustomObject from JSON deserialization
         $cbkey = [string]$item
@@ -51,11 +49,4 @@ function Update-WinUtilSelections {
             }
         }
     }
-
-    Write-Debug "-------------------------------------"
-    Write-Debug "Selected Apps: $($sync.selectedApps)"
-    Write-Debug "Selected Tweaks: $($sync.selectedTweaks)"
-    Write-Debug "Selected Toggles: $($sync.selectedToggles)"
-    Write-Debug "Selected Features: $($sync.selectedFeatures)"
-    Write-Debug "--------------------------------------"
 }
