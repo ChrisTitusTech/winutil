@@ -1,11 +1,21 @@
 Function Get-WinUtilToggleStatus {
-    if (-not $ToggleSwitchReg) {
+    param(
+        [string]$ToggleSwitch
+    )
+
+    $toggleSwitchReg = if ($ToggleSwitch) {
+        $sync.configs.tweaks.$ToggleSwitch.registry
+    } else {
+        $ToggleSwitchReg
+    }
+
+    if (-not $toggleSwitchReg) {
         return $false
     }
 
     New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS
 
-    foreach ($regentry in $ToggleSwitchReg) {
+    foreach ($regentry in $toggleSwitchReg) {
 
         if (-not (Test-Path $regentry.Path)) {
             New-Item -Path $regentry.Path -Force | Out-Null
