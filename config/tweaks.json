@@ -607,6 +607,19 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removeedge"
   },
+  "WPFTweaksDisableBitLocker": {
+    "Content": "BitLocker - Disable",
+    "Description": "Disables BitLocker.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "InvokeScript": [
+      "Disable-BitLocker -MountPoint $Env:SystemDrive"
+    ],
+    "UndoScript": [
+      "Enable-BitLocker -MountPoint $Env:SystemDrive"
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/disablebitlocker"
+  },
   "WPFTweaksUTC": {
     "Content": "Date & Time - Set Time to UTC",
     "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux systems.",
