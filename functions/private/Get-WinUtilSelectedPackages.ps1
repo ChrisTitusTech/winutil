@@ -30,7 +30,9 @@ function Get-WinUtilSelectedPackages {
                 }
             }
             "Winget" {
-                if ($package.winget) {
+                if ($package.winget -eq "na") {
+                    $packagesChoco.add($package.choco)
+                } else {
                     $packagesWinget.add($package.winget)
                 }
             }
