@@ -18,6 +18,14 @@ description: ""
         "Type": "DWord",
         "OriginalValue": "5",
         "DefaultState": "true"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers",
+        "Name": "DisableOverlays",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
       }
     ],
 ```
