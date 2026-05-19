@@ -1,4 +1,5 @@
 function Get-WinUtilSelectedPackages {
+
      param(
          [Parameter(Mandatory = $true)]
          [object] $PackageList,
@@ -24,17 +25,13 @@ function Get-WinUtilSelectedPackages {
         switch ($Preference) {
             "Choco" {
                 if ($package.choco -eq "na") {
-                    $packagesWinget.add($package.winget)
+                    $null = $packagesWinget.add($package.winget)
                 } else {
-                    $packagesChoco.add($package.choco)
+                    $null = $packagesChoco.add($package.choco)
                 }
             }
             "Winget" {
-                if ($package.winget -eq "na") {
-                    $packagesChoco.add($package.choco)
-                } else {
-                    $packagesWinget.add($package.winget)
-                }
+                $null = $packagesWinget.add($package.winget)
             }
         }
     }
