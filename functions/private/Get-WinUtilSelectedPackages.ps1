@@ -30,7 +30,9 @@ function Get-WinUtilSelectedPackages {
                 }
             }
             "Winget" {
-                 $packagesWinget.add($package.winget)
+                if ($package.winget) {
+                    $packagesWinget.add($package.winget)
+                }
             }
         }
     }
