@@ -11,9 +11,6 @@
 
 winutil.pdb
 
-### Preprocessor Hashes ###
-.preprocessor_hashes.json
-
 ### Windows ###
 
 # Folder config file
@@ -53,8 +50,6 @@ winutil.ps1
 .github/site/
 
 binary/
-
-.preprocessor_hashes.json
 
 # Hugo Files
 docs/public/
