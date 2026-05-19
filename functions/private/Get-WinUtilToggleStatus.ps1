@@ -13,29 +13,20 @@ Function Get-WinUtilToggleStatus {
         return $false
     }
 
-    New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS
+    if (-not (Get-PSDrive -Name HKU -ErrorAction SilentlyContinue)) {
+        New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS | Out-Null
+    }
 
     foreach ($regentry in $toggleSwitchReg) {
 
-        if (-not (Test-Path $regentry.Path)) {
-            New-Item -Path $regentry.Path -Force | Out-Null
+        $regstate = $null
+        if (Test-Path $regentry.Path) {
+            $regstate = (Get-ItemProperty -Path $regentry.Path -ErrorAction SilentlyContinue).$($regentry.Name)
         }
 
-        $regstate = (Get-ItemProperty -Path $regentry.Path).$($regentry.Name)
-
         if ($null -eq $regstate) {
-            switch ($regentry.DefaultState) {
-                "true" {
-                    $regstate = $regentry.Value
-                }
-                "false" {
-                    $regstate = $regentry.OriginalValue
-                }
-                default {
-                    Write-Error "Entry $($regentry.Name): missing value and no DefaultState"
-                    $regstate = $regentry.OriginalValue
-                }
-            }
+            # Missing values should be treated as "not enabled" to avoid defaulting toggles on.
+            $regstate = $regentry.OriginalValue
         }
 
         if ($regstate -ne $regentry.Value) {
