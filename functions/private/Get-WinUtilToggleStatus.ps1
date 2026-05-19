@@ -3,7 +3,7 @@ Function Get-WinUtilToggleStatus {
         return $false
     }
 
-    New-psDrive -Name HKU -PSProvider Registry -Root HKEY_USERS
+    New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS
 
     foreach ($regentry in $ToggleSwitchReg) {
 
