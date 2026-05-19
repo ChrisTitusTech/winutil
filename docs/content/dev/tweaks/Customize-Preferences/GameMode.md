@@ -1,36 +1,28 @@
 ---
-title: "Mouse Acceleration"
+title: "Game Mode"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1489}
-  "WPFToggleMouseAcceleration": {
-    "Content": "Mouse Acceleration",
-    "Description": "If enabled, the Cursor movement is affected by the speed of your physical mouse movements.",
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1765}
+  "WPFToggleGameMode": {
+    "Content": "Game Mode",
+    "Description": "If enabled, Windows prioritizes gaming performance by allocating system resources. Disable for audio/video production to prevent interference.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
     "registry": [
       {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "Name": "MouseSpeed",
+        "Path": "HKCU:\\Software\\Microsoft\\GameBar",
+        "Name": "AllowAutoGameMode",
         "Value": "1",
         "Type": "DWord",
         "OriginalValue": "0",
         "DefaultState": "true"
       },
       {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "Name": "MouseThreshold1",
-        "Value": "6",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "true"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "Name": "MouseThreshold2",
-        "Value": "10",
+        "Path": "HKCU:\\Software\\Microsoft\\GameBar",
+        "Name": "AutoGameModeEnabled",
+        "Value": "1",
         "Type": "DWord",
         "OriginalValue": "0",
         "DefaultState": "true"
