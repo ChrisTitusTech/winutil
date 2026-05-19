@@ -3,7 +3,7 @@ title: "Date & Time - Set Time to UTC"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=610}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=623}
   "WPFTweaksUTC": {
     "Content": "Date & Time - Set Time to UTC",
     "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux systems.",
