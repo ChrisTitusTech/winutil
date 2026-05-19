@@ -117,10 +117,6 @@ Function Invoke-WinUtilCurrentSystem {
                 if ($values -notcontains $false) {
                     Write-Output $Config
                 }
-            } else {
-                if ($invokeScript -or $appxKeys) {
-                    Write-Debug "Skipping $Config in Get Installed: no detectable registry, scheduled task, or service state."
-                }
             }
         }
     }

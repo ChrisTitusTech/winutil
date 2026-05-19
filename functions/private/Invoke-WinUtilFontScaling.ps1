@@ -67,7 +67,6 @@ function Invoke-WinUtilFontScaling {
                 # Calculates and applies the new font size
                 $newValue = [math]::Round($originalValue * $ScaleFactor, 1)
                 $sync.Form.Resources[$resourceName] = $newValue
-                Write-Debug "Scaled $resourceName from original $originalValue to $newValue (factor: $ScaleFactor)"
             }
         }
         catch {
@@ -80,8 +79,4 @@ function Invoke-WinUtilFontScaling {
         $percentage = [math]::Round($ScaleFactor * 100)
         $sync.FontScalingValue.Text = "$percentage%"
     }
-
-    Write-Debug "Font scaling applied with factor: $ScaleFactor"
 }
-
-
