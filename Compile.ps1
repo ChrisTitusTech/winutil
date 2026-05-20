@@ -11,9 +11,7 @@ $sync.configs = @{}
 # Create the script in memory.
 $script = [System.Collections.Generic.List[string]]::new()
 
-$script.Add(
-    ((Get-Content -Path scripts\start.ps1) -replace '#{replaceme}', (Get-Date -Format 'yy.MM.dd'))
-)
+$script.Add((Get-Content -Path scripts\start.ps1))
 
 $script.Add((Get-ChildItem -Path functions -Recurse -File | Get-Content))
 
