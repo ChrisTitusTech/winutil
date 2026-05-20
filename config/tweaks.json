@@ -1110,7 +1110,7 @@
     "panel": "1",
     "InvokeScript": [
       "
-      cleanmgr.exe /d C: /VERYLOWDISK
+      Start-Process -FilePath cleanmgr.exe -ArgumentList '/d C: /VERYLOWDISK'
       Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
       "
     ],
