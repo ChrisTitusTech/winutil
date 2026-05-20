@@ -7,6 +7,7 @@ Microsoft.PowerShell.ConsoleHost.dll
 .idea/
 .vs/
 
+# OS Specific
 desktop.ini
 .DS_Store
 
@@ -21,6 +22,7 @@ Microsoft.UI.Xaml*
 winutil.ps1
 *.psd*
 
+# winutil-bin
 winutil.exe.config
 binary/
 
