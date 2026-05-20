@@ -7,7 +7,7 @@ Microsoft.PowerShell.ConsoleHost.dll
 .idea/
 .vs/
 
-[Dd]esktop.ini
+desktop.ini
 .DS_Store
 
 # Ignore Generated XAML Files
