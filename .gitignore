@@ -1,20 +1,14 @@
-### VSCode ###
+# Libraries
+System.Management.Automation.dll
+Microsoft.PowerShell.ConsoleHost.dll
 
 # Configuration folder
 .vscode/
 .idea/
-
-### Visual Studio ###
-
-# Visual Studio user-specific files
 .vs/
 
-winutil.pdb
-
-### Windows ###
-
-# Folder config file
 [Dd]esktop.ini
+.DS_Store
 
 # Ignore Generated XAML Files
 xaml/inputApp.xaml
@@ -22,34 +16,16 @@ xaml/inputFeatures.xaml
 xaml/inputTweaks.xaml
 
 # Executables and Configs
-winget.msixbundle
 pester.ps1
-*.psd*
-ooshutup10.cfg
-winutil.exe.config
 Microsoft.UI.Xaml*
-license1.xml
 winutil.ps1
+*.psd*
 
-# Libraries
-System.Management.Automation.dll
-Microsoft.PowerShell.ConsoleHost.dll
-
-# Compressed files
-*.zip
-
-### MacOS ###
-
-# General
-.DS_Store
-True
-test.ps1
-winutil.ps1
+winutil.exe.config
+binary/
 
 # temporary excludes for docs
 .github/site/
-
-binary/
 
 # Hugo Files
 docs/public/
