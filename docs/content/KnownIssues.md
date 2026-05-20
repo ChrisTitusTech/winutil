@@ -30,6 +30,6 @@ this means that your PowerShell session is in **Constrained Language Mode**, whi
 
 ### Ultimate Performance Plan Not Working
 
-The Ultimate Performance power plan may not work on some laptops. Certain devices, especially laptops with firmware limitations, who do not fully support this power plan.
+The Ultimate Performance power plan may not work on some laptops who do not fully support this power plan.
 
 In these cases, the power plan may fail to apply, This is expected behavior on unsupported hardware.
