@@ -32,7 +32,7 @@ if ($ExecutionContext.SessionState.LanguageMode -ne 'FullLanguage') {
 }
 
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Output "Winutil needs to be run as Administrator. Attempting to relaunch."
+    Write-Output "Winutil needs to be ran as Administrator. Attempting to relaunch."
 
     $argList = @(
         if ($Config) { "-Config $Config" }
