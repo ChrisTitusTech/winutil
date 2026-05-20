@@ -546,6 +546,7 @@
         "description": "IrfanView is a lightweight, fast, and free image viewer and editor. Supports multiple formats, batch processing, and powerful plugins.",
         "link": "https://irfanview.com/",
         "winget": "IrfanSkiljan.IrfanView"
+        "foss": false
     },
     "itch": {
         "category": "Games",
@@ -923,7 +924,7 @@
         "description": "OpenVPN Connect is an open-source VPN client that allows you to connect securely to a VPN server. It provides a secure and encrypted connection for protecting your online privacy.",
         "link": "https://openvpn.net/",
         "winget": "OpenVPNTechnologies.OpenVPNConnect",
-        "foss": true
+        "foss": false
     },
     "OVirtualBox": {
         "category": "Utilities",
@@ -1508,7 +1509,7 @@
         "description": "Visual Studio Code is a free, open-source code editor with support for multiple programming languages.",
         "link": "https://code.visualstudio.com/",
         "winget": "Microsoft.VisualStudioCode",
-        "foss": true
+        "foss": false
     },
     "vscodium": {
         "category": "Development",
