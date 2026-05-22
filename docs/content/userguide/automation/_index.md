@@ -9,14 +9,14 @@ Use Automation to run Winutil from an exported configuration file.
 
 Winutil supports predefined presets that apply common configurations automatically:
 
-- `minimal`
-- `standard`
-- `advanced`
+- `Standard`
+- `Minimal`
+- `Advanced`
 
 Example:
 
 ```powershell
-& ([ScriptBlock]::Create((irm "https://christitus.com/win"))) -Preset standard
+& ([ScriptBlock]::Create((irm "https://christitus.com/win"))) -Preset Standard
 ```
 
 To view exactly what each preset does, see:
