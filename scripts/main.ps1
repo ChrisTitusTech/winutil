@@ -73,11 +73,16 @@ Set-Preferences
 if ($PARAM_NOUI) {
     Show-CTTLogo
 
-    if ($PARAM_PRESET -and -not [string]::IsNullOrWhiteSpace($PARAM_PRESET)) {
-        Write-Host "Applying preset: $PARAM_PRESET"
+    if ($PARAM_PRESET -and -not [string]::IsNullOrWhiteSpace($PARAM_CONFIG)) {
+        Update-WinUtilSelections -flatJson $sync.configs.preset.$PARAM_PRESET
 
-        Invoke-WPFPresets -preset $PARAM_PRESET -checkboxfilterpattern "WPFTweak*"
-        Invoke-WPFtweaksbutton
+        Invoke-WinUtilAutoRun
+
+        $sync.runspace.Dispose()
+        $sync.runspace.Close()
+        [System.GC]::Collect()
+        Stop-Transcript
+        return
     }
 
     if ($PARAM_CONFIG -and -not [string]::IsNullOrWhiteSpace($PARAM_CONFIG)) {
