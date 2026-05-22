@@ -73,7 +73,7 @@ Set-Preferences
 if ($PARAM_NOUI) {
     Show-CTTLogo
 
-    if ($PARAM_PRESET -and -not [string]::IsNullOrWhiteSpace($PARAM_CONFIG)) {
+    if ($PARAM_PRESET) {
         Update-WinUtilSelections -flatJson $sync.configs.preset.$PARAM_PRESET
 
         Invoke-WinUtilAutoRun
