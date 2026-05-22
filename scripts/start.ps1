@@ -8,12 +8,17 @@
 
 param (
     [string]$Config,
+    [string]$Preset,
     [switch]$Noui,
     [switch]$Offline
 )
 
 if ($Config) {
     $PARAM_CONFIG = $Config
+}
+
+if ($Preset) {
+    $PARAM_PRESET = $Preset
 }
 
 $PARAM_NOUI = $false
