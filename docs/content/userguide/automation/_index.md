@@ -19,7 +19,7 @@ Example:
 & ([ScriptBlock]::Create((irm "https://christitus.com/win"))) -Preset standard
 ```
 
-To view exactly what each preset enables, see:
+To view exactly what each preset does, see:
 https://github.com/ChrisTitusTech/winutil/blob/main/config/preset.json
 
 To create you're own config file:
