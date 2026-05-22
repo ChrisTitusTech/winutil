@@ -18,10 +18,6 @@ if ($Config) {
     $PARAM_CONFIG = $Config
 }
 
-if ($Preset) {
-    $PARAM_PRESET = $Preset
-}
-
 $PARAM_NOUI = $false
 if ($Noui) {
     $PARAM_NOUI = $true
@@ -30,6 +26,11 @@ if ($Noui) {
 $PARAM_OFFLINE = $false
 if ($Offline) {
     $PARAM_OFFLINE = $true
+}
+
+if ($Preset) {
+    $PARAM_PRESET = $Preset
+    $PARAM_NOUI = $true
 }
 
 if ($ExecutionContext.SessionState.LanguageMode -ne 'FullLanguage') {
