@@ -26,9 +26,6 @@ winutil.ps1
 winutil.exe.config
 binary/
 
-# temporary excludes for docs
-.github/site/
-
 # Hugo Files
 docs/public/
 docs/.hugo_build.lock
