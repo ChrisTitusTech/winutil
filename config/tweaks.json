@@ -1342,14 +1342,10 @@
       }
     ],
     "InvokeScript": [
-      "
-      Stop-Process -Name explorer
-      "
+      "Stop-Process -Name explorer"
     ],
     "UndoScript": [
-      "
-      Stop-Process -Name explorer
-      "
+      "Stop-Process -Name explorer"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/showext"
   },
@@ -1370,14 +1366,10 @@
       }
     ],
     "InvokeScript": [
-      "
-      Stop-Process -Name explorer
-      "
+      "Stop-Process -Name explorer"
     ],
     "UndoScript": [
-      "
-      Stop-Process -Name explorer
-      "
+      "Stop-Process -Name explorer"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/hiddenfiles"
   },
@@ -1669,14 +1661,10 @@
       }
     ],
     "InvokeScript": [
-      "
-      Stop-Process -Name explorer
-      "
+      "Stop-Process -Name explorer"
     ],
     "UndoScript": [
-      "
-      Stop-Process -Name explorer
-      "
+      "Stop-Process -Name explorer"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/startmenurecommendations"
   },
@@ -1715,14 +1703,10 @@
       }
     ],
     "InvokeScript": [
-      "
-      Stop-Process -Name explorer
-      "
+      "Stop-Process -Name explorer"
     ],
     "UndoScript": [
-      "
-      Stop-Process -Name explorer
-      "
+      "Stop-Process -Name explorer"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/taskbaralignment"
   },
