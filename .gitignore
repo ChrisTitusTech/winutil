@@ -9,6 +9,7 @@ Microsoft.PowerShell.ConsoleHost.dll
 
 # OS Specific
 desktop.ini
+.DS_Store
 
 # Ignore Generated XAML Files
 xaml/inputApp.xaml
