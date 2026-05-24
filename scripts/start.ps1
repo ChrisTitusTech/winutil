@@ -36,8 +36,9 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 
     $argList = @(
         if ($Config) { "-Config $Config" }
-        if ($Noui) { "-Noui" }
+        if ($Preset) { "-Preset $Preset" }
         if ($Offline) { "-Offline" }
+        if ($Noui) { "-Noui" }
     ) -join " "
 
     $script = if ($PSCommandPath) {
