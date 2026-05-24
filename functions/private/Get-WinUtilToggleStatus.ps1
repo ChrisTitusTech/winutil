@@ -9,7 +9,7 @@ Function Get-WinUtilToggleStatus ([string]$ToggleSwitch) {
     foreach ($regentry in $ToggleSwitchReg) {
 
         if (-not (Test-Path $regentry.Path)) {
-            New-Item -Path $regentry.Path -Force
+            New-Item -Path $regentry.Path -Force | Out-Null
         }
 
         $regstate = (Get-ItemProperty -Path $regentry.Path).$($regentry.Name)
