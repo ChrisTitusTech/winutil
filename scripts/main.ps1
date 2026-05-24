@@ -72,10 +72,13 @@ if ($PARAM_NOUI) {
     Show-CTTLogo
 
     if ($Preset) {
+        # Selects the tweaks from $Preset varible
         Update-WinUtilSelections -flatJson $sync.configs.preset.$Preset
 
+        # Runs selected tweaks from $Preset varible
         Invoke-WinUtilAutoRun
 
+        # Cleanup and exit
         $sync.runspace.Dispose()
         $sync.runspace.Close()
         [System.GC]::Collect()
