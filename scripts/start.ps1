@@ -28,10 +28,6 @@ if ($Offline) {
     $PARAM_OFFLINE = $true
 }
 
-if ($Preset) {
-    $PARAM_NOUI = $true
-}
-
 if ($ExecutionContext.SessionState.LanguageMode -ne 'FullLanguage') {
     Write-Host "WinUtil is unable to run on your system, powershell execution is restricted by security policies" -ForegroundColor Red
     return
