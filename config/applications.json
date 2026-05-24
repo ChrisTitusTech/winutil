@@ -545,7 +545,8 @@
         "content": "IrfanView",
         "description": "IrfanView is a lightweight, fast, and free image viewer and editor. Supports multiple formats, batch processing, and powerful plugins.",
         "link": "https://irfanview.com/",
-        "winget": "IrfanSkiljan.IrfanView"
+        "winget": "IrfanSkiljan.IrfanView",
+        "foss": false
     },
     "itch": {
         "category": "Games",
