@@ -1,5 +1,7 @@
 Function Get-WinUtilToggleStatus {
-    Param($ToggleSwitch)
+    param (
+        [string]$ToggleSwitch
+    )
 
     $ToggleSwitchReg = $sync.configs.tweaks.$ToggleSwitch.registry
 
