@@ -71,8 +71,8 @@ Set-Preferences
 if ($PARAM_NOUI) {
     Show-CTTLogo
 
-    if ($PARAM_PRESET) {
-        Update-WinUtilSelections -flatJson $sync.configs.preset.$PARAM_PRESET
+    if ($Preset) {
+        Update-WinUtilSelections -flatJson $sync.configs.preset.$Preset
 
         Invoke-WinUtilAutoRun
 
