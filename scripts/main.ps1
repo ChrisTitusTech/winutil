@@ -74,7 +74,7 @@ if ($Preset) {
     # Selects the tweaks from $Preset varible
     Update-WinUtilSelections -flatJson $sync.configs.preset.$Preset
 
-    # Runs selected tweaks from $Preset varible
+    # Runs tweaks that were selected by Update-WinUtilSelections
     Invoke-WinUtilAutoRun
 
     # Cleanup and exit
