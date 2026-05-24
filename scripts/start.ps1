@@ -47,12 +47,12 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
         "& ([ScriptBlock]::Create((irm https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1))) $argList"
     }
 
-    $powershellCmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
+    $powershell = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
 
-    if (Get-Command wt.exe -ErrorAction SilentlyContinue) {
+    if (Get-Command -Name wt -ErrorAction SilentlyContinue) {
         Start-Process wt.exe -ArgumentList "$powershellCmd -Command $script" -Verb RunAs
     } else {
-        Start-Process $powershellCmd -ArgumentList "-Command $script" -Verb RunAs
+        Start-Process $powershell -ArgumentList "-Command $script" -Verb RunAs
     }
 
     break
