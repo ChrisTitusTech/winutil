@@ -87,7 +87,6 @@ if ($Preset) {
 
 if ($PARAM_NOUI) {
     Show-CTTLogo
-
     if ($PARAM_CONFIG -and -not [string]::IsNullOrWhiteSpace($PARAM_CONFIG)) {
         Write-Host "Running config file tasks..."
         Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
