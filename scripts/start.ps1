@@ -29,7 +29,6 @@ if ($Offline) {
 }
 
 if ($Preset) {
-    $PARAM_PRESET = $Preset
     $PARAM_NOUI = $true
 }
 
