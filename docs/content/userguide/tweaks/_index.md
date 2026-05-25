@@ -12,6 +12,7 @@ Use the quick-selection buttons at the top of the Tweaks tab to speed up setup:
 
 * **Standard**: Selects the recommended baseline set of tweaks for most users.
 * **Minimal**: Selects a smaller, lower-impact set of common tweaks.
+* **Advanced**: Selects a focused set of safer advanced tweaks. This preset intentionally skips restore point creation and cleanup tasks to avoid long runtime.
 * **Clear**: Clears all currently selected tweaks.
 * **Get Installed Tweaks**: Attempts to detect and select tweaks that are already applied on your system.
 
