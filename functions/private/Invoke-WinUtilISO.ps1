@@ -593,9 +593,6 @@ function Invoke-WinUtilISOExport {
             })
         }
 
-
-            
-            .\oscdimg.exe -u2 -bootdata"$contentsDir\efi\microsoft\boot\efisys.bin" "$contentsDir" "$outputISO"
         try {
             Write-Win11ISOLog "Exporting to ISO: $outputISO"
             SetProgress "Building ISO..." 10
