@@ -1399,45 +1399,48 @@
 
                             <StackPanel Grid.Column="0" Margin="5,5,15,5">
 
-                                <TextBlock FontSize="22"
-                                           FontWeight="Bold"
-                                           Foreground="{DynamicResource MainForegroundColor}"
-                                           Margin="0,0,0,10">
-                                    Windows 11 ISO Creator
-                                </TextBlock>
-
-                                <TextBlock FontSize="{DynamicResource FontSize}"
-                                           Foreground="{DynamicResource MainForegroundColor}"
-                                           TextWrapping="Wrap"
-                                           Margin="0,0,0,8">
-                                    Create a clean and optimized Windows 11 ISO with integrated tweaks, toggles with optional driver injection
-                                </TextBlock>
-
-                                <TextBlock FontSize="{DynamicResource FontSize}"
-                                           Foreground="{DynamicResource MainForegroundColor}"
-                                           TextWrapping="Wrap"
-                                           Margin="0,0,0,18"
-                                           Opacity="0.85">
-                                    Designed for fresh Windows installations using official Microsoft Windows 11 ISO images only.
-                                </TextBlock>
-
-                                <Button Name="WPFWin11ISOCreateButton"
-                                        Content="Create ISO"
-                                        HorizontalAlignment="Left"
-                                        Width="Auto"
-                                        Padding="18,0"
-                                        Height="{DynamicResource ButtonHeight}"/>
-                            </StackPanel>
-
-                            <Border Grid.Column="1"
-                                    Background="{DynamicResource MainBackgroundColor}"
-                                    BorderBrush="{DynamicResource BorderColor}"
-                                    BorderThickness="1"
-                                    CornerRadius="5"
-                                    Margin="5"
-                                    Padding="15">
-
-                                <StackPanel>
+                                <StackPanel Grid.Column="0" Margin="5,5,15,5">
+                
+                                    <TextBlock FontSize="22"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource MainForegroundColor}"
+                                               Margin="0,0,0,10">
+                                        Windows 11 ISO Creator
+                                    </TextBlock>
+                
+                                    <TextBlock FontSize="{DynamicResource FontSize}"
+                                               Foreground="{DynamicResource MainForegroundColor}"
+                                               TextWrapping="Wrap"
+                                               Margin="0,0,0,18"
+                                               Opacity="0.85">
+                                        Create ISO and optionally write to USB (NTFS mode).
+                                    </TextBlock>
+                
+                                    <TextBlock FontSize="{DynamicResource FontSize}"
+                                               Foreground="{DynamicResource MainForegroundColor}"
+                                               Margin="0,0,0,5">
+                                        USB Target Drive
+                                    </TextBlock>
+                
+                                    <ComboBox Name="WPFWin11USBDriveCombo"
+                                              Width="220"
+                                              SelectedIndex="0"
+                                              Margin="0,0,0,10"/>
+                
+                                    <CheckBox Name="WPFWin11ISOToUSBCheckbox"
+                                              Content="Write directly to USB (NTFS)"
+                                              Foreground="{DynamicResource MainForegroundColor}"
+                                              Margin="0,0,0,15"
+                                              IsChecked="False"/>
+                
+                                    <Button Name="WPFWin11ISOCreateButton"
+                                            Content="Create ISO"
+                                            HorizontalAlignment="Left"
+                                            Width="Auto"
+                                            Padding="18,0"
+                                            Height="{DynamicResource ButtonHeight}"/>
+                
+                                </StackPanel>
 
                                     <TextBlock FontSize="{DynamicResource FontSize}"
                                                FontWeight="Bold"
