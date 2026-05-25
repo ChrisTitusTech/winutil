@@ -599,13 +599,13 @@ function Invoke-WinUtilISOExport {
      
             Invoke-WebRequest -Uri https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe -OutFile "oscdimg.exe"
 
-            $bootData = "$contentsDir\efi\microsoft\boot\efisys.bin"
-            $oscdimgArgs = @("-u2", "-bootdata:$bootData", "`"$contentsDir`"", "`"$outputISO`"")
+            $bootData = "2#p0,e,b`"$contentsDir\boot\etfsboot.com`"#pEF,e,b`"$contentsDir\efi\microsoft\boot\efisys.bin`""
+            $oscdimgArgs = @("-m", "-o", "-u2", "-udfver102", "-bootdata:$bootData", "-l`"CTOS_MODIFIED`"", "`"$contentsDir`"", "`"$outputISO`"")
 
             Write-Win11ISOLog "Running oscdimg..."
 
             $psi = [System.Diagnostics.ProcessStartInfo]::new()
-            $psi.FileName               = $oscdimg
+            $psi.FileName               = "oscdimg.exe"
             $psi.Arguments              = $oscdimgArgs -join " "
             $psi.RedirectStandardOutput = $true
             $psi.RedirectStandardError  = $true
