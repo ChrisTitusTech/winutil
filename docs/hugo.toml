@@ -56,7 +56,7 @@ weight = 2
 parent = "help"
 
 [[menu.main]]
-identifier = "Forums"
+identifier = "forums"
 name = "Forums"
 url = "https://forum.christitus.com/"
 weight = 3
