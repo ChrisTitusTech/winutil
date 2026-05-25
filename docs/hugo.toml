@@ -56,6 +56,13 @@ weight = 2
 parent = "help"
 
 [[menu.main]]
+identifier = "Forums"
+name = "Forums"
+url = "https://forum.christitus.com/"
+weight = 3
+parent = "help"
+
+[[menu.main]]
 name = "Store"
 url = "https://christitus.com/downloads/"
 weight = 5
