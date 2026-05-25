@@ -517,7 +517,10 @@ $sync["FontScalingApplyButton"].Add_Click({
 
 # Win11ISO Tab button handler
 $sync["WPFWin11ISOCreateButton"].Add_Click({
-    Invoke-WinUtilISO
+    $driverSelection = $sync["WPFWin11USBDriverCombo"].SelectedItem.Content
+    $toUSB = $sync["WPFWin11ISOToUSBCheckbox"].IsChecked
+
+    Invoke-WinUtilISO -UsbDriver $driverSelection -WriteToUSB $toUSB
 })
 
 $sync["Form"].ShowDialog() | Out-Null
