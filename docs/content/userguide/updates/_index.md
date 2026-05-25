@@ -7,6 +7,8 @@ next: /userguide/automation/
 
 Winutil provides three update modes so you can choose how aggressively Windows Update is managed on your system:
 
+{{< image src="images/updates-tab-new" alt="Updates tab in Winutil" >}}
+
 - **Default (Out of the Box) Settings**: Restores standard Windows Update behavior
 - **Security (Recommended) Settings**: Prioritizes stability while still receiving security updates
 - **Disable ALL Updates**: Turns off Windows Update entirely and should only be used with extreme caution
