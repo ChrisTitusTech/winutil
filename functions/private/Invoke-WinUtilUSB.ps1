@@ -8,6 +8,18 @@ function Invoke-WinUtilUSB ($IsoPath, $UsbDriveLetter) {
     Mount-DiskImage -ImagePath $IsoPath
     $Drive = (Get-CimInstance Win32_CDROMDrive).Drive
 
+    $result = [System.Windows.Forms.MessageBox]::Show(
+        "This will ERASE all data on $UsbDriveLetter. Continue?",
+        "USB Format Confirmation",
+        [System.Windows.Forms.MessageBoxButtons]::YesNo,
+        [System.Windows.Forms.MessageBoxIcon]::Warning
+    )
+
+    if ($result -ne [System.Windows.Forms.DialogResult]::Yes) {
+        Write-Host "USB format cancelled"
+        return
+    }
+
     Write-Host "Formatting USB..."
     Format-Volume -DriveLetter $UsbDriveLetter.TrimEnd(":") -FileSystem NTFS -Force
 
