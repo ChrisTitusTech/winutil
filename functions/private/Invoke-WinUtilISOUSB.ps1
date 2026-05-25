@@ -4,6 +4,8 @@ function Invoke-WinUtilISOUSB ($IsoPath, $UsbDriveLetter) {
         return
     }
 
+    Write-Host "Starting USB modifcations"
+
     Write-Host "Mounting ISO..."
 
     Mount-DiskImage -ImagePath $IsoPath
@@ -29,6 +31,7 @@ function Invoke-WinUtilISOUSB ($IsoPath, $UsbDriveLetter) {
     Copy-Item -Path "$isoDrive\*" -Destination "$UsbDriveLetter\" -Recurse -Force
 
     Dismount-DiskImage -ImagePath $IsoPath
+    Remove-Item -Path $IsoPath
 
     Write-Host "USB creation complete" -ForegroundColor Green
 }
