@@ -593,18 +593,62 @@ function Invoke-WinUtilISOExport {
             })
         }
 
+
+            
+            .\oscdimg.exe -u2 -bootdata"$contentsDir\efi\microsoft\boot\efisys.bin" "$contentsDir" "$outputISO"
         try {
             Write-Win11ISOLog "Exporting to ISO: $outputISO"
             SetProgress "Building ISO..." 10
-
+     
             Invoke-WebRequest -Uri https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe -OutFile "oscdimg.exe"
-            .\oscdimg.exe -u2 -bootdata"$contentsDir\efi\microsoft\boot\efisys.bin" "$contentsDir" "$outputISO"
 
-            SetProgress "ISO exported" 100
-            Write-Win11ISOLog "ISO exported successfully: $outputISO"
-            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                [System.Windows.MessageBox]::Show("ISO exported successfully!`n`n$outputISO", "Export Complete", "OK", "Info")
-            })
+            $bootData = "$contentsDir\efi\microsoft\boot\efisys.bin"
+            $oscdimgArgs = @("-u2", "-bootdata:$bootData", "`"$contentsDir`"", "`"$outputISO`"")
+
+            Write-Win11ISOLog "Running oscdimg..."
+
+            $psi = [System.Diagnostics.ProcessStartInfo]::new()
+            $psi.FileName               = $oscdimg
+            $psi.Arguments              = $oscdimgArgs -join " "
+            $psi.RedirectStandardOutput = $true
+            $psi.RedirectStandardError  = $true
+            $psi.UseShellExecute        = $false
+            $psi.CreateNoWindow         = $true
+
+            $proc = [System.Diagnostics.Process]::new()
+            $proc.StartInfo = $psi
+            $proc.Start()
+
+            # Stream stdout line-by-line as oscdimg runs
+            while (-not $proc.StandardOutput.EndOfStream) {
+                $line = $proc.StandardOutput.ReadLine()
+                if ($line.Trim()) { Write-Win11ISOLog $line }
+            }
+
+            $proc.WaitForExit()
+
+            Remove-Item -Path "oscdimg.exe"
+
+            # Flush any stderr after process exits
+            $stderr = $proc.StandardError.ReadToEnd()
+            foreach ($line in ($stderr -split "`r?`n")) {
+                if ($line.Trim()) { Write-Win11ISOLog "[stderr]$line" }
+            }
+
+            if ($proc.ExitCode -eq 0) {
+                SetProgress "ISO exported" 100
+                Write-Win11ISOLog "ISO exported successfully: $outputISO"
+                $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+                    [System.Windows.MessageBox]::Show("ISO exported successfully!`n`n$outputISO", "Export Complete", "OK", "Info")
+                })
+            } else {
+                Write-Win11ISOLog "oscdimg exited with code $($proc.ExitCode)."
+                $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+                    [System.Windows.MessageBox]::Show(
+                        "oscdimg exited with code $($proc.ExitCode).`nCheck the status log for details.",
+                        "Export Error", "OK", "Error")
+                })
+            }
         } catch {
             Write-Win11ISOLog "ERROR during ISO export: $_"
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
