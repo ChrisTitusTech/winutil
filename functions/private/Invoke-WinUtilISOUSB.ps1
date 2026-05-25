@@ -1,4 +1,4 @@
-function Invoke-WinUtilUSB ($IsoPath, $UsbDriveLetter) {
+function Invoke-WinUtilISOUSB ($IsoPath, $UsbDriveLetter) {
     if (-not $UsbDriveLetter) {
         Write-Host "No USB drive selected"
         return
