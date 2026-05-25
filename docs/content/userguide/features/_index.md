@@ -7,6 +7,8 @@ next: /userguide/updates/
 
 Use the **Features** and **Fixes** sections to install optional Windows components and run common repair tasks.
 
+{{< image src="images/config-tab-new" alt="Config tab with features and fixes" >}}
+
 ## Windows Features
 
 Install common **Windows features** by selecting the feature checkboxes and clicking **Install Features**.
