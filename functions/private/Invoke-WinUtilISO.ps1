@@ -23,9 +23,9 @@ Function Invoke-WinUtilISO {
     Invoke-WebRequest -Uri https://github.com/GabiNun2/winutil/raw/refactor-win11creator/tools/autounattend.xml -OutFile "Sources\autounattend.xml"
     Invoke-WebRequest -Uri https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe -OutFile "oscdimg.exe"
     
-    Write-Host "Packing files into a iso file..."
-    
     $path = Split-Path -Path $dialog.FileName
+
+    Write-Host "Packing files into $path\Win11Creator.iso..."
     .\oscdimg.exe -u2 -b"Sources\efi\microsoft\boot\efisys.bin" "Sources" "$path\Win11Creator.iso"
 
     Write-Host "Cleaning up..."
