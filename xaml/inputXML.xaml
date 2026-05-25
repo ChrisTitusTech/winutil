@@ -1383,9 +1383,10 @@
                 <Grid Name="Win11ISOPanel" Margin="{DynamicResource TabContentMargin}" Background="Transparent">
 
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>  <!-- Main Content -->
                     </Grid.RowDefinitions>
 
+                    <!-- Main Content -->
                     <StackPanel Grid.Row="0">
 
                         <Grid Margin="5"
@@ -1397,6 +1398,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
+                            <!-- Left: Description -->
                             <StackPanel Grid.Column="0" Margin="5,5,15,5">
 
                                 <TextBlock FontSize="22"
@@ -1428,10 +1430,56 @@
                                         Padding="18,0"
                                         Height="{DynamicResource ButtonHeight}"/>
                             </StackPanel>
+
+                            <!-- Right: Info Panel -->
+                            <Border Grid.Column="1"
+                                    Background="{DynamicResource MainBackgroundColor}"
+                                    BorderBrush="{DynamicResource BorderColor}"
+                                    BorderThickness="1"
+                                    CornerRadius="5"
+                                    Margin="5"
+                                    Padding="15">
+
+                                <StackPanel>
+
+                                    <TextBlock FontSize="{DynamicResource FontSize}"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource MainForegroundColor}"
+                                               Margin="0,0,0,10">
+                                        Features
+                                    </TextBlock>
+
+                                    <TextBlock FontSize="{DynamicResource FontSize}"
+                                               Foreground="{DynamicResource MainForegroundColor}"
+                                               TextWrapping="Wrap"
+                                               Margin="0,0,0,6">
+                                        • Automated Windows image customization
+                                    </TextBlock>
+
+                                    <TextBlock FontSize="{DynamicResource FontSize}"
+                                               Foreground="{DynamicResource MainForegroundColor}"
+                                               TextWrapping="Wrap"
+                                               Margin="0,0,0,6">
+                                        • Driver injection support
+                                    </TextBlock>
+
+                                    <TextBlock FontSize="{DynamicResource FontSize}"
+                                               Foreground="{DynamicResource MainForegroundColor}"
+                                               TextWrapping="Wrap"
+                                               Margin="0,0,0,6">
+                                        • Runs winutil tweaks and toggles automaticly creating a clean desktop environment for advance and regular users
+                                    </TextBlock>
+
+                                </StackPanel>
+                            </Border>
+
                         </Grid>
+
                     </StackPanel>
+
                 </Grid>
             </TabItem>
+
         </TabControl>
     </Grid>
 </Window>
