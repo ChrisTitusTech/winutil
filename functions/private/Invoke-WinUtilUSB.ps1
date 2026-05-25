@@ -5,9 +5,8 @@ function Invoke-WinUtilUSB ($IsoPath, $UsbDriveLetter) {
     }
 
     Write-Host "Mounting ISO..."
-
-    $mounted = Mount-DiskImage -ImagePath $IsoPath
-    $isoDrive = (Get-CimInstance Win32_CDROMDrive | Select-Object -First 1).Drive
+    $mount = Mount-DiskImage -ImagePath $IsoPath -PassThru
+    $isoDrive = ($mount | Get-Volume).DriveLetter + ":"
 
     Write-Host "Formatting USB..."
     Format-Volume -DriveLetter $UsbDriveLetter.TrimEnd(":") -FileSystem NTFS -Force
