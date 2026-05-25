@@ -12,6 +12,9 @@ next: /userguide/features/
 * **Select Tweaks**: Choose the tweaks you want to apply. You can use the presets available at the top for convenience.
 * **Run Tweaks**: After selecting the desired tweaks, click **Run Tweaks** at the bottom of the screen.
 
+> [!NOTE]
+> To see what each preset includes, view [preset.json](https://github.com/ChrisTitusTech/winutil/blob/main/config/preset.json).
+
 ### Undo Tweaks
 * **Open the Tweaks tab**: Go to the **Tweaks** tab located next to **Install**.
 * **Select Tweaks to Remove**: Choose the tweaks you want to disable or remove.
