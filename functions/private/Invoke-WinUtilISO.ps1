@@ -1,16 +1,7 @@
-Function Invoke-WinUtilISO {
-    Write-Host "Please choose you're iso file"
-
-    $dialog = New-Object System.Windows.Forms.OpenFileDialog
-    $dialog.Filter = "ISO files (*.iso)|*.iso"
-    $dialog.Title = "Select Windows ISO"
-    $dialog.ShowDialog()
-    
-    if (-not $dialog.FileName) { return }
-
+Function Invoke-WinUtilISO ($IsoPath) {
     Write-Host "Mounting iso file..."
 
-    Mount-DiskImage -ImagePath $dialog.FileName
+    Mount-DiskImage -ImagePath $IsoPath
     $Drive = (Get-CimInstance Win32_CDROMDrive).Drive
     
     Write-Host "Copying files..."
@@ -23,7 +14,7 @@ Function Invoke-WinUtilISO {
     Invoke-WebRequest -Uri https://github.com/GabiNun2/winutil/raw/refactor-win11creator/tools/autounattend.xml -OutFile "Sources\autounattend.xml"
     Invoke-WebRequest -Uri https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe -OutFile "oscdimg.exe"
     
-    $path = Split-Path -Path $dialog.FileName
+    $path = Split-Path -Path $IsoPath
 
     Write-Host "Packing files into $path\Win11Creator.iso..."
     .\oscdimg.exe -u2 -b"Sources\efi\microsoft\boot\efisys.bin" "Sources" "$path\Win11Creator.iso"
