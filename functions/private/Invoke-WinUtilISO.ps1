@@ -33,5 +33,5 @@ Function Invoke-WinUtilISO {
     Remove-Item -Path "Sources", "oscdimg.exe" -Recurse -Force
     Dismount-DiskImage -ImagePath $dialog.FileName
     
-    Write-Host "Done! iso file located at $path\Win11Creator.iso"
+    Write-Host "Done! iso file located at $path\Win11Creator.iso" -ForegroundColor Green
 }
