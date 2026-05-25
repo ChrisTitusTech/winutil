@@ -302,9 +302,6 @@ function Invoke-WinUtilISOModify {
             $localWim = Join-Path $isoContents "sources\install.wim"
             Log "Unused editions removed. install.wim now contains only '$selectedEditionName'."
 
-            SetProgress "Hydrating WIM metadata..." 76
-            Invoke-WinUtilWimMetadataHydration -ImagePath $localWim -EditionName $selectedEditionName -Logger ${function:Log}
-
             SetProgress "Dismounting source ISO..." 80
             Log "Dismounting original ISO..."
             Dismount-DiskImage -ImagePath $isoPath
