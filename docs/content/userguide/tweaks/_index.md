@@ -7,6 +7,14 @@ next: /userguide/features/
 
 {{< image src="images/tweaks-tab-new" alt="Image of Tweaks Tab" >}}
 
+### Recommended Selections
+Use the quick-selection buttons at the top of the Tweaks tab to speed up setup:
+
+* **Standard**: Selects the recommended baseline set of tweaks for most users.
+* **Minimal**: Selects a smaller, lower-impact set of common tweaks.
+* **Clear**: Clears all currently selected tweaks.
+* **Get Installed Tweaks**: Attempts to detect and select tweaks that are already applied on your system.
+
 ### Run Tweaks
 * **Open the Tweaks tab**: Navigate to the **Tweaks** tab in the application.
 * **Select Tweaks**: Choose the tweaks you want to apply. You can use the presets available at the top for convenience.
