@@ -1397,8 +1397,8 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <!-- LEFT -->
-                            <StackPanel Grid.Column="0" Margin="5">
+                            <!-- LEFT COLUMN -->
+                            <StackPanel Grid.Column="0" Margin="5,5,15,5">
 
                                 <TextBlock FontSize="22"
                                            FontWeight="Bold"
@@ -1441,7 +1441,7 @@
 
                             </StackPanel>
 
-                            <!-- RIGHT -->
+                            <!-- RIGHT COLUMN (your original content preserved) -->
                             <Border Grid.Column="1"
                                     Background="{DynamicResource MainBackgroundColor}"
                                     BorderBrush="{DynamicResource BorderColor}"
@@ -1470,17 +1470,18 @@
                                                Foreground="{DynamicResource MainForegroundColor}"
                                                TextWrapping="Wrap"
                                                Margin="0,0,0,6">
-                                        • NTFS USB creation support
+                                        • Driver injection support
                                     </TextBlock>
 
                                     <TextBlock FontSize="{DynamicResource FontSize}"
                                                Foreground="{DynamicResource MainForegroundColor}"
                                                TextWrapping="Wrap"
                                                Margin="0,0,0,6">
-                                        • Clean Windows 11 deployment workflow
+                                        • Runs winutil tweaks and toggles automatically creating a clean desktop environment for advanced and regular users
                                     </TextBlock>
 
                                 </StackPanel>
+
                             </Border>
 
                         </Grid>
