@@ -1380,112 +1380,115 @@
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Win11ISO" Visibility="Collapsed" Name="WPFTab5">
-            <Grid Name="Win11ISOPanel" Margin="{DynamicResource TabContentMargin}" Background="Transparent">
+                <Grid Name="Win11ISOPanel" Margin="{DynamicResource TabContentMargin}" Background="Transparent">
 
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-        
-                <!-- Main Content -->
-                <StackPanel Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>  <!-- Main Content -->
+                    </Grid.RowDefinitions>
 
-            <Grid Margin="5"
-                  HorizontalAlignment="Left"
-                  MinWidth="{DynamicResource ButtonWidth}">
+                    <!-- Main Content -->
+                    <StackPanel Grid.Row="0">
 
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+                        <Grid Margin="5"
+                              HorizontalAlignment="Left"
+                              MinWidth="{DynamicResource ButtonWidth}">
 
-                <!-- Left: Description -->
-                <StackPanel Grid.Column="0" Margin="5,5,15,5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-                    <TextBlock FontSize="22"
-                               FontWeight="Bold"
-                               Foreground="{DynamicResource MainForegroundColor}"
-                               Margin="0,0,0,10">
-                        Windows 11 ISO Creator
-                    </TextBlock>
+                            <!-- Left: Description -->
+                            <StackPanel Grid.Column="0" Margin="5,5,15,5">
 
-                    <TextBlock FontSize="{DynamicResource FontSize}"
-                               Foreground="{DynamicResource MainForegroundColor}"
-                               TextWrapping="Wrap"
-                               Margin="0,0,0,8">
-                        Create a clean and optimized Windows 11 ISO with integrated
-                        tweaks, optional driver support, and streamlined deployment settings.
-                    </TextBlock>
+                                <TextBlock FontSize="22"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource MainForegroundColor}"
+                                           Margin="0,0,0,10">
+                                    Windows 11 ISO Creator
+                                </TextBlock>
 
-                    <TextBlock FontSize="{DynamicResource FontSize}"
-                               Foreground="{DynamicResource MainForegroundColor}"
-                               TextWrapping="Wrap"
-                               Margin="0,0,0,18"
-                               Opacity="0.85">
-                        Designed for fresh Windows installations using official Microsoft
-                        Windows 11 ISO images only.
-                    </TextBlock>
+                                <TextBlock FontSize="{DynamicResource FontSize}"
+                                           Foreground="{DynamicResource MainForegroundColor}"
+                                           TextWrapping="Wrap"
+                                           Margin="0,0,0,8">
+                                    Create a clean and optimized Windows 11 ISO with integrated tweaks,
+                                    optional driver support, and streamlined deployment settings.
+                                </TextBlock>
 
-                    <Button Name="WPFWin11ISOCreateButton"
-                            Content="Create ISO"
-                            HorizontalAlignment="Left"
-                            Width="Auto"
-                            Padding="18,0"
-                            Height="{DynamicResource ButtonHeight}"/>
-                </StackPanel>
+                                <TextBlock FontSize="{DynamicResource FontSize}"
+                                           Foreground="{DynamicResource MainForegroundColor}"
+                                           TextWrapping="Wrap"
+                                           Margin="0,0,0,18"
+                                           Opacity="0.85">
+                                    Designed for fresh Windows installations using official Microsoft Windows 11 ISO images only.
+                                </TextBlock>
 
-                <!-- Right: Info Panel -->
-                <Border Grid.Column="1"
-                        Background="{DynamicResource MainBackgroundColor}"
-                        BorderBrush="{DynamicResource BorderColor}"
-                        BorderThickness="1"
-                        CornerRadius="5"
-                        Margin="5"
-                        Padding="15">
+                                <Button Name="WPFWin11ISOCreateButton"
+                                        Content="Create ISO"
+                                        HorizontalAlignment="Left"
+                                        Width="Auto"
+                                        Padding="18,0"
+                                        Height="{DynamicResource ButtonHeight}"/>
+                            </StackPanel>
 
-                    <StackPanel>
+                            <!-- Right: Info Panel -->
+                            <Border Grid.Column="1"
+                                    Background="{DynamicResource MainBackgroundColor}"
+                                    BorderBrush="{DynamicResource BorderColor}"
+                                    BorderThickness="1"
+                                    CornerRadius="5"
+                                    Margin="5"
+                                    Padding="15">
 
-                        <TextBlock FontSize="{DynamicResource FontSize}"
-                                   FontWeight="Bold"
-                                   Foreground="{DynamicResource MainForegroundColor}"
-                                   Margin="0,0,0,10">
-                            Features
-                        </TextBlock>
+                                <StackPanel>
 
-                        <TextBlock FontSize="{DynamicResource FontSize}"
-                                   Foreground="{DynamicResource MainForegroundColor}"
-                                   TextWrapping="Wrap"
-                                   Margin="0,0,0,6">
-                            • Automated Windows image customization
-                        </TextBlock>
+                                    <TextBlock FontSize="{DynamicResource FontSize}"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource MainForegroundColor}"
+                                               Margin="0,0,0,10">
+                                        Features
+                                    </TextBlock>
 
-                        <TextBlock FontSize="{DynamicResource FontSize}"
-                                   Foreground="{DynamicResource MainForegroundColor}"
-                                   TextWrapping="Wrap"
-                                   Margin="0,0,0,6">
-                            • Driver integration support
-                        </TextBlock>
+                                    <TextBlock FontSize="{DynamicResource FontSize}"
+                                               Foreground="{DynamicResource MainForegroundColor}"
+                                               TextWrapping="Wrap"
+                                               Margin="0,0,0,6">
+                                        • Automated Windows image customization
+                                    </TextBlock>
 
-                        <TextBlock FontSize="{DynamicResource FontSize}"
-                                   Foreground="{DynamicResource MainForegroundColor}"
-                                   TextWrapping="Wrap"
-                                   Margin="0,0,0,6">
-                            • Optimized for clean deployments
-                        </TextBlock>
+                                    <TextBlock FontSize="{DynamicResource FontSize}"
+                                               Foreground="{DynamicResource MainForegroundColor}"
+                                               TextWrapping="Wrap"
+                                               Margin="0,0,0,6">
+                                        • Driver integration support
+                                    </TextBlock>
 
-                        <TextBlock FontSize="{DynamicResource FontSize}"
-                                   Foreground="{DynamicResource MainForegroundColor}"
-                                   TextWrapping="Wrap"
-                                   Margin="0,10,0,0"
-                                   Opacity="0.85">
-                            Recommended for advanced users creating customized Windows 11 installation media.
-                        </TextBlock>
+                                    <TextBlock FontSize="{DynamicResource FontSize}"
+                                               Foreground="{DynamicResource MainForegroundColor}"
+                                               TextWrapping="Wrap"
+                                               Margin="0,0,0,6">
+                                        • Optimized for clean deployments
+                                    </TextBlock>
+
+                                    <TextBlock FontSize="{DynamicResource FontSize}"
+                                               Foreground="{DynamicResource MainForegroundColor}"
+                                               TextWrapping="Wrap"
+                                               Margin="0,10,0,0"
+                                               Opacity="0.85">
+                                        Recommended for advanced users creating customized Windows installation media.
+                                    </TextBlock>
+
+                                </StackPanel>
+                            </Border>
+
+                        </Grid>
 
                     </StackPanel>
-                </Border>
 
-            </Grid>
+                </Grid>
+            </TabItem>
 
-        </StackPanel>
-
+        </TabControl>
     </Grid>
-</TabItem>
+</Window>
