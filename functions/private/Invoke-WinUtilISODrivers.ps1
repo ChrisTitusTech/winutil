@@ -1,7 +1,8 @@
 function Invoke-WinUtilISODrivers {
 
     param(
-        [string]$SourcePath
+        [string]$SourcePath,
+        [int]$Index
     )
 
     $exportPath = "$env:TEMP\Win11Drivers"
@@ -13,7 +14,6 @@ function Invoke-WinUtilISODrivers {
     New-Item -ItemType Directory -Path $exportPath -Force | Out-Null
 
     Write-Host "Exporting system drivers..."
-
     Export-WindowsDriver -Online -Destination $exportPath
 
     $wimPath = "$SourcePath\sources\install.wim"
@@ -23,27 +23,27 @@ function Invoke-WinUtilISODrivers {
         return
     }
 
-    $images = Get-WindowsImage -ImagePath $wimPath
+    $mountDir = "$env:TEMP\wim_$Index"
 
-    foreach ($img in $images) {
-
-        $mountDir = "$env:TEMP\wim_$($img.ImageIndex)"
-        New-Item -ItemType Directory -Path $mountDir -Force | Out-Null
-
-        Write-Host "Mounting index $($img.ImageIndex)..."
-
-        Mount-WindowsImage -ImagePath $wimPath -Index $img.ImageIndex -Path $mountDir
-
-        Write-Host "Injecting drivers..."
-
-        Add-WindowsDriver -Path $mountDir -Driver $exportPath -Recurse
-
-        Write-Host "Committing changes..."
-
-        Dismount-WindowsImage -Path $mountDir -Save
-
+    if (Test-Path $mountDir) {
         Remove-Item $mountDir -Recurse -Force
     }
+
+    New-Item -ItemType Directory -Path $mountDir -Force | Out-Null
+
+    Write-Host "Mounting WIM index $Index..."
+
+    Mount-WindowsImage -ImagePath $wimPath -Index $Index -Path $mountDir
+
+    Write-Host "Injecting drivers..."
+
+    Add-WindowsDriver -Path $mountDir -Driver $exportPath -Recurse
+
+    Write-Host "Committing changes..."
+
+    Dismount-WindowsImage -Path $mountDir -Save
+
+    Remove-Item $mountDir -Recurse -Force
 
     Write-Host "Driver injection complete"
 }
