@@ -565,7 +565,6 @@ function Invoke-WinUtilISOExport {
 
     if ($dlg.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
     $outputISO = $dlg.FileName
-    }
 
     $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $false
 
