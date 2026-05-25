@@ -20,7 +20,8 @@ Function Invoke-WinUtilISO {
 
     Write-Host "Downloading oscdimg.exe and injecting autounattend.xml..."
 
-    Invoke-WebRequest -Uri https://github.com/GabiNun2/test/raw/main/autounattend.xml -OutFile "Sources\autounattend.xml"
+    # Invoke-WebRequest -Uri https://github.com/ChrisTitusTech/winutil/raw/main/tools/autounattend.xml -OutFile "Sources\autounattend.xml" uncomment me and delete the next line before merging
+    Invoke-WebRequest -Uri https://github.com/GabiNun2/winutil/raw/refactor-win11creator/tools/autounattend.xml -OutFile "Sources\autounattend.xml"
     Invoke-WebRequest -Uri https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe -OutFile "oscdimg.exe"
     
     Write-Host "Packing files into a iso file..."
