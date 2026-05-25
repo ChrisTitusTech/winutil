@@ -571,7 +571,7 @@ $sync["WPFWin11ISOCreateButton"].Add_Click({
 
         if ($selected) {
             $index = [int]($selected -split " - ")[0]
-            Invoke-WinUtilISODrivers -SourcePath "Sources" -Index $index
+            Invoke-WinUtilISODrivers -Index $index
         }
     }
 
