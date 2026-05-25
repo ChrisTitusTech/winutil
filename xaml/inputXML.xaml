@@ -1428,16 +1428,6 @@
                                         Padding="18,0"
                                         Height="{DynamicResource ButtonHeight}"/>
                             </StackPanel>
-
-                            <Border Grid.Column="1"
-                                    Background="{DynamicResource MainBackgroundColor}"
-                                    BorderBrush="{DynamicResource BorderColor}"
-                                    BorderThickness="1"
-                                    CornerRadius="5"
-                                    Margin="5"
-                                    Padding="15">
-                            </Border>
-
                         </Grid>
                     </StackPanel>
                 </Grid>
