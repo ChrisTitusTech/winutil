@@ -538,6 +538,10 @@ $sync["WPFWin11ISOCreateButton"].Add_Click({
 
     $isoPath = Invoke-WinUtilISO | Select-Object -Last 1
 
+    if ($sync["WPFWin11EnableDriversCheckbox"].IsChecked) {
+        Add-Win11DriversFromSystem -SourcePath "Sources"
+    }
+
     if ($writeToUSB -and $isoPath) {
         Invoke-WinUtilISOUSB -IsoPath $isoPath -UsbDriveLetter $usbDrive
     }
