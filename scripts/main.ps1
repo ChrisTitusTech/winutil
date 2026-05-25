@@ -536,7 +536,7 @@ $sync["WPFWin11ISOCreateButton"].Add_Click({
         $usbDrive = $null
     }
 
-    $isoPath = Invoke-WinUtilISO
+    $isoPath = Invoke-WinUtilISO | Select-Object -Last 1
 
     if ($writeToUSB -and $isoPath) {
         Invoke-WinUtilISOUSB -IsoPath $isoPath -UsbDriveLetter $usbDrive
