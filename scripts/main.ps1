@@ -554,26 +554,15 @@ $sync["LoadWin11WimIndexes"] = {
 }
 
 $sync["WPFWin11ISOCreateButton"].Add_Click({
-
     $usbDrive = $sync["WPFWin11USBDriveCombo"].SelectedItem
-
-    if ($usbDrive -eq "None") {
-        $usbDrive = $null
-    }
+    if ($usbDrive -eq "None") { $usbDrive = $null }
 
     $isoPath = Invoke-WinUtilISO | Select-Object -Last 1
 
     & $sync["LoadWin11WimIndexes"]
 
-    if ($sync["WPFWin11EnableDriversCheckbox"].IsChecked) {
-
-        $selected = $sync["WPFWin11WimIndexCombo"].SelectedItem
-
-        if ($selected) {
-            $index = [int]($selected -split " - ")[0]
-            Invoke-WinUtilISODrivers -Index $index
-        }
-    }
+    $sync["WPFWin11EnableDriversCheckbox"].IsEnabled = $true
+    $sync["WPFWin11WimIndexCombo"].IsEnabled = $true
 
     if ($sync["WPFWin11ISOToUSBCheckbox"].IsChecked) {
         Invoke-WinUtilISOUSB -IsoPath $isoPath -UsbDriveLetter $usbDrive
