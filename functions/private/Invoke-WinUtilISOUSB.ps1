@@ -5,8 +5,9 @@ function Invoke-WinUtilISOUSB ($IsoPath, $UsbDriveLetter) {
     }
 
     Write-Host "Mounting ISO..."
+
     Mount-DiskImage -ImagePath $IsoPath
-    $Drive = (Get-CimInstance Win32_CDROMDrive).Drive
+    $isoDrive = (Get-CimInstance Win32_CDROMDrive).Drive
 
     $result = [System.Windows.Forms.MessageBox]::Show(
         "This will ERASE all data on $UsbDriveLetter. Continue?",
@@ -17,6 +18,7 @@ function Invoke-WinUtilISOUSB ($IsoPath, $UsbDriveLetter) {
 
     if ($result -ne [System.Windows.Forms.DialogResult]::Yes) {
         Write-Host "USB format cancelled"
+        Dismount-DiskImage -ImagePath $IsoPath
         return
     }
 
