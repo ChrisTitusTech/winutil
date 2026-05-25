@@ -1,26 +1,11 @@
-function Invoke-WinUtilISODrivers {
-
-    param(
-        [string]$SourcePath,
-        [int]$Index
-    )
-
-    $wimPath = "$SourcePath\sources\install.wim"
-    $esdPath = "$SourcePath\sources\install.esd"
-
-    if (-not (Test-Path $wimPath) -and (Test-Path $esdPath)) {
-
-        Export-WindowsImage `
-            -SourceImagePath $esdPath `
-            -SourceIndex $Index `
-            -DestinationImagePath $wimPath `
-            -CompressionType Fast
-    }
+function Invoke-WinUtilISODrivers ($Index) {
+    $wimPath = "Source\sources\install.wim"
+    $esdPath = "Source\sources\install.esd"
 
     if (-not (Test-Path $wimPath)) {
-        Write-Host "No image found"
-        return
+        Export-WindowsImage -SourceImagePath $esdPath -SourceIndex $Index -DestinationImagePath $wimPath -CompressionType Fast
     }
+
 
     $exportPath = "$env:TEMP\drivers"
 
