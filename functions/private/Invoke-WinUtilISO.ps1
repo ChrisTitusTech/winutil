@@ -14,12 +14,9 @@ function Write-Win11ISOLog {
 }
 
 function Invoke-WinUtilISOBrowse {
-    Add-Type -AssemblyName System.Windows.Forms
-
     $dlg = [System.Windows.Forms.OpenFileDialog]::new()
     $dlg.Title            = "Select Windows 11 ISO"
     $dlg.Filter           = "ISO files (*.iso)|*.iso|All files (*.*)|*.*"
-    $dlg.InitialDirectory = [System.Environment]::GetFolderPath("Desktop")
 
     if ($dlg.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
 
@@ -34,7 +31,7 @@ function Invoke-WinUtilISOBrowse {
     $sync["WPFWin11ISOModifySection"].Visibility      = "Collapsed"
     $sync["WPFWin11ISOOutputSection"].Visibility      = "Collapsed"
 
-    Write-Win11ISOLog "ISO selected: $isoPath  ($fileSizeGB GB)"
+    Write-Win11ISOLog "ISO selected: $isoPath ($fileSizeGB GB)"
 }
 
 function Invoke-WinUtilISOMountAndVerify {
@@ -51,9 +48,7 @@ function Invoke-WinUtilISOMountAndVerify {
     try {
         Mount-DiskImage -ImagePath $isoPath
 
-        do {
-            Start-Sleep -Milliseconds 500
-        } until ((Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter)
+        do { Start-Sleep -Milliseconds 500 } until ((Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter)
 
         $driveLetter = (Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter + ":"
         Write-Win11ISOLog "Mounted at drive $driveLetter"
