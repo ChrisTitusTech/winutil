@@ -8,6 +8,8 @@ prev: /userguide/automation/
 
 Winutil includes a built-in **Win11 Creator** tool that lets you take an official Windows 11 ISO and produce a customized, debloated version. The resulting image can remove telemetry, bypass hardware requirement checks, and enable local account setup out of the box. You can export the result as a new ISO file or write it directly to a USB drive.
 
+{{< image src="images/win11creator-tab-new" alt="Win11 Creator tab in Winutil" >}}
+
 > [!IMPORTANT]
 > You need an **official Windows 11 ISO** from [Microsoft's website](https://www.microsoft.com/en-us/software-download/windows11) before starting. Custom, modified, or non-official ISOs are not supported. The process uses ~10–15 GB of temporary disk space, so make sure you have room.
 
