@@ -1,13 +1,12 @@
-function Invoke-WinUtilUSB ($UsbDriveLetter) {
+function Invoke-WinUtilUSB ($IsoPath, $UsbDriveLetter) {
     if (-not $UsbDriveLetter) {
         Write-Host "No USB drive selected"
         return
     }
 
-    $isoPath = Invoke-WinUtilISO
-
     Write-Host "Mounting ISO..."
-    Mount-DiskImage -ImagePath $IsoPath
+
+    $mounted = Mount-DiskImage -ImagePath $IsoPath
     $isoDrive = (Get-CimInstance Win32_CDROMDrive | Select-Object -First 1).Drive
 
     Write-Host "Formatting USB..."
