@@ -1432,6 +1432,12 @@
                                           Margin="0,0,0,15"
                                           IsChecked="False"/>
 
+                                <CheckBox Name="WPFWin11EnableDriversCheckbox"
+                                          Content="Inject current system drivers"
+                                          Foreground="{DynamicResource MainForegroundColor}"
+                                          Margin="0,10,0,10"
+                                          IsChecked="False"/>
+
                                 <Button Name="WPFWin11ISOCreateButton"
                                         Content="Create ISO"
                                         HorizontalAlignment="Left"
