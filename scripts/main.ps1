@@ -517,7 +517,7 @@ $sync["FontScalingApplyButton"].Add_Click({
 
 # Win11ISO Tab button handler
 $sync["WPFWin11ISOCreateButton"].Add_Click({
-‎    Invoke-WinUtilISO
+    Invoke-WinUtilISO
 })
 
 $sync["Form"].ShowDialog() | Out-Null
