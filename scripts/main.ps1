@@ -527,44 +527,54 @@ ForEach-Object {
 
 $sync["WPFWin11USBDriveCombo"].SelectedIndex = 0
 
+
 $sync["WPFWin11EnableDriversCheckbox"].Add_Click({
     $sync["WPFWin11WimIndexCombo"].IsEnabled =
     $sync["WPFWin11EnableDriversCheckbox"].IsChecked
 })
 
+
 $sync["LoadWin11WimIndexes"] = {
     $sync["WPFWin11WimIndexCombo"].Items.Clear()
+    Get-WindowsImage -ImagePath "Sources\sources\install.wim" | ForEach-Object {
+        $sync["WPFWin11WimIndexCombo"].Items.Add(
+            "$($_.ImageIndex) - $($_.ImageName)"
+        ) | Out-Null
+    }
 
-    $wimPath = "Sources\sources\install.wim"
+    $pro = $sync["WPFWin11WimIndexCombo"].Items |
+           Where-Object { $_ -match "Pro" } |
+           Select-Object -First 1
 
-    if (Test-Path $wimPath) {
-
-        Get-WindowsImage -ImagePath $wimPath | ForEach-Object {
-            $sync["WPFWin11WimIndexCombo"].Items.Add(
-                "$($_.ImageIndex) - $($_.ImageName)"
-            ) | Out-Null
-        }
-
-        $pro = $sync["WPFWin11WimIndexCombo"].Items |
-               Where-Object { $_ -match "Pro" } |
-               Select-Object -First 1
-
+    if ($pro) {
         $sync["WPFWin11WimIndexCombo"].SelectedItem = $pro
+    }
+    else {
+        $sync["WPFWin11WimIndexCombo"].SelectedIndex = 1
     }
 }
 
+
 $sync["WPFWin11ISOCreateButton"].Add_Click({
     $usbDrive = $sync["WPFWin11USBDriveCombo"].SelectedItem
-    if ($usbDrive -eq "None") { $usbDrive = $null }
+
+    if ($usbDrive -eq "None") {
+        $usbDrive = $null
+    }
 
     $isoPath = Invoke-WinUtilISO | Select-Object -Last 1
 
     & $sync["LoadWin11WimIndexes"]
 
-    $sync["WPFWin11EnableDriversCheckbox"].IsEnabled = $true
-    $sync["WPFWin11WimIndexCombo"].IsEnabled = $true
+    if ($sync["WPFWin11EnableDriversCheckbox"].IsChecked) {
+        $selected = $sync["WPFWin11WimIndexCombo"].SelectedItem
+        if ($selected) {
+            $index = [int]($selected -split " - ")[0]
+            Invoke-WinUtilISODrivers -SourcePath "Sources" -Index $index
+        }
+    }
 
-    if ($sync["WPFWin11ISOToUSBCheckbox"].IsChecked) {
+    if ($sync["WPFWin11ISOToUSBCheckbox"].IsChecked -and $isoPath) {
         Invoke-WinUtilISOUSB -IsoPath $isoPath -UsbDriveLetter $usbDrive
     }
 })
