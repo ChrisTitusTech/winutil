@@ -1475,7 +1475,7 @@
                             <StackPanel Grid.Column="0" Margin="0,0,20,0">
                                 <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="Bold"
                                            Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,8">
-                                    Step 2 - Mount & Verify ISO
+                                    Step 2 - Mount And Verify ISO
                                 </TextBlock>
 
                                 <Button Name="WPFWin11ISOMountButton"
@@ -1564,7 +1564,7 @@
                                               Margin="0,0,0,8"/>
 
                                     <Button Name="WPFWin11ISOWriteUSBButton"
-                                            Content="Erase & Write USB"
+                                            Content="Erase And Write USB"
                                             Foreground="OrangeRed"
                                             Padding="12,0"
                                             Height="{DynamicResource ButtonHeight}"/>
