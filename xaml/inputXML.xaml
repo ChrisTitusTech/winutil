@@ -1383,10 +1383,9 @@
                 <Grid Name="Win11ISOPanel" Margin="{DynamicResource TabContentMargin}" Background="Transparent">
 
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>  <!-- Main Content -->
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Main Content -->
                     <StackPanel Grid.Row="0">
 
                         <Grid Margin="5"
@@ -1398,7 +1397,6 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <!-- Left: Description -->
                             <StackPanel Grid.Column="0" Margin="5,5,15,5">
 
                                 <TextBlock FontSize="22"
@@ -1431,7 +1429,6 @@
                                         Height="{DynamicResource ButtonHeight}"/>
                             </StackPanel>
 
-                            <!-- Right: Info Panel -->
                             <Border Grid.Column="1"
                                     Background="{DynamicResource MainBackgroundColor}"
                                     BorderBrush="{DynamicResource BorderColor}"
@@ -1467,7 +1464,7 @@
                                                Foreground="{DynamicResource MainForegroundColor}"
                                                TextWrapping="Wrap"
                                                Margin="0,0,0,6">
-                                        • Runs winutil tweaks and toggles automaticly creating a clean desktop environment for advance and regular users
+                                        • Runs winutil tweaks and toggles automatically creating a clean desktop environment for advanced and regular users
                                     </TextBlock>
 
                                 </StackPanel>
