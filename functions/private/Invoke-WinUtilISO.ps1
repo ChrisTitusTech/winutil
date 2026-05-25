@@ -184,7 +184,6 @@ function Invoke-WinUtilISOModify {
     $runspace.SessionStateProxy.SetVariable("autounattendContent", $autounattendContent)
     $runspace.SessionStateProxy.SetVariable("injectDrivers",       $injectDrivers)
 
-    $isoScriptFuncDef   = "function Invoke-WinUtilISOScript {`n" + ${function:Invoke-WinUtilISOScript}.ToString() + "`n}"
     $win11ISOLogFuncDef = "function Write-Win11ISOLog {`n"       + ${function:Write-Win11ISOLog}.ToString()       + "`n}"
     $runspace.SessionStateProxy.SetVariable("isoScriptFuncDef",   $isoScriptFuncDef)
     $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef", $win11ISOLogFuncDef)
@@ -324,7 +323,54 @@ function Invoke-WinUtilISOModify {
             SetProgress "Modifying install.wim..." 45
 
             Log "Applying WinUtil modifications to install.wim..."
-            Invoke-WinUtilISOScript -ScratchDir $mountDir -ISOContentsDir $isoContents -AutoUnattendXml $autounattendContent -InjectCurrentSystemDrivers $injectDrivers -Log { param($m) Log $m }
+            function Add-Drivers ($MountPath, $DriverDir, $Label) {
+                dism /English "/Image:$MountPath" /Add-Driver "/Driver:$DriverDir" /Recurse |
+                    ForEach-Object { & $Log "[$Label] $_" }
+            }
+
+            function Inject-BootWim ($BootWim, $DriverDir) {
+                $mount = Join-Path $env:TEMP "WinUtil_Boot_$([guid]::NewGuid())"
+
+                Set-ItemProperty -Path $BootWim -Name IsReadOnly -Value $false
+                New-Item -Path $mount -ItemType Directory -Force
+
+                & $Log "Mounting boot.wim..."
+                Mount-WindowsImage -ImagePath $BootWim -Index 2 -Path $mount
+
+                Add-Drivers $mount $DriverDir "boot"
+
+                & $Log "Saving boot.wim..."
+                Dismount-WindowsImage -Path $mount -Save
+
+                Remove-Item $mount -Recurse -Force
+            }
+
+            $ScratchDir = $mountDir
+            $ISOContentsDir = $isoContents
+            $AutoUnattendXml = $autounattendContent
+            $InjectCurrentSystemDrivers = $injectDrivers
+            $Log = { param($m) Log $m }
+
+            if ($InjectCurrentSystemDrivers) {
+                $driverDir = Join-Path $env:TEMP "WinUtil_Drivers_$([guid]::NewGuid())"
+                $bootWim = Join-Path $ISOContentsDir "sources\boot.wim"
+
+                & $Log "Exporting system drivers..."
+                New-Item $driverDir -ItemType Directory -Force | Out-Null
+
+                Export-WindowsDriver -Online -Destination $driverDir | Out-Null
+
+                & $Log "Injecting drivers into install.wim..."
+                Add-Drivers $ScratchDir $driverDir "install"
+
+                & $Log "Injecting drivers into boot.wim..."
+                Inject-BootWim $bootWim $driverDir
+
+                Remove-Item $driverDir -Recurse -Force
+            }
+
+            Set-Content -Path "$ISOContentsDir\autounattend.xml" -Value $AutoUnattendXml
+            & $Log "Written autounattend.xml to ISO root."
 
             SetProgress "Cleaning up component store (WinSxS)..." 56
             Log "Running DISM component store cleanup (/ResetBase)..."
