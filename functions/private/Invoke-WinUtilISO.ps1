@@ -1,4 +1,6 @@
 Function Invoke-WinUtilISO {
+    Write-Host "please chose you're iso file"
+
     $dialog = New-Object System.Windows.Forms.OpenFileDialog
     $dialog.Filter = "ISO files (*.iso)|*.iso"
     $dialog.Title = "Select Windows ISO"
