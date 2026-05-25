@@ -1437,6 +1437,16 @@
                                           Foreground="{DynamicResource MainForegroundColor}"
                                           Margin="0,10,0,10"
                                           IsChecked="False"/>
+                                <TextBlock FontSize="{DynamicResource FontSize}"
+                                           Foreground="{DynamicResource MainForegroundColor}"
+                                           Margin="0,10,0,5">
+                                    Windows Edition (WIM Index)
+                                </TextBlock>
+                                
+                                <ComboBox Name="WPFWin11WimIndexCombo"
+                                          Width="220"
+                                          Margin="0,0,0,10"
+                                          IsEnabled="False"/>
 
                                 <Button Name="WPFWin11ISOCreateButton"
                                         Content="Create ISO"
