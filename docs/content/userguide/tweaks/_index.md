@@ -5,7 +5,7 @@ prev: /userguide/application/
 next: /userguide/features/
 ---
 
-{{< image src="images/Tweaks-Tab" alt="Image of Tweaks Tab" >}}
+{{< image src="images/tweaks-tab-new" alt="Image of Tweaks Tab" >}}
 
 ### Run Tweaks
 * **Open the Tweaks tab**: Navigate to the **Tweaks** tab in the application.
