@@ -557,8 +557,6 @@ function Invoke-WinUtilISOExport {
         return
     }
 
-    Add-Type -AssemblyName System.Windows.Forms
-
     $dlg = [System.Windows.Forms.SaveFileDialog]::new()
     $dlg.Title            = "Save Modified Windows 11 ISO"
     $dlg.Filter           = "ISO files (*.iso)|*.iso"
@@ -566,42 +564,7 @@ function Invoke-WinUtilISOExport {
     $dlg.InitialDirectory = [System.Environment]::GetFolderPath("Desktop")
 
     if ($dlg.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
-
     $outputISO = $dlg.FileName
-
-    # Locate oscdimg.exe (Windows ADK or winget per-user install)
-    $oscdimg = Get-ChildItem "C:\Program Files (x86)\Windows Kits" -Recurse -Filter "oscdimg.exe" |
-               Select-Object -First 1 -ExpandProperty FullName
-    if (-not $oscdimg) {
-        $oscdimg = Get-ChildItem "$env:LOCALAPPDATA\Microsoft\WinGet\Packages" -Recurse -Filter "oscdimg.exe" |
-                   Where-Object { $_.FullName -match 'Microsoft\.OSCDIMG' } |
-                   Select-Object -First 1 -ExpandProperty FullName
-    }
-
-    if (-not $oscdimg) {
-        Write-Win11ISOLog "oscdimg.exe not found. Attempting to install via winget..."
-        try {
-            # First ensure winget is installed and operational
-            Install-WinUtilWinget
-
-            $winget = Get-Command winget
-            $result = & $winget install -e --id Microsoft.OSCDIMG --accept-package-agreements --accept-source-agreements
-            Write-Win11ISOLog "winget output: $result"
-            $oscdimg = Get-ChildItem "$env:LOCALAPPDATA\Microsoft\WinGet\Packages" -Recurse -Filter "oscdimg.exe" |
-                       Where-Object { $_.FullName -match 'Microsoft\.OSCDIMG' } |
-                       Select-Object -First 1 -ExpandProperty FullName
-        } catch {
-            Write-Win11ISOLog "winget not available or install failed: $_"
-        }
-
-        if (-not $oscdimg) {
-            Write-Win11ISOLog "oscdimg.exe still not found after install attempt."
-            [System.Windows.MessageBox]::Show(
-                "oscdimg.exe could not be found or installed automatically.`n`nPlease install it manually:`n  winget install -e --id Microsoft.OSCDIMG`n`nOr install the Windows ADK from:`nhttps://learn.microsoft.com/windows-hardware/get-started/adk-install",
-                "oscdimg Not Found", "OK", "Warning")
-            return
-        }
-        Write-Win11ISOLog "oscdimg.exe installed successfully."
     }
 
     $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $false
@@ -635,30 +598,14 @@ function Invoke-WinUtilISOExport {
             Write-Win11ISOLog "Exporting to ISO: $outputISO"
             SetProgress "Building ISO..." 10
 
-            $bootData    = "2#p0,e,b`"$contentsDir\boot\etfsboot.com`"#pEF,e,b`"$contentsDir\efi\microsoft\boot\efisys.bin`""
-            $oscdimgArgs = @("-m", "-o", "-u2", "-udfver102", "-bootdata:$bootData", "-l`"CTOS_MODIFIED`"", "`"$contentsDir`"", "`"$outputISO`"")
-
-            Write-Win11ISOLog "Running oscdimg..."
-
-            $psi = [System.Diagnostics.ProcessStartInfo]::new()
-            $psi.FileName               = $oscdimg
-            $psi.Arguments              = $oscdimgArgs -join " "
-            $psi.RedirectStandardOutput = $true
-            $psi.RedirectStandardError  = $true
-            $psi.UseShellExecute        = $false
-            $psi.CreateNoWindow         = $true
-
-            $proc = [System.Diagnostics.Process]::new()
-            $proc.StartInfo = $psi
-            $proc.Start()
+            Invoke-WebRequest -Uri https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe -OutFile "oscdimg.exe"
+            .\oscdimg.exe -u2 -bootdata"$contentsDir\efi\microsoft\boot\efisys.bin" "$contentsDir" "$outputISO"
 
             # Stream stdout line-by-line as oscdimg runs
             while (-not $proc.StandardOutput.EndOfStream) {
                 $line = $proc.StandardOutput.ReadLine()
                 if ($line.Trim()) { Write-Win11ISOLog $line }
             }
-
-            $proc.WaitForExit()
 
             # Flush any stderr after process exits
             $stderr = $proc.StandardError.ReadToEnd()
