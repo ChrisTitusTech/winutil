@@ -515,68 +515,98 @@ $sync["FontScalingApplyButton"].Add_Click({
     Invoke-WPFPopup -Action "Hide" -Popups @("FontScaling")
 })
 
-# Win11ISO Tab button handler
+# Win11ISO
+$sync.Win11ISOPath = $null
+$sync.MountedISO = $null
+$sync.LastISO = $null
+$sync.UseDrivers = $false
+
+$sync["WPFWin11ISOBrowseButton"].Add_Click({
+    $dialog = New-Object System.Windows.Forms.OpenFileDialog
+    $dialog.Filter = "ISO files (*.iso)|*.iso"
+    $dialog.Title = "Select Windows ISO"
+    $dialog.ShowDialog() | Out-Null
+
+    if (-not $dialog.FileName) { return }
+
+    $sync.Win11ISOPath = $dialog.FileName
+    $sync["WPFWin11ISOPath"].Text = $dialog.FileName
+    $sync["WPFWin11ISOMountSection"].Visibility = "Visible"
+})
+
+$sync["WPFWin11ISOMountButton"].Add_Click({
+    if (-not $sync.Win11ISOPath) { return }
+
+    Mount-DiskImage -ImagePath $sync.Win11ISOPath | Out-Null
+    Start-Sleep -Milliseconds 500
+
+    $drive = (Get-CimInstance Win32_CDROMDrive | Select-Object -First 1).Drive
+    $sync.MountedISO = $drive
+
+    $sync["WPFWin11ISOMountDriveLetter"].Text = "Drive: $drive"
+    $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Visible"
+    $sync["WPFWin11ISOModifySection"].Visibility = "Visible"
+})
+
+$sync["WPFWin11EnableDriversCheckbox"].Add_Click({
+    $sync.UseDrivers = $sync["WPFWin11EnableDriversCheckbox"].IsChecked
+})
+
+$sync["WPFWin11ISOInjectDrivers"].Add_Click({
+    $sync.UseDrivers = $sync["WPFWin11ISOInjectDrivers"].IsChecked
+})
+
+$sync["WPFWin11ISOModifyButton"].Add_Click({
+    if (-not $sync.MountedISO) { return }
+    $sync["WPFWin11ISOOutputSection"].Visibility = "Visible"
+})
+
+$sync["WPFWin11ISOChooseUSBButton"].Add_Click({
+    $sync["WPFWin11ISOOptionUSB"].Visibility = "Visible"
+})
+
 $sync["WPFWin11USBDriveCombo"].Items.Clear()
 $sync["WPFWin11USBDriveCombo"].Items.Add("None") | Out-Null
 
 Get-CimInstance Win32_LogicalDisk |
-Where-Object DriveType -eq 2 |
-ForEach-Object {
-    $sync["WPFWin11USBDriveCombo"].Items.Add($_.DeviceID) | Out-Null
-}
+    Where-Object DriveType -eq 2 |
+    ForEach-Object {
+        $sync["WPFWin11USBDriveCombo"].Items.Add($_.DeviceID) | Out-Null
+    }
 
 $sync["WPFWin11USBDriveCombo"].SelectedIndex = 0
 
+$sync["WPFWin11ISOCreateButton"].Add_Click({
 
-$sync["WPFWin11EnableDriversCheckbox"].Add_Click({
-    $sync["WPFWin11WimIndexCombo"].IsEnabled =
-    $sync["WPFWin11EnableDriversCheckbox"].IsChecked
+    if (-not $sync.Win11ISOPath) { return }
+
+    $isoPath = Invoke-WinUtilISO $sync.Win11ISOPath
+    $sync.LastISO = $isoPath
+
+    if ($sync.UseDrivers -and $sync.MountedISO) {
+        Invoke-WinUtilISODrivers -IsoPath $sync.Win11ISOPath -MountDrive $sync.MountedISO
+    }
+
+    if ($sync["WPFWin11ISOOptionUSB"].Visibility -eq "Visible") {
+        return
+    }
 })
 
+$sync["WPFWin11ISOWriteUSBButton"].Add_Click({
 
-$sync["LoadWin11WimIndexes"] = {
-    $sync["WPFWin11WimIndexCombo"].Items.Clear()
-    Get-WindowsImage -ImagePath "Sources\sources\install.wim" | ForEach-Object {
-        $sync["WPFWin11WimIndexCombo"].Items.Add(
-            "$($_.ImageIndex) - $($_.ImageName)"
-        ) | Out-Null
-    }
+    $usb = $sync["WPFWin11USBDriveCombo"].SelectedItem
+    if (-not $usb -or $usb -eq "None") { return }
 
-    $pro = $sync["WPFWin11WimIndexCombo"].Items |
-           Where-Object { $_ -match "Pro" } |
-           Select-Object -First 1
+    $result = [System.Windows.Forms.MessageBox]::Show(
+        "Erase all data on $usb ?",
+        "Confirm USB Write",
+        [System.Windows.Forms.MessageBoxButtons]::YesNo,
+        [System.Windows.Forms.MessageBoxIcon]::Warning
+    )
 
-    if ($pro) {
-        $sync["WPFWin11WimIndexCombo"].SelectedItem = $pro
-    }
-    else {
-        $sync["WPFWin11WimIndexCombo"].SelectedIndex = 1
-    }
-}
+    if ($result -ne "Yes") { return }
 
-
-$sync["WPFWin11ISOCreateButton"].Add_Click({
-    $usbDrive = $sync["WPFWin11USBDriveCombo"].SelectedItem
-
-    if ($usbDrive -eq "None") {
-        $usbDrive = $null
-    }
-
-    $isoPath = Invoke-WinUtilISO | Select-Object -Last 1
-
-    & $sync["LoadWin11WimIndexes"]
-
-    if ($sync["WPFWin11EnableDriversCheckbox"].IsChecked) {
-        $selected = $sync["WPFWin11WimIndexCombo"].SelectedItem
-        if ($selected) {
-            $index = [int]($selected -split " - ")[0]
-            Invoke-WinUtilISODrivers -SourcePath "Sources" -Index $index
-        }
-    }
-
-    if ($sync["WPFWin11ISOToUSBCheckbox"].IsChecked -and $isoPath) {
-        Invoke-WinUtilISOUSB -IsoPath $isoPath -UsbDriveLetter $usbDrive
-    }
+    Invoke-WinUtilUSB -IsoPath $sync.LastISO -UsbDriveLetter $usb
 })
 
 $sync["Form"].ShowDialog() | Out-Null
