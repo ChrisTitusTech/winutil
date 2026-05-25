@@ -12,6 +12,8 @@ width: full
 
 Welcome to the official documentation for Winutil, your go-to utility for optimizing and managing your Windows environment. Whether you’re an IT professional, power user, or regular user, Winutil provides a comprehensive set of tools to enhance your Windows experience.
 
+{{< image src="images/Title-Screen" alt="Winutil title screen" >}}
+
 ## Running the latest release of Winutil
 
 * You will first need to start a PowerShell terminal **as Admin**.
