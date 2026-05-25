@@ -516,11 +516,27 @@ $sync["FontScalingApplyButton"].Add_Click({
 })
 
 # Win11ISO Tab button handler
-$sync["WPFWin11ISOCreateButton"].Add_Click({
-    $driverSelection = $sync["WPFWin11USBDriverCombo"].SelectedItem.Content
-    $toUSB = $sync["WPFWin11ISOToUSBCheckbox"].IsChecked
+$sync["WPFWin11USBDriveCombo"].Items.Clear()
+$sync["WPFWin11USBDriveCombo"].Items.Add("None") | Out-Null
 
-    Invoke-WinUtilISO -UsbDriver $driverSelection -WriteToUSB $toUSB
+Get-CimInstance Win32_LogicalDisk |
+    Where-Object { $_.DriveType -eq 2 } |
+    ForEach-Object {
+        $sync["WPFWin11USBDriveCombo"].Items.Add($_.DeviceID) | Out-Null
+    }
+
+$sync["WPFWin11USBDriveCombo"].SelectedIndex = 0
+
+$sync["WPFWin11ISOCreateButton"].Add_Click({
+
+    $writeToUSB = $sync["WPFWin11ISOToUSBCheckbox"].IsChecked
+    $usbDrive = $sync["WPFWin11USBDriveCombo"].SelectedItem
+
+    if ($usbDrive -eq "None") {
+        $usbDrive = $null
+    }
+
+    Invoke-WinUtilISO -WriteToUSB $writeToUSB -UsbDriveLetter $usbDrive
 })
 
 $sync["Form"].ShowDialog() | Out-Null
