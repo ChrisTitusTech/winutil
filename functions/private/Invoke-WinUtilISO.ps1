@@ -11,7 +11,7 @@ Function Invoke-WinUtilISO {
     Write-Host "Mounting iso file..."
 
     Mount-DiskImage -ImagePath $dialog.FileName
-    $Drive = ($Drive = Get-CimInstance Win32_CDROMDrive).Drive
+    $Drive = (Get-CimInstance Win32_CDROMDrive | Select-Object -First 1).Drive
     
     Write-Host "Copying files..."
     
