@@ -1412,7 +1412,7 @@
                                            TextWrapping="Wrap"
                                            Margin="0,0,0,18"
                                            Opacity="0.85">
-                                    Create ISO and optionally write to USB (NTFS mode).
+                                    Create ISO and optionally write to USB.
                                 </TextBlock>
 
                                 <TextBlock FontSize="{DynamicResource FontSize}"
@@ -1432,21 +1432,31 @@
                                           Margin="0,0,0,15"
                                           IsChecked="False"/>
 
-                                <CheckBox Name="WPFWin11EnableDriversCheckbox"
-                                          Content="Inject current system drivers"
-                                          Foreground="{DynamicResource MainForegroundColor}"
-                                          Margin="0,10,0,10"
-                                          IsChecked="False"/>
-                                <TextBlock FontSize="{DynamicResource FontSize}"
-                                           Foreground="{DynamicResource MainForegroundColor}"
-                                           Margin="0,10,0,5">
-                                    Windows Edition (WIM Index)
-                                </TextBlock>
-                                
-                                <ComboBox Name="WPFWin11WimIndexCombo"
-                                          Width="220"
-                                          Margin="0,0,0,10"
-                                          IsEnabled="False"/>
+                                        <TextBlock
+                                            FontSize="{DynamicResource FontSize}"
+                                            Foreground="{DynamicResource MainForegroundColor}"
+                                            Margin="0,20,0,5"
+                                            Opacity="0.7">
+                                            Step 2: Optional driver injection (after ISO creation)
+                                        </TextBlock>
+                                        
+                                        <CheckBox Name="WPFWin11EnableDriversCheckbox"
+                                                  Content="Inject current system drivers"
+                                                  Foreground="{DynamicResource MainForegroundColor}"
+                                                  Margin="0,5,0,5"
+                                                  IsEnabled="False"/>
+                                        
+                                        <TextBlock
+                                            FontSize="{DynamicResource FontSize}"
+                                            Foreground="{DynamicResource MainForegroundColor}"
+                                            Margin="0,0,0,5">
+                                            Windows Edition (WIM Index)
+                                        </TextBlock>
+                                        
+                                        <ComboBox Name="WPFWin11WimIndexCombo"
+                                                  Width="220"
+                                                  Margin="0,0,0,10"
+                                                  IsEnabled="False"/>
 
                                 <Button Name="WPFWin11ISOCreateButton"
                                         Content="Create ISO"
