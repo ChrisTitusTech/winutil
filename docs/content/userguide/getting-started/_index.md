@@ -188,6 +188,7 @@ Winutil offers several preset configurations:
 
 - **Minimal**: Minimal changes that keep most Windows features
 - **Standard**: A good middle ground for most users
+- **Advanced**: Selects a focused set of safer advanced tweaks.
 
 ## Safety Tips
 
