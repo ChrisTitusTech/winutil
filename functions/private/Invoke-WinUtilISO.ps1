@@ -261,9 +261,8 @@ function Invoke-WinUtilISOModify {
                 $bootWim = Join-Path $isoContents "sources\boot.wim"
 
                 log "Exporting system drivers..."
-                New-Item $driverDir -ItemType Directory -Force | Out-Null
-
-                Export-WindowsDriver -Online -Destination $driverDir | Out-Null
+                New-Item $driverDir -ItemType Directory -Force
+                Export-WindowsDriver -Online -Destination $driverDir
 
                 log "Injecting drivers into install.wim..."
                 Add-Drivers $mountDir $driverDir "install"
