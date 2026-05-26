@@ -7,7 +7,7 @@ next: /userguide/application/
 
 ## Welcome to Winutil!
 
-Winutil is a powerful Windows utility that helps you optimize, customize, and maintain your system. This guide walks you through everything you need to get started.
+Winutil helps you install apps, apply system tweaks, run common fixes, and manage Windows settings from one place. This guide covers the safest way to get started and the first actions most users take.
 
 ## System Requirements
 
@@ -72,7 +72,7 @@ irm "https://christitus.com/windev" | iex
 
 The first time you run Winutil, it may take a few moments to:
 
-- Run the latest version
+- Download the latest version
 - Initialize the interface
 - Load all features and settings
 
@@ -88,7 +88,7 @@ Winutil opens with a clean, tabbed interface:
 - **Tweaks**: Apply system optimizations and customizations
 - **Config**: Access system tools and utilities
 - **Updates**: Manage Windows updates
-- **Win11 Creator**: Allows user to debloat Windows 11 ISO files.
+- **Win11 Creator**: Build a customized Windows 11 ISO from an official Microsoft image.
 
 ## Your First Actions
 
@@ -116,9 +116,12 @@ This gives you a rollback point if needed.
 For a better Windows experience with minimal risk:
 
 1. Go to the **Tweaks** tab
-2. Select the **Standard** for a balanced configuration
+2. Select the **Standard** preset for a balanced configuration
 3. Review the selected tweaks
 4. Click **Run Tweaks**
+
+> [!NOTE]
+> Some tweaks, fixes, and update changes may require a restart or sign-out before the full effect is visible.
 
 ## Common Tasks
 
@@ -212,7 +215,14 @@ Winutil offers several preset configurations:
 
 ### Script Won't Download
 
-If you get any errors when running Winutil please refer to [Known Issues](/knownissues/) page
+If the launch command fails:
+
+- Make sure PowerShell or Terminal is running as Administrator.
+- Confirm the PC has internet access and can reach `christitus.com`.
+- Retry from a normal PowerShell session rather than a restricted enterprise shell profile.
+- If the command starts and then closes immediately, reopen Terminal as Administrator and run it again so you can read the error output.
+
+If it still fails, check the [Known Issues](/knownissues/) page.
 
 ## Next Steps
 
@@ -244,5 +254,3 @@ If you need assistance:
 | Fix network | Config tab | Fixes -> Reset Network |
 | Change DNS | Tweaks tab | DNS section |
 | Open Control Panel | Config tab | Legacy Windows Panels |
-
-Happy optimizing!

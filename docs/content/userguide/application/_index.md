@@ -5,6 +5,8 @@ prev: /userguide/getting-started/
 next: /userguide/tweaks/
 ---
 
+Use the Applications tab to install, upgrade, uninstall, and review supported apps from one place. Winutil relies on package manager support for these actions, so the available results depend on what WinGet can detect and manage on your system.
+
 {{< tabs >}}
 
   {{< tab name="Installation & Updates" selected=true >}}
@@ -18,19 +20,19 @@ next: /userguide/tweaks/
 
   {{< tab name="Upgrade All" >}}
     * Simply press the `Upgrade All` button.
-    * This will upgrade all applicable programs that are installed without the need for individual selection.
+    * This upgrades every supported installed program without individual selection.
 
     {{< image src="images/Install/install-apps" alt="Upgrade all applications" >}}
   {{< /tab >}}
 
   {{< tab name="Uninstall" >}}
     * Select the programs you wish to uninstall.
-    * Click the `Uninstall Selected` button to remove the selected programs.
+    * Click the `Uninstall Selected` button to remove them.
 
     {{< image src="images/Install/uninstall-apps" alt="Uninstall selected applications" >}}
   {{< /tab >}}
 
-  {{< tab name="Get Installed" >}}
+  {{< tab name="Show Installed Apps" >}}
     * Click the `Show Installed Apps` button.
     * This scans for and selects installed applications supported by WinGet.
 
@@ -39,7 +41,7 @@ next: /userguide/tweaks/
 
   {{< tab name="Clear Selection" >}}
     * Click the `Clear Selection` button.
-    * This will unselect all checked programs.
+    * This clears all current selections.
 
     {{< image src="images/Install/clear-selection-apps" alt="Clear app selections" >}}
   {{< /tab >}}
@@ -47,3 +49,9 @@ next: /userguide/tweaks/
 
 > [!TIP]
 > If you have trouble finding an application, press `Ctrl + F` and search for its name. The list filters as you type.
+
+> [!NOTE]
+> `Show Installed Apps` only selects software that WinGet can identify. Apps installed outside supported package sources may not appear.
+
+> [!IMPORTANT]
+> Before uninstalling or upgrading apps, close any running programs first. Some packages may still prompt for input or fail if their source is unavailable.

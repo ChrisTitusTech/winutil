@@ -13,6 +13,9 @@ Winutil includes a built-in **Win11 Creator** tool that lets you take an officia
 > [!IMPORTANT]
 > You need an **official Windows 11 ISO** from [Microsoft's website](https://www.microsoft.com/en-us/software-download/windows11) before starting. Custom, modified, or non-official ISOs are not supported. The process uses ~10–15 GB of temporary disk space, so make sure you have room.
 
+> [!NOTE]
+> This workflow is intended for fresh Windows installs, not in-place upgrades of an existing installation.
+
 ---
 
 ### Step 1 — Select Your Official Windows 11 ISO
@@ -132,39 +135,10 @@ When you install Windows 11 from your modified ISO:
 
 ---
 
-Below is a list of free and open-source tools for downloading, creating, and flashing Windows ISOs.
+## Additional Resources
 
-## Download Windows ISOs
-
-| Tool | Description | Website |
-|------|-------------|---------|
-| **[UUP Dump](https://uupdump.net/)** | Download Windows UUP files directly from Microsoft's servers and convert them into a clean ISO — great for getting the latest builds | [uupdump.net](https://uupdump.net/) |
-| **[Microsoft Media Creation Tool](https://www.microsoft.com/en-us/software-download/windows11)** | Microsoft's official tool for downloading and creating Windows 11 installation media | [microsoft.com](https://www.microsoft.com/en-us/software-download/windows11) |
-
-
-## Customize Windows ISOs
-
-| Tool | Description | Website |
-|------|-------------|---------|
-| **[MicroWin](https://github.com/CodingWonders/microwin)** | A C# desktop app for building stripped-down, customized Windows ISOs — the original predecessor to Winutil's old MicroWin feature | [github.com](https://github.com/CodingWonders/microwin) |
-| **[Tiny11 Builder](https://github.com/ntdevlabs/tiny11builder)** | PowerShell script that strips a Windows 11 ISO down to the bare minimum — removes bloatware and bypasses hardware requirements | [github.com](https://github.com/ntdevlabs/tiny11builder) |
-| **[NTLite](https://www.ntlite.com/)** | Remove Windows components, integrate drivers and updates, and build a custom ISO before installation | [ntlite.com](https://www.ntlite.com/) |
-
-
-## Flash ISOs to USB
-
-| Tool | Description | Website |
-|------|-------------|---------|
-| **[Rufus](https://rufus.ie/)** | The go-to tool for creating bootable Windows USB drives. Supports bypassing Windows 11 TPM/Secure Boot requirements and downloading ISOs directly | [rufus.ie](https://rufus.ie/) |
-| **[Ventoy](https://www.ventoy.net/)** | Install once, then just copy any ISO files onto the USB — supports booting multiple ISOs from a single drive without re-flashing | [ventoy.net](https://www.ventoy.net/) |
-| **[balenaEtcher](https://etcher.balena.io/)** | Simple, beginner-friendly ISO flasher with a clean interface | [etcher.balena.io](https://etcher.balena.io/) |
-
-
-
----
-
-> [!TIP]
-> Already have a Windows 11 ISO? Skip the third-party tools and use Winutil's built-in **[Win11 Creator](#using-winutils-win11-creator)** at the top of this page.
+- Download official Windows 11 media from [Microsoft](https://www.microsoft.com/en-us/software-download/windows11).
+- If you prefer to write a finished ISO with another tool, common choices include [Rufus](https://rufus.ie/), [Ventoy](https://www.ventoy.net/), and [balenaEtcher](https://etcher.balena.io/).
 
 > [!NOTE]
 > Always download Windows ISOs from official Microsoft sources or trusted tools like Rufus/UUP Dump to avoid tampered images.
