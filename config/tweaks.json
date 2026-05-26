@@ -1891,5 +1891,440 @@
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/disableexplorerautodiscovery"
+  },
+  "WPFTweaksDisableVBS": {
+    "Content": "VBS & Memory Integrity - Disable",
+    "Description": "Disables Virtualization-Based Security and Memory Integrity (HVCI) to improve gaming performance by 5-25%. Requires reboot. CAUTION: Reduces system security.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "InvokeScript": [
+      "
+      Set-ItemProperty -Path 'HKLM:\\System\\CurrentControlSet\\Control\\DeviceGuard' -Name 'EnableVirtualizationBasedSecurity' -Type DWord -Value 0 -Force -ErrorAction SilentlyContinue
+      Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity' -Name 'Enabled' -Type DWord -Value 0 -Force -ErrorAction SilentlyContinue
+      Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Lsa' -Name 'LsaCfgFlags' -Type DWord -Value 0 -Force -ErrorAction SilentlyContinue
+      Disable-WindowsOptionalFeature -Online -FeatureName 'VirtualMachinePlatform' -NoRestart -ErrorAction SilentlyContinue
+      Disable-WindowsOptionalFeature -Online -FeatureName 'HypervisorPlatform' -NoRestart -ErrorAction SilentlyContinue
+      bcdedit /set hypervisorlaunchtype off
+      Write-Host 'VBS and Memory Integrity disabled. Reboot required.'
+      "
+    ],
+    "UndoScript": [
+      "
+      Set-ItemProperty -Path 'HKLM:\\System\\CurrentControlSet\\Control\\DeviceGuard' -Name 'EnableVirtualizationBasedSecurity' -Type DWord -Value 1 -Force -ErrorAction SilentlyContinue
+      Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity' -Name 'Enabled' -Type DWord -Value 1 -Force -ErrorAction SilentlyContinue
+      Enable-WindowsOptionalFeature -Online -FeatureName 'VirtualMachinePlatform' -NoRestart -ErrorAction SilentlyContinue
+      bcdedit /set hypervisorlaunchtype on
+      Write-Host 'VBS and Memory Integrity enabled. Reboot required.'
+      "
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disablevbs"
+  },
+  "WPFToggleHAGS": {
+    "Content": "Hardware-Accelerated GPU Scheduling (HAGS)",
+    "Description": "If enabled, GPU manages its own VRAM, reducing latency and improving frame consistency. Recommended for gaming. Requires reboot.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers",
+        "Name": "HwSchMode",
+        "Value": "2",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "DefaultState": "true"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/hags"
+  },
+  "WPFTweaksESPFix": {
+    "Content": "EFI System Partition (ESP) Update Fix",
+    "Description": "Resets ESP padding to fix May 2026 update error 0x800f0922 when KB5089549 fails at 35% during reboot. Run if update fails to install.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Bfsvc",
+        "Name": "EspPaddingPercent",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "15"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/espfix"
+  },
+  "WPFToggleDriverUpdate": {
+    "Content": "Driver Updates via Windows Update - Disable",
+    "Description": "If enabled, Windows Update will not install driver updates automatically. Prevents buggy GPU drivers from replacing working ones.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate",
+        "Name": "ExcludeWUDriversInQualityUpdates",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/driverupdate"
+  },
+  "WPFToggleWindowedGames": {
+    "Content": "Optimizations for Windowed Games",
+    "Description": "If enabled, improves performance for DX10/11 games in windowed/borderless mode. Disable if you experience stuttering or flickering.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "InvokeScript": [
+      "
+      $path = 'HKCU:\\Software\\Microsoft\\DirectX\\UserGpuPreferences'
+      $name = 'DirectXUserGlobalSettings'
+      $current = Get-ItemProperty -Path $path -Name $name -ErrorAction SilentlyContinue
+      if ($current) {
+        $val = $current.$name
+        if ($val -match 'SwapEffectUpgradeEnable=') {
+          $val = $val -replace 'SwapEffectUpgradeEnable=\\d', 'SwapEffectUpgradeEnable=1'
+        } else {
+          $val = ($val.TrimEnd(';')) + ';SwapEffectUpgradeEnable=1'
+        }
+        Set-ItemProperty -Path $path -Name $name -Value $val
+      } else {
+        New-Item -Path $path -Force | Out-Null
+        Set-ItemProperty -Path $path -Name $name -Type String -Value 'SwapEffectUpgradeEnable=1'
+      }
+      "
+    ],
+    "UndoScript": [
+      "
+      $path = 'HKCU:\\Software\\Microsoft\\DirectX\\UserGpuPreferences'
+      $name = 'DirectXUserGlobalSettings'
+      $current = Get-ItemProperty -Path $path -Name $name -ErrorAction SilentlyContinue
+      if ($current -and $current.$name -match 'SwapEffectUpgradeEnable=') {
+        $val = $current.$name -replace 'SwapEffectUpgradeEnable=\\d', 'SwapEffectUpgradeEnable=0'
+        Set-ItemProperty -Path $path -Name $name -Value $val
+      }
+      "
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/windowedgames"
+  },
+  "WPFToggleClassicContextMenu": {
+    "Content": "Classic Context Menu - Enable (Win11)",
+    "Description": "Restores the classic full right-click context menu in Windows 11 instead of the modern compact one. Requires restarting Explorer.",
+    "category": "Customize Preferences",
+    "panel": "1",
+    "InvokeScript": [
+      "
+      reg.exe add \"HKCU\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32\" /f /ve
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Write-Host \"Classic context menu enabled — Explorer restarted.\"
+      "
+    ],
+    "UndoScript": [
+      "
+      reg.exe delete \"HKCU\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" /f
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Write-Host \"Modern context menu restored — Explorer restarted.\"
+      "
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/classiccontext"
+  },
+  "WPFToggleWebSearch": {
+    "Content": "Web Search - Disable suggestions",
+    "Description": "Disables web search suggestions and Bing results from appearing in Windows Search and Start menu search. Local file and app search still works.",
+    "category": "Customize Preferences",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer",
+        "Name": "DisableSearchBoxSuggestions",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/websearch"
+  },
+  "WPFToggleNotificationCenter": {
+    "Content": "Notification Center - Disable",
+    "Description": "Disables the Notification Center (Win+N) and calendar flyout in Windows 11. The clock area will no longer open notifications.",
+    "category": "Customize Preferences",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer",
+        "Name": "DisallowNotificationCenter",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/notificationcenter"
+  },
+  "WPFTweaksIconCache": {
+    "Content": "Icon Cache - Reset & Rebuild",
+    "Description": "Deletes and rebuilds the Windows icon cache. Fixes corrupted, blank, or distorted desktop and File Explorer icons.",
+    "category": "Customize Preferences",
+    "panel": "1",
+    "InvokeScript": [
+      "
+      Get-Process explorer -ErrorAction SilentlyContinue | Stop-Process -Force
+      Remove-Item \"$env:LOCALAPPDATA\\IconCache.db\" -Force -ErrorAction SilentlyContinue
+      Remove-Item \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Explorer\\iconcache*\" -Force -ErrorAction SilentlyContinue
+      Start-Process explorer.exe
+      Write-Host \"Icon cache cleared and rebuilt.\"
+      "
+    ],
+    "UndoScript": [
+      "
+      Write-Host \"Icon cache cannot be undone — it will rebuild automatically.\"
+      "
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/iconcache"
+  },
+  "WPFToggleClassicVolume": {
+    "Content": "Classic Volume Control - Restore",
+    "Description": "Restores the classic vertical volume control (Windows 7/8 style) instead of the modern horizontal slider in Windows 10/11.",
+    "category": "Customize Preferences",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\MTCUVC",
+        "Name": "EnableMtcUvc",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/classicvolume"
+  },
+  "WPFToggleHideRecommended": {
+    "Content": "Start Menu - Hide Recommended section",
+    "Description": "Hides the Recommended section entirely from the Windows 11 Start menu. Works on most Windows 11 builds via policy registry keys.",
+    "category": "Customize Preferences",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer",
+        "Name": "HideRecommendedSection",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\Start",
+        "Name": "HideRecommendedSection",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\Education",
+        "Name": "IsEducationEnvironment",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/hiderecommended"
+  },
+  "WPFTweaksPhotoViewer": {
+    "Content": "Windows Photo Viewer - Enable",
+    "Description": "Enables the classic Windows Photo Viewer and registers it to handle common image file types (.jpg, .png, .gif, .bmp, .tiff, etc.).",
+    "category": "Customize Preferences",
+    "panel": "1",
+    "InvokeScript": [
+      "
+      $regPath = 'HKLM:\\SOFTWARE\\Microsoft\\Windows Photo Viewer\\Capabilities\\FileAssociations'
+      $assocs = @{
+        '.bmp'   = 'PhotoViewer.FileAssoc.Tiff'
+        '.dib'   = 'PhotoViewer.FileAssoc.Tiff'
+        '.jfif'  = 'PhotoViewer.FileAssoc.Tiff'
+        '.jpe'   = 'PhotoViewer.FileAssoc.Tiff'
+        '.jpeg'  = 'PhotoViewer.FileAssoc.Tiff'
+        '.jpg'   = 'PhotoViewer.FileAssoc.Tiff'
+        '.jxr'   = 'PhotoViewer.FileAssoc.Tiff'
+        '.png'   = 'PhotoViewer.FileAssoc.Tiff'
+        '.gif'   = 'PhotoViewer.FileAssoc.Tiff'
+        '.tiff'  = 'PhotoViewer.FileAssoc.Tiff'
+        '.tif'   = 'PhotoViewer.FileAssoc.Tiff'
+        '.wdp'   = 'PhotoViewer.FileAssoc.Tiff'
+      }
+      if (-not (Test-Path $regPath)) { New-Item -Path $regPath -Force | Out-Null }
+      foreach ($ext in $assocs.Keys) {
+        Set-ItemProperty -Path $regPath -Name $ext -Value $assocs[$ext]
+      }
+      Write-Host \"Windows Photo Viewer enabled for all common image types.\"
+      "
+    ],
+    "UndoScript": [
+      "
+      $regPath = 'HKLM:\\SOFTWARE\\Microsoft\\Windows Photo Viewer\\Capabilities\\FileAssociations'
+      if (Test-Path $regPath) { Remove-Item -Path $regPath -Recurse -Force }
+      Write-Host \"Windows Photo Viewer file associations removed.\"
+      "
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/photoviewer"
+  },
+  "WPFToggleClockSeconds": {
+    "Content": "Taskbar Clock - Show seconds",
+    "Description": "Shows seconds in the taskbar clock. The clock will display the current second alongside hours and minutes.",
+    "category": "Customize Preferences",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "ShowSecondsInSystemClock",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/clockseconds"
+  },
+  "WPFToggleExplorerLaunchTo": {
+    "Content": "File Explorer - Opens to This PC",
+    "Description": "Changes File Explorer's default landing page from Quick Access to This PC, showing all drives and system folders immediately.",
+    "category": "Customize Preferences",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "LaunchTo",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/explorerlaunchto"
+  },
+  "WPFToggleAeroShake": {
+    "Content": "Aero Shake - Disable",
+    "Description": "Disables Aero Shake, which minimizes all other windows when you shake the active window. Useful for gamers and users who trigger it accidentally.",
+    "category": "Customize Preferences",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "DisallowShaking",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/aeroshake"
+  },
+  "WPFToggleStoreAppLookup": {
+    "Content": "Store App Lookup - Disable",
+    "Description": "Disables the 'Look for an app in the Store' prompt when opening an unknown file type. Windows will only show locally installed apps.",
+    "category": "Customize Preferences",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer",
+        "Name": "NoUseStoreOpenWith",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/storeapplookup"
+  },
+  "WPFToggleAutoReboot": {
+    "Content": "Windows Update - Disable auto reboot",
+    "Description": "Prevents Windows from automatically restarting the PC after installing updates. You will be prompted to schedule the restart instead.",
+    "category": "Customize Preferences",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU",
+        "Name": "NoAutoRebootWithLoggedOnUsers",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/autoreboot"
+  },
+  "WPFToggleLastUserName": {
+    "Content": "Login Screen - Hide last username",
+    "Description": "Hides the last signed-in username from the Windows login screen. Adds a layer of privacy and security.",
+    "category": "Customize Preferences",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+        "Name": "DontDisplayLastUserName",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/lastusername"
+  },
+  "WPFToggleLockScreen": {
+    "Content": "Lock Screen - Disable",
+    "Description": "Disables the Windows lock screen entirely. The sign-in screen will appear directly when waking or locking the PC.",
+    "category": "Customize Preferences",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Personalization",
+        "Name": "NoLockScreen",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/lockscreen"
+  },
+  "WPFToggleMenuDelay": {
+    "Content": "Menu Speed - Reduce show delay",
+    "Description": "Speeds up menu responsiveness by reducing the delay before submenus and context menus appear. Set to 0 for instant display.",
+    "category": "Customize Preferences",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Desktop",
+        "Name": "MenuShowDelay",
+        "Value": "0",
+        "Type": "String",
+        "OriginalValue": "400"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/menudelay"
+  },
+  "WPFToggleBalloonTips": {
+    "Content": "Balloon Tooltips - Enable classic",
+    "Description": "Restores classic balloon-style notifications instead of modern toast notifications for system tray apps. More compact and less intrusive.",
+    "category": "Customize Preferences",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "EnableBalloonTips",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/balloontips"
+  },
+  "WPFToggleWindowsVersion": {
+    "Content": "Windows Version - Show on desktop",
+    "Description": "Displays the Windows version and build number in the bottom-right corner of the desktop. Useful for beta testers and enthusiasts.",
+    "category": "Customize Preferences",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Desktop",
+        "Name": "PaintDesktopVersion",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/windowsversion"
   }
 }
