@@ -14,22 +14,22 @@ function Write-Win11ISOLog {
 }
 
 function Invoke-WinUtilISOBrowse {
-    $dlg = [System.Windows.Forms.OpenFileDialog]::new()
-    $dlg.Title            = "Select Windows 11 ISO"
-    $dlg.Filter           = "ISO files (*.iso)|*.iso|All files (*.*)|*.*"
+    $dialog = [System.Windows.Forms.OpenFileDialog]::new()
+    $dialog.Title = "Select Windows 11 ISO"
+    $dialog.Filter = "ISO files (*.iso)|*.iso|All files (*.*)|*.*"
 
-    if ($dlg.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
+    if ($dialog.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
 
-    $isoPath    = $dlg.FileName
+    $isoPath = $dialog.FileName
     $fileSizeGB = [math]::Round((Get-Item $isoPath).Length / 1GB, 2)
 
-    $sync["WPFWin11ISOPath"].Text           = $isoPath
-    $sync["WPFWin11ISOFileInfo"].Text       = "File size: $fileSizeGB GB"
+    $sync["WPFWin11ISOPath"].Text = $isoPath
+    $sync["WPFWin11ISOFileInfo"].Text = "File size: $fileSizeGB GB"
     $sync["WPFWin11ISOFileInfo"].Visibility = "Visible"
-    $sync["WPFWin11ISOMountSection"].Visibility       = "Visible"
-    $sync["WPFWin11ISOVerifyResultPanel"].Visibility  = "Collapsed"
-    $sync["WPFWin11ISOModifySection"].Visibility      = "Collapsed"
-    $sync["WPFWin11ISOOutputSection"].Visibility      = "Collapsed"
+    $sync["WPFWin11ISOMountSection"].Visibility = "Visible"
+    $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Collapsed"
+    $sync["WPFWin11ISOModifySection"].Visibility = "Collapsed"
+    $sync["WPFWin11ISOOutputSection"].Visibility = "Collapsed"
 
     Write-Win11ISOLog "ISO selected: $isoPath ($fileSizeGB GB)"
 }
@@ -135,11 +135,13 @@ function Invoke-WinUtilISOModify {
 
     $selectedItem     = $sync["WPFWin11ISOEditionComboBox"].SelectedItem
     $selectedWimIndex = 1
+
     if ($selectedItem -and $selectedItem -match '^(\d+):') {
         $selectedWimIndex = [int]$Matches[1]
     } elseif ($sync["Win11ISOImageInfo"]) {
         $selectedWimIndex = $sync["Win11ISOImageInfo"][0].ImageIndex
     }
+
     $selectedEditionName = if ($selectedItem) { ($selectedItem -replace '^\d+:\s*', '') } else { "Unknown" }
     Write-Win11ISOLog "Selected edition: $selectedEditionName (Index $selectedWimIndex)"
 
@@ -548,25 +550,25 @@ function Invoke-WinUtilISOExport {
         return
     }
 
-    $dlg = [System.Windows.Forms.SaveFileDialog]::new()
-    $dlg.Title            = "Save Modified Windows 11 ISO"
-    $dlg.Filter           = "ISO files (*.iso)|*.iso"
-    $dlg.FileName         = "Win11_Modified_$(Get-Date -Format 'yyyyMMdd').iso"
-    $dlg.InitialDirectory = [System.Environment]::GetFolderPath("Desktop")
+    $dialog = [System.Windows.Forms.SaveFileDialog]::new()
+    $dialog.Title            = "Save Modified Windows 11 ISO"
+    $dialog.Filter           = "ISO files (*.iso)|*.iso"
+    $dialog.FileName         = "Win11_Modified_$(Get-Date -Format 'yyyyMMdd').iso"
+    $dialog.InitialDirectory = [System.Environment]::GetFolderPath("Desktop")
 
-    if ($dlg.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
-    $outputISO = $dlg.FileName
+    if ($dialog.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
+    $outputISO = $dialog.FileName
 
     $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $false
 
     $runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
     $runspace.ApartmentState = "STA"
-    $runspace.ThreadOptions  = "ReuseThread"
+    $runspace.ThreadOptions = "ReuseThread"
     $runspace.Open()
-    $runspace.SessionStateProxy.SetVariable("sync",        $sync)
+    $runspace.SessionStateProxy.SetVariable("sync", $sync)
     $runspace.SessionStateProxy.SetVariable("contentsDir", $contentsDir)
-    $runspace.SessionStateProxy.SetVariable("outputISO",   $outputISO)
-    $runspace.SessionStateProxy.SetVariable("oscdimg",     $oscdimg)
+    $runspace.SessionStateProxy.SetVariable("outputISO", $outputISO)
+    $runspace.SessionStateProxy.SetVariable("oscdimg.exe", $oscdimg)
 
     $win11ISOLogFuncDef = "function Write-Win11ISOLog {`n" + ${function:Write-Win11ISOLog}.ToString() + "`n}"
     $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef", $win11ISOLogFuncDef)
@@ -596,7 +598,7 @@ function Invoke-WinUtilISOExport {
             Write-Win11ISOLog "Running oscdimg..."
 
             $psi = [System.Diagnostics.ProcessStartInfo]::new()
-            $psi.FileName               = "oscdimg.exe"
+            $psi.FileName               = $oscdimg
             $psi.Arguments              = $oscdimgArgs -join " "
             $psi.RedirectStandardOutput = $true
             $psi.RedirectStandardError  = $true
