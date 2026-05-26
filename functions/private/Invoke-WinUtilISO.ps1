@@ -368,32 +368,12 @@ function Invoke-WinUtilISOCleanAndReset {
     $script.Runspace = $runspace
     $script.AddScript({
 
-        function SetProgress($label, $pct) {
-            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                $sync.progressBarTextBlock.Text = $label
-                $sync.progressBarTextBlock.ToolTip = $label
-                $sync.ProgressBar.Value = [Math]::Max($pct, 5)
-            })
-        }
-
-        try {
-            if ($workDir) {
-                $mountDir = Join-Path $workDir "wim_mount"
-                try {
-                    $mountedImages = Get-WindowsImage -Mounted | Where-Object { $_.Path -like "$workDir*" }
-                    if ($mountedImages) {
-                        foreach ($img in $mountedImages) {
-                            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{ $sync["WPFWin11ISOStatusLog"].Text += "`nDismounting WIM at: $($img.Path)..." })
-                            SetProgress "Dismounting WIM image..." 25
-                            Dismount-WindowsImage -Path $img.Path -Discard
-                        }
-                    } elseif (Test-Path $mountDir) {
-                        SetProgress "Running DISM cleanup..." 50
-                        & dism /English /Cleanup-Wim
-                    }
-                } catch {
-                    & dism /English /Cleanup-Wim
-                }
+            function SetProgress($label, $pct) {
+                $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+                    $sync.progressBarTextBlock.Text = $label
+                    $sync.progressBarTextBlock.ToolTip = $label
+                    $sync.ProgressBar.Value = [Math]::Max($pct, 5)
+                })
             }
 
             if ($workDir -and (Test-Path $workDir)) {
