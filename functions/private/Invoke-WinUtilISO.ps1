@@ -43,7 +43,6 @@ function Invoke-WinUtilISOMountAndVerify {
         return
     }
 
-    # Disable the button immediately on the UI thread, then hand off
     $sync["WPFWin11ISOMountButton"].IsEnabled = $false
     Write-Win11ISOLog "Mounting ISO: $isoPath"
 
