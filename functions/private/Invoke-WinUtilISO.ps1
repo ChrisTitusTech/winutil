@@ -343,10 +343,10 @@ function Invoke-WinUtilISOCheckExistingWork {
     $modified = $existingWorkDir.LastWriteTime.ToString("yyyy-MM-dd HH:mm")
     Write-Win11ISOLog "Existing working directory found: $($existingWorkDir.FullName)"
     Write-Win11ISOLog "Last modified: $modified - Skipping Steps 1-3 and resuming at Step 4."
-    Write-Win11ISOLog "Click 'Clean & Reset' if you want to start over with a new ISO."
+    Write-Win11ISOLog "Click 'Clean And Reset' if you want to start over with a new ISO."
 
     [System.Windows.MessageBox]::Show(
-        "A previous WinUtil ISO working directory was found:`n`n$($existingWorkDir.FullName)`n`n(Last modified: $modified)`n`nStep 4 (output options) has been restored so you can save the already-modified image.`n`nClick 'Clean & Reset' in Step 4 if you want to start over.",
+        "A previous WinUtil ISO working directory was found:`n`n$($existingWorkDir.FullName)`n`n(Last modified: $modified)`n`nStep 4 (output options) has been restored so you can save the already-modified image.`n`nClick 'Clean And Reset' in Step 4 if you want to start over.",
         "Existing Work Found", "OK", "Info")
 }
 
@@ -356,7 +356,7 @@ function Invoke-WinUtilISOCleanAndReset {
     if ($workDir -and (Test-Path $workDir)) {
         $confirm = [System.Windows.MessageBox]::Show(
             "This will delete the temporary working directory:`n`n$workDir`n`nAnd reset the interface back to the start.`n`nContinue?",
-            "Clean & Reset", "YesNo", "Warning")
+            "Clean And Reset", "YesNo", "Warning")
         if ($confirm -ne "Yes") { return }
     }
 
