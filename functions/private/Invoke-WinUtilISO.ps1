@@ -235,7 +235,7 @@ function Invoke-WinUtilISOModify {
                 Remove-Item -Path "$Env:Temp\Driver" -Recurse -Force
             }
 
-            SetProgress "Cleaning up component store (WinSxS)..." 56
+            SetProgress "Cleaning up component store (WinSxS) This might take several minutes..." 56
             Log "Running DISM component store cleanup (/ResetBase)..."
             & dism /English "/image:$mountDir" /Cleanup-Image /StartComponentCleanup /ResetBase
             Log "Component store cleanup complete."
