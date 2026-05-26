@@ -2295,22 +2295,6 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/menudelay"
   },
-  "WPFToggleBalloonTips": {
-    "Content": "Balloon Tooltips - Enable classic",
-    "Description": "Restores classic balloon-style notifications instead of modern toast notifications for system tray apps. More compact and less intrusive.",
-    "category": "Customize Preferences",
-    "panel": "1",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "Name": "EnableBalloonTips",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/balloontips"
-  },
   "WPFToggleWindowsVersion": {
     "Content": "Windows Version - Show on desktop",
     "Description": "Displays the Windows version and build number in the bottom-right corner of the desktop. Useful for beta testers and enthusiasts.",
