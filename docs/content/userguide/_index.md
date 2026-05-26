@@ -45,7 +45,7 @@ New to Winutil? Follow the guides below in order to get up and running quickly:
 4. **[Features](features/)** - Explore built-in tools and common Windows fixes.
 5. **[Updates](updates/)** - Configure how Windows Update behaves on your system.
 6. **[Automation](automation/)** - Automate setups and reuse configurations across PCs.
-7. **[Win11 Creator](win11Creator/)** - Build a custom debloated Windows 11 ISO.
+7. **[Win11 Creator](win11creator/)** - Build a custom debloated Windows 11 ISO.
 
 ## Main Features
 
@@ -95,7 +95,7 @@ Automate Winutil configurations for:
 
 Build a custom Windows 11 ISO with bloatware removed, telemetry disabled, and hardware requirement checks bypassed. You can then export it as an ISO file or write it directly to a USB drive.
 
-**[Read the Win11 Creator Guide →](win11Creator/)**
+**[Read the Win11 Creator Guide →](win11creator/)**
 
 ## Safety and Best Practices
 
