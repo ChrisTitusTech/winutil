@@ -222,60 +222,17 @@ function Invoke-WinUtilISOModify {
             Mount-WindowsImage -ImagePath $localWim -Index $selectedWimIndex -Path $mountDir
             SetProgress "Modifying install.wim..." 45
 
-            Log "Applying WinUtil modifications to install.wim..."
-
-            function Add-DriversToImage {
-                param ([string]$MountPath, [string]$DriverDir, [string]$Label = "image")
-                & dism /English "/image:$MountPath" /Add-Driver "/Driver:$DriverDir" /Recurse |
-                    ForEach-Object { Log "  dism[$Label]: $_" }
-            }
-
-            function Invoke-BootWimInject {
-                param ([string]$BootWimPath, [string]$DriverDir, [string]$AutounattendXmlContent)
-                Set-ItemProperty -Path $BootWimPath -Name IsReadOnly -Value $false
-                $mountDir = Join-Path $env:TEMP "WinUtil_BootMount_$(Get-Random)"
-                New-Item -Path $mountDir -ItemType Directory -Force
-                try {
-                    Log "Mounting boot.wim (index 2) to inject answer file..."
-                    Mount-WindowsImage -ImagePath $BootWimPath -Index 2 -Path $mountDir
-
-                    Log "Injecting autounattend.xml into boot.wim index 2 root..."
-                    Set-Content -Path "$mountDirautounattend.xml" -Value $AutounattendXmlContent
-
-                    if ($DriverDir) {
-                        Add-DriversToImage -MountPath $mountDir -DriverDir $DriverDir -Label "boot"
-                    }
-
-                    Log "Saving boot.wim..."
-                    Dismount-WindowsImage -Path $mountDir -Save
-                } catch {
-                    Log "Warning: boot.wim injection failed: $_"
-                    Dismount-WindowsImage -Path $mountDir -Discard
-                } finally {
-                    Remove-Item -Path $mountDir -Recurse -Force
-                }
-            }
-
-            if ($injectDrivers) {
-                Log "Exporting all drivers from running system..."
-                $driverExportRoot = Join-Path $env:TEMP "WinUtil_DriverExport_$(Get-Random)"
-                New-Item -Path $driverExportRoot -ItemType Directory -Force
-                try {
-                    Export-WindowsDriver -Online -Destination $driverExportRoot
-                    Log "Injecting current system drivers into install.wim..."
-                    Add-DriversToImage -MountPath $mountDir -DriverDir $driverExportRoot -Label "install"
-                } catch {
-                    Log "Error during driver export/injection into install.wim: $_"
-                }
-            }
-
             Set-Content -Path "$isoContents\autounattend.xml" -Value $autounattendContent
             Log "Written autounattend.xml to ISO root."
 
-            Invoke-BootWimInject -BootWimPath "$isoContents\sources\boot.wim" -DriverDir $driverExportRoot -AutounattendXmlContent $autounattendContent
+            if ($injectDrivers) {
+                New-Item -Path "$Env:Temp\Driver" -ItemType Directory -Force
 
-            if ($driverExportRoot) {
-                Remove-Item -Path $driverExportRoot -Recurse -Force
+                Log "Injecting current system drivers..."
+                Export-WindowsDriver -Online -Destination "$Env:Temp\Driver"
+                & dism /image:$mountDir /Add-Driver /Driver:"$Env:Temp\Driver" /Recurse
+
+                Remove-Item -Path "$Env:Temp\Driver" -Recurse -Force
             }
 
             SetProgress "Cleaning up component store (WinSxS)..." 56
