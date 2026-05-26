@@ -69,12 +69,17 @@ function Invoke-WinUtilISOWriteUSB {
 
     $script.AddScript({
 
-        function Report($msg, $pct) {
+        function Write-Win11ISOLog ($Message) {
+            $ts = (Get-Date).ToString("HH:mm:ss")
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                $sync["WPFWin11ISOStatusLog"].AppendText("`n$msg")
+                $current = $sync["WPFWin11ISOStatusLog"].Text
+                if ($current -eq "Ready. Please select a Windows 11 ISO to begin.") {
+                    $sync["WPFWin11ISOStatusLog"].Text = "[$ts] $Message"
+                } else {
+                    $sync["WPFWin11ISOStatusLog"].Text += "`n[$ts] $Message"
+                }
+                $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
                 $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
-                $sync.progressBarTextBlock.Text = $msg
-                $sync.ProgressBar.Value = $pct
             })
         }
 
@@ -86,10 +91,10 @@ function Invoke-WinUtilISOWriteUSB {
         }
 
         Clear-Disk -Number $diskNum -RemoveData -Confirm:$false
-        Report "Disk Wiped." 10
+        Write-Win11ISOLog "Disk Wiped."
 
         Initialize-Disk -Number $diskNum -PartitionStyle GPT
-        Report "Initialized GPT Partition." 20
+        Write-Win11ISOLog "Initialized GPT Partition."
 
         $diskObj = Get-Disk $diskNum
         $maxMB = 32768
@@ -108,9 +113,9 @@ function Invoke-WinUtilISOWriteUSB {
             $letter = Get-FreeLetter
             Set-Partition -DiskNumber $diskNum -PartitionNumber $part.PartitionNumber -NewDriveLetter $letter
         }
-        Report "Created partition." 30
+        Write-Win11ISOLog "Created partition."
 
-        Report "Waiting for volume mount..." 40
+        Write-Win11ISOLog "Waiting for volume mount..."
 
         $ready = $false
         for ($i = 0; $i -lt 10; $i++) {
@@ -124,27 +129,26 @@ function Invoke-WinUtilISOWriteUSB {
         $usb = "${letter}:"
 
         Format-Volume -DriveLetter $letter -FileSystem FAT32 -NewFileSystemLabel ("W11-" + (Get-Date -Format "yyMMdd")) -Force
-        Report "Formatted FAT32 Partition." 50
+        Write-Win11ISOLog "Formatted FAT32 Partition."
 
-        Report "Checking size..." 60
+        Write-Win11ISOLog "Checking size..."
 
         $srcSize = (Get-ChildItem $contentsDir -Recurse -File | Measure-Object Length -Sum).Sum
         $vol = Get-Volume $letter
 
         if ($srcSize -gt $vol.Size) {
-            Report "Insufficient space" 100
-            return
+            throw "Insufficient space"
         }
 
-        Report "Splitting install.wim This will take a while..." 70
+        Write-Win11ISOLog "Splitting install.wim This will take a while..."
 
         New-Item -Path "$usb\sources" -ItemType Directory
         Split-WindowsImage -ImagePath "$contentsDir\sources\install.wim" -SplitImagePath "$usb\sources\install.swm" -FileSize 3800
 
-        Report "Copying remaining files This will take a while..." 80
+        Write-Win11ISOLog "Copying remaining files This will take a while..."
         Copy-Item -Path "$contentsDir\*" $usb -Recurse -Force -Exclude install.wim
 
-        Report "Complete" 100
+        Write-Win11ISOLog "Done"
     })
 
     $script.BeginInvoke()
