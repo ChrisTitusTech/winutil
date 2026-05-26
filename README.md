@@ -35,6 +35,23 @@ irm "https://christitus.com/win" | iex
 irm "https://christitus.com/windev" | iex
 ```
 
+### Automation
+
+Winutil also supports predefined presets that apply common configurations automatically:
+
+- `Standard`
+- `Minimal`
+- `Advanced`
+
+Example:
+
+```powershell
+& ([ScriptBlock]::Create((irm "https://christitus.com/win"))) -Preset Standard
+```
+
+To view exactly what each preset does, see:
+https://github.com/ChrisTitusTech/winutil/blob/main/config/preset.json
+
 If you have Issues, refer to [Known Issues](https://winutil.christitus.com/knownissues/) or [Create Issue](https://github.com/ChrisTitusTech/winutil/issues)
 
 ## 🎓 Documentation
