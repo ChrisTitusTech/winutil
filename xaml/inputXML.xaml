@@ -1558,9 +1558,8 @@
                                            Foreground="{DynamicResource MainForegroundColor}"
                                            TextWrapping="Wrap" Margin="0,0,0,12">
                                     The ISO contents will be extracted to a temporary working directory,
-                                    install.wim will be modified (components removed, tweaks applied),
-                                    and the result will be repackaged. This process may take several minutes
-                                    depending on your hardware.
+                                    indexes will be removed and autounattend.xml will be added for automation,
+                                    and the result will be repackaged either into an iso or directly to your usb drive. This process will take several minutes.
                                 </TextBlock>
                                 <Button Name="WPFWin11ISOModifyButton"
                                         Content="Run Windows ISO Modification and Creator"
