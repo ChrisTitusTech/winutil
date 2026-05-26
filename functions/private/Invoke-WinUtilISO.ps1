@@ -281,8 +281,6 @@ function Invoke-WinUtilISOModify {
                 } finally {
                     Remove-Item -Path $driverExportRoot -Recurse -Force
                 }
-            } else {
-                log "Driver injection skipped."
             }
 
             Set-Content -Path "isoContents\autounattend.xml" -Value $WinUtilAutounattendXml
