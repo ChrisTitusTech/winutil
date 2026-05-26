@@ -266,8 +266,8 @@ function Invoke-WinUtilISOModify {
                     Add-DriversToImage -MountPath $mountDir -DriverDir $driverExportRoot -Label "install" -Logger $Log
                     log "install.wim driver injection complete."
         
-                    if (isoContents -and (Test-Path isoContents)) {
-                        $bootWim = Join-Path isoContents "sources\boot.wim"
+                    if ($isoContents -and (Test-Path $isoContents)) {
+                        $bootWim = Join-Path $isoContents "sources\boot.wim"
                         if (Test-Path $bootWim) {
                             log "Injecting current system drivers into boot.wim..."
                             Invoke-BootWimInject -BootWimPath $bootWim -DriverDir $driverExportRoot -Logger $Log
