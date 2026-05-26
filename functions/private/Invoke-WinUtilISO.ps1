@@ -175,9 +175,7 @@ function Invoke-WinUtilISOModify {
     $runspace.SessionStateProxy.SetVariable("autounattendContent", $WinUtilAutounattendXml)
     $runspace.SessionStateProxy.SetVariable("injectDrivers",       $injectDrivers)
 
-    $isoScriptFuncDef   = "function Invoke-WinUtilISOScript {`n" + ${function:Invoke-WinUtilISOScript}.ToString() + "`n}"
     $win11ISOLogFuncDef = "function Write-Win11ISOLog {`n"       + ${function:Write-Win11ISOLog}.ToString()       + "`n}"
-    $runspace.SessionStateProxy.SetVariable("isoScriptFuncDef",   $isoScriptFuncDef)
     $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef", $win11ISOLogFuncDef)
 
     $script = [Management.Automation.PowerShell]::Create()
