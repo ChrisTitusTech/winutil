@@ -7,9 +7,15 @@ next: /userguide/updates/
 
 Use the **Features** and **Fixes** sections to install optional Windows components and run common repair tasks.
 
+This page maps to the **Config** tab in Winutil. Some actions complete immediately, while others may prompt, download files from Microsoft, or require a restart before the change is fully available.
+
+{{< image src="images/config-tab-new" alt="Config tab with features and fixes" >}}
+
 ## Windows Features
 
 Install common **Windows features** by selecting the feature checkboxes and clicking **Install Features**.
+
+If a feature depends on Windows installation media or optional downloads, Windows may take longer to finish or request a reboot.
 
 * All .NET Frameworks (2, 3, 4)
 * Hyper-V Virtualization
@@ -24,6 +30,8 @@ Install common **Windows features** by selecting the feature checkboxes and clic
 ## Fixes
 
 Use these one-click fixes for common system problems.
+
+Use these when you have a specific issue to correct, not as a routine cleanup step.
 
 * Set Up Autologin
 * Reset Windows Update
@@ -46,3 +54,5 @@ Open old-school Windows panels directly from Winutil. Available panels include:
 ## Remote Access
 
 Enable an OpenSSH server on your Windows machine for remote access.
+
+Only enable this if you intend to use remote shell access. After turning it on, verify your firewall rules and account permissions before exposing the machine to other devices.
