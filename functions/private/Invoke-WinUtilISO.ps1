@@ -14,27 +14,25 @@ function Write-Win11ISOLog {
 }
 
 function Invoke-WinUtilISOBrowse {
-    Add-Type -AssemblyName System.Windows.Forms
-
     $dlg = [System.Windows.Forms.OpenFileDialog]::new()
-    $dlg.Title            = "Select Windows 11 ISO"
-    $dlg.Filter           = "ISO files (*.iso)|*.iso|All files (*.*)|*.*"
+    $dlg.Title = "Select Windows 11 ISO"
+    $dlg.Filter = "ISO files (*.iso)|*.iso|All files (*.*)|*.*"
     $dlg.InitialDirectory = [System.Environment]::GetFolderPath("Desktop")
 
     if ($dlg.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
 
-    $isoPath    = $dlg.FileName
+    $isoPath = $dlg.FileName
     $fileSizeGB = [math]::Round((Get-Item $isoPath).Length / 1GB, 2)
 
-    $sync["WPFWin11ISOPath"].Text           = $isoPath
-    $sync["WPFWin11ISOFileInfo"].Text       = "File size: $fileSizeGB GB"
+    $sync["WPFWin11ISOPath"].Text = $isoPath
+    $sync["WPFWin11ISOFileInfo"].Text = "File size: $fileSizeGB GB"
     $sync["WPFWin11ISOFileInfo"].Visibility = "Visible"
-    $sync["WPFWin11ISOMountSection"].Visibility       = "Visible"
-    $sync["WPFWin11ISOVerifyResultPanel"].Visibility  = "Collapsed"
-    $sync["WPFWin11ISOModifySection"].Visibility      = "Collapsed"
-    $sync["WPFWin11ISOOutputSection"].Visibility      = "Collapsed"
+    $sync["WPFWin11ISOMountSection"].Visibility = "Visible"
+    $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Collapsed"
+    $sync["WPFWin11ISOModifySection"].Visibility = "Collapsed"
+    $sync["WPFWin11ISOOutputSection"].Visibility = "Collapsed"
 
-    Write-Win11ISOLog "ISO selected: $isoPath  ($fileSizeGB GB)"
+    Write-Win11ISOLog "ISO selected: $isoPath ($fileSizeGB GB)"
 }
 
 function Invoke-WinUtilISOMountAndVerify {
@@ -88,7 +86,7 @@ function Invoke-WinUtilISOMountAndVerify {
 
         $sync["Win11ISOImageInfo"] = $imageInfo
 
-        $sync["WPFWin11ISOMountDriveLetter"].Text = "Mounted at: $driveLetter   |   Image file: $(Split-Path $activeWim -Leaf)"
+        $sync["WPFWin11ISOMountDriveLetter"].Text = "Mounted at: $driveLetter | Image file: $(Split-Path $activeWim -Leaf)"
         $sync["WPFWin11ISOEditionComboBox"].Dispatcher.Invoke([action]{
             $sync["WPFWin11ISOEditionComboBox"].Items.Clear()
             foreach ($img in $imageInfo) {
@@ -107,12 +105,12 @@ function Invoke-WinUtilISOMountAndVerify {
         $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Visible"
 
         $sync["Win11ISODriveLetter"] = $driveLetter
-        $sync["Win11ISOWimPath"]     = $activeWim
-        $sync["Win11ISOImagePath"]   = $isoPath
+        $sync["Win11ISOWimPath"] = $activeWim
+        $sync["Win11ISOImagePath"] = $isoPath
         $sync["WPFWin11ISOModifySection"].Visibility = "Visible"
 
         Set-WinUtilProgressBar -Label "ISO verified" -Percent 100
-        Write-Win11ISOLog "ISO verified OK.  Editions found: $($imageInfo.Count)"
+        Write-Win11ISOLog "ISO verified OK. Editions found: $($imageInfo.Count)"
     } catch {
         Write-Win11ISOLog "ERROR during mount/verify: $_"
         [System.Windows.MessageBox]::Show(
@@ -125,9 +123,9 @@ function Invoke-WinUtilISOMountAndVerify {
 }
 
 function Invoke-WinUtilISOModify {
-    $isoPath     = $sync["Win11ISOImagePath"]
+    $isoPath = $sync["Win11ISOImagePath"]
     $driveLetter = $sync["Win11ISODriveLetter"]
-    $wimPath     = $sync["Win11ISOWimPath"]
+    $wimPath = $sync["Win11ISOWimPath"]
 
     if (-not $isoPath) {
         [System.Windows.MessageBox]::Show(
@@ -136,13 +134,15 @@ function Invoke-WinUtilISOModify {
         return
     }
 
-    $selectedItem     = $sync["WPFWin11ISOEditionComboBox"].SelectedItem
+    $selectedItem = $sync["WPFWin11ISOEditionComboBox"].SelectedItem
     $selectedWimIndex = 1
+
     if ($selectedItem -and $selectedItem -match '^(\d+):') {
         $selectedWimIndex = [int]$Matches[1]
     } elseif ($sync["Win11ISOImageInfo"]) {
         $selectedWimIndex = $sync["Win11ISOImageInfo"][0].ImageIndex
     }
+
     $selectedEditionName = if ($selectedItem) { ($selectedItem -replace '^\d+:\s*', '') } else { "Unknown" }
     Write-Win11ISOLog "Selected edition: $selectedEditionName (Index $selectedWimIndex)"
 
