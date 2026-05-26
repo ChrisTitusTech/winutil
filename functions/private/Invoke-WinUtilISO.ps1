@@ -216,7 +216,7 @@ function Invoke-WinUtilISOModify {
             SetProgress "Copying ISO contents..." 10
 
             Log "Copying ISO contents from $driveLetter to $isoContents..."
-            Copy-Item -Path $driveLetter -Destination $isoContents -Recurse -Force
+            Copy-Item -Path "$driveLetter\*" -Destination $isoContents -Recurse -Force
             Log "ISO contents copied."
             SetProgress "Mounting install.wim..." 25
 
