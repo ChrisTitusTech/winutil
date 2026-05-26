@@ -237,7 +237,7 @@ function Invoke-WinUtilISOModify {
 
             SetProgress "Cleaning up component store (WinSxS)..." 56
             Log "Running DISM component store cleanup (/ResetBase)..."
-            & dism /English "/image:$mountDir" /Cleanup-Image /StartComponentCleanup /ResetBase | ForEach-Object { Log $_ }
+            & dism /English "/image:$mountDir" /Cleanup-Image /StartComponentCleanup /ResetBase
             Log "Component store cleanup complete."
 
             SetProgress "Saving modified install.wim..." 65
