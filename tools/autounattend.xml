@@ -433,10 +433,19 @@ $scripts = @(
         reg.exe delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" /v DODownloadMode /f;
         reg.exe add "HKLM\Software\Policies\Microsoft\Windows\OneDrive" /v DisableFileSyncNGSC /t REG_DWORD /d 0 /f;
         reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\GameDVR" /v AppCaptureEnabled /t REG_DWORD /d 0 /f;
-        Set-Service -Name BITS -StartupType Manual -ErrorAction SilentlyContinue;
-        Set-Service -Name wuauserv -StartupType Manual -ErrorAction SilentlyContinue;
-        Set-Service -Name UsoSvc -StartupType Automatic -ErrorAction SilentlyContinue;
-        Set-Service -Name WaaSMedicSvc -StartupType Manual -ErrorAction SilentlyContinue;
+        $services = @(
+            @{ Name = 'BITS'; StartupType = 'Manual' },
+            @{ Name = 'wuauserv'; StartupType = 'Manual' },
+            @{ Name = 'UsoSvc'; StartupType = 'Automatic' },
+            @{ Name = 'WaaSMedicSvc'; StartupType = 'Manual' }
+        );
+        foreach ($svc in $services) {
+            try {
+                Set-Service -Name $svc.Name -StartupType $svc.StartupType -ErrorAction Stop;
+            } catch {
+                Write-Warning "Could not set startup type of $($svc.Name) to $($svc.StartupType): $_";
+            }
+        }
     };
     {
         reg.exe add "HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Education" /f;
