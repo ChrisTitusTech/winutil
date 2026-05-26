@@ -228,7 +228,7 @@ function Invoke-WinUtilISOModify {
             if ($injectDrivers) {
                 New-Item -Path "$Env:Temp\Driver" -ItemType Directory -Force
 
-                Log "Injecting current system drivers..."
+                Log "Injecting current system drivers (This might take a few minutes)..."
                 Export-WindowsDriver -Online -Destination "$Env:Temp\Driver"
                 & dism /image:$mountDir /Add-Driver /Driver:"$Env:Temp\Driver" /Recurse
 
@@ -236,7 +236,7 @@ function Invoke-WinUtilISOModify {
             }
 
             SetProgress "Cleaning up component store (WinSxS) This might take several minutes..." 56
-            Log "Running DISM component store cleanup (/ResetBase)..."
+            Log "Running DISM component store cleanup (/ResetBase) This might take a few minutes..."
             & dism /English "/image:$mountDir" /Cleanup-Image /StartComponentCleanup /ResetBase
             Log "Component store cleanup complete."
 
