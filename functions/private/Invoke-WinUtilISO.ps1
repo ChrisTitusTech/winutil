@@ -161,19 +161,19 @@ function Invoke-WinUtilISOModify {
 
     $runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
     $runspace.ApartmentState = "STA"
-    $runspace.ThreadOptions  = "ReuseThread"
+    $runspace.ThreadOptions = "ReuseThread"
     $runspace.Open()
     $injectDrivers = $sync["WPFWin11ISOInjectDrivers"].IsChecked -eq $true
 
-    $runspace.SessionStateProxy.SetVariable("sync",                $sync)
-    $runspace.SessionStateProxy.SetVariable("isoPath",             $isoPath)
-    $runspace.SessionStateProxy.SetVariable("driveLetter",         $driveLetter)
-    $runspace.SessionStateProxy.SetVariable("wimPath",             $wimPath)
-    $runspace.SessionStateProxy.SetVariable("workDir",             $workDir)
-    $runspace.SessionStateProxy.SetVariable("selectedWimIndex",    $selectedWimIndex)
+    $runspace.SessionStateProxy.SetVariable("sync", $sync)
+    $runspace.SessionStateProxy.SetVariable("isoPath", $isoPath)
+    $runspace.SessionStateProxy.SetVariable("driveLetter", $driveLetter)
+    $runspace.SessionStateProxy.SetVariable("wimPath", $wimPath)
+    $runspace.SessionStateProxy.SetVariable("workDir", $workDir)
+    $runspace.SessionStateProxy.SetVariable("selectedWimIndex", $selectedWimIndex)
     $runspace.SessionStateProxy.SetVariable("selectedEditionName", $selectedEditionName)
     $runspace.SessionStateProxy.SetVariable("autounattendContent", $WinUtilAutounattendXml)
-    $runspace.SessionStateProxy.SetVariable("injectDrivers",       $injectDrivers)
+    $runspace.SessionStateProxy.SetVariable("injectDrivers", $injectDrivers)
 
     $win11ISOLogFuncDef = "function Write-Win11ISOLog {`n" + ${function:Write-Win11ISOLog}.ToString() + "`n}"
     $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef", $win11ISOLogFuncDef)
@@ -190,22 +190,22 @@ function Invoke-WinUtilISOModify {
 
         function SetProgress($label, $pct) {
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                $sync.progressBarTextBlock.Text    = $label
+                $sync.progressBarTextBlock.Text = $label
                 $sync.progressBarTextBlock.ToolTip = $label
-                $sync.ProgressBar.Value            = [Math]::Max($pct, 5)
+                $sync.ProgressBar.Value = [Math]::Max($pct, 5)
             })
         }
 
         try {
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 $sync["WPFWin11ISOSelectSection"].Visibility = "Collapsed"
-                $sync["WPFWin11ISOMountSection"].Visibility  = "Collapsed"
+                $sync["WPFWin11ISOMountSection"].Visibility = "Collapsed"
                 $sync["WPFWin11ISOModifySection"].Visibility = "Collapsed"
             })
 
             Log "Creating working directory: $workDir"
             $isoContents = Join-Path $workDir "iso_contents"
-            $mountDir    = Join-Path $workDir "wim_mount"
+            $mountDir = Join-Path $workDir "wim_mount"
             New-Item -ItemType Directory -Path $isoContents, $mountDir -Force
             SetProgress "Copying ISO contents..." 10
 
@@ -258,7 +258,7 @@ function Invoke-WinUtilISOModify {
             Log "Dismounting original ISO..."
             Dismount-DiskImage -ImagePath $isoPath
 
-            $sync["Win11ISOWorkDir"]     = $workDir
+            $sync["Win11ISOWorkDir"] = $workDir
             $sync["Win11ISOContentsDir"] = $isoContents
 
             SetProgress "Modification complete" 100
@@ -304,13 +304,13 @@ function Invoke-WinUtilISOModify {
             Start-Sleep -Milliseconds 800
             $sync["Win11ISOModifying"] = $false
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                $sync.progressBarTextBlock.Text    = ""
+                $sync.progressBarTextBlock.Text = ""
                 $sync.progressBarTextBlock.ToolTip = ""
-                $sync.ProgressBar.Value            = 0
+                $sync.ProgressBar.Value = 0
                 $sync["WPFWin11ISOModifyButton"].IsEnabled = $true
                 if ($sync["WPFWin11ISOOutputSection"].Visibility -ne "Visible") {
                     $sync["WPFWin11ISOSelectSection"].Visibility = "Visible"
-                    $sync["WPFWin11ISOMountSection"].Visibility  = "Visible"
+                    $sync["WPFWin11ISOMountSection"].Visibility = "Visible"
                     $sync["WPFWin11ISOModifySection"].Visibility = "Visible"
                 }
             })
@@ -332,11 +332,11 @@ function Invoke-WinUtilISOCheckExistingWork {
     $isoContents = Join-Path $existingWorkDir.FullName "iso_contents"
     if (-not (Test-Path $isoContents)) { return }
 
-    $sync["Win11ISOWorkDir"]     = $existingWorkDir.FullName
+    $sync["Win11ISOWorkDir"] = $existingWorkDir.FullName
     $sync["Win11ISOContentsDir"] = $isoContents
 
     $sync["WPFWin11ISOSelectSection"].Visibility = "Collapsed"
-    $sync["WPFWin11ISOMountSection"].Visibility  = "Collapsed"
+    $sync["WPFWin11ISOMountSection"].Visibility = "Collapsed"
     $sync["WPFWin11ISOModifySection"].Visibility = "Collapsed"
     $sync["WPFWin11ISOOutputSection"].Visibility = "Visible"
 
@@ -364,9 +364,9 @@ function Invoke-WinUtilISOCleanAndReset {
 
     $runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
     $runspace.ApartmentState = "STA"
-    $runspace.ThreadOptions  = "ReuseThread"
+    $runspace.ThreadOptions = "ReuseThread"
     $runspace.Open()
-    $runspace.SessionStateProxy.SetVariable("sync",    $sync)
+    $runspace.SessionStateProxy.SetVariable("sync", $sync)
     $runspace.SessionStateProxy.SetVariable("workDir", $workDir)
 
     $script = [Management.Automation.PowerShell]::Create()
@@ -375,9 +375,9 @@ function Invoke-WinUtilISOCleanAndReset {
 
         function SetProgress($label, $pct) {
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                $sync.progressBarTextBlock.Text    = $label
+                $sync.progressBarTextBlock.Text = $label
                 $sync.progressBarTextBlock.ToolTip = $label
-                $sync.ProgressBar.Value            = [Math]::Max($pct, 5)
+                $sync.ProgressBar.Value = [Math]::Max($pct, 5)
             })
         }
 
@@ -389,11 +389,11 @@ function Invoke-WinUtilISOCleanAndReset {
                     if ($mountedImages) {
                         foreach ($img in $mountedImages) {
                             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{ $sync["WPFWin11ISOStatusLog"].Text += "`nDismounting WIM at: $($img.Path)..." })
-                            SetProgress "Dismounting WIM image..." 3
+                            SetProgress "Dismounting WIM image..." 25
                             Dismount-WindowsImage -Path $img.Path -Discard
                         }
                     } elseif (Test-Path $mountDir) {
-                        SetProgress "Running DISM cleanup..." 3
+                        SetProgress "Running DISM cleanup..." 50
                         & dism /English /Cleanup-Wim
                     }
                 } catch {
@@ -402,60 +402,43 @@ function Invoke-WinUtilISOCleanAndReset {
             }
 
             if ($workDir -and (Test-Path $workDir)) {
-                SetProgress "Scanning files..." 5
-
-                $allFiles = @(Get-ChildItem -Path $workDir -File -Recurse -Force)
-                $allDirs  = @(Get-ChildItem -Path $workDir -Directory -Recurse -Force |
-                    Sort-Object { $_.FullName.Length } -Descending)
-                $total   = $allFiles.Count
-                $deleted = 0
-
-                foreach ($f in $allFiles) {
-                    try { Remove-Item -Path $f.FullName -Force } catch { $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{ $sync["WPFWin11ISOStatusLog"].Text += "`nCould not remove file $($f.Name)" }) }
-                    $deleted++
-                    if ($deleted % 100 -eq 0 -or $deleted -eq $total) {
-                        $pct = [math]::Round(($deleted / [Math]::Max($total, 1)) * 85) + 5
-                        SetProgress "Deleting files in $($f.Directory.Name)... ($deleted / $total)" $pct
-                    }
-                }
-
-                foreach ($d in $allDirs) { try { Remove-Item -Path $d.FullName -Force } catch { $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{ $sync["WPFWin11ISOStatusLog"].Text += "`nCould not remove folder $($d.Name)" }) } }
-                try { Remove-Item -Path $workDir -Recurse -Force } catch { $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{ $sync["WPFWin11ISOStatusLog"].Text += "`nRoot directory removal failed: $_" }) }
+                SetProgress "Removing files..." 75
+                Remove-Item -Path $workDir -Recurse -Force
             }
 
             SetProgress "Resetting UI..." 95
 
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                $sync["Win11ISOWorkDir"]     = $null
+                $sync["Win11ISOWorkDir"] = $null
                 $sync["Win11ISOContentsDir"] = $null
-                $sync["Win11ISOImagePath"]   = $null
+                $sync["Win11ISOImagePath"] = $null
                 $sync["Win11ISODriveLetter"] = $null
-                $sync["Win11ISOWimPath"]     = $null
-                $sync["Win11ISOImageInfo"]   = $null
-                $sync["Win11ISOUSBDisks"]    = $null
+                $sync["Win11ISOWimPath"] = $null
+                $sync["Win11ISOImageInfo"] = $null
+                $sync["Win11ISOUSBDisks"] = $null
 
-                $sync["WPFWin11ISOPath"].Text                    = "No ISO selected..."
-                $sync["WPFWin11ISOFileInfo"].Visibility          = "Collapsed"
+                $sync["WPFWin11ISOPath"].Text = "No ISO selected..."
+                $sync["WPFWin11ISOFileInfo"].Visibility = "Collapsed"
                 $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Collapsed"
-                $sync["WPFWin11ISOOptionUSB"].Visibility         = "Collapsed"
-                $sync["WPFWin11ISOOutputSection"].Visibility     = "Collapsed"
-                $sync["WPFWin11ISOModifySection"].Visibility     = "Collapsed"
-                $sync["WPFWin11ISOMountSection"].Visibility      = "Collapsed"
-                $sync["WPFWin11ISOSelectSection"].Visibility     = "Visible"
-                $sync["WPFWin11ISOModifyButton"].IsEnabled       = $true
-                $sync["WPFWin11ISOCleanResetButton"].IsEnabled   = $true
+                $sync["WPFWin11ISOOptionUSB"].Visibility = "Collapsed"
+                $sync["WPFWin11ISOOutputSection"].Visibility = "Collapsed"
+                $sync["WPFWin11ISOModifySection"].Visibility = "Collapsed"
+                $sync["WPFWin11ISOMountSection"].Visibility = "Collapsed"
+                $sync["WPFWin11ISOSelectSection"].Visibility = "Visible"
+                $sync["WPFWin11ISOModifyButton"].IsEnabled = $true
+                $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $true
 
-                $sync.progressBarTextBlock.Text    = ""
+                $sync.progressBarTextBlock.Text = ""
                 $sync.progressBarTextBlock.ToolTip = ""
-                $sync.ProgressBar.Value            = 0
+                $sync.ProgressBar.Value = 0
 
-                $sync["WPFWin11ISOStatusLog"].Text   = "Ready. Please select a Windows 11 ISO to begin."
+                $sync["WPFWin11ISOStatusLog"].Text = "Ready. Please select a Windows 11 ISO to begin."
             })
         } catch {
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                $sync.progressBarTextBlock.Text    = ""
+                $sync.progressBarTextBlock.Text = ""
                 $sync.progressBarTextBlock.ToolTip = ""
-                $sync.ProgressBar.Value            = 0
+                $sync.ProgressBar.Value = 0
                 $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $true
             })
         }
@@ -475,9 +458,9 @@ function Invoke-WinUtilISOExport {
     }
 
     $dlg = [System.Windows.Forms.SaveFileDialog]::new()
-    $dlg.Title            = "Save Modified Windows 11 ISO"
-    $dlg.Filter           = "ISO files (*.iso)|*.iso"
-    $dlg.FileName         = "Win11_Modified_$(Get-Date -Format 'yyyyMMdd').iso"
+    $dlg.Title = "Save Modified Windows 11 ISO"
+    $dlg.Filter = "ISO files (*.iso)|*.iso"
+    $dlg.FileName = "Win11_Modified_$(Get-Date -Format 'yyyyMMdd').iso"
     $dlg.InitialDirectory = [System.Environment]::GetFolderPath("Desktop")
 
     if ($dlg.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
@@ -491,12 +474,12 @@ function Invoke-WinUtilISOExport {
 
     $runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
     $runspace.ApartmentState = "STA"
-    $runspace.ThreadOptions  = "ReuseThread"
+    $runspace.ThreadOptions = "ReuseThread"
     $runspace.Open()
-    $runspace.SessionStateProxy.SetVariable("sync",        $sync)
+    $runspace.SessionStateProxy.SetVariable("sync", $sync)
     $runspace.SessionStateProxy.SetVariable("contentsDir", $contentsDir)
-    $runspace.SessionStateProxy.SetVariable("outputISO",   $outputISO)
-    $runspace.SessionStateProxy.SetVariable("oscdimg",     $oscdimg)
+    $runspace.SessionStateProxy.SetVariable("outputISO", $outputISO)
+    $runspace.SessionStateProxy.SetVariable("oscdimg", $oscdimg)
 
     $win11ISOLogFuncDef = "function Write-Win11ISOLog {`n" + ${function:Write-Win11ISOLog}.ToString() + "`n}"
     $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef", $win11ISOLogFuncDef)
@@ -508,9 +491,9 @@ function Invoke-WinUtilISOExport {
 
         function SetProgress($label, $pct) {
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                $sync.progressBarTextBlock.Text    = $label
+                $sync.progressBarTextBlock.Text = $label
                 $sync.progressBarTextBlock.ToolTip = $label
-                $sync.ProgressBar.Value            = [Math]::Max($pct, 5)
+                $sync.ProgressBar.Value = [Math]::Max($pct, 5)
             })
         }
 
@@ -518,16 +501,16 @@ function Invoke-WinUtilISOExport {
             Write-Win11ISOLog "Exporting to ISO: $outputISO"
             SetProgress "Building ISO..." 10
 
-            $bootData    = "2#p0,e,b`"$contentsDir\boot\etfsboot.com`"#pEF,e,b`"$contentsDir\efi\microsoft\boot\efisys.bin`""
+            $bootData = "2#p0,e,b`"$contentsDir\boot\etfsboot.com`"#pEF,e,b`"$contentsDir\efi\microsoft\boot\efisys.bin`""
             $oscdimgArgs = @("-m", "-h", "-u2", "-udfver102", "-bootdata:$bootData", "-l`"CTOS_MODIFIED`"", "`"$contentsDir`"", "`"$outputISO`"")
 
             $psi = [System.Diagnostics.ProcessStartInfo]::new()
-            $psi.FileName               = $oscdimg
-            $psi.Arguments              = $oscdimgArgs -join " "
+            $psi.FileName = $oscdimg
+            $psi.Arguments = $oscdimgArgs -join " "
             $psi.RedirectStandardOutput = $true
-            $psi.RedirectStandardError  = $true
-            $psi.UseShellExecute        = $false
-            $psi.CreateNoWindow         = $true
+            $psi.RedirectStandardError = $true
+            $psi.UseShellExecute = $false
+            $psi.CreateNoWindow = $true
 
             $proc = [System.Diagnostics.Process]::new()
             $proc.StartInfo = $psi
@@ -558,9 +541,9 @@ function Invoke-WinUtilISOExport {
         } finally {
             Start-Sleep -Milliseconds 800
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                $sync.progressBarTextBlock.Text    = ""
+                $sync.progressBarTextBlock.Text = ""
                 $sync.progressBarTextBlock.ToolTip = ""
-                $sync.ProgressBar.Value            = 0
+                $sync.ProgressBar.Value = 0
                 $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $true
             })
         }
