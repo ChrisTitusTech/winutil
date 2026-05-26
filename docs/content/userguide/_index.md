@@ -49,19 +49,19 @@ New to Winutil? Follow the guides below in order to get up and running quickly:
 
 ## Main Features
 
-### 🚀 Application Installation
+### Application Installation
 
 Browse and install hundreds of popular applications with a single click. No more hunting for download links or dealing with installer bloat.
 
 **[Read the Applications Guide →](application/)**
 
-### ⚙️ System Tweaks
+### System Tweaks
 
 Apply optimizations for performance, privacy, and usability. Choose from preset configurations or customize individual tweaks.
 
 **[Read the Tweaks Guide →](tweaks/)**
 
-### 🛠️ Config & Fixes
+### Config & Fixes
 
 Quick fixes for common Windows problems:
 - Reset network settings
@@ -71,7 +71,7 @@ Quick fixes for common Windows problems:
 
 **[Read the Features Guide →](features/)**
 
-### 🔄 Update Management
+### Update Management
 
 Take control of Windows Updates with options to:
 - Enable/disable updates
@@ -81,7 +81,7 @@ Take control of Windows Updates with options to:
 
 **[Read the Updates Guide →](updates/)**
 
-### 🤖 Automation
+### Automation
 
 Automate Winutil configurations for:
 - Multiple PC setups
@@ -91,7 +91,7 @@ Automate Winutil configurations for:
 
 **[Read the Automation Guide →](automation/)**
 
-### 💿 Windows 11 Creator
+### Windows 11 Creator
 
 Build a custom Windows 11 ISO with bloatware removed, telemetry disabled, and hardware requirement checks bypassed. You can then export it as an ISO file or write it directly to a USB drive.
 
@@ -126,12 +126,12 @@ Before using Winutil:
 
 Need help?
 
-- **📖 Documentation**: You're reading it! Use the navigation menu
-- **❓ FAQ**: Check [Frequently Asked Questions](../faq/)
-- **🐛 Known Issues**: Review [Known Issues](../knownissues/)
-- **💬 Discord**: Join the [community Discord](https://discord.gg/RUbZUZyByQ)
-- **🐙 GitHub**: Report bugs on [GitHub Issues](https://github.com/ChrisTitusTech/winutil/issues)
-- **📺 YouTube**: Watch [video tutorials](https://www.youtube.com/watch?v=6UQZ5oQg8XA)
+- **Documentation**: You're reading it. Use the navigation menu.
+- **FAQ**: Check [Frequently Asked Questions](../faq/)
+- **Known Issues**: Review [Known Issues](../knownissues/)
+- **Discord**: Join the [community Discord](https://discord.gg/RUbZUZyByQ)
+- **GitHub**: Report bugs on [GitHub Issues](https://github.com/ChrisTitusTech/winutil/issues)
+- **YouTube**: Watch [video tutorials](https://www.youtube.com/watch?v=6UQZ5oQg8XA)
 
 ## Contributing
 

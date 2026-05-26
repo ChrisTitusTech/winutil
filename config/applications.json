@@ -505,7 +505,7 @@
     },
     "heroiclauncher": {
         "category": "Games",
-        "choco": "na",
+        "choco": "heroic-games-launcher",
         "content": "Heroic Games Launcher",
         "description": "Heroic Games Launcher is an open-source alternative game launcher for Epic Games Store.",
         "link": "https://heroicgameslauncher.com/",
@@ -702,7 +702,7 @@
     },
     "modrinth": {
         "category": "Games",
-        "choco": "na",
+        "choco": "modrinth-app",
         "content": "Modrinth App",
         "description": "Modrinth App is a desktop application for managing Minecraft mods and modpacks.",
         "link": "https://modrinth.com/app",
@@ -945,7 +945,7 @@
     },
     "processexplorer": {
         "category": "Microsoft Tools",
-        "choco": "na",
+        "choco": "procexp",
         "content": "Process Explorer",
         "description": "Process Explorer is a task manager and system monitor.",
         "link": "https://learn.microsoft.com/sysinternals/downloads/process-explorer",
@@ -1413,7 +1413,7 @@
     },
     "vc2015_32": {
         "category": "Microsoft Tools",
-        "choco": "na",
+        "choco": "vcredist2015",
         "content": "Visual C++ 2015-2022 32-bit",
         "description": "Visual C++ 2015-2022 32-bit redistributable package installs runtime components of Visual C++ libraries required to run 32-bit applications.",
         "link": "https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads",
@@ -1422,7 +1422,7 @@
     },
     "vc2015_64": {
         "category": "Microsoft Tools",
-        "choco": "na",
+        "choco": "vcredist2015",
         "content": "Visual C++ 2015-2022 64-bit",
         "description": "Visual C++ 2015-2022 64-bit redistributable package installs runtime components of Visual C++ libraries required to run 64-bit applications.",
         "link": "https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads",
