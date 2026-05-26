@@ -138,7 +138,7 @@ When you install Windows 11 from your modified ISO:
 ## Additional Resources
 
 - Download official Windows 11 media from [Microsoft](https://www.microsoft.com/en-us/software-download/windows11).
-- If you prefer to write a finished ISO with another tool, common choices include [Rufus](https://rufus.ie/), [Ventoy](https://www.ventoy.net/), and [balenaEtcher](https://etcher.balena.io/).
+- If you prefer to write a finished ISO with another tool, common choices include [Rufus](https://rufus.ie/) or [Ventoy](https://www.ventoy.net/).
 
 > [!NOTE]
 > Always download Windows ISOs from official Microsoft sources or trusted tools like Rufus/UUP Dump to avoid tampered images.
