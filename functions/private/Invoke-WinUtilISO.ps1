@@ -185,7 +185,7 @@ function Invoke-WinUtilISOModify {
 
         function Log($msg) {
             Write-Win11ISOLog $msg
-            Add-Content -Path (Join-Path $workDir "WinUtil_Win11ISO.log") -Value "[(Get-Date -Format 'HH:mm:ss')] $msg"
+            Add-Content -Path (Join-Path $workDir "WinUtil_Win11ISO.log") -Value "[$(Get-Date -Format 'HH:mm:ss')] $msg"
         }
 
         function SetProgress($label, $pct) {
@@ -288,7 +288,7 @@ function Invoke-WinUtilISOModify {
                 }
             } catch { Log "Warning: could not dismount ISO during cleanup: $_" }
 
-            Remove-Item -Path "$Env:Temp\*" -Recurse -Force
+            Remove-Item -Path $workDir -Recurse -Force
 
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 [System.Windows.MessageBox]::Show(
@@ -375,10 +375,10 @@ function Invoke-WinUtilISOCleanAndReset {
                     $sync.ProgressBar.Value = [Math]::Max($pct, 5)
                 })
             }
-
+        try {
             if ($workDir -and (Test-Path $workDir)) {
                 SetProgress "Removing files..." 75
-                Remove-Item -Path "$Env:Temp\*" -Recurse -Force
+                Remove-Item -Path $workDir -Recurse -Force
             }
 
             SetProgress "Resetting UI..." 95
