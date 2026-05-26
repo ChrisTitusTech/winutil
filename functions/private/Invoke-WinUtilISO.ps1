@@ -288,12 +288,7 @@ function Invoke-WinUtilISOModify {
                 }
             } catch { Log "Warning: could not dismount ISO during cleanup: $_" }
 
-            try {
-                if (Test-Path $workDir) {
-                    Log "Cleaning up: removing temp directory $workDir..."
-                    Remove-Item -Path $workDir -Recurse -Force
-                }
-            } catch { Log "Warning: could not remove temp directory during cleanup: $_" }
+            Remove-Item -Path "$Env:Temp\*" -Recurse -Force
 
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 [System.Windows.MessageBox]::Show(
@@ -403,7 +398,7 @@ function Invoke-WinUtilISOCleanAndReset {
 
             if ($workDir -and (Test-Path $workDir)) {
                 SetProgress "Removing files..." 75
-                Remove-Item -Path $workDir -Recurse -Force
+                Remove-Item -Path "$Env:Temp\*" -Recurse -Force
             }
 
             SetProgress "Resetting UI..." 95
