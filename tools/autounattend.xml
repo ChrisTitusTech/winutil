@@ -102,37 +102,19 @@ foreach( $file in $Document.unattend.Extensions.File ) {
 HKU = &amp;H80000003
 Set reg = GetObject("winmgmts://./root/default:StdRegProv")
 
-Sub LogError(sid, valueName, errCode)
-    On Error Resume Next
-    Dim fso, logFile
-    Set fso = CreateObject("Scripting.FileSystemObject")
-    Set logFile = fso.OpenTextFile("C:\Windows\Setup\Scripts\UnlockStartLayout.log", 8, True)
-    If Err.Number = 0 Then
-        logFile.WriteLine Now &amp; " - Error: Failed to delete '" &amp; valueName &amp; "' for SID " &amp; sid &amp; ". Return code: " &amp; errCode
-        logFile.Close
-    End If
-    On Error GoTo 0
-End Sub
-
 If reg.EnumKey(HKU, "", sids) = 0 Then
     If Not IsNull(sids) Then
         For Each sid In sids
             key = sid + "\Software\Policies\Microsoft\Windows\Explorer"
             
-            errCode = 0
-            On Error Resume Next
-            errCode = reg.DeleteValue(HKU, key, "LockedStartLayout")
-            On Error GoTo 0
-            If errCode &lt;&gt; 0 And errCode &lt;&gt; 2 Then
-                LogError sid, "LockedStartLayout", errCode
+            result = reg.DeleteValue(HKU, key, "LockedStartLayout")
+            If result &lt;&gt; 0 And result &lt;&gt; 2 Then
+                Err.Raise vbObjectError + result, "UnlockStartLayout.vbs", "Failed to delete LockedStartLayout from " &amp; key &amp; " (code " &amp; result &amp; ")"
             End If
 
-            errCode = 0
-            On Error Resume Next
-            errCode = reg.DeleteValue(HKU, key, "StartLayoutFile")
-            On Error GoTo 0
-            If errCode &lt;&gt; 0 And errCode &lt;&gt; 2 Then
-                LogError sid, "StartLayoutFile", errCode
+            result = reg.DeleteValue(HKU, key, "StartLayoutFile")
+            If result &lt;&gt; 0 And result &lt;&gt; 2 Then
+                Err.Raise vbObjectError + result, "UnlockStartLayout.vbs", "Failed to delete StartLayoutFile from " &amp; key &amp; " (code " &amp; result &amp; ")"
             End If
         Next
     End If
