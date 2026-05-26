@@ -283,7 +283,7 @@ function Invoke-WinUtilISOModify {
                 }
             }
 
-            Set-Content -Path "$isoContents\autounattend.xml" -Value $WinUtilAutounattendXml
+            Set-Content -Path "$isoContents\autounattend.xml" -Value $autounattendContent
             log "Written autounattend.xml to ISO root ($isoContents)."
 
             SetProgress "Cleaning up component store (WinSxS)..." 56
