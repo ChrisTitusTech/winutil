@@ -446,6 +446,8 @@ function Invoke-WinUtilISOCleanAndReset {
             })
         }
 
+        Remove-Item -Path "$Env:Temp\oscdimg.exe"
+
         try {
             if ($workDir) {
                 $mountDir = Join-Path $workDir "wim_mount"
@@ -570,8 +572,8 @@ function Invoke-WinUtilISOExport {
 
     $outputISO = $dlg.FileName
 
-    Invoke-WebRequest -Uri https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe -OutFile "oscdimg.exe"
-    $oscdimg = "oscdimg.exe"
+    Invoke-WebRequest -Uri https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe -OutFile "$Env:Temp\oscdimg.exe"
+    $oscdimg = "$Env:Temp\oscdimg.exe"
 
     $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $false
 
