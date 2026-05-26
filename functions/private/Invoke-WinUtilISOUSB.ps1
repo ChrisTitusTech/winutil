@@ -149,6 +149,19 @@ function Invoke-WinUtilISOWriteUSB {
         Copy-Item -Path "$contentsDir\*" $usb -Recurse -Force -Exclude install.wim
 
         Write-Win11ISOLog "Done"
+
+        $sync["WPFWin11ISOWriteUSBButton"].Dispatcher.Invoke([action]{
+            [System.Windows.MessageBox]::Show(
+                "USB creation completed successfully.",
+                "Done",
+                "OK",
+                "Information"
+            )
+        })
+        
+        $sync["WPFWin11ISOWriteUSBButton"].Dispatcher.Invoke([action]{
+            $sync["WPFWin11ISOWriteUSBButton"].IsEnabled = $true
+        })
     })
 
     $script.BeginInvoke()
