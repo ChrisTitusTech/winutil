@@ -270,10 +270,6 @@ function Invoke-WinUtilISOModify {
         } catch {
             Log "ERROR during modification: $_"
 
-            if ($driverExportRoot) {
-                Remove-Item -Path $driverExportRoot -Recurse -Force
-            }
-
             try {
                 if (Test-Path $mountDir) {
                     $mountedImages = Get-WindowsImage -Mounted | Where-Object { $_.Path -eq $mountDir }
