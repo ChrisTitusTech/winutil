@@ -575,6 +575,7 @@ function Invoke-WinUtilISOExport {
     $outputISO = $dlg.FileName
 
     Invoke-WebRequest -Uri https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe -OutFile "oscdimg.exe"
+    $oscdimg = "oscdimg.exe"
 
     $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $false
 
