@@ -654,7 +654,7 @@ Outputs `winutil.ps1` in the root directory.
 
 - [Contributing Guide](../../contributing/) - How to contribute code
 - [User Guide](../../userguide/) - End-user documentation
-- [Win11 Creator Guide](../../userguide/win11Creator/) - Building customized Windows 11 ISOs
+- [Win11 Creator Guide](../../userguide/win11creator/) - Building customized Windows 11 ISOs
 - [FAQ](../../faq/) - Common questions
 
 ## Additional Resources
