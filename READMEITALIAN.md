@@ -42,7 +42,7 @@ Winutil supporta anche preset predefiniti che applicano automaticamente configur
 - `Standard`
 - `Minimal`
 - `Advanced`
-- 
+
 Esempio:
 
 ```powershell
