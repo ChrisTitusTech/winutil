@@ -381,8 +381,6 @@ function Invoke-WinUtilISOCleanAndReset {
             })
         }
 
-        Remove-Item -Path "$Env:Temp\oscdimg.exe"
-
         try {
             if ($workDir) {
                 $mountDir = Join-Path $workDir "wim_mount"
