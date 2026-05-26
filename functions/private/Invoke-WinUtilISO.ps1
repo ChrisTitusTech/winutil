@@ -92,7 +92,7 @@ function Invoke-WinUtilISOMountAndVerify {
         $sync["WPFWin11ISOEditionComboBox"].Dispatcher.Invoke([action]{
             $sync["WPFWin11ISOEditionComboBox"].Items.Clear()
             foreach ($img in $imageInfo) {
-                [void]$sync["WPFWin11ISOEditionComboBox"].Items.Add("$($img.ImageIndex): $($img.ImageName)")
+                $sync["WPFWin11ISOEditionComboBox"].Items.Add("$($img.ImageIndex): $($img.ImageName)")
             }
             if ($sync["WPFWin11ISOEditionComboBox"].Items.Count -gt 0) {
                 $proIndex = -1
@@ -175,7 +175,7 @@ function Invoke-WinUtilISOModify {
     $runspace.SessionStateProxy.SetVariable("autounattendContent", $WinUtilAutounattendXml)
     $runspace.SessionStateProxy.SetVariable("injectDrivers",       $injectDrivers)
 
-    $win11ISOLogFuncDef = "function Write-Win11ISOLog {`n"       + ${function:Write-Win11ISOLog}.ToString()       + "`n}"
+    $win11ISOLogFuncDef = "function Write-Win11ISOLog {`n" + ${function:Write-Win11ISOLog}.ToString() + "`n}"
     $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef", $win11ISOLogFuncDef)
 
     $script = [Management.Automation.PowerShell]::Create()
@@ -184,13 +184,8 @@ function Invoke-WinUtilISOModify {
         . ([scriptblock]::Create($win11ISOLogFuncDef))
 
         function Log($msg) {
-            $ts = (Get-Date).ToString("HH:mm:ss")
-            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                $sync["WPFWin11ISOStatusLog"].Text += "`n[$ts] $msg"
-                $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
-                $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
-            })
-            Add-Content -Path (Join-Path $workDir "WinUtil_Win11ISO.log") -Value "[$ts] $msg"
+            Write-Win11ISOLog $msg
+            Add-Content -Path (Join-Path $workDir "WinUtil_Win11ISO.log") -Value "[(Get-Date -Format 'HH:mm:ss')] $msg"
         }
 
         function SetProgress($label, $pct) {
@@ -230,60 +225,59 @@ function Invoke-WinUtilISOModify {
             Log "Applying WinUtil modifications to install.wim..."
 
             function Add-DriversToImage {
-                param ([string]$MountPath, [string]$DriverDir, [string]$Label = "image", [scriptblock]$Logger)
+                param ([string]$MountPath, [string]$DriverDir, [string]$Label = "image")
                 & dism /English "/image:$MountPath" /Add-Driver "/Driver:$DriverDir" /Recurse |
-                    ForEach-Object { log "  dism[$Label]: $_" }
+                    ForEach-Object { Log "  dism[$Label]: $_" }
             }
 
             function Invoke-BootWimInject {
-                param ([string]$BootWimPath, [string]$DriverDir, [scriptblock]$Logger)
+                param ([string]$BootWimPath, [string]$DriverDir)
                 Set-ItemProperty -Path $BootWimPath -Name IsReadOnly -Value $false
                 $mountDir = Join-Path $env:TEMP "WinUtil_BootMount_$(Get-Random)"
                 New-Item -Path $mountDir -ItemType Directory -Force
                 try {
-                    log "Mounting boot.wim (index 2) for driver injection..."
+                    Log "Mounting boot.wim (index 2) for driver injection..."
                     Mount-WindowsImage -ImagePath $BootWimPath -Index 2 -Path $mountDir
-                    Add-DriversToImage -MountPath $mountDir -DriverDir $DriverDir -Label "boot" -Logger $Logger
-                    log "Saving boot.wim..."
+                    Add-DriversToImage -MountPath $mountDir -DriverDir $DriverDir -Label "boot"
+                    Log "Saving boot.wim..."
                     Dismount-WindowsImage -Path $mountDir -Save
-                    log "boot.wim driver injection complete."
+                    Log "boot.wim driver injection complete."
                 } catch {
-                    log "Warning: boot.wim driver injection failed: $_"
-                    try { Dismount-WindowsImage -Path $mountDir -Discard } catch {}
+                    Log "Warning: boot.wim driver injection failed: $_"
+                    try { Dismount-WindowsImage -Path $mountDir -Discard } catch { Log "Failed to discard boot.wim mount: $_" }
                 } finally {
                     Remove-Item -Path $mountDir -Recurse -Force
                 }
             }
 
             if ($injectDrivers) {
-                log "Exporting all drivers from running system..."
+                Log "Exporting all drivers from running system..."
                 $driverExportRoot = Join-Path $env:TEMP "WinUtil_DriverExport_$(Get-Random)"
                 New-Item -Path $driverExportRoot -ItemType Directory -Force
                 try {
                     Export-WindowsDriver -Online -Destination $driverExportRoot
-        
-                    log "Injecting current system drivers into install.wim..."
-                    Add-DriversToImage -MountPath $mountDir -DriverDir $driverExportRoot -Label "install" -Logger $Log
-                    log "install.wim driver injection complete."
+                    Log "Injecting current system drivers into install.wim..."
+                    Add-DriversToImage -MountPath $mountDir -DriverDir $driverExportRoot -Label "install"
+                    Log "install.wim driver injection complete."
         
                     if ($isoContents -and (Test-Path $isoContents)) {
                         $bootWim = Join-Path $isoContents "sources\boot.wim"
                         if (Test-Path $bootWim) {
-                            log "Injecting current system drivers into boot.wim..."
-                            Invoke-BootWimInject -BootWimPath $bootWim -DriverDir $driverExportRoot -Logger $Log
+                            Log "Injecting current system drivers into boot.wim..."
+                            Invoke-BootWimInject -BootWimPath $bootWim -DriverDir $driverExportRoot
                         } else {
-                            log "Warning: boot.wim not found — skipping boot.wim driver injection."
+                            Log "Warning: boot.wim not found — skipping boot.wim driver injection."
                         }
                     }
                 } catch {
-                    log "Error during driver export/injection: $_"
+                    Log "Error during driver export/injection: $_"
                 } finally {
                     Remove-Item -Path $driverExportRoot -Recurse -Force
                 }
             }
 
             Set-Content -Path "$isoContents\autounattend.xml" -Value $autounattendContent
-            log "Written autounattend.xml to ISO root ($isoContents)."
+            Log "Written autounattend.xml to ISO root ($isoContents)."
 
             SetProgress "Cleaning up component store (WinSxS)..." 56
             Log "Running DISM component store cleanup (/ResetBase)..."
@@ -372,11 +366,7 @@ function Invoke-WinUtilISOModify {
 
 function Invoke-WinUtilISOCheckExistingWork {
     if ($sync["Win11ISOContentsDir"] -and (Test-Path $sync["Win11ISOContentsDir"])) { return }
-
-    # Check if ISO modification is currently in progress
-    if ($sync["Win11ISOModifying"]) {
-        return
-    }
+    if ($sync["Win11ISOModifying"]) { return }
 
     $existingWorkDir = Get-Item -Path (Join-Path $env:TEMP "WinUtil_Win11ISO*") |
         Where-Object { $_.PSIsContainer } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
@@ -427,16 +417,6 @@ function Invoke-WinUtilISOCleanAndReset {
     $script.Runspace = $runspace
     $script.AddScript({
 
-        function Log($msg) {
-            $ts = (Get-Date).ToString("HH:mm:ss")
-            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                $sync["WPFWin11ISOStatusLog"].Text += "`n[$ts] $msg"
-                $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
-                $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
-            })
-            Add-Content -Path (Join-Path $workDir "WinUtil_Win11ISO.log") -Value "[$ts] $msg"
-        }
-
         function SetProgress($label, $pct) {
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 $sync.progressBarTextBlock.Text    = $label
@@ -451,29 +431,23 @@ function Invoke-WinUtilISOCleanAndReset {
             if ($workDir) {
                 $mountDir = Join-Path $workDir "wim_mount"
                 try {
-                    $mountedImages = Get-WindowsImage -Mounted |
-                                     Where-Object { $_.Path -like "$workDir*" }
+                    $mountedImages = Get-WindowsImage -Mounted | Where-Object { $_.Path -like "$workDir*" }
                     if ($mountedImages) {
                         foreach ($img in $mountedImages) {
-                            Log "Dismounting WIM at: $($img.Path) (discarding changes)..."
+                            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{ $sync["WPFWin11ISOStatusLog"].Text += "`nDismounting WIM at: $($img.Path)..." })
                             SetProgress "Dismounting WIM image..." 3
                             Dismount-WindowsImage -Path $img.Path -Discard
-                            Log "WIM dismounted successfully."
                         }
                     } elseif (Test-Path $mountDir) {
-                        Log "No mounted WIM reported by Get-WindowsImage. Running DISM /Cleanup-Wim as a precaution..."
                         SetProgress "Running DISM cleanup..." 3
-                        & dism /English /Cleanup-Wim | ForEach-Object { Log $_ }
+                        & dism /English /Cleanup-Wim
                     }
                 } catch {
-                    Log "Warning: could not dismount WIM cleanly. Attempting DISM /Cleanup-Wim fallback: $_"
-                    try { & dism /English /Cleanup-Wim | ForEach-Object { Log $_ } }
-                    catch { Log "Warning: DISM /Cleanup-Wim also failed: $_" }
+                    & dism /English /Cleanup-Wim
                 }
             }
 
             if ($workDir -and (Test-Path $workDir)) {
-                Log "Scanning files to delete in: $workDir"
                 SetProgress "Scanning files..." 5
 
                 $allFiles = @(Get-ChildItem -Path $workDir -File -Recurse -Force)
@@ -482,10 +456,8 @@ function Invoke-WinUtilISOCleanAndReset {
                 $total   = $allFiles.Count
                 $deleted = 0
 
-                Log "Found $total files to delete."
-
                 foreach ($f in $allFiles) {
-                    try { Remove-Item -Path $f.FullName -Force } catch { Log "WARNING: could not delete $($f.FullName): $_" }
+                    try { Remove-Item -Path $f.FullName -Force } catch { $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{ $sync["WPFWin11ISOStatusLog"].Text += "`nCould not remove file $($f.Name)" }) }
                     $deleted++
                     if ($deleted % 100 -eq 0 -or $deleted -eq $total) {
                         $pct = [math]::Round(($deleted / [Math]::Max($total, 1)) * 85) + 5
@@ -493,23 +465,11 @@ function Invoke-WinUtilISOCleanAndReset {
                     }
                 }
 
-                foreach ($d in $allDirs) {
-                    try { Remove-Item -Path $d.FullName -Force } catch {}
-                }
-
-                try { Remove-Item -Path $workDir -Recurse -Force } catch {}
-
-                if (Test-Path $workDir) {
-                    Log "WARNING: some items could not be deleted in $workDir"
-                } else {
-                    Log "Temp directory deleted successfully."
-                }
-            } else {
-                Log "No temp directory found — resetting UI."
+                foreach ($d in $allDirs) { try { Remove-Item -Path $d.FullName -Force } catch { $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{ $sync["WPFWin11ISOStatusLog"].Text += "`nCould not remove folder $($d.Name)" }) } }
+                try { Remove-Item -Path $workDir -Recurse -Force } catch { $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{ $sync["WPFWin11ISOStatusLog"].Text += "`nRoot directory removal failed: $_" }) }
             }
 
             SetProgress "Resetting UI..." 95
-            Log "Resetting interface..."
 
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 $sync["Win11ISOWorkDir"]     = $null
@@ -520,7 +480,7 @@ function Invoke-WinUtilISOCleanAndReset {
                 $sync["Win11ISOImageInfo"]   = $null
                 $sync["Win11ISOUSBDisks"]    = $null
 
-                $sync["WPFWin11ISOPath"].Text                   = "No ISO selected..."
+                $sync["WPFWin11ISOPath"].Text                    = "No ISO selected..."
                 $sync["WPFWin11ISOFileInfo"].Visibility          = "Collapsed"
                 $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Collapsed"
                 $sync["WPFWin11ISOOptionUSB"].Visibility         = "Collapsed"
@@ -538,7 +498,6 @@ function Invoke-WinUtilISOCleanAndReset {
                 $sync["WPFWin11ISOStatusLog"].Text   = "Ready. Please select a Windows 11 ISO to begin."
             })
         } catch {
-            Log "ERROR during Clean & Reset: $_"
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 $sync.progressBarTextBlock.Text    = ""
                 $sync.progressBarTextBlock.ToolTip = ""
@@ -608,8 +567,6 @@ function Invoke-WinUtilISOExport {
             $bootData    = "2#p0,e,b`"$contentsDir\boot\etfsboot.com`"#pEF,e,b`"$contentsDir\efi\microsoft\boot\efisys.bin`""
             $oscdimgArgs = @("-m", "-o", "-u2", "-udfver102", "-bootdata:$bootData", "-l`"CTOS_MODIFIED`"", "`"$contentsDir`"", "`"$outputISO`"")
 
-            Write-Win11ISOLog "Running oscdimg..."
-
             $psi = [System.Diagnostics.ProcessStartInfo]::new()
             $psi.FileName               = $oscdimg
             $psi.Arguments              = $oscdimgArgs -join " "
@@ -622,19 +579,8 @@ function Invoke-WinUtilISOExport {
             $proc.StartInfo = $psi
             $proc.Start()
 
-            # Stream stdout line-by-line as oscdimg runs
-            while (-not $proc.StandardOutput.EndOfStream) {
-                $line = $proc.StandardOutput.ReadLine()
-                if ($line.Trim()) { Write-Win11ISOLog $line }
-            }
-
+            Write-Win11ISOLog "Running oscdimg..."
             $proc.WaitForExit()
-
-            # Flush any stderr after process exits
-            $stderr = $proc.StandardError.ReadToEnd()
-            foreach ($line in ($stderr -split "`r?`n")) {
-                if ($line.Trim()) { Write-Win11ISOLog "[stderr]$line" }
-            }
 
             if ($proc.ExitCode -eq 0) {
                 SetProgress "ISO exported" 100
