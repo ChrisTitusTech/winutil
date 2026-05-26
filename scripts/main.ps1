@@ -68,6 +68,23 @@ $sync.configs.applications.PSObject.Properties | ForEach-Object {
 
 Set-Preferences
 
+if ($Preset) {
+    Show-CTTLogo
+
+    # Selects the tweaks from $Preset varible
+    Update-WinUtilSelections -flatJson $sync.configs.preset.$Preset
+
+    # Run tweaks that were selected by Update-WinUtilSelections
+    Invoke-WinUtilAutoRun
+
+    # Cleanup and exit
+    $sync.runspace.Dispose()
+    $sync.runspace.Close()
+    [System.GC]::Collect()
+    Stop-Transcript
+    return
+}
+
 if ($PARAM_NOUI) {
     Show-CTTLogo
     if ($PARAM_CONFIG -and -not [string]::IsNullOrWhiteSpace($PARAM_CONFIG)) {
