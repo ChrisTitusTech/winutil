@@ -181,7 +181,6 @@ function Invoke-WinUtilISOModify {
     $script = [Management.Automation.PowerShell]::Create()
     $script.Runspace = $runspace
     $script.AddScript({
-        . ([scriptblock]::Create($isoScriptFuncDef))
         . ([scriptblock]::Create($win11ISOLogFuncDef))
 
         function Log($msg) {
