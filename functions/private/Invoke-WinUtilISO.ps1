@@ -55,8 +55,8 @@ function Invoke-WinUtilISOMountAndVerify {
 
         Set-WinUtilProgressBar -Label "Verifying ISO contents..." -Percent 30
 
-        $wimPath = Join-Path $driveLetter "sources\install.wim"
-        $esdPath = Join-Path $driveLetter "sources\install.esd"
+        $wimPath = "$driveLetter\sources\install.wim"
+        $esdPath = "$driveLetter\sources\install.esd"
 
         if (-not (Test-Path $wimPath) -and -not (Test-Path $esdPath)) {
             Dismount-DiskImage -ImagePath $isoPath
@@ -146,21 +146,14 @@ function Invoke-WinUtilISOModify {
     $sync["WPFWin11ISOModifyButton"].IsEnabled = $false
     $sync["Win11ISOModifying"] = $true
 
-    $existingWorkDir = Get-Item -Path (Join-Path $env:TEMP "WinUtil_Win11ISO*") |
+    $existingWorkDir = Get-Item -Path "$Env:Temp\WinUtil_Win11ISO*" |
         Where-Object { $_.PSIsContainer } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
 
     $workDir = if ($existingWorkDir) {
         Write-Win11ISOLog "Reusing existing temp directory: $($existingWorkDir.FullName)"
         $existingWorkDir.FullName
     } else {
-        Join-Path $env:TEMP "WinUtil_Win11ISO_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
-    }
-
-    $autounattendContent = if ($WinUtilAutounattendXml) {
-        $WinUtilAutounattendXml
-    } else {
-        $toolsXml = Join-Path $PSScriptRoot "..\..\tools\autounattend.xml"
-        if (Test-Path $toolsXml) { Get-Content $toolsXml -Raw } else { "" }
+        Join-Path $Env:Temp "WinUtil_Win11ISO_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
     }
 
     $runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
@@ -176,7 +169,7 @@ function Invoke-WinUtilISOModify {
     $runspace.SessionStateProxy.SetVariable("workDir",             $workDir)
     $runspace.SessionStateProxy.SetVariable("selectedWimIndex",    $selectedWimIndex)
     $runspace.SessionStateProxy.SetVariable("selectedEditionName", $selectedEditionName)
-    $runspace.SessionStateProxy.SetVariable("autounattendContent", $autounattendContent)
+    $runspace.SessionStateProxy.SetVariable("autounattendContent", $WinUtilAutounattendXml)
     $runspace.SessionStateProxy.SetVariable("injectDrivers",       $injectDrivers)
 
     $win11ISOLogFuncDef = "function Write-Win11ISOLog {`n"       + ${function:Write-Win11ISOLog}.ToString()       + "`n}"
@@ -196,7 +189,7 @@ function Invoke-WinUtilISOModify {
                 $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
                 $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
             })
-            Add-Content -Path (Join-Path $workDir "WinUtil_Win11ISO.log") -Value "[$ts] $msg"
+            Add-Content -Path "$workDir\WinUtil_Win11ISO.log" -Value "[$ts] $msg"
         }
 
         function SetProgress($label, $pct) {
@@ -215,18 +208,20 @@ function Invoke-WinUtilISOModify {
             })
 
             Log "Creating working directory: $workDir"
-            $isoContents = Join-Path $workDir "iso_contents"
-            $mountDir    = Join-Path $workDir "wim_mount"
+
+            $isoContents = "$workDir\iso_contents"
+            $mountDir = "$workDir\wim_mount"
+
             New-Item -ItemType Directory -Path $isoContents, $mountDir -Force
             SetProgress "Copying ISO contents..." 10
 
             Log "Copying ISO contents from $driveLetter to $isoContents..."
-            & robocopy $driveLetter $isoContents /E /NFL /NDL /NJH /NJS
+            Copy-Item -Path $driveLetter -Destination $isoContents -Recurse -Force
             Log "ISO contents copied."
             SetProgress "Mounting install.wim..." 25
 
-            $localWim = Join-Path $isoContents "sources\install.wim"
-            if (-not (Test-Path $localWim)) { $localWim = Join-Path $isoContents "sources\install.esd" }
+            $localWim = "$isoContents\sources\install.wim"
+            if (-not (Test-Path $localWim)) { $localWim = "$isoContents\sources\install.esd" }
             Set-ItemProperty -Path $localWim -Name IsReadOnly -Value $false
 
             Log "Mounting install.wim (Index ${selectedWimIndex}: $selectedEditionName) at $mountDir..."
@@ -240,7 +235,7 @@ function Invoke-WinUtilISOModify {
             }
 
             function Inject-BootWim ($BootWim, $DriverDir) {
-                $mount = Join-Path $env:TEMP "WinUtil_Boot_$([guid]::NewGuid())"
+                $mount = Join-Path $Env:Temp "WinUtil_Boot_$([guid]::NewGuid())"
 
                 Set-ItemProperty -Path $BootWim -Name IsReadOnly -Value $false
                 New-Item -Path $mount -ItemType Directory -Force
@@ -257,8 +252,8 @@ function Invoke-WinUtilISOModify {
             }
 
             if ($injectDrivers) {
-                $driverDir = Join-Path $env:TEMP "WinUtil_Drivers_$([guid]::NewGuid())"
-                $bootWim = Join-Path $isoContents "sources\boot.wim"
+                $driverDir = Join-Path $Env:Temp "WinUtil_Drivers_$([guid]::NewGuid())"
+                $bootWim = "$isoContents\sources\boot.wim"
 
                 log "Exporting system drivers..."
                 New-Item $driverDir -ItemType Directory -Force
@@ -273,7 +268,7 @@ function Invoke-WinUtilISOModify {
                 Remove-Item $driverDir -Recurse -Force
             }
 
-            Set-Content -Path "$isoContents\autounattend.xml" -Value $autounattendContent
+            Set-Content -Path "$isoContents\autounattend.xml" -Value $WinUtilAutounattendXml
             log "Written autounattend.xml to ISO root."
 
             SetProgress "Cleaning up component store (WinSxS)..." 56
@@ -288,18 +283,21 @@ function Invoke-WinUtilISOModify {
 
             SetProgress "Removing unused editions from install.wim..." 70
             Log "Exporting edition '$selectedEditionName' (Index $selectedWimIndex) to a single-edition install.wim..."
-            $exportWim = Join-Path $isoContents "sources\install_export.wim"
+
+            $exportWim = "$isoContents\sources\install_export.wim"
             Export-WindowsImage -SourceImagePath $localWim -SourceIndex $selectedWimIndex -DestinationImagePath $exportWim
+
             Remove-Item -Path $localWim -Force
             Rename-Item -Path $exportWim -NewName "install.wim" -Force
-            $localWim = Join-Path $isoContents "sources\install.wim"
+
+            $localWim = "$isoContents\sources\install.wim"
             Log "Unused editions removed. install.wim now contains only '$selectedEditionName'."
 
             SetProgress "Dismounting source ISO..." 80
             Log "Dismounting original ISO..."
             Dismount-DiskImage -ImagePath $isoPath
 
-            $sync["Win11ISOWorkDir"]     = $workDir
+            $sync["Win11ISOWorkDir"] = $workDir
             $sync["Win11ISOContentsDir"] = $isoContents
 
             SetProgress "Modification complete" 100
@@ -369,7 +367,7 @@ function Invoke-WinUtilISOCheckExistingWork {
         return
     }
 
-    $existingWorkDir = Get-Item -Path (Join-Path $env:TEMP "WinUtil_Win11ISO*") |
+    $existingWorkDir = Get-Item -Path $Env:Temp\WinUtil_Win11ISO*" |
         Where-Object { $_.PSIsContainer } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
 
     if (-not $existingWorkDir) { return }
@@ -377,7 +375,7 @@ function Invoke-WinUtilISOCheckExistingWork {
     $isoContents = Join-Path $existingWorkDir.FullName "iso_contents"
     if (-not (Test-Path $isoContents)) { return }
 
-    $sync["Win11ISOWorkDir"]     = $existingWorkDir.FullName
+    $sync["Win11ISOWorkDir"] = $existingWorkDir.FullName
     $sync["Win11ISOContentsDir"] = $isoContents
 
     $sync["WPFWin11ISOSelectSection"].Visibility = "Collapsed"
@@ -425,7 +423,7 @@ function Invoke-WinUtilISOCleanAndReset {
                 $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
                 $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
             })
-            Add-Content -Path (Join-Path $workDir "WinUtil_Win11ISO.log") -Value "[$ts] $msg"
+            Add-Content -Path "$workDir\WinUtil_Win11ISO.log" -Value "[$ts] $msg"
         }
 
         function SetProgress($label, $pct) {
@@ -438,7 +436,7 @@ function Invoke-WinUtilISOCleanAndReset {
 
         try {
             if ($workDir) {
-                $mountDir = Join-Path $workDir "wim_mount"
+                $mountDir = "$workDir\wim_mount"
                 try {
                     $mountedImages = Get-WindowsImage -Mounted |
                                      Where-Object { $_.Path -like "$workDir*" }
