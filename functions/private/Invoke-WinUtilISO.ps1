@@ -231,20 +231,26 @@ function Invoke-WinUtilISOModify {
             }
 
             function Invoke-BootWimInject {
-                param ([string]$BootWimPath, [string]$DriverDir)
+                param ([string]$BootWimPath, [string]$DriverDir, [string]$AutounattendXmlContent)
                 Set-ItemProperty -Path $BootWimPath -Name IsReadOnly -Value $false
                 $mountDir = Join-Path $env:TEMP "WinUtil_BootMount_$(Get-Random)"
                 New-Item -Path $mountDir -ItemType Directory -Force
                 try {
-                    Log "Mounting boot.wim (index 2) for driver injection..."
+                    Log "Mounting boot.wim (index 2) to inject answer file..."
                     Mount-WindowsImage -ImagePath $BootWimPath -Index 2 -Path $mountDir
-                    Add-DriversToImage -MountPath $mountDir -DriverDir $DriverDir -Label "boot"
+
+                    Log "Injecting autounattend.xml into boot.wim index 2 root..."
+                    Set-Content -Path "$mountDirautounattend.xml" -Value $AutounattendXmlContent
+
+                    if ($DriverDir) {
+                        Add-DriversToImage -MountPath $mountDir -DriverDir $DriverDir -Label "boot"
+                    }
+
                     Log "Saving boot.wim..."
                     Dismount-WindowsImage -Path $mountDir -Save
-                    Log "boot.wim driver injection complete."
                 } catch {
-                    Log "Warning: boot.wim driver injection failed: $_"
-                    try { Dismount-WindowsImage -Path $mountDir -Discard } catch { Log "Failed to discard boot.wim mount: $_" }
+                    Log "Warning: boot.wim injection failed: $_"
+                    Dismount-WindowsImage -Path $mountDir -Discard
                 } finally {
                     Remove-Item -Path $mountDir -Recurse -Force
                 }
@@ -258,26 +264,19 @@ function Invoke-WinUtilISOModify {
                     Export-WindowsDriver -Online -Destination $driverExportRoot
                     Log "Injecting current system drivers into install.wim..."
                     Add-DriversToImage -MountPath $mountDir -DriverDir $driverExportRoot -Label "install"
-                    Log "install.wim driver injection complete."
-        
-                    if ($isoContents -and (Test-Path $isoContents)) {
-                        $bootWim = Join-Path $isoContents "sources\boot.wim"
-                        if (Test-Path $bootWim) {
-                            Log "Injecting current system drivers into boot.wim..."
-                            Invoke-BootWimInject -BootWimPath $bootWim -DriverDir $driverExportRoot
-                        } else {
-                            Log "Warning: boot.wim not found — skipping boot.wim driver injection."
-                        }
-                    }
                 } catch {
-                    Log "Error during driver export/injection: $_"
-                } finally {
-                    Remove-Item -Path $driverExportRoot -Recurse -Force
+                    Log "Error during driver export/injection into install.wim: $_"
                 }
             }
 
             Set-Content -Path "$isoContents\autounattend.xml" -Value $autounattendContent
-            Log "Written autounattend.xml to ISO root ($isoContents)."
+            Log "Written autounattend.xml to ISO root."
+
+            Invoke-BootWimInject -BootWimPath "$isoContents\sources\boot.wim" -DriverDir $driverExportRoot -AutounattendXmlContent $autounattendContent
+
+            if ($driverExportRoot) {
+                Remove-Item -Path $driverExportRoot -Recurse -Force
+            }
 
             SetProgress "Cleaning up component store (WinSxS)..." 56
             Log "Running DISM component store cleanup (/ResetBase)..."
@@ -313,6 +312,10 @@ function Invoke-WinUtilISOModify {
             })
         } catch {
             Log "ERROR during modification: $_"
+
+            if ($driverExportRoot) {
+                Remove-Item -Path $driverExportRoot -Recurse -Force
+            }
 
             try {
                 if (Test-Path $mountDir) {
