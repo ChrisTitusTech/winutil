@@ -14,24 +14,27 @@ function Write-Win11ISOLog {
 }
 
 function Invoke-WinUtilISOBrowse {
-    $dialog = [System.Windows.Forms.OpenFileDialog]::new()
-    $dialog.Title = "Select Windows 11 ISO"
-    $dialog.Filter = "ISO files (*.iso)|*.iso|All files (*.*)|*.*"
+    Add-Type -AssemblyName System.Windows.Forms
 
-    if ($dialog.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
+    $dlg = [System.Windows.Forms.OpenFileDialog]::new()
+    $dlg.Title            = "Select Windows 11 ISO"
+    $dlg.Filter           = "ISO files (*.iso)|*.iso|All files (*.*)|*.*"
+    $dlg.InitialDirectory = [System.Environment]::GetFolderPath("Desktop")
 
-    $isoPath = $dialog.FileName
+    if ($dlg.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
+
+    $isoPath    = $dlg.FileName
     $fileSizeGB = [math]::Round((Get-Item $isoPath).Length / 1GB, 2)
 
-    $sync["WPFWin11ISOPath"].Text = $isoPath
-    $sync["WPFWin11ISOFileInfo"].Text = "File size: $fileSizeGB GB"
+    $sync["WPFWin11ISOPath"].Text           = $isoPath
+    $sync["WPFWin11ISOFileInfo"].Text       = "File size: $fileSizeGB GB"
     $sync["WPFWin11ISOFileInfo"].Visibility = "Visible"
-    $sync["WPFWin11ISOMountSection"].Visibility = "Visible"
-    $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Collapsed"
-    $sync["WPFWin11ISOModifySection"].Visibility = "Collapsed"
-    $sync["WPFWin11ISOOutputSection"].Visibility = "Collapsed"
+    $sync["WPFWin11ISOMountSection"].Visibility       = "Visible"
+    $sync["WPFWin11ISOVerifyResultPanel"].Visibility  = "Collapsed"
+    $sync["WPFWin11ISOModifySection"].Visibility      = "Collapsed"
+    $sync["WPFWin11ISOOutputSection"].Visibility      = "Collapsed"
 
-    Write-Win11ISOLog "ISO selected: $isoPath ($fileSizeGB GB)"
+    Write-Win11ISOLog "ISO selected: $isoPath  ($fileSizeGB GB)"
 }
 
 function Invoke-WinUtilISOMountAndVerify {
@@ -48,15 +51,15 @@ function Invoke-WinUtilISOMountAndVerify {
     try {
         Mount-DiskImage -ImagePath $isoPath
 
-        do { Start-Sleep -Milliseconds 500 } until ((Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter)
+        do { Start-Sleep -Milliseconds 100 } until ((Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter)
 
         $driveLetter = (Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter + ":"
         Write-Win11ISOLog "Mounted at drive $driveLetter"
 
         Set-WinUtilProgressBar -Label "Verifying ISO contents..." -Percent 30
 
-        $wimPath = "$driveLetter\sources\install.wim"
-        $esdPath = "$driveLetter\sources\install.esd"
+        $wimPath = Join-Path $driveLetter "sources\install.wim"
+        $esdPath = Join-Path $driveLetter "sources\install.esd"
 
         if (-not (Test-Path $wimPath) -and -not (Test-Path $esdPath)) {
             Dismount-DiskImage -ImagePath $isoPath
@@ -135,27 +138,25 @@ function Invoke-WinUtilISOModify {
 
     $selectedItem     = $sync["WPFWin11ISOEditionComboBox"].SelectedItem
     $selectedWimIndex = 1
-
     if ($selectedItem -and $selectedItem -match '^(\d+):') {
         $selectedWimIndex = [int]$Matches[1]
     } elseif ($sync["Win11ISOImageInfo"]) {
         $selectedWimIndex = $sync["Win11ISOImageInfo"][0].ImageIndex
     }
-
     $selectedEditionName = if ($selectedItem) { ($selectedItem -replace '^\d+:\s*', '') } else { "Unknown" }
     Write-Win11ISOLog "Selected edition: $selectedEditionName (Index $selectedWimIndex)"
 
     $sync["WPFWin11ISOModifyButton"].IsEnabled = $false
     $sync["Win11ISOModifying"] = $true
 
-    $existingWorkDir = Get-Item -Path "$Env:Temp\WinUtil_Win11ISO*" |
+    $existingWorkDir = Get-Item -Path (Join-Path $env:TEMP "WinUtil_Win11ISO*") |
         Where-Object { $_.PSIsContainer } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
 
     $workDir = if ($existingWorkDir) {
         Write-Win11ISOLog "Reusing existing temp directory: $($existingWorkDir.FullName)"
         $existingWorkDir.FullName
     } else {
-        Join-Path $Env:Temp "WinUtil_Win11ISO_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+        Join-Path $env:TEMP "WinUtil_Win11ISO_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
     }
 
     $runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
@@ -174,6 +175,7 @@ function Invoke-WinUtilISOModify {
     $runspace.SessionStateProxy.SetVariable("autounattendContent", $WinUtilAutounattendXml)
     $runspace.SessionStateProxy.SetVariable("injectDrivers",       $injectDrivers)
 
+    $isoScriptFuncDef   = "function Invoke-WinUtilISOScript {`n" + ${function:Invoke-WinUtilISOScript}.ToString() + "`n}"
     $win11ISOLogFuncDef = "function Write-Win11ISOLog {`n"       + ${function:Write-Win11ISOLog}.ToString()       + "`n}"
     $runspace.SessionStateProxy.SetVariable("isoScriptFuncDef",   $isoScriptFuncDef)
     $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef", $win11ISOLogFuncDef)
@@ -191,7 +193,7 @@ function Invoke-WinUtilISOModify {
                 $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
                 $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
             })
-            Add-Content -Path "$workDir\WinUtil_Win11ISO.log" -Value "[$ts] $msg"
+            Add-Content -Path (Join-Path $workDir "WinUtil_Win11ISO.log") -Value "[$ts] $msg"
         }
 
         function SetProgress($label, $pct) {
@@ -210,10 +212,8 @@ function Invoke-WinUtilISOModify {
             })
 
             Log "Creating working directory: $workDir"
-
-            $isoContents = "$workDir\iso_contents"
-            $mountDir = "$workDir\wim_mount"
-
+            $isoContents = Join-Path $workDir "iso_contents"
+            $mountDir    = Join-Path $workDir "wim_mount"
             New-Item -ItemType Directory -Path $isoContents, $mountDir -Force
             SetProgress "Copying ISO contents..." 10
 
@@ -222,8 +222,8 @@ function Invoke-WinUtilISOModify {
             Log "ISO contents copied."
             SetProgress "Mounting install.wim..." 25
 
-            $localWim = "$isoContents\sources\install.wim"
-            if (-not (Test-Path $localWim)) { $localWim = "$isoContents\sources\install.esd" }
+            $localWim = Join-Path $isoContents "sources\install.wim"
+            if (-not (Test-Path $localWim)) { $localWim = Join-Path $isoContents "sources\install.esd" }
             Set-ItemProperty -Path $localWim -Name IsReadOnly -Value $false
 
             Log "Mounting install.wim (Index ${selectedWimIndex}: $selectedEditionName) at $mountDir..."
@@ -231,47 +231,64 @@ function Invoke-WinUtilISOModify {
             SetProgress "Modifying install.wim..." 45
 
             Log "Applying WinUtil modifications to install.wim..."
-            function Add-Drivers ($MountPath, $DriverDir, $Label) {
-                dism /English "/Image:$MountPath" /Add-Driver "/Driver:$DriverDir" /Recurse |
-                    ForEach-Object { log "[$Label] $_" }
+
+            function Add-DriversToImage {
+                param ([string]$MountPath, [string]$DriverDir, [string]$Label = "image", [scriptblock]$Logger)
+                & dism /English "/image:$MountPath" /Add-Driver "/Driver:$DriverDir" /Recurse |
+                    ForEach-Object { log "  dism[$Label]: $_" }
             }
 
-            function Inject-BootWim ($BootWim, $DriverDir) {
-                $mount = Join-Path $Env:Temp "WinUtil_Boot_$([guid]::NewGuid())"
-
-                Set-ItemProperty -Path $BootWim -Name IsReadOnly -Value $false
-                New-Item -Path $mount -ItemType Directory -Force
-
-                log "Mounting boot.wim..."
-                Mount-WindowsImage -ImagePath $BootWim -Index 2 -Path $mount
-
-                Add-Drivers $mount $DriverDir "boot"
-
-                log "Saving boot.wim..."
-                Dismount-WindowsImage -Path $mount -Save
-
-                Remove-Item $mount -Recurse -Force
+            function Invoke-BootWimInject {
+                param ([string]$BootWimPath, [string]$DriverDir, [scriptblock]$Logger)
+                Set-ItemProperty -Path $BootWimPath -Name IsReadOnly -Value $false
+                $mountDir = Join-Path $env:TEMP "WinUtil_BootMount_$(Get-Random)"
+                New-Item -Path $mountDir -ItemType Directory -Force
+                try {
+                    log "Mounting boot.wim (index 2) for driver injection..."
+                    Mount-WindowsImage -ImagePath $BootWimPath -Index 2 -Path $mountDir
+                    Add-DriversToImage -MountPath $mountDir -DriverDir $DriverDir -Label "boot" -Logger $Logger
+                    log "Saving boot.wim..."
+                    Dismount-WindowsImage -Path $mountDir -Save
+                    log "boot.wim driver injection complete."
+                } catch {
+                    log "Warning: boot.wim driver injection failed: $_"
+                    try { Dismount-WindowsImage -Path $mountDir -Discard } catch {}
+                } finally {
+                    Remove-Item -Path $mountDir -Recurse -Force
+                }
             }
 
             if ($injectDrivers) {
-                $driverDir = Join-Path $Env:Temp "WinUtil_Drivers_$([guid]::NewGuid())"
-                $bootWim = "$isoContents\sources\boot.wim"
-
-                log "Exporting system drivers..."
-                New-Item $driverDir -ItemType Directory -Force
-                Export-WindowsDriver -Online -Destination $driverDir
-
-                log "Injecting drivers into install.wim..."
-                Add-Drivers $mountDir $driverDir "install"
-
-                log "Injecting drivers into boot.wim..."
-                Inject-BootWim $bootWim $driverDir
-
-                Remove-Item $driverDir -Recurse -Force
+                log "Exporting all drivers from running system..."
+                $driverExportRoot = Join-Path $env:TEMP "WinUtil_DriverExport_$(Get-Random)"
+                New-Item -Path $driverExportRoot -ItemType Directory -Force
+                try {
+                    Export-WindowsDriver -Online -Destination $driverExportRoot
+        
+                    log "Injecting current system drivers into install.wim..."
+                    Add-DriversToImage -MountPath $mountDir -DriverDir $driverExportRoot -Label "install" -Logger $Log
+                    log "install.wim driver injection complete."
+        
+                    if (isoContents -and (Test-Path isoContents)) {
+                        $bootWim = Join-Path isoContents "sources\boot.wim"
+                        if (Test-Path $bootWim) {
+                            log "Injecting current system drivers into boot.wim..."
+                            Invoke-BootWimInject -BootWimPath $bootWim -DriverDir $driverExportRoot -Logger $Log
+                        } else {
+                            log "Warning: boot.wim not found — skipping boot.wim driver injection."
+                        }
+                    }
+                } catch {
+                    log "Error during driver export/injection: $_"
+                } finally {
+                    Remove-Item -Path $driverExportRoot -Recurse -Force
+                }
+            } else {
+                log "Driver injection skipped."
             }
 
-            Set-Content -Path "$isoContents\autounattend.xml" -Value $WinUtilAutounattendXml
-            log "Written autounattend.xml to ISO root."
+            Set-Content -Path "isoContents\autounattend.xml" -Value $WinUtilAutounattendXml
+            log "Written autounattend.xml to ISO root ($isoDest)."
 
             SetProgress "Cleaning up component store (WinSxS)..." 56
             Log "Running DISM component store cleanup (/ResetBase)..."
@@ -285,21 +302,18 @@ function Invoke-WinUtilISOModify {
 
             SetProgress "Removing unused editions from install.wim..." 70
             Log "Exporting edition '$selectedEditionName' (Index $selectedWimIndex) to a single-edition install.wim..."
-
-            $exportWim = "$isoContents\sources\install_export.wim"
+            $exportWim = Join-Path $isoContents "sources\install_export.wim"
             Export-WindowsImage -SourceImagePath $localWim -SourceIndex $selectedWimIndex -DestinationImagePath $exportWim
-
             Remove-Item -Path $localWim -Force
             Rename-Item -Path $exportWim -NewName "install.wim" -Force
-
-            $localWim = "$isoContents\sources\install.wim"
+            $localWim = Join-Path $isoContents "sources\install.wim"
             Log "Unused editions removed. install.wim now contains only '$selectedEditionName'."
 
             SetProgress "Dismounting source ISO..." 80
             Log "Dismounting original ISO..."
             Dismount-DiskImage -ImagePath $isoPath
 
-            $sync["Win11ISOWorkDir"] = $workDir
+            $sync["Win11ISOWorkDir"]     = $workDir
             $sync["Win11ISOContentsDir"] = $isoContents
 
             SetProgress "Modification complete" 100
@@ -369,7 +383,7 @@ function Invoke-WinUtilISOCheckExistingWork {
         return
     }
 
-    $existingWorkDir = Get-Item -Path $Env:Temp\WinUtil_Win11ISO*" |
+    $existingWorkDir = Get-Item -Path (Join-Path $env:TEMP "WinUtil_Win11ISO*") |
         Where-Object { $_.PSIsContainer } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
 
     if (-not $existingWorkDir) { return }
@@ -377,7 +391,7 @@ function Invoke-WinUtilISOCheckExistingWork {
     $isoContents = Join-Path $existingWorkDir.FullName "iso_contents"
     if (-not (Test-Path $isoContents)) { return }
 
-    $sync["Win11ISOWorkDir"] = $existingWorkDir.FullName
+    $sync["Win11ISOWorkDir"]     = $existingWorkDir.FullName
     $sync["Win11ISOContentsDir"] = $isoContents
 
     $sync["WPFWin11ISOSelectSection"].Visibility = "Collapsed"
@@ -425,7 +439,7 @@ function Invoke-WinUtilISOCleanAndReset {
                 $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
                 $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
             })
-            Add-Content -Path "$workDir\WinUtil_Win11ISO.log" -Value "[$ts] $msg"
+            Add-Content -Path (Join-Path $workDir "WinUtil_Win11ISO.log") -Value "[$ts] $msg"
         }
 
         function SetProgress($label, $pct) {
@@ -438,7 +452,7 @@ function Invoke-WinUtilISOCleanAndReset {
 
         try {
             if ($workDir) {
-                $mountDir = "$workDir\wim_mount"
+                $mountDir = Join-Path $workDir "wim_mount"
                 try {
                     $mountedImages = Get-WindowsImage -Mounted |
                                      Where-Object { $_.Path -like "$workDir*" }
@@ -550,25 +564,28 @@ function Invoke-WinUtilISOExport {
         return
     }
 
-    $dialog = [System.Windows.Forms.SaveFileDialog]::new()
-    $dialog.Title            = "Save Modified Windows 11 ISO"
-    $dialog.Filter           = "ISO files (*.iso)|*.iso"
-    $dialog.FileName         = "Win11_Modified_$(Get-Date -Format 'yyyyMMdd').iso"
-    $dialog.InitialDirectory = [System.Environment]::GetFolderPath("Desktop")
+    $dlg = [System.Windows.Forms.SaveFileDialog]::new()
+    $dlg.Title            = "Save Modified Windows 11 ISO"
+    $dlg.Filter           = "ISO files (*.iso)|*.iso"
+    $dlg.FileName         = "Win11_Modified_$(Get-Date -Format 'yyyyMMdd').iso"
+    $dlg.InitialDirectory = [System.Environment]::GetFolderPath("Desktop")
 
-    if ($dialog.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
-    $outputISO = $dialog.FileName
+    if ($dlg.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
+
+    $outputISO = $dlg.FileName
+
+    Invoke-WebRequest -Uri https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe -OutFile "oscdimg.exe"
 
     $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $false
 
     $runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
     $runspace.ApartmentState = "STA"
-    $runspace.ThreadOptions = "ReuseThread"
+    $runspace.ThreadOptions  = "ReuseThread"
     $runspace.Open()
-    $runspace.SessionStateProxy.SetVariable("sync", $sync)
+    $runspace.SessionStateProxy.SetVariable("sync",        $sync)
     $runspace.SessionStateProxy.SetVariable("contentsDir", $contentsDir)
-    $runspace.SessionStateProxy.SetVariable("outputISO", $outputISO)
-    $runspace.SessionStateProxy.SetVariable("oscdimg.exe", $oscdimg)
+    $runspace.SessionStateProxy.SetVariable("outputISO",   $outputISO)
+    $runspace.SessionStateProxy.SetVariable("oscdimg",     $oscdimg)
 
     $win11ISOLogFuncDef = "function Write-Win11ISOLog {`n" + ${function:Write-Win11ISOLog}.ToString() + "`n}"
     $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef", $win11ISOLogFuncDef)
@@ -589,10 +606,8 @@ function Invoke-WinUtilISOExport {
         try {
             Write-Win11ISOLog "Exporting to ISO: $outputISO"
             SetProgress "Building ISO..." 10
-     
-            Invoke-WebRequest -Uri https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe -OutFile "oscdimg.exe"
 
-            $bootData = "2#p0,e,b`"$contentsDir\boot\etfsboot.com`"#pEF,e,b`"$contentsDir\efi\microsoft\boot\efisys.bin`""
+            $bootData    = "2#p0,e,b`"$contentsDir\boot\etfsboot.com`"#pEF,e,b`"$contentsDir\efi\microsoft\boot\efisys.bin`""
             $oscdimgArgs = @("-m", "-o", "-u2", "-udfver102", "-bootdata:$bootData", "-l`"CTOS_MODIFIED`"", "`"$contentsDir`"", "`"$outputISO`"")
 
             Write-Win11ISOLog "Running oscdimg..."
@@ -616,8 +631,6 @@ function Invoke-WinUtilISOExport {
             }
 
             $proc.WaitForExit()
-
-            Remove-Item -Path "oscdimg.exe"
 
             # Flush any stderr after process exits
             $stderr = $proc.StandardError.ReadToEnd()
