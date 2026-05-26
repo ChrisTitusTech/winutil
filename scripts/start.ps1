@@ -8,6 +8,8 @@
 
 param (
     [string]$Config,
+    [ValidateSet("Standard", "Minimal", "Advanced")]
+    [string]$Preset,
     [switch]$Noui,
     [switch]$Offline
 )

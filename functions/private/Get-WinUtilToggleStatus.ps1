@@ -1,21 +1,12 @@
-Function Get-WinUtilToggleStatus {
-    param(
-        [string]$ToggleSwitch
-    )
+Function Get-WinUtilToggleStatus ($ToggleSwitch) {
 
-    $toggleSwitchReg = if ($ToggleSwitch) {
-        $sync.configs.tweaks.$ToggleSwitch.registry
-    } else {
-        $ToggleSwitchReg
+    $ToggleSwitchReg = $sync.configs.tweaks.$ToggleSwitch.registry
+
+    if (-not (Get-PSDrive -Name HKU -ErrorAction SilentlyContinue)) {
+        New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
     }
 
-    if (-not $toggleSwitchReg) {
-        return $false
-    }
-
-    New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS
-
-    foreach ($regentry in $toggleSwitchReg) {
+    foreach ($regentry in $ToggleSwitchReg) {
 
         if (-not (Test-Path $regentry.Path)) {
             New-Item -Path $regentry.Path -Force | Out-Null
@@ -25,16 +16,8 @@ Function Get-WinUtilToggleStatus {
 
         if ($null -eq $regstate) {
             switch ($regentry.DefaultState) {
-                "true" {
-                    $regstate = $regentry.Value
-                }
-                "false" {
-                    $regstate = $regentry.OriginalValue
-                }
-                default {
-                    Write-Error "Entry $($regentry.Name): missing value and no DefaultState"
-                    $regstate = $regentry.OriginalValue
-                }
+                "true"  { $regstate = $regentry.Value }
+                "false" { $regstate = $regentry.OriginalValue }
             }
         }
 
