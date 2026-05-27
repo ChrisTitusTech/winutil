@@ -106,8 +106,16 @@ If reg.EnumKey(HKU, "", sids) = 0 Then
     If Not IsNull(sids) Then
         For Each sid In sids
             key = sid + "\Software\Policies\Microsoft\Windows\Explorer"
-            reg.DeleteValue HKU, key, "LockedStartLayout"
-            reg.DeleteValue HKU, key, "StartLayoutFile"
+            
+            result = reg.DeleteValue(HKU, key, "LockedStartLayout")
+            If result &lt;&gt; 0 And result &lt;&gt; 2 Then
+                WScript.Echo "Warning: Failed to delete LockedStartLayout from " &amp; key &amp; " (code " &amp; result &amp; ")"
+            End If
+
+            result = reg.DeleteValue(HKU, key, "StartLayoutFile")
+            If result &lt;&gt; 0 And result &lt;&gt; 2 Then
+                WScript.Echo "Warning: Failed to delete StartLayoutFile from " &amp; key &amp; " (code " &amp; result &amp; ")"
+            End If
         Next
     End If
 End If
