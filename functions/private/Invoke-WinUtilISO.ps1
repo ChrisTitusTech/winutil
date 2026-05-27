@@ -14,13 +14,13 @@ function Write-Win11ISOLog {
 }
 
 function Invoke-WinUtilISOBrowse {
-    $dlg = [System.Windows.Forms.OpenFileDialog]::new()
-    $dlg.Title = "Select Windows 11 ISO"
-    $dlg.Filter = "ISO files (*.iso)|*.iso|All files (*.*)|*.*"
+    $dialog = [System.Windows.Forms.OpenFileDialog]::new()
+    $dialog.Title = "Select Windows 11 ISO"
+    $dialog.Filter = "ISO files (*.iso)|*.iso|All files (*.*)|*.*"
 
-    if ($dlg.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
+    if ($dialog.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
 
-    $isoPath = $dlg.FileName
+    $isoPath = $dialog.FileName
     $fileSizeGB = [math]::Round((Get-Item $isoPath).Length / 1GB, 2)
 
     $sync["WPFWin11ISOPath"].Text = $isoPath
@@ -429,15 +429,15 @@ function Invoke-WinUtilISOExport {
         return
     }
 
-    $dlg = [System.Windows.Forms.SaveFileDialog]::new()
-    $dlg.Title = "Save Modified Windows 11 ISO"
-    $dlg.Filter = "ISO files (*.iso)|*.iso"
-    $dlg.FileName = "Win11_Modified_$(Get-Date -Format 'yyyyMMdd').iso"
-    $dlg.InitialDirectory = [System.Environment]::GetFolderPath("Desktop")
+    $dialog = [System.Windows.Forms.SaveFileDialog]::new()
+    $dialog.Title = "Save Modified Windows 11 ISO"
+    $dialog.Filter = "ISO files (*.iso)|*.iso"
+    $dialog.FileName = "Win11_Modified_$(Get-Date -Format 'yyyyMMdd').iso"
+    $dialog.InitialDirectory = [System.Environment]::GetFolderPath("Desktop")
 
-    if ($dlg.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
+    if ($dialog.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
 
-    $outputISO = $dlg.FileName
+    $outputISO = $dialog.FileName
 
     Invoke-WebRequest -Uri https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe -OutFile "$Env:Temp\oscdimg.exe"
     $oscdimg = "$Env:Temp\oscdimg.exe"
