@@ -1,13 +1,8 @@
-function Write-Win11ISOLog {
-    param([string]$Message)
-    $ts = (Get-Date).ToString("HH:mm:ss")
+function Write-Win11ISOLog ($Message) {
+    $time = (Get-Date).ToString("HH:mm:ss")
+    
     $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-        $current = $sync["WPFWin11ISOStatusLog"].Text
-        if ($current -eq "Ready. Please select a Windows 11 ISO to begin.") {
-            $sync["WPFWin11ISOStatusLog"].Text = "[$ts] $Message"
-        } else {
-            $sync["WPFWin11ISOStatusLog"].Text += "`n[$ts] $Message"
-        }
+        $sync["WPFWin11ISOStatusLog"].Text += "`n[$time] $Message"
         $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
         $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
     })
