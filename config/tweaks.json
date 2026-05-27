@@ -2868,5 +2868,589 @@
       }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/menudelay"
+  },
+  "WPFToggleEnableTransparency": {
+    "Content": "Transparency Effects - Disable",
+    "Description": "Disables acrylic blur effects on surfaces like the Start menu, taskbar, and notification center.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "Name": "EnableTransparency",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/enabletransparency"
+  },
+  "WPFToggleColorPrevalence": {
+    "Content": "Accent Color on Title Bars - Disable",
+    "Description": "Prevents accent color from appearing on title bars and window borders.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "Name": "ColorPrevalence",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/colorprevalence"
+  },
+  "WPFToggleMinAnimation": {
+    "Content": "Minimize Animation - Disable",
+    "Description": "Disables the minimize and maximize window animation effect.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Desktop\\WindowMetrics",
+        "Name": "MinAnimate",
+        "Value": "0",
+        "Type": "String",
+        "OriginalValue": "1",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/minanimation"
+  },
+  "WPFToggleLockScreenTips": {
+    "Content": "Lock Screen Tips - Disable",
+    "Description": "Disables tips, tricks, and suggestions from Microsoft on the lock screen.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+        "Name": "EnableLogonTips",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/lockscreentips"
+  },
+  "WPFToggleNewsAndInterests": {
+    "Content": "News & Interests - Disable",
+    "Description": "Disables the news and interests feed on the taskbar and lock screen.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Dsh",
+        "Name": "AllowNewsAndInterests",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/newsandinterests"
+  },
+  "WPFToggleSMB1": {
+    "Content": "SMB1 Protocol - Disable",
+    "Description": "Disables the legacy SMB1 protocol on both server and client sides, reducing security risk from outdated network protocols.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters",
+        "Name": "SMB1",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "DefaultState": "false"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\mrxsmb10",
+        "Name": "Start",
+        "Value": "4",
+        "Type": "DWord",
+        "OriginalValue": "3",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/privacy-security/smb1"
+  },
+  "WPFToggleRemoteDesktop": {
+    "Content": "Remote Desktop - Disable",
+    "Description": "Disables Remote Desktop connections to this computer, blocking incoming RDP traffic.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server",
+        "Name": "fDenyTSConnections",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/privacy-security/remotedesktop"
+  },
+  "WPFToggleClipboardSync": {
+    "Content": "Clipboard Sync - Disable",
+    "Description": "Disables clipboard history and cloud sync across devices.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Clipboard",
+        "Name": "EnableClipboardHistory",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "DefaultState": "false"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Clipboard",
+        "Name": "CloudClipboard",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/privacy-security/clipboardsync"
+  },
+  "WPFToggleBiometrics": {
+    "Content": "Biometrics - Disable",
+    "Description": "Disables Windows Hello biometric authentication (fingerprint, facial recognition) via policy.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Biometrics",
+        "Name": "Enabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/privacy-security/biometrics"
+  },
+  "WPFToggleBluetoothAdvertising": {
+    "Content": "Bluetooth Advertising - Disable",
+    "Description": "Disables Bluetooth advertising and discovery services.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\default\\Bluetooth\\AllowAdvertising",
+        "Name": "value",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/privacy-security/bluetoothadvertising"
+  },
+  "WPFToggleFeedbackNotifications": {
+    "Content": "Feedback Notifications - Disable",
+    "Description": "Disables Windows feedback prompts and survey notifications.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Siuf\\Rules",
+        "Name": "NumberOfSIUFInPeriod",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/privacy-security/feedbacknotifications"
+  },
+  "WPFTweaksEdgeSecureNetwork": {
+    "Content": "Edge Secure Network - Disable",
+    "Description": "Disables the Edge Secure Network VPN feature (powered by Cloudflare).",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "EdgeSecureNetworkEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/edge-browser-tweaks/edgesecurenetwork"
+  },
+  "WPFTweaksEdgeStartupBoost": {
+    "Content": "Edge Startup Boost - Disable",
+    "Description": "Prevents Edge from running in the background and pre-loading at startup.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\\Recommended",
+        "Name": "StartupBoostEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\\Recommended",
+        "Name": "BackgroundModeEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/edge-browser-tweaks/edgestartupboost"
+  },
+  "WPFTweaksEdgeVisualSearch": {
+    "Content": "Edge Visual Search - Disable",
+    "Description": "Disables the image visual search (search by image) feature in Edge.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "VisualSearchEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/edge-browser-tweaks/edgevisualsearch"
+  },
+  "WPFTweaksEdgeBrowserPrompts": {
+    "Content": "Edge Default Browser Prompts - Disable",
+    "Description": "Stops Edge from showing prompts encouraging you to set it as your default browser.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "DefaultBrowserSettingOverride",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/edge-browser-tweaks/edgebrowserprompts"
+  },
+  "WPFTweaksEdgeDiscoverFeed": {
+    "Content": "Edge Discover Feed - Disable",
+    "Description": "Disables the Edge sidebar discover feed and content recommendations.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "DiscoverPageContextEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/edge-browser-tweaks/edgediscoverfeed"
+  },
+
+  "WPFTweaksNagle": {
+    "Content": "Nagle's Algorithm - Disable",
+    "Description": "Disables Nagle's Algorithm globally to reduce network latency for interactive applications like games and remote desktop.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "InvokeScript": [
+      "Get-ChildItem 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces' | ForEach-Object { Set-ItemProperty -LiteralPath $_.PSPath -Name 'TcpAckFrequency' -Value 1 -Type DWord -Force }"
+    ],
+    "UndoScript": [
+      "Get-ChildItem 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces' | ForEach-Object { Remove-ItemProperty -LiteralPath $_.PSPath -Name 'TcpAckFrequency' -Force }"
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/misc/nagle"
+  },
+  "WPFTweaksPagingExecutive": {
+    "Content": "Paging Executive - Disable",
+    "Description": "Prevents Windows from paging kernel-mode drivers and system code to disk, keeping them resident in memory for better performance.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "InvokeScript": [
+      "Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management' -Name 'DisablePagingExecutive' -Value 1 -Type DWord -Force"
+    ],
+    "UndoScript": [
+      "Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management' -Name 'DisablePagingExecutive' -Value 0 -Type DWord -Force"
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/misc/pagingexecutive"
+  },
+  "WPFTweaksForegroundBoost": {
+    "Content": "Foreground App Boost - Disable",
+    "Description": "Disables the foreground application priority boost, giving equal CPU time to background processes.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "InvokeScript": [
+      "Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\PriorityControl' -Name 'Win32PrioritySeparation' -Value 0 -Type DWord -Force"
+    ],
+    "UndoScript": [
+      "Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\PriorityControl' -Name 'Win32PrioritySeparation' -Value 38 -Type DWord -Force"
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/misc/foregroundboost"
+  },
+  "WPFTweaksRemoteRegistry": {
+    "Content": "Remote Registry - Disable",
+    "Description": "Disables the Remote Registry service to prevent remote modification of the Windows registry.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "InvokeScript": [
+      "Set-Service -Name RemoteRegistry -StartupType Disabled -Status Stopped -Force"
+    ],
+    "UndoScript": [
+      "Set-Service -Name RemoteRegistry -StartupType Manual -Status Running -Force"
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/misc/remoteregistry"
+  },
+  "WPFToggleSmartScreen": {
+    "Content": "SmartScreen - Disable",
+    "Description": "Disables Microsoft SmartScreen filter for web content evaluation in apps.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\AppHost",
+        "Name": "EnableWebContentEvaluation",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/privacy-security/smartscreen"
+  },
+  "WPFToggleErrorReporting": {
+    "Content": "Error Reporting - Disable",
+    "Description": "Disables Windows Error Reporting, preventing crash data from being sent to Microsoft.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Error Reporting",
+        "Name": "Disabled",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Error Reporting",
+        "Name": "DontShowUI",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/privacy-security/errorreporting"
+  },
+  "WPFToggleLocationFeatures": {
+    "Content": "App Access to Location - Disable",
+    "Description": "Prevents apps and services from accessing the device location.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AppPrivacy",
+        "Name": "LetAppsAccessLocation",
+        "Value": "2",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/privacy-security/locationfeatures"
+  },
+  "WPFToggleVoiceActivation": {
+    "Content": "Voice Activation - Disable",
+    "Description": "Prevents apps from activating with voice, blocking wake word detection at the system level.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AppPrivacy",
+        "Name": "LetAppsActivateWithVoice",
+        "Value": "2",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/privacy-security/voiceactivation"
+  },
+  "WPFToggleAutomaticRestartSignOn": {
+    "Content": "Automatic Restart Sign-On - Disable",
+    "Description": "Disables automatic sign-in after a Windows Update restart, requiring a password instead.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+        "Name": "DisableAutomaticRestartSignOn",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/privacy-security/automaticrestartsignon"
+  },
+  "WPFToggleHandwritingDataSharing": {
+    "Content": "Handwriting Data Sharing - Disable",
+    "Description": "Prevents Windows from collecting and sharing handwriting recognition data with Microsoft.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\HandwritingErrorReports",
+        "Name": "PreventHandwritingDataSharing",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/privacy-security/handwritingdatasharing"
+  },
+  "WPFToggleMessageSync": {
+    "Content": "Message Sync - Disable",
+    "Description": "Disables syncing of text messages across devices through Microsoft services.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Messaging",
+        "Name": "AllowMessageSync",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/privacy-security/messagesync"
+  },
+  "WPFToggleSpotlightFeatures": {
+    "Content": "Windows Spotlight - Disable",
+    "Description": "Disables Windows Spotlight features including tips, tricks, and suggestions on the lock screen and desktop.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "Name": "DisableWindowsSpotlightFeatures",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "Name": "ConfigureWindowsSpotlight",
+        "Value": "2",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/privacy-security/spotlightfeatures"
+  },
+  "WPFToggleQuickAccessHistory": {
+    "Content": "Quick Access History - Disable",
+    "Description": "Stops File Explorer Quick Access from showing recently used files and frequently visited folders.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer",
+        "Name": "ShowRecent",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "DefaultState": "false"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer",
+        "Name": "ShowFrequent",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/quickaccesshistory"
+  },
+  "WPFToggleMyPeople": {
+    "Content": "My People / Contacts - Disable",
+    "Description": "Disables the My People (Contacts) feature on the taskbar.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\People",
+        "Name": "PeopleBand",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/mypeople"
+  },
+  "WPFToggleTextInputDataCollection": {
+    "Content": "Text Input Data Collection - Disable",
+    "Description": "Prevents Windows from collecting typing and inking data for personalization.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\InputPersonalization",
+        "Name": "RestrictImplicitTextCollection",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\InputPersonalization",
+        "Name": "RestrictImplicitInkCollection",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/textinputdatacollection"
   }
 }

@@ -318,5 +318,17 @@
     "ButtonWidth": "300",
     "function": "Invoke-WPFSSHServer",
     "link": "https://winutil.christitus.com/dev/features/remote-access/sshserver"
+  },
+  "WPFUEFIRestart": {
+    "Content": "Restart to UEFI Firmware",
+    "Description": "Restarts the computer directly into the UEFI/BIOS firmware settings menu.",
+    "category": "Fixes",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "InvokeScript": [
+      "shutdown /r /fw /t 0"
+    ],
+    "link": "https://winutil.christitus.com/dev/features/fixes/uefirestart"
   }
 }
