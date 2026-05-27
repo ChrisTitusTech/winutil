@@ -6,7 +6,7 @@ winutil.exe.config
 winutil.ps1
 binary/
 
-# General software/os specific
+# general software/os specific
 desktop.ini
 .DS_Store
 
@@ -14,7 +14,7 @@ desktop.ini
 .idea/
 .vs/
 
-# Hugo Files
+# hugo files
 docs/public/
 docs/.hugo_build.lock
 docs/resources/
