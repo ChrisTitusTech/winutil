@@ -1,20 +1,18 @@
-# Libraries
+# winutil
 System.Management.Automation.dll
 Microsoft.PowerShell.ConsoleHost.dll
 
-# winutil
 winutil.exe.config
 winutil.ps1
 binary/
 
-# Configuration folder
+# General software/os specific
+desktop.ini
+.DS_Store
+
 .vscode/
 .idea/
 .vs/
-
-# OS Specific
-desktop.ini
-.DS_Store
 
 # Hugo Files
 docs/public/
