@@ -2,6 +2,11 @@
 System.Management.Automation.dll
 Microsoft.PowerShell.ConsoleHost.dll
 
+# winutil
+winutil.exe.config
+winutil.ps1
+binary/
+
 # Configuration folder
 .vscode/
 .idea/
@@ -10,15 +15,6 @@ Microsoft.PowerShell.ConsoleHost.dll
 # OS Specific
 desktop.ini
 .DS_Store
-
-# Executables and Configs
-pester.ps1
-Microsoft.UI.Xaml*
-winutil.ps1
-
-# winutil-bin
-winutil.exe.config
-binary/
 
 # Hugo Files
 docs/public/
