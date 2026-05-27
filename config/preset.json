@@ -22,5 +22,25 @@
     "WPFTweaksWPBT",
     "WPFTweaksServices",
     "WPFTweaksTelemetry"
+  ],
+  "Advanced": [
+    "WPFTweaksActivity",
+    "WPFTweaksConsumerFeatures",
+    "WPFTweaksDisableExplorerAutoDiscovery",
+    "WPFTweaksWPBT",
+    "WPFTweaksDVR",
+    "WPFTweaksDeBloat",
+    "WPFTweaksLocation",
+    "WPFTweaksServices",
+    "WPFTweaksTelemetry",
+    "WPFTweaksDeleteTempFiles",
+    "WPFTweaksEndTaskOnTaskbar",
+    "WPFTweaksDisableStoreSearch",
+    "WPFTweaksRevertStartMenu",
+    "WPFTweaksWidget",
+    "WPFTweaksRemoveOneDrive",
+    "WPFTweaksWindowsAI",
+    "WPFTweaksRightClickMenu",
+    "WPFTweaksPowershell7Tele"
   ]
 }
