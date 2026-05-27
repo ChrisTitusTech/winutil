@@ -1892,22 +1892,6 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/disableexplorerautodiscovery"
   },
-  "WPFTweaksESPFix": {
-    "Content": "EFI System Partition (ESP) Update Fix",
-    "Description": "Resets ESP padding to fix May 2026 update error 0x800f0922 when KB5089549 fails at 35% during reboot. Run if update fails to install.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Bfsvc",
-        "Name": "EspPaddingPercent",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "15"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/espfix"
-  },
   "WPFTweaksDisableVBS": {
     "Content": "VBS & Memory Integrity - Disable",
     "Description": "Disables Virtualization-Based Security and Memory Integrity (HVCI) to improve gaming performance by 5-25%. Requires reboot. CAUTION: Reduces system security.",
@@ -2013,7 +1997,18 @@
     "Content": "Classic Context Menu - Enable (Win11)",
     "Description": "Restores the classic full right-click context menu in Windows 11 instead of the modern compact one. Requires restarting Explorer.",
     "category": "Customize Preferences",
-    "panel": "1",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32",
+        "Name": "",
+        "Value": "",
+        "Type": "String",
+        "OriginalValue": "",
+        "DefaultState": "false"
+      }
+    ],
     "InvokeScript": [
       "
       reg.exe add \"HKCU\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32\" /f /ve
@@ -2034,14 +2029,16 @@
     "Content": "Web Search - Disable suggestions",
     "Description": "Disables web search suggestions and Bing results from appearing in Windows Search and Start menu search. Local file and app search still works.",
     "category": "Customize Preferences",
-    "panel": "1",
+    "panel": "2",
+    "Type": "Toggle",
     "registry": [
       {
         "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer",
         "Name": "DisableSearchBoxSuggestions",
         "Value": "1",
         "Type": "DWord",
-        "OriginalValue": "0"
+        "OriginalValue": "0",
+        "DefaultState": "false"
       }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/websearch"
@@ -2050,14 +2047,16 @@
     "Content": "Notification Center - Disable",
     "Description": "Disables the Notification Center (Win+N) and calendar flyout in Windows 11. The clock area will no longer open notifications.",
     "category": "Customize Preferences",
-    "panel": "1",
+    "panel": "2",
+    "Type": "Toggle",
     "registry": [
       {
         "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer",
         "Name": "DisallowNotificationCenter",
         "Value": "1",
         "Type": "DWord",
-        "OriginalValue": "0"
+        "OriginalValue": "0",
+        "DefaultState": "false"
       }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/notificationcenter"
@@ -2066,7 +2065,18 @@
     "Content": "Icon Cache - Reset & Rebuild",
     "Description": "Deletes and rebuilds the Windows icon cache. Fixes corrupted, blank, or distorted desktop and File Explorer icons.",
     "category": "Customize Preferences",
-    "panel": "1",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "IconCacheReset",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      }
+    ],
     "InvokeScript": [
       "
       Get-Process explorer -ErrorAction SilentlyContinue | Stop-Process -Force
@@ -2087,7 +2097,7 @@
     "Content": "Classic Volume Control - Restore",
     "Description": "Restores the classic vertical volume control (Windows 7/8 style) instead of the modern horizontal slider in Windows 10/11.",
     "category": "Customize Preferences",
-    "panel": "1",
+    "panel": "2",
     "Type": "Toggle",
     "registry": [
       {
@@ -2105,7 +2115,7 @@
     "Content": "Start Menu - Hide Recommended section",
     "Description": "Hides the Recommended section entirely from the Windows 11 Start menu. Works on most Windows 11 builds via policy registry keys.",
     "category": "Customize Preferences",
-    "panel": "1",
+    "panel": "2",
     "Type": "Toggle",
     "registry": [
       {
@@ -2139,7 +2149,18 @@
     "Content": "Windows Photo Viewer - Enable",
     "Description": "Enables the classic Windows Photo Viewer and registers it to handle common image file types (.jpg, .png, .gif, .bmp, .tiff, etc.).",
     "category": "Customize Preferences",
-    "panel": "1",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows Photo Viewer\\Capabilities\\FileAssociations",
+        "Name": "TweakEnabled",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      }
+    ],
     "InvokeScript": [
       "
       $regPath = 'HKLM:\\SOFTWARE\\Microsoft\\Windows Photo Viewer\\Capabilities\\FileAssociations'
@@ -2177,7 +2198,7 @@
     "Content": "Taskbar Clock - Show seconds",
     "Description": "Shows seconds in the taskbar clock. The clock will display the current second alongside hours and minutes.",
     "category": "Customize Preferences",
-    "panel": "1",
+    "panel": "2",
     "Type": "Toggle",
     "registry": [
       {
@@ -2195,7 +2216,7 @@
     "Content": "File Explorer - Opens to This PC",
     "Description": "Changes File Explorer's default landing page from Quick Access to This PC, showing all drives and system folders immediately.",
     "category": "Customize Preferences",
-    "panel": "1",
+    "panel": "2",
     "Type": "Toggle",
     "registry": [
       {
@@ -2213,7 +2234,7 @@
     "Content": "Aero Shake - Disable",
     "Description": "Disables Aero Shake, which minimizes all other windows when you shake the active window. Useful for gamers and users who trigger it accidentally.",
     "category": "Customize Preferences",
-    "panel": "1",
+    "panel": "2",
     "Type": "Toggle",
     "registry": [
       {
@@ -2231,7 +2252,7 @@
     "Content": "Store App Lookup - Disable",
     "Description": "Disables the 'Look for an app in the Store' prompt when opening an unknown file type. Windows will only show locally installed apps.",
     "category": "Customize Preferences",
-    "panel": "1",
+    "panel": "2",
     "Type": "Toggle",
     "registry": [
       {
@@ -2245,29 +2266,11 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/storeapplookup"
   },
-  "WPFToggleAutoReboot": {
-    "Content": "Windows Update - Disable auto reboot",
-    "Description": "Prevents Windows from automatically restarting the PC after installing updates. You will be prompted to schedule the restart instead.",
-    "category": "Customize Preferences",
-    "panel": "1",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU",
-        "Name": "NoAutoRebootWithLoggedOnUsers",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "false"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/autoreboot"
-  },
   "WPFToggleLastUserName": {
     "Content": "Login Screen - Hide last username",
     "Description": "Hides the last signed-in username from the Windows login screen. Adds a layer of privacy and security.",
     "category": "Customize Preferences",
-    "panel": "1",
+    "panel": "2",
     "Type": "Toggle",
     "registry": [
       {
@@ -2285,7 +2288,7 @@
     "Content": "Lock Screen - Disable",
     "Description": "Disables the Windows lock screen entirely. The sign-in screen will appear directly when waking or locking the PC.",
     "category": "Customize Preferences",
-    "panel": "1",
+    "panel": "2",
     "Type": "Toggle",
     "registry": [
       {
