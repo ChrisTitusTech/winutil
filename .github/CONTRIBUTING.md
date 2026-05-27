@@ -4,7 +4,6 @@
 
 - Keep each pull request focused on a single feature or fix.
 - Avoid unnecessary formatting changes or large unrelated edits.
-- Do not submit localization/language support changes at this time.
 - Document what changed and why in your PR description.
 
 ---
