@@ -12,7 +12,6 @@ desktop.ini
 
 .vscode/
 .idea/
-.vs/
 
 # hugo files
 docs/public/
