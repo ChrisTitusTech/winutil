@@ -46,7 +46,7 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     $script = if ($PSCommandPath) {
         "$PSCommandPath $argList"
     } else {
-        "& ([ScriptBlock]::Create((irm https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1))) $argList"
+        "& ([ScriptBlock]::Create((irm https://christitus.com/win))) $argList"
     }
 
     $powershell = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
