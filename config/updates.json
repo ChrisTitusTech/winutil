@@ -1,0 +1,14 @@
+{
+  "WPFUpdatesOfflineInsider": {
+    "Content": "Offline Insider Enroll - Run",
+    "Description": "Downloads and runs the OfflineInsiderEnroll script to enable Windows Insider builds without a Microsoft Account.",
+    "category": "Windows Insider",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "InvokeScript": [
+      "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/abbodi1406/offlineinsiderenroll/master/OfflineInsiderEnroll.cmd' -OutFile \"$env:TEMP\\OfflineInsiderEnroll.cmd\" -UseBasicParsing\r\nStart-Process -FilePath cmd.exe -ArgumentList \"/k `\"$env:TEMP\\OfflineInsiderEnroll.cmd`\"\" -Verb RunAs"
+    ],
+    "link": "https://winutil.christitus.com/dev/updates/windows-insider/offlineinsiderenroll"
+  }
+}

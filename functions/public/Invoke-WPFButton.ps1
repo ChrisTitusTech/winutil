@@ -40,6 +40,20 @@ function Invoke-WPFButton {
             }
             return
         }
+        }
+
+    # Check if button is defined in updates config with InvokeScript
+    if ($sync.configs.updates.$Button) {
+        $buttonConfig = $sync.configs.updates.$Button
+        if ($buttonConfig.InvokeScript -and $buttonConfig.InvokeScript.Count -gt 0) {
+            foreach ($script in $buttonConfig.InvokeScript) {
+                if (-not [string]::IsNullOrWhiteSpace($script)) {
+                    Write-Host "Running: $($buttonConfig.Content)"
+                    Invoke-Expression $script
+                }
+            }
+            return
+        }
     }
 
     # Fallback to hard-coded switch for buttons not in feature.json
