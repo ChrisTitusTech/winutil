@@ -1839,19 +1839,19 @@
   },
   "WPFAddUltPerf": {
     "Content": "Ultimate Performance Profile - Enable",
-    "category": "Performance Plans",
+    "category": "Performance Plans - NOT FOR LAPTOPS",
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://winutil.christitus.com/dev/tweaks/performance-plans/addultperf"
+    "link": "https://winutil.christitus.com/dev/tweaks/performance-plans---not-for-laptops/addultperf"
   },
   "WPFRemoveUltPerf": {
     "Content": "Ultimate Performance Profile - Disable",
-    "category": "Performance Plans",
+    "category": "Performance Plans - NOT FOR LAPTOPS",
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://winutil.christitus.com/dev/tweaks/performance-plans/removeultperf"
+    "link": "https://winutil.christitus.com/dev/tweaks/performance-plans---not-for-laptops/removeultperf"
   },
   "WPFTweaksDisableExplorerAutoDiscovery": {
     "Content": "File Explorer Automatic Folder Discovery - Disable",
