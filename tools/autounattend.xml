@@ -99,6 +99,7 @@ foreach( $file in $Document.unattend.Extensions.File ) {
 &lt;/LayoutModificationTemplate&gt;
         </File>
         <File path="C:\Windows\Setup\Scripts\UnlockStartLayout.vbs">
+On Error Resume Next
 HKU = &amp;H80000003
 Set reg = GetObject("winmgmts://./root/default:StdRegProv")
 
@@ -106,16 +107,8 @@ If reg.EnumKey(HKU, "", sids) = 0 Then
     If Not IsNull(sids) Then
         For Each sid In sids
             key = sid + "\Software\Policies\Microsoft\Windows\Explorer"
-            
-            result = reg.DeleteValue(HKU, key, "LockedStartLayout")
-            If result &lt;&gt; 0 And result &lt;&gt; 2 Then
-                Err.Raise vbObjectError + result, "UnlockStartLayout.vbs", "Failed to delete LockedStartLayout from " &amp; key &amp; " (code " &amp; result &amp; ")"
-            End If
-
-            result = reg.DeleteValue(HKU, key, "StartLayoutFile")
-            If result &lt;&gt; 0 And result &lt;&gt; 2 Then
-                Err.Raise vbObjectError + result, "UnlockStartLayout.vbs", "Failed to delete StartLayoutFile from " &amp; key &amp; " (code " &amp; result &amp; ")"
-            End If
+            reg.DeleteValue HKU, key, "LockedStartLayout"
+            reg.DeleteValue HKU, key, "StartLayoutFile"
         Next
     End If
 End If
