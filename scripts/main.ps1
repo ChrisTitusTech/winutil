@@ -16,7 +16,6 @@ $uiVar = New-object System.Management.Automation.Runspaces.SessionStateVariableE
 $offlineVar = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'PARAM_OFFLINE',$PARAM_OFFLINE,$Null
 $InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
 
-# Add the variable to the session state
 $InitialSessionState.Variables.Add($uiVar)
 $InitialSessionState.Variables.Add($offlineVar)
 
