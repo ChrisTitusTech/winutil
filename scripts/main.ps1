@@ -373,14 +373,6 @@ $sync["Form"].Add_ContentRendered({
     }
 
     $sync["Form"].Focus()
-
-   if ($Config) {
-        Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
-        Invoke-WPFRunspace -ScriptBlock {
-            Invoke-WinUtilAutoRun
-        }
-    }
-
 })
 
 # The SearchBarTimer is used to delay the search operation until the user has stopped typing for a short period
