@@ -20,7 +20,7 @@ Go to the ChrisTitusTech/winutil repository on GitHub and click the Fork button 
 
 ### 2. Clone Your Fork
 
-```bash
+```powershell
 git clone https://github.com/YOUR_USERNAME/winutil.git
 cd winutil
 ```
@@ -33,13 +33,13 @@ Never work directly on `main`.
 
 Create a branch related to your change:
 
-```bash
+```powershell
 git checkout -b feature-name
 ```
 
 Example:
 
-```bash
+```powershell
 git checkout -b add-firefox-tweak
 ```
 
@@ -83,13 +83,13 @@ If something fails, fix it before committing.
 
 Check what changed:
 
-```bash
+```powershell
 git status
 ```
 
 Review the diff:
 
-```bash
+```powershell
 git diff
 ```
 
@@ -101,19 +101,19 @@ Make sure you did not accidentally modify unrelated files.
 
 Stage files:
 
-```bash
+```powershell
 git add .
 ```
 
 Commit them:
 
-```bash
+```powershell
 git commit -m "Add feature description"
 ```
 
 Example:
 
-```bash
+```powershell
 git commit -m "Add Firefox package tweak"
 ```
 
@@ -121,13 +121,13 @@ git commit -m "Add Firefox package tweak"
 
 ### 8. Push Your Branch
 
-```bash
+```powershell
 git push origin branch-name
 ```
 
 Example:
 
-```bash
+```powershell
 git push origin add-firefox-tweak
 ```
 
