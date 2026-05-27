@@ -99,7 +99,6 @@ foreach( $file in $Document.unattend.Extensions.File ) {
 &lt;/LayoutModificationTemplate&gt;
         </File>
         <File path="C:\Windows\Setup\Scripts\UnlockStartLayout.vbs">
-On Error Resume Next
 HKU = &amp;H80000003
 Set reg = GetObject("winmgmts://./root/default:StdRegProv")
 
