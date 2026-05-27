@@ -1996,19 +1996,8 @@
   "WPFToggleClassicContextMenu": {
     "Content": "Classic Context Menu - Enable (Win11)",
     "Description": "Restores the classic full right-click context menu in Windows 11 instead of the modern compact one. Requires restarting Explorer.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32",
-        "Name": "",
-        "Value": "",
-        "Type": "String",
-        "OriginalValue": "",
-        "DefaultState": "false"
-      }
-    ],
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
     "InvokeScript": [
       "
       reg.exe add \"HKCU\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32\" /f /ve
@@ -2023,7 +2012,7 @@
       Write-Host \"Modern context menu restored - Explorer restarted.\"
       "
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/classiccontext"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/classiccontext"
   },
   "WPFToggleWebSearch": {
     "Content": "Web Search - Disable suggestions",
@@ -2064,19 +2053,8 @@
   "WPFTweaksIconCache": {
     "Content": "Icon Cache - Reset & Rebuild",
     "Description": "Deletes and rebuilds the Windows icon cache. Fixes corrupted, blank, or distorted desktop and File Explorer icons.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "Name": "IconCacheReset",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "false"
-      }
-    ],
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
     "InvokeScript": [
       "
       Get-Process explorer -ErrorAction SilentlyContinue | Stop-Process -Force
@@ -2091,7 +2069,7 @@
       Write-Host \"Icon cache cannot be undone - it will rebuild automatically.\"
       "
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/iconcache"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/iconcache"
   },
   "WPFToggleClassicVolume": {
     "Content": "Classic Volume Control - Restore",
@@ -2148,19 +2126,8 @@
   "WPFTweaksPhotoViewer": {
     "Content": "Windows Photo Viewer - Enable",
     "Description": "Enables the classic Windows Photo Viewer and registers it to handle common image file types (.jpg, .png, .gif, .bmp, .tiff, etc.).",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows Photo Viewer\\Capabilities\\FileAssociations",
-        "Name": "TweakEnabled",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "false"
-      }
-    ],
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
     "InvokeScript": [
       "
       $regPath = 'HKLM:\\SOFTWARE\\Microsoft\\Windows Photo Viewer\\Capabilities\\FileAssociations'
@@ -2192,7 +2159,7 @@
       Write-Host \"Windows Photo Viewer file associations removed.\"
       "
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/photoviewer"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/photoviewer"
   },
   "WPFToggleClockSeconds": {
     "Content": "Taskbar Clock - Show seconds",
