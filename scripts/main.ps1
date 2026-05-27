@@ -13,13 +13,11 @@ $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
 
 # Create a new session state for parsing variables into our runspace
 $hashVars = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'sync',$sync,$Null
-$uiVar = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'PARAM_NOUI',$PARAM_NOUI,$Null
 $offlineVar = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'PARAM_OFFLINE',$PARAM_OFFLINE,$Null
 $InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
 
 # Add the variable to the session state
 $InitialSessionState.Variables.Add($hashVars)
-$InitialSessionState.Variables.Add($uiVar)
 $InitialSessionState.Variables.Add($offlineVar)
 
 # Get every private function and add them to the session state
@@ -85,27 +83,19 @@ if ($Preset) {
     return
 }
 
-if ($PARAM_NOUI) {
+if ($Config) {
     Show-CTTLogo
-    if ($PARAM_CONFIG -and -not [string]::IsNullOrWhiteSpace($PARAM_CONFIG)) {
-        Write-Host "Running config file tasks..."
-        Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
-        Invoke-WinUtilAutoRun
 
-        $sync.runspace.Dispose()
-        $sync.runspace.Close()
-        [System.GC]::Collect()
-        Stop-Transcript
-        return
-    }
-    else {
-        Write-Host "Cannot automatically run without a config file provided."
-        $sync.runspace.Dispose()
-        $sync.runspace.Close()
-        [System.GC]::Collect()
-        Stop-Transcript
-        return
-    }
+    Invoke-WPFImpex -type "import" -Config $Config
+
+    Invoke-WinUtilAutoRun
+
+    # Cleanup and exit
+    $sync.runspace.Dispose()
+    $sync.runspace.Close()
+    [System.GC]::Collect()
+    Stop-Transcript
+    return
 }
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
@@ -384,8 +374,7 @@ $sync["Form"].Add_ContentRendered({
 
     $sync["Form"].Focus()
 
-   if ($PARAM_CONFIG -and -not [string]::IsNullOrWhiteSpace($PARAM_CONFIG)) {
-        Write-Host "Running config file tasks..."
+   if ($Config) {
         Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
         Invoke-WPFRunspace -ScriptBlock {
             Invoke-WinUtilAutoRun
