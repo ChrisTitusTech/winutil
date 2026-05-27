@@ -78,8 +78,8 @@ function Invoke-WinUtilISOMountAndVerify {
             Write-Win11ISOLog "Mounted at drive $driveLetter"
             SetProgress "Verifying ISO contents..." 30
 
-            $wimPath = Join-Path $driveLetter "sources\install.wim"
-            $esdPath = Join-Path $driveLetter "sources\install.esd"
+            $wimPath = "$driveLetter\sources\install.wim"
+            $esdPath = "$driveLetter\sources\install.esd"
 
             if (-not (Test-Path $wimPath) -and -not (Test-Path $esdPath)) {
                 Dismount-DiskImage -ImagePath $isoPath
@@ -221,7 +221,7 @@ function Invoke-WinUtilISOModify {
 
         function Log($msg) {
             Write-Win11ISOLog $msg
-            Add-Content -Path (Join-Path $workDir "WinUtil_Win11ISO.log") -Value "[$(Get-Date -Format 'HH:mm:ss')] $msg"
+            Add-Content -Path "$workDir\WinUtil_Win11ISO.log" -Value "[$(Get-Date -Format 'HH:mm:ss')] $msg"
         }
 
         function SetProgress($label, $pct) {
@@ -240,8 +240,8 @@ function Invoke-WinUtilISOModify {
             })
 
             Log "Creating working directory: $workDir"
-            $isoContents = Join-Path $workDir "iso_contents"
-            $mountDir = Join-Path $workDir "wim_mount"
+            $isoContents = "$workDir\iso_contents"
+            $mountDir = "$workDir\wim_mount"
             New-Item -ItemType Directory -Path $isoContents, $mountDir -Force
             SetProgress "Copying ISO contents..." 10
 
@@ -250,8 +250,8 @@ function Invoke-WinUtilISOModify {
             Log "ISO contents copied."
             SetProgress "Mounting install.wim..." 25
 
-            $localWim = Join-Path $isoContents "sources\install.wim"
-            if (-not (Test-Path $localWim)) { $localWim = Join-Path $isoContents "sources\install.esd" }
+            $localWim = "$isoContents\sources\install.wim"
+            if (-not (Test-Path $localWim)) { $localWim = "$isoContents\sources\install.esd" }
             Set-ItemProperty -Path $localWim -Name IsReadOnly -Value $false
 
             Log "Mounting install.wim (Index ${selectedWimIndex}: $selectedEditionName) at $mountDir..."
@@ -286,11 +286,11 @@ function Invoke-WinUtilISOModify {
 
             SetProgress "Removing unused editions from install.wim..." 70
             Log "Exporting edition '$selectedEditionName' (Index $selectedWimIndex) to a single-edition install.wim..."
-            $exportWim = Join-Path $isoContents "sources\install_export.wim"
+            $exportWim = "$isoContents\sources\install_export.wim"
             Export-WindowsImage -SourceImagePath $localWim -SourceIndex $selectedWimIndex -DestinationImagePath $exportWim
             Remove-Item -Path $localWim -Force
             Rename-Item -Path $exportWim -NewName "install.wim" -Force
-            $localWim = Join-Path $isoContents "sources\install.wim"
+            $localWim = "$isoContents\sources\install.wim"
             Log "Unused editions removed. install.wim now contains only '$selectedEditionName'."
 
             SetProgress "Dismounting source ISO..." 80
