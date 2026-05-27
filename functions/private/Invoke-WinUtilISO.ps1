@@ -262,6 +262,9 @@ function Invoke-WinUtilISOModify {
             Set-Content -Path "$isoContents\autounattend.xml" -Value $autounattendContent
             Log "Written autounattend.xml to ISO root."
 
+            Remove-Item -Path "$ISOContentsDir\support" -Recurse -Force
+            Log "Removed support folder from ISO root."
+
             if ($injectDrivers) {
                 New-Item -Path "$Env:Temp\Driver" -ItemType Directory -Force
 
