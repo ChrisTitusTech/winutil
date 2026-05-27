@@ -13,9 +13,5 @@ function Invoke-WPFUIThread {
         $ScriptBlock
     )
 
-    if ($PARAM_NOUI) {
-        return;
-    }
-
     $sync.form.Dispatcher.Invoke([action]$ScriptBlock)
 }
