@@ -385,80 +385,38 @@ function Invoke-WinUtilISOCheckExistingWork {
 }
 
 function Invoke-WinUtilISOCleanAndReset {
-    $workDir = $sync["Win11ISOWorkDir"]
-
-    if ($workDir -and (Test-Path $workDir)) {
-        $confirm = [System.Windows.MessageBox]::Show(
-            "This will delete the temporary working directory:`n`n$workDir`n`nAnd reset the interface back to the start.`n`nContinue?",
-            "Clean And Reset", "YesNo", "Warning")
-        if ($confirm -ne "Yes") { return }
-    }
+    $confirm = [System.Windows.MessageBox]::Show("This will delete the temporary working directory:`n`n$workDir`n`nAnd reset the interface back to the start.`n`nContinue?","Clean And Reset", "YesNo", "Warning")
+    if ($confirm -ne "Yes") { return }
 
     $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $false
+    Remove-Item -Path $workDir -Recurse -Force
 
-    $runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
-    $runspace.ApartmentState = "STA"
-    $runspace.ThreadOptions = "ReuseThread"
-    $runspace.Open()
-    $runspace.SessionStateProxy.SetVariable("sync", $sync)
-    $runspace.SessionStateProxy.SetVariable("workDir", $workDir)
+    $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+        $sync["Win11ISOWorkDir"] = $null
+        $sync["Win11ISOContentsDir"] = $null
+        $sync["Win11ISOImagePath"] = $null
+        $sync["Win11ISODriveLetter"] = $null
+        $sync["Win11ISOWimPath"] = $null
+        $sync["Win11ISOImageInfo"] = $null
+        $sync["Win11ISOUSBDisks"] = $null
 
-    $script = [Management.Automation.PowerShell]::Create()
-    $script.Runspace = $runspace
-    $script.AddScript({
+        $sync["WPFWin11ISOPath"].Text = "No ISO selected..."
+        $sync["WPFWin11ISOFileInfo"].Visibility = "Collapsed"
+        $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Collapsed"
+        $sync["WPFWin11ISOOptionUSB"].Visibility = "Collapsed"
+        $sync["WPFWin11ISOOutputSection"].Visibility = "Collapsed"
+        $sync["WPFWin11ISOModifySection"].Visibility = "Collapsed"
+        $sync["WPFWin11ISOMountSection"].Visibility = "Collapsed"
+        $sync["WPFWin11ISOSelectSection"].Visibility = "Visible"
+        $sync["WPFWin11ISOModifyButton"].IsEnabled = $true
+        $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $true
 
-            function SetProgress($label, $pct) {
-                $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                    $sync.progressBarTextBlock.Text = $label
-                    $sync.progressBarTextBlock.ToolTip = $label
-                    $sync.ProgressBar.Value = [Math]::Max($pct, 5)
-                })
-            }
-        try {
-            if ($workDir -and (Test-Path $workDir)) {
-                SetProgress "Removing files..." 75
-                Remove-Item -Path $workDir -Recurse -Force
-            }
+        $sync.progressBarTextBlock.Text = ""
+        $sync.progressBarTextBlock.ToolTip = ""
+        $sync.ProgressBar.Value = 0
 
-            SetProgress "Resetting UI..." 95
-
-            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                $sync["Win11ISOWorkDir"] = $null
-                $sync["Win11ISOContentsDir"] = $null
-                $sync["Win11ISOImagePath"] = $null
-                $sync["Win11ISODriveLetter"] = $null
-                $sync["Win11ISOWimPath"] = $null
-                $sync["Win11ISOImageInfo"] = $null
-                $sync["Win11ISOUSBDisks"] = $null
-
-                $sync["WPFWin11ISOPath"].Text = "No ISO selected..."
-                $sync["WPFWin11ISOFileInfo"].Visibility = "Collapsed"
-                $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Collapsed"
-                $sync["WPFWin11ISOOptionUSB"].Visibility = "Collapsed"
-                $sync["WPFWin11ISOOutputSection"].Visibility = "Collapsed"
-                $sync["WPFWin11ISOModifySection"].Visibility = "Collapsed"
-                $sync["WPFWin11ISOMountSection"].Visibility = "Collapsed"
-                $sync["WPFWin11ISOSelectSection"].Visibility = "Visible"
-                $sync["WPFWin11ISOModifyButton"].IsEnabled = $true
-                $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $true
-
-                $sync.progressBarTextBlock.Text = ""
-                $sync.progressBarTextBlock.ToolTip = ""
-                $sync.ProgressBar.Value = 0
-
-                $sync["WPFWin11ISOStatusLog"].Text = "Ready. Please select a Windows 11 ISO to begin."
-            })
-        } catch {
-            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                $sync.progressBarTextBlock.Text = ""
-                $sync.progressBarTextBlock.ToolTip = ""
-                $sync.ProgressBar.Value = 0
-                $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $true
-            })
-        }
+        $sync["WPFWin11ISOStatusLog"].Text = "Ready. Please select a Windows 11 ISO to begin."
     })
-
-    $script.BeginInvoke()
 }
 
 function Invoke-WinUtilISOExport {
