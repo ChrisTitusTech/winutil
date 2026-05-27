@@ -1830,6 +1830,30 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/winutillauncher"
   },
+  "WPFToggleWinUtilDevLauncher": {
+    "Content": "WinUtil Dev Command Launcher",
+    "Description": "Installs a user-level 'winutil-dev' command launcher so you can run the development branch of WinUtil from any terminal.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\WinUtil",
+        "Name": "DevCommandLauncher",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      }
+    ],
+    "InvokeScript": [
+      "Invoke-WinUtilInstallDevLauncher"
+    ],
+    "UndoScript": [
+      "Invoke-WinUtilUninstallDevLauncher"
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/winutildevlauncher"
+  },
   "WPFOOSUbutton": {
     "Content": "O&O ShutUp10++ - Run",
     "category": "z__Advanced Tweaks - CAUTION",

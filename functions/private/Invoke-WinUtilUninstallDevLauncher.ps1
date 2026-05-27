@@ -1,20 +1,20 @@
-function Invoke-WinUtilUninstallLauncher {
+function Invoke-WinUtilUninstallDevLauncher {
     <#
     .SYNOPSIS
-        Removes the optional WinUtil command launcher.
+        Removes the optional WinUtil development command launcher.
     .DESCRIPTION
-        Deletes the launcher files and removes the launcher bin path
-        from the current user's PATH environment variable.
+        Deletes the dev launcher files and removes the launcher bin path
+        from the current user's PATH environment variable if the regular launcher is also not installed.
     #>
     $binPath = Join-Path $env:LocalAppData "winutil\bin"
 
-    Write-Host "Uninstalling WinUtil command launcher..."
+    Write-Host "Uninstalling WinUtil Dev command launcher..."
 
     try {
         # 1. Remove command launcher files
-        $cmdFile = Join-Path $binPath "winutil.cmd"
-        $ps1File = Join-Path $binPath "winutil-launcher.ps1"
-        $legacyPs1File = Join-Path $binPath "winutil.ps1"
+        $cmdFile = Join-Path $binPath "winutil-dev.cmd"
+        $ps1File = Join-Path $binPath "winutil-dev-launcher.ps1"
+        $legacyPs1File = Join-Path $binPath "winutil-dev.ps1"
 
         if (Test-Path $cmdFile) {
             Remove-Item -Path $cmdFile -Force -ErrorAction SilentlyContinue
@@ -26,13 +26,13 @@ function Invoke-WinUtilUninstallLauncher {
             Remove-Item -Path $legacyPs1File -Force -ErrorAction SilentlyContinue
         }
 
-        # Check if the dev launcher files are still present in the directory
-        $devCmd = Join-Path $binPath "winutil-dev.cmd"
-        $devPs1 = Join-Path $binPath "winutil-dev-launcher.ps1"
-        $hasDev = (Test-Path $devCmd) -or (Test-Path $devPs1)
+        # Check if the regular launcher files are still present in the directory
+        $regularCmd = Join-Path $binPath "winutil.cmd"
+        $regularPs1 = Join-Path $binPath "winutil-launcher.ps1"
+        $hasRegular = (Test-Path $regularCmd) -or (Test-Path $regularPs1)
 
-        # 2. Only remove directory and PATH if dev launcher is not installed
-        if (-not $hasDev) {
+        # 2. Only remove directory and PATH if regular launcher is not installed
+        if (-not $hasRegular) {
             # Remove directory if empty
             if (Test-Path $binPath) {
                 $files = Get-ChildItem -Path $binPath -ErrorAction SilentlyContinue
@@ -66,8 +66,6 @@ function Invoke-WinUtilUninstallLauncher {
                 $newPathString = $newPaths -join ';'
                 [System.Environment]::SetEnvironmentVariable('Path', $newPathString, 'User')
                 Write-Host "Successfully removed '$targetPath' from User PATH." -ForegroundColor Green
-            } else {
-                Write-Host "'$targetPath' was not found in User PATH."
             }
 
             # Update current process PATH session
@@ -82,17 +80,17 @@ function Invoke-WinUtilUninstallLauncher {
             }
             $env:PATH = $newSessionPaths -join ';'
         } else {
-            Write-Host "Keeping '$binPath' in PATH as the WinUtil Dev launcher is still installed."
+            Write-Host "Keeping '$binPath' in PATH as the production WinUtil launcher is still installed."
         }
 
         # Update launcher registry key to keep state in sync
         $registryPath = "HKCU:\Software\WinUtil"
         if (Test-Path $registryPath) {
-            Set-ItemProperty -Path $registryPath -Name "CommandLauncher" -Value 0 -Type DWord
+            Set-ItemProperty -Path $registryPath -Name "DevCommandLauncher" -Value 0 -Type DWord
         }
 
-        Write-Host "WinUtil command launcher uninstalled successfully!" -ForegroundColor Green
+        Write-Host "WinUtil Dev command launcher uninstalled successfully!" -ForegroundColor Green
     } catch {
-        Write-Error "Failed to uninstall WinUtil command launcher. Error: $_"
+        Write-Error "Failed to uninstall WinUtil Dev command launcher. Error: $_"
     }
 }
