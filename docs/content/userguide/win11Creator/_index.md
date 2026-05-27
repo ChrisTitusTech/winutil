@@ -21,8 +21,11 @@ Winutil includes a built-in **Win11 Creator** tool that lets you take an officia
 ### Step 1 — Select Your Official Windows 11 ISO
 
 1. Open Winutil and go to the **Win11 Creator** tab.
-2. Click **Browse** and select your **official Windows 11 ISO file** from Microsoft (must be 4 GB or larger). Custom or modified ISOs are not supported.
+2. Click **Browse** and select your **official Windows 11 ISO file** from Microsoft.
 3. The file path and size will appear on screen once selected.
+
+> [!NOTE]
+> Custom or modified ISOs are not supported.
 
 ---
 
@@ -32,46 +35,10 @@ Winutil includes a built-in **Win11 Creator** tool that lets you take an officia
 2. Winutil mounts the ISO, checks for a valid `install.wim` or `install.esd`, and reads the available editions (Home, Pro, Enterprise, etc.).
 3. Once verified, select your desired **edition** from the dropdown — Pro is selected by default if available.
 
-> [!NOTE]
-> This step takes around 10–30 seconds depending on your drive speed.
-
 ---
 
-### Step 3 — Run the Modification
 
-Click **Run Windows ISO Modification and Creator** to start the customization process. Winutil will:
-
-**App & Component Removal:**
-- **Remove 40+ bloat apps** — Clipchamp, Teams, Copilot, Dev Home, new Outlook, Bing apps, Solitaire, and more
-- **Delete OneDrive setup** from the image
-
-**System Customization:**
-- **Bypass hardware checks** — removes TPM, Secure Boot, CPU, RAM, and storage requirement enforcement so the ISO installs on unsupported hardware
-- **Enable local account setup** — injects an `autounattend.xml` that skips the Microsoft account screen during OOBE
-- **Disable BitLocker and device encryption** — removes startup overhead
-- **Disable Chat icon** — removes chat taskbar button
-- **Strip unused editions** — keeps only your selected edition, saving 1–2 GB per removed edition
-- **Clean the component store** — runs DISM cleanup to reclaim another 300–800 MB
-
-**Privacy & Telemetry Tweaks:**
-- **Disable telemetry** — advertising ID, tailored experiences, input personalization, speech online privacy
-- **Disable cloud content features** — app suggestions, Microsoft Store recommendations
-- **Remove telemetry scheduled tasks** — CEIP, Appraiser, WaaSMedic, and others
-- **Disable OneDrive folder backup** — prevents automatic backups to cloud
-- **Prevent DevHome and Outlook post-setup installation**
-- **Prevent Teams installation** — blocks auto-install after OOBE
-- **Prevent new Outlook Mail app installation**
-- **Disable Windows Update during OOBE** — re-enabled automatically on first login
-- **Disable Copilot and search box suggestions**
-
-**Optional: Driver Injection**
-- If enabled, it injects all drivers from your current system into the install.wim and boot.wim — useful for offline installations on machines with missing drivers. This is an optional checkbox in Step 3.
-
-A live log shows progress as each step completes. This stage usually takes **10–30 minutes** depending on disk speed. The WIM dismount near the end is the slowest part, so do not close Winutil while it is running.
-
----
-
-### Step 4 — Export Your Result
+### Step 3 — Export Your Result
 
 Once the modification is complete, choose how to save your image:
 
@@ -104,7 +71,7 @@ Once the modification is complete, choose how to save your image:
 
 ---
 
-### Step 5 — Clean Up (Optional)
+### Step 4 — Clean Up (Optional)
 
 Click **Clean & Reset** to delete the temporary working directory (~10–15 GB) and return the tool to its initial state, ready for a new ISO. You will be asked to confirm before anything is deleted.
 
@@ -118,20 +85,6 @@ When you install Windows 11 from your modified ISO:
 - **No hardware checks** — installs on machines without TPM 2.0, Secure Boot, or supported CPUs
 - **Dark mode enabled by default**
 - **Empty taskbar and Start Menu** — no pinned apps, Chat icon removed
-- **Windows Update disabled during OOBE** — automatically re-enabled on first login to prevent setup interruptions
-- **BitLocker disabled** — removes startup overhead on first boot
-
----
-
-### Troubleshooting
-
-| Problem | Fix |
-|---------|-----|
-| "install.wim not found" | Not a valid Windows 11 ISO — download a fresh one from Microsoft |
-| "oscdimg.exe not found" | Run `winget install -e --id Microsoft.OSCDIMG` then retry |
-| USB drive not showing up | Plug it in, wait a few seconds, then click **Refresh** |
-| Modification seems stuck | The WIM dismount step is slow — wait at least 10 minutes before assuming it's frozen |
-| "Access Denied" error | Make sure Winutil is running as Administrator |
 
 ---
 
