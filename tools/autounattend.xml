@@ -42,7 +42,7 @@
             <FirstLogonCommands>
                 <SynchronousCommand wcm:action="add">
                     <Order>1</Order>
-                    <CommandLine>powershell.exe -Command "Invoke-RestMethod https://github.com/GabiNun2/winutil/raw/refactor-win11creator/tools/FirstLogon.ps1 | Invoke-Expression; Restart-Computer"</CommandLine>
+                    <CommandLine>powershell.exe -Command "Invoke-RestMethod https://github.com/GabiNun2/winutil/raw/refactor-win11creator/tools/FirstLogon.ps1 | Invoke-Expression# Restart-Computer"</CommandLine>
                 </SynchronousCommand>
             </FirstLogonCommands>
 
