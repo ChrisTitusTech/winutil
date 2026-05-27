@@ -662,7 +662,7 @@
 
       if (-not (Get-ChildItem -Path $Env:OneDrive)) {
           Remove-Item -Path $Env:OneDrive
-          [Environment]::SetEnvironmentVariable("OneDrive", $null, "User")
+          [Environment]::SetEnvironmentVariable('OneDrive', $null, 'User')
       }
 
       # Disable OneSyncSvc
