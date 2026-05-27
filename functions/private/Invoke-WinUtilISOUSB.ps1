@@ -143,7 +143,7 @@ function Invoke-WinUtilISOWriteUSB {
         Write-Win11ISOLog "Copying remaining files This will take a while..."
         Copy-Item -Path "$contentsDir\*" $usb -Recurse -Force -Exclude install.wim
 
-        Write-Win11ISOLog "Done"
+        Write-Win11ISOLog "USB creation completed successfully."
 
         $sync["WPFWin11ISOWriteUSBButton"].Dispatcher.Invoke([action]{
             [System.Windows.MessageBox]::Show(
