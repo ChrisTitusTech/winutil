@@ -17,7 +17,6 @@ function Invoke-WinUtilISOBrowse {
     $dlg = [System.Windows.Forms.OpenFileDialog]::new()
     $dlg.Title = "Select Windows 11 ISO"
     $dlg.Filter = "ISO files (*.iso)|*.iso|All files (*.*)|*.*"
-    $dlg.InitialDirectory = [System.Environment]::GetFolderPath("Desktop")
 
     if ($dlg.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
 
