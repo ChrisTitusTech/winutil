@@ -14,13 +14,10 @@ $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
 # Create a new session state for parsing variables into our runspace
 $hashVars = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'sync',$sync,$Null
 $uiVar = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'PARAM_NOUI',$PARAM_NOUI,$Null
-$offlineVar = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'PARAM_OFFLINE',$PARAM_OFFLINE,$Null
-$InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
 
 # Add the variable to the session state
 $InitialSessionState.Variables.Add($hashVars)
 $InitialSessionState.Variables.Add($uiVar)
-$InitialSessionState.Variables.Add($offlineVar)
 
 # Get every private function and add them to the session state
 $functions = Get-ChildItem function:\ | Where-Object { $_.Name -imatch 'winutil|WPF' }
@@ -353,7 +350,7 @@ $sync["Form"].Add_ContentRendered({
         }
     }
 
-    if ($PARAM_OFFLINE) {
+    if ($Offline) {
         # Show offline banner
         $sync.WPFOfflineBanner.Visibility = [System.Windows.Visibility]::Visible
 
@@ -371,15 +368,8 @@ $sync["Form"].Add_ContentRendered({
         # Show offline indicator
         Write-Host "Offline mode detected - Install tab disabled" -ForegroundColor Yellow
 
-        # Optionally switch to a different tab if install tab was going to be default
-        Invoke-WPFTab "WPFTab2BT"  # Switch to Tweaks tab instead
-    }
-    else {
-        # Online - ensure install tab is enabled
-        $sync.WPFTab1BT.IsEnabled = $true
-        $sync.WPFTab1BT.Opacity = 1.0
-        $sync.WPFTab1BT.ToolTip = $null
-        Invoke-WPFTab "WPFTab1BT"  # Default to install tab
+        # Switch to Tweaks tab instead
+        Invoke-WPFTab "WPFTab2BT"
     }
 
     $sync["Form"].Focus()
