@@ -11,16 +11,10 @@ Microsoft.PowerShell.ConsoleHost.dll
 desktop.ini
 .DS_Store
 
-# Ignore Generated XAML Files
-xaml/inputApp.xaml
-xaml/inputFeatures.xaml
-xaml/inputTweaks.xaml
-
 # Executables and Configs
 pester.ps1
 Microsoft.UI.Xaml*
 winutil.ps1
-*.psd*
 
 # winutil-bin
 winutil.exe.config
