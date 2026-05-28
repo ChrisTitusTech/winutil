@@ -55,7 +55,7 @@ Keep changes small and focused.
 
 ### 5. Test Your Changes
 
-Open PowerShell as Administrator.
+Open Pwsh (Not Powershell) as Administrator.
 
 Go to the project folder:
 
