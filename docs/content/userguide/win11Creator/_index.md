@@ -39,7 +39,8 @@ Winutil includes a built-in **Win11 Creator** tool that lets you take an officia
 
 ### Step 3 — Run the Modification
 
-Click **Run Windows ISO Modification and Creator** to start the customization process. Winutil will:
+Click **Run Windows ISO Modification and Creator** to start the customization process.
+Winutil will:
 
 **ISO Build Actions:**
 - **Copy and prepare ISO contents** in a temporary working directory
@@ -53,15 +54,17 @@ Click **Run Windows ISO Modification and Creator** to start the customization pr
 
 **Post-OOBE Configuration (First Logon):**
 - **Run Winutil automation script at first logon** during setup finalization
-- **Apply Winutil advance preset after install** instead of baking most tweaks directly into offline `install.wim`
+- **Apply Winutil advance preset after install** instead of baking most tweaks directly into `install.wim`
 - **Complete setup with an automatic reboot** into a preconfigured desktop
-
-**Optional: Driver Injection**
-- If enabled, it injects drivers from your current system into `install.wim` — useful for offline installations on machines with missing drivers. This is an optional checkbox in Step 3.
 
 >[!NOTE]
 > To view exactly what advance preset does, see:
 https://github.com/ChrisTitusTech/winutil/blob/main/config/preset.json
+
+**Optional: Driver Injection**
+- If enabled, it injects drivers from your current system into `install.wim` — useful for offline installations on machines with missing drivers. This is an optional checkbox in Step 3.
+
+
 
 ---
 
@@ -99,17 +102,6 @@ Once the modification is complete, choose how to save your image:
 ### Step 5 — Clean Up (Optional)
 
 Click **Clean & Reset** to delete the temporary working directory (~10–15 GB) and return the tool to its initial state, ready for a new ISO. You will be asked to confirm before anything is deleted.
-
----
-
-### What the Modified ISO Does Differently
-
-When you install Windows 11 from your modified ISO:
-
-- **No Microsoft account required** — create a local account directly during setup
-- **No hardware checks** — installs on machines without TPM 2.0, Secure Boot, or supported CPUs
-- **Dark mode enabled by default**
-- **Empty taskbar and Start Menu** — no pinned apps, Chat icon removed
 
 ---
 
