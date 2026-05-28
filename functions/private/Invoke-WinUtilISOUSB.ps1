@@ -124,7 +124,7 @@ function Invoke-WinUtilISOWriteUSB {
 
         $usb = "${letter}:"
 
-        Format-Volume -DriveLetter $letter -FileSystem FAT32 -NewFileSystemLabel ("W11-" + (Get-Date -Format "yyMMdd")) -Force
+        Format-Volume -DriveLetter $letter -FileSystem FAT32 -NewFileSystemLabel win11creator -Force
         Write-Win11ISOLog "Formatted FAT32 Partition."
 
         Write-Win11ISOLog "Checking size..."
@@ -147,12 +147,7 @@ function Invoke-WinUtilISOWriteUSB {
         Write-Win11ISOLog "USB creation completed successfully."
 
         $sync["WPFWin11ISOWriteUSBButton"].Dispatcher.Invoke([action]{
-            [System.Windows.MessageBox]::Show(
-                "USB creation completed successfully.",
-                "Done",
-                "OK",
-                "Information"
-            )
+            [System.Windows.MessageBox]::Show("USB creation completed successfully.","Done","OK","Information")
         })
         
         $sync["WPFWin11ISOWriteUSBButton"].Dispatcher.Invoke([action]{
