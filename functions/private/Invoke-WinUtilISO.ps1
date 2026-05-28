@@ -386,7 +386,7 @@ function Invoke-WinUtilISOExport {
         Invoke-WebRequest -Uri "https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe" -OutFile $oscdimg
 
         Write-Win11ISOLog "Exporting to ISO: $outputISO"
-        & $oscdimg -m -o -h -u2 -udfver102 -efi "-b$contentsDir\efi\microsoft\boot\efisys.bin" -lCTOS_MODIFIED $contentsDir $outputISO
+        & $oscdimg -m -o -h -u2 -udfver102 -efi "-b$contentsDir\efi\microsoft\boot\efisys.bin" $contentsDir $outputISO
 
         Write-Win11ISOLog "ISO exported successfully: $outputISO"
         $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
