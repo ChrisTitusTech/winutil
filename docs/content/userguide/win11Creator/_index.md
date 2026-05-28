@@ -69,7 +69,7 @@ Winutil will:
 https://github.com/ChrisTitusTech/winutil/blob/main/config/preset.json
 
 **Optional: Driver Injection**
-- If enabled, it injects drivers from your current system into `install.wim` — useful for offline installations on machines with missing drivers. This is an optional checkbox in Step 3.
+- If enabled, Winutil injects drivers from your current system into `install.wim` (and setup boot files), which helps when network/internet drivers are not automatically detected during setup or first boot. This is an optional checkbox in Step 3.
 
 ---
 
