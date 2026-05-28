@@ -328,6 +328,7 @@ function Invoke-WinUtilISOCleanAndReset {
 
         Write-Win11ISOLog "Removing temporary working directories..."
         Remove-Item -Path "$Env:Temp\WinUtil_Win11ISO*" -Recurse -Force
+        Remove-Item -Path "$Env:Temp\Driver" -Recurse -Force
 
         $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
             $sync["Win11ISOWorkDir"] = $null
