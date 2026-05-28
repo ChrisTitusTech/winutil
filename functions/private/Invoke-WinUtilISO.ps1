@@ -209,7 +209,7 @@ function Invoke-WinUtilISOModify {
             Write-Win11ISOLog "Removed support folder from ISO root."
 
             if ($injectDrivers) {
-                Write-Win11ISOLog "Injecting current system drivers (This might take a few minutes)..."
+                Write-Win11ISOLog "Injecting current system drivers (This will several minutes)..."
 
                 Export-WindowsDriver -Online -Destination "$Env:Temp\Driver"
                 Add-WindowsDriver -Path $mountDir -Driver "$Env:Temp\Driver" -Recurse
