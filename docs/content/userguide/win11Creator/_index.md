@@ -15,7 +15,7 @@ Winutil includes a built-in **Win11 Creator** tool that lets you take an officia
 > You need an **official Windows 11 ISO** from [Microsoft's website](https://www.microsoft.com/en-us/software-download/windows11) before starting. Custom, modified, or non-official ISOs are not supported. The process uses ~10–15 GB of temporary disk space, so make sure you have room.
 
 > [!IMPORTANT]
-> This workflow requires an active internet connection during image creation and first logon so Winutil automation can run correctly.
+> An active internet connection is required at first logon so Winutil automation can complete successfully. Internet may also be required during ISO export if `oscdimg.exe` is not already installed.
 
 > [!NOTE]
 > This workflow is intended for fresh Windows installs, not in-place upgrades of an existing installation.
@@ -47,13 +47,13 @@ Click **Run Windows ISO Modification and Creator** to start the customization pr
 Winutil will:
 
 > [!IMPORTANT]
-> Keep the PC connected to the internet while this step runs and through first logon so Winutil automation can complete successfully.
+> Keep the PC connected to the internet through first logon so Winutil automation can complete successfully. Internet may also be required during ISO export if `oscdimg.exe` is not already installed.
 
 **ISO Build Actions:**
 - **Copy and prepare ISO contents** in a temporary working directory
 - **Mount your selected edition** from `install.wim`/`install.esd`
 - **Inject `autounattend.xml`** into the ISO root for setup automation
-- **Disable hardware checks** — TPM, Secure Boot, CPU, RAM, and storage requirement checks are disabled during setup
+- **Disable hardware checks** — TPM, Secure Boot, CPU requirement checks are disabled during setup
 - **Enable local account setup** — skips Microsoft account requirement during OOBE
 - **Strip unused editions** — keeps only your selected edition, saving 1-2 GB per removed edition
 - **Clean the component store** — runs DISM cleanup (`/StartComponentCleanup /ResetBase`) to reduce image size
@@ -82,7 +82,7 @@ Once the modification is complete, choose how to save your image:
   {{< tab name="Save as ISO" selected=true >}}
   1. Click **Save as an ISO File**.
   2. Choose a save location (defaults to your Desktop as `Win11_Modified_yyyyMMdd.iso`).
-  3. Winutil builds a dual BIOS/UEFI bootable ISO.
+  3. Winutil builds a UEFI bootable ISO.
 
 
   {{< /tab >}}
