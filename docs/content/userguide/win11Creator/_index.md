@@ -37,8 +37,36 @@ Winutil includes a built-in **Win11 Creator** tool that lets you take an officia
 
 ---
 
+### Step 3 — Run the Modification
 
-### Step 3 — Export Your Result
+Click **Run Windows ISO Modification and Creator** to start the customization process. Winutil will:
+
+**ISO Build Actions:**
+- **Copy and prepare ISO contents** in a temporary working directory
+- **Mount your selected edition** from `install.wim`/`install.esd`
+- **Inject `autounattend.xml`** into the ISO root for setup automation
+- **Bypass hardware checks** — TPM, Secure Boot, CPU, RAM, and storage requirement checks are bypassed during setup
+- **Enable local account setup** — skips Microsoft account requirement during OOBE
+- **Strip unused editions** — keeps only your selected edition, saving 1-2 GB per removed edition
+- **Clean the component store** — runs DISM cleanup (`/StartComponentCleanup /ResetBase`) to reduce image size
+- **Remove ISO support files** — deletes the ISO `support` folder
+
+**Post-OOBE Configuration (First Logon):**
+- **Run Winutil automation script at first logon** during setup finalization
+- **Apply Winutil advance preset after install** instead of baking most tweaks directly into offline `install.wim`
+- **Complete setup with an automatic reboot** into a preconfigured desktop
+
+**Optional: Driver Injection**
+- If enabled, it injects drivers from your current system into `install.wim` — useful for offline installations on machines with missing drivers. This is an optional checkbox in Step 3.
+
+>[!NOTE]
+> To view exactly what advance preset does, see:
+https://github.com/ChrisTitusTech/winutil/blob/main/config/preset.json
+
+---
+
+
+### Step 4 — Export Your Result
 
 Once the modification is complete, choose how to save your image:
 
@@ -68,7 +96,7 @@ Once the modification is complete, choose how to save your image:
 
 ---
 
-### Step 4 — Clean Up (Optional)
+### Step 5 — Clean Up (Optional)
 
 Click **Clean & Reset** to delete the temporary working directory (~10–15 GB) and return the tool to its initial state, ready for a new ISO. You will be asked to confirm before anything is deleted.
 
