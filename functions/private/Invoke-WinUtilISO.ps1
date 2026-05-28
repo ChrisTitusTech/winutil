@@ -1,11 +1,30 @@
 function Write-Win11ISOLog ($Message) {
     $time = Get-Date -Format hh:mm:ss
-    
+
     $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
         $sync["WPFWin11ISOStatusLog"].Text = "[$time] $Message"
-        $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
         $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
     })
+}
+
+function Invoke-WinUtilRunspace ([scriptblock]$ScriptBlock, [hashtable]$Variables = @{}) {
+    $runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
+    $runspace.ApartmentState = "STA"
+    $runspace.ThreadOptions = "ReuseThread"
+    $runspace.Open()
+
+    $runspace.SessionStateProxy.SetVariable("sync", $sync)
+    $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef",
+        "function Write-Win11ISOLog {`n" + ${function:Write-Win11ISOLog}.ToString() + "`n}")
+
+    foreach ($kvp in $Variables.GetEnumerator()) {
+        $runspace.SessionStateProxy.SetVariable($kvp.Key, $kvp.Value)
+    }
+
+    $script = [Management.Automation.PowerShell]::Create()
+    $script.Runspace = $runspace
+    $script.AddScript($ScriptBlock)
+    $script.BeginInvoke()
 }
 
 function Invoke-WinUtilISOBrowse {
@@ -35,19 +54,7 @@ function Invoke-WinUtilISOMountAndVerify {
     $sync["WPFWin11ISOMountButton"].IsEnabled = $false
     Write-Win11ISOLog "Mounting ISO: $isoPath"
 
-    $runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
-    $runspace.ApartmentState = "STA"
-    $runspace.ThreadOptions = "ReuseThread"
-    $runspace.Open()
-    $runspace.SessionStateProxy.SetVariable("sync", $sync)
-    $runspace.SessionStateProxy.SetVariable("isoPath", $isoPath)
-
-    $win11ISOLogFuncDef = "function Write-Win11ISOLog {`n" + ${function:Write-Win11ISOLog}.ToString() + "`n}"
-    $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef", $win11ISOLogFuncDef)
-
-    $script = [Management.Automation.PowerShell]::Create()
-    $script.Runspace = $runspace
-    $script.AddScript({
+    Invoke-WinUtilRunspace -Variables @{ isoPath = $isoPath } -ScriptBlock {
         . ([scriptblock]::Create($win11ISOLogFuncDef))
 
         try {
@@ -73,7 +80,6 @@ function Invoke-WinUtilISOMountAndVerify {
             }
 
             $activeWim = if (Test-Path $wimPath) { $wimPath } else { $esdPath }
-
             $imageInfo = Get-WindowsImage -ImagePath $activeWim | Select-Object ImageIndex, ImageName
 
             if (-not ($imageInfo | Where-Object { $_.ImageName -match "Windows 11" })) {
@@ -96,9 +102,11 @@ function Invoke-WinUtilISOMountAndVerify {
                 $sync["WPFWin11ISOMountDriveLetter"].Text = "Mounted at: $driveLetter | Image file: $(Split-Path $activeWim -Leaf)"
 
                 $sync["WPFWin11ISOEditionComboBox"].Items.Clear()
+
                 foreach ($img in $imageInfo) {
                     $sync["WPFWin11ISOEditionComboBox"].Items.Add("$($img.ImageIndex): $($img.ImageName)")
                 }
+
                 if ($sync["WPFWin11ISOEditionComboBox"].Items.Count -gt 0) {
                     $proIndex = -1
                     for ($i = 0; $i -lt $sync["WPFWin11ISOEditionComboBox"].Items.Count; $i++) {
@@ -131,23 +139,20 @@ function Invoke-WinUtilISOMountAndVerify {
                 $sync["WPFWin11ISOMountButton"].IsEnabled = $true
             })
         }
-    })
-
-    $script.BeginInvoke()
+    }
 }
 
 function Invoke-WinUtilISOModify {
     $isoPath = $sync["Win11ISOImagePath"]
     $driveLetter = $sync["Win11ISODriveLetter"]
     $wimPath = $sync["Win11ISOWimPath"]
-
     $selectedItem = $sync["WPFWin11ISOEditionComboBox"].SelectedItem
-    $selectedWimIndex = 1
+    $injectDrivers = $sync["WPFWin11ISOInjectDrivers"].IsChecked -eq $true
 
-    if ($selectedItem -and $selectedItem -match '^(\d+):') {
-        $selectedWimIndex = [int]$Matches[1]
+    $selectedWimIndex = if ($selectedItem -and $selectedItem -match '^(\d+):') {
+        [int]$Matches[1]
     } elseif ($sync["Win11ISOImageInfo"]) {
-        $selectedWimIndex = $sync["Win11ISOImageInfo"][0].ImageIndex
+        $sync["Win11ISOImageInfo"][0].ImageIndex
     }
 
     $selectedEditionName = if ($selectedItem) { ($selectedItem -replace '^\d+:\s*', '') } else { "Unknown" }
@@ -158,28 +163,16 @@ function Invoke-WinUtilISOModify {
 
     $workDir = Join-Path $env:TEMP "WinUtil_Win11ISO_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
 
-    $runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
-    $runspace.ApartmentState = "STA"
-    $runspace.ThreadOptions = "ReuseThread"
-    $runspace.Open()
-    $injectDrivers = $sync["WPFWin11ISOInjectDrivers"].IsChecked -eq $true
-
-    $runspace.SessionStateProxy.SetVariable("sync", $sync)
-    $runspace.SessionStateProxy.SetVariable("isoPath", $isoPath)
-    $runspace.SessionStateProxy.SetVariable("driveLetter", $driveLetter)
-    $runspace.SessionStateProxy.SetVariable("wimPath", $wimPath)
-    $runspace.SessionStateProxy.SetVariable("workDir", $workDir)
-    $runspace.SessionStateProxy.SetVariable("selectedWimIndex", $selectedWimIndex)
-    $runspace.SessionStateProxy.SetVariable("selectedEditionName", $selectedEditionName)
-    $runspace.SessionStateProxy.SetVariable("autounattendContent", $WinUtilAutounattendXml)
-    $runspace.SessionStateProxy.SetVariable("injectDrivers", $injectDrivers)
-
-    $win11ISOLogFuncDef = "function Write-Win11ISOLog {`n" + ${function:Write-Win11ISOLog}.ToString() + "`n}"
-    $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef", $win11ISOLogFuncDef)
-
-    $script = [Management.Automation.PowerShell]::Create()
-    $script.Runspace = $runspace
-    $script.AddScript({
+    Invoke-WinUtilRunspace -Variables @{
+        isoPath = $isoPath
+        driveLetter = $driveLetter
+        wimPath = $wimPath
+        workDir = $workDir
+        selectedWimIndex = $selectedWimIndex
+        selectedEditionName = $selectedEditionName
+        autounattendContent = $WinUtilAutounattendXml
+        injectDrivers = $injectDrivers
+    } -ScriptBlock {
         . ([scriptblock]::Create($win11ISOLogFuncDef))
 
         try {
@@ -189,22 +182,24 @@ function Invoke-WinUtilISOModify {
                 $sync["WPFWin11ISOModifySection"].Visibility = "Collapsed"
             })
 
-            Write-Win11ISOLog "Creating working directory: $workDir"
-
             $isoContents = "$workDir\iso_contents"
             $mountDir = "$workDir\wim_mount"
 
             New-Item -Path $isoContents, $mountDir -ItemType Directory -Force
 
-            Write-Win11ISOLog "Copying ISO contents from $driveLetter to $isoContents..."
+            Write-Win11ISOLog "Copying ISO contents... from $driveLetter to $isoContents"
             Copy-Item -Path "$driveLetter\*" -Destination $isoContents -Recurse -Force
             Write-Win11ISOLog "ISO contents copied."
 
-            $localWim = "$isoContents\sources\install.wim"
-            if (-not (Test-Path $localWim)) { $localWim = "$isoContents\sources\install.esd" }
+            $localWim = if (Test-Path "$isoContents\sources\install.wim") {
+                "$isoContents\sources\install.wim"
+            } else {
+                "$isoContents\sources\install.esd"
+            }
+
             Set-ItemProperty -Path $localWim -Name IsReadOnly -Value $false
 
-            Write-Win11ISOLog "Mounting install.wim (Index ${selectedWimIndex}: $selectedEditionName) at $mountDir..."
+            Write-Win11ISOLog "Mounting install.wim... (Index ${selectedWimIndex}: $selectedEditionName) at $mountDir"
             Mount-WindowsImage -ImagePath $localWim -Index $selectedWimIndex -Path $mountDir
 
             Set-Content -Path "$isoContents\autounattend.xml" -Value $autounattendContent
@@ -214,17 +209,18 @@ function Invoke-WinUtilISOModify {
             Write-Win11ISOLog "Removed support folder from ISO root."
 
             if ($injectDrivers) {
-                New-Item -Path "$Env:Temp\Driver" -ItemType Directory -Force
-
                 Write-Win11ISOLog "Injecting current system drivers (This might take a few minutes)..."
+
+                New-Item -Path "$Env:Temp\Driver" -ItemType Directory
+
                 Export-WindowsDriver -Online -Destination "$Env:Temp\Driver"
-                & dism /image:$mountDir /Add-Driver /Driver:"$Env:Temp\Driver" /Recurse
+                Add-WindowsDriver -Path $mountDir -Driver "$Env:Temp\Driver" -Recurse
 
                 Remove-Item -Path "$Env:Temp\Driver" -Recurse -Force
             }
 
-            Write-Win11ISOLog "Running DISM component store cleanup (/ResetBase) This might take a few minutes..."
-            & dism /English "/image:$mountDir" /Cleanup-Image /StartComponentCleanup /ResetBase
+            Write-Win11ISOLog "Running DISM component store cleanup (/ResetBase). this may take a few minutes..."
+            Repair-WindowsImage -Path $mountDir -StartComponentCleanup -ResetBase
             Write-Win11ISOLog "Component store cleanup complete."
 
             Write-Win11ISOLog "Dismounting and saving install.wim. This will take several minutes..."
@@ -234,12 +230,12 @@ function Invoke-WinUtilISOModify {
             Write-Win11ISOLog "Exporting edition '$selectedEditionName' (Index $selectedWimIndex) to a single-edition install.wim..."
 
             $exportWim = "$isoContents\sources\install_export.wim"
+
             Export-WindowsImage -SourceImagePath $localWim -SourceIndex $selectedWimIndex -DestinationImagePath $exportWim
 
             Remove-Item -Path $localWim -Force
             Rename-Item -Path $exportWim -NewName "install.wim" -Force
 
-            $localWim = "$isoContents\sources\install.wim"
             Write-Win11ISOLog "Unused editions removed. install.wim now contains only '$selectedEditionName'."
 
             Write-Win11ISOLog "Dismounting original ISO..."
@@ -249,16 +245,14 @@ function Invoke-WinUtilISOModify {
             $sync["Win11ISOContentsDir"] = $isoContents
 
             Write-Win11ISOLog "install.wim modification complete. Choose an output option in Step 4."
-
             $sync["WPFWin11ISOOutputSection"].Dispatcher.Invoke([action]{
                 $sync["WPFWin11ISOOutputSection"].Visibility = "Visible"
             })
+
         } catch {
             Write-Win11ISOLog "ERROR during modification: $_"
-
             Dismount-DiskImage -ImagePath $isoPath
             Remove-Item -Path $workDir -Recurse -Force
-
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 [System.Windows.MessageBox]::Show(
                     "An error occurred during install.wim modification:`n`n$_",
@@ -274,22 +268,19 @@ function Invoke-WinUtilISOModify {
                 $sync["WPFWin11ISOModifyButton"].IsEnabled = $true
                 if ($sync["WPFWin11ISOOutputSection"].Visibility -ne "Visible") {
                     $sync["WPFWin11ISOSelectSection"].Visibility = "Visible"
-                    $sync["WPFWin11ISOMountSection"].Visibility = "Visible"
+                    $sync["WPFWin11ISOMountSection"].Visibility  = "Visible"
                     $sync["WPFWin11ISOModifySection"].Visibility = "Visible"
                 }
             })
         }
-    })
-
-    $script.BeginInvoke()
+    }
 }
 
 function Invoke-WinUtilISOCheckExistingWork {
     if ($sync["Win11ISOContentsDir"] -and (Test-Path $sync["Win11ISOContentsDir"])) { return }
     if ($sync["Win11ISOModifying"]) { return }
 
-    $existingWorkDir = Get-Item -Path (Join-Path $env:TEMP "WinUtil_Win11ISO*") |
-        Where-Object { $_.PSIsContainer } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+    $existingWorkDir = Get-Item -Path "$Env:Temp\WinUtil_Win11ISO*"
 
     if (-not $existingWorkDir) { return }
 
@@ -316,37 +307,19 @@ function Invoke-WinUtilISOCheckExistingWork {
 
 function Invoke-WinUtilISOCleanAndReset {
     $confirm = [System.Windows.MessageBox]::Show("This will delete the temporary working directory:`n`n$workDir`n`nAnd reset the interface back to the start.`n`nContinue?","Clean And Reset", "YesNo", "Warning")
-    if ($confirm -ne "Yes") { return }
 
     $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $false
 
-    $runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
-    $runspace.ApartmentState = "STA"
-    $runspace.ThreadOptions = "ReuseThread"
-    $runspace.Open()
-
-    $runspace.SessionStateProxy.SetVariable("sync", $sync)
-
-    $win11ISOLogFuncDef = "function Write-Win11ISOLog {`n" + ${function:Write-Win11ISOLog}.ToString() + "`n}"
-    $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef", $win11ISOLogFuncDef)
-
-    $script = [Management.Automation.PowerShell]::Create()
-    $script.Runspace = $runspace
-
-    $script.AddScript({
+    Invoke-WinUtilRunspace -ScriptBlock {
         . ([scriptblock]::Create($win11ISOLogFuncDef))
 
-        Write-Win11ISOLog "Dismounting mounted Windows images..."
-
+        Write-Win11ISOLog "Dismounting mounted Windows images... This might take a few minutes"
         foreach ($image in Get-WindowsImage -Mounted) {
             Dismount-WindowsImage -Path $image.Path -Discard
         }
 
         Write-Win11ISOLog "Dismounting mounted ISOs..."
-
-        $cdroms = Get-Volume | Where-Object DriveType -eq 'CD-ROM'
-
-        foreach ($cdrom in $cdroms) {
+        foreach ($cdrom in (Get-Volume | Where-Object DriveType -eq 'CD-ROM')) {
             Dismount-DiskImage -DevicePath "\\.\$($cdrom.DriveLetter):"
         }
 
@@ -379,9 +352,7 @@ function Invoke-WinUtilISOCleanAndReset {
 
             $sync["WPFWin11ISOStatusLog"].Text = "Ready. Please select a Windows 11 ISO to begin."
         })
-    })
-
-    $script.BeginInvoke()
+    }
 }
 
 function Invoke-WinUtilISOExport {
@@ -403,58 +374,27 @@ function Invoke-WinUtilISOExport {
     if ($dialog.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
 
     $outputISO = $dialog.FileName
-
-    Invoke-WebRequest -Uri https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe -OutFile "$Env:Temp\oscdimg.exe"
-    $oscdimg = "$Env:Temp\oscdimg.exe"
-
     $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $false
 
-    $runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
-    $runspace.ApartmentState = "STA"
-    $runspace.ThreadOptions = "ReuseThread"
-    $runspace.Open()
-    $runspace.SessionStateProxy.SetVariable("sync", $sync)
-    $runspace.SessionStateProxy.SetVariable("contentsDir", $contentsDir)
-    $runspace.SessionStateProxy.SetVariable("outputISO", $outputISO)
-    $runspace.SessionStateProxy.SetVariable("oscdimg", $oscdimg)
-
-    $win11ISOLogFuncDef = "function Write-Win11ISOLog {`n" + ${function:Write-Win11ISOLog}.ToString() + "`n}"
-    $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef", $win11ISOLogFuncDef)
-
-    $script = [Management.Automation.PowerShell]::Create()
-    $script.Runspace = $runspace
-    $script.AddScript({
+    Invoke-WinUtilRunspace -Variables @{
+        contentsDir = $contentsDir
+        outputISO = $outputISO
+    } -ScriptBlock {
         . ([scriptblock]::Create($win11ISOLogFuncDef))
 
+        $oscdimg = "$Env:Temp\oscdimg.exe"
+        Invoke-WebRequest -Uri "https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe" -OutFile $oscdimg
+
         Write-Win11ISOLog "Exporting to ISO: $outputISO"
-
-        $oscdimgArgs = @(
-            "-m",
-            "-o",
-            "-h",
-            "-u2",
-            "-udfver102",
-            "-efi",
-            "-b$contentsDir\efi\microsoft\boot\efisys.bin",
-            "-lCTOS_MODIFIED",
-            $contentsDir,
-            $outputISO
-        )
-
-        & $oscdimg $oscdimgArgs
+        & $oscdimg -m -o -h -u2 -udfver102 -efi "-b$contentsDir\efi\microsoft\boot\efisys.bin" -lCTOS_MODIFIED $contentsDir $outputISO
 
         Write-Win11ISOLog "ISO exported successfully: $outputISO"
         $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
             [System.Windows.MessageBox]::Show("ISO exported successfully!`n`n$outputISO", "Export Complete", "OK", "Info")
-        })
-
-        $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
             $sync.progressBarTextBlock.Text = ""
             $sync.progressBarTextBlock.ToolTip = ""
             $sync.ProgressBar.Value = 0
             $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $true
         })
-    })
-
-    $script.BeginInvoke()
+    }
 }
