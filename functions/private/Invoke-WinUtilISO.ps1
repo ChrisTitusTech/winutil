@@ -319,7 +319,18 @@ function Invoke-WinUtilISOCleanAndReset {
     if ($confirm -ne "Yes") { return }
 
     $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $false
-    Remove-Item -Path $workDir -Recurse -Force
+
+    $cdroms = Get-Volume | Where-Object DriveType -eq 'CD-ROM'
+
+    foreach ($image in Get-WindowsImage -Mounted) {
+        Dismount-WindowsImage -Path $image.Path -Discard
+    }
+
+    foreach ($cdrom in $cdroms) {
+        Dismount-DiskImage -DevicePath "\\.\$($cdrom.DriveLetter):"
+    }
+
+    Remove-Item -Path "$Env:Temp\WinUtil_Win11ISO*" -Recurse -Force
 
     $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
         $sync["Win11ISOWorkDir"] = $null
