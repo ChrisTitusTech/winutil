@@ -15,7 +15,7 @@ Winutil includes a built-in **Win11 Creator** tool that lets you take an officia
 > You need an **official Windows 11 ISO** from [Microsoft's website](https://www.microsoft.com/en-us/software-download/windows11) before starting. Custom, modified, or non-official ISOs are not supported. The process uses ~10–15 GB of temporary disk space, so make sure you have room.
 
 > [!IMPORTANT]
-> An active internet connection is required at first logon so Winutil automation can complete successfully. Internet may also be required during ISO export if `oscdimg.exe` is not already installed.
+> An active internet connection is required at first logon so Winutil automation can complete successfully. Internet may also be required during ISO export.
 
 > [!NOTE]
 > This workflow is intended for fresh Windows installs, not in-place upgrades of an existing installation.
@@ -52,7 +52,7 @@ Winutil will:
 - **Inject `autounattend.xml`** into the ISO root for setup automation
 - **Disable hardware checks** — TPM, Secure Boot, CPU requirement checks are disabled during setup
 - **Enable local account setup** — skips Microsoft account requirement during OOBE
-- **Strip unused editions** — keeps only your selected edition, saving 1-2 GB per removed edition
+- **Strip unused editions** — keeps only your selected edition.
 - **Clean the component store** — runs DISM cleanup (`/StartComponentCleanup /ResetBase`) to reduce image size
 - **Remove ISO support files** — deletes the ISO `support` folder
 
