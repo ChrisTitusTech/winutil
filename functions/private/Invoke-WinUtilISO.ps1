@@ -219,10 +219,6 @@ function Invoke-WinUtilISOModify {
                 Remove-Item -Path "$Env:Temp\Driver" -Recurse -Force
             }
 
-            Write-Win11ISOLog "Running DISM component store cleanup (/ResetBase). this may take a few minutes..."
-            Repair-WindowsImage -Path $mountDir -StartComponentCleanup -ResetBase
-            Write-Win11ISOLog "Component store cleanup complete."
-
             Write-Win11ISOLog "Dismounting and saving install.wim. This will take several minutes..."
             Dismount-WindowsImage -Path $mountDir -Save
             Write-Win11ISOLog "install.wim saved."
@@ -386,7 +382,7 @@ function Invoke-WinUtilISOExport {
         Invoke-WebRequest -Uri "https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe" -OutFile $oscdimg
 
         Write-Win11ISOLog "Exporting to ISO: $outputISO"
-        & $oscdimg -m -o -h -u2 -udfver102 -efi "-b$contentsDir\efi\microsoft\boot\efisys.bin" $contentsDir $outputISO
+        & $oscdimg -o -u2 "-b$contentsDir\efi\microsoft\boot\efisys.bin" $contentsDir $outputISO
 
         Write-Win11ISOLog "ISO exported successfully: $outputISO"
         $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
