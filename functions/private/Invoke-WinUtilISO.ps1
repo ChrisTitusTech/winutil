@@ -320,44 +320,68 @@ function Invoke-WinUtilISOCleanAndReset {
 
     $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $false
 
-    $cdroms = Get-Volume | Where-Object DriveType -eq 'CD-ROM'
+    $runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
+    $runspace.ApartmentState = "STA"
+    $runspace.ThreadOptions = "ReuseThread"
+    $runspace.Open()
 
-    foreach ($image in Get-WindowsImage -Mounted) {
-        Dismount-WindowsImage -Path $image.Path -Discard
-    }
+    $runspace.SessionStateProxy.SetVariable("sync", $sync)
 
-    foreach ($cdrom in $cdroms) {
-        Dismount-DiskImage -DevicePath "\\.\$($cdrom.DriveLetter):"
-    }
+    $win11ISOLogFuncDef = "function Write-Win11ISOLog {`n" + ${function:Write-Win11ISOLog}.ToString() + "`n}"
+    $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef", $win11ISOLogFuncDef)
 
-    Remove-Item -Path "$Env:Temp\WinUtil_Win11ISO*" -Recurse -Force
+    $script = [Management.Automation.PowerShell]::Create()
+    $script.Runspace = $runspace
 
-    $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-        $sync["Win11ISOWorkDir"] = $null
-        $sync["Win11ISOContentsDir"] = $null
-        $sync["Win11ISOImagePath"] = $null
-        $sync["Win11ISODriveLetter"] = $null
-        $sync["Win11ISOWimPath"] = $null
-        $sync["Win11ISOImageInfo"] = $null
-        $sync["Win11ISOUSBDisks"] = $null
+    $script.AddScript({
+        . ([scriptblock]::Create($win11ISOLogFuncDef))
 
-        $sync["WPFWin11ISOPath"].Text = "No ISO selected..."
-        $sync["WPFWin11ISOFileInfo"].Visibility = "Collapsed"
-        $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Collapsed"
-        $sync["WPFWin11ISOOptionUSB"].Visibility = "Collapsed"
-        $sync["WPFWin11ISOOutputSection"].Visibility = "Collapsed"
-        $sync["WPFWin11ISOModifySection"].Visibility = "Collapsed"
-        $sync["WPFWin11ISOMountSection"].Visibility = "Collapsed"
-        $sync["WPFWin11ISOSelectSection"].Visibility = "Visible"
-        $sync["WPFWin11ISOModifyButton"].IsEnabled = $true
-        $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $true
+        Write-Win11ISOLog "Dismounting mounted Windows images..."
 
-        $sync.progressBarTextBlock.Text = ""
-        $sync.progressBarTextBlock.ToolTip = ""
-        $sync.ProgressBar.Value = 0
+        foreach ($image in Get-WindowsImage -Mounted) {
+            Dismount-WindowsImage -Path $image.Path -Discard
+        }
 
-        $sync["WPFWin11ISOStatusLog"].Text = "Ready. Please select a Windows 11 ISO to begin."
+        Write-Win11ISOLog "Dismounting mounted ISOs..."
+
+        $cdroms = Get-Volume | Where-Object DriveType -eq 'CD-ROM'
+
+        foreach ($cdrom in $cdroms) {
+            Dismount-DiskImage -DevicePath "\\.\$($cdrom.DriveLetter):"
+        }
+
+        Write-Win11ISOLog "Removing temporary working directories..."
+        Remove-Item -Path "$Env:Temp\WinUtil_Win11ISO*" -Recurse -Force
+
+        $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+            $sync["Win11ISOWorkDir"] = $null
+            $sync["Win11ISOContentsDir"] = $null
+            $sync["Win11ISOImagePath"] = $null
+            $sync["Win11ISODriveLetter"] = $null
+            $sync["Win11ISOWimPath"] = $null
+            $sync["Win11ISOImageInfo"] = $null
+            $sync["Win11ISOUSBDisks"] = $null
+
+            $sync["WPFWin11ISOPath"].Text = "No ISO selected..."
+            $sync["WPFWin11ISOFileInfo"].Visibility = "Collapsed"
+            $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Collapsed"
+            $sync["WPFWin11ISOOptionUSB"].Visibility = "Collapsed"
+            $sync["WPFWin11ISOOutputSection"].Visibility = "Collapsed"
+            $sync["WPFWin11ISOModifySection"].Visibility = "Collapsed"
+            $sync["WPFWin11ISOMountSection"].Visibility = "Collapsed"
+            $sync["WPFWin11ISOSelectSection"].Visibility = "Visible"
+            $sync["WPFWin11ISOModifyButton"].IsEnabled = $true
+            $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $true
+
+            $sync.progressBarTextBlock.Text = ""
+            $sync.progressBarTextBlock.ToolTip = ""
+            $sync.ProgressBar.Value = 0
+
+            $sync["WPFWin11ISOStatusLog"].Text = "Ready. Please select a Windows 11 ISO to begin."
+        })
     })
+
+    $script.BeginInvoke()
 }
 
 function Invoke-WinUtilISOExport {
