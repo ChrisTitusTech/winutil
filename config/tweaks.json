@@ -1240,7 +1240,7 @@
     ],
     "UndoScript": [
       "
-      Remove-Item -Path \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\Bag*\" -Recurse -Force
+      Remove-Item -Path \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags*\" -Recurse -Force
       Write-Host 'Done. Please sign out and back in, or restart to apply changes.'
       "
     ],
