@@ -216,6 +216,8 @@ function Invoke-WinUtilISOModify {
 
                 New-Item -Path "$workDir\boot_mount" -ItemType Directory -Force
 
+                Set-ItemProperty -Path "$isoContents\sources\boot.wim" -Name IsReadOnly -Value $false
+
                 Mount-WindowsImage -ImagePath "$isoContents\sources\boot.wim" -Index 2 -Path "$workDir\boot_mount"
                 Add-WindowsDriver -Path "$workDir\boot_mount" -Driver "$Env:Temp\Driver" -Recurse
 
