@@ -2,7 +2,7 @@ param (
     [switch]$Run
 )
 
-$OFS = "`r`n" # Makes it so we dont need to add -Raw to every Get-Content command
+$OFS = "`r`n"
 
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
