@@ -47,7 +47,7 @@ Click **Run Windows ISO Modification and Creator** to start the customization pr
 Winutil will:
 
 > [!IMPORTANT]
-> Keep the PC connected to the internet through first logon so Winutil automation can complete successfully. Internet may also be required during ISO export if `oscdimg.exe` is not already installed.
+> Keep the PC connected to the internet through first logon so Winutil automation can complete successfully.
 
 **ISO Build Actions:**
 - **Copy and prepare ISO contents** in a temporary working directory
