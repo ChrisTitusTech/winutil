@@ -46,9 +46,6 @@ Winutil includes a built-in **Win11 Creator** tool that lets you take an officia
 Click **Run Windows ISO Modification and Creator** to start the customization process.
 Winutil will:
 
-> [!IMPORTANT]
-> Keep the PC connected to the internet through first logon so Winutil automation can complete successfully.
-
 **ISO Build Actions:**
 - **Copy and prepare ISO contents** in a temporary working directory
 - **Mount your selected edition** from `install.wim`/`install.esd`
@@ -63,6 +60,9 @@ Winutil will:
 - **Run Winutil automation script at first logon** during setup finalization
 - **Apply Winutil's advanced preset after installation** during first-logon setup
 - **Complete setup with an automatic reboot** into a preconfigured desktop
+
+> [!IMPORTANT]
+> Keep the PC connected to the internet through first logon so Winutil automation can complete successfully.
 
 >[!NOTE]
 > To view exactly what advance preset does, see:
