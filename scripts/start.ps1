@@ -7,9 +7,9 @@
 #>
 
 param (
+    [string]$Config,
     [ValidateSet("Standard", "Minimal", "Advanced")]
     [string]$Preset,
-    [string]$Config,
     [switch]$Offline
 )
 
