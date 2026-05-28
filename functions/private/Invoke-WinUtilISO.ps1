@@ -211,11 +211,16 @@ function Invoke-WinUtilISOModify {
             if ($injectDrivers) {
                 Write-Win11ISOLog "Injecting current system drivers (This might take a few minutes)..."
 
-                New-Item -Path "$Env:Temp\Driver" -ItemType Directory
-
                 Export-WindowsDriver -Online -Destination "$Env:Temp\Driver"
                 Add-WindowsDriver -Path $mountDir -Driver "$Env:Temp\Driver" -Recurse
 
+                New-Item -Path "$workDir\boot_mount" -ItemType Directory -Force
+
+                Mount-WindowsImage -ImagePath "$isoContents\sources\boot.wim" -Index 2 -Path "$workDir\boot_mount"
+                Add-WindowsDriver -Path "$workDir\boot_mount" -Driver "$Env:Temp\Driver" -Recurse
+
+                Dismount-WindowsImage -Path "$workDir\boot_mount" -Save
+            
                 Remove-Item -Path "$Env:Temp\Driver" -Recurse -Force
             }
 
