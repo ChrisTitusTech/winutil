@@ -10,8 +10,12 @@ Winutil includes a built-in **Win11 Creator** tool that lets you take an officia
 
 {{< image src="images/win11creator-tab-new" alt="Win11 Creator tab in Winutil" >}}
 
+
 > [!IMPORTANT]
 > You need an **official Windows 11 ISO** from [Microsoft's website](https://www.microsoft.com/en-us/software-download/windows11) before starting. Custom, modified, or non-official ISOs are not supported. The process uses ~10–15 GB of temporary disk space, so make sure you have room.
+
+> [!IMPORTANT]
+> This workflow requires an active internet connection during image creation and first logon so Winutil automation can run correctly.
 
 > [!NOTE]
 > This workflow is intended for fresh Windows installs, not in-place upgrades of an existing installation.
@@ -42,11 +46,14 @@ Winutil includes a built-in **Win11 Creator** tool that lets you take an officia
 Click **Run Windows ISO Modification and Creator** to start the customization process.
 Winutil will:
 
+> [!IMPORTANT]
+> Keep the PC connected to the internet while this step runs and through first logon so Winutil automation can complete successfully.
+
 **ISO Build Actions:**
 - **Copy and prepare ISO contents** in a temporary working directory
 - **Mount your selected edition** from `install.wim`/`install.esd`
 - **Inject `autounattend.xml`** into the ISO root for setup automation
-- **Bypass hardware checks** — TPM, Secure Boot, CPU, RAM, and storage requirement checks are bypassed during setup
+- **Disable hardware checks** — TPM, Secure Boot, CPU, RAM, and storage requirement checks are disabled during setup
 - **Enable local account setup** — skips Microsoft account requirement during OOBE
 - **Strip unused editions** — keeps only your selected edition, saving 1-2 GB per removed edition
 - **Clean the component store** — runs DISM cleanup (`/StartComponentCleanup /ResetBase`) to reduce image size
@@ -54,7 +61,7 @@ Winutil will:
 
 **Post-OOBE Configuration (First Logon):**
 - **Run Winutil automation script at first logon** during setup finalization
-- **Apply Winutil advance preset after install** instead of baking most tweaks directly into `install.wim`
+- **Apply Winutil's advanced preset after installation** during first-logon setup
 - **Complete setup with an automatic reboot** into a preconfigured desktop
 
 >[!NOTE]
@@ -64,10 +71,7 @@ https://github.com/ChrisTitusTech/winutil/blob/main/config/preset.json
 **Optional: Driver Injection**
 - If enabled, it injects drivers from your current system into `install.wim` — useful for offline installations on machines with missing drivers. This is an optional checkbox in Step 3.
 
-
-
 ---
-
 
 ### Step 4 — Export Your Result
 
@@ -78,7 +82,7 @@ Once the modification is complete, choose how to save your image:
   {{< tab name="Save as ISO" selected=true >}}
   1. Click **Save as an ISO File**.
   2. Choose a save location (defaults to your Desktop as `Win11_Modified_yyyyMMdd.iso`).
-  3. Winutil builds a dual BIOS/UEFI bootable ISO using `oscdimg.exe`.
+  3. Winutil builds a dual BIOS/UEFI bootable ISO.
 
 
   {{< /tab >}}
@@ -109,6 +113,8 @@ Click **Clean & Reset** to delete the temporary working directory (~10–15 GB) 
 
 - Download official Windows 11 media from [Microsoft](https://www.microsoft.com/en-us/software-download/windows11).
 - If you prefer to write a finished ISO with another tool, common choices include [Rufus](https://rufus.ie/) or [Ventoy](https://www.ventoy.net/).
+
+
 
 > [!NOTE]
 > Always download Windows ISOs from official Microsoft sources or trusted tools like Rufus/UUP Dump to avoid tampered images.
