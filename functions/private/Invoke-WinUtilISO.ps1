@@ -406,54 +406,34 @@ function Invoke-WinUtilISOExport {
     $script.AddScript({
         . ([scriptblock]::Create($win11ISOLogFuncDef))
 
-        try {
-            Write-Win11ISOLog "Exporting to ISO: $outputISO"
+        Write-Win11ISOLog "Exporting to ISO: $outputISO"
 
-            $bootData = "2#p0,e,b`"$contentsDir\boot\etfsboot.com`"#pEF,e,b`"$contentsDir\efi\microsoft\boot\efisys.bin`""
-            $oscdimgArgs = @("-m", "-o", "-h", "-u2", "-udfver102", "-bootdata:$bootData", "-l`"CTOS_MODIFIED`"", "`"$contentsDir`"", "`"$outputISO`"")
+        $oscdimgArgs = @(
+            "-m",
+            "-o",
+            "-h",
+            "-u2",
+            "-udfver102",
+            "-efi",
+            "-b$contentsDir\efi\microsoft\boot\efisys.bin",
+            "-lCTOS_MODIFIED",
+            $contentsDir,
+            $outputISO
+        )
 
-            $psi = [System.Diagnostics.ProcessStartInfo]::new()
-            $psi.FileName = $oscdimg
-            $psi.Arguments = $oscdimgArgs -join " "
-            $psi.RedirectStandardOutput = $true
-            $psi.RedirectStandardError = $true
-            $psi.UseShellExecute = $false
-            $psi.CreateNoWindow = $true
+        & $oscdimg $oscdimgArgs
 
-            $proc = [System.Diagnostics.Process]::new()
-            $proc.StartInfo = $psi
-            $proc.Start()
+        Write-Win11ISOLog "ISO exported successfully: $outputISO"
+        $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+            [System.Windows.MessageBox]::Show("ISO exported successfully!`n`n$outputISO", "Export Complete", "OK", "Info")
+        })
 
-            Write-Win11ISOLog "Running oscdimg..."
-            $proc.WaitForExit()
-
-            if ($proc.ExitCode -eq 0) {
-                Write-Win11ISOLog "ISO exported successfully: $outputISO"
-                $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                    [System.Windows.MessageBox]::Show("ISO exported successfully!`n`n$outputISO", "Export Complete", "OK", "Info")
-                })
-            } else {
-                Write-Win11ISOLog "oscdimg exited with code $($proc.ExitCode)."
-                $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                    [System.Windows.MessageBox]::Show(
-                        "oscdimg exited with code $($proc.ExitCode).`nCheck the status log for details.",
-                        "Export Error", "OK", "Error")
-                })
-            }
-        } catch {
-            Write-Win11ISOLog "ERROR during ISO export: $_"
-            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                [System.Windows.MessageBox]::Show("ISO export failed:`n`n$_", "Error", "OK", "Error")
-            })
-        } finally {
-            Start-Sleep -Milliseconds 800
-            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                $sync.progressBarTextBlock.Text = ""
-                $sync.progressBarTextBlock.ToolTip = ""
-                $sync.ProgressBar.Value = 0
-                $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $true
-            })
-        }
+        $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+            $sync.progressBarTextBlock.Text = ""
+            $sync.progressBarTextBlock.ToolTip = ""
+            $sync.ProgressBar.Value = 0
+            $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $true
+        })
     })
 
     $script.BeginInvoke()
