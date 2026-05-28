@@ -44,7 +44,7 @@ function Invoke-WinUtilISOWriteUSB {
     $sizeGB = [math]::Round($disk.Size / 1GB, 1)
 
     $confirm = [System.Windows.MessageBox]::Show(
-        "ALL data on Disk $($disk.Number) ($($disk.FriendlyName), $sizeGB GB) will be ERASED.`nContinue?",
+        "ALL data on Disk $($disk.Number) ($($disk.FriendlyName), $sizeGB GB) will be PERMANENTLY ERASED.`nContinue?",
         "Confirm USB Erase",
         "YesNo",
         "Warning"
