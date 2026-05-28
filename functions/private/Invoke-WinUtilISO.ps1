@@ -187,7 +187,7 @@ function Invoke-WinUtilISOModify {
 
             New-Item -Path $isoContents, $mountDir -ItemType Directory -Force
 
-            Write-Win11ISOLog "Copying ISO contents... from $driveLetter to $isoContents"
+            Write-Win11ISOLog "Copying ISO contents..."
             Copy-Item -Path "$driveLetter\*" -Destination $isoContents -Recurse -Force
             Write-Win11ISOLog "ISO contents copied."
 
@@ -199,7 +199,7 @@ function Invoke-WinUtilISOModify {
 
             Set-ItemProperty -Path $localWim -Name IsReadOnly -Value $false
 
-            Write-Win11ISOLog "Mounting install.wim... (Index ${selectedWimIndex}: $selectedEditionName) at $mountDir"
+            Write-Win11ISOLog "Mounting install.wim... This will take a few minutes"
             Mount-WindowsImage -ImagePath $localWim -Index $selectedWimIndex -Path $mountDir
 
             Set-Content -Path "$isoContents\autounattend.xml" -Value $autounattendContent
