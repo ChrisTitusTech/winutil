@@ -65,33 +65,13 @@ function Invoke-WinUtilISOMountAndVerify {
             $driveLetter = (Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter + ":"
             Write-Win11ISOLog "Mounted at drive $driveLetter"
 
-            $wimPath = "$driveLetter\sources\install.wim"
-            $esdPath = "$driveLetter\sources\install.esd"
-
-            if (-not (Test-Path $wimPath) -and -not (Test-Path $esdPath)) {
-                Dismount-DiskImage -ImagePath $isoPath
-                Write-Win11ISOLog "ERROR: install.wim/install.esd not found — not a valid Windows ISO."
-                $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                    [System.Windows.MessageBox]::Show(
-                        "This does not appear to be a valid Windows ISO.`n`ninstall.wim / install.esd was not found.",
-                        "Invalid ISO", "OK", "Error")
-                })
-                return
+            if (Test-Path "$driveLetter\sources\install.wim") {
+                $activeWim = "$driveLetter\sources\install.wim"
+            } else {
+                $activeWim = "$driveLetter\sources\install.esd"
             }
 
-            $activeWim = if (Test-Path $wimPath) { $wimPath } else { $esdPath }
             $imageInfo = Get-WindowsImage -ImagePath $activeWim | Select-Object ImageIndex, ImageName
-
-            if (-not ($imageInfo | Where-Object { $_.ImageName -match "Windows 11" })) {
-                Dismount-DiskImage -ImagePath $isoPath
-                Write-Win11ISOLog "ERROR: No 'Windows 11' edition found in the image."
-                $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                    [System.Windows.MessageBox]::Show(
-                        "No Windows 11 edition was found in this ISO.`n`nOnly official Windows 11 ISOs are supported.",
-                        "Not a Windows 11 ISO", "OK", "Error")
-                })
-                return
-            }
 
             $sync["Win11ISOImageInfo"] = $imageInfo
             $sync["Win11ISODriveLetter"] = $driveLetter
@@ -145,7 +125,6 @@ function Invoke-WinUtilISOMountAndVerify {
 function Invoke-WinUtilISOModify {
     $isoPath = $sync["Win11ISOImagePath"]
     $driveLetter = $sync["Win11ISODriveLetter"]
-    $wimPath = $sync["Win11ISOWimPath"]
     $selectedItem = $sync["WPFWin11ISOEditionComboBox"].SelectedItem
     $injectDrivers = $sync["WPFWin11ISOInjectDrivers"].IsChecked -eq $true
 
@@ -166,7 +145,6 @@ function Invoke-WinUtilISOModify {
     Invoke-WinUtilRunspace -Variables @{
         isoPath = $isoPath
         driveLetter = $driveLetter
-        wimPath = $wimPath
         workDir = $workDir
         selectedWimIndex = $selectedWimIndex
         selectedEditionName = $selectedEditionName
