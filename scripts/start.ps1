@@ -65,8 +65,6 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
     break
 }
 
-Add-Type -AssemblyName PresentationFramework
-
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.version = "#{replaceme}"
