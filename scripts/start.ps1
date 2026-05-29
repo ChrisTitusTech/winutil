@@ -69,14 +69,12 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 $sync = [Hashtable]::Synchronized(@{})
 $sync.version = "#{replaceme}"
 $sync.configs = @{}
-$sync.Buttons = [System.Collections.Generic.List[PSObject]]::new()
 $sync.preferences = @{}
-$sync.ProcessRunning = $false
+$sync.Buttons = [System.Collections.Generic.List[PSObject]]::new()
 $sync.selectedApps = [System.Collections.Generic.List[string]]::new()
 $sync.selectedTweaks = [System.Collections.Generic.List[string]]::new()
 $sync.selectedToggles = [System.Collections.Generic.List[string]]::new()
 $sync.selectedFeatures = [System.Collections.Generic.List[string]]::new()
-$sync.currentTab = "Install"
 
 $dateTime = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
 
