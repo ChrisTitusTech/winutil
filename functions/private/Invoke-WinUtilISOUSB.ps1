@@ -87,7 +87,11 @@ function Invoke-WinUtilISOWriteUSB {
 
         $usb = "${letter}:"
         $srcSize = (Get-ChildItem $contentsDir -Recurse -File | Measure-Object Length -Sum).Sum
-        if ($srcSize -gt (Get-Volume $letter).Size) { throw "Insufficient space on USB drive." }
+
+        if ($srcSize -gt (Get-Volume $letter).Size) {
+            Write-Win11ISOLog "Insufficient space on USB drive."
+            return
+        }
 
         Write-Win11ISOLog "Splitting install.wim (this will take a while)..."
         New-Item "$usb\sources" -ItemType Directory -Force | Out-Null
