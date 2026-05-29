@@ -35,7 +35,7 @@ Get-ChildItem config | ForEach-Object {
 }
 
 # Read the entire XAML file as a single string, preserving line breaks
-$xaml = Get-Content -Path xaml\inputXML.xaml
+$xaml = Get-Content -Path inputXML.xaml
 $script.Add('$inputXML = @''' + "`n" + $xaml + "`n" + '''@')
 
 $autounattendXml = Get-Content -Path tools\autounattend.xml
