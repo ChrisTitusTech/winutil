@@ -12,7 +12,7 @@ A curated compilation of Windows system tasks streamline **installs**, debloat w
 
 ## Quick Start
 
-> **WinUtil must be run as Administrator** — it performs system-wide changes.
+> **WinUtil must be run as Administrator** Because it performs system-wide changes.
 
 Open PowerShell or Terminal as admin, then run:
 
