@@ -1068,7 +1068,7 @@
     "UndoScript": [
       "
       Set-Content \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\" (
-          (Get-Content \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\") -join '`n' -replace '(?s)#New Ver.*', ''
+          (Get-Content \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\") -join \"`n\" -replace '(?s)#New Ver.*', ''
       )
 
       ipconfig /flushdns
