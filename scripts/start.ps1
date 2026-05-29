@@ -82,10 +82,9 @@ $dateTime = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
 
 # Create and set the path for the winutil directory
 $winutildir = "$Env:LocalAppData\winutil"
-
 New-Item -Path "$winutildir\logs" -ItemType Directory -Force | Out-Null
 Start-Transcript -Path "$winutildir\logs\winutil_$dateTime.log" -Append -NoClobber | Out-Null
 
 # Set PowerShell window title
 $Host.UI.RawUI.WindowTitle = "WinUtil (Admin)"
-clear-host
+Clear-Host
