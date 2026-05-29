@@ -48,8 +48,10 @@ function Invoke-WinUtilISOWriteUSB {
     $script.Runspace = $runspace
     $script.AddScript({
         function Write-Win11ISOLog ($Message) {
+            $time = Get-Date -Format hh:mm:ss
+        
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                $sync["WPFWin11ISOStatusLog"].Text = "[$(Get-Date -f hh:mm:ss)] $Message"
+                $sync["WPFWin11ISOStatusLog"].Text = "[$time] $Message"
                 $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
             })
         }
