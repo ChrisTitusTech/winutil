@@ -44,7 +44,7 @@ Apply a predefined configuration without manual selection:
 | Preset | Description |
 |--------|-------------|
 | `Standard` | Balanced defaults for most users |
-| `Minimal` | Strips down the bare minimum |
+| `Minimal` | Minimal changes to suit every user |
 | `Advanced` | Deep tweaks for power users |
 
 To see what each preset does refer to: [`preset.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/preset.json)
