@@ -1,3 +1,6 @@
+# Print the logo
+Show-CTTLogo
+
 # Create enums
 Add-Type @"
 public enum PackageManagers
@@ -253,9 +256,6 @@ Invoke-WPFRunspace -ScriptBlock {
 #===========================================================================
 # Setup and Show the Form
 #===========================================================================
-
-# Print the logo
-Show-CTTLogo
 
 # Progress bar in taskbaritem > Set-WinUtilProgressbar
 $sync["Form"].TaskbarItemInfo = New-Object System.Windows.Shell.TaskbarItemInfo
