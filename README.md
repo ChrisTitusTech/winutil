@@ -47,7 +47,7 @@ Apply a predefined configuration without manual selection:
 | `Minimal` | Strips down the bare minimum |
 | `Advanced` | Deep tweaks for power users |
 
-Full preset config: [`config/preset.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/preset.json)
+To see what each preset does refer to: [`preset.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/preset.json)
 
 ---
 
