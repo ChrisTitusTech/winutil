@@ -147,6 +147,12 @@
         "OriginalType": "Manual"
       }
     ],
+    "InvokeScript": [
+      "Set-Service -Name lfsvc -StartupType Disabled"
+    ],
+    "UndoScript": [
+      "Set-Service -Name lfsvc -StartupType Manual"
+    ],
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location",
@@ -177,37 +183,25 @@
     "Description": "Sets some services to Manual startup and adjusts the SvcHostSplitThresholdInKB registry value to better match system memory, which can significantly reduce the number of svchost.exe processes.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "service": [
-      {
-        "Name": "CscService",
-        "StartupType": "Disabled",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "DiagTrack",
-        "StartupType": "Disabled",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "MapsBroker",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "StorSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "SharedAccess",
-        "StartupType": "Disabled",
-        "OriginalType": "Automatic"
-      }
-    ],
     "InvokeScript": [
       "
+      Set-Service -Name SharedAccess -StartupType Disabled
+      Set-Service -Name CscService -StartupType Disabled
+      Set-Service -Name DiagTrack -StartupType Disabled
+      Set-Service -Name MapsBroker -StartupType Manual
+      Set-Service -Name StorSvc -StartupType Manual
+
       $Memory = (Get-CimInstance Win32_PhysicalMemory | Measure-Object Capacity -Sum).Sum / 1KB
       Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value $Memory
+      "
+    ],
+    "UndoScript": [
+      "
+      Set-Service -Name SharedAccess -StartupType Automatic
+      Set-Service -Name MapsBroker -StartupType Automatic
+      Set-Service -Name DiagTrack -StartupType Automatic
+      Set-Service -Name StorSvc -StartupType Automatic
+      Set-Service -Name CscService -StartupType Manual
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/services"
