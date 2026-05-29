@@ -10,7 +10,6 @@ function Invoke-WPFPresets ($preset, $imported, $checkboxfilterpattern) {
         "WPFInstall*" { $sync.selectedApps = [System.Collections.Generic.List[string]]::new() }
         "WPFeatures" { $sync.selectedFeatures = [System.Collections.Generic.List[string]]::new() }
         "WPFToggle" { $sync.selectedToggles = [System.Collections.Generic.List[string]]::new() }
-        default {}
     }
 
     if ($preset) {
