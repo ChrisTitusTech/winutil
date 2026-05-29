@@ -56,6 +56,12 @@ function Invoke-WinUtilISOWriteUSB {
             })
         }
 
+        function Test-Cancelled {
+            if ($sync["Win11ISOCancelRequested"]) {
+                return
+            }
+        }
+
         function Get-FreeLetter {
             $used = (Get-PSDrive -PSProvider FileSystem).Name
             68..90 | ForEach-Object { [char]$_ } | Where-Object { $used -notcontains $_ } | Select-Object -First 1
@@ -81,6 +87,8 @@ function Invoke-WinUtilISOWriteUSB {
             Start-Sleep -Milliseconds 500
         }
 
+        Test-Cancelled
+
         Format-Volume -DriveLetter $letter -FileSystem FAT32 -NewFileSystemLabel win11creator -Force
         Write-Win11ISOLog "Formatted FAT32."
 
@@ -88,9 +96,13 @@ function Invoke-WinUtilISOWriteUSB {
         $srcSize = (Get-ChildItem $contentsDir -Recurse -File | Measure-Object Length -Sum).Sum
         if ($srcSize -gt (Get-Volume $letter).Size) { throw "Insufficient space on USB drive." }
 
+        Test-Cancelled
+
         Write-Win11ISOLog "Splitting install.wim (this will take a while)..."
         New-Item "$usb\sources" -ItemType Directory -Force | Out-Null
         Split-WindowsImage -ImagePath "$contentsDir\sources\install.wim" -SplitImagePath "$usb\sources\install.swm" -FileSize 3800
+
+        Test-Cancelled
 
         Write-Win11ISOLog "Copying files (this will take a while)..."
         Copy-Item -Path "$contentsDir\*" -Destination $usb -Recurse -Force -Exclude install.wim
