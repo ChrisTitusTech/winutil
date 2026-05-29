@@ -14,6 +14,7 @@ function Invoke-WinUtilISORefreshUSBDrives {
     $disks | ForEach-Object {
         $combo.Items.Add("Disk $($_.Number): $($_.FriendlyName) [$([math]::Round($_.Size/1GB,1)) GB] - $($_.PartitionStyle)")
     }
+
     $combo.SelectedIndex = 0
     $sync["Win11ISOUSBDisks"] = $disks
     Write-Win11ISOLog "Found $($disks.Count) USB drive(s).`n"
