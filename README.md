@@ -18,12 +18,12 @@ Open PowerShell or Terminal as admin, then run:
 
 **Stable Branch (recommended)**
 ```ps1
-irm "https://christitus.com/win" | iex
+irm https://christitus.com/win | iex
 ```
 
 **Development Branch**
 ```ps1
-irm "https://christitus.com/windev" | iex
+irm https://christitus.com/windev | iex
 ```
 
 ### How to open an admin terminal
