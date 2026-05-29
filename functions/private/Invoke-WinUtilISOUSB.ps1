@@ -16,7 +16,7 @@ function Invoke-WinUtilISORefreshUSBDrives {
     }
     $combo.SelectedIndex = 0
     $sync["Win11ISOUSBDisks"] = $disks
-    Write-Win11ISOLog "Found $($disks.Count) USB drive(s)."
+    Write-Win11ISOLog "Found $($disks.Count) USB drive(s).`n"
 }
 
 function Invoke-WinUtilISOWriteUSB {
