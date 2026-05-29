@@ -73,7 +73,7 @@ See [CONTRIBUTING.md](https://github.com/ChrisTitusTech/winutil/blob/main/.githu
 - Leave a ⭐ to show support!
 - EXE Wrapper for $10 @ https://www.cttstore.com/windows-toolbox
 
-# 💖 Sponsors
+## 💖 Sponsors
 
 These are the sponsors that help keep this project alive with monthly contributions.
 
