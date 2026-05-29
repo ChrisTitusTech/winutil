@@ -1,6 +1,3 @@
-# Print the logo
-Show-CTTLogo
-
 # Create enums
 Add-Type @"
 public enum PackageManagers
