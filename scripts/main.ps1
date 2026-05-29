@@ -67,8 +67,6 @@ $sync.configs.applications.PSObject.Properties | ForEach-Object {
 Set-Preferences
 
 if ($Preset) {
-    Show-CTTLogo
-
     # Selects the tweaks from $Preset varible
     Update-WinUtilSelections -flatJson $sync.configs.preset.$Preset
 
@@ -84,8 +82,6 @@ if ($Preset) {
 }
 
 if ($Config) {
-    Show-CTTLogo
-
     Invoke-WPFImpex -type "import" -Config $Config
 
     Invoke-WinUtilAutoRun
