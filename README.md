@@ -38,7 +38,7 @@ irm https://christitus.com/windev | iex
 Apply a predefined configuration without manual selection:
 
 ```powershell
-& ([ScriptBlock]::Create((irm "https://christitus.com/win"))) -Preset Standard
+& ([ScriptBlock]::Create((irm https://christitus.com/win))) -Preset Standard
 ```
 
 | Preset | Description |
