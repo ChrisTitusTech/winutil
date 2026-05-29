@@ -69,7 +69,6 @@ Add-Type -AssemblyName PresentationFramework
 
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
-$sync.PSScriptRoot = $PSScriptRoot
 $sync.version = "#{replaceme}"
 $sync.configs = @{}
 $sync.Buttons = [System.Collections.Generic.List[PSObject]]::new()
@@ -80,13 +79,12 @@ $sync.selectedTweaks = [System.Collections.Generic.List[string]]::new()
 $sync.selectedToggles = [System.Collections.Generic.List[string]]::new()
 $sync.selectedFeatures = [System.Collections.Generic.List[string]]::new()
 $sync.currentTab = "Install"
-$sync.selectedAppsStackPanel
-$sync.selectedAppsPopup
 
 $dateTime = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
 
 # Create and set the path for the winutil directory
-$winutildir = "$env:LocalAppData\winutil"
+$winutildir = "$Env:LocalAppData\winutil"
+
 New-Item -Path "$winutildir\logs" -ItemType Directory -Force | Out-Null
 Start-Transcript -Path "$winutildir\logs\winutil_$dateTime.log" -Append -NoClobber | Out-Null
 
