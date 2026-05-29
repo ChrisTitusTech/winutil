@@ -979,6 +979,15 @@
         "winget": "Giorgiotani.Peazip",
         "foss": true
     },
+    "playnite": {
+        "category": "Games",
+        "choco": "playnite",
+        "content": "Playnite",
+        "description": "Playnite is an open source video game library manager with one simple goal: To provide a unified interface for all of your games.",
+        "link": "https://playnite.link/",
+        "winget": "Playnite.Playnite",
+        "foss": true
+    },
     "plex": {
         "category": "Selfhosted Tools",
         "choco": "plexmediaserver",
