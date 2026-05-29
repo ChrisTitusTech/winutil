@@ -64,6 +64,7 @@ function Invoke-WinUtilISOWriteUSB {
 
         Clear-Disk -Number $diskNum -RemoveData -Confirm:$false
         Initialize-Disk -Number $diskNum -PartitionStyle GPT
+
         Write-Win11ISOLog "Disk wiped and initialized (GPT)."
 
         $part = if ([math]::Floor((Get-Disk $diskNum).Size / 1MB) -gt 32768) {
