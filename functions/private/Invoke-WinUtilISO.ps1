@@ -140,7 +140,7 @@ function Invoke-WinUtilISOModify {
     $sync["WPFWin11ISOModifyButton"].IsEnabled = $false
     $sync["Win11ISOModifying"] = $true
 
-    $workDir = Join-Path $env:TEMP "WinUtil_Win11ISO_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+    $workDir = Join-Path $Env:Temp "WinUtil_Win11ISO_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
 
     Invoke-WinUtilRunspace -Variables @{
         isoPath = $isoPath
@@ -189,7 +189,7 @@ function Invoke-WinUtilISOModify {
                 Set-ItemProperty -Path $localWim -Name IsReadOnly -Value $false
                 New-Item -Path "$workDir\wim_mount" -ItemType Directory -Force
 
-                Write-Win11ISOLog "Mounting and adding drivers to $localWim"...
+                Write-Win11ISOLog "Mounting and adding drivers to $localWim..."
                 Mount-WindowsImage -ImagePath $localWim -Index $selectedWimIndex -Path "$workDir\wim_mount"
                 Add-WindowsDriver -Path "$workDir\wim_mount" -Driver "$Env:Temp\Driver" -Recurse
 
@@ -225,7 +225,7 @@ function Invoke-WinUtilISOModify {
             Remove-Item -Path $localWim -Force
             Rename-Item -Path $exportWim -NewName "install.wim" -Force
 
-            write-Win11ISOLog "Unused editions removed."
+            Write-Win11ISOLog "Unused editions removed."
             $sync["Win11ISOWorkDir"] = $workDir
             $sync["Win11ISOContentsDir"] = $isoContents
 
@@ -291,7 +291,11 @@ function Invoke-WinUtilISOCheckExistingWork {
 }
 
 function Invoke-WinUtilISOCleanAndReset {
-    $confirm = [System.Windows.MessageBox]::Show("This will delete the temporary working directory:`n`n$workDir`n`nAnd reset the interface back to the start.`n`nContinue?","Clean And Reset", "YesNo", "Warning")
+    $confirm = [System.Windows.MessageBox]::Show(
+        "This will delete the temporary working directory:`n`n$($sync["Win11ISOWorkDir"])`n`nAnd reset the interface back to the start.`n`nContinue?",
+        "Clean And Reset", "YesNo", "Warning")
+
+    if ($confirm -ne [System.Windows.MessageBoxResult]::Yes) { return }
 
     $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $false
 
