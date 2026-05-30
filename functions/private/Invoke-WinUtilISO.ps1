@@ -161,13 +161,13 @@ function Invoke-WinUtilISOModify {
             })
 
             $isoContents = "$workDir\iso_contents"
-            $mountDir = "$workDir\wim_mount"
-
-            New-Item -Path $isoContents, $mountDir -ItemType Directory -Force
+            New-Item -Path $isoContents -ItemType Directory -Force
 
             Write-Win11ISOLog "Copying ISO contents..."
+
             Copy-Item -Path "$driveLetter\*" -Destination $isoContents -Recurse -Force
             Dismount-DiskImage -ImagePath $isoPath
+
             Write-Win11ISOLog "ISO contents copied."
 
             $localWim = if (Test-Path "$isoContents\sources\install.wim") {
@@ -185,10 +185,11 @@ function Invoke-WinUtilISOModify {
             if ($injectDrivers) {
                 Write-Win11ISOLog "Injecting current system drivers This will take a really long time..."
 
-                Mount-WindowsImage -ImagePath $localWim -Index $selectedWimIndex -Path $mountDir
+                New-Item -Path "$workDir\wim_mount" -ItemType Directory -Force
+                Mount-WindowsImage -ImagePath $localWim -Index $selectedWimIndex -Path "$workDir\wim_mount"
 
                 Export-WindowsDriver -Online -Destination "$Env:Temp\Driver"
-                Add-WindowsDriver -Path $mountDir -Driver "$Env:Temp\Driver" -Recurse
+                Add-WindowsDriver -Path "$workDir\wim_mount" -Driver "$Env:Temp\Driver" -Recurse
 
                 New-Item -Path "$workDir\boot_mount" -ItemType Directory -Force
                 Set-ItemProperty -Path "$isoContents\sources\boot.wim" -Name IsReadOnly -Value $false
@@ -333,13 +334,6 @@ function Invoke-WinUtilISOCleanAndReset {
 
 function Invoke-WinUtilISOExport {
     $contentsDir = $sync["Win11ISOContentsDir"]
-
-    if (-not $contentsDir -or -not (Test-Path $contentsDir)) {
-        [System.Windows.MessageBox]::Show(
-            "No modified ISO content found.  Please complete Steps 1-3 first.",
-            "Not Ready", "OK", "Warning")
-        return
-    }
 
     $dialog = [System.Windows.Forms.SaveFileDialog]::new()
     $dialog.Title = "Save Modified Windows 11 ISO"
