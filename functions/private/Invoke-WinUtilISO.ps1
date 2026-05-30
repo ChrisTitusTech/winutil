@@ -176,12 +176,6 @@ function Invoke-WinUtilISOModify {
                 "$isoContents\sources\install.esd"
             }
 
-            Set-ItemProperty -Path $localWim -Name IsReadOnly -Value $false
-
-            Write-Win11ISOLog "Mounting install.wim. This will take a few minutes..."
-            Mount-WindowsImage -ImagePath $localWim -Index $selectedWimIndex -Path $mountDir
-            Write-Win11ISOLog "install.wim mounted."
-
             Set-Content -Path "$isoContents\autounattend.xml" -Value $autounattendContent
             Write-Win11ISOLog "Written autounattend.xml to ISO root."
 
@@ -189,8 +183,11 @@ function Invoke-WinUtilISOModify {
             Write-Win11ISOLog "Removed support folder from ISO root."
 
             if ($injectDrivers) {
-                Write-Win11ISOLog "Injecting current system drivers (This will several minutes)..."
+                Write-Win11ISOLog "Mounting install.wim for driver injection. This will take a few minutes..."
+                Mount-WindowsImage -ImagePath $localWim -Index $selectedWimIndex -Path $mountDir
+                Write-Win11ISOLog "install.wim mounted."
 
+                Write-Win11ISOLog "Injecting current system drivers (This will take several minutes)..."
                 Export-WindowsDriver -Online -Destination "$Env:Temp\Driver"
                 Add-WindowsDriver -Path $mountDir -Driver "$Env:Temp\Driver" -Recurse
 
@@ -202,11 +199,11 @@ function Invoke-WinUtilISOModify {
 
                 Dismount-WindowsImage -Path "$workDir\boot_mount" -Save
                 Remove-Item -Path "$Env:Temp\Driver" -Recurse -Force
-            }
 
-            Write-Win11ISOLog "Dismounting and saving install.wim. This will take several minutes..."
-            Dismount-WindowsImage -Path $mountDir -Save
-            Write-Win11ISOLog "install.wim saved."
+                Write-Win11ISOLog "Dismounting and saving install.wim. This will take several minutes..."
+                Dismount-WindowsImage -Path $mountDir -Save
+                Write-Win11ISOLog "install.wim saved."
+            }
 
             Write-Win11ISOLog "Exporting edition '$selectedEditionName' (Index $selectedWimIndex) to a single-edition install.wim..."
 
