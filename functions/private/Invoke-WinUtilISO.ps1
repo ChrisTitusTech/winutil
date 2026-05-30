@@ -177,8 +177,9 @@ function Invoke-WinUtilISOModify {
 
             Set-ItemProperty -Path $localWim -Name IsReadOnly -Value $false
 
-            Write-Win11ISOLog "Mounting install.wim... This will take a few minutes"
+            Write-Win11ISOLog "Mounting install.wim. This will take a few minutes..."
             Mount-WindowsImage -ImagePath $localWim -Index $selectedWimIndex -Path $mountDir
+            Write-Win11ISOLog "install.wim mounted."
 
             Set-Content -Path "$isoContents\autounattend.xml" -Value $autounattendContent
             Write-Win11ISOLog "Written autounattend.xml to ISO root."
@@ -193,14 +194,12 @@ function Invoke-WinUtilISOModify {
                 Add-WindowsDriver -Path $mountDir -Driver "$Env:Temp\Driver" -Recurse
 
                 New-Item -Path "$workDir\boot_mount" -ItemType Directory -Force
-
                 Set-ItemProperty -Path "$isoContents\sources\boot.wim" -Name IsReadOnly -Value $false
 
                 Mount-WindowsImage -ImagePath "$isoContents\sources\boot.wim" -Index 2 -Path "$workDir\boot_mount"
                 Add-WindowsDriver -Path "$workDir\boot_mount" -Driver "$Env:Temp\Driver" -Recurse
 
                 Dismount-WindowsImage -Path "$workDir\boot_mount" -Save
-            
                 Remove-Item -Path "$Env:Temp\Driver" -Recurse -Force
             }
 
