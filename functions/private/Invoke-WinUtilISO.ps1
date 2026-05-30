@@ -205,16 +205,15 @@ function Invoke-WinUtilISOModify {
                 Write-Win11ISOLog "install.wim saved."
             }
 
-            Write-Win11ISOLog "Exporting edition '$selectedEditionName' (Index $selectedWimIndex) to a single-edition install.wim..."
+            Write-Win11ISOLog "Exporting install.wim editions to a single-edition install.wim..."
 
             $exportWim = "$isoContents\sources\install_export.wim"
-
             Export-WindowsImage -SourceImagePath $localWim -SourceIndex $selectedWimIndex -DestinationImagePath $exportWim
 
             Remove-Item -Path $localWim -Force
             Rename-Item -Path $exportWim -NewName "install.wim" -Force
 
-            Write-Win11ISOLog "Unused editions removed. install.wim now contains only '$selectedEditionName'."
+            Write-Win11ISOLog "Unused editions removed."
 
             $sync["Win11ISOWorkDir"] = $workDir
             $sync["Win11ISOContentsDir"] = $isoContents
