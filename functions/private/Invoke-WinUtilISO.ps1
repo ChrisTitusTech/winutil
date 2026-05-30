@@ -210,10 +210,8 @@ function Invoke-WinUtilISOModify {
             Write-Win11ISOLog "Removing unused editions from install.wim..."
             Set-ItemProperty -Path $localWim -Name IsReadOnly -Value $false
 
-            foreach ($image in Get-WindowsImage -ImagePath $localWim) {
-                if ($image.ImageIndex -ne $selectedWimIndex) {
-                    Remove-WindowsImage -ImagePath $localWim -Index $image.ImageIndex
-                }
+            while ((Get-WindowsImage -ImagePath $localWim).Count -gt 1) {
+                Remove-WindowsImage -ImagePath $localWim -Index $(if ($selectedWimIndex -eq 1) { 2 } else { 1 })
             }
 
             Write-Win11ISOLog "Unused editions removed."
