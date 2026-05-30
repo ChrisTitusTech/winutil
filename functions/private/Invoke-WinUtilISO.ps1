@@ -207,15 +207,15 @@ function Invoke-WinUtilISOModify {
                 Dismount-WindowsImage -Path $mountDir -Save
             }
 
-            Write-Win11ISOLog "Removing unused editions from install.wim..."
-            Set-ItemProperty -Path $localWim -Name IsReadOnly -Value $false
+            Write-Win11ISOLog "Exporting install.wim into a single-edition install.wim..."
 
-            while ((Get-WindowsImage -ImagePath $localWim).Count -gt 1) {
-                Remove-WindowsImage -ImagePath $localWim -Index $(if ($selectedWimIndex -eq 1) { 2 } else { 1 })
-            }
+            $exportWim = "$isoContents\sources\install_export.wim"
+            Export-WindowsImage -SourceImagePath $localWim -SourceIndex $selectedWimIndex -DestinationImagePath $exportWim
 
-            Write-Win11ISOLog "Unused editions removed."
+            Remove-Item -Path $localWim -Force
+            Rename-Item -Path $exportWim -NewName "install.wim" -Force
 
+            write-Win11ISOLog "Unused editions removed."
             $sync["Win11ISOWorkDir"] = $workDir
             $sync["Win11ISOContentsDir"] = $isoContents
 
