@@ -167,6 +167,7 @@ function Invoke-WinUtilISOModify {
 
             Write-Win11ISOLog "Copying ISO contents..."
             Copy-Item -Path "$driveLetter\*" -Destination $isoContents -Recurse -Force
+            Dismount-DiskImage -ImagePath $isoPath
             Write-Win11ISOLog "ISO contents copied."
 
             $localWim = if (Test-Path "$isoContents\sources\install.wim") {
@@ -217,9 +218,6 @@ function Invoke-WinUtilISOModify {
             Rename-Item -Path $exportWim -NewName "install.wim" -Force
 
             Write-Win11ISOLog "Unused editions removed. install.wim now contains only '$selectedEditionName'."
-
-            Write-Win11ISOLog "Dismounting original ISO..."
-            Dismount-DiskImage -ImagePath $isoPath
 
             $sync["Win11ISOWorkDir"] = $workDir
             $sync["Win11ISOContentsDir"] = $isoContents
