@@ -361,19 +361,36 @@ function Invoke-WinUtilISOExport {
     } -ScriptBlock {
         . ([scriptblock]::Create($win11ISOLogFuncDef))
 
-        $oscdimg = "$Env:Temp\oscdimg.exe"
-        Invoke-WebRequest -Uri "https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe" -OutFile $oscdimg
+        try {
+            $oscdimg = "$Env:Temp\oscdimg.exe"
+            Invoke-WebRequest -Uri "https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe" -OutFile $oscdimg
 
-        Write-Win11ISOLog "Exporting to ISO: $outputISO"
-        & $oscdimg -o -u2 "-b$contentsDir\efi\microsoft\boot\efisys.bin" $contentsDir $outputISO
+            Write-Win11ISOLog "Exporting to ISO: $outputISO"
+            & $oscdimg -o -u2 "-b$contentsDir\efi\microsoft\boot\efisys.bin" $contentsDir $outputISO
 
-        Write-Win11ISOLog "ISO exported successfully: $outputISO"
-        $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-            [System.Windows.MessageBox]::Show("ISO exported successfully!`n`n$outputISO", "Export Complete", "OK", "Info")
-            $sync.progressBarTextBlock.Text = ""
-            $sync.progressBarTextBlock.ToolTip = ""
-            $sync.ProgressBar.Value = 0
-            $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $true
-        })
+            if ($LASTEXITCODE -ne 0) {
+                Write-Win11ISOLog "oscdimg exited with code $LASTEXITCODE"
+                return
+            }
+
+            Write-Win11ISOLog "ISO exported successfully: $outputISO"
+            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+                [System.Windows.MessageBox]::Show("ISO exported successfully!`n`n$outputISO", "Export Complete", "OK", "Info")
+            })
+        } catch {
+            Write-Win11ISOLog "ERROR during ISO export: $_"
+            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+                [System.Windows.MessageBox]::Show(
+                    "An error occurred while exporting the ISO:`n`n$_",
+                    "Export Error", "OK", "Error")
+            })
+        } finally {
+            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+                $sync.progressBarTextBlock.Text = ""
+                $sync.progressBarTextBlock.ToolTip = ""
+                $sync.ProgressBar.Value = 0
+                $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $true
+            })
+        }
     }
 }
