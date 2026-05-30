@@ -183,30 +183,38 @@ function Invoke-WinUtilISOModify {
             Write-Win11ISOLog "Removed support folder from ISO root."
 
             if ($injectDrivers) {
-                Write-Win11ISOLog "Injecting current system drivers. This will take a really long time..."
-
-                Export-WindowsDriver -Online -Destination "$Env:Temp\Driver"
+                Write-Win11ISOLog "Exporting Windows drivers..."
+                Export-WindowsDriver -Destination "$Env:Temp\Driver" -Online
 
                 Set-ItemProperty -Path $localWim -Name IsReadOnly -Value $false
                 New-Item -Path "$workDir\wim_mount" -ItemType Directory -Force
 
+                Write-Win11ISOLog "Mounting and adding drivers to $localWim"...
                 Mount-WindowsImage -ImagePath $localWim -Index $selectedWimIndex -Path "$workDir\wim_mount"
                 Add-WindowsDriver -Path "$workDir\wim_mount" -Driver "$Env:Temp\Driver" -Recurse
 
+                Write-Win11ISOLog "Saving install.wim"
                 Dismount-WindowsImage -Path "$workDir\wim_mount" -Save
 
                 Set-ItemProperty -Path "$isoContents\sources\boot.wim" -Name IsReadOnly -Value $false
                 New-Item -Path "$workDir\boot_mount" -ItemType Directory -Force
 
+                Write-Win11ISOLog "Adding drivers to boot.wim (Index 1)"
                 Mount-WindowsImage -ImagePath "$isoContents\sources\boot.wim" -Index 1 -Path "$workDir\boot_mount"
                 Add-WindowsDriver -Path "$workDir\boot_mount" -Driver "$Env:Temp\Driver" -Recurse
+
+                Write-Win11ISOLog "Saving boot.wim (Index 1)"
                 Dismount-WindowsImage -Path "$workDir\boot_mount" -Save
 
+                Write-Win11ISOLog "Adding drivers to boot.wim (Index 2)"
                 Mount-WindowsImage -ImagePath "$isoContents\sources\boot.wim" -Index 2 -Path "$workDir\boot_mount"
                 Add-WindowsDriver -Path "$workDir\boot_mount" -Driver "$Env:Temp\Driver" -Recurse
+
+                Write-Win11ISOLog "Saving boot.wim (Index 2)"
                 Dismount-WindowsImage -Path "$workDir\boot_mount" -Save
 
                 Remove-Item -Path "$Env:Temp\Driver" -Recurse -Force
+                Write-Win11ISOLog "Driver injection completed"
             }
 
             Write-Win11ISOLog "Exporting install.wim into a single-edition install.wim..."
