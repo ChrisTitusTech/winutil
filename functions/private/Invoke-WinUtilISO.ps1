@@ -183,26 +183,28 @@ function Invoke-WinUtilISOModify {
             Write-Win11ISOLog "Removed support folder from ISO root."
 
             if ($injectDrivers) {
-                Write-Win11ISOLog "Mounting install.wim for driver injection. This will take a few minutes..."
-                Mount-WindowsImage -ImagePath $localWim -Index $selectedWimIndex -Path $mountDir
-                Write-Win11ISOLog "install.wim mounted."
+                Write-Win11ISOLog "Injecting current system drivers This will take a really long time..."
 
-                Write-Win11ISOLog "Injecting current system drivers (This will take several minutes)..."
+                Mount-WindowsImage -ImagePath $localWim -Index $selectedWimIndex -Path $mountDir
+
                 Export-WindowsDriver -Online -Destination "$Env:Temp\Driver"
                 Add-WindowsDriver -Path $mountDir -Driver "$Env:Temp\Driver" -Recurse
 
                 New-Item -Path "$workDir\boot_mount" -ItemType Directory -Force
                 Set-ItemProperty -Path "$isoContents\sources\boot.wim" -Name IsReadOnly -Value $false
 
+                Mount-WindowsImage -ImagePath "$isoContents\sources\boot.wim" -Index 1 -Path "$workDir\boot_mount"
+                Add-WindowsDriver -Path "$workDir\boot_mount" -Driver "$Env:Temp\Driver" -Recurse
+                Dismount-WindowsImage -Path "$workDir\boot_mount" -Save
+            
                 Mount-WindowsImage -ImagePath "$isoContents\sources\boot.wim" -Index 2 -Path "$workDir\boot_mount"
                 Add-WindowsDriver -Path "$workDir\boot_mount" -Driver "$Env:Temp\Driver" -Recurse
+                Dismount-WindowsImage -Path "$workDir\boot_mount" -Save
 
                 Dismount-WindowsImage -Path "$workDir\boot_mount" -Save
                 Remove-Item -Path "$Env:Temp\Driver" -Recurse -Force
 
-                Write-Win11ISOLog "Dismounting and saving install.wim. This will take several minutes..."
                 Dismount-WindowsImage -Path $mountDir -Save
-                Write-Win11ISOLog "install.wim saved."
             }
 
             Write-Win11ISOLog "Exporting install.wim editions to a single-edition install.wim..."
