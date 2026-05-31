@@ -7,7 +7,7 @@ function Install-WinUtilWinget {
     .DESCRIPTION
         installs winGet if needed
     #>
-    if ((Test-WinUtilPackageManager -winget) -eq "installed") {
+    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
         return
     }
 
