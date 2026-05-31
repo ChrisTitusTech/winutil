@@ -1,9 +1,5 @@
 function Invoke-WPFGetInstalled {
     <#
-    TODO: Add the Option to use Chocolatey as Engine
-    .SYNOPSIS
-        Invokes the function that gets the checkboxes to check in a new runspace
-
     .PARAMETER checkbox
         Indicates whether to check for installed 'winget' programs or applied 'tweaks'
 
@@ -15,7 +11,7 @@ function Invoke-WPFGetInstalled {
         return
     }
 
-    if (($sync.ChocoRadioButton.IsChecked -eq $false) -and ((Test-WinUtilPackageManager -winget) -eq "not-installed") -and $checkbox -eq "winget") {
+    if (($sync.ChocoRadioButton.IsChecked -eq $false) -and (-not (Get-Command winget -ErrorAction SilentlyContinue)) -and $checkbox -eq "winget") {
         return
     }
     $managerPreference = $sync.preferences.packagemanager
