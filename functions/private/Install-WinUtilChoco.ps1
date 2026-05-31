@@ -1,6 +1,6 @@
 function Install-WinUtilChoco {
 
-    if (-not (Get-Command choco)) {
+    if (-not (Get-Command -Name choco)) {
         return
     }
 
