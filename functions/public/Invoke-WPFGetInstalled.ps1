@@ -11,7 +11,7 @@ function Invoke-WPFGetInstalled {
         return
     }
 
-    if (($sync.ChocoRadioButton.IsChecked -eq $false) -and (-not (Get-Command winget -ErrorAction SilentlyContinue)) -and $checkbox -eq "winget") {
+    if (($sync.ChocoRadioButton.IsChecked -eq $false) -and (-not (Get-Command -Name winget)) -and $checkbox -eq "winget") {
         return
     }
     $managerPreference = $sync.preferences.packagemanager
