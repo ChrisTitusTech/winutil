@@ -186,7 +186,7 @@ function Invoke-WinUtilISOModify {
                 Export-WindowsDriver -Destination "$Env:Temp\Driver" -Online
 
                 Set-ItemProperty -Path $localWim -Name IsReadOnly -Value $false
-                New-Item -Path "$workDir\wim_mount" -ItemType Directory -Force
+                New-Item -Path "$workDir\wim_mount" -ItemType Directory
 
                 Write-Win11ISOLog "Mounting and adding drivers to $localWim..."
                 Mount-WindowsImage -ImagePath $localWim -Index $selectedWimIndex -Path "$workDir\wim_mount"
@@ -237,6 +237,7 @@ function Invoke-WinUtilISOModify {
             Write-Win11ISOLog "ERROR during modification: $_"
             Dismount-DiskImage -ImagePath $isoPath
             Remove-Item -Path $workDir -Recurse -Force
+            Remove-Item -Path "$Env:Temp\Driver" -Recurse -Force
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 [System.Windows.MessageBox]::Show(
                     "An error occurred during install.wim modification:`n`n$_",
@@ -346,8 +347,7 @@ function Invoke-WinUtilISOExport {
     $dialog = [System.Windows.Forms.SaveFileDialog]::new()
     $dialog.Title = "Save Modified Windows 11 ISO"
     $dialog.Filter = "ISO files (*.iso)|*.iso"
-    $dialog.FileName = "Win11_Modified_$(Get-Date -Format 'yyyyMMdd').iso"
-    $dialog.InitialDirectory = [System.Environment]::GetFolderPath("Desktop")
+    $dialog.FileName = "Win11Creator.iso"
 
     if ($dialog.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
 
