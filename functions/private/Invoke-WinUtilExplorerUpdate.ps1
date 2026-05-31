@@ -39,7 +39,6 @@ public class Win32 {
             }
         }
     } elseif ($action -eq "restart") {
-        taskkill.exe /F /IM "explorer.exe"
-        Start-Process "explorer.exe"
+        Stop-Process -Name "explorer" -Force
     }
 }
