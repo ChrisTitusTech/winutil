@@ -6,7 +6,7 @@ function Install-WinUtilChoco {
         Installs Chocolatey if it is not already installed
 
     #>
-    if ((Test-WinUtilPackageManager -choco) -eq "installed") {
+    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
         return
     }
 
