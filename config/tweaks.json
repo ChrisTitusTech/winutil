@@ -1340,12 +1340,12 @@
     ],
     "InvokeScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"refresh\"
+      Invoke-WinUtilExplorerUpdate
       "
     ],
     "UndoScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"refresh\"
+      Invoke-WinUtilExplorerUpdate
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/showext"
@@ -1368,12 +1368,12 @@
     ],
     "InvokeScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"refresh\"
+      Invoke-WinUtilExplorerUpdate
       "
     ],
     "UndoScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"refresh\"
+      Invoke-WinUtilExplorerUpdate
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/hiddenfiles"
