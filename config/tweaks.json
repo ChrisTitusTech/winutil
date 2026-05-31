@@ -1699,6 +1699,12 @@
         "DefaultState": "true"
       },
     ],
+    "InvokeScript":[
+      "Invoke-WinUtilExplorerUdpate"
+    ],
+    "UndoScript":[
+      "Invoke-WinUtilExplorerUpdate"
+    ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/taskbaralignment"
   },
   "WPFToggleTaskbarSearch": {
