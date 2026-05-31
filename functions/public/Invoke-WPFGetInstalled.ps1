@@ -1,5 +1,9 @@
 function Invoke-WPFGetInstalled {
     <#
+    TODO: Add the Option to use Chocolatey as Engine
+    .SYNOPSIS
+        Invokes the function that gets the checkboxes to check in a new runspace
+
     .PARAMETER checkbox
         Indicates whether to check for installed 'winget' programs or applied 'tweaks'
 
