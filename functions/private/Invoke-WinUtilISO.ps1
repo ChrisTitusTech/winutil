@@ -379,9 +379,7 @@ function Invoke-WinUtilISOExport {
         } catch {
             Write-Win11ISOLog "ERROR during ISO export: $_"
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                [System.Windows.MessageBox]::Show(
-                    "An error occurred while exporting the ISO:`n`n$_",
-                    "Export Error", "OK", "Error")
+                [System.Windows.MessageBox]::Show("ISO export failed:`n`n$_", "Error", "OK", "Error")
             })
         } finally {
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
