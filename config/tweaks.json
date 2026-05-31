@@ -507,20 +507,6 @@
         "OriginalValue": "<RemoveEntry>"
       },
       {
-        "Path": "HKCU:\\Software\\Microsoft\\InputPersonalization",
-        "Name": "RestrictImplicitInkCollection",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\InputPersonalization",
-        "Name": "RestrictImplicitTextCollection",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>"
-      },
-      {
         "Path": "HKCU:\\Software\\Microsoft\\InputPersonalization\\TrainedDataStore",
         "Name": "HarvestContacts",
         "Value": "0",
@@ -555,13 +541,6 @@
         "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Siuf\\Rules",
-        "Name": "NumberOfSIUFInPeriod",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>"
-      }
     ],
     "InvokeScript": [
       "
@@ -685,13 +664,6 @@
         "Value": "0",
         "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "Name": "LaunchTo",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removehome"
@@ -705,20 +677,6 @@
       {
         "Path": "HKCU:\\Control Panel\\Desktop",
         "Name": "DragFullWindows",
-        "Value": "0",
-        "Type": "String",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Desktop",
-        "Name": "MenuShowDelay",
-        "Value": "200",
-        "Type": "String",
-        "OriginalValue": "400"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Desktop\\WindowMetrics",
-        "Name": "MinAnimate",
         "Value": "0",
         "Type": "String",
         "OriginalValue": "1"
@@ -761,27 +719,6 @@
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\DWM",
         "Name": "EnableAeroPeek",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "Name": "TaskbarMn",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "Name": "ShowTaskViewButton",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
-        "Name": "SearchboxTaskbarMode",
         "Value": "0",
         "Type": "DWord",
         "OriginalValue": "1"
@@ -1636,50 +1573,6 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/loginblur"
   },
-  "WPFToggleStartMenuRecommendations": {
-    "Content": "Start Menu Recommendations",
-    "Description": "If disabled, then you will not see recommendations in the Start Menu. WARNING: This will also disable Windows Spotlight on your Lock Screen as a side effect.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\Start",
-        "Name": "HideRecommendedSection",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "1",
-        "DefaultState": "true"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\Education",
-        "Name": "IsEducationEnvironment",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "1",
-        "DefaultState": "true"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer",
-        "Name": "HideRecommendedSection",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "1",
-        "DefaultState": "true"
-      }
-    ],
-    "InvokeScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
-    ],
-    "UndoScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/startmenurecommendations"
-  },
   "WPFToggleStickyKeys": {
     "Content": "Sticky Keys",
     "Description": "If enabled, Sticky Keys is activated. Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
@@ -1993,27 +1886,7 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/windowedgames"
   },
-  "WPFToggleClassicContextMenu": {
-    "Content": "Classic Context Menu - Enable (Win11)",
-    "Description": "Restores the classic full right-click context menu in Windows 11 instead of the modern compact one. Requires restarting Explorer.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "InvokeScript": [
-      "
-      reg.exe add \"HKCU\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32\" /f /ve
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      Write-Host \"Classic context menu enabled - Explorer restarted.\"
-      "
-    ],
-    "UndoScript": [
-      "
-      reg.exe delete \"HKCU\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" /f
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      Write-Host \"Modern context menu restored - Explorer restarted.\"
-      "
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/classiccontext"
-  },
+
   "WPFToggleWebSearch": {
     "Content": "Web Search - Disable suggestions",
     "Description": "Disables web search suggestions and Bing results from appearing in Windows Search and Start menu search. Local file and app search still works.",
@@ -2032,24 +1905,7 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/websearch"
   },
-  "WPFToggleNotificationCenter": {
-    "Content": "Notification Center - Disable",
-    "Description": "Disables the Notification Center (Win+N) and calendar flyout in Windows 11. The clock area will no longer open notifications.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer",
-        "Name": "DisallowNotificationCenter",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "false"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/notificationcenter"
-  },
+
   "WPFTweaksIconCache": {
     "Content": "Icon Cache - Reset & Rebuild",
     "Description": "Deletes and rebuilds the Windows icon cache. Fixes corrupted, blank, or distorted desktop and File Explorer icons.",
@@ -2089,40 +1945,7 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/classicvolume"
   },
-  "WPFToggleHideRecommended": {
-    "Content": "Start Menu - Hide Recommended section",
-    "Description": "Hides the Recommended section entirely from the Windows 11 Start menu. Works on most Windows 11 builds via policy registry keys.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer",
-        "Name": "HideRecommendedSection",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "false"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\Start",
-        "Name": "HideRecommendedSection",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "false"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\Education",
-        "Name": "IsEducationEnvironment",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "false"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/hiderecommended"
-  },
+
   "WPFTweaksPhotoViewer": {
     "Content": "Windows Photo Viewer - Enable",
     "Description": "Enables the classic Windows Photo Viewer and registers it to handle common image file types (.jpg, .png, .gif, .bmp, .tiff, etc.).",
@@ -2179,24 +2002,7 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/clockseconds"
   },
-  "WPFToggleExplorerLaunchTo": {
-    "Content": "File Explorer - Opens to This PC",
-    "Description": "Changes File Explorer's default landing page from Quick Access to This PC, showing all drives and system folders immediately.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "Name": "LaunchTo",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "false"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/explorerlaunchto"
-  },
+
   "WPFToggleAeroShake": {
     "Content": "Aero Shake - Disable",
     "Description": "Disables Aero Shake, which minimizes all other windows when you shake the active window. Useful for gamers and users who trigger it accidentally.",
@@ -2413,24 +2219,7 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/windowsink"
   },
-  "WPFToggleCopilot": {
-    "Content": "Copilot - Disable",
-    "Description": "Disables Microsoft Copilot AI assistant via policy.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\WindowsCopilot",
-        "Name": "TurnOffWindowsCopilot",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "false"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/copilot"
-  },
+
   "WPFToggleWidgetsIcon": {
     "Content": "Taskbar Widgets Icon",
     "Description": "Show or hide the Widgets icon (weather/news) on the taskbar.",
@@ -2455,30 +2244,7 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/widgetsicon"
   },
-  "WPFToggleChatIcon": {
-    "Content": "Taskbar Chat/Teams Icon",
-    "Description": "Show or hide the Chat/Teams icon on the taskbar.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "Name": "TaskbarMn",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "false"
-      }
-    ],
-    "InvokeScript": [
-      "Invoke-WinUtilExplorerUpdate -action \"restart\""
-    ],
-    "UndoScript": [
-      "Invoke-WinUtilExplorerUpdate -action \"restart\""
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/chaticon"
-  },
+
   "WPFToggleSnapAssist": {
     "Content": "Snap Assist Flyout - Disable",
     "Description": "Disables the Snap Assist flyout that appears when snapping windows.",
@@ -2851,24 +2617,7 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/windowsversion"
   },
-  "WPFToggleMenuDelay": {
-    "Content": "Menu Speed - Reduce show delay",
-    "Description": "Speeds up menu responsiveness by reducing the delay before submenus and context menus appear. Set to 0 for instant display.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKCU:\\Control Panel\\Desktop",
-        "Name": "MenuShowDelay",
-        "Value": "0",
-        "Type": "String",
-        "OriginalValue": "400",
-        "DefaultState": "false"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/menudelay"
-  },
+
   "WPFToggleEnableTransparency": {
     "Content": "Transparency Effects - Disable",
     "Description": "Disables acrylic blur effects on surfaces like the Start menu, taskbar, and notification center.",
@@ -2905,24 +2654,7 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/colorprevalence"
   },
-  "WPFToggleMinAnimation": {
-    "Content": "Minimize Animation - Disable",
-    "Description": "Disables the minimize and maximize window animation effect.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKCU:\\Control Panel\\Desktop\\WindowMetrics",
-        "Name": "MinAnimate",
-        "Value": "0",
-        "Type": "String",
-        "OriginalValue": "1",
-        "DefaultState": "false"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/minanimation"
-  },
+
   "WPFToggleLockScreenTips": {
     "Content": "Lock Screen Tips - Disable",
     "Description": "Disables tips, tricks, and suggestions from Microsoft on the lock screen.",
@@ -3065,24 +2797,7 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/privacy-security/bluetoothadvertising"
   },
-  "WPFToggleFeedbackNotifications": {
-    "Content": "Feedback Notifications - Disable",
-    "Description": "Disables Windows feedback prompts and survey notifications.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Siuf\\Rules",
-        "Name": "NumberOfSIUFInPeriod",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "1",
-        "DefaultState": "false"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/privacy-security/feedbacknotifications"
-  },
+
   "WPFTweaksEdgeSecureNetwork": {
     "Content": "Edge Secure Network - Disable",
     "Description": "Disables the Edge Secure Network VPN feature (powered by Cloudflare).",
