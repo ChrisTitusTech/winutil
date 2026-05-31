@@ -1,11 +1,5 @@
 function Install-WinUtilChoco {
 
-    <#
-
-    .SYNOPSIS
-        Installs Chocolatey if it is not already installed
-
-    #>
     if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
         return
     }
