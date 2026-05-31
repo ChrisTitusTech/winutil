@@ -1,12 +1,5 @@
 function Install-WinUtilWinget {
-    <#
 
-    .SYNOPSIS
-        Installs WinGet if not already installed.
-
-    .DESCRIPTION
-        installs winGet if needed
-    #>
     if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
         return
     }
