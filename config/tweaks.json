@@ -1090,15 +1090,12 @@
       "
       New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\"
       Write-Host Restarting explorer.exe ...
-      Stop-Process -Name \"explorer\" -Force
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
       "
     ],
     "UndoScript": [
       "
       Remove-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Recurse -Confirm:$false -Force
-      # Restarting Explorer in the Undo Script might not be necessary, as the Registry change without restarting Explorer does work, but just to make sure.
-      Write-Host Restarting explorer.exe ...
-      Stop-Process -Name \"explorer\" -Force
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/rightclickmenu"
@@ -1343,12 +1340,12 @@
     ],
     "InvokeScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Invoke-WinUtilExplorerUpdate -action \"refresh\"
       "
     ],
     "UndoScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Invoke-WinUtilExplorerUpdate -action \"refresh\"
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/showext"
@@ -1371,12 +1368,12 @@
     ],
     "InvokeScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Invoke-WinUtilExplorerUpdate -action \"refresh\"
       "
     ],
     "UndoScript": [
       "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Invoke-WinUtilExplorerUpdate -action \"refresh\"
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/hiddenfiles"
@@ -1713,16 +1710,6 @@
         "OriginalValue": "0",
         "DefaultState": "true"
       }
-    ],
-    "InvokeScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
-    ],
-    "UndoScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/taskbaralignment"
   },
