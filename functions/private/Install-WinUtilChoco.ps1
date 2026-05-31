@@ -1,6 +1,6 @@
 function Install-WinUtilChoco {
 
-    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+    if (-not (Get-Command choco)) {
         return
     }
 
