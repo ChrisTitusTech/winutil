@@ -1,6 +1,6 @@
 function Install-WinUtilWinget {
 
-    if (-not (Get-Command -Name winget)) {
+    if (Get-Command -Name winget) {
         return
     }
 
