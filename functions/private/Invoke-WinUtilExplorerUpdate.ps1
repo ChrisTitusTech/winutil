@@ -39,6 +39,6 @@ public class Win32 {
             }
         }
     } elseif ($action -eq "restart") {
-        Stop-Process -Name "explorer" -Force
+        Stop-Process -Name explorer
     }
 }
