@@ -13,9 +13,8 @@ function Install-WinUtilChoco {
     Move-Item -Path "chocolatey.zip" -Destination $Env:ProgramData\chocolatey\lib\chocolatey\chocolatey.nupkg
 
     $Path = [System.Environment]::GetEnvironmentVariable("PATH", "Machine")
-
     [Environment]::SetEnvironmentVariable("PATH", $Path + ";$Env:ProgramData\chocolatey", "Machine")
-    $Env:Path = $Path
+    $Env:Path = [System.Environment]::GetEnvironmentVariable("PATH", "Machine")
 
     Remove-Item -Path "chocolatey" -Recurse
 }
