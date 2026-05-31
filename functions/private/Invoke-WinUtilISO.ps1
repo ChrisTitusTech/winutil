@@ -140,7 +140,7 @@ function Invoke-WinUtilISOModify {
     $sync["WPFWin11ISOModifyButton"].IsEnabled = $false
     $sync["Win11ISOModifying"] = $true
 
-    $workDir = Join-Path $Env:Temp "WinUtil_Win11ISO_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+    $workDir = "$Env:Temp\Win11Creator"
 
     Invoke-WinUtilRunspace -Variables @{
         isoPath = $isoPath
@@ -161,10 +161,8 @@ function Invoke-WinUtilISOModify {
             })
 
             $isoContents = "$workDir\iso_contents"
-            New-Item -Path $isoContents -ItemType Directory -Force
 
             Write-Win11ISOLog "Copying ISO contents..."
-
             Copy-Item -Path "$driveLetter\*" -Destination $isoContents -Recurse -Force
             Dismount-DiskImage -ImagePath $isoPath
 
@@ -265,14 +263,10 @@ function Invoke-WinUtilISOCheckExistingWork {
     if ($sync["Win11ISOContentsDir"] -and (Test-Path $sync["Win11ISOContentsDir"])) { return }
     if ($sync["Win11ISOModifying"]) { return }
 
-    $existingWorkDir = Get-Item -Path "$Env:Temp\WinUtil_Win11ISO*"
-
-    if (-not $existingWorkDir) { return }
-
-    $isoContents = Join-Path $existingWorkDir.FullName "iso_contents"
+    $isoContents = "$Env:Temp\Win11Creator\iso_contents"
     if (-not (Test-Path $isoContents)) { return }
 
-    $sync["Win11ISOWorkDir"] = $existingWorkDir.FullName
+    $sync["Win11ISOWorkDir"] = "$Env:Temp\Win11Creator"
     $sync["Win11ISOContentsDir"] = $isoContents
 
     $sync["WPFWin11ISOSelectSection"].Visibility = "Collapsed"
@@ -281,12 +275,12 @@ function Invoke-WinUtilISOCheckExistingWork {
     $sync["WPFWin11ISOOutputSection"].Visibility = "Visible"
 
     $modified = $existingWorkDir.LastWriteTime.ToString("yyyy-MM-dd HH:mm")
-    Write-Win11ISOLog "Existing working directory found: $($existingWorkDir.FullName)"
+    Write-Win11ISOLog "Existing working directory found: $Env:Temp\Win11Creator"
     Write-Win11ISOLog "Last modified: $modified - Skipping Steps 1-3 and resuming at Step 4."
     Write-Win11ISOLog "Click 'Clean & Reset' if you want to start over with a new ISO."
 
     [System.Windows.MessageBox]::Show(
-        "A previous WinUtil ISO working directory was found:`n`n$($existingWorkDir.FullName)`n`n(Last modified: $modified)`n`nStep 4 (output options) has been restored so you can save the already-modified image.`n`nClick 'Clean & Reset' in Step 4 if you want to start over.",
+        "A previous WinUtil ISO working directory was found:`n`n$Env:Temp\Win11Creator`n`n(Last modified: $modified)`n`nStep 4 (output options) has been restored so you can save the already-modified image.`n`nClick 'Clean & Reset' in Step 4 if you want to start over.",
         "Existing Work Found", "OK", "Info")
 }
 
@@ -313,7 +307,7 @@ function Invoke-WinUtilISOCleanAndReset {
         }
 
         Write-Win11ISOLog "Removing temporary working directories..."
-        Remove-Item -Path "$Env:Temp\WinUtil_Win11ISO*" -Recurse -Force
+        Remove-Item -Path "$Env:Temp\Win11Creator" -Recurse -Force
         Remove-Item -Path "$Env:Temp\Driver" -Recurse -Force
 
         $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
