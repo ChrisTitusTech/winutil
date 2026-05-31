@@ -1722,12 +1722,6 @@
         "DefaultState": "true"
       }
     ],
-    "InvokeScript": [
-      "Invoke-WinUtilExplorerUpdate"
-    ],
-    "UndoScript":[
-      "Invoke-WinUtilExplorerUpdate"
-    ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/taskbarsearch"
   },
   "WPFToggleTaskView": {
