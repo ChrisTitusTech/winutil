@@ -8,12 +8,12 @@ $OFS = "`r`n"
 $sync = [Hashtable]::Synchronized(@{})
 $sync.configs = @{}
 
-$script = (Get-Content -Path scripts\start.ps1) -replace '#{replaceme}', (Get-Date -Format 'yy.MM.dd')
+$script = (Get-Content -Path scripts\start.ps1 -Raw) -replace '#{replaceme}', (Get-Date -Format 'yy.MM.dd')
 
-$script += Get-ChildItem -Path functions -Recurse -File | Get-Content
+$script += Get-ChildItem -Path functions -Recurse -File | Get-Content -Raw
 
 Get-ChildItem config | ForEach-Object {
-    $obj = Get-Content -Path $_.FullName | ConvertFrom-Json
+    $obj = Get-Content -Path $_.FullName -Raw | ConvertFrom-Json
 
     if ($_.Name -eq "applications.json") {
         $fixed = [ordered]@{}
@@ -29,13 +29,13 @@ Get-ChildItem config | ForEach-Object {
     $script += "`$sync.configs.$($_.BaseName) = @'`r`n$json`r`n'@ | ConvertFrom-Json"
 }
 
-$xaml = Get-Content -Path xaml\inputXML.xaml
+$xaml = Get-Content -Path xaml\inputXML.xaml -Raw
 $script += "`$inputXML = @'`r`n$xaml`r`n'@"
 
-$autounattendXml = Get-Content -Path tools\autounattend.xml
+$autounattendXml = Get-Content -Path tools\autounattend.xml -Raw
 $script += "`$WinUtilAutounattendXml = @'`r`n$autounattendXml`r`n'@"
 
-$script += Get-Content -Path scripts\main.ps1
+$script += Get-Content -Path scripts\main.ps1 -Raw
 
 Set-Content -Path winutil.ps1 -Value $script
 
