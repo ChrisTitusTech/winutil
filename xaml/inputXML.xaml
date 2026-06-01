@@ -1548,9 +1548,6 @@
                                     The ISO contents will be extracted to a temporary working directory,
                                     indexes will be removed and autounattend.xml will be added for automation,
                                     and the result will be repackaged either into an iso or directly to your usb drive.
-                                    <LineBreak/><LineBreak/>
-                                    <Run FontWeight="Bold">install.wim will not be modified</Run>
-                                    <Run> unless "Inject current system drivers" was checked in Step 2.</Run>
                                 </TextBlock>
                                 <Button Name="WPFWin11ISOModifyButton"
                                         Content="Run Windows ISO Build"
