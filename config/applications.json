@@ -1150,6 +1150,15 @@
         "winget": "WiseCleaner.WiseProgramUninstaller",
         "foss": false
     },
+    "rkward": {
+        "category": "Development",
+        "choco": "na",
+        "content": "RKWard",
+        "description": "RKWard is an easy to use and easily extensible IDE/GUI for R.",
+        "link": "https://rkward.kde.org/",
+        "winget": "KDE.RKWard",
+        "foss": true
+    },
     "rufus": {
         "category": "Utilities",
         "choco": "rufus",
@@ -1679,6 +1688,15 @@
         "description": "Deskflow is a free and open-source software KVM that lets you share a single keyboard and mouse across multiple computers.",
         "link": "https://github.com/deskflow/deskflow",
         "winget": "Deskflow.Deskflow",
+        "foss": true
+    },
+    "R": {
+        "category": "Development",
+        "choco": "r.project",
+        "content": "R",
+        "description": "R is a free software environment for statistical computing and graphics.",
+        "link": "https://www.r-project.org/",
+        "winget": "RProject.R",
         "foss": true
     },
     "Ruby": {
