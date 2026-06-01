@@ -7,6 +7,6 @@ function Invoke-WPFOOSU {
 
         $ProgressPreference = 'Continue'
     } catch {
-        Write-Error "Couldn't download ooshutup10 make sure you have a active internet connection"
+        Write-Error "Couldn't download O&O ShutUp10. Please make sure you have an active internet connection."
     }
 }
