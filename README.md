@@ -54,7 +54,7 @@ https://github.com/ChrisTitusTech/winutil/blob/main/config/preset.json
 
 ## Build & Develop
 
-See [CONTRIBUTING.md](https://github.com/ChrisTitusTech/winutil/blob/main/.github/CONTRIBUTING.md).
+See https://github.com/ChrisTitusTech/winutil/blob/main/.github/CONTRIBUTING.md
 
 ---
 
