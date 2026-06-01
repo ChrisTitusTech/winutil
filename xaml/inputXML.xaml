@@ -1387,17 +1387,14 @@
                         <RowDefinition Height="*"/>     <!-- Log / Status -->
                     </Grid.RowDefinitions>
 
-                    <!-- Steps 1-4 -->
                     <StackPanel Grid.Row="0">
 
-                            <!-- ─── STEP 1 : Select Windows 11 ISO ─────────────── -->
                             <Grid Name="WPFWin11ISOSelectSection" Margin="5" HorizontalAlignment="Left" MinWidth="{DynamicResource ButtonWidth}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <!-- Left: File Selector -->
                                 <StackPanel Grid.Column="0" Margin="5,5,15,5">
                                     <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="Bold"
                                                Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,8">
@@ -1440,7 +1437,6 @@
                                                Visibility="Collapsed"/>
                                 </StackPanel>
 
-                                <!-- Right: Download guidance -->
                                 <Border Grid.Column="1"
                                         Background="{DynamicResource MainBackgroundColor}"
                                         BorderBrush="{DynamicResource BorderColor}"
@@ -1479,7 +1475,6 @@
                                 </Border>
                             </Grid>
 
-                            <!-- ─── STEP 2 : Mount & Verify ISO ──────────────────── -->
                             <Grid Name="WPFWin11ISOMountSection"
                                   Margin="5"
                                   Visibility="Collapsed"
@@ -1492,16 +1487,15 @@
                                 <StackPanel Grid.Column="0" Margin="0,0,20,0" VerticalAlignment="Top">
                                     <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="Bold"
                                                Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,8">
-                                        Step 2 - Mount &amp; Verify ISO
+                                        Step 2 - Mount ISO
                                     </TextBlock>
                                     <TextBlock FontSize="{DynamicResource FontSize}"
                                                Foreground="{DynamicResource MainForegroundColor}"
                                                TextWrapping="Wrap" Margin="0,0,0,12" MaxWidth="320">
-                                        Mount the ISO and confirm it contains a valid Windows 11
-                                        install.wim before any modifications are made.
+                                        Mount the ISO
                                     </TextBlock>
                                     <Button Name="WPFWin11ISOMountButton"
-                                            Content="Mount &amp; Verify ISO"
+                                            Content="Mount ISO"
                                             HorizontalAlignment="Left"
                                             Width="Auto" Padding="12,0"
                                             Height="{DynamicResource ButtonHeight}"/>
@@ -1514,7 +1508,6 @@
                                               ToolTip="Exports all drivers from this machine and injects them into install.wim and boot.wim. Recommended for systems with unsupported NVMe or network controllers."/>
                                 </StackPanel>
 
-                                <!-- Verification results panel -->
                                 <Border Grid.Column="1"
                                         Name="WPFWin11ISOVerifyResultPanel"
                                         Background="{DynamicResource MainBackgroundColor}"
@@ -1546,14 +1539,13 @@
                                 </Border>
                             </Grid>
 
-                            <!-- ─── STEP 3 : Modify install.wim ───────────────────── -->
                             <StackPanel Name="WPFWin11ISOModifySection"
                                         Margin="5"
                                         Visibility="Collapsed"
                                         HorizontalAlignment="Left" MinWidth="{DynamicResource ButtonWidth}">
                                 <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="Bold"
                                            Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,8">
-                                    Step 3 - Modify install.wim
+                                    Step 3 - Build Modified ISO
                                 </TextBlock>
                                 <TextBlock FontSize="{DynamicResource FontSize}"
                                            Foreground="{DynamicResource MainForegroundColor}"
@@ -1561,20 +1553,21 @@
                                     The ISO contents will be extracted to a temporary working directory,
                                     indexes will be removed and autounattend.xml will be added for automation,
                                     and the result will be repackaged either into an iso or directly to your usb drive.
+                                    <LineBreak/><LineBreak/>
+                                    <Run FontWeight="Bold">install.wim will not be modified</Run>
+                                    <Run> unless "Inject current system drivers" was checked in Step 2.</Run>
                                 </TextBlock>
                                 <Button Name="WPFWin11ISOModifyButton"
-                                        Content="Run Windows ISO Modification and Creator"
+                                        Content="Run Windows ISO Build"
                                         HorizontalAlignment="Left"
                                         Width="Auto" Padding="12,0"
                                         Height="{DynamicResource ButtonHeight}"/>
                             </StackPanel>
 
-                            <!-- ─── STEP 4 : Output Options ───────────────────────── -->
                             <StackPanel Name="WPFWin11ISOOutputSection"
                                         Margin="5"
                                         Visibility="Collapsed"
                                         HorizontalAlignment="Left" MinWidth="{DynamicResource ButtonWidth}">
-                                <!-- Header row: title + Clean & Reset button -->
                                 <Grid Margin="0,0,0,12">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -1595,7 +1588,6 @@
                                             Margin="12,0,0,0"/>
                                 </Grid>
 
-                                <!-- ── Choice prompt buttons ── -->
                                 <Grid Margin="0,0,0,12">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -1617,7 +1609,6 @@
                                             Height="{DynamicResource ButtonHeight}"/>
                                 </Grid>
 
-                                <!-- ── USB write sub-panel (revealed on USB choice) ── -->
                                 <Border Name="WPFWin11ISOOptionUSB"
                                         Style="{StaticResource BorderStyle}"
                                         Visibility="Collapsed"
@@ -1630,7 +1621,6 @@
                                             <LineBreak/>
                                             Select a removable USB drive below, then click Erase &amp; Write.
                                         </TextBlock>
-                                        <!-- USB drive selector row -->
                                         <Grid Margin="0,0,0,8">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*"/>
@@ -1661,7 +1651,6 @@
 
                     </StackPanel>
 
-                    <!-- Status Log (fills remaining height) -->
                     <Grid Grid.Row="1" Margin="5">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
