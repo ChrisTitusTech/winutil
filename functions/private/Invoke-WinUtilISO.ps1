@@ -48,7 +48,7 @@ function Invoke-WinUtilISOBrowse {
     Write-Win11ISOLog "ISO selected: $isoPath ($fileSizeGB GB)"
 }
 
-function Invoke-WinUtilISOMountAndVerify {
+function Invoke-WinUtilISOMount {
     $isoPath = $sync["WPFWin11ISOPath"].Text
 
     $sync["WPFWin11ISOMountButton"].IsEnabled = $false
@@ -104,10 +104,10 @@ function Invoke-WinUtilISOMountAndVerify {
             Write-Win11ISOLog "ISO verified OK. Editions found: $($imageInfo.Count)"
 
         } catch {
-            Write-Win11ISOLog "ERROR during mount/verify: $_"
+            Write-Win11ISOLog "ERROR during mount: $_"
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 [System.Windows.MessageBox]::Show(
-                    "An error occurred while mounting or verifying the ISO:`n`n$_",
+                    "An error occurred while mounting the ISO:`n`n$_",
                     "Error", "OK", "Error")
             })
         } finally {
