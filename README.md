@@ -58,7 +58,7 @@ See [CONTRIBUTING.md](https://github.com/ChrisTitusTech/winutil/blob/main/.githu
 
 ---
 
-## 📚 Resources
+## Resources
 
 - [Official Documentation](https://winutil.christitus.com/)
 - [YouTube Tutorial](https://www.youtube.com/watch?v=6UQZ5oQg8XA)
@@ -68,12 +68,12 @@ See [CONTRIBUTING.md](https://github.com/ChrisTitusTech/winutil/blob/main/.githu
 
 ---
 
-## 💖 Support
+## Support
 
 - Leave a ⭐ to show support!
 - EXE Wrapper for $10 @ https://www.cttstore.com/windows-toolbox
 
-## 💖 Sponsors
+## Sponsors
 
 These are the sponsors that help keep this project alive with monthly contributions.
 
@@ -81,7 +81,7 @@ These are the sponsors that help keep this project alive with monthly contributi
 
 ---
 
-## 🏅 Contributors
+## Contributors
 
 [![Contributors](https://contrib.rocks/image?repo=ChrisTitusTech/winutil)](https://github.com/ChrisTitusTech/winutil/graphs/contributors)
 
