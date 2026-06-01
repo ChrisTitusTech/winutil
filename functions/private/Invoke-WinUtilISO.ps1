@@ -61,7 +61,7 @@ function Invoke-WinUtilISOMount {
             do { Start-Sleep -Milliseconds 100 } until ((Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter)
 
             $driveLetter = (Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter + ":"
-            Write-Win11ISOLog "Mounted at drive $driveLetter"
+            Write-Win11ISOLog "ISO Mounted."
 
             if (Test-Path "$driveLetter\sources\install.wim") {
                 $activeWim = "$driveLetter\sources\install.wim"
@@ -98,9 +98,6 @@ function Invoke-WinUtilISOMount {
                 $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Visible"
                 $sync["WPFWin11ISOModifySection"].Visibility = "Visible"
             })
-
-            Write-Win11ISOLog "ISO verified OK. Editions found: $($imageInfo.Count)"
-
         } catch {
             Write-Win11ISOLog "ERROR during mount: $_"
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
