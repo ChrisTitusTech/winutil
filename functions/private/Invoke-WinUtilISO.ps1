@@ -48,17 +48,14 @@ function Invoke-WinUtilISOBrowse {
 
 function Invoke-WinUtilISOMount {
     $isoPath = $sync["WPFWin11ISOPath"].Text
-
     $sync["WPFWin11ISOMountButton"].IsEnabled = $false
-    Write-Win11ISOLog "Mounting ISO: $isoPath"
 
     Invoke-WinUtilRunspace -Variables @{ isoPath = $isoPath } -ScriptBlock {
         . ([scriptblock]::Create($win11ISOLogFuncDef))
 
         try {
             Mount-DiskImage -ImagePath $isoPath
-
-            do { Start-Sleep -Milliseconds 100 } until ((Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter)
+            do { Start-Sleep -Milliseconds 100 } until (Get-DiskImage -ImagePath $isoPath | Get-Volume)
 
             $driveLetter = (Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter + ":"
             Write-Win11ISOLog "ISO Mounted."
