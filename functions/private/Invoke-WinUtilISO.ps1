@@ -230,7 +230,7 @@ function Invoke-WinUtilISOModify {
             $sync["Win11ISOWorkDir"] = $workDir
             $sync["Win11ISOContentsDir"] = $isoContents
 
-            Write-Win11ISOLog "install.wim modification complete. Choose an output option in Step 4."
+            Write-Win11ISOLog "Win11Creator ISO was successfully created. Choose an output option in Step 4."
             $sync["WPFWin11ISOOutputSection"].Dispatcher.Invoke([action]{
                 $sync["WPFWin11ISOOutputSection"].Visibility = "Visible"
             })
@@ -242,7 +242,7 @@ function Invoke-WinUtilISOModify {
             Remove-Item -Path "$Env:Temp\Driver" -Recurse -Force
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 [System.Windows.MessageBox]::Show(
-                    "An error occurred during install.wim modification:`n`n$_",
+                    "An error occurred during Win11Creator ISO creation:`n`n$_",
                     "Modification Error", "OK", "Error")
             })
         } finally {
