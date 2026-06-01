@@ -44,8 +44,6 @@ function Invoke-WinUtilISOBrowse {
     $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Collapsed"
     $sync["WPFWin11ISOModifySection"].Visibility = "Collapsed"
     $sync["WPFWin11ISOOutputSection"].Visibility = "Collapsed"
-
-    Write-Win11ISOLog "ISO selected: $isoPath ($fileSizeGB GB)"
 }
 
 function Invoke-WinUtilISOMount {
