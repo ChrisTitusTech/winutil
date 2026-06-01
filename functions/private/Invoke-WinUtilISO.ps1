@@ -24,7 +24,7 @@ function Invoke-WinUtilRunspace ([scriptblock]$ScriptBlock, [hashtable]$Variable
     $script = [Management.Automation.PowerShell]::Create()
     $script.Runspace = $runspace
     $script.AddScript($ScriptBlock)
-    $script.BeginInvoke()
+    return $script.BeginInvoke()
 }
 
 function Invoke-WinUtilISOBrowse {
@@ -161,10 +161,17 @@ function Invoke-WinUtilISOModify {
             })
 
             $isoContents = "$workDir\iso_contents"
-            New-Item -Path $isoContents -ItemType Directory
+            New-Item -Path $isoContents -ItemType Directory -Force
 
             Write-Win11ISOLog "Copying ISO contents..."
+            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+                $sync.progressBarTextBlock.Text = "Copying ISO contents..."
+                $sync.ProgressBar.IsIndeterminate = $true
+            })
             Copy-Item -Path "$driveLetter\*" -Destination $isoContents -Recurse -Force
+            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+                $sync.ProgressBar.IsIndeterminate = $false
+            })
             Dismount-DiskImage -ImagePath $isoPath
 
             Write-Win11ISOLog "ISO contents copied."
@@ -186,7 +193,7 @@ function Invoke-WinUtilISOModify {
                 Export-WindowsDriver -Destination "$Env:Temp\Driver" -Online
 
                 Set-ItemProperty -Path $localWim -Name IsReadOnly -Value $false
-                New-Item -Path "$workDir\wim_mount" -ItemType Directory
+                New-Item -Path "$workDir\wim_mount" -ItemType Directory -Force
 
                 Write-Win11ISOLog "Mounting and adding drivers to $localWim..."
                 Mount-WindowsImage -ImagePath $localWim -Index $selectedWimIndex -Path "$workDir\wim_mount"
@@ -250,6 +257,7 @@ function Invoke-WinUtilISOModify {
                 $sync.progressBarTextBlock.Text = ""
                 $sync.progressBarTextBlock.ToolTip = ""
                 $sync.ProgressBar.Value = 0
+                $sync.ProgressBar.IsIndeterminate = $false
                 $sync["WPFWin11ISOModifyButton"].IsEnabled = $true
                 if ($sync["WPFWin11ISOOutputSection"].Visibility -ne "Visible") {
                     $sync["WPFWin11ISOSelectSection"].Visibility = "Visible"
@@ -276,6 +284,7 @@ function Invoke-WinUtilISOCheckExistingWork {
     $sync["WPFWin11ISOModifySection"].Visibility = "Collapsed"
     $sync["WPFWin11ISOOutputSection"].Visibility = "Visible"
 
+    $existingWorkDir = Get-Item "$Env:Temp\Win11Creator"
     $modified = $existingWorkDir.LastWriteTime.ToString("yyyy-MM-dd HH:mm")
     Write-Win11ISOLog "Existing working directory found: $Env:Temp\Win11Creator"
     Write-Win11ISOLog "Last modified: $modified - Skipping Steps 1-3 and resuming at Step 4."
