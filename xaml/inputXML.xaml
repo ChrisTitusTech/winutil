@@ -1427,8 +1427,7 @@
                                                TextWrapping="Wrap"
                                                Opacity="0.75"
                                                Margin="0,0,0,6">
-                                        Browse to your locally saved Windows 11 ISO file. Only official ISOs
-                                        downloaded from Microsoft are supported.
+                                        Browse to your locally saved Windows 11 ISO file.
                                     </TextBlock>
 
                                     <TextBlock FontSize="{DynamicResource FontSize}"
