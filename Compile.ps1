@@ -8,7 +8,7 @@ $OFS = "`r`n"
 $sync = [Hashtable]::Synchronized(@{})
 $sync.configs = @{}
 
-$script = (Get-Content -Path scripts\start.ps1 -Raw) -replace '#{replaceme}', (Get-Date -Format 'yy.MM.dd')
+$script = (Get-Content -Path scripts\start.ps1) -replace '#{replaceme}', (Get-Date -Format 'yy.MM.dd')
 
 $script += Get-ChildItem -Path functions -Recurse -File | Get-Content -Raw
 
