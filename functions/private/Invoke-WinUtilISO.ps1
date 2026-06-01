@@ -362,11 +362,10 @@ function Invoke-WinUtilISOExport {
         . ([scriptblock]::Create($win11ISOLogFuncDef))
 
         try {
-            $oscdimg = "$Env:Temp\oscdimg.exe"
-            Invoke-WebRequest -Uri "https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe" -OutFile $oscdimg
+            Invoke-WebRequest -Uri "https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe" -OutFile "$Env:Temp\oscdimg.exe"
 
             Write-Win11ISOLog "Exporting to ISO: $outputISO"
-            & $oscdimg -o -u2 "-b$contentsDir\efi\microsoft\boot\efisys.bin" $contentsDir $outputISO
+            & "$Env:Temp\oscdimg.exe" -o -u2 "-b$contentsDir\efi\microsoft\boot\efisys.bin" $contentsDir $outputISO
 
             if ($LASTEXITCODE -ne 0) {
                 Write-Win11ISOLog "oscdimg exited with code $LASTEXITCODE"
