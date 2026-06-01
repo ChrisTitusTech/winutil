@@ -79,8 +79,20 @@ function Invoke-WPFButton {
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
+
         "WPFCloseButton" {$sync.Form.Close(); Write-Host "Bye bye!"}
         "WPFMinimizeButton" {$sync.Form.WindowState = [Windows.WindowState]::Minimized}
+        "WPFMaximizeButton" {
+            if ($sync.Form.WindowState -eq [Windows.WindowState]::Maximized) {
+                $sync.Form.WindowState = [Windows.WindowState]::Normal
+                $sync.WPFMaximizeButton.Content = [char]0xE922
+                $sync.WPFMaximizeButton.ToolTip = "Maximize"
+            } else {
+                $sync.Form.WindowState = [Windows.WindowState]::Maximized
+                $sync.WPFMaximizeButton.Content = [char]0xE923
+                $sync.WPFMaximizeButton.ToolTip = "Restore"
+            }
+        }
         "WPFselectedAppsButton" {$sync.selectedAppsPopup.IsOpen = -not $sync.selectedAppsPopup.IsOpen}
         "WPFToggleFOSSHighlight" {
             if ($sync.WPFToggleFOSSHighlight.IsChecked) {

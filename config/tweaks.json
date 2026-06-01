@@ -540,7 +540,7 @@
         "Value": "0",
         "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
-      },
+      }
     ],
     "InvokeScript": [
       "
@@ -1391,8 +1391,7 @@
         "Value": "0",
         "Type": "DWord",
         "OriginalValue": "1",
-        "DefaultState": "false",
-      "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/scrollbars"
+        "DefaultState": "false"
       }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/scrollbars"
@@ -1927,25 +1926,6 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/iconcache"
   },
-  "WPFToggleClassicVolume": {
-    "Content": "Classic Volume Control - Restore",
-    "Description": "Restores the classic vertical volume control (Windows 7/8 style) instead of the modern horizontal slider in Windows 10/11.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\MTCUVC",
-        "Name": "EnableMtcUvc",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "1",
-        "DefaultState": "false"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/classicvolume"
-  },
-
   "WPFTweaksPhotoViewer": {
     "Content": "Windows Photo Viewer - Enable",
     "Description": "Enables the classic Windows Photo Viewer and registers it to handle common image file types (.jpg, .png, .gif, .bmp, .tiff, etc.).",
@@ -2129,8 +2109,8 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/downloadsblocking"
   },
-  "WPFToggleClassicUAC": {
-    "Content": "UAC - Classic dialog",
+  "WPFToggleUAC": {
+    "Content": "UAC - Disable",
     "Description": "Switches UAC to the classic (Windows 7-style) dimmed credential dialog instead of the modern Secure Desktop prompt.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -2779,25 +2759,6 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/privacy-security/biometrics"
   },
-  "WPFToggleBluetoothAdvertising": {
-    "Content": "Bluetooth Advertising - Disable",
-    "Description": "Disables Bluetooth advertising and discovery services.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\default\\Bluetooth\\AllowAdvertising",
-        "Name": "value",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "1",
-        "DefaultState": "false"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/privacy-security/bluetoothadvertising"
-  },
-
   "WPFTweaksEdgeSecureNetwork": {
     "Content": "Edge Secure Network - Disable",
     "Description": "Disables the Edge Secure Network VPN feature (powered by Cloudflare).",
