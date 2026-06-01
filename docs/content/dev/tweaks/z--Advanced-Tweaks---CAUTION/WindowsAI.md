@@ -20,7 +20,7 @@ description: ""
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\WindowsNotepad",
         "Name": "DisableAIFeatures",
-        "Value": 1,
+        "Value": "1",
         "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       }
