@@ -127,7 +127,6 @@ function Invoke-WinUtilISOModify {
     }
 
     $selectedEditionName = if ($selectedItem) { ($selectedItem -replace '^\d+:\s*', '') } else { "Unknown" }
-    Write-Win11ISOLog "Selected edition: $selectedEditionName (Index $selectedWimIndex)"
 
     $sync["WPFWin11ISOModifyButton"].IsEnabled = $false
     $sync["Win11ISOModifying"] = $true
@@ -360,19 +359,24 @@ function Invoke-WinUtilISOExport {
 
             Write-Win11ISOLog "ISO exported successfully: $outputISO"
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+                $sync.progressBarTextBlock.Text = ""
+                $sync.progressBarTextBlock.ToolTip = ""
+                $sync.ProgressBar.Value = 0
+                $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $true
+            })
+            $sync["WPFWin11ISOStatusLog"].Dispatcher.BeginInvoke([action]{
                 [System.Windows.MessageBox]::Show("ISO exported successfully!`n`n$outputISO", "Export Complete", "OK", "Info")
             })
         } catch {
             Write-Win11ISOLog "ERROR during ISO export: $_"
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                [System.Windows.MessageBox]::Show("ISO export failed:`n`n$_", "Error", "OK", "Error")
-            })
-        } finally {
-            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 $sync.progressBarTextBlock.Text = ""
                 $sync.progressBarTextBlock.ToolTip = ""
                 $sync.ProgressBar.Value = 0
                 $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $true
+            })
+            $sync["WPFWin11ISOStatusLog"].Dispatcher.BeginInvoke([action]{
+                [System.Windows.MessageBox]::Show("ISO export failed:`n`n$_", "Error", "OK", "Error")
             })
         }
     }
