@@ -64,26 +64,10 @@
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
-      "
-      # Sometimes if you dont stop the Widgets process the removal may fail
-
-      Get-Process *Widget* | Stop-Process
-      Get-AppxPackage Microsoft.WidgetsPlatformRuntime -AllUsers | Remove-AppxPackage -AllUsers
-      Get-AppxPackage MicrosoftWindows.Client.WebExperience -AllUsers | Remove-AppxPackage -AllUsers
-
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      Write-Host \"Removed widgets\"
-      "
+      "\r\n      # Sometimes if you dont stop the Widgets process the removal may fail\r\n\r\n      Get-Process *Widget* | Stop-Process\r\n      Get-AppxPackage Microsoft.WidgetsPlatformRuntime -AllUsers | Remove-AppxPackage -AllUsers\r\n      Get-AppxPackage MicrosoftWindows.Client.WebExperience -AllUsers | Remove-AppxPackage -AllUsers\r\n\r\n      Invoke-WinUtilExplorerUpdate -action \"restart\"\r\n      Write-Host \"Removed widgets\"\r\n      "
     ],
     "UndoScript": [
-      "
-      Write-Host \"Restoring widgets AppxPackages\"
-
-      Add-AppxPackage -Register \"C:\\Program Files\\WindowsApps\\Microsoft.WidgetsPlatformRuntime*\\AppxManifest.xml\" -DisableDevelopmentMode
-      Add-AppxPackage -Register \"C:\\Program Files\\WindowsApps\\MicrosoftWindows.Client.WebExperience*\\AppxManifest.xml\" -DisableDevelopmentMode
-
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
+      "\r\n      Write-Host \"Restoring widgets AppxPackages\"\r\n\r\n      Add-AppxPackage -Register \"C:\\Program Files\\WindowsApps\\Microsoft.WidgetsPlatformRuntime*\\AppxManifest.xml\" -DisableDevelopmentMode\r\n      Add-AppxPackage -Register \"C:\\Program Files\\WindowsApps\\MicrosoftWindows.Client.WebExperience*\\AppxManifest.xml\" -DisableDevelopmentMode\r\n\r\n      Invoke-WinUtilExplorerUpdate -action \"restart\"\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/widget"
   },
@@ -93,32 +77,10 @@
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
-      "
-      Invoke-WebRequest https://github.com/thebookisclosed/ViVe/releases/download/v0.3.4/ViVeTool-v0.3.4-IntelAmd.zip -OutFile ViVeTool.zip
-
-      Expand-Archive ViVeTool.zip
-      Remove-Item ViVeTool.zip
-
-      Start-Process 'ViVeTool\\ViVeTool.exe' -ArgumentList '/disable /id:47205210' -Wait -NoNewWindow
-
-      Remove-Item ViVeTool -Recurse
-
-      Write-Host 'Old start menu reverted. Please restart your computer to take effect.'
-      "
+      "\r\n      Invoke-WebRequest https://github.com/thebookisclosed/ViVe/releases/download/v0.3.4/ViVeTool-v0.3.4-IntelAmd.zip -OutFile ViVeTool.zip\r\n\r\n      Expand-Archive ViVeTool.zip\r\n      Remove-Item ViVeTool.zip\r\n\r\n      Start-Process 'ViVeTool\\ViVeTool.exe' -ArgumentList '/disable /id:47205210' -Wait -NoNewWindow\r\n\r\n      Remove-Item ViVeTool -Recurse\r\n\r\n      Write-Host 'Old start menu reverted. Please restart your computer to take effect.'\r\n      "
     ],
     "UndoScript": [
-      "
-      Invoke-WebRequest https://github.com/thebookisclosed/ViVe/releases/download/v0.3.4/ViVeTool-v0.3.4-IntelAmd.zip -OutFile ViVeTool.zip
-
-      Expand-Archive ViVeTool.zip
-      Remove-Item ViVeTool.zip
-
-      Start-Process 'ViVeTool\\ViVeTool.exe' -ArgumentList '/enable /id:47205210' -Wait -NoNewWindow
-
-      Remove-Item ViVeTool -Recurse
-
-      Write-Host 'New start menu reverted. Please restart your computer to take effect.'
-      "
+      "\r\n      Invoke-WebRequest https://github.com/thebookisclosed/ViVe/releases/download/v0.3.4/ViVeTool-v0.3.4-IntelAmd.zip -OutFile ViVeTool.zip\r\n\r\n      Expand-Archive ViVeTool.zip\r\n      Remove-Item ViVeTool.zip\r\n\r\n      Start-Process 'ViVeTool\\ViVeTool.exe' -ArgumentList '/enable /id:47205210' -Wait -NoNewWindow\r\n\r\n      Remove-Item ViVeTool -Recurse\r\n\r\n      Write-Host 'New start menu reverted. Please restart your computer to take effect.'\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/revertstartmenu"
   },
@@ -205,10 +167,7 @@
       }
     ],
     "InvokeScript": [
-      "
-      $Memory = (Get-CimInstance Win32_PhysicalMemory | Measure-Object Capacity -Sum).Sum / 1KB
-      Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value $Memory
-      "
+      "\r\n      $Memory = (Get-CimInstance Win32_PhysicalMemory | Measure-Object Capacity -Sum).Sum / 1KB\r\n      Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value $Memory\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/services"
   },
@@ -543,30 +502,10 @@
       }
     ],
     "InvokeScript": [
-      "
-      # Disable Defender Auto Sample Submission
-      Set-MpPreference -SubmitSamplesConsent 2
-
-      # Disable (Connected User Experiences and Telemetry) Service
-      Set-Service -Name diagtrack -StartupType Disabled
-
-      # Disable (Windows Error Reporting Manager) Service
-      Set-Service -Name wermgr -StartupType Disabled
-
-      Remove-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Siuf\\Rules\" -Name PeriodInNanoSeconds
-      "
+      "\r\n      # Disable Defender Auto Sample Submission\r\n      Set-MpPreference -SubmitSamplesConsent 2\r\n\r\n      # Disable (Connected User Experiences and Telemetry) Service\r\n      Set-Service -Name diagtrack -StartupType Disabled\r\n\r\n      # Disable (Windows Error Reporting Manager) Service\r\n      Set-Service -Name wermgr -StartupType Disabled\r\n\r\n      Remove-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Siuf\\Rules\" -Name PeriodInNanoSeconds\r\n      "
     ],
     "UndoScript": [
-      "
-      # Enable Defender Auto Sample Submission
-      Set-MpPreference -SubmitSamplesConsent 1
-
-      # Enable (Connected User Experiences and Telemetry) Service
-      Set-Service -Name diagtrack -StartupType Automatic
-
-      # Enable (Windows Error Reporting Manager) Service
-      Set-Service -Name wermgr -StartupType Automatic
-      "
+      "\r\n      # Enable Defender Auto Sample Submission\r\n      Set-MpPreference -SubmitSamplesConsent 1\r\n\r\n      # Enable (Connected User Experiences and Telemetry) Service\r\n      Set-Service -Name diagtrack -StartupType Automatic\r\n\r\n      # Enable (Windows Error Reporting Manager) Service\r\n      Set-Service -Name wermgr -StartupType Automatic\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/telemetry"
   },
@@ -579,10 +518,7 @@
       "Invoke-WinUtilRemoveEdge"
     ],
     "UndoScript": [
-      "
-      Write-Host 'Installing Microsoft Edge...'
-      winget install Microsoft.Edge --source winget
-      "
+      "\r\n      Write-Host 'Installing Microsoft Edge...'\r\n      winget install Microsoft.Edge --source winget\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removeedge"
   },
@@ -621,34 +557,10 @@
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
-      "
-      # Deny permission to remove OneDrive folder
-      icacls $Env:OneDrive /deny \"Administrators:(D,DC)\"
-
-      Write-Host \"Uninstalling OneDrive...\"
-      Start-Process 'C:\\Windows\\System32\\OneDriveSetup.exe' -ArgumentList '/uninstall' -Wait
-
-      # Some of OneDrive files use explorer, and OneDrive uses FileCoAuth
-      Write-Host \"Removing leftover OneDrive Files...\"
-      Stop-Process -Name FileCoAuth,Explorer
-      Remove-Item \"$Env:LocalAppData\\Microsoft\\OneDrive\" -Recurse -Force
-      Remove-Item \"C:\\ProgramData\\Microsoft OneDrive\" -Recurse -Force
-
-      # Grant back permission to access OneDrive folder
-      icacls $Env:OneDrive /grant \"Administrators:(D,DC)\"
-
-      # Disable OneSyncSvc
-      Set-Service -Name OneSyncSvc -StartupType Disabled
-      "
+      "\r\n      # Deny permission to remove OneDrive folder\r\n      icacls $Env:OneDrive /deny \"Administrators:(D,DC)\"\r\n\r\n      Write-Host \"Uninstalling OneDrive...\"\r\n      Start-Process 'C:\\Windows\\System32\\OneDriveSetup.exe' -ArgumentList '/uninstall' -Wait\r\n\r\n      # Some of OneDrive files use explorer, and OneDrive uses FileCoAuth\r\n      Write-Host \"Removing leftover OneDrive Files...\"\r\n      Stop-Process -Name FileCoAuth,Explorer\r\n      Remove-Item \"$Env:LocalAppData\\Microsoft\\OneDrive\" -Recurse -Force\r\n      Remove-Item \"C:\\ProgramData\\Microsoft OneDrive\" -Recurse -Force\r\n\r\n      # Grant back permission to access OneDrive folder\r\n      icacls $Env:OneDrive /grant \"Administrators:(D,DC)\"\r\n\r\n      # Disable OneSyncSvc\r\n      Set-Service -Name OneSyncSvc -StartupType Disabled\r\n      "
     ],
     "UndoScript": [
-      "
-      Write-Host \"Installing OneDrive\"
-      winget install Microsoft.Onedrive --source winget
-
-      # Enabled OneSyncSvc
-      Set-Service -Name OneSyncSvc -StartupType Automatic
-      "
+      "\r\n      Write-Host \"Installing OneDrive\"\r\n      winget install Microsoft.Onedrive --source winget\r\n\r\n      # Enabled OneSyncSvc\r\n      Set-Service -Name OneSyncSvc -StartupType Automatic\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removeonedrive"
   },
@@ -782,17 +694,7 @@
       "MSTeams"
     ],
     "InvokeScript": [
-      "
-      $TeamsPath = \"$Env:LocalAppData\\Microsoft\\Teams\\Update.exe\"
-
-      if (Test-Path $TeamsPath) {
-        Write-Host \"Uninstalling Teams\"
-        Start-Process $TeamsPath -ArgumentList -uninstall -wait
-
-        Write-Host \"Deleting Teams directory\"
-        Remove-Item $TeamsPath -Recurse -Force
-      }
-      "
+      "\r\n      $TeamsPath = \"$Env:LocalAppData\\Microsoft\\Teams\\Update.exe\"\r\n\r\n      if (Test-Path $TeamsPath) {\r\n        Write-Host \"Uninstalling Teams\"\r\n        Start-Process $TeamsPath -ArgumentList -uninstall -wait\r\n\r\n        Write-Host \"Deleting Teams directory\"\r\n        Remove-Item $TeamsPath -Recurse -Force\r\n      }\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/debloat"
   },
@@ -812,14 +714,7 @@
       }
     ],
     "InvokeScript": [
-      "
-      if (-not (Get-ComputerRestorePoint)) {
-          Enable-ComputerRestore -Drive $Env:SystemDrive
-      }
-
-      Checkpoint-Computer -Description \"System Restore Point created by WinUtil\" -RestorePointType MODIFY_SETTINGS
-      Write-Host \"System Restore Point Created Successfully\" -ForegroundColor Green
-      "
+      "\r\n      if (-not (Get-ComputerRestorePoint)) {\r\n          Enable-ComputerRestore -Drive $Env:SystemDrive\r\n      }\r\n\r\n      Checkpoint-Computer -Description \"System Restore Point created by WinUtil\" -RestorePointType MODIFY_SETTINGS\r\n      Write-Host \"System Restore Point Created Successfully\" -ForegroundColor Green\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/restorepoint"
   },
@@ -890,21 +785,7 @@
       }
     ],
     "InvokeScript": [
-      "
-      $Appx = (Get-AppxPackage MicrosoftWindows.Client.CoreAI).PackageFullName
-      $Sid = (Get-LocalUser $Env:UserName).Sid.Value
-
-      New-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Appx\\AppxAllUserStore\\EndOfLife\\$Sid\\$Appx\" -Force
-
-      Get-AppxPackage -AllUsers *Copilot* | Remove-AppxPackage -AllUsers
-      Get-AppxPackage -AllUsers Microsoft.MicrosoftOfficeHub | Remove-AppxPackage -AllUsers
-      Remove-AppxPackage $Appx
-
-      Set-Service -Name WSAIFabricSvc -StartupType Disabled
-      Disable-WindowsOptionalFeature -FeatureName Recall -Online
-
-      Write-Host \"Windows AI Disabled\"
-      "
+      "\r\n      $Appx = (Get-AppxPackage MicrosoftWindows.Client.CoreAI).PackageFullName\r\n      $Sid = (Get-LocalUser $Env:UserName).Sid.Value\r\n\r\n      New-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Appx\\AppxAllUserStore\\EndOfLife\\$Sid\\$Appx\" -Force\r\n\r\n      Get-AppxPackage -AllUsers *Copilot* | Remove-AppxPackage -AllUsers\r\n      Get-AppxPackage -AllUsers Microsoft.MicrosoftOfficeHub | Remove-AppxPackage -AllUsers\r\n      Remove-AppxPackage $Appx\r\n\r\n      Set-Service -Name WSAIFabricSvc -StartupType Disabled\r\n      Disable-WindowsOptionalFeature -FeatureName Recall -Online\r\n\r\n      Write-Host \"Windows AI Disabled\"\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/windowsai"
   },
@@ -946,22 +827,10 @@
       }
     ],
     "InvokeScript": [
-      "
-      $RazerPath = \"C:\\Windows\\Installer\\Razer\"
-
-      if (Test-Path $RazerPath) {
-        Remove-Item $RazerPath\\* -Recurse -Force
-      } else {
-        New-Item -Path $RazerPath -ItemType Directory
-      }
-
-      icacls $RazerPath /deny \"Everyone:(W)\"
-      "
+      "\r\n      $RazerPath = \"C:\\Windows\\Installer\\Razer\"\r\n\r\n      if (Test-Path $RazerPath) {\r\n        Remove-Item $RazerPath\\* -Recurse -Force\r\n      } else {\r\n        New-Item -Path $RazerPath -ItemType Directory\r\n      }\r\n\r\n      icacls $RazerPath /deny \"Everyone:(W)\"\r\n      "
     ],
     "UndoScript": [
-      "
-      icacls \"C:\\Windows\\Installer\\Razer\" /remove:d Everyone
-      "
+      "\r\n      icacls \"C:\\Windows\\Installer\\Razer\" /remove:d Everyone\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/razerblock"
   },
@@ -994,27 +863,10 @@
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
-      "
-      $hostsUrl = \"https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts\"
-      $hosts = \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\"
-
-      Move-Item $hosts \"$hosts.bak\"
-      Invoke-WebRequest $hostsUrl -OutFile $hosts
-      ipconfig /flushdns
-
-      Write-Host \"Added Adobe url block list from host file\"
-      "
+      "\r\n      $hostsUrl = \"https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts\"\r\n      $hosts = \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\"\r\n\r\n      Move-Item $hosts \"$hosts.bak\"\r\n      Invoke-WebRequest $hostsUrl -OutFile $hosts\r\n      ipconfig /flushdns\r\n\r\n      Write-Host \"Added Adobe url block list from host file\"\r\n      "
     ],
     "UndoScript": [
-      "
-      $hosts = \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\"
-
-      Remove-Item $hosts
-      Move-Item \"$hosts.bak\" $hosts
-      ipconfig /flushdns
-
-      Write-Host \"Removed Adobe url block list from host file\"
-      "
+      "\r\n      $hosts = \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\"\r\n\r\n      Remove-Item $hosts\r\n      Move-Item \"$hosts.bak\" $hosts\r\n      ipconfig /flushdns\r\n\r\n      Write-Host \"Removed Adobe url block list from host file\"\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/blockadobenet"
   },
@@ -1024,19 +876,10 @@
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
-      "
-      New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\"
-      Write-Host Restarting explorer.exe ...
-      Stop-Process -Name \"explorer\" -Force
-      "
+      "\r\n      New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\"\r\n      Write-Host Restarting explorer.exe ...\r\n      Stop-Process -Name \"explorer\" -Force\r\n      "
     ],
     "UndoScript": [
-      "
-      Remove-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Recurse -Confirm:$false -Force
-      # Restarting Explorer in the Undo Script might not be necessary, as the Registry change without restarting Explorer does work, but just to make sure.
-      Write-Host Restarting explorer.exe ...
-      Stop-Process -Name \"explorer\" -Force
-      "
+      "\r\n      Remove-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Recurse -Confirm:$false -Force\r\n      # Restarting Explorer in the Undo Script might not be necessary, as the Registry change without restarting Explorer does work, but just to make sure.\r\n      Write-Host Restarting explorer.exe ...\r\n      Stop-Process -Name \"explorer\" -Force\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/rightclickmenu"
   },
@@ -1046,10 +889,7 @@
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
-      "
-      cleanmgr.exe /d C: /VERYLOWDISK
-      Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
-      "
+      "\r\n      cleanmgr.exe /d C: /VERYLOWDISK\r\n      Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/diskcleanup"
   },
@@ -1059,10 +899,7 @@
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
-      "
-      Remove-Item -Path \"$Env:Temp\\*\" -Recurse -Force
-      Remove-Item -Path \"$Env:SystemRoot\\Temp\\*\" -Recurse -Force
-      "
+      "\r\n      Remove-Item -Path \"$Env:Temp\\*\" -Recurse -Force\r\n      Remove-Item -Path \"$Env:SystemRoot\\Temp\\*\" -Recurse -Force\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/deletetempfiles"
   },
@@ -1245,20 +1082,10 @@
       }
     ],
     "InvokeScript": [
-      "
-      Invoke-WinUtilExplorerUpdate
-      if ($sync.ThemeButton.Content -eq [char]0xF08C) {
-        Invoke-WinutilThemeChange -theme \"Auto\"
-      }
-      "
+      "\r\n      Invoke-WinUtilExplorerUpdate\r\n      if ($sync.ThemeButton.Content -eq [char]0xF08C) {\r\n        Invoke-WinutilThemeChange -theme \"Auto\"\r\n      }\r\n      "
     ],
     "UndoScript": [
-      "
-      Invoke-WinUtilExplorerUpdate
-      if ($sync.ThemeButton.Content -eq [char]0xF08C) {
-        Invoke-WinutilThemeChange -theme \"Auto\"
-      }
-      "
+      "\r\n      Invoke-WinUtilExplorerUpdate\r\n      if ($sync.ThemeButton.Content -eq [char]0xF08C) {\r\n        Invoke-WinutilThemeChange -theme \"Auto\"\r\n      }\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/darkmode"
   },
@@ -1279,14 +1106,10 @@
       }
     ],
     "InvokeScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
+      "\r\n      Invoke-WinUtilExplorerUpdate -action \"restart\"\r\n      "
     ],
     "UndoScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
+      "\r\n      Invoke-WinUtilExplorerUpdate -action \"restart\"\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/showext"
   },
@@ -1307,14 +1130,10 @@
       }
     ],
     "InvokeScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
+      "\r\n      Invoke-WinUtilExplorerUpdate -action \"restart\"\r\n      "
     ],
     "UndoScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
+      "\r\n      Invoke-WinUtilExplorerUpdate -action \"restart\"\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/hiddenfiles"
   },
@@ -1378,7 +1197,7 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/newoutlook"
   },
-    "WPFToggleScrollbars": {
+  "WPFToggleScrollbars": {
     "Content": "Scrollbars Always Visible",
     "Description": "If enabled, scrollbars will always be visible. If disabled, Windows will automatically hide scrollbars when not in use.",
     "category": "Customize Preferences",
@@ -1607,14 +1426,10 @@
       }
     ],
     "InvokeScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
+      "\r\n      Invoke-WinUtilExplorerUpdate -action \"restart\"\r\n      "
     ],
     "UndoScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
+      "\r\n      Invoke-WinUtilExplorerUpdate -action \"restart\"\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/taskbaralignment"
   },
@@ -1735,52 +1550,10 @@
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
-      "
-      # Previously detected folders
-      $bags = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\"
-
-      # Folder types lookup table
-      $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
-
-      # Flush Explorer view database
-      Remove-Item -Path $bags -Recurse -Force
-      Write-Host \"Removed $bags\"
-
-      Remove-Item -Path $bagMRU -Recurse -Force
-      Write-Host \"Removed $bagMRU\"
-
-      # Every folder
-      $allFolders = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\\AllFolders\\Shell\"
-
-      if (!(Test-Path $allFolders)) {
-        New-Item -Path $allFolders -Force
-        Write-Host \"Created $allFolders\"
-      }
-
-      # Generic view
-      New-ItemProperty -Path $allFolders -Name \"FolderType\" -Value \"NotSpecified\" -PropertyType String -Force
-      Write-Host \"Set FolderType to NotSpecified\"
-
-      Write-Host Please sign out and back in, or restart your computer to apply the changes!
-      "
+      "\r\n      # Previously detected folders\r\n      $bags = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\"\r\n\r\n      # Folder types lookup table\r\n      $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"\r\n\r\n      # Flush Explorer view database\r\n      Remove-Item -Path $bags -Recurse -Force\r\n      Write-Host \"Removed $bags\"\r\n\r\n      Remove-Item -Path $bagMRU -Recurse -Force\r\n      Write-Host \"Removed $bagMRU\"\r\n\r\n      # Every folder\r\n      $allFolders = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\\AllFolders\\Shell\"\r\n\r\n      if (!(Test-Path $allFolders)) {\r\n        New-Item -Path $allFolders -Force\r\n        Write-Host \"Created $allFolders\"\r\n      }\r\n\r\n      # Generic view\r\n      New-ItemProperty -Path $allFolders -Name \"FolderType\" -Value \"NotSpecified\" -PropertyType String -Force\r\n      Write-Host \"Set FolderType to NotSpecified\"\r\n\r\n      Write-Host Please sign out and back in, or restart your computer to apply the changes!\r\n      "
     ],
     "UndoScript": [
-      "
-      # Previously detected folders
-      $bags = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\"
-
-      # Folder types lookup table
-      $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
-
-      # Flush Explorer view database
-      Remove-Item -Path $bags -Recurse -Force
-      Write-Host \"Removed $bags\"
-
-      Remove-Item -Path $bagMRU -Recurse -Force
-      Write-Host \"Removed $bagMRU\"
-
-      Write-Host Please sign out and back in, or restart your computer to apply the changes!
-      "
+      "\r\n      # Previously detected folders\r\n      $bags = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\"\r\n\r\n      # Folder types lookup table\r\n      $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"\r\n\r\n      # Flush Explorer view database\r\n      Remove-Item -Path $bags -Recurse -Force\r\n      Write-Host \"Removed $bags\"\r\n\r\n      Remove-Item -Path $bagMRU -Recurse -Force\r\n      Write-Host \"Removed $bagMRU\"\r\n\r\n      Write-Host Please sign out and back in, or restart your computer to apply the changes!\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/disableexplorerautodiscovery"
   },
@@ -1790,24 +1563,10 @@
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
-      "
-      Set-ItemProperty -Path 'HKLM:\\System\\CurrentControlSet\\Control\\DeviceGuard' -Name 'EnableVirtualizationBasedSecurity' -Type DWord -Value 0 -Force -ErrorAction SilentlyContinue
-      Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity' -Name 'Enabled' -Type DWord -Value 0 -Force -ErrorAction SilentlyContinue
-      Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Lsa' -Name 'LsaCfgFlags' -Type DWord -Value 0 -Force -ErrorAction SilentlyContinue
-      Disable-WindowsOptionalFeature -Online -FeatureName 'VirtualMachinePlatform' -NoRestart -ErrorAction SilentlyContinue
-      Disable-WindowsOptionalFeature -Online -FeatureName 'HypervisorPlatform' -NoRestart -ErrorAction SilentlyContinue
-      bcdedit /set hypervisorlaunchtype off
-      Write-Host 'VBS and Memory Integrity disabled. Reboot required.'
-      "
+      "\r\n      Set-ItemProperty -Path 'HKLM:\\System\\CurrentControlSet\\Control\\DeviceGuard' -Name 'EnableVirtualizationBasedSecurity' -Type DWord -Value 0 -Force -ErrorAction SilentlyContinue\r\n      Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity' -Name 'Enabled' -Type DWord -Value 0 -Force -ErrorAction SilentlyContinue\r\n      Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Lsa' -Name 'LsaCfgFlags' -Type DWord -Value 0 -Force -ErrorAction SilentlyContinue\r\n      Disable-WindowsOptionalFeature -Online -FeatureName 'VirtualMachinePlatform' -NoRestart -ErrorAction SilentlyContinue\r\n      Disable-WindowsOptionalFeature -Online -FeatureName 'HypervisorPlatform' -NoRestart -ErrorAction SilentlyContinue\r\n      bcdedit /set hypervisorlaunchtype off\r\n      Write-Host 'VBS and Memory Integrity disabled. Reboot required.'\r\n      "
     ],
     "UndoScript": [
-      "
-      Set-ItemProperty -Path 'HKLM:\\System\\CurrentControlSet\\Control\\DeviceGuard' -Name 'EnableVirtualizationBasedSecurity' -Type DWord -Value 1 -Force -ErrorAction SilentlyContinue
-      Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity' -Name 'Enabled' -Type DWord -Value 1 -Force -ErrorAction SilentlyContinue
-      Enable-WindowsOptionalFeature -Online -FeatureName 'VirtualMachinePlatform' -NoRestart -ErrorAction SilentlyContinue
-      bcdedit /set hypervisorlaunchtype on
-      Write-Host 'VBS and Memory Integrity enabled. Reboot required.'
-      "
+      "\r\n      Set-ItemProperty -Path 'HKLM:\\System\\CurrentControlSet\\Control\\DeviceGuard' -Name 'EnableVirtualizationBasedSecurity' -Type DWord -Value 1 -Force -ErrorAction SilentlyContinue\r\n      Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity' -Name 'Enabled' -Type DWord -Value 1 -Force -ErrorAction SilentlyContinue\r\n      Enable-WindowsOptionalFeature -Online -FeatureName 'VirtualMachinePlatform' -NoRestart -ErrorAction SilentlyContinue\r\n      bcdedit /set hypervisorlaunchtype on\r\n      Write-Host 'VBS and Memory Integrity enabled. Reboot required.'\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disablevbs"
   },
@@ -1854,38 +1613,13 @@
     "panel": "2",
     "Type": "Toggle",
     "InvokeScript": [
-      "
-      $path = 'HKCU:\\Software\\Microsoft\\DirectX\\UserGpuPreferences'
-      $name = 'DirectXUserGlobalSettings'
-      $current = Get-ItemProperty -Path $path -Name $name -ErrorAction SilentlyContinue
-      if ($current) {
-        $val = $current.$name
-        if ($val -match 'SwapEffectUpgradeEnable=') {
-          $val = $val -replace 'SwapEffectUpgradeEnable=\\d', 'SwapEffectUpgradeEnable=1'
-        } else {
-          $val = ($val.TrimEnd(';')) + ';SwapEffectUpgradeEnable=1'
-        }
-        Set-ItemProperty -Path $path -Name $name -Value $val
-      } else {
-        New-Item -Path $path -Force | Out-Null
-        Set-ItemProperty -Path $path -Name $name -Type String -Value 'SwapEffectUpgradeEnable=1'
-      }
-      "
+      "\r\n      $path = 'HKCU:\\Software\\Microsoft\\DirectX\\UserGpuPreferences'\r\n      $name = 'DirectXUserGlobalSettings'\r\n      $current = Get-ItemProperty -Path $path -Name $name -ErrorAction SilentlyContinue\r\n      if ($current) {\r\n        $val = $current.$name\r\n        if ($val -match 'SwapEffectUpgradeEnable=') {\r\n          $val = $val -replace 'SwapEffectUpgradeEnable=\\d', 'SwapEffectUpgradeEnable=1'\r\n        } else {\r\n          $val = ($val.TrimEnd(';')) + ';SwapEffectUpgradeEnable=1'\r\n        }\r\n        Set-ItemProperty -Path $path -Name $name -Value $val\r\n      } else {\r\n        New-Item -Path $path -Force | Out-Null\r\n        Set-ItemProperty -Path $path -Name $name -Type String -Value 'SwapEffectUpgradeEnable=1'\r\n      }\r\n      "
     ],
     "UndoScript": [
-      "
-      $path = 'HKCU:\\Software\\Microsoft\\DirectX\\UserGpuPreferences'
-      $name = 'DirectXUserGlobalSettings'
-      $current = Get-ItemProperty -Path $path -Name $name -ErrorAction SilentlyContinue
-      if ($current -and $current.$name -match 'SwapEffectUpgradeEnable=') {
-        $val = $current.$name -replace 'SwapEffectUpgradeEnable=\\d', 'SwapEffectUpgradeEnable=0'
-        Set-ItemProperty -Path $path -Name $name -Value $val
-      }
-      "
+      "\r\n      $path = 'HKCU:\\Software\\Microsoft\\DirectX\\UserGpuPreferences'\r\n      $name = 'DirectXUserGlobalSettings'\r\n      $current = Get-ItemProperty -Path $path -Name $name -ErrorAction SilentlyContinue\r\n      if ($current -and $current.$name -match 'SwapEffectUpgradeEnable=') {\r\n        $val = $current.$name -replace 'SwapEffectUpgradeEnable=\\d', 'SwapEffectUpgradeEnable=0'\r\n        Set-ItemProperty -Path $path -Name $name -Value $val\r\n      }\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/windowedgames"
   },
-
   "WPFToggleWebSearch": {
     "Content": "Web Search - Disable suggestions",
     "Description": "Disables web search suggestions and Bing results from appearing in Windows Search and Start menu search. Local file and app search still works.",
@@ -1904,25 +1638,16 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/websearch"
   },
-
   "WPFTweaksIconCache": {
     "Content": "Icon Cache - Reset & Rebuild",
     "Description": "Deletes and rebuilds the Windows icon cache. Fixes corrupted, blank, or distorted desktop and File Explorer icons.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
-      "
-      Get-Process explorer -ErrorAction SilentlyContinue | Stop-Process -Force
-      Remove-Item \"$env:LOCALAPPDATA\\IconCache.db\" -Force -ErrorAction SilentlyContinue
-      Remove-Item \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Explorer\\iconcache*\" -Force -ErrorAction SilentlyContinue
-      Start-Process explorer.exe
-      Write-Host \"Icon cache cleared and rebuilt.\"
-      "
+      "\r\n      Get-Process explorer -ErrorAction SilentlyContinue | Stop-Process -Force\r\n      Remove-Item \"$env:LOCALAPPDATA\\IconCache.db\" -Force -ErrorAction SilentlyContinue\r\n      Remove-Item \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Explorer\\iconcache*\" -Force -ErrorAction SilentlyContinue\r\n      Start-Process explorer.exe\r\n      Write-Host \"Icon cache cleared and rebuilt.\"\r\n      "
     ],
     "UndoScript": [
-      "
-      Write-Host \"Icon cache cannot be undone - it will rebuild automatically.\"
-      "
+      "\r\n      Write-Host \"Icon cache cannot be undone - it will rebuild automatically.\"\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/iconcache"
   },
@@ -1932,35 +1657,10 @@
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
-      "
-      $regPath = 'HKLM:\\SOFTWARE\\Microsoft\\Windows Photo Viewer\\Capabilities\\FileAssociations'
-      $assocs = @{
-        '.bmp'   = 'PhotoViewer.FileAssoc.Tiff'
-        '.dib'   = 'PhotoViewer.FileAssoc.Tiff'
-        '.jfif'  = 'PhotoViewer.FileAssoc.Tiff'
-        '.jpe'   = 'PhotoViewer.FileAssoc.Tiff'
-        '.jpeg'  = 'PhotoViewer.FileAssoc.Tiff'
-        '.jpg'   = 'PhotoViewer.FileAssoc.Tiff'
-        '.jxr'   = 'PhotoViewer.FileAssoc.Tiff'
-        '.png'   = 'PhotoViewer.FileAssoc.Tiff'
-        '.gif'   = 'PhotoViewer.FileAssoc.Tiff'
-        '.tiff'  = 'PhotoViewer.FileAssoc.Tiff'
-        '.tif'   = 'PhotoViewer.FileAssoc.Tiff'
-        '.wdp'   = 'PhotoViewer.FileAssoc.Tiff'
-      }
-      if (-not (Test-Path $regPath)) { New-Item -Path $regPath -Force | Out-Null }
-      foreach ($ext in $assocs.Keys) {
-        Set-ItemProperty -Path $regPath -Name $ext -Value $assocs[$ext]
-      }
-      Write-Host \"Windows Photo Viewer enabled for all common image types.\"
-      "
+      "\r\n      $regPath = 'HKLM:\\SOFTWARE\\Microsoft\\Windows Photo Viewer\\Capabilities\\FileAssociations'\r\n      $assocs = @{\r\n        '.bmp'   = 'PhotoViewer.FileAssoc.Tiff'\r\n        '.dib'   = 'PhotoViewer.FileAssoc.Tiff'\r\n        '.jfif'  = 'PhotoViewer.FileAssoc.Tiff'\r\n        '.jpe'   = 'PhotoViewer.FileAssoc.Tiff'\r\n        '.jpeg'  = 'PhotoViewer.FileAssoc.Tiff'\r\n        '.jpg'   = 'PhotoViewer.FileAssoc.Tiff'\r\n        '.jxr'   = 'PhotoViewer.FileAssoc.Tiff'\r\n        '.png'   = 'PhotoViewer.FileAssoc.Tiff'\r\n        '.gif'   = 'PhotoViewer.FileAssoc.Tiff'\r\n        '.tiff'  = 'PhotoViewer.FileAssoc.Tiff'\r\n        '.tif'   = 'PhotoViewer.FileAssoc.Tiff'\r\n        '.wdp'   = 'PhotoViewer.FileAssoc.Tiff'\r\n      }\r\n      if (-not (Test-Path $regPath)) { New-Item -Path $regPath -Force | Out-Null }\r\n      foreach ($ext in $assocs.Keys) {\r\n        Set-ItemProperty -Path $regPath -Name $ext -Value $assocs[$ext]\r\n      }\r\n      Write-Host \"Windows Photo Viewer enabled for all common image types.\"\r\n      "
     ],
     "UndoScript": [
-      "
-      $regPath = 'HKLM:\\SOFTWARE\\Microsoft\\Windows Photo Viewer\\Capabilities\\FileAssociations'
-      if (Test-Path $regPath) { Remove-Item -Path $regPath -Recurse -Force }
-      Write-Host \"Windows Photo Viewer file associations removed.\"
-      "
+      "\r\n      $regPath = 'HKLM:\\SOFTWARE\\Microsoft\\Windows Photo Viewer\\Capabilities\\FileAssociations'\r\n      if (Test-Path $regPath) { Remove-Item -Path $regPath -Recurse -Force }\r\n      Write-Host \"Windows Photo Viewer file associations removed.\"\r\n      "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/photoviewer"
   },
@@ -1982,7 +1682,6 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/clockseconds"
   },
-
   "WPFToggleAeroShake": {
     "Content": "Aero Shake - Disable",
     "Description": "Disables Aero Shake, which minimizes all other windows when you shake the active window. Useful for gamers and users who trigger it accidentally.",
@@ -2199,7 +1898,6 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/windowsink"
   },
-
   "WPFToggleWidgetsIcon": {
     "Content": "Taskbar Widgets Icon",
     "Description": "Show or hide the Widgets icon (weather/news) on the taskbar.",
@@ -2224,7 +1922,6 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/widgetsicon"
   },
-
   "WPFToggleSnapAssist": {
     "Content": "Snap Assist Flyout - Disable",
     "Description": "Disables the Snap Assist flyout that appears when snapping windows.",
@@ -2597,7 +2294,6 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/windowsversion"
   },
-
   "WPFToggleEnableTransparency": {
     "Content": "Transparency Effects - Disable",
     "Description": "Disables acrylic blur effects on surfaces like the Start menu, taskbar, and notification center.",
@@ -2634,7 +2330,6 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/colorprevalence"
   },
-
   "WPFToggleLockScreenTips": {
     "Content": "Lock Screen Tips - Disable",
     "Description": "Disables tips, tricks, and suggestions from Microsoft on the lock screen.",
@@ -2846,7 +2541,6 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/edge-browser-tweaks/edgediscoverfeed"
   },
-
   "WPFTweaksNagle": {
     "Content": "Nagle's Algorithm - Disable",
     "Description": "Disables Nagle's Algorithm globally to reduce network latency for interactive applications like games and remote desktop.",
@@ -3129,4 +2823,311 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/textinputdatacollection"
   },
+  "WPFTweaksHomeGroup": {
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/homegroup",
+    "service": [
+      {
+        "StartupType": "Disabled",
+        "Name": "HomeGroupListener",
+        "OriginalType": "Manual"
+      },
+      {
+        "StartupType": "Disabled",
+        "Name": "HomeGroupProvider",
+        "OriginalType": "Manual"
+      }
+    ],
+    "Content": "HomeGroup Services - Disable",
+    "Description": "Disables HomeGroup Listener and HomeGroup Provider services. HomeGroup was removed from Windows 10 (1803+) but these services may still be present.",
+    "category": "Essential Tweaks",
+    "panel": "1"
+  },
+  "WPFTweaksPrintSpooler": {
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/printspooler",
+    "service": [
+      {
+        "StartupType": "Disabled",
+        "Name": "Spooler",
+        "OriginalType": "Automatic"
+      }
+    ],
+    "Content": "Print Spooler - Disable",
+    "Description": "Disables the Print Spooler service. Prevents all printing and faxing functionality. Re-enable if you need to print.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1"
+  },
+  "WPFTweaksCompatAssistant": {
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/compatassistant",
+    "service": [
+      {
+        "StartupType": "Disabled",
+        "Name": "PcaSvc",
+        "OriginalType": "Automatic"
+      }
+    ],
+    "Content": "Compatibility Assistant (PcaSvc) - Disable",
+    "Description": "Disables the Program Compatibility Assistant service. Prevents Windows from automatically detecting and applying compatibility fixes to older programs.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1"
+  },
+  "WPFTweaksThirdPartyTele": {
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/thirdpartytele",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\VisualStudio\\Feedback",
+        "OriginalValue": "<RemoveEntry>",
+        "Value": "1",
+        "Name": "DisableFeedbackDialog",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Mozilla\\Firefox",
+        "OriginalValue": "<RemoveEntry>",
+        "Value": "1",
+        "Name": "DisableTelemetry",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Mozilla\\Firefox",
+        "OriginalValue": "<RemoveEntry>",
+        "Value": "1",
+        "Name": "DisableFirefoxStudies",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Google\\Chrome",
+        "OriginalValue": "<RemoveEntry>",
+        "Value": "0",
+        "Name": "MetricsReportingEnabled",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Google\\Chrome",
+        "OriginalValue": "<RemoveEntry>",
+        "Value": "0",
+        "Name": "ChromeCleanupEnabled",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\WOW6432Node\\Policies\\Google\\Chrome",
+        "OriginalValue": "<RemoveEntry>",
+        "Value": "0",
+        "Name": "MetricsReportingEnabled",
+        "Type": "DWord"
+      }
+    ],
+    "service": [
+      {
+        "StartupType": "Disabled",
+        "Name": "NvTelemetryContainer",
+        "OriginalType": "Automatic"
+      },
+      {
+        "StartupType": "Disabled",
+        "Name": "NvTelemetryApiHelper",
+        "OriginalType": "Automatic"
+      }
+    ],
+    "Content": "Third-Party App Telemetry - Disable",
+    "Description": "Disables telemetry and data collection in Visual Studio, NVIDIA, Firefox, and Google Chrome via enterprise policies.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1"
+  },
+  "WPFTweaksSystemRestore": {
+    "InvokeScript": [
+      "Disable-ComputerRestore -Drive $Env:SystemDrive"
+    ],
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore",
+        "OriginalValue": "0",
+        "Value": "1",
+        "Name": "DisableSR",
+        "Type": "DWord"
+      }
+    ],
+    "Content": "System Restore - Disable",
+    "panel": "1",
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/systemrestore",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "Description": "Disables System Restore functionality entirely. Prevents Windows from creating automatic restore points. CAUTION: You will lose the ability to revert system changes.",
+    "UndoScript": [
+      "Enable-ComputerRestore -Drive $Env:SystemDrive"
+    ]
+  },
+  "WPFTweaksTaskTimeouts": {
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/tasktimeouts",
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Desktop",
+        "OriginalValue": "0",
+        "Value": "1",
+        "Name": "AutoEndTasks",
+        "Type": "String"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Desktop",
+        "OriginalValue": "5000",
+        "Value": "5000",
+        "Name": "HungAppTimeout",
+        "Type": "String"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Desktop",
+        "OriginalValue": "20000",
+        "Value": "5000",
+        "Name": "WaitToKillAppTimeout",
+        "Type": "String"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Desktop",
+        "OriginalValue": "5000",
+        "Value": "5000",
+        "Name": "LowLevelHooksTimeout",
+        "Type": "DWord"
+      }
+    ],
+    "Content": "Task & App Timeouts - Reduce",
+    "Description": "Reduces the time Windows waits before considering apps/tasks as hung. Sets AutoEndTasks to enabled, and reduces HungAppTimeout, WaitToKillAppTimeout, and LowLevelHooksTimeout for faster shutdown.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1"
+  },
+  "WPFTweaksLowDiskSpaceChecks": {
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/lowdiskspacechecks",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+        "OriginalValue": "<RemoveEntry>",
+        "Value": "1",
+        "Name": "NoLowDiskSpaceChecks",
+        "Type": "DWord"
+      }
+    ],
+    "Content": "Low Disk Space Checks - Disable",
+    "Description": "Disables Windows from constantly checking and warning about low disk space. Useful on systems with small SSDs or partitions that are intentionally kept near capacity.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1"
+  },
+  "WPFTweaksLinkResolve": {
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/linkresolve",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+        "OriginalValue": "<RemoveEntry>",
+        "Value": "1",
+        "Name": "LinkResolveIgnoreLinkInfo",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+        "OriginalValue": "<RemoveEntry>",
+        "Value": "1",
+        "Name": "NoResolveSearch",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+        "OriginalValue": "<RemoveEntry>",
+        "Value": "1",
+        "Name": "NoResolveTrack",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+        "OriginalValue": "<RemoveEntry>",
+        "Value": "1",
+        "Name": "NoInternetOpenWith",
+        "Type": "DWord"
+      }
+    ],
+    "Content": "Link Resolve Operations - Disable",
+    "Description": "Disables several link-resolving operations in Explorer: ignore distributed link tracking, disable search for target, disable tracking on NTFS volumes, and prevent opening Store for unknown file types.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1"
+  },
+  "WPFTweaksServiceTimeouts": {
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/servicetimeouts",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control",
+        "OriginalValue": "20000",
+        "Value": "5000",
+        "Name": "WaitToKillServiceTimeout",
+        "Type": "String"
+      }
+    ],
+    "Content": "Service Timeout - Reduce",
+    "Description": "Reduces the time Windows waits for services to stop during shutdown from the default 20 seconds to 5 seconds, speeding up shutdown times.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1"
+  },
+  "WPFTweaksSysMain": {
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/sysmain",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\SysMain",
+        "OriginalValue": "3",
+        "Value": "4",
+        "Name": "Start",
+        "Type": "DWord"
+      }
+    ],
+    "service": [
+      {
+        "StartupType": "Disabled",
+        "Name": "SysMain",
+        "OriginalType": "Automatic"
+      }
+    ],
+    "Content": "SysMain (Superfetch) - Disable",
+    "Description": "Disables the SysMain service (formerly Superfetch). Can improve performance on systems with SSDs by reducing unnecessary background disk activity.",
+    "category": "Essential Tweaks",
+    "panel": "1"
+  },
+  "WPFTweaksMultimediaProfile": {
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/multimediaprofile",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
+        "OriginalValue": "20",
+        "Value": "10",
+        "Name": "SystemResponsiveness",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
+        "OriginalValue": "10",
+        "Value": "10",
+        "Name": "NetworkThrottlingIndex",
+        "Type": "DWord"
+      }
+    ],
+    "Content": "Multimedia System Profile - Optimize",
+    "Description": "Optimizes the multimedia system profile for maximum responsiveness. Sets SystemResponsiveness to 10. Useful for real-time audio/video production and gaming.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1"
+  },
+  "WPFTweaksChromeAI": {
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/chrome-ai",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Google\\Chrome",
+        "OriginalValue": "<RemoveEntry>",
+        "Value": "1",
+        "Name": "GenAILocalFoundationalModelSettings",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\WOW6432Node\\Policies\\Google\\Chrome",
+        "OriginalValue": "<RemoveEntry>",
+        "Value": "1",
+        "Name": "GenAILocalFoundationalModelSettings",
+        "Type": "DWord"
+      }
+    ],
+    "Content": "Chrome AI Model - Disable",
+    "Description": "Prevents Google Chrome from automatically downloading its 4GB Gemini Nano AI model by enforcing an enterprise policy.",
+    "category": "Essential Tweaks",
+    "panel": "1"
+  }
 }
