@@ -156,14 +156,8 @@ function Invoke-WinUtilISOModify {
             New-Item -Path $isoContents -ItemType Directory -Force
 
             Write-Win11ISOLog "Copying ISO contents..."
-            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                $sync.progressBarTextBlock.Text = "Copying ISO contents..."
-                $sync.ProgressBar.IsIndeterminate = $true
-            })
+
             Copy-Item -Path "$driveLetter\*" -Destination $isoContents -Recurse -Force
-            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                $sync.ProgressBar.IsIndeterminate = $false
-            })
             Dismount-DiskImage -ImagePath $isoPath
 
             Write-Win11ISOLog "ISO contents copied."
