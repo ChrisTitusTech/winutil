@@ -36,6 +36,7 @@
             <OOBE>
                 <HideEULAPage>true</HideEULAPage>
                 <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
+                <HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
                 <ProtectYourPC>3</ProtectYourPC>
             </OOBE>
 
