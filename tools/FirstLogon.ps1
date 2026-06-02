@@ -4,7 +4,7 @@
 
 # Run WinUtil Toggles
 
-# Disavles the task view button on the taskbar
+# Disables the task view button on the taskbar
 Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name ShowTaskViewButton -Value 0
 
 # Shows .extensions in explorer
