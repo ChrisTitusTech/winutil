@@ -83,4 +83,5 @@ function Invoke-WPFtweaksbutton {
     Write-Host "--     Tweaks are Finished    ---"
     Write-Host "================================="
   }
+  return $handle
 }

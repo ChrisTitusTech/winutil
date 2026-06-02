@@ -53,4 +53,5 @@ function Invoke-WPFInstall {
         }
         $sync.ProcessRunning = $False
     }
+    return $handle
 }

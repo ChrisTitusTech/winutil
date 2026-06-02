@@ -37,4 +37,5 @@ function Invoke-WPFFeatureInstall {
         Write-Host "---  A Reboot may be required   ---"
         Write-Host "==================================="
     }
+    return $handle
 }

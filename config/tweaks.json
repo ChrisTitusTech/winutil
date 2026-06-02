@@ -2968,7 +2968,7 @@
       {
         "Path": "HKCU:\\Control Panel\\Desktop",
         "OriginalValue": "5000",
-        "Value": "5000",
+        "Value": "2000",
         "Name": "HungAppTimeout",
         "Type": "String"
       },
@@ -2982,7 +2982,7 @@
       {
         "Path": "HKCU:\\Control Panel\\Desktop",
         "OriginalValue": "5000",
-        "Value": "5000",
+        "Value": "2000",
         "Name": "LowLevelHooksTimeout",
         "Type": "DWord"
       }
@@ -3066,7 +3066,7 @@
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\SysMain",
-        "OriginalValue": "3",
+        "OriginalValue": "2",
         "Value": "4",
         "Name": "Start",
         "Type": "DWord"
@@ -3097,7 +3097,7 @@
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
         "OriginalValue": "10",
-        "Value": "10",
+        "Value": "4294967295",
         "Name": "NetworkThrottlingIndex",
         "Type": "DWord"
       }

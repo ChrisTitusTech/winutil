@@ -96,7 +96,7 @@ if ($PARAM_NOUI) {
         $sync.runspace.Close()
         [System.GC]::Collect()
         Stop-Transcript
-        exit 1
+        exit 0
     }
     else {
         Write-Host "Cannot automatically run without a config file provided."

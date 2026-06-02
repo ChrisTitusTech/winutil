@@ -5,8 +5,13 @@ function Invoke-WinUtilAutoRun {
         Runs Install, Tweaks, and Features with optional UI invocation.
     #>
 
-    function BusyWait {
-        Start-Sleep -Milliseconds 100
+    function BusyWait ($RunspaceJob) {
+        if ($RunspaceJob -and $RunspaceJob.Handle) {
+            $RunspaceJob.PowerShell.EndInvoke($RunspaceJob.Handle)
+            $RunspaceJob.PowerShell.Dispose()
+            return
+        }
+
         while ($sync.ProcessRunning) {
             Start-Sleep -Milliseconds 100
         }
@@ -14,20 +19,20 @@ function Invoke-WinUtilAutoRun {
 
     if ($sync.selectedTweaks.Count -gt 0) {
         Write-Host "Applying tweaks..."
-        Invoke-WPFtweaksbutton
-        BusyWait
+        $job = Invoke-WPFtweaksbutton
+        BusyWait $job
     }
 
     if ($sync.selectedFeatures.Count -gt 0) {
         Write-Host "Applying features..."
-        Invoke-WPFFeatureInstall
-        BusyWait
+        $job = Invoke-WPFFeatureInstall
+        BusyWait $job
     }
 
     if ($sync.selectedApps.Count -gt 0) {
         Write-Host "Installing applications..."
-        Invoke-WPFInstall
-        BusyWait
+        $job = Invoke-WPFInstall
+        BusyWait $job
     }
 
     Write-Host "Done."
