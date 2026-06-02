@@ -1403,7 +1403,9 @@
                                 <StackPanel>
 
                                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                                        <Border Background="#1A6EFF"
+                                        <Border Background="{DynamicResource MainBackgroundColor}"
+                                                BorderBrush="{DynamicResource MainForegroundColor}"
+                                                BorderThickness="1"
                                                 CornerRadius="4"
                                                 Padding="6,2"
                                                 Margin="0,0,10,0"
@@ -1411,7 +1413,7 @@
                                             <TextBlock Text="01"
                                                        FontSize="11"
                                                        FontWeight="Bold"
-                                                       Foreground="White"
+                                                       Foreground="{DynamicResource MainForegroundColor}"
                                                        FontFamily="Consolas"/>
                                         </Border>
                                         <TextBlock FontSize="{DynamicResource FontSize}"
@@ -1481,7 +1483,9 @@
                                 <StackPanel>
 
                                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                                        <Border Background="#FF4C1A"
+                                        <Border Background="{DynamicResource MainBackgroundColor}"
+                                                BorderBrush="#FF4C1A"
+                                                BorderThickness="1"
                                                 CornerRadius="4"
                                                 Padding="6,2"
                                                 Margin="0,0,10,0"
@@ -1489,7 +1493,7 @@
                                             <TextBlock Text="!!"
                                                        FontSize="11"
                                                        FontWeight="Bold"
-                                                       Foreground="White"
+                                                       Foreground="#FF4C1A"
                                                        FontFamily="Consolas"/>
                                         </Border>
                                         <TextBlock FontSize="{DynamicResource FontSize}"
@@ -1558,7 +1562,9 @@
                                 <StackPanel VerticalAlignment="Top">
 
                                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                                        <Border Background="#1A6EFF"
+                                        <Border Background="{DynamicResource MainBackgroundColor}"
+                                                BorderBrush="{DynamicResource MainForegroundColor}"
+                                                BorderThickness="1"
                                                 CornerRadius="4"
                                                 Padding="6,2"
                                                 Margin="0,0,10,0"
@@ -1566,7 +1572,7 @@
                                             <TextBlock Text="02"
                                                        FontSize="11"
                                                        FontWeight="Bold"
-                                                       Foreground="White"
+                                                       Foreground="{DynamicResource MainForegroundColor}"
                                                        FontFamily="Consolas"/>
                                         </Border>
                                         <TextBlock FontSize="{DynamicResource FontSize}"
@@ -1639,7 +1645,9 @@
                             <StackPanel MinWidth="{DynamicResource ButtonWidth}">
 
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                                    <Border Background="#1A6EFF"
+                                    <Border Background="{DynamicResource MainBackgroundColor}"
+                                            BorderBrush="{DynamicResource MainForegroundColor}"
+                                            BorderThickness="1"
                                             CornerRadius="4"
                                             Padding="6,2"
                                             Margin="0,0,10,0"
@@ -1647,7 +1655,7 @@
                                         <TextBlock Text="03"
                                                    FontSize="11"
                                                    FontWeight="Bold"
-                                                   Foreground="White"
+                                                   Foreground="{DynamicResource MainForegroundColor}"
                                                    FontFamily="Consolas"/>
                                     </Border>
                                     <TextBlock FontSize="{DynamicResource FontSize}"
@@ -1693,7 +1701,9 @@
                                     </Grid.ColumnDefinitions>
 
                                     <StackPanel Grid.Column="0" Orientation="Horizontal">
-                                        <Border Background="#1A6EFF"
+                                        <Border Background="{DynamicResource MainBackgroundColor}"
+                                                BorderBrush="{DynamicResource MainForegroundColor}"
+                                                BorderThickness="1"
                                                 CornerRadius="4"
                                                 Padding="6,2"
                                                 Margin="0,0,10,0"
@@ -1701,7 +1711,7 @@
                                             <TextBlock Text="04"
                                                        FontSize="11"
                                                        FontWeight="Bold"
-                                                       Foreground="White"
+                                                       Foreground="{DynamicResource MainForegroundColor}"
                                                        FontFamily="Consolas"/>
                                         </Border>
                                         <TextBlock FontSize="{DynamicResource FontSize}"
@@ -1798,7 +1808,9 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,5">
-                            <Border Background="{DynamicResource BorderColor}"
+                            <Border Background="{DynamicResource MainBackgroundColor}"
+                                    BorderBrush="{DynamicResource MainForegroundColor}"
+                                    BorderThickness="1"
                                     CornerRadius="3"
                                     Padding="6,2"
                                     Margin="0,0,8,0"
@@ -1807,8 +1819,7 @@
                                            FontSize="10"
                                            FontWeight="Bold"
                                            Foreground="{DynamicResource MainForegroundColor}"
-                                           FontFamily="Consolas"
-                                           Opacity="0.70"/>
+                                           FontFamily="Consolas"/>
                             </Border>
                             <TextBlock FontSize="{DynamicResource FontSize}"
                                        FontWeight="Bold"
