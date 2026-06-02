@@ -228,9 +228,6 @@ function Invoke-WinUtilISOModify {
 
         } catch {
             Write-Win11ISOLog "ERROR during modification: $_"
-            Dismount-DiskImage -ImagePath $isoPath
-            Remove-Item -Path $workDir -Recurse -Force
-            Remove-Item -Path "$Env:Temp\Driver" -Recurse -Force
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 [System.Windows.MessageBox]::Show(
                     "An error occurred during Win11Creator ISO creation:`n`n$_",
