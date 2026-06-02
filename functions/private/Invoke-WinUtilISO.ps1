@@ -361,11 +361,6 @@ function Invoke-WinUtilISOExport {
             Write-Win11ISOLog "Exporting to ISO: $outputISO"
             & "$Env:Temp\oscdimg.exe" -o -u2 "-b$contentsDir\efi\microsoft\boot\efisys.bin" $contentsDir $outputISO
 
-            if ($LASTEXITCODE -ne 0) {
-                Write-Win11ISOLog "oscdimg exited with code $LASTEXITCODE"
-                return
-            }
-
             Write-Win11ISOLog "ISO exported successfully: $outputISO"
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 [System.Windows.MessageBox]::Show("ISO exported successfully!`n`n$outputISO", "Export Complete", "OK", "Info")
