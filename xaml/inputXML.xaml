@@ -1271,6 +1271,7 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
                             <StackPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Vertical" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="5">
@@ -1296,6 +1297,17 @@
                                     </TextBlock>
                                 </StackPanel>
                             </Border>
+
+                            <StackPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Vertical" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="5">
+                                <Label Content="Menu Show Delay:" FontSize="{DynamicResource FontSize}" VerticalAlignment="Center" Margin="2"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="10,2,10,5">
+                                    <TextBlock Text="0ms" VerticalAlignment="Center" FontSize="11" Foreground="{DynamicResource MainForegroundColor}"/>
+                                    <Slider Name="WPFMenuShowDelaySlider" Minimum="0" Maximum="4000" Value="400" Width="250" HorizontalAlignment="Left" Margin="10,0" TickFrequency="100" IsSnapToTickEnabled="False" VerticalAlignment="Center"/>
+                                    <TextBlock Text="4000ms" VerticalAlignment="Center" FontSize="11" Foreground="{DynamicResource MainForegroundColor}"/>
+                                    <Label Name="WPFMenuShowDelayValue" Content="400ms" VerticalAlignment="Center" FontSize="{DynamicResource FontSize}" Margin="20,0,0,0" FontWeight="Bold"/>
+                                    <Button Name="WPFMenuShowDelayReset" Content="Default (400)" Margin="10,0,0,0" Width="110" Height="{DynamicResource ButtonHeight}"/>
+                                </StackPanel>
+                            </StackPanel>
                         </Grid>
                     </ScrollViewer>
                     <Border Grid.Row="1" Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="5" HorizontalAlignment="Stretch" Padding="10">

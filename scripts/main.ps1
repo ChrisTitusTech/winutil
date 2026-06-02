@@ -233,6 +233,42 @@ $sync.keys | ForEach-Object {
 }
 
 #===========================================================================
+# Menu Show Delay Slider
+#===========================================================================
+
+# Read current registry value (default 400 if not set)
+$menuShowDelayPath = "HKCU:\Control Panel\Desktop"
+$menuShowDelayValue = 400
+try {
+    if (Test-Path $menuShowDelayPath) {
+        $current = Get-ItemProperty -Path $menuShowDelayPath -Name "MenuShowDelay" -ErrorAction Stop
+        $menuShowDelayValue = [int]$current.MenuShowDelay
+    }
+} catch {
+    $menuShowDelayValue = 400
+}
+
+$sync.WPFMenuShowDelaySlider.Value = $menuShowDelayValue
+$sync.WPFMenuShowDelayValue.Content = "$($menuShowDelayValue)ms"
+
+$sync.WPFMenuShowDelaySlider.Add_ValueChanged({
+    $value = [int]$($sync.WPFMenuShowDelaySlider.Value)
+    $sync.WPFMenuShowDelayValue.Content = "$($value)ms"
+})
+
+$sync.WPFMenuShowDelaySlider.Add_PreviewMouseUp({
+    $value = [int]$($sync.WPFMenuShowDelaySlider.Value)
+    if (!(Test-Path $menuShowDelayPath)) { New-Item -Path $menuShowDelayPath -Force | Out-Null }
+    Set-ItemProperty -Path $menuShowDelayPath -Name "MenuShowDelay" -Value "$value" -Type String -Force
+})
+
+$sync.WPFMenuShowDelayReset.Add_Click({
+    $sync.WPFMenuShowDelaySlider.Value = 400
+    if (!(Test-Path $menuShowDelayPath)) { New-Item -Path $menuShowDelayPath -Force | Out-Null }
+    Set-ItemProperty -Path $menuShowDelayPath -Name "MenuShowDelay" -Value "400" -Type String -Force
+})
+
+#===========================================================================
 # Setup background config
 #===========================================================================
 
