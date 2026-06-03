@@ -3,7 +3,7 @@ title: "Legacy Media Components (WMP, DirectPlay) - Enable"
 description: ""
 ---
 
-```json {filename="config/feature.json",linenos=inline,linenostart=37}
+```json {filename="config/feature.json",linenos=inline,linenostart=34}
   "WPFFeatureslegacymedia": {
     "Content": "Legacy Media Components (WMP, DirectPlay) - Enable",
     "Description": "Enables legacy programs from previous versions of Windows.",
