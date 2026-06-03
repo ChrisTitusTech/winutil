@@ -372,7 +372,7 @@ function Invoke-WinUtilISOExport {
             $image = New-Object -ComObject IMAPI2FS.MsftFileSystemImage
             $image.ChooseImageDefaultsForMediaType(13)
 
-            Get-ChildItem $contentsDir | ForEach-Object {
+            Get-ChildItem -Path $contentsDir | ForEach-Object {
                 $image.Root.AddTree($_.FullName, $true)
             }
 
