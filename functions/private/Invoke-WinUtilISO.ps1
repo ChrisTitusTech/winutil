@@ -341,7 +341,7 @@ function Invoke-WinUtilISOExport {
             Write-Win11ISOLog "Exporting to ISO: $outputISO"
 
             ($stream = New-Object -ComObject ADODB.Stream -Property @{Type = 1}).Open()
-            $stream.LoadFromFile($contentsDir)
+            $stream.LoadFromFile("$contentsDir\efi\microsoft\boot\efisys.bin")
             ($boot = New-Object -ComObject IMAPI2FS.BootOptions).AssignBootImage($stream)
             
             $image = New-Object -ComObject IMAPI2FS.MsftFileSystemImage
