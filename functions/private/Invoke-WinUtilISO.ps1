@@ -59,10 +59,10 @@ function Invoke-WinUtilISOMount {
             Mount-DiskImage -ImagePath $isoPath
             $driveLetter = (Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter + ":"
 
-            if (Test-Path "$driveLetter\sources\install.wim") {
-                $activeWim = "$driveLetter\sources\install.wim"
+            $activeWim = if (Test-Path "$driveLetter\sources\install.wim") {
+                "$driveLetter\sources\install.wim"
             } else {
-                $activeWim = "$driveLetter\sources\install.esd"
+                "$driveLetter\sources\install.esd"
             }
 
             $imageInfo = Get-WindowsImage -ImagePath $activeWim | Select-Object ImageIndex, ImageName
