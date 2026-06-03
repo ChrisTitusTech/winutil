@@ -3,7 +3,7 @@ title: "Logon Verbose Mode"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1407}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1389}
   "WPFToggleVerboseLogon": {
     "Content": "Logon Verbose Mode",
     "Description": "Show detailed messages during the login process for troubleshooting and diagnostics.",
