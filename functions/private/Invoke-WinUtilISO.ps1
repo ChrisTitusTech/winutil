@@ -338,9 +338,9 @@ function Invoke-WinUtilISOExport {
         . ([scriptblock]::Create($win11ISOLogFuncDef))
 
         try {
-            Invoke-WebRequest -Uri "https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe" -OutFile "$Env:Temp\oscdimg.exe"
-
             Write-Win11ISOLog "Exporting to ISO: $outputISO"
+
+            Invoke-WebRequest -Uri "https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe" -OutFile "$Env:Temp\oscdimg.exe"
             & "$Env:Temp\oscdimg.exe" -o -u2 "-b$contentsDir\efi\microsoft\boot\efisys.bin" $contentsDir $outputISO
 
             Write-Win11ISOLog "ISO exported successfully: $outputISO"
