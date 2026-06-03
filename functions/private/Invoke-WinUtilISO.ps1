@@ -382,6 +382,7 @@ function Invoke-WinUtilISOExport {
             [ISOFile]::Create($outputISO, $result.ImageStream, $result.BlockSize, $result.TotalBlocks)
 
             Write-Win11ISOLog "ISO exported successfully"
+            [System.Windows.MessageBox]::Show("ISO exported successfully", "Export Complete", "OK", "Info")
         } catch {
             Write-Win11ISOLog "ERROR during ISO export: $_"
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
