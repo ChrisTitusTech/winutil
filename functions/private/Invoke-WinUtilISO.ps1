@@ -339,13 +339,13 @@ function Invoke-WinUtilISOExport {
             var ptr = (System.IntPtr)(&bytes);
             var o = System.IO.File.Open(Path, System.IO.FileMode.Create);
             var i = Stream as System.Runtime.InteropServices.ComTypes.IStream;
-    
+
             if (o != null) {
                 while (TotalBlocks-- > 0) {
                     i.Read(buf, BlockSize, ptr);
                     o.Write(buf, 0, bytes);
                 }
-    
+
                 o.Flush();
                 o.Close();
             }
@@ -386,7 +386,7 @@ function Invoke-WinUtilISOExport {
             $exportError = $_
             Write-Win11ISOLog "ERROR during ISO export: $_"
         } finally {
-            $sync["WPFWin11ISOStatusLog"].Dispatcher.BeginInvoke([action]{
+            $sync["Form"].Dispatcher.Invoke([action]{
                 $sync.progressBarTextBlock.Text = ""
                 $sync.progressBarTextBlock.ToolTip = ""
                 $sync.ProgressBar.Value = 0
