@@ -54,6 +54,7 @@ function Invoke-WinUtilISOMount {
         . ([scriptblock]::Create($win11ISOLogFuncDef))
 
         try {
+            Write-Win11ISOLog "Mounting ISO..."
             Mount-DiskImage -ImagePath $isoPath
             do { Start-Sleep -Milliseconds 100 } until (Get-DiskImage -ImagePath $isoPath | Get-Volume)
 
@@ -359,25 +360,20 @@ function Invoke-WinUtilISOExport {
             & "$Env:Temp\oscdimg.exe" -o -u2 "-b$contentsDir\efi\microsoft\boot\efisys.bin" $contentsDir $outputISO
 
             Write-Win11ISOLog "ISO exported successfully: $outputISO"
-            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                $sync.progressBarTextBlock.Text = ""
-                $sync.progressBarTextBlock.ToolTip = ""
-                $sync.ProgressBar.Value = 0
-                $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $true
-            })
             $sync["WPFWin11ISOStatusLog"].Dispatcher.BeginInvoke([action]{
                 [System.Windows.MessageBox]::Show("ISO exported successfully!`n`n$outputISO", "Export Complete", "OK", "Info")
             })
         } catch {
             Write-Win11ISOLog "ERROR during ISO export: $_"
+            $sync["WPFWin11ISOStatusLog"].Dispatcher.BeginInvoke([action]{
+                [System.Windows.MessageBox]::Show("ISO export failed:`n`n$_", "Error", "OK", "Error")
+            })
+        } finally {
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 $sync.progressBarTextBlock.Text = ""
                 $sync.progressBarTextBlock.ToolTip = ""
                 $sync.ProgressBar.Value = 0
                 $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $true
-            })
-            $sync["WPFWin11ISOStatusLog"].Dispatcher.BeginInvoke([action]{
-                [System.Windows.MessageBox]::Show("ISO export failed:`n`n$_", "Error", "OK", "Error")
             })
         }
     }
