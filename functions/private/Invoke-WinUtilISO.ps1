@@ -186,7 +186,7 @@ function Invoke-WinUtilISOModify {
                 Mount-WindowsImage -ImagePath $localWim -Index $selectedWimIndex -Path "$workDir\wim_mount"
                 Add-WindowsDriver -Path "$workDir\wim_mount" -Driver "$Env:Temp\Driver" -Recurse
 
-                Write-Win11ISOLog "Saving install.wim"
+                Write-Win11ISOLog "Saving install.wim/install.esd"
                 Dismount-WindowsImage -Path "$workDir\wim_mount" -Save
 
                 Set-ItemProperty -Path "$isoContents\sources\boot.wim" -Name IsReadOnly -Value $false
@@ -209,7 +209,7 @@ function Invoke-WinUtilISOModify {
                 Remove-Item -Path "$Env:Temp\Driver" -Recurse -Force
                 Write-Win11ISOLog "Driver injection completed"
 
-                Write-Win11ISOLog "Exporting install.wim into a single-edition install.wim..."
+                Write-Win11ISOLog "Exporting install.wim/install.esd into a single-edition install.wim..."
 
                 $exportWim = "$isoContents\sources\install_export.wim"
                 Export-WindowsImage -SourceImagePath $localWim -SourceIndex $selectedWimIndex -DestinationImagePath $exportWim
