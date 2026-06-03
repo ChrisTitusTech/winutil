@@ -337,15 +337,17 @@ function Invoke-WinUtilISOExport {
             int bytes = 0;
             byte[] buf = new byte[BlockSize];
             var ptr = (System.IntPtr)(&bytes);
-            var o = System.IO.File.OpenWrite(Path);
+            var o = System.IO.File.Open(Path, System.IO.FileMode.Create);
             var i = Stream as System.Runtime.InteropServices.ComTypes.IStream;
     
             if (o != null) {
                 while (TotalBlocks-- > 0) {
-                    i.Read(buf, BlockSize, ptr); o.Write(buf, 0, bytes);
+                    i.Read(buf, BlockSize, ptr);
+                    o.Write(buf, 0, bytes);
                 }
     
-                o.Flush(); o.Close();
+                o.Flush();
+                o.Close();
             }
         }
     }
@@ -360,7 +362,7 @@ function Invoke-WinUtilISOExport {
         try {
             Write-Win11ISOLog "Exporting to ISO: $outputISO"
 
-            $stream = New-Object -ComObject ADODB.Stream -Property @{Type=1}
+            $stream = New-Object -ComObject ADODB.Stream -Property @{ Type = 1 }
             $stream.Open()
             $stream.LoadFromFile("$contentsDir\efi\microsoft\boot\efisys.bin")
 
@@ -369,11 +371,12 @@ function Invoke-WinUtilISOExport {
 
             $image = New-Object -ComObject IMAPI2FS.MsftFileSystemImage
             $image.ChooseImageDefaultsForMediaType(13)
-            $image.FileSystemsToCreate = 3
+
             $image.Root.AddTree($contentsDir, $true)
-            $Image.BootImageOptions = $boot
+            $image.BootImageOptions = $boot
 
             $result = $image.CreateResultImage()
+
             [ISOFile]::Create($outputISO, $result.ImageStream, $result.BlockSize, $result.TotalBlocks)
 
             Write-Win11ISOLog "ISO exported successfully: $outputISO"
