@@ -1,19 +1,12 @@
 function Invoke-WPFOOSU {
-    <#
-    .SYNOPSIS
-        Downloads and runs OO Shutup 10
-    #>
     try {
-        $OOSU_filepath = "$ENV:temp\OOSU10.exe"
-        $Initial_ProgressPreference = $ProgressPreference
-        $ProgressPreference = "SilentlyContinue" # Disables the Progress Bar to drasticly speed up Invoke-WebRequest
-        Invoke-WebRequest -Uri "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -OutFile $OOSU_filepath
-        Write-Host "Starting OO Shutup 10 ..."
-        Start-Process $OOSU_filepath
+        $ProgressPreference = 'SilentlyContinue'
+
+        Invoke-WebRequest -Uri https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe -OutFile "$Env:Temp\ooshutup10.exe"
+        Start-Process -FilePath "$Env:Temp\ooshutup10.exe"
+
+        $ProgressPreference = 'Continue'
     } catch {
-        Write-Host "Error Downloading and Running OO Shutup 10" -ForegroundColor Red
-    }
-    finally {
-        $ProgressPreference = $Initial_ProgressPreference
+        Write-Error "Couldn't download O&O ShutUp10. Please make sure you have an active internet connection."
     }
 }

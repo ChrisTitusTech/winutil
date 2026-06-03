@@ -591,6 +591,22 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/telemetry"
   },
+  "WPFTweaksDeliveryOptimization": {
+    "Content": "Delivery Optimization - Disable",
+    "Description": "Stops Windows from using your bandwidth to upload updates to other PCs on the internet or local network.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DeliveryOptimization",
+        "Name": "DODownloadMode",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/deliveryoptimization"
+  },
   "WPFTweaksRemoveEdge": {
     "Content": "Microsoft Edge - Remove",
     "Description": "Unblocks Microsoft Edge uninstaller restrictions then uses that uninstaller to remove Microsoft Edge.",
@@ -651,12 +667,19 @@
 
       # Some of OneDrive files use explorer, and OneDrive uses FileCoAuth
       Write-Host \"Removing leftover OneDrive Files...\"
+
       Stop-Process -Name FileCoAuth,Explorer
+
       Remove-Item \"$Env:LocalAppData\\Microsoft\\OneDrive\" -Recurse -Force
       Remove-Item \"C:\\ProgramData\\Microsoft OneDrive\" -Recurse -Force
 
       # Grant back permission to access OneDrive folder
       icacls $Env:OneDrive /grant \"Administrators:(D,DC)\"
+
+      if (-not (Get-ChildItem -Path $Env:OneDrive)) {
+          Remove-Item -Path $Env:OneDrive
+          [Environment]::SetEnvironmentVariable('OneDrive', $null, 'User')
+      }
 
       # Disable OneSyncSvc
       Set-Service -Name OneSyncSvc -StartupType Disabled
@@ -1058,25 +1081,21 @@
     "panel": "1",
     "InvokeScript": [
       "
-      $hostsUrl = \"https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts\"
-      $hosts = \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\"
+      $hostsUrl = Invoke-RestMethod -Uri https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts
+      Add-Content -Path \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\" -Value $hostsUrl
 
-      Move-Item $hosts \"$hosts.bak\"
-      Invoke-WebRequest $hostsUrl -OutFile $hosts
       ipconfig /flushdns
-
-      Write-Host \"Added Adobe url block list from host file\"
+      Write-Host 'Added Adobe url block list from host file'
       "
     ],
     "UndoScript": [
       "
-      $hosts = \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\"
+      Set-Content \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\" (
+          (Get-Content \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\") -join \"`n\" -replace '(?s)#New Ver.*', ''
+      )
 
-      Remove-Item $hosts
-      Move-Item \"$hosts.bak\" $hosts
       ipconfig /flushdns
-
-      Write-Host \"Removed Adobe url block list from host file\"
+      Write-Host 'Removed Adobe url block list from host file'
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/blockadobenet"
@@ -1221,27 +1240,64 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disablefso"
   },
-  "WPFToggleDisableCrossDeviceResume": {
-    "Content": "Cross-Device Resume",
-    "Description": "This tweak controls the Resume function in Windows 11 24H2 and later, which allows you to resume an activity from a mobile device and vice-versa.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\CrossDeviceResume\\Configuration",
-        "Name": "IsResumeAllowed",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "true"
+  "WPFTweaksDisableExplorerAutoDiscovery": {
+    "Content": "File Explorer Automatic Folder Discovery - Disable",
+    "Description": "Windows Explorer automatically tries to guess the type of the folder based on its contents, slowing down the browsing experience. WARNING! Will disable File Explorer grouping.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "InvokeScript": [
+      "
+      # Previously detected folders
+      $bags = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\"
+
+      # Folder types lookup table
+      $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
+
+      # Flush Explorer view database
+      Remove-Item -Path $bags -Recurse -Force
+      Write-Host \"Removed $bags\"
+
+      Remove-Item -Path $bagMRU -Recurse -Force
+      Write-Host \"Removed $bagMRU\"
+
+      # Every folder
+      $allFolders = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\\AllFolders\\Shell\"
+
+      if (!(Test-Path $allFolders)) {
+        New-Item -Path $allFolders -Force
+        Write-Host \"Created $allFolders\"
       }
+
+      # Generic view
+      New-ItemProperty -Path $allFolders -Name \"FolderType\" -Value \"NotSpecified\" -PropertyType String -Force
+      Write-Host \"Set FolderType to NotSpecified\"
+
+      Write-Host Please sign out and back in, or restart your computer to apply the changes!
+      "
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/disablecrossdeviceresume"
+    "UndoScript": [
+      "
+      # Previously detected folders
+      $bags = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\"
+
+      # Folder types lookup table
+      $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
+
+      # Flush Explorer view database
+      Remove-Item -Path $bags -Recurse -Force
+      Write-Host \"Removed $bags\"
+
+      Remove-Item -Path $bagMRU -Recurse -Force
+      Write-Host \"Removed $bagMRU\"
+
+      Write-Host Please sign out and back in, or restart your computer to apply the changes!
+      "
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/disableexplorerautodiscovery"
   },
   "WPFToggleDetailedBSoD": {
     "Content": "BSoD Verbose Mode",
-    "Description": "If enabled, you will see a detailed Blue Screen of Death (BSOD) with more information.",
+    "Description": "Gives more information when you blue screen.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1267,7 +1323,7 @@
   },
   "WPFToggleBatteryPercentage": {
     "Content": "System Tray Battery Percentage",
-    "Description": "If enabled, Shows numeric battery percentage next to the battery icon in the system tray.",
+    "Description": "Shows numeric battery percentage next to the battery icon in the system tray.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1285,7 +1341,7 @@
   },
   "WPFToggleDarkMode": {
     "Content": "Dark Theme for Windows",
-    "Description": "Enable/Disable Dark Mode.",
+    "Description": "Dark Mode for the system and applications.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1327,7 +1383,7 @@
   },
   "WPFToggleShowExt": {
     "Content": "File Explorer File Extensions",
-    "Description": "If enabled, File extensions (e.g., .txt, .jpg) are visible.",
+    "Description": "Shows .file extensions in explorer (.exe, .png, etc)",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1355,7 +1411,7 @@
   },
   "WPFToggleHiddenFiles": {
     "Content": "File Explorer Hidden Files",
-    "Description": "If enabled, Hidden Files will be shown.",
+    "Description": "reveals hidden files in explorer",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1383,7 +1439,7 @@
   },
   "WPFToggleVerboseLogon": {
     "Content": "Logon Verbose Mode",
-    "Description": "Show detailed messages during the login process for troubleshooting and diagnostics.",
+    "Description": "Show detailed messages during startup/shutdown.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1401,7 +1457,7 @@
   },
   "WPFToggleNewOutlook": {
     "Content": "Microsoft Outlook New Version",
-    "Description": "If disabled, it removes the new Outlook toggle, disables the new Outlook migration, and ensures the classic Outlook application is used.",
+    "Description": "This will ensures the classic Outlook application is used.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1462,7 +1518,7 @@
   },
   "WPFToggleMultiplaneOverlay": {
     "Content": "Multiplane Overlay",
-    "Description": "Enable or disable the Multiplane Overlay, which can sometimes cause issues with graphics cards.",
+    "Description": "Multiplane Overlay compose multiple image layers, which can sometimes cause issues with graphics cards.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1488,7 +1544,7 @@
   },
   "WPFToggleMouseAcceleration": {
     "Content": "Mouse Acceleration",
-    "Description": "If enabled, the Cursor movement is affected by the speed of your physical mouse movements.",
+    "Description": "Makes it so Cursor movement is affected by the speed of your physical mouse movements.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1548,7 +1604,7 @@
   },
   "WPFToggleStandbyFix": {
     "Content": "S0 Sleep Network Connectivity",
-    "Description": "Enable or disable network connectivity during S0 Sleep.",
+    "Description": "Toggles network connectivity during S0 Sleep which is low power idle in modern laptops.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1566,7 +1622,7 @@
   },
   "WPFToggleS3Sleep": {
     "Content": "S3 Sleep",
-    "Description": "Toggles between Modern Standby and S3 Sleep.",
+    "Description": "Toggles between Modern Standby and S3 Sleep which cuts of power to cpu while continuing to refreshes the memory.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1584,7 +1640,7 @@
   },
   "WPFToggleHideSettingsHome": {
     "Content": "Settings Home Page",
-    "Description": "Enable or disable the Home Page in the Windows Settings app.",
+    "Description": "Toggles the Home Page in the Windows Settings app.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1602,7 +1658,7 @@
   },
   "WPFToggleBingSearch": {
     "Content": "Start Menu Bing Search",
-    "Description": "If enabled, Bing web search results will be included in your Start Menu search.",
+    "Description": "Toggles Bing web search results in windows search",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1620,7 +1676,7 @@
   },
   "WPFToggleLoginBlur": {
     "Content": "Logon Screen Acrylic Blur",
-    "Description": "If disabled, the acrylic blur effect will be removed on the Windows 10/11 login screen background.",
+    "Description": "Toggles the acrylic blur effect on login screen background.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1638,7 +1694,7 @@
   },
   "WPFToggleStartMenuRecommendations": {
     "Content": "Start Menu Recommendations",
-    "Description": "If disabled, then you will not see recommendations in the Start Menu. WARNING: This will also disable Windows Spotlight on your Lock Screen as a side effect.",
+    "Description": "Toggles the recommendations section in the Start Menu. WARNING: This will also disable Windows Spotlight on your Lock Screen as a side effect.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1682,7 +1738,7 @@
   },
   "WPFToggleStickyKeys": {
     "Content": "Sticky Keys",
-    "Description": "If enabled, Sticky Keys is activated. Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
+    "Description": "Toggles the stick keys which active when clicking shift rapidly",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1700,7 +1756,7 @@
   },
   "WPFToggleTaskbarAlignment": {
     "Content": "Taskbar Centered Icons",
-    "Description": "[Windows 11] If enabled, the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
+    "Description": "Toggles the taskbar alignment either to the left or center",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1728,7 +1784,7 @@
   },
   "WPFToggleTaskbarSearch": {
     "Content": "Taskbar Search Icon",
-    "Description": "If enabled, Search Button will be on the Taskbar.",
+    "Description": "Toggles the Search Button on the Taskbar.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1736,9 +1792,9 @@
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
         "Name": "SearchboxTaskbarMode",
-        "Value": "1",
+        "Value": "0",
         "Type": "DWord",
-        "OriginalValue": "0",
+        "OriginalValue": "d",
         "DefaultState": "true"
       }
     ],
@@ -1746,7 +1802,7 @@
   },
   "WPFToggleTaskView": {
     "Content": "Taskbar Task View Icon",
-    "Description": "If enabled, Task View Button in Taskbar will be shown.",
+    "Description": "Toggles the Task View Button in the Taskbar.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1764,7 +1820,7 @@
   },
   "WPFToggleGameMode": {
     "Content": "Game Mode",
-    "Description": "If enabled, Windows prioritizes gaming performance by allocating system resources. Disable for audio/video production to prevent interference.",
+    "Description": "Toggles Windows prioritizes gaming performance by allocating system resources to games.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1790,7 +1846,7 @@
   },
   "WPFToggleLongPaths": {
     "Content": "Enable Long Paths",
-    "Description": "Enables support for file paths longer than 260 characters.",
+    "Description": "Toggles support for file paths longer than 260 characters in explorer.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1836,60 +1892,5 @@
     "Type": "Button",
     "ButtonWidth": "300",
     "link": "https://winutil.christitus.com/dev/tweaks/performance-plans---not-for-laptops/removeultperf"
-  },
-  "WPFTweaksDisableExplorerAutoDiscovery": {
-    "Content": "File Explorer Automatic Folder Discovery - Disable",
-    "Description": "Windows Explorer automatically tries to guess the type of the folder based on its contents, slowing down the browsing experience. WARNING! Will disable File Explorer grouping.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "InvokeScript": [
-      "
-      # Previously detected folders
-      $bags = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\"
-
-      # Folder types lookup table
-      $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
-
-      # Flush Explorer view database
-      Remove-Item -Path $bags -Recurse -Force
-      Write-Host \"Removed $bags\"
-
-      Remove-Item -Path $bagMRU -Recurse -Force
-      Write-Host \"Removed $bagMRU\"
-
-      # Every folder
-      $allFolders = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\\AllFolders\\Shell\"
-
-      if (!(Test-Path $allFolders)) {
-        New-Item -Path $allFolders -Force
-        Write-Host \"Created $allFolders\"
-      }
-
-      # Generic view
-      New-ItemProperty -Path $allFolders -Name \"FolderType\" -Value \"NotSpecified\" -PropertyType String -Force
-      Write-Host \"Set FolderType to NotSpecified\"
-
-      Write-Host Please sign out and back in, or restart your computer to apply the changes!
-      "
-    ],
-    "UndoScript": [
-      "
-      # Previously detected folders
-      $bags = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\"
-
-      # Folder types lookup table
-      $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
-
-      # Flush Explorer view database
-      Remove-Item -Path $bags -Recurse -Force
-      Write-Host \"Removed $bags\"
-
-      Remove-Item -Path $bagMRU -Recurse -Force
-      Write-Host \"Removed $bagMRU\"
-
-      Write-Host Please sign out and back in, or restart your computer to apply the changes!
-      "
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/disableexplorerautodiscovery"
   }
 }
