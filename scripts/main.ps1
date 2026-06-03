@@ -331,7 +331,6 @@ $sync["Form"].Add_ContentRendered({
 
         # Compare with the primary monitor size
         if ($sync.Form.ActualWidth -gt $screenWidth -or $sync.Form.ActualHeight -gt $screenHeight) {
-            Write-Debug "The specified width and/or height is greater than the primary monitor size."
             $sync.Form.Left = 0
             $sync.Form.Top = 0
             $sync.Form.Width = $screenWidth
