@@ -340,8 +340,32 @@ function Invoke-WinUtilISOExport {
         try {
             Write-Win11ISOLog "Exporting to ISO: $outputISO"
 
-            Invoke-WebRequest -Uri "https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe" -OutFile "$Env:Temp\oscdimg.exe"
-            & "$Env:Temp\oscdimg.exe" -o -u2 "-b$contentsDir\efi\microsoft\boot\efisys.bin" $contentsDir $outputISO
+            ($stream = New-Object -ComObject ADODB.Stream -Property @{Type = 1}).Open()
+            $stream.LoadFromFile($contentsDir)
+            ($boot = New-Object -ComObject IMAPI2FS.BootOptions).AssignBootImage($stream)
+            
+            $image = New-Object -ComObject IMAPI2FS.MsftFileSystemImage
+            $image.FreeMediaBlocks = 0
+            $image.FileSystemsToCreate = 4
+            $image.BootImageOptions = $boot
+            $image.Root.AddTree($contentsDir, $false)
+
+            Add-Type -CompilerOptions /unsafe -TypeDefinition @"
+            public class ISOFile {
+                public unsafe static void Create(string path, object stream, int blockSize, int totalBlocks) {
+                    int bytes = 0;
+                    byte[] buf = new byte[blockSize];
+                    var ptr = (System.IntPtr)(&bytes);
+                    var o = System.IO.File.OpenWrite(path);
+                    var i = stream as System.Runtime.InteropServices.ComTypes.IStream;
+                    while (totalBlocks-- > 0) { i.Read(buf, blockSize, ptr); o.Write(buf, 0, bytes); }
+                    o.Flush(); o.Close();
+                }
+            }
+"@
+
+            $result = $image.CreateResultImage()
+            [ISOFile]::Create($outputISO, $result.ImageStream, $result.BlockSize, $result.TotalBlocks)
 
             Write-Win11ISOLog "ISO exported successfully: $outputISO"
         } catch {
