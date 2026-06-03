@@ -268,7 +268,7 @@ function Invoke-WinUtilISOCheckExistingWork {
     $sync["WPFWin11ISOOutputSection"].Visibility = "Visible"
 
     [System.Windows.MessageBox]::Show(
-        "Found existing work in:`n$Env:Temp\Win11Creator (modified: $modified)`n`nStep 4 restored. Click 'Clean & Reset' to start over.",
+        "Found existing work in:`n$Env:Temp\Win11Creator`n`nStep 4 restored. Click 'Clean & Reset' to start over.",
         "Existing Work Found", "OK", "Info")
 }
 
