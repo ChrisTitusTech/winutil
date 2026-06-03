@@ -135,12 +135,10 @@ function Invoke-WinUtilISOModify {
     $sync["WPFWin11ISOModifyButton"].IsEnabled = $false
     $sync["Win11ISOModifying"] = $true
 
-    $workDir = "$Env:Temp\Win11Creator"
-
     Invoke-WinUtilRunspace -Variables @{
         isoPath = $isoPath
         driveLetter = $driveLetter
-        workDir = $workDir
+        workDir = "$Env:Temp\Win11Creator"
         selectedWimIndex = $selectedWimIndex
         selectedEditionName = $selectedEditionName
         autounattendContent = $WinUtilAutounattendXml
@@ -222,7 +220,6 @@ function Invoke-WinUtilISOModify {
                 Write-Win11ISOLog "Unused editions removed."
             }
 
-            $sync["Win11ISOWorkDir"] = $workDir
             $sync["Win11ISOContentsDir"] = $isoContents
 
             Write-Win11ISOLog "Win11Creator ISO was successfully created. Choose an output option in Step 4."
