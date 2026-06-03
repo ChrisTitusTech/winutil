@@ -29,7 +29,7 @@ Get-ChildItem config | ForEach-Object {
     $script += "`$sync.configs.$($_.BaseName) = @'`r`n$json`r`n'@ | ConvertFrom-Json"
 }
 
-$xaml = Get-Content -Path xaml\inputXML.xaml -Raw
+$xaml = Get-Content -Path inputXML.xaml -Raw
 $script += "`$inputXML = @'`r`n$xaml`r`n'@"
 
 $autounattendXml = Get-Content -Path tools\autounattend.xml -Raw
