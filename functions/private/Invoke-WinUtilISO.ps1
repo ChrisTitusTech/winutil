@@ -360,7 +360,7 @@ function Invoke-WinUtilISOExport {
         . ([scriptblock]::Create($win11ISOLogFuncDef))
 
         try {
-            Write-Win11ISOLog "Exporting to ISO: $outputISO"
+            Write-Win11ISOLog "Exporting to $outputISO"
 
             $stream = New-Object -ComObject ADODB.Stream -Property @{ Type = 1 }
             $stream.Open()
@@ -381,7 +381,7 @@ function Invoke-WinUtilISOExport {
             $result = $image.CreateResultImage()
             [ISOFile]::Create($outputISO, $result.ImageStream, $result.BlockSize, $result.TotalBlocks)
 
-            Write-Win11ISOLog "ISO exported successfully: $outputISO"
+            Write-Win11ISOLog "ISO exported successfully"
         } catch {
             Write-Win11ISOLog "ERROR during ISO export: $_"
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
