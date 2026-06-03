@@ -763,6 +763,15 @@
         "winget": "MullvadVPN.MullvadBrowser",
         "foss": true
     },
+    "nomacs": {
+        "category": "Multimedia Tools",
+        "choco": "nomacs",
+        "content": "nomacs",
+        "description": "nomacs is a free, open source image viewer, which supports multiple platforms. You can use it for viewing all common image formats including RAW and psd images.",
+        "link": "https://nomacs.org/",
+        "winget": "nomacs.nomacs",
+        "foss": true
+    },
     "nanazip": {
         "category": "Utilities",
         "choco": "nanazip",
@@ -977,6 +986,15 @@
         "description": "PeaZip is a free, open-source file archiver utility that supports multiple archive formats and provides encryption features.",
         "link": "https://peazip.github.io/",
         "winget": "Giorgiotani.Peazip",
+        "foss": true
+    },
+    "playnite": {
+        "category": "Games",
+        "choco": "playnite",
+        "content": "Playnite",
+        "description": "Playnite is an open source video game library manager with one simple goal: To provide a unified interface for all of your games.",
+        "link": "https://playnite.link/",
+        "winget": "Playnite.Playnite",
         "foss": true
     },
     "plex": {
