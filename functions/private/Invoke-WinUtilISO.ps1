@@ -372,11 +372,13 @@ function Invoke-WinUtilISOExport {
             $image = New-Object -ComObject IMAPI2FS.MsftFileSystemImage
             $image.ChooseImageDefaultsForMediaType(13)
 
-            $image.Root.AddTree($contentsDir, $true)
+            Get-ChildItem $contentsDir | ForEach-Object {
+                $image.Root.AddTree($_.FullName, $true)
+            }
+
             $image.BootImageOptions = $boot
 
             $result = $image.CreateResultImage()
-
             [ISOFile]::Create($outputISO, $result.ImageStream, $result.BlockSize, $result.TotalBlocks)
 
             Write-Win11ISOLog "ISO exported successfully: $outputISO"
