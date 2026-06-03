@@ -335,12 +335,19 @@ function Invoke-WinUtilISOExport {
     public class ISOFile {
         public unsafe static void Create(string path, object stream, int blockSize, int totalBlocks) {
             int bytes = 0;
-            byte[] buf = new byte[blockSize];
             var ptr = (System.IntPtr)(&bytes);
-            var o = System.IO.File.OpenWrite(path);
             var i = stream as System.Runtime.InteropServices.ComTypes.IStream;
-            while (totalBlocks-- > 0) { i.Read(buf, blockSize, ptr); o.Write(buf, 0, bytes); }
-            o.Flush(); o.Close();
+            using (var o = new System.IO.FileStream(path, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None, 8 * 1024 * 1024, true)) {
+                byte[] buf = new byte[8 * 1024 * 1024];
+                int blocksPerChunk = buf.Length / blockSize;
+                while (totalBlocks > 0) {
+                    int chunk = System.Math.Min(blocksPerChunk, totalBlocks);
+                    int toRead = chunk * blockSize;
+                    i.Read(buf, toRead, ptr);
+                    o.Write(buf, 0, bytes);
+                    totalBlocks -= chunk;
+                }
+            }
         }
     }
 "@
@@ -357,7 +364,7 @@ function Invoke-WinUtilISOExport {
             ($stream = New-Object -ComObject ADODB.Stream -Property @{Type = 1}).Open()
             $stream.LoadFromFile("$contentsDir\efi\microsoft\boot\efisys.bin")
             ($boot = New-Object -ComObject IMAPI2FS.BootOptions).AssignBootImage($stream)
-            
+
             $image = New-Object -ComObject IMAPI2FS.MsftFileSystemImage
             $image.FreeMediaBlocks = 0
             $image.FileSystemsToCreate = 4
