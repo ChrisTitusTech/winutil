@@ -1,21 +1,21 @@
 ---
-title: "Storage Sense - Disable"
+title: "Delivery Optimization - Disable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=941}
-  "WPFTweaksStorage": {
-    "Content": "Storage Sense - Disable",
-    "Description": "Storage Sense deletes temp files automatically.",
-    "category": "z__Advanced Tweaks - CAUTION",
+```json {filename="config/tweaks.json",linenos=inline,linenostart=594}
+  "WPFTweaksDeliveryOptimization": {
+    "Content": "Delivery Optimization - Disable",
+    "Description": "Stops Windows from using your bandwidth to upload updates to other PCs on the internet or local network.",
+    "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
       {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy",
-        "Name": "01",
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DeliveryOptimization",
+        "Name": "DODownloadMode",
         "Value": "0",
         "Type": "DWord",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
 ```
