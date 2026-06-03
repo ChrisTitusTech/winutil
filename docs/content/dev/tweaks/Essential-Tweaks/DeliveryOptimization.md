@@ -1,19 +1,19 @@
 ---
-title: "End Task With Right Click - Enable"
+title: "Delivery Optimization - Disable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=905}
-  "WPFTweaksEndTaskOnTaskbar": {
-    "Content": "End Task With Right Click - Enable",
-    "Description": "Enables option to end task when right clicking a program in the taskbar.",
+```json {filename="config/tweaks.json",linenos=inline,linenostart=594}
+  "WPFTweaksDeliveryOptimization": {
+    "Content": "Delivery Optimization - Disable",
+    "Description": "Stops Windows from using your bandwidth to upload updates to other PCs on the internet or local network.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
       {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings",
-        "Name": "TaskbarEndTask",
-        "Value": "1",
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DeliveryOptimization",
+        "Name": "DODownloadMode",
+        "Value": "0",
         "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       }
