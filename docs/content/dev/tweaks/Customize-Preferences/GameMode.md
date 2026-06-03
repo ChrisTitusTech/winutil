@@ -3,7 +3,7 @@ title: "Game Mode"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1825}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1821}
   "WPFToggleGameMode": {
     "Content": "Game Mode",
     "Description": "Toggles Windows prioritizes gaming performance by allocating system resources to games.",
