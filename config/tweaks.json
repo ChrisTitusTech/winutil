@@ -1244,24 +1244,6 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disablefso"
   },
-  "WPFToggleDisableCrossDeviceResume": {
-    "Content": "Cross-Device Resume",
-    "Description": "This tweak controls the Resume function in Windows 11 24H2 and later, which allows you to resume an activity from a mobile device and vice-versa.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\CrossDeviceResume\\Configuration",
-        "Name": "IsResumeAllowed",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "true"
-      }
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/disablecrossdeviceresume"
-  },
   "WPFToggleDetailedBSoD": {
     "Content": "BSoD Verbose Mode",
     "Description": "If enabled, you will see a detailed Blue Screen of Death (BSOD) with more information.",
