@@ -333,14 +333,20 @@ function Invoke-WinUtilISOExport {
 
     Add-Type -CompilerOptions /unsafe -TypeDefinition @"
     public class ISOFile {
-        public unsafe static void Create(string path, object stream, int blockSize, int totalBlocks) {
+        public unsafe static void Create(string Path, object Stream, int BlockSize, int TotalBlocks) {
             int bytes = 0;
-            byte[] buf = new byte[blockSize];
+            byte[] buf = new byte[BlockSize];
             var ptr = (System.IntPtr)(&bytes);
-            var o = System.IO.File.OpenWrite(path);
-            var i = stream as System.Runtime.InteropServices.ComTypes.IStream;
-            while (totalBlocks-- > 0) { i.Read(buf, blockSize, ptr); o.Write(buf, 0, bytes); }
-            o.Flush(); o.Close();
+            var o = System.IO.File.OpenWrite(Path);
+            var i = Stream as System.Runtime.InteropServices.ComTypes.IStream;
+    
+            if (o != null) {
+                while (TotalBlocks-- > 0) {
+                    i.Read(buf, BlockSize, ptr); o.Write(buf, 0, bytes);
+                }
+    
+                o.Flush(); o.Close();
+            }
         }
     }
 "@
@@ -354,15 +360,17 @@ function Invoke-WinUtilISOExport {
         try {
             Write-Win11ISOLog "Exporting to ISO: $outputISO"
 
-            ($stream = New-Object -ComObject ADODB.Stream -Property @{Type = 1}).Open()
+            $stream = New-Object -ComObject ADODB.Stream -Property @{Type=1}
+            $stream.Open()
             $stream.LoadFromFile("$contentsDir\efi\microsoft\boot\efisys.bin")
-            ($boot = New-Object -ComObject IMAPI2FS.BootOptions).AssignBootImage($stream)
+
+            $boot = New-Object -ComObject IMAPI2FS.BootOptions
+            $boot.AssignBootImage($stream)
 
             $image = New-Object -ComObject IMAPI2FS.MsftFileSystemImage
-            $image.FreeMediaBlocks = 0
-            $image.FileSystemsToCreate = 4
-            $image.BootImageOptions = $boot
-            $image.Root.AddTree($contentsDir, $false)
+            $image.ChooseImageDefaultsForMediaType = 13
+            $image.Root.AddTree($contentsDir, $true)
+            $Image.BootImageOptions = $boot
 
             $result = $image.CreateResultImage()
             [ISOFile]::Create($outputISO, $result.ImageStream, $result.BlockSize, $result.TotalBlocks)
