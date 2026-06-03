@@ -1177,15 +1177,6 @@
         "winget": "Rufus.Rufus",
         "foss": true
     },
-    "rustdesk": {
-        "category": "Pro Tools",
-        "choco": "rustdesk.portable",
-        "content": "RustDesk",
-        "description": "RustDesk is a free and open-source remote desktop application. It provides a secure way to connect to remote machines and access desktop environments.",
-        "link": "https://rustdesk.com/",
-        "winget": "RustDesk.RustDesk",
-        "foss": true
-    },
     "rustlang": {
         "category": "Development",
         "choco": "rust",
