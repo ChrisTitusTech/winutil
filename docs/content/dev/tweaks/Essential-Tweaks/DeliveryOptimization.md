@@ -3,7 +3,7 @@ title: "Delivery Optimization - Disable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=600}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=590}
   "WPFTweaksDeliveryOptimization": {
     "Content": "Delivery Optimization - Disable",
     "Description": "Stops Windows from using your bandwidth to upload updates to other PCs on the internet or local network.",
