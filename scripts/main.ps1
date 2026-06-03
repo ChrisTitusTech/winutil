@@ -191,11 +191,9 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
 
 $sync.ChocoRadioButton.Add_Checked({
     $sync.preferences.packagemanager = [PackageManagers]::Choco
-    Set-Preferences
 })
 $sync.WingetRadioButton.Add_Checked({
     $sync.preferences.packagemanager = [PackageManagers]::Winget
-    Set-Preferences
 })
 
 switch ($sync.preferences.packagemanager) {
