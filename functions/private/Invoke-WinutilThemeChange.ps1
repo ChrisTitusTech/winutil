@@ -1,6 +1,4 @@
-function Invoke-WinutilThemeChange {
-    param([string]$theme = "Auto")
-
+function Invoke-WinutilThemeChange ($theme) {
     $sync.preferences.theme = $theme
 
     function Set-Prop($name, $value, $type) {
