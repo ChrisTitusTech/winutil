@@ -395,5 +395,5 @@ function Invoke-WinUtilISOExport {
                 $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $true
             })
         }
-    })
+    }
 }
