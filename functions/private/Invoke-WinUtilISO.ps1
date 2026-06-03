@@ -369,6 +369,7 @@ function Invoke-WinUtilISOExport {
 
             $image = New-Object -ComObject IMAPI2FS.MsftFileSystemImage
             $image.ChooseImageDefaultsForMediaType(13)
+            $image.FileSystemsToCreate = 3
             $image.Root.AddTree($contentsDir, $true)
             $Image.BootImageOptions = $boot
 
