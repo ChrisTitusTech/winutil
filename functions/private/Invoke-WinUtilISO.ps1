@@ -34,10 +34,9 @@ function Invoke-WinUtilISOBrowse {
     if ($dialog.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
 
     $isoPath = $dialog.FileName
-    $fileSizeGB = [math]::Round((Get-Item $isoPath).Length / 1GB, 2)
 
     $sync["WPFWin11ISOPath"].Text = $isoPath
-    $sync["WPFWin11ISOFileInfo"].Text = "File size: $fileSizeGB GB"
+    $sync["WPFWin11ISOFileInfo"].Text = "File size: $([math]::Round((Get-Item $isoPath).Length / 1GB, 2)) GB"
     $sync["WPFWin11ISOFileInfo"].Visibility = "Visible"
     $sync["WPFWin11ISOMountSection"].Visibility = "Visible"
     $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Collapsed"
