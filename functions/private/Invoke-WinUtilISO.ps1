@@ -55,9 +55,8 @@ function Invoke-WinUtilISOMount {
 
         try {
             Write-Win11ISOLog "Mounting ISO..."
-            Mount-DiskImage -ImagePath $isoPath
-            do { Start-Sleep -Milliseconds 100 } until (Get-DiskImage -ImagePath $isoPath | Get-Volume)
 
+            Mount-DiskImage -ImagePath $isoPath
             $driveLetter = (Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter + ":"
 
             if (Test-Path "$driveLetter\sources\install.wim") {
