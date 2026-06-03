@@ -16,6 +16,6 @@ function Invoke-WPFInstallUpgrade {
         Write-Host "-- You can close this window if desired ---"
         Write-Host "==========================================="
 
-        Start-Process -FilePath powershell.exe -ArgumentList 'winget upgrade --all --include-unknown --silent --accept-source-agreements --accept-package-agreements'
+        Start-Process -FilePath powershell.exe -ArgumentList '-NoExit winget upgrade --all --include-unknown --silent --accept-source-agreements --accept-package-agreements'
     }
 }
