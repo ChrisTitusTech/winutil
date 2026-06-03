@@ -80,5 +80,5 @@ Click **Clean & Reset** to delete the temporary working directory and return the
 
 ## Additional Resources
 
-* Download official Windows 11 media from [Microsoft](https://www.microsoft.com/en-us/software-download/windows11).
-* If you prefer to write a finished ISO using another utility, popular choices include [Rufus](https://rufus.ie/) or [Ventoy](https://www.net/net/).
+- Download official Windows 11 media from [Microsoft](https://www.microsoft.com/en-us/software-download/windows11).
+- If you prefer to write a finished ISO with another tool, common choices include [Rufus](https://rufus.ie/) or [Ventoy](https://www.ventoy.net/).
