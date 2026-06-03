@@ -3,7 +3,7 @@ title: "Logon Screen Acrylic Blur"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1670}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1660}
   "WPFToggleLoginBlur": {
     "Content": "Logon Screen Acrylic Blur",
     "Description": "Toggles the acrylic blur effect on login screen background.",
