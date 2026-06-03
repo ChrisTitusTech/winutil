@@ -107,7 +107,6 @@ function Invoke-WinUtilISOMount {
                     "Error", "OK", "Error")
             })
         } finally {
-            Start-Sleep -Milliseconds 800
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 $sync.progressBarTextBlock.Text = ""
                 $sync.progressBarTextBlock.ToolTip = ""
@@ -235,7 +234,6 @@ function Invoke-WinUtilISOModify {
                     "Modification Error", "OK", "Error")
             })
         } finally {
-            Start-Sleep -Milliseconds 800
             $sync["Win11ISOModifying"] = $false
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 $sync.progressBarTextBlock.Text = ""
