@@ -331,19 +331,21 @@ function Invoke-WinUtilISOExport {
     $outputISO = $dialog.FileName
     $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $false
 
-Add-Type -TypeDefinition @"
+    Add-Type -TypeDefinition @"
     using System.Runtime.InteropServices;
     using System.Runtime.InteropServices.ComTypes;
-    
     public class ISOFile {
         public static void Create(string path, object stream, int blockSize, int totalBlocks) {
-            var buf = new byte[blockSize];
-            var dst = System.IO.File.Open(path, System.IO.FileMode.Create);
+            const int batch = 64;
+            var buf = new byte[blockSize * batch];
+            var dst = new System.IO.FileStream(path, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None, blockSize * batch);
             var src = (IStream)stream;
             var ptr = Marshal.AllocHGlobal(4);
-            while (totalBlocks-- > 0) {
-                src.Read(buf, blockSize, ptr);
+            while (totalBlocks > 0) {
+                int blocks = totalBlocks < batch ? totalBlocks : batch;
+                src.Read(buf, blockSize * blocks, ptr);
                 dst.Write(buf, 0, Marshal.ReadInt32(ptr));
+                totalBlocks -= blocks;
             }
             dst.Flush(); dst.Close();
             Marshal.FreeHGlobal(ptr);
