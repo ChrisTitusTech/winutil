@@ -331,6 +331,20 @@ function Invoke-WinUtilISOExport {
     $outputISO = $dialog.FileName
     $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $false
 
+    Add-Type -CompilerOptions /unsafe -TypeDefinition @"
+    public class ISOFile {
+        public unsafe static void Create(string path, object stream, int blockSize, int totalBlocks) {
+            int bytes = 0;
+            byte[] buf = new byte[blockSize];
+            var ptr = (System.IntPtr)(&bytes);
+            var o = System.IO.File.OpenWrite(path);
+            var i = stream as System.Runtime.InteropServices.ComTypes.IStream;
+            while (totalBlocks-- > 0) { i.Read(buf, blockSize, ptr); o.Write(buf, 0, bytes); }
+            o.Flush(); o.Close();
+        }
+    }
+"@
+
     Invoke-WinUtilRunspace -Variables @{
         contentsDir = $contentsDir
         outputISO = $outputISO
@@ -349,20 +363,6 @@ function Invoke-WinUtilISOExport {
             $image.FileSystemsToCreate = 4
             $image.BootImageOptions = $boot
             $image.Root.AddTree($contentsDir, $false)
-
-            Add-Type -CompilerOptions /unsafe -TypeDefinition @"
-            public class ISOFile {
-                public unsafe static void Create(string path, object stream, int blockSize, int totalBlocks) {
-                    int bytes = 0;
-                    byte[] buf = new byte[blockSize];
-                    var ptr = (System.IntPtr)(&bytes);
-                    var o = System.IO.File.OpenWrite(path);
-                    var i = stream as System.Runtime.InteropServices.ComTypes.IStream;
-                    while (totalBlocks-- > 0) { i.Read(buf, blockSize, ptr); o.Write(buf, 0, bytes); }
-                    o.Flush(); o.Close();
-                }
-            }
-"@
 
             $result = $image.CreateResultImage()
             [ISOFile]::Create($outputISO, $result.ImageStream, $result.BlockSize, $result.TotalBlocks)
