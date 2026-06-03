@@ -763,6 +763,15 @@
         "winget": "MullvadVPN.MullvadBrowser",
         "foss": true
     },
+    "nomacs": {
+        "category": "Multimedia Tools",
+        "choco": "nomacs",
+        "content": "nomacs",
+        "description": "nomacs is a free, open source image viewer, which supports multiple platforms. You can use it for viewing all common image formats including RAW and psd images.",
+        "link": "https://nomacs.org/",
+        "winget": "nomacs.nomacs",
+        "foss": true
+    },
     "nanazip": {
         "category": "Utilities",
         "choco": "nanazip",
@@ -979,6 +988,15 @@
         "winget": "Giorgiotani.Peazip",
         "foss": true
     },
+    "playnite": {
+        "category": "Games",
+        "choco": "playnite",
+        "content": "Playnite",
+        "description": "Playnite is an open source video game library manager with one simple goal: To provide a unified interface for all of your games.",
+        "link": "https://playnite.link/",
+        "winget": "Playnite.Playnite",
+        "foss": true
+    },
     "plex": {
         "category": "Selfhosted Tools",
         "choco": "plexmediaserver",
@@ -1157,15 +1175,6 @@
         "description": "Rufus is a utility that helps format and create bootable USB drives, such as USB keys or pen drives.",
         "link": "https://rufus.ie/",
         "winget": "Rufus.Rufus",
-        "foss": true
-    },
-    "rustdesk": {
-        "category": "Pro Tools",
-        "choco": "rustdesk.portable",
-        "content": "RustDesk",
-        "description": "RustDesk is a free and open-source remote desktop application. It provides a secure way to connect to remote machines and access desktop environments.",
-        "link": "https://rustdesk.com/",
-        "winget": "RustDesk.RustDesk",
         "foss": true
     },
     "rustlang": {
