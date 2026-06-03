@@ -3,10 +3,10 @@ title: "Mouse Acceleration"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1494}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1549}
   "WPFToggleMouseAcceleration": {
     "Content": "Mouse Acceleration",
-    "Description": "If enabled, the Cursor movement is affected by the speed of your physical mouse movements.",
+    "Description": "Makes it so Cursor movement is affected by the speed of your physical mouse movements.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",

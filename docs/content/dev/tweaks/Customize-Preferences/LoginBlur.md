@@ -3,10 +3,10 @@ title: "Logon Screen Acrylic Blur"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1626}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1681}
   "WPFToggleLoginBlur": {
     "Content": "Logon Screen Acrylic Blur",
-    "Description": "If disabled, the acrylic blur effect will be removed on the Windows 10/11 login screen background.",
+    "Description": "Toggles the acrylic blur effect on login screen background.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
