@@ -1,7 +1,7 @@
 function Invoke-WinutilThemeChange ($theme) {
     $sync.preferences.theme = $theme
 
-    function Set-Prop($name, $value, $type) {
+    function Set-Prop ($name, $value, $type) {
         $sync.Form.Resources[$name] = switch ($type) {
             "ColorBrush" {
                 [Windows.Media.SolidColorBrush]::new($value)
@@ -28,7 +28,7 @@ function Invoke-WinutilThemeChange ($theme) {
         }
     }
 
-    function ApplyTheme($name) {
+    function ApplyTheme ($name) {
         foreach ($p in $sync.configs.themes.$name.PSObject.Properties) {
 
             if ($p.Name -like "*color*") {
@@ -62,9 +62,7 @@ function Invoke-WinutilThemeChange ($theme) {
 
     $toggle = $sync.WPFToggleFOSSHighlight
 
-    $fossEnabled =
-        if ($null -eq $toggle) { $true }
-        else { $toggle.IsChecked -ne $false }
+    $fossEnabled = if ($null -eq $toggle) { $true } else { $toggle.IsChecked -ne $false }
 
     $sync.Form.Resources["FOSSColor"] =
         if ($fossEnabled) {
