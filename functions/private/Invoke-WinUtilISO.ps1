@@ -282,7 +282,7 @@ function Invoke-WinUtilISOCleanAndReset {
     Invoke-WinUtilRunspace -ScriptBlock {
         . ([scriptblock]::Create($win11ISOLogFuncDef))
 
-        Write-Win11ISOLog "Dismounting mounted Windows images... This might take a few minutes"
+        Write-Win11ISOLog "Dismounting mounted Windows images..."
         foreach ($image in Get-WindowsImage -Mounted) {
             Dismount-WindowsImage -Path $image.Path -Discard
         }
