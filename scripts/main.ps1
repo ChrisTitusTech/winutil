@@ -66,7 +66,7 @@ $sync.configs.applications.PSObject.Properties | ForEach-Object {
     $sync.configs.applicationsHashtable[$_.Name] = $_.Value
 }
 
-Set-Preferences
+$sync.preferences.theme = "Auto"
 
 if ($Preset) {
     Show-CTTLogo
