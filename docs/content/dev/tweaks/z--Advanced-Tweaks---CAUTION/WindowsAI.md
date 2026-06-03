@@ -3,7 +3,7 @@ title: "Windows AI - Disable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=934}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=957}
   "WPFTweaksWindowsAI": {
     "Content": "Windows AI - Disable",
     "Description": "Removes or disables all ai features and packages",
@@ -20,7 +20,7 @@ description: ""
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\WindowsNotepad",
         "Name": "DisableAIFeatures",
-        "Value": 1,
+        "Value": "1",
         "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       }
