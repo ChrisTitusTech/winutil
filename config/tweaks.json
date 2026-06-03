@@ -1081,25 +1081,21 @@
     "panel": "1",
     "InvokeScript": [
       "
-      $hostsUrl = \"https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts\"
-      $hosts = \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\"
+      $hostsUrl = Invoke-RestMethod -Uri https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts
+      Add-Content -Path \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\" -Value $hostsUrl
 
-      Move-Item $hosts \"$hosts.bak\"
-      Invoke-WebRequest $hostsUrl -OutFile $hosts
       ipconfig /flushdns
-
-      Write-Host \"Added Adobe url block list from host file\"
+      Write-Host 'Added Adobe url block list from host file'
       "
     ],
     "UndoScript": [
       "
-      $hosts = \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\"
+      Set-Content \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\" (
+          (Get-Content \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\") -join \"`n\" -replace '(?s)#New Ver.*', ''
+      )
 
-      Remove-Item $hosts
-      Move-Item \"$hosts.bak\" $hosts
       ipconfig /flushdns
-
-      Write-Host \"Removed Adobe url block list from host file\"
+      Write-Host 'Removed Adobe url block list from host file'
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/blockadobenet"
