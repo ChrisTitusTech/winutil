@@ -274,7 +274,7 @@ function Invoke-WinUtilISOCheckExistingWork {
     Write-Win11ISOLog "Click 'Clean & Reset' if you want to start over with a new ISO."
 
     [System.Windows.MessageBox]::Show(
-        "A previous WinUtil ISO working directory was found:`n`n$Env:Temp\Win11Creator`n`n(Last modified: $modified)`n`nStep 4 (output options) has been restored so you can save the already-modified image.`n`nClick 'Clean & Reset' in Step 4 if you want to start over.",
+        "Found existing work in:`n$Env:Temp\Win11Creator (modified: $modified)`n`nStep 4 restored. Click 'Clean & Reset' to start over.",
         "Existing Work Found", "OK", "Info")
 }
 
