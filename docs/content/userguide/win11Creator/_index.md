@@ -37,9 +37,7 @@ Winutil includes a built-in **Win11 Creator** tool that lets you take an officia
 
 Click **Run Windows ISO Build** to start the customization process. Winutil will:
 
-- **Bypass hardware checks** — removes TPM, Secure Boot And CPU requirement enforcement so the ISO installs on unsupported hardware
-- **Enable local account setup** — injects an `autounattend.xml` that skips the Microsoft account screen during Out-of-Box Experience (OOBE)
-- **During installtion an firstlogon.ps1 file will run which will strip down windows by running the advance preset of winutil and winutil toggles + security updates from updates tab
+- **Injects an autouunatend.xml file to bypass TPM, Secure Boot And CPU requirement, microsoft a accounts during Out-of-Box Experience (OOBE) and will run a firstlogon.ps1 file during setup which runs winutil advance preset and some winutil toggles plus security updates from updates tab
 
 **Optional: Driver Injection**
 - If enabled, it injects all drivers from your current system into the install.wim/install.esd and boot.wim — useful for offline installations on machines with missing drivers. This is an optional checkbox in Step 3.
