@@ -267,24 +267,12 @@ function Invoke-WinUtilISOCheckExistingWork {
     $sync["WPFWin11ISOModifySection"].Visibility = "Collapsed"
     $sync["WPFWin11ISOOutputSection"].Visibility = "Visible"
 
-    $existingWorkDir = Get-Item "$Env:Temp\Win11Creator"
-    $modified = $existingWorkDir.LastWriteTime.ToString("yyyy-MM-dd HH:mm")
-    Write-Win11ISOLog "Existing working directory found: $Env:Temp\Win11Creator"
-    Write-Win11ISOLog "Last modified: $modified - Skipping Steps 1-3 and resuming at Step 4."
-    Write-Win11ISOLog "Click 'Clean & Reset' if you want to start over with a new ISO."
-
     [System.Windows.MessageBox]::Show(
         "Found existing work in:`n$Env:Temp\Win11Creator (modified: $modified)`n`nStep 4 restored. Click 'Clean & Reset' to start over.",
         "Existing Work Found", "OK", "Info")
 }
 
 function Invoke-WinUtilISOCleanAndReset {
-    $confirm = [System.Windows.MessageBox]::Show(
-        "This will delete the temporary working directory:`n`n$($sync["Win11ISOWorkDir"])`n`nAnd reset the interface back to the start.`n`nContinue?",
-        "Clean And Reset", "YesNo", "Warning")
-
-    if ($confirm -ne [System.Windows.MessageBoxResult]::Yes) { return }
-
     $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $false
 
     Invoke-WinUtilRunspace -ScriptBlock {
