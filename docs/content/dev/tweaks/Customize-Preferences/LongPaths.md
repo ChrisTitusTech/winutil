@@ -3,10 +3,10 @@ title: "Enable Long Paths"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1796}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1851}
   "WPFToggleLongPaths": {
     "Content": "Enable Long Paths",
-    "Description": "Enables support for file paths longer than 260 characters.",
+    "Description": "Toggles support for file paths longer than 260 characters in explorer.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",

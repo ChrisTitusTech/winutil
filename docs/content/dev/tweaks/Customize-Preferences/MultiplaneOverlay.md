@@ -3,10 +3,10 @@ title: "Multiplane Overlay"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1468}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1523}
   "WPFToggleMultiplaneOverlay": {
     "Content": "Multiplane Overlay",
-    "Description": "Enable or disable the Multiplane Overlay, which can sometimes cause issues with graphics cards.",
+    "Description": "Multiplane Overlay compose multiple image layers, which can sometimes cause issues with graphics cards.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",

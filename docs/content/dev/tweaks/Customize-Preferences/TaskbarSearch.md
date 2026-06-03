@@ -3,10 +3,10 @@ title: "Taskbar Search Icon"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1734}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1789}
   "WPFToggleTaskbarSearch": {
     "Content": "Taskbar Search Icon",
-    "Description": "If enabled, Search Button will be on the Taskbar.",
+    "Description": "Toggles the Search Button on the Taskbar.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -14,9 +14,9 @@ description: ""
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
         "Name": "SearchboxTaskbarMode",
-        "Value": "1",
+        "Value": "0",
         "Type": "DWord",
-        "OriginalValue": "0",
+        "OriginalValue": "d",
         "DefaultState": "true"
       }
     ],

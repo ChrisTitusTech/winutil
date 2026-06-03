@@ -3,10 +3,10 @@ title: "Taskbar Centered Icons"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1706}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1761}
   "WPFToggleTaskbarAlignment": {
     "Content": "Taskbar Centered Icons",
-    "Description": "[Windows 11] If enabled, the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
+    "Description": "Toggles the taskbar alignment either to the left or center",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",

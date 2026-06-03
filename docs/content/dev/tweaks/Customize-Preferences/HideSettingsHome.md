@@ -3,10 +3,10 @@ title: "Settings Home Page"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1590}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1645}
   "WPFToggleHideSettingsHome": {
     "Content": "Settings Home Page",
-    "Description": "Enable or disable the Home Page in the Windows Settings app.",
+    "Description": "Toggles the Home Page in the Windows Settings app.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",

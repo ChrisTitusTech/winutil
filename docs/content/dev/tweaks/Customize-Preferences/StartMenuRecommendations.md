@@ -3,10 +3,10 @@ title: "Start Menu Recommendations"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1644}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1699}
   "WPFToggleStartMenuRecommendations": {
     "Content": "Start Menu Recommendations",
-    "Description": "If disabled, then you will not see recommendations in the Start Menu. WARNING: This will also disable Windows Spotlight on your Lock Screen as a side effect.",
+    "Description": "Toggles the recommendations section in the Start Menu. WARNING: This will also disable Windows Spotlight on your Lock Screen as a side effect.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
