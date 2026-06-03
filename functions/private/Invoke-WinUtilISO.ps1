@@ -386,7 +386,7 @@ function Invoke-WinUtilISOExport {
             $exportError = $_
             Write-Win11ISOLog "ERROR during ISO export: $_"
         } finally {
-            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+            $sync["WPFWin11ISOStatusLog"].Dispatcher.BeginInvoke([action]{
                 $sync.progressBarTextBlock.Text = ""
                 $sync.progressBarTextBlock.ToolTip = ""
                 $sync.ProgressBar.Value = 0
