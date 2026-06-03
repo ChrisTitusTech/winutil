@@ -763,6 +763,15 @@
         "winget": "MullvadVPN.MullvadBrowser",
         "foss": true
     },
+    "nomacs": {
+        "category": "Multimedia Tools",
+        "choco": "nomacs",
+        "content": "nomacs",
+        "description": "nomacs is a free, open source image viewer, which supports multiple platforms. You can use it for viewing all common image formats including RAW and psd images.",
+        "link": "https://nomacs.org/",
+        "winget": "nomacs.nomacs",
+        "foss": true
+    },
     "nanazip": {
         "category": "Utilities",
         "choco": "nanazip",
