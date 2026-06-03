@@ -75,16 +75,6 @@
       Write-Host \"Removed widgets\"
       "
     ],
-    "UndoScript": [
-      "
-      Write-Host \"Restoring widgets AppxPackages\"
-
-      Add-AppxPackage -Register \"C:\\Program Files\\WindowsApps\\Microsoft.WidgetsPlatformRuntime*\\AppxManifest.xml\" -DisableDevelopmentMode
-      Add-AppxPackage -Register \"C:\\Program Files\\WindowsApps\\MicrosoftWindows.Client.WebExperience*\\AppxManifest.xml\" -DisableDevelopmentMode
-
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
-    ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/widget"
   },
   "WPFTweaksRevertStartMenu": {
