@@ -189,6 +189,13 @@ Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "feat
 
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
 
+$sync.ChocoRadioButton.Add_Checked({
+    $sync.preferences.packagemanager = [PackageManagers]::Choco
+})
+$sync.WingetRadioButton.Add_Checked({
+    $sync.preferences.packagemanager = [PackageManagers]::Winget
+})
+
 switch ($sync.preferences.packagemanager) {
     "Choco" {$sync.ChocoRadioButton.IsChecked = $true; break}
     "Winget" {$sync.WingetRadioButton.IsChecked = $true; break}
