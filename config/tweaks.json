@@ -75,16 +75,6 @@
       Write-Host \"Removed widgets\"
       "
     ],
-    "UndoScript": [
-      "
-      Write-Host \"Restoring widgets AppxPackages\"
-
-      Add-AppxPackage -Register \"C:\\Program Files\\WindowsApps\\Microsoft.WidgetsPlatformRuntime*\\AppxManifest.xml\" -DisableDevelopmentMode
-      Add-AppxPackage -Register \"C:\\Program Files\\WindowsApps\\MicrosoftWindows.Client.WebExperience*\\AppxManifest.xml\" -DisableDevelopmentMode
-
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
-    ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/widget"
   },
   "WPFTweaksRevertStartMenu": {
@@ -574,6 +564,9 @@
       # Disable (Windows Error Reporting Manager) Service
       Set-Service -Name wermgr -StartupType Disabled
 
+      # Disable PowerShell 7 telemetry
+      [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
+
       Remove-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Siuf\\Rules\" -Name PeriodInNanoSeconds
       "
     ],
@@ -587,6 +580,9 @@
 
       # Enable (Windows Error Reporting Manager) Service
       Set-Service -Name wermgr -StartupType Automatic
+
+      # Enable PowerShell 7 telemetry
+      [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '', 'Machine')
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/telemetry"
@@ -924,19 +920,6 @@
       }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/endtaskontaskbar"
-  },
-  "WPFTweaksPowershell7Tele": {
-    "Content": "PowerShell 7 Telemetry - Disable",
-    "Description": "Creates an Environment Variable called 'POWERSHELL_TELEMETRY_OPTOUT' with a value of '1' which will tell PowerShell 7 to not send Telemetry Data.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "InvokeScript": [
-      "[Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')"
-    ],
-    "UndoScript": [
-      "[Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '', 'Machine')"
-    ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/powershell7tele"
   },
   "WPFTweaksStorage": {
     "Content": "Storage Sense - Disable",

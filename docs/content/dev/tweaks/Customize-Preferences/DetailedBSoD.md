@@ -3,7 +3,7 @@ title: "BSoD Verbose Mode"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1298}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1281}
   "WPFToggleDetailedBSoD": {
     "Content": "BSoD Verbose Mode",
     "Description": "Gives more information when you blue screen.",

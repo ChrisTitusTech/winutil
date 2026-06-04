@@ -12,7 +12,4 @@ description: ""
     "feature": [
       "Microsoft-Hyper-V-All"
     ],
-    "InvokeScript": [
-      "bcdedit /set hypervisorschedulertype classic"
-    ],
 ```
