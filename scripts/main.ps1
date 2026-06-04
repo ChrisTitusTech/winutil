@@ -354,7 +354,6 @@ $sync["Form"].Add_ContentRendered({
         $sync.WPFOfflineBanner.Visibility = [System.Windows.Visibility]::Visible
 
         $sync.WPFTab1BT.IsEnabled = $false
-        $sync.WPFTab1BT.Opacity = 0.5
         $sync.WPFTab1BT.ToolTip = "Internet connection required for installing applications"
 
         Write-Host "Offline mode detected - Install tab disabled" -ForegroundColor Yellow
