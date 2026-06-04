@@ -255,24 +255,6 @@ $sync.keys | ForEach-Object {
 }
 
 #===========================================================================
-# Setup background config
-#===========================================================================
-
-# Load computer information in the background
-Invoke-WPFRunspace -ScriptBlock {
-    try {
-        $ProgressPreference = "SilentlyContinue"
-        $sync.ConfigLoaded = $False
-        $sync.ComputerInfo = Get-ComputerInfo
-        $sync.ConfigLoaded = $True
-    }
-    finally{
-        $ProgressPreference = $oldProgressPreference
-    }
-
-} | Out-Null
-
-#===========================================================================
 # Setup and Show the Form
 #===========================================================================
 
