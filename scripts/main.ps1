@@ -350,8 +350,7 @@ $sync["Form"].Add_ContentRendered({
         }
     }
 
-    if ($Offline) {
-        # Show offline banner
+    if (-not (Test-Connection -Ping 8.8.8.8 -Count 1 -ErrorAction SilentlyContinue)) {
         $sync.WPFOfflineBanner.Visibility = [System.Windows.Visibility]::Visible
 
         # Disable the install tab
@@ -359,13 +358,6 @@ $sync["Form"].Add_ContentRendered({
         $sync.WPFTab1BT.Opacity = 0.5
         $sync.WPFTab1BT.ToolTip = "Internet connection required for installing applications"
 
-        # Disable install-related buttons
-        $sync.WPFInstall.IsEnabled = $false
-        $sync.WPFUninstall.IsEnabled = $false
-        $sync.WPFInstallUpgrade.IsEnabled = $false
-        $sync.WPFGetInstalled.IsEnabled = $false
-
-        # Show offline indicator
         Write-Host "Offline mode detected - Install tab disabled" -ForegroundColor Yellow
 
         # Switch to Tweaks tab instead
