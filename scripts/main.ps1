@@ -400,6 +400,17 @@ $sync["Form"].Add_ContentRendered({
         Invoke-WPFTab "WPFTab1BT"  # Default to install tab
     }
 
+    if (-not $PARAM_CONFIG -and (Test-Path "$winutildir\lastrun.json")) {
+        try {
+            $drifted = @(Get-Content "$winutildir\lastrun.json" | ConvertFrom-Json | Where-Object { $_ -notin (Invoke-WinUtilCurrentSystem -CheckBox "tweaks") })
+            if ($drifted.Count -gt 0 -and [System.Windows.MessageBox]::Show("$($drifted.Count) tweak(s) were reverted since last run. Re-select them?", "Winutil", "YesNo", "Question") -eq "Yes") {
+                Update-WinUtilSelections -flatJson $drifted
+                Reset-WPFCheckBoxes -doToggles $false
+                Invoke-WPFTab "WPFTab2BT"
+            }
+        } catch {}
+    }
+
     $sync["Form"].Focus()
 
    if ($PARAM_CONFIG -and -not [string]::IsNullOrWhiteSpace($PARAM_CONFIG)) {
