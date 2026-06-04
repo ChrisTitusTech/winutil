@@ -2,51 +2,52 @@
 <unattend xmlns="urn:schemas-microsoft-com:unattend" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
     <settings pass="windowsPE">
         <component name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
-
             <UserData>
                 <AcceptEula>true</AcceptEula>
                 <ProductKey>
                     <Key></Key>
                 </ProductKey>
             </UserData>
-
             <RunSynchronous>
                 <RunSynchronousCommand wcm:action="add">
                     <Order>1</Order>
                     <Path>reg.exe add HKLM\SYSTEM\Setup\LabConfig /v BypassTPMCheck /t REG_DWORD /d 1</Path>
                 </RunSynchronousCommand>
-
                 <RunSynchronousCommand wcm:action="add">
                     <Order>2</Order>
                     <Path>reg.exe add HKLM\SYSTEM\Setup\LabConfig /v BypassSecureBootCheck /t REG_DWORD /d 1</Path>
                 </RunSynchronousCommand>
-
                 <RunSynchronousCommand wcm:action="add">
                     <Order>3</Order>
                     <Path>reg.exe add HKLM\SYSTEM\Setup\LabConfig /v BypassCPUCheck /t REG_DWORD /d 1</Path>
                 </RunSynchronousCommand>
             </RunSynchronous>
-
         </component>
     </settings>
-
+    <settings pass="specialize">
+        <component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+            <RunSynchronous>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>1</Order>
+                    <Path>sc config UsoSvc start=disabled</Path>
+                </RunSynchronousCommand>
+            </RunSynchronous>
+        </component>
+    </settings>
     <settings pass="oobeSystem">
         <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
-
             <OOBE>
                 <HideEULAPage>true</HideEULAPage>
                 <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
                 <HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
                 <ProtectYourPC>3</ProtectYourPC>
             </OOBE>
-
             <FirstLogonCommands>
                 <SynchronousCommand wcm:action="add">
                     <Order>1</Order>
                     <CommandLine>powershell.exe -Command "Invoke-RestMethod https://github.com/GabiNun2/winutil/raw/refactor-win11creator/tools/FirstLogon.ps1 | Invoke-Expression; Restart-Computer"</CommandLine>
                 </SynchronousCommand>
             </FirstLogonCommands>
-
         </component>
     </settings>
 </unattend>
