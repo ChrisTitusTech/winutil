@@ -11,7 +11,6 @@ param (
     [ValidateSet("Standard", "Minimal", "Advanced")]
     [string]$Preset,
     [switch]$Noui,
-    [switch]$Offline
 )
 
 if ($Config) {
