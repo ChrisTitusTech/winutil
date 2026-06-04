@@ -52,7 +52,7 @@ function Invoke-WinUtilISOMount {
         . ([scriptblock]::Create($win11ISOLogFuncDef))
 
         try {
-            Write-Win11ISOLog "Mounting ISO..."
+            Write-Win11ISOLog "Mounting ISO: $isoPath..."
 
             Mount-DiskImage -ImagePath $isoPath
             $driveLetter = (Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter + ":"
@@ -153,7 +153,7 @@ function Invoke-WinUtilISOModify {
             $isoContents = "$workDir\iso_contents"
             New-Item -Path $isoContents -ItemType Directory -Force
 
-            Write-Win11ISOLog "Copying ISO contents..."
+            Write-Win11ISOLog "Copying Iso Contents to $isoContent..."
 
             Copy-Item -Path "$driveLetter\*" -Destination $isoContents -Recurse -Force
             Dismount-DiskImage -ImagePath $isoPath
