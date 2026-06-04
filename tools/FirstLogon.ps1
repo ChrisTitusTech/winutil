@@ -1,6 +1,6 @@
 # Run WinUtil Tweaks
 
-& ([ScriptBlock]::Create((irm https://christitus.com/win))) -Preset Advanced
+& ([ScriptBlock]::Create((irm https://christitus.com/windev))) -Preset Advanced
 
 # Run WinUtil Toggles
 
