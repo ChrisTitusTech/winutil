@@ -43,4 +43,4 @@ Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings -Name 
 Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings -Name DeferQualityUpdatesPeriodInDays -Value 4
 
 # Reenable updates
-Set-Service -Name UsoSvc -StartupType Automatic
+Set-Service -Name UsoSvc -StartupType wuauserv
