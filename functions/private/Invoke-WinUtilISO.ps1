@@ -89,6 +89,7 @@ function Invoke-WinUtilISOMount {
                     $sync["WPFWin11ISOEditionComboBox"].SelectedIndex = if ($proIndex -ge 0) { $proIndex } else { 0 }
                 }
 
+                $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Visible"
                 $sync["WPFWin11ISOModifySection"].Visibility = "Visible"
             })
 
@@ -106,7 +107,6 @@ function Invoke-WinUtilISOMount {
                 $sync.progressBarTextBlock.ToolTip = ""
                 $sync.ProgressBar.Value = 0
                 $sync["WPFWin11ISOMountButton"].IsEnabled = $true
-                $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Visible"
             })
         }
     }
