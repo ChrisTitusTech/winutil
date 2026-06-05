@@ -286,7 +286,7 @@ function Invoke-WinUtilISOCleanAndReset {
         Remove-Item -Path "$winutildir\Win11Creator" -Recurse -Force
         Remove-Item -Path "$winutildir\Driver" -Recurse -Force
 
-        if (Test-Path -Path "$winutildir\Win11Creator")
+        if (Test-Path -Path "$winutildir\Win11Creator") {
             Write-Win11ISOLog "Couldn't remove temporary working directories."
             return
         }
