@@ -269,7 +269,7 @@ function Invoke-WinUtilISOCheckExistingWork {
 function Invoke-WinUtilISOCleanAndReset {
     $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $false
 
-    Invoke-WinUtilRunspace -ScriptBlock {
+    Invoke-WinUtilRunspace -Variables @{ winutildir = $winutildir } -ScriptBlock {
         . ([scriptblock]::Create($win11ISOLogFuncDef))
 
         Write-Win11ISOLog "Dismounting mounted Windows images..."
