@@ -56,8 +56,6 @@ Invoke-WebRequest -Uri https://github.com/Raphire/Win11Debloat/raw/master/Assets
 
 # Clear out the taskbar
 Remove-Item -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband -Recurse
-
-# Restart explorer to ensure taskbar/start menu clear will work
 Stop-Process -Name explorer
 
 pause
