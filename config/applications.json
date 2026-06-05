@@ -545,7 +545,8 @@
         "content": "IrfanView",
         "description": "IrfanView is a lightweight, fast, and free image viewer and editor. Supports multiple formats, batch processing, and powerful plugins.",
         "link": "https://irfanview.com/",
-        "winget": "IrfanSkiljan.IrfanView"
+        "winget": "IrfanSkiljan.IrfanView",
+        "foss": false
     },
     "itch": {
         "category": "Games",
@@ -929,10 +930,10 @@
         "category": "Pro Tools",
         "choco": "openvpn-connect",
         "content": "OpenVPN Connect",
-        "description": "OpenVPN Connect is an open-source VPN client that allows you to connect securely to a VPN server. It provides a secure and encrypted connection for protecting your online privacy.",
+        "description": "OpenVPN Connect is an VPN client that allows you to connect securely to a VPN server. It provides a secure and encrypted connection for protecting your online privacy.",
         "link": "https://openvpn.net/",
         "winget": "OpenVPNTechnologies.OpenVPNConnect",
-        "foss": true
+        "foss": false
     },
     "OVirtualBox": {
         "category": "Utilities",
