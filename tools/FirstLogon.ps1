@@ -1,6 +1,5 @@
 # Run WinUtil Tweaks
 
-Get-AppxPackage -Name MSTeams | Remove-AppxPackage
 & ([ScriptBlock]::Create((irm https://gist.github.com/GabiNun2/58ea0a785e407bbdf84503ac01efc6e1/raw/winutil.ps1))) -Preset Advanced
 
 # Run WinUtil Toggles
