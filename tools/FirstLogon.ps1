@@ -30,13 +30,13 @@ Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Pe
 Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name SystemUsesLightTheme -Value 0
 
 # Disable recommended section in the start menu
-New-Item -Path HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Education
+New-Item -Path HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Education | Out-Null
 Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Education -Name IsEducationEnvironment -Value 1
 
-New-Item -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer
+New-Item -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer | Out-Null
 Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer -Name HideRecommendedSection -Value 1
 
-New-Item -Path HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Start
+New-Item -Path HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Start | Out-Null
 Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Start -Name HideRecommendedSection -Value 1
 
 # Run WinUtil Security Updates
@@ -58,6 +58,6 @@ Invoke-WebRequest -Uri https://github.com/Raphire/Win11Debloat/raw/master/Assets
 
 # Clear out the taskbar
 Remove-Item -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband -Recurse
-Stop-Process -Name explorer
 
-pause
+Stop-Process -Name explorer
+Restart-Computer
