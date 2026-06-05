@@ -27,17 +27,17 @@ Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Pe
 Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name SystemUsesLightTheme -Value 0
 
 # Disable recommended section in the start menu
-New-Item -Path HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Education | Out-Null
+New-Item -Path HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Education
 Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Education -Name IsEducationEnvironment -Value 1
 
-New-Item -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer | Out-Null
+New-Item -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer
 Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer -Name HideRecommendedSection -Value 1
 
-New-Item -Path HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Start | Out-Null
+New-Item -Path HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Start
 Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Start -Name HideRecommendedSection -Value 1
 
 # Run WinUtil Security Updates
-New-Item -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Force | Out-Null
+New-Item -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Force
 
 Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Name NoAutoUpdate -Value 1
 Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate -Name ExcludeWUDriversInQualityUpdate -Value 1
