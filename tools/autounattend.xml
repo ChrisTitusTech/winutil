@@ -29,7 +29,7 @@
             <RunSynchronous>
                 <RunSynchronousCommand wcm:action="add">
                     <Order>1</Order>
-                    <Path>sc config wuauserv start=disabled</Path>
+                    <Path>reg delete HKLM\SYSTEM\CurrentControlSet\Services\wuauserv /v ImagePath /f</Path>
                 </RunSynchronousCommand>
             </RunSynchronous>
         </component>
