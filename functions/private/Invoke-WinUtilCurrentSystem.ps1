@@ -50,12 +50,11 @@ Function Invoke-WinUtilCurrentSystem {
             $Config = $psitem.Name
             $entry = $sync.configs.tweaks.$Config
             $registryKeys = $entry.registry
-            $serviceKeys = $entry.service
+            $entryType = $entry.Type
             $appxKeys = $entry.appx
             $invokeScript = $entry.InvokeScript
-            $entryType = $entry.Type
 
-            if ($registryKeys -or $serviceKeys) {
+            if ($registryKeys) {
                 $Values = @()
 
                 if ($entryType -eq "Toggle") {
@@ -97,20 +96,6 @@ Function Invoke-WinUtilCurrentSystem {
 
                     if ($registryTotal -gt 0 -and $registryMatchCount -ne $registryTotal) {
                         $values += $False
-                    }
-                }
-
-                Foreach ($tweaks in $serviceKeys) {
-                    Foreach ($tweak in $tweaks) {
-                        $Service = Get-Service -Name $tweak.Name
-
-                        if ($Service) {
-                            $actualValue = $Service.StartType
-                            $expectedValue = $tweak.StartupType
-                            if ($expectedValue -ne $actualValue) {
-                                $values += $False
-                            }
-                        }
                     }
                 }
 
