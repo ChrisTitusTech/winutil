@@ -56,4 +56,7 @@ Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\wuauserv -Name Im
 # Clear out the start menu
 Invoke-WebRequest -Uri https://github.com/Raphire/Win11Debloat/raw/master/Assets/Start/start2.bin -OutFile $Env:LocalAppData\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\start2.bin
 
+# Removed edge icon from the desktop
+Remove-Item -Path "$Env:Public\Desktop\Microsoft Edge.lnk"
+
 Restart-Computer
