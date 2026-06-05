@@ -288,7 +288,7 @@ function Invoke-WinUtilISOCleanAndReset {
 
         if (Test-Path -Path "$winutildir\Win11Creator") {
             Write-Win11ISOLog "Couldn't remove temporary working directories."
-            Write-Win11ISOLog "Please close this powershell window and go to $winutildir and delete Win11Creator folder"
+            Write-Win11ISOLog "Please close this powershell window and go to $winutildir and delete the Win11Creator folder"
             return
         }
 
