@@ -27,8 +27,13 @@ Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Pe
 Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name SystemUsesLightTheme -Value 0
 
 # Disable recommended section in the start menu
+New-Item -Path HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Education
 Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Education -Name IsEducationEnvironment -Value 1
+
+New-Item -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer
 Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer -Name HideRecommendedSection -Value 1
+
+New-Item -Path HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Start
 Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Start -Name HideRecommendedSection -Value 1
 
 # Run WinUtil Security Updates
