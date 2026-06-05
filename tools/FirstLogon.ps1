@@ -1,6 +1,6 @@
 # Run WinUtil Tweaks
 
-& ([ScriptBlock]::Create((irm https://gist.github.com/GabiNun2/58ea0a785e407bbdf84503ac01efc6e1/raw/winutil.ps1))) -Preset Advanced
+#& ([ScriptBlock]::Create((irm https://gist.github.com/GabiNun2/58ea0a785e407bbdf84503ac01efc6e1/raw/winutil.ps1))) -Preset Advanced
 
 # Run WinUtil Toggles
 
@@ -51,12 +51,12 @@ Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings -Name 
 Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\wuauserv -Name ImagePath -Value "$Env:SystemRoot\System32\svchost.exe -k netsvcs -p"
 
 # Clear out the start menu
-#Invoke-WebRequest -Uri https://github.com/Raphire/Win11Debloat/raw/master/Assets/Start/start2.bin -OutFile $Env:LocalAppData\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\start2.bin
+Invoke-WebRequest -Uri https://github.com/Raphire/Win11Debloat/raw/master/Assets/Start/start2.bin -OutFile $Env:LocalAppData\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\start2.bin
 
 # Clear out the taskbar
-#Remove-Item -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband -Recurse
+Remove-Item -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband -Recurse
 
 # Restart explorer to ensure taskbar/start menu clear will work
-#Stop-Process -Name explorer
+Stop-Process -Name explorer
 
 pause
