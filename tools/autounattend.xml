@@ -29,7 +29,7 @@
             <RunSynchronous>
                 <RunSynchronousCommand wcm:action="add">
                     <Order>1</Order>
-                    <Path>sc config UsoSvc start=disabled</Path>
+                    <Path>sc config UsoSvc wuauserv=disabled</Path>
                 </RunSynchronousCommand>
             </RunSynchronous>
         </component>
