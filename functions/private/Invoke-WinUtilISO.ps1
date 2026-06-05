@@ -132,7 +132,7 @@ function Invoke-WinUtilISOModify {
     Invoke-WinUtilRunspace -Variables @{
         isoPath = $isoPath
         driveLetter = $driveLetter
-        workDir = "$Env:Temp\Win11Creator"
+        workDir = "$winutildir\Win11Creator"
         selectedWimIndex = $selectedWimIndex
         selectedEditionName = $selectedEditionName
         autounattendContent = $WinUtilAutounattendXml
@@ -171,14 +171,14 @@ function Invoke-WinUtilISOModify {
 
             if ($injectDrivers) {
                 Write-Win11ISOLog "Exporting Windows drivers..."
-                Export-WindowsDriver -Destination "$Env:Temp\Driver" -Online
+                Export-WindowsDriver -Destination "$winutildir\Driver" -Online
 
                 Set-ItemProperty -Path $localWim -Name IsReadOnly -Value $false
                 New-Item -Path "$workDir\wim_mount" -ItemType Directory -Force
 
                 Write-Win11ISOLog "Mounting and adding drivers to $localWim..."
                 Mount-WindowsImage -ImagePath $localWim -Index $selectedWimIndex -Path "$workDir\wim_mount"
-                Add-WindowsDriver -Path "$workDir\wim_mount" -Driver "$Env:Temp\Driver" -Recurse
+                Add-WindowsDriver -Path "$workDir\wim_mount" -Driver "$winutildir\Driver" -Recurse
 
                 Write-Win11ISOLog "Saving install.wim/install.esd"
                 Dismount-WindowsImage -Path "$workDir\wim_mount" -Save
@@ -188,19 +188,19 @@ function Invoke-WinUtilISOModify {
 
                 Write-Win11ISOLog "Adding drivers to boot.wim (Index 1)"
                 Mount-WindowsImage -ImagePath "$isoContents\sources\boot.wim" -Index 1 -Path "$workDir\boot_mount"
-                Add-WindowsDriver -Path "$workDir\boot_mount" -Driver "$Env:Temp\Driver" -Recurse
+                Add-WindowsDriver -Path "$workDir\boot_mount" -Driver "$winutildir\Driver" -Recurse
 
                 Write-Win11ISOLog "Saving boot.wim (Index 1)"
                 Dismount-WindowsImage -Path "$workDir\boot_mount" -Save
 
                 Write-Win11ISOLog "Adding drivers to boot.wim (Index 2)"
                 Mount-WindowsImage -ImagePath "$isoContents\sources\boot.wim" -Index 2 -Path "$workDir\boot_mount"
-                Add-WindowsDriver -Path "$workDir\boot_mount" -Driver "$Env:Temp\Driver" -Recurse
+                Add-WindowsDriver -Path "$workDir\boot_mount" -Driver "$winutildir\Driver" -Recurse
 
                 Write-Win11ISOLog "Saving boot.wim (Index 2)"
                 Dismount-WindowsImage -Path "$workDir\boot_mount" -Save
 
-                Remove-Item -Path "$Env:Temp\Driver" -Recurse -Force
+                Remove-Item -Path "$winutildir\Driver" -Recurse -Force
                 Write-Win11ISOLog "Driver injection completed"
             }
 
@@ -250,10 +250,10 @@ function Invoke-WinUtilISOCheckExistingWork {
     if ($sync["Win11ISOContentsDir"] -and (Test-Path $sync["Win11ISOContentsDir"])) { return }
     if ($sync["Win11ISOModifying"]) { return }
 
-    $isoContents = "$Env:Temp\Win11Creator\iso_contents"
+    $isoContents = "$winutildir\Win11Creator\iso_contents"
     if (-not (Test-Path $isoContents)) { return }
 
-    $sync["Win11ISOWorkDir"] = "$Env:Temp\Win11Creator"
+    $sync["Win11ISOWorkDir"] = "$winutildir\Win11Creator"
     $sync["Win11ISOContentsDir"] = $isoContents
 
     $sync["WPFWin11ISOSelectSection"].Visibility = "Collapsed"
@@ -262,7 +262,7 @@ function Invoke-WinUtilISOCheckExistingWork {
     $sync["WPFWin11ISOOutputSection"].Visibility = "Visible"
 
     [System.Windows.MessageBox]::Show(
-        "Found existing work in:`n$Env:Temp\Win11Creator`n`nStep 4 restored. Click 'Clean & Reset' to start over.",
+        "Found existing work in:`n$winutildir\Win11Creator`n`nStep 4 restored. Click 'Clean & Reset' to start over.",
         "Existing Work Found", "OK", "Info")
 }
 
@@ -283,8 +283,8 @@ function Invoke-WinUtilISOCleanAndReset {
         }
 
         Write-Win11ISOLog "Removing temporary working directories..."
-        Remove-Item -Path "$Env:Temp\Win11Creator" -Recurse -Force
-        Remove-Item -Path "$Env:Temp\Driver" -Recurse -Force
+        Remove-Item -Path "$winutildir\Win11Creator" -Recurse -Force
+        Remove-Item -Path "$winutildir\Driver" -Recurse -Force
 
         $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
             $sync["Win11ISOWorkDir"] = $null
