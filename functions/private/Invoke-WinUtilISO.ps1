@@ -334,28 +334,6 @@ function Invoke-WinUtilISOExport {
     $outputISO = $dialog.FileName
     $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $false
 
-    Add-Type -TypeDefinition @"
-    using System.Runtime.InteropServices;
-    using System.Runtime.InteropServices.ComTypes;
-    public class ISOFile {
-        public static void Create(string path, object stream, int blockSize, int totalBlocks) {
-            const int batch = 64;
-            var buf = new byte[blockSize * batch];
-            var dst = new System.IO.FileStream(path, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None, blockSize * batch);
-            var src = (IStream)stream;
-            var ptr = Marshal.AllocHGlobal(4);
-            while (totalBlocks > 0) {
-                int blocks = totalBlocks < batch ? totalBlocks : batch;
-                src.Read(buf, blockSize * blocks, ptr);
-                dst.Write(buf, 0, Marshal.ReadInt32(ptr));
-                totalBlocks -= blocks;
-            }
-            dst.Flush(); dst.Close();
-            Marshal.FreeHGlobal(ptr);
-        }
-    }
-"@
-
     Invoke-WinUtilRunspace -Variables @{
         contentsDir = $contentsDir
         outputISO = $outputISO
@@ -365,24 +343,8 @@ function Invoke-WinUtilISOExport {
         try {
             Write-Win11ISOLog "Exporting to $outputISO"
 
-            $stream = New-Object -ComObject ADODB.Stream -Property @{ Type = 1 }
-            $stream.Open()
-            $stream.LoadFromFile("$contentsDir\efi\microsoft\boot\efisys.bin")
-
-            $boot = New-Object -ComObject IMAPI2FS.BootOptions
-            $boot.AssignBootImage($stream)
-
-            $image = New-Object -ComObject IMAPI2FS.MsftFileSystemImage
-            $image.ChooseImageDefaultsForMediaType(13)
-
-            Get-ChildItem -Path $contentsDir | ForEach-Object {
-                $image.Root.AddTree($_.FullName, $true)
-            }
-
-            $image.BootImageOptions = $boot
-
-            $result = $image.CreateResultImage()
-            [ISOFile]::Create($outputISO, $result.ImageStream, $result.BlockSize, $result.TotalBlocks)
+            Invoke-WebRequest -Uri "https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe" -OutFile "$winutildir\oscdimg.exe"
+            & "$winutildir\oscdimg.exe" -o -u2 "-b$contentsDir\efi\microsoft\boot\efisys.bin" $contentsDir $outputISO
 
             Write-Win11ISOLog "ISO successfully exported."
             [System.Windows.MessageBox]::Show("ISO successfully exported.", "Export Complete", "OK", "Info")
