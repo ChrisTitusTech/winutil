@@ -29,7 +29,7 @@
             <RunSynchronous>
                 <RunSynchronousCommand wcm:action="add">
                     <Order>1</Order>
-                    <Path>reg ADD HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate /v DoNotConnectToWindowsUpdateInternetLocations /d 1 /t REG_DWORD</Path>
+                    <Path>sc config wuauserv start=disabled</Path>
                 </RunSynchronousCommand>
             </RunSynchronous>
         </component>
