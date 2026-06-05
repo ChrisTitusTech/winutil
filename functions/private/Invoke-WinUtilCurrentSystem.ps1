@@ -50,9 +50,9 @@ Function Invoke-WinUtilCurrentSystem {
             $Config = $psitem.Name
             $entry = $sync.configs.tweaks.$Config
             $registryKeys = $entry.registry
-            $entryType = $entry.Type
             $appxKeys = $entry.appx
             $invokeScript = $entry.InvokeScript
+            $entryType = $entry.Type
 
             if ($registryKeys) {
                 $Values = @()
