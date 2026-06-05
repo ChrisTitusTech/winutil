@@ -549,16 +549,6 @@ $sync["WPFWin11ISOMountButton"].Add_Click({
     Invoke-WinUtilISOMount
 })
 
-$sync["WPFWin11ISOInjectDrivers"].Add_Checked({
-    if ($sync["Win11ISOImageInfo"]) {
-        $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Visible"
-    }
-})
-
-$sync["WPFWin11ISOInjectDrivers"].Add_Unchecked({
-    $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Collapsed"
-})
-
 $sync["WPFWin11ISOModifyButton"].Add_Click({
     Invoke-WinUtilISOModify
 })

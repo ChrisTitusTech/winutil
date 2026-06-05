@@ -89,10 +89,6 @@ function Invoke-WinUtilISOMount {
                     $sync["WPFWin11ISOEditionComboBox"].SelectedIndex = if ($proIndex -ge 0) { $proIndex } else { 0 }
                 }
 
-                if ($sync["WPFWin11ISOInjectDrivers"].IsChecked -eq $true) {
-                    $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Visible"
-                }
-
                 $sync["WPFWin11ISOModifySection"].Visibility = "Visible"
             })
 
@@ -110,6 +106,7 @@ function Invoke-WinUtilISOMount {
                 $sync.progressBarTextBlock.ToolTip = ""
                 $sync.ProgressBar.Value = 0
                 $sync["WPFWin11ISOMountButton"].IsEnabled = $true
+                $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Visible"
             })
         }
     }
@@ -205,17 +202,17 @@ function Invoke-WinUtilISOModify {
 
                 Remove-Item -Path "$Env:Temp\Driver" -Recurse -Force
                 Write-Win11ISOLog "Driver injection completed"
-
-                Write-Win11ISOLog "Exporting install.wim/install.esd into a single-edition install.wim..."
-
-                $exportWim = "$isoContents\sources\install_export.wim"
-                Export-WindowsImage -SourceImagePath $localWim -SourceIndex $selectedWimIndex -DestinationImagePath $exportWim
-
-                Remove-Item -Path $localWim -Force
-                Rename-Item -Path $exportWim -NewName "install.wim" -Force
-
-                Write-Win11ISOLog "Unused editions removed."
             }
+
+            Write-Win11ISOLog "Exporting $localWim into a single-edition install.wim..."
+
+            $exportWim = "$isoContents\sources\install_export.wim"
+            Export-WindowsImage -SourceImagePath $localWim -SourceIndex $selectedWimIndex -DestinationImagePath $exportWim
+
+            Remove-Item -Path $localWim -Force
+            Rename-Item -Path $exportWim -NewName "install.wim" -Force
+
+            Write-Win11ISOLog "Unused editions removed."
 
             $sync["Win11ISOContentsDir"] = $isoContents
 
