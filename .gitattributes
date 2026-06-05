@@ -6,6 +6,7 @@
 
 *.png binary
 *.jpg binary
+*.ico binary
 
 config/* diff
 config/applications.json diff
