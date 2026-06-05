@@ -1,11 +1,8 @@
 # Run WinUtil Tweaks
-
 & ([ScriptBlock]::Create((irm https://gist.github.com/GabiNun2/58ea0a785e407bbdf84503ac01efc6e1/raw/winutil.ps1))) -Preset Advanced
 
 # Ensure msteams was removed
 Get-AppxPackage -Name MSTeams | Remove-AppxPackage -AllUsers
-
-# Run WinUtil Toggles
 
 # Disables the task view button on the taskbar
 Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name ShowTaskViewButton -Value 0
@@ -40,7 +37,6 @@ New-Item -Path HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Start | Out
 Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Start -Name HideRecommendedSection -Value 1
 
 # Run WinUtil Security Updates
-
 New-Item -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Force | Out-Null
 
 Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Name NoAutoUpdate -Value 1
@@ -58,5 +54,10 @@ Invoke-WebRequest -Uri https://github.com/Raphire/Win11Debloat/raw/master/Assets
 
 # Removed edge icon from the desktop
 Remove-Item -Path "$Env:Public\Desktop\Microsoft Edge.lnk"
+
+# Removed Windows.old if it's empty
+if (-not (Get-ChildItem -Path $Env:SystemDrive\Windows.old -ErrorAction SilentlyContinue)) {
+  Remove-Item -Path $Env:SystemDrive\Windows.old
+}
 
 Restart-Computer
