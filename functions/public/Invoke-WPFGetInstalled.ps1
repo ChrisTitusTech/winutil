@@ -9,7 +9,7 @@ function Invoke-WPFGetInstalled {
 
     #>
     param($checkbox)
-    if ($sync.ProcessRunning) {
+    if (Test-WinUtilProcessBusy) {
         $msg = "[Invoke-WPFGetInstalled] Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return

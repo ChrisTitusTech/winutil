@@ -36,12 +36,28 @@ function Set-WinUtilRegistry {
         }
 
         if ($Value -ne "<RemoveEntry>") {
-            Write-Host "Set $Path\$Name to $Value"
-            Set-ItemProperty -Path $Path -Name $Name -Type $Type -Value $Value -Force -ErrorAction Stop | Out-Null
+            $resolvedValue = switch ($Type) {
+                'DWord' { ConvertTo-WinUtilRegistryNumericValue -Value $Value -NumericType 'DWord' }
+                'QWord' { ConvertTo-WinUtilRegistryNumericValue -Value $Value -NumericType 'QWord' }
+                default { $Value }
+            }
+
+            $currentValue = (Get-ItemProperty -Path $Path -Name $Name -ErrorAction SilentlyContinue).$Name
+            if (Test-WinUtilRegistryValueMatch -CurrentValue $currentValue -ExpectedValue $resolvedValue -Type $Type) {
+                Write-Host "Skip $Path\$Name - already set to $resolvedValue"
+                return
+            }
+
+            Write-Host "Set $Path\$Name to $resolvedValue"
+            Set-ItemProperty -Path $Path -Name $Name -Type $Type -Value $resolvedValue -Force -ErrorAction Stop | Out-Null
         }
-        else{
+        else {
             Write-Host "Remove $Path\$Name"
-            Remove-ItemProperty -Path $Path -Name $Name -Force -ErrorAction Stop | Out-Null
+            if (Get-ItemProperty -Path $Path -Name $Name -ErrorAction SilentlyContinue) {
+                Remove-ItemProperty -Path $Path -Name $Name -Force -ErrorAction Stop | Out-Null
+            } else {
+                Write-Host "$Path\$Name does not exist, skipping remove."
+            }
         }
     } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception."
@@ -51,6 +67,6 @@ function Set-WinUtilRegistry {
        Write-Warning $psitem.Exception.Message
     } catch {
         Write-Warning "Unable to set $Name due to unhandled exception."
-        Write-Warning $psitem.Exception.StackTrace
+        Write-Warning $psitem.Exception.Message
     }
 }

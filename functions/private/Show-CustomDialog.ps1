@@ -98,6 +98,10 @@ function Show-CustomDialog {
         [bool]$EnableScroll = $false
     )
 
+    if ($null -eq $Message) {
+        $Message = ""
+    }
+
     # Create a custom dialog window
     $dialog = New-Object Windows.Window
     $dialog.Title = $Title
@@ -209,21 +213,26 @@ function Show-CustomDialog {
         $hyperlink.TextDecorations = [Windows.TextDecorations]::None  # Remove underline
         $hyperlink.Foreground = $LinkForegroundColor
 
-        $hyperlink.Add_Click({
-            param($sender, $args)
-            Start-Process $sender.NavigateUri.AbsoluteUri
+        $linkDefaultForeground = $LinkForegroundColor
+        $linkHoverForeground = $LinkHoverForegroundColor
+        $linkFontSize = [double]$FontSize
+        $linkHoverFontSize = [double]($FontSize + ($FontSize / 4))
+
+        $hyperlink.Add_Click([System.Windows.RoutedEventHandler]{
+            param($sender, $e)
+            [System.Diagnostics.Process]::Start($sender.NavigateUri.ToString()) | Out-Null
         })
-        $hyperlink.Add_MouseEnter({
-            param($sender, $args)
-            $sender.Foreground = $LinkHoverForegroundColor
-            $sender.FontSize = ($FontSize + ($FontSize / 4))
-            $sender.FontWeight = "SemiBold"
+        $hyperlink.Add_MouseEnter([System.Windows.Input.MouseEventHandler]{
+            param($sender, $e)
+            $sender.Foreground = $linkHoverForeground
+            $sender.FontSize = $linkHoverFontSize
+            $sender.FontWeight = [Windows.FontWeights]::SemiBold
         })
-        $hyperlink.Add_MouseLeave({
-            param($sender, $args)
-            $sender.Foreground = $LinkForegroundColor
-            $sender.FontSize = $FontSize
-            $sender.FontWeight = "Normal"
+        $hyperlink.Add_MouseLeave([System.Windows.Input.MouseEventHandler]{
+            param($sender, $e)
+            $sender.Foreground = $linkDefaultForeground
+            $sender.FontSize = $linkFontSize
+            $sender.FontWeight = [Windows.FontWeights]::Normal
         })
 
         $messageTextBlock.Inlines.Add($hyperlink)
@@ -268,15 +277,17 @@ function Show-CustomDialog {
     $okButton.Background = $buttonBackgroundColor
     $okButton.Foreground = $buttonForegroundColor
     $okButton.BorderBrush = $BorderColor
-    $okButton.Add_Click({
+    $okButton.Add_Click([System.Windows.RoutedEventHandler]{
+        param($sender, $e)
         $dialog.Close()
     })
     $grid.Children.Add($okButton)
     [Windows.Controls.Grid]::SetRow($okButton, 2)  # Set the row to the third row (0-based index)
 
     # Handle Escape key press to close the dialog
-    $dialog.Add_KeyDown({
-        if ($_.Key -eq 'Escape') {
+    $dialog.Add_KeyDown([System.Windows.Input.KeyEventHandler]{
+        param($sender, $e)
+        if ($e.Key -eq 'Escape') {
             $dialog.Close()
         }
     })

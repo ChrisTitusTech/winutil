@@ -19,20 +19,26 @@ Function Set-WinUtilService {
         $StartupType
     )
     try {
+        $service = Get-Service -Name $Name -ErrorAction Stop
+        $currentStartupType = Get-WinUtilServiceStartupType -Service $service
+
+        if ($currentStartupType -eq $StartupType) {
+            Write-Host "Skip Service $Name - already set to $StartupType"
+            return
+        }
+
         Write-Host "Setting Service $Name to $StartupType"
 
-        # Check if the service exists
-        $service = Get-Service -Name $Name -ErrorAction Stop
-
-        # Service exists, proceed with changing properties -- while handling auto delayed start for PWSH 5
         if (($PSVersionTable.PSVersion.Major -lt 7) -and ($StartupType -eq "AutomaticDelayedStart")) {
-            sc.exe config $Name start=delayed-auto
+            sc.exe config "$Name" start=delayed-auto
         } else {
             $service | Set-Service -StartupType $StartupType -ErrorAction Stop
         }
-    } catch [System.ServiceProcess.ServiceNotFoundException] {
-        Write-Warning "Service $Name was not found."
     } catch {
+        if (Test-WinUtilIsServiceNotFoundException -Exception $_.Exception) {
+            Write-Warning "Service $Name was not found."
+            return
+        }
         Write-Warning "Unable to set $Name due to unhandled exception."
         Write-Warning $_.Exception.Message
     }

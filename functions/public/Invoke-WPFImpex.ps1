@@ -53,7 +53,8 @@ function Invoke-WPFImpex {
                     }
                     $jsonFile = $allConfs | ConvertTo-Json
                     $jsonFile | Out-File $Config -Force
-                    "iex ""& { `$(irm https://christitus.com/win) } -Config '$Config'""" | Set-Clipboard
+                    $escapedConfig = $Config.Replace("'", "''")
+                    "iex ""& { `$(irm https://christitus.com/win) } -Config '$escapedConfig'""" | Set-Clipboard
                 }
             } catch {
                 Write-Error "An error occurred while exporting: $_"
@@ -65,7 +66,21 @@ function Invoke-WPFImpex {
                 if ($Config) {
                     try {
                         if ($Config -match '^https?://') {
-                            $jsonFile = (Invoke-WebRequest "$Config").Content | ConvertFrom-Json
+                            if (-not (Test-WinUtilRemoteUrlAllowed -Url $Config)) {
+                                [System.Windows.MessageBox]::Show(
+                                    "The remote configuration URL targets a blocked host (localhost/private network). Import aborted.",
+                                    "Blocked URL", "OK", "Warning")
+                                return
+                            }
+                            if (-not $PARAM_NOUI) {
+                                $confirmRemote = [System.Windows.MessageBox]::Show(
+                                    "Import settings from remote URL?`n$Config",
+                                    "Confirm Remote Import", "YesNo", "Warning")
+                                if ($confirmRemote -ne "Yes") {
+                                    return
+                                }
+                            }
+                            $jsonFile = (Invoke-WinUtilSafeWebRequest -Uri $Config).Content | ConvertFrom-Json
                         } else {
                             $jsonFile = Get-Content $Config | ConvertFrom-Json
                         }
@@ -73,8 +88,6 @@ function Invoke-WPFImpex {
                         Write-Error "Failed to load the JSON file from the specified path or URL: $_"
                         return
                     }
-                    # TODO how to handle old style? detected json type then flatten it in a func?
-                    # $flattenedJson = $jsonFile.PSObject.Properties.Where({ $_.Name -ne "Install" }).ForEach({ $_.Value })
                     $flattenedJson = $jsonFile
 
                     if (-not $flattenedJson) {
@@ -84,8 +97,6 @@ function Invoke-WPFImpex {
                         return
                     }
 
-                    # Clear all existing selections before importing so the import replaces
-                    # the current state rather than merging with it
                     $sync.selectedApps = [System.Collections.Generic.List[string]]::new()
                     $sync.selectedTweaks = [System.Collections.Generic.List[string]]::new()
                     $sync.selectedToggles = [System.Collections.Generic.List[string]]::new()
@@ -94,8 +105,6 @@ function Invoke-WPFImpex {
                     Update-WinUtilSelections -flatJson $flattenedJson
 
                     if (!$PARAM_NOUI) {
-                        # Set flag so toggle Checked/Unchecked events don't trigger registry writes
-                        # while we're programmatically restoring UI state from the imported config
                         $sync.ImportInProgress = $true
                         try {
                             Reset-WPFCheckBoxes -doToggles $true

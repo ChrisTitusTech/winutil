@@ -193,19 +193,51 @@ function Invoke-WPFUIElements {
 
                             $sync[$entryInfo.Name].Add_Checked({
                                 [System.Object]$Sender = $args[0]
+                                if ($sync.SuppressToggleEvents) { return }
+
+                                $action = Test-WPFToggleActionAllowed -ImportInProgress:$sync.ImportInProgress
+                                if (-not $action.Allowed) {
+                                    Set-WPFToggleCheckedState -ToggleName $Sender.name -IsChecked $false
+                                    return
+                                }
+
+                                if (-not (Test-WPFToggleExecutionLock -ToggleName $Sender.name)) {
+                                    Set-WPFToggleCheckedState -ToggleName $Sender.name -IsChecked $false
+                                    return
+                                }
+
                                 Invoke-WPFSelectedCheckboxesUpdate -type "Add" -checkboxName $Sender.name
-                                # Skip applying tweaks while an import is restoring toggle states
-                                if (-not $sync.ImportInProgress) {
-                                    Invoke-WinUtilTweaks $Sender.name
+
+                                try {
+                                    Start-WPFToggleTweakJob -ToggleName $Sender.name -Undo $false
+                                } catch {
+                                    Set-WPFToggleCheckedState -ToggleName $Sender.name -IsChecked $false
+                                    Invoke-WPFSelectedCheckboxesUpdate -type "Remove" -checkboxName $Sender.name
                                 }
                             })
 
                             $sync[$entryInfo.Name].Add_Unchecked({
                                 [System.Object]$Sender = $args[0]
+                                if ($sync.SuppressToggleEvents) { return }
+
+                                $action = Test-WPFToggleActionAllowed -ImportInProgress:$sync.ImportInProgress
+                                if (-not $action.Allowed) {
+                                    Set-WPFToggleCheckedState -ToggleName $Sender.name -IsChecked $true
+                                    return
+                                }
+
+                                if (-not (Test-WPFToggleExecutionLock -ToggleName $Sender.name)) {
+                                    Set-WPFToggleCheckedState -ToggleName $Sender.name -IsChecked $true
+                                    return
+                                }
+
                                 Invoke-WPFSelectedCheckboxesUpdate -type "Remove" -checkboxName $Sender.name
-                                # Skip undoing tweaks while an import is restoring toggle states
-                                if (-not $sync.ImportInProgress) {
-                                    Invoke-WinUtiltweaks $Sender.name -undo $true
+
+                                try {
+                                    Start-WPFToggleTweakJob -ToggleName $Sender.name -Undo $true
+                                } catch {
+                                    Set-WPFToggleCheckedState -ToggleName $Sender.name -IsChecked $true
+                                    Invoke-WPFSelectedCheckboxesUpdate -type "Add" -checkboxName $Sender.name
                                 }
                             })
                         }
@@ -222,7 +254,7 @@ function Invoke-WPFUIElements {
 
                         $toggleButton.Tag = @{
                             contentOn = if ($entryInfo.Content.Count -ge 1) { $entryInfo.Content[0] } else { "" }
-                            contentOff = if ($entryInfo.Content.Count -ge 2) { $entryInfo.Content[1] } else { $contentOn }
+                            contentOff = if ($entryInfo.Content.Count -ge 2) { $entryInfo.Content[1] } else { $entryInfo.Content[0] }
                         }
 
                         $itemsControl.Items.Add($toggleButton) | Out-Null
@@ -319,6 +351,7 @@ function Invoke-WPFUIElements {
 
                             # Add the group container to the ItemsControl
                             $itemsControl.Items.Add($groupStackPanel) | Out-Null
+                            $radioButtonGroups[$entryInfo.GroupName] = $groupStackPanel
                         }
                         else {
                             # Retrieve the existing group container
@@ -387,7 +420,7 @@ function Invoke-WPFUIElements {
 
                         $sync[$entryInfo.Name].Add_Unchecked({
                             [System.Object]$Sender = $args[0]
-                            Invoke-WPFSelectedCheckboxesUpdate -type "Remove" -checkbox $Sender.name
+                            Invoke-WPFSelectedCheckboxesUpdate -type "Remove" -checkboxName $Sender.name
                         })
                     }
                 }

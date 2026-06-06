@@ -9,8 +9,10 @@ function Install-WinUtilProgramChoco {
     )
 
     if ($Action -eq 'Install') {
-        Start-Process -FilePath choco -ArgumentList "install $Programs -y" -NoNewWindow -Wait
+        $chocoArgs = @('install') + $Programs + @('-y')
+        Start-Process -FilePath choco -ArgumentList $chocoArgs -NoNewWindow -Wait
     } else {
-        Start-Process -FilePath choco -ArgumentList "uninstall $Programs -y" -NoNewWindow -Wait
+        $chocoArgs = @('uninstall') + $Programs + @('-y')
+        Start-Process -FilePath choco -ArgumentList $chocoArgs -NoNewWindow -Wait
     }
 }

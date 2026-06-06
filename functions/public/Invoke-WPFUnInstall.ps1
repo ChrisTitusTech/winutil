@@ -9,7 +9,7 @@ function Invoke-WPFUnInstall {
         Uninstalls the selected programs
     #>
 
-    if($sync.ProcessRunning) {
+    if (Test-WinUtilProcessBusy) {
         $msg = "[Invoke-WPFUnInstall] Install process is currently running"
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return

@@ -6,7 +6,7 @@ function Invoke-WPFtweaksbutton {
 
   #>
 
-  if($sync.ProcessRunning) {
+  if (Test-WinUtilProcessBusy) {
     $msg = "[Invoke-WPFtweaksbutton] Install process is currently running."
     [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
     return
@@ -54,13 +54,13 @@ function Invoke-WPFtweaksbutton {
   }
 
   # The leading "," in the ParameterList is necessary because we only provide one argument and powershell cannot be convinced that we want a nested loop with only one argument otherwise
-  $handle = Invoke-WPFRunspace -ParameterList @(("tweaks", $tweaksToRun), ("dnsProvider", $dnsProvider), ("completedSteps", $completedSteps), ("totalSteps", $totalSteps)) -ScriptBlock {
+  Invoke-WPFRunspace -ParameterList @(("tweaks", $tweaksToRun), ("dnsProvider", $dnsProvider), ("completedSteps", $completedSteps), ("totalSteps", $totalSteps)) -ScriptBlock {
     param($tweaks, $dnsProvider, $completedSteps, $totalSteps)
 
     $sync.ProcessRunning = $true
 
     if ($completedSteps -eq 0) {
-      if ($Tweaks.count -eq 1) {
+      if ($totalSteps -eq 1) {
         Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" }
       } else {
         Invoke-WPFUIThread -ScriptBlock{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" }
@@ -83,5 +83,6 @@ function Invoke-WPFtweaksbutton {
     Write-Host "--     Tweaks are Finished    ---"
     Write-Host "================================="
     @($tweaks | Where-Object { $sync.configs.tweaks.$_.registry -or $sync.configs.tweaks.$_.service }) | ConvertTo-Json | Out-File "$env:LocalAppData\winutil\lastrun.json" -Force
+    $sync.AppxProvisionedCache = $null
   }
 }

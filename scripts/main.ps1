@@ -110,6 +110,14 @@ if ($Preset) {
 if ($PARAM_NOUI) {
     Show-CTTLogo
     if ($PARAM_CONFIG -and -not [string]::IsNullOrWhiteSpace($PARAM_CONFIG)) {
+        if ($PARAM_CONFIG -match '^https?://') {
+            if (-not (Test-WinUtilRemoteUrlAllowed -Url $PARAM_CONFIG)) {
+                Write-Warning "Remote config URL '$PARAM_CONFIG' targets a blocked host (localhost/private network)."
+                exit 1
+            }
+            Write-Warning "Remote config URLs require interactive confirmation. Download the file locally and pass the file path instead."
+            exit 1
+        }
         Write-Host "Running config file tasks..."
         Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
         Invoke-WinUtilAutoRun
@@ -414,6 +422,23 @@ $sync["Form"].Add_ContentRendered({
     $sync["Form"].Focus()
 
    if ($PARAM_CONFIG -and -not [string]::IsNullOrWhiteSpace($PARAM_CONFIG)) {
+        if ($PARAM_CONFIG -match '^https?://') {
+            if (-not (Test-WinUtilRemoteUrlAllowed -Url $PARAM_CONFIG)) {
+                Write-Warning "Remote config URL '$PARAM_CONFIG' targets a blocked host (localhost/private network). Aborting auto-run."
+                return
+            }
+            if ($PARAM_NOUI) {
+                Write-Warning "Remote config URLs require interactive confirmation. Download the file locally and pass the file path instead."
+                return
+            }
+            $confirmRemote = [System.Windows.MessageBox]::Show(
+                "A remote configuration URL was provided. WinUtil will download and apply the selected settings. Continue?",
+                "Confirm Remote Config", "YesNo", "Warning")
+            if ($confirmRemote -ne "Yes") {
+                return
+            }
+        }
+
         Write-Host "Running config file tasks..."
         Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
         Invoke-WPFRunspace -ScriptBlock {

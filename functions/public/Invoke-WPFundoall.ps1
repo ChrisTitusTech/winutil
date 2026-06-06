@@ -6,7 +6,7 @@ function Invoke-WPFundoall {
 
     #>
 
-    if($sync.ProcessRunning) {
+    if (Test-WinUtilProcessBusy) {
         $msg = "[Invoke-WPFundoall] Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
@@ -33,7 +33,7 @@ function Invoke-WPFundoall {
 
         for ($i = 0; $i -lt $tweaks.Count; $i++) {
             Set-WinUtilProgressBar -Label "Undoing $($tweaks[$i])" -Percent ($i / $tweaks.Count * 100)
-            Invoke-WinUtiltweaks $tweaks[$i] -undo $true
+            Invoke-WinUtilTweaks $tweaks[$i] -undo $true
             Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -value ($i/$tweaks.Count) }
         }
 

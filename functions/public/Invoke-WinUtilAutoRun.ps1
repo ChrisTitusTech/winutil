@@ -8,8 +8,10 @@ function Invoke-WinUtilAutoRun {
     function BusyWait {
         Start-Sleep -Milliseconds 100
         while ($sync.ProcessRunning) {
+            Complete-WinUtilRunspaceJobs
             Start-Sleep -Milliseconds 100
         }
+        Complete-WinUtilRunspaceJobs
     }
 
     if ($sync.selectedTweaks.Count -gt 0) {

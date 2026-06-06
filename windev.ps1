@@ -1,4 +1,11 @@
-# Runs the pre-release version of winutil
+# Runs winutil from local source (dev build)
 
-$latestTag = (Invoke-RestMethod https://api.github.com/repos/ChrisTitusTech/winutil/tags).Name | Select-Object -First 1
-Invoke-RestMethod -Uri https://github.com/ChrisTitusTech/winutil/releases/download/$latestTag/winutil.ps1 | Invoke-Expression
+$scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+Push-Location $scriptRoot
+try {
+    & (Join-Path $scriptRoot 'Compile.ps1')
+    & (Join-Path $scriptRoot 'winutil.ps1') @args
+}
+finally {
+    Pop-Location
+}

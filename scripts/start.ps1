@@ -8,11 +8,14 @@
 
 param (
     [string]$Config,
-    [ValidateSet("Standard", "Minimal", "Advanced")]
     [string]$Preset,
     [switch]$Noui,
     [switch]$Offline
 )
+
+if ($Preset -and $Preset -notin @('Standard', 'Minimal', 'Advanced')) {
+    throw "Invalid Preset '$Preset'. Valid values are: Standard, Minimal, Advanced."
+}
 
 if ($Config) {
     $PARAM_CONFIG = $Config
@@ -35,31 +38,48 @@ if ($ExecutionContext.SessionState.LanguageMode -ne 'FullLanguage') {
 
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Output "Winutil needs to be run as Administrator. Attempting to relaunch."
-    $argList = @()
-
-    $PSBoundParameters.GetEnumerator() | ForEach-Object {
-        $argList += if ($_.Value -is [switch] -and $_.Value) {
-            "-$($_.Key)"
-        } elseif ($_.Value -is [array]) {
-            "-$($_.Key) $($_.Value -join ',')"
-        } elseif ($_.Value) {
-            "-$($_.Key) '$($_.Value)'"
-        }
-    }
-
-    $script = if ($PSCommandPath) {
-        "& { & `'$($PSCommandPath)`' $($argList -join ' ') }"
-    } else {
-        "&([ScriptBlock]::Create((irm https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1))) $($argList -join ' ')"
-    }
 
     $powershellCmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
-    $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { "$powershellCmd" }
+    $elevatedArgs = @('-ExecutionPolicy', 'Bypass', '-NoProfile')
+
+    if ($PSCommandPath) {
+        $elevatedArgs += @('-File', $PSCommandPath)
+        $PSBoundParameters.GetEnumerator() | ForEach-Object {
+            if ($_.Value -is [switch] -and $_.Value) {
+                $elevatedArgs += "-$($_.Key)"
+            } elseif ($_.Value -is [array]) {
+                $elevatedArgs += "-$($_.Key)"
+                $elevatedArgs += ($_.Value -join ',')
+            } elseif ($null -ne $_.Value -and -not ($_.Value -is [switch])) {
+                $elevatedArgs += "-$($_.Key)"
+                $elevatedArgs += $_.Value.ToString()
+            }
+        }
+        $launchTarget = $powershellCmd
+    } else {
+        $bootstrapScript = Join-Path $env:TEMP "winutil-bootstrap.ps1"
+        Invoke-WebRequest -Uri "https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1" -OutFile $bootstrapScript
+        $elevatedArgs += @('-File', $bootstrapScript)
+        $PSBoundParameters.GetEnumerator() | ForEach-Object {
+            if ($_.Value -is [switch] -and $_.Value) {
+                $elevatedArgs += "-$($_.Key)"
+            } elseif ($_.Value -is [array]) {
+                $elevatedArgs += "-$($_.Key)"
+                $elevatedArgs += ($_.Value -join ',')
+            } elseif ($null -ne $_.Value -and -not ($_.Value -is [switch])) {
+                $elevatedArgs += "-$($_.Key)"
+                $elevatedArgs += $_.Value.ToString()
+            }
+        }
+        $launchTarget = $powershellCmd
+    }
+
+    $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { $launchTarget }
 
     if ($processCmd -eq "wt.exe") {
-        Start-Process $processCmd -ArgumentList "$powershellCmd -ExecutionPolicy Bypass -NoProfile -Command `"$script`"" -Verb RunAs
+        Start-Process -FilePath $processCmd -ArgumentList (@($launchTarget) + $elevatedArgs) -Verb RunAs
     } else {
-        Start-Process $processCmd -ArgumentList "-ExecutionPolicy Bypass -NoProfile -Command `"$script`"" -Verb RunAs
+        Start-Process -FilePath $launchTarget -ArgumentList $elevatedArgs -Verb RunAs
     }
 
     break
@@ -77,6 +97,7 @@ $sync.configs = @{}
 $sync.Buttons = [System.Collections.Generic.List[PSObject]]::new()
 $sync.preferences = @{}
 $sync.ProcessRunning = $false
+$sync.ActiveToggleJobs = 0
 $sync.selectedApps = [System.Collections.Generic.List[string]]::new()
 $sync.selectedTweaks = [System.Collections.Generic.List[string]]::new()
 $sync.selectedToggles = [System.Collections.Generic.List[string]]::new()

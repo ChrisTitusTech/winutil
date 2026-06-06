@@ -52,6 +52,55 @@ Describe "Config Files" -ForEach @(
             }
         }
         if($undo) {
+            It "Toggle DWord and QWord values should be numeric or RemoveEntry" {
+                $invalid = New-Object System.Collections.Generic.List[string]
+                $tweaks = $global:importedconfigs.$name | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
+
+                foreach ($tweak in $tweaks) {
+                    $entry = $global:importedconfigs.$name.$tweak
+                    if ($entry.Type -ne 'Toggle' -or -not $entry.registry) {
+                        continue
+                    }
+
+                    foreach ($reg in $entry.registry) {
+                        foreach ($property in @('Value', 'OriginalValue')) {
+                            $value = $reg.$property
+                            if ($null -eq $value) { continue }
+                            if ($value -eq '<RemoveEntry>') { continue }
+                            if ($reg.Type -in @('DWord', 'QWord')) {
+                                if ($value -notmatch '^-?(0x[0-9a-fA-F]+|\d+)$') {
+                                    $invalid.Add("$tweak.$property=$value")
+                                }
+                            }
+                        }
+                    }
+                }
+
+                $invalid.Count | Should -Be 0
+            }
+
+            It "Toggle Value should differ from OriginalValue when both are set" {
+                $invalid = New-Object System.Collections.Generic.List[string]
+                $tweaks = $global:importedconfigs.$name | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
+
+                foreach ($tweak in $tweaks) {
+                    $entry = $global:importedconfigs.$name.$tweak
+                    if ($entry.Type -ne 'Toggle' -or -not $entry.registry) {
+                        continue
+                    }
+
+                    foreach ($reg in $entry.registry) {
+                        if ($null -eq $reg.Value -or $null -eq $reg.OriginalValue) { continue }
+                        if ($reg.Value -eq '<RemoveEntry>' -or $reg.OriginalValue -eq '<RemoveEntry>') { continue }
+                        if ("$($reg.Value)" -eq "$($reg.OriginalValue)") {
+                            $invalid.Add("$tweak=$($reg.Value)")
+                        }
+                    }
+                }
+
+                $invalid.Count | Should -Be 0
+            }
+
             It "Tweaks should contain original Value" {
                 $tweaks = $global:importedconfigs.$name | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
                 $result = New-Object System.Collections.Generic.List[System.Object]

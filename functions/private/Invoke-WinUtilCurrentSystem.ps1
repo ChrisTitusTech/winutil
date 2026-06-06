@@ -66,32 +66,22 @@ Function Invoke-WinUtilCurrentSystem {
                     $registryMatchCount = 0
                     $registryTotal = 0
 
-                    Foreach ($tweaks in $registryKeys) {
-                        Foreach ($tweak in $tweaks) {
-                            $registryTotal++
-                            $regstate = $null
+                    Foreach ($tweak in $registryKeys) {
+                        $registryTotal++
+                        $regstate = $null
 
-                            if (Test-Path $tweak.Path) {
-                                $regstate = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
-                            }
+                        if (Test-Path $tweak.Path) {
+                            $regstate = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
+                        }
 
-                            if ($null -eq $regstate) {
-                                switch ($tweak.DefaultState) {
-                                    "true" {
-                                        $regstate = $tweak.Value
-                                    }
-                                    "false" {
-                                        $regstate = $tweak.OriginalValue
-                                    }
-                                    default {
-                                        $regstate = $tweak.OriginalValue
-                                    }
-                                }
-                            }
+                        $regstate = Resolve-WinUtilRegistryEffectiveValue `
+                            -CurrentValue $regstate `
+                            -DefaultState $tweak.DefaultState `
+                            -Value $tweak.Value `
+                            -OriginalValue $tweak.OriginalValue
 
-                            if ($regstate -eq $tweak.Value) {
-                                $registryMatchCount++
-                            }
+                        if ($null -ne $regstate -and (Test-WinUtilRegistryValueMatch -CurrentValue $regstate -ExpectedValue $tweak.Value -Type $tweak.Type)) {
+                            $registryMatchCount++
                         }
                     }
 
@@ -100,16 +90,19 @@ Function Invoke-WinUtilCurrentSystem {
                     }
                 }
 
-                Foreach ($tweaks in $serviceKeys) {
-                    Foreach ($tweak in $tweaks) {
-                        $Service = Get-Service -Name $tweak.Name
-
-                        if ($Service) {
-                            $actualValue = $Service.StartType
-                            $expectedValue = $tweak.StartupType
-                            if ($expectedValue -ne $actualValue) {
-                                $values += $False
-                            }
+                Foreach ($tweak in $serviceKeys) {
+                    try {
+                        $Service = Get-Service -Name $tweak.Name -ErrorAction Stop
+                        $actualValue = Get-WinUtilServiceStartupType -Service $Service
+                        $expectedValue = $tweak.StartupType
+                        if ($expectedValue -ne $actualValue) {
+                            $values += $False
+                        }
+                    } catch {
+                        if (Test-WinUtilIsServiceNotFoundException -Exception $_.Exception) {
+                            $values += $False
+                        } else {
+                            throw
                         }
                     }
                 }

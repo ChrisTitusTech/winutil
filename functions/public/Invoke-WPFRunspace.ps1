@@ -1,3 +1,30 @@
+function Complete-WinUtilRunspaceJobs {
+    if (-not $sync.RunspaceJobs -or $sync.RunspaceJobs.Count -eq 0) {
+        return
+    }
+
+    if (-not $sync.RunspaceJobsLock) {
+        $sync.RunspaceJobsLock = [object]::new()
+    }
+
+    [System.Threading.Monitor]::Enter($sync.RunspaceJobsLock)
+    try {
+        $completed = @($sync.RunspaceJobs | Where-Object { $_.Handle.IsCompleted })
+        foreach ($job in $completed) {
+            try {
+                $null = $job.PowerShell.EndInvoke($job.Handle)
+            } catch {
+                Write-Warning $_.Exception.Message
+            } finally {
+                $job.PowerShell.Dispose()
+                $null = $sync.RunspaceJobs.Remove($job)
+            }
+        }
+    } finally {
+        [System.Threading.Monitor]::Exit($sync.RunspaceJobsLock)
+    }
+}
+
 function Invoke-WPFRunspace {
 
     <#
@@ -30,30 +57,54 @@ function Invoke-WPFRunspace {
         $ParameterList
     )
 
-    # Create a PowerShell instance
-    $script:powershell = [powershell]::Create()
+    Complete-WinUtilRunspaceJobs
 
-    # Add Scriptblock and Arguments to runspace
-    $script:powershell.AddScript($ScriptBlock)
-    $script:powershell.AddArgument($ArgumentList)
-
-    foreach ($parameter in $ParameterList) {
-        $script:powershell.AddParameter($parameter[0], $parameter[1])
+    if (-not $sync.RunspaceJobs) {
+        $sync.RunspaceJobs = [System.Collections.Generic.List[hashtable]]::new()
     }
 
-    $script:powershell.RunspacePool = $sync.runspace
-
-    # Execute the RunspacePool
-    $script:handle = $script:powershell.BeginInvoke()
-
-    # Clean up the RunspacePool threads when they are complete, and invoke the garbage collector to clean up the memory
-    if ($script:handle.IsCompleted) {
-        $script:powershell.EndInvoke($script:handle)
-        $script:powershell.Dispose()
-        $sync.runspace.Dispose()
-        $sync.runspace.Close()
-        [System.GC]::Collect()
+    if (-not $sync.RunspaceJobsLock) {
+        $sync.RunspaceJobsLock = [object]::new()
     }
-    # Return the handle
+
+    $powershell = [powershell]::Create()
+
+    $powershell.AddScript($ScriptBlock)
+    if ($null -ne $ArgumentList) {
+        $powershell.AddArgument($ArgumentList)
+    }
+
+    if ($ParameterList) {
+        foreach ($parameter in $ParameterList) {
+            $powershell.AddParameter($parameter[0], $parameter[1])
+        }
+    }
+
+    $powershell.RunspacePool = $sync.runspace
+
+    $handle = $powershell.BeginInvoke()
+
+    $job = @{
+        PowerShell = $powershell
+        Handle = $handle
+    }
+
+    [System.Threading.Monitor]::Enter($sync.RunspaceJobsLock)
+    try {
+        if ($handle.IsCompleted) {
+            try {
+                $null = $job.PowerShell.EndInvoke($job.Handle)
+            } catch {
+                Write-Warning $_.Exception.Message
+            } finally {
+                $job.PowerShell.Dispose()
+            }
+        } else {
+            $sync.RunspaceJobs.Add($job) | Out-Null
+        }
+    } finally {
+        [System.Threading.Monitor]::Exit($sync.RunspaceJobsLock)
+    }
+
     return $handle
 }

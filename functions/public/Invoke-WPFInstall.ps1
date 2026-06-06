@@ -7,7 +7,7 @@ function Invoke-WPFInstall {
     $PackagesToInstall = $sync.selectedApps | Foreach-Object { $sync.configs.applicationsHashtable.$_ }
 
 
-    if($sync.ProcessRunning) {
+    if (Test-WinUtilProcessBusy) {
         $msg = "[Invoke-WPFInstall] An Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return

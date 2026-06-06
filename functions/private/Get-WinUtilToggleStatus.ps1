@@ -2,26 +2,32 @@ Function Get-WinUtilToggleStatus ($ToggleSwitch) {
 
     $ToggleSwitchReg = $sync.configs.tweaks.$ToggleSwitch.registry
 
+    if (-not $ToggleSwitchReg) {
+        return $false
+    }
+
     if (-not (Get-PSDrive -Name HKU -ErrorAction SilentlyContinue)) {
         New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
     }
 
     foreach ($regentry in $ToggleSwitchReg) {
 
-        if (-not (Test-Path $regentry.Path)) {
-            New-Item -Path $regentry.Path -Force | Out-Null
+        $regstate = $null
+        if (Test-Path $regentry.Path) {
+            $regstate = (Get-ItemProperty -Path $regentry.Path -ErrorAction SilentlyContinue).$($regentry.Name)
         }
 
-        $regstate = (Get-ItemProperty -Path $regentry.Path).$($regentry.Name)
+        $regstate = Resolve-WinUtilRegistryEffectiveValue `
+            -CurrentValue $regstate `
+            -DefaultState $regentry.DefaultState `
+            -Value $regentry.Value `
+            -OriginalValue $regentry.OriginalValue
 
         if ($null -eq $regstate) {
-            switch ($regentry.DefaultState) {
-                "true"  { $regstate = $regentry.Value }
-                "false" { $regstate = $regentry.OriginalValue }
-            }
+            return $false
         }
 
-        if ($regstate -ne $regentry.Value) {
+        if (-not (Test-WinUtilRegistryValueMatch -CurrentValue $regstate -ExpectedValue $regentry.Value -Type $regentry.Type)) {
             return $false
         }
     }

@@ -9,8 +9,10 @@ Function Install-WinUtilProgramWinget {
     )
 
     if ($Action -eq 'Install') {
-        Start-Process -FilePath winget -ArgumentList "install $Programs --accept-package-agreements --source winget --silent" -NoNewWindow -Wait
+        $wingetArgs = @('install') + $Programs + @('--accept-package-agreements', '--source', 'winget', '--silent')
+        Start-Process -FilePath winget -ArgumentList $wingetArgs -NoNewWindow -Wait
     } else {
-        Start-Process -FilePath winget -ArgumentList "uninstall $Programs --source winget --silent" -NoNewWindow -Wait
+        $wingetArgs = @('uninstall') + $Programs + @('--source', 'winget', '--silent')
+        Start-Process -FilePath winget -ArgumentList $wingetArgs -NoNewWindow -Wait
     }
 }
