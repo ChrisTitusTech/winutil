@@ -1738,10 +1738,10 @@
       }
     ],
     "InvokeScript": [
-      "Invoke-WinUtilExplorerUpdate"
+      "Invoke-WinUtilExplorerUpdate -action restart"
     ],
     "UndoScript": [
-      "Invoke-WinUtilExplorerUpdate"
+      "Invoke-WinUtilExplorerUpdate -action restart"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/taskbaralignment"
   },
