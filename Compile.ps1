@@ -40,5 +40,5 @@ $script += Get-Content -Path scripts\main.ps1 -Raw
 Set-Content -Path winutil.ps1 -Value $script
 
 if ($Run) {
-    .\Winutil.ps1
+    .\winutil.ps1
 }

@@ -34,8 +34,13 @@ if ($ExecutionContext.SessionState.LanguageMode -ne 'FullLanguage') {
 }
 
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Output "Winutil needs to be run as Administrator. Attempting to relaunch."
+    Write-Output "WinUtil needs to be run as Administrator. Attempting to relaunch."
     $argList = @()
+
+    if ($env:WINUTIL_DEV_TAG) {
+        $latestTag = $env:WINUTIL_DEV_TAG
+        [Environment]::SetEnvironmentVariable('WINUTIL_DEV_TAG', $null, 'Process')
+    }
 
     $PSBoundParameters.GetEnumerator() | ForEach-Object {
         $argList += if ($_.Value -is [switch] -and $_.Value) {
@@ -49,6 +54,8 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 
     $script = if ($PSCommandPath) {
         "& { & `'$($PSCommandPath)`' $($argList -join ' ') }"
+    } elseif ($latestTag) {
+        "&([ScriptBlock]::Create((Invoke-RestMethod -Uri https://github.com/ChrisTitusTech/winutil/releases/download/$latestTag/winutil.ps1))) $($argList -join ' ')"
     } else {
         "&([ScriptBlock]::Create((irm https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1))) $($argList -join ' ')"
     }
