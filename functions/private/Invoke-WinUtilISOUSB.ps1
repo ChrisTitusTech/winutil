@@ -94,11 +94,11 @@ function Invoke-WinUtilISOWriteUSB {
             return
         }
 
-        Write-Win11ISOLog "Splitting install.wim (this will take a while)..."
+        Write-Win11ISOLog "Splitting install.wim..."
         New-Item "$usb\sources" -ItemType Directory
         Split-WindowsImage -ImagePath "$contentsDir\sources\install.wim" -SplitImagePath "$usb\sources\install.swm" -FileSize 3800
 
-        Write-Win11ISOLog "Copying files (this will take a while)..."
+        Write-Win11ISOLog "Copying files..."
         Copy-Item -Path "$contentsDir\*" -Destination $usb -Recurse -Force -Exclude install.wim
 
         Write-Win11ISOLog "USB creation completed successfully."
