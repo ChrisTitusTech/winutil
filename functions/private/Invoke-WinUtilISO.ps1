@@ -52,7 +52,11 @@ function Invoke-WinUtilISOMount {
         . ([scriptblock]::Create($win11ISOLogFuncDef))
 
         try {
-            Write-Win11ISOLog "Mounting ISO: $isoPath..."
+            $time = Get-Date -Format hh:mm:ss
+            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+                $sync["WPFWin11ISOStatusLog"].Text = "[$time] Mounting ISO: $isoPath..."
+                $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
+            })
 
             Mount-DiskImage -ImagePath $isoPath
             $driveLetter = (Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter + ":"
