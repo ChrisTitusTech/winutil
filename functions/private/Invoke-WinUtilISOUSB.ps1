@@ -50,7 +50,6 @@ function Invoke-WinUtilISOWriteUSB {
     $script.AddScript({
         function Write-Win11ISOLog ($Message) {
             $time = Get-Date -Format hh:mm:ss
-        
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 $sync["WPFWin11ISOStatusLog"].Text += "[$time] $Message`n"
                 $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
@@ -59,53 +58,63 @@ function Invoke-WinUtilISOWriteUSB {
 
         function Get-FreeLetter {
             $used = (Get-PSDrive -PSProvider FileSystem).Name
-            68..90 | ForEach-Object { [char]$_ } | Where-Object { $used -notcontains $_ } | Select-Object -First 1
+            70..90 | ForEach-Object { [char]$_ } | Where-Object { $used -notcontains $_ } | Select-Object -First 1
         }
 
-        Clear-Disk -Number $diskNum -RemoveData -Confirm:$false
-        Initialize-Disk -Number $diskNum -PartitionStyle GPT
+        try {
+            Clear-Disk -Number $diskNum -RemoveData -Confirm:$false
+            Initialize-Disk -Number $diskNum -PartitionStyle GPT
 
-        Write-Win11ISOLog "Disk wiped and initialized (GPT)."
+            Write-Win11ISOLog "Disk wiped and initialized (GPT)."
 
-        $part = if ([math]::Floor((Get-Disk $diskNum).Size / 1MB) -gt 32768) {
-            New-Partition -DiskNumber $diskNum -Size (32768MB) -AssignDriveLetter
-        } else {
-            New-Partition -DiskNumber $diskNum -UseMaximumSize -AssignDriveLetter
+            $part = if ([math]::Floor((Get-Disk $diskNum).Size / 1MB) -gt 32768) {
+                New-Partition -DiskNumber $diskNum -Size (32768MB) -AssignDriveLetter
+            } else {
+                New-Partition -DiskNumber $diskNum -UseMaximumSize -AssignDriveLetter
+            }
+
+            $letter = (Get-Partition -DiskNumber $diskNum -PartitionNumber $part.PartitionNumber).DriveLetter
+            if (-not $letter) {
+                $letter = Get-FreeLetter
+                Set-Partition -DiskNumber $diskNum -PartitionNumber $part.PartitionNumber -NewDriveLetter $letter
+            }
+
+            for ($i = 0; $i -lt 10 -and -not (Get-Volume -DriveLetter $letter); $i++) {
+                Start-Sleep -Milliseconds 500
+            }
+
+            Format-Volume -DriveLetter $letter -FileSystem FAT32 -NewFileSystemLabel win11creator -Force
+            Write-Win11ISOLog "Formatted FAT32."
+
+            $usb = "${letter}:"
+            $srcSize = (Get-ChildItem $contentsDir -Recurse -File | Measure-Object Length -Sum).Sum
+
+            if ($srcSize -gt (Get-Volume -DriveLetter $letter).SizeRemaining) {
+                Write-Win11ISOLog "Insufficient space on USB drive."
+                return
+            }
+
+            Write-Win11ISOLog "Splitting install.wim..."
+            New-Item "$usb\sources" -ItemType Directory -Force
+            Split-WindowsImage -ImagePath "$contentsDir\sources\install.wim" -SplitImagePath "$usb\sources\install.swm" -FileSize 3800
+
+            Write-Win11ISOLog "Copying files..."
+            Copy-Item -Path "$contentsDir\*" -Destination $usb -Recurse -Force -Exclude install.wim
+
+            Write-Win11ISOLog "USB creation completed successfully."
+            $sync["WPFWin11ISOWriteUSBButton"].Dispatcher.Invoke([action]{
+                [System.Windows.MessageBox]::Show("USB creation completed successfully.", "Done", "OK", "Information")
+            })
+        } catch {
+            Write-Win11ISOLog "ERROR: $_"
+            $sync["WPFWin11ISOWriteUSBButton"].Dispatcher.Invoke([action]{
+                [System.Windows.MessageBox]::Show("USB creation failed:`n$_", "Error", "OK", "Error")
+            })
+        } finally {
+            $sync["WPFWin11ISOWriteUSBButton"].Dispatcher.Invoke([action]{
+                $sync["WPFWin11ISOWriteUSBButton"].IsEnabled = $true
+            })
         }
-
-        $letter = $part.DriveLetter
-        if (-not $letter) {
-            $letter = Get-FreeLetter
-            Set-Partition -DiskNumber $diskNum -PartitionNumber $part.PartitionNumber -NewDriveLetter $letter
-        }
-
-        for ($i = 0; $i -lt 10 -and -not (Get-Volume -DriveLetter $letter); $i++) {
-            Start-Sleep -Milliseconds 500
-        }
-
-        Format-Volume -DriveLetter $letter -FileSystem FAT32 -NewFileSystemLabel win11creator -Force
-        Write-Win11ISOLog "Formatted FAT32."
-
-        $usb = "${letter}:"
-        $srcSize = (Get-ChildItem $contentsDir -Recurse -File | Measure-Object Length -Sum).Sum
-
-        if ($srcSize -gt (Get-Volume $letter).Size) {
-            Write-Win11ISOLog "Insufficient space on USB drive."
-            return
-        }
-
-        Write-Win11ISOLog "Splitting install.wim..."
-        New-Item "$usb\sources" -ItemType Directory
-        Split-WindowsImage -ImagePath "$contentsDir\sources\install.wim" -SplitImagePath "$usb\sources\install.swm" -FileSize 3800
-
-        Write-Win11ISOLog "Copying files..."
-        Copy-Item -Path "$contentsDir\*" -Destination $usb -Recurse -Force -Exclude install.wim
-
-        Write-Win11ISOLog "USB creation completed successfully."
-        $sync["WPFWin11ISOWriteUSBButton"].Dispatcher.Invoke([action]{
-            [System.Windows.MessageBox]::Show("USB creation completed successfully.", "Done", "OK", "Information")
-            $sync["WPFWin11ISOWriteUSBButton"].IsEnabled = $true
-        })
     })
 
     $script.BeginInvoke()
