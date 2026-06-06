@@ -71,7 +71,7 @@
       Get-AppxPackage Microsoft.WidgetsPlatformRuntime -AllUsers | Remove-AppxPackage -AllUsers
       Get-AppxPackage MicrosoftWindows.Client.WebExperience -AllUsers | Remove-AppxPackage -AllUsers
 
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      Invoke-WinUtilExplorerUpdate -action restart
       Write-Host \"Removed widgets\"
       "
     ],
@@ -567,7 +567,7 @@
       # Disable PowerShell 7 telemetry
       [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
 
-      Remove-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Siuf\\Rules\" -Name PeriodInNanoSeconds
+      Remove-ItemProperty -Path (Get-WinUtilHKCURedirectPath \"HKCU:\\Software\\Microsoft\\Siuf\\Rules\") -Name PeriodInNanoSeconds
       "
     ],
     "UndoScript": [
@@ -807,10 +807,10 @@
       }
     ],
     "InvokeScript": [
-      "Set-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))"
+      "Set-ItemProperty -Path (Get-WinUtilHKCURedirectPath \"HKCU:\\Control Panel\\Desktop\") -Name \"UserPreferencesMask\" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))"
     ],
     "UndoScript": [
-      "Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\""
+      "Remove-ItemProperty -Path (Get-WinUtilHKCURedirectPath \"HKCU:\\Control Panel\\Desktop\") -Name \"UserPreferencesMask\""
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/display"
   },
@@ -1090,17 +1090,13 @@
     "panel": "1",
     "InvokeScript": [
       "
-      New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\"
-      Write-Host Restarting explorer.exe ...
-      Stop-Process -Name \"explorer\" -Force
+      New-Item -Path (Get-WinUtilHKCURedirectPath \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32\") -Value '' -Force
+      Invoke-WinUtilExplorerUpdate -action restart
       "
     ],
     "UndoScript": [
       "
-      Remove-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Recurse -Confirm:$false -Force
-      # Restarting Explorer in the Undo Script might not be necessary, as the Registry change without restarting Explorer does work, but just to make sure.
-      Write-Host Restarting explorer.exe ...
-      Stop-Process -Name \"explorer\" -Force
+      Remove-Item -Path (Get-WinUtilHKCURedirectPath \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\") -Recurse
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/rightclickmenu"
@@ -1231,10 +1227,10 @@
     "InvokeScript": [
       "
       # Previously detected folders
-      $bags = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\"
+      $bags = (Get-WinUtilHKCURedirectPath \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\")
 
       # Folder types lookup table
-      $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
+      $bagMRU = (Get-WinUtilHKCURedirectPath \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\")
 
       # Flush Explorer view database
       Remove-Item -Path $bags -Recurse -Force
@@ -1244,7 +1240,7 @@
       Write-Host \"Removed $bagMRU\"
 
       # Every folder
-      $allFolders = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\\AllFolders\\Shell\"
+      $allFolders = (Get-WinUtilHKCURedirectPath \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\\AllFolders\\Shell\")
 
       if (!(Test-Path $allFolders)) {
         New-Item -Path $allFolders -Force
@@ -1261,10 +1257,10 @@
     "UndoScript": [
       "
       # Previously detected folders
-      $bags = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\"
+      $bags = (Get-WinUtilHKCURedirectPath \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\")
 
       # Folder types lookup table
-      $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
+      $bagMRU = (Get-WinUtilHKCURedirectPath \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\")
 
       # Flush Explorer view database
       Remove-Item -Path $bags -Recurse -Force
@@ -1381,14 +1377,10 @@
       }
     ],
     "InvokeScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
+      "Invoke-WinUtilExplorerUpdate"
     ],
     "UndoScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
+      "Invoke-WinUtilExplorerUpdate"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/showext"
   },
@@ -1409,14 +1401,10 @@
       }
     ],
     "InvokeScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
+      "Invoke-WinUtilExplorerUpdate"
     ],
     "UndoScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
+      "Invoke-WinUtilExplorerUpdate"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/hiddenfiles"
   },
@@ -1708,14 +1696,10 @@
       }
     ],
     "InvokeScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
+      "Invoke-WinUtilExplorerUpdate -action restart"
     ],
     "UndoScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
+      "Invoke-WinUtilExplorerUpdate -action restart"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/startmenurecommendations"
   },
@@ -1754,14 +1738,10 @@
       }
     ],
     "InvokeScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
+      "Invoke-WinUtilExplorerUpdate"
     ],
     "UndoScript": [
-      "
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      "
+      "Invoke-WinUtilExplorerUpdate"
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/taskbaralignment"
   },

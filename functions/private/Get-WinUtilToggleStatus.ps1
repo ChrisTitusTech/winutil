@@ -8,11 +8,9 @@ Function Get-WinUtilToggleStatus ($ToggleSwitch) {
 
     foreach ($regentry in $ToggleSwitchReg) {
 
-        if (-not (Test-Path $regentry.Path)) {
-            New-Item -Path $regentry.Path -Force | Out-Null
-        }
+        $regPath = Get-WinUtilHKCURedirectPath -Path $regentry.Path
 
-        $regstate = (Get-ItemProperty -Path $regentry.Path).$($regentry.Name)
+        $regstate = (Get-ItemProperty -Path $regPath -ErrorAction SilentlyContinue).$($regentry.Name)
 
         if ($null -eq $regstate) {
             switch ($regentry.DefaultState) {

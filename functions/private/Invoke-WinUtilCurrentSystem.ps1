@@ -70,9 +70,10 @@ Function Invoke-WinUtilCurrentSystem {
                         Foreach ($tweak in $tweaks) {
                             $registryTotal++
                             $regstate = $null
+                            $tweakPath = Get-WinUtilHKCURedirectPath -Path $tweak.Path
 
-                            if (Test-Path $tweak.Path) {
-                                $regstate = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
+                            if (Test-Path $tweakPath) {
+                                $regstate = Get-ItemProperty -Name $tweak.Name -Path $tweakPath -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
                             }
 
                             if ($null -eq $regstate) {
