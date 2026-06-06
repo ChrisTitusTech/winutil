@@ -13,6 +13,7 @@ function Invoke-WinUtilRunspace ($ScriptBlock, $Variables = @{}) {
     $runspace.Open()
 
     $runspace.SessionStateProxy.SetVariable("sync", $sync)
+    $runspace.SessionStateProxy.SetVariable("winutildir", $winutildir)
     $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef",
         "function Write-Win11ISOLog {`n" + ${function:Write-Win11ISOLog}.ToString() + "`n}")
 
@@ -86,7 +87,7 @@ function Invoke-WinUtilISOMount {
                 if ($sync["WPFWin11ISOEditionComboBox"].Items.Count -gt 0) {
                     $proIndex = -1
                     for ($i = 0; $i -lt $sync["WPFWin11ISOEditionComboBox"].Items.Count; $i++) {
-                        if ($sync["WPFWin11ISOEditionComboBox"].Items[$i] -match "Windows 11 Pro(?![\w ])") {
+                        if ($sync["WPFWin11ISOEditionComboBox"].Items[$i] -match "^\d+:\s*Windows 11 Pro$") {
                             $proIndex = $i; break
                         }
                     }
@@ -257,7 +258,6 @@ function Invoke-WinUtilISOCheckExistingWork {
     $isoContents = "$winutildir\Win11Creator\iso_contents"
     if (-not (Test-Path $isoContents)) { return }
 
-    $sync["Win11ISOWorkDir"] = "$winutildir\Win11Creator"
     $sync["Win11ISOContentsDir"] = $isoContents
 
     $sync["WPFWin11ISOSelectSection"].Visibility = "Collapsed"
@@ -281,17 +281,14 @@ function Invoke-WinUtilISOCleanAndReset {
             Dismount-WindowsImage -Path $image.Path -Discard
         }
 
-        Write-Win11ISOLog "Dismounting mounted ISOs..."
-        foreach ($cdrom in (Get-Volume | Where-Object DriveType -eq 'CD-ROM')) {
-            Dismount-DiskImage -DevicePath "\\.\$($cdrom.DriveLetter):"
-        }
+        Write-Win11ISOLog "Dismounting mounted ISO..."
+        Dismount-DiskImage -ImagePath $sync["Win11ISOImagePath"]
 
         Write-Win11ISOLog "Removing temporary working directories..."
         Remove-Item -Path "$winutildir\Win11Creator" -Recurse -Force
         Remove-Item -Path "$winutildir\Driver" -Recurse -Force
 
         $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-            $sync["Win11ISOWorkDir"] = $null
             $sync["Win11ISOContentsDir"] = $null
             $sync["Win11ISOImagePath"] = $null
             $sync["Win11ISODriveLetter"] = $null
