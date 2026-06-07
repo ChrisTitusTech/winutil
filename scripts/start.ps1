@@ -47,6 +47,11 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
         }
     }
 
+    if ($windev) {
+        "& ([ScriptBlock]::Create((irm https://github.com/ChrisTitusTech/winutil/releases/download/$latestTag/winutil.ps1))) $($argList -join ' ')"
+        break
+    }
+
     $script = if ($PSCommandPath) {
         "& { & `'$($PSCommandPath)`' $($argList -join ' ') }"
     } else {
