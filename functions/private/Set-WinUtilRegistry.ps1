@@ -1,5 +1,5 @@
 function Set-WinUtilRegistry ($Name, $Path, $Type, $Value) {
-    if (-not (Get-PSDrive -Name HKU)) {
+    if (-not (Get-PSDrive -Name HKU -ErrorAction SilentlyContinue)) {
         New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
     }
 
