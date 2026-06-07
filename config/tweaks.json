@@ -968,6 +968,7 @@
       Get-AppxPackage -AllUsers *Copilot* | Remove-AppxPackage -AllUsers
       Get-AppxPackage -AllUsers Microsoft.MicrosoftOfficeHub | Remove-AppxPackage -AllUsers
       Remove-AppxPackage $Appx
+      winget uninstall -e --name \"Copilot\" --silent --force --accept-source-agreements 2>$null
 
       Set-Service -Name WSAIFabricSvc -StartupType Disabled
       Disable-WindowsOptionalFeature -FeatureName Recall -Online
