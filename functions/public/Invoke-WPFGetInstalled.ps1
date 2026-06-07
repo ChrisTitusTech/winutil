@@ -37,7 +37,7 @@ function Invoke-WPFGetInstalled {
         }
         elseif ($checkbox -eq "tweaks") {
             Write-Host "Getting Installed Tweaks..."
-            if (Test-Path "$winutildir\lastrun.json" ) {
+            if (Test-Path -Path "$winutildir\lastrun.json" ) {
                 $Checkboxes = Get-Content -Path "$winutildir\lastrun.json" | ConvertFrom-Json
             } else {
                 $Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox
