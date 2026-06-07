@@ -356,7 +356,7 @@ $sync["Form"].Add_ContentRendered({
         $sync.WPFTab1BT.IsEnabled = $false
         $sync.WPFTab1BT.ToolTip = "Internet connection required for installing applications"
 
-        Write-Host "Offline mode detected - Install tab disabled" -ForegroundColor Yellow
+        Write-Host "No active internet connection detected - Install tab disabled" -ForegroundColor Yellow
         Invoke-WPFTab "WPFTab2BT"
     }
 
