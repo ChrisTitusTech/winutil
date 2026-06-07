@@ -536,10 +536,10 @@ function Invoke-WinUtilISOCleanAndReset {
                 }
 
                 foreach ($d in $allDirs) {
-                    try { Remove-Item -Path $d.FullName -Force } catch {}
+                    try { Remove-Item -Path $d.FullName -Force } catch { Log "Warning: Failed to remove directory $($d.FullName): $_" }
                 }
 
-                try { Remove-Item -Path $workDir -Recurse -Force } catch {}
+                try { Remove-Item -Path $workDir -Recurse -Force } catch { Log "Warning: Failed to remove work directory $workDir: $_" }
 
                 if (Test-Path $workDir) {
                     Log "WARNING: some items could not be deleted in $workDir"

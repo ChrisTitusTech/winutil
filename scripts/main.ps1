@@ -408,7 +408,7 @@ $sync["Form"].Add_ContentRendered({
                 Reset-WPFCheckBoxes -doToggles $false
                 Invoke-WPFTab "WPFTab2BT"
             }
-        } catch {}
+        } catch { Write-Debug "Failed to process lastrun.json or check for drifted tweaks: $_" }
     }
 
     $sync["Form"].Focus()

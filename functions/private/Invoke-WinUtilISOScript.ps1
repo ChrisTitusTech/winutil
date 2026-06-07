@@ -102,7 +102,7 @@ function Invoke-WinUtilISOScript {
             & $Logger "boot.wim driver injection complete."
         } catch {
             & $Logger "Warning: boot.wim driver injection failed: $_"
-            try { Dismount-WindowsImage -Path $mountDir -Discard } catch {}
+            try { Dismount-WindowsImage -Path $mountDir -Discard } catch { & $Logger "Warning: Failed to dismount image after error: $_" }
         } finally {
             Remove-Item -Path $mountDir -Recurse -Force
         }

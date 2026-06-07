@@ -7,11 +7,6 @@ function Initialize-WPFUI {
 
     switch ($TargetGridName) {
         "appscategory"{
-            # TODO
-            # Switch UI generation of the sidebar to this function
-            # $sync.ItemsControl = Initialize-InstallAppArea -TargetElement $TargetGridName
-            # ...
-
             # Create and configure a popup for displaying selected apps
             $selectedAppsPopup = New-Object Windows.Controls.Primitives.Popup
             $selectedAppsPopup.IsOpen = $false
@@ -46,8 +41,6 @@ function Initialize-WPFUI {
             })
 
             # Creates the popup that is displayed when the user right-clicks on an app entry
-            # This popup contains buttons for installing, uninstalling, and viewing app information
-
             $appPopup = New-Object Windows.Controls.Primitives.Popup
             $appPopup.StaysOpen = $false
             $appPopup.Placement = [System.Windows.Controls.Primitives.PlacementMode]::Bottom
@@ -73,7 +66,7 @@ function Initialize-WPFUI {
                 $newButton.Content = $button.Icon
                 $appPopupStackPanel.Children.Add($newButton) | Out-Null
 
-                # Dynamically load the selected app object so the buttons can be reused and do not need to be created for each app
+                # Dynamically load the selected app object
                 switch ($button.Name) {
                     "Install" {
                         $newButton.Add_MouseEnter({
@@ -117,4 +110,3 @@ function Initialize-WPFUI {
         }
     }
 }
-
