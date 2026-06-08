@@ -3,7 +3,7 @@ title: "Windows AI - Disable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=942}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=949}
   "WPFTweaksWindowsAI": {
     "Content": "Windows AI - Disable",
     "Description": "Removes or disables all ai features and packages",
