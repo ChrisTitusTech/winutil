@@ -605,11 +605,18 @@
   },
   "WPFTweaksRemoveEdge": {
     "Content": "Microsoft Edge - Remove",
-    "Description": "Unblocks Microsoft Edge uninstaller restrictions then uses that uninstaller to remove Microsoft Edge.",
+    "Description": "Takes advantage of when Microsoft swapped from Internet Explorer to Microsoft Edge by creating a file (MicrosoftEdge.exe) that makes windows disable edge which then allows us to use the offical edge uninstaller to uninstall edge",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
-      "Invoke-WinUtilRemoveEdge"
+      "
+        New-Item -Path \"$Env:SystemRoot\\SystemApps\\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\\MicrosoftEdge.exe\" -Force
+
+        $Path = Resolve-Path -Path \"$Env:ProgramFiles (x86)\\Microsoft\\Edge\\Application\\*\\Installer\\setup.exe\" | Select-Object -Last 1
+        Start-Process -FilePath $Path -ArgumentList '--uninstall --system-level --force-uninstall --delete-profile' -Wait
+
+        Write-Host 'Microsoft Edge was removed'
+      "
     ],
     "UndoScript": [
       "
