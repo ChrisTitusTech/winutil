@@ -37,7 +37,7 @@ description: ""
       Remove-AppxPackage $Appx
 
       Set-Service -Name WSAIFabricSvc -StartupType Disabled
-      Disable-WindowsOptionalFeature -FeatureName Recall -Online
+      Disable-WindowsOptionalFeature -FeatureName Recall -Online -NoRestart
 
       Write-Host \"Windows AI Disabled\"
       "
