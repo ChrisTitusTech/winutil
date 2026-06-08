@@ -57,12 +57,11 @@ winutil/
 │   │   └── ...
 ├── config/                    # JSON configuration files
 │   ├── applications.json      # Application definitions
-│   ├── tweaks.json           # Tweak definitions
-│   ├── feature.json          # Windows feature definitions
-│   └── preset.json           # Preset configurations
-├── xaml/
-│   └── inputXML.xaml         # GUI layout definition
-└── docs/                     # Documentation
+│   ├── tweaks.json            # Tweak definitions
+│   ├── feature.json           # Windows feature definitions
+│   └── preset.json            # Preset configurations
+├── inputXML.xaml              # GUI layout definition
+└── docs/                      # Documentation
 ```
 
 ### Key Components
