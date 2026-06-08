@@ -67,8 +67,8 @@ function Invoke-WinUtilISOWriteUSB {
 
             Write-Win11ISOLog "Disk wiped and initialized (GPT)."
 
-            $part = if ([math]::Floor((Get-Disk $diskNum).Size / 1MB) -gt 32768) {
-                New-Partition -DiskNumber $diskNum -Size (32768MB) -AssignDriveLetter
+            $part = if ((Get-Disk $diskNum).Size -gt 32GB) {
+                New-Partition -DiskNumber $diskNum -Size 32GB -AssignDriveLetter
             } else {
                 New-Partition -DiskNumber $diskNum -UseMaximumSize -AssignDriveLetter
             }
