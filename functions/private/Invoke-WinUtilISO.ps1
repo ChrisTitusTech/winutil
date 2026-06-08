@@ -221,11 +221,10 @@ function Invoke-WinUtilISOModify {
 
             $sync["Win11ISOContentsDir"] = $isoContents
 
-            Write-Win11ISOLog "Win11Creator ISO was successfully created. Choose an output option in Step 4."
+            Write-Win11ISOLog "Win11Creator ISO created successfully. Choose an output option in Step 4."
             $sync["WPFWin11ISOOutputSection"].Dispatcher.Invoke([action]{
                 $sync["WPFWin11ISOOutputSection"].Visibility = "Visible"
             })
-
         } catch {
             Write-Win11ISOLog "ERROR during modification: $_"
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
