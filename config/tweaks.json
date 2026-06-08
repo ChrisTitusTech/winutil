@@ -77,9 +77,9 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/widget"
   },
-  "WPFTweaksRevertStartMenu": {
+ "WPFTweaksRevertStartMenu": {
     "Content": "Start Menu Previous Layout - Enable",
-    "Description": "Bring back the old Start Menu layout from before the gradual rollout of the new one in 25H2.",
+    "Description": "Bring back the old Start Menu layout from before the gradual rollout of the new one in 25H2. On newer versions of windows !!THIS TWEAK WILL NOT WORK!!",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
@@ -94,6 +94,7 @@
       Remove-Item ViVeTool -Recurse
 
       Write-Host 'Old start menu reverted. Please restart your computer to take effect.'
+      Write-Host 'On newer versions of windows !!THIS TWEAK WILL NOT WORK!!.'
       "
     ],
     "UndoScript": [
@@ -110,7 +111,8 @@
       Write-Host 'New start menu reverted. Please restart your computer to take effect.'
       "
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/revertstartmenu"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/revertstartmenu",
+   "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/revertstartmenu"
   },
   "WPFTweaksDisableStoreSearch": {
     "Content": "Microsoft Store Recommended Search Results - Disable",
@@ -1088,6 +1090,15 @@
     "Description": "Restores the classic context menu when right-clicking in File Explorer, replacing the simplified Windows 11 version.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32",
+        "Name": "(default)",
+        "Value": "",
+        "Type": "String",
+        "OriginalValue": "<RemoveEntry>"
+      }
+    ],
     "InvokeScript": [
       "
       New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\"
