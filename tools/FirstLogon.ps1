@@ -1,5 +1,5 @@
 # Run WinUtil Tweaks
-& ([ScriptBlock]::Create((irm https://gist.github.com/GabiNun2/58ea0a785e407bbdf84503ac01efc6e1/raw/winutil.ps1))) -Preset Advanced
+& ([ScriptBlock]::Create((Invoke-RestMethod -Uri https://christitus.com/windev))) -Preset Advanced
 
 # Ensure msteams was removed
 Get-AppxPackage -Name MSTeams | Remove-AppxPackage -AllUsers
