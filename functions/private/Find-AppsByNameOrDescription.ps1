@@ -5,6 +5,7 @@ function Find-AppsByNameOrDescription {
 
         .DESCRIPTION
             Filters application entries by name or description using literal string matching.
+            Also supports filtering by FOSS status with 'foss:true' or 'foss:false'.
             Respects collapsed category state and handles null $sync gracefully.
 
         .PARAMETER SearchString
@@ -38,28 +39,32 @@ function Find-AppsByNameOrDescription {
     }
 
     try {
-        # Reset the visibility if the search string is empty or the search is cleared
-        if ([string]::IsNullOrWhiteSpace($SearchString)) {
-            $sync.ItemsControl.Items | ForEach-Object {
-                # Each item is a StackPanel container
-                $_.Visibility = [Windows.Visibility]::Visible
+        $fossFilter = $null
+        $actualSearchString = $SearchString
 
+        if ($SearchString -match "foss:(true|false)") {
+            $fossFilter = [bool]::Parse($Matches[1])
+            $actualSearchString = $SearchString -replace "foss:(true|false)", ""
+        } elseif ($SearchString -eq "foss") {
+            $fossFilter = $true
+            $actualSearchString = ""
+        }
+
+        $actualSearchString = $actualSearchString.Trim()
+
+        # Reset the visibility if the search string is empty or the search is cleared
+        if ([string]::IsNullOrWhiteSpace($actualSearchString) -and $null -eq $fossFilter) {
+            $sync.ItemsControl.Items | ForEach-Object {
+                $_.Visibility = [Windows.Visibility]::Visible
                 if ($_.Children.Count -ge 2) {
                     $categoryLabel = $_.Children[0]
                     $wrapPanel = $_.Children[1]
-
-                    # Keep category label visible
                     $categoryLabel.Visibility = [Windows.Visibility]::Visible
-
-                    # Respect the collapsed state of categories (indicated by + prefix)
                     if ($categoryLabel.Content -like "+*") {
                         $wrapPanel.Visibility = [Windows.Visibility]::Collapsed
-                    }
-                    else {
+                    } else {
                         $wrapPanel.Visibility = [Windows.Visibility]::Visible
                     }
-
-                    # Show all apps within the category
                     $wrapPanel.Children | ForEach-Object {
                         $_.Visibility = [Windows.Visibility]::Visible
                     }
@@ -69,22 +74,18 @@ function Find-AppsByNameOrDescription {
         }
 
         # Escape wildcard characters for literal matching
-        $escapedSearchString = [System.Management.Automation.WildcardPattern]::Escape($SearchString)
+        $escapedSearchString = [System.Management.Automation.WildcardPattern]::Escape($actualSearchString)
 
         # Perform search
         $sync.ItemsControl.Items | ForEach-Object {
-            # Each item is a StackPanel container with Children[0] = label, Children[1] = WrapPanel
             if ($_.Children.Count -ge 2) {
                 $categoryLabel = $_.Children[0]
                 $wrapPanel = $_.Children[1]
                 $categoryHasMatch = $false
 
-                # Keep category label visible
                 $categoryLabel.Visibility = [Windows.Visibility]::Visible
 
-                # Search through apps in this category
                 $wrapPanel.Children | ForEach-Object {
-                    # Safely retrieve app entry from hashtable
                     $appTag = $_.Tag
                     $appEntry = $null
 
@@ -92,37 +93,37 @@ function Find-AppsByNameOrDescription {
                         $appEntry = $sync.configs.applicationsHashtable[$appTag]
                     }
 
-                    # Check if app matches search criteria
                     if ($null -ne $appEntry) {
-                        $contentMatch = $appEntry.Content -like "*$escapedSearchString*"
-                        $descriptionMatch = $appEntry.Description -like "*$escapedSearchString*"
+                        $textMatch = $true
+                        if (-not [string]::IsNullOrWhiteSpace($actualSearchString)) {
+                            $contentMatch = $appEntry.Content -like "*$escapedSearchString*"
+                            $descriptionMatch = $appEntry.Description -like "*$escapedSearchString*"
+                            $textMatch = $contentMatch -or $descriptionMatch
+                        }
 
-                        if ($contentMatch -or $descriptionMatch) {
-                            # Show the App and mark that this category has a match
+                        $fossMatch = $true
+                        if ($null -ne $fossFilter) {
+                            $fossMatch = ($appEntry.foss -eq $fossFilter)
+                        }
+
+                        if ($textMatch -and $fossMatch) {
                             $_.Visibility = [Windows.Visibility]::Visible
                             $categoryHasMatch = $true
-                        }
-                        else {
+                        } else {
                             $_.Visibility = [Windows.Visibility]::Collapsed
                         }
-                    }
-                    else {
-                        # Hide app if no entry found (data integrity issue)
+                    } else {
                         $_.Visibility = [Windows.Visibility]::Collapsed
                     }
                 }
 
-                # If category has matches, show the WrapPanel and update the category label to expanded state
                 if ($categoryHasMatch) {
                     $wrapPanel.Visibility = [Windows.Visibility]::Visible
                     $_.Visibility = [Windows.Visibility]::Visible
-                    # Update category label to show expanded state (-)
                     if ($categoryLabel.Content -like "+*") {
                         $categoryLabel.Content = $categoryLabel.Content -replace "^\+ ", "- "
                     }
-                }
-                else {
-                    # Hide the entire category container if no matches
+                } else {
                     $_.Visibility = [Windows.Visibility]::Collapsed
                 }
             }
@@ -130,7 +131,6 @@ function Find-AppsByNameOrDescription {
     }
     catch {
         Write-Warning "Find-AppsByNameOrDescription: An error occurred during search: $_"
-        # Fail gracefully - do not crash the UI thread
         return
     }
 }

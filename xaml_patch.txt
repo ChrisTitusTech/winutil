@@ -1,0 +1,27 @@
+<<<<<<< SEARCH
+                <Button Grid.Column="0"
+                    VerticalAlignment="Center" HorizontalAlignment="Left"
+                    Name="SearchBarClearButton"
+                    Style="{StaticResource SearchBarClearButtonStyle}"
+                    Margin="213,0,0,0" Visibility="Collapsed">
+                </Button>
+=======
+                <Button Grid.Column="0"
+                    VerticalAlignment="Center" HorizontalAlignment="Left"
+                    Name="SearchBarClearButton"
+                    Style="{StaticResource SearchBarClearButtonStyle}"
+                    Margin="213,0,0,0" Visibility="Collapsed">
+                </Button>
+
+                <Button Grid.Column="0"
+                    VerticalAlignment="Center" HorizontalAlignment="Left"
+                    Name="WPFRefreshApps"
+                    Style="{StaticResource HoverButtonStyle}"
+                    Background="Transparent" Foreground="{DynamicResource MainForegroundColor}"
+                    BorderBrush="Transparent" BorderThickness="0"
+                    FontFamily="Segoe MDL2 Assets" FontSize="{DynamicResource IconFontSize}"
+                    Content="&#xE72C;"
+                    Margin="240,0,0,0"
+                    ToolTip="Refresh installed apps list">
+                </Button>
+>>>>>>> REPLACE
