@@ -3,7 +3,7 @@ title: "Sticky Keys"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1724}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1733}
   "WPFToggleStickyKeys": {
     "Content": "Sticky Keys",
     "Description": "Toggles the stick keys which active when clicking shift rapidly",
