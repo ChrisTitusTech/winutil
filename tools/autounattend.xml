@@ -5,7 +5,7 @@
             <UserData>
                 <AcceptEula>true</AcceptEula>
                 <ProductKey>
-                    <Key></Key>
+                    <WillShowUI>Never</WillShowUI>
                 </ProductKey>
             </UserData>
             <RunSynchronous>
