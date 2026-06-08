@@ -14,29 +14,51 @@ Function Invoke-WinUtilCurrentSystem {
         $CheckBox
     )
     if ($CheckBox -eq "choco") {
-        $apps = (choco list | Select-String -Pattern "^\S+").Matches.Value
-        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPFInstall*"}
-        $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
-            $dependencies = @($sync.configs.applications.$($psitem.Key).choco -split ";")
-            if ($dependencies -in $apps) {
-                Write-Output $psitem.name
+        if (-not (Get-Command choco -ErrorAction SilentlyContinue)) { return }
+        $apps = choco list -l -r | ForEach-Object { $_.Split('|')[0] }
+        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object { $psitem -like "WPFInstall*" }
+        foreach ($key in $filter) {
+            $chocoId = $sync.configs.applications.$key.choco
+            if ($null -ne $chocoId) {
+                $dependencies = $chocoId -split ";"
+                $allInstalled = $true
+                foreach ($dep in $dependencies) {
+                    if ($dep -notin $apps) {
+                        $allInstalled = $false
+                        break
+                    }
+                }
+                if ($allInstalled) {
+                    Write-Output $key
+                }
             }
         }
     }
 
     if ($checkbox -eq "winget") {
-
+        if (-not (Get-Command winget -ErrorAction SilentlyContinue)) { return }
         $originalEncoding = [Console]::OutputEncoding
         [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
-        $Sync.InstalledPrograms = winget list -s winget | Select-Object -skip 3 | ConvertFrom-String -PropertyNames "Name", "Id", "Version", "Available" -Delimiter '\s{2,}'
+        # Using --source winget to filter to just winget repo, and -q to be quiet.
+        # ConvertFrom-String with Delimiter '\s{2,}' is a bit fragile but used in the original.
+        $Sync.InstalledPrograms = winget list --source winget | Select-Object -skip 3 | ConvertFrom-String -PropertyNames "Name", "Id", "Version", "Available" -Delimiter '\s{2,}'
         [Console]::OutputEncoding = $originalEncoding
 
         $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPFInstall*"}
-        $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
-            $dependencies = @($sync.configs.applications.$($psitem.Key).winget -split ";")
-
-            if ($dependencies[-1] -in $sync.InstalledPrograms.Id) {
-                Write-Output $psitem.name
+        foreach ($key in $filter) {
+            $wingetId = $sync.configs.applications.$key.winget
+            if ($null -ne $wingetId) {
+                $dependencies = $wingetId -split ";"
+                $allInstalled = $true
+                foreach ($dep in $dependencies) {
+                    if ($dep -notin $sync.InstalledPrograms.Id) {
+                        $allInstalled = $false
+                        break
+                    }
+                }
+                if ($allInstalled) {
+                    Write-Output $key
+                }
             }
         }
     }

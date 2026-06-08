@@ -1,6 +1,5 @@
 function Invoke-WPFGetInstalled {
     <#
-    TODO: Add the Option to use Chocolatey as Engine
     .SYNOPSIS
         Invokes the function that gets the checkboxes to check in a new runspace
 

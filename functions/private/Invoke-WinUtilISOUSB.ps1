@@ -180,7 +180,7 @@ function Invoke-WinUtilISOWriteUSB {
             Start-Sleep -Seconds 2
             Update-Disk -Number $diskNum
 
-            try { Remove-PartitionAccessPath -DiskNumber $diskNum -PartitionNumber $winpePart.PartitionNumber -AccessPath "$($winpePart.DriveLetter):" } catch {}
+            try { Remove-PartitionAccessPath -DiskNumber $diskNum -PartitionNumber $winpePart.PartitionNumber -AccessPath "$($winpePart.DriveLetter):" } catch { & $Logger "Warning: Failed to remove partition access path: $_" }
             $usbLetter = Get-FreeDriveLetter
             if (-not $usbLetter) { throw "No free drive letters (D-Z) available to assign to the USB data partition." }
             Set-Partition -DiskNumber $diskNum -PartitionNumber $winpePart.PartitionNumber -NewDriveLetter $usbLetter

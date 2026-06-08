@@ -75,5 +75,9 @@ function Invoke-WPFButton {
                  $sync.Form.Resources["FOSSColor"] = $sync.Form.Resources["MainForegroundColor"]
             }
         }
+        "WPFCopyStandardCommand" {Invoke-WPFCopyPresetCommand -Preset "Standard"}
+        "WPFCopyMinimalCommand" {Invoke-WPFCopyPresetCommand -Preset "Minimal"}
+        "WPFCopyAdvancedCommand" {Invoke-WPFCopyPresetCommand -Preset "Advanced"}
+        "WPFRefreshApps" {Initialize-RefreshApps}
     }
 }
