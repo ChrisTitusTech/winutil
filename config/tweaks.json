@@ -77,9 +77,9 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/widget"
   },
-  "WPFTweaksRevertStartMenu": {
+ "WPFTweaksRevertStartMenu": {
     "Content": "Start Menu Previous Layout - Enable",
-    "Description": "Bring back the old Start Menu layout from before the gradual rollout of the new one in 25H2.",
+    "Description": "Bring back the old Start Menu layout from before the gradual rollout of the new one in 25H2. On newer versions of windows !!THIS TWEAK WILL NOT WORK!!",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
@@ -94,6 +94,7 @@
       Remove-Item ViVeTool -Recurse
 
       Write-Host 'Old start menu reverted. Please restart your computer to take effect.'
+      Write-Host 'On newer versions of windows !!THIS TWEAK WILL NOT WORK!!.'
       "
     ],
     "UndoScript": [
