@@ -250,6 +250,49 @@ function Invoke-WinUtilISOModify {
     }
 }
 
+function Invoke-WinUtilISOExport {
+    $contentsDir = $sync["Win11ISOContentsDir"]
+
+    $dialog = [System.Windows.Forms.SaveFileDialog]::new()
+    $dialog.Title = "Save Modified Windows 11 ISO"
+    $dialog.Filter = "ISO files (*.iso)|*.iso"
+    $dialog.FileName = "Win11Creator.iso"
+
+    if ($dialog.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
+
+    $outputISO = $dialog.FileName
+    $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $false
+
+    Invoke-WinUtilRunspace -Variables @{
+        contentsDir = $contentsDir
+        outputISO = $outputISO
+    } -ScriptBlock {
+        . ([scriptblock]::Create($win11ISOLogFuncDef))
+
+        try {
+            Write-Win11ISOLog "Exporting to $outputISO"
+
+            Invoke-WebRequest -Uri "https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe" -OutFile "$winutildir\oscdimg.exe"
+            & "$winutildir\oscdimg.exe" -o -u2 "-b$contentsDir\efi\microsoft\boot\efisys.bin" $contentsDir $outputISO
+
+            Write-Win11ISOLog "ISO successfully exported."
+            [System.Windows.MessageBox]::Show("ISO successfully exported.", "Export Complete", "OK", "Info")
+        } catch {
+            Write-Win11ISOLog "ERROR during ISO export: $_"
+            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+                [System.Windows.MessageBox]::Show("ISO export failed:`n`n$_", "Error", "OK", "Error")
+            })
+        } finally {
+            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+                $sync.progressBarTextBlock.Text = ""
+                $sync.progressBarTextBlock.ToolTip = ""
+                $sync.ProgressBar.Value = 0
+                $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $true
+            })
+        }
+    }
+}
+
 function Invoke-WinUtilISOCheckExistingWork {
     if ($sync["Win11ISOContentsDir"] -and (Test-Path $sync["Win11ISOContentsDir"])) { return }
     if ($sync["Win11ISOModifying"]) { return }
@@ -312,48 +355,5 @@ function Invoke-WinUtilISOCleanAndReset {
 
             $sync["WPFWin11ISOStatusLog"].Text = "Ready. Please select a Windows 11 ISO to begin."
         })
-    }
-}
-
-function Invoke-WinUtilISOExport {
-    $contentsDir = $sync["Win11ISOContentsDir"]
-
-    $dialog = [System.Windows.Forms.SaveFileDialog]::new()
-    $dialog.Title = "Save Modified Windows 11 ISO"
-    $dialog.Filter = "ISO files (*.iso)|*.iso"
-    $dialog.FileName = "Win11Creator.iso"
-
-    if ($dialog.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
-
-    $outputISO = $dialog.FileName
-    $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $false
-
-    Invoke-WinUtilRunspace -Variables @{
-        contentsDir = $contentsDir
-        outputISO = $outputISO
-    } -ScriptBlock {
-        . ([scriptblock]::Create($win11ISOLogFuncDef))
-
-        try {
-            Write-Win11ISOLog "Exporting to $outputISO"
-
-            Invoke-WebRequest -Uri "https://msdl.microsoft.com/download/symbols/oscdimg.exe/688CABB065000/oscdimg.exe" -OutFile "$winutildir\oscdimg.exe"
-            & "$winutildir\oscdimg.exe" -o -u2 "-b$contentsDir\efi\microsoft\boot\efisys.bin" $contentsDir $outputISO
-
-            Write-Win11ISOLog "ISO successfully exported."
-            [System.Windows.MessageBox]::Show("ISO successfully exported.", "Export Complete", "OK", "Info")
-        } catch {
-            Write-Win11ISOLog "ERROR during ISO export: $_"
-            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                [System.Windows.MessageBox]::Show("ISO export failed:`n`n$_", "Error", "OK", "Error")
-            })
-        } finally {
-            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                $sync.progressBarTextBlock.Text = ""
-                $sync.progressBarTextBlock.ToolTip = ""
-                $sync.ProgressBar.Value = 0
-                $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $true
-            })
-        }
     }
 }
