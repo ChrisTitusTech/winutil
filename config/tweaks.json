@@ -605,7 +605,7 @@
   },
   "WPFTweaksRemoveEdge": {
     "Content": "Microsoft Edge - Remove",
-    "Description": "Takes advantage of when Microsoft swapped from Internet Explorer to Microsoft Edge by creating a file (MicrosoftEdge.exe) that makes windows disable edge which then allows us to use the offical edge uninstaller to uninstall edge",
+    "Description": "Uninstalls Microsoft Edge by creating dummy MicrosoftEdge.exe file in the legacy Edge folder. This tricks Windows into unlocking the official Edge uninstaller allowing for a system-level removal.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
