@@ -259,13 +259,11 @@ function Invoke-WinUtilISOExport {
     $dialog.FileName = "Win11Creator.iso"
 
     if ($dialog.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
-
-    $outputISO = $dialog.FileName
     $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $false
 
     Invoke-WinUtilRunspace -Variables @{
         contentsDir = $contentsDir
-        outputISO = $outputISO
+        outputISO = $dialog.FileName
     } -ScriptBlock {
         . ([scriptblock]::Create($win11ISOLogFuncDef))
 
