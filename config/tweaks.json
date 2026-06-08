@@ -878,6 +878,19 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/debloat"
   },
+  "WPFTweaksReservedStorage": {
+    "Content": "Disable Reserved Storage",
+    "Description": "Disables Windows Reserved Storage (7-10 GB held for updates/temp files). Recommended only on small drives. Re-enable before major Windows feature updates to avoid installation failures.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "InvokeScript": [
+      "DISM /Online /Set-ReservedStorageState /State:Disabled"
+    ],
+    "UndoScript": [
+      "DISM /Online /Set-ReservedStorageState /State:Enabled"
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/reservedstorage"
+  },
   "WPFTweaksRestorePoint": {
     "Content": "Restore Point - Create",
     "Description": "Creates a restore point at runtime in case a revert is needed from WinUtil modifications.",
