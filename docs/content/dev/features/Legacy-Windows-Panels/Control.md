@@ -3,7 +3,7 @@ title: "Control Panel"
 description: ""
 ---
 
-```json {filename="config/feature.json",linenos=inline,linenostart=185}
+```json {filename="config/feature.json",linenos=inline,linenostart=182}
   "WPFPanelControl": {
     "Content": "Control Panel",
     "category": "Legacy Windows Panels",

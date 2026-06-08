@@ -3,7 +3,7 @@ title: "Brave Browser - Debloat"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=215}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=205}
   "WPFTweaksBraveDebloat": {
     "Content": "Brave Browser - Debloat",
     "Description": "Disables various annoyances like Brave Rewards, Leo AI, Crypto Wallet and VPN.",

@@ -3,7 +3,7 @@ title: "Windows AI - Disable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=957}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=940}
   "WPFTweaksWindowsAI": {
     "Content": "Windows AI - Disable",
     "Description": "Removes or disables all ai features and packages",
@@ -37,7 +37,7 @@ description: ""
       Remove-AppxPackage $Appx
 
       Set-Service -Name WSAIFabricSvc -StartupType Disabled
-      Disable-WindowsOptionalFeature -FeatureName Recall -Online
+      Disable-WindowsOptionalFeature -FeatureName Recall -Online -NoRestart
 
       Write-Host \"Windows AI Disabled\"
       "
