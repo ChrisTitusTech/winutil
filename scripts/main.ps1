@@ -35,13 +35,11 @@ $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
 
 # Create a new session state for parsing variables into our runspace
 $hashVars = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'sync',$sync,$Null
-$uiVar = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'PARAM_NOUI',$PARAM_NOUI,$Null
 $offlineVar = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'PARAM_OFFLINE',$PARAM_OFFLINE,$Null
 $InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
 
 # Add the variable to the session state
 $InitialSessionState.Variables.Add($hashVars)
-$InitialSessionState.Variables.Add($uiVar)
 $InitialSessionState.Variables.Add($offlineVar)
 
 # Get every private function and add them to the session state
@@ -91,8 +89,6 @@ $sync.configs.applications.PSObject.Properties | ForEach-Object {
 Set-Preferences
 
 if ($Preset) {
-    Show-CTTLogo
-
     # Selects the tweaks from $Preset varible
     Update-WinUtilSelections -flatJson $sync.configs.preset.$Preset
 
@@ -107,27 +103,17 @@ if ($Preset) {
     return
 }
 
-if ($PARAM_NOUI) {
-    Show-CTTLogo
-    if ($PARAM_CONFIG -and -not [string]::IsNullOrWhiteSpace($PARAM_CONFIG)) {
-        Write-Host "Running config file tasks..."
-        Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
-        Invoke-WinUtilAutoRun
+if ($Config) {
+    Invoke-WPFImpex -type "import" -Config $Config
 
-        $sync.runspace.Dispose()
-        $sync.runspace.Close()
-        [System.GC]::Collect()
-        Stop-Transcript
-        exit 1
-    }
-    else {
-        Write-Host "Cannot automatically run without a config file provided."
-        $sync.runspace.Dispose()
-        $sync.runspace.Close()
-        [System.GC]::Collect()
-        Stop-Transcript
-        exit 1
-    }
+    Invoke-WinUtilAutoRun
+
+    # Cleanup and exit
+    $sync.runspace.Dispose()
+    $sync.runspace.Close()
+    [System.GC]::Collect()
+    Stop-Transcript
+    return
 }
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
@@ -400,27 +386,16 @@ $sync["Form"].Add_ContentRendered({
         Invoke-WPFTab "WPFTab1BT"  # Default to install tab
     }
 
-    if (-not $PARAM_CONFIG -and (Test-Path "$winutildir\lastrun.json")) {
-        try {
-            $drifted = @(Get-Content "$winutildir\lastrun.json" | ConvertFrom-Json | Where-Object { $_ -notin (Invoke-WinUtilCurrentSystem -CheckBox "tweaks") })
-            if ($drifted.Count -gt 0 -and [System.Windows.MessageBox]::Show("$($drifted.Count) tweak(s) were reverted since last run. Re-select them?", "Winutil", "YesNo", "Question") -eq "Yes") {
-                Update-WinUtilSelections -flatJson $drifted
-                Reset-WPFCheckBoxes -doToggles $false
-                Invoke-WPFTab "WPFTab2BT"
-            }
-        } catch {}
-    }
-
-    $sync["Form"].Focus()
-
-   if ($PARAM_CONFIG -and -not [string]::IsNullOrWhiteSpace($PARAM_CONFIG)) {
-        Write-Host "Running config file tasks..."
-        Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
-        Invoke-WPFRunspace -ScriptBlock {
-            Invoke-WinUtilAutoRun
+    if (-not $Config -and (Test-Path "$winutildir\lastrun.json")) {
+        $drifted = @(Get-Content "$winutildir\lastrun.json" | ConvertFrom-Json | Where-Object { $_ -notin (Invoke-WinUtilCurrentSystem -CheckBox "tweaks") })
+        if ($drifted.Count -gt 0 -and [System.Windows.MessageBox]::Show("$($drifted.Count) tweak(s) were reverted since last run. Re-select them?", "Winutil", "YesNo", "Question") -eq "Yes") {
+            Update-WinUtilSelections -flatJson $drifted
+            Reset-WPFCheckBoxes -doToggles $false
+            Invoke-WPFTab "WPFTab2BT"
         }
     }
 
+    $sync["Form"].Focus()
 })
 
 # The SearchBarTimer is used to delay the search operation until the user has stopped typing for a short period
