@@ -4,7 +4,7 @@ function Set-Preferences{
         [switch]$save=$false
     )
 
-    # TODO delete this function sometime later
+    # Clean-OldPrefs handles migration from outdated individual .ini files to the single preferences.ini
     function Clean-OldPrefs{
         if (Test-Path -Path "$winutildir\LightTheme.ini") {
             $sync.preferences.theme = "Light"
@@ -19,7 +19,7 @@ function Set-Preferences{
         # check old prefs, if its first line has no =, then absorb it as pm
         if (Test-Path -Path $iniPath) {
             $oldPM = Get-Content $iniPath
-            if ($oldPM -notlike "*=*") {
+            if ($oldPM -and $oldPM -notlike "*=*") {
                 $sync.preferences.packagemanager = $oldPM
             }
         }
@@ -42,7 +42,7 @@ function Set-Preferences{
     function Load-Preferences{
         Clean-OldPrefs
         if (Test-Path -Path $iniPath) {
-            $iniData = Get-Content "$winutildir\preferences.ini"
+            $iniData = Get-Content $iniPath
             foreach ($line in $iniData) {
                 if ($line -like "*=*") {
                     $arr = $line -split "=",-2
