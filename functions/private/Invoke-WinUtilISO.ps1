@@ -155,7 +155,7 @@ function Invoke-WinUtilISOModify {
             $isoContents = "$workDir\iso_contents"
             New-Item -Path $isoContents -ItemType Directory -Force
 
-            Write-Win11ISOLog "Copying Iso Contents from $driveLetter to $isoContents..."
+            Write-Win11ISOLog "Copying ISO Contents from $driveLetter to $isoContents..."
 
             Copy-Item -Path "$driveLetter\*" -Destination $isoContents -Recurse -Force
             Dismount-DiskImage -ImagePath $isoPath
