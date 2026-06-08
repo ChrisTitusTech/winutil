@@ -92,17 +92,6 @@ function Invoke-WPFImpex {
                     $sync.selectedFeatures = [System.Collections.Generic.List[string]]::new()
 
                     Update-WinUtilSelections -flatJson $flattenedJson
-
-                    if (!$PARAM_NOUI) {
-                        # Set flag so toggle Checked/Unchecked events don't trigger registry writes
-                        # while we're programmatically restoring UI state from the imported config
-                        $sync.ImportInProgress = $true
-                        try {
-                            Reset-WPFCheckBoxes -doToggles $true
-                        } finally {
-                            $sync.ImportInProgress = $false
-                        }
-                    }
                 }
             } catch {
                 Write-Error "An error occurred while importing: $_"

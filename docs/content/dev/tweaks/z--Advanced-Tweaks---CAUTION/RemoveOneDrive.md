@@ -3,7 +3,7 @@ title: "Microsoft OneDrive - Remove"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=639}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=653}
   "WPFTweaksRemoveOneDrive": {
     "Content": "Microsoft OneDrive - Remove",
     "Description": "Denies permission to remove OneDrive user files, then uses its own uninstaller to remove it and restores the original permission afterward.",
@@ -19,12 +19,19 @@ description: ""
 
       # Some of OneDrive files use explorer, and OneDrive uses FileCoAuth
       Write-Host \"Removing leftover OneDrive Files...\"
+
       Stop-Process -Name FileCoAuth,Explorer
+
       Remove-Item \"$Env:LocalAppData\\Microsoft\\OneDrive\" -Recurse -Force
       Remove-Item \"C:\\ProgramData\\Microsoft OneDrive\" -Recurse -Force
 
       # Grant back permission to access OneDrive folder
       icacls $Env:OneDrive /grant \"Administrators:(D,DC)\"
+
+      if (-not (Get-ChildItem -Path $Env:OneDrive)) {
+          Remove-Item -Path $Env:OneDrive -Recurse
+          [Environment]::SetEnvironmentVariable('OneDrive', $null, 'User')
+      }
 
       # Disable OneSyncSvc
       Set-Service -Name OneSyncSvc -StartupType Disabled

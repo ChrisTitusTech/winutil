@@ -1,32 +1,19 @@
-# Libraries
+# winutil
 System.Management.Automation.dll
 Microsoft.PowerShell.ConsoleHost.dll
 
-# Configuration folder
-.vscode/
-.idea/
-.vs/
+winutil.exe.config
+winutil.ps1
+binary/
 
-# OS Specific
+# general software/os specific
 desktop.ini
 .DS_Store
 
-# Ignore Generated XAML Files
-xaml/inputApp.xaml
-xaml/inputFeatures.xaml
-xaml/inputTweaks.xaml
+.vscode/
+.idea/
 
-# Executables and Configs
-pester.ps1
-Microsoft.UI.Xaml*
-winutil.ps1
-*.psd*
-
-# winutil-bin
-winutil.exe.config
-binary/
-
-# Hugo Files
+# hugo files
 docs/public/
 docs/.hugo_build.lock
 docs/resources/

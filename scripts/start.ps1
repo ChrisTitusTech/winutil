@@ -8,20 +8,10 @@
 
 param (
     [string]$Config,
-    [ValidateSet("Standard", "Minimal", "Advanced")]
+    [ValidateSet("Standard", "Minimal", "Advanced", "")]
     [string]$Preset,
-    [switch]$Noui,
     [switch]$Offline
 )
-
-if ($Config) {
-    $PARAM_CONFIG = $Config
-}
-
-$PARAM_NOUI = $false
-if ($Noui) {
-    $PARAM_NOUI = $true
-}
 
 $PARAM_OFFLINE = $false
 if ($Offline) {

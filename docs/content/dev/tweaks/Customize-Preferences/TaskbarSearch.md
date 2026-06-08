@@ -3,10 +3,10 @@ title: "Taskbar Search Icon"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1729}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1786}
   "WPFToggleTaskbarSearch": {
     "Content": "Taskbar Search Icon",
-    "Description": "If enabled, Search Button will be on the Taskbar.",
+    "Description": "Toggles the Search Button on the Taskbar.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",

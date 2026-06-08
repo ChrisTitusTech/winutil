@@ -4,16 +4,15 @@
     "WPFTweaksConsumerFeatures",
     "WPFTweaksDisableExplorerAutoDiscovery",
     "WPFTweaksWPBT",
-    "WPFTweaksDVR",
     "WPFTweaksDeBloat",
     "WPFTweaksLocation",
     "WPFTweaksServices",
     "WPFTweaksTelemetry",
+    "WPFTweaksDeliveryOptimization",
     "WPFTweaksDiskCleanup",
     "WPFTweaksDeleteTempFiles",
     "WPFTweaksEndTaskOnTaskbar",
-    "WPFTweaksRestorePoint",
-    "WPFTweaksPowershell7Tele"
+    "WPFTweaksRestorePoint"
   ],
   "Minimal": [
     "WPFTweaksConsumerFeatures",
@@ -27,11 +26,11 @@
     "WPFTweaksConsumerFeatures",
     "WPFTweaksDisableExplorerAutoDiscovery",
     "WPFTweaksWPBT",
-    "WPFTweaksDVR",
     "WPFTweaksDeBloat",
     "WPFTweaksLocation",
     "WPFTweaksServices",
     "WPFTweaksTelemetry",
+    "WPFTweaksDeliveryOptimization",
     "WPFTweaksDeleteTempFiles",
     "WPFTweaksEndTaskOnTaskbar",
     "WPFTweaksDisableStoreSearch",
@@ -39,7 +38,6 @@
     "WPFTweaksWidget",
     "WPFTweaksRemoveOneDrive",
     "WPFTweaksWindowsAI",
-    "WPFTweaksRightClickMenu",
-    "WPFTweaksPowershell7Tele"
+    "WPFTweaksRightClickMenu"
   ]
 }
