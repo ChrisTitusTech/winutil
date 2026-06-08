@@ -128,29 +128,32 @@ winutil/
 - CheckBoxes for options
 - ListBoxes for selections
 
-# Win11 Creator Architecture
+## Win11 Creator Architecture
 
 A specialized subsystem within WinUtil that creates customized, debloated Windows 11 ISOs with automated setup. Operates independently from the main package installation and tweak system.
 
 ---
 
-## Core Functions
+### Core Functions
 
-All functions live in `functions/private/Invoke-WinUtilISO.ps1`.
+Functions are split across two files:
 
-### `Write-Win11ISOLog`
+- `functions/private/Invoke-WinUtilISO.ps1` — ISO selection, mount, modify, export, and cleanup
+- `functions/private/Invoke-WinUtilISOUSB.ps1` — USB drive detection and writing
+
+#### `Write-Win11ISOLog`
 Thread-safe logging helper. Appends timestamped messages to the status log TextBox via Dispatcher.Invoke, ensuring UI updates from background runspaces are safe.
 
-### `Invoke-WinUtilRunspace`
+#### `Invoke-WinUtilRunspace`
 Generic runspace factory. Creates an STA runspace, injects the `$sync` hashtable, `$winutildir`, and the log function definition as a string (so it can be dot-sourced in the child runspace), then starts the script asynchronously via `BeginInvoke`.
 
-### `Invoke-WinUtilISOBrowse`
+#### `Invoke-WinUtilISOBrowse`
 Opens an OpenFileDialog filtered to `.iso` files. On confirmation, populates the path field, shows the file size, and reveals the Mount section. Resets downstream UI sections (verify, modify, output) to collapsed.
 
-### `Invoke-WinUtilISOMount`
+#### `Invoke-WinUtilISOMount`
 Runs in a background runspace. Mounts the ISO via `Mount-DiskImage`, resolves the drive letter, detects whether the image file is `install.wim` or `install.esd`, and enumerates all editions via `Get-WindowsImage`. Stores results in `$sync` and populates the edition ComboBox, auto-selecting Windows 11 Pro if present.
 
-### `Invoke-WinUtilISOModify`
+#### `Invoke-WinUtilISOModify`
 The main modification pipeline. Runs in a background runspace with these steps in order:
 
 1. Creates the working directory at `$winutildir\Win11Creator\iso_contents`
@@ -163,13 +166,29 @@ The main modification pipeline. Runs in a background runspace with these steps i
 8. Renames the exported WIM back to `install.wim`
 9. Stores the contents directory in `$sync` and reveals the Output section
 
-### `Invoke-WinUtilISOExport`
+#### `Invoke-WinUtilISOExport`
 Opens a SaveFileDialog defaulting to `Win11Creator.iso`. Downloads `oscdimg.exe` from Microsoft's symbol server at runtime and uses it to build a UEFI-bootable ISO from the modified contents directory, using `efisys.bin` as the boot sector.
 
-### `Invoke-WinUtilISOCheckExistingWork`
+#### `Invoke-WinUtilISORefreshUSBDrives`
+Populates the USB drive ComboBox. Queries all disks filtered to `BusType -eq "USB"`, sorted by disk number. Each entry is formatted as `Disk N: <FriendlyName> [X.X GB] - <PartitionStyle>`. Stores the raw disk objects in `$sync["Win11ISOUSBDisks"]` so `Invoke-WinUtilISOWriteUSB` can index into them by ComboBox selection. If no USB drives are found, inserts a placeholder item and clears the stored list.
+
+#### `Invoke-WinUtilISOWriteUSB`
+Writes the modified ISO contents to a physical USB drive. Runs in its own inline runspace (not via `Invoke-WinUtilRunspace`) with `diskNum` and `contentsDir` injected as variables. Pipeline:
+
+1. Confirms destructive action with a YesNo MessageBox showing disk number, name, and size
+2. `Clear-Disk` + `Initialize-Disk` — wipes and re-initializes as GPT
+3. Creates a single partition: 32 GB if the disk is larger than 32 GB, otherwise uses the full disk size
+4. Assigns a drive letter, retrying with `Get-FreeLetter` (iterates D–Z) if Windows doesn't auto-assign one
+5. Polls up to 5 seconds for the volume to become available before formatting
+6. `Format-Volume` as FAT32 with label `win11creator`
+7. Checks that the source `iso_contents` directory fits within the available space
+8. `Split-WindowsImage` — splits `install.wim` into `.swm` chunks of 3800 MB to stay within FAT32's 4 GB file size limit, writing directly to `<USB>:\sources\install.swm`
+9. `Copy-Item` — copies all remaining ISO contents excluding `install.wim` (already split)
+
+#### `Invoke-WinUtilISOCheckExistingWork`
 Called on tab load. Checks if `$winutildir\Win11Creator\iso_contents` exists on disk from a previous session. If so, restores the UI directly to Step 4 (output) without requiring Steps 1–3 to be re-run.
 
-### `Invoke-WinUtilISOCleanAndReset`
+#### `Invoke-WinUtilISOCleanAndReset`
 Cleanup function. Dismounts any mounted Windows images and the source ISO, deletes the `Win11Creator` and `Driver` working directories, clears all `$sync` state keys, and resets the UI to its initial state.
 
 ---
@@ -203,10 +222,25 @@ Cleanup function. Dismounts any mounted Windows images and the source ISO, delet
         $sync key set: Win11ISOContentsDir
 
 [Step 4] Export
-    Invoke-WinUtilISOExport
-    ├─ SaveFileDialog → output path
-    ├─ Download oscdimg.exe from msdl.microsoft.com
-    └─ Build bootable ISO: oscdimg -o -u2 -b<efisys.bin> <contentsDir> <output>
+    Option A — Save as ISO
+        Invoke-WinUtilISOExport
+        ├─ SaveFileDialog → output path
+        ├─ Download oscdimg.exe from msdl.microsoft.com
+        └─ Build bootable ISO: oscdimg -o -u2 -b<efisys.bin> <contentsDir> <output>
+
+    Option B — Write to USB
+        Invoke-WinUtilISORefreshUSBDrives
+        └─ Enumerate USB disks → populate ComboBox → store in $sync["Win11ISOUSBDisks"]
+
+        Invoke-WinUtilISOWriteUSB  (inline background runspace)
+        ├─ Confirm destructive action (YesNo dialog)
+        ├─ Clear-Disk + Initialize-Disk (GPT)
+        ├─ New-Partition (32 GB cap or max size)
+        ├─ Assign drive letter (auto or Get-FreeLetter fallback)
+        ├─ Poll until volume is available, then Format-Volume (FAT32, "win11creator")
+        ├─ Check available space vs source size
+        ├─ Split-WindowsImage → install.swm chunks (3800 MB, FAT32 safe)
+        └─ Copy-Item all contents except install.wim
 
 [Optional] Clean & Reset
     Invoke-WinUtilISOCleanAndReset
@@ -323,7 +357,7 @@ To start over, click **Clean & Reset** which runs `Invoke-WinUtilISOCleanAndRese
 | `Win11ISOImageInfo` | Mount | Array of `{ImageIndex, ImageName}` objects |
 | `Win11ISOContentsDir` | Modify | Path to `iso_contents` working directory |
 | `Win11ISOModifying` | Modify | Boolean flag preventing concurrent modifications |
-| `Win11ISOUSBDisks` | USB flow | Available USB disk list |
+| `Win11ISOUSBDisks` | RefreshUSBDrives | Array of USB `Disk` objects, indexed in parallel with the ComboBox |
 
 ---
 
