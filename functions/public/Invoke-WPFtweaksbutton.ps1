@@ -82,7 +82,6 @@ function Invoke-WPFtweaksbutton {
     Write-Host "================================="
     Write-Host "--     Tweaks are Finished    ---"
     Write-Host "================================="
-    $syncableTweaks = @($tweaks | Where-Object { $sync.configs.tweaks.$_.registry -or $sync.configs.tweaks.$_.service })
-    $syncableTweaks | ConvertTo-Json | Out-File "$env:LocalAppData\winutil\lastrun.json" -Force
+    @($tweaks | Where-Object { $sync.configs.tweaks.$_.registry -or $sync.configs.tweaks.$_.service }) | ConvertTo-Json | Out-File "...lastrun.json" -Force
   }
 }
