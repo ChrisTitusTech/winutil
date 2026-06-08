@@ -1696,10 +1696,10 @@
         "Type": "DWord",
         "OriginalValue": "0",
         "DefaultState": "true"
-      },
+      }
     ],
     "InvokeScript":[
-      "Invoke-WinUtilExplorerUdpate"
+      "Invoke-WinUtilExplorerUpdate"
     ],
     "UndoScript":[
       "Invoke-WinUtilExplorerUpdate"
