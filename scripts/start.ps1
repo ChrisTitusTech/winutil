@@ -47,10 +47,10 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
         }
     }
 
-    $script = if ($windev) {
-        "& ([ScriptBlock]::Create((irm https://github.com/ChrisTitusTech/winutil/releases/download/$latestTag/winutil.ps1))) $($argList -join ' ')"
-    } elseif ($PSCommandPath) {
+    $script = if ($PSCommandPath) {
         "& { & `'$($PSCommandPath)`' $($argList -join ' ') }"
+    } elseif ($windev) {
+        "& ([ScriptBlock]::Create((irm https://github.com/ChrisTitusTech/winutil/releases/download/$latestTag/winutil.ps1))) $($argList -join ' ')"
     } else {
         "&([ScriptBlock]::Create((irm https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1))) $($argList -join ' ')"
     }
