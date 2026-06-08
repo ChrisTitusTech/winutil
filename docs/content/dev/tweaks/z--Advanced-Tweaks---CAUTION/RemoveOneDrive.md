@@ -29,7 +29,7 @@ description: ""
       icacls $Env:OneDrive /grant \"Administrators:(D,DC)\"
 
       if (-not (Get-ChildItem -Path $Env:OneDrive)) {
-          Remove-Item -Path $Env:OneDrive
+          Remove-Item -Path $Env:OneDrive -Recurse
           [Environment]::SetEnvironmentVariable('OneDrive', $null, 'User')
       }
 

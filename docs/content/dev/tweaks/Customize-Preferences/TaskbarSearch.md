@@ -14,9 +14,9 @@ description: ""
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
         "Name": "SearchboxTaskbarMode",
-        "Value": "0",
+        "Value": "1",
         "Type": "DWord",
-        "OriginalValue": "d",
+        "OriginalValue": "0",
         "DefaultState": "true"
       }
     ],
