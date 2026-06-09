@@ -17,74 +17,65 @@ function Microwin-RemoveProvisionedPackages() {
     )
     try
     {
-        if ($UseCmdlets) {
-            $appxProvisionedPackages = Get-AppxProvisionedPackage -Path "$($scratchDir)" | Where-Object {
-                    $_.PackageName -NotLike "*AppInstaller*" -AND
-                    $_.PackageName -NotLike "*Store*" -and
-                    $_.PackageName -NotLike "*Notepad*" -and
-                    $_.PackageName -NotLike "*Printing*" -and
-                    $_.PackageName -NotLike "*YourPhone*" -and
-                    $_.PackageName -NotLike "*Xbox*" -and
-                    $_.PackageName -NotLike "*WindowsTerminal*" -and
-                    $_.PackageName -NotLike "*Calculator*" -and
-                    $_.PackageName -NotLike "*Photos*" -and
-                    $_.PackageName -NotLike "*VCLibs*" -and
-                    $_.PackageName -NotLike "*Paint*" -and
-                    $_.PackageName -NotLike "*Gaming*" -and
-                    $_.PackageName -NotLike "*Extension*" -and
-                    $_.PackageName -NotLike "*SecHealthUI*" -and
-                    $_.PackageName -NotLike "*ScreenSketch*"
-            }
-        } else {
-            $appxProvisionedPackages = dism /english /image="$scratchDir" /get-provisionedappxpackages | Select-String -Pattern "PackageName : " -CaseSensitive -SimpleMatch
-            if ($?) {
-                $appxProvisionedPackages = $appxProvisionedPackages -split "PackageName : " | Where-Object {$_}
-                # Exclude the same items.
-                $appxProvisionedPackages = $appxProvisionedPackages | Where-Object {
-                    $_ -NotLike "*AppInstaller*" -AND
-                    $_ -NotLike "*Store*" -and
-                    $_ -NotLike "*Notepad*" -and
-                    $_ -NotLike "*Printing*" -and
-                    $_ -NotLike "*YourPhone*" -and
-                    $_ -NotLike "*Xbox*" -and
-                    $_ -NotLike "*WindowsTerminal*" -and
-                    $_ -NotLike "*Calculator*" -and
-                    $_ -NotLike "*Photos*" -and
-                    $_ -NotLike "*VCLibs*" -and
-                    $_ -NotLike "*Paint*" -and
-                    $_ -NotLike "*Gaming*" -and
-                    $_ -NotLike "*Extension*" -and
-                    $_ -NotLike "*SecHealthUI*" -and
-                    $_ -NotLike "*ScreenSketch*"
+        $packages = & dism /English "/image:$ScratchDir" /Get-ProvisionedAppxPackages |
+                ForEach-Object {
+                    if ($_ -match 'PackageName : (.*)') { $matches[1] }
                 }
-            } else {
-                Write-Host "AppX packages could not be obtained with DISM. MicroWin processing will continue, but AppX packages will be skipped."
-                return
-            }
-        }
 
-        $counter = 0
-        if ($UseCmdlets) {
-            foreach ($appx in $appxProvisionedPackages) {
-                $status = "Removing Provisioned $($appx.PackageName)"
-                Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++/$appxProvisionedPackages.Count*100)
-                try {
-                    Remove-AppxProvisionedPackage -Path "$scratchDir" -PackageName $appx.PackageName -ErrorAction SilentlyContinue
-                } catch {
-                    Write-Host "Application $($appx.PackageName) could not be removed"
-                    continue
-                }
+            $packagePrefixes = @(
+                'AppUp.IntelManagementandSecurityStatus',
+                'Clipchamp.Clipchamp',
+                'DolbyLaboratories.DolbyAccess',
+                'DolbyLaboratories.DolbyDigitalPlusDecoderOEM',
+                'Microsoft.BingNews',
+                'Microsoft.BingSearch',
+                'Microsoft.BingWeather',
+                'Microsoft.Copilot',
+                'Microsoft.Windows.CrossDevice',
+                'Microsoft.GamingApp',
+                'Microsoft.GetHelp',
+                'Microsoft.Getstarted',
+                'Microsoft.Microsoft3DViewer',
+                'Microsoft.MicrosoftOfficeHub',
+                'Microsoft.MicrosoftSolitaireCollection',
+                'Microsoft.MicrosoftStickyNotes',
+                'Microsoft.MixedReality.Portal',
+                'Microsoft.MSPaint',
+                'Microsoft.Office.OneNote',
+                'Microsoft.OfficePushNotificationUtility',
+                'Microsoft.OutlookForWindows',
+                'Microsoft.Paint',
+                'Microsoft.People',
+                'Microsoft.PowerAutomateDesktop',
+                'Microsoft.SkypeApp',
+                'Microsoft.StartExperiencesApp',
+                'Microsoft.Todos',
+                'Microsoft.Wallet',
+                'Microsoft.Windows.DevHome',
+                'Microsoft.Windows.Copilot',
+                'Microsoft.Windows.Teams',
+                'Microsoft.WindowsAlarms',
+                'Microsoft.WindowsCamera',
+                'microsoft.windowscommunicationsapps',
+                'Microsoft.WindowsFeedbackHub',
+                'Microsoft.WindowsMaps',
+                'Microsoft.WindowsSoundRecorder',
+                'Microsoft.ZuneMusic',
+                'Microsoft.ZuneVideo',
+                'MicrosoftCorporationII.MicrosoftFamily',
+                'MicrosoftCorporationII.QuickAssist',
+                'MSTeams',
+                'MicrosoftTeams'
+            )
+
+            $packagesToRemove = $packages | Where-Object {
+                $pkg = $_
+                $packagePrefixes | Where-Object { $pkg -like "*$_*" }
             }
-        } else {
-            foreach ($appx in $appxProvisionedPackages) {
-                $status = "Removing Provisioned $appx"
-                Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++/$appxProvisionedPackages.Count*100)
-                dism /english /image="$scratchDir" /remove-provisionedappxpackage /packagename=$appx /quiet /norestart | Out-Null
-                if ($? -eq $false) {
-                    Write-Host "AppX package $appx could not be removed."
-                }
+            foreach ($package in $packagesToRemove) {
+                & dism /English "/image:$ScratchDir" /Remove-ProvisionedAppxPackage "/PackageName:$package"
             }
-        }
+
         Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
     }
     catch

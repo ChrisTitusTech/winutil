@@ -55,9 +55,6 @@ public class PowerManagement {
     Write-Host "Index chosen: '$index' from $($sync.MicrowinWindowsFlavors.SelectedValue)"
 
     $injectDrivers = $sync.MicrowinInjectDrivers.IsChecked
-    $importDrivers = $sync.MicrowinImportDrivers.IsChecked
-
-    $importVirtIO = $sync.MicrowinCopyVirtIO.IsChecked
 
     $mountDir = $sync.MicrowinMountDir.Text
     $scratchDir = $sync.MicrowinScratchDir.Text
@@ -134,44 +131,20 @@ public class PowerManagement {
             return
         }
 
-        if ($importDrivers) {
-            Write-Host "Exporting drivers from active installation..."
+        if ($injectDrivers) {
+            New-Item -Path "$env:TEMP\DRV_EXPORT" -ItemType Directory -Force
+            dism /english /online /export-driver /destination="$env:TEMP\DRV_EXPORT" | Out-Host
+            if ($?) {
+                Write-Host "Adding exported drivers..."
+                dism /english /image="$scratchDir" /add-driver /driver="$env:TEMP\DRV_EXPORT" /recurse | Out-Host
+            } else {
+                Write-Host "Failed to export drivers. Continuing without importing them..."
+            }
             if (Test-Path "$env:TEMP\DRV_EXPORT") {
                 Remove-Item "$env:TEMP\DRV_EXPORT" -Recurse -Force
             }
-            if (($injectDrivers -and (Test-Path "$($sync.MicrowinDriverLocation.Text)"))) {
-                Write-Host "Using specified driver source..."
-                dism /english /online /export-driver /destination="$($sync.MicrowinDriverLocation.Text)" | Out-Host
-                if ($?) {
-                    # Don't add exported drivers yet, that is run later
-                    Write-Host "Drivers have been exported successfully."
-                } else {
-                    Write-Host "Failed to export drivers."
-                }
-            } else {
-                New-Item -Path "$env:TEMP\DRV_EXPORT" -ItemType Directory -Force
-                dism /english /online /export-driver /destination="$env:TEMP\DRV_EXPORT" | Out-Host
-                if ($?) {
-                    Write-Host "Adding exported drivers..."
-                    dism /english /image="$scratchDir" /add-driver /driver="$env:TEMP\DRV_EXPORT" /recurse | Out-Host
-                } else {
-                    Write-Host "Failed to export drivers. Continuing without importing them..."
-                }
-                if (Test-Path "$env:TEMP\DRV_EXPORT") {
-                    Remove-Item "$env:TEMP\DRV_EXPORT" -Recurse -Force
-                }
-            }
         }
 
-        if ($injectDrivers) {
-            $driverPath = $sync.MicrowinDriverLocation.Text
-            if (Test-Path $driverPath) {
-                Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-                dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
-            } else {
-                Write-Host "Path to drivers is invalid continuing without driver injection"
-            }
-        }
 
         Write-Host "Disabling WPBT Execution"
         reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM"
@@ -198,11 +171,6 @@ public class PowerManagement {
         reg add "HKLM\zSOFTWARE\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell" /v "ExecutionPolicy" /t REG_SZ /d "RemoteSigned" /f
 
         reg unload HKLM\zSOFTWARE
-
-        if ($importVirtIO) {
-            Write-Host "Copying VirtIO drivers..."
-            Microwin-CopyVirtIO
-        }
 
         Write-Host "Remove Features from the image"
         Microwin-RemoveFeatures -UseCmdlets $true
@@ -301,29 +269,11 @@ public class PowerManagement {
         Copy-Item "$env:temp\FirstStartup.ps1" "$($scratchDir)\Windows\FirstStartup.ps1" -force
         Write-Host "Done copy FirstRun.ps1"
 
-        Write-Host "Copy checkinstall.cmd into the ISO"
-        Microwin-NewCheckInstall
-        Copy-Item "$env:temp\checkinstall.cmd" "$($scratchDir)\Windows\checkinstall.cmd" -force
-        Write-Host "Done copy checkinstall.cmd"
-
-        Write-Host "Creating a directory that allows to bypass Wifi setup"
-        New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\OOBE\BYPASSNRO"
-
         Write-Host "Loading registry"
         reg load HKLM\zDEFAULT "$($scratchDir)\Windows\System32\config\default"
         reg load HKLM\zNTUSER "$($scratchDir)\Users\Default\ntuser.dat"
         reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE"
         reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM"
-
-        Write-Host "Disabling Teams"
-        reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Communications" /v "ConfigureChatAutoInstall" /t REG_DWORD /d 0 /f   >$null 2>&1
-        reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\Windows Chat" /v ChatIcon /t REG_DWORD /d 2 /f                             >$null 2>&1
-        reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarMn" /t REG_DWORD /d 0 /f        >$null 2>&1
-        reg query "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Communications" /v "ConfigureChatAutoInstall"                      >$null 2>&1
-        Write-Host "Done disabling Teams"
-
-        Write-Host "Fix Windows Volume Mixer Issue"
-        reg add "HKLM\zNTUSER\Software\Microsoft\Internet Explorer\LowRegistry\Audio\PolicyConfig\PropertyStore" /f
 
         Write-Host "Bypassing system requirements (system image)"
         reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
@@ -336,19 +286,6 @@ public class PowerManagement {
         reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassStorageCheck" /t REG_DWORD /d 1 /f
         reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassTPMCheck" /t REG_DWORD /d 1 /f
         reg add "HKLM\zSYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
-
-        # Prevent Windows Update Installing so called Expedited Apps - 24H2 and newer
-        if ((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,26100,1))) -eq $true) {
-            @(
-                'EdgeUpdate',
-                'DevHomeUpdate',
-                'OutlookUpdate',
-                'CrossDeviceUpdate'
-            ) | ForEach-Object {
-                Write-Host "Removing Windows Expedited App: $_"
-                reg delete "HKLM\zSOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\$_" /f | Out-Null
-            }
-        }
 
         reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTaskbarMode" /t REG_DWORD /d 0 /f
         Write-Host "Setting all services to start manually"
@@ -365,25 +302,47 @@ public class PowerManagement {
         reg add "HKLM\zSOFTWARE\Microsoft\PolicyManager\current\device\Start" /v "ConfigureStartPins" /t REG_SZ /d '{\"pinnedList\": [{}]}' /f
         Write-Host "Done removing Sponsored Apps"
 
-        Write-Host "Disabling Reserved Storage"
+        reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\OOBE" /v "BypassNRO" /t REG_DWORD /d 1 /f
+
         reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager" /v "ShippedWithReserves" /t REG_DWORD /d 0 /f
 
-        Write-Host "Showing file extensions..."
-        reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "HideFileExt" /t REG_DWORD /d 0 /f
+        reg add "HKLM\zSYSTEM\ControlSet001\Control\BitLocker" /v "PreventDeviceEncryption" /t REG_DWORD /d 1 /f
 
-        if ((Microwin-TestCompatibleImage $imgVersion $([System.Version]::new(10,0,21996,1))) -eq $false) {
-            # We're dealing with Windows 10. Configure sane desktop settings. NOTE: even though stuff to disable News and Interests is there,
-            # it doesn't seem to work, and I don't want to waste more time dealing with an operating system that will lose support in a year (2025)
+        reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\Windows Chat" /v "ChatIcon" /t REG_DWORD /d 3 /f
 
-            # I invite anyone to work on improving stuff for News and Interests, but that won't be me!
+        reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarMn" /t REG_DWORD /d 0 /f
 
-            Write-Host "Disabling Search Highlights..."
-            reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds\DSB" /v "ShowDynamicContent" /t REG_DWORD /d 0 /f
-            reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\SearchSettings" /v "IsDynamicSearchBoxEnabled" /t REG_DWORD /d 0 /f
-            reg add "HKLM\zSOFTWARE\Policies\Microsoft\Dsh" /v "AllowNewsAndInterests" /t REG_DWORD /d 0 /f
-            reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "TraySearchBoxVisible" /t REG_DWORD /d 1 /f
-            reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\Windows Feeds" /v "EnableFeeds" /t REG_DWORD /d 0 /f
-        }
+        reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge"
+        reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update"
+
+        reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\OneDrive" /v "DisableFileSyncNGSC" /t REG_DWORD /d 1 /f
+
+        reg add "HKLM\zNTUSER\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo" /v "Enabled" /t REG_DWORD /d 0 /f
+
+        reg add 'HKLM\zNTUSER\Software\Microsoft\Windows\CurrentVersion\Privacy' /v 'TailoredExperiencesWithDiagnosticDataEnabled' /t REG_DWORD /d 0 /f
+        reg add 'HKLM\zNTUSER\Software\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy' /v 'HasAccepted' /t REG_DWORD /d 0 /f
+        reg add 'HKLM\zNTUSER\Software\Microsoft\Input\TIPC' /v 'Enabled' /t REG_DWORD /d 0 /f
+        reg add 'HKLM\zNTUSER\Software\Microsoft\InputPersonalization' /v 'RestrictImplicitInkCollection' /t REG_DWORD /d 1 /f
+        reg add 'HKLM\zNTUSER\Software\Microsoft\InputPersonalization' /v 'RestrictImplicitTextCollection' /t REG_DWORD /d 1 /f
+        reg add 'HKLM\zNTUSER\Software\Microsoft\InputPersonalization\TrainedDataStore' /v 'HarvestContacts' /t REG_DWORD /d 0 /f
+        reg add 'HKLM\zNTUSER\Software\Microsoft\Personalization\Settings' /v 'AcceptedPrivacyPolicy' /t REG_DWORD /d 0 /f
+        reg add 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\DataCollection' /v 'AllowTelemetry' /t REG_DWORD /d 0 /f
+        reg add 'HKLM\zSYSTEM\ControlSet001\Services\dmwappushservice' /v 'Start' /t REG_DWORD /d 4 /f
+
+        reg add 'HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler_Oobe\OutlookUpdate' /v 'workCompleted' /t REG_DWORD /d 1 /f
+        reg add 'HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler\OutlookUpdate' /v 'workCompleted' /t REG_DWORD /d 1 /f
+        reg add 'HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler\DevHomeUpdate' /v 'workCompleted' /t REG_DWORD /d 1 /f
+        reg delete 'HKLM\zSOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\OutlookUpdate'
+        reg delete 'HKLM\zSOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\DevHomeUpdate'
+
+        reg add 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\WindowsCopilot' /v 'TurnOffWindowsCopilot' /t REG_DWORD /d 1 /f
+        reg add 'HKLM\zSOFTWARE\Policies\Microsoft\Edge' /v 'HubsSidebarEnabled' /t REG_DWORD /d 0 /f
+        reg add 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\Explorer' /v 'DisableSearchBoxSuggestions' /t REG_DWORD /d 1 /f
+        reg add 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU' /v 'NoAutoUpdate' /t REG_DWORD /d 1 /f
+        reg add 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\WindowsUpdate' /v 'DisableWindowsUpdateAccess' /t REG_DWORD /d 1 /f
+        reg add 'HKLM\zSOFTWARE\Policies\Microsoft\Teams' /v 'DisableInstallation' /t REG_DWORD /d 1 /f
+
+        reg add 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\Windows Mail' /v 'PreventRun' /t REG_DWORD /d 1 /f
 
     } catch {
         Write-Error "An unexpected error occurred: $_"
