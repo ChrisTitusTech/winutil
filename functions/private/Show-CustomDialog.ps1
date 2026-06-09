@@ -177,7 +177,7 @@ function Show-CustomDialog {
 
     # Add "Winutil" text
     $winutilTextBlock = New-Object Windows.Controls.TextBlock
-    $winutilTextBlock.Text = "Winutil"
+    $winutilTextBlock.Text = "WinUtil"
     $winutilTextBlock.FontSize = $HeaderFontSize
     $winutilTextBlock.Foreground = $LogoColor
     $winutilTextBlock.Margin = New-Object Windows.Thickness(10, 10, 10, 5)  # Add margins around the text block

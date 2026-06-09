@@ -15,7 +15,7 @@ try using a **VPN** and if that doesn't work than report the issue to https://gi
 
 If you run WinUtil and get the error:
 
-`"WinUtil is unable to run on your system, powershell execution is restricted by security policies,"`
+`"WinUtil is unable to run on your system. PowerShell execution is restricted by security policies"`
 
 this means that your PowerShell session is in **Constrained Language Mode**, which prevents WinUtil from running.
 
