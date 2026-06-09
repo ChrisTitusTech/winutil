@@ -1001,7 +1001,7 @@
                     Background="{DynamicResource ButtonWin11ISOBackgroundColor}" Foreground="{DynamicResource ButtonWin11ISOForegroundColor}" FontWeight="Bold" Name="WPFTab5BT">
                     <ToggleButton.Content>
                         <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonWin11ISOForegroundColor}">
-                            <Underline>W</Underline>in11 Creator
+                            <Underline>M</Underline>icroWin
                         </TextBlock>
                     </ToggleButton.Content>
                 </ToggleButton>
@@ -1409,7 +1409,6 @@
                                 Foreground="{DynamicResource LabelboxForegroundColor}"
                             />
                             <RadioButton x:Name="ISOmanual" Content="Select your own ISO" GroupName="Options" Margin="0,10,0,0" IsChecked="True"/>
-                            <RadioButton x:Name="ISOdownloader" Content="Get newest ISO automatically" GroupName="Options" Margin="0,5,0,5"/>
                             <ComboBox x:Name="ISOLanguage" Visibility="Collapsed"/>
                             <Button Name="WPFGetIso" Margin="2" Padding="15">
                                 <Button.Content>
@@ -1548,7 +1547,7 @@
                                 Height = "Auto"
                                 Width = "Auto"
                                 Foreground="{DynamicResource ComboBoxForegroundColor}">
-                                <Bold>MicroWin features:</Bold><LineBreak/>
+                                <Bold>MicroWin Lite features:</Bold><LineBreak/>
                                 - Remove Telemetry and Tracking <LineBreak/>
                                 - Fast Install using either the "User" local account or the account of your choosing <LineBreak/>
                                 - Bypasses Windows 11 System Requirements on unsupported computers <LineBreak/>
@@ -1558,14 +1557,10 @@
                                 <LineBreak/>
 
                                 <Bold>INSTRUCTIONS</Bold> <LineBreak/>
-                                1. Download Windows 11 ISO from <TextBlock Name="Win11DownloadLink" Style="{StaticResource HoverTextBlockStyle}" ToolTip="https://www.microsoft.com/software-download/windows11">Microsoft</TextBlock> directly, or use the "Get newest ISO" option and select your preferred language.<LineBreak/>
+                                1. Download Windows 11 ISO from <TextBlock Name="Win11DownloadLink" Style="{StaticResource HoverTextBlockStyle}" ToolTip="https://www.microsoft.com/software-download/windows11">Microsoft</TextBlock> directly.<LineBreak/>
                                 2. Click "Get Windows ISO" then select your Windows ISO (may take several minutes depending on your machine and connection)<LineBreak/>
                                 3. Select Windows flavor > Click "Start Process" (may take time, check the console and wait for the "Done" message to appear)<LineBreak/>
                                 4. Finally, write the ISO to a USB drive using your preferred method and boot.<LineBreak/><LineBreak/>
-                                <Bold>Driver Injection:</Bold> <LineBreak/>
-                                Organize drivers in separate folders with .inf, .sys, and .dll files for each device <LineBreak/><LineBreak/>
-                                <Bold>VirtIO Drivers (QEMU/Proxmox):</Bold><LineBreak/>
-                                Check "Include VirtIO drivers" before starting. During setup, select Load Driver > Browse to D:\VirtIO\vioscsi\w11\amd64 (use ARM64 for Windows on ARM) > Select all drivers and click OK<LineBreak/>
                             </TextBlock>
                             <TextBlock Margin="15,0,15,15"
                                 Padding = "1"

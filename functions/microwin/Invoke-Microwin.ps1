@@ -5,12 +5,6 @@ function Invoke-Microwin {
     #>
 
 
-    if($sync.ProcessRunning) {
-        $msg = "GetIso process is currently running."
-        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-        return
-    }
-
     # Define the constants for Windows API
 Add-Type @"
 using System;
