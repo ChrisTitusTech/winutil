@@ -54,7 +54,7 @@ public class PowerManagement {
     $index = $sync.MicrowinWindowsFlavors.SelectedValue.Split(":")[0].Trim()
     Write-Host "Index chosen: '$index' from $($sync.MicrowinWindowsFlavors.SelectedValue)"
 
-    $injectDrivers = $sync.MicrowinInjectDrivers.IsChecked
+    $injectDrivers = $sync.MicrowinImportDrivers.IsChecked
 
     $mountDir = $sync.MicrowinMountDir.Text
     $scratchDir = $sync.MicrowinScratchDir.Text
@@ -171,12 +171,7 @@ public class PowerManagement {
         reg add "HKLM\zSOFTWARE\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell" /v "ExecutionPolicy" /t REG_SZ /d "RemoteSigned" /f
 
         reg unload HKLM\zSOFTWARE
-
-        Write-Host "Remove Features from the image"
-        Microwin-RemoveFeatures -UseCmdlets $true
-        Write-Host "Removing features complete!"
-        Write-Host "Removing OS packages"
-        Microwin-RemovePackages -UseCmdlets $true
+        
         Write-Host "Removing Appx Bloat"
         Microwin-RemoveProvisionedPackages -UseCmdlets $true
 
