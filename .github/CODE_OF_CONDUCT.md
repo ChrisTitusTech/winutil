@@ -2,7 +2,7 @@
 
 ## Our Pledge
 
-We as members, contributors, and leaders pledge to make participation in our
+We, as members, contributors, and leaders, pledge to make participation in our
 community a harassment-free experience for everyone, regardless of age, body
 size, visible or invisible disability, ethnicity, sex characteristics, gender
 identity and expression, level of experience, education, socio-economic status,
@@ -106,7 +106,7 @@ Violating these terms may lead to a permanent ban.
 ### 4. Permanent Ban
 
 **Community Impact**: Demonstrating a pattern of violation of community
-standards, including sustained inappropriate behavior,  harassment of an
+standards, including sustained inappropriate behavior, harassment of an
 individual, or aggression toward or disparagement of classes of individuals.
 
 **Consequence**: A permanent ban from any sort of public interaction within
