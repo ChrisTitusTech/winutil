@@ -7,29 +7,25 @@ function Microwin-GetOscdimg {
         Microwin-GetOscdimg
     #>
 
-    param(
-        [Parameter(Mandatory, position=0)]
-        [string]$oscdimgPath
-    )
-
-    $oscdimgPath = "$env:TEMP\oscdimg.exe"
-    $downloadUrl = "https://github.com/ChrisTitusTech/winutil/raw/main/releases/oscdimg.exe"
-    Invoke-RestMethod -Uri $downloadUrl -OutFile $oscdimgPath
-    if (-not (Test-Path "$oscdimgPath" -PathType Leaf)) {
-        Write-Host "OSCDIMG could not be downloaded."
-        return $false
+    try {
+        $winget = Get-Command winget -ErrorAction Stop
+        $result = & $winget install -e --id Microsoft.OSCDIMG --accept-package-agreements --accept-source-agreements 2>&1
+        Write-Win11ISOLog "winget output: $result"
+        # Re-scan for oscdimg after install
+        $oscdimg = Get-ChildItem "C:\Program Files (x86)\Windows Kits" -Recurse -Filter "oscdimg.exe" -ErrorAction SilentlyContinue |
+                    Select-Object -First 1 -ExpandProperty FullName
+    } catch {
+        Write-Win11ISOLog "winget not available or install failed: $_"
     }
-    $hashResult = Get-FileHash -Path $oscdimgPath -Algorithm SHA256
-    $sha256Hash = $hashResult.Hash
 
-    Write-Host "[INFO] oscdimg.exe SHA-256 Hash: $sha256Hash"
-
-    $expectedHash = "AB9E161049D293B544961BFDF2D61244ADE79376D6423DF4F60BF9B147D3C78D"  # Replace with the actual expected hash
-    if ($sha256Hash -eq $expectedHash) {
-        Write-Host "Hashes match. File is verified."
-        return $true
-    } else {
-        Write-Host "Hashes do not match. File may be corrupted or tampered with."
-        return $false
+    if (-not $oscdimg) {
+        Set-WinUtilProgressBar -Label "" -Percent 0
+        Write-Win11ISOLog "oscdimg.exe still not found after install attempt."
+        [System.Windows.MessageBox]::Show(
+            "oscdimg.exe could not be found or installed automatically.`n`nPlease install it manually:`n  winget install -e --id Microsoft.OSCDIMG`n`nOr install the Windows ADK from:`nhttps://learn.microsoft.com/windows-hardware/get-started/adk-install",
+            "oscdimg Not Found", "OK", "Warning")
+        return
     }
+    Write-Win11ISOLog "oscdimg.exe installed successfully."
+    return $true
 }
