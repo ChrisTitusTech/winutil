@@ -845,6 +845,14 @@
         "winget": "OpenJS.NodeJS.LTS",
         "foss": true
     },
+    "pnpm": {
+    "category": "Development",
+    "content": "pnpm",
+    "description": "pnpm is a fast and disk space efficient package manager for JavaScript and Node.js applications.",
+    "link": "https://pnpm.io/",
+    "winget": "pnpm.pnpm",
+    "foss": true
+    },
     "notepadplus": {
         "category": "Multimedia Tools",
         "choco": "notepadplusplus",
