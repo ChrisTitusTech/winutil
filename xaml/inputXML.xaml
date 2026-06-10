@@ -1381,68 +1381,84 @@
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Win11ISO" Visibility="Collapsed" Name="WPFTab5">
-                <Grid Name="Win11ISOPanel" Margin="{DynamicResource TabContentMargin}" Background="Transparent">
+                <Grid Name="Win11ISOPanel" Margin="20" Background="Transparent">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>  <!-- Steps 1-4 -->
-                        <RowDefinition Height="*"/>     <!-- Log / Status -->
-                    </Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>  <RowDefinition Height="*"/>     </Grid.RowDefinitions>
 
-                    <StackPanel Grid.Row="0">
-                        <Grid Name="WPFWin11ISOSelectSection" Margin="5" HorizontalAlignment="Left" MinWidth="{DynamicResource ButtonWidth}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
+                    <Grid Grid.Row="0" Margin="0,0,0,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/> <ColumnDefinition Width="30"/>  <ColumnDefinition Width="1*"/> </Grid.ColumnDefinitions>
 
-                            <StackPanel Grid.Column="0" Margin="5,5,15,5">
-                                <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="Bold"
-                                            Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,8">
-                                    Launch MicroWin here
+                        <Border Grid.Column="0" 
+                                Background="{DynamicResource MainBackgroundColor}" 
+                                BorderBrush="{DynamicResource BorderColor}" 
+                                BorderThickness="1" 
+                                CornerRadius="6" 
+                                Padding="20">
+                            <StackPanel>
+                                <TextBlock FontSize="18" FontWeight="Bold" Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,5">
+                                    MicroWin ISO Builder
                                 </TextBlock>
-                                <Button Grid.Column="1"
-                                        Name="WPFLaunchMicroWin"
-                                        Content="Launch"
-                                        Width="Auto" Padding="12,0"
-                                        Height="{DynamicResource ButtonHeight}"/>
-                            </StackPanel>
+                                <TextBlock FontSize="12" Foreground="{DynamicResource MainForegroundColor}" Opacity="0.6" Margin="0,0,0,20">
+                                    Configure and automate your streamlined Windows installation media.
+                                </TextBlock>
 
-                            <Border Grid.Column="1"
-                                    Background="{DynamicResource MainBackgroundColor}"
-                                    BorderBrush="{DynamicResource BorderColor}"
-                                    BorderThickness="1" CornerRadius="5"
-                                    Margin="5" Padding="15">
-                                <StackPanel>
-                                    <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="Bold"
-                                                Foreground="OrangeRed" Margin="0,0,0,10">
-                                        Report MicroWin Issues Here
-                                    </TextBlock>
-                                    <Button Name="WPFReportMicroWinIssues"
-                                            Content="Open Microwin Issues Page"
+                                <StackPanel Margin="0,0,0,10">
+                                    <TextBlock FontWeight="SemiBold" Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,5">Step 2: Execution Options</TextBlock>
+                                    <Button Name="WPFLaunchMicroWin"
+                                            Content="Launch MicroWin"
                                             HorizontalAlignment="Left"
-                                            Width="Auto" Padding="12,0"
+                                            Padding="20,0"
+                                            FontWeight="Bold"
                                             Height="{DynamicResource ButtonHeight}"/>
                                 </StackPanel>
-                            </Border>
+                            </StackPanel>
+                        </Border>
 
-                            <Border Grid.Column="1"
-                                    Background="{DynamicResource MainBackgroundColor}"
-                                    BorderBrush="{DynamicResource BorderColor}"
-                                    BorderThickness="1" CornerRadius="5"
-                                    Margin="5" Padding="15">
-                                <StackPanel>
-                                    <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="Bold"
-                                            Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,8">
-                                        Open MicroWin Repository Here
+                        <Border Grid.Column="2"
+                                Background="{DynamicResource MainBackgroundColor}"
+                                BorderBrush="{DynamicResource BorderColor}"
+                                BorderThickness="1" 
+                                CornerRadius="6"
+                                Padding="20"
+                                VerticalAlignment="Stretch">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Row="0" Margin="0,0,0,20">
+                                    <TextBlock FontSize="14" FontWeight="Bold" Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,4">
+                                        Resources &amp; Support
+                                    </TextBlock>
+                                    <Separator Background="{DynamicResource BorderColor}" Margin="0,5,0,0"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="1" VerticalAlignment="Top">
+                                    <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,6">
+                                        Project Repository
                                     </TextBlock>
                                     <Button Name="WPFOpenMicroWinRepo"
-                                            Content="Open Microwin GitHub Repository"
-                                            HorizontalAlignment="Left"
-                                            Width="Auto" Padding="12,0"
+                                            Content="GitHub Repository"
+                                            HorizontalAlignment="Stretch"
+                                            Margin="0,0,0,20"
+                                            Height="{DynamicResource ButtonHeight}"/>
+
+                                    <TextBlock FontSize="{DynamicResource FontSize}" FontWeight="SemiBold"
+                                               Foreground="OrangeRed" Margin="0,0,0,6">
+                                        Encountered a Bug?
+                                    </TextBlock>
+                                    <Button Name="WPFReportMicroWinIssues"
+                                            Content="Open Issues Page"
+                                            HorizontalAlignment="Stretch"
                                             Height="{DynamicResource ButtonHeight}"/>
                                 </StackPanel>
-                            </Border>
-                        </Grid>
-                    </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
                 </Grid>
             </TabItem>
         </TabControl>
