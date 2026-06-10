@@ -537,47 +537,18 @@ $sync["FontScalingApplyButton"].Add_Click({
 })
 
 # ── Win11ISO Tab button handlers ──────────────────────────────────────────────
-
-$sync["WPFTab5BT"].Add_Click({
-    $sync["Form"].Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{ Invoke-WinUtilISOCheckExistingWork }) | Out-Null
+$sync["WPFLaunchMicroWin"].Add_Click({
+    Start-Process powershell -ArgumentList "-ExecutionPolicy Bypass", "-NoExit", "-Command", {
+        iwr -useb "https://raw.githubusercontent.com/CodingWonders/MicroWin/refs/heads/main/Microwin.ps1" | iex
+    }
 })
 
-$sync["WPFWin11ISOBrowseButton"].Add_Click({
-    Invoke-WinUtilISOBrowse
+$sync["WPFReportMicroWinIssues"].Add_Click({
+    Start-Process "https://github.com/CodingWonders/MicroWin/issues"
 })
 
-$sync["WPFWin11ISODownloadLink"].Add_Click({
-    Start-Process "https://www.microsoft.com/software-download/windows11"
-})
-
-$sync["WPFWin11ISOMountButton"].Add_Click({
-    Invoke-WinUtilISOMountAndVerify
-})
-
-$sync["WPFWin11ISOModifyButton"].Add_Click({
-    Invoke-WinUtilISOModify
-})
-
-$sync["WPFWin11ISOChooseISOButton"].Add_Click({
-    $sync["WPFWin11ISOOptionUSB"].Visibility = "Collapsed"
-    Invoke-WinUtilISOExport
-})
-
-$sync["WPFWin11ISOChooseUSBButton"].Add_Click({
-    $sync["WPFWin11ISOOptionUSB"].Visibility = "Visible"
-    Invoke-WinUtilISORefreshUSBDrives
-})
-
-$sync["WPFWin11ISORefreshUSBButton"].Add_Click({
-    Invoke-WinUtilISORefreshUSBDrives
-})
-
-$sync["WPFWin11ISOWriteUSBButton"].Add_Click({
-    Invoke-WinUtilISOWriteUSB
-})
-
-$sync["WPFWin11ISOCleanResetButton"].Add_Click({
-    Invoke-WinUtilISOCleanAndReset
+$sync["WPFOpenMicroWinRepo"].Add_Click({
+    Start-Process "https://github.com/CodingWonders/MicroWin"
 })
 
 # ──────────────────────────────────────────────────────────────────────────────
