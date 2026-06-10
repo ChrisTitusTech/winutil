@@ -75,6 +75,8 @@ function Invoke-WPFButton {
                  $sync.Form.Resources["FOSSColor"] = $sync.Form.Resources["MainForegroundColor"]
             }
         }
-        "WPFGetIso" {Invoke-Microwin}
+        "WPFGetIso" {Invoke-MicroWinGetISO}
+        "WPFMicrowin" {Invoke-Microwin}
+        "WPFMicrowinPanelBack" {Toggle-MicrowinPanel 1}
     }
 }
