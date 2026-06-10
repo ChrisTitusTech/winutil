@@ -538,7 +538,7 @@ $sync["FontScalingApplyButton"].Add_Click({
 
 # ── Win11ISO Tab button handlers ──────────────────────────────────────────────
 $sync["WPFLaunchMicroWin"].Add_Click({
-    Start-Process powershell -ArgumentList "-ExecutionPolicy Bypass", "-NoExit", "-Command", {
+    Start-Process powershell -ArgumentList "-ExecutionPolicy Bypass", "-Command", {
         iwr -useb "https://raw.githubusercontent.com/CodingWonders/MicroWin/refs/heads/main/Microwin.ps1" | iex
     }
 })
