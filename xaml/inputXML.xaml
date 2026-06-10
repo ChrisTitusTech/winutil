@@ -1389,11 +1389,11 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="2*"/> <ColumnDefinition Width="30"/>  <ColumnDefinition Width="1*"/> </Grid.ColumnDefinitions>
 
-                        <Border Grid.Column="0" 
-                                Background="{DynamicResource MainBackgroundColor}" 
-                                BorderBrush="{DynamicResource BorderColor}" 
-                                BorderThickness="1" 
-                                CornerRadius="6" 
+                        <Border Grid.Column="0"
+                                Background="{DynamicResource MainBackgroundColor}"
+                                BorderBrush="{DynamicResource BorderColor}"
+                                BorderThickness="1"
+                                CornerRadius="6"
                                 Padding="20">
                             <StackPanel>
                                 <TextBlock FontSize="18" FontWeight="Bold" Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,5">
@@ -1404,7 +1404,7 @@
                                 </TextBlock>
 
                                 <StackPanel Margin="0,0,0,10">
-                                    <TextBlock FontWeight="SemiBold" Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,5">Step 2: Execution Options</TextBlock>
+                                    <TextBlock FontWeight="SemiBold" Foreground="{DynamicResource MainForegroundColor}" Margin="0,0,0,5">MicroWin</TextBlock>
                                     <Button Name="WPFLaunchMicroWin"
                                             Content="Launch MicroWin"
                                             HorizontalAlignment="Left"
@@ -1418,7 +1418,7 @@
                         <Border Grid.Column="2"
                                 Background="{DynamicResource MainBackgroundColor}"
                                 BorderBrush="{DynamicResource BorderColor}"
-                                BorderThickness="1" 
+                                BorderThickness="1"
                                 CornerRadius="6"
                                 Padding="20"
                                 VerticalAlignment="Stretch">
