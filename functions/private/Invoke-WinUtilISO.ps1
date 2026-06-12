@@ -14,16 +14,17 @@ function Invoke-WinUtilRunspace ($ScriptBlock, $Variables) {
 
     $runspace.SessionStateProxy.SetVariable("sync", $sync)
     $runspace.SessionStateProxy.SetVariable("winutildir", $winutildir)
-    $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef",
-        "function Write-Win11ISOLog {`n" + ${function:Write-Win11ISOLog}.ToString() + "`n}")
 
     foreach ($kvp in $Variables.GetEnumerator()) {
         $runspace.SessionStateProxy.SetVariable($kvp.Key, $kvp.Value)
     }
 
+    $funcDef = "function Write-Win11ISOLog {`n" + ${function:Write-Win11ISOLog}.ToString() + "`n}"
+    $wrappedScript = [scriptblock]::Create($funcDef + "`n`n" + $ScriptBlock.ToString())
+
     $script = [Management.Automation.PowerShell]::Create()
     $script.Runspace = $runspace
-    $script.AddScript($ScriptBlock)
+    $script.AddScript($wrappedScript)
     return $script.BeginInvoke()
 }
 
@@ -50,8 +51,6 @@ function Invoke-WinUtilISOMount {
     $sync["WPFWin11ISOMountButton"].IsEnabled = $false
 
     Invoke-WinUtilRunspace -Variables @{ isoPath = $isoPath } -ScriptBlock {
-        . ([scriptblock]::Create($win11ISOLogFuncDef))
-
         try {
             $time = Get-Date -Format hh:mm:ss
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
@@ -143,8 +142,6 @@ function Invoke-WinUtilISOModify {
         autounattendContent = $WinUtilAutounattendXml
         injectDrivers = $injectDrivers
     } -ScriptBlock {
-        . ([scriptblock]::Create($win11ISOLogFuncDef))
-
         try {
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 $sync["WPFWin11ISOSelectSection"].Visibility = "Collapsed"
@@ -256,8 +253,6 @@ function Invoke-WinUtilISOExport {
         contentsDir = $sync["Win11ISOContentsDir"]
         outputISO = $dialog.FileName
     } -ScriptBlock {
-        . ([scriptblock]::Create($win11ISOLogFuncDef))
-
         try {
             Write-Win11ISOLog "Exporting to $outputISO"
 
@@ -305,8 +300,6 @@ function Invoke-WinUtilISOCleanAndReset {
     $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $false
 
     Invoke-WinUtilRunspace -Variables @{ winutildir = $winutildir } -ScriptBlock {
-        . ([scriptblock]::Create($win11ISOLogFuncDef))
-
         Write-Win11ISOLog "Dismounting mounted Windows images..."
         foreach ($image in Get-WindowsImage -Mounted) {
             Dismount-WindowsImage -Path $image.Path -Discard
