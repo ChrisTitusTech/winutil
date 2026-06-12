@@ -37,7 +37,7 @@ function Invoke-WinUtilTweaks ($CheckBox, $undo) {
             }
         } catch {
             Write-Warning "Unable to set $Name due to unhandled exception."
-            Write-Warning $psitem.Exception.StackTrace
+            Write-Warning $_.Exception.Message
         }
     }
 
@@ -47,7 +47,7 @@ function Invoke-WinUtilTweaks ($CheckBox, $undo) {
             Invoke-Command ([scriptblock]::Create($script)) -ErrorAction Stop
         } catch {
             Write-Warning "Unable to run script for $CheckBox due to unhandled exception."
-            Write-Warning $psitem.Exception.StackTrace
+            Write-Warning $_.Exception.Message
         }
     }
 
