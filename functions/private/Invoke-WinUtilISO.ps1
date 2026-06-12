@@ -191,18 +191,11 @@ function Invoke-WinUtilISOModify {
                 Set-ItemProperty -Path "$isoContents\sources\boot.wim" -Name IsReadOnly -Value $false
                 New-Item -Path "$workDir\boot_mount" -ItemType Directory -Force
 
-                Write-Win11ISOLog "Adding drivers to boot.wim (Index 1)"
-                Mount-WindowsImage -ImagePath "$isoContents\sources\boot.wim" -Index 1 -Path "$workDir\boot_mount"
-                Add-WindowsDriver -Path "$workDir\boot_mount" -Driver "$winutildir\Driver" -Recurse
-
-                Write-Win11ISOLog "Saving boot.wim (Index 1)"
-                Dismount-WindowsImage -Path "$workDir\boot_mount" -Save
-
-                Write-Win11ISOLog "Adding drivers to boot.wim (Index 2)"
+                Write-Win11ISOLog "Adding drivers to boot.wim"
                 Mount-WindowsImage -ImagePath "$isoContents\sources\boot.wim" -Index 2 -Path "$workDir\boot_mount"
                 Add-WindowsDriver -Path "$workDir\boot_mount" -Driver "$winutildir\Driver" -Recurse
 
-                Write-Win11ISOLog "Saving boot.wim (Index 2)"
+                Write-Win11ISOLog "Saving boot.wim"
                 Dismount-WindowsImage -Path "$workDir\boot_mount" -Save
 
                 Remove-Item -Path "$winutildir\Driver" -Recurse -Force
