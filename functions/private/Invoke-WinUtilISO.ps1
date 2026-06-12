@@ -97,7 +97,7 @@ function Invoke-WinUtilISOMount {
                 $sync["WPFWin11ISOModifySection"].Visibility = "Visible"
             })
 
-            Write-Win11ISOLog "ISO Mounted to $driveLetter."
+            Write-Win11ISOLog "ISO Mounted to $driveLetter"
         } catch {
             Write-Win11ISOLog "ERROR during mount: $_"
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
