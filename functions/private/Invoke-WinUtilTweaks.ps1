@@ -52,9 +52,9 @@ function Invoke-WinUtilTweaks ($CheckBox, $undo) {
     }
 
     if (-not $undo) {
-        foreach ($app in $tweak.appx) {
-            Write-Host "Removing $app"
-            Get-AppxPackage -Name $app -AllUsers | Remove-AppxPackage -AllUsers
+        foreach ($appx in $tweak.appx) {
+            Write-Host "Removing $appx"
+            Get-AppxPackage -Name $appx -AllUsers | Remove-AppxPackage -AllUsers
         }
     }
 }
