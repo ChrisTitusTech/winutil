@@ -1121,6 +1121,8 @@
                                         TickFrequency="0.25"
                                         TickPlacement="BottomRight"
                                         IsSnapToTickEnabled="True"
+                                        IsMoveToPointEnabled="True"
+                                        Stylus.IsPressAndHoldEnabled="False"
                                         Width="120"
                                         VerticalAlignment="Center"/>
                                 <TextBlock Text="Large"
