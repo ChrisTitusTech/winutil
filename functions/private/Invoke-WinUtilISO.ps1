@@ -175,7 +175,7 @@ function Invoke-WinUtilISOModify {
             Write-Win11ISOLog "Removed support folder from ISO root."
 
             if ($injectDrivers) {
-                Write-Win11ISOLog "Exporting Windows drivers..."
+                Write-Win11ISOLog "Exporting Windows drivers to $winutildir\Driver..."
                 Export-WindowsDriver -Destination "$winutildir\Driver" -Online
 
                 Set-ItemProperty -Path $localWim -Name IsReadOnly -Value $false
@@ -185,17 +185,17 @@ function Invoke-WinUtilISOModify {
                 Mount-WindowsImage -ImagePath $localWim -Index $selectedWimIndex -Path "$workDir\wim_mount"
                 Add-WindowsDriver -Path "$workDir\wim_mount" -Driver "$winutildir\Driver" -Recurse
 
-                Write-Win11ISOLog "Saving install.wim/install.esd"
+                Write-Win11ISOLog "Saving $localWim..."
                 Dismount-WindowsImage -Path "$workDir\wim_mount" -Save
 
                 Set-ItemProperty -Path "$isoContents\sources\boot.wim" -Name IsReadOnly -Value $false
                 New-Item -Path "$workDir\boot_mount" -ItemType Directory -Force
 
-                Write-Win11ISOLog "Adding drivers to boot.wim"
+                Write-Win11ISOLog "Adding drivers to $isoContents\sources\boot.wim...."
                 Mount-WindowsImage -ImagePath "$isoContents\sources\boot.wim" -Index 2 -Path "$workDir\boot_mount"
                 Add-WindowsDriver -Path "$workDir\boot_mount" -Driver "$winutildir\Driver" -Recurse
 
-                Write-Win11ISOLog "Saving boot.wim"
+                Write-Win11ISOLog "Saving $isoContents\sources\boot.wim..."
                 Dismount-WindowsImage -Path "$workDir\boot_mount" -Save
 
                 Remove-Item -Path "$winutildir\Driver" -Recurse -Force
