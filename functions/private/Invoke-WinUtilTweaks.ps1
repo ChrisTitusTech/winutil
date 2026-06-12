@@ -73,7 +73,8 @@ function Invoke-WinUtilTweaks {
     if (!$undo) {
         if($sync.configs.tweaks.$CheckBox.appx) {
             $sync.configs.tweaks.$CheckBox.appx | ForEach-Object {
-                Remove-WinUtilAPPX -Name $psitem
+                Write-Host "Removing $psitem"
+                Get-AppxPackage -Name $psitem -AllUsers | Remove-AppxPackage -AllUsers
             }
         }
     }
