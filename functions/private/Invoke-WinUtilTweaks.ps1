@@ -25,7 +25,7 @@ function Invoke-WinUtilTweaks ($CheckBox, $undo) {
 
             if (-not (Test-Path $Path)) {
                 Write-Host "$Path was not found. Creating..."
-                New-Item -Path $Path -Force -ErrorAction Stop | Out-Null
+                New-Item -Path $Path -Force -ErrorAction Stop
             }
 
             if ($Value -ne "<RemoveEntry>") {
