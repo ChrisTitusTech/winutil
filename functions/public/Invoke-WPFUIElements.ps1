@@ -371,6 +371,8 @@ function Invoke-WPFUIElements {
                             $textBlock.ToolTip = $entryInfo.Link
                             $textBlock.Style = $HoverTextBlockStyle
                             $textBlock.UseLayoutRounding = $true
+                            $textBlock.Margin = "5,0,0,0"
+                            $textBlock.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
 
                             $horizontalStackPanel.Children.Add($textBlock) | Out-Null
 
