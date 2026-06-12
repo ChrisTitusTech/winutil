@@ -98,7 +98,7 @@ function Invoke-WinUtilISOMount {
                 $sync["WPFWin11ISOModifySection"].Visibility = "Visible"
             })
 
-            Write-Win11ISOLog "ISO Mounted."
+            Write-Win11ISOLog "ISO Mounted to $driveLetter."
         } catch {
             Write-Win11ISOLog "ERROR during mount: $_"
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
@@ -160,7 +160,7 @@ function Invoke-WinUtilISOModify {
             Copy-Item -Path "$driveLetter\*" -Destination $isoContents -Recurse -Force
             Dismount-DiskImage -ImagePath $isoPath
 
-            Write-Win11ISOLog "ISO contents copied."
+            Write-Win11ISOLog "ISO contents copied to $isoContents."
 
             $localWim = if (Test-Path "$isoContents\sources\install.wim") {
                 "$isoContents\sources\install.wim"
