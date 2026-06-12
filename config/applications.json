@@ -1421,6 +1421,15 @@
         "winget": "Unity.UnityHub",
         "foss": false
     },
+    "everything": {
+        "category": "Utilities",
+        "choco": "everything",
+        "content": "VoidTools Everything",
+        "description": "Everything is a search engine that locates files and folders by filename instantly for Windows. Unlike Windows search Everything initially displays every file and folder on your computer (hence the name Everything). You type in a search filter to limit what files and folders are displayed.",
+        "link": "https://www.voidtools.com/",
+        "winget": "voidtools.Everything",
+        "foss": false
+    },
     "vc2015_32": {
         "category": "Microsoft Tools",
         "choco": "vcredist2015",
