@@ -31,7 +31,7 @@ function Invoke-WinUtilTweaks ($CheckBox, $undo) {
             if ($Value -ne "<RemoveEntry>") {
                 Write-Host "Set $Path\$Name to $Value"
                 Set-ItemProperty -Path $Path -Name $Name -Type $Type -Value $Value -Force -ErrorAction Stop
-            } else{
+            } else {
                 Write-Host "Remove $Path\$Name"
                 Remove-ItemProperty -Path $Path -Name $Name -Force -ErrorAction Stop
             }
