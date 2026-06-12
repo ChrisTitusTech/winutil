@@ -8,8 +8,8 @@ function Invoke-WinUtilTweaks ($CheckBox, $undo) {
     }
 
     foreach ($svc in $tweak.service) {
-        Write-Host "Setting Service $svc.Name to $svc.($keys.Service)"
-        Set-Service -Name $svc.Name -StartupType $svc.($keys.Service)
+        Write-Host "Setting Service $($svc.Name) to $($svc.$($keys.Service))"
+        Set-Service -Name $svc.Name -StartupType $svc.$($keys.Service)
     }
 
     foreach ($reg in $tweak.registry) {
