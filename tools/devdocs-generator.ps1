@@ -27,12 +27,10 @@ function Get-RawJsonBlock {
 
     $escapedName = [regex]::Escape($ItemName)
     $startIndex  = -1
-    $startIndent = ""
 
     for ($i = 0; $i -lt $JsonLines.Count; $i++) {
-        if ($JsonLines[$i] -match "^(\s*)`"$escapedName`"\s*:\s*\{") {
-            $startIndex  = $i
-            $startIndent = $matches[1]
+        if ($JsonLines[$i] -match "^\s*`"$escapedName`"\s*:\s*\{") {
+            $startIndex = $i
             break
         }
     }
@@ -42,13 +40,29 @@ function Get-RawJsonBlock {
         return $null
     }
 
-    $escapedIndent = [regex]::Escape($startIndent)
-    $endIndex      = -1
-    for ($i = ($startIndex + 1); $i -lt $JsonLines.Count; $i++) {
-        if ($JsonLines[$i] -match "^$escapedIndent\}") {
-            $endIndex = $i
-            break
+    # Find the item's own closing brace by string-aware brace matching from the opening
+    # "{" on the start line: count "{"/"}" but ignore any that appear inside quoted string
+    # values. This is immune to inconsistent indentation and to braces inside multi-line
+    # InvokeScript/UndoScript values.
+    $depth    = 0
+    $inString = $false
+    $escaped  = $false
+    $endIndex = -1
+    for ($i = $startIndex; $i -lt $JsonLines.Count; $i++) {
+        foreach ($ch in $JsonLines[$i].ToCharArray()) {
+            if ($inString) {
+                if     ($escaped)    { $escaped = $false }
+                elseif ($ch -eq '\') { $escaped = $true }
+                elseif ($ch -eq '"') { $inString = $false }
+            }
+            elseif ($ch -eq '"') { $inString = $true }
+            elseif ($ch -eq '{') { $depth++ }
+            elseif ($ch -eq '}') {
+                $depth--
+                if ($depth -eq 0) { $endIndex = $i; break }
+            }
         }
+        if ($endIndex -ne -1) { break }
     }
 
     if ($endIndex -eq -1) {
@@ -104,58 +118,67 @@ function Add-LinkAttributeToJson {
     $jsonData = Get-Content -Path $JsonFilePath -Raw | ConvertFrom-Json
     $lines    = [System.Collections.Generic.List[string]](Get-Content -Path $JsonFilePath)
 
+    # Pre-scan: record the start line of every top-level item by its KNOWN name.
+    # Item names are unique top-level keys, so matching by name never collides with a
+    # brace/key that appears inside a string value (e.g. multi-line InvokeScript/UndoScript).
+    $itemStartIdx = @{}
+    foreach ($item in $jsonData.PSObject.Properties) {
+        $escapedName = [regex]::Escape($item.Name)
+        for ($i = 0; $i -lt $lines.Count; $i++) {
+            if ($lines[$i] -match "^\s*`"$escapedName`"\s*:\s*\{") {
+                $itemStartIdx[$item.Name] = $i
+                break
+            }
+        }
+    }
+    $sortedStarts = @($itemStartIdx.Values | Sort-Object)
+
+    # Root closing brace = the last zero-indent "}" line. Used to bound the final item
+    # so its boundary scan never grabs the root object's brace.
+    $rootCloseIdx = $lines.Count
+    for ($i = $lines.Count - 1; $i -ge 0; $i--) {
+        if ($lines[$i] -match '^\}\s*$') { $rootCloseIdx = $i; break }
+    }
+
     foreach ($item in $jsonData.PSObject.Properties) {
         $itemName    = $item.Name
         $category    = $item.Value.category -replace '[^a-zA-Z0-9]', '-'
         $displayName = $itemName -replace $ItemNameToCut, ''
         $newLink     = "$UrlPrefix/$($category.ToLower())/$($displayName.ToLower())"
-        $escapedName = [regex]::Escape($itemName)
 
-        # Find item start line
-        $startIdx = -1
-        for ($i = 0; $i -lt $lines.Count; $i++) {
-            if ($lines[$i] -match "^\s*`"$escapedName`"\s*:\s*\{") {
-                $startIdx = $i
-                break
-            }
+        if (-not $itemStartIdx.ContainsKey($itemName)) { continue }
+        $startIdx = $itemStartIdx[$itemName]
+
+        # Boundary = the next item's start line, or the root closing brace for the last item.
+        $boundary = $rootCloseIdx
+        foreach ($s in $sortedStarts) {
+            if ($s -gt $startIdx) { $boundary = $s; break }
         }
-        if ($startIdx -eq -1) { continue }
 
-        # Derive indentation: propIndent is one level deeper than the item start.
-        # Used to target only top-level properties and skip nested object braces.
-        $null          = $lines[$startIdx] -match '^(\s*)'
-        $propIndent    = $matches[1] + '  '
-        $propIndentLen = $propIndent.Length
-        $escapedPropIndent = [regex]::Escape($propIndent)
-
-        # Scan forward: update existing "link" or find the closing brace to insert one.
-        # Closing brace is matched by indent <= propIndentLen to handle inconsistent formatting.
-        $linkUpdated   = $false
+        # The item's OWN closing brace = the last "}"/"}," line strictly before the boundary.
+        # We never count braces, so nested objects and braces inside strings are irrelevant.
         $closeBraceIdx = -1
-        for ($j = $startIdx + 1; $j -lt $lines.Count; $j++) {
-            if ($lines[$j] -match "^$escapedPropIndent`"link`"\s*:") {
-                $lines[$j] = $lines[$j] -replace '"link"\s*:\s*"[^"]*"', "`"link`": `"$newLink`""
-                $linkUpdated = $true
-                break
-            }
-            if ($lines[$j] -match '^\s*\}') {
-                $null = $lines[$j] -match '^(\s*)'
-                if ($matches[1].Length -le $propIndentLen) {
-                    $closeBraceIdx = $j
-                    break
-                }
-            }
+        for ($j = $boundary - 1; $j -gt $startIdx; $j--) {
+            if ($lines[$j] -match '^\s*\},?\s*$') { $closeBraceIdx = $j; break }
         }
+        if ($closeBraceIdx -eq -1) { continue }
 
-        if (-not $linkUpdated -and $closeBraceIdx -ne -1) {
-            # Insert "link" before the closing brace
-            $prevPropIdx = $closeBraceIdx - 1
-            while ($prevPropIdx -gt $startIdx -and $lines[$prevPropIdx].Trim() -eq '') { $prevPropIdx-- }
+        # The top-level "link", if any, is the property immediately before that brace
+        # (skipping blank lines). Update it in place; otherwise insert a new one.
+        $prevIdx = $closeBraceIdx - 1
+        while ($prevIdx -gt $startIdx -and $lines[$prevIdx].Trim() -eq '') { $prevIdx-- }
 
-            if ($lines[$prevPropIdx] -notmatch ',\s*$') {
-                $lines[$prevPropIdx] = $lines[$prevPropIdx].TrimEnd() + ','
+        if ($lines[$prevIdx] -match '"link"\s*:') {
+            $lines[$prevIdx] = $lines[$prevIdx] -replace '"link"\s*:\s*"[^"]*"', "`"link`": `"$newLink`""
+        }
+        else {
+            if ($lines[$prevIdx] -notmatch ',\s*$') {
+                $lines[$prevIdx] = $lines[$prevIdx].TrimEnd() + ','
             }
-            $lines.Insert($closeBraceIdx, "$propIndent`"link`": `"$newLink`"")
+            # Indent the new "link" two spaces deeper than its closing brace.
+            $null       = $lines[$closeBraceIdx] -match '^(\s*)'
+            $linkIndent = $matches[1] + '  '
+            $lines.Insert($closeBraceIdx, "$linkIndent`"link`": `"$newLink`"")
         }
     }
 
@@ -165,6 +188,12 @@ function Add-LinkAttributeToJson {
 # ==============================================================================
 # Main
 # ==============================================================================
+
+# When this file is dot-sourced (e.g. by pester/devdocs-generator.Tests.ps1) load the
+# functions above only and skip the generation pipeline below. Running the script
+# directly (./devdocs-generator.ps1, as CI does) leaves InvocationName as the script
+# name, so generation proceeds as normal.
+if ($MyInvocation.InvocationName -eq '.') { return }
 
 $scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { (Get-Location).Path }
 $repoRoot  = Resolve-Path "$scriptDir/.."
