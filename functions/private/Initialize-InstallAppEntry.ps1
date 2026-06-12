@@ -63,14 +63,25 @@ function Initialize-InstallAppEntry {
         $appName.Style = $sync.Form.Resources.AppEntryNameStyle
         $appName.Text = $Apps.$appKey.content
 
-        # Change color to Green if FOSS
+        # Add Code icon after the name if FOSS
         if ($Apps.$appKey.foss -eq $true) {
-            $appName.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "FOSSColor")
-            $appName.FontWeight = "Bold"
-        }
+            $panel = New-Object Windows.Controls.StackPanel
+            $panel.Orientation = "Horizontal"
+            $panel.Children.Add($appName) | Out-Null
 
-        # Add the name to the Checkbox
-        $checkBox.Content = $appName
+            $fossIcon = New-Object Windows.Controls.TextBlock
+            $fossIcon.Text = "- FOSS"
+            $fossIcon.Foreground = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(76, 175, 80))
+            $fossIcon.Background = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromArgb(0,0,0,0))
+            $fossIcon.VerticalAlignment = "Center"
+            $fossIcon.FontSize = 10
+            $panel.Children.Add($fossIcon) | Out-Null
+
+            $checkBox.Content = $panel
+        } else {
+            # Add the name to the Checkbox
+            $checkBox.Content = $appName
+        }
 
         # Add accessibility properties to make the elements screen reader friendly
         $checkBox.SetValue([Windows.Automation.AutomationProperties]::NameProperty, $Apps.$appKey.content)
