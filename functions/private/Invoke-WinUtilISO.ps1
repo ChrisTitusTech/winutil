@@ -244,8 +244,6 @@ function Invoke-WinUtilISOModify {
 }
 
 function Invoke-WinUtilISOExport {
-    $contentsDir = $sync["Win11ISOContentsDir"]
-
     $dialog = [System.Windows.Forms.SaveFileDialog]::new()
     $dialog.Title = "Save Modified Windows 11 ISO"
     $dialog.Filter = "ISO files (*.iso)|*.iso"
@@ -255,7 +253,7 @@ function Invoke-WinUtilISOExport {
     $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $false
 
     Invoke-WinUtilRunspace -Variables @{
-        contentsDir = $contentsDir
+        contentsDir = $sync["Win11ISOContentsDir"]
         outputISO = $dialog.FileName
     } -ScriptBlock {
         . ([scriptblock]::Create($win11ISOLogFuncDef))
