@@ -948,7 +948,7 @@
   },
   "WPFTweaksWindowsAI": {
     "Content": "Windows AI - Disable And Remove",
-    "Description": "Removes and disables all ai features/packages",
+    "Description": "Removes and disables all AI features/packages",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
