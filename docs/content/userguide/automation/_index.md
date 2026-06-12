@@ -5,9 +5,9 @@ prev: /userguide/updates/
 next: /userguide/win11creator/
 ---
 
-Use Automation to run Winutil from an exported configuration file.
+Use Automation to run WinUtil from an exported configuration file.
 
-Winutil supports predefined presets that apply common configurations automatically:
+WinUtil supports predefined presets that apply common configurations automatically:
 
 - `Standard`
 - `Minimal`
@@ -22,23 +22,23 @@ Example:
 To view exactly what each preset does, see:
 https://github.com/ChrisTitusTech/winutil/blob/main/config/preset.json
 
-To create you're own config file:
+To create your own config file:
 
-1. Open Winutil.
+1. Open WinUtil.
 2. Click the gear icon in the top-right corner.
 3. Choose **Export**.
 4. Save the exported JSON file.
 
-Once you have exported a config, launch Winutil with it using this command:
+Once you have exported a config, launch WinUtil with it using this command:
 ```powershell
 & ([ScriptBlock]::Create((irm "https://christitus.com/win"))) -Config "C:\Path\To\Config.json"
 ```
 
 This is useful for:
 
-- Applying the same Winutil configuration across multiple Windows 11 PCs
+- Applying the same WinUtil configuration across multiple Windows 11 PCs
 - Reusing a known-good baseline after reinstalling Windows
 - Standardizing deployments for labs, workstations, or personal setups
 
 > [!NOTE]
-> Run the command in an elevated PowerShell session so Winutil can apply system-level changes.
+> Run the command in an elevated PowerShell session so WinUtil can apply system-level changes.
