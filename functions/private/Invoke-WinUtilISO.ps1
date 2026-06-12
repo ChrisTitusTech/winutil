@@ -6,7 +6,7 @@ function Write-Win11ISOLog ($Message) {
     })
 }
 
-function Invoke-WinUtilRunspace ($ScriptBlock, $Variables = @{}) {
+function Invoke-WinUtilRunspace ($ScriptBlock, $Variables) {
     $runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
     $runspace.ApartmentState = "STA"
     $runspace.ThreadOptions = "ReuseThread"
