@@ -17,7 +17,13 @@ function Invoke-WinUtilTweaks ($CheckBox, $undo) {
     }
 
     foreach ($script in $tweak.($keys.ScriptType)) {
-        Invoke-WinUtilScript -ScriptBlock ([scriptblock]::Create($script)) -Name $CheckBox
+        try {
+            Write-Host "Running Script for $CheckBox"
+            Invoke-Command ([scriptblock]::Create($script)) -ErrorAction Stop
+        } catch {
+            Write-Warning "Unable to run script for $CheckBox due to unhandled exception."
+            Write-Warning $psitem.Exception.StackTrace
+        }
     }
 
     if (-not $undo) {
