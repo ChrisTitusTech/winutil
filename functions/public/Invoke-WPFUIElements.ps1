@@ -371,6 +371,16 @@ function Invoke-WPFUIElements {
                             $textBlock.ToolTip = $entryInfo.Link
                             $textBlock.Style = $HoverTextBlockStyle
                             $textBlock.UseLayoutRounding = $true
+                            
+                            $textBlock.VerticalAlignment = "Center"
+                            $textBlock.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
+                            
+                            $MarginTopBase = if ($horizontalStackPanel.Children.Count -gt 0) { $horizontalStackPanel.Children[-1].Margin.Top } else { 0 }
+                            $textBlock.Margin = New-Object Windows.Thickness( # left, top, right, bottm
+                                [math]::Round($textBlock.FontSize * 0.5),
+                                ($MarginTopBase - [math]::Round($textBlock.FontSize / 2)), 
+                                0, 0
+                            )
 
                             $horizontalStackPanel.Children.Add($textBlock) | Out-Null
 
