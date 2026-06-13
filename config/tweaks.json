@@ -77,9 +77,9 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/widget"
   },
-  "WPFTweaksRevertStartMenu": {
+ "WPFTweaksRevertStartMenu": {
     "Content": "Start Menu Previous Layout - Enable",
-    "Description": "Bring back the old Start Menu layout from before the gradual rollout of the new one in 25H2.",
+    "Description": "Bring back the old Start Menu layout from before the gradual rollout of the new one in 25H2. On newer versions of windows !!THIS TWEAK WILL NOT WORK!!",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
@@ -94,6 +94,7 @@
       Remove-Item ViVeTool -Recurse
 
       Write-Host 'Old start menu reverted. Please restart your computer to take effect.'
+      Write-Host 'On newer versions of windows !!THIS TWEAK WILL NOT WORK!!.'
       "
     ],
     "UndoScript": [
@@ -110,7 +111,8 @@
       Write-Host 'New start menu reverted. Please restart your computer to take effect.'
       "
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/revertstartmenu"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/revertstartmenu",
+   "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/revertstartmenu"
   },
   "WPFTweaksDisableStoreSearch": {
     "Content": "Microsoft Store Recommended Search Results - Disable",
@@ -673,7 +675,7 @@
       icacls $Env:OneDrive /grant \"Administrators:(D,DC)\"
 
       if (-not (Get-ChildItem -Path $Env:OneDrive)) {
-          Remove-Item -Path $Env:OneDrive
+          Remove-Item -Path $Env:OneDrive -Recurse
           [Environment]::SetEnvironmentVariable('OneDrive', $null, 'User')
       }
 
@@ -692,7 +694,7 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removeonedrive"
   },
-  "WPFTweaksRemoveHome": {
+  "WPFTweaksRemoveHomeAndGallery": {
     "Content": "File Explorer Home and Gallery - Disable",
     "Description": "Removes the Home and Gallery from Explorer and sets This PC as default.",
     "category": "z__Advanced Tweaks - CAUTION",
@@ -706,6 +708,13 @@
         "OriginalValue": "<RemoveEntry>"
       },
       {
+        "Path": "HKCU:\\Software\\Classes\\CLSID\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}",
+        "Name": "System.IsPinnedToNameSpaceTree",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "Name": "LaunchTo",
         "Value": "1",
@@ -713,7 +722,7 @@
         "OriginalValue": "<RemoveEntry>"
       }
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removehome"
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/removehomeandgallery"
   },
   "WPFTweaksDisplay": {
     "Content": "Visual Effects - Set to Best Performance",
@@ -970,7 +979,7 @@
       Remove-AppxPackage $Appx
 
       Set-Service -Name WSAIFabricSvc -StartupType Disabled
-      Disable-WindowsOptionalFeature -FeatureName Recall -Online
+      Disable-WindowsOptionalFeature -FeatureName Recall -Online -NoRestart
 
       Write-Host \"Windows AI Disabled\"
       "
@@ -1088,6 +1097,15 @@
     "Description": "Restores the classic context menu when right-clicking in File Explorer, replacing the simplified Windows 11 version.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32",
+        "Name": "(default)",
+        "Value": "",
+        "Type": "String",
+        "OriginalValue": "<RemoveEntry>"
+      }
+    ],
     "InvokeScript": [
       "
       New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\"
@@ -1775,9 +1793,9 @@
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
         "Name": "SearchboxTaskbarMode",
-        "Value": "0",
+        "Value": "1",
         "Type": "DWord",
-        "OriginalValue": "d",
+        "OriginalValue": "0",
         "DefaultState": "true"
       }
     ],

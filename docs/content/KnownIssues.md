@@ -15,6 +15,18 @@ try using a **VPN** and if that doesn't work than report the issue to https://gi
 
 If you run WinUtil and get the error:
 
-`"WinUtil is unable to run on your system, powershell execution is restricted by security policies,"`
+`"WinUtil is unable to run on your system. PowerShell execution is restricted by security policies"`
 
 this means that your PowerShell session is in **Constrained Language Mode**, which prevents WinUtil from running.
+
+### Ultimate Performance Plan Not Working
+
+The Ultimate Performance power plan may not work on some laptops who do not fully support this power plan.
+
+In these cases, the power plan may fail to apply, This is expected behavior on unsupported hardware.
+
+### Revet start menu tweak not working
+
+Revet start menu tweak stops working starting with **Windows 11 update KB5089573** (released in May 2026).
+
+In this update, Microsoft completely removed the old Start Menu code from Windows so we aren't able to bring it back

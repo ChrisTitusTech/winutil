@@ -545,7 +545,8 @@
         "content": "IrfanView",
         "description": "IrfanView is a lightweight, fast, and free image viewer and editor. Supports multiple formats, batch processing, and powerful plugins.",
         "link": "https://irfanview.com/",
-        "winget": "IrfanSkiljan.IrfanView"
+        "winget": "IrfanSkiljan.IrfanView",
+        "foss": false
     },
     "itch": {
         "category": "Games",
@@ -929,10 +930,10 @@
         "category": "Pro Tools",
         "choco": "openvpn-connect",
         "content": "OpenVPN Connect",
-        "description": "OpenVPN Connect is an open-source VPN client that allows you to connect securely to a VPN server. It provides a secure and encrypted connection for protecting your online privacy.",
+        "description": "OpenVPN Connect is an VPN client that allows you to connect securely to a VPN server. It provides a secure and encrypted connection for protecting your online privacy.",
         "link": "https://openvpn.net/",
         "winget": "OpenVPNTechnologies.OpenVPNConnect",
-        "foss": true
+        "foss": false
     },
     "OVirtualBox": {
         "category": "Utilities",
@@ -1418,6 +1419,15 @@
         "description": "Unity is a powerful game development platform for creating 2D, 3D, augmented reality, and virtual reality games.",
         "link": "https://unity.com/",
         "winget": "Unity.UnityHub",
+        "foss": false
+    },
+    "everything": {
+        "category": "Utilities",
+        "choco": "everything",
+        "content": "VoidTools Everything",
+        "description": "Everything is a search engine that locates files and folders by filename instantly for Windows. Unlike Windows search Everything initially displays every file and folder on your computer (hence the name Everything). You type in a search filter to limit what files and folders are displayed.",
+        "link": "https://www.voidtools.com/",
+        "winget": "voidtools.Everything",
         "foss": false
     },
     "vc2015_32": {

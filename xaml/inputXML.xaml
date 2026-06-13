@@ -1055,7 +1055,7 @@
                     Margin="0,0,2,0"
                     FontFamily="Segoe MDL2 Assets"
                     Content="N/A"
-                    ToolTip="Change the Winutil UI Theme"
+                    ToolTip="Change the WinUtil UI Theme"
                 />
                     <Popup Name="ThemePopup"
                     IsOpen="False"
