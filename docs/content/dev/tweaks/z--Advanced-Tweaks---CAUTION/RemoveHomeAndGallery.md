@@ -3,8 +3,8 @@ title: "File Explorer Home and Gallery - Disable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=699}
-  "WPFTweaksRemoveHome": {
+```json {filename="config/tweaks.json",linenos=inline,linenostart=697}
+  "WPFTweaksRemoveHomeAndGallery": {
     "Content": "File Explorer Home and Gallery - Disable",
     "Description": "Removes the Home and Gallery from Explorer and sets This PC as default.",
     "category": "z__Advanced Tweaks - CAUTION",
@@ -12,6 +12,13 @@ description: ""
     "registry": [
       {
         "Path": "HKCU:\\Software\\Classes\\CLSID\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}",
+        "Name": "System.IsPinnedToNameSpaceTree",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKCU:\\Software\\Classes\\CLSID\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}",
         "Name": "System.IsPinnedToNameSpaceTree",
         "Value": "0",
         "Type": "DWord",

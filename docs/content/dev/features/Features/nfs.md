@@ -3,7 +3,7 @@ title: "Network File System (NFS) - Enable"
 description: ""
 ---
 
-```json {filename="config/feature.json",linenos=inline,linenostart=63}
+```json {filename="config/feature.json",linenos=inline,linenostart=60}
   "WPFFeaturenfs": {
     "Content": "Network File System (NFS) - Enable",
     "Description": "Network File System (NFS) is a mechanism for storing files on a network.",
