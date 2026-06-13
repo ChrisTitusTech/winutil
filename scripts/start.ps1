@@ -8,27 +8,17 @@
 
 param (
     [string]$Config,
-    [ValidateSet("Standard", "Minimal", "Advanced")]
-    [string]$Preset,
-    [switch]$Noui
+    [ValidateSet("Standard", "Minimal", "Advanced", "")]
+    [string]$Preset
 )
 
-if ($Config) {
-    $PARAM_CONFIG = $Config
-}
-
-$PARAM_NOUI = $false
-if ($Noui) {
-    $PARAM_NOUI = $true
-}
-
 if ($ExecutionContext.SessionState.LanguageMode -ne 'FullLanguage') {
-    Write-Host "WinUtil is unable to run on your system, powershell execution is restricted by security policies" -ForegroundColor Red
+    Write-Host "WinUtil is unable to run on your system. PowerShell execution is restricted by security policies." -ForegroundColor Red
     return
 }
 
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Output "Winutil needs to be run as Administrator. Attempting to relaunch."
+    Write-Output "WinUtil needs to be run as Administrator. Attempting to relaunch."
     $argList = @()
 
     $PSBoundParameters.GetEnumerator() | ForEach-Object {

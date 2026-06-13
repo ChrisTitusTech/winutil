@@ -14,10 +14,6 @@ function Set-WinUtilProgressbar{
         [int]$Percent
     )
 
-    if($PARAM_NOUI) {
-        return;
-    }
-
     Invoke-WPFUIThread -ScriptBlock {$sync.progressBarTextBlock.Text = $label}
     Invoke-WPFUIThread -ScriptBlock {$sync.progressBarTextBlock.ToolTip = $label}
     if ($percent -lt 5 ) {

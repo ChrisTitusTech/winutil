@@ -3,7 +3,7 @@ title: "Telemetry - Disable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=475}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=467}
   "WPFTweaksTelemetry": {
     "Content": "Telemetry - Disable",
     "Description": "Disables Microsoft Telemetry.",
@@ -106,6 +106,9 @@ description: ""
       # Disable (Windows Error Reporting Manager) Service
       Set-Service -Name wermgr -StartupType Disabled
 
+      # Disable PowerShell 7 telemetry
+      [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
+
       Remove-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Siuf\\Rules\" -Name PeriodInNanoSeconds
       "
     ],
@@ -119,6 +122,9 @@ description: ""
 
       # Enable (Windows Error Reporting Manager) Service
       Set-Service -Name wermgr -StartupType Automatic
+
+      # Enable PowerShell 7 telemetry
+      [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '', 'Machine')
       "
     ],
 ```
