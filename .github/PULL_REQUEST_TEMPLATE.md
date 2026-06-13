@@ -5,6 +5,7 @@
 - [ ] New feature
 - [ ] Bug fix
 - [ ] Documentation update
+- [ ] Refactor
 - [ ] UI/UX improvement
 
 <!-- This automatically adds labels to your PR based on the selections above. -->
