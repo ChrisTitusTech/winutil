@@ -65,7 +65,7 @@ function Invoke-WinUtilISOMountAndVerify {
 
         if (-not (Test-Path $wimPath) -and -not (Test-Path $esdPath)) {
             Dismount-DiskImage -ImagePath $isoPath
-            Write-Win11ISOLog "ERROR: install.wim/install.esd not found — not a valid Windows ISO."
+            Write-Win11ISOLog "ERROR: install.wim/install.esd not found - not a valid Windows ISO."
             [System.Windows.MessageBox]::Show(
                 "This does not appear to be a valid Windows ISO.`n`ninstall.wim / install.esd was not found.",
                 "Invalid ISO", "OK", "Error")
@@ -547,7 +547,7 @@ function Invoke-WinUtilISOCleanAndReset {
                     Log "Temp directory deleted successfully."
                 }
             } else {
-                Log "No temp directory found — resetting UI."
+                Log "No temp directory found - resetting UI."
             }
 
             SetProgress "Resetting UI..." 95
