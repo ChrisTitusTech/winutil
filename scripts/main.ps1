@@ -86,7 +86,7 @@ $sync.configs.applications.PSObject.Properties | ForEach-Object {
     $sync.configs.applicationsHashtable[$_.Name] = $_.Value
 }
 
-Set-Preferences
+$sync.preferences.theme = "Auto"
 
 if ($Preset) {
     # Selects the tweaks from $Preset varible
@@ -197,14 +197,11 @@ Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "feat
 
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
 
-#Persist Package Manager preference across winutil restarts
 $sync.ChocoRadioButton.Add_Checked({
     $sync.preferences.packagemanager = [PackageManagers]::Choco
-    Set-Preferences -save
 })
 $sync.WingetRadioButton.Add_Checked({
     $sync.preferences.packagemanager = [PackageManagers]::Winget
-    Set-Preferences -save
 })
 
 switch ($sync.preferences.packagemanager) {

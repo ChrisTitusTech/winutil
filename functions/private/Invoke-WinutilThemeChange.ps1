@@ -1,168 +1,75 @@
-function Invoke-WinutilThemeChange {
-    <#
-    .SYNOPSIS
-        Toggles between light and dark themes for a Windows utility application.
-
-    .DESCRIPTION
-        This function toggles the theme of the user interface between 'Light' and 'Dark' modes,
-        modifying various UI elements such as colors, margins, corner radii, font families, etc.
-        If the '-init' switch is used, it initializes the theme based on the system's current dark mode setting.
-
-    .EXAMPLE
-        Invoke-WinutilThemeChange
-        # Toggles the theme between 'Light' and 'Dark'.
-
-
-    #>
-    param (
-        [string]$theme = "Auto"
-    )
-
-    function Set-WinutilTheme {
-        <#
-        .SYNOPSIS
-            Applies the specified theme to the application's user interface.
-
-        .DESCRIPTION
-            This internal function applies the given theme by setting the relevant properties
-            like colors, font families, corner radii, etc., in the UI. It uses the
-            'Set-ThemeResourceProperty' helper function to modify the application's resources.
-
-        .PARAMETER currentTheme
-            The name of the theme to be applied. Common values are "Light", "Dark", or "shared".
-        #>
-        param (
-            [string]$currentTheme
-        )
-
-        function Set-ThemeResourceProperty {
-            <#
-            .SYNOPSIS
-                Sets a specific UI property in the application's resources.
-
-            .DESCRIPTION
-                This helper function sets a property (e.g., color, margin, corner radius) in the
-                application's resources, based on the provided type and value. It includes
-                error handling to manage potential issues while setting a property.
-
-            .PARAMETER Name
-                The name of the resource property to modify (e.g., "MainBackgroundColor", "ButtonBackgroundMouseoverColor").
-
-            .PARAMETER Value
-                The value to assign to the resource property (e.g., "#FFFFFF" for a color).
-
-            .PARAMETER Type
-                The type of the resource, such as "ColorBrush", "CornerRadius", "GridLength", or "FontFamily".
-            #>
-            param($Name, $Value, $Type)
-            try {
-                # Set the resource property based on its type
-                $sync.Form.Resources[$Name] = switch ($Type) {
-                    "ColorBrush" { [Windows.Media.SolidColorBrush]::new($Value) }
-                    "Color" {
-                        # Convert hex string to RGB values
-                        $hexColor = $Value.TrimStart("#")
-                        $r = [Convert]::ToInt32($hexColor.Substring(0,2), 16)
-                        $g = [Convert]::ToInt32($hexColor.Substring(2,2), 16)
-                        $b = [Convert]::ToInt32($hexColor.Substring(4,2), 16)
-                        [Windows.Media.Color]::FromRgb($r, $g, $b)
-                    }
-                    "CornerRadius" { [System.Windows.CornerRadius]::new($Value) }
-                    "GridLength" { [System.Windows.GridLength]::new($Value) }
-                    "Thickness" {
-                        # Parse the Thickness value (supports 1, 2, or 4 inputs)
-                        $values = $Value -split ","
-                        switch ($values.Count) {
-                            1 { [System.Windows.Thickness]::new([double]$values[0]) }
-                            2 { [System.Windows.Thickness]::new([double]$values[0], [double]$values[1]) }
-                            4 { [System.Windows.Thickness]::new([double]$values[0], [double]$values[1], [double]$values[2], [double]$values[3]) }
-                        }
-                    }
-                    "FontFamily" { [Windows.Media.FontFamily]::new($Value) }
-                    "Double" { [double]$Value }
-                    default { $Value }
-                }
-            }
-            catch {
-                # Log a warning if there's an issue setting the property
-                Write-Warning "Failed to set property $($Name): $_"
-            }
-        }
-
-        # Retrieve all theme properties from the theme configuration
-        $themeProperties = $sync.configs.themes.$currentTheme.PSObject.Properties
-        foreach ($_ in $themeProperties) {
-            # Apply properties that deal with colors
-            if ($_.Name -like "*color*") {
-                Set-ThemeResourceProperty -Name $_.Name -Value $_.Value -Type "ColorBrush"
-                # For certain color properties, also set complementary values (e.g., BorderColor -> CBorderColor) This is required because e.g DropShadowEffect requires a <Color> and not a <SolidColorBrush> object
-                if ($_.Name -in @("BorderColor", "ButtonBackgroundMouseoverColor")) {
-                    Set-ThemeResourceProperty -Name "C$($_.Name)" -Value $_.Value -Type "Color"
-                }
-            }
-            # Apply corner radius properties
-            elseif ($_.Name -like "*Radius*") {
-                Set-ThemeResourceProperty -Name $_.Name -Value $_.Value -Type "CornerRadius"
-            }
-            # Apply row height properties
-            elseif ($_.Name -like "*RowHeight*") {
-                Set-ThemeResourceProperty -Name $_.Name -Value $_.Value -Type "GridLength"
-            }
-            # Apply thickness or margin properties
-            elseif (($_.Name -like "*Thickness*") -or ($_.Name -like "*margin")) {
-                Set-ThemeResourceProperty -Name $_.Name -Value $_.Value -Type "Thickness"
-            }
-            # Apply font family properties
-            elseif ($_.Name -like "*FontFamily*") {
-                Set-ThemeResourceProperty -Name $_.Name -Value $_.Value -Type "FontFamily"
-            }
-            # Apply any other properties as doubles (numerical values)
-            else {
-                Set-ThemeResourceProperty -Name $_.Name -Value $_.Value -Type "Double"
-            }
-        }
-    }
-
+function Invoke-WinutilThemeChange ($theme) {
     $sync.preferences.theme = $theme
-    Set-Preferences -save
-    Set-WinutilTheme -currentTheme "shared"
 
-    switch ($sync.preferences.theme) {
-        "Auto" {
-            $systemUsesDarkMode = Get-WinUtilToggleStatus WPFToggleDarkMode
-            if ($systemUsesDarkMode) {
-                $theme = "Dark"
+    function Set-Prop ($name, $value, $type) {
+        $sync.Form.Resources[$name] = switch ($type) {
+            "ColorBrush" {
+                [Windows.Media.SolidColorBrush]::new($value)
             }
-            else{
-                $theme = "Light"
+            "Color" {
+                $h = $value.TrimStart("#")
+                [Windows.Media.Color]::FromRgb(
+                    [Convert]::ToInt32($h.Substring(0,2),16),
+                    [Convert]::ToInt32($h.Substring(2,2),16),
+                    [Convert]::ToInt32($h.Substring(4,2),16)
+                )
             }
-
-            Set-WinutilTheme -currentTheme $theme
-            $themeButtonIcon = [char]0xF08C
+            "CornerRadius" { [System.Windows.CornerRadius]::new($value) }
+            "GridLength"   { [System.Windows.GridLength]::new($value) }
+            "Thickness" {
+                $v = $value -split ","
+                if ($v.Count -eq 1) { [System.Windows.Thickness]::new($v[0]) }
+                elseif ($v.Count -eq 2) { [System.Windows.Thickness]::new($v[0],$v[1]) }
+                else { [System.Windows.Thickness]::new($v[0],$v[1],$v[2],$v[3]) }
+            }
+            "FontFamily" { [Windows.Media.FontFamily]::new($value) }
+            "Double" { [double]$value }
+            default { $value }
         }
-        "Dark" {
-            Set-WinutilTheme -currentTheme $sync.preferences.theme
-            $themeButtonIcon = [char]0xE708
-           }
-        "Light" {
-            Set-WinutilTheme -currentTheme $sync.preferences.theme
-            $themeButtonIcon = [char]0xE706
+    }
+
+    function ApplyTheme ($name) {
+        foreach ($p in $sync.configs.themes.$name.PSObject.Properties) {
+
+            if ($p.Name -like "*color*") {
+                Set-Prop $p.Name $p.Value "ColorBrush"
+
+                if ($p.Name -in "BorderColor","ButtonBackgroundMouseoverColor") {
+                    Set-Prop "C$($p.Name)" $p.Value "Color"
+                }
+            }
+            elseif ($p.Name -like "*Radius*") { Set-Prop $p.Name $p.Value "CornerRadius" }
+            elseif ($p.Name -like "*RowHeight*") { Set-Prop $p.Name $p.Value "GridLength" }
+            elseif ($p.Name -like "*Thickness*" -or $p.Name -like "*margin*") { Set-Prop $p.Name $p.Value "Thickness" }
+            elseif ($p.Name -like "*FontFamily*") { Set-Prop $p.Name $p.Value "FontFamily" }
+            else { Set-Prop $p.Name $p.Value "Double" }
         }
     }
 
-    # Set FOSS Highlight Color
-    $fossEnabled = $true
-    if ($sync.WPFToggleFOSSHighlight) {
-        $fossEnabled = $sync.WPFToggleFOSSHighlight.IsChecked
+    ApplyTheme "shared"
+
+    if ($theme -eq "Auto") {
+        $theme = if (Get-WinUtilToggleStatus WPFToggleDarkMode) { "Dark" } else { "Light" }
     }
 
-    if ($fossEnabled) {
-         $sync.Form.Resources["FOSSColor"] = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(76, 175, 80)) # #4CAF50
-    } else {
-         $sync.Form.Resources["FOSSColor"] = $sync.Form.Resources["MainForegroundColor"]
+    ApplyTheme $theme
+
+    $icon = switch ($theme) {
+        "Dark"  { [char]0xE708 }
+        "Light" { [char]0xE706 }
+        default { [char]0xF08C }
     }
 
-    # Update the theme selector button with the appropriate icon
-    $ThemeButton = $sync.Form.FindName("ThemeButton")
-    $ThemeButton.Content = [string]$themeButtonIcon
+    $toggle = $sync.WPFToggleFOSSHighlight
+
+    $fossEnabled = if ($null -eq $toggle) { $true } else { $toggle.IsChecked -ne $false }
+
+    $sync.Form.Resources["FOSSColor"] =
+        if ($fossEnabled) {
+            [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(76,175,80))
+        } else {
+            $sync.Form.Resources["MainForegroundColor"]
+        }
+
+    ($sync.Form.FindName("ThemeButton")).Content = [string]$icon
 }
