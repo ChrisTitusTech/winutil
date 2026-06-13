@@ -53,8 +53,8 @@ Once the modification is complete, choose how to save your image:
 {{< tabs >}}
   {{< tab name="Save as ISO" selected=true >}}
   1. Click **Save as an ISO File**.
-  2. Choose a save location (defaults to your Documents folder as `Win11Creator.iso`).
-  3. Winutil builds a UEFI-bootable ISO using native PowerShell/C# code.
+  2. Choose a save location.
+  3. Winutil builds a UEFI-bootable ISO using oscdimg (This step requires an active internet connection).
   {{< /tab >}}
 
   {{< tab name="Write to USB" >}}
