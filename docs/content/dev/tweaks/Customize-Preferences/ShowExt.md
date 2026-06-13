@@ -3,7 +3,7 @@ title: "File Explorer File Extensions"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1367}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1385}
   "WPFToggleShowExt": {
     "Content": "File Explorer File Extensions",
     "Description": "Shows .file extensions in explorer (.exe, .png, etc)",
