@@ -1,80 +1,58 @@
-function Invoke-WinUtilTweaks {
-    <#
+function Invoke-WinUtilTweaks ($CheckBox, $undo) {
+    $tweak = $sync.configs.tweaks.$CheckBox
 
-    .SYNOPSIS
-        Invokes the function associated with each provided checkbox
-
-    .PARAMETER CheckBox
-        The checkbox to invoke
-
-    .PARAMETER undo
-        Indicates whether to undo the operation contained in the checkbox
-
-    .PARAMETER KeepServiceStartup
-        Indicates whether to override the startup of a service with the one given from WinUtil,
-        or to keep the startup of said service, if it was changed by the user, or another program, from its default value.
-    #>
-
-    param(
-        $CheckBox,
-        $undo = $false,
-        $KeepServiceStartup = $true
-    )
-
-    if ($undo) {
-        $Values = @{
-            Registry = "OriginalValue"
-            Service = "OriginalType"
-            ScriptType = "UndoScript"
-        }
-
+    $keys = if ($undo) {
+        @{ Registry = "OriginalValue"; Service = "OriginalType"; ScriptType = "UndoScript" }
     } else {
-        $Values = @{
-            Registry = "Value"
-            Service = "StartupType"
-            OriginalService = "OriginalType"
-            ScriptType = "InvokeScript"
-        }
+        @{ Registry = "Value"; Service = "StartupType"; OriginalService = "OriginalType"; ScriptType = "InvokeScript" }
     }
-    if ($sync.configs.tweaks.$CheckBox.service) {
-        $sync.configs.tweaks.$CheckBox.service | ForEach-Object {
-            $changeservice = $true
 
-        # The check for !($undo) is required, without it the script will throw an error for accessing unavailable member, which's the 'OriginalService' Property
-            if ($KeepServiceStartup -AND !($undo)) {
-                try {
-                    # Check if the service exists
-                    $service = Get-Service -Name $psitem.Name -ErrorAction Stop
-                    if(!($service.StartType.ToString() -eq $psitem.$($values.OriginalService))) {
-                        $changeservice = $false
-                    }
-                } catch [System.ServiceProcess.ServiceNotFoundException] {
-                    Write-Warning "Service $($psitem.Name) was not found."
-                }
+    foreach ($svc in $tweak.service) {
+        Write-Host "Setting Service $($svc.Name) to $($svc.$($keys.Service))"
+        Set-Service -Name $svc.Name -StartupType $svc.$($keys.Service)
+    }
+
+    foreach ($reg in $tweak.registry) {
+        $Name = $reg.Name
+        $Path = $reg.Path 
+        $Type = $reg.Type
+        $Value = $reg.($keys.Registry)
+
+        try {
+            if (-not (Get-PSDrive -Name HKU)) {
+                New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS
             }
 
-            if ($changeservice) {
-                Set-WinUtilService -Name $psitem.Name -StartupType $psitem.$($values.Service)
+            if (-not (Test-Path $Path)) {
+                Write-Host "$Path was not found. Creating..."
+                New-Item -Path $Path -Force -ErrorAction Stop
             }
-        }
-    }
-    if ($sync.configs.tweaks.$CheckBox.registry) {
-        $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
-            Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
-        }
-    }
-    if ($sync.configs.tweaks.$CheckBox.$($values.ScriptType)) {
-        $sync.configs.tweaks.$CheckBox.$($values.ScriptType) | ForEach-Object {
-            $Scriptblock = [scriptblock]::Create($psitem)
-            Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
+
+            if ($Value -ne "<RemoveEntry>") {
+                Write-Host "Set $Path\$Name to $Value"
+                Set-ItemProperty -Path $Path -Name $Name -Type $Type -Value $Value -Force -ErrorAction Stop
+            } else {
+                Write-Host "Remove $Path\$Name"
+                Remove-ItemProperty -Path $Path -Name $Name -Force -ErrorAction Stop
+            }
+        } catch {
+            Write-Warning $_.Exception.Message
         }
     }
 
-    if (!$undo) {
-        if($sync.configs.tweaks.$CheckBox.appx) {
-            $sync.configs.tweaks.$CheckBox.appx | ForEach-Object {
-                Remove-WinUtilAPPX -Name $psitem
-            }
+    foreach ($script in $tweak.($keys.ScriptType)) {
+        try {
+            Write-Host "Running Script for $CheckBox"
+            Invoke-Command ([scriptblock]::Create($script)) -ErrorAction Stop
+        } catch {
+            Write-Warning $_.Exception.Message
+        }
+    }
+
+    if (-not $undo) {
+        foreach ($appx in $tweak.appx) {
+            Write-Host "Removing $appx"
+            Get-AppxPackage -Name $appx -AllUsers | Remove-AppxPackage -AllUsers
         }
     }
 }
