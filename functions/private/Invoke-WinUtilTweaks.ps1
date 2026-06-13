@@ -36,7 +36,6 @@ function Invoke-WinUtilTweaks ($CheckBox, $undo) {
                 Remove-ItemProperty -Path $Path -Name $Name -Force -ErrorAction Stop
             }
         } catch {
-            Write-Warning "Unable to set $Name due to unhandled exception."
             Write-Warning $_.Exception.Message
         }
     }
@@ -46,7 +45,6 @@ function Invoke-WinUtilTweaks ($CheckBox, $undo) {
             Write-Host "Running Script for $CheckBox"
             Invoke-Command ([scriptblock]::Create($script)) -ErrorAction Stop
         } catch {
-            Write-Warning "Unable to run script for $CheckBox due to unhandled exception."
             Write-Warning $_.Exception.Message
         }
     }
