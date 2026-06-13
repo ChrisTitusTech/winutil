@@ -551,7 +551,7 @@ $sync["WPFWin11ISODownloadLink"].Add_Click({
 })
 
 $sync["WPFWin11ISOMountButton"].Add_Click({
-    Invoke-WinUtilISOMountAndVerify
+    Invoke-WinUtilISOMount
 })
 
 $sync["WPFWin11ISOModifyButton"].Add_Click({

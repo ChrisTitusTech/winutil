@@ -130,151 +130,240 @@ winutil/
 
 ## Win11 Creator Architecture
 
-The **Win11 Creator** is a specialized subsystem within Winutil that creates customized Windows 11 ISOs. It operates independently from the main package installation and tweak system.
+A specialized subsystem within WinUtil that creates customized, debloated Windows 11 ISOs with automated setup. Operates independently from the main package installation and tweak system.
 
-### Win11 Creator Components
+---
 
-**Core Functions** (`functions/private/`):
-- `Invoke-WinUtilISO.ps1`: Main orchestrator containing all Win11 Creator functions
-  - `Invoke-WinUtilISOBrowse`: ISO file selection dialog
-  - `Invoke-WinUtilISOMountAndVerify`: Validates and mounts ISO, verifies it's official Windows 11
-  - `Invoke-WinUtilISOModify`: Launches modification in background runspace
-  - `Invoke-WinUtilISOExport`: Handles ISO and USB export
-  - `Invoke-WinUtilISOCheckExistingWork`: Recovers incomplete work sessions
-  - `Invoke-WinUtilISOCleanAndReset`: Cleans up temp directories and resets UI
+### Core Functions
 
-- `Invoke-WinUtilISOScript.ps1`: Applies modifications to mounted install.wim
-  - Removes provisioned AppX packages (40+ bloatware apps)
-  - Injects drivers (optional) from the current system
-  - Removes OneDrive setup files
-  - Applies offline registry tweaks (hardware bypass, privacy, telemetry, OOBE)
-  - Deletes telemetry scheduled task definitions
-  - Pre-stages setup scripts from autounattend.xml
-  - Removes unused Windows editions
-  - Cleans component store via DISM
+Functions are split across two files:
 
-### Win11 Creator Data Flow
+- `functions/private/Invoke-WinUtilISO.ps1` — ISO selection, mount, modify, export, and cleanup
+- `functions/private/Invoke-WinUtilISOUSB.ps1` — USB drive detection and writing
+
+#### `Write-Win11ISOLog`
+Thread-safe logging helper. Appends timestamped messages to the status log TextBox via Dispatcher.Invoke, ensuring UI updates from background runspaces are safe.
+
+#### `Invoke-WinUtilRunspace`
+Generic runspace factory. Creates an STA runspace, injects the `$sync` hashtable, `$winutildir`, and the log function definition as a string (so it can be dot-sourced in the child runspace), then starts the script asynchronously via `BeginInvoke`.
+
+#### `Invoke-WinUtilISOBrowse`
+Opens an OpenFileDialog filtered to `.iso` files. On confirmation, populates the path field, shows the file size, and reveals the Mount section. Resets downstream UI sections (verify, modify, output) to collapsed.
+
+#### `Invoke-WinUtilISOMount`
+Runs in a background runspace. Mounts the ISO via `Mount-DiskImage`, resolves the drive letter, detects whether the image file is `install.wim` or `install.esd`, and enumerates all editions via `Get-WindowsImage`. Stores results in `$sync` and populates the edition ComboBox, auto-selecting Windows 11 Pro if present.
+
+#### `Invoke-WinUtilISOModify`
+The main modification pipeline. Runs in a background runspace with these steps in order:
+
+1. Creates the working directory at `$winutildir\Win11Creator\iso_contents`
+2. Copies all ISO contents from the mounted drive letter to disk
+3. Dismounts the source ISO
+4. Writes `autounattend.xml` to the ISO root
+5. Deletes the `\support` folder (removes telemetry components)
+6. Optionally injects drivers (see Driver Injection below)
+7. Exports only the selected edition via `Export-WindowsImage`, removing all others
+8. Renames the exported WIM back to `install.wim`
+9. Stores the contents directory in `$sync` and reveals the Output section
+
+#### `Invoke-WinUtilISOExport`
+Opens a SaveFileDialog defaulting to `Win11Creator.iso`. Downloads `oscdimg.exe` from Microsoft's symbol server at runtime and uses it to build a UEFI-bootable ISO from the modified contents directory, using `efisys.bin` as the boot sector.
+
+#### `Invoke-WinUtilISORefreshUSBDrives`
+Populates the USB drive ComboBox. Queries all disks filtered to `BusType -eq "USB"`, sorted by disk number. Each entry is formatted as `Disk N: <FriendlyName> [X.X GB] - <PartitionStyle>`. Stores the raw disk objects in `$sync["Win11ISOUSBDisks"]` so `Invoke-WinUtilISOWriteUSB` can index into them by ComboBox selection. If no USB drives are found, inserts a placeholder item and clears the stored list.
+
+#### `Invoke-WinUtilISOWriteUSB`
+Writes the modified ISO contents to a physical USB drive. Runs in its own inline runspace (not via `Invoke-WinUtilRunspace`) with `diskNum` and `contentsDir` injected as variables. Pipeline:
+
+1. Confirms destructive action with a YesNo MessageBox showing disk number, name, and size
+2. `Clear-Disk` + `Initialize-Disk` — wipes and re-initializes as GPT
+3. Creates a single partition: 32 GB if the disk is larger than 32 GB, otherwise uses the full disk size
+4. Assigns a drive letter, retrying with `Get-FreeLetter` (iterates D–Z) if Windows doesn't auto-assign one
+5. Polls up to 5 seconds for the volume to become available before formatting
+6. `Format-Volume` as FAT32 with label `win11creator`
+7. Checks that the source `iso_contents` directory fits within the available space
+8. `Split-WindowsImage` — splits `install.wim` into `.swm` chunks of 3800 MB to stay within FAT32's 4 GB file size limit, writing directly to `<USB>:\sources\install.swm`
+9. `Copy-Item` — copies all remaining ISO contents excluding `install.wim` (already split)
+
+#### `Invoke-WinUtilISOCheckExistingWork`
+Called on tab load. Checks if `$winutildir\Win11Creator\iso_contents` exists on disk from a previous session. If so, restores the UI directly to Step 4 (output) without requiring Steps 1–3 to be re-run.
+
+#### `Invoke-WinUtilISOCleanAndReset`
+Cleanup function. Dismounts any mounted Windows images and the source ISO, deletes the `Win11Creator` and `Driver` working directories, clears all `$sync` state keys, and resets the UI to its initial state.
+
+---
+
+## Data Flow
 
 ```
-User selects official Windows 11 ISO
-    ↓
-Invoke-WinUtilISOBrowse → OpenFileDialog, validates file size
-    ↓
-Invoke-WinUtilISOMountAndVerify
-    ├─ Mount ISO via Mount-DiskImage
-    ├─ Verify install.wim or install.esd exists
-    ├─ Check for "Windows 11" in image metadata
-    ├─ Extract available editions (Home, Pro, Enterprise, etc.)
-    └─ Store ISO path, drive letter, WIM path, image info in $sync
-    ↓
-User optionally enables the Driver Injection checkbox
-    ↓
-Invoke-WinUtilISOModify (runs in background runspace)
-    ├─ Create work directory: ~WinUtil_Win11ISO_[timestamp]
-    ├─ Copy ISO contents to disk (~5-6 GB)
-    ├─ Mount install.wim at selected edition/index
-    ├─ Invoke-WinUtilISOScript:
-    │   ├─ Remove 40+ bloat AppX packages
-    │   ├─ Export and inject drivers (if enabled)
-    │   ├─ Remove OneDrive setup
-    │   ├─ Load offline registry hives
-    │   ├─ Apply 50+ registry tweaks (hardware bypass, privacy, telemetry, OOBE, etc.)
-    │   ├─ Delete telemetry scheduled task files
-    │   ├─ Pre-stage setup scripts from autounattend.xml to C:\Windows\Setup\Scripts\
-    │   └─ Unload registry hives
-    ├─ DISM /Cleanup-Image /StartComponentCleanup /ResetBase (saves 300-800 MB)
-    ├─ Dismount and save the modified install.wim (~10+ minutes, slowest step)
-    ├─ Export selected edition only (removes all other editions, saves 1-2 GB each)
+[Step 1] User selects ISO
+    Invoke-WinUtilISOBrowse
+    └─ OpenFileDialog → populate path, show file size, reveal Mount section
+
+[Step 2] Mount & Inspect
+    Invoke-WinUtilISOMount  (background runspace)
+    ├─ Mount-DiskImage → resolve drive letter
+    ├─ Detect install.wim or install.esd
+    ├─ Get-WindowsImage → enumerate editions
+    └─ Populate ComboBox, auto-select Pro, reveal Modify section
+        $sync keys set: Win11ISOImagePath, Win11ISODriveLetter,
+                        Win11ISOWimPath, Win11ISOImageInfo
+
+[Step 3] Modify
+    Invoke-WinUtilISOModify  (background runspace)
+    ├─ Create $winutildir\Win11Creator\iso_contents
+    ├─ Copy-Item from drive letter → iso_contents
     ├─ Dismount source ISO
-    └─ Report completion, enable export options
-    ↓
-Invoke-WinUtilISOExport (user chooses output)
-    ├─ Option 1: Save as ISO
-    │   ├─ Build bootable ISO via oscdimg.exe (BIOS/UEFI dual-boot)
-    │   └─ Output: Win11_Modified_[date].iso (2.5-3.5 GB)
-    │
-    └─ Option 2: Write to USB
-        ├─ Format USB as GPT
-        ├─ Create 512 MB EFI partition
-        ├─ Copy modified ISO contents
-        └─ Output: Bootable USB (minimum 8 GB)
-    ↓
-Invoke-WinUtilISOCleanAndReset (optional)
-    └─ Delete temp working directory (~10-15 GB)
-    └─ Reset UI to initial state
+    ├─ Write autounattend.xml → iso root
+    ├─ Remove \support folder
+    ├─ [optional] Driver injection (see below)
+    ├─ Export-WindowsImage → single edition install.wim
+    └─ Reveal Output section
+        $sync key set: Win11ISOContentsDir
+
+[Step 4] Export
+    Option A — Save as ISO
+        Invoke-WinUtilISOExport
+        ├─ SaveFileDialog → output path
+        ├─ Download oscdimg.exe from msdl.microsoft.com
+        └─ Build bootable ISO: oscdimg -o -u2 -b<efisys.bin> <contentsDir> <output>
+
+    Option B — Write to USB
+        Invoke-WinUtilISORefreshUSBDrives
+        └─ Enumerate USB disks → populate ComboBox → store in $sync["Win11ISOUSBDisks"]
+
+        Invoke-WinUtilISOWriteUSB  (inline background runspace)
+        ├─ Confirm destructive action (YesNo dialog)
+        ├─ Clear-Disk + Initialize-Disk (GPT)
+        ├─ New-Partition (32 GB cap or max size)
+        ├─ Assign drive letter (auto or Get-FreeLetter fallback)
+        ├─ Poll until volume is available, then Format-Volume (FAT32, "win11creator")
+        ├─ Check available space vs source size
+        ├─ Split-WindowsImage → install.swm chunks (3800 MB, FAT32 safe)
+        └─ Copy-Item all contents except install.wim
+
+[Optional] Clean & Reset
+    Invoke-WinUtilISOCleanAndReset
+    ├─ Dismount-WindowsImage (all mounted)
+    ├─ Dismount-DiskImage (source ISO)
+    ├─ Remove-Item Win11Creator\ and Driver\
+    └─ Reset all $sync state and UI
 ```
 
-### Win11 Creator Validation & Safety
+---
 
-**ISO Validation**:
-- Only accepts official Microsoft Windows 11 ISOs
-- Validates presence of install.wim or install.esd
-- Checks image metadata for "Windows 11" string
-- Rejects custom, modified, or non-Windows 11 ISOs
+## Driver Injection (Optional)
 
-**Work Session Recovery**:
-- Auto-detects incomplete work from previous sessions
-- Allows resuming Step 4 (export) without re-running Steps 1-3
-- Prevents redundant modifications
+When the "Inject Drivers" checkbox is enabled, the modify step performs additional operations before the WIM export:
 
-**Modification Safety**:
-- All registry changes are documented in a script (reversible)
-- Original ISO never modified; only working copy
-- Logged to `WinUtil_Win11ISO.log` for debugging
-- DISM handles image dismount with automatic cleanup on error
+1. `Export-WindowsDriver -Online` — exports all drivers from the currently running system to `$winutildir\Driver`
+2. Mounts `install.wim` at the selected index → `Add-WindowsDriver` recursively → saves and dismounts
+3. Mounts `boot.wim` Index 1 → injects drivers → saves
+4. Mounts `boot.wim` Index 2 → injects drivers → saves
+5. Deletes the exported driver staging directory
 
-### Win11 Creator Registry Tweaks
+This ensures the target system can boot into Windows PE and complete installation without missing drivers.
 
-The `Invoke-WinUtilISOScript` function applies **50+ offline registry tweaks**:
+---
 
-**Hardware Bypass**:
-- TPM 2.0 check bypass
-- Secure Boot requirement bypass
-- CPU compatibility bypass
-- RAM requirement bypass
-- Storage check bypass
+## autounattend.xml
 
-**Privacy & Telemetry**:
-- Disable advertising ID
-- Disable tailored experiences
-- Disable input personalization
-- Disable speech online privacy
-- Disable cloud content suggestions
-- Disable app suggestion subscriptions
-- Remove CEIP, Appraiser, WaaSMedic, etc.
+Injected into the ISO root during Step 3. Applied automatically by Windows Setup on boot.
 
-**OOBE & Setup**:
-- Enable local account setup
-- Skip Microsoft account requirement
-- Dark mode by default
-- Empty taskbar and Start Menu
+### windowsPE pass
+Hardware requirement bypasses applied via synchronous registry commands during setup:
 
-**Post-Setup Installations**:
-- Prevent DevHome auto-installation
-- Prevent new Outlook Mail app installation
-- Prevent Teams auto-installation
+| Registry Value | Purpose |
+|---|---|
+| `BypassTPMCheck` | Skip TPM 2.0 requirement |
+| `BypassSecureBootCheck` | Skip Secure Boot requirement |
+| `BypassCPUCheck` | Skip CPU compatibility check |
+| `BypassRAMCheck` | Skip RAM minimum check |
+| `BypassStorageCheck` | Skip storage size check |
 
-**System Features**:
-- Disable BitLocker and device encryption
-- Disable Chat icon from the Taskbar
-- Disable OneDrive folder backup
-- Disable Copilot
-- Disable Windows Update during OOBE (re-enabled at first login)
+All written to `HKLM\SYSTEM\Setup\LabConfig`.
 
-### Driver Injection Feature
+### specialize pass
+Deletes the `wuauserv` ImagePath registry value, disabling Windows Update during setup to prevent driver or update interference before first logon.
 
-**Optional Enhancement**: When enabled, exports all drivers from the running system and injects them into both:
-- `install.wim` (main OS image)
-- `boot.wim` index 2 (Windows Setup PE environment)
+### oobeSystem pass
+Configures out-of-box experience:
 
-**Use Case**: Enables offline installation on systems with missing drivers.
+- `HideEULAPage` — skips license agreement screen
+- `HideOnlineAccountScreens` — enables local account creation without a Microsoft account
+- `HideOEMRegistrationScreen` — skips OEM registration
+- `ProtectYourPC: 3` — disables automatic protection settings
 
-### Disk Space Requirements
+Runs `FirstLogon.ps1` as the first synchronous command at first user logon (see First Logon Script below).
 
-- **Temporary working directory**: ~10-15 GB
-- **Original ISO**: 4-6 GB
-- **Modified ISO**: 2.5-3.5 GB
-- **Total needed**: ~25 GB for safe operation
+---
+
+## First Logon Script (`FirstLogon.ps1`)
+
+Downloaded and executed at first logon via `Invoke-RestMethod | Invoke-Expression`. Applies system configuration after setup completes.
+
+### App Removal
+- Removes MSTeams via `Remove-AppxPackage -AllUsers`
+- Schedules OneDrive uninstall via `RunOnce`
+
+### Taskbar & Explorer
+- Clears taskbar pins via RunOnce (deletes `Taskband` registry key, restarts Explorer)
+- Disables Task View button (`ShowTaskViewButton = 0`)
+- Shows file extensions (`HideFileExt = 0`)
+- Sets Explorer default location to This PC (`LaunchTo = 1`)
+- Left-aligns taskbar (`TaskbarAl = 0`)
+- Hides search box (`SearchboxTaskbarMode = 0`)
+
+### Visual Settings
+- Sets wallpaper to `img19.jpg` (default dark wallpaper)
+- Enables dark mode for apps and system (`AppsUseLightTheme = 0`, `SystemUsesLightTheme = 0`)
+- Clears Start Menu pins by replacing `start2.bin` from Win11Debloat
+
+### Start Menu
+- Hides Recommended section via three registry paths:
+  - `PolicyManager\current\device\Education` — `IsEducationEnvironment = 1`
+  - `Policies\Microsoft\Windows\Explorer` — `HideRecommendedSection = 1`
+  - `PolicyManager\current\device\Start` — `HideRecommendedSection = 1`
+
+### Windows Update Policy
+- Disables auto-update (`NoAutoUpdate = 1`)
+- Excludes drivers from quality updates (`ExcludeWUDriversInQualityUpdate = 1`)
+- Defers feature updates 365 days
+- Defers quality updates 4 days
+- Re-enables the `wuauserv` service ImagePath (was deleted during specialize pass; security updates are still delivered manually)
+
+### Cleanup
+- Removes Microsoft Edge desktop shortcut
+- Removes `Windows.old` if empty
+- Restarts the computer
+
+---
+
+## Work Session Recovery
+
+On tab load, `Invoke-WinUtilISOCheckExistingWork` checks for an existing `iso_contents` directory. If found, it skips Steps 1–3 and restores the UI to Step 4 directly. This allows export to continue after an application restart without re-running the full modification pipeline.
+
+To start over, click **Clean & Reset** which runs `Invoke-WinUtilISOCleanAndReset`.
+
+---
+
+## $sync State Keys
+
+| Key | Set by | Contains |
+|---|---|---|
+| `Win11ISOImagePath` | Mount | Path to source `.iso` file |
+| `Win11ISODriveLetter` | Mount | Drive letter of mounted ISO (e.g. `D:`) |
+| `Win11ISOWimPath` | Mount | Full path to `install.wim` or `install.esd` on mounted drive |
+| `Win11ISOImageInfo` | Mount | Array of `{ImageIndex, ImageName}` objects |
+| `Win11ISOContentsDir` | Modify | Path to `iso_contents` working directory |
+| `Win11ISOModifying` | Modify | Boolean flag preventing concurrent modifications |
+| `Win11ISOUSBDisks` | RefreshUSBDrives | Array of USB `Disk` objects, indexed in parallel with the ComboBox |
+
+---
+
+## Disk Space Requirements
+
+Ensure at least **15 GB of free storage** before starting. The working directory at `$winutildir\Win11Creator` holds a full copy of the ISO contents plus mounted WIM images during driver injection.
 
 ## Data Flow
 
