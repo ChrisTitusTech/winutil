@@ -1,15 +1,17 @@
 function Install-WinUtilChoco {
+    if (-not (Get-Command -Name choco)) {
+        Invoke-WebRequest -Uri https://community.chocolatey.org/api/v2/package/chocolatey -OutFile "chocolatey.zip"
+        Expand-Archive -Path "chocolatey.zip"
 
-    <#
+        New-Item -Path $Env:ProgramData\chocolatey\lib\chocolatey -ItemType Directory  -Force
 
-    .SYNOPSIS
-        Installs Chocolatey if it is not already installed
+        Move-Item -Path "chocolatey\tools\chocolateyInstall\*" -Destination $Env:ProgramData\chocolatey
+        Move-Item -Path "chocolatey.zip" -Destination $Env:ProgramData\chocolatey\lib\chocolatey\chocolatey.nupkg
 
-    #>
-    if ((Test-WinUtilPackageManager -choco) -eq "installed") {
-        return
+        $Path = [System.Environment]::GetEnvironmentVariable("PATH", "Machine")
+        [Environment]::SetEnvironmentVariable("PATH", $Path + ";$Env:ProgramData\chocolatey", "Machine")
+        $Env:Path = [System.Environment]::GetEnvironmentVariable("PATH", "Machine")
+
+        Remove-Item -Path "chocolatey" -Recurse
     }
-
-    Write-Host "Chocolatey is not installed. Installing now..."
-    Invoke-WebRequest -Uri https://community.chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression
 }
