@@ -108,7 +108,7 @@ function Invoke-WinUtilISOScript {
         }
     }
 
-    # ── 1. Remove provisioned AppX packages ──────────────────────────────────
+    # -- 1. Remove provisioned AppX packages ----------------------------------
     & $Log "Removing provisioned AppX packages..."
 
     $packages = & dism /English "/image:$ScratchDir" /Get-ProvisionedAppxPackages |
@@ -139,7 +139,7 @@ function Invoke-WinUtilISOScript {
     $packages | Where-Object { $pkg = $_; $packagePrefixes | Where-Object { $pkg -like "*$_*" } } |
         ForEach-Object { & dism /English "/image:$ScratchDir" /Remove-ProvisionedAppxPackage "/PackageName:$_" }
 
-    # ── 2. Inject current system drivers (optional) ───────────────────────────
+    # -- 2. Inject current system drivers (optional) ---------------------------
     if ($InjectCurrentSystemDrivers) {
         & $Log "Exporting all drivers from running system..."
         $driverExportRoot = Join-Path $env:TEMP "WinUtil_DriverExport_$(Get-Random)"
@@ -157,7 +157,7 @@ function Invoke-WinUtilISOScript {
                     & $Log "Injecting current system drivers into boot.wim..."
                     Invoke-BootWimInject -BootWimPath $bootWim -DriverDir $driverExportRoot -Logger $Log
                 } else {
-                    & $Log "Warning: boot.wim not found — skipping boot.wim driver injection."
+                    & $Log "Warning: boot.wim not found - skipping boot.wim driver injection."
                 }
             }
         } catch {
@@ -169,7 +169,7 @@ function Invoke-WinUtilISOScript {
         & $Log "Driver injection skipped."
     }
 
-    # ── 3. Registry tweaks ────────────────────────────────────────────────────
+    # -- 3. Registry tweaks ----------------------------------------------------
     & $Log "Loading offline registry hives..."
     reg load HKLM\zCOMPONENTS "$ScratchDir\Windows\System32\config\COMPONENTS"
     reg load HKLM\zDEFAULT    "$ScratchDir\Windows\System32\config\default"
@@ -243,7 +243,7 @@ function Invoke-WinUtilISOScript {
                     & $Log "Pre-staged setup script: $relPath"
                 }
             } else {
-                & $Log "Warning: no <Extensions><File> nodes found in autounattend.xml — setup scripts not pre-staged."
+                & $Log "Warning: no <Extensions><File> nodes found in autounattend.xml - setup scripts not pre-staged."
             }
         } catch {
             & $Log "Warning: could not pre-stage setup scripts from autounattend.xml: $_"
@@ -255,7 +255,7 @@ function Invoke-WinUtilISOScript {
             & $Log "Written autounattend.xml to ISO root ($isoDest)."
         }
     } else {
-        & $Log "Warning: autounattend.xml content is empty — skipping OOBE bypass file."
+        & $Log "Warning: autounattend.xml content is empty - skipping OOBE bypass file."
     }
 
     & $Log "Disabling reserved storage..."
@@ -323,7 +323,7 @@ function Invoke-WinUtilISOScript {
     reg unload HKLM\zSOFTWARE
     reg unload HKLM\zSYSTEM
 
-    # ── 4. Delete scheduled task definition files ─────────────────────────────
+    # -- 4. Delete scheduled task definition files -----------------------------
     & $Log "Deleting scheduled task definition files..."
     $tasksPath = "$ScratchDir\Windows\System32\Tasks"
     Remove-Item "$tasksPath\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" -Force
@@ -339,7 +339,7 @@ function Invoke-WinUtilISOScript {
     Remove-Item "$tasksPath\Microsoft\WindowsUpdate"                                                   -Recurse -Force
     & $Log "Scheduled task files deleted."
 
-    # ── 5. Remove ISO support folder ─────────────────────────────────────────
+    # -- 5. Remove ISO support folder -----------------------------------------
     if ($ISOContentsDir -and (Test-Path $ISOContentsDir)) {
         & $Log "Removing ISO support\ folder..."
         Remove-Item -Path (Join-Path $ISOContentsDir "support") -Recurse -Force
