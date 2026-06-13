@@ -683,6 +683,15 @@
         "winget": "LocalSend.LocalSend",
         "foss": true
     },
+    "losslesscut": {
+        "category": "Multimedia Tools",
+        "choco": "lossless-cut",
+        "content": "LosslessCut",
+        "description": "LosslessCut is a cross-platform video editor built for trimming, merging and cutting video files without re-encoding.",
+        "link": "https://losslesscut.net",
+        "winget": "ch.LosslessCut",
+        "foss": true
+    },
     "mpc-qt": {
         "category": "Multimedia Tools",
         "choco": "mediainfo",
