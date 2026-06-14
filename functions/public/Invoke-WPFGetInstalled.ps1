@@ -23,7 +23,7 @@ function Invoke-WPFGetInstalled {
     Invoke-WPFRunspace -ParameterList @(("managerPreference", $managerPreference),("checkbox", $checkbox)) -ScriptBlock {
         param (
             [string]$checkbox,
-            [PackageManagers]$managerPreference
+            [string]$managerPreference
         )
         $sync.ProcessRunning = $true
         Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Indeterminate" }
