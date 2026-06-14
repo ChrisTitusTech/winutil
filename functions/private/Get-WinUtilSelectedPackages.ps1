@@ -5,7 +5,6 @@ function Get-WinUtilSelectedPackages {
          [object] $PackageList,
      
          [Parameter(Mandatory = $true)]
-         [ValidateSet('Winget', 'Choco')]
          [string] $Preference
      )
 
