@@ -60,8 +60,6 @@ function Set-Preferences{
         if ($null -eq $sync.preferences.packagemanager) {
             $sync.preferences.packagemanager = "Winget"
         }
-
-        # preference is kept as standard string
     }
 
     $iniPath = "$winutildir\preferences.ini"
