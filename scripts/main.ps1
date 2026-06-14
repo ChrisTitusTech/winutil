@@ -398,15 +398,12 @@ $sync["Form"].Add_ContentRendered({
     $sync["Form"].Focus()
 })
 
-# The SearchBarTimer is used to delay the search operation until the user has stopped typing for a short period
-# This prevents the ui from stuttering when the user types quickly as it dosnt need to update the ui for every keystroke
-
-$searchBarTimer = New-Object System.Windows.Threading.DispatcherTimer
-$searchBarTimer.Interval = [TimeSpan]::FromMilliseconds(300)
-$searchBarTimer.IsEnabled = $false
-
-$searchBarTimer.add_Tick({
-    $searchBarTimer.Stop()
+$sync["SearchBar"].Add_TextChanged({
+    if ($sync.SearchBar.Text -ne "") {
+        $sync.SearchBarClearButton.Visibility = "Visible"
+    } else {
+        $sync.SearchBarClearButton.Visibility = "Collapsed"
+    }
     switch ($sync.currentTab) {
         "Install" {
             Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text
@@ -415,17 +412,6 @@ $searchBarTimer.add_Tick({
             Find-TweaksByNameOrDescription -SearchString $sync.SearchBar.Text
         }
     }
-})
-$sync["SearchBar"].Add_TextChanged({
-    if ($sync.SearchBar.Text -ne "") {
-        $sync.SearchBarClearButton.Visibility = "Visible"
-    } else {
-        $sync.SearchBarClearButton.Visibility = "Collapsed"
-    }
-    if ($searchBarTimer.IsEnabled) {
-        $searchBarTimer.Stop()
-    }
-    $searchBarTimer.Start()
 })
 
 $sync["Form"].Add_Loaded({
@@ -582,5 +568,5 @@ $sync["WPFWin11ISOCleanResetButton"].Add_Click({
 
 # ──────────────────────────────────────────────────────────────────────────────
 
-$sync["Form"].ShowDialog() | out-null
+$sync["Form"].ShowDialog() | Out-Null
 Stop-Transcript
