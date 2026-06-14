@@ -53,8 +53,6 @@ $sync.runspace = [runspacefactory]::CreateRunspacePool(
 # Open the RunspacePool instance
 $sync.runspace.Open()
 
-
-
 # Load the configuration files
 
 $sync.configs.applicationsHashtable = @{}
