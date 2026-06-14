@@ -61,13 +61,7 @@ function Set-Preferences{
             $sync.preferences.packagemanager = "Winget"
         }
 
-        # convert packagemanager to enum
-        if ($sync.preferences.packagemanager -eq "Choco") {
-            $sync.preferences.packagemanager = [PackageManagers]::Choco
-        }
-        elseif ($sync.preferences.packagemanager -eq "Winget") {
-            $sync.preferences.packagemanager = [PackageManagers]::Winget
-        }
+        # preference is kept as standard string
     }
 
     $iniPath = "$winutildir\preferences.ini"

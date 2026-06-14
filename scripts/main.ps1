@@ -20,14 +20,7 @@ CCC::::::::::::C         T:::::::::T            T:::::::::T
 =====Windows Toolbox=====
 "@
 
-# Create enums
-Add-Type @"
-public enum PackageManagers
-{
-    Winget,
-    Choco
-}
-"@
+# Package manager preference uses standard strings "Winget" and "Choco"
 
 # SPDX-License-Identifier: MIT
 # Set the maximum number of threads for the RunspacePool to the number of threads on the machine
@@ -62,22 +55,7 @@ $sync.runspace = [runspacefactory]::CreateRunspacePool(
 # Open the RunspacePool instance
 $sync.runspace.Open()
 
-# Create classes for different exceptions
 
-class WingetFailedInstall : Exception {
-    [string]$additionalData
-    WingetFailedInstall($Message) : base($Message) {}
-}
-
-class ChocoFailedInstall : Exception {
-    [string]$additionalData
-    ChocoFailedInstall($Message) : base($Message) {}
-}
-
-class GenericException : Exception {
-    [string]$additionalData
-    GenericException($Message) : base($Message) {}
-}
 
 # Load the configuration files
 
@@ -199,11 +177,11 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
 
 #Persist Package Manager preference across winutil restarts
 $sync.ChocoRadioButton.Add_Checked({
-    $sync.preferences.packagemanager = [PackageManagers]::Choco
+    $sync.preferences.packagemanager = "Choco"
     Set-Preferences -save
 })
 $sync.WingetRadioButton.Add_Checked({
-    $sync.preferences.packagemanager = [PackageManagers]::Winget
+    $sync.preferences.packagemanager = "Winget"
     Set-Preferences -save
 })
 

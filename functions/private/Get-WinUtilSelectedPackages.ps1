@@ -5,7 +5,8 @@ function Get-WinUtilSelectedPackages {
          [object] $PackageList,
      
          [Parameter(Mandatory = $true)]
-         [PackageManagers] $Preference
+         [ValidateSet('Winget', 'Choco')]
+         [string] $Preference
      )
 
     if ($PackageList.count -eq 1) {
@@ -18,8 +19,8 @@ function Get-WinUtilSelectedPackages {
     $packagesWinget = [System.Collections.ArrayList]::new()
     $packagesChoco = [System.Collections.ArrayList]::new()
 
-    $packages[[PackageManagers]::Winget] = $packagesWinget
-    $packages[[PackageManagers]::Choco] = $packagesChoco
+    $packages['Winget'] = $packagesWinget
+    $packages['Choco'] = $packagesChoco
 
     foreach ($package in $PackageList) {
         switch ($Preference) {
