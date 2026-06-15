@@ -43,7 +43,7 @@ function Invoke-WPFUnInstall {
             $sync.ProcessRunning = $true
             Show-WPFInstallAppBusy -text "Uninstalling apps..."
 
-            if ($PackagesToUninstall.Name -contains "Microsoft.Edge") {
+            if ($packagesWinget -contains "Microsoft.Edge") {
                 New-Item -Path "$Env:SystemRoot\SystemApps\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\MicrosoftEdge.exe" -Force
             }
 
