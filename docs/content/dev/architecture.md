@@ -291,7 +291,7 @@ Check if WinGet/Choco is installed
     ↓
 Install-WinUtilWinget/Choco (if needed)
     ↓
-Install-WinUtilProgramWinget/Choco → Install app
+Invoke-WPFInstall → Install app
     ↓
 Update UI with progress
     ↓
