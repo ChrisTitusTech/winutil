@@ -32,7 +32,7 @@ function Invoke-WPFInstall {
             $sync.ProcessRunning = $true
             Show-WPFInstallAppBusy -text "Installing apps..."
 
-            if ($packagesWinget.Count -gt 0 -and $packagesWinget -ne "0") {
+            if ($packagesWinget.Count -gt 0) {
                 Install-WinUtilWinget
                 Start-Process -FilePath winget -ArgumentList "install $packagesWinget --accept-package-agreements --source winget --silent" -NoNewWindow -Wait
             }
