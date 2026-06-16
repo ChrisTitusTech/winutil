@@ -96,7 +96,7 @@ winutil/
 - `Initialize-WPFUI.ps1`: Sets up the GUI
 - `Invoke-WPFTweak*`: Applies system tweaks
 - `Invoke-WPFFeature*`: Enables Windows features
-- `Install-WinUtilProgram*`: Installs applications
+- `Invoke-WPFInstall*`: Installs applications
 
 **Naming Convention**: Functions start with `WPF` or `Winutil` to be loaded into the runspace.
 
