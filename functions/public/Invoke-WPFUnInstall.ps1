@@ -45,10 +45,12 @@ function Invoke-WPFUnInstall {
 
             # Uninstall all selected programs in new window
             if ($packagesWinget.Count -gt 0) {
+                Install-WinUtilWinget
                 Start-Process -FilePath winget -ArgumentList "uninstall $packagesWinget --source winget --silent" -NoNewWindow -Wait
             }
 
             if ($packagesChoco.Count -gt 0) {
+                Install-WinUtilChoco
                 Start-Process -FilePath choco -ArgumentList "uninstall $packagesChoco -y" -NoNewWindow -Wait
             }
 
