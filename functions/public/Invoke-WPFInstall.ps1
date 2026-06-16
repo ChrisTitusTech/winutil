@@ -32,13 +32,13 @@ function Invoke-WPFInstall {
             $sync.ProcessRunning = $true
             Show-WPFInstallAppBusy -text "Installing apps..."
 
-            if ($packagesWinget.Count -gt 0) {
+            if ($packagesWinget) {
                 Install-WinUtilWinget
                 Start-Process -FilePath winget -ArgumentList "install $packagesWinget --silent --source winget --accept-package-agreements" -NoNewWindow -Wait
             }
-            if ($packagesChoco.Count -gt 0) {
+            if ($packagesChoco) {
                 Install-WinUtilChoco
-                Start-Process -FilePath choco -ArgumentList "install $packagesChoco -y" -NoNewWindow -Wait
+                Start-Process -FilePath choco -ArgumentList "install $packagesChoco -y --ignore-checksums" -NoNewWindow -Wait
             }
 
             Hide-WPFInstallAppBusy
