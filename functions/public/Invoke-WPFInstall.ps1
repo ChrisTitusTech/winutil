@@ -35,8 +35,7 @@ function Invoke-WPFInstall {
             if ($packagesWinget) {
                 Install-WinUtilWinget
                 Start-Process -FilePath winget -ArgumentList "install $packagesWinget --silent --source winget --accept-package-agreements" -NoNewWindow -Wait
-            }
-            if ($packagesChoco) {
+            } else {
                 Install-WinUtilChoco
                 Start-Process -FilePath choco -ArgumentList "install $packagesChoco -y --ignore-checksums" -NoNewWindow -Wait
             }
