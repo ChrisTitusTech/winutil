@@ -337,11 +337,10 @@ function Invoke-WPFUIElements {
                         $textBlock = New-Object Windows.Controls.TextBlock
                         $textBlock.TextWrapping = "Wrap"
                         $textBlock.Margin = "5,5,5,5"
-                        $textBlock.FontStyle = "Italic"
                         $textBlock.UseLayoutRounding = $true
 
                         $bulletRun = New-Object Windows.Documents.Run
-                        $bulletRun.Text = [char]0x25CF
+                        $bulletRun.Text = [char]0x2B24
                         $bulletRun.Foreground = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(76,175,80))
                         $bulletRun.FontSize = 10
 
