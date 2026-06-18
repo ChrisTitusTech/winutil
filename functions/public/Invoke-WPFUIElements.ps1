@@ -333,6 +333,29 @@ function Invoke-WPFUIElements {
                         $sync[$entryInfo.Name] = $radioButton
                     }
 
+                    "Note" {
+                        $textBlock = New-Object Windows.Controls.TextBlock
+                        $textBlock.TextWrapping = "Wrap"
+                        $textBlock.Margin = "5,5,5,5"
+                        $textBlock.FontStyle = "Italic"
+                        $textBlock.UseLayoutRounding = $true
+
+                        $bulletRun = New-Object Windows.Documents.Run
+                        $bulletRun.Text = [char]0x25CF
+                        $bulletRun.Foreground = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(76,175,80))
+                        $bulletRun.FontSize = 10
+
+                        $textRun = New-Object Windows.Documents.Run
+                        $textRun.Text = " $($entryInfo.Content)"
+                        $textRun.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
+                        $textRun.Foreground = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(76,175,80))
+
+                        $textBlock.Inlines.Add($bulletRun)
+                        $textBlock.Inlines.Add($textRun)
+
+                        $itemsControl.Items.Add($textBlock) | Out-Null
+                    }
+
                     default {
                         $horizontalStackPanel = New-Object Windows.Controls.StackPanel
                         $horizontalStackPanel.Orientation = "Horizontal"
