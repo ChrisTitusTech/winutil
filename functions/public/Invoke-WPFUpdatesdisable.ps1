@@ -1,6 +1,4 @@
 function Invoke-WPFUpdatesdisable {
-    Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer -Name SettingsPageVisibility -Value hide:windowsupdate
-    Write-Host "Windows Update will not be hidden from settings"
 
     takeown /f $Env:SystemRoot\System32\usosvc.dll | Out-Null
     icacls $Env:SystemRoot\System32\usosvc.dll /grant Everyone:F | Out-Null
@@ -10,10 +8,7 @@ function Invoke-WPFUpdatesdisable {
     icacls $Env:SystemRoot\System32\wuaueng.dll /grant Everyone:F | Out-Null
     Rename-Item -Path $Env:SystemRoot\System32\wuaueng.dll -NewName wuaueng.dlle
 
-    Write-Host "Windows Update dlls renamed."
-
-    Remove-Item "C:\Windows\SoftwareDistribution\*" -Recurse -Force
-    Write-Host "Cleared SoftwareDistribution folder"
+    Remove-Item -Path $Env:SystemRootSoftwareDistribution\* -Recurse -Force
 
     Write-Host "=================================" -ForegroundColor Green
     Write-Host "---   Updates Are Disabled    ---" -ForegroundColor Green
