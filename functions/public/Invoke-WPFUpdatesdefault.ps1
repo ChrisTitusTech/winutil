@@ -18,8 +18,8 @@ function Invoke-WPFUpdatesdefault {
 
     Write-Host "Reenabling Windows Update Services..." -ForegroundColor Green
 
-    Rename-Item -Path $Env:SystemRoot\System32\usosvc.dlle -NewName usosvc.dll
-    Rename-Item -Path $Env:SystemRoot\System32\wuaueng.dlle -NewName wuaueng.dll
+    icacls $Env:SystemRoot\System32\usosvc.dll /grant Everyone:F
+    icacls $Env:SystemRoot\System32\wuaueng.dll /grant Everyone:F
 
     Write-Host "Restored BITS to Manual"
     Set-Service -Name BITS -StartupType Manual
