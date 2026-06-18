@@ -1,12 +1,9 @@
 function Invoke-WPFUpdatesdisable {
+    takeown /f $Env:SystemRoot\System32\usosvc.dll
+    icacls $Env:SystemRoot\System32\usosvc.dll /deny Everyone:F
 
-    takeown /f $Env:SystemRoot\System32\usosvc.dll | Out-Null
-    icacls $Env:SystemRoot\System32\usosvc.dll /grant Everyone:F | Out-Null
-    Rename-Item -Path $Env:SystemRoot\System32\usosvc.dll -NewName usosvc.dlle
-
-    takeown /f $Env:SystemRoot\System32\wuaueng.dll | Out-Null
-    icacls $Env:SystemRoot\System32\wuaueng.dll /grant Everyone:F | Out-Null
-    Rename-Item -Path $Env:SystemRoot\System32\wuaueng.dll -NewName wuaueng.dlle
+    takeown /f $Env:SystemRoot\System32\wuaueng.dll
+    icacls $Env:SystemRoot\System32\wuaueng.dll /deny Everyone:F
 
     Remove-Item -Path $Env:SystemRootSoftwareDistribution\* -Recurse -Force
 
