@@ -16,10 +16,10 @@ function Invoke-WPFUpdatesdefault {
     Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Recurse -Force
     Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Recurse -Force
 
-    Write-Host "Showing Windows Updates in settings"
-    Remove-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer -Name SettingsPageVisibility
-
     Write-Host "Reenabling Windows Update Services..." -ForegroundColor Green
+
+    Rename-Item -Path $Env:SystemRoot\System32\usosvc.dlle -NewName usosvc.dll
+    Rename-Item -Path $Env:SystemRoot\System32\wuaueng.dlle -NewName wuaueng.dll
 
     Write-Host "Restored BITS to Manual"
     Set-Service -Name BITS -StartupType Manual
