@@ -1,4 +1,6 @@
 function Invoke-WPFUpdatesdisable {
+    Write-Host "Note: This will prevent you from using the Microsoft Store." -ForegroundColor Yellow
+
     takeown /f $Env:SystemRoot\System32\usosvc.dll
     icacls $Env:SystemRoot\System32\usosvc.dll /deny Everyone:F
 
