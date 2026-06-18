@@ -65,9 +65,9 @@ function Initialize-InstallAppEntry {
 
         # Add FOSS label after the name if FOSS
         if ($Apps.$appKey.foss -eq $true) {
-            $fossRun = [System.Windows.Documents.Run]::new(" $([char]0x2B24)")
-            $fossRun.Foreground = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(76,175,80))
-            $fossRun.FontSize = 10
+            $fossRun = [System.Windows.Documents.Run]::new(" $([char]0x25CF)")
+            $fossRun.Foreground = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(110, 255, 114))
+            $fossRun.FontSize = 11.5
 
             [void]$appName.Inlines.Add($fossRun)
         }

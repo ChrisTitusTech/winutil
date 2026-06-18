@@ -340,14 +340,14 @@ function Invoke-WPFUIElements {
                         $textBlock.UseLayoutRounding = $true
 
                         $bulletRun = New-Object Windows.Documents.Run
-                        $bulletRun.Text = [char]0x2B24
-                        $bulletRun.Foreground = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(76,175,80))
-                        $bulletRun.FontSize = 10
+                        $bulletRun.Text = [char]0x25CF
+                        $bulletRun.Foreground = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(110, 255, 114))
+                        $bulletRun.FontSize = 11.5
 
                         $textRun = New-Object Windows.Documents.Run
                         $textRun.Text = " $($entryInfo.Content)"
                         $textRun.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
-                        $textRun.Foreground = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(76,175,80))
+                        $textRun.Foreground = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(19, 143, 83))
 
                         $textBlock.Inlines.Add($bulletRun)
                         $textBlock.Inlines.Add($textRun)
