@@ -355,7 +355,7 @@ $sync["Form"].Add_ContentRendered({
         }
     }
 
-    if (-not (Test-Connection -Ping 8.8.8.8 -Count 1 -ErrorAction SilentlyContinue)) {
+    if (-not (Test-Connection -TargetName www.google.com -Count 1 -ErrorAction SilentlyContinue)) {
         $sync.WPFOfflineBanner.Visibility = [System.Windows.Visibility]::Visible
 
         $sync.WPFTab1BT.IsEnabled = $false
