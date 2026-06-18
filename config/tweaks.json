@@ -1893,5 +1893,21 @@
     "Type": "Button",
     "ButtonWidth": "300",
     "link": "https://winutil.christitus.com/dev/tweaks/performance-plans---not-for-laptops/removeultperf"
+  },
+  "WPFTweaksDisableLockscreen": {
+    "Content": "Lock Screen - Disable",
+    "Description": "Skips the lock screen entirely and goes directly to the sign-in screen on boot and wake. WARNING: Because this uses a Windows Policy registry key, the Lock Screen settings page in Personalization will show 'Some settings are managed by your organization' and wallpaper options will appear greyed out. Undo this tweak temporarily if you need to change your lock screen image.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Personalization",
+        "Name": "NoLockScreen",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disablelockscreen"
   }
 }
