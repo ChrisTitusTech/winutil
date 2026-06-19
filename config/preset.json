@@ -4,7 +4,6 @@
     "WPFTweaksConsumerFeatures",
     "WPFTweaksDisableExplorerAutoDiscovery",
     "WPFTweaksWPBT",
-    "WPFTweaksDeBloat",
     "WPFTweaksLocation",
     "WPFTweaksServices",
     "WPFTweaksTelemetry",
@@ -16,7 +15,6 @@
   ],
   "Minimal": [
     "WPFTweaksConsumerFeatures",
-    "WPFTweaksDeBloat",
     "WPFTweaksWPBT",
     "WPFTweaksServices",
     "WPFTweaksTelemetry"
