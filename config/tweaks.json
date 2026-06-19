@@ -1038,7 +1038,7 @@
     ],
     "UndoScript": [
       "
-      icacls \"$Env:SystemRoot\Installer\\Razer\" /remove:d Everyone
+      icacls \"$Env:SystemRoot\\Installer\\Razer\" /remove:d Everyone
       "
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/razerblock"
