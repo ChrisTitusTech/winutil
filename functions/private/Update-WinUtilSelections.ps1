@@ -19,6 +19,7 @@ function Update-WinUtilSelections {
                     elseif ($cbkey.StartsWith("WPFTweaks")) { "Tweaks" }
                     elseif ($cbkey.StartsWith("WPFToggle")) { "Toggle" }
                     elseif ($cbkey.StartsWith("WPFFeature")) { "Feature" }
+                    elseif ($cbkey.StartsWith("WPFAppx")) { "Appx" }
                     else { "na" }
 
         switch ($group) {
@@ -42,6 +43,11 @@ function Update-WinUtilSelections {
             "Feature" {
                 if (!$sync.selectedFeatures.Contains($cbkey)) {
                     $sync.selectedFeatures.Add($cbkey)
+                }
+            }
+            "Appx" {
+                if (!$sync.selectedAppx.Contains($cbkey)) {
+                    $sync.selectedAppx.Add($cbkey)
                 }
             }
             default {

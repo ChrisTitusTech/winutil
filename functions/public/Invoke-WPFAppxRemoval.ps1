@@ -3,8 +3,10 @@ function Invoke-WPFAppxRemoval {
     $apps = $sync.configs.appxHashtable
 
     Get-Process -Name *widget*, *game*, dllhost -ErrorAction SilentlyContinue | Stop-Process -Force
-    Invoke-WPFRunspace -ParameterList @(("selected", $selected),("apps", $apps)) -ScriptBlock {
+    $handle = Invoke-WPFRunspace -ParameterList @(("selected", $selected),("apps", $apps)) -ScriptBlock {
         param($selected, $apps)
+
+        $sync.ProcessRunning = $true
 
         foreach ($key in $selected) {
             $package = $apps[$key].PackageId
@@ -16,5 +18,7 @@ function Invoke-WPFAppxRemoval {
         Write-Host "================================="
         Write-Host "--   AppX Removal Finished   ---"
         Write-Host "================================="
+
+        $sync.ProcessRunning = $false
     }
 }
