@@ -93,10 +93,7 @@ function Invoke-WPFImpex {
                     $sync.selectedFeatures = [System.Collections.Generic.List[string]]::new()
 
                     Update-WinUtilSelections -flatJson $flattenedJson
-
-                    if ($sync.Form) {
-                        Reset-WPFCheckBoxes -doToggles $true
-                    }
+                    Reset-WPFCheckBoxes -doToggles $true
                 }
             } catch {
                 Write-Error "An error occurred while importing: $_"
