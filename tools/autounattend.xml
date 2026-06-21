@@ -176,10 +176,7 @@
 
                     Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\wuauserv -Name ImagePath -Value &quot;$Env:SystemRoot\System32\svchost.exe -k netsvcs -p&quot;;
 
-                    Remove-Item $Env:LocalAppData\Microsoft\OneDrive -Recurse -Force;
-                    Remove-Item "$Env:ProgramData\Microsoft OneDrive" -Recurse -Force;
                     Remove-Item -Path $Env:OneDrive -Recurse;
-
                     Set-Service -Name OneSyncSvc -StartupType Disabled;
 
                     Invoke-WebRequest -Uri https://github.com/Raphire/Win11Debloat/raw/master/Assets/Start/start2.bin -OutFile $Env:LocalAppData\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\start2.bin;
