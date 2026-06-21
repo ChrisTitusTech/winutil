@@ -834,7 +834,7 @@
         "Name": "AppCaptureEnabled",
         "Value": "0",
         "Type": "DWord",
-        "OriginalValue": "1"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/gamedvr"
