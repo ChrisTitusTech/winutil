@@ -74,14 +74,14 @@
     "Content": "Dev Home",
     "Description": "Developer dashboard and environment management application.",
     "Panel": "0",
-    "PackageId": "Microsoft.WindowsDevHome"
+    "PackageId": "Microsoft.Windows.DevHome"
   },
   "WPFAppxMicrosoft_WindowsCrossDevice": {
     "Category": "Utilities & Productivity",
     "Content": "Mobile Devices",
     "Description": "Manage and integrate mobile devices with Windows.",
     "Panel": "0",
-    "PackageId": "Microsoft.WindowsCrossDevice"
+    "PackageId": "MicrosoftWindows.CrossDevice"
   },
   "WPFAppxMicrosoft_Todos": {
     "Category": "Utilities & Productivity",
