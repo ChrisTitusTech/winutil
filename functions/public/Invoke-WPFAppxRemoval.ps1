@@ -20,8 +20,6 @@ function Invoke-WPFAppxRemoval {
     $totalSteps = $selected.Count
     $completedSteps = 0
 
-    Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" }
-
     $handle = Invoke-WPFRunspace -ParameterList @(("selected", $selected), ("completedSteps", $completedSteps), ("totalSteps", $totalSteps)) -ScriptBlock {
         param($selected, $completedSteps, $totalSteps)
 
@@ -31,18 +29,13 @@ function Invoke-WPFAppxRemoval {
             $key = $selected[$i]
             $appInfo = $sync.configs.appxHashtable.$key
             $packageId = $appInfo.PackageId
-            $friendlyName = $appInfo.content
 
-            Set-WinUtilProgressBar -Label "Removing $friendlyName" -Percent ($completedSteps / $totalSteps * 100)
-            Remove-WinUtilAPPX -Name $packageId
-            $completedSteps++
-            $progress = $completedSteps / $totalSteps
-            Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -value $progress }
+            Write-Host "Removing $packageId"
+            Get-AppxPackage -Name $packageId -AllUsers | Remove-AppxPackage -AllUsers
         }
 
-        Set-WinUtilProgressBar -Label "AppX Removal finished" -Percent 100
         $sync.ProcessRunning = $false
-        Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" }
+
         Write-Host "================================="
         Write-Host "--   AppX Removal Finished   ---"
         Write-Host "================================="
