@@ -65,6 +65,23 @@ function Invoke-WPFButton {
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
+        "WPFSelectAllAppx" {
+            $sync.configs.appxHashtable.Keys | ForEach-Object {
+                if ($sync.$_) {
+                    $sync.$_.IsChecked = $true
+                }
+            }
+        }
+        "WPFClearAppxSelection" {
+            $sync.configs.appxHashtable.Keys | ForEach-Object {
+                if ($sync.$_) {
+                    $sync.$_.IsChecked = $false
+                }
+            }
+        }
+        "WPFRemoveSelectedAppx" {
+            Invoke-WPFAppxRemoval
+        }
         "WPFCloseButton" {$sync.Form.Close(); Write-Host "Bye bye!"}
         "WPFMinimizeButton" {$sync.Form.WindowState = [Windows.WindowState]::Minimized}
         "WPFselectedAppsButton" {$sync.selectedAppsPopup.IsOpen = -not $sync.selectedAppsPopup.IsOpen}

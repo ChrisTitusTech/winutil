@@ -30,6 +30,7 @@ function Invoke-WPFSelectedCheckboxesUpdate{
                 elseif ($appKey.StartsWith("WPFTweaks")) { "Tweaks" }
                 elseif ($appKey.StartsWith("WPFToggle")) { "Toggle" }
                 elseif ($appKey.StartsWith("WPFFeature")) { "Feature" }
+                elseif ($appKey.StartsWith("WPFAppx")) { "Appx" }
                 else { "na" }
 
     switch ($group) {
@@ -79,6 +80,16 @@ function Invoke-WPFSelectedCheckboxesUpdate{
             }
             else{
                 $sync.selectedFeatures.Remove($appKey)
+            }
+        }
+        "Appx" {
+            if ($type -eq "Add") {
+                if (!$sync.selectedAppx.Contains($appKey)) {
+                    $sync.selectedAppx.Add($appKey)
+                }
+            }
+            else{
+                $sync.selectedAppx.Remove($appKey)
             }
         }
         default {

@@ -23,6 +23,17 @@ Get-ChildItem config | ForEach-Object {
         $obj = [pscustomobject]$fixed
     }
 
+    if ($_.Name -eq "appx.json") {
+        $fixed = [ordered]@{}
+        foreach ($p in $obj.PSObject.Properties) {
+            $keyName = "WPFAppx$($p.Name -replace '\.', '_')"
+            $val = $p.Value
+            $val | Add-Member -MemberType NoteProperty -Name "PackageId" -Value $p.Name -Force
+            $fixed[$keyName] = $val
+        }
+        $obj = [pscustomobject]$fixed
+    }
+
     $json = $obj | ConvertTo-Json -Depth 10
 
     $sync.configs[$_.BaseName] = $obj
