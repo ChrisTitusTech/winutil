@@ -13,13 +13,6 @@
     "Panel": "0",
     "PackageId": "Microsoft.GetHelp"
   },
-  "WPFAppxMicrosoft_Getstarted": {
-    "Category": "Utilities & Productivity",
-    "Content": "Tips",
-    "Description": "Provides interactive feature walk-throughs, keyboard shortcuts, and onboarding tips for Windows.",
-    "Panel": "0",
-    "PackageId": "Microsoft.Getstarted"
-  },
   "WPFAppxMicrosoft_OutlookForWindows": {
     "Category": "Microsoft Apps",
     "Content": "Outlook for Windows",
