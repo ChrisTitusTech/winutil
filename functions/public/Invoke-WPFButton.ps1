@@ -80,6 +80,7 @@ function Invoke-WPFButton {
             }
         }
         "WPFRemoveSelectedAppx" {
+            Get-Process -Name *widget*, *game*, dllhost | Stop-Process -Force
             Invoke-WPFAppxRemoval
         }
         "WPFCloseButton" {$sync.Form.Close(); Write-Host "Bye bye!"}
