@@ -65,6 +65,7 @@ function Invoke-WPFButton {
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
+        "WPFRemoveSelectedAppx" {Invoke-WPFAppxRemoval}
         "WPFSelectAllAppx" {
             $sync.configs.appxHashtable.Keys | ForEach-Object {
                 if ($sync.$_) {
@@ -78,10 +79,6 @@ function Invoke-WPFButton {
                     $sync.$_.IsChecked = $false
                 }
             }
-        }
-        "WPFRemoveSelectedAppx" {
-            Get-Process -Name *widget*, *game*, dllhost -ErrorAction SilentlyContinue | Stop-Process -Force
-            Invoke-WPFAppxRemoval
         }
         "WPFCloseButton" {$sync.Form.Close(); Write-Host "Bye bye!"}
         "WPFMinimizeButton" {$sync.Form.WindowState = [Windows.WindowState]::Minimized}
