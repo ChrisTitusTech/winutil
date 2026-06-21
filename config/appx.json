@@ -3,231 +3,203 @@
     "Category": "Microsoft Apps",
     "Content": "Feedback Hub",
     "Description": "Feedback collection and diagnostics application.",
-    "Panel": "1",
+    "Panel": "0",
     "PackageId": "Microsoft.WindowsFeedbackHub"
   },
-
   "WPFAppxMicrosoft_GetHelp": {
     "Category": "Microsoft Apps",
     "Content": "Get Help",
     "Description": "Microsoft support and troubleshooting application.",
-    "Panel": "1",
+    "Panel": "0",
     "PackageId": "Microsoft.GetHelp"
   },
-
   "WPFAppxMicrosoft_Getstarted": {
     "Category": "Microsoft Apps",
     "Content": "Tips",
     "Description": "Windows tips and onboarding application.",
-    "Panel": "1",
+    "Panel": "0",
     "PackageId": "Microsoft.Getstarted"
   },
-
   "WPFAppxMicrosoft_OutlookForWindows": {
     "Category": "Microsoft Apps",
     "Content": "Outlook for Windows",
     "Description": "Modern Outlook mail and calendar application.",
-    "Panel": "1",
+    "Panel": "0",
     "PackageId": "Microsoft.OutlookForWindows"
   },
-
   "WPFAppxMSTeams": {
     "Category": "Microsoft Apps",
     "Content": "Microsoft Teams",
     "Description": "Chat and collaboration application.",
-    "Panel": "1",
+    "Panel": "0",
     "PackageId": "MSTeams"
   },
-
   "WPFAppxClipchamp_Clipchamp": {
     "Category": "Microsoft Apps",
     "Content": "Clipchamp",
     "Description": "Video editor included with Windows 11.",
-    "Panel": "1",
+    "Panel": "0",
     "PackageId": "Clipchamp.Clipchamp"
   },
-
   "WPFAppxMicrosoft_MicrosoftOfficeHub": {
     "Category": "Microsoft Apps",
     "Content": "Microsoft 365",
     "Description": "Launcher and dashboard for Microsoft 365 services.",
-    "Panel": "1",
+    "Panel": "0",
     "PackageId": "Microsoft.MicrosoftOfficeHub"
   },
-
   "WPFAppxMicrosoft_Todos": {
     "Category": "Utilities & Productivity",
     "Content": "To Do",
     "Description": "Task and reminder management application.",
-    "Panel": "1",
+    "Panel": "0",
     "PackageId": "Microsoft.Todos"
   },
-
   "WPFAppxMicrosoft_PowerAutomateDesktop": {
     "Category": "Utilities & Productivity",
     "Content": "Power Automate",
     "Description": "Desktop automation and workflow application.",
-    "Panel": "1",
+    "Panel": "0",
     "PackageId": "Microsoft.PowerAutomateDesktop"
   },
-
   "WPFAppxMicrosoft_YourPhone": {
     "Category": "Utilities & Productivity",
     "Content": "Phone Link",
     "Description": "Connect and manage phone features from Windows.",
-    "Panel": "1",
+    "Panel": "0",
     "PackageId": "Microsoft.YourPhone"
   },
-
   "WPFAppxMicrosoft_MicrosoftStickyNotes": {
     "Category": "Utilities & Productivity",
     "Content": "Sticky Notes",
     "Description": "Quick note taking application.",
-    "Panel": "1",
+    "Panel": "0",
     "PackageId": "Microsoft.MicrosoftStickyNotes"
   },
-
   "WPFAppxMicrosoft_WindowsSoundRecorder": {
     "Category": "Utilities & Productivity",
     "Content": "Sound Recorder",
     "Description": "Audio recording application.",
-    "Panel": "1",
+    "Panel": "0",
     "PackageId": "Microsoft.WindowsSoundRecorder"
   },
-
   "WPFAppxMicrosoft_WindowsAlarms": {
     "Category": "Utilities & Productivity",
     "Content": "Clock",
     "Description": "Clock, alarms, timer and focus sessions.",
-    "Panel": "1",
+    "Panel": "0",
     "PackageId": "Microsoft.WindowsAlarms"
   },
-
   "WPFAppxMicrosoft_Paint": {
     "Category": "Utilities & Productivity",
     "Content": "Paint",
     "Description": "Built-in image editing application.",
-    "Panel": "1",
+    "Panel": "0",
     "PackageId": "Microsoft.Paint"
   },
-
   "WPFAppxMicrosoft_WindowsNotepad": {
     "Category": "Utilities & Productivity",
     "Content": "Notepad",
     "Description": "Modern Windows text editor.",
-    "Panel": "1",
+    "Panel": "0",
     "PackageId": "Microsoft.WindowsNotepad"
   },
-
   "WPFAppxMicrosoft_ScreenSketch": {
     "Category": "Utilities & Productivity",
     "Content": "Snipping Tool",
     "Description": "Screen capture and annotation tool.",
-    "Panel": "1",
+    "Panel": "0",
     "PackageId": "Microsoft.ScreenSketch"
   },
-
   "WPFAppxMicrosoft_Copilot": {
     "Category": "Microsoft Apps",
     "Content": "Microsoft Copilot",
     "Description": "Microsoft AI assistant application.",
-    "Panel": "1",
+    "Panel": "0",
     "PackageId": "Microsoft.Copilot"
   },
-
   "WPFAppxMicrosoft_WindowsCalculator": {
     "Category": "Utilities & Productivity",
     "Content": "Calculator",
     "Description": "Built-in calculator application.",
-    "Panel": "1",
+    "Panel": "0",
     "PackageId": "Microsoft.WindowsCalculator"
   },
-
   "WPFAppxMicrosoft_WindowsCamera": {
     "Category": "Utilities & Productivity",
     "Content": "Camera",
     "Description": "Camera and webcam application.",
-    "Panel": "1",
+    "Panel": "0",
     "PackageId": "Microsoft.WindowsCamera"
   },
-
   "WPFAppxMicrosoft_WindowsPhotos": {
     "Category": "Utilities & Productivity",
     "Content": "Photos",
     "Description": "Photo viewing and management application.",
-    "Panel": "1",
+    "Panel": "0",
     "PackageId": "Microsoft.Windows.Photos"
   },
-
   "WPFAppxMicrosoft_WindowsMaps": {
     "Category": "Bing & Web Services",
     "Content": "Maps",
     "Description": "Maps and location services application.",
-    "Panel": "0",
+    "Panel": "1",
     "PackageId": "Microsoft.WindowsMaps"
   },
-
   "WPFAppxMicrosoft_BingNews": {
     "Category": "Bing & Web Services",
     "Content": "News",
     "Description": "Microsoft News application.",
-    "Panel": "0",
+    "Panel": "1",
     "PackageId": "Microsoft.BingNews"
   },
-
   "WPFAppxMicrosoft_BingWeather": {
     "Category": "Bing & Web Services",
     "Content": "Weather",
     "Description": "Weather forecast application.",
-    "Panel": "0",
+    "Panel": "1",
     "PackageId": "Microsoft.BingWeather"
   },
-
   "WPFAppxMicrosoft_GamingApp": {
     "Category": "Xbox & Gaming",
     "Content": "Xbox App",
     "Description": "Primary Xbox application for Windows gaming.",
-    "Panel": "0",
+    "Panel": "1",
     "PackageId": "Microsoft.GamingApp"
   },
-
   "WPFAppxMicrosoft_XboxGamingOverlay": {
     "Category": "Xbox & Gaming",
     "Content": "Xbox Game Bar",
     "Description": "Gaming overlay and capture tools.",
-    "Panel": "0",
+    "Panel": "1",
     "PackageId": "Microsoft.XboxGamingOverlay"
   },
-
   "WPFAppxMicrosoft_XboxIdentityProvider": {
     "Category": "Xbox & Gaming",
     "Content": "Xbox Identity Provider",
     "Description": "Xbox authentication services.",
-    "Panel": "0",
+    "Panel": "1",
     "PackageId": "Microsoft.XboxIdentityProvider"
   },
-
   "WPFAppxMicrosoft_XboxSpeechToTextOverlay": {
     "Category": "Xbox & Gaming",
     "Content": "Xbox Speech To Text Overlay",
     "Description": "Accessibility overlay for Xbox communication.",
-    "Panel": "0",
+    "Panel": "1",
     "PackageId": "Microsoft.XboxSpeechToTextOverlay"
   },
-
   "WPFAppxMicrosoft_Xbox_TCUI": {
     "Category": "Xbox & Gaming",
     "Content": "Xbox TCUI",
     "Description": "Xbox account and sign-in interface components.",
-    "Panel": "0",
+    "Panel": "1",
     "PackageId": "Microsoft.Xbox.TCUI"
   },
-
   "WPFAppxMicrosoft_MicrosoftSolitaireCollection": {
     "Category": "Xbox & Gaming",
     "Content": "Microsoft Solitaire Collection",
     "Description": "Preinstalled Microsoft card games.",
-    "Panel": "0",
+    "Panel": "1",
     "PackageId": "Microsoft.MicrosoftSolitaireCollection"
   }
 }
