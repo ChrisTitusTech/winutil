@@ -2,6 +2,7 @@ function Invoke-WPFAppxRemoval {
     $selected = $sync.selectedAppx
     $apps = $sync.configs.appxHashtable
 
+    Get-Process -Name *widget*, *game*, dllhost -ErrorAction SilentlyContinue | Stop-Process -Force
     Invoke-WPFRunspace -ParameterList @(("selected", $selected),("apps", $apps)) -ScriptBlock {
         param($selected, $apps)
 
