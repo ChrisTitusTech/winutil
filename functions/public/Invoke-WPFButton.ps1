@@ -81,8 +81,24 @@ function Invoke-WPFButton {
         }
         "WPFRemoveSelectedAppx" {
             Get-Process -Name *widget*, *game*, dllhost -ErrorAction SilentlyContinue | Stop-Process -Force
-            Invoke-WPFAppxRemoval
+            $apps = $sync.configs.appxHashtable
+
+            Invoke-WPFRunspace -ParameterList @(("selected", $selected),("apps", $apps)) -ScriptBlock {
+                param($selected, $apps)
+
+                foreach ($key in $selected) {
+                    $package = $apps[$key].PackageId
+
+                    Write-Host "Removing $package"
+                    Get-AppxPackage -Name $package -AllUsers | Remove-AppxPackage -AllUsers
+                }
+
+                Write-Host "================================="
+                Write-Host "--   AppX Removal Finished   ---"
+                Write-Host "================================="
+            }
         }
+
         "WPFCloseButton" {$sync.Form.Close(); Write-Host "Bye bye!"}
         "WPFMinimizeButton" {$sync.Form.WindowState = [Windows.WindowState]::Minimized}
         "WPFselectedAppsButton" {$sync.selectedAppsPopup.IsOpen = -not $sync.selectedAppsPopup.IsOpen}
