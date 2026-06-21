@@ -1,8 +1,109 @@
-# Run WinUtil Tweaks
-& ([ScriptBlock]::Create((Invoke-RestMethod -Uri https://christitus.com/win))) -Preset Advanced
+$ProgressPreference = 'SilentlyContinue'
+Write-Host "Running winutil tweaks please wait..."
 
-# Ensure msteams was removed
-Get-AppxPackage -Name MSTeams | Remove-AppxPackage -AllUsers
+# WPFTweaksActivity
+Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\System -Name EnableActivityFeed -Value 0
+Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\System -Name PublishUserActivities -Value 0
+Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\System -Name UploadUserActivities -Value 0
+
+# WPFTweaksConsumerFeatures
+Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent -Name DisableWindowsConsumerFeatures -Value 1
+
+# WPFTweaksWPBT
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" -Name DisableWpbtExecution -Value 1
+
+# WPFTweaksDeBloat
+Get-AppxPackage Microsoft.WindowsFeedbackHub | Remove-AppxPackage -AllUsers
+Get-AppxPackage Microsoft.BingNews | Remove-AppxPackage -AllUsers
+Get-AppxPackage Microsoft.BingSearch | Remove-AppxPackage -AllUsers
+Get-AppxPackage Microsoft.BingWeather | Remove-AppxPackage -AllUsers
+Get-AppxPackage Clipchamp.Clipchamp | Remove-AppxPackage -AllUsers
+Get-AppxPackage Microsoft.Todos | Remove-AppxPackage -AllUsers
+Get-AppxPackage Microsoft.PowerAutomateDesktop | Remove-AppxPackage -AllUsers
+Get-AppxPackage Microsoft.MicrosoftSolitaireCollection | Remove-AppxPackage -AllUsers
+Get-AppxPackage Microsoft.WindowsSoundRecorder | Remove-AppxPackage -AllUsers
+Get-AppxPackage Microsoft.MicrosoftStickyNotes | Remove-AppxPackage -AllUsers
+Get-AppxPackage Microsoft.Windows.DevHome | Remove-AppxPackage -AllUsers
+Get-AppxPackage Microsoft.Paint | Remove-AppxPackage -AllUsers
+Get-AppxPackage Microsoft.OutlookForWindows | Remove-AppxPackage -AllUsers
+Get-AppxPackage Microsoft.WindowsAlarms | Remove-AppxPackage -AllUsers
+Get-AppxPackage Microsoft.StartExperiencesApp | Remove-AppxPackage -AllUsers
+Get-AppxPackage Microsoft.GetHelp | Remove-AppxPackage -AllUsers
+Get-AppxPackage Microsoft.ZuneMusic | Remove-AppxPackage -AllUsers
+Get-AppxPackage MicrosoftCorporationII.QuickAssist | Remove-AppxPackage -AllUsers
+Get-AppxPackage MSTeams | Remove-AppxPackage -AllUsers
+
+# WPFTweaksLocation
+Set-Service -Name lfsvc -StartupType Disabled
+
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Name Value -Value Deny
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}" -Name SensorPermissionState -Value 0
+Set-ItemProperty -Path HKLM:\SYSTEM\Maps -Name AutoUpdateEnabled -Value 0
+
+# WPFTweaksServices
+Set-Service -Name CscService -StartupType Disabled
+Set-Service -Name DiagTrack -StartupType Disabled
+Set-Service -Name MapsBroker -StartupType Manual
+Set-Service -Name StorSvc -StartupType Manual
+Set-Service -Name SharedAccess -StartupType Disabled
+
+$Memory = (Get-CimInstance Win32_PhysicalMemory | Measure-Object Capacity -Sum).Sum / 1KB
+Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Control -Name SvcHostSplitThresholdInKB -Value $Memory
+
+# WPFTweaksTelemetry
+Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo -Name Enabled -Value 0
+Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Privacy -Name TailoredExperiencesWithDiagnosticDataEnabled -Value 0
+Set-ItemProperty -Path HKCU:\Software\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy -Name HasAccepted -Value 0
+Set-ItemProperty -Path HKCU:\Software\Microsoft\Input\TIPC -Name Enabled -Value 0
+Set-ItemProperty -Path HKCU:\Software\Microsoft\InputPersonalization -Name RestrictImplicitInkCollection -Value 1
+Set-ItemProperty -Path HKCU:\Software\Microsoft\InputPersonalization -Name RestrictImplicitTextCollection -Value 1
+Set-ItemProperty -Path HKCU:\Software\Microsoft\InputPersonalization\TrainedDataStore -Name HarvestContacts -Value 0
+Set-ItemProperty -Path HKCU:\Software\Microsoft\Personalization\Settings -Name AcceptedPrivacyPolicy -Value 0
+Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection -Name AllowTelemetry -Value 0
+Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name Start_TrackProgs -Value 0
+Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\System -Name PublishUserActivities -Value 0
+Set-ItemProperty -Path HKCU:\Software\Microsoft\Siuf\Rules -Name NumberOfSIUFInPeriod -Value 0
+Remove-ItemProperty -Path HKCU:\Software\Microsoft\Siuf\Rules -Name PeriodInNanoSeconds
+
+Set-MpPreference -SubmitSamplesConsent 2
+
+Set-Service -Name diagtrack -StartupType Disabled
+Set-Service -Name wermgr -StartupType Disabled
+
+# WPFTweaksDeliveryOptimization
+Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\DeliveryOptimization -Name DODownloadMode -Value 0
+
+# WPFTweaksEndTaskOnTaskbar
+Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings -Name TaskbarEndTask -Value 1
+
+# WPFTweaksDisableStoreSearch
+icacls $Env:LocalAppData\Packages\Microsoft.WindowsStore_8wekyb3d8bbwe\LocalState\store.db /deny Everyone:F
+
+# WPFTweaksRevertStartMenu
+Set-ItemProperty -Path HKLM:\SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\8\3036241548 -Name EnabledState -Value 1
+
+# WPFTweaksWidget
+Get-Process *Widget* | Stop-Process
+Get-AppxPackage Microsoft.WidgetsPlatformRuntime | Remove-AppxPackage -AllUsers
+Get-AppxPackage MicrosoftWindows.Client.WebExperience | Remove-AppxPackage -AllUsers
+
+# WPFTweaksWindowsAI
+Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer -Name SettingsPageVisibility -Value hide:aicomponents
+Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\WindowsNotepad -Name DisableAIFeatures -Value 1
+
+$Appx = Get-AppxPackage MicrosoftWindows.Client.CoreAI
+$Sid = (Get-LocalUser $Env:UserName).Sid.Value
+New-Item "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore\EndOfLife\$Sid\$Appx" -Force
+
+Get-AppxPackage -AllUsers *Copilot* | Remove-AppxPackage -AllUsers
+Get-AppxPackage -AllUsers Microsoft.MicrosoftOfficeHub | Remove-AppxPackage -AllUsers
+Remove-AppxPackage $Appx
+
+Set-Service -Name WSAIFabricSvc -StartupType Disabled
+Disable-WindowsOptionalFeature -FeatureName Recall -Online -NoRestart
+
+# WPFTweaksRightClickMenu
+New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Name InprocServer32 -Value "" -Force
 
 # Ensure onedrive will be removed
 Set-ItemProperty -Path HKLM:\Software\Microsoft\Windows\CurrentVersion\RunOnce -Name RemoveOneDrive -Value "$Env:SystemRoot\System32\OneDriveSetup.exe /uninstall"
