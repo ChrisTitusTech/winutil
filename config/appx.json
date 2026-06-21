@@ -1,9 +1,9 @@
 {
   "WPFAppxMicrosoft_WindowsFeedbackHub": {
-    "Category": "Telemetry & Diagnostics",
+    "Category": "Microsoft Apps",
     "Content": "Feedback Hub",
     "Description": "Feedback collection and diagnostics application.",
-    "Panel": "0",
+    "Panel": "1",
     "PackageId": "Microsoft.WindowsFeedbackHub"
   },
 
