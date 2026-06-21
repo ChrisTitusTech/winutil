@@ -54,15 +54,15 @@
             <FirstLogonCommands>
                 <SynchronousCommand wcm:action="add">
                     <Order>1</Order>
-                    <CommandLine>powershell.exe -Command '
-                    $ProgressPreference = SilentlyContinue
-                    Write-Host Running winutil tweaks please wait...
+                    <CommandLine>powershell.exe -Command "
+                    $ProgressPreference = 'SilentlyContinue'
+                    Write-Host 'Running winutil tweaks please wait...'
 
                     Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\System -Name EnableActivityFeed -Value 0;
                     Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\System -Name PublishUserActivities -Value 0;
                     Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\System -Name UploadUserActivities -Value 0;
                     Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent -Name DisableWindowsConsumerFeatures -Value 1;
-                    Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager -Name DisableWpbtExecution -Value 1;
+                    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -Name DisableWpbtExecution -Value 1;
 
                     Get-AppxPackage Microsoft.WindowsFeedbackHub | Remove-AppxPackage -AllUsers;
                     Get-AppxPackage Microsoft.BingNews | Remove-AppxPackage -AllUsers;
@@ -86,8 +86,8 @@
 
                     Set-Service -Name lfsvc -StartupType Disabled;
 
-                    Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location -Name Value -Value Deny;
-                    Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA794E4-F964-4FDB-90F6-51056BFE4B44} -Name SensorPermissionState -Value 0;
+                    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location' -Name Value -Value Deny;
+                    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}' -Name SensorPermissionState -Value 0;
                     Set-ItemProperty -Path HKLM:\SYSTEM\Maps -Name AutoUpdateEnabled -Value 0;
 
                     Set-Service -Name CscService -StartupType Disabled;
@@ -145,7 +145,7 @@
                     Set-Service -Name WSAIFabricSvc -StartupType Disabled;
                     Disable-WindowsOptionalFeature -FeatureName Recall -Online -NoRestart;
 
-                    New-Item -Path HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2} -Name InprocServer32 -Value '' -Force;
+                    New-Item -Path 'HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}' -Name InprocServer32 -Value '' -Force;
 
                     Set-ItemProperty -Path HKLM:\Software\Microsoft\Windows\CurrentVersion\RunOnce -Name RemoveOneDrive -Value &quot;$Env:SystemRoot\System32\OneDriveSetup.exe /uninstall&quot;;
                     $ClearTaskbar = &quot;powershell -Command Remove-Item -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband -Recurse;Stop-Process -Name explorer&quot;;
@@ -156,7 +156,7 @@
                     Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name LaunchTo -Value 1;
                     Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name TaskbarAl -Value 0;
                     Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Search -Name SearchboxTaskbarMode -Value 0;
-                    Set-ItemProperty -Path HKCU:\Control Panel\Desktop -Name Wallpaper -Value $Env:SystemRoot\Web\Wallpaper\Windows\img19.jpg;
+                    Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name Wallpaper -Value $Env:SystemRoot\Web\Wallpaper\Windows\img19.jpg;
                     Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name AppsUseLightTheme -Value 0;
                     Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name SystemUsesLightTheme -Value 0;
 
@@ -180,7 +180,7 @@
                     Remove-Item -Path &quot;$Env:Public\Desktop\Microsoft Edge.lnk&quot;;
                     if (-not (Get-ChildItem -Path $Env:SystemDrive\Windows.old -ErrorAction SilentlyContinue)) { Remove-Item -Path $Env:SystemDrive\Windows.old };
 
-                    pause</CommandLine>
+                    pause"</CommandLine>
                 </SynchronousCommand>
             </FirstLogonCommands>
         </component>
