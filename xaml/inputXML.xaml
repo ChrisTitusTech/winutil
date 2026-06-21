@@ -1722,7 +1722,6 @@
                             </StackPanel>
 
                             <Grid Name="appxpanel" Grid.Row="1">
-                                <!-- Dynamic AppX package checkboxes -->
                             </Grid>
 
                             <Border Grid.Row="2" Style="{StaticResource BorderStyle}" Margin="5,15,5,5">
