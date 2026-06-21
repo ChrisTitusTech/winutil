@@ -37,6 +37,7 @@
             <RunSynchronous>
                 <RunSynchronousCommand wcm:action="add">
                     <Order>1</Order>
+                    <Description>Disables updates for oobe, this will be reenabled later</Description>
                     <Path>reg delete HKLM\SYSTEM\CurrentControlSet\Services\wuauserv /v ImagePath /f</Path>
                 </RunSynchronousCommand>
             </RunSynchronous>
