@@ -48,6 +48,41 @@
     "Panel": "0",
     "PackageId": "Microsoft.MicrosoftOfficeHub"
   },
+  "WPFAppxMicrosoft_ZuneMusic": {
+    "Category": "Media",
+    "Content": "Media Player",
+    "Description": "Modern Windows media playback application.",
+    "Panel": "1",
+    "PackageId": "Microsoft.ZuneMusic"
+  },
+  "WPFAppxMicrosoft_BingSearch": {
+    "Category": "Bing & Web Services",
+    "Content": "Microsoft Bing",
+    "Description": "Microsoft Bing search and web services application.",
+    "Panel": "1",
+    "PackageId": "Microsoft.BingSearch"
+  },
+  "WPFAppxMicrosoftCorporationII_QuickAssist": {
+    "Category": "Utilities & Productivity",
+    "Content": "Quick Assist",
+    "Description": "Remote assistance and screen sharing application.",
+    "Panel": "0",
+    "PackageId": "MicrosoftCorporationII.QuickAssist"
+  },
+  "WPFAppxMicrosoft_WindowsDevHome": {
+    "Category": "Developer Tools",
+    "Content": "Dev Home",
+    "Description": "Developer dashboard and environment management application.",
+    "Panel": "0",
+    "PackageId": "Microsoft.WindowsDevHome"
+  },
+  "WPFAppxMicrosoft_WindowsCrossDevice": {
+    "Category": "Utilities & Productivity",
+    "Content": "Mobile Devices",
+    "Description": "Manage and integrate mobile devices with Windows.",
+    "Panel": "0",
+    "PackageId": "Microsoft.WindowsCrossDevice"
+  },
   "WPFAppxMicrosoft_Todos": {
     "Category": "Utilities & Productivity",
     "Content": "To Do",
