@@ -65,6 +65,7 @@ function Invoke-WPFButton {
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
+        "WPFGetInstalledAppx" {Invoke-WPFGetInstalled -CheckBox "appx"}
         "WPFRemoveSelectedAppx" {Invoke-WPFAppxRemoval}
         "WPFDefaultAppxSelection" {Invoke-WPFPresets "AppxDefault" -checkboxfilterpattern "WPFAppx*"}
         "WPFSelectAllAppx" {

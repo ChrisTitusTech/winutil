@@ -39,6 +39,9 @@ function Invoke-WPFGetInstalled {
             Write-Host "Getting Installed Tweaks..."
             $Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox
         }
+        elseif ($checkbox -eq "appx") {
+            $Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox
+        }
 
         $sync.form.Dispatcher.invoke({
             foreach ($checkbox in $Checkboxes) {

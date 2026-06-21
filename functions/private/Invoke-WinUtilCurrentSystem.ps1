@@ -120,4 +120,14 @@ Function Invoke-WinUtilCurrentSystem {
             }
         }
     }
+
+    if ($CheckBox -eq "appx") {
+        $installedAppxPackages = Get-AppxPackage | Select-Object -ExpandProperty Name
+
+        foreach ($appx in $sync.configs.appxHashtable.GetEnumerator()) {
+            if ($appx.Value.PackageId -in $installedAppxPackages) {
+                Write-Output $appx.Name
+            }
+        }
+    }
 }
