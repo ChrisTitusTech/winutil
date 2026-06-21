@@ -1,37 +1,27 @@
 function Invoke-WPFAppxRemoval {
-    <#
-    .SYNOPSIS
-        Removes the selected AppX packages in a background runspace.
-    #>
-
     if ($sync.ProcessRunning) {
-        $msg = "A process is currently running. Please wait for it to finish."
-        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+        [System.Windows.MessageBox]::Show("A process is currently running.", "Winutil", "OK", "Warning")
         return
     }
 
     $selected = @($sync.selectedAppx)
-    if ($selected.Count -eq 0) {
-        $msg = "Please select the AppX packages you wish to remove."
-        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+    if (-not $selected) {
+        [System.Windows.MessageBox]::Show("Select AppX packages to remove.", "Winutil", "OK", "Warning")
         return
     }
 
-    $totalSteps = $selected.Count
-    $completedSteps = 0
+    $apps = $sync.configs.appxHashtable
 
-    $handle = Invoke-WPFRunspace -ParameterList @(("selected", $selected), ("completedSteps", $completedSteps), ("totalSteps", $totalSteps)) -ScriptBlock {
-        param($selected, $completedSteps, $totalSteps)
+    Invoke-WPFRunspace -ParameterList @(("selected", $selected),("apps", $apps)) -ScriptBlock {
+        param($selected, $apps)
 
         $sync.ProcessRunning = $true
 
-        for ($i = 0; $i -lt $selected.Count; $i++) {
-            $key = $selected[$i]
-            $appInfo = $sync.configs.appxHashtable.$key
-            $packageId = $appInfo.PackageId
+        foreach ($key in $selected) {
+            $package = $apps[$key].PackageId
 
-            Write-Host "Removing $packageId"
-            Get-AppxPackage -Name $packageId -AllUsers | Remove-AppxPackage -AllUsers
+            Write-Host "Removing $package"
+            Get-AppxPackage -Name $package -AllUsers | Remove-AppxPackage -AllUsers
         }
 
         $sync.ProcessRunning = $false
