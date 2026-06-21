@@ -87,7 +87,7 @@ function Invoke-WPFSelectedCheckboxesUpdate{
                 if (-not $sync.selectedAppx.Contains($appKey)) {
                     $sync.selectedAppx.Add($appKey)
                 }
-            } else{
+            } else {
                 $sync.selectedAppx.Remove($appKey)
             }
         }
