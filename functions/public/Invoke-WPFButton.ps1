@@ -66,6 +66,7 @@ function Invoke-WPFButton {
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
         "WPFRemoveSelectedAppx" {Invoke-WPFAppxRemoval}
+        "WPFDefaultAppxSelection" {Invoke-WPFPresets "AppxDefault" -checkboxfilterpattern "WPFAppx*"}
         "WPFSelectAllAppx" {
             $sync.configs.appxHashtable.Keys | ForEach-Object {$sync.$_.IsChecked = $true}
         }
