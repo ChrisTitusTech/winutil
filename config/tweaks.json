@@ -91,7 +91,8 @@
         "OriginalValue": "<RemoveEntry>"
       }
     ],
-    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/revertstartmenu"
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/revertstartmenu",
+   "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/revertstartmenu"
   },
   "WPFTweaksDisableStoreSearch": {
     "Content": "Microsoft Store Recommended Search Results - Disable",
