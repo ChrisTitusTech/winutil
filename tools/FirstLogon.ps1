@@ -92,6 +92,9 @@ Invoke-WebRequest -Uri https://github.com/Raphire/Win11Debloat/raw/master/Assets
 # Removed edge icon from the desktop
 Remove-Item -Path "$Env:Public\Desktop\Microsoft Edge.lnk"
 
+# Removed onedrive startup entry
+Remove-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Run -Name OneDriveSetup
+
 # Removed Windows.old if it's empty
 if (-not (Get-ChildItem -Path $Env:SystemDrive\Windows.old -ErrorAction SilentlyContinue)) {
   Remove-Item -Path $Env:SystemDrive\Windows.old
