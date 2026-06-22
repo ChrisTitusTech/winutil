@@ -6,7 +6,7 @@ description: ""
 ```json {filename="config/tweaks.json",linenos=inline,linenostart=1771}
   "WPFToggleTaskbarAlignment": {
     "Content": "Taskbar Centered Icons",
-    "Description": "Toggles the taskbar alignment either to the left or center",
+    "Description": "Toggles the Taskbar alignment either to the left or center.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
