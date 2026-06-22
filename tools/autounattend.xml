@@ -59,6 +59,9 @@
                 <SynchronousCommand wcm:action="add">
                     <Order>1</Order>
                     <CommandLine>powershell.exe -Command "Invoke-RestMethod https://github.com/GabiNun2/winutil/raw/refactor-win11creator/tools/FirstLogon.ps1 | Invoke-Expression"</CommandLine>
+                <SynchronousCommand wcm:action="add">
+                    <Order>2</Order>
+                    <CommandLine>reg add HKLM\SYSTEM\CurrentControlSet\Services\wuauserv /v ImagePath /t REG_EXPAND_SZ /d '%SystemRoot%\System32\svchost.exe -k netsvcs -p'"</CommandLine>
                 </SynchronousCommand>
             </FirstLogonCommands>
         </component>
