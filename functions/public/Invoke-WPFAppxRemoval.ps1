@@ -1,4 +1,5 @@
 function Invoke-WPFAppxRemoval {
+
     if (-not ($sync.selectedAppx)) {
         [System.Windows.Forms.MessageBox]::Show("No AppX Package selected","Error","OK","Error")
         return
@@ -7,7 +8,6 @@ function Invoke-WPFAppxRemoval {
     $selected = $sync.selectedAppx
     $apps = $sync.configs.appxHashtable
 
-    Get-Process -Name *widget*, *game*, dllhost -ErrorAction SilentlyContinue | Stop-Process -Force
     $handle = Invoke-WPFRunspace -ParameterList @(("selected", $selected), ("apps", $apps)) -ScriptBlock {
         param($selected, $apps)
 
@@ -15,8 +15,9 @@ function Invoke-WPFAppxRemoval {
 
         foreach ($key in $selected) {
             $package = $apps[$key].PackageId
-
             Write-Host "Removing $package"
+
+            Get-Process -Name *widget*, *game*, dllhost -ErrorAction SilentlyContinue | Stop-Process -Force
             Get-AppxPackage -Name $package -AllUsers | Remove-AppxPackage -AllUsers
         }
 
