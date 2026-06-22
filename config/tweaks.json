@@ -79,7 +79,7 @@
   },
  "WPFTweaksRevertStartMenu": {
     "Content": "Start Menu Previous Layout - Enable",
-    "Description": "Bring back the old Start Menu layout from before the gradual rollout of the new one in 25H2. On newer versions of windows !!THIS TWEAK WILL NOT WORK!!",
+    "Description": "Bring back the old Start Menu layout from before the gradual rollout of the new one in 25H2. On newer versions of Windows !!THIS TWEAK WILL NOT WORK!!",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
@@ -429,7 +429,7 @@
   },
   "WPFTweaksConsumerFeatures": {
     "Content": "ConsumerFeatures - Disable",
-    "Description": "Windows will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link).",
+    "Description": "Windows will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (e.g. Phone Link).",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
@@ -866,6 +866,19 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/debloat"
   },
+  "WPFTweaksReservedStorage": {
+    "Content": "Disable Reserved Storage",
+    "Description": "Disables Windows Reserved Storage (7-10 GB held for updates/temp files). Recommended only on small drives. Re-enable before major Windows feature updates to avoid installation failures.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "InvokeScript": [
+      "DISM /Online /Set-ReservedStorageState /State:Disabled"
+    ],
+    "UndoScript": [
+      "DISM /Online /Set-ReservedStorageState /State:Enabled"
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/reservedstorage"
+  },
   "WPFTweaksRestorePoint": {
     "Content": "Restore Point - Create",
     "Description": "Creates a restore point at runtime in case a revert is needed from WinUtil modifications.",
@@ -926,8 +939,8 @@
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/storage"
   },
   "WPFTweaksWindowsAI": {
-    "Content": "Windows AI - Disable",
-    "Description": "Removes or disables all ai features and packages",
+    "Content": "Windows AI - Disable And Remove",
+    "Description": "Removes and disables all AI features/packages",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -953,7 +966,7 @@
 
       New-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Appx\\AppxAllUserStore\\EndOfLife\\$Sid\\$Appx\" -Force
 
-      Get-AppxPackage -AllUsers *Copilot* | Remove-AppxPackage -AllUsers
+      Get-AppxPackage -AllUsers \"*Copilot*\" | Remove-AppxPackage -AllUsers
       Get-AppxPackage -AllUsers Microsoft.MicrosoftOfficeHub | Remove-AppxPackage -AllUsers
       Remove-AppxPackage $Appx
 
@@ -1363,7 +1376,7 @@
   },
   "WPFToggleShowExt": {
     "Content": "File Explorer File Extensions",
-    "Description": "Shows .file extensions in explorer (.exe, .png, etc)",
+    "Description": "Shows .file extensions in Explorer (.exe, .png, etc.)",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1391,7 +1404,7 @@
   },
   "WPFToggleHiddenFiles": {
     "Content": "File Explorer Hidden Files",
-    "Description": "reveals hidden files in explorer",
+    "Description": "Reveals hidden files in Explorer.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1602,7 +1615,7 @@
   },
   "WPFToggleS3Sleep": {
     "Content": "S3 Sleep",
-    "Description": "Toggles between Modern Standby and S3 Sleep which cuts of power to cpu while continuing to refreshes the memory.",
+    "Description": "Toggles between Modern Standby and S3 Sleep, which cuts off power to the CPU while continuing to refresh the memory.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1638,7 +1651,7 @@
   },
   "WPFToggleBingSearch": {
     "Content": "Start Menu Bing Search",
-    "Description": "Toggles Bing web search results in windows search",
+    "Description": "Toggles Bing web search results in Windows Search.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1718,7 +1731,7 @@
   },
   "WPFToggleStickyKeys": {
     "Content": "Sticky Keys",
-    "Description": "Toggles the stick keys which active when clicking shift rapidly",
+    "Description": "Toggles the Sticky Keys, which activate when clicking shift rapidly.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1736,7 +1749,7 @@
   },
   "WPFToggleTaskbarAlignment": {
     "Content": "Taskbar Centered Icons",
-    "Description": "Toggles the taskbar alignment either to the left or center",
+    "Description": "Toggles the Taskbar alignment either to the left or center.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
@@ -1826,7 +1839,7 @@
   },
   "WPFToggleLongPaths": {
     "Content": "Enable Long Paths",
-    "Description": "Toggles support for file paths longer than 260 characters in explorer.",
+    "Description": "Toggles support for file paths longer than 260 characters in Explorer.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",

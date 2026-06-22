@@ -7,7 +7,7 @@ next: /userguide/updates/
 
 Use the **Features** and **Fixes** sections to install optional Windows components and run common repair tasks.
 
-This page maps to the **Config** tab in Winutil. Some actions complete immediately, while others may prompt, download files from Microsoft, or require a restart before the change is fully available.
+This page maps to the **Config** tab in WinUtil. Some actions complete immediately, while others may prompt, download files from Microsoft, or require a restart before the change is fully available.
 
 {{< image src="images/config-tab-new" alt="Config tab with features and fixes" >}}
 
@@ -41,7 +41,7 @@ Use these when you have a specific issue to correct, not as a routine cleanup st
 
 ## Legacy Windows Panels
 
-Open old-school Windows panels directly from Winutil. Available panels include:
+Open old-school Windows panels directly from WinUtil. Available panels include:
 
 * Control Panel
 * Network Connections
