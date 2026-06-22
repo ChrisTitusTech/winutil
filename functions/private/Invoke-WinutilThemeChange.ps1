@@ -46,30 +46,7 @@ function Invoke-WinutilThemeChange ($theme) {
         }
     }
 
-    ApplyTheme "shared"
-
-    if ($theme -eq "Auto") {
-        $theme = if (Get-WinUtilToggleStatus WPFToggleDarkMode) { "Dark" } else { "Light" }
-    }
-
-    ApplyTheme $theme
-
-    $icon = switch ($theme) {
-        "Dark"  { [char]0xE708 }
-        "Light" { [char]0xE706 }
-        default { [char]0xF08C }
-    }
-
-    $toggle = $sync.WPFToggleFOSSHighlight
-
-    $fossEnabled = if ($null -eq $toggle) { $true } else { $toggle.IsChecked -ne $false }
-
-    $sync.Form.Resources["FOSSColor"] =
-        if ($fossEnabled) {
-            [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(76,175,80))
-        } else {
-            $sync.Form.Resources["MainForegroundColor"]
-        }
-
-    ($sync.Form.FindName("ThemeButton")).Content = [string]$icon
+    # Update the theme selector button with the appropriate icon
+    $ThemeButton = $sync.Form.FindName("ThemeButton")
+    $ThemeButton.Content = [string]$themeButtonIcon
 }

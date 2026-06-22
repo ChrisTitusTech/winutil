@@ -21,12 +21,12 @@ this means that your PowerShell session is in **Constrained Language Mode**, whi
 
 ### Ultimate Performance Plan Not Working
 
-The Ultimate Performance power plan may not work on some laptops who do not fully support this power plan.
+The Ultimate Performance power plan may not work on some laptops that do not fully support this power plan.
 
 In these cases, the power plan may fail to apply, This is expected behavior on unsupported hardware.
 
-### Revet start menu tweak not working
+### Revert start menu tweak not working
 
-Revet start menu tweak stops working starting with **Windows 11 update KB5089573** (released in May 2026).
+Revert start menu tweak stops working starting with **Windows 11 update KB5089573** (released in May 2026).
 
-In this update, Microsoft completely removed the old Start Menu code from Windows so we aren't able to bring it back
+In this update, Microsoft completely removed the old Start Menu code from Windows, so we aren't able to bring it back.
