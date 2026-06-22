@@ -37,9 +37,9 @@
   "WPFAppxMSTeams",
   "WPFAppxMicrosoft_OutlookForWindows"
 ]
-'@ | Set-Content config.json
+'@ | Set-Content $Env:SystemRoot\Setup\config.json
 
-& ([ScriptBlock]::Create((Invoke-RestMethod -Uri https://gist.github.com/GabiNun2/028f17551933fb31a847878f808fa9f8/raw/winutil.ps1))) -Config config.json
+& ([ScriptBlock]::Create((Invoke-RestMethod -Uri https://gist.github.com/GabiNun2/028f17551933fb31a847878f808fa9f8/raw/winutil.ps1))) -Config $Env:SystemRoot\Setup\config.json
 
 # Disables the task view button on the taskbar
 Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name ShowTaskViewButton -Value 0
