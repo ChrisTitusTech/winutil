@@ -27,12 +27,18 @@ public class Win32 {
             $WM_SETTINGCHANGE = 0x1A
             $SMTO_ABORTIFHUNG = 0x2
 
+            # Send a Broadcast Message to tell the Explorer that the Theme has changed
             [Win32]::SendMessageTimeout($HWND_BROADCAST, $WM_SETTINGCHANGE,
                 [IntPtr]::Zero, "ImmersiveColorSet", $SMTO_ABORTIFHUNG, 100,
                 [ref]([IntPtr]::Zero))
+
+            # Refresh the configuration for all open Explorer instances
+            $shell = New-Object -ComObject Shell.Application
+            foreach ($window in $shell.Windows()) {
+                $window.Refresh()
+            }
         }
     } elseif ($action -eq "restart") {
-        taskkill.exe /F /IM "explorer.exe"
-        Start-Process "explorer.exe"
+        Stop-Process -Name explorer
     }
 }
