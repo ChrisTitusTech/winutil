@@ -27,7 +27,7 @@ function Invoke-WPFUpdatessecurity {
     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Force
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -Type DWord -Value 1
 
-    Write-Host "Setting cumulative updates back by 1 year and security updates by 4 days"
+    Write-Host "Setting cumulative updates back by 1 year and security updates by 4 days..."
 
     New-Item -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Force
 

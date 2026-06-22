@@ -13,9 +13,9 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: Checkout Sources
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
-    - name: Compile and Syntaxcheck winutil.ps1
+    - name: Compile and Syntax check winutil.ps1
       shell: pwsh
       run: |
         Set-ExecutionPolicy Bypass -Scope Process -Force; ./Compile.ps1
