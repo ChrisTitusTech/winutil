@@ -15,9 +15,11 @@ function Invoke-WPFAppxRemoval {
 
         foreach ($key in $selected) {
             $package = $apps[$key].PackageId
-            Write-Host "Removing $package"
+            $name = $apps[$key].Content
 
             Get-Process -Name *widget*, *game*, dllhost -ErrorAction SilentlyContinue | Stop-Process -Force
+
+            Write-Host "Removing $name"
             Get-AppxPackage -Name $package -AllUsers | Remove-AppxPackage -AllUsers
         }
 
