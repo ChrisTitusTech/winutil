@@ -1,6 +1,11 @@
 function Invoke-WPFUpdatesdisable {
     Write-Host "Note: This will prevent you from using the Microsoft Store." -ForegroundColor Yellow
 
+    Write-Host "Disabling windows update services"
+
+    Set-Service -Name UsoSvc -StartupType Disabled
+    Set-Service -Name wuauserv -StartupType Disabled
+
     Write-Host "Blocking execution of windows update dlls"
 
     takeown /f $Env:SystemRoot\System32\usosvc.dll

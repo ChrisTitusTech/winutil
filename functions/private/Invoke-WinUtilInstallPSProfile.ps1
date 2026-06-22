@@ -1,12 +1,12 @@
 function Invoke-WinUtilInstallPSProfile {
     if (-not (Get-Command wt)) {
-        Write-Host "Windows Terminal not found installing..."
+        Write-Host "Windows Terminal not found. Installing..."
         Install-WinUtilWinget
         winget install Microsoft.WindowsTerminal --source winget --silent
     }
 
     if (-not (Get-Command pwsh)) {
-        Write-Host "Powershell 7 not found installing..."
+        Write-Host "PowerShell 7 not found. Installing..."
         Install-WinUtilWinget
         winget install Microsoft.PowerShell --source winget --silent
     }
