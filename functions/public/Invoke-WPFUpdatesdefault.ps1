@@ -16,22 +16,22 @@ function Invoke-WPFUpdatesdefault {
     Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Recurse -Force
     Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Recurse -Force
 
-    Write-Host "Showing Windows Updates in settings"
+    Write-Host "Showing Windows Updates in settings..."
     Remove-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer -Name SettingsPageVisibility
 
     Write-Host "Reenabling Windows Update Services..." -ForegroundColor Green
 
-    Write-Host "Restored BITS to Manual"
+    Write-Host "Restored BITS to Manual."
     Set-Service -Name BITS -StartupType Manual
 
-    Write-Host "Restored wuauserv to Manual"
+    Write-Host "Restored wuauserv to Manual."
     Set-Service -Name wuauserv -StartupType Manual
 
-    Write-Host "Restored UsoSvc to Automatic"
+    Write-Host "Restored UsoSvc to Automatic."
     Start-Service -Name UsoSvc
     Set-Service -Name UsoSvc -StartupType Automatic
 
-    Write-Host "Restored WaaSMedicSvc to Manual"
+    Write-Host "Restored WaaSMedicSvc to Manual."
     Set-Service -Name WaaSMedicSvc -StartupType Manual
 
     Write-Host "Enabling update related scheduled tasks..." -ForegroundColor Green
@@ -48,7 +48,7 @@ function Invoke-WPFUpdatesdefault {
         Get-ScheduledTask -TaskPath $Task | Enable-ScheduledTask -ErrorAction SilentlyContinue
     }
 
-    Write-Host "Windows Local Policies Reset to Default"
+    Write-Host "Windows Local Policies Reset to Default."
     secedit /configure /cfg "$Env:SystemRoot\inf\defltbase.inf" /db defltbase.sdb
 
     Write-Host "===================================================" -ForegroundColor Green
