@@ -89,10 +89,6 @@ Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\wuauserv -Name Im
 # Ensure onedrive will be removed
 Set-ItemProperty -Path HKLM:\Software\Microsoft\Windows\CurrentVersion\RunOnce -Name RemoveOneDrive -Value "$Env:SystemRoot\System32\OneDriveSetup.exe /uninstall"
 
-# Clear out the taskbar
-$ClearTaskbar = "powershell -Command Remove-Item -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband -Recurse;Stop-Process -Name explorer"
-Set-ItemProperty -Path HKLM:\Software\Microsoft\Windows\CurrentVersion\RunOnce -Name ClearTaskbar -Value $ClearTaskbar
-
 # Clear out the start menu
 Invoke-WebRequest -Uri https://github.com/Raphire/Win11Debloat/raw/master/Assets/Start/start2.bin -OutFile $Env:LocalAppData\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\start2.bin
 
