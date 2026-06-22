@@ -44,10 +44,6 @@
                     <Order>2</Order>
                     <Path>cmd /c del %SystemRoot%\System32\OneDriveSetup.exe</Path>
                 </RunSynchronousCommand>
-                <RunSynchronousCommand wcm:action="add">
-                    <Order>3</Order>
-                    <Path>reg delete HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v OneDriveSetup /f</Path>
-                </RunSynchronousCommand>
             </RunSynchronous>
         </component>
     </settings>
