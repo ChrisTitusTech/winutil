@@ -73,12 +73,11 @@
         "Order": "5",
         "Description": "Show the selected applications"
     },
-    "WPFToggleFOSSHighlight": {
-        "Content": "Highlight FOSS",
+    "WPFInstallFOSSInfo": {
+        "Content": "Free and Open Source Software",
         "Category": "__Selection",
-        "Type": "Toggle",
-        "Checked": true,
-        "Order": "6",
-        "Description": "Toggle the green highlight for FOSS applications"
+        "Type": "Note",
+        "Order": "0",
+        "Description": "Information about the #FOSS label on application entries"
     }
 }

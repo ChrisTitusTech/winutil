@@ -147,7 +147,7 @@ Want to help improve Winutil?
 
 ## Video Tutorial
 
-Watch the complete Winutil overview:
+Watch the complete WinUtil overview:
 
 {{< youtube id=6UQZ5oQg8XA loading=lazy >}}
 
@@ -158,5 +158,5 @@ Ready to get started? Head to the **[Getting Started Guide](getting-started/)**.
 Dive right into the following section to get started:
 
 {{< cards >}}
-  {{< card link="getting-started" title="Getting Started" icon="document-text" subtitle="Learn how to use winutil." >}}
+  {{< card link="getting-started" title="Getting Started" icon="document-text" subtitle="Learn how to use WinUtil." >}}
 {{< /cards >}}

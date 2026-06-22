@@ -1,18 +1,18 @@
 tag-prefix: ''
 categories:
-  - title: '🚀 Features'
+  - title: 'Features'
     labels:
       - 'feature'
       - 'enhancement'
       - 'new feature'
-  - title: '🐛 Bug Fixes'
+  - title: 'Bug Fixes'
     labels:
       - 'hotfix'
       - 'bugfix'
       - 'bug'
-  - title: '📚 Documentation'
+  - title: 'Documentation'
     label: 'documentation'
-  - title: '🎨 UI/UX Improvements'
+  - title: 'UI/UX Improvements'
     label: 'ui update'
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 template: |

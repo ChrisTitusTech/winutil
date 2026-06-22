@@ -624,9 +624,18 @@
         "category": "Utilities",
         "choco": "jpegview",
         "content": "JPEG View",
-        "description": "JPEGView is a lean, fast and highly configurable viewer/editor for JPEG, BMP, PNG, WEBP, TGA, GIF, JXL, HEIC, HEIF, AVIF and TIFF images with a minimal GUI.",
+        "description": "JPEGView is a lean, fast and highly configurable viewer/editor for JPEG, BMP, PNG, WEBP, TGA, GIF, JXL, HEIC, HEIF, AVIF, and TIFF images with a minimal GUI.",
         "link": "https://github.com/sylikc/jpegview",
         "winget": "sylikc.JPEGView",
+        "foss": true
+    },
+    "keepassxc": {
+        "category": "Utilities",
+        "choco": "keepassxc",
+        "content": "KeePassXC",
+        "description": "KeePassXC is a modern, secure, and open-source password manager that stores and manages your most sensitive information. You can run KeePassXC on Windows, macOS, and Linux systems. KeePassXC is for people with extremely high demands of secure personal data management. It saves many different types of information, such as usernames, passwords, URLs, attachments, and notes in an offline, encrypted file that can be stored in any location, including private and public cloud solutions. For easy identification and management, user-defined titles and icons can be specified for entries. In addition, entries are sorted into customizable groups. An integrated search function allows you to use advanced patterns to easily find any entry in your database. A customizable, fast, and easy-to-use password generator utility allows you to create passwords with any combination of characters or easy to remember passphrases.",
+        "link": "https://keepassxc.org/",
+        "winget": "KeePassXCTeam.KeePassXC",
         "foss": true
     },
     "klite": {
@@ -646,6 +655,15 @@
         "link": "https://kodi.tv/",
         "winget": "XBMCFoundation.Kodi",
         "foss": true
+    },
+    "lightshot": {
+        "category": "Multimedia Tools",
+        "choco": "lightshot",
+        "content": "Lightshot",
+        "description": "The fastest way to take a customizable screenshot.",
+        "link": "https://app.prntscr.com/",
+        "winget": "Skillbrains.Lightshot",
+        "foss": false
     },
     "lazygit": {
         "category": "Development",
@@ -768,7 +786,7 @@
         "category": "Multimedia Tools",
         "choco": "nomacs",
         "content": "nomacs",
-        "description": "nomacs is a free, open source image viewer, which supports multiple platforms. You can use it for viewing all common image formats including RAW and psd images.",
+        "description": "nomacs is a free, open-source image viewer, which supports multiple platforms. You can use it for viewing all common image formats, including RAW and .psd images.",
         "link": "https://nomacs.org/",
         "winget": "nomacs.nomacs",
         "foss": true
@@ -786,7 +804,7 @@
         "category": "Selfhosted Tools",
         "choco": "netbird",
         "content": "NetBird",
-        "description": "NetBird is a open-source alternative comparable to TailScale that can be connected to a self-hosted server.",
+        "description": "NetBird is an open-source alternative comparable to TailScale that can be connected to a self-hosted server.",
         "link": "https://netbird.io/",
         "winget": "Netbird.Netbird",
         "foss": true
@@ -845,6 +863,14 @@
         "winget": "OpenJS.NodeJS.LTS",
         "foss": true
     },
+    "pnpm": {
+    "category": "Development",
+    "content": "pnpm",
+    "description": "pnpm is a fast and disk space efficient package manager for JavaScript and Node.js applications.",
+    "link": "https://pnpm.io/",
+    "winget": "pnpm.pnpm",
+    "foss": true
+    },
     "notepadplus": {
         "category": "Multimedia Tools",
         "choco": "notepadplusplus",
@@ -902,8 +928,8 @@
     "onlyoffice": {
         "category": "Multimedia Tools",
         "choco": "onlyoffice",
-        "content": "ONLYOffice Desktop",
-        "description": "ONLYOffice Desktop is a comprehensive office suite for document editing and collaboration.",
+        "content": "ONLYOFFICE Desktop",
+        "description": "ONLYOFFICE Desktop is a comprehensive office suite for document editing and collaboration.",
         "link": "https://www.onlyoffice.com/desktop.aspx",
         "winget": "ONLYOFFICE.DesktopEditors",
         "foss": true
@@ -930,7 +956,7 @@
         "category": "Pro Tools",
         "choco": "openvpn-connect",
         "content": "OpenVPN Connect",
-        "description": "OpenVPN Connect is an VPN client that allows you to connect securely to a VPN server. It provides a secure and encrypted connection for protecting your online privacy.",
+        "description": "OpenVPN Connect is a VPN client that allows you to connect securely to a VPN server. It provides a secure and encrypted connection for protecting your online privacy.",
         "link": "https://openvpn.net/",
         "winget": "OpenVPNTechnologies.OpenVPNConnect",
         "foss": false
@@ -993,7 +1019,7 @@
         "category": "Games",
         "choco": "playnite",
         "content": "Playnite",
-        "description": "Playnite is an open source video game library manager with one simple goal: To provide a unified interface for all of your games.",
+        "description": "Playnite is an open-source video game library manager with one simple goal: To provide a unified interface for all of your games.",
         "link": "https://playnite.link/",
         "winget": "Playnite.Playnite",
         "foss": true
@@ -1047,7 +1073,7 @@
         "category": "Games",
         "choco": "prismlauncher",
         "content": "Prism Launcher",
-        "description": "Prism Launcher is an open-source Minecraft launcher with the ability to manage multiple instances, accounts and mods.",
+        "description": "Prism Launcher is an open-source Minecraft launcher with the ability to manage multiple instances, accounts, and mods.",
         "link": "https://prismlauncher.org/",
         "winget": "PrismLauncher.PrismLauncher",
         "foss": true
@@ -1317,7 +1343,7 @@
         "category": "Communications",
         "choco": "teamspeak",
         "content": "TeamSpeak 3",
-        "description": "TEAMSPEAK. YOUR TEAM. YOUR RULES. Use crystal clear sound to communicate with your team mates cross-platform with military-grade security, lag-free performance & unparalleled reliability and uptime.",
+        "description": "TEAMSPEAK. YOUR TEAM. YOUR RULES. Use crystal clear sound to communicate with your teammates cross-platform with military-grade security, lag-free performance & unparalleled reliability and uptime.",
         "link": "https://www.teamspeak.com/",
         "winget": "TeamSpeakSystems.TeamSpeakClient",
         "foss": false
