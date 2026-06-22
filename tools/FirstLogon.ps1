@@ -42,8 +42,6 @@
 
 & ([ScriptBlock]::Create((Invoke-RestMethod -Uri https://gist.github.com/GabiNun2/028f17551933fb31a847878f808fa9f8/raw/winutil.ps1))) -Config $Env:SystemRoot\Setup\config.json
 
-Start-Transcript -Path $Home\log.txt
-
 # Disables the task view button on the taskbar
 Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name ShowTaskViewButton -Value 0
 
@@ -103,5 +101,4 @@ if (-not (Get-ChildItem -Path $Env:SystemDrive\Windows.old -ErrorAction Silently
     Remove-Item -Path $Env:SystemDrive\Windows.old
 }
 
-Stop-Transcript
 Restart-Computer
