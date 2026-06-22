@@ -1,6 +1,5 @@
-Start-Transcript -Path log.txt
-
 # Run WinUtil Tweaks
+
 @'
 [
   "WPFTweaksActivity",
@@ -43,6 +42,8 @@ Start-Transcript -Path log.txt
 
 & ([ScriptBlock]::Create((Invoke-RestMethod -Uri https://gist.github.com/GabiNun2/028f17551933fb31a847878f808fa9f8/raw/winutil.ps1))) -Config $Env:SystemRoot\Setup\config.json
 
+Start-Transcript -Path $Home\log.txt
+
 # Disables the task view button on the taskbar
 Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name ShowTaskViewButton -Value 0
 
@@ -76,7 +77,7 @@ New-Item -Path HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Start -Forc
 Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Start -Name HideRecommendedSection -Value 1
 
 # Run WinUtil Security Updates
-New-Item -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Force -Force
+New-Item -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Force
 
 Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Name NoAutoUpdate -Value 1
 Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate -Name ExcludeWUDriversInQualityUpdate -Value 1
