@@ -97,4 +97,5 @@ if (-not (Get-ChildItem -Path $Env:SystemDrive\Windows.old -ErrorAction Silently
   Remove-Item -Path $Env:SystemDrive\Windows.old
 }
 
+pause
 Restart-Computer
