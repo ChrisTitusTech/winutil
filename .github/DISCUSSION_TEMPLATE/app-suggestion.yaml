@@ -17,6 +17,8 @@ body:
           required: true
         - label: "This application should be included on majority of fresh installed systems"
           required: true
+        - label: "This application is present on WinGet (check winstall.app or do 'winget search your-app' in terminal)"
+          required: true
   - type: checkboxes
     attributes:
       label: "Check for denied applications"
