@@ -3,7 +3,7 @@ title: "Multiplane Overlay"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1520}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1498}
   "WPFToggleMultiplaneOverlay": {
     "Content": "Multiplane Overlay",
     "Description": "Multiplane Overlay compose multiple image layers, which can sometimes cause issues with graphics cards.",

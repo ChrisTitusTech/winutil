@@ -6,7 +6,7 @@ toc: true
 
 ## Overview
 
-Winutil is a PowerShell-based Windows utility with a WPF (Windows Presentation Foundation) GUI. This document explains the architecture, code structure, and how different components work together.
+WinUtil is a PowerShell-based Windows utility with a WPF (Windows Presentation Foundation) GUI. This document explains the architecture, code structure, and how different components work together.
 
 ## High-Level Architecture
 
@@ -74,7 +74,7 @@ winutil/
 1. Reads all function files from `/functions/`
 2. Includes configuration JSON files
 3. Embeds XAML GUI definition
-4. Combines into single script
+4. Combines into a single script
 5. Outputs `winutil.ps1`
 
 **Why**: Makes distribution easier (single file) and improves load time.
