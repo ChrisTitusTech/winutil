@@ -3,7 +3,7 @@ title: "Taskbar Centered Icons"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1751}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1768}
   "WPFToggleTaskbarAlignment": {
     "Content": "Taskbar Centered Icons",
     "Description": "Toggles the Taskbar alignment either to the left or center.",
