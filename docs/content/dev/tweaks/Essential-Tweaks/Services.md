@@ -3,7 +3,7 @@ title: "Services - Set to Manual"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=167}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=147}
   "WPFTweaksServices": {
     "Content": "Services - Set to Manual",
     "Description": "Sets some services to Manual startup and adjusts the SvcHostSplitThresholdInKB registry value to better match system memory, which can significantly reduce the number of svchost.exe processes.",
