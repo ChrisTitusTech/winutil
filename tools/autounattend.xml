@@ -40,6 +40,10 @@
                     <Description>Disables updates for oobe, this will be reenabled later</Description>
                     <Path>reg delete HKLM\SYSTEM\CurrentControlSet\Services\wuauserv /v ImagePath /f</Path>
                 </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>2</Order>
+                    <Path>cmd /c del %SystemRoot%\System32\OneDriveSetup.exe</Path>
+                </RunSynchronousCommand>
             </RunSynchronous>
         </component>
     </settings>
