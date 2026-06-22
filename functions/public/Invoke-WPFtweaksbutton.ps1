@@ -67,7 +67,7 @@ function Invoke-WPFtweaksbutton {
       }
     }
 
-    if ($DNSProvider -ne "Default") {
+    if ($dnsProvider -ne "Default") {
       Set-WinUtilDNS -DNSProvider $dnsProvider
     }
 
