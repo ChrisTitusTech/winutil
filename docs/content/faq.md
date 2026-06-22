@@ -6,46 +6,46 @@ toc: true
 ## General Questions
 
 ### Is Windows 10 still supported?
-No. Windows 10 is no longer supported by Winutil because it reached the end of support on **October 14, 2025**.
-Winutil is focused on Windows 11.
+No. Windows 10 is no longer supported by WinUtil because it reached the end of support on **October 14, 2025**.
+WinUtil is focused on Windows 11.
 
-### How do I uninstall Winutil?
-You do not need to uninstall Winutil. Because it runs as a PowerShell script, it is loaded into memory only while it is open. Once you close it, it is removed from memory and does not remain installed on your system.
+### How do I uninstall WinUtil?
+You do not need to uninstall WinUtil. Because it runs as a PowerShell script, it is loaded into memory only while it is open. Once you close it, it is removed from memory and does not remain installed on your system.
 
-### Is Winutil safe to use?
-Yes, Winutil is open source, and the code is publicly available on GitHub. Thousands of users run it daily. However, like any system modification tool, you should:
+### Is WinUtil safe to use?
+Yes, WinUtil is open source, and the code is publicly available on GitHub. Thousands of users run it daily. However, like any system modification tool, you should:
 - Run it as Administrator (required)
 - Create a restore point before major changes
 - Understand what tweaks you're applying
 - Run only from [official source](https://github.com/ChrisTitusTech/winutil/)
 
-### Do I need to keep running Winutil?
-No. Once you've applied tweaks or installed applications, you can close Winutil. Changes persist after closing. You only need to run Winutil again when you want to make additional changes or undo tweaks.
+### Do I need to keep running WinUtil?
+No. Once you've applied tweaks or installed applications, you can close WinUtil. Changes persist after closing. You only need to run WinUtil again when you want to make additional changes or undo tweaks.
 
 ### Does Winutil require internet access?
-- **For downloading**: Yes, installing applications requires the internet
+- **For downloading**: Yes, installing applications requires the Internet
 - **For tweaks**: No, most tweaks work offline
 - **Initial run**: Yes, to run the latest script
 
-### How often is Winutil updated?
-Winutil is actively maintained with frequent updates. New features, bug fixes, and application additions are released regularly. The script auto-downloads the latest version each time you run it.
+### How often is WinUtil updated?
+WinUtil is actively maintained with frequent updates. New features, bug fixes, and application additions are released regularly. The script auto-downloads the latest version each time you run it.
 
 ## Installation & Running
 
-### How do I run Winutil?
+### How do I run WinUtil?
 1. Open PowerShell as Administrator
 2. Run: `irm "https://christitus.com/win" | iex`
 3. Wait for the GUI to appear
 
 ### Why do I need Administrator rights?
-Winutil makes system-level changes (registry edits, service modifications, software installation) that require elevated permissions. Without admin rights, most features won't work.
+WinUtil makes system-level changes (registry edits, service modifications, software installation) that require elevated permissions. Without admin rights, most features won't work.
 
 ### The script won't download. What do I do?
 Try these solutions in order:
 
 1. **Use the direct GitHub link**:
    ```powershell
-   irm https://github.com/ChrisTitusTech/Winutil/releases/latest/download/Winutil.ps1 | iex
+   irm https://github.com/ChrisTitusTech/winutil/releases/latest/download/Winutil.ps1 | iex
    ```
 
 2. **Force TLS 1.2**:

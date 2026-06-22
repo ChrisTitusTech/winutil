@@ -68,12 +68,5 @@ function Invoke-WPFButton {
         "WPFCloseButton" {$sync.Form.Close(); Write-Host "Bye bye!"}
         "WPFMinimizeButton" {$sync.Form.WindowState = [Windows.WindowState]::Minimized}
         "WPFselectedAppsButton" {$sync.selectedAppsPopup.IsOpen = -not $sync.selectedAppsPopup.IsOpen}
-        "WPFToggleFOSSHighlight" {
-            if ($sync.WPFToggleFOSSHighlight.IsChecked) {
-                 $sync.Form.Resources["FOSSColor"] = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(76, 175, 80)) # #4CAF50
-            } else {
-                 $sync.Form.Resources["FOSSColor"] = $sync.Form.Resources["MainForegroundColor"]
-            }
-        }
     }
 }
