@@ -1,5 +1,45 @@
 # Run WinUtil Tweaks
-& ([ScriptBlock]::Create((Invoke-RestMethod -Uri https://christitus.com/win))) -Preset Advanced
+Set-Content -Value @'
+[
+  "WPFTweaksActivity",
+  "WPFTweaksConsumerFeatures",
+  "WPFTweaksDisableExplorerAutoDiscovery",
+  "WPFTweaksWPBT",
+  "WPFTweaksLocation",
+  "WPFTweaksServices",
+  "WPFTweaksTelemetry",
+  "WPFTweaksDeliveryOptimization",
+  "WPFTweaksDeleteTempFiles",
+  "WPFTweaksEndTaskOnTaskbar",
+  "WPFTweaksDisableStoreSearch",
+  "WPFTweaksRevertStartMenu",
+  "WPFTweaksWidget",
+  "WPFTweaksWindowsAI",
+  "WPFTweaksRightClickMenu",
+  "WPFAppxMicrosoft_WindowsFeedbackHub",
+  "WPFAppxMicrosoft_ScreenSketch",
+  "WPFAppxMicrosoft_Copilot",
+  "WPFAppxMicrosoft_MicrosoftStickyNotes",
+  "WPFAppxMicrosoft_WindowsSoundRecorder",
+  "WPFAppxMicrosoft_MicrosoftOfficeHub",
+  "WPFAppxMicrosoft_WindowsMaps",
+  "WPFAppxMicrosoft_GetHelp",
+  "WPFAppxMicrosoft_WindowsDevHome",
+  "WPFAppxMicrosoft_MicrosoftSolitaireCollection",
+  "WPFAppxMicrosoft_Todos",
+  "WPFAppxClipchamp_Clipchamp",
+  "WPFAppxMicrosoft_BingNews",
+  "WPFAppxMicrosoftCorporationII_QuickAssist",
+  "WPFAppxMicrosoft_PowerAutomateDesktop",
+  "WPFAppxMicrosoft_BingWeather",
+  "WPFAppxMicrosoft_BingSearch",
+  "WPFAppxMicrosoft_WindowsAlarms",
+  "WPFAppxMSTeams",
+  "WPFAppxMicrosoft_OutlookForWindows"
+]
+'@ config.json
+
+& ([ScriptBlock]::Create((Invoke-RestMethod -Uri https://christitus.com/win))) -Config config.json
 
 # Disables the task view button on the taskbar
 Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name ShowTaskViewButton -Value 0
