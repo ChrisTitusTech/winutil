@@ -1,3 +1,5 @@
+Start-Transcript -Path log.txt
+
 # Run WinUtil Tweaks
 @'
 [
@@ -100,4 +102,5 @@ if (-not (Get-ChildItem -Path $Env:SystemDrive\Windows.old -ErrorAction Silently
     Remove-Item -Path $Env:SystemDrive\Windows.old
 }
 
+Stop-Transcript
 Restart-Computer
