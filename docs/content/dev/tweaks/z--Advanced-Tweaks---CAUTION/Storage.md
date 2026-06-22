@@ -3,7 +3,7 @@ title: "Storage Sense - Disable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=933}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=926}
   "WPFTweaksStorage": {
     "Content": "Storage Sense - Disable",
     "Description": "Storage Sense deletes temp files automatically.",

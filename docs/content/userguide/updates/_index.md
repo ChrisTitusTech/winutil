@@ -5,11 +5,11 @@ prev: /userguide/features/
 next: /userguide/automation/
 ---
 
-Winutil provides three update modes so you can choose how aggressively Windows Update is managed on your system:
+WinUtil provides three update modes so you can choose how aggressively Windows Update is managed on your system:
 
 Changing modes adjusts system-wide Windows Update behavior. After switching modes, give Windows a moment to apply the policy and plan for a restart if the new state does not appear immediately.
 
-{{< image src="images/updates-tab-new" alt="Updates tab in Winutil" >}}
+{{< image src="images/updates-tab-new" alt="Updates tab in WinUtil" >}}
 
 - **Default (Out of the Box) Settings**: Restores standard Windows Update behavior
 - **Security (Recommended) Settings**: Prioritizes stability while still receiving security updates
@@ -19,7 +19,7 @@ Changing modes adjusts system-wide Windows Update behavior. After switching mode
 
 - **What it does**: Restores the default Windows Update configuration.
 - **Best for**: Systems where you want Windows to manage updates normally.
-- **Notes**: This removes custom update settings previously applied by Winutil. If update errors continue, use the reset option in the **Config** tab to restore Microsoft Update services to their default state.
+- **Notes**: This removes custom update settings previously applied by WinUtil. If update errors continue, use the reset option in the **Config** tab to restore Microsoft Update services to their default state.
 
 ### Security (Recommended) Settings
 

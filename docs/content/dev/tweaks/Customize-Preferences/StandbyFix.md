@@ -3,7 +3,7 @@ title: "S0 Sleep Network Connectivity"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1606}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1584}
   "WPFToggleStandbyFix": {
     "Content": "S0 Sleep Network Connectivity",
     "Description": "Toggles network connectivity during S0 Sleep which is low power idle in modern laptops.",
