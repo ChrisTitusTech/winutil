@@ -14,9 +14,9 @@ Use the quick-selection buttons at the top of the Tweaks tab to speed up setup:
 
 * **Standard**: Selects the recommended baseline set of tweaks for most users.
 * **Minimal**: Selects a smaller, lower-impact set of common tweaks.
-* **Advanced**: Selects a focused set of safer advanced tweaks. This preset intentionally skips restore point creation and cleanup tasks to avoid long runtime.
+* **Advanced**: Selects a focused set of safer advanced tweaks. This preset intentionally skips restore point creation and cleanup tasks to avoid a long runtime.
 * **Clear**: Clears all currently selected tweaks.
-* **Get Installed Tweaks**: Best-effort detection for tweaks already applied on your system.
+* **Get Installed Tweaks**: Best-effort detection for tweaks already applied to your system.
 
 ### Run Tweaks
 * **Open the Tweaks tab**: Navigate to the **Tweaks** tab in the application.
@@ -41,7 +41,7 @@ Essential Tweaks are the safest starting point for most systems. They focus on l
 Advanced Tweaks are for users who understand the side effects of deeper Windows changes. Create a restore point first, review each item, and avoid treating the full advanced list as a one-click baseline.
 
 ### O&O ShutUp10++
-[O&O ShutUp10++](https://www.oo-software.com/en/shutup10) can be launched from Winutil with one click. It is a free privacy tool for Windows that helps users manage telemetry, update behavior, and app permission settings.
+[O&O ShutUp10++](https://www.oo-software.com/en/shutup10) can be launched from WinUtil with one click. It is a free privacy tool for Windows that helps users manage telemetry, update behavior, and app permission settings.
 
 {{< youtube id=3HvNr8eMcv0 loading=lazy >}}
 

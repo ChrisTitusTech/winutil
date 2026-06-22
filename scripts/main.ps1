@@ -241,24 +241,6 @@ $sync.keys | ForEach-Object {
 }
 
 #===========================================================================
-# Setup background config
-#===========================================================================
-
-# Load computer information in the background
-Invoke-WPFRunspace -ScriptBlock {
-    try {
-        $ProgressPreference = "SilentlyContinue"
-        $sync.ConfigLoaded = $False
-        $sync.ComputerInfo = Get-ComputerInfo
-        $sync.ConfigLoaded = $True
-    }
-    finally{
-        $ProgressPreference = $oldProgressPreference
-    }
-
-} | Out-Null
-
-#===========================================================================
 # Setup and Show the Form
 #===========================================================================
 
@@ -424,12 +406,7 @@ $sync["Form"].Add_Loaded({
 $NavLogoPanel = $sync["Form"].FindName("NavLogoPanel")
 $NavLogoPanel.Children.Add((Invoke-WinUtilAssets -Type "logo" -Size 25)) | Out-Null
 
-
-if (Test-Path "$winutildir\logo.ico") {
-    $sync["logorender"] = "$winutildir\logo.ico"
-} else {
-    $sync["logorender"] = (Invoke-WinUtilAssets -Type "Logo" -Size 90 -Render)
-}
+$sync["logorender"] = (Invoke-WinUtilAssets -Type "Logo" -Size 90 -Render)
 $sync["checkmarkrender"] = (Invoke-WinUtilAssets -Type "checkmark" -Size 512 -Render)
 $sync["warningrender"] = (Invoke-WinUtilAssets -Type "warning" -Size 512 -Render)
 
