@@ -6,7 +6,7 @@ description: ""
 ```json {filename="config/tweaks.json",linenos=inline,linenostart=1426}
   "WPFToggleHiddenFiles": {
     "Content": "File Explorer Hidden Files",
-    "Description": "reveals hidden files in explorer",
+    "Description": "Reveals hidden files in Explorer.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
