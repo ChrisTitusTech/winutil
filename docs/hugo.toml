@@ -1,6 +1,6 @@
 baseURL = "https://winutil.christitus.com/"
 languageCode = "en-us"
-title = "Winutil Documentation"
+title = "WinUtil Documentation"
 enableGitInfo = true
 canonifyURLs = true
 
@@ -77,7 +77,7 @@ weight = 6
 [[menu.main]]
 name = "GitHub"
 weight = 7
-url = "https://github.com/christitustech/Winutil"
+url = "https://github.com/christitustech/winutil"
 
   [menu.main.params]
   icon = "github"
@@ -124,7 +124,7 @@ display = "hover"
     type = "separator"
 
   [[menu.sidebar]]
-  name = "Github Repo ↗"
+  name = "GitHub Repo ↗"
   url = "https://github.com/ChrisTitusTech/winutil"
   weight = 2
 
