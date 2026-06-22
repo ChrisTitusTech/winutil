@@ -1,12 +1,12 @@
 ---
-title: "Windows AI - Disable"
+title: "Windows AI - Disable And Remove"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=949}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=942}
   "WPFTweaksWindowsAI": {
-    "Content": "Windows AI - Disable",
-    "Description": "Removes or disables all ai features and packages",
+    "Content": "Windows AI - Disable And Remove",
+    "Description": "Removes and disables all AI features/packages",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -32,7 +32,7 @@ description: ""
 
       New-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Appx\\AppxAllUserStore\\EndOfLife\\$Sid\\$Appx\" -Force
 
-      Get-AppxPackage -AllUsers *Copilot* | Remove-AppxPackage -AllUsers
+      Get-AppxPackage -AllUsers \"*Copilot*\" | Remove-AppxPackage -AllUsers
       Get-AppxPackage -AllUsers Microsoft.MicrosoftOfficeHub | Remove-AppxPackage -AllUsers
       Remove-AppxPackage $Appx
 

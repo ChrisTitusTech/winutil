@@ -3,7 +3,7 @@ title: "Microsoft Store Recommended Search Results - Disable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=117}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=97}
   "WPFTweaksDisableStoreSearch": {
     "Content": "Microsoft Store Recommended Search Results - Disable",
     "Description": "Will not display recommended Microsoft Store apps when searching for apps in the Start menu.",

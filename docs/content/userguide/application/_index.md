@@ -5,7 +5,7 @@ prev: /userguide/getting-started/
 next: /userguide/tweaks/
 ---
 
-Use the Applications tab to install, upgrade, uninstall, and review supported apps from one place. Winutil relies on package manager support for these actions, so the available results depend on what WinGet can detect and manage on your system.
+Use the Applications tab to install, upgrade, uninstall, and review supported apps from one place. WinUtil relies on package manager support for these actions, so the available results depend on what WinGet can detect and manage on your system.
 
 {{< tabs >}}
 

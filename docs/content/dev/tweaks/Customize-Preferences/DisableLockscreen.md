@@ -1,23 +1,22 @@
 ---
-title: "Start Menu Bing Search"
+title: "Lock Screen - Disable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1638}
-  "WPFToggleBingSearch": {
-    "Content": "Start Menu Bing Search",
-    "Description": "Toggles Bing web search results in Windows Search.",
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1674}
+  "WPFTweaksDisableLockscreen": {
+    "Content": "Lock Screen - Disable",
+    "Description": "Skips the lock screen entirely and goes directly to the sign-in screen on boot and wake.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
     "registry": [
       {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
-        "Name": "BingSearchEnabled",
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Personalization",
+        "Name": "NoLockScreen",
         "Value": "1",
         "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "true"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
 ```
