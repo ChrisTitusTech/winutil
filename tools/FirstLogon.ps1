@@ -97,7 +97,7 @@ Remove-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Run -N
 
 # Removed Windows.old if it's empty
 if (-not (Get-ChildItem -Path $Env:SystemDrive\Windows.old -ErrorAction SilentlyContinue)) {
-  Remove-Item -Path $Env:SystemDrive\Windows.old
+    Remove-Item -Path $Env:SystemDrive\Windows.old
 }
 
 Restart-Computer
