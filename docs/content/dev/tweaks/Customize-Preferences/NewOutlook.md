@@ -3,7 +3,7 @@ title: "Microsoft Outlook New Version"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1459}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1437}
   "WPFToggleNewOutlook": {
     "Content": "Microsoft Outlook New Version",
     "Description": "This will ensures the classic Outlook application is used.",

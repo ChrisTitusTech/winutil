@@ -11,7 +11,7 @@ body:
 
         ## ⚠️ **IMPORTANT**
         - 🛠️ **Supported environments only:** We only support Windows 11.
-        - 💡 For general questions, use the [Discussions section](https://github.com/Christitustech/winutil/discussions) or join our Community-driven [Discord Server](https://discord.gg/RUbZUZyByQ).
+        - 💡 For general questions, use the [Discussions section](https://github.com/ChrisTitusTech/winutil/discussions) or join our Community-driven [Discord Server](https://discord.gg/RUbZUZyByQ).
 
   - type: textarea
     id: proposed_solution

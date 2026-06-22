@@ -3,10 +3,10 @@ title: "S3 Sleep"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1624}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1602}
   "WPFToggleS3Sleep": {
     "Content": "S3 Sleep",
-    "Description": "Toggles between Modern Standby and S3 Sleep which cuts of power to cpu while continuing to refreshes the memory.",
+    "Description": "Toggles between Modern Standby and S3 Sleep, which cuts off power to the CPU while continuing to refresh the memory.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",

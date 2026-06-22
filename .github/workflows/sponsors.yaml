@@ -12,7 +12,7 @@ jobs:
     if: (github.event_name == 'schedule' && github.repository == 'ChrisTitusTech/winutil') || (github.event_name != 'schedule')
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
 
