@@ -165,7 +165,7 @@
     "Content": "Photos",
     "Description": "Organizes, views, and crops local images with basic color adjustment and album creation tools.",
     "Panel": "0",
-    "PackageId": "Microsoft.WindowsPhotos"
+    "PackageId": "Microsoft.Windows.Photos"
   },
   "WPFAppxMicrosoft_WindowsMaps": {
     "Category": "Bing & Web Services",
