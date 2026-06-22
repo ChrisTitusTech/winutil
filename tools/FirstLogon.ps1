@@ -1,5 +1,5 @@
 # Run WinUtil Tweaks
-Set-Content -Value @'
+@'
 [
   "WPFTweaksActivity",
   "WPFTweaksConsumerFeatures",
@@ -37,7 +37,7 @@ Set-Content -Value @'
   "WPFAppxMSTeams",
   "WPFAppxMicrosoft_OutlookForWindows"
 ]
-'@ config.json
+'@ | Set-Content config.json
 
 & ([ScriptBlock]::Create((Invoke-RestMethod -Uri https://gist.github.com/GabiNun2/028f17551933fb31a847878f808fa9f8/raw/winutil.ps1))) -Config config.json
 
