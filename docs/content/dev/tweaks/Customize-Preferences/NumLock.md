@@ -3,7 +3,7 @@ title: "Num Lock on Startup"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1580}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1558}
   "WPFToggleNumLock": {
     "Content": "Num Lock on Startup",
     "Description": "Toggle the Num Lock key state when your computer starts.",

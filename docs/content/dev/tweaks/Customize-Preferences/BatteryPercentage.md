@@ -3,7 +3,7 @@ title: "System Tray Battery Percentage"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1325}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1303}
   "WPFToggleBatteryPercentage": {
     "Content": "System Tray Battery Percentage",
     "Description": "Shows numeric battery percentage next to the battery icon in the system tray.",
