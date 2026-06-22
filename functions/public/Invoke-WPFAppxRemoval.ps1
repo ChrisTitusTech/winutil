@@ -1,4 +1,9 @@
 function Invoke-WPFAppxRemoval {
+    if (-not ($sync.selectedAppx)) {
+        [System.Windows.Forms.MessageBox]::Show("No AppX Package selected","Error","OK","Error")
+        return
+    }
+
     $selected = $sync.selectedAppx
     $apps = $sync.configs.appxHashtable
 
