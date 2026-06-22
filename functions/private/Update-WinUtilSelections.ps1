@@ -1,58 +1,15 @@
-function Update-WinUtilSelections {
-    <#
+function Update-WinUtilSelections ($flatJson) {
+    foreach ($cbkey in $flatJson) {
+        $listName = switch -Regex ($cbkey) {
+            '^WPFInstall' { 'selectedApps' }
+            '^WPFTweaks'  { 'selectedTweaks' }
+            '^WPFToggle'  { 'selectedToggles' }
+            '^WPFFeature' { 'selectedFeatures' }
+            '^WPFAppx'    { 'selectedAppx' }
+        }
 
-    .SYNOPSIS
-        Updates the $sync.selected variables with a given preset.
-
-    .PARAMETER flatJson
-        The flattened json list of $sync values to select.
-    #>
-
-    param (
-        $flatJson
-    )
-
-    foreach ($item in $flatJson) {
-        # Ensure each item is treated as a string to handle PSCustomObject from JSON deserialization
-        $cbkey = [string]$item
-        $group = if ($cbkey.StartsWith("WPFInstall")) { "Install" }
-                    elseif ($cbkey.StartsWith("WPFTweaks")) { "Tweaks" }
-                    elseif ($cbkey.StartsWith("WPFToggle")) { "Toggle" }
-                    elseif ($cbkey.StartsWith("WPFFeature")) { "Feature" }
-                    elseif ($cbkey.StartsWith("WPFAppx")) { "Appx" }
-                    else { "na" }
-
-        switch ($group) {
-            "Install" {
-                if (!$sync.selectedApps.Contains($cbkey)) {
-                    $sync.selectedApps.Add($cbkey)
-                    # The List type needs to be specified again, because otherwise Sort-Object will convert the list to a string if there is only a single entry
-                    [System.Collections.Generic.List[string]]$sync.selectedApps = $sync.SelectedApps | Sort-Object
-                }
-            }
-            "Tweaks" {
-                if (!$sync.selectedTweaks.Contains($cbkey)) {
-                    $sync.selectedTweaks.Add($cbkey)
-                }
-            }
-            "Toggle" {
-                if (!$sync.selectedToggles.Contains($cbkey)) {
-                    $sync.selectedToggles.Add($cbkey)
-                }
-            }
-            "Feature" {
-                if (!$sync.selectedFeatures.Contains($cbkey)) {
-                    $sync.selectedFeatures.Add($cbkey)
-                }
-            }
-            "Appx" {
-                if (!$sync.selectedAppx.Contains($cbkey)) {
-                    $sync.selectedAppx.Add($cbkey)
-                }
-            }
-            default {
-                Write-Host "Unknown group for checkbox: $($cbkey)"
-            }
+        if (-not $sync.$listName.Contains($cbkey)) {
+            $sync.$listName.Add($cbkey)
         }
     }
 }
