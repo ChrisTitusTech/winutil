@@ -40,7 +40,7 @@ function Invoke-WPFGetInstalled {
             $Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox
         }
         elseif ($checkbox -eq "appx") {
-            Write-Host "Getting Installed Packages..."
+            Write-Host "Getting Installed Appx Packages..."
             $Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox
         }
 
