@@ -1591,9 +1591,9 @@
       {
         "Path": "HKCU:\\Control Panel\\Desktop",
         "Name": "WindowArrangementActive",
-        "Value": "0",
+        "Value": "1",
         "Type": "String",
-        "OriginalValue": "1",
+        "OriginalValue": "<RemoveEntry>",
         "DefaultState": "true"
       }
     ],
