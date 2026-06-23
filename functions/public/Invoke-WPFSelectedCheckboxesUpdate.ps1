@@ -7,11 +7,9 @@ function Invoke-WPFSelectedCheckboxesUpdate ($type, $checkboxName) {
         '^WPFAppx'    { 'selectedAppx' }
     }
 
-    $list = $sync.$listName
-
     if ($type -eq "Add") {
-        $list.Add($checkboxName)
+        $sync.$listName.Add($checkboxName)
     } else {
-        $list.Remove($checkboxName)
+        $sync.$listName.Remove($checkboxName)
     }
 }
