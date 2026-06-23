@@ -167,13 +167,6 @@
     "Panel": "0",
     "PackageId": "Microsoft.Windows.Photos"
   },
-  "WPFAppxMicrosoft_WindowsMaps": {
-    "Category": "Bing & Web Services",
-    "Content": "Maps",
-    "Description": "Provides navigation routing, overhead satellite imagery, offline mapping capabilities, and local point-of-interest data.",
-    "Panel": "1",
-    "PackageId": "Microsoft.WindowsMaps"
-  },
   "WPFAppxMicrosoft_BingNews": {
     "Category": "Bing & Web Services",
     "Content": "News",
