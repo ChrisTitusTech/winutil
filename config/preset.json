@@ -15,6 +15,7 @@
     "WPFTweaksRestorePoint"
   ],
   "Minimal": [
+    "WPFTweaksRestorePoint",
     "WPFTweaksConsumerFeatures",
     "WPFTweaksDeBloat",
     "WPFTweaksWPBT",
@@ -22,6 +23,7 @@
     "WPFTweaksTelemetry"
   ],
   "Advanced": [
+    "WPFTweaksRestorePoint",
     "WPFTweaksActivity",
     "WPFTweaksConsumerFeatures",
     "WPFTweaksDisableExplorerAutoDiscovery",
