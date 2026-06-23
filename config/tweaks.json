@@ -1582,7 +1582,7 @@
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/numlock"
   },
   "WPFToggleWindowSnapping": {
-    "Content": "Disable Window Snapping",
+    "Content": "Window Snapping",
     "Description": "Toggles the window snapping feature when dragging windows.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -1594,7 +1594,7 @@
         "Value": "0",
         "Type": "String",
         "OriginalValue": "1",
-        "DefaultState": "true"
+        "DefaultState": "false"
       }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/windowsnapping"
