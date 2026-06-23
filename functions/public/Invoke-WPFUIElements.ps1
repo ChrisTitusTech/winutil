@@ -177,38 +177,25 @@ function Invoke-WPFUIElements {
                         $itemsControl.Items.Add($dockPanel) | Out-Null
 
                         $sync[$entryInfo.Name] = $checkBox
-                        if ($entryInfo.Name -eq "WPFToggleFOSSHighlight") {
-                             if ($entryInfo.Checked -eq $true) {
-                                 $sync[$entryInfo.Name].IsChecked = $true
-                             }
+                        $sync[$entryInfo.Name].IsChecked = (Get-WinUtilToggleStatus $entryInfo.Name)
 
-                             $sync[$entryInfo.Name].Add_Checked({
-                                 Invoke-WPFButton -Button "WPFToggleFOSSHighlight"
-                             })
-                             $sync[$entryInfo.Name].Add_Unchecked({
-                                 Invoke-WPFButton -Button "WPFToggleFOSSHighlight"
-                             })
-                        } else {
-                            $sync[$entryInfo.Name].IsChecked = (Get-WinUtilToggleStatus $entryInfo.Name)
+                        $sync[$entryInfo.Name].Add_Checked({
+                            [System.Object]$Sender = $args[0]
+                            Invoke-WPFSelectedCheckboxesUpdate -type "Add" -checkboxName $Sender.name
+                            # Skip applying tweaks while an import is restoring toggle states
+                            if (-not $sync.ImportInProgress) {
+                                Invoke-WinUtilTweaks $Sender.name
+                            }
+                        })
 
-                            $sync[$entryInfo.Name].Add_Checked({
-                                [System.Object]$Sender = $args[0]
-                                Invoke-WPFSelectedCheckboxesUpdate -type "Add" -checkboxName $Sender.name
-                                # Skip applying tweaks while an import is restoring toggle states
-                                if (-not $sync.ImportInProgress) {
-                                    Invoke-WinUtilTweaks $Sender.name
-                                }
-                            })
-
-                            $sync[$entryInfo.Name].Add_Unchecked({
-                                [System.Object]$Sender = $args[0]
-                                Invoke-WPFSelectedCheckboxesUpdate -type "Remove" -checkboxName $Sender.name
-                                # Skip undoing tweaks while an import is restoring toggle states
-                                if (-not $sync.ImportInProgress) {
-                                    Invoke-WinUtiltweaks $Sender.name -undo $true
-                                }
-                            })
-                        }
+                        $sync[$entryInfo.Name].Add_Unchecked({
+                            [System.Object]$Sender = $args[0]
+                            Invoke-WPFSelectedCheckboxesUpdate -type "Remove" -checkboxName $Sender.name
+                            # Skip undoing tweaks while an import is restoring toggle states
+                            if (-not $sync.ImportInProgress) {
+                                Invoke-WinUtiltweaks $Sender.name -undo $true
+                            }
+                        })
                     }
 
                     "ToggleButton" {
@@ -344,6 +331,28 @@ function Invoke-WPFUIElements {
                         # Add the RadioButton to the group container
                         $groupStackPanel.Children.Add($radioButton) | Out-Null
                         $sync[$entryInfo.Name] = $radioButton
+                    }
+
+                    "Note" {
+                        $textBlock = New-Object Windows.Controls.TextBlock
+                        $textBlock.TextWrapping = "Wrap"
+                        $textBlock.Margin = "5,5,5,5"
+                        $textBlock.UseLayoutRounding = $true
+
+                        $bulletRun = New-Object Windows.Documents.Run
+                        $bulletRun.Text = [char]0x25CF
+                        $bulletRun.Foreground = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(110, 255, 114))
+                        $bulletRun.FontSize = 11.5
+
+                        $textRun = New-Object Windows.Documents.Run
+                        $textRun.Text = " $($entryInfo.Content)"
+                        $textRun.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
+                        $textRun.Foreground = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(19, 143, 83))
+
+                        $textBlock.Inlines.Add($bulletRun)
+                        $textBlock.Inlines.Add($textRun)
+
+                        $itemsControl.Items.Add($textBlock) | Out-Null
                     }
 
                     default {

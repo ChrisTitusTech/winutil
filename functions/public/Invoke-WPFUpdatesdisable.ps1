@@ -19,21 +19,21 @@ function Invoke-WPFUpdatesdisable {
     New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Force
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 0
 
-    Write-Host "Hiding Windows Updates from settings"
+    Write-Host "Hiding Windows Updates from settings..."
     Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer -Name SettingsPageVisibility -Value hide:windowsupdate
 
-    Write-Host "Disabled BITS Service"
+    Write-Host "Disabled BITS Service."
     Set-Service -Name BITS -StartupType Disabled
 
-    Write-Host "Disabled wuauserv Service"
+    Write-Host "Disabled wuauserv Service."
     Set-Service -Name wuauserv -StartupType Disabled
 
-    Write-Host "Disabled UsoSvc Service"
+    Write-Host "Disabled UsoSvc Service."
     Stop-Service -Name UsoSvc -Force
     Set-Service -Name UsoSvc -StartupType Disabled
 
     Remove-Item "C:\Windows\SoftwareDistribution\*" -Recurse -Force
-    Write-Host "Cleared SoftwareDistribution folder"
+    Write-Host "Cleared SoftwareDistribution folder."
 
     Write-Host "Disabling update related scheduled tasks..." -ForegroundColor Yellow
 

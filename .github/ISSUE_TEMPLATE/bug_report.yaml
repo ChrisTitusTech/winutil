@@ -21,7 +21,7 @@ body:
   - type: dropdown
     id: affected_part
     attributes:
-      label: What part of Winutil are you having issues with?
+      label: What part of WinUtil are you having issues with?
       options:
         - Program Install Tab
         - Tweaks Tab

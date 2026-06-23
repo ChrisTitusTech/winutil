@@ -2,4 +2,7 @@ blank_issues_enabled: false
 contact_links:
     - name: 💻 Community Discord
       url: https://discord.gg/RUbZUZyByQ
-      about: Join our Community Discord server to chat with other users in the Winutil community.
+      about: Join our Community Discord server to chat with other users in the WinUtil community.
+    - name: Suggest an application
+      url: https://github.com/ChrisTitusTech/winutil/discussions/new?category=app-suggestion
+      about: If you want to suggest an application to be added, create a discussion with given template
