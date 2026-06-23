@@ -1594,7 +1594,7 @@
         "Value": "0",
         "Type": "String",
         "OriginalValue": "1",
-        "DefaultState": "false"
+        "DefaultState": "true"
       }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/windowsnapping"
