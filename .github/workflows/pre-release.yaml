@@ -37,7 +37,7 @@ jobs:
         with:
           token: ${{ secrets.AUTO_MERGE }}
           commit-message: 'chore: Update documentation links in JSON configs'
-          title: 'chore: Update Generated Dev Docs'
+          title: 'chore: Update documentation links in JSON configs'
           body: 'Automated update of documentation links in JSON configs from pre-release build'
           branch: docs-update
           delete-branch: true
