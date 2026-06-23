@@ -6,9 +6,6 @@ on:
       - main
     paths:
       - "docs/**"
-      - "config/tweaks.json"
-      - "config/feature.json"
-      - "functions/**"
   workflow_dispatch:
 
 permissions:
