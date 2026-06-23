@@ -17,8 +17,6 @@ function Invoke-WPFAppxRemoval {
             $package = $apps[$key].PackageId
             $name = $apps[$key].Content
 
-            Get-Process -Name *game* -ErrorAction SilentlyContinue | Stop-Process -Force
-
             if ($name -eq "WPFAppxMicrosoft_WindowsNotepad") {
                 Stop-Process -Name dllhost
             }
