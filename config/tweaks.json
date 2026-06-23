@@ -1593,7 +1593,7 @@
         "Name": "WindowArrangementActive",
         "Value": "1",
         "Type": "String",
-        "OriginalValue": "<RemoveEntry>",
+        "OriginalValue": "0",
         "DefaultState": "true"
       }
     ],
