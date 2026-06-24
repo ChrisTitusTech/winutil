@@ -297,12 +297,8 @@ function Invoke-WinUtilISOCleanAndReset {
     $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $false
 
     Invoke-WinUtilRunspace -ScriptBlock {
-        Write-Win11ISOLog "Dismounting mounted ISO..."
-        Dismount-DiskImage -ImagePath $sync["Win11ISOImagePath"]
-
         Write-Win11ISOLog "Removing temporary working directories..."
-        Remove-Item -Path "$winutildir\Win11Creator" -Recurse -Force
-        Remove-Item -Path "$winutildir\Driver" -Recurse -Force
+        Remove-Item -Path "$winutildir\Win11Creator", "$winutildir\Driver" -Recurse -Force
 
         $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
             $sync["Win11ISOContentsDir"] = $null
