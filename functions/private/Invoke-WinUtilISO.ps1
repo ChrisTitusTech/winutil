@@ -281,8 +281,6 @@ function Invoke-WinUtilISOCheckExistingWork {
     if (-not (Test-Path "$winutildir\Win11Creator\iso_contents")) { return }
     if ($sync["Win11ISOModifying"]) { return }
 
-    $sync["Win11ISOContentsDir"] = "$winutildir\Win11Creator\iso_contents"
-
     $sync["WPFWin11ISOSelectSection"].Visibility = "Collapsed"
     $sync["WPFWin11ISOMountSection"].Visibility = "Collapsed"
     $sync["WPFWin11ISOModifySection"].Visibility = "Collapsed"
