@@ -35,10 +35,8 @@ function Invoke-WinUtilISOBrowse {
 
     if ($dialog.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
 
-    $isoPath = $dialog.FileName
-
-    $sync["WPFWin11ISOPath"].Text = $isoPath
-    $sync["WPFWin11ISOFileInfo"].Text = "File size: $([math]::Round((Get-Item $isoPath).Length / 1GB, 2)) GB"
+    $sync["WPFWin11ISOPath"].Text = $dialog.FileName
+    $sync["WPFWin11ISOFileInfo"].Text = "File size: $([math]::Round((Get-Item -Path $dialog.FileName).Length / 1GB, 2)) GB"
     $sync["WPFWin11ISOFileInfo"].Visibility = "Visible"
     $sync["WPFWin11ISOMountSection"].Visibility = "Visible"
     $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Collapsed"
@@ -47,10 +45,9 @@ function Invoke-WinUtilISOBrowse {
 }
 
 function Invoke-WinUtilISOMount {
-    $isoPath = $sync["WPFWin11ISOPath"].Text
     $sync["WPFWin11ISOMountButton"].IsEnabled = $false
 
-    Invoke-WinUtilRunspace -Variables @{ isoPath = $isoPath } -ScriptBlock {
+    Invoke-WinUtilRunspace -Variables @{ isoPath = $sync["WPFWin11ISOPath"].Text } -ScriptBlock {
         try {
             $time = Get-Date -Format hh:mm:ss
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
