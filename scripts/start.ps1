@@ -78,8 +78,8 @@ $sync.selectedAppsPopup
 $dateTime = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
 
 # Set the path for the winutil directory
-$winutildir = "$env:LocalAppData\winutil"
-New-Item $winutildir -ItemType Directory -Force | Out-Null
+$winutildir = "$Env:LocalAppData\winutil"
+New-Item -Path $winutildir -ItemType Directory -Force | Out-Null
 
 # Set PowerShell window title
 $Host.UI.RawUI.WindowTitle = "WinUtil (Admin)"
