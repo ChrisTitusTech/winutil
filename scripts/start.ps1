@@ -68,8 +68,13 @@ $sync.selectedFeatures = [System.Collections.Generic.List[string]]::new()
 
 $dateTime = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
 
-$winutildir = "$Env:LocalAppData\winutil"
-Start-Transcript -Path "$winutildir\logs\winutil_$dateTime.log" -Append -NoClobber | Out-Null
+# Set the path for the winutil directory
+$winutildir = "$env:LocalAppData\winutil"
+New-Item $winutildir -ItemType Directory -Force | Out-Null
+
+$logdir = "$winutildir\logs"
+New-Item $logdir -ItemType Directory -Force | Out-Null
+Start-Transcript -Path "$logdir\winutil_$dateTime.log" -Append -NoClobber | Out-Null
 
 $Host.UI.RawUI.WindowTitle = "WinUtil"
 Clear-Host
