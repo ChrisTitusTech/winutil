@@ -275,13 +275,10 @@ function Invoke-WinUtilISOExport {
 }
 
 function Invoke-WinUtilISOCheckExistingWork {
-    if ($sync["Win11ISOContentsDir"] -and (Test-Path $sync["Win11ISOContentsDir"])) { return }
+    if (-not (Test-Path "$winutildir\Win11Creator\iso_contents")) { return }
     if ($sync["Win11ISOModifying"]) { return }
 
-    $isoContents = "$winutildir\Win11Creator\iso_contents"
-    if (-not (Test-Path $isoContents)) { return }
-
-    $sync["Win11ISOContentsDir"] = $isoContents
+    $sync["Win11ISOContentsDir"] = "$winutildir\Win11Creator\iso_contents"
 
     $sync["WPFWin11ISOSelectSection"].Visibility = "Collapsed"
     $sync["WPFWin11ISOMountSection"].Visibility = "Collapsed"
