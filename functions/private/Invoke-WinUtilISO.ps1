@@ -297,6 +297,12 @@ function Invoke-WinUtilISOCleanAndReset {
     $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $false
 
     Invoke-WinUtilRunspace -ScriptBlock {
+        Write-Win11ISOLog "Dismounting any mounted wim files"
+
+        foreach ($Mount in Get-WindowsImage -Mounted) {
+            Dismount-WindowsImage -Path $Mount.Path -Discard
+        }
+
         Write-Win11ISOLog "Removing temporary working directories..."
         Remove-Item -Path "$winutildir\Win11Creator" -Recurse -Force
 
