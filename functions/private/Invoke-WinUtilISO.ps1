@@ -130,7 +130,7 @@ function Invoke-WinUtilISOModify {
     $sync["WPFWin11ISOModifyButton"].IsEnabled = $false
     $sync["Win11ISOModifying"] = $true
 
-    Invoke-WinUtilRunspace -Variables @{
+    Invoke-WinUtilRunspace -ApartmentState "MTA" -Variables @{
         isoPath = $isoPath
         driveLetter = $driveLetter
         workDir = "$winutildir\Win11Creator"
