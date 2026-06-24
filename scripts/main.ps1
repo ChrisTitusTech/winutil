@@ -551,4 +551,3 @@ $sync["WPFWin11ISOCleanResetButton"].Add_Click({
 # ──────────────────────────────────────────────────────────────────────────────
 
 $sync["Form"].ShowDialog() | out-null
-Stop-Transcript
