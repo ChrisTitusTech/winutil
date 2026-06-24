@@ -40,7 +40,7 @@
 ]
 '@ | Set-Content $Env:SystemRoot\Setup\config.json
 
-& ([ScriptBlock]::Create((Invoke-RestMethod -Uri https://gist.github.com/GabiNun2/42a86e423c736478aa474081375c5109/raw/winutil.ps1))) -Config $Env:SystemRoot\Setup\config.json
+& ([ScriptBlock]::Create((Invoke-RestMethod -Uri https://christitus.com/win))) -Config $Env:SystemRoot\Setup\config.json
 
 # Hide 'Task view' button on the taskbar
 Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name ShowTaskViewButton -Value 0
