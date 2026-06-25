@@ -359,6 +359,15 @@
         "winget": "EpicGames.EpicGamesLauncher",
         "foss": false
     },
+    "equibop": {
+        "category": "Communications",
+        "choco": "na",
+        "content": "Equibop",
+        "description": "Equibop is a fork of Vesktop.",
+        "link": "https://github.com/Equicord/equibop",
+        "winget": "Equicord.Equibop",
+        "foss": true
+    },
     "files": {
         "category": "Utilities",
         "choco": "files",
