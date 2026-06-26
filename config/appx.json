@@ -216,6 +216,13 @@
     "Panel": "1",
     "PackageId": "Microsoft.Xbox.TCUI"
   },
+  "WPFAppxMicrosoft_StartExperiencesApp": {
+    "Category": "Bing & Web Services",
+    "Content": "Start Experiences App",
+    "Description": "Start Experiences App powers Windows Widgets, keeping you informed, entertained, and inspired. Easily personalize your feed for quick access to news, weather, sports, finance, and more.",
+    "Panel": "1",
+    "PackageId": "Microsoft.StartExperiencesApp"
+  },
   "WPFAppxMicrosoft_MicrosoftSolitaireCollection": {
     "Category": "Xbox & Gaming",
     "Content": "Solitaire Collection",
