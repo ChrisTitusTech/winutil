@@ -95,7 +95,7 @@ function Invoke-WPFImpex {
                     Update-WinUtilSelections -flatJson $flattenedJson
 
                     if ($sync.Form) {
-                        Reset-WPFCheckBoxes
+                        Reset-WPFCheckBoxes -doToggles $true
                     }
                 }
             } catch {
