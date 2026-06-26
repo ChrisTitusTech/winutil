@@ -8,7 +8,7 @@ function Invoke-WinUtilInstallPSProfile {
     if (-not (Get-Command pwsh)) {
         Write-Host "PowerShell 7 not found. Installing..."
         Install-WinUtilWinget
-        winget install Microsoft.PowerShell --source winget --silent
+        winget install Microsoft.PowerShell --source winget --installer-type wix --silent
     }
 
     wt new-tab pwsh -NoExit -Command "irm https://github.com/ChrisTitusTech/powershell-profile/raw/main/setup.ps1 | iex"
