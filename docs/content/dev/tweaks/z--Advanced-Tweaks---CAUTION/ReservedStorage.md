@@ -3,7 +3,7 @@ title: "Disable Reserved Storage"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=870}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=869}
   "WPFTweaksReservedStorage": {
     "Content": "Disable Reserved Storage",
     "Description": "Disables Windows Reserved Storage (7-10 GB held for updates/temp files). Recommended only on small drives. Re-enable before major Windows feature updates to avoid installation failures.",
