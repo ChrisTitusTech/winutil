@@ -32,7 +32,7 @@ Revert start menu tweak stops working starting with **Windows 11 update KB508957
 In this update, Microsoft completely removed the old Start Menu code from Windows, so we aren't able to bring it back.
 
 ### Do Not Install PowerShell 7 from the Microsoft Store
-Installing PowerShell 7 from the Microsoft Store (MSIX package) is known to cause issues with DISM cmdlets such as `Get-WindowsOptionalFeature` and `Enable-WindowsOptionalFeature`, resulting in a `Class not registered` COM error. This affects Win11Creator inside of WinUtil.
+Installing PowerShell 7 from the Microsoft Store (MSIX package) is known to cause issues with DISM cmdlets such as `Get-WindowsOptionalFeature` and `Enable-WindowsOptionalFeature`, resulting in a `Class not registered` COM error.
 
 Instead, install PowerShell 7 using one of the following methods:
 
