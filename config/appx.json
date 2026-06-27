@@ -70,9 +70,9 @@
     "PackageId": "Microsoft.Windows.DevHome"
   },
   "WPFAppxMicrosoft_WindowsCrossDevice": {
-    "Category": "Utilities & Productivity",
+    "Category": "Microsoft Ecosystem",
     "Content": "Mobile Devices",
-    "Description": "Manages core system-level integrations and background connectivity with paired mobile devices.",
+    "Description": "Manages system-level background connectivity with paired mobile devices. Removing this may disable cross-device features such as phone screen mirroring, file transfer, and mobile hotspot handoff integrated into Windows Settings.",
     "Panel": "0",
     "PackageId": "MicrosoftWindows.CrossDevice"
   },
@@ -91,7 +91,7 @@
     "PackageId": "Microsoft.PowerAutomateDesktop"
   },
   "WPFAppxMicrosoft_YourPhone": {
-    "Category": "Utilities & Productivity",
+    "Category": "Microsoft Ecosystem",
     "Content": "Phone Link",
     "Description": "Synchronizes text messages, phone notifications, photos, and calls from a mobile device to the desktop.",
     "Panel": "0",
@@ -198,7 +198,7 @@
   "WPFAppxMicrosoft_XboxIdentityProvider": {
     "Category": "Xbox & Gaming",
     "Content": "Xbox Identity Provider",
-    "Description": "Manages Xbox network user authentication and background account validation pipelines for connected titles.",
+    "Description": "Manages Xbox network user authentication and background account validation for connected titles. Warning: removing this may break Microsoft account sign-in for non-Xbox games and apps that rely on this authentication pipeline.",
     "Panel": "1",
     "PackageId": "Microsoft.XboxIdentityProvider"
   },
@@ -212,7 +212,7 @@
   "WPFAppxMicrosoft_Xbox_TCUI": {
     "Category": "Xbox & Gaming",
     "Content": "Xbox TCUI",
-    "Description": "Provides core account connection UI modules for seamless single sign-on flows within individual game titles.",
+    "Description": "Provides core account connection UI modules for single sign-on flows within game titles. Warning: removing this may break Microsoft account authentication in games and apps that do not otherwise require the Xbox app.",
     "Panel": "1",
     "PackageId": "Microsoft.Xbox.TCUI"
   },
