@@ -16,11 +16,6 @@ function Invoke-WPFAppxRemoval {
             $package = $apps[$key].PackageId
             $name = $apps[$key].Content
 
-            if ($key -eq "WPFAppxMicrosoft_WindowsNotepad") {
-                # Notepad uses dllhost, this will close Windows Settings if open
-                Stop-Process -Name dllhost
-            }
-
             Write-Host "Removing $name"
             Get-AppxPackage -Name $package -AllUsers | Remove-AppxPackage -AllUsers
 
