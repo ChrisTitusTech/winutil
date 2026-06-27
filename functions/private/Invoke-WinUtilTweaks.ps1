@@ -48,11 +48,4 @@ function Invoke-WinUtilTweaks ($CheckBox, $undo) {
             Write-Warning $_.Exception.Message
         }
     }
-
-    if (-not $undo) {
-        foreach ($appx in $tweak.appx) {
-            Write-Host "Removing $appx"
-            Get-AppxPackage -Name $appx -AllUsers | Remove-AppxPackage -AllUsers
-        }
-    }
 }
