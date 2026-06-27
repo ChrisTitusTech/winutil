@@ -8,7 +8,9 @@ function Invoke-WPFSelectedCheckboxesUpdate ($type, $checkboxName) {
     }
 
     if ($type -eq "Add") {
-        $sync.$listName.Add($checkboxName)
+        if (-not $sync.$listName.Contains($checkboxName)) {
+            $sync.$listName.Add($checkboxName)
+        }
     } else {
         $sync.$listName.Remove($checkboxName)
     }
