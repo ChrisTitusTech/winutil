@@ -1,7 +1,5 @@
 function Invoke-WPFOOSU {
     try {
-        $ProgressPreference = 'Continue'
-
         Write-Host "Downloading O&O ShutUp10..."
         Invoke-WebRequest -Uri https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe -OutFile "$winutildir\ooshutup10.exe"
         Write-Host "Starting O&O ShutUp10..."
