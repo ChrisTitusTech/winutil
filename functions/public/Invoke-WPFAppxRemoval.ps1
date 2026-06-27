@@ -13,11 +13,12 @@ function Invoke-WPFAppxRemoval {
         $sync.ProcessRunning = $true
 
         foreach ($key in $selected) {
-            $package = $apps[$key].PackageId
-            $name = $apps[$key].Content
+            Write-Host "Removing $($apps[$key].Content)"
+            Get-AppxPackage -Name $apps[$key].PackageId -AllUsers | Remove-AppxPackage -AllUsers
 
-            Write-Host "Removing $name"
-            Get-AppxPackage -Name $package -AllUsers | Remove-AppxPackage -AllUsers
+            if ($key -eq "WPFAppxMicrosoft_XboxGamingOverlay") {
+                Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR -Name AppCaptureEnabled -Value 0
+            }
 
             if ($key -eq "WPFAppxMSTeams") {
                 # Uninstalls Microsoft Teams Meeting Add-in for Microsoft Office
