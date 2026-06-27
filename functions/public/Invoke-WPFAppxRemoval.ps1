@@ -13,13 +13,16 @@ function Invoke-WPFAppxRemoval {
         $sync.ProcessRunning = $true
 
         foreach ($key in $selected) {
-            Write-Host "Removing $($apps[$key].Content)"
-            Get-AppxPackage -Name $apps[$key].PackageId -AllUsers | Remove-AppxPackage -AllUsers
-
             if ($key -eq "WPFAppxMicrosoft_XboxGamingOverlay") {
+                # Making sure Game Bar isn't running
+                Stop-Process -Name GameBarFTServer
+
                 # This stops annoying ms-gamebar popup when launching games.
                 Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR -Name AppCaptureEnabled -Value 0
             }
+
+            Write-Host "Removing $($apps[$key].Content)"
+            Get-AppxPackage -Name $apps[$key].PackageId -AllUsers | Remove-AppxPackage -AllUsers
 
             if ($key -eq "WPFAppxMSTeams") {
                 # Uninstalls Microsoft Teams Meeting Add-in for Microsoft Office
