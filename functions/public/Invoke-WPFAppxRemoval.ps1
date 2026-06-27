@@ -17,6 +17,7 @@ function Invoke-WPFAppxRemoval {
             Get-AppxPackage -Name $apps[$key].PackageId -AllUsers | Remove-AppxPackage -AllUsers
 
             if ($key -eq "WPFAppxMicrosoft_XboxGamingOverlay") {
+                # This stops annoying ms-gamebar popup when launching games.
                 Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR -Name AppCaptureEnabled -Value 0
             }
 
