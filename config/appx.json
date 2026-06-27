@@ -205,7 +205,7 @@
   "WPFAppxMicrosoft_XboxSpeechToTextOverlay": {
     "Category": "Xbox & Gaming",
     "Content": "Xbox Speech To Text Overlay",
-    "Description": "Provides system-level live accessibility captions and voice-to-text translation metrics for gaming chat networks.",
+    "Description": "Provides system-level live accessibility captions and voice-to-text translation for gaming chat networks.",
     "Panel": "1",
     "PackageId": "Microsoft.XboxSpeechToTextOverlay"
   },
@@ -219,14 +219,14 @@
   "WPFAppxMicrosoft_StartExperiencesApp": {
     "Category": "Bing & Web Services",
     "Content": "Start Experiences App",
-    "Description": "Start Experiences App powers Windows Widgets, keeping you informed, entertained, and inspired. Easily personalize your feed for quick access to news, weather, sports, finance, and more.",
+    "Description": "Powers the Windows Widgets board, delivering a personalized feed of news, weather, sports, and finance content.",
     "Panel": "1",
     "PackageId": "Microsoft.StartExperiencesApp"
   },
   "WPFAppxMicrosoft_MicrosoftSolitaireCollection": {
     "Category": "Xbox & Gaming",
     "Content": "Solitaire Collection",
-    "Description": "Bundles built-in card game modes including Klondike, Spider, FreeCell, Pyramid, and TriPeaks alongside daily game challenges.",
+    "Description": "Bundles built-in card game modes including Klondike, Spider, FreeCell, Pyramid, and TriPeaks alongside daily challenges.",
     "Panel": "1",
     "PackageId": "Microsoft.MicrosoftSolitaireCollection"
   }
