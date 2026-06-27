@@ -23,6 +23,7 @@ function Invoke-WPFAppxRemoval {
 
             Write-Host "Removing $($apps[$key].Content)"
             Get-AppxPackage -Name $apps[$key].PackageId -AllUsers | Remove-AppxPackage -AllUsers
+            Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $apps[$key].PackageId | Remove-AppxProvisionedPackage -Online
 
             if ($key -eq "WPFAppxMSTeams") {
                 # Uninstalls Microsoft Teams Meeting Add-in for Microsoft Office
