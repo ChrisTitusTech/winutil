@@ -21,6 +21,11 @@ function Invoke-WPFAppxRemoval {
                 Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR -Name AppCaptureEnabled -Value 0
             }
 
+            if ($key -eq "WPFAppxMicrosoft_WindowsNotepad") {
+                # i hope your having fun reading this
+                Stop-Process -Name dllhost
+            }
+
             Write-Host "Removing $($apps[$key].Content)"
             Get-AppxPackage -Name $apps[$key].PackageId -AllUsers | Remove-AppxPackage -AllUsers
 
