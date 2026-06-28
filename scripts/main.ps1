@@ -394,6 +394,9 @@ $searchBarTimer.add_Tick({
         "Tweaks" {
             Find-TweaksByNameOrDescription -SearchString $sync.SearchBar.Text
         }
+        "AppX" {
+            Find-AppxByNameOrDescription -SearchString $sync.SearchBar.Text
+        }
     }
 })
 $sync["SearchBar"].Add_TextChanged({
