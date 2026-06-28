@@ -65,7 +65,14 @@ function Invoke-WPFButton {
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
-        "WPFGetInstalledAppx" {Invoke-WPFGetInstalled -CheckBox "appx"}
+        "WPFGetInstalledAppx" {
+            $installedAppxPackages = Get-AppxPackage -AllUsers | Select-Object -ExpandProperty Name
+            foreach ($appx in $sync.configs.appxHashtable.GetEnumerator()) {
+                if ($appx.Value.PackageId -in $installedAppxPackages) {
+                    $sync.$($appx.Key).IsChecked = $true
+                }
+            }
+        }
         "WPFRemoveSelectedAppx" {Invoke-WPFAppxRemoval}
         "WPFDefaultAppxSelection" {Invoke-WPFPresets "AppxDefault" -checkboxfilterpattern "WPFAppx*"}
         "WPFSelectAllAppx" {
