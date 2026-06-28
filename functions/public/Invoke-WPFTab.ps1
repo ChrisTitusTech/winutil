@@ -39,7 +39,7 @@ function Invoke-WPFTab {
         Find-TweaksByNameOrDescription -SearchString ""
     } elseif ($sync.currentTab -eq "AppX") {
         # Reset AppX tab filter
-        Find-AppxByNameOrDescription -SearchString ""
+        Find-TweaksByNameOrDescription -SearchString ""
     }
 
     # Show search bar in Install, Tweaks, and AppX tabs
