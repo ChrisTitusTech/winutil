@@ -58,6 +58,30 @@ function Initialize-InstallAppEntry {
             $borderElement.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallUnselectedColor")
         })
 
+        $contentPanel = New-Object Windows.Controls.StackPanel
+        $contentPanel.Orientation = "Horizontal"
+        $contentPanel.VerticalAlignment = [Windows.VerticalAlignment]::Center
+
+        $icon = New-Object Windows.Controls.Grid
+        $icon.SetResourceReference([Windows.FrameworkElement]::WidthProperty, "AppEntryIconSize")
+        $icon.SetResourceReference([Windows.FrameworkElement]::HeightProperty, "AppEntryIconSize")
+        $icon.Margin = New-Object Windows.Thickness(0, 0, 8, 0)
+        $fallback = New-Object Windows.Controls.TextBlock
+        $fallback.Text = $Apps.$appKey.content.TrimStart(".").Substring(0, 1).ToUpper()
+        $fallback.FontWeight = "Bold"; $fallback.HorizontalAlignment = "Center"; $fallback.VerticalAlignment = "Center"
+        if ($Apps.$appKey.link) { $fallback.Visibility = "Collapsed" }
+        $fallback.SetResourceReference([Windows.Controls.TextBlock]::FontSizeProperty, "AppEntryFontSize")
+        $fallback.SetResourceReference([Windows.Controls.TextBlock]::ForegroundProperty, "ToggleButtonOnColor")
+        [void]$icon.Children.Add($fallback)
+        if ($Apps.$appKey.link) {
+            $logo = New-Object Windows.Controls.Image
+            $logo.Stretch = [Windows.Media.Stretch]::Uniform
+            $logo.Source = "https://www.google.com/s2/favicons?sz=64&domain_url=$([uri]::EscapeDataString($Apps.$appKey.link))"
+            $logo.Add_ImageFailed({ $this.Visibility = "Collapsed"; $this.Parent.Children[0].Visibility = "Visible" })
+            [void]$icon.Children.Add($logo)
+        }
+        [void]$contentPanel.Children.Add($icon)
+
         # Create the TextBlock for the application name
         $appName = New-Object Windows.Controls.TextBlock
         $appName.Style = $sync.Form.Resources.AppEntryNameStyle
@@ -71,7 +95,8 @@ function Initialize-InstallAppEntry {
 
             [void]$appName.Inlines.Add($fossRun)
         }
-        $checkBox.Content = $appName
+        [void]$contentPanel.Children.Add($appName)
+        $checkBox.Content = $contentPanel
 
         # Add accessibility properties to make the elements screen reader friendly
         $checkBox.SetValue([Windows.Automation.AutomationProperties]::NameProperty, $Apps.$appKey.content)
