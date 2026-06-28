@@ -922,6 +922,22 @@
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/endtaskontaskbar"
   },
+  "WPFTweaksEnableSudo": {
+    "Content": "Enable Sudo (Win 11 24H2+)",
+    "Description": "Enables native Sudo functionality in Windows (Inline mode). Requires Windows 11 Build 26045 (24H2) or higher.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Sudo",
+        "Name": "Enabled",
+        "Value": "3",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      }
+    ],
+    "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/enablesudo"
+  },
   "WPFTweaksStorage": {
     "Content": "Storage Sense - Disable",
     "Description": "Storage Sense deletes temp files automatically.",
