@@ -3,7 +3,7 @@ title: "Lock Screen - Disable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1673}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1676}
   "WPFTweaksDisableLockscreen": {
     "Content": "Lock Screen - Disable",
     "Description": "Skips the lock screen entirely and goes directly to the sign-in screen on boot and wake.",
