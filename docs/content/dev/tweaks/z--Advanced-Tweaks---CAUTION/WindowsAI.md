@@ -34,7 +34,10 @@ description: ""
 
       Get-AppxPackage -AllUsers \"*Copilot*\" | Remove-AppxPackage -AllUsers
       Get-AppxPackage -AllUsers Microsoft.MicrosoftOfficeHub | Remove-AppxPackage -AllUsers
-      Remove-AppxPackage $Appx
+
+      if ($Appx) {
+          Remove-AppxPackage $Appx
+      }
 
       Set-Service -Name WSAIFabricSvc -StartupType Disabled
       Disable-WindowsOptionalFeature -FeatureName Recall -Online -NoRestart
