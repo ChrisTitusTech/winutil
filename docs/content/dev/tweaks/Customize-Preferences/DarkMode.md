@@ -3,7 +3,7 @@ title: "Dark Theme for Windows"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1321}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1333}
   "WPFToggleDarkMode": {
     "Content": "Dark Theme for Windows",
     "Description": "Dark Mode for the system and applications.",
