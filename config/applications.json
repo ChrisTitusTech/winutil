@@ -262,7 +262,7 @@
     },
     "discord-canary": {
         "category": "Communications",
-        "choco": "discord-canary",
+        "choco": "na",
         "content": "Discord Canary",
         "description": "Discord is a popular communication platform with voice, video, and text chat, designed for gamers but used by a wide range of communities. (Canary Version)",
         "link": "https://discord.com/",
