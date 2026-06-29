@@ -3,7 +3,7 @@ title: "Scrollbars Always Visible"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1481}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1491}
     "WPFToggleScrollbars": {
     "Content": "Scrollbars Always Visible",
     "Description": "If enabled, scrollbars will always be visible. If disabled, Windows will automatically hide scrollbars when not in use.",

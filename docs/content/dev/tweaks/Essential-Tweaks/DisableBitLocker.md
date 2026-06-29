@@ -3,7 +3,7 @@ title: "BitLocker - Disable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=603}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=613}
   "WPFTweaksDisableBitLocker": {
     "Content": "BitLocker - Disable",
     "Description": "Disables BitLocker.",
