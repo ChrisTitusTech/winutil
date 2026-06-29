@@ -65,7 +65,7 @@
     "ButtonConfigBackgroundColor": "#F7F7F7",
     "ButtonUpdatesBackgroundColor": "#F7F7F7",
     "ButtonWin11ISOBackgroundColor": "#F7F7F7",
-    "ButtonAppxBackgroundColor": "#F7F7F7",
+    "ButtonAppxBackgroundColor": "#555555",
     "ButtonInstallForegroundColor": "#232629",
     "ButtonTweaksForegroundColor": "#232629",
     "ButtonConfigForegroundColor": "#232629",
