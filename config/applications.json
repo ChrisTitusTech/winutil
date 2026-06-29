@@ -251,6 +251,33 @@
         "winget": "Discord.Discord",
         "foss": false
     },
+    "discord-ptb": {
+        "category": "Communications",
+        "choco": "na",
+        "content": "Discord PTB",
+        "description": "Discord is a popular communication platform with voice, video, and text chat, designed for gamers but used by a wide range of communities. (Public Test Build)",
+        "link": "https://discord.com/",
+        "winget": "Discord.Discord.PTB",
+        "foss": false
+    },
+    "discord-canary": {
+        "category": "Communications",
+        "choco": "discord-canary",
+        "content": "Discord Canary",
+        "description": "Discord is a popular communication platform with voice, video, and text chat, designed for gamers but used by a wide range of communities. (Canary Version)",
+        "link": "https://discord.com/",
+        "winget": "Discord.Discord.Canary",
+        "foss": false
+    },
+    "discord-development": {
+        "category": "Communications",
+        "choco": "na",
+        "content": "Discord Development Edition",
+        "description": "Discord is a popular communication platform with voice, video, and text chat, designed for gamers but used by a wide range of communities. (Development Edition)",
+        "link": "https://discord.com/",
+        "winget": "Discord.Discord.Development",
+        "foss": false
+    },
     "dismtools": {
         "category": "Microsoft Tools",
         "choco": "dismtools",
@@ -672,6 +699,15 @@
         "description": "Simple terminal UI for git commands.",
         "link": "https://github.com/jesseduffield/lazygit/",
         "winget": "JesseDuffield.lazygit",
+        "foss": true
+    },
+    "legcord": {
+        "category": "Communications",
+        "choco": "na",
+        "content": "Legcord",
+        "description": "Legcord is a custom client designed to enhance your Discord experience while keeping everything lightweight. ",
+        "link": "https://legcord.app/",
+        "winget": "smartfrigde.Legcord",
         "foss": true
     },
     "libreoffice": {
