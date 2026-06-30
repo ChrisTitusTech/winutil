@@ -147,8 +147,9 @@ function Find-AppsByNameOrDescription {
                         $entry = @(Invoke-RestMethod -Uri "https://community.chocolatey.org/api/v2/Search()?searchTerm='$q'&targetFramework=''&includePrerelease=false&`$skip=0&`$top=1" -UseBasicParsing -TimeoutSec 6 -ErrorAction Stop)[0]
                         if ($entry) { $id = $entry.title.InnerText; $name = (($entry.properties.ChildNodes | Where-Object { $_.LocalName -eq "Title" } | Select-Object -First 1).InnerText); $desc = $entry.summary.InnerText; $link = "https://community.chocolatey.org/packages/$id" }
                     } else {
-                        $json = (Invoke-WebRequest -Uri "https://api.winget.run/v2/packages?query=$q&take=1" -UseBasicParsing -TimeoutSec 6 -ErrorAction Stop).Content
-                        $id = [regex]::Match($json, '"Id":"([^"]+)"').Groups[1].Value; $name = [regex]::Match($json, '"Name":"([^"]+)"').Groups[1].Value; $desc = [regex]::Match($json, '"Description":"([^"]*)"').Groups[1].Value; $link = "https://winget.run/pkg/$id"
+                        if (Get-Command winget -ErrorAction SilentlyContinue) { $row = winget search --source winget --accept-source-agreements --disable-interactivity $SearchString | Where-Object { $_ -match '^(.+?)\s{2,}(\S+\.\S+)\s{2,}' } | Select-Object -First 1; if ($row -match '^(.+?)\s{2,}(\S+\.\S+)\s{2,}') { $name = $matches[1].Trim(); $id = $matches[2]; $desc = $name } }
+                        if (-not $id) { $json = (Invoke-WebRequest -Uri "https://api.winget.run/v2/packages?query=$q&take=1" -UseBasicParsing -TimeoutSec 6 -ErrorAction Stop).Content; $id = [regex]::Match($json, '"Id":"([^"]+)"').Groups[1].Value; $name = [regex]::Match($json, '"Name":"([^"]+)"').Groups[1].Value; $desc = [regex]::Match($json, '"Description":"([^"]*)"').Groups[1].Value }
+                        $link = "https://winget.run/pkg/$id"
                     }
                     if (-not $id) { return }
                     if (-not $name) { $name = $id }; if (-not $desc) { $desc = $name }
