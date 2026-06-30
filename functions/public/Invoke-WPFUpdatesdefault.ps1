@@ -1,7 +1,7 @@
 function Invoke-WPFUpdatesdefault {
     $ErrorActionPreference = 'SilentlyContinue'
 
-    Write-Host "Removing Windows Update policy settings..." -ForegroundColor Green
+    Write-Host "Removing Windows Update policy settings..."
 
     Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Recurse -Force
     Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization" -Recurse -Force
@@ -10,7 +10,7 @@ function Invoke-WPFUpdatesdefault {
     Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Recurse -Force
     Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Recurse -Force
 
-    Write-Host "Reenabling Windows Update Services..." -ForegroundColor Green
+    Write-Host "Reenabling Windows Update Services..."
     Rename-Item -Path $Env:SystemRoot\System32\usosvc.dll -NewName usosvc.dlle
 
     Write-Host "Restored BITS to Manual"
@@ -26,7 +26,7 @@ function Invoke-WPFUpdatesdefault {
     Write-Host "Restored WaaSMedicSvc to Manual."
     Set-Service -Name WaaSMedicSvc -StartupType Manual
 
-    Write-Host "Enabling update related scheduled tasks..." -ForegroundColor Green
+    Write-Host "Enabling update related scheduled tasks..."
 
     $Tasks =
         '\Microsoft\Windows\InstallService\*',
@@ -43,9 +43,9 @@ function Invoke-WPFUpdatesdefault {
     Write-Host "Windows Local Policies Reset to Default."
     secedit /configure /cfg "$Env:SystemRoot\inf\defltbase.inf" /db defltbase.sdb
 
-    Write-Host "===================================================" -ForegroundColor Green
-    Write-Host "---  Windows Update Settings Reset to Default   ---" -ForegroundColor Green
-    Write-Host "===================================================" -ForegroundColor Green
+    Write-Host "==================================================="
+    Write-Host "---  Windows Update Settings Reset to Default   ---"
+    Write-Host "==================================================="
 
     Write-Host "Note: You must restart your system in order for all changes to take effect." -ForegroundColor Yellow
 }
