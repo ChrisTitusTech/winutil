@@ -13,18 +13,17 @@ function Invoke-WPFUpdatesdefault {
     Write-Host "Reenabling Windows Update Services..."
     Rename-Item -Path $Env:SystemRoot\System32\usosvc.dlle -NewName usosvc.dll
 
-    Write-Host "Restored BITS to Manual"
     Set-Service -Name BITS -StartupType Manual
+    Write-Host "Restored BITS to Manual"
 
-    Write-Host "Restored wuauserv to Manual."
     Set-Service -Name wuauserv -StartupType Manual
+    Write-Host "Restored wuauserv to Manual."
 
-    Write-Host "Restored UsoSvc to Automatic."
     Set-Service -Name UsoSvc -StartupType Automatic
-    Start-Service -Name UsoSvc
+    Write-Host "Restored UsoSvc to Automatic."
 
-    Write-Host "Restored WaaSMedicSvc to Manual."
     Set-Service -Name WaaSMedicSvc -StartupType Manual
+    Write-Host "Restored WaaSMedicSvc to Manual."
 
     Write-Host "Enabling update related scheduled tasks..."
 
