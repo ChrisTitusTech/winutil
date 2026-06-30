@@ -43,9 +43,9 @@ function Invoke-WPFUpdatesdefault {
     Write-Host "Windows Local Policies Reset to Default."
     secedit /configure /cfg "$Env:SystemRoot\inf\defltbase.inf" /db defltbase.sdb
 
-    Write-Host "==================================================="
-    Write-Host "---  Windows Update Settings Reset to Default   ---"
-    Write-Host "==================================================="
+    Write-Host "===================================================" -ForegroundColor Green
+    Write-Host "---  Windows Update Settings Reset to Default   ---" -ForegroundColor Green
+    Write-Host "===================================================" -ForegroundColor Green
 
     Write-Host "Note: You must restart your system in order for all changes to take effect." -ForegroundColor Yellow
 }
