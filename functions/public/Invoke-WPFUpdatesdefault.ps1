@@ -11,7 +11,6 @@ function Invoke-WPFUpdatesdefault {
     Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Recurse -Force
 
     Write-Host "Reenabling Windows Update Services..." -ForegroundColor Green
-
     Rename-Item -Path $Env:SystemRoot\System32\usosvc.dlle -NewName usosvc.dll
 
     Write-Host "Restored BITS to Manual"
