@@ -20,8 +20,8 @@ function Invoke-WPFUpdatesdefault {
     Set-Service -Name wuauserv -StartupType Manual
 
     Write-Host "Restored UsoSvc to Automatic."
-    Start-Service -Name UsoSvc
     Set-Service -Name UsoSvc -StartupType Automatic
+    Start-Service -Name UsoSvc
 
     Write-Host "Restored WaaSMedicSvc to Manual."
     Set-Service -Name WaaSMedicSvc -StartupType Manual
