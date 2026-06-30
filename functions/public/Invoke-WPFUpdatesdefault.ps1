@@ -1,10 +1,4 @@
 function Invoke-WPFUpdatesdefault {
-    <#
-
-    .SYNOPSIS
-        Resets Windows Update settings to default
-
-    #>
     $ErrorActionPreference = 'SilentlyContinue'
 
     Write-Host "Removing Windows Update policy settings..." -ForegroundColor Green
@@ -18,8 +12,7 @@ function Invoke-WPFUpdatesdefault {
 
     Write-Host "Reenabling Windows Update Services..." -ForegroundColor Green
 
-    icacls $Env:SystemRoot\System32\usosvc.dll /grant Everyone:F
-    icacls $Env:SystemRoot\System32\wuaueng.dll /grant Everyone:F
+    Rename-Item -Path $Env:SystemRoot\System32\usosvc.dlle -NewName usosvc.dll
 
     Write-Host "Restored BITS to Manual"
     Set-Service -Name BITS -StartupType Manual
