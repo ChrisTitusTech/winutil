@@ -201,10 +201,12 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
 $sync.ChocoRadioButton.Add_Checked({
     $sync.preferences.packagemanager = [PackageManagers]::Choco
     Set-Preferences -save
+    if (![string]::IsNullOrWhiteSpace($sync.SearchBar.Text)) { Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text }
 })
 $sync.WingetRadioButton.Add_Checked({
     $sync.preferences.packagemanager = [PackageManagers]::Winget
     Set-Preferences -save
+    if (![string]::IsNullOrWhiteSpace($sync.SearchBar.Text)) { Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text }
 })
 
 switch ($sync.preferences.packagemanager) {
