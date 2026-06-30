@@ -1,7 +1,10 @@
 function Invoke-WPFUpdatesdisable {
     Write-Host "Disabling windows update services"
 
+    Stop-Service -Name UsoSvc
     Set-Service -Name UsoSvc -StartupType Disabled
+
+    Stop-Service -Name wuauserv
     Set-Service -Name wuauserv -StartupType Disabled
 
     Write-Host "Blocking execution of windows update dlls"
