@@ -213,6 +213,59 @@ function Invoke-WinUtilISOModify {
             })
         }
 
+        function Get-WinUtilEditionIdFromName {
+            param([string]$EditionName)
+
+            $normalizedName = ($EditionName -replace '^Windows\s+11\s+', '').Trim()
+            switch -Regex ($normalizedName) {
+                '^Home Single Language$'      { return 'CoreSingleLanguage' }
+                '^Home N$'                    { return 'CoreN' }
+                '^Home$'                      { return 'Core' }
+                '^Pro for Workstations N$'    { return 'ProfessionalWorkstationN' }
+                '^Pro for Workstations$'      { return 'ProfessionalWorkstation' }
+                '^Pro Education N$'           { return 'ProfessionalEducationN' }
+                '^Pro Education$'             { return 'ProfessionalEducation' }
+                '^Pro N$'                     { return 'ProfessionalN' }
+                '^Pro$'                       { return 'Professional' }
+                '^Education N$'               { return 'EducationN' }
+                '^Education$'                 { return 'Education' }
+                '^Enterprise LTSC N$'         { return 'EnterpriseSN' }
+                '^Enterprise LTSC$'           { return 'EnterpriseS' }
+                '^Enterprise N$'              { return 'EnterpriseN' }
+                '^Enterprise$'                { return 'Enterprise' }
+                default                       { return '' }
+            }
+        }
+
+        function Get-WinUtilMountedImageEditionId {
+            param(
+                [Parameter(Mandatory)][string]$MountDir,
+                [string]$EditionName,
+                [scriptblock]$Logger
+            )
+
+            try {
+                $dismOutput = & dism /English "/Image:$MountDir" /Get-CurrentEdition 2>&1
+                foreach ($line in $dismOutput) {
+                    if ($line -match '^\s*Current Edition\s*:\s*(.+?)\s*$') {
+                        $editionId = $Matches[1].Trim()
+                        if ($editionId) {
+                            if ($Logger) { $null = $Logger.Invoke("Detected mounted image EditionID: $editionId") }
+                            return $editionId
+                        }
+                    }
+                }
+            } catch {
+                if ($Logger) { $null = $Logger.Invoke("Warning: could not detect mounted image EditionID with DISM: $_") }
+            }
+
+            $fallbackEditionId = Get-WinUtilEditionIdFromName -EditionName $EditionName
+            if ($fallbackEditionId -and $Logger) {
+                $null = $Logger.Invoke("Using fallback EditionID '$fallbackEditionId' from selected edition name.")
+            }
+            return $fallbackEditionId
+        }
+
         function Get-DismImageInfoMap {
             param(
                 [Parameter(Mandatory)][string]$ImagePath,
@@ -322,9 +375,10 @@ function Invoke-WinUtilISOModify {
             Log "Mounting install.wim (Index ${selectedWimIndex}: $selectedEditionName) at $mountDir..."
             Mount-WindowsImage -ImagePath $localWim -Index $selectedWimIndex -Path $mountDir
             SetProgress "Modifying install.wim..." 45
+            $selectedEditionId = Get-WinUtilMountedImageEditionId -MountDir $mountDir -EditionName $selectedEditionName -Logger ${function:Log}
 
             Log "Applying WinUtil modifications to install.wim..."
-            Invoke-WinUtilISOScript -ScratchDir $mountDir -ISOContentsDir $isoContents -AutoUnattendXml $autounattendContent -InjectCurrentSystemDrivers $injectDrivers -Log { param($m) Log $m }
+            Invoke-WinUtilISOScript -ScratchDir $mountDir -ISOContentsDir $isoContents -AutoUnattendXml $autounattendContent -InjectCurrentSystemDrivers $injectDrivers -InstallEditionId $selectedEditionId -InstallImageIndex 1 -Log { param($m) Log $m }
 
             SetProgress "Cleaning up component store (WinSxS)..." 56
             Log "Running DISM component store cleanup (/ResetBase)..."
