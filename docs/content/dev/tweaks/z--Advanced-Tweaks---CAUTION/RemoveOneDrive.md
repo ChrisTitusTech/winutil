@@ -15,7 +15,7 @@ description: ""
       icacls $Env:OneDrive /deny \"Administrators:(D,DC)\"
 
       Write-Host \"Uninstalling OneDrive...\"
-      Start-Process 'C:\\Windows\\System32\\OneDriveSetup.exe' -ArgumentList '/uninstall' -Wait
+      Start-Process '$Env:SystemRoot\\System32\\OneDriveSetup.exe' -ArgumentList '/uninstall' -Wait
 
       # Some of OneDrive files use explorer, and OneDrive uses FileCoAuth
       Write-Host \"Removing leftover OneDrive Files...\"
@@ -23,7 +23,7 @@ description: ""
       Stop-Process -Name FileCoAuth,Explorer
 
       Remove-Item \"$Env:LocalAppData\\Microsoft\\OneDrive\" -Recurse -Force
-      Remove-Item \"C:\\ProgramData\\Microsoft OneDrive\" -Recurse -Force
+      Remove-Item \"$Env:ProgramData\\Microsoft OneDrive\" -Recurse -Force
 
       # Grant back permission to access OneDrive folder
       icacls $Env:OneDrive /grant \"Administrators:(D,DC)\"
