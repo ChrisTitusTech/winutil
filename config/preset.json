@@ -20,6 +20,7 @@
     "WPFTweaksTelemetry"
   ],
   "Advanced": [
+    "WPFTweaksRestorePoint",
     "WPFTweaksActivity",
     "WPFTweaksConsumerFeatures",
     "WPFTweaksDisableExplorerAutoDiscovery",
