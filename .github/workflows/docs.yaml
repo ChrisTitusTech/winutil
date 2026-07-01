@@ -53,7 +53,10 @@ jobs:
         run: |
           Set-Location tools
           ./devdocs-generator.ps1
-
+      
+      - name: Wait 30 minutes before creating PR
+        run: sleep 1800
+      
       - name: Create Pull Request
         id: cpr
         uses: peter-evans/create-pull-request@v8
