@@ -275,6 +275,8 @@ $sync.SearchBarClearButton.Add_Click({
 })
 
 # add some shortcuts for people that don't like clicking
+function Set-WinUtilFontScale([double]$Step) { $sync.FontScalingSlider.Value = [math]::Max(0.75, [math]::Min(2.0, $sync.FontScalingSlider.Value + $Step)); Invoke-WinUtilFontScaling -ScaleFactor $sync.FontScalingSlider.Value }
+
 $commonKeyEvents = {
     # Prevent shortcuts from executing if a process is already running
     if ($sync.ProcessRunning -eq $true) {
@@ -298,13 +300,19 @@ $commonKeyEvents = {
     }
     # Handle Ctrl key combinations for specific actions
     if ($_.KeyboardDevice.Modifiers -eq "Ctrl") {
+        $keyEventArgs = $_
         switch ($_.Key) {
             "F" { $sync.SearchBar.Focus() } # Focus on the search bar
             "Q" { $this.Close() } # Close the application
+            { $_ -in "OemPlus", "Add" } { Set-WinUtilFontScale 0.05; $keyEventArgs.Handled = $true }
+            { $_ -in "OemMinus", "Subtract" } { Set-WinUtilFontScale -0.05; $keyEventArgs.Handled = $true }
         }
     }
 }
 $sync["Form"].Add_PreViewKeyDown($commonKeyEvents)
+$sync["Form"].Add_PreviewMouseWheel({
+    if ([Windows.Input.Keyboard]::Modifiers -eq "Ctrl") { Set-WinUtilFontScale $(if ($_.Delta -gt 0) { 0.05 } else { -0.05 }); $_.Handled = $true }
+})
 
 $sync["Form"].Add_MouseLeftButtonDown({
     Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme", "FontScaling")
