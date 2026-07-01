@@ -4,19 +4,30 @@
 
 Describe "Win11 Creator setup media" {
     It "autounattend template does not force a product key" {
-        [xml]$xml = Get-Content -Path ".\tools\autounattend.xml" -Raw
+        $templatePath = Join-Path $PSScriptRoot "..\tools\autounattend.xml"
+        [xml]$xml = Get-Content -Path $templatePath -Raw
         $nsMgr = New-Object System.Xml.XmlNamespaceManager($xml.NameTable)
         $nsMgr.AddNamespace("u", "urn:schemas-microsoft-com:unattend")
 
-        $xml.SelectNodes("//u:ProductKey", $nsMgr).Count | Should Be 0
+        $productKeyCount = $xml.SelectNodes("//u:ProductKey", $nsMgr).Count
+        if ($productKeyCount -ne 0) {
+            throw "Expected no ProductKey nodes, found $productKeyCount."
+        }
     }
 
     It "ISO script accepts selected edition setup metadata" {
-        $content = Get-Content -Path ".\functions\private\Invoke-WinUtilISOScript.ps1" -Raw
+        $isoScriptPath = Join-Path $PSScriptRoot "..\functions\private\Invoke-WinUtilISOScript.ps1"
+        $content = Get-Content -Path $isoScriptPath -Raw
 
-        $content | Should Match '\[string\]\$InstallEditionId'
-        $content | Should Match '\[int\]\$InstallImageIndex'
-        $content | Should Match 'sources\\ei\.cfg'
-        $content | Should Match 'PID\.txt'
+        foreach ($pattern in @(
+            '\[string\]\$InstallEditionId',
+            '\[int\]\$InstallImageIndex',
+            'sources\\ei\.cfg',
+            'PID\.txt'
+        )) {
+            if ($content -notmatch $pattern) {
+                throw "Expected Invoke-WinUtilISOScript.ps1 to match pattern: $pattern"
+            }
+        }
     }
 }
