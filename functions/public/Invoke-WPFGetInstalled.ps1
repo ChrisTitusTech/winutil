@@ -15,7 +15,7 @@ function Invoke-WPFGetInstalled {
         return
     }
 
-    if (($sync.ChocoRadioButton.IsChecked -eq $false) -and ((Test-WinUtilPackageManager -winget) -eq "not-installed") -and $checkbox -eq "winget") {
+    if (($sync.ChocoRadioButton.IsChecked -eq $false) -and (-not (Get-Command -Name winget)) -and $checkbox -eq "winget") {
         return
     }
     $managerPreference = $sync.preferences.packagemanager
@@ -23,7 +23,7 @@ function Invoke-WPFGetInstalled {
     Invoke-WPFRunspace -ParameterList @(("managerPreference", $managerPreference),("checkbox", $checkbox)) -ScriptBlock {
         param (
             [string]$checkbox,
-            [PackageManagers]$managerPreference
+            [string]$managerPreference
         )
         $sync.ProcessRunning = $true
         Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Indeterminate" }
