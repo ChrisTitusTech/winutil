@@ -4,7 +4,7 @@ Current suite status: broad parser, import, config JSON, compile, and runspace s
 
 ## P0 - Highest Priority
 
-- [ ] Add config reference integrity tests.
+- [x] Add config reference integrity tests.
   - Verify every preset entry points to an existing tweak, feature, app, appx item, or supported action.
   - Verify `appnavigation.json` entries point to real tabs/panels and valid config groups.
   - Verify tweak, feature, DNS, appx, and theme entries include all fields used by the UI/rendering code.
