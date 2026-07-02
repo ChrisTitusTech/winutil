@@ -5,7 +5,7 @@ param (
 
 $OFS = "`r`n"
 
-function Remove-WinUtilPerformanceTraceCalls {
+function Get-WinUtilTraceStrippedContent {
     param(
         [Parameter(Mandatory = $true)]
         [string]$Content
@@ -29,7 +29,7 @@ $sync.configs = @{}
 $script = (Get-Content -Path scripts\start.ps1) -replace '#{replaceme}', (Get-Date -Format 'yy.MM.dd')
 
 $script += Get-ChildItem -Path functions -Recurse -File | ForEach-Object {
-    Remove-WinUtilPerformanceTraceCalls -Content (Get-Content -Path $_.FullName -Raw)
+    Get-WinUtilTraceStrippedContent -Content (Get-Content -Path $_.FullName -Raw)
 }
 
 if ($Trace) {
@@ -72,7 +72,7 @@ $script += "`$inputXML = @'`r`n$xaml`r`n'@"
 $autounattendXml = Get-Content -Path tools\autounattend.xml -Raw
 $script += "`$WinUtilAutounattendXml = @'`r`n$autounattendXml`r`n'@"
 
-$script += Remove-WinUtilPerformanceTraceCalls -Content (Get-Content -Path scripts\main.ps1 -Raw)
+$script += Get-WinUtilTraceStrippedContent -Content (Get-Content -Path scripts\main.ps1 -Raw)
 
 Set-Content -Path winutil.ps1 -Value $script
 

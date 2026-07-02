@@ -54,10 +54,10 @@ function Initialize-InstallCategoryAppList {
 
             # Add click handler to toggle category visibility
             $toggleButton.Add_MouseLeftButtonUp({
-                param($sender, $e)
+                param($categoryToggle)
 
                 # Find the parent StackPanel (categoryContainer)
-                $categoryContainer = $sender.Parent
+                $categoryContainer = $categoryToggle.Parent
                 if ($categoryContainer -and $categoryContainer.Children.Count -ge 2) {
                     # The WrapPanel is the second child
                     $wrapPanel = $categoryContainer.Children[1]
@@ -66,11 +66,11 @@ function Initialize-InstallCategoryAppList {
                     if ($wrapPanel.Visibility -eq [Windows.Visibility]::Visible) {
                         $wrapPanel.Visibility = [Windows.Visibility]::Collapsed
                         # Change - to +
-                        $sender.Content = $sender.Content -replace "^- ", "+ "
+                        $categoryToggle.Content = $categoryToggle.Content -replace "^- ", "+ "
                     } else {
                         $wrapPanel.Visibility = [Windows.Visibility]::Visible
                         # Change + to -
-                        $sender.Content = $sender.Content -replace "^\+ ", "- "
+                        $categoryToggle.Content = $categoryToggle.Content -replace "^\+ ", "- "
                     }
                 }
             })
