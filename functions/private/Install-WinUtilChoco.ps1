@@ -11,5 +11,6 @@ function Install-WinUtilChoco {
     }
 
     Write-Host "Chocolatey is not installed. Installing now..."
-    Invoke-WebRequest -Uri https://community.chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression
+    $installScript = Invoke-WebRequest -Uri https://community.chocolatey.org/install.ps1 -UseBasicParsing
+    Invoke-Command -ScriptBlock ([scriptblock]::Create($installScript.Content))
 }

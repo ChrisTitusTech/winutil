@@ -210,20 +210,23 @@ function Show-CustomDialog {
         $hyperlink.Foreground = $LinkForegroundColor
 
         $hyperlink.Add_Click({
-            param($sender, $args)
-            Start-Process $sender.NavigateUri.AbsoluteUri
+            param($eventSender, $routedEvent)
+            $null = $routedEvent
+            Start-Process $eventSender.NavigateUri.AbsoluteUri
         })
         $hyperlink.Add_MouseEnter({
-            param($sender, $args)
-            $sender.Foreground = $LinkHoverForegroundColor
-            $sender.FontSize = ($FontSize + ($FontSize / 4))
-            $sender.FontWeight = "SemiBold"
+            param($eventSender, $routedEvent)
+            $null = $routedEvent
+            $eventSender.Foreground = $LinkHoverForegroundColor
+            $eventSender.FontSize = ($FontSize + ($FontSize / 4))
+            $eventSender.FontWeight = "SemiBold"
         })
         $hyperlink.Add_MouseLeave({
-            param($sender, $args)
-            $sender.Foreground = $LinkForegroundColor
-            $sender.FontSize = $FontSize
-            $sender.FontWeight = "Normal"
+            param($eventSender, $routedEvent)
+            $null = $routedEvent
+            $eventSender.Foreground = $LinkForegroundColor
+            $eventSender.FontSize = $FontSize
+            $eventSender.FontWeight = "Normal"
         })
 
         $messageTextBlock.Inlines.Add($hyperlink)

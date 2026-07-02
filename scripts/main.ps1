@@ -136,6 +136,7 @@ $sync.Form.Add_Loaded({
             [System.IntPtr]$lParam,
             [ref]$handled
         )
+        $null = $hwnd, $wParam, $lParam
         # Check for the Event WM_SETTINGCHANGE (0x1001A) and validate that Button shows the icon for "Auto" => [char]0xF08C
         if (($msg -eq 0x001A) -and $sync.ThemeButton.Content -eq [char]0xF08C) {
             $currentTime = [datetime]::Now
@@ -378,6 +379,7 @@ $sync["SearchBar"].Add_TextChanged({
 
 $sync["Form"].Add_Loaded({
     param($e)
+    $null = $e
     $sync.Form.MinWidth = "1000"
     $sync["Form"].MaxWidth = [Double]::PositiveInfinity
     $sync["Form"].MaxHeight = [Double]::PositiveInfinity

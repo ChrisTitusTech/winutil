@@ -21,5 +21,24 @@
     # the default rules except for those you exclude below.
     # Note: if a rule is in both IncludeRules and ExcludeRules, the rule
     # will be excluded.
-    ExcludeRules = @('PSAvoidUsingWriteHost')
+    ExcludeRules = @(
+        # WinUtil is a WPF utility script that intentionally logs progress to the host/transcript.
+        'PSAvoidUsingWriteHost',
+
+        # Public and XAML-wired function names are part of the existing WinUtil surface.
+        'PSUseSingularNouns',
+        'PSUseApprovedVerbs',
+
+        # UI helpers and internal state helpers are not exposed as WhatIf-capable cmdlets.
+        'PSUseShouldProcessForStateChangingFunctions',
+
+        # Shared WPF/runspace state is intentionally stored in $sync/global state.
+        'PSAvoidGlobalVars',
+
+        # Source files are UTF-8 without BOM and are verified by parser tests.
+        'PSUseBOMForUnicodeEncodedFile',
+
+        # WPF dispatcher closures and Pester mocks intentionally keep callback-style parameters.
+        'PSReviewUnusedParameter'
+    )
 }

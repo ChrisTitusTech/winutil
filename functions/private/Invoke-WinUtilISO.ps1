@@ -590,10 +590,10 @@ function Invoke-WinUtilISOCleanAndReset {
                 }
 
                 foreach ($d in $allDirs) {
-                    try { Remove-Item -Path $d.FullName -Force } catch {}
+                    try { Remove-Item -Path $d.FullName -Force } catch { Log "WARNING: could not delete $($d.FullName): $_" }
                 }
 
-                try { Remove-Item -Path $workDir -Recurse -Force } catch {}
+                try { Remove-Item -Path $workDir -Recurse -Force } catch { Log "WARNING: could not delete temp directory ${workDir}: $_" }
 
                 if (Test-Path $workDir) {
                     Log "WARNING: some items could not be deleted in $workDir"

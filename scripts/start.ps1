@@ -6,6 +6,7 @@
     Version        : #{replaceme}
 #>
 
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', 'PARAM_OFFLINE', Justification='Consumed after source concatenation by Compile.ps1.')]
 param (
     [string]$Config,
     [ValidateSet("Standard", "Minimal", "Advanced", "")]
