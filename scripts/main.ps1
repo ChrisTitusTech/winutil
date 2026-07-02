@@ -61,6 +61,7 @@ $sync.runspace = [runspacefactory]::CreateRunspacePool(
 
 # Open the RunspacePool instance
 $sync.runspace.Open()
+Write-WinUtilPerformanceCheckpoint -Name "Runspace pool initialized"
 
 # Create classes for different exceptions
 
@@ -90,8 +91,10 @@ $sync.configs.appxHashtable = @{}
 $sync.configs.appx.PSObject.Properties | ForEach-Object {
     $sync.configs.appxHashtable[$_.Name] = $_.Value
 }
+Write-WinUtilPerformanceCheckpoint -Name "Config hashtables initialized"
 
 Set-Preferences
+Write-WinUtilPerformanceCheckpoint -Name "Preferences loaded"
 
 if ($Preset) {
     # Selects the tweaks from $Preset varible
@@ -130,6 +133,7 @@ $reader = (New-Object System.Xml.XmlNodeReader $xaml)
 try {
     $sync["Form"] = [Windows.Markup.XamlReader]::Load( $reader )
     $readerOperationSuccessful = $true
+    Write-WinUtilPerformanceCheckpoint -Name "XAML loaded"
 } catch [System.Management.Automation.MethodInvocationException] {
     Write-Host "We ran into a problem with the XAML code.  Check the syntax for this control..." -ForegroundColor Red
     Write-Host $error[0].Exception.Message -ForegroundColor Red
@@ -179,19 +183,25 @@ $sync.Form.Add_Loaded({
 })
 
 Invoke-WinutilThemeChange -theme $sync.preferences.theme
+Write-WinUtilPerformanceCheckpoint -Name "Theme applied"
 
 
 # Now call the function with the final merged config
 Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
 Initialize-WPFUI -targetGridName "appscategory"
+Write-WinUtilPerformanceCheckpoint -Name "App navigation UI created"
 
 Initialize-WPFUI -targetGridName "appspanel"
+Write-WinUtilPerformanceCheckpoint -Name "Install UI created"
 
 Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
+Write-WinUtilPerformanceCheckpoint -Name "Tweaks UI created"
 
 Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
+Write-WinUtilPerformanceCheckpoint -Name "Features UI created"
 
 Invoke-WPFUIElements -configVariable $sync.configs.appx -targetGridName "appxpanel" -columncount 2
+Write-WinUtilPerformanceCheckpoint -Name "AppX UI created"
 
 # Future implementation: Add Windows Version to updates panel
 #Invoke-WPFUIElements -configVariable $sync.configs.updates -targetGridName "updatespanel" -columncount 1
@@ -257,6 +267,7 @@ Set-WinUtilTaskbaritem -state "None"
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version
 # Set the commands that will run when the form is closed
 $sync["Form"].Add_Closing({
+    Stop-WinUtilPerformanceTrace -Name "Window closing"
     $sync.runspace.Dispose()
     $sync.runspace.Close()
     [System.GC]::Collect()
@@ -326,6 +337,7 @@ $sync["Form"].Add_Deactivated({
 })
 
 $sync["Form"].Add_ContentRendered({
+    Write-WinUtilPerformanceCheckpoint -Name "First content rendered"
     # Load the Windows Forms assembly
     Add-Type -AssemblyName System.Windows.Forms
     $primaryScreen = [System.Windows.Forms.Screen]::PrimaryScreen
@@ -422,6 +434,7 @@ $NavLogoPanel.Children.Add((Invoke-WinUtilAssets -Type "logo" -Size 25)) | Out-N
 $sync["logorender"] = (Invoke-WinUtilAssets -Type "Logo" -Size 90 -Render)
 $sync["checkmarkrender"] = (Invoke-WinUtilAssets -Type "checkmark" -Size 512 -Render)
 $sync["warningrender"] = (Invoke-WinUtilAssets -Type "warning" -Size 512 -Render)
+Write-WinUtilPerformanceCheckpoint -Name "Assets rendered"
 
 Set-WinUtilTaskbaritem -overlay "logo"
 

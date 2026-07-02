@@ -12,6 +12,11 @@ $script = (Get-Content -Path scripts\start.ps1) -replace '#{replaceme}', (Get-Da
 
 $script += Get-ChildItem -Path functions -Recurse -File | Get-Content -Raw
 
+$script += @'
+Start-WinUtilPerformanceTrace
+Write-WinUtilPerformanceCheckpoint -Name "Config load start"
+'@
+
 Get-ChildItem config | ForEach-Object {
     $obj = Get-Content -Path $_.FullName -Raw | ConvertFrom-Json
 
@@ -27,7 +32,10 @@ Get-ChildItem config | ForEach-Object {
 
     $sync.configs[$_.BaseName] = $obj
     $script += "`$sync.configs.$($_.BaseName) = @'`r`n$json`r`n'@ | ConvertFrom-Json"
+    $script += "`r`nWrite-WinUtilPerformanceCheckpoint -Name `"Config $($_.BaseName) loaded`""
 }
+
+$script += "`r`nWrite-WinUtilPerformanceCheckpoint -Name `"Config load complete`""
 
 $xaml = Get-Content -Path xaml\inputXML.xaml -Raw
 $script += "`$inputXML = @'`r`n$xaml`r`n'@"
