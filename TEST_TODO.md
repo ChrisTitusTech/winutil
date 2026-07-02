@@ -62,7 +62,7 @@ Current suite status: broad parser, import, config JSON, compile, and runspace s
 
 ## P2 - Domain-Specific Coverage
 
-- [ ] Expand Win11 Creator tests.
+- [x] Expand Win11 Creator tests.
   - Test edition name to edition ID mapping.
   - Test `ei.cfg` and `PID.txt` generation/removal behavior in a temp directory.
   - Test autounattend conversion preserves required nodes and removes unsupported product key paths.
