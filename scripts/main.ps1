@@ -53,6 +53,14 @@ $sync.configs.applications.PSObject.Properties | ForEach-Object {
     $sync.configs.applicationsHashtable[$_.Name] = $_.Value
 }
 
+
+$sync.configs.appxHashtable = @{}
+$sync.configs.appx.PSObject.Properties | ForEach-Object {
+    $sync.configs.appxHashtable[$_.Name] = $_.Value
+}
+
+Write-WinUtilPerformanceCheckpoint -Name "Config hashtables initialized"
+
 $sync.preferences.theme = "Auto"
 
 if ($Preset) {
