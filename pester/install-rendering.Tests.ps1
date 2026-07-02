@@ -15,21 +15,22 @@ Describe "Install app rendering startup contract" {
         $categoryScript | Should -Match 'Pre-group apps by category before creating WPF controls'
     }
 
-    It "renders queued apps through a dispatcher timer when a form dispatcher exists" {
+    It "renders queued apps through dispatcher callbacks when a form dispatcher exists" {
         $renderScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilInstallAppRendering.ps1") -Raw
 
-        $renderScript | Should -Match 'System\.Windows\.Threading\.DispatcherTimer'
+        $renderScript | Should -Match 'Dispatcher\.BeginInvoke'
+        $renderScript | Should -Match 'Invoke-WinUtilInstallAppRenderNextBatch'
         $renderScript | Should -Match 'Initialize-InstallAppEntry'
         $renderScript | Should -Match 'Install app entries rendered'
     }
 
-    It "does not rely on local timer variables after the dispatcher tick fires" {
+    It "does not use dispatcher timers for deferred install rendering" {
         $renderScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilInstallAppRendering.ps1") -Raw
 
-        $renderScript | Should -Match 'param\(\$sender\)'
-        $renderScript | Should -Match '\$dispatcherTimer = \[System\.Windows\.Threading\.DispatcherTimer\]\$sender'
+        $renderScript | Should -Not -Match 'DispatcherTimer'
+        $renderScript | Should -Not -Match '\$timer'
+        $renderScript | Should -Not -Match '\$dispatcherTimer'
         $renderScript | Should -Not -Match '\$timer\.Stop\(\)'
-        $renderScript | Should -Match '\$dispatcherTimer\.Start\(\)'
         $renderScript | Should -Not -Match '& \$renderCategory'
     }
 

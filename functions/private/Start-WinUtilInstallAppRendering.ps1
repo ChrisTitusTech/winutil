@@ -13,6 +13,28 @@ function Invoke-WinUtilInstallAppRenderBatch {
     }
 }
 
+function Complete-WinUtilInstallAppRendering {
+    $sync.InstallAppEntriesRendered = $true
+    Write-WinUtilPerformanceCheckpoint -Name "Install app entries rendered"
+}
+
+function Invoke-WinUtilInstallAppRenderNextBatch {
+    if ($sync.InstallAppRenderQueue.Count -gt 0) {
+        $categoryBatch = $sync.InstallAppRenderQueue.Dequeue()
+        Invoke-WinUtilInstallAppRenderBatch -CategoryBatch $categoryBatch
+    }
+
+    if ($sync.InstallAppRenderQueue.Count -gt 0) {
+        $sync.Form.Dispatcher.BeginInvoke(
+            [System.Windows.Threading.DispatcherPriority]::Background,
+            [action]{ Invoke-WinUtilInstallAppRenderNextBatch }
+        ) | Out-Null
+        return
+    }
+
+    Complete-WinUtilInstallAppRendering
+}
+
 function Start-WinUtilInstallAppRendering {
     if ($null -eq $sync.InstallAppRenderQueue) {
         return
@@ -20,30 +42,11 @@ function Start-WinUtilInstallAppRendering {
 
     $sync.InstallAppEntriesRendered = $false
 
-    if ($sync.Form -and $sync.Form.Dispatcher -and ("System.Windows.Threading.DispatcherTimer" -as [type])) {
-        $timer = New-Object System.Windows.Threading.DispatcherTimer
-        $timer.Interval = [TimeSpan]::FromMilliseconds(1)
-        $timer.Add_Tick({
-            param($sender)
-
-            $dispatcherTimer = [System.Windows.Threading.DispatcherTimer]$sender
-            $dispatcherTimer.Stop()
-
-            if ($sync.InstallAppRenderQueue.Count -gt 0) {
-                $categoryBatch = $sync.InstallAppRenderQueue.Dequeue()
-                Invoke-WinUtilInstallAppRenderBatch -CategoryBatch $categoryBatch
-            }
-
-            if ($sync.InstallAppRenderQueue.Count -gt 0) {
-                $dispatcherTimer.Start()
-                return
-            }
-
-            $sync.InstallAppEntriesRendered = $true
-            Write-WinUtilPerformanceCheckpoint -Name "Install app entries rendered"
-        })
-        $sync.InstallAppRenderTimer = $timer
-        $timer.Start()
+    if ($sync.Form -and $sync.Form.Dispatcher) {
+        $sync.Form.Dispatcher.BeginInvoke(
+            [System.Windows.Threading.DispatcherPriority]::Background,
+            [action]{ Invoke-WinUtilInstallAppRenderNextBatch }
+        ) | Out-Null
         return
     }
 
@@ -52,6 +55,5 @@ function Start-WinUtilInstallAppRendering {
         Invoke-WinUtilInstallAppRenderBatch -CategoryBatch $categoryBatch
     }
 
-    $sync.InstallAppEntriesRendered = $true
-    Write-WinUtilPerformanceCheckpoint -Name "Install app entries rendered"
+    Complete-WinUtilInstallAppRendering
 }
