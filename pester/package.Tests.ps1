@@ -17,11 +17,14 @@ public enum PackageManagers
 
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilSelectedPackages.ps1")
     . (Join-Path $script:repoRoot "functions\private\Test-WinUtilPackageManager.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilLoggedProcess.ps1")
     . (Join-Path $script:repoRoot "functions\private\Install-WinUtilProgramWinget.ps1")
     . (Join-Path $script:repoRoot "functions\private\Install-WinUtilProgramChoco.ps1")
 
     function Invoke-WPFUIThread { }
-    function Write-WinUtilLog { }
+    function Write-WinUtilLog {
+        param($Message, $Level, $Component)
+    }
 }
 
 Describe "Get-WinUtilSelectedPackages" {
@@ -122,6 +125,8 @@ Describe "Test-WinUtilPackageManager" {
 Describe "Install-WinUtilProgramWinget" {
     BeforeEach {
         Mock Write-WinUtilLog { }
+        Mock Write-Host { }
+        Mock Write-Warning { }
         Mock Start-Process { [pscustomobject]@{ ExitCode = 0 } }
     }
 
@@ -133,7 +138,9 @@ Describe "Install-WinUtilProgramWinget" {
                 (@($ArgumentList) -join "|") -eq "install|--id|Git.Git|--accept-package-agreements|--accept-source-agreements|--source|winget|--silent" -and
                 $NoNewWindow -eq $true -and
                 $Wait -eq $true -and
-                $PassThru -eq $true
+                $PassThru -eq $true -and
+                -not [string]::IsNullOrWhiteSpace($RedirectStandardOutput) -and
+                -not [string]::IsNullOrWhiteSpace($RedirectStandardError)
         }
     }
 
@@ -151,11 +158,39 @@ Describe "Install-WinUtilProgramWinget" {
 
         Should -Invoke -CommandName Start-Process -Times 0 -Exactly
     }
+
+    It "logs redirected winget stdout and stderr" {
+        Mock Start-Process {
+            Set-Content -Path $RedirectStandardOutput -Value @("Installing package", "Done")
+            Set-Content -Path $RedirectStandardError -Value @("Installer warning")
+            [pscustomobject]@{ ExitCode = 0 }
+        }
+
+        Install-WinUtilProgramWinget -Action Install -Programs @("Git.Git")
+
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Component -eq "Package" -and
+                $Level -eq "INFO" -and
+                $Message -eq "Install winget package Git.Git [stdout] Installing package"
+        }
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Component -eq "Package" -and
+                $Level -eq "INFO" -and
+                $Message -eq "Install winget package Git.Git [stdout] Done"
+        }
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Component -eq "Package" -and
+                $Level -eq "WARN" -and
+                $Message -eq "Install winget package Git.Git [stderr] Installer warning"
+        }
+    }
 }
 
 Describe "Install-WinUtilProgramChoco" {
     BeforeEach {
         Mock Write-WinUtilLog { }
+        Mock Write-Host { }
+        Mock Write-Warning { }
         Mock Start-Process { [pscustomobject]@{ ExitCode = 0 } }
     }
 
@@ -167,7 +202,9 @@ Describe "Install-WinUtilProgramChoco" {
                 $ArgumentList -eq "install git vlc -y" -and
                 $NoNewWindow -eq $true -and
                 $Wait -eq $true -and
-                $PassThru -eq $true
+                $PassThru -eq $true -and
+                -not [string]::IsNullOrWhiteSpace($RedirectStandardOutput) -and
+                -not [string]::IsNullOrWhiteSpace($RedirectStandardError)
         }
     }
 
@@ -176,6 +213,27 @@ Describe "Install-WinUtilProgramChoco" {
 
         Should -Invoke -CommandName Start-Process -Times 1 -Exactly -ParameterFilter {
             $FilePath -eq "choco" -and $ArgumentList -eq "uninstall git -y"
+        }
+    }
+
+    It "logs redirected choco stdout and stderr" {
+        Mock Start-Process {
+            Set-Content -Path $RedirectStandardOutput -Value @("Chocolatey installed package")
+            Set-Content -Path $RedirectStandardError -Value @("Chocolatey warning")
+            [pscustomobject]@{ ExitCode = 0 }
+        }
+
+        Install-WinUtilProgramChoco -Action Install -Programs @("git")
+
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Component -eq "Package" -and
+                $Level -eq "INFO" -and
+                $Message -eq "Install choco package(s) git [stdout] Chocolatey installed package"
+        }
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Component -eq "Package" -and
+                $Level -eq "WARN" -and
+                $Message -eq "Install choco package(s) git [stderr] Chocolatey warning"
         }
     }
 }

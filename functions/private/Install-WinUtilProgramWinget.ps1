@@ -26,7 +26,7 @@ Function Install-WinUtilProgramWinget {
         }
 
         Write-WinUtilLog -Component "Package" -Message "$Action winget package: $program (source: $source)"
-        $process = Start-Process -FilePath winget -ArgumentList $arguments -NoNewWindow -Wait -PassThru
+        $process = Invoke-WinUtilLoggedProcess -FilePath winget -ArgumentList $arguments -Component "Package" -Description "$Action winget package $program"
         Write-WinUtilLog -Component "Package" -Message "$Action winget package completed: $program (exit code: $($process.ExitCode))"
     }
 }
