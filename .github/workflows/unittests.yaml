@@ -27,13 +27,16 @@ jobs:
     - name: Install Pester
       run: |
         Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
-        Install-Module -Name Pester -Force -SkipPublisherCheck -AllowClobber
+        Install-Module -Name Pester -RequiredVersion 5.8.0 -Force -SkipPublisherCheck -AllowClobber
+        Import-Module Pester -RequiredVersion 5.8.0 -Force
+        Get-Module Pester | Select-Object Name, Version, Path
       shell: pwsh
 
     - name: Run Pester tests
       run: |
         Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
-        Invoke-Pester -Path 'pester/*.Tests.ps1' -Output Detailed
+        Import-Module Pester -RequiredVersion 5.8.0 -Force
+        Invoke-Pester -Path 'pester/*.Tests.ps1' -Output Detailed -CI
 
       shell: pwsh
       env:

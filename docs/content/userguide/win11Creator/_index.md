@@ -51,6 +51,7 @@ Click **Run Windows ISO Modification and Creator** to start the customization pr
 - **Disable BitLocker and device encryption** — removes startup overhead
 - **Disable Chat icon** — removes chat taskbar button
 - **Strip unused editions** — keeps only your selected edition, saving 1–2 GB per removed edition
+- **Pin the selected edition during setup** — writes setup metadata so OEM firmware keys for a different edition do not force the installer down the wrong product-key path
 - **Clean the component store** — runs DISM cleanup to reclaim another 300–800 MB
 
 **Privacy & Telemetry Tweaks:**
@@ -132,6 +133,7 @@ When you install Windows 11 from your modified ISO:
 | USB drive not showing up | Plug it in, wait a few seconds, then click **Refresh** |
 | Modification seems stuck | The WIM dismount step is slow — wait at least 10 minutes before assuming it's frozen |
 | "Access Denied" error | Make sure WinUtil is running as Administrator |
+| "Setup has failed to validate the product key" | Recreate the ISO with the latest WinUtil. The creator now removes stale `PID.txt`, writes `sources\ei.cfg`, and pins the selected image in `autounattend.xml` so setup does not use an embedded OEM key for a different edition |
 
 ---
 
