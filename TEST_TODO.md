@@ -34,7 +34,7 @@ Current suite status: broad parser, import, config JSON, compile, and runspace s
 
 ## P1 - Important Workflow Coverage
 
-- [ ] Add tweak execution orchestration tests.
+- [x] Add tweak execution orchestration tests.
   - Cover `Invoke-WinUtilTweaks` with mocked `Invoke-WinUtilScript`, `Set-WinUtilRegistry`, `Set-WinUtilService`, and `Set-WinUtilDNS`.
   - Verify undo mode uses `OriginalValue` and `OriginalType`.
   - Verify DNS provider and progress counters are passed through correctly.
