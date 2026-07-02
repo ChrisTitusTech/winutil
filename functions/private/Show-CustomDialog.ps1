@@ -193,6 +193,7 @@ function Show-CustomDialog {
     # Define the Regex to find hyperlinks formatted as HTML <a> tags
     $regex = [regex]::new('<a href="([^"]+)">([^<]+)</a>')
     $lastPos = 0
+    $linkHoverBrush = $LinkHoverForegroundColor
 
     # Iterate through each match and add regular text and hyperlinks
     foreach ($match in $regex.Matches($Message)) {
@@ -217,7 +218,7 @@ function Show-CustomDialog {
         $hyperlink.Add_MouseEnter({
             param($eventSender, $routedEvent)
             $null = $routedEvent
-            $eventSender.Foreground = $LinkHoverForegroundColor
+            $eventSender.Foreground = $linkHoverBrush
             $eventSender.FontSize = ($FontSize + ($FontSize / 4))
             $eventSender.FontWeight = "SemiBold"
         })

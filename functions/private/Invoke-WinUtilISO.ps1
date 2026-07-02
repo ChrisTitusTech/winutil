@@ -1,12 +1,13 @@
 function Write-Win11ISOLog {
     param([string]$Message)
     $ts = (Get-Date).ToString("HH:mm:ss")
+    $logLine = "[$ts] $Message"
     $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
         $current = $sync["WPFWin11ISOStatusLog"].Text
         if ($current -eq "Ready. Please select a Windows 11 ISO to begin.") {
-            $sync["WPFWin11ISOStatusLog"].Text = "[$ts] $Message"
+            $sync["WPFWin11ISOStatusLog"].Text = $logLine
         } else {
-            $sync["WPFWin11ISOStatusLog"].Text += "`n[$ts] $Message"
+            $sync["WPFWin11ISOStatusLog"].Text += "`n$logLine"
         }
         $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
         $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
@@ -293,9 +294,11 @@ function Invoke-WinUtilISOModify {
                 [scriptblock]$Logger
             )
 
+            $metadataLogger = $Logger
+
             function LogMeta([string]$Message) {
-                if ($Logger) {
-                    $null = $Logger.Invoke($Message)
+                if ($metadataLogger) {
+                    $null = $metadataLogger.Invoke($Message)
                 }
             }
 
