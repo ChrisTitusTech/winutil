@@ -13,6 +13,12 @@ BeforeAll {
             [switch]$ResetServerAddresses
         )
     }
+    function netsh {
+        param(
+            [Parameter(ValueFromRemainingArguments = $true)]
+            [string[]]$Arguments
+        )
+    }
     function Write-WinUtilLog {
         param($Message, $Level, $Component)
     }
@@ -43,6 +49,7 @@ Describe "Set-WinUtilDNS" {
             }
         }
         Mock Set-DnsClientServerAddress { }
+        Mock netsh { }
         Mock Write-WinUtilLog { }
         Mock Write-Warning { }
         Mock Write-Host { }
@@ -69,6 +76,31 @@ Describe "Set-WinUtilDNS" {
         }
         Should -Invoke -CommandName Set-DnsClientServerAddress -Times 0 -Exactly -ParameterFilter {
             $ServerAddresses.Count -eq 4
+        }
+    }
+
+    It "resets DNS to DHCP for IPv4 and IPv6" {
+        Set-WinUtilDNS -DNSProvider "DHCP"
+
+        Should -Invoke -CommandName Set-DnsClientServerAddress -Times 1 -Exactly -ParameterFilter {
+            $InterfaceIndex -eq 7 -and
+                $ResetServerAddresses -eq $true
+        }
+        Should -Invoke -CommandName netsh -Times 1 -Exactly -ParameterFilter {
+            $Arguments[0] -eq "interface" -and
+                $Arguments[1] -eq "ip" -and
+                $Arguments[2] -eq "set" -and
+                $Arguments[3] -eq "dnsservers" -and
+                $Arguments[4] -eq "name=Ethernet" -and
+                $Arguments[5] -eq "source=dhcp"
+        }
+        Should -Invoke -CommandName netsh -Times 1 -Exactly -ParameterFilter {
+            $Arguments[0] -eq "interface" -and
+                $Arguments[1] -eq "ipv6" -and
+                $Arguments[2] -eq "set" -and
+                $Arguments[3] -eq "dnsservers" -and
+                $Arguments[4] -eq "name=Ethernet" -and
+                $Arguments[5] -eq "source=dhcp"
         }
     }
 

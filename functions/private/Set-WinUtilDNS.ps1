@@ -25,6 +25,8 @@ function Set-WinUtilDNS {
             if($DNSProvider -eq "DHCP") {
                 Write-WinUtilLog -Component "DNS" -Message "Resetting DNS to DHCP on adapter $($Adapter.Name) (ifIndex: $($Adapter.ifIndex))."
                 Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ResetServerAddresses
+                netsh interface ip set dnsservers name="$($Adapter.Name)" source=dhcp
+                netsh interface ipv6 set dnsservers name="$($Adapter.Name)" source=dhcp
             } else {
                 Write-WinUtilLog -Component "DNS" -Message "Setting IPv4 DNS on adapter $($Adapter.Name) (ifIndex: $($Adapter.ifIndex)) to $($dns.Primary), $($dns.Secondary)."
                 Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ServerAddresses ($dns.Primary, $dns.Secondary)

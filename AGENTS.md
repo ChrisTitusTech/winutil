@@ -189,3 +189,4 @@ When the user corrects an agent approach, add or tighten one concrete rule here 
 - When the active log file is owned by `Start-Transcript`, do not call `Add-Content` against that file; write to host output so the transcript captures the line in the same log file without recording a terminating-error diagnostic.
 - Log install/uninstall package names and package-manager IDs before queuing background runspace work; do not rely on runspace host output for the package identity.
 - Keep performance tracing helpers under `tools/perf`; include them in generated output only through `Compile.ps1 -Trace`.
+- For DNS DHCP reset, keep the cmdlet reset and explicitly set IPv4 and IPv6 DNS source to DHCP.
