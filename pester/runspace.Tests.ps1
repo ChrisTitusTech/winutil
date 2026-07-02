@@ -20,8 +20,6 @@ BeforeAll {
         $initialSessionState.Variables.Add($syncVariable)
         $script:sync.runspace = [runspacefactory]::CreateRunspacePool(1, 2, $initialSessionState, $Host)
         $script:sync.runspace.Open()
-
-        function Write-WinUtilPerformanceCheckpoint { param($Name) }
     }
 
     function script:Clear-WinUtilRunspaceTestContext {

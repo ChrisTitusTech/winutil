@@ -5,16 +5,6 @@
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 
-    if (-not ("PackageManagers" -as [type])) {
-        Add-Type @"
-public enum PackageManagers
-{
-    Winget,
-    Choco
-}
-"@
-    }
-
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilSelectedPackages.ps1")
     . (Join-Path $script:repoRoot "functions\private\Test-WinUtilPackageManager.ps1")
     . (Join-Path $script:repoRoot "functions\private\Install-WinUtilProgramWinget.ps1")
@@ -35,10 +25,10 @@ Describe "Get-WinUtilSelectedPackages" {
             [pscustomobject]@{ winget = "VideoLAN.VLC"; choco = "vlc" }
         )
 
-        $result = Get-WinUtilSelectedPackages -PackageList $packages -Preference ([PackageManagers]::Winget)
+        $result = Get-WinUtilSelectedPackages -PackageList $packages -Preference "Winget"
 
-        (@($result[[PackageManagers]::Winget]) -join "|") | Should -Be "Git.Git|VideoLAN.VLC"
-        @($result[[PackageManagers]::Choco]).Count | Should -Be 0
+        (@($result["Winget"]) -join "|") | Should -Be "Git.Git|VideoLAN.VLC"
+        @($result["Choco"]).Count | Should -Be 0
     }
 
     It "uses choco IDs and falls back to winget for na or missing choco IDs" {
@@ -48,10 +38,10 @@ Describe "Get-WinUtilSelectedPackages" {
             [pscustomobject]@{ winget = "Mozilla.Firefox" }
         )
 
-        $result = Get-WinUtilSelectedPackages -PackageList $packages -Preference ([PackageManagers]::Choco)
+        $result = Get-WinUtilSelectedPackages -PackageList $packages -Preference "Choco"
 
-        (@($result[[PackageManagers]::Choco]) -join "|") | Should -Be "git"
-        (@($result[[PackageManagers]::Winget]) -join "|") | Should -Be "VideoLAN.VLC|Mozilla.Firefox"
+        (@($result["Choco"]) -join "|") | Should -Be "git"
+        (@($result["Winget"]) -join "|") | Should -Be "VideoLAN.VLC|Mozilla.Firefox"
     }
 
     It "skips blank, na, and missing package IDs" {
@@ -62,10 +52,10 @@ Describe "Get-WinUtilSelectedPackages" {
             [pscustomobject]@{ winget = "   " }
         )
 
-        $result = Get-WinUtilSelectedPackages -PackageList $packages -Preference ([PackageManagers]::Winget)
+        $result = Get-WinUtilSelectedPackages -PackageList $packages -Preference "Winget"
 
-        @($result[[PackageManagers]::Winget]).Count | Should -Be 0
-        @($result[[PackageManagers]::Choco]).Count | Should -Be 0
+        @($result["Winget"]).Count | Should -Be 0
+        @($result["Choco"]).Count | Should -Be 0
     }
 
     It "deduplicates package IDs" {
@@ -75,17 +65,17 @@ Describe "Get-WinUtilSelectedPackages" {
             [pscustomobject]@{ winget = "VideoLAN.VLC"; choco = "vlc" }
         )
 
-        $result = Get-WinUtilSelectedPackages -PackageList $packages -Preference ([PackageManagers]::Choco)
+        $result = Get-WinUtilSelectedPackages -PackageList $packages -Preference "Choco"
 
-        (@($result[[PackageManagers]::Choco]) -join "|") | Should -Be "git|vlc"
-        @($result[[PackageManagers]::Winget]).Count | Should -Be 0
+        (@($result["Choco"]) -join "|") | Should -Be "git|vlc"
+        @($result["Winget"]).Count | Should -Be 0
     }
 
     It "returns empty package lists for an empty selection" {
-        $result = Get-WinUtilSelectedPackages -PackageList @() -Preference ([PackageManagers]::Winget)
+        $result = Get-WinUtilSelectedPackages -PackageList @() -Preference "Winget"
 
-        @($result[[PackageManagers]::Winget]).Count | Should -Be 0
-        @($result[[PackageManagers]::Choco]).Count | Should -Be 0
+        @($result["Winget"]).Count | Should -Be 0
+        @($result["Choco"]).Count | Should -Be 0
     }
 }
 
