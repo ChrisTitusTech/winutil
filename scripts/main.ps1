@@ -57,10 +57,8 @@ $sync.configs.appxHashtable = @{}
 $sync.configs.appx.PSObject.Properties | ForEach-Object {
     $sync.configs.appxHashtable[$_.Name] = $_.Value
 }
-Write-WinUtilPerformanceCheckpoint -Name "Config hashtables initialized"
 
 Set-Preferences
-Write-WinUtilPerformanceCheckpoint -Name "Preferences loaded"
 
 if ($Preset) {
     Initialize-WinUtilRunspacePool | Out-Null
@@ -101,7 +99,6 @@ $reader = (New-Object System.Xml.XmlNodeReader $xaml)
 try {
     $sync["Form"] = [Windows.Markup.XamlReader]::Load( $reader )
     $readerOperationSuccessful = $true
-    Write-WinUtilPerformanceCheckpoint -Name "XAML loaded"
 } catch [System.Management.Automation.MethodInvocationException] {
     Write-Host "We ran into a problem with the XAML code.  Check the syntax for this control..." -ForegroundColor Red
     Write-Host $error[0].Exception.Message -ForegroundColor Red
@@ -151,7 +148,6 @@ $sync.Form.Add_Loaded({
 })
 
 Invoke-WinutilThemeChange -theme $sync.preferences.theme
-Write-WinUtilPerformanceCheckpoint -Name "Theme applied"
 
 
 # Build only the default tab before first paint; other tabs initialize on first activation.
@@ -228,7 +224,6 @@ Set-WinUtilTaskbaritem -state "None"
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version
 # Set the commands that will run when the form is closed
 $sync["Form"].Add_Closing({
-    Stop-WinUtilPerformanceTrace -Name "Window closing"
     Close-WinUtilRunspacePool
     [System.GC]::Collect()
 })
@@ -297,7 +292,6 @@ $sync["Form"].Add_Deactivated({
 })
 
 $sync["Form"].Add_ContentRendered({
-    Write-WinUtilPerformanceCheckpoint -Name "First content rendered"
     # Load the Windows Forms assembly
     Add-Type -AssemblyName System.Windows.Forms
     $primaryScreen = [System.Windows.Forms.Screen]::PrimaryScreen

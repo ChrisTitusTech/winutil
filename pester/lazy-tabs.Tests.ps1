@@ -11,9 +11,6 @@ BeforeAll {
     function Initialize-WPFUI {
         param([string]$TargetGridName)
     }
-    function Write-WinUtilPerformanceCheckpoint {
-        param([string]$Name)
-    }
     function Invoke-WinUtilISOCheckExistingWork { }
 
     . (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilTabContent.ps1")
@@ -32,7 +29,6 @@ Describe "Initialize-WinUtilTabContent" {
 
         Mock Invoke-WPFUIElements { }
         Mock Initialize-WPFUI { }
-        Mock Write-WinUtilPerformanceCheckpoint { }
     }
 
     AfterEach {

@@ -188,5 +188,4 @@ When the user corrects an agent approach, add or tighten one concrete rule here 
 - Keep package install/uninstall process launches simple unless explicitly requested; do not add a separate stdout/stderr process logging helper for winget or Chocolatey.
 - When the active log file is owned by `Start-Transcript`, do not call `Add-Content` against that file; write to host output so the transcript captures the line in the same log file without recording a terminating-error diagnostic.
 - Log install/uninstall package names and package-manager IDs before queuing background runspace work; do not rely on runspace host output for the package identity.
-- Keep performance tracing helpers under `tools/perf`; include them in generated output only through `Compile.ps1 -Trace`.
 - For Script Analyzer cleanup, fix actionable source warnings first and do not globally suppress accepted convention warnings such as plural names, `ShouldProcess` on UI helpers, `$global:sync`, or compile-time cross-file false positives.

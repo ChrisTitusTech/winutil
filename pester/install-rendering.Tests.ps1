@@ -21,7 +21,7 @@ Describe "Install app rendering startup contract" {
         $renderScript | Should -Match 'Dispatcher\.BeginInvoke'
         $renderScript | Should -Match 'Invoke-WinUtilInstallAppRenderNextBatch'
         $renderScript | Should -Match 'Initialize-InstallAppEntry'
-        $renderScript | Should -Match 'Install app entries rendered'
+        $renderScript | Should -Match '\$sync\.InstallAppEntriesRendered = \$true'
     }
 
     It "does not use dispatcher timers for deferred install rendering" {
@@ -41,7 +41,6 @@ Describe "Install app rendering startup contract" {
         $previousSync = Get-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
         $previousInitializeAppEntry = Get-Item -Path Function:\Initialize-InstallAppEntry -ErrorAction SilentlyContinue
         $previousSearch = Get-Item -Path Function:\Find-AppsByNameOrDescription -ErrorAction SilentlyContinue
-        $previousCheckpoint = Get-Item -Path Function:\Write-WinUtilPerformanceCheckpoint -ErrorAction SilentlyContinue
         $errorCountBefore = $global:Error.Count
 
         try {
@@ -52,7 +51,6 @@ Describe "Install app rendering startup contract" {
             $global:sync.InstallAppRenderQueue = [System.Collections.Queue]::new()
 
             $renderedApps = [System.Collections.Generic.List[string]]::new()
-            $checkpoints = [System.Collections.Generic.List[string]]::new()
 
             function global:Initialize-InstallAppEntry {
                 param($TargetElement, $AppKey)
@@ -63,11 +61,6 @@ Describe "Install app rendering startup contract" {
             function global:Find-AppsByNameOrDescription {
                 param($SearchString)
                 throw "Search should not run for an empty search box in this test."
-            }
-
-            function global:Write-WinUtilPerformanceCheckpoint {
-                param([string]$Name)
-                $checkpoints.Add($Name)
             }
 
             $global:sync.InstallAppRenderQueue.Enqueue([pscustomobject]@{ TargetElement = [pscustomobject]@{}; AppKeys = @("AppA", "AppB") })
@@ -95,7 +88,6 @@ Describe "Install app rendering startup contract" {
             $global:sync.InstallAppEntriesRendered | Should -BeTrue
             $global:sync.InstallAppRenderQueue.Count | Should -Be 0
             @($renderedApps) | Should -Be @("AppA", "AppB", "AppC")
-            @($checkpoints) | Should -Contain "Install app entries rendered"
             $global:Error.Count | Should -Be $errorCountBefore
         } finally {
             if ($previousSync) {
@@ -106,8 +98,7 @@ Describe "Install app rendering startup contract" {
 
             foreach ($functionBackup in @(
                     @{ Name = "Initialize-InstallAppEntry"; Backup = $previousInitializeAppEntry },
-                    @{ Name = "Find-AppsByNameOrDescription"; Backup = $previousSearch },
-                    @{ Name = "Write-WinUtilPerformanceCheckpoint"; Backup = $previousCheckpoint }
+                    @{ Name = "Find-AppsByNameOrDescription"; Backup = $previousSearch }
                 )) {
                 if ($functionBackup.Backup) {
                     Set-Item -Path "Function:\$($functionBackup.Name)" -Value $functionBackup.Backup.ScriptBlock
