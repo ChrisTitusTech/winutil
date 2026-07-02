@@ -102,5 +102,6 @@ Current suite status: broad parser, import, config JSON, compile, and runspace s
 - Run the full gate before marking test work complete:
 
 ```powershell
+Import-Module Pester -RequiredVersion 5.8.0 -Force
 Invoke-Pester -Path 'pester/*.Tests.ps1' -Output Detailed -CI
 ```

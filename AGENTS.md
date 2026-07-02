@@ -44,6 +44,7 @@ WinUtil is a Windows PowerShell utility with a WPF interface. The repository is 
   ```
 - Run tests:
   ```powershell
+  Import-Module Pester -RequiredVersion 5.8.0 -Force
   Invoke-Pester -Path 'pester/*.Tests.ps1' -Output Detailed
   ```
 - Run Script Analyzer with project settings when available:
@@ -182,4 +183,4 @@ Proceed without asking when:
 When the user corrects an agent approach, add or tighten one concrete rule here before ending the session. Keep this section short and prune rules that no longer matter.
 
 - Keep `winutil.ps1` generated-only: change source files, compile to verify, and never stage the generated script.
-
+- Import Pester 5.8.0 before running tests so `Invoke-Pester -Output Detailed -CI` does not resolve to Windows' inbox Pester 3.4.0.
