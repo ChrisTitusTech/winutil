@@ -150,6 +150,11 @@ function Invoke-WinutilThemeChange {
         }
     }
 
+    # Reapply font scaling if it was previously set (theme change resets shared resources)
+    if ($sync.ContainsKey("FontScaleFactor") -and $sync.FontScaleFactor -ne 1.0) {
+        Invoke-WinUtilFontScaling -ScaleFactor $sync.FontScaleFactor
+    }
+
     # Update the theme selector button with the appropriate icon
     $ThemeButton = $sync.Form.FindName("ThemeButton")
     $ThemeButton.Content = [string]$themeButtonIcon
