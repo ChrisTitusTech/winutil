@@ -129,7 +129,6 @@ namespace System.Windows
 "@
     }
 
-    . (Join-Path $script:repoRoot "functions\private\Set-Preferences.ps1")
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinutilThemeChange.ps1")
 
     function Get-WinUtilToggleStatus {
@@ -186,84 +185,6 @@ namespace System.Windows
     }
 }
 
-Describe "Set-Preferences" {
-    AfterEach {
-        if ($script:testRoot -and (Test-Path $script:testRoot)) {
-            Remove-Item -Path $script:testRoot -Recurse -Force -ErrorAction SilentlyContinue
-        }
-        $script:testRoot = $null
-        Remove-WinUtilPreferenceGlobals
-    }
-
-    It "loads default preferences when no preferences file exists" {
-        $script:testRoot = New-WinUtilPreferencesTestRoot
-        $global:winutildir = $script:testRoot
-        New-WinUtilPreferenceSync
-
-        Set-Preferences
-
-        $script:sync.preferences.theme | Should -Be "Auto"
-        $script:sync.preferences.packagemanager | Should -Be "Winget"
-    }
-
-    It "loads saved preferences and keeps the package manager as a string" {
-        $script:testRoot = New-WinUtilPreferencesTestRoot
-        $global:winutildir = $script:testRoot
-        New-WinUtilPreferenceSync
-        Set-Content -Path (Join-Path $script:testRoot "preferences.ini") -Value @(
-            "theme = Dark"
-            "packagemanager = Choco"
-        )
-
-        Set-Preferences
-
-        $script:sync.preferences.theme | Should -Be "Dark"
-        $script:sync.preferences.packagemanager | Should -Be "Choco"
-    }
-
-    It "saves current preferences to preferences.ini" {
-        $script:testRoot = New-WinUtilPreferencesTestRoot
-        $global:winutildir = $script:testRoot
-        New-WinUtilPreferenceSync -Preferences @{
-            theme = "Light"
-            packagemanager = "Winget"
-        }
-
-        Set-Preferences -save
-
-        $preferencesText = Get-Content -Path (Join-Path $script:testRoot "preferences.ini") -Raw
-        $preferencesText | Should -Match "theme=Light"
-        $preferencesText | Should -Match "packagemanager=Winget"
-    }
-
-    It "absorbs legacy preference files and removes old markers" {
-        $script:testRoot = New-WinUtilPreferencesTestRoot
-        $global:winutildir = $script:testRoot
-        New-WinUtilPreferenceSync
-        Set-Content -Path (Join-Path $script:testRoot "LightTheme.ini") -Value ""
-        Set-Content -Path (Join-Path $script:testRoot "preferChocolatey.ini") -Value ""
-
-        Set-Preferences
-
-        $script:sync.preferences.theme | Should -Be "Light"
-        $script:sync.preferences.packagemanager | Should -Be "Choco"
-        Test-Path (Join-Path $script:testRoot "LightTheme.ini") | Should -BeFalse
-        Test-Path (Join-Path $script:testRoot "preferChocolatey.ini") | Should -BeFalse
-    }
-
-    It "absorbs old package manager preferences stored without a key" {
-        $script:testRoot = New-WinUtilPreferencesTestRoot
-        $global:winutildir = $script:testRoot
-        New-WinUtilPreferenceSync
-        Set-Content -Path (Join-Path $script:testRoot "preferences.ini") -Value "Choco"
-
-        Set-Preferences
-
-        $script:sync.preferences.theme | Should -Be "Auto"
-        $script:sync.preferences.packagemanager | Should -Be "Choco"
-    }
-}
-
 Describe "Invoke-WinutilThemeChange" {
     AfterEach {
         if ($script:testRoot -and (Test-Path $script:testRoot)) {
@@ -273,7 +194,7 @@ Describe "Invoke-WinutilThemeChange" {
         Remove-WinUtilPreferenceGlobals
     }
 
-    It "applies shared and selected theme resources, saves the preference, and updates the theme button" {
+    It "applies shared and selected theme resources, keeps the preference in memory, and updates the theme button" {
         $script:testRoot = New-WinUtilPreferencesTestRoot
         $global:winutildir = $script:testRoot
         New-WinUtilPreferenceSync
@@ -287,8 +208,7 @@ Describe "Invoke-WinutilThemeChange" {
         $script:sync.Form.Resources.ContainsKey("CBorderColor") | Should -BeTrue
         $script:sync.Form.ThemeButton.Content | Should -Be ([string][char]0xE708)
 
-        $preferencesText = Get-Content -Path (Join-Path $script:testRoot "preferences.ini") -Raw
-        $preferencesText | Should -Match "theme=Dark"
+        Test-Path -Path (Join-Path $script:testRoot "preferences.ini") | Should -BeFalse
     }
 
     It "uses the system dark-mode toggle when Auto theme is selected" {
