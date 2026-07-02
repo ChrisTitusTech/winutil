@@ -53,14 +53,15 @@ $sync.configs.applications.PSObject.Properties | ForEach-Object {
     $sync.configs.applicationsHashtable[$_.Name] = $_.Value
 }
 
+
 $sync.configs.appxHashtable = @{}
 $sync.configs.appx.PSObject.Properties | ForEach-Object {
     $sync.configs.appxHashtable[$_.Name] = $_.Value
 }
+
 Write-WinUtilPerformanceCheckpoint -Name "Config hashtables initialized"
 
-Set-Preferences
-Write-WinUtilPerformanceCheckpoint -Name "Preferences loaded"
+$sync.preferences.theme = "Auto"
 
 if ($Preset) {
     Initialize-WinUtilRunspacePool | Out-Null
@@ -166,14 +167,11 @@ Initialize-WinUtilTabContent -TabName "Install"
 
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
 
-#Persist Package Manager preference across winutil restarts
 $sync.ChocoRadioButton.Add_Checked({
     $sync.preferences.packagemanager = [PackageManagers]::Choco
-    Set-Preferences -save
 })
 $sync.WingetRadioButton.Add_Checked({
     $sync.preferences.packagemanager = [PackageManagers]::Winget
-    Set-Preferences -save
 })
 
 switch ($sync.preferences.packagemanager) {
