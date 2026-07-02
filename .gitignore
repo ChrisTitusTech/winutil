@@ -5,6 +5,7 @@ Microsoft.PowerShell.ConsoleHost.dll
 winutil.exe.config
 winutil.ps1
 binary/
+testResults.xml
 
 # general software/os specific
 desktop.ini

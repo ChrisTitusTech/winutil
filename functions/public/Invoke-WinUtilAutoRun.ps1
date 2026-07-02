@@ -30,5 +30,11 @@ function Invoke-WinUtilAutoRun {
         BusyWait
     }
 
+    if ($sync.selectedAppx.Count -gt 0) {
+        Write-Host "Removing AppX packages..."
+        Invoke-WPFAppxRemoval
+        BusyWait
+    }
+
     Write-Host "Done."
 }
