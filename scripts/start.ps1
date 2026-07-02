@@ -55,13 +55,8 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
     break
 }
 
-# Load DLLs
-Add-Type -AssemblyName PresentationFramework
-Add-Type -AssemblyName System.Windows.Forms
-
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
-$sync.PSScriptRoot = $PSScriptRoot
 $sync.version = "#{replaceme}"
 $sync.configs = @{}
 $sync.Buttons = [System.Collections.Generic.List[PSObject]]::new()
@@ -73,22 +68,15 @@ $sync.selectedTweaks = [System.Collections.Generic.List[string]]::new()
 $sync.selectedToggles = [System.Collections.Generic.List[string]]::new()
 $sync.selectedFeatures = [System.Collections.Generic.List[string]]::new()
 $sync.currentTab = "Install"
-$sync.selectedAppsStackPanel
-$sync.selectedAppsPopup
 
 $dateTime = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
-
-# Set the path for the winutil directory
 $winutildir = "$env:LocalAppData\winutil"
-New-Item $winutildir -ItemType Directory -Force | Out-Null
 $sync.winutildir = $winutildir
 
 $logdir = "$winutildir\logs"
-New-Item $logdir -ItemType Directory -Force | Out-Null
 $sync.logPath = "$logdir\winutil_$dateTime.log"
 $sync.transcriptPath = $sync.logPath
 Start-Transcript -Path $sync.logPath -Append -NoClobber | Out-Null
 
-# Set PowerShell window title
-$Host.UI.RawUI.WindowTitle = "WinUtil (Admin)"
-clear-host
+$Host.UI.RawUI.WindowTitle = "WinUtil"
+Clear-Host

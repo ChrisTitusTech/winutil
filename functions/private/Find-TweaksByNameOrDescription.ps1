@@ -114,6 +114,7 @@ function Find-TweaksByNameOrDescription {
         }
         catch {
             # Silent catch - UI element may be disposed
+            $null = $_
         }
 
         return
@@ -303,5 +304,6 @@ function Find-TweaksByNameOrDescription {
     catch {
         # Silent catch - UI elements may be disposed or in unexpected state
         # Do not log to terminal as this function is called on every keystroke
+        $null = $_
     }
 }

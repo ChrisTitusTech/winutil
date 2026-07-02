@@ -24,6 +24,7 @@ function Invoke-WPFRunspace {
     #>
 
     [CmdletBinding()]
+    [OutputType([System.IAsyncResult])]
     Param (
         $ScriptBlock,
         $ArgumentList,
