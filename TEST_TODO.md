@@ -69,7 +69,7 @@ Current suite status: broad parser, import, config JSON, compile, and runspace s
   - Test driver injection branching with mocked DISM commands.
   - Test ISO export fallback when `oscdimg.exe` is missing and winget install fails.
 
-- [ ] Add preferences/theme tests.
+- [x] Add preferences/theme tests.
   - Cover `Set-Preferences` loading, saving, old preference cleanup, and defaults.
   - Cover theme resource updates without opening the full GUI.
   - Verify theme config contains required brushes/colors used by the theme code.
