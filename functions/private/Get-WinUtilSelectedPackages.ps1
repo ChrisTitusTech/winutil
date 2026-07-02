@@ -16,8 +16,10 @@ function Get-WinUtilSelectedPackages {
 
     $packagesWinget = [System.Collections.ArrayList]::new()
     $packagesChoco = [System.Collections.ArrayList]::new()
-    $packages['Winget'] = $packagesWinget
-    $packages['Choco'] = $packagesChoco
+    $packages = @{
+        Winget = $packagesWinget
+        Choco = $packagesChoco
+    }
 
     function Add-PackageId {
         param(
