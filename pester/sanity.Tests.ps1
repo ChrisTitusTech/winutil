@@ -143,6 +143,64 @@ Describe "Compiled WinUtil sanity" {
             }
         }
     }
+
+    It "transforms applications config keys with WPFInstall prefixes" {
+        $content = Get-Content -Path $script:compiledPath -Raw
+        $configMatch = [regex]::Match(
+            $content,
+            "(?s)\`$sync\.configs\.applications = @'\r?\n(?<json>.*?)\r?\n'@ \| ConvertFrom-Json"
+        )
+
+        if (-not $configMatch.Success) {
+            throw "Compiled script is missing embedded applications config."
+        }
+
+        $sourceApps = Get-Content -Path (Join-Path $script:repoRoot "config\applications.json") -Raw | ConvertFrom-Json
+        $compiledApps = $configMatch.Groups["json"].Value | ConvertFrom-Json
+
+        foreach ($sourceApp in $sourceApps.PSObject.Properties) {
+            $compiledKey = "WPFInstall$($sourceApp.Name)"
+            if ($compiledApps.PSObject.Properties.Name -notcontains $compiledKey) {
+                throw "Compiled applications config is missing transformed key: $compiledKey"
+            }
+            if ($compiledApps.PSObject.Properties.Name -contains $sourceApp.Name) {
+                throw "Compiled applications config contains untransformed source key: $($sourceApp.Name)"
+            }
+        }
+    }
+
+    It "preserves compile source ordering" {
+        $content = Get-Content -Path $script:compiledPath -Raw
+        $orderedSnippets = @(
+            '$sync.version =',
+            'function Add-SelectedAppsMenuItem',
+            ('$sync.configs.applications = @' + "'"),
+            ('$inputXML = @' + "'"),
+            ('$WinUtilAutounattendXml = @' + "'"),
+            '$sync.SearchBarClearButton.Add_Click({'
+        )
+
+        $lastIndex = -1
+        foreach ($snippet in $orderedSnippets) {
+            $index = $content.IndexOf($snippet)
+            if ($index -lt 0) {
+                throw "Compiled script is missing expected ordered content: $snippet"
+            }
+            if ($index -le $lastIndex) {
+                throw "Compiled script content is out of order near: $snippet"
+            }
+
+            $lastIndex = $index
+        }
+    }
+
+    It "replaces the generated build date placeholder" {
+        $content = Get-Content -Path $script:compiledPath -Raw
+        $expectedBuildDate = Get-Date -Format "yy.MM.dd"
+
+        $content | Should -Not -Match ([regex]::Escape("#{replaceme}"))
+        $content | Should -Match ([regex]::Escape('$sync.version = "' + $expectedBuildDate + '"'))
+    }
 }
 
 Describe "Runspace sanity" {

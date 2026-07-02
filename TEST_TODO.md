@@ -80,7 +80,7 @@ Current suite status: broad parser, import, config JSON, compile, and runspace s
   - Verify category labels and panels hide/show correctly.
   - Verify description and display-name matches both work.
 
-- [ ] Add compile contract tests.
+- [x] Add compile contract tests.
   - Verify compiled config key transformation for `applications.json` adds `WPFInstall` prefixes.
   - Verify source ordering in `winutil.ps1`: start script, functions, configs, XAML, autounattend XML, main script.
   - Verify generated build date placeholder is replaced.
