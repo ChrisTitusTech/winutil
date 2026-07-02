@@ -52,10 +52,10 @@ WinUtil currently does too much work before the first GUI paint. Work from the t
 
 ## P6 - Asset And Theme Cost
 
-- [ ] Measure `Invoke-WinUtilAssets -Render` calls during startup.
-- [ ] Cache rendered logo, checkmark, and warning images once per process.
-- [ ] Defer non-critical taskbar overlay assets until after first render if measurable.
-- [ ] Verify taskbar overlay success/error states still display correctly.
+- [x] Measure `Invoke-WinUtilAssets -Render` calls during startup.
+- [x] Cache rendered logo, checkmark, and warning images once per process.
+- [x] Defer non-critical taskbar overlay assets until after first render if measurable.
+- [x] Verify taskbar overlay success/error states still display correctly.
 
 ## P7 - Verification
 

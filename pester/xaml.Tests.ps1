@@ -302,6 +302,7 @@ Describe "XAML and sync wiring" {
             "InitializedTabs",
             "PerformanceTrace",
             "PerformanceTraceEnabled",
+            "RenderedAssetCache",
             "ToggleStatusCache",
             "InstallAppAreaBorder",
             "InstallAppAreaScrollViewer",

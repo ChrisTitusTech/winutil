@@ -61,12 +61,21 @@ function Set-WinUtilTaskbaritem {
     if ($overlay) {
         switch ($overlay) {
             'logo' {
+                if (-not $sync["logorender"]) {
+                    Initialize-WinUtilTaskbarOverlayAssets -IncludeLogo $true -IncludeStatusAssets $false
+                }
                 $sync["Form"].taskbarItemInfo.Overlay = $sync["logorender"]
             }
             'checkmark' {
+                if (-not $sync["checkmarkrender"]) {
+                    Initialize-WinUtilTaskbarOverlayAssets -IncludeLogo $false -IncludeStatusAssets $true
+                }
                 $sync["Form"].taskbarItemInfo.Overlay = $sync["checkmarkrender"]
             }
             'warning' {
+                if (-not $sync["warningrender"]) {
+                    Initialize-WinUtilTaskbarOverlayAssets -IncludeLogo $false -IncludeStatusAssets $true
+                }
                 $sync["Form"].taskbarItemInfo.Overlay = $sync["warningrender"]
             }
             'None' {

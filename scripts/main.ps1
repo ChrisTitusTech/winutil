@@ -340,6 +340,7 @@ $sync["Form"].Add_ContentRendered({
 
     $sync["Form"].Focus()
     $sync["Form"].Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{ Initialize-WinUtilRunspacePool | Out-Null }) | Out-Null
+    $sync["Form"].Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{ Initialize-WinUtilTaskbarOverlayAssets -IncludeLogo $false -IncludeStatusAssets $true }) | Out-Null
 })
 
 # The SearchBarTimer is used to delay the search operation until the user has stopped typing for a short period
@@ -384,11 +385,7 @@ $sync["Form"].Add_Loaded({
 
 $NavLogoPanel = $sync["Form"].FindName("NavLogoPanel")
 $NavLogoPanel.Children.Add((Invoke-WinUtilAssets -Type "logo" -Size 25)) | Out-Null
-
-$sync["logorender"] = (Invoke-WinUtilAssets -Type "Logo" -Size 90 -Render)
-$sync["checkmarkrender"] = (Invoke-WinUtilAssets -Type "checkmark" -Size 512 -Render)
-$sync["warningrender"] = (Invoke-WinUtilAssets -Type "warning" -Size 512 -Render)
-Write-WinUtilPerformanceCheckpoint -Name "Assets rendered"
+Initialize-WinUtilTaskbarOverlayAssets -IncludeLogo $true -IncludeStatusAssets $false
 
 Set-WinUtilTaskbaritem -overlay "logo"
 

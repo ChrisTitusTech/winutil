@@ -71,7 +71,8 @@ Describe "Startup performance checkpoints" {
         $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
         $lazyTabScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilTabContent.ps1") -Raw
         $runspaceScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilRunspacePool.ps1") -Raw
-        $startupText = "$mainScript`n$lazyTabScript`n$runspaceScript"
+        $overlayScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilTaskbarOverlayAssets.ps1") -Raw
+        $startupText = "$mainScript`n$lazyTabScript`n$runspaceScript`n$overlayScript"
 
         foreach ($checkpoint in @(
             "Runspace pool initialized",
@@ -81,7 +82,7 @@ Describe "Startup performance checkpoints" {
             "Tweaks UI created",
             "Features UI created",
             "AppX UI created",
-            "Assets rendered",
+            "Taskbar logo asset rendered",
             "First content rendered"
         )) {
             $startupText | Should -Match ([regex]::Escape($checkpoint))
