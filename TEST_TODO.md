@@ -10,7 +10,7 @@ Current suite status: broad parser, import, config JSON, compile, and runspace s
   - Verify tweak, feature, DNS, appx, and theme entries include all fields used by the UI/rendering code.
   - Verify all embedded script strings in `config/*.json` parse as PowerShell when wrapped as scriptblocks.
 
-- [ ] Add XAML/control wiring tests.
+- [x] Add XAML/control wiring tests.
   - Load `xaml/inputXML.xaml` as XML and verify expected named controls exist.
   - Verify controls referenced through `$sync["Name"]`, `$sync.Name`, or event handlers exist in XAML or are intentionally created dynamically.
   - Verify `Invoke-WPF*` handler names used by buttons/tabs correspond to real functions.
