@@ -59,8 +59,8 @@ WinUtil currently does too much work before the first GUI paint. Work from the t
 
 ## P7 - Verification
 
-- [ ] Run `.\Compile.ps1`.
-- [ ] Run focused Pester tests for runspace, config, XAML wiring, install workflow, tweaks, and preferences/theme.
-- [ ] Run the full Pester gate before marking speed work complete.
+- [x] Run `.\Compile.ps1`.
+- [x] Run focused Pester tests for runspace, config, XAML wiring, install workflow, tweaks, and preferences/theme.
+- [x] Run the full Pester gate before marking speed work complete.
 - [ ] Manually launch with `.\Compile.ps1 -Run` and verify first paint, default tab, lazy tabs, search, install selection, tweak toggles, AppX tab, and Win11 ISO tab.
-- [ ] Check `git status --short` and do not stage or commit generated `winutil.ps1`.
+- [x] Check `git status --short` and do not stage or commit generated `winutil.ps1`.
