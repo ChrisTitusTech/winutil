@@ -16,7 +16,7 @@ function Initialize-InstallCategoryAppList {
             $Apps
         )
 
-        # Pre-group apps by category
+        # Pre-group apps by category before creating WPF controls.
         $appsByCategory = @{}
         foreach ($appKey in $Apps.Keys) {
             $category = $Apps.$appKey.Category
@@ -25,6 +25,8 @@ function Initialize-InstallCategoryAppList {
             }
             $appsByCategory[$category] += $appKey
         }
+        $sync.InstallAppRenderQueue = [System.Collections.Queue]::new()
+
         foreach ($category in $($appsByCategory.Keys | Sort-Object)) {
             # Create a container for category label + apps
             $categoryContainer = New-Object Windows.Controls.StackPanel
@@ -52,10 +54,10 @@ function Initialize-InstallCategoryAppList {
 
             # Add click handler to toggle category visibility
             $toggleButton.Add_MouseLeftButtonUp({
-                param($sender, $e)
+                param($categoryToggle)
 
                 # Find the parent StackPanel (categoryContainer)
-                $categoryContainer = $sender.Parent
+                $categoryContainer = $categoryToggle.Parent
                 if ($categoryContainer -and $categoryContainer.Children.Count -ge 2) {
                     # The WrapPanel is the second child
                     $wrapPanel = $categoryContainer.Children[1]
@@ -64,11 +66,11 @@ function Initialize-InstallCategoryAppList {
                     if ($wrapPanel.Visibility -eq [Windows.Visibility]::Visible) {
                         $wrapPanel.Visibility = [Windows.Visibility]::Collapsed
                         # Change - to +
-                        $sender.Content = $sender.Content -replace "^- ", "+ "
+                        $categoryToggle.Content = $categoryToggle.Content -replace "^- ", "+ "
                     } else {
                         $wrapPanel.Visibility = [Windows.Visibility]::Visible
                         # Change + to -
-                        $sender.Content = $sender.Content -replace "^\+ ", "- "
+                        $categoryToggle.Content = $categoryToggle.Content -replace "^\+ ", "- "
                     }
                 }
             })
@@ -89,9 +91,12 @@ function Initialize-InstallCategoryAppList {
             # Add the entire category container to the target element
             $null = $TargetElement.Items.Add($categoryContainer)
 
-            # Add apps to the wrap panel
-            $appsByCategory[$category] | Sort-Object | ForEach-Object {
-                $sync.$_ = $(Initialize-InstallAppEntry -TargetElement $wrapPanel -AppKey $_)
-            }
+            $sync.InstallAppRenderQueue.Enqueue([pscustomobject]@{
+                Category = $category
+                TargetElement = $wrapPanel
+                AppKeys = @($appsByCategory[$category] | Sort-Object)
+            })
         }
+
+        Start-WinUtilInstallAppRendering
     }

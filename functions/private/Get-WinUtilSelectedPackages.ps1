@@ -21,17 +21,32 @@ function Get-WinUtilSelectedPackages {
     $packages[[PackageManagers]::Winget] = $packagesWinget
     $packages[[PackageManagers]::Choco] = $packagesChoco
 
+    function Add-PackageId {
+        param(
+            [System.Collections.ArrayList]$Target,
+            $PackageId
+        )
+
+        if ([string]::IsNullOrWhiteSpace([string]$PackageId) -or $PackageId -eq "na") {
+            return
+        }
+
+        if (-not $Target.Contains($PackageId)) {
+            $null = $Target.Add($PackageId)
+        }
+    }
+
     foreach ($package in $PackageList) {
         switch ($Preference) {
             "Choco" {
-                if ($package.choco -eq "na") {
-                    $null = $packagesWinget.add($package.winget)
+                if ([string]::IsNullOrWhiteSpace([string]$package.choco) -or $package.choco -eq "na") {
+                    Add-PackageId -Target $packagesWinget -PackageId $package.winget
                 } else {
-                    $null = $packagesChoco.add($package.choco)
+                    Add-PackageId -Target $packagesChoco -PackageId $package.choco
                 }
             }
             "Winget" {
-                $null = $packagesWinget.add($package.winget)
+                Add-PackageId -Target $packagesWinget -PackageId $package.winget
             }
         }
     }
