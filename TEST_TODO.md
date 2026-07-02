@@ -21,7 +21,7 @@ Current suite status: broad parser, import, config JSON, compile, and runspace s
   - Cover `Set-WinUtilService` for missing services, startup type changes, and no-op behavior.
   - Assert command parameters instead of touching the real registry or services.
 
-- [ ] Add package selection and package manager tests.
+- [x] Add package selection and package manager tests.
   - Cover `Get-WinUtilSelectedPackages` for winget-only, choco-only, mixed, `na`, empty, duplicate, and missing package entries.
   - Cover `Test-WinUtilPackageManager` with mocked `Get-Command`.
   - Cover `Install-WinUtilProgramWinget` and `Install-WinUtilProgramChoco` with mocked `Start-Process`, including install/uninstall arguments.
