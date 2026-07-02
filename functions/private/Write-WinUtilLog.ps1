@@ -2,7 +2,7 @@ function Write-WinUtilLog {
     <#
 
     .SYNOPSIS
-        Writes a timestamped WinUtil log entry directly to the active session log file.
+        Writes a timestamped WinUtil log entry to the active session log.
 
     .PARAMETER Message
         The message to write.
@@ -59,7 +59,11 @@ function Write-WinUtilLog {
 
         $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss.fff"
         $line = "[$timestamp] [$Level] [$Component] $Message"
-        Add-Content -Path $logPath -Value $line -Encoding UTF8
+        try {
+            Add-Content -Path $logPath -Value $line -Encoding UTF8 -ErrorAction Stop
+        } catch [System.IO.IOException] {
+            Write-Host $line
+        }
     } catch {
         Write-Warning "Unable to write WinUtil log entry: $($_.Exception.Message)"
     }

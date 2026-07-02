@@ -67,6 +67,31 @@ Describe "Write-WinUtilLog" {
         $content | Should -Match "second fallback entry"
     }
 
+    It "writes through the transcript stream when the active log file is locked" {
+        $logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
+        $script:sync = [hashtable]::Synchronized(@{
+            winutildir = $script:testRoot
+            logPath = $logPath
+            transcriptPath = $logPath
+        })
+
+        Mock Add-Content { throw [System.IO.IOException]::new("locked by transcript") } -ParameterFilter {
+            $Path -eq $logPath -and $ErrorAction -eq "Stop"
+        }
+        Mock Write-Host { }
+        Mock Write-Warning { }
+
+        Write-WinUtilLog -Component "Test" -Message "transcript stream fallback"
+
+        Should -Invoke -CommandName Add-Content -Times 1 -Exactly -ParameterFilter {
+            $Path -eq $logPath -and $ErrorAction -eq "Stop"
+        }
+        Should -Invoke -CommandName Write-Host -Times 1 -Exactly -ParameterFilter {
+            $Object -match "\[INFO\] \[Test\] transcript stream fallback"
+        }
+        Should -Invoke -CommandName Write-Warning -Times 0 -Exactly
+    }
+
 }
 
 Describe "WinUtil startup logging path" {
