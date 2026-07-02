@@ -28,11 +28,11 @@ WinUtil currently does too much work before the first GUI paint. Work from the t
 
 ## P3 - Toggle And Registry Startup Cost
 
-- [ ] Stop doing expensive registry-backed toggle status checks while constructing invisible UI.
-- [ ] Defer toggle state reads until the Tweaks tab is first opened.
-- [ ] Review `Get-WinUtilToggleStatus` so a status read does not create missing registry paths unless that behavior is explicitly required.
-- [ ] Batch or cache repeated registry checks where possible.
-- [ ] Verify toggle import, undo, preset, and manual click behavior still match current expectations.
+- [x] Stop doing expensive registry-backed toggle status checks while constructing invisible UI.
+- [x] Defer toggle state reads until the Tweaks tab is first opened.
+- [x] Review `Get-WinUtilToggleStatus` so a status read does not create missing registry paths unless that behavior is explicitly required.
+- [x] Batch or cache repeated registry checks where possible.
+- [x] Verify toggle import, undo, preset, and manual click behavior still match current expectations.
 
 ## P4 - Runspace Cleanup
 
