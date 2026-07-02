@@ -20,9 +20,13 @@ Function Install-WinUtilProgramWinget {
         }
 
         if ($Action -eq 'Install') {
-            Start-Process -FilePath winget -ArgumentList @("install", "--id", $program, "--accept-package-agreements", "--accept-source-agreements", "--source", $source, "--silent") -NoNewWindow -Wait
+            $arguments = @("install", "--id", $program, "--accept-package-agreements", "--accept-source-agreements", "--source", $source, "--silent")
         } else {
-            Start-Process -FilePath winget -ArgumentList @("uninstall", "--id", $program, "--source", $source, "--silent") -NoNewWindow -Wait
+            $arguments = @("uninstall", "--id", $program, "--source", $source, "--silent")
         }
+
+        Write-WinUtilLog -Component "Package" -Message "$Action winget package: $program (source: $source)"
+        $process = Start-Process -FilePath winget -ArgumentList $arguments -NoNewWindow -Wait -PassThru
+        Write-WinUtilLog -Component "Package" -Message "$Action winget package completed: $program (exit code: $($process.ExitCode))"
     }
 }
