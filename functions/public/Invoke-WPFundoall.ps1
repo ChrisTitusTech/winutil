@@ -24,6 +24,7 @@ function Invoke-WPFundoall {
         param($tweaks)
 
         $sync.ProcessRunning = $true
+        Write-WinUtilLog -Component "Tweaks" -Message "Undo tweaks requested: $(@($tweaks).Count) selected tweak(s)."
         if ($tweaks.count -eq 1) {
             Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" }
         } else {
@@ -43,6 +44,7 @@ function Invoke-WPFundoall {
         Write-Host "=================================="
         Write-Host "---  Undo Tweaks are Finished  ---"
         Write-Host "=================================="
+        Write-WinUtilLog -Component "Tweaks" -Message "Undo tweaks workflow completed."
 
     }
 }

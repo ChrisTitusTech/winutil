@@ -29,37 +29,6 @@ public enum PackageManagers
 }
 "@
 
-# SPDX-License-Identifier: MIT
-# Set the maximum number of threads for the RunspacePool to the number of threads on the machine
-$maxthreads = [int]$env:NUMBER_OF_PROCESSORS
-
-# Create a new session state for parsing variables into our runspace
-$hashVars = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'sync',$sync,$Null
-$InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
-
-# Add the variable to the session state
-$InitialSessionState.Variables.Add($hashVars)
-
-# Get every private function and add them to the session state
-$functions = Get-ChildItem function:\ | Where-Object { $_.Name -imatch 'winutil|WPF' }
-foreach ($function in $functions) {
-    $functionDefinition = Get-Content function:\$($function.name)
-    $functionEntry = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $($function.name), $functionDefinition
-
-    $initialSessionState.Commands.Add($functionEntry)
-}
-
-# Create the runspace pool
-$sync.runspace = [runspacefactory]::CreateRunspacePool(
-    1,                      # Minimum thread count
-    $maxthreads,            # Maximum thread count
-    $InitialSessionState,   # Initial session state
-    $Host                   # Machine to create runspaces on
-)
-
-# Open the RunspacePool instance
-$sync.runspace.Open()
-
 # Create classes for different exceptions
 
 class WingetFailedInstall : Exception {
@@ -84,9 +53,18 @@ $sync.configs.applications.PSObject.Properties | ForEach-Object {
     $sync.configs.applicationsHashtable[$_.Name] = $_.Value
 }
 
+$sync.configs.appxHashtable = @{}
+$sync.configs.appx.PSObject.Properties | ForEach-Object {
+    $sync.configs.appxHashtable[$_.Name] = $_.Value
+}
+Write-WinUtilPerformanceCheckpoint -Name "Config hashtables initialized"
+
 Set-Preferences
+Write-WinUtilPerformanceCheckpoint -Name "Preferences loaded"
 
 if ($Preset) {
+    Initialize-WinUtilRunspacePool | Out-Null
+
     # Selects the tweaks from $Preset varible
     Update-WinUtilSelections -flatJson $sync.configs.preset.$Preset
 
@@ -94,27 +72,25 @@ if ($Preset) {
     Invoke-WinUtilAutoRun
 
     # Cleanup and exit
-    $sync.runspace.Dispose()
-    $sync.runspace.Close()
+    Close-WinUtilRunspacePool
     [System.GC]::Collect()
     Stop-Transcript
     return
 }
 
 if ($Config) {
+    Initialize-WinUtilRunspacePool | Out-Null
+
     Invoke-WPFImpex -type "import" -Config $Config
 
     Invoke-WinUtilAutoRun
 
     # Cleanup and exit
-    $sync.runspace.Dispose()
-    $sync.runspace.Close()
+    Close-WinUtilRunspacePool
     [System.GC]::Collect()
     Stop-Transcript
     return
 }
-
-$inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
@@ -125,6 +101,7 @@ $reader = (New-Object System.Xml.XmlNodeReader $xaml)
 try {
     $sync["Form"] = [Windows.Markup.XamlReader]::Load( $reader )
     $readerOperationSuccessful = $true
+    Write-WinUtilPerformanceCheckpoint -Name "XAML loaded"
 } catch [System.Management.Automation.MethodInvocationException] {
     Write-Host "We ran into a problem with the XAML code.  Check the syntax for this control..." -ForegroundColor Red
     Write-Host $error[0].Exception.Message -ForegroundColor Red
@@ -139,8 +116,7 @@ try {
 if (-NOT ($readerOperationSuccessful)) {
     Write-Host "Failed to parse xaml content using Windows.Markup.XamlReader's Load Method." -ForegroundColor Red
     Write-Host "Quitting WinUtil..." -ForegroundColor Red
-    $sync.runspace.Dispose()
-    $sync.runspace.Close()
+    Close-WinUtilRunspacePool
     [System.GC]::Collect()
     exit 1
 }
@@ -174,17 +150,12 @@ $sync.Form.Add_Loaded({
 })
 
 Invoke-WinutilThemeChange -theme $sync.preferences.theme
+Write-WinUtilPerformanceCheckpoint -Name "Theme applied"
 
 
-# Now call the function with the final merged config
-Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
-Initialize-WPFUI -targetGridName "appscategory"
-
-Initialize-WPFUI -targetGridName "appspanel"
-
-Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
-
-Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
+# Build only the default tab before first paint; other tabs initialize on first activation.
+$sync.InitializedTabs = @{}
+Initialize-WinUtilTabContent -TabName "Install"
 
 # Future implementation: Add Windows Version to updates panel
 #Invoke-WPFUIElements -configVariable $sync.configs.updates -targetGridName "updatespanel" -columncount 1
@@ -250,8 +221,8 @@ Set-WinUtilTaskbaritem -state "None"
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version
 # Set the commands that will run when the form is closed
 $sync["Form"].Add_Closing({
-    $sync.runspace.Dispose()
-    $sync.runspace.Close()
+    Stop-WinUtilPerformanceTrace -Name "Window closing"
+    Close-WinUtilRunspacePool
     [System.GC]::Collect()
 })
 
@@ -319,6 +290,7 @@ $sync["Form"].Add_Deactivated({
 })
 
 $sync["Form"].Add_ContentRendered({
+    Write-WinUtilPerformanceCheckpoint -Name "First content rendered"
     # Load the Windows Forms assembly
     Add-Type -AssemblyName System.Windows.Forms
     $primaryScreen = [System.Windows.Forms.Screen]::PrimaryScreen
@@ -349,6 +321,8 @@ $sync["Form"].Add_ContentRendered({
     }
 
     $sync["Form"].Focus()
+    $sync["Form"].Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{ Initialize-WinUtilRunspacePool | Out-Null }) | Out-Null
+    $sync["Form"].Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{ Initialize-WinUtilTaskbarOverlayAssets -IncludeLogo $false -IncludeStatusAssets $true }) | Out-Null
 })
 
 # The SearchBarTimer is used to delay the search operation until the user has stopped typing for a short period
@@ -365,6 +339,9 @@ $searchBarTimer.add_Tick({
             Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text
         }
         "Tweaks" {
+            Find-TweaksByNameOrDescription -SearchString $sync.SearchBar.Text
+        }
+        "AppX" {
             Find-TweaksByNameOrDescription -SearchString $sync.SearchBar.Text
         }
     }
@@ -390,10 +367,7 @@ $sync["Form"].Add_Loaded({
 
 $NavLogoPanel = $sync["Form"].FindName("NavLogoPanel")
 $NavLogoPanel.Children.Add((Invoke-WinUtilAssets -Type "logo" -Size 25)) | Out-Null
-
-$sync["logorender"] = (Invoke-WinUtilAssets -Type "Logo" -Size 90 -Render)
-$sync["checkmarkrender"] = (Invoke-WinUtilAssets -Type "checkmark" -Size 512 -Render)
-$sync["warningrender"] = (Invoke-WinUtilAssets -Type "warning" -Size 512 -Render)
+Initialize-WinUtilTaskbarOverlayAssets -IncludeLogo $true -IncludeStatusAssets $false
 
 Set-WinUtilTaskbaritem -overlay "logo"
 
@@ -485,10 +459,6 @@ $sync["FontScalingApplyButton"].Add_Click({
 })
 
 # ── Win11ISO Tab button handlers ──────────────────────────────────────────────
-
-$sync["WPFTab5BT"].Add_Click({
-    $sync["Form"].Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{ Invoke-WinUtilISOCheckExistingWork }) | Out-Null
-})
 
 $sync["WPFWin11ISOBrowseButton"].Add_Click({
     Invoke-WinUtilISOBrowse
