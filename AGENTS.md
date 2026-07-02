@@ -186,4 +186,4 @@ When the user corrects an agent approach, add or tighten one concrete rule here 
 - Keep WinUtil runtime logging in the existing timestamped `%LocalAppData%\winutil\logs\winutil_*.log` session file; do not create a separate root `winutil.log`.
 - Import Pester 5.8.0 before running tests so `Invoke-Pester -Output Detailed -CI` does not resolve to Windows' inbox Pester 3.4.0.
 - Keep package install/uninstall process launches simple unless explicitly requested; do not add a separate stdout/stderr process logging helper for winget or Chocolatey.
-- When the active log file is owned by `Start-Transcript`, do not require direct `Add-Content` writes to succeed; fall back to host output so the transcript captures the line in the same log file.
+- When the active log file is owned by `Start-Transcript`, do not call `Add-Content` against that file; write to host output so the transcript captures the line in the same log file without recording a terminating-error diagnostic.

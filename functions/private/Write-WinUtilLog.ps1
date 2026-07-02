@@ -26,12 +26,17 @@ function Write-WinUtilLog {
 
     try {
         $logPath = $null
+        $transcriptPath = $null
         if ($null -ne $sync -and $sync.ContainsKey("logPath")) {
             $logPath = $sync.logPath
         }
 
-        if ([string]::IsNullOrWhiteSpace($logPath) -and $null -ne $sync -and $sync.ContainsKey("transcriptPath")) {
-            $logPath = $sync.transcriptPath
+        if ($null -ne $sync -and $sync.ContainsKey("transcriptPath")) {
+            $transcriptPath = $sync.transcriptPath
+        }
+
+        if ([string]::IsNullOrWhiteSpace($logPath) -and -not [string]::IsNullOrWhiteSpace($transcriptPath)) {
+            $logPath = $transcriptPath
         }
 
         if ([string]::IsNullOrWhiteSpace($logPath) -and $null -ne $sync -and $sync.ContainsKey("winutildir")) {
@@ -59,6 +64,12 @@ function Write-WinUtilLog {
 
         $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss.fff"
         $line = "[$timestamp] [$Level] [$Component] $Message"
+
+        if (-not [string]::IsNullOrWhiteSpace($transcriptPath) -and $logPath -eq $transcriptPath) {
+            Write-Host $line
+            return
+        }
+
         try {
             Add-Content -Path $logPath -Value $line -Encoding UTF8 -ErrorAction Stop
         } catch [System.IO.IOException] {

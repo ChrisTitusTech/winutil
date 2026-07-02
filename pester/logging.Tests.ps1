@@ -26,7 +26,6 @@ Describe "Write-WinUtilLog" {
         $script:sync = [hashtable]::Synchronized(@{
             winutildir = $script:testRoot
             logPath = $logPath
-            transcriptPath = $logPath
         })
 
         Write-WinUtilLog -Component "Test" -Message "same session log"
@@ -36,18 +35,22 @@ Describe "Write-WinUtilLog" {
         Get-Content -Path $logPath -Raw | Should -Match "\[INFO\] \[Test\] same session log"
     }
 
-    It "uses transcriptPath when logPath is not set" {
+    It "uses the transcript stream when logPath is not set" {
         $transcriptPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
         $script:sync = [hashtable]::Synchronized(@{
             winutildir = $script:testRoot
             transcriptPath = $transcriptPath
         })
+        Mock Add-Content { }
+        Mock Write-Host { }
 
         Write-WinUtilLog -Component "Test" -Message "transcript fallback"
 
-        Test-Path -Path $transcriptPath | Should -BeTrue
+        Should -Invoke -CommandName Add-Content -Times 0 -Exactly
+        Should -Invoke -CommandName Write-Host -Times 1 -Exactly -ParameterFilter {
+            $Object -match "\[INFO\] \[Test\] transcript fallback"
+        }
         Test-Path -Path (Join-Path $script:testRoot "winutil.log") | Should -BeFalse
-        Get-Content -Path $transcriptPath -Raw | Should -Match "\[INFO\] \[Test\] transcript fallback"
     }
 
     It "creates one fallback log under logs when only winutildir is available" {
@@ -67,7 +70,7 @@ Describe "Write-WinUtilLog" {
         $content | Should -Match "second fallback entry"
     }
 
-    It "writes through the transcript stream when the active log file is locked" {
+    It "does not append directly when the active log file is the transcript" {
         $logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
         $script:sync = [hashtable]::Synchronized(@{
             winutildir = $script:testRoot
@@ -83,9 +86,7 @@ Describe "Write-WinUtilLog" {
 
         Write-WinUtilLog -Component "Test" -Message "transcript stream fallback"
 
-        Should -Invoke -CommandName Add-Content -Times 1 -Exactly -ParameterFilter {
-            $Path -eq $logPath -and $ErrorAction -eq "Stop"
-        }
+        Should -Invoke -CommandName Add-Content -Times 0 -Exactly
         Should -Invoke -CommandName Write-Host -Times 1 -Exactly -ParameterFilter {
             $Object -match "\[INFO\] \[Test\] transcript stream fallback"
         }
