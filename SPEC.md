@@ -94,7 +94,8 @@ Expected validation for source changes:
 
 - `.\Compile.ps1` verifies the compiler can generate `winutil.ps1`.
 - `.\Compile.ps1 -Run` compiles and launches the generated utility for manual GUI verification.
-- `Invoke-Pester -Path 'pester/*.Tests.ps1' -Output Detailed` runs the Pester suite.
+- `Install-Module -Name Pester -RequiredVersion 5.8.0 -Scope CurrentUser -Force -SkipPublisherCheck` installs the supported Pester version.
+- `Import-Module Pester -RequiredVersion 5.8.0 -Force; Invoke-Pester -Path 'pester/*.Tests.ps1' -Output Detailed -CI` runs the Pester suite.
 - GitHub Actions also runs a compile check and PowerShell Script Analyzer with `lint/PSScriptAnalyser.ps1`.
 
 The generated `winutil.ps1` may appear locally after compile. It remains ignored build output and must not be committed.
@@ -102,4 +103,3 @@ The generated `winutil.ps1` may appear locally after compile. It remains ignored
 ## Release Artifact
 
 GitHub Actions is responsible for producing the release `winutil.ps1` from repository sources. A release should be considered valid only if the generated script came from the compile process, not from direct manual edits to `winutil.ps1`.
-
