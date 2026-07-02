@@ -4,6 +4,8 @@
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+    . (Join-Path $script:repoRoot "functions\private\Close-WinUtilRunspacePool.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilRunspacePool.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFRunspace.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFFeatureInstall.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFAppxRemoval.ps1")
@@ -18,6 +20,8 @@ BeforeAll {
         $initialSessionState.Variables.Add($syncVariable)
         $script:sync.runspace = [runspacefactory]::CreateRunspacePool(1, 2, $initialSessionState, $Host)
         $script:sync.runspace.Open()
+
+        function Write-WinUtilPerformanceCheckpoint { param($Name) }
     }
 
     function script:Clear-WinUtilRunspaceTestContext {

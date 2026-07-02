@@ -29,40 +29,6 @@ public enum PackageManagers
 }
 "@
 
-# SPDX-License-Identifier: MIT
-# Set the maximum number of threads for the RunspacePool to the number of threads on the machine
-$maxthreads = [int]$env:NUMBER_OF_PROCESSORS
-
-# Create a new session state for parsing variables into our runspace
-$hashVars = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'sync',$sync,$Null
-$offlineVar = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'PARAM_OFFLINE',$PARAM_OFFLINE,$Null
-$InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
-
-# Add the variable to the session state
-$InitialSessionState.Variables.Add($hashVars)
-$InitialSessionState.Variables.Add($offlineVar)
-
-# Get every private function and add them to the session state
-$functions = Get-ChildItem function:\ | Where-Object { $_.Name -imatch 'winutil|WPF' }
-foreach ($function in $functions) {
-    $functionDefinition = Get-Content function:\$($function.name)
-    $functionEntry = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $($function.name), $functionDefinition
-
-    $initialSessionState.Commands.Add($functionEntry)
-}
-
-# Create the runspace pool
-$sync.runspace = [runspacefactory]::CreateRunspacePool(
-    1,                      # Minimum thread count
-    $maxthreads,            # Maximum thread count
-    $InitialSessionState,   # Initial session state
-    $Host                   # Machine to create runspaces on
-)
-
-# Open the RunspacePool instance
-$sync.runspace.Open()
-Write-WinUtilPerformanceCheckpoint -Name "Runspace pool initialized"
-
 # Create classes for different exceptions
 
 class WingetFailedInstall : Exception {
@@ -97,6 +63,8 @@ Set-Preferences
 Write-WinUtilPerformanceCheckpoint -Name "Preferences loaded"
 
 if ($Preset) {
+    Initialize-WinUtilRunspacePool | Out-Null
+
     # Selects the tweaks from $Preset varible
     Update-WinUtilSelections -flatJson $sync.configs.preset.$Preset
 
@@ -104,21 +72,21 @@ if ($Preset) {
     Invoke-WinUtilAutoRun
 
     # Cleanup and exit
-    $sync.runspace.Dispose()
-    $sync.runspace.Close()
+    Close-WinUtilRunspacePool
     [System.GC]::Collect()
     Stop-Transcript
     return
 }
 
 if ($Config) {
+    Initialize-WinUtilRunspacePool | Out-Null
+
     Invoke-WPFImpex -type "import" -Config $Config
 
     Invoke-WinUtilAutoRun
 
     # Cleanup and exit
-    $sync.runspace.Dispose()
-    $sync.runspace.Close()
+    Close-WinUtilRunspacePool
     [System.GC]::Collect()
     Stop-Transcript
     return
@@ -148,8 +116,7 @@ try {
 if (-NOT ($readerOperationSuccessful)) {
     Write-Host "Failed to parse xaml content using Windows.Markup.XamlReader's Load Method." -ForegroundColor Red
     Write-Host "Quitting WinUtil..." -ForegroundColor Red
-    $sync.runspace.Dispose()
-    $sync.runspace.Close()
+    Close-WinUtilRunspacePool
     [System.GC]::Collect()
     exit 1
 }
@@ -255,8 +222,7 @@ $sync["Form"].title = $sync["Form"].title + " " + $sync.version
 # Set the commands that will run when the form is closed
 $sync["Form"].Add_Closing({
     Stop-WinUtilPerformanceTrace -Name "Window closing"
-    $sync.runspace.Dispose()
-    $sync.runspace.Close()
+    Close-WinUtilRunspacePool
     [System.GC]::Collect()
 })
 
@@ -373,6 +339,7 @@ $sync["Form"].Add_ContentRendered({
     }
 
     $sync["Form"].Focus()
+    $sync["Form"].Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{ Initialize-WinUtilRunspacePool | Out-Null }) | Out-Null
 })
 
 # The SearchBarTimer is used to delay the search operation until the user has stopped typing for a short period

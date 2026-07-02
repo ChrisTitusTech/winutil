@@ -67,6 +67,8 @@ public static class WinUtilRunspaceCleanup
 "@
     }
 
+    Initialize-WinUtilRunspacePool | Out-Null
+
     # Create a PowerShell instance
     $powershell = [powershell]::Create()
 

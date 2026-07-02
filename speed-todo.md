@@ -44,11 +44,11 @@ WinUtil currently does too much work before the first GUI paint. Work from the t
 
 ## P5 - Defer Runspace Pool Startup
 
-- [ ] Move GUI runspace pool creation after first render when no automation mode is active.
-- [ ] Keep synchronous runspace pool creation for `-Preset` and `-Config`.
-- [ ] Prewarm the pool shortly after `ContentRendered` so later actions do not feel delayed.
-- [ ] Ensure closing the form disposes the pool if it was created.
-- [ ] Verify buttons that queue work create or reuse the pool safely.
+- [x] Move GUI runspace pool creation after first render when no automation mode is active.
+- [x] Keep synchronous runspace pool creation for `-Preset` and `-Config`.
+- [x] Prewarm the pool shortly after `ContentRendered` so later actions do not feel delayed.
+- [x] Ensure closing the form disposes the pool if it was created.
+- [x] Verify buttons that queue work create or reuse the pool safely.
 
 ## P6 - Asset And Theme Cost
 

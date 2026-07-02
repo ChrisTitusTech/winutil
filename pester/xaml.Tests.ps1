@@ -295,6 +295,7 @@ Describe "XAML and sync wiring" {
             "keys",
             "ContainsKey",
             "GetEnumerator",
+            "Remove",
             "logorender",
             "checkmarkrender",
             "warningrender",

@@ -206,6 +206,10 @@ Describe "Compiled WinUtil sanity" {
 Describe "Runspace sanity" {
     BeforeAll {
         . (Join-Path $script:repoRoot "functions\public\Invoke-WPFRunspace.ps1")
+        . (Join-Path $script:repoRoot "functions\private\Close-WinUtilRunspacePool.ps1")
+        . (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilRunspacePool.ps1")
+
+        function Write-WinUtilPerformanceCheckpoint { param($Name) }
     }
 
     It "returns a single async handle and runs a scriptblock with arguments in the shared runspace pool" {
