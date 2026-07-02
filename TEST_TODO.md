@@ -45,7 +45,7 @@ Current suite status: broad parser, import, config JSON, compile, and runspace s
   - Verify process-running guard prevents a second install/uninstall.
   - Verify taskbar/progress cleanup happens on success and error.
 
-- [ ] Add update profile tests.
+- [x] Add update profile tests.
   - Cover `Invoke-WPFUpdatesdisable`, `Invoke-WPFUpdatesdefault`, and `Invoke-WPFUpdatessecurity` with mocks for registry, services, scheduled tasks, and process calls.
   - Assert intended registry paths, values, service startup types, and scheduled task paths.
   - Keep all tests non-mutating.
