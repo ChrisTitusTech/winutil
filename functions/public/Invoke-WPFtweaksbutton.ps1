@@ -22,6 +22,7 @@ function Invoke-WPFtweaksbutton {
   $tweaksToRun = @($Tweaks | Where-Object { $_ -ne $restorePointTweak })
   $totalSteps = [Math]::Max($Tweaks.Count, 1)
   $completedSteps = 0
+  Write-WinUtilLog -Component "Tweaks" -Message "Tweaks requested: $(@($Tweaks).Count) selected tweak(s), DNS provider: $dnsProvider"
 
   if ($tweaks.count -eq 0 -and $dnsProvider -eq "Default") {
     $msg = "Please check the tweaks you wish to perform."
@@ -39,6 +40,7 @@ function Invoke-WPFtweaksbutton {
     }
 
     Set-WinUtilProgressBar -Label "Creating restore point" -Percent 0
+    Write-WinUtilLog -Component "Tweaks" -Message "Creating restore point before applying selected tweaks."
     Invoke-WinUtilTweaks $restorePointTweak
     $completedSteps = 1
 
@@ -49,6 +51,7 @@ function Invoke-WPFtweaksbutton {
       Write-Host "================================="
       Write-Host "--     Tweaks are Finished    ---"
       Write-Host "================================="
+      Write-WinUtilLog -Component "Tweaks" -Message "Tweaks workflow completed after restore point."
       return
     }
   }
@@ -82,5 +85,6 @@ function Invoke-WPFtweaksbutton {
     Write-Host "================================="
     Write-Host "--     Tweaks are Finished    ---"
     Write-Host "================================="
+    Write-WinUtilLog -Component "Tweaks" -Message "Tweaks workflow completed."
   }
 }
