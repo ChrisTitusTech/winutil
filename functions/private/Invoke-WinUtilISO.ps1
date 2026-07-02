@@ -152,14 +152,9 @@ function Invoke-WinUtilISOModify {
     $sync["WPFWin11ISOModifyButton"].IsEnabled = $false
     $sync["Win11ISOModifying"] = $true
 
-    $existingWorkDir = Get-Item -Path (Join-Path $env:TEMP "WinUtil_Win11ISO*") |
-        Where-Object { $_.PSIsContainer } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-
-    $workDir = if ($existingWorkDir) {
-        Write-Win11ISOLog "Reusing existing temp directory: $($existingWorkDir.FullName)"
-        $existingWorkDir.FullName
-    } else {
-        Join-Path $env:TEMP "WinUtil_Win11ISO_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+    $workDir = Join-Path $env:TEMP "WinUtil_Win11ISO_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+    if (Test-Path $workDir) {
+        $workDir = Join-Path $env:TEMP "WinUtil_Win11ISO_$(Get-Date -Format 'yyyyMMdd_HHmmss')_$(([guid]::NewGuid()).ToString('N').Substring(0, 8))"
     }
 
     $autounattendContent = if ($WinUtilAutounattendXml) {
@@ -371,8 +366,11 @@ function Invoke-WinUtilISOModify {
             Log "ISO contents copied."
             SetProgress "Mounting install.wim..." 25
 
-            $localWim = Join-Path $isoContents "sources\install.wim"
-            if (-not (Test-Path $localWim)) { $localWim = Join-Path $isoContents "sources\install.esd" }
+            $sourceImageFileName = Split-Path $wimPath -Leaf
+            $localWim = Join-Path $isoContents "sources\$sourceImageFileName"
+            if (-not (Test-Path $localWim)) {
+                throw "Copied ISO image file not found: sources\$sourceImageFileName"
+            }
             Set-ItemProperty -Path $localWim -Name IsReadOnly -Value $false
 
             Log "Mounting install.wim (Index ${selectedWimIndex}: $selectedEditionName) at $mountDir..."

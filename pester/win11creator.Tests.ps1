@@ -35,6 +35,7 @@ Describe "Win11 Creator setup media" {
             return $functionAst.Extent.Text
         }
 
+        $script:modifyFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Invoke-WinUtilISOModify"
         $script:editionIdFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Get-WinUtilEditionIdFromName"
         $script:addDriversFunction = Get-WinUtilFunctionText -Path $script:isoScriptPath -FunctionName "Add-DriversToImage"
         $script:answerFileChildElementFunction = Get-WinUtilFunctionText -Path $script:isoScriptPath -FunctionName "Get-WinUtilISOScriptChildElement"
@@ -66,6 +67,27 @@ Describe "Win11 Creator setup media" {
             if ($content -notmatch $pattern) {
                 throw "Expected Invoke-WinUtilISOScript.ps1 to match pattern: $pattern"
             }
+        }
+    }
+
+    It "starts each new ISO modification in a fresh working directory" {
+        foreach ($expectedText in @(
+            '$workDir = Join-Path $env:TEMP "WinUtil_Win11ISO_$(Get-Date -Format ''yyyyMMdd_HHmmss'')"',
+            '$workDir = Join-Path $env:TEMP "WinUtil_Win11ISO_$(Get-Date -Format ''yyyyMMdd_HHmmss'')_$(([guid]::NewGuid()).ToString(''N'').Substring(0, 8))"'
+        )) {
+            $script:modifyFunction | Should -Match ([regex]::Escape($expectedText))
+        }
+
+        $script:modifyFunction | Should -Not -Match ([regex]::Escape("Reusing existing temp directory"))
+    }
+
+    It "mounts the copied image file that was verified from the ISO" {
+        foreach ($expectedText in @(
+            '$sourceImageFileName = Split-Path $wimPath -Leaf',
+            '$localWim = Join-Path $isoContents "sources\$sourceImageFileName"',
+            'Copied ISO image file not found: sources\$sourceImageFileName'
+        )) {
+            $script:modifyFunction | Should -Match ([regex]::Escape($expectedText))
         }
     }
 
