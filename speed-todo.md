@@ -36,11 +36,11 @@ WinUtil currently does too much work before the first GUI paint. Work from the t
 
 ## P4 - Runspace Cleanup
 
-- [ ] Refactor `Invoke-WPFRunspace` to avoid shared `$script:powershell` and `$script:handle` state for concurrent callers.
-- [ ] Keep the shared runspace pool alive for the app lifetime instead of disposing it from individual queued calls.
-- [ ] Add explicit completion cleanup for each PowerShell instance after `EndInvoke`.
-- [ ] Add focused Pester coverage for multiple queued runspace calls, failures, and cleanup.
-- [ ] Do not parallelize winget/choco package installs by default; package manager locking and prompts make that unsafe.
+- [x] Refactor `Invoke-WPFRunspace` to avoid shared `$script:powershell` and `$script:handle` state for concurrent callers.
+- [x] Keep the shared runspace pool alive for the app lifetime instead of disposing it from individual queued calls.
+- [x] Add explicit completion cleanup for each PowerShell instance after `EndInvoke`.
+- [x] Add focused Pester coverage for multiple queued runspace calls, failures, and cleanup.
+- [x] Do not parallelize winget/choco package installs by default; package manager locking and prompts make that unsafe.
 
 ## P5 - Defer Runspace Pool Startup
 
