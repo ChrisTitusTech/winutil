@@ -16,7 +16,7 @@ function Initialize-InstallCategoryAppList {
             $Apps
         )
 
-        # Pre-group apps by category
+        # Pre-group apps by category before creating WPF controls.
         $appsByCategory = @{}
         foreach ($appKey in $Apps.Keys) {
             $category = $Apps.$appKey.Category
@@ -25,6 +25,8 @@ function Initialize-InstallCategoryAppList {
             }
             $appsByCategory[$category] += $appKey
         }
+        $sync.InstallAppRenderQueue = [System.Collections.Queue]::new()
+
         foreach ($category in $($appsByCategory.Keys | Sort-Object)) {
             # Create a container for category label + apps
             $categoryContainer = New-Object Windows.Controls.StackPanel
@@ -89,9 +91,12 @@ function Initialize-InstallCategoryAppList {
             # Add the entire category container to the target element
             $null = $TargetElement.Items.Add($categoryContainer)
 
-            # Add apps to the wrap panel
-            $appsByCategory[$category] | Sort-Object | ForEach-Object {
-                $sync.$_ = $(Initialize-InstallAppEntry -TargetElement $wrapPanel -AppKey $_)
-            }
+            $sync.InstallAppRenderQueue.Enqueue([pscustomobject]@{
+                Category = $category
+                TargetElement = $wrapPanel
+                AppKeys = @($appsByCategory[$category] | Sort-Object)
+            })
         }
+
+        Start-WinUtilInstallAppRendering
     }

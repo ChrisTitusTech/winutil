@@ -20,11 +20,11 @@ WinUtil currently does too much work before the first GUI paint. Work from the t
 
 ## P2 - Install Tab Rendering
 
-- [ ] Reduce up-front creation of all install app entries.
-- [ ] Keep category/app grouping as pure data before touching WPF controls.
-- [ ] Create WPF controls only on the UI thread.
-- [ ] Investigate replacing eager app-entry creation with item templates or incremental category rendering.
-- [ ] Verify search, selected-app counts, right-click popup, install, uninstall, and import/export selection state still work.
+- [x] Reduce up-front creation of all install app entries.
+- [x] Keep category/app grouping as pure data before touching WPF controls.
+- [x] Create WPF controls only on the UI thread.
+- [x] Investigate replacing eager app-entry creation with item templates or incremental category rendering.
+- [x] Verify search, selected-app counts, right-click popup, install, uninstall, and import/export selection state still work.
 
 ## P3 - Toggle And Registry Startup Cost
 
