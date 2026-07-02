@@ -13,11 +13,6 @@ param (
     [switch]$Offline
 )
 
-$PARAM_OFFLINE = $false
-if ($Offline) {
-    $PARAM_OFFLINE = $true
-}
-
 if ($ExecutionContext.SessionState.LanguageMode -ne 'FullLanguage') {
     Write-Host "WinUtil is unable to run on your system. PowerShell execution is restricted by security policies." -ForegroundColor Red
     return

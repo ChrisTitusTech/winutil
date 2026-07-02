@@ -309,33 +309,15 @@ $sync["Form"].Add_ContentRendered({
         }
     }
 
-    if ($PARAM_OFFLINE) {
+    if ($Offline) {
         # Show offline banner
         $sync.WPFOfflineBanner.Visibility = [System.Windows.Visibility]::Visible
 
-        # Disable the install tab
         $sync.WPFTab1BT.IsEnabled = $false
-        $sync.WPFTab1BT.Opacity = 0.5
         $sync.WPFTab1BT.ToolTip = "Internet connection required for installing applications."
 
-        # Disable install-related buttons
-        $sync.WPFInstall.IsEnabled = $false
-        $sync.WPFUninstall.IsEnabled = $false
-        $sync.WPFInstallUpgrade.IsEnabled = $false
-        $sync.WPFGetInstalled.IsEnabled = $false
-
-        # Show offline indicator
         Write-Host "Offline mode detected - Install tab disabled." -ForegroundColor Yellow
-
-        # Optionally switch to a different tab if install tab was going to be default
         Invoke-WPFTab "WPFTab2BT"  # Switch to Tweaks tab instead
-    }
-    else {
-        # Online - ensure install tab is enabled
-        $sync.WPFTab1BT.IsEnabled = $true
-        $sync.WPFTab1BT.Opacity = 1.0
-        $sync.WPFTab1BT.ToolTip = $null
-        Invoke-WPFTab "WPFTab1BT"  # Default to install tab
     }
 
     $sync["Form"].Focus()
