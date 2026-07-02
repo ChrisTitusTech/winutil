@@ -50,7 +50,7 @@ Current suite status: broad parser, import, config JSON, compile, and runspace s
   - Assert intended registry paths, values, service startup types, and scheduled task paths.
   - Keep all tests non-mutating.
 
-- [ ] Add AppX removal tests.
+- [x] Add AppX removal tests.
   - Cover `Remove-WinUtilAPPX` with mocked `Get-AppxPackage` and `Remove-AppxPackage`.
   - Cover `Invoke-WPFAppxRemoval` selection behavior and runspace parameter passing.
   - Verify empty selection is handled without removal calls.
