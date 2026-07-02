@@ -16,6 +16,8 @@ function Remove-WinUtilAPPX {
     )
 
     Write-Host "Removing $Name"
+    Write-WinUtilLog -Component "AppX" -Message "Removing AppX package pattern: $Name"
     Get-AppxPackage $Name -AllUsers | Remove-AppxPackage -AllUsers
     Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Name | Remove-AppxProvisionedPackage -Online
+    Write-WinUtilLog -Component "AppX" -Message "AppX removal completed for package pattern: $Name"
 }
