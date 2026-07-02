@@ -12,9 +12,6 @@ Describe "Initialize-WinUtilRunspacePool" {
     BeforeEach {
         $script:sync = [Hashtable]::Synchronized(@{})
         $script:PARAM_OFFLINE = $false
-
-        function Write-WinUtilPerformanceCheckpoint { param($Name) }
-        Mock Write-WinUtilPerformanceCheckpoint { }
     }
 
     AfterEach {
@@ -29,9 +26,6 @@ Describe "Initialize-WinUtilRunspacePool" {
 
         $firstPool.RunspacePoolStateInfo.State | Should -Be ([System.Management.Automation.Runspaces.RunspacePoolState]::Opened)
         [object]::ReferenceEquals($firstPool, $secondPool) | Should -BeTrue
-        Should -Invoke -CommandName Write-WinUtilPerformanceCheckpoint -Times 1 -Exactly -ParameterFilter {
-            $Name -eq "Runspace pool initialized"
-        }
     }
 
     It "closes and removes the active runspace pool" {

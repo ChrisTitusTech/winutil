@@ -3,7 +3,7 @@ function Get-WinUtilSelectedPackages {
      param(
          [Parameter(Mandatory = $true)]
          [object] $PackageList,
-     
+
          [Parameter(Mandatory = $true)]
          [string] $Preference
      )
@@ -14,7 +14,6 @@ function Get-WinUtilSelectedPackages {
         Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" }
     }
 
-    $packages = [System.Collections.Hashtable]::new()
     $packagesWinget = [System.Collections.ArrayList]::new()
     $packagesChoco = [System.Collections.ArrayList]::new()
     $packages['Winget'] = $packagesWinget
