@@ -91,4 +91,13 @@ Describe "Startup lazy tab wiring" {
 
         $tabScript | Should -Match 'Initialize-WinUtilTabContent -TabName \$sync\.currentTab'
     }
+
+    It "binds generated button clicks when lazy panels are rendered" {
+        $rendererScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIElements.ps1") -Raw
+        $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
+
+        $rendererScript | Should -Match '(?s)"Button"\s*\{.*\$button\.Add_Click\(\{.*Invoke-WPFButton \$Sender\.name'
+        $rendererScript | Should -Match '\$sync\.Buttons\.Add\(\$button\.Name\)'
+        $mainScript | Should -Match '\$sync\.Buttons -notcontains \$psitem'
+    }
 }
