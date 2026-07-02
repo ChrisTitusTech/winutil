@@ -91,34 +91,34 @@ function Invoke-WinutilThemeChange {
 
         # Retrieve all theme properties from the theme configuration
         $themeProperties = $sync.configs.themes.$currentTheme.PSObject.Properties
-        foreach ($_ in $themeProperties) {
+        foreach ($themeProperty in $themeProperties) {
             # Apply properties that deal with colors
-            if ($_.Name -like "*color*") {
-                Set-ThemeResourceProperty -Name $_.Name -Value $_.Value -Type "ColorBrush"
+            if ($themeProperty.Name -like "*color*") {
+                Set-ThemeResourceProperty -Name $themeProperty.Name -Value $themeProperty.Value -Type "ColorBrush"
                 # For certain color properties, also set complementary values (e.g., BorderColor -> CBorderColor) This is required because e.g DropShadowEffect requires a <Color> and not a <SolidColorBrush> object
-                if ($_.Name -in @("BorderColor", "ButtonBackgroundMouseoverColor")) {
-                    Set-ThemeResourceProperty -Name "C$($_.Name)" -Value $_.Value -Type "Color"
+                if ($themeProperty.Name -in @("BorderColor", "ButtonBackgroundMouseoverColor")) {
+                    Set-ThemeResourceProperty -Name "C$($themeProperty.Name)" -Value $themeProperty.Value -Type "Color"
                 }
             }
             # Apply corner radius properties
-            elseif ($_.Name -like "*Radius*") {
-                Set-ThemeResourceProperty -Name $_.Name -Value $_.Value -Type "CornerRadius"
+            elseif ($themeProperty.Name -like "*Radius*") {
+                Set-ThemeResourceProperty -Name $themeProperty.Name -Value $themeProperty.Value -Type "CornerRadius"
             }
             # Apply row height properties
-            elseif ($_.Name -like "*RowHeight*") {
-                Set-ThemeResourceProperty -Name $_.Name -Value $_.Value -Type "GridLength"
+            elseif ($themeProperty.Name -like "*RowHeight*") {
+                Set-ThemeResourceProperty -Name $themeProperty.Name -Value $themeProperty.Value -Type "GridLength"
             }
             # Apply thickness or margin properties
-            elseif (($_.Name -like "*Thickness*") -or ($_.Name -like "*margin")) {
-                Set-ThemeResourceProperty -Name $_.Name -Value $_.Value -Type "Thickness"
+            elseif (($themeProperty.Name -like "*Thickness*") -or ($themeProperty.Name -like "*margin")) {
+                Set-ThemeResourceProperty -Name $themeProperty.Name -Value $themeProperty.Value -Type "Thickness"
             }
             # Apply font family properties
-            elseif ($_.Name -like "*FontFamily*") {
-                Set-ThemeResourceProperty -Name $_.Name -Value $_.Value -Type "FontFamily"
+            elseif ($themeProperty.Name -like "*FontFamily*") {
+                Set-ThemeResourceProperty -Name $themeProperty.Name -Value $themeProperty.Value -Type "FontFamily"
             }
             # Apply any other properties as doubles (numerical values)
             else {
-                Set-ThemeResourceProperty -Name $_.Name -Value $_.Value -Type "Double"
+                Set-ThemeResourceProperty -Name $themeProperty.Name -Value $themeProperty.Value -Type "Double"
             }
         }
     }

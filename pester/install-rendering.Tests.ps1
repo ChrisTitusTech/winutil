@@ -80,8 +80,8 @@ Describe "Install app rendering startup contract" {
             $closeTimer = New-Object System.Windows.Threading.DispatcherTimer
             $closeTimer.Interval = [TimeSpan]::FromMilliseconds(25)
             $closeTimer.Add_Tick({
-                param($sender)
-                $timer = [System.Windows.Threading.DispatcherTimer]$sender
+                param($eventSender)
+                $timer = [System.Windows.Threading.DispatcherTimer]$eventSender
 
                 if ($global:sync.InstallAppEntriesRendered -or $timeout.Elapsed.TotalSeconds -gt 5) {
                     $timer.Stop()
