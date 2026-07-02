@@ -69,6 +69,8 @@ Describe "Startup performance checkpoints" {
 
     It "adds runtime checkpoints for startup hotspots" {
         $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
+        $lazyTabScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilTabContent.ps1") -Raw
+        $startupText = "$mainScript`n$lazyTabScript"
 
         foreach ($checkpoint in @(
             "Runspace pool initialized",
@@ -81,7 +83,7 @@ Describe "Startup performance checkpoints" {
             "Assets rendered",
             "First content rendered"
         )) {
-            $mainScript | Should -Match ([regex]::Escape($checkpoint))
+            $startupText | Should -Match ([regex]::Escape($checkpoint))
         }
     }
 }

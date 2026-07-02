@@ -12,11 +12,11 @@ WinUtil currently does too much work before the first GUI paint. Work from the t
 
 ## P1 - Faster First Paint
 
-- [ ] Show the main window before building every non-visible panel.
-- [ ] Build only the default visible tab during startup.
-- [ ] Move Tweaks, Features, AppX, and Win11 ISO tab initialization to first tab activation.
-- [ ] Add one-time guards so each lazy tab initializes only once.
-- [ ] Preserve current behavior for `-Preset` and `-Config` automation paths.
+- [x] Show the main window before building every non-visible panel.
+- [x] Build only the default visible tab during startup.
+- [x] Move Tweaks, Features, AppX, and Win11 ISO tab initialization to first tab activation.
+- [x] Add one-time guards so each lazy tab initializes only once.
+- [x] Preserve current behavior for `-Preset` and `-Config` automation paths.
 
 ## P2 - Install Tab Rendering
 

@@ -29,6 +29,7 @@ function Invoke-WPFTab {
         }
     }
     $sync.currentTab = $sync.$tabNav.Items[$tabNumber].Header
+    Initialize-WinUtilTabContent -TabName $sync.currentTab
 
     # Always reset the filter for the current tab
     if ($sync.currentTab -eq "Install") {

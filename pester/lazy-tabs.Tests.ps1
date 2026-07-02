@@ -1,0 +1,94 @@
+#===========================================================================
+# Tests - Lazy tab initialization
+#===========================================================================
+
+BeforeAll {
+    $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+
+    function Invoke-WPFUIElements {
+        param($configVariable, [string]$targetGridName, [int]$columncount)
+    }
+    function Initialize-WPFUI {
+        param([string]$TargetGridName)
+    }
+    function Write-WinUtilPerformanceCheckpoint {
+        param([string]$Name)
+    }
+    function Invoke-WinUtilISOCheckExistingWork { }
+
+    . (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilTabContent.ps1")
+}
+
+Describe "Initialize-WinUtilTabContent" {
+    BeforeEach {
+        $script:sync = [Hashtable]::Synchronized(@{
+            configs = @{
+                appnavigation = [pscustomobject]@{}
+                tweaks = [pscustomobject]@{}
+                feature = [pscustomobject]@{}
+                appx = [pscustomobject]@{}
+            }
+        })
+
+        Mock Invoke-WPFUIElements { }
+        Mock Initialize-WPFUI { }
+        Mock Write-WinUtilPerformanceCheckpoint { }
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+    }
+
+    It "initializes the install tab once" {
+        Initialize-WinUtilTabContent -TabName "Install"
+        Initialize-WinUtilTabContent -TabName "Install"
+
+        Should -Invoke -CommandName Invoke-WPFUIElements -Times 1 -Exactly -ParameterFilter {
+            $targetGridName -eq "appscategory" -and $columncount -eq 1
+        }
+        Should -Invoke -CommandName Initialize-WPFUI -Times 1 -Exactly -ParameterFilter {
+            $TargetGridName -eq "appscategory"
+        }
+        Should -Invoke -CommandName Initialize-WPFUI -Times 1 -Exactly -ParameterFilter {
+            $TargetGridName -eq "appspanel"
+        }
+        $script:sync.InitializedTabs["Install"] | Should -BeTrue
+    }
+
+    It "initializes deferred config-backed tabs once" {
+        Initialize-WinUtilTabContent -TabName "Tweaks"
+        Initialize-WinUtilTabContent -TabName "Config"
+        Initialize-WinUtilTabContent -TabName "AppX"
+        Initialize-WinUtilTabContent -TabName "Tweaks"
+        Initialize-WinUtilTabContent -TabName "Config"
+        Initialize-WinUtilTabContent -TabName "AppX"
+
+        Should -Invoke -CommandName Invoke-WPFUIElements -Times 1 -Exactly -ParameterFilter {
+            $targetGridName -eq "tweakspanel" -and $columncount -eq 2
+        }
+        Should -Invoke -CommandName Invoke-WPFUIElements -Times 1 -Exactly -ParameterFilter {
+            $targetGridName -eq "featurespanel" -and $columncount -eq 2
+        }
+        Should -Invoke -CommandName Invoke-WPFUIElements -Times 1 -Exactly -ParameterFilter {
+            $targetGridName -eq "appxpanel" -and $columncount -eq 2
+        }
+    }
+}
+
+Describe "Startup lazy tab wiring" {
+    It "builds only install tab content before first paint" {
+        $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
+        $startupRegion = $mainScript.Substring(0, $mainScript.IndexOf("# Store Form Objects In PowerShell"))
+
+        $startupRegion | Should -Match 'Initialize-WinUtilTabContent -TabName "Install"'
+        $startupRegion | Should -Not -Match 'targetGridName "tweakspanel"'
+        $startupRegion | Should -Not -Match 'targetGridName "featurespanel"'
+        $startupRegion | Should -Not -Match 'targetGridName "appxpanel"'
+    }
+
+    It "initializes tab content when a tab is selected" {
+        $tabScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFTab.ps1") -Raw
+
+        $tabScript | Should -Match 'Initialize-WinUtilTabContent -TabName \$sync\.currentTab'
+    }
+}

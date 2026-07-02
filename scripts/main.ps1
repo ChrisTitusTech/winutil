@@ -186,22 +186,9 @@ Invoke-WinutilThemeChange -theme $sync.preferences.theme
 Write-WinUtilPerformanceCheckpoint -Name "Theme applied"
 
 
-# Now call the function with the final merged config
-Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
-Initialize-WPFUI -targetGridName "appscategory"
-Write-WinUtilPerformanceCheckpoint -Name "App navigation UI created"
-
-Initialize-WPFUI -targetGridName "appspanel"
-Write-WinUtilPerformanceCheckpoint -Name "Install UI created"
-
-Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
-Write-WinUtilPerformanceCheckpoint -Name "Tweaks UI created"
-
-Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
-Write-WinUtilPerformanceCheckpoint -Name "Features UI created"
-
-Invoke-WPFUIElements -configVariable $sync.configs.appx -targetGridName "appxpanel" -columncount 2
-Write-WinUtilPerformanceCheckpoint -Name "AppX UI created"
+# Build only the default tab before first paint; other tabs initialize on first activation.
+$sync.InitializedTabs = @{}
+Initialize-WinUtilTabContent -TabName "Install"
 
 # Future implementation: Add Windows Version to updates panel
 #Invoke-WPFUIElements -configVariable $sync.configs.updates -targetGridName "updatespanel" -columncount 1
@@ -526,10 +513,6 @@ $sync["FontScalingApplyButton"].Add_Click({
 })
 
 # ── Win11ISO Tab button handlers ──────────────────────────────────────────────
-
-$sync["WPFTab5BT"].Add_Click({
-    $sync["Form"].Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{ Invoke-WinUtilISOCheckExistingWork }) | Out-Null
-})
 
 $sync["WPFWin11ISOBrowseButton"].Add_Click({
     Invoke-WinUtilISOBrowse
