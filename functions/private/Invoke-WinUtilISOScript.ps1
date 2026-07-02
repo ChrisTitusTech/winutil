@@ -34,6 +34,16 @@ function Invoke-WinUtilISOScript {
         them into install.wim and boot.wim index 2 (Windows Setup PE).
         Defaults to $false.
 
+    .PARAMETER InstallEditionId
+        Optional. Windows edition ID for the selected image, for example Professional
+        or Core. Used to write sources\ei.cfg so setup does not fall back to an
+        embedded firmware product key for a different edition.
+
+    .PARAMETER InstallImageIndex
+        Optional. Image index that setup should install from the final install.wim.
+        Win11 Creator exports the selected edition to a single-image WIM, so this
+        defaults to 1.
+
     .PARAMETER Log
         Optional ScriptBlock for progress/status logging. Receives a single [string] argument.
 
@@ -56,6 +66,8 @@ function Invoke-WinUtilISOScript {
         [string]$ISOContentsDir = "",
         [string]$AutoUnattendXml = "",
         [bool]$InjectCurrentSystemDrivers = $false,
+        [string]$InstallEditionId = "",
+        [int]$InstallImageIndex = 1,
         [scriptblock]$Log = { param($m) Write-Output $m }
     )
 
@@ -106,6 +118,146 @@ function Invoke-WinUtilISOScript {
         } finally {
             Remove-Item -Path $mountDir -Recurse -Force
         }
+    }
+
+    function Get-WinUtilISOScriptChildElement {
+        param (
+            [Parameter(Mandatory)][System.Xml.XmlElement]$Parent,
+            [Parameter(Mandatory)][string]$Name,
+            [Parameter(Mandatory)][string]$NamespaceUri
+        )
+
+        foreach ($childNode in $Parent.ChildNodes) {
+            if ($childNode.NodeType -eq [System.Xml.XmlNodeType]::Element -and
+                $childNode.LocalName -eq $Name -and
+                $childNode.NamespaceURI -eq $NamespaceUri) {
+                return [System.Xml.XmlElement]$childNode
+            }
+        }
+
+        $childElement = $Parent.OwnerDocument.CreateElement($Name, $NamespaceUri)
+        [void]$Parent.AppendChild($childElement)
+        return $childElement
+    }
+
+    function ConvertTo-WinUtilISOAnswerFile {
+        param (
+            [Parameter(Mandatory)][string]$XmlContent,
+            [int]$ImageIndex = 1
+        )
+
+        if ($ImageIndex -lt 1) { $ImageIndex = 1 }
+
+        $unattendNs = "urn:schemas-microsoft-com:unattend"
+        $wcmNs = "http://schemas.microsoft.com/WMIConfig/2002/State"
+
+        $xmlDoc = [xml]::new()
+        $xmlDoc.PreserveWhitespace = $true
+        $xmlDoc.LoadXml($XmlContent)
+
+        if ($xmlDoc.DocumentElement.NamespaceURI -ne $unattendNs) {
+            throw "Unexpected autounattend.xml namespace: $($xmlDoc.DocumentElement.NamespaceURI)"
+        }
+
+        if (-not $xmlDoc.DocumentElement.HasAttribute("xmlns:wcm")) {
+            $xmlDoc.DocumentElement.SetAttribute("wcm", "http://www.w3.org/2000/xmlns/", $wcmNs)
+        }
+
+        $nsMgr = New-Object System.Xml.XmlNamespaceManager($xmlDoc.NameTable)
+        $nsMgr.AddNamespace("u", $unattendNs)
+
+        $windowsPESettings = $xmlDoc.SelectSingleNode('/u:unattend/u:settings[@pass="windowsPE"]', $nsMgr)
+        if (-not $windowsPESettings) {
+            $windowsPESettings = $xmlDoc.CreateElement("settings", $unattendNs)
+            $windowsPESettings.SetAttribute("pass", "windowsPE")
+            [void]$xmlDoc.DocumentElement.PrependChild($windowsPESettings)
+        }
+
+        $setupComponent = $windowsPESettings.SelectSingleNode('u:component[@name="Microsoft-Windows-Setup"]', $nsMgr)
+        if (-not $setupComponent) {
+            $setupComponent = $xmlDoc.CreateElement("component", $unattendNs)
+            $setupComponent.SetAttribute("name", "Microsoft-Windows-Setup")
+            $setupComponent.SetAttribute("processorArchitecture", "amd64")
+            $setupComponent.SetAttribute("publicKeyToken", "31bf3856ad364e35")
+            $setupComponent.SetAttribute("language", "neutral")
+            $setupComponent.SetAttribute("versionScope", "nonSxS")
+            [void]$windowsPESettings.AppendChild($setupComponent)
+        }
+
+        $productKeyNodes = @($setupComponent.SelectNodes("u:UserData/u:ProductKey", $nsMgr))
+        foreach ($productKeyNode in $productKeyNodes) {
+            $keyNode = $productKeyNode.SelectSingleNode("u:Key", $nsMgr)
+            $keyValue = if ($keyNode) { $keyNode.InnerText.Trim() } else { "" }
+
+            if ([string]::IsNullOrWhiteSpace($keyValue) -or $keyValue -eq "00000-00000-00000-00000-00000") {
+                [void]$productKeyNode.ParentNode.RemoveChild($productKeyNode)
+            }
+        }
+
+        $imageInstall = Get-WinUtilISOScriptChildElement -Parent $setupComponent -Name "ImageInstall" -NamespaceUri $unattendNs
+        $osImage = Get-WinUtilISOScriptChildElement -Parent $imageInstall -Name "OSImage" -NamespaceUri $unattendNs
+        $installFrom = Get-WinUtilISOScriptChildElement -Parent $osImage -Name "InstallFrom" -NamespaceUri $unattendNs
+
+        $existingMetadataNodes = @($installFrom.SelectNodes("u:MetaData", $nsMgr))
+        foreach ($metadataNode in $existingMetadataNodes) {
+            [void]$installFrom.RemoveChild($metadataNode)
+        }
+
+        $metadata = $xmlDoc.CreateElement("MetaData", $unattendNs)
+        $actionAttribute = $xmlDoc.CreateAttribute("wcm", "action", $wcmNs)
+        $actionAttribute.Value = "add"
+        [void]$metadata.Attributes.Append($actionAttribute)
+
+        $keyElement = $xmlDoc.CreateElement("Key", $unattendNs)
+        $keyElement.InnerText = "/IMAGE/INDEX"
+        [void]$metadata.AppendChild($keyElement)
+
+        $valueElement = $xmlDoc.CreateElement("Value", $unattendNs)
+        $valueElement.InnerText = [string]$ImageIndex
+        [void]$metadata.AppendChild($valueElement)
+
+        [void]$installFrom.AppendChild($metadata)
+
+        return $xmlDoc.OuterXml
+    }
+
+    function Write-WinUtilISOEditionConfig {
+        param (
+            [Parameter(Mandatory)][string]$ContentRoot,
+            [string]$EditionId,
+            [scriptblock]$Logger
+        )
+
+        if (-not (Test-Path $ContentRoot)) {
+            return
+        }
+
+        $sourcesDir = Join-Path $ContentRoot "sources"
+        New-Item -Path $sourcesDir -ItemType Directory -Force | Out-Null
+
+        $pidPath = Join-Path $sourcesDir "PID.txt"
+        if (Test-Path $pidPath) {
+            Remove-Item -Path $pidPath -Force
+            & $Logger "Removed sources\PID.txt so setup will not force a stale or mismatched product key."
+        }
+
+        if ([string]::IsNullOrWhiteSpace($EditionId)) {
+            & $Logger "Warning: selected edition ID is unknown - skipping sources\ei.cfg fallback."
+            return
+        }
+
+        $eiCfgPath = Join-Path $sourcesDir "ei.cfg"
+        $eiCfg = @"
+[EditionID]
+$EditionId
+[Channel]
+Retail
+[VL]
+0
+"@.Trim()
+
+        Set-Content -Path $eiCfgPath -Value $eiCfg -Encoding ASCII -Force
+        & $Logger "Written sources\ei.cfg for EditionID '$EditionId'."
     }
 
     # -- 1. Remove provisioned AppX packages ----------------------------------
@@ -218,9 +370,17 @@ function Invoke-WinUtilISOScript {
     Set-ISOScriptReg 'HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\OOBE' 'BypassNRO' 'REG_DWORD' '1'
 
     if ($AutoUnattendXml) {
+        $preparedAutoUnattendXml = $AutoUnattendXml
+        try {
+            $preparedAutoUnattendXml = ConvertTo-WinUtilISOAnswerFile -XmlContent $AutoUnattendXml -ImageIndex $InstallImageIndex
+            & $Log "Prepared autounattend.xml to install image index $InstallImageIndex without forcing a product key."
+        } catch {
+            & $Log "Warning: could not prepare autounattend.xml image selection: $_"
+        }
+
         try {
             $xmlDoc = [xml]::new()
-            $xmlDoc.LoadXml($AutoUnattendXml)
+            $xmlDoc.LoadXml($preparedAutoUnattendXml)
 
             $nsMgr = New-Object System.Xml.XmlNamespaceManager($xmlDoc.NameTable)
             $nsMgr.AddNamespace("sg", "https://schneegans.de/windows/unattend-generator/")
@@ -251,11 +411,15 @@ function Invoke-WinUtilISOScript {
 
         if ($ISOContentsDir -and (Test-Path $ISOContentsDir)) {
             $isoDest = Join-Path $ISOContentsDir "autounattend.xml"
-            Set-Content -Path $isoDest -Value $AutoUnattendXml -Encoding UTF8 -Force
+            Set-Content -Path $isoDest -Value $preparedAutoUnattendXml -Encoding UTF8 -Force
             & $Log "Written autounattend.xml to ISO root ($isoDest)."
         }
     } else {
         & $Log "Warning: autounattend.xml content is empty - skipping OOBE bypass file."
+    }
+
+    if ($ISOContentsDir -and (Test-Path $ISOContentsDir)) {
+        Write-WinUtilISOEditionConfig -ContentRoot $ISOContentsDir -EditionId $InstallEditionId -Logger $Log
     }
 
     & $Log "Disabling reserved storage..."
