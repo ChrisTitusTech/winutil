@@ -39,9 +39,11 @@ BeforeAll {
         process { }
     }
     function Get-Package {
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidOverwritingBuiltInCmdlets', '', Justification='Test shim is intentionally mocked by Pester.')]
         param($Name, $ErrorAction)
     }
     function Uninstall-Package {
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidOverwritingBuiltInCmdlets', '', Justification='Test shim is intentionally mocked by Pester.')]
         param(
             [Parameter(ValueFromPipeline = $true)]
             $InputObject,

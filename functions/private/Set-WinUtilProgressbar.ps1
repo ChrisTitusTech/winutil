@@ -14,11 +14,13 @@ function Set-WinUtilProgressbar{
         [int]$Percent
     )
 
-    Invoke-WPFUIThread -ScriptBlock {$sync.progressBarTextBlock.Text = $label}
-    Invoke-WPFUIThread -ScriptBlock {$sync.progressBarTextBlock.ToolTip = $label}
-    if ($percent -lt 5 ) {
-        $percent = 5 # Ensure the progress bar is not empty, as it looks weird
+    $progressLabel = $Label
+
+    Invoke-WPFUIThread -ScriptBlock {$sync.progressBarTextBlock.Text = $progressLabel}
+    Invoke-WPFUIThread -ScriptBlock {$sync.progressBarTextBlock.ToolTip = $progressLabel}
+    if ($Percent -lt 5 ) {
+        $Percent = 5 # Ensure the progress bar is not empty, as it looks weird
     }
-    Invoke-WPFUIThread -ScriptBlock { $sync.ProgressBar.Value = $percent}
+    Invoke-WPFUIThread -ScriptBlock { $sync.ProgressBar.Value = $Percent}
 
 }
