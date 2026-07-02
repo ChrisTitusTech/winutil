@@ -23,6 +23,16 @@ Describe "Install app rendering startup contract" {
         $renderScript | Should -Match 'Install app entries rendered'
     }
 
+    It "does not rely on local timer variables after the dispatcher tick fires" {
+        $renderScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilInstallAppRendering.ps1") -Raw
+
+        $renderScript | Should -Match 'param\(\$sender\)'
+        $renderScript | Should -Match '\$dispatcherTimer = \[System\.Windows\.Threading\.DispatcherTimer\]\$sender'
+        $renderScript | Should -Not -Match '\$timer\.Stop\(\)'
+        $renderScript | Should -Match '\$dispatcherTimer\.Start\(\)'
+        $renderScript | Should -Not -Match '& \$renderCategory'
+    }
+
     It "keeps app-entry metadata lookup independent from the old caller scope" {
         $entryScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Initialize-InstallAppEntry.ps1") -Raw
 
