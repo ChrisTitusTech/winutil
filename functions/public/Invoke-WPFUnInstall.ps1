@@ -9,7 +9,7 @@ function Invoke-WPFUnInstall {
         Uninstalls the selected programs
     #>
 
-    if($sync.ProcessRunning) {
+    if ($sync.ProcessRunning) {
         $msg = "[Invoke-WPFUnInstall] Install process is currently running"
         Show-WinUtilMessage -Message $msg -Title "Winutil" -Button "OK" -Icon "Warning"
         return
@@ -52,12 +52,14 @@ function Invoke-WPFUnInstall {
             }
 
             # Uninstall all selected programs in new window
-            if($packagesWinget.Count -gt 0) {
-                Install-WinUtilProgramWinget -Action Uninstall -Programs $packagesWinget
+            if ($packagesWinget) {
+                Install-WinUtilWinget
+                Start-Process -FilePath winget -ArgumentList "uninstall $packagesWinget --source winget --silent" -NoNewWindow -Wait
+            } else {
+                Install-WinUtilChoco
+                Start-Process -FilePath choco -ArgumentList "uninstall $packagesChoco -y" -NoNewWindow -Wait
             }
-            if($packagesChoco.Count -gt 0) {
-                Install-WinUtilProgramChoco -Action Uninstall -Programs $packagesChoco
-            }
+
             Hide-WPFInstallAppBusy
             Write-Host "==========================================="
             Write-Host "--       Uninstalls have finished       ---"

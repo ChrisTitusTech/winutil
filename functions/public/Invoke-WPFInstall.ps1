@@ -6,8 +6,7 @@ function Invoke-WPFInstall {
 
     $PackagesToInstall = $sync.selectedApps | Foreach-Object { $sync.configs.applicationsHashtable.$_ }
 
-
-    if($sync.ProcessRunning) {
+    if ($sync.ProcessRunning) {
         $msg = "[Invoke-WPFInstall] An Install process is currently running."
         Show-WinUtilMessage -Message $msg -Title "Winutil" -Button "OK" -Icon "Warning"
         return
@@ -35,15 +34,16 @@ function Invoke-WPFInstall {
 
         try {
             $sync.ProcessRunning = $true
-            if($packagesWinget.Count -gt 0 -and $packagesWinget -ne "0") {
-                Show-WPFInstallAppBusy -text "Installing apps..."
+            Show-WPFInstallAppBusy -text "Installing apps..."
+
+            if ($packagesWinget) {
                 Install-WinUtilWinget
-                Install-WinUtilProgramWinget -Action Install -Programs $packagesWinget
-            }
-            if($packagesChoco.Count -gt 0) {
+                Start-Process -FilePath winget -ArgumentList "install $packagesWinget --silent --source winget --accept-package-agreements" -NoNewWindow -Wait
+            } else {
                 Install-WinUtilChoco
-                Install-WinUtilProgramChoco -Action Install -Programs $packagesChoco
+                Start-Process -FilePath choco -ArgumentList "install $packagesChoco -y --ignore-checksums" -NoNewWindow -Wait
             }
+
             Hide-WPFInstallAppBusy
             Write-Host "==========================================="
             Write-Host "--      Installs have finished          ---"

@@ -96,7 +96,7 @@ winutil/
 - `Initialize-WPFUI.ps1`: Sets up the GUI
 - `Invoke-WPFTweak*`: Applies system tweaks
 - `Invoke-WPFFeature*`: Enables Windows features
-- `Install-WinUtilProgram*`: Installs applications
+- `Invoke-WPFInstall*`: Installs applications
 
 **Naming Convention**: Functions start with `WPF` or `Winutil` to be loaded into the runspace.
 
@@ -291,7 +291,7 @@ Check if WinGet/Choco is installed
     ↓
 Install-WinUtilWinget/Choco (if needed)
     ↓
-Install-WinUtilProgramWinget/Choco → Install app
+Invoke-WPFInstall → Install app
     ↓
 Update UI with progress
     ↓
