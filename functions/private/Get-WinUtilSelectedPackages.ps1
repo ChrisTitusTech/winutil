@@ -17,7 +17,6 @@ function Get-WinUtilSelectedPackages {
     $packages = [System.Collections.Hashtable]::new()
     $packagesWinget = [System.Collections.ArrayList]::new()
     $packagesChoco = [System.Collections.ArrayList]::new()
-
     $packages['Winget'] = $packagesWinget
     $packages['Choco'] = $packagesChoco
 

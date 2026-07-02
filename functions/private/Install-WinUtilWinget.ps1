@@ -1,12 +1,19 @@
 function Install-WinUtilWinget {
-    if (-not (Get-Command -Name winget)) {
-        Write-Host "WinGet is not installed. Installing..." -ForegroundColor Red
+    <#
 
-        Invoke-WebRequest -Uri https://github.com/microsoft/winget-cli/releases/latest/download/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle -OutFile "winget.msixbundle"
-        Invoke-WebRequest -Uri https://github.com/microsoft/winget-cli/releases/latest/download/DesktopAppInstaller_Dependencies.zip -OutFile "winget.zip"
+    .SYNOPSIS
+        Installs WinGet if not already installed.
 
-        Expand-Archive "winget.zip"
-        Add-AppxPackage -Path "winget.msixbundle" -DependencyPath "winget\x64\*"
-        Remove-Item -Path "winget*" -Recurse
+    .DESCRIPTION
+        installs winGet if needed
+    #>
+    if ((Test-WinUtilPackageManager -winget) -eq "installed") {
+        return
     }
+
+    Write-Host "WinGet is not installed. Installing now..." -ForegroundColor Red
+
+    Install-PackageProvider -Name NuGet -Force
+    Install-Module -Name Microsoft.WinGet.Client -Force
+    Repair-WinGetPackageManager -AllUsers
 }

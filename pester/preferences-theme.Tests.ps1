@@ -5,16 +5,6 @@
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 
-    if (-not ("PackageManagers" -as [type])) {
-        Add-Type @"
-public enum PackageManagers
-{
-    Winget,
-    Choco
-}
-"@
-    }
-
     if (-not ("Windows.Media.SolidColorBrush" -as [type])) {
         Add-Type @"
 namespace Windows.Media
@@ -213,10 +203,10 @@ Describe "Set-Preferences" {
         Set-Preferences
 
         $script:sync.preferences.theme | Should -Be "Auto"
-        $script:sync.preferences.packagemanager | Should -Be ([PackageManagers]::Winget)
+        $script:sync.preferences.packagemanager | Should -Be "Winget"
     }
 
-    It "loads saved preferences and converts the package manager to an enum" {
+    It "loads saved preferences and keeps the package manager as a string" {
         $script:testRoot = New-WinUtilPreferencesTestRoot
         $global:winutildir = $script:testRoot
         New-WinUtilPreferenceSync
@@ -228,7 +218,7 @@ Describe "Set-Preferences" {
         Set-Preferences
 
         $script:sync.preferences.theme | Should -Be "Dark"
-        $script:sync.preferences.packagemanager | Should -Be ([PackageManagers]::Choco)
+        $script:sync.preferences.packagemanager | Should -Be "Choco"
     }
 
     It "saves current preferences to preferences.ini" {
@@ -236,7 +226,7 @@ Describe "Set-Preferences" {
         $global:winutildir = $script:testRoot
         New-WinUtilPreferenceSync -Preferences @{
             theme = "Light"
-            packagemanager = [PackageManagers]::Winget
+            packagemanager = "Winget"
         }
 
         Set-Preferences -save
@@ -256,7 +246,7 @@ Describe "Set-Preferences" {
         Set-Preferences
 
         $script:sync.preferences.theme | Should -Be "Light"
-        $script:sync.preferences.packagemanager | Should -Be ([PackageManagers]::Choco)
+        $script:sync.preferences.packagemanager | Should -Be "Choco"
         Test-Path (Join-Path $script:testRoot "LightTheme.ini") | Should -BeFalse
         Test-Path (Join-Path $script:testRoot "preferChocolatey.ini") | Should -BeFalse
     }
@@ -270,7 +260,7 @@ Describe "Set-Preferences" {
         Set-Preferences
 
         $script:sync.preferences.theme | Should -Be "Auto"
-        $script:sync.preferences.packagemanager | Should -Be ([PackageManagers]::Choco)
+        $script:sync.preferences.packagemanager | Should -Be "Choco"
     }
 }
 
