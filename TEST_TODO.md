@@ -39,7 +39,7 @@ Current suite status: broad parser, import, config JSON, compile, and runspace s
   - Verify undo mode uses `OriginalValue` and `OriginalType`.
   - Verify DNS provider and progress counters are passed through correctly.
 
-- [ ] Add install/uninstall workflow tests.
+- [x] Add install/uninstall workflow tests.
   - Cover `Invoke-WPFInstall` and `Invoke-WPFUnInstall` with mocked package sorting and mocked installers.
   - Verify empty selection prompts and exits.
   - Verify process-running guard prevents a second install/uninstall.

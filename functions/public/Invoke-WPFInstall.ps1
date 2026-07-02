@@ -9,13 +9,13 @@ function Invoke-WPFInstall {
 
     if($sync.ProcessRunning) {
         $msg = "[Invoke-WPFInstall] An Install process is currently running."
-        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+        Show-WinUtilMessage -Message $msg -Title "Winutil" -Button "OK" -Icon "Warning"
         return
     }
 
     if ($PackagesToInstall.Count -eq 0) {
         $WarningMsg = "Please select the program(s) to install or upgrade."
-        [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+        Show-WinUtilMessage -Message $WarningMsg -Title $AppTitle -Button "OK" -Icon "Warning"
         return
     }
 
@@ -49,12 +49,14 @@ function Invoke-WPFInstall {
             Write-WinUtilLog -Component "Install" -Message "Install workflow completed."
             Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" }
         } catch {
+            Hide-WPFInstallAppBusy
             Write-Host "==========================================="
             Write-Host "Error: $_"
             Write-Host "==========================================="
             Write-WinUtilLog -Level "ERROR" -Component "Install" -Message "Install workflow failed: $($_.Exception.Message)"
             Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Error" -overlay "warning" }
+        } finally {
+            $sync.ProcessRunning = $False
         }
-        $sync.ProcessRunning = $False
     }
 }

@@ -11,22 +11,22 @@ function Invoke-WPFUnInstall {
 
     if($sync.ProcessRunning) {
         $msg = "[Invoke-WPFUnInstall] Install process is currently running"
-        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+        Show-WinUtilMessage -Message $msg -Title "Winutil" -Button "OK" -Icon "Warning"
         return
     }
 
     if ($PackagesToUninstall.Count -eq 0) {
         $WarningMsg = "Please select the program(s) to uninstall"
-        [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+        Show-WinUtilMessage -Message $WarningMsg -Title $AppTitle -Button "OK" -Icon "Warning"
         return
     }
 
-    $ButtonType = [System.Windows.MessageBoxButton]::YesNo
+    $ButtonType = "YesNo"
     $MessageboxTitle = "Are you sure?"
     $Messageboxbody = ("This will uninstall the following applications: `n $($PackagesToUninstall | Select-Object Name, Description| Out-String)")
-    $MessageIcon = [System.Windows.MessageBoxImage]::Information
+    $MessageIcon = "Information"
 
-    $confirm = [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+    $confirm = Show-WinUtilMessage -Message $Messageboxbody -Title $MessageboxTitle -Button $ButtonType -Icon $MessageIcon
 
     if($confirm -eq "No") {return}
 
@@ -63,13 +63,15 @@ function Invoke-WPFUnInstall {
             Write-WinUtilLog -Component "Uninstall" -Message "Uninstall workflow completed."
             Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" }
         } catch {
+            Hide-WPFInstallAppBusy
             Write-Host "==========================================="
             Write-Host "Error: $_"
             Write-Host "==========================================="
             Write-WinUtilLog -Level "ERROR" -Component "Uninstall" -Message "Uninstall workflow failed: $($_.Exception.Message)"
            Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Error" -overlay "warning" }
+        } finally {
+            $sync.ProcessRunning = $False
         }
-        $sync.ProcessRunning = $False
 
     }
 }
