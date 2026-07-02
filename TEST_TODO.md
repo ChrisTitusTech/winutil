@@ -16,7 +16,7 @@ Current suite status: broad parser, import, config JSON, compile, and runspace s
   - Verify `Invoke-WPF*` handler names used by buttons/tabs correspond to real functions.
   - Verify core tabs, search controls, install panels, tweak panels, and Win11 Creator controls are present.
 
-- [ ] Add mock-based tests for registry and service helpers.
+- [x] Add mock-based tests for registry and service helpers.
   - Cover `Set-WinUtilRegistry` set/remove paths with `Mock New-Item`, `Mock Set-ItemProperty`, and `Mock Remove-ItemProperty`.
   - Cover `Set-WinUtilService` for missing services, startup type changes, and no-op behavior.
   - Assert command parameters instead of touching the real registry or services.
