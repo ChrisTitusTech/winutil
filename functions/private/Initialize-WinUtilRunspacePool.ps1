@@ -12,11 +12,9 @@ function Initialize-WinUtilRunspacePool {
 
     # Create a new session state for parsing variables into our runspace.
     $hashVars = New-Object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'sync', $sync, $null
-    $offlineVar = New-Object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'PARAM_OFFLINE', $PARAM_OFFLINE, $null
     $initialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
 
     $initialSessionState.Variables.Add($hashVars)
-    $initialSessionState.Variables.Add($offlineVar)
 
     # Get every WinUtil/WPF function and add it to the session state.
     $functions = Get-ChildItem function:\ | Where-Object { $_.Name -imatch 'winutil|WPF' }
