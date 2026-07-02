@@ -6,10 +6,14 @@ BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 
     . (Join-Path $script:repoRoot "functions\private\Write-WinUtilLog.ps1")
-    . (Join-Path $script:repoRoot "functions\private\Test-WinUtilPerformanceTrace.ps1")
-    . (Join-Path $script:repoRoot "functions\private\Write-WinUtilPerformanceCheckpoint.ps1")
-    . (Join-Path $script:repoRoot "functions\private\Start-WinUtilPerformanceTrace.ps1")
-    . (Join-Path $script:repoRoot "functions\private\Stop-WinUtilPerformanceTrace.ps1")
+    . (Join-Path $script:repoRoot "tools\perf\Test-WinUtilPerformanceTrace.ps1")
+    . (Join-Path $script:repoRoot "tools\perf\Write-WinUtilPerformanceCheckpoint.ps1")
+    . (Join-Path $script:repoRoot "tools\perf\Start-WinUtilPerformanceTrace.ps1")
+    . (Join-Path $script:repoRoot "tools\perf\Stop-WinUtilPerformanceTrace.ps1")
+}
+
+AfterAll {
+    & (Join-Path $script:repoRoot "Compile.ps1")
 }
 
 Describe "WinUtil performance tracing helpers" {
@@ -58,13 +62,34 @@ Describe "WinUtil performance tracing helpers" {
 }
 
 Describe "Startup performance checkpoints" {
-    It "adds config-load checkpoints to compiled output" {
+    It "keeps performance tracing out of normal compiled output" {
+        & (Join-Path $script:repoRoot "Compile.ps1")
+
+        $compiledScript = Get-Content -Path (Join-Path $script:repoRoot "winutil.ps1") -Raw
+
+        $compiledScript | Should -Not -Match "Test-WinUtilPerformanceTrace"
+        $compiledScript | Should -Not -Match "Start-WinUtilPerformanceTrace"
+        $compiledScript | Should -Not -Match "Write-WinUtilPerformanceCheckpoint"
+        $compiledScript | Should -Not -Match "Stop-WinUtilPerformanceTrace"
+        $compiledScript | Should -Not -Match "PerformanceTraceEnabled"
+    }
+
+    It "adds config-load checkpoints only to trace compiled output" {
         $compileScript = Get-Content -Path (Join-Path $script:repoRoot "Compile.ps1") -Raw
 
+        $compileScript | Should -Match '\[switch\]\$Trace'
         $compileScript | Should -Match "Start-WinUtilPerformanceTrace"
         $compileScript | Should -Match "Config load start"
         $compileScript | Should -Match "Config load complete"
         $compileScript | Should -Match "Config .* loaded"
+
+        & (Join-Path $script:repoRoot "Compile.ps1") -Trace
+        $compiledScript = Get-Content -Path (Join-Path $script:repoRoot "winutil.ps1") -Raw
+
+        $compiledScript | Should -Match "function Test-WinUtilPerformanceTrace"
+        $compiledScript | Should -Match '\$sync\.PerformanceTraceEnabled = \$true'
+        $compiledScript | Should -Match "Config load start"
+        $compiledScript | Should -Match "Config load complete"
     }
 
     It "adds runtime checkpoints for startup hotspots" {
