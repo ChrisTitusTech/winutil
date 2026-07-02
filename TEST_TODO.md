@@ -55,7 +55,7 @@ Current suite status: broad parser, import, config JSON, compile, and runspace s
   - Cover `Invoke-WPFAppxRemoval` selection behavior and runspace parameter passing.
   - Verify empty selection is handled without removal calls.
 
-- [ ] Add UI selection/state helper tests.
+- [x] Add UI selection/state helper tests.
   - Cover `Update-WinUtilSelections`, `Reset-WPFCheckBoxes`, `Invoke-WPFSelectedCheckboxesUpdate`, and `Invoke-WPFToggleAllCategories`.
   - Use small fake checkbox/control objects instead of WPF windows where possible.
   - Verify selected apps, tweaks, toggles, appx, and features stay in sync with checkbox state.
