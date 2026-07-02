@@ -20,32 +20,6 @@ CCC::::::::::::C         T:::::::::T            T:::::::::T
 =====Windows Toolbox=====
 "@
 
-# Create enums
-Add-Type @"
-public enum PackageManagers
-{
-    Winget,
-    Choco
-}
-"@
-
-# Create classes for different exceptions
-
-class WingetFailedInstall : Exception {
-    [string]$additionalData
-    WingetFailedInstall($Message) : base($Message) {}
-}
-
-class ChocoFailedInstall : Exception {
-    [string]$additionalData
-    ChocoFailedInstall($Message) : base($Message) {}
-}
-
-class GenericException : Exception {
-    [string]$additionalData
-    GenericException($Message) : base($Message) {}
-}
-
 # Load the configuration files
 
 $sync.configs.applicationsHashtable = @{}
@@ -165,11 +139,11 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
 
 #Persist Package Manager preference across winutil restarts
 $sync.ChocoRadioButton.Add_Checked({
-    $sync.preferences.packagemanager = [PackageManagers]::Choco
+    $sync.preferences.packagemanager = "Choco"
     Set-Preferences -save
 })
 $sync.WingetRadioButton.Add_Checked({
-    $sync.preferences.packagemanager = [PackageManagers]::Winget
+    $sync.preferences.packagemanager = "Winget"
     Set-Preferences -save
 })
 

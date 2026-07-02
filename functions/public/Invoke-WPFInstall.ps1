@@ -29,8 +29,8 @@ function Invoke-WPFInstall {
 
         $packagesSorted = Get-WinUtilSelectedPackages -PackageList $PackagesToInstall -Preference $ManagerPreference
 
-        $packagesWinget = $packagesSorted[[PackageManagers]::Winget]
-        $packagesChoco = $packagesSorted[[PackageManagers]::Choco]
+        $packagesWinget = $packagesSorted['Winget']
+        $packagesChoco = $packagesSorted['Choco']
         Write-WinUtilLog -Component "Install" -Message "Install package manager split: winget=$(@($packagesWinget).Count), choco=$(@($packagesChoco).Count)"
 
         try {
