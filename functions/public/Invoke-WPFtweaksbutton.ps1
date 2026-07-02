@@ -70,7 +70,9 @@ function Invoke-WPFtweaksbutton {
       }
     }
 
-    Set-WinUtilDNS -DNSProvider $dnsProvider
+    if ($dnsProvider -ne "Default") {
+      Set-WinUtilDNS -DNSProvider $dnsProvider
+    }
 
     for ($i = 0; $i -lt $tweaks.Count; $i++) {
       Set-WinUtilProgressBar -Label "Applying $($tweaks[$i])" -Percent ($completedSteps / $totalSteps * 100)
