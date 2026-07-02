@@ -161,6 +161,15 @@
         "winget": "Cemu.Cemu",
         "foss": true
     },
+    "chatgpt": {
+        "category": "Development",
+        "choco": "na",
+        "content": "ChatGPT Desktop",
+        "description": "The official ChatGPT desktop app for Windows, distributed through the Microsoft Store.",
+        "link": "https://apps.microsoft.com/detail/9nt1r1c2hh7j",
+        "winget": "msstore:9NT1R1C2HH7J",
+        "foss": false
+    },
     "chatterino": {
         "category": "Communications",
         "choco": "chatterino",
@@ -188,6 +197,33 @@
         "winget": "Hibbiki.Chromium",
         "foss": true
     },
+    "cinebenchr23": {
+        "category": "Pro Tools",
+        "choco": "na",
+        "content": "Cinebench R23",
+        "description": "Cinebench R23 is a benchmark tool for comparing CPU rendering performance across systems.",
+        "link": "https://www.maxon.net/en/cinebench",
+        "winget": "Maxon.CinebenchR23",
+        "foss": false
+    },
+    "claude": {
+        "category": "Development",
+        "choco": "claude",
+        "content": "Claude Desktop",
+        "description": "Anthropic's Claude desktop application for focused AI-assisted work and chat.",
+        "link": "https://claude.ai/download",
+        "winget": "Anthropic.Claude",
+        "foss": false
+    },
+    "claude-code": {
+        "category": "Development",
+        "choco": "claude-code",
+        "content": "Claude Code",
+        "description": "Anthropic's agentic coding tool for terminal and IDE development workflows.",
+        "link": "https://code.claude.com/",
+        "winget": "Anthropic.ClaudeCode",
+        "foss": false
+    },
     "cmake": {
         "category": "Development",
         "choco": "cmake",
@@ -195,6 +231,15 @@
         "description": "CMake is an open-source, cross-platform family of tools designed to build, test and package software.",
         "link": "https://cmake.org/",
         "winget": "Kitware.CMake",
+        "foss": true
+    },
+    "codex": {
+        "category": "Development",
+        "choco": "codex",
+        "content": "Codex",
+        "description": "Codex CLI is an OpenAI coding agent that runs locally in your terminal.",
+        "link": "https://developers.openai.com/codex/cli",
+        "winget": "OpenAI.Codex",
         "foss": true
     },
     "cpuz": {
@@ -313,6 +358,15 @@
         "link": "https://dotnet.microsoft.com/download/dotnet/10.0",
         "winget": "Microsoft.DotNet.DesktopRuntime.10",
         "foss": true
+    },
+    "dropbox": {
+        "category": "Utilities",
+        "choco": "dropbox",
+        "content": "Dropbox",
+        "description": "Dropbox is a cloud storage client for syncing files, sharing content, and keeping documents available across devices.",
+        "link": "https://www.dropbox.com/desktop",
+        "winget": "Dropbox.Dropbox",
+        "foss": false
     },
     "eaapp": {
         "category": "Games",
@@ -538,6 +592,15 @@
         "link": "https://imageglass.org/",
         "winget": "DuongDieuPhap.ImageGlass",
         "foss": true
+    },
+    "internetdownloadmanager": {
+        "category": "Utilities",
+        "choco": "internet-download-manager",
+        "content": "Internet Download Manager",
+        "description": "Internet Download Manager is a download manager for accelerating, resuming, and scheduling file downloads.",
+        "link": "https://www.internetdownloadmanager.com/",
+        "winget": "Tonec.InternetDownloadManager",
+        "foss": false
     },
     "irfanview": {
         "category": "Multimedia Tools",
@@ -1285,6 +1348,15 @@
         "winget": "SlackTechnologies.Slack",
         "foss": false
     },
+    "startallback": {
+        "category": "Utilities",
+        "choco": "StartAllBack",
+        "content": "StartAllBack",
+        "description": "StartAllBack restores and improves Windows taskbar, Start menu, File Explorer, and shell UI behavior.",
+        "link": "https://www.startallback.com/",
+        "winget": "StartIsBack.StartAllBack",
+        "foss": false
+    },
     "steam": {
         "category": "Games",
         "choco": "steam-client",
@@ -1572,6 +1644,15 @@
         "link": "https://www.waterfox.net/",
         "winget": "Waterfox.Waterfox",
         "foss": true
+    },
+    "whatsapp": {
+        "category": "Communications",
+        "choco": "na",
+        "content": "WhatsApp Desktop",
+        "description": "WhatsApp Desktop is the official Windows desktop messaging app from Meta, distributed through the Microsoft Store.",
+        "link": "https://apps.microsoft.com/detail/9nksqgp7f2nh",
+        "winget": "msstore:9NKSQGP7F2NH",
+        "foss": false
     },
     "wingetui": {
         "category": "Utilities",

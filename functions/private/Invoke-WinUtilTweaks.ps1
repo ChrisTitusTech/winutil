@@ -21,6 +21,9 @@ function Invoke-WinUtilTweaks {
         $KeepServiceStartup = $true
     )
 
+    $action = if ($undo) { "Undo" } else { "Apply" }
+    Write-WinUtilLog -Component "Tweaks" -Message "$action tweak: $CheckBox"
+
     if ($undo) {
         $Values = @{
             Registry = "OriginalValue"
@@ -77,4 +80,5 @@ function Invoke-WinUtilTweaks {
             }
         }
     }
+    Write-WinUtilLog -Component "Tweaks" -Message "$action tweak completed: $CheckBox"
 }

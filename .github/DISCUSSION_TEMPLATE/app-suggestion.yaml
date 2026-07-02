@@ -1,0 +1,28 @@
+title: "[App Suggestion] "
+body:
+  - type: input
+    attributes:
+      label: "Application Link"
+      description: "Provide a link where this application can downloaded officially"
+  - type: checkboxes
+    attributes:
+      label: "Rules Checklist"
+      description: "You should agree with next rules"
+      options:
+        - label: "This application is popular enough, so is not considered as niche"
+          required: true
+        - label: "This application is not considered bloatware"
+          required: true
+        - label: "This application is free to access"
+          required: true
+        - label: "This application should be included on majority of fresh installed systems"
+          required: true
+        - label: "This application is present on WinGet (check winstall.app or do 'winget search your-app' in terminal)"
+          required: true
+  - type: checkboxes
+    attributes:
+      label: "Check for denied applications"
+      options:
+        - label: "Yes, I checked PRs, issues and discussions for existing suggestions and their result"
+          required: true
+      
