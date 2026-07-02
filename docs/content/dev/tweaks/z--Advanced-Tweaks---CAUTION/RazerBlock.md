@@ -3,7 +3,7 @@ title: "Razer Software Auto-Install - Disable"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=998}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=946}
   "WPFTweaksRazerBlock": {
     "Content": "Razer Software Auto-Install - Disable",
     "Description": "Blocks ALL Razer Software installations. The hardware works fine without any software.",
@@ -27,7 +27,7 @@ description: ""
     ],
     "InvokeScript": [
       "
-      $RazerPath = \"C:\\Windows\\Installer\\Razer\"
+      $RazerPath = \"$Env:SystemRoot\\Installer\\Razer\"
 
       if (Test-Path $RazerPath) {
         Remove-Item $RazerPath\\* -Recurse -Force
@@ -40,7 +40,7 @@ description: ""
     ],
     "UndoScript": [
       "
-      icacls \"C:\\Windows\\Installer\\Razer\" /remove:d Everyone
+      icacls \"$Env:SystemRoot\\Installer\\Razer\" /remove:d Everyone
       "
     ],
 ```
