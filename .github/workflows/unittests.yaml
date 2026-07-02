@@ -9,14 +9,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v7
-    - name: lint
-      uses: devblackops/github-action-psscriptanalyzer@master
-      with:
-        sendComment: false
-        settingsPath: lint/PSScriptAnalyser.ps1
-        failOnErrors: false
-        failOnWarnings: false
-        failOnInfos: false
+    - name: Install PSScriptAnalyzer
+      run: |
+        Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+        Install-Module -Name PSScriptAnalyzer -RequiredVersion 1.20.0 -Scope CurrentUser -Force
+        Import-Module PSScriptAnalyzer -RequiredVersion 1.20.0 -Force
+        Get-Module PSScriptAnalyzer | Select-Object Name, Version, Path
+      shell: pwsh
+    - name: Run PSScriptAnalyzer
+      run: |
+        $results = Invoke-ScriptAnalyzer -Path . -Settings ./lint/PSScriptAnalyser.ps1 -Recurse
+        if ($results) {
+            $results | Format-Table -AutoSize | Out-String -Width 4096 | Write-Host
+        } else {
+            Write-Host "PSScriptAnalyzer found no diagnostics."
+        }
+      shell: pwsh
   test:
     runs-on: windows-latest
 
