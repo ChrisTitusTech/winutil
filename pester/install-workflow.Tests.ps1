@@ -15,6 +15,7 @@ public enum PackageManagers
 "@
     }
 
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilPackageLogSummary.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFInstall.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFUnInstall.ps1")
 
@@ -147,6 +148,10 @@ Describe "Invoke-WPFInstall entrypoint" {
                 $ParameterList[1][1] -eq [PackageManagers]::Winget
         }
         Should -Invoke -CommandName Show-WinUtilMessage -Times 0 -Exactly
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Component -eq "Install" -and
+                $Message -eq "Install selected package(s): Git (winget: Git.Git)"
+        }
     }
 
     It "prompts and exits when no packages are selected" {
@@ -294,6 +299,10 @@ Describe "Invoke-WPFUnInstall entrypoint" {
                 @($ParameterList[0][1])[0].winget -eq "Git.Git" -and
                 $ParameterList[1][0] -eq "ManagerPreference" -and
                 $ParameterList[1][1] -eq [PackageManagers]::Winget
+        }
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Component -eq "Uninstall" -and
+                $Message -eq "Uninstall selected package(s): Git (winget: Git.Git)"
         }
     }
 
