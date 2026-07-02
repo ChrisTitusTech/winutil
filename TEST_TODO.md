@@ -26,7 +26,7 @@ Current suite status: broad parser, import, config JSON, compile, and runspace s
   - Cover `Test-WinUtilPackageManager` with mocked `Get-Command`.
   - Cover `Install-WinUtilProgramWinget` and `Install-WinUtilProgramChoco` with mocked `Start-Process`, including install/uninstall arguments.
 
-- [ ] Add runspace behavior tests beyond the smoke test.
+- [x] Add runspace behavior tests beyond the smoke test.
   - Cover no argument list, one named parameter, multiple named parameters, and scriptblock failures.
   - Assert callers receive a single `IAsyncResult`.
   - Verify failure output/errors can be retrieved by the owning PowerShell instance.
