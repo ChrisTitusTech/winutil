@@ -1,53 +1,71 @@
 #===========================================================================
 # Tests - Functions
 #===========================================================================
-Describe "Comprehensive Checks for PS1 Files in Functions Folder" {
-    BeforeAll {
-        # Get all .ps1 files in the functions folder
-        $ps1Files = Get-ChildItem -Path ./functions -Filter *.ps1 -Recurse
+
+$functionRoot = Join-Path $PSScriptRoot "..\functions"
+$functionCases = @(
+    Get-ChildItem -Path $functionRoot -Filter *.ps1 -Recurse | ForEach-Object {
+        @{
+            Name = $_.Name
+            Path = $_.FullName
+        }
     }
+)
 
-    foreach ($file in $ps1Files) {
-        Context "Checking $($file.Name)" {
-            It "Should import without errors" {
-                { . $file.FullName } | Should -Not -Throw
-            }
+Describe "Function source files" {
+    foreach ($functionCase in $functionCases) {
+        Context "Checking $($functionCase.Path)" {
+            It "has no parser errors" -TestCases $functionCase {
+                param([string]$Path)
 
-            It "Should have no syntax errors" {
+                $tokens = $null
                 $syntaxErrors = $null
-                $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content -Path $file.FullName -Raw), [ref]$syntaxErrors)
-                $syntaxErrors.Count | Should -Be 0
-            }
+                [System.Management.Automation.Language.Parser]::ParseFile($Path, [ref]$tokens, [ref]$syntaxErrors) | Out-Null
 
-            It "Should not use deprecated cmdlets or aliases" {
-                $content = Get-Content -Path $file.FullName -Raw
-                # Example check for a known deprecated cmdlet or alias
-                $content | Should -Not -Match 'DeprecatedCmdlet'
-                # Add more checks as needed
-            }
-
-            It "Should follow naming conventions for functions" {
-                $functions = (Get-Command -Path $file.FullName).Name
-                foreach ($function in $functions) {
-                    $function | Should -Match '^[a-z]+(-[a-z]+)*$' # Enforce lower-kebab-case
+                if ($syntaxErrors.Count -ne 0) {
+                    throw ($syntaxErrors | Out-String)
                 }
             }
 
-            It "Should define mandatory parameters for all functions" {
-                . $file.FullName
-                $functions = (Get-Command -Path $file.FullName).Name
-                foreach ($function in $functions) {
-                    $parameters = (Get-Command -Name $function).Parameters.Values
-                    $mandatoryParams = $parameters | Where-Object { $_.Attributes.Mandatory -eq $true }
-                    $mandatoryParams.Count | Should -BeGreaterThan 0
+            It "defines top-level functions with approved verb-noun names" -TestCases $functionCase {
+                param([string]$Path)
+
+                $tokens = $null
+                $syntaxErrors = $null
+                $approvedVerbs = (Get-Verb).Verb
+                $ast = [System.Management.Automation.Language.Parser]::ParseFile($Path, [ref]$tokens, [ref]$syntaxErrors)
+                if ($syntaxErrors.Count -ne 0) {
+                    throw ($syntaxErrors | Out-String)
+                }
+
+                $topLevelFunctions = @(
+                    $ast.EndBlock.Statements |
+                        Where-Object { $_ -is [System.Management.Automation.Language.FunctionDefinitionAst] }
+                )
+
+                if ($topLevelFunctions.Count -eq 0) {
+                    throw "No top-level function was found in $Path."
+                }
+
+                foreach ($function in $topLevelFunctions) {
+                    if ($function.Name -notmatch '^[A-Za-z]+-[A-Za-z0-9]+$') {
+                        throw "Function '$($function.Name)' does not use Verb-Noun naming."
+                    }
+
+                    $verb = ($function.Name -split '-', 2)[0]
+                    if ($approvedVerbs -notcontains $verb) {
+                        throw "Function '$($function.Name)' does not use an approved PowerShell verb."
+                    }
                 }
             }
 
-            It "Should have all functions available after import" {
-                . $file.FullName
-                $functions = (Get-Command -Path $file.FullName).Name
-                foreach ($function in $functions) {
-                    { Get-Command -Name $function -CommandType Function } | Should -Not -BeNullOrEmpty
+            It "imports without throwing" -TestCases $functionCase {
+                param([string]$Path)
+
+                try {
+                    . $Path
+                } catch {
+                    throw "Failed to import ${Path}: $_"
                 }
             }
         }

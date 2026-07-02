@@ -578,7 +578,9 @@ Tests are in `/pester/`:
 
 Run tests:
 ```powershell
-Invoke-Pester
+Install-Module -Name Pester -RequiredVersion 5.8.0 -Scope CurrentUser -Force -SkipPublisherCheck
+Import-Module Pester -RequiredVersion 5.8.0 -Force
+Invoke-Pester -Path 'pester/*.Tests.ps1' -Output Detailed -CI
 ```
 
 ## Build Process

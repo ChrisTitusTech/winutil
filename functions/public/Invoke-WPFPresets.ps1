@@ -37,6 +37,7 @@ function Invoke-WPFPresets {
     switch ($checkboxfilterpattern) {
         "WPFTweak*" { $sync.selectedTweaks = [System.Collections.Generic.List[string]]::new() }
         "WPFInstall*" { $sync.selectedApps = [System.Collections.Generic.List[string]]::new() }
+        "WPFAppx*" { $sync.selectedAppx = [System.Collections.Generic.List[string]]::new() }
         "WPFeatures" { $sync.selectedFeatures = [System.Collections.Generic.List[string]]::new() }
         "WPFToggle" { $sync.selectedToggles = [System.Collections.Generic.List[string]]::new() }
         default {}
