@@ -60,16 +60,18 @@ $sync = [Hashtable]::Synchronized(@{})
 $sync.version = "#{replaceme}"
 $sync.configs = @{}
 $sync.preferences = @{}
-$sync.Buttons = [System.Collections.Generic.List[PSObject]]::new()
+$sync.ProcessRunning = $false
+$sync.selectedAppx = [System.Collections.Generic.List[string]]::new()
 $sync.selectedApps = [System.Collections.Generic.List[string]]::new()
 $sync.selectedTweaks = [System.Collections.Generic.List[string]]::new()
 $sync.selectedToggles = [System.Collections.Generic.List[string]]::new()
 $sync.selectedFeatures = [System.Collections.Generic.List[string]]::new()
 
 $winutildir = "$env:LocalAppData\winutil"
-$dateTime = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
+$sync.winutildir = $winutildir
 
-Start-Transcript -Path "$winutildir\logs\winutil_$dateTime.log" -Append -NoClobber | Out-Null
+$sync.transcriptPath = "$winutildir\winutil_$dateTime.log"
+Start-Transcript -Path "$winutildir\winutil_$dateTime.log" -Append -NoClobber | Out-Null
 
 $Host.UI.RawUI.WindowTitle = "WinUtil"
 Clear-Host
