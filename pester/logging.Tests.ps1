@@ -6,7 +6,6 @@ BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 
     . (Join-Path $script:repoRoot "functions\private\Write-WinUtilLog.ps1")
-    . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilLoggedProcess.ps1")
 }
 
 Describe "Write-WinUtilLog" {
@@ -68,32 +67,6 @@ Describe "Write-WinUtilLog" {
         $content | Should -Match "second fallback entry"
     }
 
-    It "keeps process stdout and stderr in the active session log" {
-        $logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
-        $script:sync = [hashtable]::Synchronized(@{
-            winutildir = $script:testRoot
-            logPath = $logPath
-            transcriptPath = $logPath
-        })
-
-        Mock Write-Host { }
-        Mock Write-Warning { }
-        Mock Start-Process {
-            Set-Content -Path $RedirectStandardOutput -Value @("install output")
-            Set-Content -Path $RedirectStandardError -Value @("install warning")
-            [pscustomobject]@{ ExitCode = 0 }
-        }
-
-        Invoke-WinUtilLoggedProcess -FilePath winget -ArgumentList @("install", "--id", "Git.Git") -Component "Package" -Description "Install winget package Git.Git"
-
-        $logFiles = @(Get-ChildItem -Path (Join-Path $script:testRoot "logs") -Filter "winutil_*.log")
-        $logFiles.Count | Should -Be 1
-        Test-Path -Path (Join-Path $script:testRoot "winutil.log") | Should -BeFalse
-
-        $content = Get-Content -Path $logPath -Raw
-        $content | Should -Match "\[Package\] Install winget package Git\.Git \[stdout\] install output"
-        $content | Should -Match "\[Package\] Install winget package Git\.Git \[stderr\] install warning"
-    }
 }
 
 Describe "WinUtil startup logging path" {

@@ -185,3 +185,4 @@ When the user corrects an agent approach, add or tighten one concrete rule here 
 - Keep `winutil.ps1` generated-only: change source files, compile to verify, and never stage the generated script.
 - Keep WinUtil runtime logging in the existing timestamped `%LocalAppData%\winutil\logs\winutil_*.log` session file; do not create a separate root `winutil.log`.
 - Import Pester 5.8.0 before running tests so `Invoke-Pester -Output Detailed -CI` does not resolve to Windows' inbox Pester 3.4.0.
+- Keep package install/uninstall process launches simple unless explicitly requested; do not add a separate stdout/stderr process logging helper for winget or Chocolatey.
