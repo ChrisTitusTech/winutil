@@ -4,6 +4,8 @@
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+    . (Join-Path $script:repoRoot "functions\private\Close-WinUtilRunspacePool.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilRunspacePool.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFRunspace.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFFeatureInstall.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFAppxRemoval.ps1")
@@ -18,21 +20,17 @@ BeforeAll {
         $initialSessionState.Variables.Add($syncVariable)
         $script:sync.runspace = [runspacefactory]::CreateRunspacePool(1, 2, $initialSessionState, $Host)
         $script:sync.runspace.Open()
+
+        function Write-WinUtilPerformanceCheckpoint { param($Name) }
     }
 
     function script:Clear-WinUtilRunspaceTestContext {
-        if ($script:powershell) {
-            $script:powershell.Dispose()
-        }
-
         if ($script:sync -and $script:sync.runspace) {
             $script:sync.runspace.Close()
             $script:sync.runspace.Dispose()
         }
 
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name powershell -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name handle -Scope Script -ErrorAction SilentlyContinue
     }
 
     function script:Assert-WinUtilAsyncHandle {
@@ -54,28 +52,34 @@ Describe "Invoke-WPFRunspace behavior" {
     }
 
     It "returns a single async handle with no argument list" {
+        $script:sync.Result = $null
+
         $handle = Invoke-WPFRunspace -ScriptBlock {
             Start-Sleep -Milliseconds 100
-            "no-args|$($sync.Marker)"
+            $sync.Result = "no-args|$($sync.Marker)"
         }
 
         Assert-WinUtilAsyncHandle -Handle $handle
-        @($script:powershell.EndInvoke($handle))[0] | Should -Be "no-args|shared"
+        $script:sync.Result | Should -Be "no-args|shared"
     }
 
     It "passes one named parameter" {
+        $script:sync.Result = $null
+
         $handle = Invoke-WPFRunspace -ParameterList @(,("Name", "value")) -ScriptBlock {
             param([string]$Name)
 
             Start-Sleep -Milliseconds 100
-            "Name=$Name"
+            $sync.Result = "Name=$Name"
         }
 
         Assert-WinUtilAsyncHandle -Handle $handle
-        @($script:powershell.EndInvoke($handle))[0] | Should -Be "Name=value"
+        $script:sync.Result | Should -Be "Name=value"
     }
 
     It "passes multiple named parameters" {
+        $script:sync.Result = $null
+
         $handle = Invoke-WPFRunspace -ParameterList @(
             ("First", "alpha"),
             ("Second", "beta")
@@ -86,21 +90,57 @@ Describe "Invoke-WPFRunspace behavior" {
             )
 
             Start-Sleep -Milliseconds 100
-            "$First|$Second|$($sync.Marker)"
+            $sync.Result = "$First|$Second|$($sync.Marker)"
         }
 
         Assert-WinUtilAsyncHandle -Handle $handle
-        @($script:powershell.EndInvoke($handle))[0] | Should -Be "alpha|beta|shared"
+        $script:sync.Result | Should -Be "alpha|beta|shared"
     }
 
-    It "surfaces scriptblock failures through the owning PowerShell instance" {
+    It "keeps the shared runspace pool usable after scriptblock failures" {
         $handle = Invoke-WPFRunspace -ScriptBlock {
             Start-Sleep -Milliseconds 100
             throw "runspace failure"
         }
 
         Assert-WinUtilAsyncHandle -Handle $handle
-        { $script:powershell.EndInvoke($handle) } | Should -Throw -ExpectedMessage "*runspace failure*"
+
+        $script:sync.Result = $null
+        $secondHandle = Invoke-WPFRunspace -ScriptBlock {
+            $sync.Result = "after-failure"
+        }
+
+        Assert-WinUtilAsyncHandle -Handle $secondHandle
+        $script:sync.Result | Should -Be "after-failure"
+    }
+
+    It "runs multiple queued invocations without shared PowerShell state" {
+        $script:sync.FirstResult = $null
+        $script:sync.SecondResult = $null
+
+        $firstHandle = Invoke-WPFRunspace -ParameterList @(,("Value", "first")) -ScriptBlock {
+            param([string]$Value)
+
+            Start-Sleep -Milliseconds 150
+            $sync.FirstResult = $Value
+        }
+        $secondHandle = Invoke-WPFRunspace -ParameterList @(,("Value", "second")) -ScriptBlock {
+            param([string]$Value)
+
+            $sync.SecondResult = $Value
+        }
+
+        Assert-WinUtilAsyncHandle -Handle $firstHandle
+        Assert-WinUtilAsyncHandle -Handle $secondHandle
+        $script:sync.FirstResult | Should -Be "first"
+        $script:sync.SecondResult | Should -Be "second"
+    }
+
+    It "does not use script-scoped PowerShell or handle state" {
+        $runspaceScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFRunspace.ps1") -Raw
+
+        $runspaceScript | Should -Not -Match '\$script:powershell'
+        $runspaceScript | Should -Not -Match '\$script:handle'
     }
 }
 

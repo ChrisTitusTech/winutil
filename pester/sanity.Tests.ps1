@@ -206,6 +206,10 @@ Describe "Compiled WinUtil sanity" {
 Describe "Runspace sanity" {
     BeforeAll {
         . (Join-Path $script:repoRoot "functions\public\Invoke-WPFRunspace.ps1")
+        . (Join-Path $script:repoRoot "functions\private\Close-WinUtilRunspacePool.ps1")
+        . (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilRunspacePool.ps1")
+
+        function Write-WinUtilPerformanceCheckpoint { param($Name) }
     }
 
     It "returns a single async handle and runs a scriptblock with arguments in the shared runspace pool" {
@@ -216,44 +220,26 @@ Describe "Runspace sanity" {
         $script:sync.runspace = [runspacefactory]::CreateRunspacePool(1, 2, $initialSessionState, $Host)
         $script:sync.runspace.Open()
 
-        $ended = $false
         try {
+            $script:sync.Result = $null
             $handle = Invoke-WPFRunspace -ArgumentList "argument" -ParameterList @(,("NamedValue", "parameter")) -ScriptBlock {
                 param($ArgumentValue, [string]$NamedValue)
 
                 Start-Sleep -Milliseconds 200
-                "$ArgumentValue|$NamedValue|$($sync.SmokeValue)"
+                $sync.Result = "$ArgumentValue|$NamedValue|$($sync.SmokeValue)"
             }
 
             ($handle -is [System.IAsyncResult]) | Should -BeTrue
             ($handle -is [array]) | Should -BeFalse
             $handle.AsyncWaitHandle.WaitOne(5000) | Should -BeTrue
-
-            $result = $script:powershell.EndInvoke($handle)
-            $ended = $true
-
-            @($result)[0] | Should -Be "argument|parameter|shared"
+            $script:sync.Result | Should -Be "argument|parameter|shared"
         } finally {
-            if (-not $ended -and $handle -and $handle.IsCompleted -and $script:powershell) {
-                try {
-                    $script:powershell.EndInvoke($handle) | Out-Null
-                } catch {
-                    # The assertion failure is more useful than cleanup errors here.
-                }
-            }
-
-            if ($script:powershell) {
-                $script:powershell.Dispose()
-            }
-
             if ($script:sync -and $script:sync.runspace) {
                 $script:sync.runspace.Close()
                 $script:sync.runspace.Dispose()
             }
 
             Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
-            Remove-Variable -Name powershell -Scope Script -ErrorAction SilentlyContinue
-            Remove-Variable -Name handle -Scope Script -ErrorAction SilentlyContinue
         }
     }
 }

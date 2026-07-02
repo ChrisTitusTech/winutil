@@ -245,13 +245,14 @@ Describe "Preset config" {
 Describe "App navigation config" {
     It "is wired to an existing XAML target grid" {
         $mainScript = Get-Content -Path $script:mainScriptPath -Raw
+        $tabInitializerScript = Get-Content -Path (Join-Path $script:repoRoot "functions/private/Initialize-WinUtilTabContent.ps1") -Raw
         $targetGridMatch = [regex]::Match(
-            $mainScript,
+            "$mainScript`n$tabInitializerScript",
             'Invoke-WPFUIElements\s+-configVariable\s+\$sync\.configs\.appnavigation\s+-targetGridName\s+"([^"]+)"'
         )
 
         if (-not $targetGridMatch.Success) {
-            throw "scripts/main.ps1 does not wire appnavigation through Invoke-WPFUIElements."
+            throw "Startup tab initialization does not wire appnavigation through Invoke-WPFUIElements."
         }
 
         $xamlText = Get-Content -Path $script:xamlPath -Raw
