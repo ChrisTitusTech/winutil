@@ -74,7 +74,7 @@ Current suite status: broad parser, import, config JSON, compile, and runspace s
   - Cover theme resource updates without opening the full GUI.
   - Verify theme config contains required brushes/colors used by the theme code.
 
-- [ ] Add search/filter tests.
+- [x] Add search/filter tests.
   - Cover `Find-AppsByNameOrDescription` and `Find-TweaksByNameOrDescription` with fake UI item trees.
   - Verify empty search restores visibility.
   - Verify category labels and panels hide/show correctly.
