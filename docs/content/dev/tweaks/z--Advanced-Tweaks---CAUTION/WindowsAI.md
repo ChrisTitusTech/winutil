@@ -3,7 +3,7 @@ title: "Windows AI - Disable And Remove"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=942}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=887}
   "WPFTweaksWindowsAI": {
     "Content": "Windows AI - Disable And Remove",
     "Description": "Removes and disables all AI features/packages",
@@ -34,7 +34,10 @@ description: ""
 
       Get-AppxPackage -AllUsers \"*Copilot*\" | Remove-AppxPackage -AllUsers
       Get-AppxPackage -AllUsers Microsoft.MicrosoftOfficeHub | Remove-AppxPackage -AllUsers
-      Remove-AppxPackage $Appx
+
+      if ($Appx) {
+          Remove-AppxPackage $Appx
+      }
 
       Set-Service -Name WSAIFabricSvc -StartupType Disabled
       Disable-WindowsOptionalFeature -FeatureName Recall -Online -NoRestart
