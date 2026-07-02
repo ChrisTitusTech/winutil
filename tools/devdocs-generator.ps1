@@ -42,10 +42,26 @@ function Get-RawJsonBlock {
         return $null
     }
 
-    $escapedIndent = [regex]::Escape($startIndent)
-    $endIndex      = -1
+    # Use brace-depth tracking to find the closing brace
+    $endIndex = -1
+    $depth = 1  # We're starting inside the opening brace
     for ($i = ($startIndex + 1); $i -lt $JsonLines.Count; $i++) {
-        if ($JsonLines[$i] -match "^$escapedIndent\}") {
+        $line = $JsonLines[$i]
+        
+        # Count braces in this line, ignoring those in strings
+        $inString = $false
+        $chars = $line.ToCharArray()
+        for ($k = 0; $k -lt $chars.Count; $k++) {
+            if ($chars[$k] -eq '"' -and ($k -eq 0 -or $chars[$k-1] -ne '\')) {
+                $inString = -not $inString
+            } elseif (-not $inString) {
+                if ($chars[$k] -eq '{') { $depth++ }
+                elseif ($chars[$k] -eq '}') { $depth-- }
+            }
+        }
+        
+        # Found the closing brace of the item
+        if ($depth -eq 0) {
             $endIndex = $i
             break
         }
@@ -121,34 +137,86 @@ function Add-LinkAttributeToJson {
         }
         if ($startIdx -eq -1) { continue }
 
-        # Derive indentation: propIndent is one level deeper than the item start.
-        # Used to target only top-level properties and skip nested object braces.
-        $null          = $lines[$startIdx] -match '^(\s*)'
-        $propIndent    = $matches[1] + '  '
-        $propIndentLen = $propIndent.Length
-        $escapedPropIndent = [regex]::Escape($propIndent)
+        # Derive indentation used by top-level properties in the item.
+        # Prefer existing property indentation to avoid inheriting bad key indentation.
+        $null       = $lines[$startIdx] -match '^(\s*)'
+        $propIndent = $matches[1] + '  '
 
-        # Scan forward: update existing "link" or find the closing brace to insert one.
-        # Closing brace is matched by indent <= propIndentLen to handle inconsistent formatting.
-        $linkUpdated   = $false
-        $closeBraceIdx = -1
-        for ($j = $startIdx + 1; $j -lt $lines.Count; $j++) {
-            if ($lines[$j] -match "^$escapedPropIndent`"link`"\s*:") {
-                $lines[$j] = $lines[$j] -replace '"link"\s*:\s*"[^"]*"', "`"link`": `"$newLink`""
-                $linkUpdated = $true
+        $depthProbe = 1
+        for ($p = $startIdx + 1; $p -lt $lines.Count; $p++) {
+            $probeLine = $lines[$p]
+
+            if ($depthProbe -eq 1 -and $probeLine -match '^(\s*)"[^"]+"\s*:') {
+                $propIndent = $matches[1]
                 break
             }
-            if ($lines[$j] -match '^\s*\}') {
-                $null = $lines[$j] -match '^(\s*)'
-                if ($matches[1].Length -le $propIndentLen) {
-                    $closeBraceIdx = $j
-                    break
+
+            $inStringProbe = $false
+            $probeChars = $probeLine.ToCharArray()
+            for ($q = 0; $q -lt $probeChars.Count; $q++) {
+                if ($probeChars[$q] -eq '"' -and ($q -eq 0 -or $probeChars[$q-1] -ne '\')) {
+                    $inStringProbe = -not $inStringProbe
+                } elseif (-not $inStringProbe) {
+                    if ($probeChars[$q] -eq '{') { $depthProbe++ }
+                    elseif ($probeChars[$q] -eq '}') { $depthProbe-- }
                 }
+            }
+
+            if ($depthProbe -eq 0) { break }
+        }
+
+        # Scan forward: remove any existing "link" property and find the closing brace.
+        # Use brace-depth tracking to properly handle nested structures like arrays.
+        $closeBraceIdx = -1
+        $depth         = 1  # We're starting inside the opening brace of the item
+        $linesToRemove  = @()
+
+        for ($j = $startIdx + 1; $j -lt $lines.Count; $j++) {
+            $line = $lines[$j]
+            
+            # Check for existing "link" property at top-level (depth 1 before processing braces on this line)
+            # Match at any indentation level (user may have manually changed indentation)
+            if ($depth -eq 1 -and $line -match '^\s*"link"\s*:') {
+                # Mark this line for removal
+                $linesToRemove += $j
+            }
+            
+            # Count braces in this line, ignoring those in strings
+            $inString = $false
+            $chars = $line.ToCharArray()
+            for ($k = 0; $k -lt $chars.Count; $k++) {
+                if ($chars[$k] -eq '"' -and ($k -eq 0 -or $chars[$k-1] -ne '\')) {
+                    $inString = -not $inString
+                } elseif (-not $inString) {
+                    if ($chars[$k] -eq '{') { $depth++ }
+                    elseif ($chars[$k] -eq '}') { $depth-- }
+                }
+            }
+            
+            # Found the closing brace of the item
+            if ($depth -eq 0) {
+                $closeBraceIdx = $j
+                break
             }
         }
 
-        if (-not $linkUpdated -and $closeBraceIdx -ne -1) {
-            # Insert "link" before the closing brace
+        # Remove old "link" lines in reverse order to preserve indices
+        foreach ($idx in ($linesToRemove | Sort-Object -Descending)) {
+            # If the line before had a trailing comma (from the link property), remove it
+            if ($idx -gt $startIdx) {
+                $prevLine = $lines[$idx - 1]
+                if ($prevLine -match ',\s*$' -and $lines[$idx].Trim() -match '^}') {
+                    $lines[$idx - 1] = $prevLine -replace ',\s*$', ''
+                }
+            }
+            $lines.RemoveAt($idx)
+            if ($idx -lt $closeBraceIdx) {
+                $closeBraceIdx--
+            }
+        }
+
+        # Now insert "link" before the closing brace (consistent position for all items)
+        if ($closeBraceIdx -ne -1) {
             $prevPropIdx = $closeBraceIdx - 1
             while ($prevPropIdx -gt $startIdx -and $lines[$prevPropIdx].Trim() -eq '') { $prevPropIdx-- }
 

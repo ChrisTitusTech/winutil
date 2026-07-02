@@ -1,10 +1,9 @@
-<Window x:Class="WinUtility.MainWindow"
+<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WinUtility"
-        mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         UseLayoutRounding="True"
         WindowStyle="None"
@@ -56,9 +55,9 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
-                    <Grid x:Name="Grid">
+                    <Grid Name="Grid">
                         <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" Fill="Transparent" />
-                        <Border x:Name="Rectangle1" CornerRadius="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto"  Background="{TemplateBinding Background}" />
+                        <Border Name="Rectangle1" CornerRadius="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto"  Background="{TemplateBinding Background}" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="Tag" Value="Horizontal">
@@ -103,14 +102,14 @@
                 <ControlTemplate TargetType="CheckBox">
                     <StackPanel Orientation="Horizontal">
                         <Grid Width="16" Height="16" Margin="0,0,8,0">
-                            <Border x:Name="CheckBoxBorder"
+                            <Border Name="CheckBoxBorder"
                                     BorderBrush="{DynamicResource MainForegroundColor}"
                                     Background="{DynamicResource ButtonBackgroundColor}"
                                     BorderThickness="1"
                                     Width="12"
                                     Height="12"
                                     CornerRadius="2"/>
-                            <Path x:Name="CheckMark"
+                            <Path Name="CheckMark"
                                   Stroke="{DynamicResource ToggleButtonOnColor}"
                                   StrokeThickness="2"
                                   Data="M 2 8 L 6 12 L 14 4"
@@ -159,7 +158,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Grid>
-                            <Border x:Name="BackgroundBorder"
+                            <Border Name="BackgroundBorder"
                                     Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{DynamicResource ButtonBorderThickness}"
@@ -219,20 +218,20 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ScrollBar}">
-                    <Grid x:Name="GridRoot" Width="7" Background="{TemplateBinding Background}" >
+                    <Grid Name="GridRoot" Width="7" Background="{TemplateBinding Background}" >
                         <Grid.RowDefinitions>
                             <RowDefinition Height="0.00001*" />
                         </Grid.RowDefinitions>
 
-                        <Track x:Name="PART_Track" Grid.Row="0" IsDirectionReversed="true" Focusable="false">
+                        <Track Name="PART_Track" Grid.Row="0" IsDirectionReversed="true" Focusable="false">
                             <Track.Thumb>
-                                <Thumb x:Name="Thumb" Background="{TemplateBinding Foreground}" Style="{DynamicResource ScrollThumbs}" />
+                                <Thumb Name="Thumb" Background="{TemplateBinding Foreground}" Style="{DynamicResource ScrollThumbs}" />
                             </Track.Thumb>
                             <Track.IncreaseRepeatButton>
-                                <RepeatButton x:Name="PageUp" Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="false" />
+                                <RepeatButton Name="PageUp" Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="false" />
                             </Track.IncreaseRepeatButton>
                             <Track.DecreaseRepeatButton>
-                                <RepeatButton x:Name="PageDown" Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="false" />
+                                <RepeatButton Name="PageDown" Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="false" />
                             </Track.DecreaseRepeatButton>
                         </Track>
                     </Grid>
@@ -278,12 +277,12 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBox">
                         <Grid>
-                            <Border x:Name="OuterBorder"
+                            <Border Name="OuterBorder"
                                     BorderBrush="{DynamicResource BorderColor}"
                                     BorderThickness="1"
                                     CornerRadius="{DynamicResource ButtonCornerRadius}"
                                     Background="{TemplateBinding Background}">
-                                <ToggleButton x:Name="ToggleButton"
+                                <ToggleButton Name="ToggleButton"
                                               Background="Transparent"
                                               BorderThickness="0"
                                               IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
@@ -310,13 +309,13 @@
                                     </Grid>
                                 </ToggleButton>
                             </Border>
-                            <Popup x:Name="Popup"
+                            <Popup Name="Popup"
                                    IsOpen="{TemplateBinding IsDropDownOpen}"
                                    Placement="Bottom"
                                    Focusable="False"
                                    AllowsTransparency="True"
                                    PopupAnimation="Slide">
-                                <Border x:Name="DropDownBorder"
+                                <Border Name="DropDownBorder"
                                         Background="{TemplateBinding Background}"
                                         BorderBrush="{DynamicResource BorderColor}"
                                         BorderThickness="1"
@@ -352,13 +351,13 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
                         <Grid>
-                            <Border x:Name="ButtonGlow"
+                            <Border Name="ButtonGlow"
                                         Background="{TemplateBinding Background}"
                                         BorderBrush="{DynamicResource ButtonForegroundColor}"
                                         BorderThickness="{DynamicResource ButtonBorderThickness}"
                                         CornerRadius="{DynamicResource ButtonCornerRadius}">
                                 <Grid>
-                                    <Border x:Name="BackgroundBorder"
+                                    <Border Name="BackgroundBorder"
                                         Background="{TemplateBinding Background}"
                                         BorderBrush="{DynamicResource ButtonBackgroundColor}"
                                         BorderThickness="{DynamicResource ButtonBorderThickness}"
@@ -413,7 +412,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Grid>
-                            <Border x:Name="BackgroundBorder"
+                            <Border Name="BackgroundBorder"
                                     Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{DynamicResource ButtonBorderThickness}"
@@ -450,7 +449,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
                         <Grid>
-                            <Border x:Name="BackgroundBorder"
+                            <Border Name="BackgroundBorder"
                                     Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{DynamicResource ButtonBorderThickness}"
@@ -464,7 +463,7 @@
                                             Margin="0,3,5,0" />
 
                                     <!-- Toggle Dot with hover grow effect -->
-                                    <Ellipse x:Name="ToggleDot"
+                                    <Ellipse Name="ToggleDot"
                                             Width="8" Height="8"
                                             Fill="{DynamicResource ButtonForegroundColor}"
                                             HorizontalAlignment="Right"
@@ -568,7 +567,7 @@
                             <BulletDecorator Background="Transparent">
                                 <BulletDecorator.Bullet>
                                     <Grid Width="{DynamicResource CheckBoxBulletDecoratorSize}" Height="{DynamicResource CheckBoxBulletDecoratorSize}">
-                                        <Border x:Name="Border"
+                                        <Border Name="Border"
                                                 BorderBrush="{TemplateBinding BorderBrush}"
                                                 Background="{DynamicResource ButtonBackgroundColor}"
                                                 BorderThickness="1"
@@ -576,13 +575,13 @@
                                                 Height="{DynamicResource CheckBoxBulletDecoratorSize *0.85}"
                                                 Margin="1"
                                                 SnapsToDevicePixels="True"/>
-                                        <Viewbox x:Name="CheckMarkContainer"
+                                        <Viewbox Name="CheckMarkContainer"
                                                 Width="{DynamicResource CheckBoxBulletDecoratorSize}"
                                                 Height="{DynamicResource CheckBoxBulletDecoratorSize}"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
                                                 Visibility="Collapsed">
-                                            <Path x:Name="CheckMark"
+                                            <Path Name="CheckMark"
                                                   Stroke="{DynamicResource ToggleButtonOnColor}"
                                                   StrokeThickness="1.5"
                                                   Data="M 0 5 L 5 10 L 12 0"
@@ -620,14 +619,14 @@
                         <StackPanel Orientation="Horizontal" Margin="{DynamicResource CheckBoxMargin}">
                             <Viewbox Width="{DynamicResource CheckBoxBulletDecoratorSize}" Height="{DynamicResource CheckBoxBulletDecoratorSize}">
                                 <Grid Width="14" Height="14">
-                                    <Ellipse x:Name="OuterCircle"
+                                    <Ellipse Name="OuterCircle"
                                             Stroke="{DynamicResource ToggleButtonOffColor}"
                                             Fill="{DynamicResource ButtonBackgroundColor}"
                                             StrokeThickness="1"
                                             Width="14"
                                             Height="14"
                                             SnapsToDevicePixels="True"/>
-                                    <Ellipse x:Name="InnerCircle"
+                                    <Ellipse Name="InnerCircle"
                                             Fill="{DynamicResource ToggleButtonOnColor}"
                                             Width="8"
                                             Height="8"
@@ -682,7 +681,7 @@
                             <Trigger Property="IsChecked" Value="false">
                                 <Trigger.ExitActions>
                                     <RemoveStoryboard BeginStoryboardName="WPFToggleSwitchLeft" />
-                                    <BeginStoryboard x:Name="WPFToggleSwitchRight">
+                                    <BeginStoryboard Name="WPFToggleSwitchRight">
                                         <Storyboard>
                                             <ThicknessAnimation Storyboard.TargetProperty="Margin"
                                                     Storyboard.TargetName="WPFToggleSwitchButton"
@@ -701,7 +700,7 @@
                             <Trigger Property="IsChecked" Value="true">
                                 <Trigger.ExitActions>
                                     <RemoveStoryboard BeginStoryboardName="WPFToggleSwitchRight" />
-                                    <BeginStoryboard x:Name="WPFToggleSwitchLeft">
+                                    <BeginStoryboard Name="WPFToggleSwitchLeft">
                                         <Storyboard>
                                             <ThicknessAnimation Storyboard.TargetProperty="Margin"
                                                     Storyboard.TargetName="WPFToggleSwitchButton"
@@ -727,17 +726,17 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ToggleButton}">
-                        <Grid x:Name="toggleSwitch">
+                        <Grid Name="toggleSwitch">
 
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <Border Grid.Column="1" x:Name="Border" CornerRadius="8"
+                        <Border Grid.Column="1" Name="Border" CornerRadius="8"
                                 BorderThickness="1"
                                 Width="34" Height="17">
-                            <Ellipse x:Name="Ellipse" Fill="{DynamicResource MainForegroundColor}" Stretch="Uniform"
+                            <Ellipse Name="Ellipse" Fill="{DynamicResource MainForegroundColor}" Stretch="Uniform"
                                     Margin="2,2,2,1"
                                     HorizontalAlignment="Left" Width="10.8"
                                     RenderTransformOrigin="0.5, 0.5">
@@ -884,7 +883,7 @@
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="5">
                             <Grid>
-                                <ScrollViewer x:Name="PART_ContentHost" />
+                                <ScrollViewer Name="PART_ContentHost" />
                             </Grid>
                         </Border>
                     </ControlTemplate>
@@ -916,7 +915,7 @@
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="5">
                             <Grid>
-                                <ScrollViewer x:Name="PART_ContentHost" />
+                                <ScrollViewer Name="PART_ContentHost" />
                             </Grid>
                         </Border>
                     </ControlTemplate>
@@ -1002,6 +1001,14 @@
                     <ToggleButton.Content>
                         <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonWin11ISOForegroundColor}">
                             <Underline>W</Underline>in11 Creator
+                        </TextBlock>
+                    </ToggleButton.Content>
+                </ToggleButton>
+                <ToggleButton Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="Auto" MinWidth="{DynamicResource TabButtonWidth}"
+                    Background="{DynamicResource ButtonAppxBackgroundColor}" Foreground="{DynamicResource ButtonAppxForegroundColor}" FontWeight="Bold" Name="WPFTab6BT">
+                    <ToggleButton.Content>
+                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonAppxForegroundColor}">
+                            <Underline>A</Underline>ppX Removal
                         </TextBlock>
                     </ToggleButton.Content>
                 </ToggleButton>
@@ -1688,6 +1695,52 @@
                                  Text="Ready. Please select a Windows 11 ISO to begin."/>
                     </Grid>
 
+                </Grid>
+            </TabItem>
+            <TabItem Header="AppX" Visibility="Collapsed" Name="WPFTab6">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Grid.Row="0" Margin="{DynamicResource TabContentMargin}">
+                        <Grid Background="Transparent">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Vertical" Grid.Row="0" Grid.Column="0" Margin="5">
+                                <Label Content="Selections:" FontSize="{DynamicResource FontSize}" VerticalAlignment="Center" Margin="2"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,2,0,0">
+                                    <Button Name="WPFDefaultAppxSelection" Content=" Default " Margin="2" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
+                                    <Button Name="WPFGetInstalledAppx" Content=" Get Installed " Margin="2" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
+                                    <Button Name="WPFSelectAllAppx" Content=" Select All " Margin="2" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
+                                    <Button Name="WPFClearAppxSelection" Content=" Clear Selection " Margin="2" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <Grid Name="appxpanel" Grid.Row="1">
+                            </Grid>
+
+                            <Border Grid.Row="2" Style="{StaticResource BorderStyle}" Margin="5,15,5,5">
+                                <StackPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left">
+                                    <TextBlock Padding="10" TextWrapping="Wrap" Foreground="{DynamicResource MainForegroundColor}">
+                                        Note: Select the pre-installed Windows AppX packages you wish to remove and click 'Remove Selected'.
+                                        <LineBreak/>These packages are removed for the current user and all new user profiles.
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </ScrollViewer>
+
+                    <Border Grid.Row="1" Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="5" HorizontalAlignment="Stretch" Padding="10">
+                        <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <Button Name="WPFRemoveSelectedAppx" Content="Remove Selected" Margin="5" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
+                        </WrapPanel>
+                    </Border>
                 </Grid>
             </TabItem>
         </TabControl>
