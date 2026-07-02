@@ -33,6 +33,7 @@ description: ""
       New-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Appx\\AppxAllUserStore\\EndOfLife\\$Sid\\$Appx\" -Force
 
       Get-AppxPackage -AllUsers \"*Copilot*\" | Remove-AppxPackage -AllUsers
+      winget uninstall -e --name \"Copilot\" --silent --force --accept-source-agreements 2>$null
       Get-AppxPackage -AllUsers Microsoft.MicrosoftOfficeHub | Remove-AppxPackage -AllUsers
 
       if ($Appx) {
