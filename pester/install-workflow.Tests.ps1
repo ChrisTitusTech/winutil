@@ -5,16 +5,6 @@
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 
-    if (-not ("PackageManagers" -as [type])) {
-        Add-Type @"
-public enum PackageManagers
-{
-    Winget,
-    Choco
-}
-"@
-    }
-
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilPackageLogSummary.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFInstall.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFUnInstall.ps1")
@@ -26,7 +16,7 @@ public enum PackageManagers
         param($ArgumentList, $ParameterList, [scriptblock]$ScriptBlock)
     }
     function Get-WinUtilSelectedPackages {
-        param($PackageList, [PackageManagers]$Preference)
+        param($PackageList, [string]$Preference)
     }
     function Show-WPFInstallAppBusy {
         param($text)
@@ -82,7 +72,7 @@ public enum PackageManagers
             ProcessRunning = $ProcessRunning
             selectedApps = $selectedApps
             preferences = [pscustomobject]@{
-                packagemanager = [PackageManagers]::Winget
+                packagemanager = "Winget"
             }
             configs = @{
                 applicationsHashtable = $applications
@@ -97,15 +87,15 @@ public enum PackageManagers
         )
 
         $packages = @{}
-        $packages[[PackageManagers]::Winget] = [System.Collections.Generic.List[string]]::new()
-        $packages[[PackageManagers]::Choco] = [System.Collections.Generic.List[string]]::new()
+        $packages["Winget"] = [System.Collections.Generic.List[string]]::new()
+        $packages["Choco"] = [System.Collections.Generic.List[string]]::new()
 
         foreach ($package in $Winget) {
-            $null = $packages[[PackageManagers]::Winget].Add($package)
+            $null = $packages["Winget"].Add($package)
         }
 
         foreach ($package in $Choco) {
-            $null = $packages[[PackageManagers]::Choco].Add($package)
+            $null = $packages["Choco"].Add($package)
         }
 
         $packages
@@ -145,7 +135,7 @@ Describe "Invoke-WPFInstall entrypoint" {
                 @($ParameterList[0][1]).Count -eq 1 -and
                 @($ParameterList[0][1])[0].winget -eq "Git.Git" -and
                 $ParameterList[1][0] -eq "ManagerPreference" -and
-                $ParameterList[1][1] -eq [PackageManagers]::Winget
+                $ParameterList[1][1] -eq "Winget"
         }
         Should -Invoke -CommandName Show-WinUtilMessage -Times 0 -Exactly
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
@@ -217,10 +207,10 @@ Describe "Invoke-WPFInstall runspace body" {
     It "installs split winget and choco packages and cleans up on success" {
         Invoke-WPFInstall
 
-        & $script:capturedInstallScriptBlock -PackagesToInstall @($script:package) -ManagerPreference ([PackageManagers]::Winget)
+        & $script:capturedInstallScriptBlock -PackagesToInstall @($script:package) -ManagerPreference "Winget"
 
         Should -Invoke -CommandName Get-WinUtilSelectedPackages -Times 1 -Exactly -ParameterFilter {
-            @($PackageList).Count -eq 1 -and $Preference -eq [PackageManagers]::Winget
+            @($PackageList).Count -eq 1 -and $Preference -eq "Winget"
         }
         Should -Invoke -CommandName Show-WPFInstallAppBusy -Times 1 -Exactly -ParameterFilter {
             $text -eq "Installing apps..."
@@ -245,7 +235,7 @@ Describe "Invoke-WPFInstall runspace body" {
 
         Invoke-WPFInstall
 
-        & $script:capturedInstallScriptBlock -PackagesToInstall @($script:package) -ManagerPreference ([PackageManagers]::Winget)
+        & $script:capturedInstallScriptBlock -PackagesToInstall @($script:package) -ManagerPreference "Winget"
 
         Should -Invoke -CommandName Hide-WPFInstallAppBusy -Times 1 -Exactly
         Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
@@ -298,7 +288,7 @@ Describe "Invoke-WPFUnInstall entrypoint" {
                 @($ParameterList[0][1]).Count -eq 1 -and
                 @($ParameterList[0][1])[0].winget -eq "Git.Git" -and
                 $ParameterList[1][0] -eq "ManagerPreference" -and
-                $ParameterList[1][1] -eq [PackageManagers]::Winget
+                $ParameterList[1][1] -eq "Winget"
         }
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
             $Component -eq "Uninstall" -and
@@ -374,10 +364,10 @@ Describe "Invoke-WPFUnInstall runspace body" {
     It "uninstalls split winget and choco packages and cleans up on success" {
         Invoke-WPFUnInstall -PackagesToUninstall @($script:package)
 
-        & $script:capturedUninstallScriptBlock -PackagesToUninstall @($script:package) -ManagerPreference ([PackageManagers]::Winget)
+        & $script:capturedUninstallScriptBlock -PackagesToUninstall @($script:package) -ManagerPreference "Winget"
 
         Should -Invoke -CommandName Get-WinUtilSelectedPackages -Times 1 -Exactly -ParameterFilter {
-            @($PackageList).Count -eq 1 -and $Preference -eq [PackageManagers]::Winget
+            @($PackageList).Count -eq 1 -and $Preference -eq "Winget"
         }
         Should -Invoke -CommandName Show-WPFInstallAppBusy -Times 1 -Exactly -ParameterFilter {
             $text -eq "Uninstalling apps..."
@@ -400,7 +390,7 @@ Describe "Invoke-WPFUnInstall runspace body" {
 
         Invoke-WPFUnInstall -PackagesToUninstall @($script:package)
 
-        & $script:capturedUninstallScriptBlock -PackagesToUninstall @($script:package) -ManagerPreference ([PackageManagers]::Winget)
+        & $script:capturedUninstallScriptBlock -PackagesToUninstall @($script:package) -ManagerPreference "Winget"
 
         Should -Invoke -CommandName Hide-WPFInstallAppBusy -Times 1 -Exactly
         Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {

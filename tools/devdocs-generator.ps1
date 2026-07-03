@@ -27,12 +27,10 @@ function Get-RawJsonBlock {
 
     $escapedName = [regex]::Escape($ItemName)
     $startIndex  = -1
-    $startIndent = ""
 
     for ($i = 0; $i -lt $JsonLines.Count; $i++) {
         if ($JsonLines[$i] -match "^(\s*)`"$escapedName`"\s*:\s*\{") {
             $startIndex  = $i
-            $startIndent = $matches[1]
             break
         }
     }
@@ -47,7 +45,7 @@ function Get-RawJsonBlock {
     $depth = 1  # We're starting inside the opening brace
     for ($i = ($startIndex + 1); $i -lt $JsonLines.Count; $i++) {
         $line = $JsonLines[$i]
-        
+
         # Count braces in this line, ignoring those in strings
         $inString = $false
         $chars = $line.ToCharArray()
@@ -59,7 +57,7 @@ function Get-RawJsonBlock {
                 elseif ($chars[$k] -eq '}') { $depth-- }
             }
         }
-        
+
         # Found the closing brace of the item
         if ($depth -eq 0) {
             $endIndex = $i
@@ -173,14 +171,14 @@ function Add-LinkAttributeToJson {
 
         for ($j = $startIdx + 1; $j -lt $lines.Count; $j++) {
             $line = $lines[$j]
-            
+
             # Check for existing "link" property at top-level (depth 1 before processing braces on this line)
             # Match at any indentation level (user may have manually changed indentation)
             if ($depth -eq 1 -and $line -match '^\s*"link"\s*:') {
                 # Mark this line for removal
                 $linesToRemove += $j
             }
-            
+
             # Count braces in this line, ignoring those in strings
             $inString = $false
             $chars = $line.ToCharArray()
@@ -192,7 +190,7 @@ function Add-LinkAttributeToJson {
                     elseif ($chars[$k] -eq '}') { $depth-- }
                 }
             }
-            
+
             # Found the closing brace of the item
             if ($depth -eq 0) {
                 $closeBraceIdx = $j

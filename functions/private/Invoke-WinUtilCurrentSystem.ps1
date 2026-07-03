@@ -55,8 +55,6 @@ Function Invoke-WinUtilCurrentSystem {
             $entry = $sync.configs.tweaks.$Config
             $registryKeys = $entry.registry
             $serviceKeys = $entry.service
-            $appxKeys = $entry.appx
-            $invokeScript = $entry.InvokeScript
             $entryType = $entry.Type
 
             if ($registryKeys -or $serviceKeys) {

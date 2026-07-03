@@ -30,3 +30,18 @@ In these cases, the power plan may fail to apply, This is expected behavior on u
 Revert start menu tweak stops working starting with **Windows 11 update KB5089573** (released in May 2026).
 
 In this update, Microsoft completely removed the old Start Menu code from Windows, so we aren't able to bring it back.
+
+### Issues with PowerShell 7 or Class not registered Error
+Installing PowerShell 7 from the Microsoft Store (MSIX package) is known to cause issues with DISM cmdlets such as `Get-WindowsOptionalFeature` and `Enable-WindowsOptionalFeature`, resulting in a `Class not registered` COM error.
+
+This might also make it so running the "pre-installed app removal" will take a indefinite amount of time
+
+Instead, install PowerShell 7 using one of the following methods:
+
+**winget (recommended):**
+```powershell
+winget install --id Microsoft.PowerShell --source winget --installer-type wix
+```
+**Direct MSI from GitHub Releases:** Download the `.msi` installer from the [PowerShell GitHub Releases](https://github.com/PowerShell/PowerShell/releases) page.
+
+For more details see https://github.com/PowerShell/PowerShell/issues/13866
