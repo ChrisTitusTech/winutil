@@ -23,9 +23,9 @@ function Invoke-WPFUpdatesdisable {
     Write-WinUtilLog -Component "Updates" -Message "Clearing SoftwareDistribution folder."
     Remove-Item "C:\Windows\SoftwareDistribution\*" -Recurse -Force -ErrorAction SilentlyContinue
 
-    Write-WinUtilLog -Component "Updates" -Message "=================================" -ForegroundColor Green
-    Write-WinUtilLog -Component "Updates" -Message "---   Updates Are Disabled    ---" -ForegroundColor Green
-    Write-WinUtilLog -Component "Updates" -Message "=================================" -ForegroundColor Green
+    Write-WinUtilLog -Component "Updates" -Message "================================="
+    Write-WinUtilLog -Component "Updates" -Message "---   Updates Are Disabled    ---"
+    Write-WinUtilLog -Component "Updates" -Message "================================="
 
     Write-WinUtilLog -Component "Updates" -Message "Windows Update disable workflow completed. Restart required."
 }
