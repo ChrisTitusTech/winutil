@@ -9,8 +9,12 @@ function Install-WinUtilProgramChoco {
     )
 
     if ($Action -eq 'Install') {
-        Start-Process -FilePath choco -ArgumentList "install $Programs -y" -NoNewWindow -Wait
+        $arguments = "install $Programs -y"
     } else {
-        Start-Process -FilePath choco -ArgumentList "uninstall $Programs -y" -NoNewWindow -Wait
+        $arguments = "uninstall $Programs -y"
     }
+
+    Write-WinUtilLog -Component "Package" -Message "$Action choco package(s): $($Programs -join ', ')"
+    $process = Start-Process -FilePath choco -ArgumentList $arguments -NoNewWindow -Wait -PassThru
+    Write-WinUtilLog -Component "Package" -Message "$Action choco package(s) completed: $($Programs -join ', ') (exit code: $($process.ExitCode))"
 }

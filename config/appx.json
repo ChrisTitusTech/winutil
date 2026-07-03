@@ -1,0 +1,233 @@
+{
+  "WPFAppxMicrosoft_WindowsFeedbackHub": {
+    "Category": "Microsoft Apps",
+    "Content": "Feedback Hub",
+    "Description": "Allows users to submit bug reports, feature suggestions, and diagnostic data directly to Microsoft.",
+    "Panel": "0",
+    "PackageId": "Microsoft.WindowsFeedbackHub"
+  },
+  "WPFAppxMicrosoft_GetHelp": {
+    "Category": "Microsoft Apps",
+    "Content": "Get Help",
+    "Description": "Provides access to automated troubleshooting guides, support documentation, and direct Microsoft customer assistance.",
+    "Panel": "0",
+    "PackageId": "Microsoft.GetHelp"
+  },
+  "WPFAppxMicrosoft_OutlookForWindows": {
+    "Category": "Microsoft Apps",
+    "Content": "Outlook for Windows",
+    "Description": "Provides modern email management, calendar scheduling, and contact organization features.",
+    "Panel": "0",
+    "PackageId": "Microsoft.OutlookForWindows"
+  },
+  "WPFAppxMSTeams": {
+    "Category": "Microsoft Apps",
+    "Content": "Microsoft Teams",
+    "Description": "Facilitates instant messaging, video conferencing, file sharing, and workspace collaboration.",
+    "Panel": "0",
+    "PackageId": "MSTeams"
+  },
+  "WPFAppxClipchamp_Clipchamp": {
+    "Category": "Utilities & Productivity",
+    "Content": "Clipchamp",
+    "Description": "Provides a user-friendly video editor with built-in templates, effects, and timeline editing tools.",
+    "Panel": "0",
+    "PackageId": "Clipchamp.Clipchamp"
+  },
+  "WPFAppxMicrosoft_MicrosoftOfficeHub": {
+    "Category": "Microsoft Apps",
+    "Content": "Microsoft 365",
+    "Description": "Serves as a centralized launcher and dashboard for accessing cloud-based Microsoft 365 apps and recent documents.",
+    "Panel": "0",
+    "PackageId": "Microsoft.MicrosoftOfficeHub"
+  },
+  "WPFAppxMicrosoft_ZuneMusic": {
+    "Category": "Utilities & Productivity",
+    "Content": "Media Player",
+    "Description": "Plays local audio and video files with modern playlist management and casting capabilities.",
+    "Panel": "0",
+    "PackageId": "Microsoft.ZuneMusic"
+  },
+  "WPFAppxMicrosoft_BingSearch": {
+    "Category": "Bing & Web Services",
+    "Content": "Bing Search",
+    "Description": "Integrates Microsoft Bing search capabilities and web services directly into the operating system.",
+    "Panel": "1",
+    "PackageId": "Microsoft.BingSearch"
+  },
+  "WPFAppxMicrosoftCorporationII_QuickAssist": {
+    "Category": "Utilities & Productivity",
+    "Content": "Quick Assist",
+    "Description": "Enables secure remote technical support and screen sharing over an internet connection.",
+    "Panel": "0",
+    "PackageId": "MicrosoftCorporationII.QuickAssist"
+  },
+  "WPFAppxMicrosoft_WindowsDevHome": {
+    "Category": "Developer Tools",
+    "Content": "Dev Home",
+    "Description": "Provides a specialized dashboard for software developer environment setups, repository syncing, and hardware widgets.",
+    "Panel": "1",
+    "PackageId": "Microsoft.Windows.DevHome"
+  },
+  "WPFAppxMicrosoft_WindowsCrossDevice": {
+    "Category": "Microsoft Ecosystem",
+    "Content": "Mobile Devices",
+    "Description": "Manages system-level background connectivity with paired mobile devices. Removing this may disable cross-device features such as phone screen mirroring, file transfer, and mobile hotspot handoff integrated into Windows Settings.",
+    "Panel": "0",
+    "PackageId": "MicrosoftWindows.CrossDevice"
+  },
+  "WPFAppxMicrosoft_Todos": {
+    "Category": "Utilities & Productivity",
+    "Content": "To Do",
+    "Description": "Creates, tracks, and synchronizes personal tasks, smart lists, and daily reminders.",
+    "Panel": "0",
+    "PackageId": "Microsoft.Todos"
+  },
+  "WPFAppxMicrosoft_PowerAutomateDesktop": {
+    "Category": "Developer Tools",
+    "Content": "Power Automate",
+    "Description": "Automates repetitive workflows and desktop tasks using low-code visual scripting.",
+    "Panel": "1",
+    "PackageId": "Microsoft.PowerAutomateDesktop"
+  },
+  "WPFAppxMicrosoft_YourPhone": {
+    "Category": "Microsoft Ecosystem",
+    "Content": "Phone Link",
+    "Description": "Synchronizes text messages, phone notifications, photos, and calls from a mobile device to the desktop.",
+    "Panel": "0",
+    "PackageId": "Microsoft.YourPhone"
+  },
+  "WPFAppxMicrosoft_MicrosoftStickyNotes": {
+    "Category": "Utilities & Productivity",
+    "Content": "Sticky Notes",
+    "Description": "Creates quick, floating text notes on the desktop that automatically sync across devices.",
+    "Panel": "0",
+    "PackageId": "Microsoft.MicrosoftStickyNotes"
+  },
+  "WPFAppxMicrosoft_WindowsSoundRecorder": {
+    "Category": "Utilities & Productivity",
+    "Content": "Sound Recorder",
+    "Description": "Records and trims live audio inputs with simple microphone adjustment controls.",
+    "Panel": "0",
+    "PackageId": "Microsoft.WindowsSoundRecorder"
+  },
+  "WPFAppxMicrosoft_WindowsAlarms": {
+    "Category": "Utilities & Productivity",
+    "Content": "Clock",
+    "Description": "Features world clocks, alarms, countdown timers, stopwatches, and dedicated focus session tracking.",
+    "Panel": "0",
+    "PackageId": "Microsoft.WindowsAlarms"
+  },
+  "WPFAppxMicrosoft_Paint": {
+    "Category": "Utilities & Productivity",
+    "Content": "Paint",
+    "Description": "Provides built-in digital sketching, basic image editing, and pixel-level graphic manipulation tools.",
+    "Panel": "0",
+    "PackageId": "Microsoft.Paint"
+  },
+  "WPFAppxMicrosoft_WindowsNotepad": {
+    "Category": "Utilities & Productivity",
+    "Content": "Notepad",
+    "Description": "Provides a lightweight text editor with multi-tab support for plain text files and code snippets.",
+    "Panel": "0",
+    "PackageId": "Microsoft.WindowsNotepad"
+  },
+  "WPFAppxMicrosoft_ScreenSketch": {
+    "Category": "Utilities & Productivity",
+    "Content": "Snipping Tool",
+    "Description": "Captures screenshots or screen recordings with built-in markup, image cropping, and optical character recognition (OCR).",
+    "Panel": "0",
+    "PackageId": "Microsoft.ScreenSketch"
+  },
+  "WPFAppxMicrosoft_Copilot": {
+    "Category": "Bing & Web Services",
+    "Content": "Copilot",
+    "Description": "Launches the Microsoft AI companion for contextual answers, creative writing assistance, and intelligent web search.",
+    "Panel": "1",
+    "PackageId": "Microsoft.Copilot"
+  },
+  "WPFAppxMicrosoft_WindowsCalculator": {
+    "Category": "Utilities & Productivity",
+    "Content": "Calculator",
+    "Description": "Performs standard arithmetic, scientific operations, programming calculations, and unit conversions.",
+    "Panel": "0",
+    "PackageId": "Microsoft.WindowsCalculator"
+  },
+  "WPFAppxMicrosoft_WindowsCamera": {
+    "Category": "Utilities & Productivity",
+    "Content": "Camera",
+    "Description": "Captures photographs and records video files via connected webcams or imaging hardware.",
+    "Panel": "0",
+    "PackageId": "Microsoft.WindowsCamera"
+  },
+  "WPFAppxMicrosoft_WindowsPhotos": {
+    "Category": "Utilities & Productivity",
+    "Content": "Photos",
+    "Description": "Organizes, views, and crops local images with basic color adjustment and album creation tools.",
+    "Panel": "0",
+    "PackageId": "Microsoft.Windows.Photos"
+  },
+  "WPFAppxMicrosoft_BingNews": {
+    "Category": "Bing & Web Services",
+    "Content": "News",
+    "Description": "Aggregates breaking news headlines, personalized article feeds, and world current events.",
+    "Panel": "1",
+    "PackageId": "Microsoft.BingNews"
+  },
+  "WPFAppxMicrosoft_BingWeather": {
+    "Category": "Bing & Web Services",
+    "Content": "Weather",
+    "Description": "Displays local real-time weather tracking, radar maps, and historical meteorological forecasts.",
+    "Panel": "1",
+    "PackageId": "Microsoft.BingWeather"
+  },
+  "WPFAppxMicrosoft_GamingApp": {
+    "Category": "Xbox & Gaming",
+    "Content": "Xbox App",
+    "Description": "Serves as the primary gaming library manager, social community interface, and PC Game Pass dashboard.",
+    "Panel": "1",
+    "PackageId": "Microsoft.GamingApp"
+  },
+  "WPFAppxMicrosoft_XboxGamingOverlay": {
+    "Category": "Xbox & Gaming",
+    "Content": "Xbox Game Bar",
+    "Description": "Provides customizable in-game status widgets, audio balancing sliders, system monitoring tools, and gameplay recording.",
+    "Panel": "1",
+    "PackageId": "Microsoft.XboxGamingOverlay"
+  },
+  "WPFAppxMicrosoft_XboxIdentityProvider": {
+    "Category": "Xbox & Gaming",
+    "Content": "Xbox Identity Provider",
+    "Description": "Manages Xbox network user authentication and background account validation for connected titles. Warning: removing this may break Microsoft account sign-in for non-Xbox games and apps that rely on this authentication pipeline.",
+    "Panel": "1",
+    "PackageId": "Microsoft.XboxIdentityProvider"
+  },
+  "WPFAppxMicrosoft_XboxSpeechToTextOverlay": {
+    "Category": "Xbox & Gaming",
+    "Content": "Xbox Speech To Text Overlay",
+    "Description": "Provides system-level live accessibility captions and voice-to-text translation for gaming chat networks.",
+    "Panel": "1",
+    "PackageId": "Microsoft.XboxSpeechToTextOverlay"
+  },
+  "WPFAppxMicrosoft_Xbox_TCUI": {
+    "Category": "Xbox & Gaming",
+    "Content": "Xbox TCUI",
+    "Description": "Provides core account connection UI modules for single sign-on flows within game titles. Warning: removing this may break Microsoft account authentication in games and apps that do not otherwise require the Xbox app.",
+    "Panel": "1",
+    "PackageId": "Microsoft.Xbox.TCUI"
+  },
+  "WPFAppxMicrosoft_StartExperiencesApp": {
+    "Category": "Bing & Web Services",
+    "Content": "Start Experiences App",
+    "Description": "Powers the Windows Widgets board, delivering a personalized feed of news, weather, sports, and finance content.",
+    "Panel": "1",
+    "PackageId": "Microsoft.StartExperiencesApp"
+  },
+  "WPFAppxMicrosoft_MicrosoftSolitaireCollection": {
+    "Category": "Xbox & Gaming",
+    "Content": "Solitaire Collection",
+    "Description": "Bundles built-in card game modes including Klondike, Spider, FreeCell, Pyramid, and TriPeaks alongside daily challenges.",
+    "Panel": "1",
+    "PackageId": "Microsoft.MicrosoftSolitaireCollection"
+  }
+}

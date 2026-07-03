@@ -13,11 +13,13 @@ function Initialize-InstallAppEntry {
             $appKey
         )
 
+        $app = $sync.configs.applicationsHashtable.$appKey
+
         # Create the outer Border for the application type
         $border = New-Object Windows.Controls.Border
         $border.Style = $sync.Form.Resources.AppEntryBorderStyle
         $border.Tag = $appKey
-        $border.ToolTip = $Apps.$appKey.description
+        $border.ToolTip = $app.description
         $border.Add_MouseLeftButtonUp({
             $childCheckbox = ($this.Child | Where-Object {$_.Template.TargetType -eq [System.Windows.Controls.Checkbox]})[0]
             $childCheckBox.isChecked = -not $childCheckbox.IsChecked
@@ -85,10 +87,10 @@ function Initialize-InstallAppEntry {
         # Create the TextBlock for the application name
         $appName = New-Object Windows.Controls.TextBlock
         $appName.Style = $sync.Form.Resources.AppEntryNameStyle
-        $appName.Text = $Apps.$appKey.content
+        $appName.Text = $app.content
 
         # Add FOSS label after the name if FOSS
-        if ($Apps.$appKey.foss -eq $true) {
+        if ($app.foss -eq $true) {
             $fossRun = [System.Windows.Documents.Run]::new(" $([char]0x25CF)")
             $fossRun.Foreground = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(110, 255, 114))
             $fossRun.FontSize = 11.5
@@ -99,10 +101,13 @@ function Initialize-InstallAppEntry {
         $checkBox.Content = $contentPanel
 
         # Add accessibility properties to make the elements screen reader friendly
-        $checkBox.SetValue([Windows.Automation.AutomationProperties]::NameProperty, $Apps.$appKey.content)
-        $border.SetValue([Windows.Automation.AutomationProperties]::NameProperty, $Apps.$appKey.content)
+        $checkBox.SetValue([Windows.Automation.AutomationProperties]::NameProperty, $app.content)
+        $border.SetValue([Windows.Automation.AutomationProperties]::NameProperty, $app.content)
 
         $border.Child = $checkBox
+        if ($sync.selectedApps -contains $appKey) {
+            $checkBox.IsChecked = $true
+        }
         # Add the border to the corresponding Category
         $TargetElement.Children.Add($border) | Out-Null
         return $checkbox

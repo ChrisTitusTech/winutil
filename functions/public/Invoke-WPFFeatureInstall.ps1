@@ -12,7 +12,7 @@ function Invoke-WPFFeatureInstall {
         return
     }
 
-    $handle = Invoke-WPFRunspace -ScriptBlock {
+    Invoke-WPFRunspace -ScriptBlock {
         $Features = $sync.selectedFeatures
         $sync.ProcessRunning = $true
         if ($Features.count -eq 1) {
@@ -26,7 +26,7 @@ function Invoke-WPFFeatureInstall {
         $Features | ForEach-Object {
             Invoke-WinUtilFeatureInstall $_
             $X++
-            Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -value ($x/$CheckBox.Count) }
+            Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -value ($x/$Features.Count) }
         }
 
         $sync.ProcessRunning = $false

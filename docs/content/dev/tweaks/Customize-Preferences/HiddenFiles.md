@@ -3,7 +3,7 @@ title: "File Explorer Hidden Files"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1390}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1340}
   "WPFToggleHiddenFiles": {
     "Content": "File Explorer Hidden Files",
     "Description": "Reveals hidden files in Explorer.",

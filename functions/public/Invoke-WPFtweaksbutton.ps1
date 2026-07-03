@@ -22,6 +22,7 @@ function Invoke-WPFtweaksbutton {
   $tweaksToRun = @($Tweaks | Where-Object { $_ -ne $restorePointTweak })
   $totalSteps = [Math]::Max($Tweaks.Count, 1)
   $completedSteps = 0
+  Write-WinUtilLog -Component "Tweaks" -Message "Tweaks requested: $(@($Tweaks).Count) selected tweak(s), DNS provider: $dnsProvider"
 
   if ($tweaks.count -eq 0 -and $dnsProvider -eq "Default") {
     $msg = "Please check the tweaks you wish to perform."
@@ -39,6 +40,7 @@ function Invoke-WPFtweaksbutton {
     }
 
     Set-WinUtilProgressBar -Label "Creating restore point" -Percent 0
+    Write-WinUtilLog -Component "Tweaks" -Message "Creating restore point before applying selected tweaks."
     Invoke-WinUtilTweaks $restorePointTweak
     $completedSteps = 1
 
@@ -49,12 +51,13 @@ function Invoke-WPFtweaksbutton {
       Write-Host "================================="
       Write-Host "--     Tweaks are Finished    ---"
       Write-Host "================================="
+      Write-WinUtilLog -Component "Tweaks" -Message "Tweaks workflow completed after restore point."
       return
     }
   }
 
   # The leading "," in the ParameterList is necessary because we only provide one argument and powershell cannot be convinced that we want a nested loop with only one argument otherwise
-  $handle = Invoke-WPFRunspace -ParameterList @(("tweaks", $tweaksToRun), ("dnsProvider", $dnsProvider), ("completedSteps", $completedSteps), ("totalSteps", $totalSteps)) -ScriptBlock {
+  Invoke-WPFRunspace -ParameterList @(("tweaks", $tweaksToRun), ("dnsProvider", $dnsProvider), ("completedSteps", $completedSteps), ("totalSteps", $totalSteps)) -ScriptBlock {
     param($tweaks, $dnsProvider, $completedSteps, $totalSteps)
 
     $sync.ProcessRunning = $true
@@ -67,7 +70,9 @@ function Invoke-WPFtweaksbutton {
       }
     }
 
-    Set-WinUtilDNS -DNSProvider $dnsProvider
+    if ($dnsProvider -ne "Default") {
+      Set-WinUtilDNS -DNSProvider $dnsProvider
+    }
 
     for ($i = 0; $i -lt $tweaks.Count; $i++) {
       Set-WinUtilProgressBar -Label "Applying $($tweaks[$i])" -Percent ($completedSteps / $totalSteps * 100)
@@ -82,5 +87,6 @@ function Invoke-WPFtweaksbutton {
     Write-Host "================================="
     Write-Host "--     Tweaks are Finished    ---"
     Write-Host "================================="
+    Write-WinUtilLog -Component "Tweaks" -Message "Tweaks workflow completed."
   }
 }
