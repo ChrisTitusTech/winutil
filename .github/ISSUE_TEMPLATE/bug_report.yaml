@@ -23,7 +23,8 @@ body:
     attributes:
       - label: "Version of WinUtil"
         description: "Provide a version that you are using when issue submitted (it can be found in right corner of app)"
-        required: true
+        validations:
+          required: true
 
   - type: dropdown
     id: affected_part
