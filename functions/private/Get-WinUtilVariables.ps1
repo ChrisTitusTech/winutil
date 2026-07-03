@@ -19,8 +19,9 @@ function Get-WinUtilVariables {
                 if ($Type -contains $objType) {
                     Write-Output $psitem
                 }
-            } catch {
-                <#I am here so errors don't get outputted for a couple variables that don't have the .GetType() attribute#>
+            }
+            catch {
+                $null = $_
             }
         }
         return $output
