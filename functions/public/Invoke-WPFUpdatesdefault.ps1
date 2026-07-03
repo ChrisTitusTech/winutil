@@ -44,5 +44,10 @@ function Invoke-WPFUpdatesdefault {
     Write-WinUtilLog -Component "Updates" -Message "Resetting local security policy to defaults with secedit."
     secedit /configure /cfg "$Env:SystemRoot\inf\defltbase.inf" /db defltbase.sdb
 
+
+    Write-WinUtilLog -Component "Updates" -Message "==================================================="
+    Write-WinUtilLog -Component "Updates" -Message "---  Windows Update Settings Reset to Default   ---"
+    Write-WinUtilLog -Component "Updates" -Message "==================================================="
+
     Write-WinUtilLog -Component "Updates" -Message "Windows Update default workflow completed. Restart required."
 }
