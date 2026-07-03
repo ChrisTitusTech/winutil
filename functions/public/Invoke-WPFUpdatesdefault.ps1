@@ -27,6 +27,9 @@ function Invoke-WPFUpdatesdefault {
     Write-WinUtilLog -Component "Updates" -Message "Restoring WaaSMedicSvc service to Manual."
     Set-Service -Name WaaSMedicSvc -StartupType Manual
 
+    Write-WinUtilLog -Component "Updates" -Message "Enabling update related dll files."
+    Rename-Item -Path $Env:SystemRoot\System32\usosvc.dlle -NewName usosvc.dll
+
     Write-WinUtilLog -Component "Updates" -Message "Enabling update related scheduled tasks."
 
     $Tasks =
