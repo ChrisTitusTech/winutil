@@ -21,7 +21,7 @@ function Invoke-WPFUpdatesdefault {
     Write-WinUtilLog -Component "Updates" -Message "Restoring wuauserv service to Manual."
     Set-Service -Name wuauserv -StartupType Manual
 
-    Write-WinUtilLog -Component "Updates" -Message "Starting UsoSvc service and restoring startup type to Automatic."
+    Write-WinUtilLog -Component "Updates" -Message "Restoring startup type to Automatic."
     Set-Service -Name UsoSvc -StartupType Automatic
 
     Write-WinUtilLog -Component "Updates" -Message "Restoring WaaSMedicSvc service to Manual."
