@@ -15,7 +15,6 @@ function Invoke-WinUtilInstallAppRenderBatch {
 
 function Complete-WinUtilInstallAppRendering {
     $sync.InstallAppEntriesRendered = $true
-    Write-WinUtilPerformanceCheckpoint -Name "Install app entries rendered"
 }
 
 function Invoke-WinUtilInstallAppRenderNextBatch {

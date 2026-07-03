@@ -35,7 +35,7 @@ function Invoke-WPFButton {
         if ($buttonConfig.InvokeScript -and $buttonConfig.InvokeScript.Count -gt 0) {
             foreach ($script in $buttonConfig.InvokeScript) {
                 if (-not [string]::IsNullOrWhiteSpace($script)) {
-                    Invoke-Expression $script
+                    Invoke-Command -ScriptBlock ([scriptblock]::Create($script)) -ErrorAction Stop
                 }
             }
             return

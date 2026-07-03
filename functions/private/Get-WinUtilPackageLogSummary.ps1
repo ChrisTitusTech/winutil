@@ -4,7 +4,7 @@ function Get-WinUtilPackageLogSummary {
         [object[]]$Packages,
 
         [Parameter(Mandatory = $true)]
-        [PackageManagers]$Preference
+        [string]$Preference
     )
 
     @($Packages | ForEach-Object {
@@ -17,7 +17,7 @@ function Get-WinUtilPackageLogSummary {
             $packageName = "Unknown package"
         }
 
-        if ($Preference -eq [PackageManagers]::Choco -and -not [string]::IsNullOrWhiteSpace([string]$package.choco) -and $package.choco -ne "na") {
+        if ($Preference -eq "Choco" -and -not [string]::IsNullOrWhiteSpace([string]$package.choco) -and $package.choco -ne "na") {
             "$packageName (choco: $($package.choco))"
         } elseif (-not [string]::IsNullOrWhiteSpace([string]$package.winget) -and $package.winget -ne "na") {
             "$packageName (winget: $($package.winget))"

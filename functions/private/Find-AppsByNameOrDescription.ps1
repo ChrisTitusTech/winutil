@@ -83,9 +83,9 @@ function Find-AppsByNameOrDescription {
                 $categoryLabel.Visibility = [Windows.Visibility]::Visible
 
                 # Search through apps in this category
-                $wrapPanel.Children | ForEach-Object {
+                foreach ($appControl in $wrapPanel.Children) {
                     # Safely retrieve app entry from hashtable
-                    $appTag = $_.Tag
+                    $appTag = $appControl.Tag
                     $appEntry = $null
 
                     if (-not [string]::IsNullOrWhiteSpace($appTag) -and $sync.configs.applicationsHashtable.ContainsKey($appTag)) {
@@ -99,16 +99,16 @@ function Find-AppsByNameOrDescription {
 
                         if ($contentMatch -or $descriptionMatch) {
                             # Show the App and mark that this category has a match
-                            $_.Visibility = [Windows.Visibility]::Visible
+                            $appControl.Visibility = [Windows.Visibility]::Visible
                             $categoryHasMatch = $true
                         }
                         else {
-                            $_.Visibility = [Windows.Visibility]::Collapsed
+                            $appControl.Visibility = [Windows.Visibility]::Collapsed
                         }
                     }
                     else {
                         # Hide app if no entry found (data integrity issue)
-                        $_.Visibility = [Windows.Visibility]::Collapsed
+                        $appControl.Visibility = [Windows.Visibility]::Collapsed
                     }
                 }
 

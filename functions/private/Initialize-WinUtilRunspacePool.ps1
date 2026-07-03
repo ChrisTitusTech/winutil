@@ -32,6 +32,5 @@ function Initialize-WinUtilRunspacePool {
     )
 
     $sync.runspace.Open()
-    Write-WinUtilPerformanceCheckpoint -Name "Runspace pool initialized"
     return $sync.runspace
 }

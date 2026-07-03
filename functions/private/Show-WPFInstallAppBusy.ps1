@@ -10,11 +10,13 @@ function Show-WPFInstallAppBusy {
     param (
         $text = "Installing apps..."
     )
+    $overlayText = $text
+
     Invoke-WPFUIThread -ScriptBlock {
         $sync.InstallAppAreaOverlay.Visibility = [Windows.Visibility]::Visible
         $sync.InstallAppAreaOverlay.Width = $($sync.InstallAppAreaScrollViewer.ActualWidth * 0.4)
         $sync.InstallAppAreaOverlay.Height = $($sync.InstallAppAreaScrollViewer.ActualWidth * 0.4)
-        $sync.InstallAppAreaOverlayText.Text = $text
+        $sync.InstallAppAreaOverlayText.Text = $overlayText
         $sync.InstallAppAreaBorder.IsEnabled = $false
         $sync.InstallAppAreaScrollViewer.Effect.Radius = 5
     }

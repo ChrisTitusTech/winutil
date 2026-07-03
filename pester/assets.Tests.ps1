@@ -32,11 +32,4 @@ Describe "Rendered asset caching" {
         $taskbarScript | Should -Match 'Initialize-WinUtilTaskbarOverlayAssets -IncludeLogo \$false -IncludeStatusAssets \$true'
     }
 
-    It "records individual taskbar overlay render checkpoints" {
-        $overlayScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilTaskbarOverlayAssets.ps1") -Raw
-
-        $overlayScript | Should -Match 'Taskbar logo asset rendered'
-        $overlayScript | Should -Match 'Taskbar checkmark asset rendered'
-        $overlayScript | Should -Match 'Taskbar warning asset rendered'
-    }
 }
