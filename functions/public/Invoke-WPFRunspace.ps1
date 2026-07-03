@@ -24,36 +24,74 @@ function Invoke-WPFRunspace {
     #>
 
     [CmdletBinding()]
+    [OutputType([System.IAsyncResult])]
     Param (
         $ScriptBlock,
         $ArgumentList,
         $ParameterList
     )
 
+    if (-not ("WinUtilRunspaceCleanup" -as [type])) {
+        Add-Type @"
+using System;
+using System.Management.Automation;
+
+public sealed class WinUtilRunspaceCleanupState
+{
+    public PowerShell PowerShell { get; set; }
+    public IAsyncResult Handle { get; set; }
+}
+
+public static class WinUtilRunspaceCleanup
+{
+    public static void Cleanup(object state, bool timedOut)
+    {
+        var cleanupState = state as WinUtilRunspaceCleanupState;
+        if (cleanupState == null || cleanupState.PowerShell == null || cleanupState.Handle == null)
+        {
+            return;
+        }
+
+        try
+        {
+            cleanupState.PowerShell.EndInvoke(cleanupState.Handle);
+        }
+        catch
+        {
+        }
+        finally
+        {
+            cleanupState.PowerShell.Dispose();
+        }
+    }
+}
+"@
+    }
+
+    Initialize-WinUtilRunspacePool | Out-Null
+
     # Create a PowerShell instance
-    $script:powershell = [powershell]::Create()
+    $powershell = [powershell]::Create()
 
     # Add Scriptblock and Arguments to runspace
-    $script:powershell.AddScript($ScriptBlock)
-    $script:powershell.AddArgument($ArgumentList)
+    [void]$powershell.AddScript($ScriptBlock)
+    [void]$powershell.AddArgument($ArgumentList)
 
     foreach ($parameter in $ParameterList) {
-        $script:powershell.AddParameter($parameter[0], $parameter[1])
+        [void]$powershell.AddParameter($parameter[0], $parameter[1])
     }
 
-    $script:powershell.RunspacePool = $sync.runspace
+    $powershell.RunspacePool = $sync.runspace
 
     # Execute the RunspacePool
-    $script:handle = $script:powershell.BeginInvoke()
+    $handle = $powershell.BeginInvoke()
 
-    # Clean up the RunspacePool threads when they are complete, and invoke the garbage collector to clean up the memory
-    if ($script:handle.IsCompleted) {
-        $script:powershell.EndInvoke($script:handle)
-        $script:powershell.Dispose()
-        $sync.runspace.Dispose()
-        $sync.runspace.Close()
-        [System.GC]::Collect()
-    }
+    $cleanupState = [WinUtilRunspaceCleanupState]::new()
+    $cleanupState.PowerShell = $powershell
+    $cleanupState.Handle = $handle
+    $cleanupCallback = [System.Threading.WaitOrTimerCallback][WinUtilRunspaceCleanup]::Cleanup
+    [System.Threading.ThreadPool]::RegisterWaitForSingleObject($handle.AsyncWaitHandle, $cleanupCallback, $cleanupState, -1, $true) | Out-Null
+
     # Return the handle
     return $handle
 }

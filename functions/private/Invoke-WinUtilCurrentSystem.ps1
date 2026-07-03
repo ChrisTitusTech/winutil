@@ -28,12 +28,16 @@ Function Invoke-WinUtilCurrentSystem {
 
         $originalEncoding = [Console]::OutputEncoding
         [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
-        $Sync.InstalledPrograms = winget list -s winget | Select-Object -skip 3 | ConvertFrom-String -PropertyNames "Name", "Id", "Version", "Available" -Delimiter '\s{2,}'
+        $Sync.InstalledPrograms = @("winget", "msstore") | ForEach-Object {
+            winget list -s $psitem | Select-Object -skip 3 | ConvertFrom-String -PropertyNames "Name", "Id", "Version", "Available" -Delimiter '\s{2,}'
+        }
         [Console]::OutputEncoding = $originalEncoding
 
         $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPFInstall*"}
         $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
-            $dependencies = @($sync.configs.applications.$($psitem.Key).winget -split ";")
+            $dependencies = @($sync.configs.applications.$($psitem.Key).winget -split ";") | ForEach-Object {
+                $psitem -replace "^msstore:", ""
+            }
 
             if ($dependencies[-1] -in $sync.InstalledPrograms.Id) {
                 Write-Output $psitem.name
@@ -51,8 +55,6 @@ Function Invoke-WinUtilCurrentSystem {
             $entry = $sync.configs.tweaks.$Config
             $registryKeys = $entry.registry
             $serviceKeys = $entry.service
-            $appxKeys = $entry.appx
-            $invokeScript = $entry.InvokeScript
             $entryType = $entry.Type
 
             if ($registryKeys -or $serviceKeys) {

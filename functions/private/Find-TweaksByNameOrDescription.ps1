@@ -46,12 +46,17 @@ function Find-TweaksByNameOrDescription {
     }
 
     # ------------------------------------------------------------------------------
-    # 2. GET REFERENCE TO TWEAKS PANEL
+    # 2. GET REFERENCE TO TWEAKS OR APPX PANEL
     # ------------------------------------------------------------------------------
+
+    $panelName = "tweakspanel"
+    if ($null -ne $Sync.currentTab -and $Sync.currentTab -eq "AppX") {
+        $panelName = "appxpanel"
+    }
 
     $tweaksPanel = $null
     try {
-        $tweaksPanel = $Sync.Form.FindName("tweakspanel")
+        $tweaksPanel = $Sync.Form.FindName($panelName)
     }
     catch {
         # Silent return - panel not found or disposed
@@ -109,6 +114,7 @@ function Find-TweaksByNameOrDescription {
         }
         catch {
             # Silent catch - UI element may be disposed
+            $null = $_
         }
 
         return
@@ -298,5 +304,6 @@ function Find-TweaksByNameOrDescription {
     catch {
         # Silent catch - UI elements may be disposed or in unexpected state
         # Do not log to terminal as this function is called on every keystroke
+        $null = $_
     }
 }

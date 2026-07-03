@@ -10,7 +10,9 @@ $sync.configs = @{}
 
 $script = (Get-Content -Path scripts\start.ps1) -replace '#{replaceme}', (Get-Date -Format 'yy.MM.dd')
 
-$script += Get-ChildItem -Path functions -Recurse -File | Get-Content -Raw
+$script += Get-ChildItem -Path functions -Recurse -File | ForEach-Object {
+    Get-Content -Path $_.FullName -Raw
+}
 
 Get-ChildItem config | ForEach-Object {
     $obj = Get-Content -Path $_.FullName -Raw | ConvertFrom-Json

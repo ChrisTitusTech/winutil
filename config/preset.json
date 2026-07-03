@@ -4,7 +4,6 @@
     "WPFTweaksConsumerFeatures",
     "WPFTweaksDisableExplorerAutoDiscovery",
     "WPFTweaksWPBT",
-    "WPFTweaksDeBloat",
     "WPFTweaksLocation",
     "WPFTweaksServices",
     "WPFTweaksTelemetry",
@@ -16,17 +15,16 @@
   ],
   "Minimal": [
     "WPFTweaksConsumerFeatures",
-    "WPFTweaksDeBloat",
     "WPFTweaksWPBT",
     "WPFTweaksServices",
     "WPFTweaksTelemetry"
   ],
   "Advanced": [
+    "WPFTweaksRestorePoint",
     "WPFTweaksActivity",
     "WPFTweaksConsumerFeatures",
     "WPFTweaksDisableExplorerAutoDiscovery",
     "WPFTweaksWPBT",
-    "WPFTweaksDeBloat",
     "WPFTweaksLocation",
     "WPFTweaksServices",
     "WPFTweaksTelemetry",
@@ -39,5 +37,25 @@
     "WPFTweaksRemoveOneDrive",
     "WPFTweaksWindowsAI",
     "WPFTweaksRightClickMenu"
+  ],
+  "AppxDefault": [
+    "WPFAppxMicrosoft_WindowsFeedbackHub",
+    "WPFAppxMicrosoft_GetHelp",
+    "WPFAppxMicrosoft_MicrosoftOfficeHub",
+    "WPFAppxMicrosoft_WindowsCalculator",
+    "WPFAppxClipchamp_Clipchamp",
+    "WPFAppxMicrosoft_WindowsAlarms",
+    "WPFAppxMicrosoftCorporationII_QuickAssist",
+    "WPFAppxMicrosoft_WindowsSoundRecorder",
+    "WPFAppxMicrosoft_MicrosoftStickyNotes",
+    "WPFAppxMicrosoft_Todos",
+    "WPFAppxMicrosoft_MicrosoftSolitaireCollection",
+    "WPFAppxMicrosoft_PowerAutomateDesktop",
+    "WPFAppxMicrosoft_WindowsDevHome",
+    "WPFAppxMicrosoft_BingWeather",
+    "WPFAppxMicrosoft_StartExperiencesApp",
+    "WPFAppxMicrosoft_BingNews",
+    "WPFAppxMicrosoft_Copilot",
+    "WPFAppxMicrosoft_BingSearch"
   ]
 }

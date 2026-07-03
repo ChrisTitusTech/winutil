@@ -3,9 +3,9 @@ function Get-WinUtilSelectedPackages {
      param(
          [Parameter(Mandatory = $true)]
          [object] $PackageList,
-     
+
          [Parameter(Mandatory = $true)]
-         [PackageManagers] $Preference
+         [string] $Preference
      )
 
     if ($PackageList.count -eq 1) {
@@ -14,24 +14,39 @@ function Get-WinUtilSelectedPackages {
         Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" }
     }
 
-    $packages = [System.Collections.Hashtable]::new()
     $packagesWinget = [System.Collections.ArrayList]::new()
     $packagesChoco = [System.Collections.ArrayList]::new()
+    $packages = @{
+        Winget = $packagesWinget
+        Choco = $packagesChoco
+    }
 
-    $packages[[PackageManagers]::Winget] = $packagesWinget
-    $packages[[PackageManagers]::Choco] = $packagesChoco
+    function Add-PackageId {
+        param(
+            [System.Collections.ArrayList]$Target,
+            $PackageId
+        )
+
+        if ([string]::IsNullOrWhiteSpace([string]$PackageId) -or $PackageId -eq "na") {
+            return
+        }
+
+        if (-not $Target.Contains($PackageId)) {
+            $null = $Target.Add($PackageId)
+        }
+    }
 
     foreach ($package in $PackageList) {
         switch ($Preference) {
             "Choco" {
-                if ($package.choco -eq "na") {
-                    $null = $packagesWinget.add($package.winget)
+                if ([string]::IsNullOrWhiteSpace([string]$package.choco) -or $package.choco -eq "na") {
+                    Add-PackageId -Target $packagesWinget -PackageId $package.winget
                 } else {
-                    $null = $packagesChoco.add($package.choco)
+                    Add-PackageId -Target $packagesChoco -PackageId $package.choco
                 }
             }
             "Winget" {
-                $null = $packagesWinget.add($package.winget)
+                Add-PackageId -Target $packagesWinget -PackageId $package.winget
             }
         }
     }
