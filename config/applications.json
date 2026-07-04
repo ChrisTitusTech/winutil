@@ -530,6 +530,15 @@
         "winget": "TechPowerUp.GPU-Z",
         "foss": false
     },
+    "gsudo": {
+        "category": "Pro Tools",
+        "choco": "gsudo",
+        "content": "gsudo",
+        "description": "gsudo is a sudo equivalent for Windows. It allows you to run commands with elevated administrative privileges directly within the current console window.",
+        "link": "https://github.com/gerardog/gsudo",
+        "winget": "gerardog.gsudo",
+        "foss": true
+    },
     "helium": {
         "category": "Browsers",
         "choco": "helium",
