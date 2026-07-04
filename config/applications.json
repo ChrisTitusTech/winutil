@@ -719,15 +719,6 @@
         "winget": "XBMCFoundation.Kodi",
         "foss": true
     },
-    "lightshot": {
-        "category": "Multimedia Tools",
-        "choco": "lightshot",
-        "content": "Lightshot",
-        "description": "The fastest way to take a customizable screenshot.",
-        "link": "https://app.prntscr.com/",
-        "winget": "Skillbrains.Lightshot",
-        "foss": false
-    },
     "lazygit": {
         "category": "Development",
         "choco": "lazygit",
