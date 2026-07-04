@@ -24,13 +24,13 @@ function Invoke-WPFInstall {
     $packageSummary = Get-WinUtilPackageLogSummary -Packages $PackagesToInstall -Preference $ManagerPreference
     Write-WinUtilLog -Component "Install" -Message "Install selected package(s): $($packageSummary -join '; ')"
 
-    $handle = Invoke-WPFRunspace -ParameterList @(("PackagesToInstall", $PackagesToInstall),("ManagerPreference", $ManagerPreference)) -ScriptBlock {
+    Invoke-WPFRunspace -ParameterList @(("PackagesToInstall", $PackagesToInstall),("ManagerPreference", $ManagerPreference)) -ScriptBlock {
         param($PackagesToInstall, $ManagerPreference)
 
         $packagesSorted = Get-WinUtilSelectedPackages -PackageList $PackagesToInstall -Preference $ManagerPreference
 
-        $packagesWinget = $packagesSorted[[PackageManagers]::Winget]
-        $packagesChoco = $packagesSorted[[PackageManagers]::Choco]
+        $packagesWinget = $packagesSorted['Winget']
+        $packagesChoco = $packagesSorted['Choco']
         Write-WinUtilLog -Component "Install" -Message "Install package manager split: winget=$(@($packagesWinget).Count), choco=$(@($packagesChoco).Count)"
 
         try {

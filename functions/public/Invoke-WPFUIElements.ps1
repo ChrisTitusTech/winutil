@@ -223,6 +223,18 @@ function Invoke-WPFUIElements {
                         $sync[$entryInfo.Name].Add_Unchecked({
                             $this.Content = $this.Tag.contentOff
                         })
+
+                        if ($null -eq $sync.Buttons) {
+                            $sync.Buttons = [System.Collections.Generic.List[PSObject]]::new()
+                        }
+
+                        if ($sync.Buttons -notcontains $toggleButton.Name) {
+                            $toggleButton.Add_Click({
+                                [System.Object]$Sender = $args[0]
+                                Invoke-WPFButton $Sender.name
+                            })
+                            $sync.Buttons.Add($toggleButton.Name) | Out-Null
+                        }
                     }
 
                     "Combobox" {
@@ -294,6 +306,18 @@ function Invoke-WPFUIElements {
                         $itemsControl.Items.Add($button) | Out-Null
 
                         $sync[$entryInfo.Name] = $button
+
+                        if ($null -eq $sync.Buttons) {
+                            $sync.Buttons = [System.Collections.Generic.List[PSObject]]::new()
+                        }
+
+                        if ($sync.Buttons -notcontains $button.Name) {
+                            $button.Add_Click({
+                                [System.Object]$Sender = $args[0]
+                                Invoke-WPFButton $Sender.name
+                            })
+                            $sync.Buttons.Add($button.Name) | Out-Null
+                        }
                     }
 
                     "RadioButton" {
@@ -380,6 +404,27 @@ function Invoke-WPFUIElements {
                             $textBlock.ToolTip = $entryInfo.Link
                             $textBlock.Style = $HoverTextBlockStyle
                             $textBlock.UseLayoutRounding = $true
+                            
+                            $textBlock.VerticalAlignment = "Center"
+                            $textBlock.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
+                            $textBlock.Tag = $checkBox
+
+                            $updateLinkMargin = {
+                                [System.Object]$Sender = $args[0]
+                                $linkedCheckBox = $Sender.Tag
+                                $MarginTopBase = if ($linkedCheckBox) { $linkedCheckBox.Margin.Top } else { 0 }
+                                $Sender.Margin = New-Object Windows.Thickness(
+                                    [math]::Round($Sender.FontSize * 0.5),
+                                    ($MarginTopBase - [math]::Round($Sender.FontSize / 2)),
+                                    0, 0
+                                )
+                            }
+                            $textBlock.Add_Loaded($updateLinkMargin)
+                            $fontSizeDescriptor = [System.ComponentModel.DependencyPropertyDescriptor]::FromProperty(
+                                [Windows.Controls.Control]::FontSizeProperty,
+                                [Windows.Controls.TextBlock]
+                            )
+                            $fontSizeDescriptor.AddValueChanged($textBlock, $updateLinkMargin)
 
                             $horizontalStackPanel.Children.Add($textBlock) | Out-Null
 

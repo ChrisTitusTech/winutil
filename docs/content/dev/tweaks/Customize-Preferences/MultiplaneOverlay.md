@@ -3,7 +3,7 @@ title: "Multiplane Overlay"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1446}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1447}
   "WPFToggleMultiplaneOverlay": {
     "Content": "Multiplane Overlay",
     "Description": "Multiplane Overlay compose multiple image layers, which can sometimes cause issues with graphics cards.",
@@ -22,10 +22,10 @@ description: ""
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers",
         "Name": "DisableOverlays",
-        "Value": "1",
+        "Value": "0",
         "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "false"
+        "OriginalValue": "1",
+        "DefaultState": "true"
       }
     ],
 ```

@@ -22,7 +22,11 @@ function Reset-WPFCheckBoxes {
     )
 
     $CheckBoxesToCheck = $sync.selectedApps + $sync.selectedTweaks + $sync.selectedFeatures + $sync.selectedAppx
-    $CheckBoxes = ($sync.GetEnumerator()).where{ $_.Value -is [System.Windows.Controls.CheckBox] -and $_.Name -notlike "WPFToggle*" -and $_.Name -like "$checkboxfilterpattern"}
+    $CheckBoxes = foreach ($syncEntry in $sync.GetEnumerator()) {
+        if ($syncEntry.Value -is [System.Windows.Controls.CheckBox] -and $syncEntry.Name -notlike "WPFToggle*" -and $syncEntry.Name -like $checkboxfilterpattern) {
+            $syncEntry
+        }
+    }
 
     foreach ($CheckBox in $CheckBoxes) {
         $checkboxName = $CheckBox.Key

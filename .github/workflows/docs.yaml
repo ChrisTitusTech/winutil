@@ -71,6 +71,7 @@ jobs:
           labels: |
             automated
             documentation
+            skip-changelog
 
       - name: Check outputs
         run: |
