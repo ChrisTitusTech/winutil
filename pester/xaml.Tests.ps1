@@ -310,6 +310,7 @@ Describe "XAML and sync wiring" {
             "InstallAppEntriesRendered",
             "ProgressBar",
             "progressBarTextBlock",
+            "FontScaleFactor",
             "Win11ISOImageInfo",
             "Win11ISODriveLetter",
             "Win11ISOWimPath",

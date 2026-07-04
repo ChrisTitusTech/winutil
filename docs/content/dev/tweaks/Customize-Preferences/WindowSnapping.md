@@ -1,23 +1,23 @@
 ---
-title: "S3 Sleep"
+title: "Window Snapping"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1569}
-  "WPFToggleS3Sleep": {
-    "Content": "S3 Sleep",
-    "Description": "Toggles between Modern Standby and S3 Sleep, which cuts off power to the CPU while continuing to refresh the memory.",
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1533}
+  "WPFToggleWindowSnapping": {
+    "Content": "Window Snapping",
+    "Description": "Toggles the window snapping feature when dragging windows.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
     "registry": [
       {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power",
-        "Name": "PlatformAoAcOverride",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>",
-        "DefaultState": "false"
+        "Path": "HKCU:\\Control Panel\\Desktop",
+        "Name": "WindowArrangementActive",
+        "Value": "1",
+        "Type": "String",
+        "OriginalValue": "0",
+        "DefaultState": "true"
       }
     ],
 ```

@@ -782,6 +782,15 @@
         "winget": "Element.Element",
         "foss": true
     },
+    "minitoolpartitionwizard": {
+        "category": "Utilities",
+        "choco": "minitoolpartitionwizard",
+        "content": "MiniTool Partition Wizard",
+        "description": "Comprehensive free partition manager that performs advanced operations Windows natively cannot, such as merging partitions, converting file systems, and organizing disk capacity.",
+        "link": "https://www.partitionwizard.com/",
+        "winget": "MiniTool.PartitionWizard.Free",
+        "foss": false
+    },
     "modrinth": {
         "category": "Games",
         "choco": "modrinth-app",
@@ -1522,7 +1531,7 @@
     "everything": {
         "category": "Utilities",
         "choco": "everything",
-        "content": "VoidTools Everything",
+        "content": "Everything",
         "description": "Everything is a search engine that locates files and folders by filename instantly for Windows. Unlike Windows search Everything initially displays every file and folder on your computer (hence the name Everything). You type in a search filter to limit what files and folders are displayed.",
         "link": "https://www.voidtools.com/",
         "winget": "voidtools.Everything",

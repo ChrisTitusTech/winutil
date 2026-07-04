@@ -32,7 +32,9 @@ jobs:
           body: 'Automated update of sponsors section'
           branch: sponsors-update
           delete-branch: true
-          labels: automated
+          labels: |
+            automated
+            skip-changelog
 
       - name: Check outputs
         run: |
