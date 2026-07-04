@@ -22,10 +22,10 @@ description: ""
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers",
         "Name": "DisableOverlays",
-        "Value": "1",
+        "Value": "0",
         "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "false"
+        "OriginalValue": "1",
+        "DefaultState": "true"
       }
     ],
 ```
