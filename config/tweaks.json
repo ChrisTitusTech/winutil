@@ -542,6 +542,9 @@
       # Disable (Connected User Experiences and Telemetry) Service
       Set-Service -Name diagtrack -StartupType Disabled
 
+      # Disable (Windows Error Reporting Service) Service
+      Set-Service -Name WerSvc -StartupType Automatic
+
       # Disable PowerShell 7 telemetry
       [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
 
@@ -556,7 +559,7 @@
       # Enable (Connected User Experiences and Telemetry) Service
       Set-Service -Name diagtrack -StartupType Automatic
 
-      # Enable (Windows Error Reporting Manager) Service
+      # Enable (Windows Error Reporting Service) Service
       Set-Service -Name WerSvc -StartupType Automatic
 
       # Enable PowerShell 7 telemetry
