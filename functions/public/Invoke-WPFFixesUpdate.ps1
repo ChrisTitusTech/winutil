@@ -32,6 +32,7 @@ function Invoke-WPFFixesUpdate {
     Write-Progress -Id 0 -Activity "Repairing Windows Update" -PercentComplete 0
     Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
     Write-Host "Starting Windows Update Repair..."
+    Test-WinUtilTrustedInstallerPath | Out-Null
     # Wait for the first progress bar to show, otherwise the second one won't show
     Start-Sleep -Milliseconds 200
 
