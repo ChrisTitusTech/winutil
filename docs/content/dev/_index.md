@@ -5,7 +5,7 @@ toc: false
 ---
 
 > [!NOTE]
-> This section contains code-only references and examples. For end-user guidance, see the [User Guide](../userguide/).
+> This section contains code-only references. For end-user documentation, see the [User Guide](../userguide/).
 
 ## Architecture
 
