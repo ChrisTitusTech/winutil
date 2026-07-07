@@ -5,7 +5,7 @@ toc: false
 ---
 
 > [!NOTE]
-> This section contains technical documentation for developers. For end-user documentation, see the [User Guide](../userguide/).
+> This section contains code-only references and examples. For end-user guidance, see the [User Guide](../userguide/).
 
 ## Architecture
 
