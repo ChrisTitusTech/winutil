@@ -413,6 +413,15 @@
         "winget": "EpicGames.EpicGamesLauncher",
         "foss": false
     },
+    "fancontrol": {
+        "category": "Pro Tools", 
+        "choco": "na",
+        "content": "Fan Control",
+        "description": "A deeply customizable and lightweight fan controlling software for Windows.",
+        "link": "https://getfancontrol.com/",
+        "winget": "Rem0o.FanControl",
+        "foss": false
+    },
     "files": {
         "category": "Utilities",
         "choco": "files",
