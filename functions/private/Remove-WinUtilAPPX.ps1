@@ -17,7 +17,27 @@ function Remove-WinUtilAPPX {
 
     Write-Host "Removing $Name"
     Write-WinUtilLog -Component "AppX" -Message "Removing AppX package pattern: $Name"
-    Get-AppxPackage $Name -AllUsers | Remove-AppxPackage -AllUsers
-    Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Name | Remove-AppxProvisionedPackage -Online
+    
+    # We explicitly loop through packages instead of using the pipeline because PowerShell 7 pipeline binding
+    # for Remove-AppxPackage fails silently, and Get-AppxPackage -AllUsers returns duplicate objects for each user profile.
+    $pkgs = Get-AppxPackage "*$Name*" -AllUsers
+    if ($null -ne $pkgs) {
+        foreach ($pkg in $pkgs) {
+            Remove-AppxPackage -Package $pkg.PackageFullName
+        }
+    }
+
+    # DISM cmdlets like Get-AppxProvisionedPackage often fail with "Class not registered" or hang in PowerShell 7.
+    # We shell out to Windows PowerShell 5.1 (powershell.exe) to reliably remove the provisioned packages.
+    $ps5Script = "
+        # Explicit loop to avoid pipeline binding issues with Remove-AppxProvisionedPackage
+        `$provs = Get-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue | Where-Object DisplayName -like '*$Name*'
+        if (`$null -ne `$provs) {
+            foreach (`$prov in `$provs) {
+                Remove-AppxProvisionedPackage -Online -PackageName `$prov.PackageName -ErrorAction SilentlyContinue | Out-Null
+            }
+        }
+    "
+    powershell.exe -NoProfile -NonInteractive -Command $ps5Script
     Write-WinUtilLog -Component "AppX" -Message "AppX removal completed for package pattern: $Name"
 }

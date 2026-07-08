@@ -25,14 +25,13 @@ function Invoke-WPFAppxRemoval {
             }
 
             if ($key -eq "WPFAppxMicrosoft_WindowsNotepad") {
-                # i hope your having fun reading this
                 Write-WinUtilLog -Component "AppX" -Message "Stopping dllhost before removing Notepad."
                 Stop-Process -Name dllhost
             }
 
             Write-Host "Removing $($apps[$key].Content)"
             Write-WinUtilLog -Component "AppX" -Message "Removing $($apps[$key].Content) ($($apps[$key].PackageId))."
-            Get-AppxPackage -Name $apps[$key].PackageId -AllUsers | Remove-AppxPackage -AllUsers
+            Remove-WinUtilAPPX -Name $apps[$key].PackageId
 
             if ($key -eq "WPFAppxMSTeams") {
                 # Uninstalls Microsoft Teams Meeting Add-in for Microsoft Office
