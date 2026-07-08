@@ -1198,7 +1198,7 @@
     "processmonitor": {
         "category": "Microsoft Tools",
         "choco": "procexp",
-        "content": "SysInternals Process Monitor",
+        "content": "Process Monitor",
         "description": "SysInternals Process Monitor is an advanced monitoring tool that shows real-time file system, registry, and process/thread activity.",
         "link": "https://docs.microsoft.com/en-us/sysinternals/downloads/procmon",
         "winget": "Microsoft.Sysinternals.ProcessMonitor",
@@ -1387,7 +1387,7 @@
     "tcpview": {
         "category": "Microsoft Tools",
         "choco": "tcpview",
-        "content": "SysInternals TCPView",
+        "content": "TCPView",
         "description": "SysInternals TCPView is a network monitoring tool that displays a detailed list of all TCP and UDP endpoints on your system.",
         "link": "https://docs.microsoft.com/en-us/sysinternals/downloads/tcpview",
         "winget": "Microsoft.Sysinternals.TCPView",
@@ -1504,7 +1504,7 @@
     "ungoogled": {
         "category": "Browsers",
         "choco": "ungoogled-chromium",
-        "content": "Ungoogled",
+        "content": "Ungoogled Chromium",
         "description": "Ungoogled Chromium is a version of Chromium without Google's integration for enhanced privacy and control.",
         "link": "https://github.com/Eloston/ungoogled-chromium",
         "winget": "eloston.ungoogled-chromium",
