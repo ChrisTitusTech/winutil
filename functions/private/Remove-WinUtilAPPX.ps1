@@ -29,15 +29,16 @@ function Remove-WinUtilAPPX {
 
     # DISM cmdlets like Get-AppxProvisionedPackage often fail with "Class not registered" or hang in PowerShell 7.
     # We shell out to Windows PowerShell 5.1 (powershell.exe) to reliably remove the provisioned packages.
-    $ps5Script = "
-        # Explicit loop to avoid pipeline binding issues with Remove-AppxProvisionedPackage
-        `$provs = Get-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue | Where-Object DisplayName -like '*$Name*'
-        if (`$null -ne `$provs) {
-            foreach (`$prov in `$provs) {
-                Remove-AppxProvisionedPackage -Online -PackageName `$prov.PackageName -ErrorAction SilentlyContinue | Out-Null
+    $ps5ScriptBlock = {
+        $provs = Get-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue | Where-Object DisplayName -like "*$Using:Name*"
+        if ($null -ne $provs) {
+            foreach ($prov in $provs) {
+                Remove-AppxProvisionedPackage -Online -PackageName $prov.PackageName -ErrorAction SilentlyContinue | Out-Null
             }
         }
-    "
-    powershell.exe -NoProfile -NonInteractive -Command $ps5Script
+    }
+
+    powershell.exe -NoProfile -NonInteractive -Command $ps5ScriptBlock
+
     Write-WinUtilLog -Component "AppX" -Message "AppX removal completed for package pattern: $Name"
 }
