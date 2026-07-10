@@ -5,6 +5,7 @@
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     . (Join-Path $script:repoRoot "functions\private\Remove-WinUtilAPPX.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Remove-WinUtilProvisionedAPPX.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFAppxRemoval.ps1")
 
     function Write-WinUtilLog {
@@ -23,9 +24,13 @@ BeforeAll {
         param(
             [Parameter(ValueFromPipeline = $true)]
             $InputObject,
+            $Package,
             [switch]$AllUsers
         )
         process { }
+    }
+    function Remove-WinUtilProvisionedAPPX {
+        param($PackageList)
     }
     function Get-AppxProvisionedPackage {
         param([switch]$Online)
@@ -60,32 +65,20 @@ Describe "Remove-WinUtilAPPX" {
         Mock Get-AppxPackage {
             [pscustomobject]@{
                 Name = $Name
+                PackageFullName = "$Name.FullName"
             }
         }
         Mock Remove-AppxPackage { }
-        Mock Get-AppxProvisionedPackage {
-            @(
-                [pscustomobject]@{ DisplayName = "Microsoft.XboxGamingOverlay" }
-                [pscustomobject]@{ DisplayName = "Microsoft.WindowsCalculator" }
-            )
-        }
-        Mock Remove-AppxProvisionedPackage { }
     }
 
-    It "removes matching installed and provisioned AppX packages" {
+    It "removes matching installed AppX packages" {
         Remove-WinUtilAPPX -Name "Microsoft.Xbox*"
 
         Should -Invoke -CommandName Get-AppxPackage -Times 1 -Exactly -ParameterFilter {
-            $Name -eq "Microsoft.Xbox*" -and $AllUsers -eq $true
+            $Name -eq "*Microsoft.Xbox**" -and $AllUsers -eq $true
         }
         Should -Invoke -CommandName Remove-AppxPackage -Times 1 -Exactly -ParameterFilter {
-            $InputObject.Name -eq "Microsoft.Xbox*" -and $AllUsers -eq $true
-        }
-        Should -Invoke -CommandName Get-AppxProvisionedPackage -Times 1 -Exactly -ParameterFilter {
-            $Online -eq $true
-        }
-        Should -Invoke -CommandName Remove-AppxProvisionedPackage -Times 1 -Exactly -ParameterFilter {
-            $InputObject.DisplayName -eq "Microsoft.XboxGamingOverlay" -and $Online -eq $true
+            $Package -eq "*Microsoft.Xbox**.FullName"
         }
     }
 }
@@ -190,9 +183,11 @@ Describe "Invoke-WPFAppxRemoval runspace body" {
         Mock Get-AppxPackage {
             [pscustomobject]@{
                 Name = $Name
+                PackageFullName = "$Name.FullName"
             }
         }
         Mock Remove-AppxPackage { }
+        Mock Remove-WinUtilProvisionedAPPX { }
         Mock Get-Package {
             [pscustomobject]@{
                 Name = "Microsoft Teams Meeting Add-in"
@@ -216,10 +211,13 @@ Describe "Invoke-WPFAppxRemoval runspace body" {
         & $script:capturedAppxScriptBlock -selected $selected -apps $script:apps
 
         Should -Invoke -CommandName Get-AppxPackage -Times 1 -Exactly -ParameterFilter {
-            $Name -eq "Example.Package" -and $AllUsers -eq $true
+            $Name -eq "*Example.Package*" -and $AllUsers -eq $true
         }
         Should -Invoke -CommandName Remove-AppxPackage -Times 1 -Exactly -ParameterFilter {
-            $InputObject.Name -eq "Example.Package" -and $AllUsers -eq $true
+            $Package -eq "*Example.Package*.FullName"
+        }
+        Should -Invoke -CommandName Remove-WinUtilProvisionedAPPX -Times 1 -Exactly -ParameterFilter {
+            $PackageList.Count -eq 1 -and $PackageList[0] -eq "Example.Package"
         }
         $script:sync.ProcessRunning | Should -BeFalse
     }
@@ -256,6 +254,12 @@ Describe "Invoke-WPFAppxRemoval runspace body" {
             $InputObject.Name -eq "Microsoft Teams Meeting Add-in" -and $Force -eq $true
         }
         Should -Invoke -CommandName Remove-AppxPackage -Times 3 -Exactly
+        Should -Invoke -CommandName Remove-WinUtilProvisionedAPPX -Times 1 -Exactly -ParameterFilter {
+            $PackageList.Count -eq 3 -and 
+            $PackageList[0] -eq "Microsoft.XboxGamingOverlay" -and 
+            $PackageList[1] -eq "Microsoft.WindowsNotepad" -and 
+            $PackageList[2] -eq "MSTeams"
+        }
         $script:sync.ProcessRunning | Should -BeFalse
     }
 }
