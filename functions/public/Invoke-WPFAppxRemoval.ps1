@@ -13,6 +13,8 @@ function Invoke-WPFAppxRemoval {
         $sync.ProcessRunning = $true
         Write-WinUtilLog -Component "AppX" -Message "Starting AppX removal for $(@($selected).Count) selected package(s)."
 
+        $packageList = [System.Collections.Generic.List[string]]::new()
+
         foreach ($key in $selected) {
             if ($key -eq "WPFAppxMicrosoft_XboxGamingOverlay") {
                 # Making sure Game Bar isn't running
@@ -32,12 +34,17 @@ function Invoke-WPFAppxRemoval {
             Write-Host "Removing $($apps[$key].Content)"
             Write-WinUtilLog -Component "AppX" -Message "Removing $($apps[$key].Content) ($($apps[$key].PackageId))."
             Remove-WinUtilAPPX -Name $apps[$key].PackageId
+            $packageList.Add($apps[$key].PackageId)
 
             if ($key -eq "WPFAppxMSTeams") {
                 # Uninstalls Microsoft Teams Meeting Add-in for Microsoft Office
                 Write-WinUtilLog -Component "AppX" -Message "Uninstalling Microsoft Teams meeting add-in package."
                 Get-Package -Name "Microsoft Teams*" -ErrorAction SilentlyContinue | Uninstall-Package -Force
             }
+        }
+
+        if ($packageList.Count -gt 0) {
+            Remove-WinUtilProvisionedAPPX -PackageList $packageList.ToArray()
         }
 
         Write-Host "================================="
