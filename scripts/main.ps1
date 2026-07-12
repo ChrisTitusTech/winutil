@@ -362,6 +362,19 @@ $sync["SearchBar"].Add_TextChanged({
     $searchBarTimer.Start()
 })
 
+# Quick Category Search Chips - insert the category name into the SearchBar.
+# The existing SearchBar TextChanged handler performs the actual filtering.
+$sync["WPFSearchChipAll"].Add_Click({ $sync.SearchBar.Text = "" })
+$sync["WPFSearchChipBrowsers"].Add_Click({ $sync.SearchBar.Text = "Browsers" })
+$sync["WPFSearchChipCommunications"].Add_Click({ $sync.SearchBar.Text = "Communications" })
+$sync["WPFSearchChipDevelopment"].Add_Click({ $sync.SearchBar.Text = "Development" })
+$sync["WPFSearchChipGames"].Add_Click({ $sync.SearchBar.Text = "Games" })
+$sync["WPFSearchChipMicrosoftTools"].Add_Click({ $sync.SearchBar.Text = "Microsoft Tools" })
+$sync["WPFSearchChipMultimediaTools"].Add_Click({ $sync.SearchBar.Text = "Multimedia Tools" })
+$sync["WPFSearchChipProTools"].Add_Click({ $sync.SearchBar.Text = "Pro Tools" })
+$sync["WPFSearchChipSelfhostedTools"].Add_Click({ $sync.SearchBar.Text = "Selfhosted Tools" })
+$sync["WPFSearchChipUtilities"].Add_Click({ $sync.SearchBar.Text = "Utilities" })
+
 $sync["Form"].Add_Loaded({
     param($e)
     $null = $e

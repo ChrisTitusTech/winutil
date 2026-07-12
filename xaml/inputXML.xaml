@@ -1198,8 +1198,26 @@
         <TabControl Name="WPFTabNav" Background="Transparent" Width="Auto" Height="Auto" BorderBrush="Transparent" BorderThickness="0" Grid.Row="2" Grid.Column="0" Padding="-1">
             <TabItem Header="Install" Visibility="Collapsed" Name="WPFTab1">
                 <Grid Background="Transparent" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                    <Grid Grid.Row="0" Grid.Column="0" Margin="{DynamicResource TabContentMargin}">
+                    <!-- Quick Category Search Chips -->
+                    <WrapPanel Grid.Row="0" Orientation="Horizontal" Margin="5,5,5,5" Name="WPFSearchChips">
+                        <Button Name="WPFSearchChipAll"             Content="All"               Width="Auto" Height="Auto" Margin="2"/>
+                        <Button Name="WPFSearchChipBrowsers"        Content="Browsers"          Width="Auto" Height="Auto" Margin="2"/>
+                        <Button Name="WPFSearchChipCommunications"  Content="Communications"    Width="Auto" Height="Auto" Margin="2"/>
+                        <Button Name="WPFSearchChipDevelopment"     Content="Development"       Width="Auto" Height="Auto" Margin="2"/>
+                        <Button Name="WPFSearchChipGames"           Content="Games"             Width="Auto" Height="Auto" Margin="2"/>
+                        <Button Name="WPFSearchChipMicrosoftTools"  Content="Microsoft Tools"   Width="Auto" Height="Auto" Margin="2"/>
+                        <Button Name="WPFSearchChipMultimediaTools" Content="Multimedia Tools"  Width="Auto" Height="Auto" Margin="2"/>
+                        <Button Name="WPFSearchChipProTools"        Content="Pro Tools"         Width="Auto" Height="Auto" Margin="2"/>
+                        <Button Name="WPFSearchChipSelfhostedTools" Content="Selfhosted Tools"  Width="Auto" Height="Auto" Margin="2"/>
+                        <Button Name="WPFSearchChipUtilities"       Content="Utilities"         Width="Auto" Height="Auto" Margin="2"/>
+                    </WrapPanel>
+
+                    <Grid Grid.Row="1" Margin="{DynamicResource TabContentMargin}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
