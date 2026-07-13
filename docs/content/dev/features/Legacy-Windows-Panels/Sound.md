@@ -3,7 +3,7 @@ title: "Sound Settings"
 description: ""
 ---
 
-```json {filename="config/feature.json",linenos=inline,linenostart=259}
+```json {filename="config/feature.json",linenos=inline,linenostart=281}
   "WPFPanelSound": {
     "Content": "Sound Settings",
     "category": "Legacy Windows Panels",
