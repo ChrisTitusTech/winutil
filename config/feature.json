@@ -179,6 +179,17 @@
     "function": "Invoke-WPFFixesWinget",
     "link": "https://winutil.christitus.com/dev/features/fixes/winget"
   },
+  "WPFPanelComputer": {
+    "Content": "Computer Management",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "InvokeScript": [
+      "compmgmt.msc"
+    ],
+    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/computer"
+  },
   "WPFPanelControl": {
     "Content": "Control Panel",
     "category": "Legacy Windows Panels",
@@ -190,16 +201,16 @@
     ],
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/control"
   },
-  "WPFPanelComputer": {
-    "Content": "Computer Management",
+  "WPFPanelMouse": {
+    "Content": "Mouse Properties",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
     "InvokeScript": [
-      "compmgmt.msc"
+      "main.cpl"
     ],
-    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/computer"
+    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/mouse"
   },
   "WPFPanelNetwork": {
     "Content": "Network Connections",
@@ -234,6 +245,17 @@
     ],
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/printer"
   },
+  "WPFPanelPrograms": {
+    "Content": "Programs and Features",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "InvokeScript": [
+      "appwiz.cpl"
+    ],
+    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/programs"
+  },
   "WPFPanelRegion": {
     "Content": "Region",
     "category": "Legacy Windows Panels",
@@ -245,16 +267,16 @@
     ],
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/region"
   },
-  "WPFPanelRestore": {
-    "Content": "Windows Restore",
+  "WPFPanelSecurity": {
+    "Content": "Security and Maintenance",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
     "InvokeScript": [
-      "rstrui.exe"
+      "wscui.cpl"
     ],
-    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/restore"
+    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/security"
   },
   "WPFPanelSound": {
     "Content": "Sound Settings",
@@ -300,38 +322,16 @@
     ],
     "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/firewall"
   },
-  "WPFPanelSecurity": {
-    "Content": "Security and Maintenance",
+  "WPFPanelRestore": {
+    "Content": "Windows Restore",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300",
     "InvokeScript": [
-      "wscui.cpl"
+      "rstrui.exe"
     ],
-    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/security"
-  },
-  "WPFPanelPrograms": {
-    "Content": "Programs and Features",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "Button",
-    "ButtonWidth": "300",
-    "InvokeScript": [
-      "appwiz.cpl"
-    ],
-    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/programs"
-  },
-  "WPFPanelMouse": {
-    "Content": "Mouse Properties",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "Button",
-    "ButtonWidth": "300",
-    "InvokeScript": [
-      "main.cpl"
-    ],
-    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/mouse"
+    "link": "https://winutil.christitus.com/dev/features/legacy-windows-panels/restore"
   },
   "WPFWinUtilInstallPSProfile": {
     "Content": "CTT PowerShell Profile - Install",
