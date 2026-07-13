@@ -9,7 +9,7 @@
         WindowStyle="None"
         Width="Auto"
         Height="Auto"
-        MinWidth="800"
+        MinWidth="1150"
         MinHeight="600"
         Title="WinUtil">
     <WindowChrome.WindowChrome>
@@ -1000,13 +1000,12 @@
                     <ColumnDefinition Width="Auto"/><!-- Buttons area -->
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0" Margin="5,0,0,0" Width="{DynamicResource SearchBarWidth}" Height="{DynamicResource SearchBarHeight}" VerticalAlignment="Center" HorizontalAlignment="Left">
+                <Border Grid.Column="0" Margin="5,0,10,0" MinWidth="120" Height="{DynamicResource SearchBarHeight}" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                     <Grid>
                         <TextBox
-                            Width="{DynamicResource SearchBarWidth}"
                             Height="{DynamicResource SearchBarHeight}"
                             FontSize="{DynamicResource SearchBarTextBoxFontSize}"
-                            VerticalAlignment="Center" HorizontalAlignment="Left"
+                            VerticalAlignment="Center" HorizontalAlignment="Stretch"
                             BorderThickness="1"
                             Name="SearchBar"
                             Foreground="{DynamicResource MainForegroundColor}" Background="{DynamicResource MainBackgroundColor}"
@@ -1023,10 +1022,10 @@
                     </Grid>
                 </Border>
                 <Button Grid.Column="0"
-                    VerticalAlignment="Center" HorizontalAlignment="Left"
+                    VerticalAlignment="Center" HorizontalAlignment="Right"
                     Name="SearchBarClearButton"
                     Style="{StaticResource SearchBarClearButtonStyle}"
-                    Margin="213,0,0,0" Visibility="Collapsed">
+                    Margin="0,0,20,0" Visibility="Collapsed">
                 </Button>
 
                 <!-- Buttons Container -->
