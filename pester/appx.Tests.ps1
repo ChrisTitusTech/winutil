@@ -142,6 +142,27 @@ Describe "Remove-WinUtilProvisionedAPPX" {
             $PackageName -eq "Example.Two_1.0" -and $Online -eq $true
         }
     }
+
+    It "surfaces provisioned package removal failures from the child process" {
+        Mock Remove-AppxProvisionedPackage { throw "DISM failed" }
+
+        { & $script:provisionedRemovalScriptBlock "Example.One" } |
+            Should -Throw "*Failed to remove provisioned AppX package Example.One_1.0: DISM failed*"
+        Should -Invoke -CommandName Remove-AppxProvisionedPackage -Times 1 -Exactly -ParameterFilter {
+            $PackageName -eq "Example.One_1.0" -and
+                $Online -eq $true -and
+                $ErrorAction -eq "Stop"
+        }
+    }
+
+    It "handles child process failures before logging completion" {
+        $source = Get-Content -Path $provisionedSourcePath -Raw
+
+        $source | Should -Match '\$removalOutput = powershell\.exe .* 2>&1'
+        $source | Should -Match 'if \(\$LASTEXITCODE -ne 0 -or \$null -ne \$removalOutput\)'
+        $source | Should -Match 'Write-WinUtilLog -Level "ERROR" -Component "AppX" -Message "AppX provisioned package removal failed:'
+        $source | Should -Match '(?s)AppX provisioned package removal failed:.*return.*AppX provisioned package removal completed\.'
+    }
 }
 
 Describe "Invoke-WPFAppxRemoval entrypoint" {

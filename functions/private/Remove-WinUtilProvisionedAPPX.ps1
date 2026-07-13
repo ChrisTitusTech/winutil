@@ -27,6 +27,7 @@ function Remove-WinUtilProvisionedAPPX {
     $ps5Command = {
         $pkgs = $args
         $provisionedPackages = Get-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
+        $failures = [System.Collections.Generic.List[string]]::new()
 
         foreach ($Package in $pkgs) {
             $provs = $provisionedPackages |
@@ -34,13 +35,27 @@ function Remove-WinUtilProvisionedAPPX {
 
             if ($null -ne $provs) {
                 foreach ($prov in $provs) {
-                    Remove-AppxProvisionedPackage -Online -PackageName $prov.PackageName -ErrorAction SilentlyContinue | Out-Null
+                    try {
+                        Remove-AppxProvisionedPackage -Online -PackageName $prov.PackageName -ErrorAction Stop | Out-Null
+                    }
+                    catch {
+                        $failures.Add("Failed to remove provisioned AppX package $($prov.PackageName): $($_.Exception.Message)")
+                    }
                 }
             }
         }
+
+        if ($failures.Count -gt 0) {
+            throw ($failures -join [Environment]::NewLine)
+        }
     }
 
-    powershell.exe -NoProfile -NonInteractive -Command $ps5Command -args $PackageList
+    $removalOutput = powershell.exe -NoProfile -NonInteractive -Command $ps5Command -args $PackageList 2>&1
+    if ($LASTEXITCODE -ne 0 -or $null -ne $removalOutput) {
+        $failureDetails = ($removalOutput | Out-String).Trim()
+        Write-WinUtilLog -Level "ERROR" -Component "AppX" -Message "AppX provisioned package removal failed: $failureDetails"
+        return
+    }
 
     Write-WinUtilLog -Component "AppX" -Message "AppX provisioned package removal completed."
 }
