@@ -25,7 +25,3 @@ description: ""
 Applications and System Components store and retrieve configuration data to modify Windows settings, so we can use the registry to change many settings in one place.
 
 You can find information about the registry on [Wikipedia](https://en.wikipedia.org/wiki/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).
-
-## References
-1. [Microsoft Documentation - PreventDeviceMetadataFromNetwork](https://learn.microsoft.com/en-us/windows/client-management/mdm/policy-csp-deviceinstallation#preventdevicemetadatafromnetwork)
-2. [CyberSecurityNews - Windows Update Silently Installs LG Monitor App That Pushes McAfee Ads](https://cybersecuritynews.com/windows-update-installs-lg-monitor-app-pushes-mcafee-ads/)
