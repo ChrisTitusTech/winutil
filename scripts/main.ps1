@@ -365,7 +365,7 @@ $sync["SearchBar"].Add_TextChanged({
 $sync["Form"].Add_Loaded({
     param($e)
     $null = $e
-    $sync.Form.MinWidth = "1000"
+    $sync.Form.MinWidth = "1150"
     $sync["Form"].MaxWidth = [Double]::PositiveInfinity
     $sync["Form"].MaxHeight = [Double]::PositiveInfinity
 })
