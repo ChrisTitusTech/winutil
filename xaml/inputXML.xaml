@@ -84,8 +84,8 @@
     <Style x:Key="AppEntryBorderStyle" TargetType="Border">
         <Setter Property="BorderBrush" Value="Gray"/>
         <Setter Property="BorderThickness" Value="{DynamicResource AppEntryBorderThickness}"/>
-        <Setter Property="CornerRadius" Value="2"/>
-        <Setter Property="Padding" Value="{DynamicResource AppEntryMargin}"/>
+        <Setter Property="CornerRadius" Value="5"/>
+        <Setter Property="Padding" Value="6,4"/>
         <Setter Property="Width" Value="{DynamicResource AppEntryWidth}"/>
         <Setter Property="VerticalAlignment" Value="Top"/>
         <Setter Property="Margin" Value="{DynamicResource AppEntryMargin}"/>
@@ -100,30 +100,9 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBox">
-                    <StackPanel Orientation="Horizontal">
-                        <Grid Width="16" Height="16" Margin="0,0,8,0">
-                            <Border Name="CheckBoxBorder"
-                                    BorderBrush="{DynamicResource MainForegroundColor}"
-                                    Background="{DynamicResource ButtonBackgroundColor}"
-                                    BorderThickness="1"
-                                    Width="12"
-                                    Height="12"
-                                    CornerRadius="2"/>
-                            <Path Name="CheckMark"
-                                  Stroke="{DynamicResource ToggleButtonOnColor}"
-                                  StrokeThickness="2"
-                                  Data="M 2 8 L 6 12 L 14 4"
-                                  Visibility="Collapsed"/>
-                        </Grid>
-                        <ContentPresenter Content="{TemplateBinding Content}"
-                                        VerticalAlignment="Center"
-                                        HorizontalAlignment="Left"/>
-                    </StackPanel>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
+                    <ContentPresenter Content="{TemplateBinding Content}"
+                                      VerticalAlignment="Center"
+                                      HorizontalAlignment="Left"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
