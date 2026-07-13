@@ -28,7 +28,7 @@ function Invoke-WPFAppxRemoval {
 
             if ($key -eq "WPFAppxMicrosoft_WindowsNotepad") {
                 Write-WinUtilLog -Component "AppX" -Message "Stopping dllhost before removing Notepad."
-                Stop-Process -Name dllhost
+                Stop-Process -Name dllhost -ErrorAction SilentlyContinue
             }
 
             Write-Host "Removing $($apps[$key].Content)"

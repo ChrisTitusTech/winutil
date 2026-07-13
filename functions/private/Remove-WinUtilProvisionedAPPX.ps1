@@ -26,9 +26,10 @@ function Remove-WinUtilProvisionedAPPX {
     # We shell out to Windows PowerShell 5.1 (powershell.exe) to reliably remove the provisioned packages.
     $ps5Command = {
         $pkgs = $args
+        $provisionedPackages = Get-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
 
         foreach ($Package in $pkgs) {
-            $provs = Get-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue |
+            $provs = $provisionedPackages |
                 Where-Object DisplayName -Like "*$Package*"
 
             if ($null -ne $provs) {

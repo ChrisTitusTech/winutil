@@ -23,7 +23,12 @@ function Remove-WinUtilAPPX {
     $pkgs = Get-AppxPackage "*$Name*" -AllUsers | Sort-Object -Property PackageFullName -Unique
     if ($null -ne $pkgs) {
         foreach ($pkg in $pkgs) {
-            Remove-AppxPackage -Package $pkg.PackageFullName -AllUsers
+            try {
+                Remove-AppxPackage -Package $pkg.PackageFullName -AllUsers -ErrorAction Stop
+            }
+            catch {
+                Write-WinUtilLog -Level "ERROR" -Component "AppX" -Message "Failed to remove AppX package $($pkg.PackageFullName): $($_.Exception.Message)"
+            }
         }
     }
 
