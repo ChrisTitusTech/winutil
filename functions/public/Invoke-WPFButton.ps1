@@ -83,6 +83,13 @@ function Invoke-WPFButton {
         }
         "WPFCloseButton" {$sync.Form.Close(); Write-Host "Bye bye!"}
         "WPFMinimizeButton" {$sync.Form.WindowState = [Windows.WindowState]::Minimized}
+        "WPFMaximizeButton" {
+            if ($sync.Form.WindowState -eq [Windows.WindowState]::Normal) {
+                $sync.Form.WindowState = [Windows.WindowState]::Maximized
+            } else {
+                $sync.Form.WindowState = [Windows.WindowState]::Normal
+            }
+        }
         "WPFselectedAppsButton" {$sync.selectedAppsPopup.IsOpen = -not $sync.selectedAppsPopup.IsOpen}
     }
 }
