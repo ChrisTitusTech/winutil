@@ -6,7 +6,7 @@ description: ""
 ```json {filename="config/tweaks.json",linenos=inline,linenostart=430}
   "WPFTweaksConsumerFeatures": {
     "Content": "ConsumerFeatures - Disable",
-    "Description": "Windows will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (e.g. Phone Link).",
+    "Description": "Stops promoted app installs and reduces app suggestions from Microsoft Store content.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
