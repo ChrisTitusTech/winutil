@@ -17,13 +17,13 @@ function Remove-WinUtilAPPX {
 
     Write-Host "Removing $Name"
     Write-WinUtilLog -Component "AppX" -Message "Removing AppX package pattern: $Name"
-    
+
     # We explicitly loop through packages instead of using the pipeline because PowerShell 7 pipeline binding
     # for Remove-AppxPackage fails silently, and Get-AppxPackage -AllUsers returns duplicate objects for each user profile.
-    $pkgs = Get-AppxPackage "*$Name*" -AllUsers
+    $pkgs = Get-AppxPackage "*$Name*" -AllUsers | Sort-Object -Property PackageFullName -Unique
     if ($null -ne $pkgs) {
         foreach ($pkg in $pkgs) {
-            Remove-AppxPackage -Package $pkg.PackageFullName
+            Remove-AppxPackage -Package $pkg.PackageFullName -AllUsers
         }
     }
 

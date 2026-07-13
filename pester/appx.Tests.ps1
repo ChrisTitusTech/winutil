@@ -63,10 +63,16 @@ Describe "Remove-WinUtilAPPX" {
         Mock Write-Host { }
         Mock Write-WinUtilLog { }
         Mock Get-AppxPackage {
-            [pscustomobject]@{
-                Name = $Name
-                PackageFullName = "$Name.FullName"
-            }
+            @(
+                [pscustomobject]@{
+                    Name = $Name
+                    PackageFullName = "$Name.FullName"
+                }
+                [pscustomobject]@{
+                    Name = $Name
+                    PackageFullName = "$Name.FullName"
+                }
+            )
         }
         Mock Remove-AppxPackage { }
     }
@@ -78,7 +84,7 @@ Describe "Remove-WinUtilAPPX" {
             $Name -eq "*Microsoft.Xbox**" -and $AllUsers -eq $true
         }
         Should -Invoke -CommandName Remove-AppxPackage -Times 1 -Exactly -ParameterFilter {
-            $Package -eq "*Microsoft.Xbox**.FullName"
+            $Package -eq "*Microsoft.Xbox**.FullName" -and $AllUsers -eq $true
         }
     }
 }
@@ -255,9 +261,9 @@ Describe "Invoke-WPFAppxRemoval runspace body" {
         }
         Should -Invoke -CommandName Remove-AppxPackage -Times 3 -Exactly
         Should -Invoke -CommandName Remove-WinUtilProvisionedAPPX -Times 1 -Exactly -ParameterFilter {
-            $PackageList.Count -eq 3 -and 
-            $PackageList[0] -eq "Microsoft.XboxGamingOverlay" -and 
-            $PackageList[1] -eq "Microsoft.WindowsNotepad" -and 
+            $PackageList.Count -eq 3 -and
+            $PackageList[0] -eq "Microsoft.XboxGamingOverlay" -and
+            $PackageList[1] -eq "Microsoft.WindowsNotepad" -and
             $PackageList[2] -eq "MSTeams"
         }
         $script:sync.ProcessRunning | Should -BeFalse

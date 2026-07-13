@@ -30,7 +30,7 @@ function Remove-WinUtilProvisionedAPPX {
         foreach ($Package in $pkgs) {
             $provs = Get-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue |
                 Where-Object DisplayName -Like "*$Package*"
-            
+
             if ($null -ne $provs) {
                 foreach ($prov in $provs) {
                     Remove-AppxProvisionedPackage -Online -PackageName $prov.PackageName -ErrorAction SilentlyContinue | Out-Null
@@ -39,7 +39,7 @@ function Remove-WinUtilProvisionedAPPX {
         }
     }
 
-    powershell.exe -NoProfile -NonInteractive -Command "& {$ps5Command}" -args $PackageList
+    powershell.exe -NoProfile -NonInteractive -Command $ps5Command -args $PackageList
 
     Write-WinUtilLog -Component "AppX" -Message "AppX provisioned package removal completed."
 }
