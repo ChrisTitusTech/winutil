@@ -319,7 +319,10 @@ Describe "Invoke-WPFAppxRemoval runspace body" {
         & $script:capturedAppxScriptBlock -selected $selected -apps $script:apps
 
         Should -Invoke -CommandName Stop-Process -Times 1 -Exactly -ParameterFilter {
-            $Name -eq "GameBarFTServer"
+            $Name -eq "GameBarFTServer" -and
+                $Force -eq $true -and
+                $Confirm -eq $false -and
+                $ErrorAction -eq "SilentlyContinue"
         }
         Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
             $Path -eq "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR" -and
@@ -327,7 +330,10 @@ Describe "Invoke-WPFAppxRemoval runspace body" {
                 $Value -eq 0
         }
         Should -Invoke -CommandName Stop-Process -Times 1 -Exactly -ParameterFilter {
-            $Name -eq "dllhost" -and $ErrorAction -eq "SilentlyContinue"
+            $Name -eq "dllhost" -and
+                $Force -eq $true -and
+                $Confirm -eq $false -and
+                $ErrorAction -eq "SilentlyContinue"
         }
         Should -Invoke -CommandName Get-Package -Times 1 -Exactly -ParameterFilter {
             $Name -eq "Microsoft Teams*"

@@ -19,7 +19,7 @@ function Invoke-WPFAppxRemoval {
             if ($key -eq "WPFAppxMicrosoft_XboxGamingOverlay") {
                 # Making sure Game Bar isn't running
                 Write-WinUtilLog -Component "AppX" -Message "Stopping GameBarFTServer before removing Xbox Gaming Overlay."
-                Stop-Process -Name GameBarFTServer
+                Stop-Process -Name GameBarFTServer -Force -Confirm:$false -ErrorAction SilentlyContinue
 
                 # This stops annoying ms-gamebar popup when launching games.
                 Write-WinUtilLog -Component "AppX" -Message "Disabling Game DVR capture before removing Xbox Gaming Overlay."
@@ -28,7 +28,7 @@ function Invoke-WPFAppxRemoval {
 
             if ($key -eq "WPFAppxMicrosoft_WindowsNotepad") {
                 Write-WinUtilLog -Component "AppX" -Message "Stopping dllhost before removing Notepad."
-                Stop-Process -Name dllhost -ErrorAction SilentlyContinue
+                Stop-Process -Name dllhost -Force -Confirm:$false -ErrorAction SilentlyContinue
             }
 
             Write-Host "Removing $($apps[$key].Content)"
