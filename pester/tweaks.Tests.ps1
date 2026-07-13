@@ -34,6 +34,9 @@ BeforeAll {
     function Set-WinUtilProgressBar {
         param($Label, $Percent)
     }
+    function Set-WinUtilTweaksProgressIndicator {
+        param($Visible, $Label, $Percent)
+    }
     function Write-WinUtilLog {
         param($Message, $Level, $Component)
     }
