@@ -340,7 +340,7 @@ $searchBarTimer.add_Tick({
     $searchBarTimer.Stop()
     switch ($sync.currentTab) {
         "Install" {
-            Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text
+            Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text -Category $sync.SearchBar.Tag
         }
         "Tweaks" {
             Find-TweaksByNameOrDescription -SearchString $sync.SearchBar.Text
@@ -351,6 +351,10 @@ $searchBarTimer.add_Tick({
     }
 })
 $sync["SearchBar"].Add_TextChanged({
+    if ($sync.SearchBar.Tag -ne $sync.SearchBar.Text) {
+        $sync.SearchBar.Tag = $null
+    }
+
     if ($sync.SearchBar.Text -ne "") {
         $sync.SearchBarClearButton.Visibility = "Visible"
     } else {
@@ -362,18 +366,17 @@ $sync["SearchBar"].Add_TextChanged({
     $searchBarTimer.Start()
 })
 
-# Quick Category Search Chips - insert the category name into the SearchBar.
-# The existing SearchBar TextChanged handler performs the actual filtering.
-$sync["WPFSearchChipAll"].Add_Click({ $sync.SearchBar.Text = "" })
-$sync["WPFSearchChipBrowsers"].Add_Click({ $sync.SearchBar.Text = "Browsers" })
-$sync["WPFSearchChipCommunications"].Add_Click({ $sync.SearchBar.Text = "Communications" })
-$sync["WPFSearchChipDevelopment"].Add_Click({ $sync.SearchBar.Text = "Development" })
-$sync["WPFSearchChipGames"].Add_Click({ $sync.SearchBar.Text = "Games" })
-$sync["WPFSearchChipMicrosoftTools"].Add_Click({ $sync.SearchBar.Text = "Microsoft Tools" })
-$sync["WPFSearchChipMultimediaTools"].Add_Click({ $sync.SearchBar.Text = "Multimedia Tools" })
-$sync["WPFSearchChipProTools"].Add_Click({ $sync.SearchBar.Text = "Pro Tools" })
-$sync["WPFSearchChipSelfhostedTools"].Add_Click({ $sync.SearchBar.Text = "Selfhosted Tools" })
-$sync["WPFSearchChipUtilities"].Add_Click({ $sync.SearchBar.Text = "Utilities" })
+# Quick Category Search Chips
+$sync["WPFSearchChipAll"].Add_Click({ Set-WinUtilAppCategoryFilter })
+$sync["WPFSearchChipBrowsers"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Browsers" })
+$sync["WPFSearchChipCommunications"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Communications" })
+$sync["WPFSearchChipDevelopment"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Development" })
+$sync["WPFSearchChipGames"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Games" })
+$sync["WPFSearchChipMicrosoftTools"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Microsoft Tools" })
+$sync["WPFSearchChipMultimediaTools"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Multimedia Tools" })
+$sync["WPFSearchChipProTools"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Pro Tools" })
+$sync["WPFSearchChipSelfhostedTools"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Selfhosted Tools" })
+$sync["WPFSearchChipUtilities"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Utilities" })
 
 $sync["Form"].Add_Loaded({
     param($e)

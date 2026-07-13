@@ -10,6 +10,9 @@ function Find-AppsByNameOrDescription {
         .PARAMETER SearchString
             The string to be searched for. Wildcards are treated as literal characters.
 
+        .PARAMETER Category
+            When provided, only applications in this exact category are shown.
+
         .NOTES
             - Uses module-scope $sync (no parameter needed; inherits from caller's scope)
             - Performs literal matching (no wildcard expansion)
@@ -18,7 +21,10 @@ function Find-AppsByNameOrDescription {
     #>
     param(
         [Parameter(Mandatory = $false)]
-        [string]$SearchString = ""
+        [string]$SearchString = "",
+
+        [Parameter(Mandatory = $false)]
+        [string]$Category = ""
     )
 
     # Validate that $sync exists and has required structure
@@ -39,7 +45,7 @@ function Find-AppsByNameOrDescription {
 
     try {
         # Reset the visibility if the search string is empty or the search is cleared
-        if ([string]::IsNullOrWhiteSpace($SearchString)) {
+        if ([string]::IsNullOrWhiteSpace($SearchString) -and [string]::IsNullOrWhiteSpace($Category)) {
             $sync.ItemsControl.Items | ForEach-Object {
                 # Each item is a StackPanel container
                 $_.Visibility = [Windows.Visibility]::Visible
@@ -94,10 +100,11 @@ function Find-AppsByNameOrDescription {
 
                     # Check if app matches search criteria
                     if ($null -ne $appEntry) {
-                        $contentMatch = $appEntry.Content -like "*$escapedSearchString*"
-                        $descriptionMatch = $appEntry.Description -like "*$escapedSearchString*"
+                        $categoryMatch = -not [string]::IsNullOrWhiteSpace($Category) -and $appEntry.Category -eq $Category
+                        $contentMatch = [string]::IsNullOrWhiteSpace($Category) -and $appEntry.Content -like "*$escapedSearchString*"
+                        $descriptionMatch = [string]::IsNullOrWhiteSpace($Category) -and $appEntry.Description -like "*$escapedSearchString*"
 
-                        if ($contentMatch -or $descriptionMatch) {
+                        if ($categoryMatch -or $contentMatch -or $descriptionMatch) {
                             # Show the App and mark that this category has a match
                             $appControl.Visibility = [Windows.Visibility]::Visible
                             $categoryHasMatch = $true
