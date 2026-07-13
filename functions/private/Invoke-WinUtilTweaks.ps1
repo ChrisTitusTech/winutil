@@ -78,6 +78,7 @@ function Invoke-WinUtilTweaks {
             $sync.configs.tweaks.$CheckBox.appx | ForEach-Object {
                 Remove-WinUtilAPPX -Name $psitem
             }
+            Remove-WinUtilProvisionedAPPX -PackageList $sync.configs.tweaks.$CheckBox.appx
         }
     }
     Write-WinUtilLog -Component "Tweaks" -Message "$action tweak completed: $CheckBox"

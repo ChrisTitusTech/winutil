@@ -5,7 +5,20 @@
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     . (Join-Path $script:repoRoot "functions\private\Remove-WinUtilAPPX.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Remove-WinUtilProvisionedAPPX.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFAppxRemoval.ps1")
+
+    $tokens = $null
+    $parseErrors = $null
+    $provisionedSourcePath = Join-Path $script:repoRoot "functions\private\Remove-WinUtilProvisionedAPPX.ps1"
+    $provisionedSourceAst = [System.Management.Automation.Language.Parser]::ParseFile($provisionedSourcePath, [ref]$tokens, [ref]$parseErrors)
+    $ps5CommandAssignment = $provisionedSourceAst.Find({
+        param($node)
+        $node -is [System.Management.Automation.Language.AssignmentStatementAst] -and
+            $node.Left -is [System.Management.Automation.Language.VariableExpressionAst] -and
+            $node.Left.VariablePath.UserPath -eq "ps5Command"
+    }, $true)
+    $script:provisionedRemovalScriptBlock = $ps5CommandAssignment.Right.Expression.ScriptBlock.GetScriptBlock()
 
     function Write-WinUtilLog {
         param($Message, $Level, $Component)
@@ -23,18 +36,25 @@ BeforeAll {
         param(
             [Parameter(ValueFromPipeline = $true)]
             $InputObject,
-            [switch]$AllUsers
+            $Package,
+            [switch]$AllUsers,
+            $ErrorAction
         )
         process { }
     }
+    function Remove-WinUtilProvisionedAPPX {
+        param($PackageList)
+    }
     function Get-AppxProvisionedPackage {
-        param([switch]$Online)
+        param([switch]$Online, $ErrorAction)
     }
     function Remove-AppxProvisionedPackage {
         param(
             [Parameter(ValueFromPipeline = $true)]
             $InputObject,
-            [switch]$Online
+            [switch]$Online,
+            $PackageName,
+            $ErrorAction
         )
         process { }
     }
@@ -58,35 +78,90 @@ Describe "Remove-WinUtilAPPX" {
         Mock Write-Host { }
         Mock Write-WinUtilLog { }
         Mock Get-AppxPackage {
-            [pscustomobject]@{
-                Name = $Name
-            }
+            @(
+                [pscustomobject]@{
+                    Name = $Name
+                    PackageFullName = "$Name.FullName"
+                }
+                [pscustomobject]@{
+                    Name = $Name
+                    PackageFullName = "$Name.FullName"
+                }
+            )
         }
         Mock Remove-AppxPackage { }
+    }
+
+    It "removes matching installed AppX packages" {
+        Remove-WinUtilAPPX -Name "Microsoft.Xbox*"
+
+        Should -Invoke -CommandName Get-AppxPackage -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "*Microsoft.Xbox**" -and $AllUsers -eq $true
+        }
+        Should -Invoke -CommandName Remove-AppxPackage -Times 1 -Exactly -ParameterFilter {
+            $Package -eq "*Microsoft.Xbox**.FullName" -and
+                $AllUsers -eq $true -and
+                $ErrorAction -eq "Stop"
+        }
+    }
+
+    It "logs installed AppX removal failures" {
+        Mock Remove-AppxPackage { throw "Removal failed" }
+
+        { Remove-WinUtilAPPX -Name "Example.Package" } | Should -Not -Throw
+
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "ERROR" -and
+                $Component -eq "AppX" -and
+                $Message -eq "Failed to remove AppX package *Example.Package*.FullName: Removal failed"
+        }
+    }
+}
+
+Describe "Remove-WinUtilProvisionedAPPX" {
+    BeforeEach {
         Mock Get-AppxProvisionedPackage {
             @(
-                [pscustomobject]@{ DisplayName = "Microsoft.XboxGamingOverlay" }
-                [pscustomobject]@{ DisplayName = "Microsoft.WindowsCalculator" }
+                [pscustomobject]@{ DisplayName = "Example.One"; PackageName = "Example.One_1.0" }
+                [pscustomobject]@{ DisplayName = "Example.Two"; PackageName = "Example.Two_1.0" }
             )
         }
         Mock Remove-AppxProvisionedPackage { }
     }
 
-    It "removes matching installed and provisioned AppX packages" {
-        Remove-WinUtilAPPX -Name "Microsoft.Xbox*"
+    It "queries provisioned packages once for all selected package names" {
+        & $script:provisionedRemovalScriptBlock "Example.One" "Example.Two"
 
-        Should -Invoke -CommandName Get-AppxPackage -Times 1 -Exactly -ParameterFilter {
-            $Name -eq "Microsoft.Xbox*" -and $AllUsers -eq $true
-        }
-        Should -Invoke -CommandName Remove-AppxPackage -Times 1 -Exactly -ParameterFilter {
-            $InputObject.Name -eq "Microsoft.Xbox*" -and $AllUsers -eq $true
-        }
         Should -Invoke -CommandName Get-AppxProvisionedPackage -Times 1 -Exactly -ParameterFilter {
             $Online -eq $true
         }
         Should -Invoke -CommandName Remove-AppxProvisionedPackage -Times 1 -Exactly -ParameterFilter {
-            $InputObject.DisplayName -eq "Microsoft.XboxGamingOverlay" -and $Online -eq $true
+            $PackageName -eq "Example.One_1.0" -and $Online -eq $true
         }
+        Should -Invoke -CommandName Remove-AppxProvisionedPackage -Times 1 -Exactly -ParameterFilter {
+            $PackageName -eq "Example.Two_1.0" -and $Online -eq $true
+        }
+    }
+
+    It "surfaces provisioned package removal failures from the child process" {
+        Mock Remove-AppxProvisionedPackage { throw "DISM failed" }
+
+        { & $script:provisionedRemovalScriptBlock "Example.One" } |
+            Should -Throw "*Failed to remove provisioned AppX package Example.One_1.0: DISM failed*"
+        Should -Invoke -CommandName Remove-AppxProvisionedPackage -Times 1 -Exactly -ParameterFilter {
+            $PackageName -eq "Example.One_1.0" -and
+                $Online -eq $true -and
+                $ErrorAction -eq "Stop"
+        }
+    }
+
+    It "handles child process failures before logging completion" {
+        $source = Get-Content -Path $provisionedSourcePath -Raw
+
+        $source | Should -Match '\$removalOutput = powershell\.exe .* 2>&1'
+        $source | Should -Match 'if \(\$LASTEXITCODE -ne 0 -or \$null -ne \$removalOutput\)'
+        $source | Should -Match 'Write-WinUtilLog -Level "ERROR" -Component "AppX" -Message "AppX provisioned package removal failed:'
+        $source | Should -Match '(?s)AppX provisioned package removal failed:.*return.*AppX provisioned package removal completed\.'
     }
 }
 
@@ -190,9 +265,11 @@ Describe "Invoke-WPFAppxRemoval runspace body" {
         Mock Get-AppxPackage {
             [pscustomobject]@{
                 Name = $Name
+                PackageFullName = "$Name.FullName"
             }
         }
         Mock Remove-AppxPackage { }
+        Mock Remove-WinUtilProvisionedAPPX { }
         Mock Get-Package {
             [pscustomobject]@{
                 Name = "Microsoft Teams Meeting Add-in"
@@ -216,10 +293,13 @@ Describe "Invoke-WPFAppxRemoval runspace body" {
         & $script:capturedAppxScriptBlock -selected $selected -apps $script:apps
 
         Should -Invoke -CommandName Get-AppxPackage -Times 1 -Exactly -ParameterFilter {
-            $Name -eq "Example.Package" -and $AllUsers -eq $true
+            $Name -eq "*Example.Package*" -and $AllUsers -eq $true
         }
         Should -Invoke -CommandName Remove-AppxPackage -Times 1 -Exactly -ParameterFilter {
-            $InputObject.Name -eq "Example.Package" -and $AllUsers -eq $true
+            $Package -eq "*Example.Package*.FullName"
+        }
+        Should -Invoke -CommandName Remove-WinUtilProvisionedAPPX -Times 1 -Exactly -ParameterFilter {
+            $PackageList.Count -eq 1 -and $PackageList[0] -eq "Example.Package"
         }
         $script:sync.ProcessRunning | Should -BeFalse
     }
@@ -239,7 +319,10 @@ Describe "Invoke-WPFAppxRemoval runspace body" {
         & $script:capturedAppxScriptBlock -selected $selected -apps $script:apps
 
         Should -Invoke -CommandName Stop-Process -Times 1 -Exactly -ParameterFilter {
-            $Name -eq "GameBarFTServer"
+            $Name -eq "GameBarFTServer" -and
+                $Force -eq $true -and
+                $Confirm -eq $false -and
+                $ErrorAction -eq "SilentlyContinue"
         }
         Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
             $Path -eq "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR" -and
@@ -247,7 +330,10 @@ Describe "Invoke-WPFAppxRemoval runspace body" {
                 $Value -eq 0
         }
         Should -Invoke -CommandName Stop-Process -Times 1 -Exactly -ParameterFilter {
-            $Name -eq "dllhost"
+            $Name -eq "dllhost" -and
+                $Force -eq $true -and
+                $Confirm -eq $false -and
+                $ErrorAction -eq "SilentlyContinue"
         }
         Should -Invoke -CommandName Get-Package -Times 1 -Exactly -ParameterFilter {
             $Name -eq "Microsoft Teams*"
@@ -256,6 +342,12 @@ Describe "Invoke-WPFAppxRemoval runspace body" {
             $InputObject.Name -eq "Microsoft Teams Meeting Add-in" -and $Force -eq $true
         }
         Should -Invoke -CommandName Remove-AppxPackage -Times 3 -Exactly
+        Should -Invoke -CommandName Remove-WinUtilProvisionedAPPX -Times 1 -Exactly -ParameterFilter {
+            $PackageList.Count -eq 3 -and
+            $PackageList[0] -eq "Microsoft.XboxGamingOverlay" -and
+            $PackageList[1] -eq "Microsoft.WindowsNotepad" -and
+            $PackageList[2] -eq "MSTeams"
+        }
         $script:sync.ProcessRunning | Should -BeFalse
     }
 }

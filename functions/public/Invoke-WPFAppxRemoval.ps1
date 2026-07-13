@@ -13,11 +13,13 @@ function Invoke-WPFAppxRemoval {
         $sync.ProcessRunning = $true
         Write-WinUtilLog -Component "AppX" -Message "Starting AppX removal for $(@($selected).Count) selected package(s)."
 
+        $packageList = [System.Collections.Generic.List[string]]::new()
+
         foreach ($key in $selected) {
             if ($key -eq "WPFAppxMicrosoft_XboxGamingOverlay") {
                 # Making sure Game Bar isn't running
                 Write-WinUtilLog -Component "AppX" -Message "Stopping GameBarFTServer before removing Xbox Gaming Overlay."
-                Stop-Process -Name GameBarFTServer
+                Stop-Process -Name GameBarFTServer -Force -Confirm:$false -ErrorAction SilentlyContinue
 
                 # This stops annoying ms-gamebar popup when launching games.
                 Write-WinUtilLog -Component "AppX" -Message "Disabling Game DVR capture before removing Xbox Gaming Overlay."
@@ -25,20 +27,24 @@ function Invoke-WPFAppxRemoval {
             }
 
             if ($key -eq "WPFAppxMicrosoft_WindowsNotepad") {
-                # i hope your having fun reading this
                 Write-WinUtilLog -Component "AppX" -Message "Stopping dllhost before removing Notepad."
-                Stop-Process -Name dllhost
+                Stop-Process -Name dllhost -Force -Confirm:$false -ErrorAction SilentlyContinue
             }
 
             Write-Host "Removing $($apps[$key].Content)"
             Write-WinUtilLog -Component "AppX" -Message "Removing $($apps[$key].Content) ($($apps[$key].PackageId))."
-            Get-AppxPackage -Name $apps[$key].PackageId -AllUsers | Remove-AppxPackage -AllUsers
+            Remove-WinUtilAPPX -Name $apps[$key].PackageId
+            $packageList.Add($apps[$key].PackageId)
 
             if ($key -eq "WPFAppxMSTeams") {
                 # Uninstalls Microsoft Teams Meeting Add-in for Microsoft Office
                 Write-WinUtilLog -Component "AppX" -Message "Uninstalling Microsoft Teams meeting add-in package."
                 Get-Package -Name "Microsoft Teams*" -ErrorAction SilentlyContinue | Uninstall-Package -Force
             }
+        }
+
+        if ($packageList.Count -gt 0) {
+            Remove-WinUtilProvisionedAPPX -PackageList $packageList.ToArray()
         }
 
         Write-Host "================================="
