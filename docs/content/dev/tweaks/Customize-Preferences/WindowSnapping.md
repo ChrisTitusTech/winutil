@@ -3,7 +3,7 @@ title: "Window Snapping"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=1533}
+```json {filename="config/tweaks.json",linenos=inline,linenostart=1549}
   "WPFToggleWindowSnapping": {
     "Content": "Window Snapping",
     "Description": "Toggles the window snapping feature when dragging windows.",

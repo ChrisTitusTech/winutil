@@ -134,7 +134,6 @@ Describe "XAML document" {
             "WPFTab3BT",
             "WPFTab4BT",
             "WPFTab5BT",
-            "WPFTab6BT",
             "SearchBar",
             "SearchBarClearButton",
             "appscategory",
@@ -148,6 +147,7 @@ Describe "XAML document" {
             "WPFAdvanced",
             "WPFClearTweaksSelection",
             "WPFGetInstalledTweaks",
+            "WPFAppxRemoval",
             "WPFTweaksbutton",
             "WPFUndoall",
             "WPFUpdatesdefault",
@@ -157,6 +157,7 @@ Describe "XAML document" {
             "WPFGetInstalledAppx",
             "WPFSelectAllAppx",
             "WPFClearAppxSelection",
+            "WPFBackToTweaks",
             "WPFRemoveSelectedAppx"
         )
 
@@ -222,6 +223,27 @@ Describe "XAML document" {
                 throw "Tab order mismatch at index ${index}: expected $($expectedTabs[$index]), found $($actualTabs[$index])"
             }
         }
+    }
+
+    It "opens AppX removal from Tweaks and provides a return path" {
+        $navPanel = $script:xaml.SelectSingleNode('//*[local-name()="StackPanel"][@Name="NavDockPanel"]')
+        $tweaksTab = $script:xaml.SelectSingleNode('//*[local-name()="TabItem"][@Name="WPFTab2"]')
+        $appxTab = $script:xaml.SelectSingleNode('//*[local-name()="TabItem"][@Name="WPFTab6"]')
+        $openButton = $tweaksTab.SelectSingleNode('.//*[local-name()="Button"][@Name="WPFAppxRemoval"]')
+        $buttonNames = @($openButton.ParentNode.SelectNodes('./*[local-name()="Button"]') | ForEach-Object { $_.GetAttribute("Name") })
+        $getInstalledIndex = [array]::IndexOf($buttonNames, "WPFGetInstalledTweaks")
+        $openAppxIndex = [array]::IndexOf($buttonNames, "WPFAppxRemoval")
+        $buttonSource = Get-Content -Path $script:buttonScriptPath -Raw
+        $tabSource = Get-Content -Path (Join-Path $script:functionRoot "public\Invoke-WPFTab.ps1") -Raw
+
+        $navPanel.SelectSingleNode('./*[local-name()="ToggleButton"][@Name="WPFTab6BT"]') | Should -BeNullOrEmpty
+        $openButton.GetAttribute("Content").Trim() | Should -Be "AppX Removal"
+        $openAppxIndex | Should -Be ($getInstalledIndex + 1)
+        $appxTab.SelectSingleNode('.//*[local-name()="Button"][@Name="WPFBackToTweaks"]') | Should -Not -BeNullOrEmpty
+        $appxTab.SelectSingleNode('.//*[local-name()="Button"][@Name="WPFRemoveSelectedAppx"]') | Should -Not -BeNullOrEmpty
+        $buttonSource | Should -Match '"WPFAppxRemoval"\s*\{Invoke-WPFTab "WPFTab6BT"\}'
+        $buttonSource | Should -Match '"WPFBackToTweaks"\s*\{Invoke-WPFTab "WPFTab2BT"\}'
+        $tabSource | Should -Match '\$sync\.\$tabNav\.Items\[\$tabNumber\]\.IsSelected = \$true'
     }
 }
 

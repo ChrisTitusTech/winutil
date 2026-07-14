@@ -3,7 +3,7 @@ title: "Power Panel"
 description: ""
 ---
 
-```json {filename="config/feature.json",linenos=inline,linenostart=215}
+```json {filename="config/feature.json",linenos=inline,linenostart=226}
   "WPFPanelPower": {
     "Content": "Power Panel",
     "category": "Legacy Windows Panels",
