@@ -248,6 +248,52 @@ Describe "XAML document" {
         $buttonSource | Should -Match '"WPFInstallSelectedAppx"\s*\{Invoke-WPFAppxInstall\}'
         $tabSource | Should -Match '\$sync\.\$tabNav\.Items\[\$tabNumber\]\.IsSelected = \$true'
     }
+
+    It "centers top bar controls vertically" {
+        $navPanel = $script:xaml.SelectSingleNode('//*[local-name()="StackPanel"][@Name="NavDockPanel"]')
+        $minimizeButton = $script:xaml.SelectSingleNode('//*[local-name()="Button"][@Name="WPFMinimizeButton"]')
+        $actionPanel = $minimizeButton.ParentNode
+        $topBarButtonNames = @(
+            "ThemeButton",
+            "FontScalingButton",
+            "SettingsButton",
+            "WPFMinimizeButton",
+            "WPFMaximizeButton",
+            "WPFCloseButton"
+        )
+
+        $navPanel.GetAttribute("VerticalAlignment") | Should -Be "Center"
+        $actionPanel.GetAttribute("VerticalAlignment") | Should -Be "Center"
+
+        foreach ($buttonName in $topBarButtonNames) {
+            $button = $script:xaml.SelectSingleNode("//*[local-name()='Button'][@Name='$buttonName']")
+            $button.GetAttribute("VerticalAlignment") | Should -Be "Center"
+        }
+    }
+
+    It "uses state-aware maximize and restore icons" {
+        $themes = Get-WinUtilConfigObject -Name "themes"
+        $minimizeButton = $script:xaml.SelectSingleNode('//*[local-name()="Button"][@Name="WPFMinimizeButton"]')
+        $maximizeButton = $script:xaml.SelectSingleNode('//*[local-name()="Button"][@Name="WPFMaximizeButton"]')
+        $closeButton = $script:xaml.SelectSingleNode('//*[local-name()="Button"][@Name="WPFCloseButton"]')
+        $maximizeStyle = $maximizeButton.SelectSingleNode('./*[local-name()="Button.Style"]/*[local-name()="Style"]')
+        $maximizeIcon = $maximizeStyle.SelectSingleNode('./*[local-name()="Setter"][@Property="Content"]')
+        $maximizedTrigger = $maximizeStyle.SelectSingleNode('./*[local-name()="Style.Triggers"]/*[local-name()="DataTrigger"][@Value="Maximized"]')
+        $restoreIcon = $maximizedTrigger.SelectSingleNode('./*[local-name()="Setter"][@Property="Content"]')
+
+        foreach ($button in @($minimizeButton, $maximizeButton, $closeButton)) {
+            $button.GetAttribute("FontFamily") | Should -Be "Segoe MDL2 Assets"
+            $button.GetAttribute("FontSize") | Should -Be "{DynamicResource CloseIconFontSize}"
+            $button.GetAttribute("Margin") | Should -BeIn @("0", "0,0,0,0")
+        }
+
+        $minimizeButton.GetAttribute("Content") | Should -Be ([string][char]0xE921)
+        $maximizeIcon.GetAttribute("Value") | Should -Be ([string][char]0xE922)
+        $restoreIcon.GetAttribute("Value") | Should -Be ([string][char]0xE923)
+        $closeButton.GetAttribute("Content") | Should -Be ([string][char]0xE8BB)
+        $maximizeStyle.GetAttribute("BasedOn") | Should -Be "{StaticResource HoverButtonStyle}"
+        [int]$themes.shared.CloseIconFontSize | Should -BeLessThan ([int]$themes.shared.SettingsIconFontSize)
+    }
 }
 
 Describe "XAML and sync wiring" {
