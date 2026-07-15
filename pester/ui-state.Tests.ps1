@@ -5,7 +5,7 @@
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 
-    if (-not ("System.Windows.Controls.CheckBox" -as [type])) {
+    if (-not ("Windows.Visibility" -as [type])) {
         Add-Type @"
 namespace Windows
 {
@@ -14,7 +14,14 @@ namespace Windows
         Visible,
         Collapsed
     }
+}
+"@
+    }
 
+    if (-not ("Windows.WindowState" -as [type])) {
+        Add-Type @"
+namespace Windows
+{
     public enum WindowState
     {
         Normal,
@@ -22,7 +29,11 @@ namespace Windows
         Maximized
     }
 }
+"@
+    }
 
+    if (-not ("System.Windows.Controls.CheckBox" -as [type])) {
+        Add-Type @"
 namespace System.Windows.Controls
 {
     public class CheckBox
