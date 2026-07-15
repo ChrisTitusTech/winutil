@@ -1184,8 +1184,7 @@
                     Margin="0,0,0,0"
                     FontFamily="{DynamicResource FontFamily}"
                     Foreground="{DynamicResource MainForegroundColor}" FontSize="{DynamicResource CloseIconFontSize}" Name="WPFMinimizeButton" />
-
-                    <Button
+                   <Button
                     Content="&#x25A1;" BorderThickness="0"
                     BorderBrush="Transparent"
                     Background="{DynamicResource MainBackgroundColor}"
@@ -1193,17 +1192,18 @@
                     HorizontalAlignment="Right" VerticalAlignment="Top"
                     Margin="0,0,0,0"
                     FontFamily="{DynamicResource FontFamily}"
-                    Foreground="{DynamicResource MainForegroundColor}" FontSize="{DynamicResource CloseIconFontSize}" Name="WPFMaximizeButton" />
+                    Foreground="{DynamicResource MainForegroundColor}" FontSize="22" Name="WPFMaximizeButton" />
+
 
                     <Button
-                    Content="&#xD7;" BorderThickness="0"
-                BorderBrush="Transparent"
-                Background="{DynamicResource MainBackgroundColor}"
-                Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
-                HorizontalAlignment="Right" VerticalAlignment="Top"
-                Margin="0,0,0,0"
-                FontFamily="{DynamicResource FontFamily}"
-                Foreground="{DynamicResource MainForegroundColor}" FontSize="{DynamicResource CloseIconFontSize}" Name="WPFCloseButton" />
+                        Content="&#xD7;" BorderThickness="0"
+                        BorderBrush="Transparent"
+                        Background="{DynamicResource MainBackgroundColor}"
+                        Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
+                        HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Margin="4,1,0,0"
+                        FontFamily="{DynamicResource FontFamily}"
+                        Foreground="{DynamicResource MainForegroundColor}" FontSize="{DynamicResource CloseIconFontSize}" Name="WPFCloseButton" />
                 </StackPanel>
             </Grid>
         </Grid>
