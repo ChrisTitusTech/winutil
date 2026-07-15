@@ -69,16 +69,16 @@ function Initialize-InstallAppEntry {
         $icon.SetResourceReference([Windows.FrameworkElement]::HeightProperty, "AppEntryIconSize")
         $icon.Margin = New-Object Windows.Thickness(0, 0, 8, 0)
         $fallback = New-Object Windows.Controls.TextBlock
-        $fallback.Text = $Apps.$appKey.content.TrimStart(".").Substring(0, 1).ToUpper()
+        $fallback.Text = $app.content.TrimStart(".").Substring(0, 1).ToUpper()
         $fallback.FontWeight = "Bold"; $fallback.HorizontalAlignment = "Center"; $fallback.VerticalAlignment = "Center"
-        if ($Apps.$appKey.link) { $fallback.Visibility = "Collapsed" }
+        if ($app.link) { $fallback.Visibility = "Collapsed" }
         $fallback.SetResourceReference([Windows.Controls.TextBlock]::FontSizeProperty, "AppEntryFontSize")
         $fallback.SetResourceReference([Windows.Controls.TextBlock]::ForegroundProperty, "ToggleButtonOnColor")
         [void]$icon.Children.Add($fallback)
-        if ($Apps.$appKey.link) {
+        if ($app.link) {
             $logo = New-Object Windows.Controls.Image
             $logo.Stretch = [Windows.Media.Stretch]::Uniform
-            $logo.Source = "https://www.google.com/s2/favicons?sz=64&domain_url=$([uri]::EscapeDataString($Apps.$appKey.link))"
+            $logo.Source = "https://www.google.com/s2/favicons?sz=64&domain_url=$([uri]::EscapeDataString($app.link))"
             $logo.Add_ImageFailed({ $this.Visibility = "Collapsed"; $this.Parent.Children[0].Visibility = "Visible" })
             [void]$icon.Children.Add($logo)
         }
