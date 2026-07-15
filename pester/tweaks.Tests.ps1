@@ -19,6 +19,9 @@ BeforeAll {
     function Remove-WinUtilAPPX {
         param($Name)
     }
+    function Remove-WinUtilProvisionedAPPX {
+        param($PackageList)
+    }
     function Set-WinUtilDNS {
         param($DNSProvider)
     }
@@ -89,6 +92,7 @@ Describe "Invoke-WinUtilTweaks" {
         Mock Set-WinUtilRegistry { }
         Mock Invoke-WinUtilScript { }
         Mock Remove-WinUtilAPPX { }
+        Mock Remove-WinUtilProvisionedAPPX { }
         Mock Write-WinUtilLog { }
         Mock Write-Warning { }
     }
@@ -118,6 +122,9 @@ Describe "Invoke-WinUtilTweaks" {
         Should -Invoke -CommandName Remove-WinUtilAPPX -Times 1 -Exactly -ParameterFilter {
             $Name -eq "Microsoft.ExampleApp"
         }
+        Should -Invoke -CommandName Remove-WinUtilProvisionedAPPX -Times 1 -Exactly -ParameterFilter {
+            $PackageList.Count -eq 1 -and $PackageList[0] -eq "Microsoft.ExampleApp"
+        }
     }
 
     It "uses original registry values and service startup types in undo mode" {
@@ -137,6 +144,7 @@ Describe "Invoke-WinUtilTweaks" {
             $Name -eq "WPFTweaksExample" -and $ScriptBlock.ToString() -eq "Write-Output 'undo tweak'"
         }
         Should -Invoke -CommandName Remove-WinUtilAPPX -Times 0 -Exactly
+        Should -Invoke -CommandName Remove-WinUtilProvisionedAPPX -Times 0 -Exactly
     }
 
     It "keeps a user-changed service startup type by default" {
