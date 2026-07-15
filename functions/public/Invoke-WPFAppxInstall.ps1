@@ -12,10 +12,10 @@ function Invoke-WPFAppxInstall {
     $selected = @($sync.selectedAppx)
     $apps = $sync.configs.appxHashtable
 
+    $sync.ProcessRunning = $true
     Invoke-WPFRunspace -ParameterList @(("selected", $selected), ("apps", $apps)) -ScriptBlock {
         param($selected, $apps)
 
-        $sync.ProcessRunning = $true
         $totalPackages = @($selected).Count
         Write-WinUtilLog -Component "AppX" -Message "Starting AppX install for $totalPackages selected package(s)."
         Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Preparing AppX install (0/$totalPackages)" -Percent 0

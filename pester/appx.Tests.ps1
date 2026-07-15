@@ -368,6 +368,7 @@ Describe "Invoke-WPFAppxInstall" {
         })
         $script:capturedAppxInstallScriptBlock = $null
         $script:capturedAppxInstallParameterList = $null
+        $script:appxInstallProcessRunningAtLaunch = $null
 
         Mock Show-WinUtilMessage { "OK" }
         Mock Write-Host { }
@@ -376,6 +377,7 @@ Describe "Invoke-WPFAppxInstall" {
         Mock Invoke-WPFUIThread { }
         Mock Install-WinUtilAPPX { }
         Mock Invoke-WPFRunspace {
+            $script:appxInstallProcessRunningAtLaunch = $script:sync.ProcessRunning
             $script:capturedAppxInstallScriptBlock = $ScriptBlock
             $script:capturedAppxInstallParameterList = $ParameterList
             [pscustomobject]@{ MockHandle = $true }
@@ -386,6 +388,7 @@ Describe "Invoke-WPFAppxInstall" {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name capturedAppxInstallScriptBlock -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name capturedAppxInstallParameterList -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name appxInstallProcessRunningAtLaunch -Scope Script -ErrorAction SilentlyContinue
     }
 
     It "prompts and exits when no AppX packages are selected for install" {
@@ -419,6 +422,7 @@ Describe "Invoke-WPFAppxInstall" {
         $script:sync.selectedAppx.Add("WPFAppxExample")
 
         Invoke-WPFAppxInstall
+        $script:appxInstallProcessRunningAtLaunch | Should -BeTrue
         & $script:capturedAppxInstallScriptBlock -selected @("WPFAppxExample") -apps $script:sync.configs.appxHashtable
 
         $script:capturedAppxInstallParameterList[0][1][0] | Should -Be "WPFAppxExample"
@@ -468,9 +472,11 @@ Describe "Invoke-WPFAppxRemoval entrypoint" {
         })
         $script:capturedAppxScriptBlock = $null
         $script:capturedAppxParameterList = $null
+        $script:appxRemovalProcessRunningAtLaunch = $null
 
         Mock Show-WinUtilMessage { "OK" }
         Mock Invoke-WPFRunspace {
+            $script:appxRemovalProcessRunningAtLaunch = $script:sync.ProcessRunning
             $script:capturedAppxScriptBlock = $ScriptBlock
             $script:capturedAppxParameterList = $ParameterList
             [pscustomobject]@{ MockHandle = $true }
@@ -481,6 +487,7 @@ Describe "Invoke-WPFAppxRemoval entrypoint" {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name capturedAppxScriptBlock -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name capturedAppxParameterList -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name appxRemovalProcessRunningAtLaunch -Scope Script -ErrorAction SilentlyContinue
     }
 
     It "prompts and exits when no AppX packages are selected" {
@@ -518,7 +525,10 @@ Describe "Invoke-WPFAppxRemoval entrypoint" {
         }
 
         Invoke-WPFAppxRemoval
+        $script:sync.selectedAppx.Add("WPFAppxChangedAfterLaunch")
 
+        $script:appxRemovalProcessRunningAtLaunch | Should -BeTrue
+        $script:capturedAppxParameterList[0][1] | Should -HaveCount 1
         Should -Invoke -CommandName Show-WinUtilMessage -Times 0 -Exactly
         Should -Invoke -CommandName Invoke-WPFRunspace -Times 1 -Exactly -ParameterFilter {
             $ScriptBlock -is [scriptblock] -and
