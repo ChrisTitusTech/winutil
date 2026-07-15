@@ -1,12 +1,14 @@
 #===========================================================================
-# Tests - AppX Removal
+# Tests - AppX Management
 #===========================================================================
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilInstalledAPPX.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Install-WinUtilAPPX.ps1")
     . (Join-Path $script:repoRoot "functions\private\Remove-WinUtilAPPX.ps1")
     . (Join-Path $script:repoRoot "functions\private\Remove-WinUtilProvisionedAPPX.ps1")
+    . (Join-Path $script:repoRoot "functions\public\Invoke-WPFAppxInstall.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFAppxRemoval.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFButton.ps1")
 
@@ -21,6 +23,16 @@ BeforeAll {
             $node.Left.VariablePath.UserPath -eq "ps5Command"
     }, $true)
     $script:provisionedRemovalScriptBlock = $ps5CommandAssignment.Right.Expression.ScriptBlock.GetScriptBlock()
+
+    $installSourcePath = Join-Path $script:repoRoot "functions\private\Install-WinUtilAPPX.ps1"
+    $installSourceAst = [System.Management.Automation.Language.Parser]::ParseFile($installSourcePath, [ref]$tokens, [ref]$parseErrors)
+    $installCommandAssignment = $installSourceAst.Find({
+        param($node)
+        $node -is [System.Management.Automation.Language.AssignmentStatementAst] -and
+            $node.Left -is [System.Management.Automation.Language.VariableExpressionAst] -and
+            $node.Left.VariablePath.UserPath -eq "ps5Command"
+    }, $true)
+    $script:appxInstallScriptBlock = $installCommandAssignment.Right.Expression.ScriptBlock.GetScriptBlock()
 
     function Write-WinUtilLog {
         param($Message, $Level, $Component)
@@ -39,7 +51,14 @@ BeforeAll {
     }
     function powershell.exe { }
     function Get-AppxPackage {
-        param($Name, [switch]$AllUsers)
+        param($Name, [switch]$AllUsers, $ErrorAction)
+    }
+    function Add-AppxPackage {
+        param($Register, [switch]$DisableDevelopmentMode, $ErrorAction)
+    }
+    function Install-WinUtilWinget { }
+    function Install-WinUtilProgramWinget {
+        param($Action, $Programs)
     }
     function Remove-AppxPackage {
         param(
@@ -116,6 +135,87 @@ Describe "Get-WinUtilInstalledAPPX" {
     }
 }
 
+Describe "Install-WinUtilAPPX" {
+    BeforeEach {
+        Mock Write-WinUtilLog { }
+        Mock Install-WinUtilWinget { }
+        Mock Install-WinUtilProgramWinget { }
+        Mock powershell.exe {
+            $global:LASTEXITCODE = 0
+            "C:\Program Files\WindowsApps\Example.Package\AppxManifest.xml"
+        }
+    }
+
+    It "uses a local manifest without contacting the Microsoft Store" {
+        Install-WinUtilAPPX -Name "Example.Package" -StoreId "9EXAMPLE1234"
+
+        Should -Invoke -CommandName Install-WinUtilWinget -Times 0 -Exactly
+        Should -Invoke -CommandName Install-WinUtilProgramWinget -Times 0 -Exactly
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Component -eq "AppX" -and
+                $Message -like "Registered local AppX manifest for Example.Package*"
+        }
+    }
+
+    It "falls back to the Microsoft Store when no local manifest is available" {
+        Mock powershell.exe { $global:LASTEXITCODE = 0 }
+
+        Install-WinUtilAPPX -Name "Example.Package" -StoreId "9EXAMPLE1234"
+
+        Should -Invoke -CommandName Install-WinUtilWinget -Times 1 -Exactly
+        Should -Invoke -CommandName Install-WinUtilProgramWinget -Times 1 -Exactly -ParameterFilter {
+            $Action -eq "Install" -and $Programs.Count -eq 1 -and $Programs[0] -eq "msstore:9EXAMPLE1234"
+        }
+    }
+
+    It "logs local registration failures before using the Microsoft Store" {
+        Mock powershell.exe {
+            $global:LASTEXITCODE = 1
+            "Registration failed"
+        }
+
+        Install-WinUtilAPPX -Name "Example.Package" -StoreId "9EXAMPLE1234"
+
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "WARN" -and
+                $Component -eq "AppX" -and
+                $Message -eq "Local AppX registration failed for Example.Package: Registration failed"
+        }
+        Should -Invoke -CommandName Install-WinUtilProgramWinget -Times 1 -Exactly
+    }
+
+    It "logs an error when neither install method is available" {
+        Mock powershell.exe { $global:LASTEXITCODE = 0 }
+
+        Install-WinUtilAPPX -Name "Example.Package"
+
+        Should -Invoke -CommandName Install-WinUtilProgramWinget -Times 0 -Exactly
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "ERROR" -and
+                $Component -eq "AppX" -and
+                $Message -eq "Unable to install Example.Package because no local manifest or Microsoft Store ID is available."
+        }
+    }
+
+    It "registers an installed package manifest through Windows PowerShell" {
+        Mock Get-AppxPackage {
+            [pscustomobject]@{
+                InstallLocation = "C:\Program Files\WindowsApps\Example.Package"
+                Version = [version]"2.0.0.0"
+            }
+        }
+        Mock Get-AppxProvisionedPackage { }
+        Mock Test-Path { $LiteralPath -eq "C:\Program Files\WindowsApps\Example.Package\AppxManifest.xml" }
+        Mock Add-AppxPackage { }
+
+        $result = & $script:appxInstallScriptBlock "Example.Package"
+
+        $result | Should -Be "C:\Program Files\WindowsApps\Example.Package\AppxManifest.xml"
+        Should -Invoke -CommandName Get-AppxPackage -Times 1 -Exactly
+        Should -Invoke -CommandName Add-AppxPackage -Times 1 -Exactly
+    }
+}
+
 Describe "Get installed AppX selection" {
     BeforeEach {
         $script:sync = [Hashtable]::Synchronized(@{
@@ -134,6 +234,7 @@ Describe "Get installed AppX selection" {
         Mock Set-WinUtilProgressBar { }
         Mock Set-WinUtilTweaksProgressIndicator { }
         Mock Get-WinUtilInstalledAPPX { @("Example.Package") }
+        Mock Invoke-WPFAppxInstall { }
     }
 
     AfterEach {
@@ -146,6 +247,12 @@ Describe "Get installed AppX selection" {
         Should -Invoke -CommandName Get-WinUtilInstalledAPPX -Times 1 -Exactly
         $script:sync.WPFAppxExample.IsChecked | Should -BeTrue
         $script:sync.WPFAppxMissing.IsChecked | Should -BeFalse
+    }
+
+    It "routes the install button to the AppX install workflow" {
+        Invoke-WPFButton -Button "WPFInstallSelectedAppx"
+
+        Should -Invoke -CommandName Invoke-WPFAppxInstall -Times 1 -Exactly
     }
 }
 
@@ -238,6 +345,67 @@ Describe "Remove-WinUtilProvisionedAPPX" {
         $source | Should -Match 'if \(\$LASTEXITCODE -ne 0 -or \$null -ne \$removalOutput\)'
         $source | Should -Match 'Write-WinUtilLog -Level "ERROR" -Component "AppX" -Message "AppX provisioned package removal failed:'
         $source | Should -Match '(?s)AppX provisioned package removal failed:.*return.*AppX provisioned package removal completed\.'
+    }
+}
+
+Describe "Invoke-WPFAppxInstall" {
+    BeforeEach {
+        $script:sync = [Hashtable]::Synchronized(@{
+            ProcessRunning = $false
+            selectedAppx = [System.Collections.Generic.List[string]]::new()
+            configs = @{
+                appxHashtable = @{
+                    WPFAppxExample = [pscustomobject]@{
+                        Content = "Example App"
+                        PackageId = "Example.Package"
+                        StoreId = "9EXAMPLE1234"
+                    }
+                }
+            }
+        })
+        $script:capturedAppxInstallScriptBlock = $null
+        $script:capturedAppxInstallParameterList = $null
+
+        Mock Show-WinUtilMessage { "OK" }
+        Mock Write-Host { }
+        Mock Write-WinUtilLog { }
+        Mock Install-WinUtilAPPX { }
+        Mock Invoke-WPFRunspace {
+            $script:capturedAppxInstallScriptBlock = $ScriptBlock
+            $script:capturedAppxInstallParameterList = $ParameterList
+            [pscustomobject]@{ MockHandle = $true }
+        }
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name capturedAppxInstallScriptBlock -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name capturedAppxInstallParameterList -Scope Script -ErrorAction SilentlyContinue
+    }
+
+    It "prompts and exits when no AppX packages are selected for install" {
+        Invoke-WPFAppxInstall
+
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
+            $Message -eq "No AppX Package selected" -and
+                $Title -eq "Error" -and
+                $Button -eq "OK" -and
+                $Icon -eq "Error"
+        }
+        Should -Invoke -CommandName Invoke-WPFRunspace -Times 0 -Exactly
+    }
+
+    It "installs selected AppX packages with their Store IDs" {
+        $script:sync.selectedAppx.Add("WPFAppxExample")
+
+        Invoke-WPFAppxInstall
+        & $script:capturedAppxInstallScriptBlock -selected @("WPFAppxExample") -apps $script:sync.configs.appxHashtable
+
+        $script:capturedAppxInstallParameterList[0][1][0] | Should -Be "WPFAppxExample"
+        Should -Invoke -CommandName Install-WinUtilAPPX -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "Example.Package" -and $StoreId -eq "9EXAMPLE1234"
+        }
+        $script:sync.ProcessRunning | Should -BeFalse
     }
 }
 

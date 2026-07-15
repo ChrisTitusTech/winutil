@@ -34,6 +34,12 @@ Use the quick-selection buttons at the top of the Tweaks tab to speed up setup:
 * **Select Tweaks to Remove**: Choose the tweaks you want to disable or remove.
 * **Undo Tweaks**: Click **Undo Selected Tweaks** at the bottom of the screen to apply the changes.
 
+### AppX Packages
+
+Open **AppX Removal** from the Tweaks tab to manage the listed Windows apps. Select one or more packages, then choose **Install Selected** or **Remove Selected**.
+
+When installing a selected package, WinUtil first registers an existing local `AppxManifest.xml`. If no usable local manifest remains, WinUtil installs the package from the Microsoft Store through WinGet when a Store product ID is available.
+
 ### Essential Tweaks
 Essential Tweaks are the safest starting point for most systems. They focus on lower-risk changes that improve usability, reduce noise, and avoid the more invasive changes found in advanced options.
 
