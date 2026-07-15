@@ -158,6 +158,7 @@ Describe "XAML document" {
             "WPFSelectAllAppx",
             "WPFClearAppxSelection",
             "WPFBackToTweaks",
+            "WPFInstallSelectedAppx",
             "WPFRemoveSelectedAppx"
         )
 
@@ -240,9 +241,11 @@ Describe "XAML document" {
         $openButton.GetAttribute("Content").Trim() | Should -Be "AppX Removal"
         $openAppxIndex | Should -Be ($getInstalledIndex + 1)
         $appxTab.SelectSingleNode('.//*[local-name()="Button"][@Name="WPFBackToTweaks"]') | Should -Not -BeNullOrEmpty
+        $appxTab.SelectSingleNode('.//*[local-name()="Button"][@Name="WPFInstallSelectedAppx"]') | Should -Not -BeNullOrEmpty
         $appxTab.SelectSingleNode('.//*[local-name()="Button"][@Name="WPFRemoveSelectedAppx"]') | Should -Not -BeNullOrEmpty
         $buttonSource | Should -Match '"WPFAppxRemoval"\s*\{Invoke-WPFTab "WPFTab6BT"\}'
         $buttonSource | Should -Match '"WPFBackToTweaks"\s*\{Invoke-WPFTab "WPFTab2BT"\}'
+        $buttonSource | Should -Match '"WPFInstallSelectedAppx"\s*\{Invoke-WPFAppxInstall\}'
         $tabSource | Should -Match '\$sync\.\$tabNav\.Items\[\$tabNumber\]\.IsSelected = \$true'
     }
 }
