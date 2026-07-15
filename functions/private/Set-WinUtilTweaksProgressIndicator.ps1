@@ -1,9 +1,9 @@
 function Set-WinUtilTweaksProgressIndicator {
     <#
     .SYNOPSIS
-        Shows, updates, or hides the window-level progress indicator used by the
-        Tweaks and Undo workflows. It lives outside the TabControl, so unlike the
-        Install tab's progress bar it stays visible no matter which tab is active.
+        Shows, updates, or hides the window-level progress indicator used by long-running
+        workflows such as Tweaks, Undo, and AppX management. It lives outside the TabControl,
+        so unlike the Install tab's progress bar it stays visible no matter which tab is active.
     .PARAMETER Visible
         Whether the indicator should be shown or hidden.
     .PARAMETER Label
