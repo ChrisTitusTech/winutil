@@ -17,19 +17,24 @@ function Invoke-WPFAppxRemoval {
         param($selected, $apps)
 
         $totalPackages = @($selected).Count
-        Write-WinUtilLog -Component "AppX" -Message "Starting AppX removal for $totalPackages selected package(s)."
-        Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Preparing AppX removal (0/$totalPackages)" -Percent 0
-        Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" }
-
+        $hasUI = $null -ne $sync.Form -and $null -ne $sync.Form.Dispatcher
         $packageList = [System.Collections.Generic.List[string]]::new()
 
         try {
+            Write-WinUtilLog -Component "AppX" -Message "Starting AppX removal for $totalPackages selected package(s)."
+            if ($hasUI) {
+                Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Preparing AppX removal (0/$totalPackages)" -Percent 0
+                Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" }
+            }
+
             for ($index = 0; $index -lt $totalPackages; $index++) {
                 $key = $selected[$index]
                 $app = $apps[$key]
                 $position = $index + 1
                 $startPercent = [int](($index / $totalPackages) * 90)
-                Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Removing $($app.Content) ($position/$totalPackages)" -Percent $startPercent
+                if ($hasUI) {
+                    Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Removing $($app.Content) ($position/$totalPackages)" -Percent $startPercent
+                }
 
                 if ($key -eq "WPFAppxMicrosoft_XboxGamingOverlay") {
                     # Making sure Game Bar isn't running
@@ -58,12 +63,16 @@ function Invoke-WPFAppxRemoval {
                 }
 
                 $completedPercent = [int](($position / $totalPackages) * 90)
-                Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Removed $($app.Content) ($position/$totalPackages)" -Percent $completedPercent
-                Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -value ($completedPercent / 100) }
+                if ($hasUI) {
+                    Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Removed $($app.Content) ($position/$totalPackages)" -Percent $completedPercent
+                    Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -value ($completedPercent / 100) }
+                }
             }
 
             if ($packageList.Count -gt 0) {
-                Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Removing provisioned AppX packages" -Percent 90
+                if ($hasUI) {
+                    Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Removing provisioned AppX packages" -Percent 90
+                }
                 Remove-WinUtilProvisionedAPPX -PackageList $packageList.ToArray()
             }
 
@@ -71,13 +80,17 @@ function Invoke-WPFAppxRemoval {
             Write-Host "--   AppX Removal Finished   ---"
             Write-Host "================================="
             Write-WinUtilLog -Component "AppX" -Message "AppX removal finished."
-            Set-WinUtilTweaksProgressIndicator -Visible $true -Label "AppX removal finished" -Percent 100
-            Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" }
+            if ($hasUI) {
+                Set-WinUtilTweaksProgressIndicator -Visible $true -Label "AppX removal finished" -Percent 100
+                Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" }
+            }
         }
         catch {
             Write-WinUtilLog -Level "ERROR" -Component "AppX" -Message "AppX removal failed: $($_.Exception.Message)"
-            Set-WinUtilTweaksProgressIndicator -Visible $true -Label "AppX removal failed" -Percent 100
-            Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Error" -overlay "warning" }
+            if ($hasUI) {
+                Set-WinUtilTweaksProgressIndicator -Visible $true -Label "AppX removal failed" -Percent 100
+                Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Error" -overlay "warning" }
+            }
         }
         finally {
             $sync.ProcessRunning = $false

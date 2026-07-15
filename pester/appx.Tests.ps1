@@ -187,10 +187,11 @@ Describe "Install-WinUtilAPPX" {
         Should -Invoke -CommandName Install-WinUtilProgramWinget -Times 1 -Exactly
     }
 
-    It "logs an error when neither install method is available" {
+    It "throws after logging an error when neither install method is available" {
         Mock powershell.exe { $global:LASTEXITCODE = 0 }
 
-        Install-WinUtilAPPX -Name "Example.Package"
+        { Install-WinUtilAPPX -Name "Example.Package" } |
+            Should -Throw "Unable to install Example.Package because no local manifest or Microsoft Store ID is available."
 
         Should -Invoke -CommandName Install-WinUtilProgramWinget -Times 0 -Exactly
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
@@ -341,13 +342,12 @@ Describe "Remove-WinUtilProvisionedAPPX" {
         }
     }
 
-    It "handles child process failures before logging completion" {
+    It "throws after logging child process failures" {
         $source = Get-Content -Path $provisionedSourcePath -Raw
 
         $source | Should -Match '\$removalOutput = powershell\.exe .* 2>&1'
-        $source | Should -Match 'if \(\$LASTEXITCODE -ne 0 -or \$null -ne \$removalOutput\)'
-        $source | Should -Match 'Write-WinUtilLog -Level "ERROR" -Component "AppX" -Message "AppX provisioned package removal failed:'
-        $source | Should -Match '(?s)AppX provisioned package removal failed:.*return.*AppX provisioned package removal completed\.'
+        $source | Should -Match 'Write-WinUtilLog -Level "ERROR" -Component "AppX" -Message \$errorMessage'
+        $source | Should -Match '(?s)AppX provisioned package removal failed:.*throw \$errorMessage.*AppX provisioned package removal completed\.'
     }
 }
 
@@ -355,6 +355,7 @@ Describe "Invoke-WPFAppxInstall" {
     BeforeEach {
         $script:sync = [Hashtable]::Synchronized(@{
             ProcessRunning = $false
+            Form = [pscustomobject]@{ Dispatcher = [pscustomobject]@{} }
             selectedAppx = [System.Collections.Generic.List[string]]::new()
             configs = @{
                 appxHashtable = @{
@@ -545,6 +546,7 @@ Describe "Invoke-WPFAppxRemoval runspace body" {
     BeforeEach {
         $script:sync = [Hashtable]::Synchronized(@{
             ProcessRunning = $false
+            Form = [pscustomobject]@{ Dispatcher = [pscustomobject]@{} }
             selectedAppx = [System.Collections.Generic.List[string]]::new()
             configs = @{
                 appxHashtable = @{}
@@ -651,6 +653,46 @@ Describe "Invoke-WPFAppxRemoval runspace body" {
             $ScriptBlock.ToString() -like '*Set-WinUtilTaskbaritem -state "Error" -overlay "warning"*'
         }
         Should -Invoke -CommandName Remove-WinUtilProvisionedAPPX -Times 0 -Exactly
+        $script:sync.ProcessRunning | Should -BeFalse
+    }
+
+    It "removes packages without UI progress during headless autorun" {
+        $selected = @("WPFAppxExample")
+        $script:sync.Remove("Form")
+        $script:sync.selectedAppx.Add("WPFAppxExample")
+        $script:sync.configs.appxHashtable = $script:apps
+
+        Invoke-WPFAppxRemoval
+        & $script:capturedAppxScriptBlock -selected $selected -apps $script:apps
+
+        Should -Invoke -CommandName Remove-AppxPackage -Times 1 -Exactly
+        Should -Invoke -CommandName Remove-WinUtilProvisionedAPPX -Times 1 -Exactly
+        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 0 -Exactly
+        Should -Invoke -CommandName Invoke-WPFUIThread -Times 0 -Exactly
+        $script:sync.ProcessRunning | Should -BeFalse
+    }
+
+    It "shows failure feedback when provisioned package removal fails" {
+        $selected = @("WPFAppxExample")
+        $script:sync.selectedAppx.Add("WPFAppxExample")
+        $script:sync.configs.appxHashtable = $script:apps
+        Mock Remove-WinUtilProvisionedAPPX { throw "Provisioned removal failed" }
+
+        Invoke-WPFAppxRemoval
+        & $script:capturedAppxScriptBlock -selected $selected -apps $script:apps
+
+        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
+            $Visible -eq $true -and $Label -eq "AppX removal failed" -and $Percent -eq 100
+        }
+        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 0 -Exactly -ParameterFilter {
+            $Label -eq "AppX removal finished"
+        }
+        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
+            $ScriptBlock.ToString() -like '*Set-WinUtilTaskbaritem -state "Error" -overlay "warning"*'
+        }
+        Should -Invoke -CommandName Invoke-WPFUIThread -Times 0 -Exactly -ParameterFilter {
+            $ScriptBlock.ToString() -like '*Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"*'
+        }
         $script:sync.ProcessRunning | Should -BeFalse
     }
 
