@@ -942,9 +942,7 @@
             <!-- Navigation Buttons Panel -->
             <StackPanel Name="NavDockPanel" Orientation="Horizontal" Grid.Column="0" Margin="5,5,10,5">
                 <StackPanel Name="NavLogoPanel" Orientation="Horizontal" HorizontalAlignment="Left" Background="{DynamicResource MainBackgroundColor}" SnapsToDevicePixels="True" Margin="10,0,10,0">
-                    <Border VerticalAlignment="Center" Background="Transparent" MaxHeight="{DynamicResource SearchBarHeight}" MaxWidth="200" Margin="0,5,5,0">
-                        <Image Source="assets/logo.png" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                    </Border>
+                    <!-- logo removed -->
                 </StackPanel>
                 <ToggleButton Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="{DynamicResource TabButtonWidth}"
                     Background="{DynamicResource ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
