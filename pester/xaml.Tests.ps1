@@ -271,6 +271,27 @@ Describe "XAML document" {
         }
     }
 
+    It "scopes toggle button styles without leaking into combo boxes" {
+        $resources = $script:xaml.SelectSingleNode('//*[local-name()="Window.Resources"]')
+        $implicitToggleStyles = @($resources.SelectNodes('./*[local-name()="Style"][@TargetType="ToggleButton" or @TargetType="{x:Type ToggleButton}"][not(@x:Key)]', $script:xamlNamespace))
+        $tabStyle = $resources.SelectSingleNode('./*[local-name()="Style"][@x:Key="TabToggleButton"]', $script:xamlNamespace)
+        $comboToggleStyle = $resources.SelectSingleNode('./*[local-name()="Style"][@x:Key="ComboBoxToggleButtonStyle"]', $script:xamlNamespace)
+        $comboStyle = $resources.SelectSingleNode('./*[local-name()="Style"][@TargetType="ComboBox"]')
+        $comboToggle = $comboStyle.SelectSingleNode('.//*[local-name()="ToggleButton"][@Name="ToggleButton"]')
+        $comboItemStyle = $resources.SelectSingleNode('./*[local-name()="Style"][@TargetType="ComboBoxItem"]')
+        $navButtons = @($script:xaml.SelectNodes('//*[local-name()="StackPanel"][@Name="NavDockPanel"]/*[local-name()="ToggleButton"]'))
+
+        $implicitToggleStyles | Should -BeNullOrEmpty
+        $tabStyle | Should -Not -BeNullOrEmpty
+        $comboToggleStyle | Should -Not -BeNullOrEmpty
+        $comboToggle.GetAttribute("Style") | Should -Be "{StaticResource ComboBoxToggleButtonStyle}"
+        $comboItemStyle | Should -Not -BeNullOrEmpty
+        $navButtons.Count | Should -Be 5
+        foreach ($navButton in $navButtons) {
+            $navButton.GetAttribute("Style") | Should -Be "{StaticResource TabToggleButton}"
+        }
+    }
+
     It "uses state-aware maximize and restore icons" {
         $themes = Get-WinUtilConfigObject -Name "themes"
         $minimizeButton = $script:xaml.SelectSingleNode('//*[local-name()="Button"][@Name="WPFMinimizeButton"]')
