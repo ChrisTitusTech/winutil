@@ -283,7 +283,7 @@ Describe "XAML document" {
         $searchBorder.GetAttribute("HorizontalAlignment") | Should -Be "Stretch"
         $searchBar.GetAttribute("Width") | Should -BeNullOrEmpty
         $searchBar.GetAttribute("HorizontalAlignment") | Should -Be "Stretch"
-        $mainScript | Should -Match '\$sync\.Form\.MinWidth = "1000"'
+        $mainScript | Should -Match '\$sync\.Form\.MinWidth = "1150"'
         $mainScript | Should -Match '\$sync\.Form\.MinWidth = \[Math\]::Min\(\[double\]\$sync\.Form\.MinWidth, \[double\]\$screenWidth\)'
     }
 
