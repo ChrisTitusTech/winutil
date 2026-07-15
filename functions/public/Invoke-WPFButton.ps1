@@ -77,7 +77,7 @@ function Invoke-WPFButton {
             $sync.configs.appxHashtable.Keys | ForEach-Object {$sync.$_.IsChecked = $false}
         }
         "WPFGetInstalledAppx" {
-            $installedAppxPackages = Get-AppxPackage -AllUsers | Select-Object -ExpandProperty Name
+            $installedAppxPackages = Get-WinUtilInstalledAPPX
             foreach ($appx in $sync.configs.appxHashtable.GetEnumerator()) {
                 if ($appx.Value.PackageId -in $installedAppxPackages) {
                     $sync.$($appx.Key).IsChecked = $true
