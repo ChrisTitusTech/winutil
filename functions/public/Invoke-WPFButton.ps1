@@ -16,6 +16,7 @@ function Invoke-WPFButton {
     #[System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")
     if (-not $sync.ProcessRunning) {
         Set-WinUtilProgressBar  -label "" -percent 0
+        Set-WinUtilTweaksProgressIndicator -Visible $false
     }
 
     # Check if button is defined in feature config with function or InvokeScript
