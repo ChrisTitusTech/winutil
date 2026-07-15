@@ -9,7 +9,7 @@
         WindowStyle="None"
         Width="Auto"
         Height="Auto"
-        MinWidth="1150"
+        MinWidth="800"
         MinHeight="600"
         Title="WinUtil">
     <WindowChrome.WindowChrome>
@@ -1052,6 +1052,7 @@
                             ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter">
                         </TextBox>
                         <TextBlock
+                            Name="SearchBarIcon"
                             VerticalAlignment="Center" HorizontalAlignment="Right"
                             FontFamily="Segoe MDL2 Assets"
                             Foreground="{DynamicResource ButtonBackgroundSelectedColor}"
