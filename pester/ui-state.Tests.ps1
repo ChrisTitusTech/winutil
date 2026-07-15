@@ -5,7 +5,7 @@
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 
-    if (-not ("System.Windows.Controls.CheckBox" -as [type])) {
+    if (-not ("Windows.Visibility" -as [type])) {
         Add-Type @"
 namespace Windows
 {
@@ -15,7 +15,25 @@ namespace Windows
         Collapsed
     }
 }
+"@
+    }
 
+    if (-not ("Windows.WindowState" -as [type])) {
+        Add-Type @"
+namespace Windows
+{
+    public enum WindowState
+    {
+        Normal,
+        Minimized,
+        Maximized
+    }
+}
+"@
+    }
+
+    if (-not ("System.Windows.Controls.CheckBox" -as [type])) {
+        Add-Type @"
 namespace System.Windows.Controls
 {
     public class CheckBox
@@ -44,7 +62,16 @@ namespace System.Windows.Controls
     . (Join-Path $script:repoRoot "functions\private\Update-WinUtilSelections.ps1")
     . (Join-Path $script:repoRoot "functions\private\Reset-WPFCheckBoxes.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFSelectedCheckboxesUpdate.ps1")
+    . (Join-Path $script:repoRoot "functions\public\Invoke-WPFButton.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFToggleAllCategories.ps1")
+
+    function Set-WinUtilProgressBar {
+        param($Label, $Percent)
+    }
+
+    function Set-WinUtilTweaksProgressIndicator {
+        param($Visible, $Label, $Percent)
+    }
 
     function script:New-WinUtilFakeCheckBox {
         param([bool]$IsChecked = $false)
@@ -270,5 +297,69 @@ Describe "Invoke-WPFToggleAllCategories" {
         Should -Invoke -CommandName Write-Warning -Times 1 -Exactly -ParameterFilter {
             $Message -eq "ItemsControl not initialized"
         }
+    }
+}
+
+Describe "Invoke-WPFButton progress cleanup" {
+    BeforeEach {
+        New-WinUtilUiStateTestContext
+        Mock Set-WinUtilProgressBar { }
+        Mock Set-WinUtilTweaksProgressIndicator { }
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
+    }
+
+    It "clears completed progress on the next idle button click" {
+        $script:sync.ProcessRunning = $false
+
+        Invoke-WPFButton -Button "WPFNoOp"
+
+        Should -Invoke Set-WinUtilProgressBar -Times 1 -Exactly -ParameterFilter {
+            $Label -eq "" -and $Percent -eq 0
+        }
+        Should -Invoke Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
+            $Visible -eq $false
+        }
+    }
+
+    It "leaves progress visible while a process is running" {
+        $script:sync.ProcessRunning = $true
+
+        Invoke-WPFButton -Button "WPFNoOp"
+
+        Should -Not -Invoke Set-WinUtilProgressBar
+        Should -Not -Invoke Set-WinUtilTweaksProgressIndicator
+    }
+}
+
+Describe "Invoke-WPFButton window state" {
+    BeforeEach {
+        New-WinUtilUiStateTestContext
+        $script:sync.ProcessRunning = $true
+        $script:sync.Form = [pscustomobject]@{
+            WindowState = [Windows.WindowState]::Normal
+        }
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
+    }
+
+    It "maximizes a normal window" {
+        Invoke-WPFButton -Button "WPFMaximizeButton"
+
+        $script:sync.Form.WindowState | Should -Be ([Windows.WindowState]::Maximized)
+    }
+
+    It "restores a maximized window" {
+        $script:sync.Form.WindowState = [Windows.WindowState]::Maximized
+
+        Invoke-WPFButton -Button "WPFMaximizeButton"
+
+        $script:sync.Form.WindowState | Should -Be ([Windows.WindowState]::Normal)
     }
 }
