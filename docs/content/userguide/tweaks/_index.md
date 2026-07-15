@@ -40,6 +40,8 @@ Open **AppX Removal** from the Tweaks tab to manage the listed Windows apps. Sel
 
 When installing a selected package, WinUtil first registers an existing local `AppxManifest.xml`. If no usable local manifest remains, WinUtil installs the package from the Microsoft Store through WinGet when a Store product ID is available.
 
+During AppX installation or removal, the window-level progress bar shows the current package, completed package count, and overall progress. The Windows taskbar also reflects progress and the final success or failure state.
+
 ### Essential Tweaks
 Essential Tweaks are the safest starting point for most systems. They focus on lower-risk changes that improve usability, reduce noise, and avoid the more invasive changes found in advanced options.
 
