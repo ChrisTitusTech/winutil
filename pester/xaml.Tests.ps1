@@ -135,6 +135,7 @@ Describe "XAML document" {
             "WPFTab4BT",
             "WPFTab5BT",
             "SearchBar",
+            "SearchBarIcon",
             "SearchBarClearButton",
             "appscategory",
             "appspanel",
@@ -269,6 +270,32 @@ Describe "XAML document" {
             $button = $script:xaml.SelectSingleNode("//*[local-name()='Button'][@Name='$buttonName']")
             $button.GetAttribute("VerticalAlignment") | Should -Be "Center"
         }
+    }
+
+    It "keeps the responsive search controls within the available screen width" {
+        $window = $script:xaml.DocumentElement
+        $searchBar = $script:xaml.SelectSingleNode('//*[local-name()="TextBox"][@Name="SearchBar"]')
+        $searchBorder = $searchBar.ParentNode.ParentNode
+        $mainScript = Get-Content -Path $script:mainScriptPath -Raw
+
+        $window.GetAttribute("MinWidth") | Should -Be "800"
+        $searchBorder.GetAttribute("Width") | Should -BeNullOrEmpty
+        $searchBorder.GetAttribute("HorizontalAlignment") | Should -Be "Stretch"
+        $searchBar.GetAttribute("Width") | Should -BeNullOrEmpty
+        $searchBar.GetAttribute("HorizontalAlignment") | Should -Be "Stretch"
+        $mainScript | Should -Match '\$sync\.Form\.MinWidth = "1150"'
+        $mainScript | Should -Match '\$sync\.Form\.MinWidth = \[Math\]::Min\(\[double\]\$sync\.Form\.MinWidth, \[double\]\$screenWidth\)'
+    }
+
+    It "shows only one search action glyph at a time" {
+        $searchIcon = $script:xaml.SelectSingleNode('//*[local-name()="TextBlock"][@Name="SearchBarIcon"]')
+        $clearButton = $script:xaml.SelectSingleNode('//*[local-name()="Button"][@Name="SearchBarClearButton"]')
+        $mainScript = Get-Content -Path $script:mainScriptPath -Raw
+
+        $searchIcon | Should -Not -BeNullOrEmpty
+        $clearButton | Should -Not -BeNullOrEmpty
+        $mainScript | Should -Match '\$sync\.SearchBarClearButton\.Visibility = "Visible"\s+\$sync\.SearchBarIcon\.Visibility = "Collapsed"'
+        $mainScript | Should -Match '\$sync\.SearchBarClearButton\.Visibility = "Collapsed"\s+\$sync\.SearchBarIcon\.Visibility = "Visible"'
     }
 
     It "scopes toggle button styles without leaking into combo boxes" {

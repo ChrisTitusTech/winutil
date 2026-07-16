@@ -285,6 +285,7 @@ $sync["Form"].Add_ContentRendered({
         # Extract screen width and height for the primary monitor
         $screenWidth = $primaryScreen.Bounds.Width
         $screenHeight = $primaryScreen.Bounds.Height
+        $sync.Form.MinWidth = [Math]::Min([double]$sync.Form.MinWidth, [double]$screenWidth)
 
         # Compare with the primary monitor size
         if ($sync.Form.ActualWidth -gt $screenWidth -or $sync.Form.ActualHeight -gt $screenHeight) {
@@ -353,8 +354,10 @@ $searchBarTimer.add_Tick({
 $sync["SearchBar"].Add_TextChanged({
     if ($sync.SearchBar.Text -ne "") {
         $sync.SearchBarClearButton.Visibility = "Visible"
+        $sync.SearchBarIcon.Visibility = "Collapsed"
     } else {
         $sync.SearchBarClearButton.Visibility = "Collapsed"
+        $sync.SearchBarIcon.Visibility = "Visible"
     }
     if ($searchBarTimer.IsEnabled) {
         $searchBarTimer.Stop()
@@ -365,7 +368,7 @@ $sync["SearchBar"].Add_TextChanged({
 $sync["Form"].Add_Loaded({
     param($e)
     $null = $e
-    $sync.Form.MinWidth = "1000"
+    $sync.Form.MinWidth = "1150"
     $sync["Form"].MaxWidth = [Double]::PositiveInfinity
     $sync["Form"].MaxHeight = [Double]::PositiveInfinity
 })
