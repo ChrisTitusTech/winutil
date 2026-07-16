@@ -61,6 +61,7 @@ function Invoke-WinUtilISOWriteUSB {
     }
 
     $sync["WPFWin11ISOWriteUSBButton"].IsEnabled = $false
+    $sync["Win11ISOProcessRunning"] = $true
     Write-Win11ISOLog "Starting USB write to Disk $diskNum..."
 
     $runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
@@ -256,6 +257,7 @@ function Invoke-WinUtilISOWriteUSB {
             })
         } finally {
             Start-Sleep -Milliseconds 800
+            $sync["Win11ISOProcessRunning"] = $false
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 $sync["WPFTweaksProgressBar"].Visibility = "Collapsed"
                 $sync["WPFTweaksProgressLabel"].Text      = ""

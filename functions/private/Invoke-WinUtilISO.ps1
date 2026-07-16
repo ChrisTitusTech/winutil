@@ -151,6 +151,7 @@ function Invoke-WinUtilISOModify {
 
     $sync["WPFWin11ISOModifyButton"].IsEnabled = $false
     $sync["Win11ISOModifying"] = $true
+    $sync["Win11ISOProcessRunning"] = $true
 
     $workDir = Join-Path $env:TEMP "WinUtil_Win11ISO_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
     if (Test-Path $workDir) {
@@ -453,6 +454,7 @@ function Invoke-WinUtilISOModify {
         } finally {
             Start-Sleep -Milliseconds 800
             $sync["Win11ISOModifying"] = $false
+            $sync["Win11ISOProcessRunning"] = $false
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 $sync["WPFTweaksProgressBar"].Visibility = "Collapsed"
                 $sync["WPFTweaksProgressLabel"].Text      = ""
@@ -516,6 +518,7 @@ function Invoke-WinUtilISOCleanAndReset {
     }
 
     $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $false
+    $sync["Win11ISOProcessRunning"] = $true
 
     $runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
     $runspace.ApartmentState = "STA"
@@ -647,6 +650,8 @@ function Invoke-WinUtilISOCleanAndReset {
                 $sync["WPFTweaksProgressValue"].Value     = 0
                 $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $true
             })
+        } finally {
+            $sync["Win11ISOProcessRunning"] = $false
         }
     })
 
@@ -711,6 +716,7 @@ function Invoke-WinUtilISOExport {
     }
 
     $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $false
+    $sync["Win11ISOProcessRunning"] = $true
 
     $runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
     $runspace.ApartmentState = "STA"
@@ -794,6 +800,7 @@ function Invoke-WinUtilISOExport {
             })
         } finally {
             Start-Sleep -Milliseconds 800
+            $sync["Win11ISOProcessRunning"] = $false
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 $sync["WPFTweaksProgressBar"].Visibility = "Collapsed"
                 $sync["WPFTweaksProgressLabel"].Text      = ""

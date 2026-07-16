@@ -440,6 +440,7 @@ Describe "XAML and sync wiring" {
             "Win11ISOWimPath",
             "Win11ISOImagePath",
             "Win11ISOModifying",
+            "Win11ISOProcessRunning",
             "Win11ISOWorkDir",
             "Win11ISOContentsDir",
             "Win11ISOUSBDisks"
