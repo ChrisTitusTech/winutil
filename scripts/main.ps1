@@ -128,9 +128,6 @@ Invoke-WinutilThemeChange -theme $sync.preferences.theme
 $sync.InitializedTabs = @{}
 Initialize-WinUtilTabContent -TabName "Install"
 
-# Future implementation: Add Windows Version to updates panel
-#Invoke-WPFUIElements -configVariable $sync.configs.updates -targetGridName "updatespanel" -columncount 1
-
 #===========================================================================
 # Store Form Objects In PowerShell
 #===========================================================================
@@ -171,15 +168,6 @@ $sync.keys | ForEach-Object {
             }
         }
 
-        if ($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "TextBlock") {
-            if ($sync["$psitem"].Name.EndsWith("Link")) {
-                $sync["$psitem"].Add_MouseUp({
-                    [System.Object]$Sender = $args[0]
-                    Start-Process $Sender.ToolTip -ErrorAction Stop
-                })
-            }
-
-        }
     }
 }
 
