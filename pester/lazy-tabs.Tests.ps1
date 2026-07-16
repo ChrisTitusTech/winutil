@@ -113,4 +113,12 @@ Describe "Startup lazy tab wiring" {
         $rendererScript | Should -Match '\$sync\.Buttons\.Add\(\$button\.Name\)'
         $mainScript | Should -Match '\$sync\.Buttons -notcontains \$psitem'
     }
+
+    It "binds generated documentation links when lazy panels are rendered" {
+        $rendererScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIElements.ps1") -Raw
+        $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
+
+        $rendererScript | Should -Match '(?s)if \(\$entryInfo\.Link\).*\$textBlock\.Add_MouseUp\(\{.*Start-Process \$Sender\.ToolTip -ErrorAction Stop'
+        $mainScript | Should -Not -Match '\.Name\.EndsWith\("Link"\)'
+    }
 }

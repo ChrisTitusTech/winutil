@@ -404,10 +404,15 @@ function Invoke-WPFUIElements {
                             $textBlock.ToolTip = $entryInfo.Link
                             $textBlock.Style = $HoverTextBlockStyle
                             $textBlock.UseLayoutRounding = $true
-                            
+
                             $textBlock.VerticalAlignment = "Center"
                             $textBlock.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
                             $textBlock.Tag = $checkBox
+
+                            $textBlock.Add_MouseUp({
+                                [System.Object]$Sender = $args[0]
+                                Start-Process $Sender.ToolTip -ErrorAction Stop
+                            })
 
                             $updateLinkMargin = {
                                 [System.Object]$Sender = $args[0]
