@@ -18,10 +18,9 @@ BeforeAll {
     function Get-WinUtilSelectedPackages {
         param($PackageList, [string]$Preference)
     }
-    function Show-WPFInstallAppBusy {
-        param($text)
+    function Set-WinUtilTweaksProgressIndicator {
+        param($Visible, $Label, $Percent)
     }
-    function Hide-WPFInstallAppBusy { }
     function Install-WinUtilWinget { }
     function Install-WinUtilChoco { }
     function Install-WinUtilProgramWinget {
@@ -73,6 +72,9 @@ BeforeAll {
             selectedApps = $selectedApps
             preferences = [pscustomobject]@{
                 packagemanager = "Winget"
+            }
+            Form = [pscustomobject]@{
+                Dispatcher = [pscustomobject]@{}
             }
             configs = @{
                 applicationsHashtable = $applications
@@ -187,8 +189,7 @@ Describe "Invoke-WPFInstall runspace body" {
         Mock Get-WinUtilSelectedPackages {
             New-WinUtilPackageSplit -Winget @("Git.Git") -Choco @("vlc")
         }
-        Mock Show-WPFInstallAppBusy { }
-        Mock Hide-WPFInstallAppBusy { }
+        Mock Set-WinUtilTweaksProgressIndicator { }
         Mock Install-WinUtilWinget { }
         Mock Install-WinUtilChoco { }
         Mock Install-WinUtilProgramWinget { }
@@ -212,8 +213,17 @@ Describe "Invoke-WPFInstall runspace body" {
         Should -Invoke -CommandName Get-WinUtilSelectedPackages -Times 1 -Exactly -ParameterFilter {
             @($PackageList).Count -eq 1 -and $Preference -eq "Winget"
         }
-        Should -Invoke -CommandName Show-WPFInstallAppBusy -Times 1 -Exactly -ParameterFilter {
-            $text -eq "Installing apps..."
+        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
+            $Visible -eq $true -and $Label -eq "Preparing app install (0/2)" -and $Percent -eq 0
+        }
+        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
+            $Visible -eq $true -and $Label -eq "Installed Git.Git (1/2)" -and $Percent -eq 50
+        }
+        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
+            $Visible -eq $true -and $Label -eq "Installed Chocolatey packages (2/2)" -and $Percent -eq 100
+        }
+        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
+            $Visible -eq $true -and $Label -eq "App install finished" -and $Percent -eq 100
         }
         Should -Invoke -CommandName Install-WinUtilWinget -Times 1 -Exactly
         Should -Invoke -CommandName Install-WinUtilProgramWinget -Times 1 -Exactly -ParameterFilter {
@@ -223,21 +233,22 @@ Describe "Invoke-WPFInstall runspace body" {
         Should -Invoke -CommandName Install-WinUtilProgramChoco -Times 1 -Exactly -ParameterFilter {
             $Action -eq "Install" -and @($Programs)[0] -eq "vlc"
         }
-        Should -Invoke -CommandName Hide-WPFInstallAppBusy -Times 1 -Exactly
         Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
             $ScriptBlock.ToString() -like '*Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"*'
         }
         $script:sync.ProcessRunning | Should -BeFalse
     }
 
-    It "hides the busy overlay, sets taskbar error state, and clears ProcessRunning on failure" {
+    It "shows failure progress, sets taskbar error state, and clears ProcessRunning on failure" {
         Mock Install-WinUtilProgramWinget { throw "winget failed" }
 
         Invoke-WPFInstall
 
         & $script:capturedInstallScriptBlock -PackagesToInstall @($script:package) -ManagerPreference "Winget"
 
-        Should -Invoke -CommandName Hide-WPFInstallAppBusy -Times 1 -Exactly
+        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
+            $Visible -eq $true -and $Label -eq "App install failed" -and $Percent -eq 100
+        }
         Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
             $ScriptBlock.ToString() -like '*Set-WinUtilTaskbaritem -state "Error" -overlay "warning"*'
         }
@@ -345,8 +356,7 @@ Describe "Invoke-WPFUnInstall runspace body" {
         Mock Get-WinUtilSelectedPackages {
             New-WinUtilPackageSplit -Winget @("Git.Git") -Choco @("vlc")
         }
-        Mock Show-WPFInstallAppBusy { }
-        Mock Hide-WPFInstallAppBusy { }
+        Mock Set-WinUtilTweaksProgressIndicator { }
         Mock Install-WinUtilProgramWinget { }
         Mock Install-WinUtilProgramChoco { }
         Mock Invoke-WPFUIThread { }
@@ -369,8 +379,17 @@ Describe "Invoke-WPFUnInstall runspace body" {
         Should -Invoke -CommandName Get-WinUtilSelectedPackages -Times 1 -Exactly -ParameterFilter {
             @($PackageList).Count -eq 1 -and $Preference -eq "Winget"
         }
-        Should -Invoke -CommandName Show-WPFInstallAppBusy -Times 1 -Exactly -ParameterFilter {
-            $text -eq "Uninstalling apps..."
+        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
+            $Visible -eq $true -and $Label -eq "Preparing app uninstall (0/2)" -and $Percent -eq 0
+        }
+        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
+            $Visible -eq $true -and $Label -eq "Uninstalled Git.Git (1/2)" -and $Percent -eq 50
+        }
+        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
+            $Visible -eq $true -and $Label -eq "Uninstalled Chocolatey packages (2/2)" -and $Percent -eq 100
+        }
+        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
+            $Visible -eq $true -and $Label -eq "App uninstall finished" -and $Percent -eq 100
         }
         Should -Invoke -CommandName Install-WinUtilProgramWinget -Times 1 -Exactly -ParameterFilter {
             $Action -eq "Uninstall" -and @($Programs)[0] -eq "Git.Git"
@@ -378,21 +397,22 @@ Describe "Invoke-WPFUnInstall runspace body" {
         Should -Invoke -CommandName Install-WinUtilProgramChoco -Times 1 -Exactly -ParameterFilter {
             $Action -eq "Uninstall" -and @($Programs)[0] -eq "vlc"
         }
-        Should -Invoke -CommandName Hide-WPFInstallAppBusy -Times 1 -Exactly
         Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
             $ScriptBlock.ToString() -like '*Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"*'
         }
         $script:sync.ProcessRunning | Should -BeFalse
     }
 
-    It "hides the busy overlay, sets taskbar error state, and clears ProcessRunning on failure" {
+    It "shows failure progress, sets taskbar error state, and clears ProcessRunning on failure" {
         Mock Install-WinUtilProgramWinget { throw "winget failed" }
 
         Invoke-WPFUnInstall -PackagesToUninstall @($script:package)
 
         & $script:capturedUninstallScriptBlock -PackagesToUninstall @($script:package) -ManagerPreference "Winget"
 
-        Should -Invoke -CommandName Hide-WPFInstallAppBusy -Times 1 -Exactly
+        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
+            $Visible -eq $true -and $Label -eq "App uninstall failed" -and $Percent -eq 100
+        }
         Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
             $ScriptBlock.ToString() -like '*Set-WinUtilTaskbaritem -state "Error" -overlay "warning"*'
         }
