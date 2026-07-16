@@ -6,10 +6,75 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+    . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilCurrentSystem.ps1")
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilRegistry.ps1")
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilService.ps1")
 
+    function winget {
+        param(
+            [Parameter(Position = 0)]
+            $Command,
+            [Alias("s")]
+            $Source
+        )
+    }
+    function Get-WinUtilVariables {
+        param($Type)
+    }
     function Write-WinUtilLog { }
+}
+
+Describe "Invoke-WinUtilCurrentSystem installed apps" {
+    BeforeEach {
+        $script:sync = [Hashtable]::Synchronized(@{
+            WPFInstallGit = [pscustomobject]@{}
+            WPFInstallChatGPT = [pscustomobject]@{}
+            WPFInstallMissing = [pscustomobject]@{}
+            configs = [pscustomobject]@{
+                applications = [pscustomobject]@{
+                    WPFInstallGit = [pscustomobject]@{ winget = "Git.Git" }
+                    WPFInstallChatGPT = [pscustomobject]@{ winget = "msstore:9NT1R1C2HH7J" }
+                    WPFInstallMissing = [pscustomobject]@{ winget = "Missing.Package" }
+                }
+            }
+        })
+
+        Mock Get-WinUtilVariables {
+            @("WPFInstallGit", "WPFInstallChatGPT", "WPFInstallMissing")
+        }
+        Mock winget {
+            if ($Source -eq "winget") {
+                @(
+                    "",
+                    "Name  Id  Version  Available",
+                    "----  --  -------  ---------",
+                    "Git  Git.Git  2.0  "
+                )
+            } else {
+                @(
+                    "",
+                    "Name  Id  Version  Available",
+                    "----  --  -------  ---------",
+                    "ChatGPT  9NT1R1C2HH7J  1.0  "
+                )
+            }
+        }
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+    }
+
+    It "matches single standard and Microsoft Store package IDs" {
+        $result = @(Invoke-WinUtilCurrentSystem -CheckBox "winget")
+
+        $result | Should -HaveCount 2
+        $result | Should -Contain "WPFInstallGit"
+        $result | Should -Contain "WPFInstallChatGPT"
+        $result | Should -Not -Contain "WPFInstallMissing"
+        Should -Invoke -CommandName winget -Times 1 -Exactly -ParameterFilter { $Source -eq "winget" }
+        Should -Invoke -CommandName winget -Times 1 -Exactly -ParameterFilter { $Source -eq "msstore" }
+    }
 }
 
 Describe "Set-WinUtilRegistry" {
