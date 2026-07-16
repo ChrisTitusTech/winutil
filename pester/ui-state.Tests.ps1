@@ -65,10 +65,6 @@ namespace System.Windows.Controls
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFButton.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFToggleAllCategories.ps1")
 
-    function Set-WinUtilProgressBar {
-        param($Label, $Percent)
-    }
-
     function Set-WinUtilTweaksProgressIndicator {
         param($Visible, $Label, $Percent)
     }
@@ -303,7 +299,6 @@ Describe "Invoke-WPFToggleAllCategories" {
 Describe "Invoke-WPFButton progress cleanup" {
     BeforeEach {
         New-WinUtilUiStateTestContext
-        Mock Set-WinUtilProgressBar { }
         Mock Set-WinUtilTweaksProgressIndicator { }
     }
 
@@ -317,9 +312,6 @@ Describe "Invoke-WPFButton progress cleanup" {
 
         Invoke-WPFButton -Button "WPFNoOp"
 
-        Should -Invoke Set-WinUtilProgressBar -Times 1 -Exactly -ParameterFilter {
-            $Label -eq "" -and $Percent -eq 0
-        }
         Should -Invoke Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
             $Visible -eq $false
         }
@@ -330,7 +322,6 @@ Describe "Invoke-WPFButton progress cleanup" {
 
         Invoke-WPFButton -Button "WPFNoOp"
 
-        Should -Not -Invoke Set-WinUtilProgressBar
         Should -Not -Invoke Set-WinUtilTweaksProgressIndicator
     }
 }

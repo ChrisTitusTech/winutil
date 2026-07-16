@@ -31,9 +31,6 @@ BeforeAll {
     function Invoke-WPFUIThread {
         param([scriptblock]$ScriptBlock)
     }
-    function Set-WinUtilProgressBar {
-        param($Label, $Percent)
-    }
     function Set-WinUtilTweaksProgressIndicator {
         param($Visible, $Label, $Percent)
     }
@@ -187,7 +184,6 @@ Describe "Invoke-WPFtweaksbutton" {
         Mock Invoke-WPFRunspace { [pscustomobject]@{ MockHandle = $true } }
         Mock Invoke-WinUtilTweaks { }
         Mock Invoke-WPFUIThread { }
-        Mock Set-WinUtilProgressBar { }
         Mock Write-WinUtilLog { }
         Mock Write-Host { }
     }
