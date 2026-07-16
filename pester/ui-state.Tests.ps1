@@ -84,6 +84,9 @@ namespace System.Windows.Controls
     function Test-WinUtilPackageManager {
         param([switch]$winget)
     }
+    function Write-WinUtilLog {
+        param($Message, $Level, $Component)
+    }
 
     function script:New-WinUtilFakeCheckBox {
         param([bool]$IsChecked = $false)
@@ -228,22 +231,18 @@ Describe "Invoke-WPFGetInstalled selection state" {
     BeforeEach {
         New-WinUtilUiStateTestContext
 
-        $dispatcher = [pscustomobject]@{}
-        $dispatcher | Add-Member -MemberType ScriptMethod -Name Invoke -Value {
-            param([scriptblock]$Action)
-            & $Action
-        }
-
         $script:sync.ProcessRunning = $false
         $script:sync.ChocoRadioButton = [pscustomobject]@{ IsChecked = $false }
         $script:sync.preferences = [pscustomobject]@{ packagemanager = "Winget" }
-        $script:sync.Form = [pscustomobject]@{ Dispatcher = $dispatcher }
         $script:sync.WPFInstallGit = New-WinUtilFakeCheckBox
         $script:capturedGetInstalledScriptBlock = $null
 
         Mock Test-WinUtilPackageManager { "installed" }
-        Mock Invoke-WPFUIThread { }
+        Mock Invoke-WPFUIThread { & $ScriptBlock }
         Mock Invoke-WinUtilCurrentSystem { @("WPFInstallGit") }
+        Mock Set-WinUtilTaskbaritem { }
+        Mock Write-WinUtilLog { }
+        Mock Write-Warning { }
         Mock Invoke-WPFRunspace {
             $script:capturedGetInstalledScriptBlock = $ScriptBlock
             [pscustomobject]@{ MockHandle = $true }
@@ -265,6 +264,21 @@ Describe "Invoke-WPFGetInstalled selection state" {
         $script:sync.WPFselectedAppsButton.Content | Should -Be "Selected Apps: 1"
         $script:sync.selectedAppsstackPanel.Children.Count | Should -Be 1
         $script:sync.selectedAppsstackPanel.Children[0].Key | Should -Be "WPFInstallGit"
+    }
+
+    It "clears the running state when detection fails" {
+        Mock Invoke-WinUtilCurrentSystem { throw "detection failed" }
+
+        Invoke-WPFGetInstalled -CheckBox "winget"
+        & $script:capturedGetInstalledScriptBlock -checkbox "winget" -managerPreference "Winget"
+
+        $script:sync.ProcessRunning | Should -BeFalse
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "ERROR" -and
+                $Component -eq "Install" -and
+                $Message -eq "Get installed state failed: detection failed"
+        }
+        Should -Invoke -CommandName Set-WinUtilTaskbaritem -Times 1 -Exactly -ParameterFilter { $state -eq "None" }
     }
 }
 

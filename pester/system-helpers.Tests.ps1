@@ -11,15 +11,10 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilService.ps1")
 
     function winget {
-        param(
-            [Parameter(Position = 0)]
-            $Command,
-            [Alias("s")]
-            $Source
-        )
+        param([Parameter(ValueFromRemainingArguments = $true)]$Arguments)
     }
-    function Get-WinUtilVariables {
-        param($Type)
+    function choco {
+        param([Parameter(ValueFromRemainingArguments = $true)]$Arguments)
     }
     function Write-WinUtilLog { }
 }
@@ -27,42 +22,35 @@ BeforeAll {
 Describe "Invoke-WinUtilCurrentSystem installed apps" {
     BeforeEach {
         $script:sync = [Hashtable]::Synchronized(@{
-            WPFInstallGit = [pscustomobject]@{}
-            WPFInstallChatGPT = [pscustomobject]@{}
-            WPFInstallMissing = [pscustomobject]@{}
             configs = [pscustomobject]@{
-                applications = [pscustomobject]@{
-                    WPFInstallGit = [pscustomobject]@{ winget = "Git.Git" }
-                    WPFInstallChatGPT = [pscustomobject]@{ winget = "msstore:9NT1R1C2HH7J" }
-                    WPFInstallMissing = [pscustomobject]@{ winget = "Missing.Package" }
+                applicationsHashtable = @{
+                    WPFInstallGit = [pscustomobject]@{ winget = "Git.Git"; choco = "git" }
+                    WPFInstallChatGPT = [pscustomobject]@{ winget = "msstore:9NT1R1C2HH7J"; choco = "na" }
+                    WPFInstallMissing = [pscustomobject]@{ winget = "Git"; choco = "missing" }
                 }
             }
         })
 
-        Mock Get-WinUtilVariables {
-            @("WPFInstallGit", "WPFInstallChatGPT", "WPFInstallMissing")
-        }
         Mock winget {
-            if ($Source -eq "winget") {
-                @(
-                    "",
-                    "Name  Id  Version  Available",
-                    "----  --  -------  ---------",
-                    "Git  Git.Git  2.0  "
-                )
-            } else {
-                @(
-                    "",
-                    "Name  Id  Version  Available",
-                    "----  --  -------  ---------",
-                    "ChatGPT  9NT1R1C2HH7J  1.0  "
-                )
-            }
+            $global:LASTEXITCODE = 0
+            $script:wingetArguments = @($Arguments)
+            @(
+                "Name  Id  Version  Source",
+                "--------------------------------",
+                "Git  Git.Git  2.0  winget",
+                "ChatGPT  9NT1R1C2HH7J  1.0  msstore"
+            )
+        }
+        Mock choco {
+            $script:chocoArguments = @($Arguments)
+            @("Chocolatey v2", "git 2.0", "2 packages installed.")
         }
     }
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name wingetArguments -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name chocoArguments -Scope Script -ErrorAction SilentlyContinue
     }
 
     It "matches single standard and Microsoft Store package IDs" {
@@ -72,8 +60,25 @@ Describe "Invoke-WinUtilCurrentSystem installed apps" {
         $result | Should -Contain "WPFInstallGit"
         $result | Should -Contain "WPFInstallChatGPT"
         $result | Should -Not -Contain "WPFInstallMissing"
-        Should -Invoke -CommandName winget -Times 1 -Exactly -ParameterFilter { $Source -eq "winget" }
-        Should -Invoke -CommandName winget -Times 1 -Exactly -ParameterFilter { $Source -eq "msstore" }
+        Should -Invoke -CommandName winget -Times 1 -Exactly
+        $script:wingetArguments | Should -Be @("list", "--accept-source-agreements", "--disable-interactivity")
+    }
+
+    It "fails promptly when Winget cannot list applications" {
+        Mock winget {
+            $global:LASTEXITCODE = 1
+            "winget failed"
+        }
+
+        { Invoke-WinUtilCurrentSystem -CheckBox "winget" } | Should -Throw "winget list failed with exit code 1."
+    }
+
+    It "matches the primary Chocolatey package ID in one list call" {
+        $result = @(Invoke-WinUtilCurrentSystem -CheckBox "choco")
+
+        $result | Should -Be @("WPFInstallGit")
+        Should -Invoke -CommandName choco -Times 1 -Exactly
+        $script:chocoArguments | Should -Be @("list")
     }
 }
 

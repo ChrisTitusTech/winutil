@@ -1,6 +1,5 @@
 function Invoke-WPFGetInstalled {
     <#
-    TODO: Add the Option to use Chocolatey as Engine
     .SYNOPSIS
         Invokes the function that gets the checkboxes to check in a new runspace
 
@@ -26,37 +25,43 @@ function Invoke-WPFGetInstalled {
             [string]$managerPreference
         )
         $sync.ProcessRunning = $true
-        Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Indeterminate" }
+        try {
+            Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Indeterminate" }
 
-        if ($checkbox -eq "winget") {
-            Write-Host "Getting Installed Programs..."
-            switch ($managerPreference) {
-                "Choco"{$Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox "choco"; break}
-                "Winget"{$Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox; break}
-            }
-        }
-        elseif ($checkbox -eq "tweaks") {
-            Write-Host "Getting Installed Tweaks..."
-            $Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox
-        }
-
-        $sync.form.Dispatcher.invoke({
             if ($checkbox -eq "winget") {
-                foreach ($checkboxName in $Checkboxes) {
-                    if (-not $sync.selectedApps.Contains($checkboxName)) {
-                        $sync.selectedApps.Add($checkboxName)
+                Write-Host "Getting Installed Programs..."
+                switch ($managerPreference) {
+                    "Choco"{$Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox "choco"; break}
+                    "Winget"{$Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox; break}
+                }
+            }
+            elseif ($checkbox -eq "tweaks") {
+                Write-Host "Getting Installed Tweaks..."
+                $Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox
+            }
+
+            Invoke-WPFUIThread -ScriptBlock {
+                if ($checkbox -eq "winget") {
+                    foreach ($checkboxName in $Checkboxes) {
+                        if (-not $sync.selectedApps.Contains($checkboxName)) {
+                            $sync.selectedApps.Add($checkboxName)
+                        }
+                    }
+                    Reset-WPFCheckBoxes -checkboxfilterpattern "WPFInstall*"
+                } else {
+                    foreach ($checkboxName in $Checkboxes) {
+                        $sync.$checkboxName.ischecked = $True
                     }
                 }
-                Reset-WPFCheckBoxes -checkboxfilterpattern "WPFInstall*"
-            } else {
-                foreach ($checkboxName in $Checkboxes) {
-                    $sync.$checkboxName.ischecked = $True
-                }
             }
-        })
 
-        Write-Host "Done..."
-        $sync.ProcessRunning = $false
-        Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "None" }
+            Write-Host "Done..."
+        } catch {
+            Write-WinUtilLog -Level "ERROR" -Component "Install" -Message "Get installed state failed: $($_.Exception.Message)"
+            Write-Warning "Unable to get installed state: $($_.Exception.Message)"
+        } finally {
+            $sync.ProcessRunning = $false
+            Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "None" }
+        }
     }
 }
