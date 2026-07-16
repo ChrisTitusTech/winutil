@@ -152,7 +152,6 @@ Describe "XAML document" {
             "appspanel",
             "tweakspanel",
             "featurespanel",
-            "updatespanel",
             "appxpanel",
             "WPFstandard",
             "WPFminimal",
@@ -178,6 +177,23 @@ Describe "XAML document" {
         if ($missingControls.Count -gt 0) {
             throw ($missingControls -join "`n")
         }
+    }
+
+    It "presents the three Updates profiles with accurate action labels" {
+        $updatesTab = $script:xaml.SelectSingleNode('//*[local-name()="TabItem"][@Name="WPFTab4"]')
+        $profileGrid = $updatesTab.SelectSingleNode('.//*[local-name()="UniformGrid"]')
+        $expectedButtons = @{
+            WPFUpdatessecurity = "Apply Recommended"
+            WPFUpdatesdefault = "Restore Defaults"
+            WPFUpdatesdisable = "Disable Updates"
+        }
+
+        $profileGrid.GetAttribute("Columns") | Should -Be "3"
+        foreach ($buttonName in $expectedButtons.Keys) {
+            $button = $updatesTab.SelectSingleNode(".//*[local-name()='Button'][@Name='$buttonName']")
+            $button.GetAttribute("Content") | Should -Be $expectedButtons[$buttonName]
+        }
+        $updatesTab.SelectSingleNode('.//*[@Name="updatespanel"]') | Should -BeNullOrEmpty
     }
 
     It "contains Win11 Creator controls used by the ISO workflow" {

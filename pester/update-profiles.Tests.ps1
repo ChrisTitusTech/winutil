@@ -11,8 +11,11 @@ BeforeAll {
     function Write-WinUtilLog {
         param($Message, $Level, $Component)
     }
+    function Show-WinUtilMessage {
+        param($Message, $Title, $Button, $Icon)
+    }
     function Get-ScheduledTask {
-        param($TaskPath)
+        param($TaskPath, $ErrorAction)
     }
     function Disable-ScheduledTask {
         param(
@@ -51,6 +54,7 @@ Describe "Invoke-WPFUpdatesdisable" {
     BeforeEach {
         Mock Write-Host { }
         Mock Write-WinUtilLog { }
+        Mock Show-WinUtilMessage { "Yes" }
         Mock New-Item { }
         Mock Set-ItemProperty { }
         Mock Set-Service { }
@@ -88,24 +92,22 @@ Describe "Invoke-WPFUpdatesdisable" {
                 $Type -eq "DWord" -and
                 $Value -eq 0
         }
-        Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
-            $Path -eq "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -and
-                $Name -eq "SettingsPageVisibility" -and
-                $Value -eq "hide:windowsupdate"
-        }
     }
 
     It "disables update services and clears the SoftwareDistribution folder" {
         Invoke-WPFUpdatesdisable
 
+        foreach ($expectedServiceName in @("BITS", "wuauserv", "UsoSvc")) {
+            $expected = $expectedServiceName
+            Should -Invoke -CommandName Stop-Service -Times 1 -Exactly -ParameterFilter {
+                $Name -eq $expected -and $Force -eq $true
+            }
+        }
         Should -Invoke -CommandName Set-Service -Times 1 -Exactly -ParameterFilter {
             $Name -eq "BITS" -and $StartupType -eq "Disabled"
         }
         Should -Invoke -CommandName Set-Service -Times 1 -Exactly -ParameterFilter {
             $Name -eq "wuauserv" -and $StartupType -eq "Disabled"
-        }
-        Should -Invoke -CommandName Stop-Service -Times 1 -Exactly -ParameterFilter {
-            $Name -eq "UsoSvc" -and $Force -eq $true
         }
         Should -Invoke -CommandName Set-Service -Times 1 -Exactly -ParameterFilter {
             $Name -eq "UsoSvc" -and $StartupType -eq "Disabled"
@@ -128,6 +130,21 @@ Describe "Invoke-WPFUpdatesdisable" {
         }
         Should -Invoke -CommandName Disable-ScheduledTask -Times $script:updateTaskPaths.Count -Exactly
     }
+
+    It "requires confirmation before disabling updates" {
+        Mock Show-WinUtilMessage { "No" }
+
+        Invoke-WPFUpdatesdisable
+
+        Should -Invoke Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
+            $Title -eq "Disable Windows Update?" -and
+                $Button -eq "YesNo" -and
+                $Icon -eq "Warning"
+        }
+        Should -Not -Invoke Set-ItemProperty
+        Should -Not -Invoke Set-Service
+        Should -Not -Invoke Remove-Item
+    }
 }
 
 Describe "Invoke-WPFUpdatesdefault" {
@@ -136,6 +153,11 @@ Describe "Invoke-WPFUpdatesdefault" {
         Mock Write-WinUtilLog { }
         Mock Remove-Item { }
         Mock Remove-ItemProperty { }
+        Mock Get-ItemProperty {
+            [pscustomobject]@{
+                SettingsPageVisibility = "hide:windowsupdate"
+            }
+        }
         Mock Set-Service { }
         Mock Start-Service { }
         Mock Get-ScheduledTask {
@@ -147,25 +169,44 @@ Describe "Invoke-WPFUpdatesdefault" {
         Mock secedit { }
     }
 
-    It "removes update policy registry paths and shows the Windows Update settings page" {
+    It "removes only registry values managed by WinUtil" {
         Invoke-WPFUpdatesdefault
 
-        $expectedPaths = @(
-            "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU",
-            "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization",
-            "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings",
-            "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata",
-            "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching",
-            "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate"
+        $expectedRegistryValues = @(
+            @("HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU", "NoAutoUpdate", "AUOptions", "NoAutoRebootWithLoggedOnUsers", "AUPowerManagement"),
+            @("HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate", "ExcludeWUDriversInQualityUpdate", "DeferFeatureUpdates", "DeferFeatureUpdatesPeriodInDays", "DeferQualityUpdates", "DeferQualityUpdatesPeriodInDays"),
+            @("HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings", "BranchReadinessLevel", "DeferFeatureUpdatesPeriodInDays", "DeferQualityUpdatesPeriodInDays"),
+            @("HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata", "PreventDeviceMetadataFromNetwork"),
+            @("HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching", "DontPromptForWindowsUpdate", "DontSearchWindowsUpdate", "DriverUpdateWizardWuSearchEnabled"),
+            @("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config", "DODownloadMode")
         )
 
-        foreach ($expectedRegistryPath in $expectedPaths) {
-            $expected = $expectedRegistryPath
-            Should -Invoke -CommandName Remove-Item -Times 1 -Exactly -ParameterFilter {
-                $Path -eq $expected -and $Recurse -eq $true -and $Force -eq $true
+        foreach ($expectedEntry in $expectedRegistryValues) {
+            $expectedPath = $expectedEntry[0]
+            foreach ($expectedName in $expectedEntry[1..($expectedEntry.Count - 1)]) {
+                $valueName = $expectedName
+                Should -Invoke -CommandName Remove-ItemProperty -Times 1 -Exactly -ParameterFilter {
+                    $Path -eq $expectedPath -and $Name -eq $valueName
+                }
             }
         }
+        Should -Not -Invoke Remove-Item
         Should -Invoke -CommandName Remove-ItemProperty -Times 1 -Exactly -ParameterFilter {
+            $Path -eq "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -and
+                $Name -eq "SettingsPageVisibility"
+        }
+    }
+
+    It "preserves unrelated Settings page visibility policy" {
+        Mock Get-ItemProperty {
+            [pscustomobject]@{
+                SettingsPageVisibility = "hide:privacy"
+            }
+        }
+
+        Invoke-WPFUpdatesdefault
+
+        Should -Not -Invoke Remove-ItemProperty -ParameterFilter {
             $Path -eq "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -and
                 $Name -eq "SettingsPageVisibility"
         }
@@ -186,12 +227,12 @@ Describe "Invoke-WPFUpdatesdefault" {
         Should -Invoke -CommandName Set-Service -Times 1 -Exactly -ParameterFilter {
             $Name -eq "UsoSvc" -and $StartupType -eq "Automatic"
         }
-        Should -Invoke -CommandName Set-Service -Times 1 -Exactly -ParameterFilter {
-            $Name -eq "WaaSMedicSvc" -and $StartupType -eq "Manual"
+        Should -Not -Invoke Set-Service -ParameterFilter {
+            $Name -eq "WaaSMedicSvc"
         }
     }
 
-    It "enables update scheduled task paths and resets local policy defaults" {
+    It "enables update scheduled task paths without resetting unrelated local security policy" {
         Invoke-WPFUpdatesdefault
 
         foreach ($expectedTaskPath in $script:updateTaskPaths) {
@@ -201,13 +242,7 @@ Describe "Invoke-WPFUpdatesdefault" {
             }
         }
         Should -Invoke -CommandName Enable-ScheduledTask -Times $script:updateTaskPaths.Count -Exactly
-        Should -Invoke -CommandName secedit -Times 1 -Exactly -ParameterFilter {
-            $Arguments[0] -eq "/configure" -and
-                $Arguments[1] -eq "/cfg" -and
-                $Arguments[2] -like "*\inf\defltbase.inf" -and
-                $Arguments[3] -eq "/db" -and
-                $Arguments[4] -eq "defltbase.sdb"
-        }
+        Should -Not -Invoke secedit
     }
 }
 
@@ -217,6 +252,7 @@ Describe "Invoke-WPFUpdatessecurity" {
         Mock Write-WinUtilLog { }
         Mock New-Item { }
         Mock Set-ItemProperty { }
+        Mock Remove-ItemProperty { }
     }
 
     It "disables driver metadata and Windows Update driver search" {
@@ -261,20 +297,32 @@ Describe "Invoke-WPFUpdatessecurity" {
         Invoke-WPFUpdatessecurity
 
         Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
-            $Path -eq "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -and
-                $Name -eq "BranchReadinessLevel" -and
+            $Path -eq "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -and
+                $Name -eq "DeferFeatureUpdates" -and
                 $Type -eq "DWord" -and
-                $Value -eq 20
+                $Value -eq 1
         }
         Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
-            $Path -eq "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -and
+            $Path -eq "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -and
                 $Name -eq "DeferFeatureUpdatesPeriodInDays" -and
                 $Type -eq "DWord" -and
                 $Value -eq 365
         }
         Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
-            $Path -eq "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -and
+            $Path -eq "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -and
+                $Name -eq "DeferQualityUpdates" -and
+                $Type -eq "DWord" -and
+                $Value -eq 1
+        }
+        Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
+            $Path -eq "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -and
                 $Name -eq "DeferQualityUpdatesPeriodInDays" -and
+                $Type -eq "DWord" -and
+                $Value -eq 4
+        }
+        Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
+            $Path -eq "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -and
+                $Name -eq "AUOptions" -and
                 $Type -eq "DWord" -and
                 $Value -eq 4
         }
@@ -289,6 +337,18 @@ Describe "Invoke-WPFUpdatessecurity" {
                 $Name -eq "AUPowerManagement" -and
                 $Type -eq "DWord" -and
                 $Value -eq 0
+        }
+    }
+
+    It "removes legacy WinUtil deferral values from the unsupported UX settings path" {
+        Invoke-WPFUpdatessecurity
+
+        foreach ($expectedValueName in @("BranchReadinessLevel", "DeferFeatureUpdatesPeriodInDays", "DeferQualityUpdatesPeriodInDays")) {
+            $expected = $expectedValueName
+            Should -Invoke Remove-ItemProperty -Times 1 -Exactly -ParameterFilter {
+                $Path -eq "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -and
+                    $Name -eq $expected
+            }
         }
     }
 }
