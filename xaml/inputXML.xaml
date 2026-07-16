@@ -965,15 +965,10 @@
             </Setter>
         </Style>
         <!-- Filter Chip Style — used by the Install tab category filter buttons -->
-        <Style x:Key="FilterChipStyle" TargetType="Button">
+        <Style x:Key="FilterChipStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Margin" Value="2"/>
             <Setter Property="Padding" Value="12,0,12,0"/>
             <Setter Property="Width" Value="Auto"/>
-            <Setter Property="Height" Value="{DynamicResource ButtonHeight}"/>
-            <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundColor}"/>
-            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundColor}"/>
-            <Setter Property="FontSize" Value="{DynamicResource ButtonFontSize}"/>
-            <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
