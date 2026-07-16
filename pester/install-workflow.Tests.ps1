@@ -234,6 +234,12 @@ Describe "Invoke-WPFInstall runspace body" {
             $Action -eq "Install" -and @($Programs)[0] -eq "vlc"
         }
         Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
+            $ScriptBlock.ToString() -like '*$sync.ItemsControl.IsEnabled = $false*'
+        }
+        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
+            $ScriptBlock.ToString() -like '*$sync.ItemsControl.IsEnabled = $true*'
+        }
+        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
             $ScriptBlock.ToString() -like '*Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"*'
         }
         $script:sync.ProcessRunning | Should -BeFalse
@@ -248,6 +254,12 @@ Describe "Invoke-WPFInstall runspace body" {
 
         Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
             $Visible -eq $true -and $Label -eq "App install failed" -and $Percent -eq 100
+        }
+        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
+            $ScriptBlock.ToString() -like '*$sync.ItemsControl.IsEnabled = $false*'
+        }
+        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
+            $ScriptBlock.ToString() -like '*$sync.ItemsControl.IsEnabled = $true*'
         }
         Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
             $ScriptBlock.ToString() -like '*Set-WinUtilTaskbaritem -state "Error" -overlay "warning"*'
@@ -398,6 +410,12 @@ Describe "Invoke-WPFUnInstall runspace body" {
             $Action -eq "Uninstall" -and @($Programs)[0] -eq "vlc"
         }
         Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
+            $ScriptBlock.ToString() -like '*$sync.ItemsControl.IsEnabled = $false*'
+        }
+        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
+            $ScriptBlock.ToString() -like '*$sync.ItemsControl.IsEnabled = $true*'
+        }
+        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
             $ScriptBlock.ToString() -like '*Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"*'
         }
         $script:sync.ProcessRunning | Should -BeFalse
@@ -412,6 +430,12 @@ Describe "Invoke-WPFUnInstall runspace body" {
 
         Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
             $Visible -eq $true -and $Label -eq "App uninstall failed" -and $Percent -eq 100
+        }
+        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
+            $ScriptBlock.ToString() -like '*$sync.ItemsControl.IsEnabled = $false*'
+        }
+        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
+            $ScriptBlock.ToString() -like '*$sync.ItemsControl.IsEnabled = $true*'
         }
         Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
             $ScriptBlock.ToString() -like '*Set-WinUtilTaskbaritem -state "Error" -overlay "warning"*'

@@ -40,6 +40,11 @@ function Invoke-WPFInstall {
             $sync.ProcessRunning = $true
             if ($hasUI) {
                 Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Preparing app install (0/$totalPackages)" -Percent 0
+                Invoke-WPFUIThread -ScriptBlock {
+                    if ($null -ne $sync.ItemsControl) {
+                        $sync.ItemsControl.IsEnabled = $false
+                    }
+                }
             }
 
             if($packagesWinget.Count -gt 0 -and $packagesWinget -ne "0") {
@@ -94,6 +99,13 @@ function Invoke-WPFInstall {
                 Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Error" -overlay "warning" }
             }
         } finally {
+            if ($hasUI) {
+                Invoke-WPFUIThread -ScriptBlock {
+                    if ($null -ne $sync.ItemsControl) {
+                        $sync.ItemsControl.IsEnabled = $true
+                    }
+                }
+            }
             $sync.ProcessRunning = $False
         }
     }

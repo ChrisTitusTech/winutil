@@ -324,6 +324,15 @@ Describe "Invoke-WPFButton progress cleanup" {
 
         Should -Not -Invoke Set-WinUtilTweaksProgressIndicator
     }
+
+    It "leaves progress visible while a Win11 ISO modification is running" {
+        $script:sync.ProcessRunning = $false
+        $script:sync.Win11ISOModifying = $true
+
+        Invoke-WPFButton -Button "WPFNoOp"
+
+        Should -Not -Invoke Set-WinUtilTweaksProgressIndicator
+    }
 }
 
 Describe "Invoke-WPFButton window state" {

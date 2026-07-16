@@ -51,6 +51,11 @@ function Invoke-WPFUnInstall {
             $sync.ProcessRunning = $true
             if ($hasUI) {
                 Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Preparing app uninstall (0/$totalPackages)" -Percent 0
+                Invoke-WPFUIThread -ScriptBlock {
+                    if ($null -ne $sync.ItemsControl) {
+                        $sync.ItemsControl.IsEnabled = $false
+                    }
+                }
             }
 
             if ($packagesWinget -contains "Microsoft.Edge") {
@@ -108,6 +113,13 @@ function Invoke-WPFUnInstall {
                 Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Error" -overlay "warning" }
             }
         } finally {
+            if ($hasUI) {
+                Invoke-WPFUIThread -ScriptBlock {
+                    if ($null -ne $sync.ItemsControl) {
+                        $sync.ItemsControl.IsEnabled = $true
+                    }
+                }
+            }
             $sync.ProcessRunning = $False
         }
 

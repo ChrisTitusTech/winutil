@@ -14,7 +14,7 @@ function Invoke-WPFButton {
 
     # Use this to get the name of the button
     #[System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")
-    if (-not $sync.ProcessRunning) {
+    if (-not $sync.ProcessRunning -and -not $sync.Win11ISOModifying) {
         Set-WinUtilTweaksProgressIndicator -Visible $false
     }
 
