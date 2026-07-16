@@ -1,18 +1,18 @@
 ---
-title: "ConsumerFeatures - Disable"
+title: "Prevent Device Companion Apps"
 description: ""
 ---
 
-```json {filename="config/tweaks.json",linenos=inline,linenostart=430}
-  "WPFTweaksConsumerFeatures": {
-    "Content": "ConsumerFeatures - Disable",
-    "Description": "Stops promoted app installs and reduces app suggestions from Microsoft Store content.",
+```json {filename="config/tweaks.json",linenos=inline,linenostart=947}
+  "WPFTweaksPreventDeviceMetadataFromNetwork": {
+    "Content": "Prevent Device Companion Apps",
+    "Description": "Prevents additional software from being installed when plugging in devices (e.g. Ads when plugging in a monitor). Poses potential security risk.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
       {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-        "Name": "DisableWindowsConsumerFeatures",
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Device Metadata",
+        "Name": "PreventDeviceMetadataFromNetwork",
         "Value": "1",
         "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"

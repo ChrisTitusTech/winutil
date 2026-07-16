@@ -3,7 +3,7 @@ title: "Region"
 description: ""
 ---
 
-```json {filename="config/feature.json",linenos=inline,linenostart=237}
+```json {filename="config/feature.json",linenos=inline,linenostart=259}
   "WPFPanelRegion": {
     "Content": "Region",
     "category": "Legacy Windows Panels",
