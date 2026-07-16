@@ -341,7 +341,7 @@ $searchBarTimer.add_Tick({
     $searchBarTimer.Stop()
     switch ($sync.currentTab) {
         "Install" {
-            Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text
+            Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text -Category $sync.SearchBar.Tag
         }
         "Tweaks" {
             Find-TweaksByNameOrDescription -SearchString $sync.SearchBar.Text
@@ -352,6 +352,10 @@ $searchBarTimer.add_Tick({
     }
 })
 $sync["SearchBar"].Add_TextChanged({
+    if ($sync.SearchBar.Tag -ne $sync.SearchBar.Text) {
+        $sync.SearchBar.Tag = $null
+    }
+
     if ($sync.SearchBar.Text -ne "") {
         $sync.SearchBarClearButton.Visibility = "Visible"
         $sync.SearchBarIcon.Visibility = "Collapsed"
@@ -359,11 +363,29 @@ $sync["SearchBar"].Add_TextChanged({
         $sync.SearchBarClearButton.Visibility = "Collapsed"
         $sync.SearchBarIcon.Visibility = "Visible"
     }
+
+    # Category chip handlers apply their filter immediately.
+    if ($sync.SearchBar.Tag -eq $sync.SearchBar.Text) {
+        return
+    }
+
     if ($searchBarTimer.IsEnabled) {
         $searchBarTimer.Stop()
     }
     $searchBarTimer.Start()
 })
+
+# Quick Category Search Chips
+$sync["WPFSearchChipAll"].Add_Click({ Set-WinUtilAppCategoryFilter })
+$sync["WPFSearchChipBrowsers"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Browsers" })
+$sync["WPFSearchChipCommunications"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Communications" })
+$sync["WPFSearchChipDevelopment"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Development" })
+$sync["WPFSearchChipGames"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Games" })
+$sync["WPFSearchChipMicrosoftTools"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Microsoft Tools" })
+$sync["WPFSearchChipMultimediaTools"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Multimedia Tools" })
+$sync["WPFSearchChipProTools"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Pro Tools" })
+$sync["WPFSearchChipSelfhostedTools"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Selfhosted Tools" })
+$sync["WPFSearchChipUtilities"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Utilities" })
 
 $sync["Form"].Add_Loaded({
     param($e)
