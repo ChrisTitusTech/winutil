@@ -253,6 +253,46 @@ Describe "Invoke-WPFUpdatessecurity" {
         Mock New-Item { }
         Mock Set-ItemProperty { }
         Mock Remove-ItemProperty { }
+        Mock Set-Service { }
+        Mock Start-Service { }
+        Mock Get-ScheduledTask {
+            [pscustomobject]@{
+                TaskPath = $TaskPath
+            }
+        }
+        Mock Enable-ScheduledTask { }
+    }
+
+    It "restores update availability before applying recommended settings" {
+        Invoke-WPFUpdatessecurity
+
+        Should -Invoke -CommandName Remove-ItemProperty -Times 1 -Exactly -ParameterFilter {
+            $Path -eq "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -and
+                $Name -eq "NoAutoUpdate"
+        }
+        Should -Invoke -CommandName Remove-ItemProperty -Times 1 -Exactly -ParameterFilter {
+            $Path -eq "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -and
+                $Name -eq "DODownloadMode"
+        }
+        Should -Invoke -CommandName Set-Service -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "BITS" -and $StartupType -eq "Manual"
+        }
+        Should -Invoke -CommandName Set-Service -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "wuauserv" -and $StartupType -eq "Manual"
+        }
+        Should -Invoke -CommandName Set-Service -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "UsoSvc" -and $StartupType -eq "Automatic"
+        }
+        Should -Invoke -CommandName Start-Service -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "UsoSvc"
+        }
+        foreach ($expectedTaskPath in $script:updateTaskPaths) {
+            $expected = $expectedTaskPath
+            Should -Invoke -CommandName Get-ScheduledTask -Times 1 -Exactly -ParameterFilter {
+                $TaskPath -eq $expected
+            }
+        }
+        Should -Invoke -CommandName Enable-ScheduledTask -Times $script:updateTaskPaths.Count -Exactly
     }
 
     It "disables driver metadata and Windows Update driver search" {
