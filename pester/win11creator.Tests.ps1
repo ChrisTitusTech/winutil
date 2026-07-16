@@ -6,6 +6,7 @@ Describe "Win11 Creator setup media" {
     BeforeAll {
         $script:repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
         $script:isoWorkflowPath = Join-Path $script:repoRoot "functions\private\Invoke-WinUtilISO.ps1"
+        $script:isoUsbWorkflowPath = Join-Path $script:repoRoot "functions\private\Invoke-WinUtilISOUSB.ps1"
         $script:isoScriptPath = Join-Path $script:repoRoot "functions\private\Invoke-WinUtilISOScript.ps1"
         $script:autoUnattendPath = Join-Path $script:repoRoot "tools\autounattend.xml"
 
@@ -36,6 +37,9 @@ Describe "Win11 Creator setup media" {
         }
 
         $script:modifyFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Invoke-WinUtilISOModify"
+        $script:cleanAndResetFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Invoke-WinUtilISOCleanAndReset"
+        $script:exportFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Invoke-WinUtilISOExport"
+        $script:writeUsbFunction = Get-WinUtilFunctionText -Path $script:isoUsbWorkflowPath -FunctionName "Invoke-WinUtilISOWriteUSB"
         $script:editionIdFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Get-WinUtilEditionIdFromName"
         $script:addDriversFunction = Get-WinUtilFunctionText -Path $script:isoScriptPath -FunctionName "Add-DriversToImage"
         $script:answerFileChildElementFunction = Get-WinUtilFunctionText -Path $script:isoScriptPath -FunctionName "Get-WinUtilISOScriptChildElement"
@@ -79,6 +83,18 @@ Describe "Win11 Creator setup media" {
         }
 
         $script:modifyFunction | Should -Not -Match ([regex]::Escape("Reusing existing temp directory"))
+    }
+
+    It "tracks every background ISO workflow with the shared busy state" {
+        foreach ($functionText in @(
+            $script:modifyFunction,
+            $script:cleanAndResetFunction,
+            $script:exportFunction,
+            $script:writeUsbFunction
+        )) {
+            $functionText | Should -Match ([regex]::Escape('$sync["Win11ISOProcessRunning"] = $true'))
+            $functionText | Should -Match ([regex]::Escape('$sync["Win11ISOProcessRunning"] = $false'))
+        }
     }
 
     It "mounts the copied image file that was verified from the ISO" {

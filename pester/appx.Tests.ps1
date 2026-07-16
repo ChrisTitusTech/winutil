@@ -46,9 +46,6 @@ BeforeAll {
     function Invoke-WPFUIThread {
         param([scriptblock]$ScriptBlock)
     }
-    function Set-WinUtilProgressBar {
-        param($Label, $Percent)
-    }
     function Set-WinUtilTweaksProgressIndicator {
         param($Visible, $Label, $Percent)
     }
@@ -235,7 +232,6 @@ Describe "Get installed AppX selection" {
             WPFAppxMissing = [pscustomobject]@{ IsChecked = $false }
         })
 
-        Mock Set-WinUtilProgressBar { }
         Mock Set-WinUtilTweaksProgressIndicator { }
         Mock Get-WinUtilInstalledAPPX { @("Example.Package") }
         Mock Invoke-WPFAppxInstall { }

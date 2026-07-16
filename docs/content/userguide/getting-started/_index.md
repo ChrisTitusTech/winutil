@@ -138,7 +138,7 @@ For a better Windows experience with minimal risk:
 
 1. Check multiple application boxes
 2. All checked apps will install in sequence
-3. Progress is shown in the bottom panel
+3. Install and uninstall progress is shown in the window-level bottom panel, including the current package or package-manager batch and overall completion
 
 ### Applying Tweaks
 

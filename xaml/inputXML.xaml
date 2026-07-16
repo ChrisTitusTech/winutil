@@ -1823,7 +1823,7 @@
             </TabItem>
         </TabControl>
 
-        <!-- Tweaks/Undo progress indicator - visible regardless of active tab -->
+        <!-- Window-level progress indicator - visible regardless of active tab -->
         <Border Name="WPFTweaksProgressBar" Grid.Row="3" Background="{DynamicResource MainBackgroundColor}" Visibility="Collapsed" Padding="10,6">
             <StackPanel Orientation="Vertical">
                 <TextBlock Name="WPFTweaksProgressLabel" Text="" Foreground="{DynamicResource MainForegroundColor}" FontSize="13" Background="Transparent" Margin="0,0,0,4"/>

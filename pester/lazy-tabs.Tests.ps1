@@ -69,6 +69,23 @@ Describe "Initialize-WinUtilTabContent" {
             $targetGridName -eq "appxpanel" -and $columncount -eq 2
         }
     }
+
+    It "checks for existing Win11ISO work when the tab is initialized" {
+        Add-Type -AssemblyName WindowsBase
+        $dispatcher = [pscustomobject]@{}
+        $dispatcher | Add-Member -MemberType ScriptMethod -Name BeginInvoke -Value {
+            param($priority, $action)
+            $action.Invoke()
+        }
+        $script:sync.Form = [pscustomobject]@{ Dispatcher = $dispatcher }
+        Mock Invoke-WinUtilISOCheckExistingWork { }
+
+        Initialize-WinUtilTabContent -TabName "Win11ISO"
+        Initialize-WinUtilTabContent -TabName "Win11ISO"
+
+        Should -Invoke -CommandName Invoke-WinUtilISOCheckExistingWork -Times 1 -Exactly
+        $script:sync.InitializedTabs["Win11ISO"] | Should -BeTrue
+    }
 }
 
 Describe "Startup lazy tab wiring" {
