@@ -363,6 +363,12 @@ $sync["SearchBar"].Add_TextChanged({
         $sync.SearchBarClearButton.Visibility = "Collapsed"
         $sync.SearchBarIcon.Visibility = "Visible"
     }
+
+    # Category chip handlers apply their filter immediately.
+    if ($sync.SearchBar.Tag -eq $sync.SearchBar.Text) {
+        return
+    }
+
     if ($searchBarTimer.IsEnabled) {
         $searchBarTimer.Stop()
     }
