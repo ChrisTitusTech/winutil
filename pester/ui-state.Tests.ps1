@@ -61,12 +61,28 @@ namespace System.Windows.Controls
 
     . (Join-Path $script:repoRoot "functions\private\Update-WinUtilSelections.ps1")
     . (Join-Path $script:repoRoot "functions\private\Reset-WPFCheckBoxes.ps1")
+    . (Join-Path $script:repoRoot "functions\public\Invoke-WPFGetInstalled.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFSelectedCheckboxesUpdate.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFButton.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFToggleAllCategories.ps1")
 
     function Set-WinUtilTweaksProgressIndicator {
         param($Visible, $Label, $Percent)
+    }
+    function Invoke-WPFRunspace {
+        param($ArgumentList, $ParameterList, [scriptblock]$ScriptBlock)
+    }
+    function Invoke-WPFUIThread {
+        param([scriptblock]$ScriptBlock)
+    }
+    function Invoke-WinUtilCurrentSystem {
+        param($CheckBox)
+    }
+    function Set-WinUtilTaskbaritem {
+        param($state)
+    }
+    function Test-WinUtilPackageManager {
+        param([switch]$winget)
     }
 
     function script:New-WinUtilFakeCheckBox {
@@ -180,6 +196,9 @@ Describe "Invoke-WPFSelectedCheckboxesUpdate" {
         @($script:sync.selectedToggles) | Should -Be @("WPFToggleDarkMode")
         @($script:sync.selectedFeatures) | Should -Be @("WPFFeatureSandbox")
         @($script:sync.selectedAppx) | Should -Be @("WPFAppxExample")
+        $script:sync.WPFselectedAppsButton.Content | Should -Be "Selected Apps: 1"
+        $script:sync.selectedAppsstackPanel.Children.Count | Should -Be 1
+        $script:sync.selectedAppsstackPanel.Children[0].Key | Should -Be "WPFInstallGit"
     }
 
     It "removes checkbox keys from the matching selected lists" {
@@ -200,6 +219,52 @@ Describe "Invoke-WPFSelectedCheckboxesUpdate" {
         $script:sync.selectedToggles.Count | Should -Be 0
         $script:sync.selectedFeatures.Count | Should -Be 0
         $script:sync.selectedAppx.Count | Should -Be 0
+        $script:sync.WPFselectedAppsButton.Content | Should -Be "Selected Apps: 0"
+        $script:sync.selectedAppsstackPanel.Children.Count | Should -Be 0
+    }
+}
+
+Describe "Invoke-WPFGetInstalled selection state" {
+    BeforeEach {
+        New-WinUtilUiStateTestContext
+
+        $dispatcher = [pscustomobject]@{}
+        $dispatcher | Add-Member -MemberType ScriptMethod -Name Invoke -Value {
+            param([scriptblock]$Action)
+            & $Action
+        }
+
+        $script:sync.ProcessRunning = $false
+        $script:sync.ChocoRadioButton = [pscustomobject]@{ IsChecked = $false }
+        $script:sync.preferences = [pscustomobject]@{ packagemanager = "Winget" }
+        $script:sync.Form = [pscustomobject]@{ Dispatcher = $dispatcher }
+        $script:sync.WPFInstallGit = New-WinUtilFakeCheckBox
+        $script:capturedGetInstalledScriptBlock = $null
+
+        Mock Test-WinUtilPackageManager { "installed" }
+        Mock Invoke-WPFUIThread { }
+        Mock Invoke-WinUtilCurrentSystem { @("WPFInstallGit") }
+        Mock Invoke-WPFRunspace {
+            $script:capturedGetInstalledScriptBlock = $ScriptBlock
+            [pscustomobject]@{ MockHandle = $true }
+        }
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
+        Remove-Variable -Name capturedGetInstalledScriptBlock -Scope Script -ErrorAction SilentlyContinue
+    }
+
+    It "updates the selected app model, checkbox, count, and popup" {
+        Invoke-WPFGetInstalled -CheckBox "winget"
+        & $script:capturedGetInstalledScriptBlock -checkbox "winget" -managerPreference "Winget"
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallGit")
+        $script:sync.WPFInstallGit.IsChecked | Should -BeTrue
+        $script:sync.WPFselectedAppsButton.Content | Should -Be "Selected Apps: 1"
+        $script:sync.selectedAppsstackPanel.Children.Count | Should -Be 1
+        $script:sync.selectedAppsstackPanel.Children[0].Key | Should -Be "WPFInstallGit"
     }
 }
 

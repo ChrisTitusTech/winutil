@@ -41,8 +41,17 @@ function Invoke-WPFGetInstalled {
         }
 
         $sync.form.Dispatcher.invoke({
-            foreach ($checkbox in $Checkboxes) {
-                $sync.$checkbox.ischecked = $True
+            if ($checkbox -eq "winget") {
+                foreach ($checkboxName in $Checkboxes) {
+                    if (-not $sync.selectedApps.Contains($checkboxName)) {
+                        $sync.selectedApps.Add($checkboxName)
+                    }
+                }
+                Reset-WPFCheckBoxes -checkboxfilterpattern "WPFInstall*"
+            } else {
+                foreach ($checkboxName in $Checkboxes) {
+                    $sync.$checkboxName.ischecked = $True
+                }
             }
         })
 
