@@ -18,50 +18,72 @@ function Invoke-WPFGetInstalled {
         return
     }
     $managerPreference = $sync.preferences.packagemanager
-
-    Invoke-WPFRunspace -ParameterList @(("managerPreference", $managerPreference),("checkbox", $checkbox)) -ScriptBlock {
-        param (
-            [string]$checkbox,
-            [string]$managerPreference
+    $operation = [Hashtable]::Synchronized(@{
+        Checkboxes = @()
+        Error = $null
+    })
+    $completeAction = [Action[hashtable, string]]{
+        param(
+            [hashtable]$completedOperation,
+            [string]$completedCheckbox
         )
-        $sync.ProcessRunning = $true
         try {
-            Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Indeterminate" }
-
-            if ($checkbox -eq "winget") {
-                Write-Host "Getting Installed Programs..."
-                switch ($managerPreference) {
-                    "Choco"{$Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox "choco"; break}
-                    "Winget"{$Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox; break}
-                }
-            }
-            elseif ($checkbox -eq "tweaks") {
-                Write-Host "Getting Installed Tweaks..."
-                $Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox
+            if ($completedOperation.Error) {
+                Write-WinUtilLog -Level "ERROR" -Component "Install" -Message "Get installed state failed: $($completedOperation.Error)"
+                Write-Warning "Unable to get installed state: $($completedOperation.Error)"
+                return
             }
 
-            Invoke-WPFUIThread -ScriptBlock {
-                if ($checkbox -eq "winget") {
-                    foreach ($checkboxName in $Checkboxes) {
-                        if (-not $sync.selectedApps.Contains($checkboxName)) {
-                            $sync.selectedApps.Add($checkboxName)
-                        }
-                    }
-                    Reset-WPFCheckBoxes -checkboxfilterpattern "WPFInstall*"
-                } else {
-                    foreach ($checkboxName in $Checkboxes) {
-                        $sync.$checkboxName.ischecked = $True
+            if ($completedCheckbox -eq "winget") {
+                foreach ($checkboxName in $completedOperation.Checkboxes) {
+                    if (-not $sync.selectedApps.Contains($checkboxName)) {
+                        $sync.selectedApps.Add($checkboxName)
                     }
                 }
+                Reset-WPFCheckBoxes -checkboxfilterpattern "WPFInstall*"
+            } else {
+                foreach ($checkboxName in $completedOperation.Checkboxes) {
+                    $sync.$checkboxName.ischecked = $True
+                }
             }
-
-            Write-Host "Done..."
-        } catch {
-            Write-WinUtilLog -Level "ERROR" -Component "Install" -Message "Get installed state failed: $($_.Exception.Message)"
-            Write-Warning "Unable to get installed state: $($_.Exception.Message)"
         } finally {
             $sync.ProcessRunning = $false
-            Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "None" }
+            Set-WinUtilTaskbaritem -state "None"
         }
+    }
+
+    $sync.ProcessRunning = $true
+    Set-WinUtilTaskbaritem -state "Indeterminate"
+    try {
+        Invoke-WPFRunspace -ParameterList @(
+            ("managerPreference", $managerPreference),
+            ("checkbox", $checkbox),
+            ("operation", $operation),
+            ("completeAction", $completeAction)
+        ) -ScriptBlock {
+            param (
+                [string]$checkbox,
+                [string]$managerPreference,
+                [hashtable]$operation,
+                [Action[hashtable, string]]$completeAction
+            )
+            try {
+                if ($checkbox -eq "winget") {
+                    switch ($managerPreference) {
+                        "Choco" { $operation.Checkboxes = @(Invoke-WinUtilCurrentSystem -CheckBox "choco"); break }
+                        "Winget" { $operation.Checkboxes = @(Invoke-WinUtilCurrentSystem -CheckBox $checkbox); break }
+                    }
+                } elseif ($checkbox -eq "tweaks") {
+                    $operation.Checkboxes = @(Invoke-WinUtilCurrentSystem -CheckBox $checkbox)
+                }
+            } catch {
+                $operation.Error = $_.Exception.Message
+            } finally {
+                $sync.Form.Dispatcher.BeginInvoke($completeAction, [object[]]@($operation, $checkbox)) | Out-Null
+            }
+        }
+    } catch {
+        $operation.Error = $_.Exception.Message
+        $completeAction.Invoke($operation, $checkbox)
     }
 }
