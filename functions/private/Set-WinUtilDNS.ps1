@@ -33,18 +33,49 @@ function Set-WinUtilDNS {
             }
         }
 
+        $dohSupported = [bool](Get-Command Add-DnsClientDohServerAddress -ErrorAction SilentlyContinue)
+        $dnscacheBase = "HKLM:\System\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters"
+
         Foreach ($Adapter in $Adapters) {
+            $interfaceParams = "$dnscacheBase\$($Adapter.InterfaceGuid)"
+
             if($DNSProvider -eq "DHCP") {
                 Write-WinUtilLog -Component "DNS" -Message "Resetting DNS to DHCP on adapter $($Adapter.Name) (ifIndex: $($Adapter.ifIndex))."
                 Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ResetServerAddresses
                 netsh interface ip set dnsservers name="$($Adapter.Name)" source=dhcp
                 netsh interface ipv6 set dnsservers name="$($Adapter.Name)" source=dhcp
+
+                if (Test-Path "$interfaceParams\DohInterfaceSettings") {
+                    Remove-Item -Path "$interfaceParams\DohInterfaceSettings" -Recurse -Force -ErrorAction SilentlyContinue
+                }
             } else {
                 Write-WinUtilLog -Component "DNS" -Message "Setting IPv4 DNS on adapter $($Adapter.Name) (ifIndex: $($Adapter.ifIndex)) to $($dns.Primary), $($dns.Secondary)."
                 Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ServerAddresses ($dns.Primary, $dns.Secondary)
                 Write-WinUtilLog -Component "DNS" -Message "Setting IPv6 DNS on adapter $($Adapter.Name) (ifIndex: $($Adapter.ifIndex)) to $($dns.Primary6), $($dns.Secondary6)."
                 Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ServerAddresses ($dns.Primary6, $dns.Secondary6)
+
+                if ($dohSupported -and $dns.DohTemplate) {
+                    $ips = @($dns.Primary, $dns.Secondary, $dns.Primary6, $dns.Secondary6) | Where-Object { $_ }
+                    foreach ($ip in $ips) {
+                        $existing = Get-DnsClientDohServerAddress -ServerAddress $ip -ErrorAction SilentlyContinue
+                        if (-not $existing) {
+                            Write-WinUtilLog -Component "DNS" -Message "Registering DoH template for $ip."
+                            Add-DnsClientDohServerAddress -ServerAddress $ip -DohTemplate $dns.DohTemplate -AllowFallbackToUdp $false -AutoUpgrade $true -ErrorAction SilentlyContinue
+                        }
+                        
+                        $leaf = if ($ip.Contains(':')) { 'Doh6' } else { 'Doh' }
+                        $regPath = "$interfaceParams\DohInterfaceSettings\$leaf\$ip"
+                        
+                        if (-not (Test-Path $regPath)) {
+                            New-Item -Path $regPath -Force | Out-Null
+                        }
+                        New-ItemProperty -Path $regPath -Name "DohFlags" -Value 1 -PropertyType QWord -Force | Out-Null
+                    }
+                }
             }
+        }
+        if ($DNSProvider -ne "DHCP" -and $dohSupported -and $dns.DohTemplate) {
+            Clear-DnsClientCache
         }
         Write-WinUtilLog -Component "DNS" -Message "DNS provider change completed: $DNSProvider"
     } catch {
