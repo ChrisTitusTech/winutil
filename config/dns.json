@@ -53,6 +53,6 @@
         "Secondary": "94.140.15.16",
         "Primary6": "2a10:50c0::bad1:ff",
         "Secondary6": "2a10:50c0::bad2:ff",
-        "DohTemplate": "https://dns-family.adguard-dns.com/dns-query"
+        "DohTemplate": "https://family.adguard-dns.com/dns-query"
     }
 }
