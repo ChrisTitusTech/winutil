@@ -964,6 +964,39 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <!-- Filter Chip Style — used by the Install tab category filter buttons -->
+        <Style x:Key="FilterChipStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Padding" Value="12,0,12,0"/>
+            <Setter Property="Width" Value="Auto"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Name="ChipBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{DynamicResource ButtonBorderThickness}"
+                                CornerRadius="{DynamicResource ButtonCornerRadius}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ChipBorder" Property="Background" Value="{DynamicResource ButtonBackgroundPressedColor}"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ChipBorder" Property="Background" Value="{DynamicResource ButtonBackgroundMouseoverColor}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="ChipBorder" Property="Background" Value="{DynamicResource ButtonBackgroundSelectedColor}"/>
+                                <Setter Property="Foreground" Value="DimGray"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
     <Grid Background="{DynamicResource MainBackgroundColor}" ShowGridLines="False" Name="WPFMainGrid" Width="Auto" Height="Auto" HorizontalAlignment="Stretch">
         <Grid.RowDefinitions>
@@ -1282,16 +1315,23 @@
 
                     <!-- Quick Category Search Chips -->
                     <WrapPanel Grid.Row="0" Orientation="Horizontal" Margin="5,5,5,5" Name="WPFSearchChips">
-                        <Button Name="WPFSearchChipAll"             Content="All"               Width="Auto" Height="Auto" Margin="2"/>
-                        <Button Name="WPFSearchChipBrowsers"        Content="Browsers"          Width="Auto" Height="Auto" Margin="2"/>
-                        <Button Name="WPFSearchChipCommunications"  Content="Communications"    Width="Auto" Height="Auto" Margin="2"/>
-                        <Button Name="WPFSearchChipDevelopment"     Content="Development"       Width="Auto" Height="Auto" Margin="2"/>
-                        <Button Name="WPFSearchChipGames"           Content="Games"             Width="Auto" Height="Auto" Margin="2"/>
-                        <Button Name="WPFSearchChipMicrosoftTools"  Content="Microsoft Tools"   Width="Auto" Height="Auto" Margin="2"/>
-                        <Button Name="WPFSearchChipMultimediaTools" Content="Multimedia Tools"  Width="Auto" Height="Auto" Margin="2"/>
-                        <Button Name="WPFSearchChipProTools"        Content="Pro Tools"         Width="Auto" Height="Auto" Margin="2"/>
-                        <Button Name="WPFSearchChipSelfhostedTools" Content="Selfhosted Tools"  Width="Auto" Height="Auto" Margin="2"/>
-                        <Button Name="WPFSearchChipUtilities"       Content="Utilities"         Width="Auto" Height="Auto" Margin="2"/>
+                        <TextBlock Text="Filters"
+                                   FontSize="{DynamicResource HeaderFontSize}"
+                                   FontFamily="{DynamicResource HeaderFontFamily}"
+                                   Foreground="{DynamicResource LabelboxForegroundColor}"
+                                   Background="Transparent"
+                                   VerticalAlignment="Center"
+                                   Margin="15,0,8,0"/>
+                        <Button Name="WPFSearchChipAll"             Content="All"               Style="{StaticResource FilterChipStyle}"/>
+                        <Button Name="WPFSearchChipBrowsers"        Content="Browsers"          Style="{StaticResource FilterChipStyle}"/>
+                        <Button Name="WPFSearchChipCommunications"  Content="Communications"    Style="{StaticResource FilterChipStyle}"/>
+                        <Button Name="WPFSearchChipDevelopment"     Content="Development"       Style="{StaticResource FilterChipStyle}"/>
+                        <Button Name="WPFSearchChipGames"           Content="Games"             Style="{StaticResource FilterChipStyle}"/>
+                        <Button Name="WPFSearchChipMicrosoftTools"  Content="Microsoft Tools"   Style="{StaticResource FilterChipStyle}"/>
+                        <Button Name="WPFSearchChipMultimediaTools" Content="Multimedia Tools"  Style="{StaticResource FilterChipStyle}"/>
+                        <Button Name="WPFSearchChipProTools"        Content="Pro Tools"         Style="{StaticResource FilterChipStyle}"/>
+                        <Button Name="WPFSearchChipSelfhostedTools" Content="Selfhosted Tools"  Style="{StaticResource FilterChipStyle}"/>
+                        <Button Name="WPFSearchChipUtilities"       Content="Utilities"         Style="{StaticResource FilterChipStyle}"/>
                     </WrapPanel>
 
                     <Grid Grid.Row="1" Margin="{DynamicResource TabContentMargin}">
@@ -1326,14 +1366,14 @@
 
                             <StackPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Vertical" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="5">
                                 <Label Content="Recommended Selections:" FontSize="{DynamicResource FontSize}" VerticalAlignment="Center" Margin="2"/>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,2,0,0">
+                                <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,2,0,0">
                                     <Button Name="WPFstandard" Content=" Standard " Margin="2" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
                                     <Button Name="WPFminimal" Content=" Minimal " Margin="2" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
                                     <Button Name="WPFAdvanced" Content=" Advanced " Margin="2" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
                                     <Button Name="WPFClearTweaksSelection" Content=" Clear " Margin="2" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
                                     <Button Name="WPFGetInstalledTweaks" Content=" Get Installed Tweaks " Margin="2" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
                                     <Button Name="WPFAppxRemoval" Content=" AppX Removal " Margin="2" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
-                                </StackPanel>
+                                </WrapPanel>
                             </StackPanel>
 
                             <Grid Name="tweakspanel" Grid.Row="1">

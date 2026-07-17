@@ -140,6 +140,10 @@ Describe "Invoke-WPFRunspace behavior" {
         $runspaceScript | Should -Not -Match '\$script:powershell'
         $runspaceScript | Should -Not -Match '\$script:handle'
     }
+
+    It "exposes a strongly typed cleanup callback" {
+        ([WinUtilRunspaceCleanup]::Callback -is [System.Threading.WaitOrTimerCallback]) | Should -BeTrue
+    }
 }
 
 Describe "Public runspace callers" {
