@@ -23,6 +23,14 @@ BeforeAll {
         param($Message, $Level, $Component)
     }
 
+    function Add-DnsClientDohServerAddress {
+        param($ServerAddress, $DohTemplate, $AllowFallbackToUdp, $AutoUpgrade, $ErrorAction)
+    }
+    function Get-DnsClientDohServerAddress {
+        param($ServerAddress, $ErrorAction)
+    }
+    function Clear-DnsClientCache { }
+
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilDNS.ps1")
 }
 
@@ -36,6 +44,7 @@ Describe "Set-WinUtilDNS" {
                         Secondary = "1.0.0.1"
                         Primary6 = "2606:4700:4700::1111"
                         Secondary6 = "2606:4700:4700::1001"
+                        DohTemplate = "https://cloudflare-dns.com/dns-query"
                     }
                 }
             }
@@ -46,6 +55,7 @@ Describe "Set-WinUtilDNS" {
                 Name = "Ethernet"
                 Status = "Up"
                 ifIndex = 7
+                InterfaceGuid = "{1234-5678-90AB-CDEF}"
             }
         }
         Mock Set-DnsClientServerAddress { }
@@ -53,13 +63,22 @@ Describe "Set-WinUtilDNS" {
         Mock Write-WinUtilLog { }
         Mock Write-Warning { }
         Mock Write-Host { }
+
+        Mock Get-Command { return $true } -ParameterFilter { $Name -eq "Add-DnsClientDohServerAddress" }
+        Mock Add-DnsClientDohServerAddress { }
+        Mock Get-DnsClientDohServerAddress { return $null }
+        Mock Test-Path { return $false }
+        Mock New-Item { }
+        Mock New-ItemProperty { }
+        Mock Remove-Item { }
+        Mock Clear-DnsClientCache { }
     }
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
     }
 
-    It "sets IPv4 and IPv6 DNS server addresses separately" {
+    It "sets IPv4 and IPv6 DNS server addresses separately and applies DoH templates" {
         Set-WinUtilDNS -DNSProvider "Cloudflare"
 
         Should -Invoke -CommandName Set-DnsClientServerAddress -Times 1 -Exactly -ParameterFilter {
@@ -77,9 +96,18 @@ Describe "Set-WinUtilDNS" {
         Should -Invoke -CommandName Set-DnsClientServerAddress -Times 0 -Exactly -ParameterFilter {
             $ServerAddresses.Count -eq 4
         }
+        Should -Invoke -CommandName Add-DnsClientDohServerAddress -Times 1 -Exactly -ParameterFilter {
+            $ServerAddress -eq "1.1.1.1" -and $DohTemplate -eq "https://cloudflare-dns.com/dns-query"
+        }
+        Should -Invoke -CommandName New-ItemProperty -Times 4 -ParameterFilter {
+            $Name -eq "DohFlags" -and $Value -eq 1
+        }
+        Should -Invoke -CommandName Clear-DnsClientCache -Times 1 -Exactly
     }
 
-    It "resets DNS to DHCP for IPv4 and IPv6" {
+    It "resets DNS to DHCP for IPv4 and IPv6 and cleans up DoH registry" {
+        Mock Test-Path { return $true } -ParameterFilter { $Path -like "*DohInterfaceSettings*" }
+        
         Set-WinUtilDNS -DNSProvider "DHCP"
 
         Should -Invoke -CommandName Set-DnsClientServerAddress -Times 1 -Exactly -ParameterFilter {
@@ -101,6 +129,9 @@ Describe "Set-WinUtilDNS" {
                 $Arguments[3] -eq "dnsservers" -and
                 $Arguments[4] -eq "name=Ethernet" -and
                 $Arguments[5] -eq "source=dhcp"
+        }
+        Should -Invoke -CommandName Remove-Item -Times 1 -Exactly -ParameterFilter {
+            $Path -like "*DohInterfaceSettings*" -and $Recurse -eq $true -and $Force -eq $true
         }
     }
 
