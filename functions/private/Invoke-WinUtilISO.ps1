@@ -1,4 +1,4 @@
-function Write-Win11ISOLog {
+function Write-WinUtilISOLog {
     param([string]$Message)
     $ts = (Get-Date).ToString("HH:mm:ss")
     $logLine = "[$ts] $Message"
@@ -35,7 +35,7 @@ function Invoke-WinUtilISOBrowse {
     $sync["WPFWin11ISOModifySection"].Visibility      = "Collapsed"
     $sync["WPFWin11ISOOutputSection"].Visibility      = "Collapsed"
 
-    Write-Win11ISOLog "ISO selected: $isoPath  ($fileSizeGB GB)"
+    Write-WinUtilISOLog "ISO selected: $isoPath  ($fileSizeGB GB)"
 }
 
 function Invoke-WinUtilISOMountAndVerify {
@@ -46,84 +46,98 @@ function Invoke-WinUtilISOMountAndVerify {
         return
     }
 
-    Write-Win11ISOLog "Mounting ISO: $isoPath"
+    Write-WinUtilISOLog "Mounting ISO: $isoPath"
     Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Mounting ISO..." -Percent 10
+    $sync["WPFWin11ISOMountButton"].IsEnabled = $false
+    $sync["Win11ISOProcessRunning"] = $true
 
-    try {
-        Mount-DiskImage -ImagePath $isoPath
+    Invoke-WPFRunspace -ParameterList @(,('isoPath', $isoPath)) -ScriptBlock {
+        param($isoPath)
 
-        do {
-            Start-Sleep -Milliseconds 500
-        } until ((Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter)
+        try {
+            Mount-DiskImage -ImagePath $isoPath
 
-        $driveLetter = (Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter + ":"
-        Write-Win11ISOLog "Mounted at drive $driveLetter"
+            do {
+                Start-Sleep -Milliseconds 500
+            } until ((Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter)
 
-        Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Verifying ISO contents..." -Percent 30
+            $driveLetter = (Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter + ":"
+            Write-WinUtilISOLog "Mounted at drive $driveLetter"
 
-        $wimPath = Join-Path $driveLetter "sources\install.wim"
-        $esdPath = Join-Path $driveLetter "sources\install.esd"
+            Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Verifying ISO contents..." -Percent 30
 
-        if (-not (Test-Path $wimPath) -and -not (Test-Path $esdPath)) {
-            Dismount-DiskImage -ImagePath $isoPath
-            Write-Win11ISOLog "ERROR: install.wim/install.esd not found - not a valid Windows ISO."
-            [System.Windows.MessageBox]::Show(
-                "This does not appear to be a valid Windows ISO.`n`ninstall.wim / install.esd was not found.",
-                "Invalid ISO", "OK", "Error")
-            Set-WinUtilTweaksProgressIndicator -Visible $false
-            return
-        }
+            $wimPath = Join-Path $driveLetter "sources\install.wim"
+            $esdPath = Join-Path $driveLetter "sources\install.esd"
 
-        $activeWim = if (Test-Path $wimPath) { $wimPath } else { $esdPath }
-
-        Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Reading image metadata..." -Percent 55
-        $imageInfo = Get-WindowsImage -ImagePath $activeWim | Select-Object ImageIndex, ImageName
-
-        if (-not ($imageInfo | Where-Object { $_.ImageName -match "Windows 11" })) {
-            Dismount-DiskImage -ImagePath $isoPath
-            Write-Win11ISOLog "ERROR: No 'Windows 11' edition found in the image."
-            [System.Windows.MessageBox]::Show(
-                "No Windows 11 edition was found in this ISO.`n`nOnly official Windows 11 ISOs are supported.",
-                "Not a Windows 11 ISO", "OK", "Error")
-            Set-WinUtilTweaksProgressIndicator -Visible $false
-            return
-        }
-
-        $sync["Win11ISOImageInfo"] = $imageInfo
-
-        $sync["WPFWin11ISOMountDriveLetter"].Text = "Mounted at: $driveLetter   |   Image file: $(Split-Path $activeWim -Leaf)"
-        $sync["WPFWin11ISOEditionComboBox"].Dispatcher.Invoke([action]{
-            $sync["WPFWin11ISOEditionComboBox"].Items.Clear()
-            foreach ($img in $imageInfo) {
-                [void]$sync["WPFWin11ISOEditionComboBox"].Items.Add("$($img.ImageIndex): $($img.ImageName)")
-            }
-            if ($sync["WPFWin11ISOEditionComboBox"].Items.Count -gt 0) {
-                $proIndex = -1
-                for ($i = 0; $i -lt $sync["WPFWin11ISOEditionComboBox"].Items.Count; $i++) {
-                    if ($sync["WPFWin11ISOEditionComboBox"].Items[$i] -match "Windows 11 Pro(?![\w ])") {
-                        $proIndex = $i; break
-                    }
+            if (-not (Test-Path $wimPath) -and -not (Test-Path $esdPath)) {
+                Dismount-DiskImage -ImagePath $isoPath
+                Write-WinUtilISOLog "ERROR: install.wim/install.esd not found - not a valid Windows ISO."
+                Invoke-WPFUIThread {
+                    [System.Windows.MessageBox]::Show(
+                        "This does not appear to be a valid Windows ISO.`n`ninstall.wim / install.esd was not found.",
+                        "Invalid ISO", "OK", "Error")
                 }
-                $sync["WPFWin11ISOEditionComboBox"].SelectedIndex = if ($proIndex -ge 0) { $proIndex } else { 0 }
+                return
             }
-        })
-        $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Visible"
 
-        $sync["Win11ISODriveLetter"] = $driveLetter
-        $sync["Win11ISOWimPath"]     = $activeWim
-        $sync["Win11ISOImagePath"]   = $isoPath
-        $sync["WPFWin11ISOModifySection"].Visibility = "Visible"
+            $activeWim = if (Test-Path $wimPath) { $wimPath } else { $esdPath }
 
-        Set-WinUtilTweaksProgressIndicator -Visible $true -Label "ISO verified" -Percent 100
-        Write-Win11ISOLog "ISO verified OK.  Editions found: $($imageInfo.Count)"
-    } catch {
-        Write-Win11ISOLog "ERROR during mount/verify: $_"
-        [System.Windows.MessageBox]::Show(
-            "An error occurred while mounting or verifying the ISO:`n`n$_",
-            "Error", "OK", "Error")
-    } finally {
-        Start-Sleep -Milliseconds 800
-        Set-WinUtilTweaksProgressIndicator -Visible $false
+            Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Reading image metadata..." -Percent 55
+            $imageInfo = Get-WindowsImage -ImagePath $activeWim | Select-Object ImageIndex, ImageName
+
+            if (-not ($imageInfo | Where-Object { $_.ImageName -match "Windows 11" })) {
+                Dismount-DiskImage -ImagePath $isoPath
+                Write-WinUtilISOLog "ERROR: No 'Windows 11' edition found in the image."
+                Invoke-WPFUIThread {
+                    [System.Windows.MessageBox]::Show(
+                        "No Windows 11 edition was found in this ISO.`n`nOnly official Windows 11 ISOs are supported.",
+                        "Not a Windows 11 ISO", "OK", "Error")
+                }
+                return
+            }
+
+            $sync["Win11ISOImageInfo"] = $imageInfo
+            $sync["Win11ISODriveLetter"] = $driveLetter
+            $sync["Win11ISOWimPath"]     = $activeWim
+            $sync["Win11ISOImagePath"]   = $isoPath
+
+            Invoke-WPFUIThread {
+                $sync["WPFWin11ISOMountDriveLetter"].Text = "Mounted at: $driveLetter   |   Image file: $(Split-Path $activeWim -Leaf)"
+                $sync["WPFWin11ISOEditionComboBox"].Items.Clear()
+                foreach ($img in $imageInfo) {
+                    [void]$sync["WPFWin11ISOEditionComboBox"].Items.Add("$($img.ImageIndex): $($img.ImageName)")
+                }
+                if ($sync["WPFWin11ISOEditionComboBox"].Items.Count -gt 0) {
+                    $proIndex = -1
+                    for ($i = 0; $i -lt $sync["WPFWin11ISOEditionComboBox"].Items.Count; $i++) {
+                        if ($sync["WPFWin11ISOEditionComboBox"].Items[$i] -match "Windows 11 Pro(?![\w ])") {
+                            $proIndex = $i; break
+                        }
+                    }
+                    $sync["WPFWin11ISOEditionComboBox"].SelectedIndex = if ($proIndex -ge 0) { $proIndex } else { 0 }
+                }
+                $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Visible"
+                $sync["WPFWin11ISOModifySection"].Visibility = "Visible"
+            }
+
+            Set-WinUtilTweaksProgressIndicator -Visible $true -Label "ISO verified" -Percent 100
+            Write-WinUtilISOLog "ISO verified OK.  Editions found: $($imageInfo.Count)"
+        } catch {
+            $errorMessage = $_
+            Write-WinUtilISOLog "ERROR during mount/verify: $errorMessage"
+            Invoke-WPFUIThread {
+                [System.Windows.MessageBox]::Show(
+                    "An error occurred while mounting or verifying the ISO:`n`n$errorMessage",
+                    "Error", "OK", "Error")
+            }
+        } finally {
+            Start-Sleep -Milliseconds 800
+            Set-WinUtilTweaksProgressIndicator -Visible $false
+            Invoke-WPFUIThread {
+                $sync["WPFWin11ISOMountButton"].IsEnabled = $true
+                $sync["Win11ISOProcessRunning"] = $false
+            }
+        }
     }
 }
 
@@ -147,7 +161,7 @@ function Invoke-WinUtilISOModify {
         $selectedWimIndex = $sync["Win11ISOImageInfo"][0].ImageIndex
     }
     $selectedEditionName = if ($selectedItem) { ($selectedItem -replace '^\d+:\s*', '') } else { "Unknown" }
-    Write-Win11ISOLog "Selected edition: $selectedEditionName (Index $selectedWimIndex)"
+    Write-WinUtilISOLog "Selected edition: $selectedEditionName (Index $selectedWimIndex)"
 
     $sync["WPFWin11ISOModifyButton"].IsEnabled = $false
     $sync["Win11ISOModifying"] = $true
@@ -181,7 +195,7 @@ function Invoke-WinUtilISOModify {
     $runspace.SessionStateProxy.SetVariable("injectDrivers",       $injectDrivers)
 
     $isoScriptFuncDef   = "function Invoke-WinUtilISOScript {`n" + ${function:Invoke-WinUtilISOScript}.ToString() + "`n}"
-    $win11ISOLogFuncDef = "function Write-Win11ISOLog {`n"       + ${function:Write-Win11ISOLog}.ToString()       + "`n}"
+    $win11ISOLogFuncDef = "function Write-WinUtilISOLog {`n"     + ${function:Write-WinUtilISOLog}.ToString()     + "`n}"
     $runspace.SessionStateProxy.SetVariable("isoScriptFuncDef",   $isoScriptFuncDef)
     $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef", $win11ISOLogFuncDef)
 
@@ -351,9 +365,9 @@ function Invoke-WinUtilISOCheckExistingWork {
     $sync["WPFWin11ISOOutputSection"].Visibility = "Visible"
 
     $modified = $existingWorkDir.LastWriteTime.ToString("yyyy-MM-dd HH:mm")
-    Write-Win11ISOLog "Existing working directory found: $($existingWorkDir.FullName)"
-    Write-Win11ISOLog "Last modified: $modified - Skipping Steps 1-3 and resuming at Step 4."
-    Write-Win11ISOLog "Click 'Clean & Reset' if you want to start over with a new ISO."
+    Write-WinUtilISOLog "Existing working directory found: $($existingWorkDir.FullName)"
+    Write-WinUtilISOLog "Last modified: $modified - Skipping Steps 1-3 and resuming at Step 4."
+    Write-WinUtilISOLog "Click 'Clean & Reset' if you want to start over with a new ISO."
 
     [System.Windows.MessageBox]::Show(
         "A previous WinUtil ISO working directory was found:`n`n$($existingWorkDir.FullName)`n`n(Last modified: $modified)`n`nStep 4 (output options) has been restored so you can save the already-modified image.`n`nClick 'Clean & Reset' in Step 4 if you want to start over.",
@@ -543,29 +557,29 @@ function Invoke-WinUtilISOExport {
     }
 
     if (-not $oscdimg) {
-        Write-Win11ISOLog "oscdimg.exe not found. Attempting to install via winget..."
+        Write-WinUtilISOLog "oscdimg.exe not found. Attempting to install via winget..."
         try {
             # First ensure winget is installed and operational
             Install-WinUtilWinget
 
             $winget = Get-Command winget
             $result = & $winget install -e --id Microsoft.OSCDIMG --accept-package-agreements --accept-source-agreements
-            Write-Win11ISOLog "winget output: $result"
+            Write-WinUtilISOLog "winget output: $result"
             $oscdimg = Get-ChildItem "$env:LOCALAPPDATA\Microsoft\WinGet\Packages" -Recurse -Filter "oscdimg.exe" |
                        Where-Object { $_.FullName -match 'Microsoft\.OSCDIMG' } |
                        Select-Object -First 1 -ExpandProperty FullName
         } catch {
-            Write-Win11ISOLog "winget not available or install failed: $_"
+            Write-WinUtilISOLog "winget not available or install failed: $_"
         }
 
         if (-not $oscdimg) {
-            Write-Win11ISOLog "oscdimg.exe still not found after install attempt."
+            Write-WinUtilISOLog "oscdimg.exe still not found after install attempt."
             [System.Windows.MessageBox]::Show(
                 "oscdimg.exe could not be found or installed automatically.`n`nPlease install it manually:`n  winget install -e --id Microsoft.OSCDIMG`n`nOr install the Windows ADK from:`nhttps://learn.microsoft.com/windows-hardware/get-started/adk-install",
                 "oscdimg Not Found", "OK", "Warning")
             return
         }
-        Write-Win11ISOLog "oscdimg.exe installed successfully."
+        Write-WinUtilISOLog "oscdimg.exe installed successfully."
     }
 
     $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $false
@@ -580,7 +594,7 @@ function Invoke-WinUtilISOExport {
     $runspace.SessionStateProxy.SetVariable("outputISO",   $outputISO)
     $runspace.SessionStateProxy.SetVariable("oscdimg",     $oscdimg)
 
-    $win11ISOLogFuncDef = "function Write-Win11ISOLog {`n" + ${function:Write-Win11ISOLog}.ToString() + "`n}"
+    $win11ISOLogFuncDef = "function Write-WinUtilISOLog {`n" + ${function:Write-WinUtilISOLog}.ToString() + "`n}"
     $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef", $win11ISOLogFuncDef)
 
     $script = [Management.Automation.PowerShell]::Create()
@@ -598,13 +612,13 @@ function Invoke-WinUtilISOExport {
         }
 
         try {
-            Write-Win11ISOLog "Exporting to ISO: $outputISO"
+            Write-WinUtilISOLog "Exporting to ISO: $outputISO"
             SetProgress "Building ISO..." 10
 
             $bootData    = "2#p0,e,b`"$contentsDir\boot\etfsboot.com`"#pEF,e,b`"$contentsDir\efi\microsoft\boot\efisys.bin`""
             $oscdimgArgs = @("-m", "-o", "-u2", "-udfver102", "-bootdata:$bootData", "-l`"CTOS_MODIFIED`"", "`"$contentsDir`"", "`"$outputISO`"")
 
-            Write-Win11ISOLog "Running oscdimg..."
+            Write-WinUtilISOLog "Running oscdimg..."
 
             $psi = [System.Diagnostics.ProcessStartInfo]::new()
             $psi.FileName               = $oscdimg
@@ -621,7 +635,7 @@ function Invoke-WinUtilISOExport {
             # Stream stdout line-by-line as oscdimg runs
             while (-not $proc.StandardOutput.EndOfStream) {
                 $line = $proc.StandardOutput.ReadLine()
-                if ($line.Trim()) { Write-Win11ISOLog $line }
+                if ($line.Trim()) { Write-WinUtilISOLog $line }
             }
 
             $proc.WaitForExit()
@@ -629,17 +643,17 @@ function Invoke-WinUtilISOExport {
             # Flush any stderr after process exits
             $stderr = $proc.StandardError.ReadToEnd()
             foreach ($line in ($stderr -split "`r?`n")) {
-                if ($line.Trim()) { Write-Win11ISOLog "[stderr]$line" }
+                if ($line.Trim()) { Write-WinUtilISOLog "[stderr]$line" }
             }
 
             if ($proc.ExitCode -eq 0) {
                 SetProgress "ISO exported" 100
-                Write-Win11ISOLog "ISO exported successfully: $outputISO"
+                Write-WinUtilISOLog "ISO exported successfully: $outputISO"
                 $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                     [System.Windows.MessageBox]::Show("ISO exported successfully!`n`n$outputISO", "Export Complete", "OK", "Info")
                 })
             } else {
-                Write-Win11ISOLog "oscdimg exited with code $($proc.ExitCode)."
+                Write-WinUtilISOLog "oscdimg exited with code $($proc.ExitCode)."
                 $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                     [System.Windows.MessageBox]::Show(
                         "oscdimg exited with code $($proc.ExitCode).`nCheck the status log for details.",
@@ -647,7 +661,7 @@ function Invoke-WinUtilISOExport {
                 })
             }
         } catch {
-            Write-Win11ISOLog "ERROR during ISO export: $_"
+            Write-WinUtilISOLog "ERROR during ISO export: $_"
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 [System.Windows.MessageBox]::Show("ISO export failed:`n`n$_", "Error", "OK", "Error")
             })

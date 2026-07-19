@@ -37,6 +37,7 @@ Describe "Win11 Creator setup media" {
         }
 
         $script:modifyFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Invoke-WinUtilISOModify"
+        $script:mountAndVerifyFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Invoke-WinUtilISOMountAndVerify"
         $script:cleanAndResetFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Invoke-WinUtilISOCleanAndReset"
         $script:exportFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Invoke-WinUtilISOExport"
         $script:writeUsbFunction = Get-WinUtilFunctionText -Path $script:isoUsbWorkflowPath -FunctionName "Invoke-WinUtilISOWriteUSB"
@@ -144,6 +145,7 @@ Describe "Win11 Creator setup media" {
 
     It "tracks every background ISO workflow with the shared busy state" {
         foreach ($functionText in @(
+            $script:mountAndVerifyFunction,
             $script:modifyFunction,
             $script:cleanAndResetFunction,
             $script:exportFunction,
@@ -152,6 +154,15 @@ Describe "Win11 Creator setup media" {
             $functionText | Should -Match ([regex]::Escape('$sync["Win11ISOProcessRunning"] = $true'))
             $functionText | Should -Match ([regex]::Escape('$sync["Win11ISOProcessRunning"] = $false'))
         }
+    }
+
+    It "runs ISO mount and verification outside the UI thread" {
+        $script:mountAndVerifyFunction | Should -Match ([regex]::Escape("Invoke-WPFRunspace -ParameterList @(,('isoPath', `$isoPath))"))
+        $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('Invoke-WPFUIThread {'))
+        $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('Write-WinUtilISOLog'))
+        $script:mountAndVerifyFunction | Should -Not -Match ([regex]::Escape('Write-Win11ISOLog'))
+        $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$sync["WPFWin11ISOMountButton"].IsEnabled = $false'))
+        $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$sync["WPFWin11ISOMountButton"].IsEnabled = $true'))
     }
 
     It "maps Windows edition names to setup edition IDs" {
