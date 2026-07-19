@@ -55,6 +55,17 @@ Describe "Win11 Creator setup media" {
         }
     }
 
+    It "sets every hardware bypass before Windows Setup checks requirements" {
+        [xml]$xml = Get-Content -Path $script:autoUnattendPath -Raw
+        $nsMgr = New-Object System.Xml.XmlNamespaceManager($xml.NameTable)
+        $nsMgr.AddNamespace("u", "urn:schemas-microsoft-com:unattend")
+        $paths = @($xml.SelectNodes('/u:unattend/u:settings[@pass="windowsPE"]/u:component[@name="Microsoft-Windows-Setup"]/u:RunSynchronous/u:RunSynchronousCommand/u:Path', $nsMgr) | ForEach-Object InnerText) -join "`n"
+
+        foreach ($bypass in 'BypassTPMCheck', 'BypassSecureBootCheck', 'BypassRAMCheck', 'BypassCPUCheck', 'BypassStorageCheck') {
+            $paths | Should -Match ([regex]::Escape($bypass))
+        }
+    }
+
     It "ISO script accepts selected edition and driver-only WIM servicing metadata" {
         $isoScriptPath = Join-Path $PSScriptRoot "..\functions\private\Invoke-WinUtilISOScript.ps1"
         $content = Get-Content -Path $isoScriptPath -Raw
@@ -90,6 +101,7 @@ Describe "Win11 Creator setup media" {
             "'/Mount-Image'",
             "'/Add-Driver'",
             "'/Commit'",
+            "`$mountDir = Join-Path (Split-Path -Path `$ContentRoot -Parent) 'wim_mount'",
             'install.wim metadata validation passed'
         )) {
             $isoScriptContent | Should -Match ([regex]::Escape($expectedText))
@@ -195,18 +207,21 @@ Describe "Win11 Creator setup media" {
         }
     }
 
-    It "stages the complete WinUtil customization script in the answer file" {
+    It "stages the complete WinUtil customization script and selected image index" {
         $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoAnswerFile_$([guid]::NewGuid())"
         $template = Get-Content -Path $script:autoUnattendPath -Raw
 
         try {
             New-Item -Path $contentRoot -ItemType Directory -Force | Out-Null
             . $script:isoScriptPath
-            Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template -InstallEditionId "Core"
+            Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template -InstallEditionId "Core" -InstallImageIndex 6
 
             [xml]$answerFile = Get-Content -Path (Join-Path $contentRoot "autounattend.xml") -Raw
             $nsMgr = New-Object System.Xml.XmlNamespaceManager($answerFile.NameTable)
+            $nsMgr.AddNamespace("u", "urn:schemas-microsoft-com:unattend")
             $nsMgr.AddNamespace("sg", "https://schneegans.de/windows/unattend-generator/")
+
+            $answerFile.SelectSingleNode('/u:unattend/u:settings[@pass="windowsPE"]/u:component[@name="Microsoft-Windows-Setup"]/u:ImageInstall/u:OSImage/u:InstallFrom/u:MetaData[u:Key="/IMAGE/INDEX"]/u:Value', $nsMgr).InnerText | Should -Be '6'
 
             $postInstallFile = $answerFile.SelectSingleNode('//sg:File[@path="C:\Windows\Setup\Scripts\WinUtil-PostInstall.ps1"]', $nsMgr)
             $postInstallFile | Should -Not -BeNullOrEmpty
@@ -214,6 +229,17 @@ Describe "Win11 Creator setup media" {
             $postInstallFile.InnerText | Should -Match 'DisableWindowsConsumerFeatures'
             $postInstallFile.InnerText | Should -Match 'Microsoft Compatibility Appraiser'
             $postInstallFile.InnerText | Should -Match 'OneDriveSetup.exe'
+            foreach ($defaultProfilePath in @(
+                '$defaultHive\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo',
+                '$defaultHive\Software\Microsoft\Windows\CurrentVersion\Privacy',
+                '$defaultHive\Software\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy',
+                '$defaultHive\Software\Microsoft\Input\TIPC',
+                '$defaultHive\Software\Microsoft\InputPersonalization',
+                '$defaultHive\Software\Microsoft\InputPersonalization\TrainedDataStore',
+                '$defaultHive\Software\Microsoft\Personalization\Settings'
+            )) {
+                $postInstallFile.InnerText | Should -Match ([regex]::Escape($defaultProfilePath))
+            }
 
             $firstLogonFile = $answerFile.SelectSingleNode('//sg:File[@path="C:\Windows\Setup\Scripts\FirstLogon.ps1"]', $nsMgr)
             $firstLogonFile.InnerText | Should -Match 'WinUtil-PostInstall.ps1'

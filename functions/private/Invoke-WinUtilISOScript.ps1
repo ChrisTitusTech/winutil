@@ -143,7 +143,7 @@ function Invoke-WinUtilISOScript {
         }
 
         $driverExportRoot = Join-Path $env:TEMP "WinUtil_DriverExport_$(Get-Date -Format 'yyyyMMdd_HHmmss')_$(([guid]::NewGuid()).ToString('N').Substring(0, 8))"
-        $mountDir = Join-Path $env:TEMP "WinUtil_DriverMount_$(Get-Date -Format 'yyyyMMdd_HHmmss')_$(([guid]::NewGuid()).ToString('N').Substring(0, 8))"
+        $mountDir = Join-Path (Split-Path -Path $ContentRoot -Parent) 'wim_mount'
         New-Item -Path $driverExportRoot -ItemType Directory -Force | Out-Null
         $imageMounted = $false
 
@@ -257,6 +257,7 @@ Retail
     function Add-WinUtilISOSetupCustomizations {
         param (
             [Parameter(Mandatory)][string]$XmlContent,
+            [Parameter(Mandatory)][int]$InstallImageIndex,
             [scriptblock]$Logger
         )
 
@@ -358,6 +359,14 @@ $appxList
         Set-WinUtilRegistryValue "`$defaultHive\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" 'SubscribedContent-353694Enabled' 'REG_DWORD' '0'
         Set-WinUtilRegistryValue "`$defaultHive\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" 'SubscribedContent-353696Enabled' 'REG_DWORD' '0'
         Set-WinUtilRegistryValue "`$defaultHive\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" 'SystemPaneSuggestionsEnabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue "`$defaultHive\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo" 'Enabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue "`$defaultHive\Software\Microsoft\Windows\CurrentVersion\Privacy" 'TailoredExperiencesWithDiagnosticDataEnabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue "`$defaultHive\Software\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy" 'HasAccepted' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue "`$defaultHive\Software\Microsoft\Input\TIPC" 'Enabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue "`$defaultHive\Software\Microsoft\InputPersonalization" 'RestrictImplicitInkCollection' 'REG_DWORD' '1'
+        Set-WinUtilRegistryValue "`$defaultHive\Software\Microsoft\InputPersonalization" 'RestrictImplicitTextCollection' 'REG_DWORD' '1'
+        Set-WinUtilRegistryValue "`$defaultHive\Software\Microsoft\InputPersonalization\TrainedDataStore" 'HarvestContacts' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue "`$defaultHive\Software\Microsoft\Personalization\Settings" 'AcceptedPrivacyPolicy' 'REG_DWORD' '0'
         reg.exe delete "`$defaultHive\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager\Subscriptions" /f 2>&1 | Out-Null
         reg.exe delete "`$defaultHive\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager\SuggestedApps" /f 2>&1 | Out-Null
         reg.exe unload `$defaultHive 2>&1 | Out-Null
@@ -400,13 +409,45 @@ $appxList
         $xmlDoc.PreserveWhitespace = $true
         $xmlDoc.LoadXml($XmlContent)
         $nsMgr = New-Object System.Xml.XmlNamespaceManager($xmlDoc.NameTable)
+        $nsMgr.AddNamespace('u', 'urn:schemas-microsoft-com:unattend')
         $nsMgr.AddNamespace('sg', 'https://schneegans.de/windows/unattend-generator/')
 
+        $setupComponent = $xmlDoc.SelectSingleNode('/u:unattend/u:settings[@pass="windowsPE"]/u:component[@name="Microsoft-Windows-Setup"]', $nsMgr)
         $extensions = $xmlDoc.SelectSingleNode('//sg:Extensions', $nsMgr)
         $firstLogonFile = $xmlDoc.SelectSingleNode('//sg:File[@path="C:\Windows\Setup\Scripts\FirstLogon.ps1"]', $nsMgr)
-        if (-not $extensions -or -not $firstLogonFile) {
-            throw 'autounattend.xml is missing the Extensions or FirstLogon.ps1 node required for WinUtil setup customizations.'
+        if (-not $setupComponent -or -not $extensions -or -not $firstLogonFile) {
+            throw 'autounattend.xml is missing a required Windows Setup, Extensions, or FirstLogon.ps1 node.'
         }
+
+        $imageInstall = $setupComponent.SelectSingleNode('u:ImageInstall', $nsMgr)
+        if (-not $imageInstall) {
+            $imageInstall = $xmlDoc.CreateElement('ImageInstall', $setupComponent.NamespaceURI)
+            [void]$setupComponent.AppendChild($imageInstall)
+        }
+        $osImage = $imageInstall.SelectSingleNode('u:OSImage', $nsMgr)
+        if (-not $osImage) {
+            $osImage = $xmlDoc.CreateElement('OSImage', $setupComponent.NamespaceURI)
+            [void]$imageInstall.AppendChild($osImage)
+        }
+        $installFrom = $osImage.SelectSingleNode('u:InstallFrom', $nsMgr)
+        if (-not $installFrom) {
+            $installFrom = $xmlDoc.CreateElement('InstallFrom', $setupComponent.NamespaceURI)
+            [void]$osImage.AppendChild($installFrom)
+        }
+        foreach ($existingMetadata in @($installFrom.SelectNodes('u:MetaData', $nsMgr))) {
+            [void]$installFrom.RemoveChild($existingMetadata)
+        }
+        $metadata = $xmlDoc.CreateElement('MetaData', $setupComponent.NamespaceURI)
+        $action = $xmlDoc.CreateAttribute('wcm', 'action', 'http://schemas.microsoft.com/WMIConfig/2002/State')
+        $action.Value = 'add'
+        [void]$metadata.Attributes.Append($action)
+        $key = $xmlDoc.CreateElement('Key', $setupComponent.NamespaceURI)
+        $key.InnerText = '/IMAGE/INDEX'
+        [void]$metadata.AppendChild($key)
+        $value = $xmlDoc.CreateElement('Value', $setupComponent.NamespaceURI)
+        $value.InnerText = [string]$InstallImageIndex
+        [void]$metadata.AppendChild($value)
+        [void]$installFrom.AppendChild($metadata)
 
         $postInstallFile = $xmlDoc.CreateElement('File', $extensions.NamespaceURI)
         $postInstallFile.SetAttribute('path', 'C:\Windows\Setup\Scripts\WinUtil-PostInstall.ps1')
@@ -465,7 +506,7 @@ $appxList
         throw "autounattend.xml content is required to prepare setup media."
     }
 
-    $preparedAutoUnattendXml = Add-WinUtilISOSetupCustomizations -XmlContent $AutoUnattendXml -Logger $Log
+    $preparedAutoUnattendXml = Add-WinUtilISOSetupCustomizations -XmlContent $AutoUnattendXml -InstallImageIndex $InstallImageIndex -Logger $Log
     $unattendPath = Join-Path $ISOContentsDir "autounattend.xml"
     [System.IO.File]::WriteAllText($unattendPath, $preparedAutoUnattendXml, [System.Text.UTF8Encoding]::new($false))
     & $Log "Written autounattend.xml with WinUtil setup customizations to ISO root ($unattendPath)."
