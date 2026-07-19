@@ -435,7 +435,6 @@ Describe "XAML and sync wiring" {
             "appPopup",
             "appPopupSelectedApp",
             "ItemsControl",
-            "InstalledPrograms",
             "ImportInProgress",
             "ScriptsInstallPrograms",
             "keys",

@@ -61,12 +61,31 @@ namespace System.Windows.Controls
 
     . (Join-Path $script:repoRoot "functions\private\Update-WinUtilSelections.ps1")
     . (Join-Path $script:repoRoot "functions\private\Reset-WPFCheckBoxes.ps1")
+    . (Join-Path $script:repoRoot "functions\public\Invoke-WPFGetInstalled.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFSelectedCheckboxesUpdate.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFButton.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFToggleAllCategories.ps1")
 
     function Set-WinUtilTweaksProgressIndicator {
         param($Visible, $Label, $Percent)
+    }
+    function Invoke-WPFRunspace {
+        param($ArgumentList, $ParameterList, [scriptblock]$ScriptBlock)
+    }
+    function Invoke-WPFUIThread {
+        param([scriptblock]$ScriptBlock)
+    }
+    function Invoke-WinUtilCurrentSystem {
+        param($CheckBox)
+    }
+    function Set-WinUtilTaskbaritem {
+        param($state)
+    }
+    function Test-WinUtilPackageManager {
+        param([switch]$winget)
+    }
+    function Write-WinUtilLog {
+        param($Message, $Level, $Component)
     }
 
     function script:New-WinUtilFakeCheckBox {
@@ -180,6 +199,9 @@ Describe "Invoke-WPFSelectedCheckboxesUpdate" {
         @($script:sync.selectedToggles) | Should -Be @("WPFToggleDarkMode")
         @($script:sync.selectedFeatures) | Should -Be @("WPFFeatureSandbox")
         @($script:sync.selectedAppx) | Should -Be @("WPFAppxExample")
+        $script:sync.WPFselectedAppsButton.Content | Should -Be "Selected Apps: 1"
+        $script:sync.selectedAppsstackPanel.Children.Count | Should -Be 1
+        $script:sync.selectedAppsstackPanel.Children[0].Key | Should -Be "WPFInstallGit"
     }
 
     It "removes checkbox keys from the matching selected lists" {
@@ -200,6 +222,94 @@ Describe "Invoke-WPFSelectedCheckboxesUpdate" {
         $script:sync.selectedToggles.Count | Should -Be 0
         $script:sync.selectedFeatures.Count | Should -Be 0
         $script:sync.selectedAppx.Count | Should -Be 0
+        $script:sync.WPFselectedAppsButton.Content | Should -Be "Selected Apps: 0"
+        $script:sync.selectedAppsstackPanel.Children.Count | Should -Be 0
+    }
+}
+
+Describe "Invoke-WPFGetInstalled selection state" {
+    BeforeEach {
+        New-WinUtilUiStateTestContext
+
+        $script:sync.ProcessRunning = $false
+        $script:sync.ChocoRadioButton = [pscustomobject]@{ IsChecked = $false }
+        $script:sync.preferences = [pscustomobject]@{ packagemanager = "Winget" }
+        $script:sync.WPFInstallGit = New-WinUtilFakeCheckBox
+        $dispatcher = [pscustomobject]@{}
+        $dispatcher | Add-Member -MemberType ScriptMethod -Name BeginInvoke -Value {
+            param($Action, [object[]]$Arguments)
+            $Action.DynamicInvoke($Arguments)
+        }
+        $script:sync.Form = [pscustomobject]@{ Dispatcher = $dispatcher }
+        $script:capturedGetInstalledScriptBlock = $null
+        $script:capturedGetInstalledParameters = @{}
+
+        Mock Test-WinUtilPackageManager { "installed" }
+        Mock Invoke-WinUtilCurrentSystem { @("WPFInstallGit") }
+        Mock Set-WinUtilTaskbaritem { }
+        Mock Write-WinUtilLog { }
+        Mock Write-Warning { }
+        Mock Invoke-WPFRunspace {
+            $script:capturedGetInstalledScriptBlock = $ScriptBlock
+            foreach ($parameter in $ParameterList) {
+                $script:capturedGetInstalledParameters[$parameter[0]] = $parameter[1]
+            }
+        }
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
+        Remove-Variable -Name capturedGetInstalledScriptBlock -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name capturedGetInstalledParameters -Scope Script -ErrorAction SilentlyContinue
+    }
+
+    It "updates the selected app model, checkbox, count, and popup" {
+        Invoke-WPFGetInstalled -CheckBox "winget"
+        & $script:capturedGetInstalledScriptBlock `
+            -checkbox "winget" `
+            -managerPreference "Winget" `
+            -operation $script:capturedGetInstalledParameters.operation `
+            -completeAction $script:capturedGetInstalledParameters.completeAction
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallGit")
+        $script:sync.WPFInstallGit.IsChecked | Should -BeTrue
+        $script:sync.WPFselectedAppsButton.Content | Should -Be "Selected Apps: 1"
+        $script:sync.selectedAppsstackPanel.Children.Count | Should -Be 1
+        $script:sync.selectedAppsstackPanel.Children[0].Key | Should -Be "WPFInstallGit"
+    }
+
+    It "clears the running state when detection fails" {
+        Mock Invoke-WinUtilCurrentSystem { throw "detection failed" }
+
+        Invoke-WPFGetInstalled -CheckBox "winget"
+        & $script:capturedGetInstalledScriptBlock `
+            -checkbox "winget" `
+            -managerPreference "Winget" `
+            -operation $script:capturedGetInstalledParameters.operation `
+            -completeAction $script:capturedGetInstalledParameters.completeAction
+
+        $script:sync.ProcessRunning | Should -BeFalse
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "ERROR" -and
+                $Component -eq "Install" -and
+                $Message -eq "Get installed state failed: detection failed"
+        }
+        Should -Invoke -CommandName Set-WinUtilTaskbaritem -Times 1 -Exactly -ParameterFilter { $state -eq "None" }
+    }
+
+    It "clears the running state when the worker cannot be queued" {
+        Mock Invoke-WPFRunspace { throw "queue failed" }
+
+        Invoke-WPFGetInstalled -CheckBox "winget"
+
+        $script:sync.ProcessRunning | Should -BeFalse
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "ERROR" -and
+                $Component -eq "Install" -and
+                $Message -eq "Get installed state failed: queue failed"
+        }
+        Should -Invoke -CommandName Set-WinUtilTaskbaritem -Times 1 -Exactly -ParameterFilter { $state -eq "None" }
     }
 }
 
