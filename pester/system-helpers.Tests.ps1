@@ -6,10 +6,80 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+    . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilCurrentSystem.ps1")
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilRegistry.ps1")
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilService.ps1")
 
+    function winget {
+        param([Parameter(ValueFromRemainingArguments = $true)]$Arguments)
+    }
+    function choco {
+        param([Parameter(ValueFromRemainingArguments = $true)]$Arguments)
+    }
     function Write-WinUtilLog { }
+}
+
+Describe "Invoke-WinUtilCurrentSystem installed apps" {
+    BeforeEach {
+        $script:sync = [Hashtable]::Synchronized(@{
+            configs = [pscustomobject]@{
+                applicationsHashtable = @{
+                    WPFInstallGit = [pscustomobject]@{ winget = "Git.Git"; choco = "git" }
+                    WPFInstallChatGPT = [pscustomobject]@{ winget = "msstore:9NT1R1C2HH7J"; choco = "na" }
+                    WPFInstallMissing = [pscustomobject]@{ winget = "Git"; choco = "missing" }
+                }
+            }
+        })
+
+        Mock winget {
+            $global:LASTEXITCODE = 0
+            $script:wingetArguments = @($Arguments)
+            @(
+                "Name  Id  Version  Source",
+                "--------------------------------",
+                "Git  Git.Git  2.0  winget",
+                "ChatGPT  9NT1R1C2HH7J  1.0  msstore"
+            )
+        }
+        Mock choco {
+            $script:chocoArguments = @($Arguments)
+            @("Chocolatey v2", "git 2.0", "2 packages installed.")
+        }
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name wingetArguments -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name chocoArguments -Scope Script -ErrorAction SilentlyContinue
+    }
+
+    It "matches single standard and Microsoft Store package IDs" {
+        $result = @(Invoke-WinUtilCurrentSystem -CheckBox "winget")
+
+        $result | Should -HaveCount 2
+        $result | Should -Contain "WPFInstallGit"
+        $result | Should -Contain "WPFInstallChatGPT"
+        $result | Should -Not -Contain "WPFInstallMissing"
+        Should -Invoke -CommandName winget -Times 1 -Exactly
+        $script:wingetArguments | Should -Be @("list", "--accept-source-agreements", "--disable-interactivity")
+    }
+
+    It "fails promptly when Winget cannot list applications" {
+        Mock winget {
+            $global:LASTEXITCODE = 1
+            "winget failed"
+        }
+
+        { Invoke-WinUtilCurrentSystem -CheckBox "winget" } | Should -Throw "winget list failed with exit code 1."
+    }
+
+    It "matches the primary Chocolatey package ID in one list call" {
+        $result = @(Invoke-WinUtilCurrentSystem -CheckBox "choco")
+
+        $result | Should -Be @("WPFInstallGit")
+        Should -Invoke -CommandName choco -Times 1 -Exactly
+        $script:chocoArguments | Should -Be @("list")
+    }
 }
 
 Describe "Set-WinUtilRegistry" {

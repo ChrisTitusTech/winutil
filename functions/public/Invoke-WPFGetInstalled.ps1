@@ -1,6 +1,5 @@
 function Invoke-WPFGetInstalled {
     <#
-    TODO: Add the Option to use Chocolatey as Engine
     .SYNOPSIS
         Invokes the function that gets the checkboxes to check in a new runspace
 
@@ -19,35 +18,72 @@ function Invoke-WPFGetInstalled {
         return
     }
     $managerPreference = $sync.preferences.packagemanager
-
-    Invoke-WPFRunspace -ParameterList @(("managerPreference", $managerPreference),("checkbox", $checkbox)) -ScriptBlock {
-        param (
-            [string]$checkbox,
-            [string]$managerPreference
+    $operation = [Hashtable]::Synchronized(@{
+        Checkboxes = @()
+        Error = $null
+    })
+    $completeAction = [Action[hashtable, string]]{
+        param(
+            [hashtable]$completedOperation,
+            [string]$completedCheckbox
         )
-        $sync.ProcessRunning = $true
-        Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Indeterminate" }
+        try {
+            if ($completedOperation.Error) {
+                Write-WinUtilLog -Level "ERROR" -Component "Install" -Message "Get installed state failed: $($completedOperation.Error)"
+                Write-Warning "Unable to get installed state: $($completedOperation.Error)"
+                return
+            }
 
-        if ($checkbox -eq "winget") {
-            Write-Host "Getting Installed Programs..."
-            switch ($managerPreference) {
-                "Choco"{$Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox "choco"; break}
-                "Winget"{$Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox; break}
+            if ($completedCheckbox -eq "winget") {
+                foreach ($checkboxName in $completedOperation.Checkboxes) {
+                    if (-not $sync.selectedApps.Contains($checkboxName)) {
+                        $sync.selectedApps.Add($checkboxName)
+                    }
+                }
+                Reset-WPFCheckBoxes -checkboxfilterpattern "WPFInstall*"
+            } else {
+                foreach ($checkboxName in $completedOperation.Checkboxes) {
+                    $sync.$checkboxName.ischecked = $True
+                }
+            }
+        } finally {
+            $sync.ProcessRunning = $false
+            Set-WinUtilTaskbaritem -state "None"
+        }
+    }
+
+    $sync.ProcessRunning = $true
+    Set-WinUtilTaskbaritem -state "Indeterminate"
+    try {
+        Invoke-WPFRunspace -ParameterList @(
+            ("managerPreference", $managerPreference),
+            ("checkbox", $checkbox),
+            ("operation", $operation),
+            ("completeAction", $completeAction)
+        ) -ScriptBlock {
+            param (
+                [string]$checkbox,
+                [string]$managerPreference,
+                [hashtable]$operation,
+                [Action[hashtable, string]]$completeAction
+            )
+            try {
+                if ($checkbox -eq "winget") {
+                    switch ($managerPreference) {
+                        "Choco" { $operation.Checkboxes = @(Invoke-WinUtilCurrentSystem -CheckBox "choco"); break }
+                        "Winget" { $operation.Checkboxes = @(Invoke-WinUtilCurrentSystem -CheckBox $checkbox); break }
+                    }
+                } elseif ($checkbox -eq "tweaks") {
+                    $operation.Checkboxes = @(Invoke-WinUtilCurrentSystem -CheckBox $checkbox)
+                }
+            } catch {
+                $operation.Error = $_.Exception.Message
+            } finally {
+                $sync.Form.Dispatcher.BeginInvoke($completeAction, [object[]]@($operation, $checkbox)) | Out-Null
             }
         }
-        elseif ($checkbox -eq "tweaks") {
-            Write-Host "Getting Installed Tweaks..."
-            $Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox
-        }
-
-        $sync.form.Dispatcher.invoke({
-            foreach ($checkbox in $Checkboxes) {
-                $sync.$checkbox.ischecked = $True
-            }
-        })
-
-        Write-Host "Done..."
-        $sync.ProcessRunning = $false
-        Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "None" }
+    } catch {
+        $operation.Error = $_.Exception.Message
+        $completeAction.Invoke($operation, $checkbox)
     }
 }
