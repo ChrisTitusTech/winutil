@@ -419,6 +419,44 @@ $appxList
         return $xmlDoc.OuterXml
     }
 
+    function Add-WinUtilISOSetupScriptFallback {
+        param (
+            [Parameter(Mandatory)][string]$ContentRoot,
+            [Parameter(Mandatory)][string]$XmlContent,
+            [scriptblock]$Logger
+        )
+
+        $xmlDoc = [xml]::new()
+        $xmlDoc.PreserveWhitespace = $true
+        $xmlDoc.LoadXml($XmlContent)
+        $nsMgr = New-Object System.Xml.XmlNamespaceManager($xmlDoc.NameTable)
+        $nsMgr.AddNamespace('sg', 'https://schneegans.de/windows/unattend-generator/')
+
+        $setupScriptsRoot = Join-Path $ContentRoot 'sources\$OEM$\$$\Setup\Scripts'
+        $stagedCount = 0
+        foreach ($file in $xmlDoc.SelectNodes('//sg:File', $nsMgr)) {
+            $path = $file.GetAttribute('path')
+            if (-not $path.StartsWith('C:\Windows\Setup\Scripts\', [System.StringComparison]::OrdinalIgnoreCase)) {
+                continue
+            }
+
+            $relativePath = $path.Substring('C:\Windows\Setup\Scripts\'.Length)
+            $targetPath = Join-Path $setupScriptsRoot $relativePath
+            New-Item -Path (Split-Path $targetPath -Parent) -ItemType Directory -Force | Out-Null
+
+            $encoding = switch ([System.IO.Path]::GetExtension($targetPath)) {
+                { $_ -in '.ps1', '.xml' } { [System.Text.Encoding]::UTF8; break }
+                { $_ -in '.reg', '.vbs', '.js' } { [System.Text.UnicodeEncoding]::new($false, $true); break }
+                default { [System.Text.Encoding]::Default }
+            }
+            $bytes = $encoding.GetPreamble() + $encoding.GetBytes($file.InnerText.Trim())
+            [System.IO.File]::WriteAllBytes($targetPath, $bytes)
+            $stagedCount++
+        }
+
+        & $Logger "Staged $stagedCount WinUtil setup script fallback files at '$setupScriptsRoot'."
+    }
+
     if (-not (Test-Path $ISOContentsDir)) {
         throw "ISO contents directory does not exist: $ISOContentsDir"
     }
@@ -431,6 +469,7 @@ $appxList
     $unattendPath = Join-Path $ISOContentsDir "autounattend.xml"
     [System.IO.File]::WriteAllText($unattendPath, $preparedAutoUnattendXml, [System.Text.UTF8Encoding]::new($false))
     & $Log "Written autounattend.xml with WinUtil setup customizations to ISO root ($unattendPath)."
+    Add-WinUtilISOSetupScriptFallback -ContentRoot $ISOContentsDir -XmlContent $preparedAutoUnattendXml -Logger $Log
 
     Write-WinUtilISOEditionConfig -ContentRoot $ISOContentsDir -EditionId $InstallEditionId -Logger $Log
 

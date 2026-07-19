@@ -218,6 +218,14 @@ Describe "Win11 Creator setup media" {
             $firstLogonFile = $answerFile.SelectSingleNode('//sg:File[@path="C:\Windows\Setup\Scripts\FirstLogon.ps1"]', $nsMgr)
             $firstLogonFile.InnerText | Should -Match 'WinUtil-PostInstall.ps1'
 
+            $setupScriptsRoot = Join-Path $contentRoot 'sources\$OEM$\$$\Setup\Scripts'
+            Test-Path (Join-Path $setupScriptsRoot 'Specialize.ps1') | Should -BeTrue
+            Test-Path (Join-Path $setupScriptsRoot 'DefaultUser.ps1') | Should -BeTrue
+            Test-Path (Join-Path $setupScriptsRoot 'FirstLogon.ps1') | Should -BeTrue
+            Test-Path (Join-Path $setupScriptsRoot 'WinUtil-PostInstall.ps1') | Should -BeTrue
+            Get-Content -Path (Join-Path $setupScriptsRoot 'FirstLogon.ps1') -Raw | Should -Match 'WinUtil-PostInstall.ps1'
+            Get-Content -Path (Join-Path $setupScriptsRoot 'WinUtil-PostInstall.ps1') -Raw | Should -Match 'Remove-AppxProvisionedPackage'
+
             $tokens = $null
             $errors = $null
             [System.Management.Automation.Language.Parser]::ParseInput($postInstallFile.InnerText, [ref]$tokens, [ref]$errors) | Out-Null
