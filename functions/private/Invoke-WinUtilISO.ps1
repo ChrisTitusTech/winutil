@@ -50,6 +50,7 @@ function Invoke-WinUtilISOMountAndVerify {
     Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Mounting ISO..." -Percent 10
     $sync["WPFWin11ISOBrowseButton"].IsEnabled = $false
     $sync["WPFWin11ISOMountButton"].IsEnabled = $false
+    $sync["WPFWin11ISOModifyButton"].IsEnabled = $false
     $sync["Win11ISOProcessRunning"] = $true
 
     Invoke-WPFRunspace -ParameterList @(,('isoPath', $isoPath)) -ScriptBlock {
@@ -119,6 +120,7 @@ function Invoke-WinUtilISOMountAndVerify {
                 }
                 $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Visible"
                 $sync["WPFWin11ISOModifySection"].Visibility = "Visible"
+                $sync["WPFWin11ISOModifyButton"].IsEnabled = $true
             }
 
             Set-WinUtilTweaksProgressIndicator -Visible $true -Label "ISO verified" -Percent 100

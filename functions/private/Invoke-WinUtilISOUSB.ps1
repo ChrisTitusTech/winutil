@@ -33,8 +33,10 @@ function Invoke-WinUtilISOWriteUSB {
     $installWim = Join-Path $contentsDir "sources\install.wim"
     $installEsd = Join-Path $contentsDir "sources\install.esd"
     if (-not (Test-Path $installWim) -and (Test-Path $installEsd)) {
-        $esdSizeMB = [math]::Ceiling((Get-Item $installEsd).Length / 1MB)
-        if ($esdSizeMB -gt 3800) {
+        $installEsdFile = Get-Item $installEsd
+        $esdSizeBytes = $installEsdFile.Length
+        $esdSizeMB = [math]::Ceiling($esdSizeBytes / 1MB)
+        if ($esdSizeBytes -ge 4GB) {
             [System.Windows.MessageBox]::Show(
                 "This ISO uses an install.esd file that is $esdSizeMB MB. WinUtil's FAT32 USB format cannot store files larger than 4 GB.`n`nExport an ISO instead or use media with install.wim.",
                 "USB Creation Not Supported", "OK", "Warning")
