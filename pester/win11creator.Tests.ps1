@@ -161,8 +161,21 @@ Describe "Win11 Creator setup media" {
         $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('Invoke-WPFUIThread {'))
         $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('Write-WinUtilISOLog'))
         $script:mountAndVerifyFunction | Should -Not -Match ([regex]::Escape('Write-Win11ISOLog'))
+        $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$sync["WPFWin11ISOBrowseButton"].IsEnabled = $false'))
+        $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$sync["WPFWin11ISOBrowseButton"].IsEnabled = $true'))
         $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$sync["WPFWin11ISOMountButton"].IsEnabled = $false'))
         $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$sync["WPFWin11ISOMountButton"].IsEnabled = $true'))
+    }
+
+    It "blocks oversized install.esd before USB erase confirmation" {
+        $script:writeUsbFunction | Should -Match ([regex]::Escape('$installEsd = Join-Path $contentsDir "sources\install.esd"'))
+        $script:writeUsbFunction | Should -Match ([regex]::Escape('$esdSizeMB -gt 3800'))
+        $script:writeUsbFunction | Should -Match 'install\.esd file'
+
+        $guardIndex = $script:writeUsbFunction.IndexOf('$installEsd = Join-Path $contentsDir "sources\install.esd"')
+        $confirmationIndex = $script:writeUsbFunction.IndexOf('Confirm USB Erase')
+        $guardIndex | Should -BeGreaterThan -1
+        $confirmationIndex | Should -BeGreaterThan $guardIndex
     }
 
     It "maps Windows edition names to setup edition IDs" {
@@ -240,6 +253,9 @@ Describe "Win11 Creator setup media" {
             $postInstallFile.InnerText | Should -Match 'DisableWindowsConsumerFeatures'
             $postInstallFile.InnerText | Should -Match 'Microsoft Compatibility Appraiser'
             $postInstallFile.InnerText | Should -Match 'OneDriveSetup.exe'
+            $postInstallFile.InnerText | Should -Match 'function Set-WinUtilContentDeliveryManagerValues'
+            $postInstallFile.InnerText | Should -Match ([regex]::Escape('Set-WinUtilContentDeliveryManagerValues $defaultHive'))
+            $postInstallFile.InnerText | Should -Match ([regex]::Escape("Set-WinUtilContentDeliveryManagerValues 'HKCU'"))
             foreach ($defaultProfilePath in @(
                 '$defaultHive\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo',
                 '$defaultHive\Software\Microsoft\Windows\CurrentVersion\Privacy',

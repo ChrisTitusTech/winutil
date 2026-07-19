@@ -48,6 +48,7 @@ function Invoke-WinUtilISOMountAndVerify {
 
     Write-WinUtilISOLog "Mounting ISO: $isoPath"
     Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Mounting ISO..." -Percent 10
+    $sync["WPFWin11ISOBrowseButton"].IsEnabled = $false
     $sync["WPFWin11ISOMountButton"].IsEnabled = $false
     $sync["Win11ISOProcessRunning"] = $true
 
@@ -134,6 +135,7 @@ function Invoke-WinUtilISOMountAndVerify {
             Start-Sleep -Milliseconds 800
             Set-WinUtilTweaksProgressIndicator -Visible $false
             Invoke-WPFUIThread {
+                $sync["WPFWin11ISOBrowseButton"].IsEnabled = $true
                 $sync["WPFWin11ISOMountButton"].IsEnabled = $true
                 $sync["Win11ISOProcessRunning"] = $false
             }

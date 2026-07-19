@@ -295,6 +295,27 @@ $appxList
         reg.exe add `$Path /v `$Name /t `$Type /d `$Value /f 2>&1 | Out-Null
     }
 
+    function Set-WinUtilContentDeliveryManagerValues([string]`$HiveRoot) {
+        `$contentDeliveryManager = "`$HiveRoot\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'OemPreInstalledAppsEnabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'PreInstalledAppsEnabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'SilentInstalledAppsEnabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'ContentDeliveryAllowed' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'FeatureManagementEnabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'PreInstalledAppsEverEnabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'SoftLandingEnabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'SubscribedContentEnabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'SubscribedContent-310093Enabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'SubscribedContent-338388Enabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'SubscribedContent-338389Enabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'SubscribedContent-338393Enabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'SubscribedContent-353694Enabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'SubscribedContent-353696Enabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'SystemPaneSuggestionsEnabled' 'REG_DWORD' '0'
+        reg.exe delete "`$contentDeliveryManager\Subscriptions" /f 2>&1 | Out-Null
+        reg.exe delete "`$contentDeliveryManager\SuggestedApps" /f 2>&1 | Out-Null
+    }
+
     Write-Host 'WinUtil: Applying registry tweaks...'
     Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager' 'ShippedWithReserves' 'REG_DWORD' '0'
     Set-WinUtilRegistryValue 'HKLM\SYSTEM\CurrentControlSet\Control\BitLocker' 'PreventDeviceEncryption' 'REG_DWORD' '1'
@@ -344,21 +365,7 @@ $appxList
     if (`$LASTEXITCODE -eq 0) {
         Set-WinUtilRegistryValue "`$defaultHive\Control Panel\UnsupportedHardwareNotificationCache" 'SV1' 'REG_DWORD' '0'
         Set-WinUtilRegistryValue "`$defaultHive\Control Panel\UnsupportedHardwareNotificationCache" 'SV2' 'REG_DWORD' '0'
-        Set-WinUtilRegistryValue "`$defaultHive\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" 'OemPreInstalledAppsEnabled' 'REG_DWORD' '0'
-        Set-WinUtilRegistryValue "`$defaultHive\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" 'PreInstalledAppsEnabled' 'REG_DWORD' '0'
-        Set-WinUtilRegistryValue "`$defaultHive\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" 'SilentInstalledAppsEnabled' 'REG_DWORD' '0'
-        Set-WinUtilRegistryValue "`$defaultHive\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" 'ContentDeliveryAllowed' 'REG_DWORD' '0'
-        Set-WinUtilRegistryValue "`$defaultHive\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" 'FeatureManagementEnabled' 'REG_DWORD' '0'
-        Set-WinUtilRegistryValue "`$defaultHive\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" 'PreInstalledAppsEverEnabled' 'REG_DWORD' '0'
-        Set-WinUtilRegistryValue "`$defaultHive\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" 'SoftLandingEnabled' 'REG_DWORD' '0'
-        Set-WinUtilRegistryValue "`$defaultHive\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" 'SubscribedContentEnabled' 'REG_DWORD' '0'
-        Set-WinUtilRegistryValue "`$defaultHive\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" 'SubscribedContent-310093Enabled' 'REG_DWORD' '0'
-        Set-WinUtilRegistryValue "`$defaultHive\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" 'SubscribedContent-338388Enabled' 'REG_DWORD' '0'
-        Set-WinUtilRegistryValue "`$defaultHive\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" 'SubscribedContent-338389Enabled' 'REG_DWORD' '0'
-        Set-WinUtilRegistryValue "`$defaultHive\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" 'SubscribedContent-338393Enabled' 'REG_DWORD' '0'
-        Set-WinUtilRegistryValue "`$defaultHive\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" 'SubscribedContent-353694Enabled' 'REG_DWORD' '0'
-        Set-WinUtilRegistryValue "`$defaultHive\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" 'SubscribedContent-353696Enabled' 'REG_DWORD' '0'
-        Set-WinUtilRegistryValue "`$defaultHive\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" 'SystemPaneSuggestionsEnabled' 'REG_DWORD' '0'
+        Set-WinUtilContentDeliveryManagerValues `$defaultHive
         Set-WinUtilRegistryValue "`$defaultHive\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo" 'Enabled' 'REG_DWORD' '0'
         Set-WinUtilRegistryValue "`$defaultHive\Software\Microsoft\Windows\CurrentVersion\Privacy" 'TailoredExperiencesWithDiagnosticDataEnabled' 'REG_DWORD' '0'
         Set-WinUtilRegistryValue "`$defaultHive\Software\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy" 'HasAccepted' 'REG_DWORD' '0'
@@ -367,11 +374,10 @@ $appxList
         Set-WinUtilRegistryValue "`$defaultHive\Software\Microsoft\InputPersonalization" 'RestrictImplicitTextCollection' 'REG_DWORD' '1'
         Set-WinUtilRegistryValue "`$defaultHive\Software\Microsoft\InputPersonalization\TrainedDataStore" 'HarvestContacts' 'REG_DWORD' '0'
         Set-WinUtilRegistryValue "`$defaultHive\Software\Microsoft\Personalization\Settings" 'AcceptedPrivacyPolicy' 'REG_DWORD' '0'
-        reg.exe delete "`$defaultHive\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager\Subscriptions" /f 2>&1 | Out-Null
-        reg.exe delete "`$defaultHive\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager\SuggestedApps" /f 2>&1 | Out-Null
         reg.exe unload `$defaultHive 2>&1 | Out-Null
     }
 
+    Set-WinUtilContentDeliveryManagerValues 'HKCU'
     Set-WinUtilRegistryValue 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' 'TaskbarMn' 'REG_DWORD' '0'
     Set-WinUtilRegistryValue 'HKCU\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo' 'Enabled' 'REG_DWORD' '0'
     Set-WinUtilRegistryValue 'HKCU\Software\Microsoft\Windows\CurrentVersion\Privacy' 'TailoredExperiencesWithDiagnosticDataEnabled' 'REG_DWORD' '0'
