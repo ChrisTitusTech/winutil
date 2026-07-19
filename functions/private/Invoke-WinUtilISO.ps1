@@ -170,7 +170,6 @@ function Invoke-WinUtilISOModify {
     $runspace.ThreadOptions  = "ReuseThread"
     $runspace.Open()
     $injectDrivers = $sync["WPFWin11ISOInjectDrivers"].IsChecked -eq $true
-
     $runspace.SessionStateProxy.SetVariable("sync",                $sync)
     $runspace.SessionStateProxy.SetVariable("isoPath",             $isoPath)
     $runspace.SessionStateProxy.SetVariable("driveLetter",         $driveLetter)
@@ -235,121 +234,6 @@ function Invoke-WinUtilISOModify {
             }
         }
 
-        function Get-WinUtilMountedImageEditionId {
-            param(
-                [Parameter(Mandatory)][string]$MountDir,
-                [string]$EditionName,
-                [scriptblock]$Logger
-            )
-
-            try {
-                $dismOutput = & dism /English "/Image:$MountDir" /Get-CurrentEdition 2>&1
-                foreach ($line in $dismOutput) {
-                    if ($line -match '^\s*Current Edition\s*:\s*(.+?)\s*$') {
-                        $editionId = $Matches[1].Trim()
-                        if ($editionId) {
-                            if ($Logger) { $null = $Logger.Invoke("Detected mounted image EditionID: $editionId") }
-                            return $editionId
-                        }
-                    }
-                }
-            } catch {
-                if ($Logger) { $null = $Logger.Invoke("Warning: could not detect mounted image EditionID with DISM: $_") }
-            }
-
-            $fallbackEditionId = Get-WinUtilEditionIdFromName -EditionName $EditionName
-            if ($fallbackEditionId -and $Logger) {
-                $null = $Logger.Invoke("Using fallback EditionID '$fallbackEditionId' from selected edition name.")
-            }
-            return $fallbackEditionId
-        }
-
-        function Get-DismImageInfoMap {
-            param(
-                [Parameter(Mandatory)][string]$ImagePath,
-                [int]$Index = 1
-            )
-
-            $map = @{}
-            $lines = & dism /English "/Get-ImageInfo" "/ImageFile:$ImagePath" "/Index:$Index"
-            foreach ($line in $lines) {
-                if ($line -match '^\s*([^:]+?)\s*:\s*(.*)$') {
-                    $key = $Matches[1].Trim()
-                    $val = $Matches[2].Trim()
-                    if (-not $map.ContainsKey($key)) {
-                        $map[$key] = $val
-                    }
-                }
-            }
-            return $map
-        }
-
-        function Invoke-WinUtilWimMetadataHydration {
-            param(
-                [Parameter(Mandatory)][string]$ImagePath,
-                [Parameter(Mandatory)][string]$EditionName,
-                [scriptblock]$Logger
-            )
-
-            $metadataLogger = $Logger
-
-            function LogMeta([string]$Message) {
-                if ($metadataLogger) {
-                    $null = $metadataLogger.Invoke($Message)
-                }
-            }
-
-            $before = Get-DismImageInfoMap -ImagePath $ImagePath -Index 1
-            $undefinedBefore = @($before.GetEnumerator() | Where-Object { $_.Value -eq '<undefined>' } | ForEach-Object { $_.Key })
-
-            if ($undefinedBefore.Count -eq 0) {
-                LogMeta "Metadata check: no undefined DISM fields detected."
-                return
-            }
-
-            LogMeta "Metadata check: undefined DISM fields detected: $($undefinedBefore -join ', ')"
-            LogMeta "Attempting best-effort metadata hydration for install.wim..."
-
-            $setImage = Get-Command Set-WindowsImage -ErrorAction SilentlyContinue
-            if (-not $setImage) {
-                LogMeta "Set-WindowsImage is unavailable on this host; cannot write additional WIM metadata fields."
-                return
-            }
-
-            $targetName = if ($EditionName -and $EditionName -ne 'Unknown') { $EditionName } else { $before['Name'] }
-            if (-not $targetName) { $targetName = 'Windows 11' }
-
-            $targetDescription = if ($before['Description'] -and $before['Description'] -ne '<undefined>') {
-                $before['Description']
-            } else {
-                $targetName
-            }
-
-            $setArgs = @{
-                ImagePath   = $ImagePath
-                Index       = 1
-                Name        = $targetName
-                Description = $targetDescription
-                ErrorAction = 'Stop'
-            }
-
-            try {
-                Set-WindowsImage @setArgs | Out-Null
-                LogMeta "Applied Set-WindowsImage metadata updates (Name/Description)."
-            } catch {
-                LogMeta "Warning: Set-WindowsImage metadata update failed: $_"
-            }
-
-            $after = Get-DismImageInfoMap -ImagePath $ImagePath -Index 1
-            $undefinedAfter = @($after.GetEnumerator() | Where-Object { $_.Value -eq '<undefined>' } | ForEach-Object { $_.Key })
-            if ($undefinedAfter.Count -eq 0) {
-                LogMeta "Metadata hydration complete: no undefined DISM fields remain."
-            } else {
-                LogMeta "Metadata hydration complete. Remaining undefined DISM fields: $($undefinedAfter -join ', ')"
-                LogMeta "Note: some DISM metadata fields are read-only and come from Microsoft image internals."
-            }
-        }
-
         try {
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 $sync["WPFWin11ISOSelectSection"].Visibility = "Collapsed"
@@ -359,51 +243,30 @@ function Invoke-WinUtilISOModify {
 
             Log "Creating working directory: $workDir"
             $isoContents = Join-Path $workDir "iso_contents"
-            $mountDir    = Join-Path $workDir "wim_mount"
-            New-Item -ItemType Directory -Path $isoContents, $mountDir -Force
+            New-Item -ItemType Directory -Path $isoContents -Force
             SetProgress "Copying ISO contents..." 10
 
             Log "Copying ISO contents from $driveLetter to $isoContents..."
             & robocopy $driveLetter $isoContents /E /NFL /NDL /NJH /NJS
             Log "ISO contents copied."
-            SetProgress "Mounting install.wim..." 25
+            SetProgress "Preparing setup media..." 25
 
             $sourceImageFileName = Split-Path $wimPath -Leaf
             $localWim = Join-Path $isoContents "sources\$sourceImageFileName"
             if (-not (Test-Path $localWim)) {
                 throw "Copied ISO image file not found: sources\$sourceImageFileName"
             }
-            Set-ItemProperty -Path $localWim -Name IsReadOnly -Value $false
+            $selectedEditionId = Get-WinUtilEditionIdFromName -EditionName $selectedEditionName
 
-            Log "Mounting install.wim (Index ${selectedWimIndex}: $selectedEditionName) at $mountDir..."
-            Mount-WindowsImage -ImagePath $localWim -Index $selectedWimIndex -Path $mountDir
-            SetProgress "Modifying install.wim..." 45
-            $selectedEditionId = Get-WinUtilMountedImageEditionId -MountDir $mountDir -EditionName $selectedEditionName -Logger ${function:Log}
+            Log "Writing autounattend.xml and edition selection..."
+            Invoke-WinUtilISOScript -ISOContentsDir $isoContents -AutoUnattendXml $autounattendContent -InjectCurrentSystemDrivers $injectDrivers -InstallImagePath $localWim -InstallImageIndex $selectedWimIndex -InstallEditionId $selectedEditionId -Log { param($m) Log $m }
 
-            Log "Applying WinUtil modifications to install.wim..."
-            Invoke-WinUtilISOScript -ScratchDir $mountDir -ISOContentsDir $isoContents -AutoUnattendXml $autounattendContent -InjectCurrentSystemDrivers $injectDrivers -InstallEditionId $selectedEditionId -InstallImageIndex 1 -Log { param($m) Log $m }
-
-            SetProgress "Cleaning up component store (WinSxS)..." 56
-            Log "Running DISM component store cleanup (/ResetBase)..."
-            & dism /English "/image:$mountDir" /Cleanup-Image /StartComponentCleanup /ResetBase | ForEach-Object { Log $_ }
-            Log "Component store cleanup complete."
-
-            SetProgress "Saving modified install.wim..." 65
-            Log "Dismounting and saving install.wim. This will take several minutes..."
-            Dismount-WindowsImage -Path $mountDir -Save
-            Log "install.wim saved."
-
-            SetProgress "Removing unused editions from install.wim..." 70
-            Log "Exporting edition '$selectedEditionName' (Index $selectedWimIndex) to a single-edition install.wim..."
-            $exportWim = Join-Path $isoContents "sources\install_export.wim"
-            Export-WindowsImage -SourceImagePath $localWim -SourceIndex $selectedWimIndex -DestinationImagePath $exportWim
-            Remove-Item -Path $localWim -Force
-            Rename-Item -Path $exportWim -NewName "install.wim" -Force
-            $localWim = Join-Path $isoContents "sources\install.wim"
-            Log "Unused editions removed. install.wim now contains only '$selectedEditionName'."
-
-            SetProgress "Hydrating WIM metadata..." 76
-            Invoke-WinUtilWimMetadataHydration -ImagePath $localWim -EditionName $selectedEditionName -Logger ${function:Log}
+            SetProgress "Preserving install image..." 70
+            if ($injectDrivers) {
+                Log "Added current-system drivers to $sourceImageFileName index $selectedWimIndex with one mount and commit."
+            } else {
+                Log "Preserved the original $sourceImageFileName without mounting, exporting, or modifying it."
+            }
 
             SetProgress "Dismounting source ISO..." 80
             Log "Dismounting original ISO..."
@@ -420,16 +283,6 @@ function Invoke-WinUtilISOModify {
             })
         } catch {
             Log "ERROR during modification: $_"
-
-            try {
-                if (Test-Path $mountDir) {
-                    $mountedImages = Get-WindowsImage -Mounted | Where-Object { $_.Path -eq $mountDir }
-                    if ($mountedImages) {
-                        Log "Cleaning up: dismounting install.wim (discarding changes)..."
-                        Dismount-WindowsImage -Path $mountDir -Discard
-                    }
-                }
-            } catch { Log "Warning: could not dismount install.wim during cleanup: $_" }
 
             try {
                 $mountedISO = Get-DiskImage -ImagePath $isoPath

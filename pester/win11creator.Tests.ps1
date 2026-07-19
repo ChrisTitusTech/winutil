@@ -41,10 +41,7 @@ Describe "Win11 Creator setup media" {
         $script:exportFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Invoke-WinUtilISOExport"
         $script:writeUsbFunction = Get-WinUtilFunctionText -Path $script:isoUsbWorkflowPath -FunctionName "Invoke-WinUtilISOWriteUSB"
         $script:editionIdFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Get-WinUtilEditionIdFromName"
-        $script:addDriversFunction = Get-WinUtilFunctionText -Path $script:isoScriptPath -FunctionName "Add-DriversToImage"
-        $script:answerFileChildElementFunction = Get-WinUtilFunctionText -Path $script:isoScriptPath -FunctionName "Get-WinUtilISOScriptChildElement"
-        $script:answerFileConversionFunction = Get-WinUtilFunctionText -Path $script:isoScriptPath -FunctionName "ConvertTo-WinUtilISOAnswerFile"
-        $script:editionConfigFunction = Get-WinUtilFunctionText -Path $script:isoScriptPath -FunctionName "Write-WinUtilISOEditionConfig"
+        $script:wimMetadataAssertionFunction = Get-WinUtilFunctionText -Path $script:isoScriptPath -FunctionName "Assert-WinUtilISOWimMetadata"
     }
 
     It "autounattend template does not force a product key" {
@@ -58,12 +55,13 @@ Describe "Win11 Creator setup media" {
         }
     }
 
-    It "ISO script accepts selected edition setup metadata" {
+    It "ISO script accepts selected edition and driver-only WIM servicing metadata" {
         $isoScriptPath = Join-Path $PSScriptRoot "..\functions\private\Invoke-WinUtilISOScript.ps1"
         $content = Get-Content -Path $isoScriptPath -Raw
 
         foreach ($pattern in @(
             '\[string\]\$InstallEditionId',
+            '\[string\]\$InstallImagePath',
             '\[int\]\$InstallImageIndex',
             'sources\\ei\.cfg',
             'PID\.txt'
@@ -85,6 +83,53 @@ Describe "Win11 Creator setup media" {
         $script:modifyFunction | Should -Not -Match ([regex]::Escape("Reusing existing temp directory"))
     }
 
+    It "keeps WIM servicing limited to one driver-only mount and commit" {
+        $isoScriptContent = Get-Content -Path $script:isoScriptPath -Raw
+
+        foreach ($expectedText in @(
+            "'/Mount-Image'",
+            "'/Add-Driver'",
+            "'/Commit'",
+            'install.wim metadata validation passed'
+        )) {
+            $isoScriptContent | Should -Match ([regex]::Escape($expectedText))
+        }
+
+        foreach ($forbiddenText in @(
+            'Mount-WindowsImage',
+            'Dismount-WindowsImage',
+            'Export-WindowsImage',
+            'Set-WindowsImage',
+            '/ResetBase',
+            '/Cleanup-Image'
+        )) {
+            $isoScriptContent | Should -Not -Match ([regex]::Escape($forbiddenText))
+        }
+    }
+
+    It "stages only boot-storage drivers in WinPE" {
+        $isoScriptContent = Get-Content -Path $script:isoScriptPath -Raw
+
+        $isoScriptContent | Should -Match ([regex]::Escape("Join-Path `$ContentRoot '`$WinpeDriver$'"))
+        $isoScriptContent | Should -Match 'SCSIAdapter\|HDC'
+        $isoScriptContent | Should -Not -Match ([regex]::Escape('sources\$OEM$\$$\Drivers'))
+        $isoScriptContent | Should -Not -Match ([regex]::Escape('WinUtil-InstallDrivers.ps1'))
+        $isoScriptContent | Should -Not -Match ([regex]::Escape('SetupComplete.cmd'))
+    }
+
+    It "rejects invalid WIM metadata before and after driver injection" {
+        . ([scriptblock]::Create($script:wimMetadataAssertionFunction))
+
+        $valid = @{ Languages = 'en-US'; Installation = 'Client'; Edition = 'Professional'; ProductSuite = 'Terminal Server'; ProductType = 'WinNT' }
+        $invalidBefore = $valid.Clone()
+        $invalidBefore.Edition = '<undefined>'
+        $invalidAfter = $valid.Clone()
+        $invalidAfter.ProductType = '<undefined>'
+
+        { Assert-WinUtilISOWimMetadata -Before $invalidBefore } | Should -Throw '*already invalid*'
+        { Assert-WinUtilISOWimMetadata -Before $valid -After $invalidAfter } | Should -Throw '*validation failed*'
+    }
+
     It "tracks every background ISO workflow with the shared busy state" {
         foreach ($functionText in @(
             $script:modifyFunction,
@@ -94,16 +139,6 @@ Describe "Win11 Creator setup media" {
         )) {
             $functionText | Should -Match ([regex]::Escape('$sync["Win11ISOProcessRunning"] = $true'))
             $functionText | Should -Match ([regex]::Escape('$sync["Win11ISOProcessRunning"] = $false'))
-        }
-    }
-
-    It "mounts the copied image file that was verified from the ISO" {
-        foreach ($expectedText in @(
-            '$sourceImageFileName = Split-Path $wimPath -Leaf',
-            '$localWim = Join-Path $isoContents "sources\$sourceImageFileName"',
-            'Copied ISO image file not found: sources\$sourceImageFileName'
-        )) {
-            $script:modifyFunction | Should -Match ([regex]::Escape($expectedText))
         }
     }
 
@@ -135,9 +170,7 @@ Describe "Win11 Creator setup media" {
         Get-WinUtilEditionIdFromName -EditionName "Windows 11 Unknown Edition" | Should -Be ""
     }
 
-    It "writes ei.cfg and removes stale PID.txt for selected editions" {
-        . ([scriptblock]::Create($script:editionConfigFunction))
-
+    It "writes ei.cfg and removes stale PID.txt for the selected edition" {
         $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoConfig_$([guid]::NewGuid())"
         $sourcesDir = Join-Path $contentRoot "sources"
         $logs = [System.Collections.Generic.List[string]]::new()
@@ -146,8 +179,10 @@ Describe "Win11 Creator setup media" {
         try {
             New-Item -Path $sourcesDir -ItemType Directory -Force | Out-Null
             Set-Content -Path (Join-Path $sourcesDir "PID.txt") -Value "stale-key" -Encoding UTF8
+            Set-Content -Path (Join-Path $sourcesDir "ei.cfg") -Value "stale-cfg" -Encoding UTF8
 
-            Write-WinUtilISOEditionConfig -ContentRoot $contentRoot -EditionId "Professional" -Logger $logger
+            . $script:isoScriptPath
+            Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml (Get-Content -Path $script:autoUnattendPath -Raw) -InstallEditionId "Professional" -Log $logger
 
             Test-Path (Join-Path $sourcesDir "PID.txt") | Should -BeFalse
             Test-Path (Join-Path $sourcesDir "ei.cfg") | Should -BeTrue
@@ -160,90 +195,143 @@ Describe "Win11 Creator setup media" {
         }
     }
 
-    It "skips ei.cfg when selected edition ID is unknown" {
-        . ([scriptblock]::Create($script:editionConfigFunction))
-
-        $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoConfig_$([guid]::NewGuid())"
-        $logs = [System.Collections.Generic.List[string]]::new()
-        $logger = { param($message) $logs.Add([string]$message) }
+    It "stages the complete WinUtil customization script in the answer file" {
+        $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoAnswerFile_$([guid]::NewGuid())"
+        $template = Get-Content -Path $script:autoUnattendPath -Raw
 
         try {
             New-Item -Path $contentRoot -ItemType Directory -Force | Out-Null
+            . $script:isoScriptPath
+            Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template -InstallEditionId "Core"
 
-            Write-WinUtilISOEditionConfig -ContentRoot $contentRoot -EditionId "" -Logger $logger
+            [xml]$answerFile = Get-Content -Path (Join-Path $contentRoot "autounattend.xml") -Raw
+            $nsMgr = New-Object System.Xml.XmlNamespaceManager($answerFile.NameTable)
+            $nsMgr.AddNamespace("sg", "https://schneegans.de/windows/unattend-generator/")
 
-            Test-Path (Join-Path $contentRoot "sources\ei.cfg") | Should -BeFalse
-            ($logs -join "|") | Should -Match "selected edition ID is unknown"
+            $postInstallFile = $answerFile.SelectSingleNode('//sg:File[@path="C:\Windows\Setup\Scripts\WinUtil-PostInstall.ps1"]', $nsMgr)
+            $postInstallFile | Should -Not -BeNullOrEmpty
+            $postInstallFile.InnerText | Should -Match 'Remove-AppxProvisionedPackage'
+            $postInstallFile.InnerText | Should -Match 'DisableWindowsConsumerFeatures'
+            $postInstallFile.InnerText | Should -Match 'Microsoft Compatibility Appraiser'
+            $postInstallFile.InnerText | Should -Match 'OneDriveSetup.exe'
+
+            $firstLogonFile = $answerFile.SelectSingleNode('//sg:File[@path="C:\Windows\Setup\Scripts\FirstLogon.ps1"]', $nsMgr)
+            $firstLogonFile.InnerText | Should -Match 'WinUtil-PostInstall.ps1'
+
+            $tokens = $null
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseInput($postInstallFile.InnerText, [ref]$tokens, [ref]$errors) | Out-Null
+            $errors.Count | Should -Be 0
         } finally {
             Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
         }
     }
 
-    It "converts autounattend setup metadata without preserving placeholder product keys" {
-        . ([scriptblock]::Create($script:answerFileChildElementFunction))
-        . ([scriptblock]::Create($script:answerFileConversionFunction))
-
-        [xml]$templateXml = Get-Content -Path $script:autoUnattendPath -Raw
-        $unattendNs = "urn:schemas-microsoft-com:unattend"
-        $nsMgr = New-Object System.Xml.XmlNamespaceManager($templateXml.NameTable)
-        $nsMgr.AddNamespace("u", $unattendNs)
-        $nsMgr.AddNamespace("sg", "https://schneegans.de/windows/unattend-generator/")
-
-        $setupComponent = $templateXml.SelectSingleNode('//u:settings[@pass="windowsPE"]/u:component[@name="Microsoft-Windows-Setup"]', $nsMgr)
-        $userData = $templateXml.CreateElement("UserData", $unattendNs)
-        $productKey = $templateXml.CreateElement("ProductKey", $unattendNs)
-        $key = $templateXml.CreateElement("Key", $unattendNs)
-        $key.InnerText = "00000-00000-00000-00000-00000"
-        [void]$productKey.AppendChild($key)
-        [void]$userData.AppendChild($productKey)
-        [void]$setupComponent.AppendChild($userData)
-
-        $originalSetupFileCount = $templateXml.SelectNodes("//sg:File", $nsMgr).Count
-        [xml]$converted = ConvertTo-WinUtilISOAnswerFile -XmlContent $templateXml.OuterXml -ImageIndex 3
-        $convertedNsMgr = New-Object System.Xml.XmlNamespaceManager($converted.NameTable)
-        $convertedNsMgr.AddNamespace("u", $unattendNs)
-        $convertedNsMgr.AddNamespace("sg", "https://schneegans.de/windows/unattend-generator/")
-
-        $converted.DocumentElement.NamespaceURI | Should -Be $unattendNs
-        $converted.DocumentElement.GetAttribute("xmlns:wcm") | Should -Be "http://schemas.microsoft.com/WMIConfig/2002/State"
-        $converted.SelectNodes('//u:component[@name="Microsoft-Windows-Setup"]/u:UserData/u:ProductKey', $convertedNsMgr).Count | Should -Be 0
-        $converted.SelectSingleNode('//u:ImageInstall/u:OSImage/u:InstallFrom/u:MetaData[u:Key="/IMAGE/INDEX"]/u:Value', $convertedNsMgr).InnerText | Should -Be "3"
-        $converted.SelectNodes("//sg:File", $convertedNsMgr).Count | Should -Be $originalSetupFileCount
-    }
-
-    It "logs DISM output for driver injection through a mocked command" {
-        . ([scriptblock]::Create($script:addDriversFunction))
-
-        $script:dismArguments = @()
-        function dism {
-            param([Parameter(ValueFromRemainingArguments)]$Arguments)
-            $script:dismArguments = @($Arguments)
-            "driver one"
-            "driver two"
-        }
-
+    It "stages storage drivers for WinPE and adds all drivers to one install.wim index" {
+        $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoDrivers_$([guid]::NewGuid())"
+        $installWim = Join-Path $contentRoot 'sources\install.wim'
+        $template = Get-Content -Path $script:autoUnattendPath -Raw
         $logs = [System.Collections.Generic.List[string]]::new()
-        Add-DriversToImage -MountPath "C:\Mount" -DriverDir "C:\Drivers" -Label "install" -Logger {
-            param($message)
-            $logs.Add([string]$message)
+        $script:dismCalls = [System.Collections.Generic.List[string]]::new()
+
+        function dism.exe {
+            param([Parameter(ValueFromRemainingArguments)][string[]]$Arguments)
+
+            $script:dismCalls.Add(($Arguments -join '|'))
+            $global:LASTEXITCODE = 0
+            if ($Arguments -contains '/Get-WimInfo') {
+                'Languages : en-US'
+                'Installation : Client'
+                'Edition : Professional'
+                'ProductSuite : Terminal Server'
+                'ProductType : WinNT'
+            } elseif ($Arguments -contains '/Mount-Image') {
+                '[==========================100.0%==========================]'
+            }
         }
 
-        ($script:dismArguments -join "|") | Should -Be "/English|/image:C:\Mount|/Add-Driver|/Driver:C:\Drivers|/Recurse"
-        ($logs -join "|") | Should -Be "  dism[install]: driver one|  dism[install]: driver two"
+        Mock Start-Process {
+            param($FilePath, $ArgumentList)
+
+            if ($FilePath -ne 'dism.exe') {
+                throw "Unexpected process in driver export mock: $FilePath"
+            }
+
+            $destinationMatch = [regex]::Match([string]$ArgumentList, '/destination:"([^"]+)"')
+            if (-not $destinationMatch.Success) {
+                throw "Unable to find the mocked DISM export destination in: $ArgumentList"
+            }
+
+            $exportRoot = $destinationMatch.Groups[1].Value
+            $fixtures = @(
+                @{ Path = 'system_pkg'; Name = 'chipset.inf'; Class = 'System' },
+                @{ Path = 'storage_pkg'; Name = 'iaStorAC.inf'; Class = 'System' },
+                @{ Path = 'scsi_pkg'; Name = 'controller.inf'; Class = 'SCSIAdapter' },
+                @{ Path = 'net_pkg'; Name = 'network.inf'; Class = 'Net' },
+                @{ Path = 'group_a\duplicate'; Name = 'audio.inf'; Class = 'Media' },
+                @{ Path = 'group_b\duplicate'; Name = 'extension.inf'; Class = 'Extension' }
+            )
+
+            foreach ($fixture in $fixtures) {
+                $fixturePath = Join-Path $exportRoot $fixture.Path
+                New-Item -Path $fixturePath -ItemType Directory -Force | Out-Null
+                Set-Content -Path (Join-Path $fixturePath $fixture.Name) -Value "[Version]`r`nClass=$($fixture.Class)" -Encoding ASCII
+            }
+
+            return [pscustomobject]@{ ExitCode = 0 }
+        } -ParameterFilter { $FilePath -eq 'dism.exe' }
+
+        try {
+            New-Item -Path (Split-Path $installWim -Parent) -ItemType Directory -Force | Out-Null
+            Set-Content -Path $installWim -Value 'mock-wim'
+            . $script:isoScriptPath
+            Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template -InjectCurrentSystemDrivers $true -InstallImagePath $installWim -InstallImageIndex 6 -InstallEditionId 'Professional' -Log {
+                param($message)
+                $logs.Add([string]$message)
+            }
+
+            $winpeDriverRoot = Join-Path $contentRoot '$WinpeDriver$'
+            @(Get-ChildItem -Path $winpeDriverRoot -Directory).Count | Should -Be 2
+            Test-Path (Join-Path $winpeDriverRoot 'system_pkg\chipset.inf') | Should -BeFalse
+            Test-Path (Join-Path $winpeDriverRoot 'storage_pkg\iaStorAC.inf') | Should -BeTrue
+            Test-Path (Join-Path $winpeDriverRoot 'scsi_pkg\controller.inf') | Should -BeTrue
+            Test-Path (Join-Path $winpeDriverRoot 'net_pkg\network.inf') | Should -BeFalse
+
+            @($script:dismCalls | Where-Object { $_ -match '/Mount-Image' }).Count | Should -Be 1
+            @($script:dismCalls | Where-Object { $_ -match '/Add-Driver' }).Count | Should -Be 1
+            @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Commit' }).Count | Should -Be 1
+            @($script:dismCalls | Where-Object { $_ -match '/Get-WimInfo' }).Count | Should -Be 2
+            ($script:dismCalls -join "`n") | Should -Not -Match '/Cleanup-Image|/Export-Image'
+
+            [xml]$answerFile = Get-Content -Path (Join-Path $contentRoot 'autounattend.xml') -Raw
+            $nsMgr = New-Object System.Xml.XmlNamespaceManager($answerFile.NameTable)
+            $nsMgr.AddNamespace('sg', 'https://schneegans.de/windows/unattend-generator/')
+            $answerFile.SelectSingleNode('//sg:File[@path="C:\Windows\Setup\Scripts\WinUtil-InstallDrivers.ps1"]', $nsMgr) | Should -BeNullOrEmpty
+            ($logs -join '|') | Should -Match 'staged 2 boot-storage packages for WinPE'
+            ($logs -join '|') | Should -Match 'install.wim metadata validation passed'
+            ($logs -join '|') | Should -Match 'DISM mount completed.'
+            ($logs -join '|') | Should -Not -Match '100.0%'
+        } finally {
+            Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
+            Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
+        }
     }
 
-    It "keeps driver export and boot.wim injection behind the selected branch" {
-        $content = Get-Content -Path $script:isoScriptPath -Raw
+    It "does not add driver setup artifacts when injection is disabled" {
+        $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoNoDrivers_$([guid]::NewGuid())"
 
-        foreach ($expectedText in @(
-            'if ($InjectCurrentSystemDrivers)',
-            'Export-WindowsDriver -Online -Destination $driverExportRoot',
-            'Add-DriversToImage -MountPath $ScratchDir -DriverDir $driverExportRoot -Label "install" -Logger $Log',
-            'Invoke-BootWimInject -BootWimPath $bootWim -DriverDir $driverExportRoot -Logger $Log',
-            'Warning: boot.wim not found - skipping boot.wim driver injection.',
-            'Driver injection skipped.'
-        )) {
-            $content | Should -Match ([regex]::Escape($expectedText))
+        try {
+            New-Item -Path $contentRoot -ItemType Directory -Force | Out-Null
+            . $script:isoScriptPath
+            Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml (Get-Content -Path $script:autoUnattendPath -Raw) -InjectCurrentSystemDrivers $false -InstallEditionId 'Core'
+
+            Test-Path (Join-Path $contentRoot '$WinpeDriver$') | Should -BeFalse
+            [xml]$answerFile = Get-Content -Path (Join-Path $contentRoot 'autounattend.xml') -Raw
+            $nsMgr = New-Object System.Xml.XmlNamespaceManager($answerFile.NameTable)
+            $nsMgr.AddNamespace('sg', 'https://schneegans.de/windows/unattend-generator/')
+            $answerFile.SelectSingleNode('//sg:File[@path="C:\Windows\Setup\Scripts\WinUtil-InstallDrivers.ps1"]', $nsMgr) | Should -BeNullOrEmpty
+        } finally {
+            Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
         }
     }
 
