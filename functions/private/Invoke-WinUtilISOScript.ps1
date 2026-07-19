@@ -485,6 +485,7 @@ $appxList
         $xmlDoc.PreserveWhitespace = $true
         $xmlDoc.LoadXml($XmlContent)
         $nsMgr = New-Object System.Xml.XmlNamespaceManager($xmlDoc.NameTable)
+        $nsMgr.AddNamespace('u', 'urn:schemas-microsoft-com:unattend')
         $nsMgr.AddNamespace('sg', 'https://schneegans.de/windows/unattend-generator/')
 
         $setupScriptsRoot = Join-Path $ContentRoot 'sources\$OEM$\$$\Setup\Scripts'
@@ -509,6 +510,11 @@ $appxList
             $stagedCount++
         }
 
+        $useConfigurationSet = $xmlDoc.SelectSingleNode('/u:unattend/u:settings[@pass="windowsPE"]/u:component[@name="Microsoft-Windows-Setup"]/u:UseConfigurationSet', $nsMgr)
+        if ($useConfigurationSet) {
+            $useConfigurationSet.InnerText = 'true'
+            [System.IO.File]::WriteAllText((Join-Path $ContentRoot 'autounattend.xml'), $xmlDoc.OuterXml, [System.Text.UTF8Encoding]::new($false))
+        }
         & $Logger "Staged $stagedCount WinUtil setup script fallback files at '$setupScriptsRoot'."
     }
 

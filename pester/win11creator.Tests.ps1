@@ -67,13 +67,15 @@ Describe "Win11 Creator setup media" {
         }
     }
 
-    It "sets BypassNRO before OOBE starts" {
+    It "sets OOBE-sensitive registry values before OOBE starts" {
         [xml]$xml = Get-Content -Path $script:autoUnattendPath -Raw
         $nsMgr = New-Object System.Xml.XmlNamespaceManager($xml.NameTable)
         $nsMgr.AddNamespace("u", "urn:schemas-microsoft-com:unattend")
         $paths = @($xml.SelectNodes('/u:unattend/u:settings[@pass="specialize"]/u:component[@name="Microsoft-Windows-Deployment"]/u:RunSynchronous/u:RunSynchronousCommand/u:Path', $nsMgr) | ForEach-Object InnerText) -join "`n"
 
-        $paths | Should -Match ([regex]::Escape('BypassNRO'))
+        foreach ($valueName in 'BypassNRO', 'PreventDeviceEncryption', 'ShippedWithReserves') {
+            $paths | Should -Match ([regex]::Escape($valueName))
+        }
     }
 
     It "ISO script accepts selected edition and driver-only WIM servicing metadata" {
@@ -459,6 +461,26 @@ Describe "Win11 Creator setup media" {
             $nsMgr = New-Object System.Xml.XmlNamespaceManager($answerFile.NameTable)
             $nsMgr.AddNamespace('sg', 'https://schneegans.de/windows/unattend-generator/')
             $answerFile.SelectSingleNode('//sg:File[@path="C:\Windows\Setup\Scripts\WinUtil-InstallDrivers.ps1"]', $nsMgr) | Should -BeNullOrEmpty
+        } finally {
+            Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    It "enables configuration-set fallback when staging OEM setup scripts" {
+        $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoFallback_$([guid]::NewGuid())"
+
+        try {
+            New-Item -Path $contentRoot -ItemType Directory -Force | Out-Null
+            . $script:isoScriptPath
+            Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml (Get-Content -Path $script:autoUnattendPath -Raw) -InstallEditionId 'Core'
+
+            [xml]$answerFile = Get-Content -Path (Join-Path $contentRoot 'autounattend.xml') -Raw
+            $nsMgr = New-Object System.Xml.XmlNamespaceManager($answerFile.NameTable)
+            $nsMgr.AddNamespace('u', 'urn:schemas-microsoft-com:unattend')
+
+            $answerFile.SelectSingleNode('/u:unattend/u:settings[@pass="windowsPE"]/u:component[@name="Microsoft-Windows-Setup"]/u:UseConfigurationSet', $nsMgr).InnerText |
+                Should -Be 'true'
+            Test-Path (Join-Path $contentRoot 'sources\$OEM$\$$\Setup\Scripts\FirstLogon.ps1') | Should -BeTrue
         } finally {
             Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
         }
