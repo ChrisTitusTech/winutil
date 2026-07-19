@@ -132,6 +132,12 @@ function Invoke-WinUtilISOScript {
             }
         }
 
+        function Test-WinUtilISOMountedImage {
+            param ([Parameter(Mandatory)][string]$Path)
+
+            return @(& dism.exe /English /Get-MountedImageInfo 2>$null) -match [regex]::Escape($Path)
+        }
+
         if ([IO.Path]::GetExtension($InstallImagePath) -ne '.wim') {
             throw 'Current-system driver injection requires install.wim; install.esd cannot be serviced in place.'
         }
@@ -207,7 +213,7 @@ function Invoke-WinUtilISOScript {
             Assert-WinUtilISOWimMetadata -Before $metadataBefore -After $metadataAfter
             & $Logger 'Driver injection complete; install.wim metadata validation passed.'
         } finally {
-            if ($imageMounted) {
+            if ($imageMounted -or (Test-WinUtilISOMountedImage -Path $mountDir)) {
                 try {
                     Invoke-WinUtilISODism -Arguments @('/English', '/Unmount-Image', "/MountDir:$mountDir", '/Discard') -Operation 'discard' | Out-Null
                 } catch {

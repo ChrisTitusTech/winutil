@@ -67,6 +67,15 @@ Describe "Win11 Creator setup media" {
         }
     }
 
+    It "sets BypassNRO before OOBE starts" {
+        [xml]$xml = Get-Content -Path $script:autoUnattendPath -Raw
+        $nsMgr = New-Object System.Xml.XmlNamespaceManager($xml.NameTable)
+        $nsMgr.AddNamespace("u", "urn:schemas-microsoft-com:unattend")
+        $paths = @($xml.SelectNodes('/u:unattend/u:settings[@pass="specialize"]/u:component[@name="Microsoft-Windows-Deployment"]/u:RunSynchronous/u:RunSynchronousCommand/u:Path', $nsMgr) | ForEach-Object InnerText) -join "`n"
+
+        $paths | Should -Match ([regex]::Escape('BypassNRO'))
+    }
+
     It "ISO script accepts selected edition and driver-only WIM servicing metadata" {
         $isoScriptPath = Join-Path $PSScriptRoot "..\functions\private\Invoke-WinUtilISOScript.ps1"
         $content = Get-Content -Path $isoScriptPath -Raw
@@ -372,6 +381,61 @@ Describe "Win11 Creator setup media" {
             ($logs -join '|') | Should -Match 'install.wim metadata validation passed'
             ($logs -join '|') | Should -Match 'DISM mount completed.'
             ($logs -join '|') | Should -Not -Match '100.0%'
+        } finally {
+            Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
+            Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    It "discards a partially mounted install.wim after mount failure" {
+        $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoMountFailure_$([guid]::NewGuid())"
+        $installWim = Join-Path $contentRoot 'sources\install.wim'
+        $template = Get-Content -Path $script:autoUnattendPath -Raw
+        $script:dismCalls = [System.Collections.Generic.List[string]]::new()
+
+        function dism.exe {
+            param([Parameter(ValueFromRemainingArguments)][string[]]$Arguments)
+
+            $script:dismCalls.Add(($Arguments -join '|'))
+            if ($Arguments -contains '/Get-WimInfo') {
+                $global:LASTEXITCODE = 0
+                'Languages : en-US'
+                'Installation : Client'
+                'Edition : Professional'
+                'ProductSuite : Terminal Server'
+                'ProductType : WinNT'
+            } elseif ($Arguments -contains '/Mount-Image') {
+                $global:LASTEXITCODE = 50
+                'Mount failed'
+            } elseif ($Arguments -contains '/Get-MountedImageInfo') {
+                $global:LASTEXITCODE = 0
+                "Mount Dir : $(Join-Path (Split-Path -Path $contentRoot -Parent) 'wim_mount')"
+            } else {
+                $global:LASTEXITCODE = 0
+            }
+        }
+
+        Mock Start-Process {
+            param($FilePath, $ArgumentList)
+
+            $destinationMatch = [regex]::Match([string]$ArgumentList, '/destination:"([^"]+)"')
+            $exportRoot = $destinationMatch.Groups[1].Value
+            $fixturePath = Join-Path $exportRoot 'storage_pkg'
+            New-Item -Path $fixturePath -ItemType Directory -Force | Out-Null
+            Set-Content -Path (Join-Path $fixturePath 'iaStorAC.inf') -Value "[Version]`r`nClass=System" -Encoding ASCII
+            return [pscustomobject]@{ ExitCode = 0 }
+        } -ParameterFilter { $FilePath -eq 'dism.exe' }
+
+        try {
+            New-Item -Path (Split-Path $installWim -Parent) -ItemType Directory -Force | Out-Null
+            Set-Content -Path $installWim -Value 'mock-wim'
+            . $script:isoScriptPath
+
+            { Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template -InjectCurrentSystemDrivers $true -InstallImagePath $installWim -InstallImageIndex 6 -InstallEditionId 'Professional' } |
+                Should -Throw '*DISM mount failed*'
+
+            @($script:dismCalls | Where-Object { $_ -match '/Get-MountedImageInfo' }).Count | Should -Be 1
+            @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Discard' }).Count | Should -Be 1
         } finally {
             Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
             Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
