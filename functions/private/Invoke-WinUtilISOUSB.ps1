@@ -32,7 +32,7 @@ function Invoke-WinUtilISOWriteUSB {
 
     $installWim = Join-Path $contentsDir "sources\install.wim"
     $installEsd = Join-Path $contentsDir "sources\install.esd"
-    if (-not (Test-Path $installWim) -and (Test-Path $installEsd)) {
+    if (Test-Path $installEsd) {
         $installEsdFile = Get-Item $installEsd
         $esdSizeBytes = $installEsdFile.Length
         $esdSizeMB = [math]::Ceiling($esdSizeBytes / 1MB)
