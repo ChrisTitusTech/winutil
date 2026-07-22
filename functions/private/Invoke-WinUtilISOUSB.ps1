@@ -8,7 +8,7 @@ function Invoke-WinUtilISORefreshUSBDrives {
         $combo.Items.Add("No USB drives detected.")
         $combo.SelectedIndex = 0
         $sync["Win11ISOUSBDisks"] = @()
-        Write-Win11ISOLog "No USB drives detected."
+        Write-WinUtilISOLog "No USB drives detected."
         return
     }
 
@@ -17,7 +17,7 @@ function Invoke-WinUtilISORefreshUSBDrives {
         $combo.Items.Add("Disk $($disk.Number): $($disk.FriendlyName)  [$sizeGB GB] - $($disk.PartitionStyle)")
     }
     $combo.SelectedIndex = 0
-    Write-Win11ISOLog "Found $($removable.Count) USB drive(s)."
+    Write-WinUtilISOLog "Found $($removable.Count) USB drive(s)."
     $sync["Win11ISOUSBDisks"] = $removable
 }
 
@@ -28,6 +28,20 @@ function Invoke-WinUtilISOWriteUSB {
     if (-not $contentsDir -or -not (Test-Path $contentsDir)) {
         [System.Windows.MessageBox]::Show("No modified ISO content found. Please complete Steps 1-3 first.", "Not Ready", "OK", "Warning")
         return
+    }
+
+    $installWim = Join-Path $contentsDir "sources\install.wim"
+    $installEsd = Join-Path $contentsDir "sources\install.esd"
+    if (Test-Path $installEsd) {
+        $installEsdFile = Get-Item $installEsd
+        $esdSizeBytes = $installEsdFile.Length
+        $esdSizeMB = [math]::Ceiling($esdSizeBytes / 1MB)
+        if ($esdSizeBytes -ge 4GB) {
+            [System.Windows.MessageBox]::Show(
+                "This ISO uses an install.esd file that is $esdSizeMB MB. WinUtil's FAT32 USB format cannot store files larger than 4 GB.`n`nExport an ISO instead or use media with install.wim.",
+                "USB Creation Not Supported", "OK", "Warning")
+            return
+        }
     }
 
     $combo = $sync["WPFWin11ISOUSBDriveComboBox"]
@@ -56,13 +70,13 @@ function Invoke-WinUtilISOWriteUSB {
         "Confirm USB Erase", "YesNo", "Warning")
 
     if ($confirm -ne "Yes") {
-        Write-Win11ISOLog "USB write cancelled by user."
+        Write-WinUtilISOLog "USB write cancelled by user."
         return
     }
 
     $sync["WPFWin11ISOWriteUSBButton"].IsEnabled = $false
     $sync["Win11ISOProcessRunning"] = $true
-    Write-Win11ISOLog "Starting USB write to Disk $diskNum..."
+    Write-WinUtilISOLog "Starting USB write to Disk $diskNum..."
 
     $runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
     $runspace.ApartmentState = "STA"
