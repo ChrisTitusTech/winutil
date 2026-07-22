@@ -15,7 +15,7 @@ description: ""
       icacls $Env:OneDrive /deny \"Administrators:(D,DC)\"
 
       Write-Host \"Uninstalling OneDrive...\"
-      Start-Process '$Env:SystemRoot\\System32\\OneDriveSetup.exe' -ArgumentList '/uninstall' -Wait
+      Start-Process -FilePath (Join-Path $Env:SystemRoot \"System32\\OneDriveSetup.exe\") -ArgumentList '/uninstall' -Wait
 
       # Some of OneDrive files use explorer, and OneDrive uses FileCoAuth
       Write-Host \"Removing leftover OneDrive Files...\"
