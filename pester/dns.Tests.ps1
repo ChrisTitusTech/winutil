@@ -32,6 +32,9 @@ BeforeAll {
     function Get-DnsClientDohServerAddress {
         param($ServerAddress, $ErrorAction)
     }
+    function Remove-DnsClientDohServerAddress {
+        param($ServerAddress, $Confirm, $ErrorAction)
+    }
     function Clear-DnsClientCache { }
 
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilDNS.ps1")
@@ -71,7 +74,9 @@ Describe "Set-WinUtilDNS" {
         Mock Add-DnsClientDohServerAddress { }
         Mock Set-DnsClientDohServerAddress { }
         Mock Get-DnsClientDohServerAddress { return $null }
+        Mock Remove-DnsClientDohServerAddress { }
         Mock Test-Path { return $false }
+        Mock Get-ChildItem { }
         Mock New-Item { }
         Mock New-ItemProperty { }
         Mock Remove-Item { }
@@ -126,8 +131,24 @@ Describe "Set-WinUtilDNS" {
         Should -Invoke -CommandName Add-DnsClientDohServerAddress -Times 3 -Exactly
     }
 
-    It "resets DNS to DHCP for IPv4 and IPv6 and cleans up DoH registry" {
+    It "resets DNS to DHCP and removes the applied DoH configuration" {
         Mock Test-Path { return $true } -ParameterFilter { $Path -like "*DohInterfaceSettings*" }
+        Mock Get-ChildItem {
+            if ($Path -like "*\Doh6") {
+                return @(
+                    [pscustomobject]@{ PSChildName = "2606:4700:4700::1111" }
+                    [pscustomobject]@{ PSChildName = "2606:4700:4700::1001" }
+                )
+            }
+
+            return @(
+                [pscustomobject]@{ PSChildName = "1.1.1.1" }
+                [pscustomobject]@{ PSChildName = "1.0.0.1" }
+            )
+        }
+        Mock Get-DnsClientDohServerAddress {
+            [pscustomobject]@{ ServerAddress = $ServerAddress }
+        }
         
         Set-WinUtilDNS -DNSProvider "DHCP"
 
@@ -154,6 +175,7 @@ Describe "Set-WinUtilDNS" {
         Should -Invoke -CommandName Remove-Item -Times 1 -Exactly -ParameterFilter {
             $Path -like "*DohInterfaceSettings*" -and $Recurse -eq $true -and $Force -eq $true
         }
+        Should -Invoke -CommandName Remove-DnsClientDohServerAddress -Times 4 -Exactly
     }
 
     It "catches DNS setter failures so the tweak runspace can continue" {

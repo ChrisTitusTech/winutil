@@ -45,8 +45,23 @@ function Set-WinUtilDNS {
                 netsh interface ip set dnsservers name="$($Adapter.Name)" source=dhcp
                 netsh interface ipv6 set dnsservers name="$($Adapter.Name)" source=dhcp
 
-                if (Test-Path "$interfaceParams\DohInterfaceSettings") {
-                    Remove-Item -Path "$interfaceParams\DohInterfaceSettings" -Recurse -Force -ErrorAction SilentlyContinue
+                $dohInterfaceSettings = "$interfaceParams\DohInterfaceSettings"
+                if (Test-Path $dohInterfaceSettings) {
+                    if ($dohSupported) {
+                        $dohServerAddresses = @(
+                            Get-ChildItem -Path "$dohInterfaceSettings\Doh" -ErrorAction SilentlyContinue
+                            Get-ChildItem -Path "$dohInterfaceSettings\Doh6" -ErrorAction SilentlyContinue
+                        ) | Select-Object -ExpandProperty PSChildName -Unique
+
+                        foreach ($ip in $dohServerAddresses) {
+                            if (Get-DnsClientDohServerAddress -ServerAddress $ip -ErrorAction SilentlyContinue) {
+                                Write-WinUtilLog -Component "DNS" -Message "Removing DoH registration for $ip."
+                                Remove-DnsClientDohServerAddress -ServerAddress $ip -Confirm:$false -ErrorAction Stop
+                            }
+                        }
+                    }
+
+                    Remove-Item -Path $dohInterfaceSettings -Recurse -Force -ErrorAction SilentlyContinue
                 }
             } else {
                 Write-WinUtilLog -Component "DNS" -Message "Setting IPv4 DNS on adapter $($Adapter.Name) (ifIndex: $($Adapter.ifIndex)) to $($dns.Primary), $($dns.Secondary)."
