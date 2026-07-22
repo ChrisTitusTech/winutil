@@ -58,7 +58,9 @@ function Set-WinUtilDNS {
                     $ips = @($dns.Primary, $dns.Secondary, $dns.Primary6, $dns.Secondary6) | Where-Object { $_ }
                     foreach ($ip in $ips) {
                         $existing = Get-DnsClientDohServerAddress -ServerAddress $ip -ErrorAction SilentlyContinue
-                        if (-not $existing) {
+                        if ($existing) {
+                            Set-DnsClientDohServerAddress -ServerAddress $ip -DohTemplate $dns.DohTemplate -AllowFallbackToUdp $false -AutoUpgrade $false -ErrorAction SilentlyContinue
+                        } else {
                             Write-WinUtilLog -Component "DNS" -Message "Registering DoH template for $ip."
                             Add-DnsClientDohServerAddress -ServerAddress $ip -DohTemplate $dns.DohTemplate -AllowFallbackToUdp $false -AutoUpgrade $false -ErrorAction SilentlyContinue
                         }

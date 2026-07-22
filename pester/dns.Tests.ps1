@@ -26,6 +26,9 @@ BeforeAll {
     function Add-DnsClientDohServerAddress {
         param($ServerAddress, $DohTemplate, $AllowFallbackToUdp, $AutoUpgrade, $ErrorAction)
     }
+    function Set-DnsClientDohServerAddress {
+        param($ServerAddress, $DohTemplate, $AllowFallbackToUdp, $AutoUpgrade, $ErrorAction)
+    }
     function Get-DnsClientDohServerAddress {
         param($ServerAddress, $ErrorAction)
     }
@@ -66,6 +69,7 @@ Describe "Set-WinUtilDNS" {
 
         Mock Get-Command { return $true } -ParameterFilter { $Name -eq "Add-DnsClientDohServerAddress" }
         Mock Add-DnsClientDohServerAddress { }
+        Mock Set-DnsClientDohServerAddress { }
         Mock Get-DnsClientDohServerAddress { return $null }
         Mock Test-Path { return $false }
         Mock New-Item { }
@@ -96,13 +100,30 @@ Describe "Set-WinUtilDNS" {
         Should -Invoke -CommandName Set-DnsClientServerAddress -Times 0 -Exactly -ParameterFilter {
             $ServerAddresses.Count -eq 4
         }
-        Should -Invoke -CommandName Add-DnsClientDohServerAddress -Times 1 -Exactly -ParameterFilter {
-            $ServerAddress -eq "1.1.1.1" -and $DohTemplate -eq "https://cloudflare-dns.com/dns-query"
-        }
+        Should -Invoke -CommandName Add-DnsClientDohServerAddress -Times 4 -Exactly
         Should -Invoke -CommandName New-ItemProperty -Times 4 -ParameterFilter {
             $Name -eq "DohFlags" -and $Value -eq 1
         }
         Should -Invoke -CommandName Clear-DnsClientCache -Times 1 -Exactly
+    }
+
+    It "updates an existing DoH entry with the selected provider settings" {
+        Mock Get-DnsClientDohServerAddress {
+            if ($ServerAddress -eq "1.1.1.1") {
+                return [pscustomobject]@{ ServerAddress = $ServerAddress }
+            }
+            return $null
+        }
+
+        Set-WinUtilDNS -DNSProvider "Cloudflare"
+
+        Should -Invoke -CommandName Set-DnsClientDohServerAddress -Times 1 -Exactly -ParameterFilter {
+            $ServerAddress -eq "1.1.1.1" -and
+                $DohTemplate -eq "https://cloudflare-dns.com/dns-query" -and
+                $AllowFallbackToUdp -eq $false -and
+                $AutoUpgrade -eq $false
+        }
+        Should -Invoke -CommandName Add-DnsClientDohServerAddress -Times 3 -Exactly
     }
 
     It "resets DNS to DHCP for IPv4 and IPv6 and cleans up DoH registry" {
