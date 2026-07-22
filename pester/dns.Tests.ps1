@@ -164,7 +164,7 @@ Describe "Set-WinUtilDNS" {
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
             $Level -eq "ERROR" -and
                 $Component -eq "DNS" -and
-                $Message -like "Unable to set DNS provider Cloudflare*"
+                $Message -like "DNS provider Cloudflare was not completed: *"
         }
     }
 }

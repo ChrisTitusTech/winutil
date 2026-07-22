@@ -59,19 +59,19 @@ function Set-WinUtilDNS {
                     foreach ($ip in $ips) {
                         $existing = Get-DnsClientDohServerAddress -ServerAddress $ip -ErrorAction SilentlyContinue
                         if ($existing) {
-                            Set-DnsClientDohServerAddress -ServerAddress $ip -DohTemplate $dns.DohTemplate -AllowFallbackToUdp $false -AutoUpgrade $true -ErrorAction SilentlyContinue
+                            Set-DnsClientDohServerAddress -ServerAddress $ip -DohTemplate $dns.DohTemplate -AllowFallbackToUdp $false -AutoUpgrade $true -ErrorAction Stop
                         } else {
                             Write-WinUtilLog -Component "DNS" -Message "Registering DoH template for $ip."
-                            Add-DnsClientDohServerAddress -ServerAddress $ip -DohTemplate $dns.DohTemplate -AllowFallbackToUdp $false -AutoUpgrade $true -ErrorAction SilentlyContinue
+                            Add-DnsClientDohServerAddress -ServerAddress $ip -DohTemplate $dns.DohTemplate -AllowFallbackToUdp $false -AutoUpgrade $true -ErrorAction Stop
                         }
                         
                         $leaf = if ($ip.Contains(':')) { 'Doh6' } else { 'Doh' }
                         $regPath = "$interfaceParams\DohInterfaceSettings\$leaf\$ip"
                         
                         if (-not (Test-Path $regPath)) {
-                            New-Item -Path $regPath -Force | Out-Null
+                            New-Item -Path $regPath -Force -ErrorAction Stop | Out-Null
                         }
-                        New-ItemProperty -Path $regPath -Name "DohFlags" -Value 1 -PropertyType QWord -Force | Out-Null
+                        New-ItemProperty -Path $regPath -Name "DohFlags" -Value 1 -PropertyType QWord -Force -ErrorAction Stop | Out-Null
                     }
                 }
             }
@@ -81,8 +81,8 @@ function Set-WinUtilDNS {
         }
         Write-WinUtilLog -Component "DNS" -Message "DNS provider change completed: $DNSProvider"
     } catch {
-        Write-Warning "Unable to set DNS Provider due to an unhandled exception."
-        Write-Warning $psitem.Exception.StackTrace
-        Write-WinUtilLog -Level "ERROR" -Component "DNS" -Message "Unable to set DNS provider $DNSProvider`: $($psitem.Exception.Message)"
+        Write-Warning "DNS provider $DNSProvider was not completed because an error occurred."
+        Write-Warning $psitem.Exception.Message
+        Write-WinUtilLog -Level "ERROR" -Component "DNS" -Message "DNS provider $DNSProvider was not completed: $($psitem.Exception.Message)"
     }
 }
