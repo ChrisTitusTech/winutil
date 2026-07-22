@@ -121,7 +121,7 @@ Describe "Set-WinUtilDNS" {
             $ServerAddress -eq "1.1.1.1" -and
                 $DohTemplate -eq "https://cloudflare-dns.com/dns-query" -and
                 $AllowFallbackToUdp -eq $false -and
-                $AutoUpgrade -eq $false
+                $AutoUpgrade -eq $true
         }
         Should -Invoke -CommandName Add-DnsClientDohServerAddress -Times 3 -Exactly
     }

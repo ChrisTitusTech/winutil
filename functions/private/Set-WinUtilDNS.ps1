@@ -59,10 +59,10 @@ function Set-WinUtilDNS {
                     foreach ($ip in $ips) {
                         $existing = Get-DnsClientDohServerAddress -ServerAddress $ip -ErrorAction SilentlyContinue
                         if ($existing) {
-                            Set-DnsClientDohServerAddress -ServerAddress $ip -DohTemplate $dns.DohTemplate -AllowFallbackToUdp $false -AutoUpgrade $false -ErrorAction SilentlyContinue
+                            Set-DnsClientDohServerAddress -ServerAddress $ip -DohTemplate $dns.DohTemplate -AllowFallbackToUdp $false -AutoUpgrade $true -ErrorAction SilentlyContinue
                         } else {
                             Write-WinUtilLog -Component "DNS" -Message "Registering DoH template for $ip."
-                            Add-DnsClientDohServerAddress -ServerAddress $ip -DohTemplate $dns.DohTemplate -AllowFallbackToUdp $false -AutoUpgrade $false -ErrorAction SilentlyContinue
+                            Add-DnsClientDohServerAddress -ServerAddress $ip -DohTemplate $dns.DohTemplate -AllowFallbackToUdp $false -AutoUpgrade $true -ErrorAction SilentlyContinue
                         }
                         
                         $leaf = if ($ip.Contains(':')) { 'Doh6' } else { 'Doh' }
