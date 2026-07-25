@@ -836,6 +836,15 @@
         "winget": "Guru3D.Afterburner",
         "foss": false
     },
+    "mullvadvpn": {
+        "category": "Pro Tools",
+        "choco": "mullvad-app",
+        "content": "Mullvad VPN",
+        "description": "This is the VPN client software for the Mullvad VPN service.",
+        "link": "https://github.com/mullvad/mullvadvpn-app",
+        "winget": "MullvadVPN.MullvadVPN",
+        "foss": true
+    },
     "nomacs": {
         "category": "Multimedia Tools",
         "choco": "nomacs",
