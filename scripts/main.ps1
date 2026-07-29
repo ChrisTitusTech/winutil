@@ -252,10 +252,10 @@ $sync["Form"].Add_MouseDoubleClick({
     if ($_.OriginalSource.Name -eq "NavDockPanel" -or
         $_.OriginalSource.Name -eq "GridBesideNavDockPanel") {
             if ($sync["Form"].WindowState -eq [Windows.WindowState]::Normal) {
-                $sync["Form"].WindowState = [Windows.WindowState]::Maximized
+                [Windows.SystemCommands]::MaximizeWindow($sync.Form)
             }
             else{
-                $sync["Form"].WindowState = [Windows.WindowState]::Normal
+                [Windows.SystemCommands]::RestoreWindow($sync.Form)
             }
     }
 })
