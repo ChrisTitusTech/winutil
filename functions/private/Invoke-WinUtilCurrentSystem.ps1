@@ -15,10 +15,10 @@ Function Invoke-WinUtilCurrentSystem {
     )
     if ($CheckBox -eq "choco") {
         $apps = (choco list | Select-String -Pattern "^\S+").Matches.Value
-        $sync.configs.applicationsHashtable.GetEnumerator() | ForEach-Object {
-            $packageId = ($_.Value.choco -split ";")[-1].Trim()
+        foreach ($app in $sync.configs.applicationsHashtable.GetEnumerator()) {
+            $packageId = ($app.Value.choco -split ";")[-1].Trim()
             if ($packageId -ne "na" -and $packageId -in $apps) {
-                Write-Output $_.Key
+                Write-Output $app.Key
             }
         }
     }
@@ -38,13 +38,11 @@ Function Invoke-WinUtilCurrentSystem {
 
         $sync.configs.applicationsHashtable.GetEnumerator() | ForEach-Object {
             $packageId = (($_.Value.winget -split ";")[-1] -replace "^msstore:", "").Trim()
-            if ([string]::IsNullOrWhiteSpace($packageId) -or $packageId -eq "na") {
-                return
-            }
-
-            $packagePattern = "(?im)[^\S\r\n]{2,}$([regex]::Escape($packageId))(?=[^\S\r\n]{2,}|$)"
-            if ($installedProgramText -match $packagePattern) {
-                Write-Output $_.Key
+            if (-not [string]::IsNullOrWhiteSpace($packageId) -and $packageId -ne "na") {
+                $packagePattern = "(?im)[^\S\r\n]{2,}$([regex]::Escape($packageId))(?=[^\S\r\n]{2,}|$)"
+                if ($installedProgramText -match $packagePattern) {
+                    Write-Output $_.Key
+                }
             }
         }
     }
@@ -53,10 +51,13 @@ Function Invoke-WinUtilCurrentSystem {
 
         if (!(Test-Path 'HKU:\')) {$null = (New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS)}
 
-        $sync.configs.tweaks | Get-Member -MemberType NoteProperty | ForEach-Object {
+        $servicesMap = @{}
+        Get-Service -ErrorAction SilentlyContinue | ForEach-Object { $servicesMap[$_.Name] = $_ }
 
-            $Config = $psitem.Name
-            $entry = $sync.configs.tweaks.$Config
+        foreach ($prop in $sync.configs.tweaks.PSObject.Properties) {
+
+            $Config = $prop.Name
+            $entry = $prop.Value
             $registryKeys = $entry.registry
             $serviceKeys = $entry.service
             $entryType = $entry.Type
@@ -72,14 +73,10 @@ Function Invoke-WinUtilCurrentSystem {
                     $registryMatchCount = 0
                     $registryTotal = 0
 
-                    Foreach ($tweaks in $registryKeys) {
-                        Foreach ($tweak in $tweaks) {
+                    foreach ($tweaks in $registryKeys) {
+                        foreach ($tweak in $tweaks) {
                             $registryTotal++
-                            $regstate = $null
-
-                            if (Test-Path $tweak.Path) {
-                                $regstate = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
-                            }
+                            $regstate = Get-ItemPropertyValue -Path $tweak.Path -Name $tweak.Name -ErrorAction SilentlyContinue
 
                             if ($null -eq $regstate) {
                                 switch ($tweak.DefaultState) {
@@ -106,16 +103,11 @@ Function Invoke-WinUtilCurrentSystem {
                     }
                 }
 
-                Foreach ($tweaks in $serviceKeys) {
-                    Foreach ($tweak in $tweaks) {
-                        $Service = Get-Service -Name $tweak.Name
-
-                        if ($Service) {
-                            $actualValue = $Service.StartType
-                            $expectedValue = $tweak.StartupType
-                            if ($expectedValue -ne $actualValue) {
-                                $values += $False
-                            }
+                foreach ($tweaks in $serviceKeys) {
+                    foreach ($tweak in $tweaks) {
+                        $Service = $servicesMap[$tweak.Name]
+                        if ($Service -and $Service.StartType -ne $tweak.StartupType) {
+                            $values += $False
                         }
                     }
                 }
