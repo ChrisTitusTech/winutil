@@ -183,6 +183,7 @@ Set-WinUtilTaskbaritem -state "None"
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version
 # Set the commands that will run when the form is closed
 $sync["Form"].Add_Closing({
+    Close-WinUtilFaviconRunspacePool
     Close-WinUtilRunspacePool
     [System.GC]::Collect()
 })
