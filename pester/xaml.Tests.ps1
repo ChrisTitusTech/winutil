@@ -450,6 +450,7 @@ Describe "XAML and sync wiring" {
             "InstallAppRenderQueue",
             "InstallAppEntriesRendered",
             "FaviconOperations",
+            "FaviconCircuitBreaker",
             "FaviconRunspace",
             "FaviconTimer",
             "FontScaleFactor",

@@ -1,6 +1,14 @@
 function Close-WinUtilFaviconRunspacePool {
+    <#
+        .SYNOPSIS
+            Stops favicon work and disposes its timer, operations, circuit breaker, and runspace pool.
+    #>
     if ($null -eq $sync) {
         return
+    }
+
+    if ($sync.FaviconCircuitBreaker) {
+        $sync.FaviconCircuitBreaker.Cancel()
     }
 
     if ($sync.FaviconTimer) {
@@ -35,5 +43,10 @@ function Close-WinUtilFaviconRunspacePool {
             $sync.FaviconRunspace.Dispose()
             $sync.Remove("FaviconRunspace")
         }
+    }
+
+    if ($sync.FaviconCircuitBreaker) {
+        $sync.FaviconCircuitBreaker.Dispose()
+        $sync.Remove("FaviconCircuitBreaker")
     }
 }
