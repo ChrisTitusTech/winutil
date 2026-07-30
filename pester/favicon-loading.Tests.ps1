@@ -2,6 +2,7 @@ BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     Add-Type -AssemblyName PresentationFramework
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilFaviconUrl.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilFaviconRunspacePool.ps1")
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilFaviconFetch.ps1")
 }
 
@@ -24,6 +25,39 @@ Describe "WinUtil favicon loading" {
         $poolScript | Should -Match '\[Math\]::Max\(\$halfProcessors, \$minimumWorkers\)'
         $poolScript | Should -Match '\[Math\]::Min\(\$maxThreads, \$maximumWorkers\)'
         $poolScript | Should -Match 'CreateRunspacePool'
+    }
+
+    It "replaces a stale pool without clearing shared favicon state" {
+        $previousSync = Get-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
+        $stalePool = [runspacefactory]::CreateRunspacePool(1, 1)
+        $stalePool.Open()
+        $stalePool.Close()
+        $circuitBreaker = [pscustomobject]@{ Name = "Test breaker" }
+        $operations = [hashtable]::Synchronized(@{})
+
+        try {
+            $global:sync = [hashtable]::Synchronized(@{
+                FaviconCircuitBreaker = $circuitBreaker
+                FaviconOperations     = $operations
+                FaviconRunspace       = $stalePool
+            })
+
+            $replacementPool = Initialize-WinUtilFaviconRunspacePool
+
+            $replacementPool.RunspacePoolStateInfo.State | Should -Be ([System.Management.Automation.Runspaces.RunspacePoolState]::Opened)
+            [object]::ReferenceEquals($global:sync.FaviconCircuitBreaker, $circuitBreaker) | Should -BeTrue
+            [object]::ReferenceEquals($global:sync.FaviconOperations, $operations) | Should -BeTrue
+        } finally {
+            if ($global:sync.FaviconRunspace) {
+                $global:sync.FaviconRunspace.Close()
+                $global:sync.FaviconRunspace.Dispose()
+            }
+            if ($previousSync) {
+                $global:sync = $previousSync.Value
+            } else {
+                Remove-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
+            }
+        }
     }
 
     It "downloads favicon bytes without assigning a network URL to the WPF image" {

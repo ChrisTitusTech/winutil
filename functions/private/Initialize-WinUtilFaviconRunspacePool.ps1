@@ -12,7 +12,18 @@ function Initialize-WinUtilFaviconRunspacePool {
     }
 
     if ($sync.FaviconRunspace) {
-        Close-WinUtilFaviconRunspacePool
+        try {
+            if ($sync.FaviconRunspace.RunspacePoolStateInfo.State -notin @(
+                [System.Management.Automation.Runspaces.RunspacePoolState]::Closed,
+                [System.Management.Automation.Runspaces.RunspacePoolState]::Closing,
+                [System.Management.Automation.Runspaces.RunspacePoolState]::Broken
+            )) {
+                $sync.FaviconRunspace.Close()
+            }
+        } finally {
+            $sync.FaviconRunspace.Dispose()
+            $sync.Remove("FaviconRunspace")
+        }
     }
 
     $minimumWorkers = 2
