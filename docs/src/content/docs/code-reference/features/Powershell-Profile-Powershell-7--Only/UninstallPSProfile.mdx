@@ -1,0 +1,21 @@
+---
+title: "CTT PowerShell Profile - Remove"
+description: ""
+---
+
+:::note
+This page is generated from [`functions/private/Invoke-WinUtilUninstallPSProfile.ps1`](https://github.com/ChrisTitusTech/winutil/blob/main/functions/private/Invoke-WinUtilUninstallPSProfile.ps1). Edit the source file and regenerate the docs rather than editing this file directly.
+:::
+
+```powershell title="functions/private/Invoke-WinUtilUninstallPSProfile.ps1"
+function Invoke-WinUtilUninstallPSProfile {
+
+    if (Test-Path ($Profile + ".bak")) {
+        Move-Item -Path ($Profile + ".bak") -Destination $Profile
+    } else {
+        Remove-Item -Path $Profile
+    }
+
+    Write-Host "Successfully uninstalled CTT PowerShell Profile." -ForegroundColor Green
+}
+```
