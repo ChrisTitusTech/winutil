@@ -144,6 +144,23 @@ Describe "Invoke-WPFInstall entrypoint" {
         }
     }
 
+    It "queues the explicit app popup package over the selected apps" {
+        $explicitPackage = New-WinUtilPackage -Name "VLC" -Winget "VideoLAN.VLC" -Choco "vlc"
+
+        Invoke-WPFInstall -PackagesToInstall $explicitPackage
+
+        Should -Invoke -CommandName Invoke-WPFRunspace -Times 1 -Exactly -ParameterFilter {
+            $ScriptBlock -is [scriptblock] -and
+                $ParameterList.Count -eq 2 -and
+                $ParameterList[0][0] -eq "PackagesToInstall" -and
+                @($ParameterList[0][1]).Count -eq 1 -and
+                @($ParameterList[0][1])[0].winget -eq "VideoLAN.VLC" -and
+                $ParameterList[1][0] -eq "ManagerPreference" -and
+                $ParameterList[1][1] -eq "Winget"
+        }
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 0 -Exactly
+    }
+
     It "prompts and exits when no packages are selected" {
         New-WinUtilInstallTestContext
 
