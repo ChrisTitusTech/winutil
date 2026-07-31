@@ -22,6 +22,7 @@ export default defineConfig({
 			components: {
 				ThemeProvider: './src/components/ThemeProvider.astro',
 				Hero: './src/components/Hero.astro',
+				Header: './src/components/Header.astro',
 			},
 			editLink: {
 				baseUrl: 'https://github.com/ChrisTitusTech/winutil/edit/main/docs-astro/',
