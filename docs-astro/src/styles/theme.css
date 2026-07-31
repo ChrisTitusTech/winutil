@@ -83,6 +83,16 @@
 	border-radius: 0 var(--wu-radius-sm) var(--wu-radius-sm) 0;
 }
 
+/* Windows-style minimize/maximize/close glyph for the code blocks */
+.expressive-code .frame.is-terminal .header::before {
+	left: auto !important;
+	right: 0.85rem !important;
+	width: 4.75rem !important;
+	height: 0.7rem !important;
+	opacity: 0.85 !important;
+	--ec-frm-trmIcon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 16' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M4 8h12'/%3E%3Crect x='42' y='3.5' width='12' height='9' rx='0.5'/%3E%3Cpath d='M80 3l12 10M92 3L80 13'/%3E%3C/svg%3E");
+}
+
 /* Cards (CardGrid / LinkCard): rounded, accent border on hover. */
 .sl-markdown-content .card,
 a.link-card {
