@@ -28,7 +28,7 @@ hero:
       variant: secondary
 ---
 
-import { Icon } from '@astrojs/starlight/components';
+import { Icon, Code } from '@astrojs/starlight/components';
 import CornerCard from '../../components/CornerCard.astro';
 
 {/* Trust bar: icon + label chips under the hero. */}
@@ -145,7 +145,8 @@ import CornerCard from '../../components/CornerCard.astro';
 			<div class="wu-timeline-step">
 				<span class="wu-timeline-number">2</span>
 				<h3>Run the launch command</h3>
-				<p><code>irm "https://christitus.com/win" | iex</code> downloads and starts the latest release.</p>
+				<p>Downloads and starts the latest release.</p>
+				<Code code={'irm "https://christitus.com/win" | iex'} lang="powershell" />
 			</div>
 			<div class="wu-timeline-step">
 				<span class="wu-timeline-number">3</span>
