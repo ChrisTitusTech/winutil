@@ -1,0 +1,178 @@
+---
+import config from 'virtual:starlight/user-config';
+
+import LanguageSelect from 'virtual:starlight/components/LanguageSelect';
+import Search from 'virtual:starlight/components/Search';
+import SiteTitle from 'virtual:starlight/components/SiteTitle';
+import SocialIcons from 'virtual:starlight/components/SocialIcons';
+import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
+
+/**
+ * Render the `Search` component if Pagefind is enabled or the default search component has been overridden.
+ */
+const shouldRenderSearch =
+	config.pagefind || config.components.Search !== '@astrojs/starlight/components/Search.astro';
+---
+
+<div class="header">
+	<div class="title-wrapper sl-flex">
+		<SiteTitle />
+	</div>
+	<div class="sl-flex print:hidden">
+		{shouldRenderSearch && <Search />}
+	</div>
+	<div class="sl-hidden md:sl-flex print:hidden right-group">
+		<nav class="site-nav" aria-label="Top">
+			<a class="site-nav-link" href="/guides/">User Guides</a>
+			<div class="site-nav-dropdown">
+				<button type="button" class="site-nav-link" aria-haspopup="true">Documentation</button>
+				<div class="site-nav-menu">
+					<a href="/contributing/">Contribution Guides</a>
+					<a href="/code-reference/architecture/">Developer Docs</a>
+				</div>
+			</div>
+			<div class="site-nav-dropdown">
+				<button type="button" class="site-nav-link" aria-haspopup="true">Help</button>
+				<div class="site-nav-menu">
+					<a href="/faq/">FAQ</a>
+					<a href="/known-issues/">Known Issues</a>
+					<a href="https://forum.christitus.com/" target="_blank" rel="noreferrer">Forums</a>
+				</div>
+			</div>
+			<a class="site-nav-link" href="https://christitus.com/downloads/" target="_blank" rel="noreferrer">Store</a>
+		</nav>
+		<div class="sl-flex social-icons">
+			<SocialIcons />
+		</div>
+		<ThemeSelect />
+		<LanguageSelect />
+	</div>
+</div>
+
+<style>
+	@layer starlight.core {
+		.header {
+			display: flex;
+			gap: var(--sl-nav-gap);
+			justify-content: space-between;
+			align-items: center;
+			height: 100%;
+		}
+
+		.title-wrapper {
+			/* Prevent long titles overflowing and covering the search and menu buttons on narrow viewports. */
+			overflow: clip;
+			/* Avoid clipping focus ring around title wrapper. */
+			padding: 0.25rem;
+			margin: -0.25rem;
+			min-width: 0;
+		}
+
+		.right-group,
+		.social-icons {
+			gap: 1rem;
+			align-items: center;
+		}
+		.social-icons::after {
+			content: '';
+			height: 2rem;
+			border-inline-end: 1px solid var(--sl-color-hairline-light);
+		}
+
+		@media (min-width: 50rem) {
+			:global(:root[data-has-sidebar]) {
+				--__sidebar-pad: calc(2 * var(--sl-nav-pad-x));
+			}
+			:global(:root:not([data-has-toc])) {
+				--__toc-width: 0rem;
+			}
+			.header {
+				--__sidebar-width: max(0rem, var(--sl-content-inline-start, 0rem) - var(--sl-nav-pad-x));
+				--__main-column-fr: calc(
+					(
+							100% + var(--__sidebar-pad, 0rem) - var(--__toc-width, var(--sl-sidebar-width)) -
+								(2 * var(--__toc-width, var(--sl-nav-pad-x))) - var(--sl-content-inline-start, 0rem) -
+								var(--sl-content-width)
+						) / 2
+				);
+				display: grid;
+				grid-template-columns:
+      /* 1 (site title): runs up until the main content column’s left edge or the width of the title, whichever is the largest  */
+					minmax(
+						calc(var(--__sidebar-width) + max(0rem, var(--__main-column-fr) - var(--sl-nav-gap))),
+						auto
+					)
+					/* 2 (search box): all free space that is available. */
+					1fr
+					/* 3 (right items): use the space that these need. */
+					auto;
+				align-content: center;
+			}
+		}
+	}
+
+	/* Top nav links + dropdowns, matching the previous Hugo docs site's navbar. */
+	.site-nav {
+		display: flex;
+		align-items: center;
+		gap: 1.25rem;
+		padding-inline-end: 1.25rem;
+		border-inline-end: 1px solid var(--sl-color-hairline-light);
+	}
+
+	.site-nav-link {
+		font-size: var(--sl-text-sm);
+		font-weight: 500;
+		color: var(--sl-color-gray-2);
+		background: none;
+		border: none;
+		padding: 0;
+		font-family: inherit;
+		cursor: pointer;
+		white-space: nowrap;
+		text-decoration: none;
+	}
+	.site-nav-link:hover {
+		color: var(--sl-color-white);
+	}
+
+	.site-nav-dropdown {
+		position: relative;
+		/* Extends the dropdown's own hoverable box down to meet the menu, so the
+		   cursor never crosses a dead zone between the trigger and the menu. */
+		padding-bottom: 0.75rem;
+		margin-bottom: -0.75rem;
+	}
+	.site-nav-menu {
+		display: none;
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		transform: translateX(-50%);
+		min-width: 11rem;
+		padding: 0.5rem;
+		flex-direction: column;
+		gap: 0.125rem;
+		background: var(--sl-color-bg-nav);
+		border: 1px solid var(--sl-color-hairline-light);
+		border-radius: var(--wu-radius-sm, 0.5rem);
+		box-shadow: var(--sl-shadow-lg);
+		z-index: 10;
+	}
+	.site-nav-dropdown:hover .site-nav-menu,
+	.site-nav-dropdown:focus-within .site-nav-menu {
+		display: flex;
+	}
+	.site-nav-menu a {
+		padding: 0.4rem 0.6rem;
+		border-radius: var(--wu-radius-sm, 0.5rem);
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-gray-2);
+		text-decoration: none;
+		white-space: nowrap;
+	}
+	.site-nav-menu a:hover {
+		color: var(--sl-color-white);
+		background: var(--sl-color-gray-6);
+	}
+</style>
