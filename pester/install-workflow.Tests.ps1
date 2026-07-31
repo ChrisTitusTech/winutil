@@ -66,7 +66,6 @@ BeforeAll {
             $selectedApps.Add($key)
         }
 
-        $script:AppTitle = "Winutil"
         $script:sync = [Hashtable]::Synchronized(@{
             ProcessRunning = $ProcessRunning
             selectedApps = $selectedApps
@@ -122,7 +121,6 @@ Describe "Invoke-WPFInstall entrypoint" {
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name AppTitle -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name capturedInstallScriptBlock -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name capturedInstallParameterList -Scope Script -ErrorAction SilentlyContinue
     }
@@ -153,7 +151,7 @@ Describe "Invoke-WPFInstall entrypoint" {
 
         Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
             $Message -eq "Please select the program(s) to install or upgrade." -and
-                $Title -eq "Winutil" -and
+                $Title -eq "WinUtil" -and
                 $Button -eq "OK" -and
                 $Icon -eq "Warning"
         }
@@ -167,7 +165,7 @@ Describe "Invoke-WPFInstall entrypoint" {
 
         Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
             $Message -eq "[Invoke-WPFInstall] An Install process is currently running." -and
-                $Title -eq "Winutil" -and
+                $Title -eq "WinUtil" -and
                 $Button -eq "OK" -and
                 $Icon -eq "Warning"
         }
@@ -201,7 +199,6 @@ Describe "Invoke-WPFInstall runspace body" {
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name AppTitle -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name capturedInstallScriptBlock -Scope Script -ErrorAction SilentlyContinue
     }
 
@@ -289,7 +286,6 @@ Describe "Invoke-WPFUnInstall entrypoint" {
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name AppTitle -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name capturedUninstallScriptBlock -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name capturedUninstallParameterList -Scope Script -ErrorAction SilentlyContinue
     }
@@ -324,7 +320,7 @@ Describe "Invoke-WPFUnInstall entrypoint" {
 
         Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
             $Message -eq "Please select the program(s) to uninstall" -and
-                $Title -eq "Winutil" -and
+                $Title -eq "WinUtil" -and
                 $Button -eq "OK" -and
                 $Icon -eq "Warning"
         }
@@ -338,7 +334,7 @@ Describe "Invoke-WPFUnInstall entrypoint" {
 
         Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
             $Message -eq "[Invoke-WPFUnInstall] Install process is currently running" -and
-                $Title -eq "Winutil" -and
+                $Title -eq "WinUtil" -and
                 $Button -eq "OK" -and
                 $Icon -eq "Warning"
         }
@@ -379,7 +375,6 @@ Describe "Invoke-WPFUnInstall runspace body" {
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name AppTitle -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name capturedUninstallScriptBlock -Scope Script -ErrorAction SilentlyContinue
     }
 

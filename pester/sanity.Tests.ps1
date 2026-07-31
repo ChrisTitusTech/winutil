@@ -53,7 +53,8 @@ if ($failed.Count -gt 0) {
 }
 '@
 
-            $output = & $windowsPowerShell.Source -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command $parseScript 2>&1
+            $encodedCommand = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($parseScript))
+            $output = & $windowsPowerShell.Source -NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand $encodedCommand 2>&1
             if ($LASTEXITCODE -ne 0) {
                 throw "Windows PowerShell parser failed:`n$($output | Out-String)"
             }

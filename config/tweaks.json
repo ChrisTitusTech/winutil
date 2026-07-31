@@ -1454,8 +1454,7 @@
         "Value": "0",
         "Type": "DWord",
         "OriginalValue": "1",
-        "DefaultState": "false",
-      "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/scrollbars"
+        "DefaultState": "false"
       }
     ],
     "link": "https://winutil.christitus.com/dev/tweaks/customize-preferences/scrollbars"
