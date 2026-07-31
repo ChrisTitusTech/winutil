@@ -7,6 +7,7 @@ BeforeAll {
 
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilSelectedPackages.ps1")
     . (Join-Path $script:repoRoot "functions\private\Test-WinUtilPackageManager.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Ensure-WinUtilWingetSources.ps1")
     . (Join-Path $script:repoRoot "functions\private\Install-WinUtilProgramWinget.ps1")
     . (Join-Path $script:repoRoot "functions\private\Install-WinUtilProgramChoco.ps1")
 
@@ -112,12 +113,14 @@ Describe "Test-WinUtilPackageManager" {
 Describe "Install-WinUtilProgramWinget" {
     BeforeEach {
         Mock Write-WinUtilLog { }
+        Mock Ensure-WinUtilWingetSources { }
         Mock Start-Process { [pscustomobject]@{ ExitCode = 0 } }
     }
 
     It "starts winget with install arguments" {
         Install-WinUtilProgramWinget -Action Install -Programs @("Git.Git")
 
+        Should -Invoke -CommandName Ensure-WinUtilWingetSources -Times 0 -Exactly
         Should -Invoke -CommandName Start-Process -Times 1 -Exactly -ParameterFilter {
             $FilePath -eq "winget" -and
                 (@($ArgumentList) -join "|") -eq "install|--id|Git.Git|--accept-package-agreements|--accept-source-agreements|--source|winget|--silent" -and
@@ -127,9 +130,44 @@ Describe "Install-WinUtilProgramWinget" {
         }
     }
 
+    It "repairs sources and retries a source failure once" {
+        $script:wingetCallCount = 0
+        Mock Start-Process {
+            $script:wingetCallCount++
+            if ($script:wingetCallCount -eq 1) {
+                return [pscustomobject]@{ ExitCode = -1978335217 }
+            }
+            return [pscustomobject]@{ ExitCode = 0 }
+        }
+
+        Install-WinUtilProgramWinget -Action Install -Programs @("Git.Git")
+
+        Should -Invoke -CommandName Ensure-WinUtilWingetSources -Times 1 -Exactly
+        Should -Invoke -CommandName Start-Process -Times 2 -Exactly
+    }
+
+    It "throws when source repair does not resolve the failure" {
+        Mock Start-Process { [pscustomobject]@{ ExitCode = -1978335217 } }
+
+        { Install-WinUtilProgramWinget -Action Install -Programs @("Git.Git") } | Should -Throw
+
+        Should -Invoke -CommandName Ensure-WinUtilWingetSources -Times 1 -Exactly
+        Should -Invoke -CommandName Start-Process -Times 2 -Exactly
+    }
+
+    It "does not repair sources for unrelated failures" {
+        Mock Start-Process { [pscustomobject]@{ ExitCode = 1 } }
+
+        Install-WinUtilProgramWinget -Action Install -Programs @("Git.Git")
+
+        Should -Invoke -CommandName Ensure-WinUtilWingetSources -Times 0 -Exactly
+        Should -Invoke -CommandName Start-Process -Times 1 -Exactly
+    }
+
     It "starts winget with uninstall arguments and msstore source when requested" {
         Install-WinUtilProgramWinget -Action Uninstall -Programs @("msstore:9NBLGGH4NNS1")
 
+        Should -Invoke -CommandName Ensure-WinUtilWingetSources -Times 0 -Exactly
         Should -Invoke -CommandName Start-Process -Times 1 -Exactly -ParameterFilter {
             $FilePath -eq "winget" -and
                 (@($ArgumentList) -join "|") -eq "uninstall|--id|9NBLGGH4NNS1|--source|msstore|--silent"
