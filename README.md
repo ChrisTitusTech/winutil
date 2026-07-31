@@ -6,7 +6,8 @@
 
 A curated compilation of Windows system tasks streamline **installs**, debloat with **tweaks**, troubleshoot with **config**, and configure **Windows updates**. Run it fresh on every new Windows install.
 
-![Title Screen](/docs/assets/images/Title-Screen.png)
+<img width="1200" height="942" alt="image" src="https://github.com/user-attachments/assets/b809c261-2798-4203-9e34-e7cbe10dc44f" />
+
 
 ---
 
