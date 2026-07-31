@@ -132,11 +132,18 @@ body {
 	border-radius: var(--wu-radius-sm);
 	font-size: var(--sl-text-sm);
 	font-weight: 500;
+	line-height: 1;
 	text-decoration: none;
 	transition:
 		filter 0.15s ease,
 		border-color 0.15s ease,
 		color 0.15s ease;
+}
+/* The right/left-arrow glyph's visual weight sits high in its viewBox, so it
+   reads as floating above the label's baseline without this nudge. */
+.wu-btn .wu-icon-arrow {
+	position: relative;
+	top: 0.05em;
 }
 .wu-btn-primary {
 	background: var(--wu-accent);

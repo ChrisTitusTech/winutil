@@ -28,7 +28,13 @@ if (image && 'file' in image) heroImage = image.file;
 						{actions.map(({ icon, link: href, text, variant = 'primary' }) => (
 							<a href={href} class:list={['wu-btn', variant === 'primary' ? 'wu-btn-primary' : 'wu-btn-secondary']}>
 								{text}
-								{icon?.name && <Icon name={icon.name} size="1.1em" />}
+								{icon?.name && (
+									<Icon
+										name={icon.name}
+										size="1.5em"
+										class:list={[(icon.name === 'right-arrow' || icon.name === 'left-arrow') && 'wu-icon-arrow']}
+									/>
+								)}
 							</a>
 						))}
 					</div>
