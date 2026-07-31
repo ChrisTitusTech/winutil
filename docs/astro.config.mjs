@@ -25,7 +25,7 @@ export default defineConfig({
 				Header: './src/components/Header.astro',
 			},
 			editLink: {
-				baseUrl: 'https://github.com/ChrisTitusTech/winutil/edit/main/docs-astro/',
+				baseUrl: 'https://github.com/ChrisTitusTech/winutil/edit/main/docs/',
 			},
 			sidebar: [
 				{
@@ -42,13 +42,11 @@ export default defineConfig({
 					],
 				},
 				{
-					label: 'Developer Docs',
+					label: 'Code Reference',
 					items: [
-						// Architecture doc lands here once ported.
-						{
-							label: 'Tweaks Reference',
-							items: [{ label: 'Hyper-V - Enable', slug: 'reference/tweaks/hyperv' }],
-						},
+						{ label: 'Architecture & Design', slug: 'code-reference/architecture' },
+						{ label: 'Tweaks Reference', items: [{ autogenerate: { directory: 'code-reference/tweaks' } }] },
+						{ label: 'Features Reference', items: [{ autogenerate: { directory: 'code-reference/features' } }] },
 					],
 				},
 				{
