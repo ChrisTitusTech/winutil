@@ -41,9 +41,18 @@ if (image && 'file' in image) heroImage = image.file;
 				<div class="wu-hero-media">
 					<div class="wu-window">
 						<div class="wu-window-bar">
-							<span class="wu-dot wu-dot-red" />
-							<span class="wu-dot wu-dot-yellow" />
-							<span class="wu-dot wu-dot-green" />
+							<span class="wu-window-title">winutil.ps1</span>
+							<div class="wu-caption-buttons">
+								<span class="wu-cap-btn wu-cap-min" aria-hidden="true">
+									<svg viewBox="0 0 10 10"><path d="M0 5h10" /></svg>
+								</span>
+								<span class="wu-cap-btn wu-cap-max" aria-hidden="true">
+									<svg viewBox="0 0 10 10"><rect x="0.5" y="0.5" width="9" height="9" /></svg>
+								</span>
+								<span class="wu-cap-btn wu-cap-close" aria-hidden="true">
+									<svg viewBox="0 0 10 10"><path d="M0 0l10 10M10 0L0 10" /></svg>
+								</span>
+							</div>
 						</div>
 						<Image src={heroImage} alt={image?.alt || ''} width={1200} loading="eager" decoding="async" />
 					</div>
@@ -185,25 +194,55 @@ if (image && 'file' in image) heroImage = image.file;
 
 		.wu-window-bar {
 			display: flex;
+			align-items: center;
 			gap: 0.4rem;
-			padding: 0.65rem 0.85rem;
+			padding-inline-start: 0.85rem;
 			border-bottom: 1px solid var(--sl-color-hairline-light);
 			background: var(--sl-color-black);
 		}
 
-		.wu-dot {
+		.wu-window-title {
+			font-size: var(--sl-text-xs);
+			color: var(--sl-color-gray-3);
+			flex: 1;
+		}
+
+		.wu-caption-buttons {
+			display: flex;
+			height: 2.1rem;
+		}
+
+		.wu-cap-btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 2.75rem;
+			height: 100%;
+			color: var(--sl-color-gray-3);
+		}
+
+		.wu-cap-btn svg {
 			width: 0.65rem;
 			height: 0.65rem;
-			border-radius: 999px;
+			fill: none;
+			stroke: currentColor;
+			stroke-width: 1;
 		}
-		.wu-dot-red {
-			background: #ff5f57;
+
+		.wu-cap-max svg {
+			fill: none;
 		}
-		.wu-dot-yellow {
-			background: #febc2e;
+
+		.wu-cap-close svg {
+			fill: none;
 		}
-		.wu-dot-green {
-			background: #28c840;
+
+		.wu-cap-btn:hover {
+			background: var(--sl-color-gray-5);
+		}
+		.wu-cap-close:hover {
+			background: #e81123;
+			color: white;
 		}
 
 		.wu-window :global(img) {
