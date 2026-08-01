@@ -5,10 +5,12 @@ import { Icon } from '@astrojs/starlight/components';
 
 <script is:inline>
 	window.StarlightThemeProvider = (() => {
+		// Apply the resolved theme to <html> immediately, before paint, to avoid a flash of the wrong theme.
 		const storedTheme =
 			typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
 		const theme = storedTheme || 'dark';
 		document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+		// Re-syncs each theme-select picker's icon + value after the visitor changes theme.
 		return {
 			updatePickers(theme = storedTheme || 'auto') {
 				document.querySelectorAll('starlight-theme-select').forEach((picker) => {

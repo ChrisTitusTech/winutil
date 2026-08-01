@@ -139,8 +139,7 @@ body {
 		border-color 0.15s ease,
 		color 0.15s ease;
 }
-/* The right/left-arrow glyph's visual weight sits high in its viewBox, so it
-   reads as floating above the label's baseline without this nudge. */
+/* The right/left-arrow glyph's visual weight sits high in its viewBox, so it reads as floating above the label's baseline without this nudge. */
 .wu-btn .wu-icon-arrow {
 	position: relative;
 	top: 0.05em;
