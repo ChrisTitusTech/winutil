@@ -24,7 +24,7 @@ irm https://christitus.com/windev | iex
 * If you're doing code changes, then you can submit a PR to the `main` branch.
 
 > [!IMPORTANT]
-> Do not use a code formatter, make massive amounts of line changes, or make multiple feature changes. EACH FEATURE CHANGE SHOULD BE IT'S OWN PULL REQUEST!
+> Do not use a code formatter, make massive amounts of line changes, or make multiple feature changes. EACH FEATURE CHANGE SHOULD BE ITS OWN PULL REQUEST!
 >
 > Do not open a pull request that adds support for other languages to WinUtil for now, until we decide how we want to move forward with language support.
 
