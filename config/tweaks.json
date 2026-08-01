@@ -1460,29 +1460,16 @@
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/customize-preferences/scrollbars"
   },
-  "WPFToggleMultiplaneOverlay": {
-    "Content": "Multiplane Overlay",
-    "Description": "Multiplane Overlay compose multiple image layers, which can sometimes cause issues with graphics cards.",
+  "WPFMultiplaneOverlay": {
+    "Content": "Multiplane Overlay - Set to:",
+    "Description": "Multiplane Overlay compose multiple image layers, which can sometimes cause issues with graphics cards. Changes to this preference are applied immediately.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Dwm",
-        "Name": "OverlayTestMode",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "5",
-        "DefaultState": "true"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers",
-        "Name": "DisableOverlays",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "1",
-        "DefaultState": "true"
-      }
+    "Type": "Combobox",
+    "ComboItems": [
+      "Enabled",
+      "Disabled (Compatibility)",
+      "Fully Disabled"
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/customize-preferences/multiplaneoverlay"
   },

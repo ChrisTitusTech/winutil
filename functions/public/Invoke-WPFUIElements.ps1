@@ -262,7 +262,13 @@ function Invoke-WPFUIElements {
                         $comboBox.UseLayoutRounding = $true
                         [System.Windows.Automation.AutomationProperties]::SetName($comboBox, $entryInfo.Content)
 
-                        foreach ($comboitem in ($entryInfo.ComboItems -split " ")) {
+                        $comboItems = if ($entryInfo.ComboItems -is [string]) {
+                            $entryInfo.ComboItems -split " "
+                        } else {
+                            @($entryInfo.ComboItems)
+                        }
+
+                        foreach ($comboitem in $comboItems) {
                             $comboBoxItem = New-Object Windows.Controls.ComboBoxItem
                             $comboBoxItem.Content = $comboitem
                             $comboBoxItem.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
@@ -273,22 +279,51 @@ function Invoke-WPFUIElements {
                         $horizontalStackPanel.Children.Add($comboBox) | Out-Null
                         $itemsControl.Items.Add($horizontalStackPanel) | Out-Null
 
-                        $comboBox.SelectedIndex = 0
+                        if ($entryInfo.Name -eq "WPFMultiplaneOverlay") {
+                            Sync-WPFMultiplaneOverlayState -ComboBox $comboBox
+                        } else {
+                            $comboBox.SelectedIndex = 0
+                        }
 
                         # Set initial text
                         if ($comboBox.Items.Count -gt 0) {
-                            $comboBox.Text = $comboBox.Items[0].Content
+                            $comboBox.Text = $comboBox.SelectedItem.Content
                         }
+
+                        $sync[$entryInfo.Name] = $comboBox
 
                         # Add SelectionChanged event handler to update the text property
                         $comboBox.Add_SelectionChanged({
                             $selectedItem = $this.SelectedItem
                             if ($selectedItem) {
                                 $this.Text = $selectedItem.Content
+                                if ($this.Name -eq "WPFMultiplaneOverlay" -and $selectedItem.IsEnabled) {
+                                    try {
+                                        $currentState = Get-WinUtilMultiplaneOverlayState
+                                    } catch {
+                                        $currentState = $null
+                                    }
+
+                                    if ($selectedItem.Content -eq $currentState) {
+                                        return
+                                    }
+
+                                    try {
+                                        Set-WinUtilMultiplaneOverlay -State $selectedItem.Content
+                                        Sync-WPFMultiplaneOverlayState -ComboBox $this
+                                    } catch {
+                                        $applyError = $_.Exception.Message
+                                        Sync-WPFMultiplaneOverlayState -ComboBox $this
+                                        [System.Windows.MessageBox]::Show(
+                                            $applyError,
+                                            "WinUtil",
+                                            [System.Windows.MessageBoxButton]::OK,
+                                            [System.Windows.MessageBoxImage]::Warning
+                                        ) | Out-Null
+                                    }
+                                }
                             }
                         })
-
-                        $sync[$entryInfo.Name] = $comboBox
                     }
 
                     "Button" {
