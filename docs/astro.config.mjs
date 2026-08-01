@@ -21,8 +21,8 @@ export default defineConfig({
 			customCss: ['./src/styles/theme.css'],
 			components: {
 				ThemeProvider: './src/components/ThemeProvider.astro',
-				Hero: './src/components/Hero.astro',
 				Header: './src/components/Header.astro',
+				Hero: './src/components/Hero.astro',
 				Footer: './src/components/Footer.astro',
 			},
 			editLink: {
@@ -54,7 +54,7 @@ export default defineConfig({
 					label: 'Help',
 					items: [
 						{ label: 'FAQ', slug: 'faq' },
-						{ label: 'Known Issues', slug: 'known-issues' },
+						{ label: 'Known Issues', slug: 'knownissues' },
 						{ label: 'Contributing', slug: 'contributing' },
 					],
 				},
