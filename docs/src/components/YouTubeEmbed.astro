@@ -1,0 +1,41 @@
+---
+// Responsive 16:9 YouTube embed using the privacy-enhanced (nocookie) domain.
+interface Props {
+	id: string;
+	title: string;
+}
+
+const { id, title } = Astro.props;
+---
+
+<div class="wu-video-embed">
+	<iframe
+		src={`https://www.youtube-nocookie.com/embed/${id}`}
+		title={title}
+		loading="lazy"
+		allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+		allowfullscreen
+	></iframe>
+</div>
+
+<style>
+	@layer starlight.core {
+		.wu-video-embed {
+			position: relative;
+			width: 100%;
+			aspect-ratio: 16 / 9;
+			margin: 1.5rem 0;
+			border: 1px solid var(--sl-color-hairline-light);
+			background-color: var(--sl-color-black);
+		}
+
+		.wu-video-embed iframe {
+			position: absolute !important;
+			inset: 0 !important;
+			width: 100% !important;
+			height: 100% !important;
+			max-width: 100% !important;
+			border: 0;
+		}
+	}
+</style>
