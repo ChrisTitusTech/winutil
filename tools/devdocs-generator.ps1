@@ -100,7 +100,7 @@ function Get-GeneratedFromNote {
 
     $githubUrl = "https://github.com/ChrisTitusTech/winutil/blob/main/$SourceRelativePath"
     $note  = ":::note`r`n"
-    $note += "This page is generated from [``$SourceRelativePath``]($githubUrl). Edit the source file and regenerate the docs rather than editing this file directly.`r`n"
+    $note += "This page is generated from [``$SourceRelativePath``]($githubUrl). Do not edit this page directly.`r`n"
     $note += ":::`r`n`r`n"
     return $note
 }
