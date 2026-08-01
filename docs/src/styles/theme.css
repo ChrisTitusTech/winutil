@@ -166,6 +166,11 @@ body {
 	display: contents;
 }
 
+/* Cancels Starlight's automatic 1.5rem margin between the hero and the content column. */
+.wu-hero + .sl-markdown-content {
+	margin-top: 0;
+}
+
 /* Cancels Starlight's automatic 1.5rem inter-block margin inside our own grids/rows (it otherwise lands on item 2+ of each row and breaks alignment). */
 .sl-markdown-content .wu-section,
 .sl-markdown-content .wu-solution-grid > *,
@@ -187,6 +192,9 @@ body {
 	padding-block: clamp(3rem, 4vw + 1.5rem, 5.5rem);
 }
 .wu-section--trust {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	padding-block: 2rem;
 }
 .wu-section--tint {
