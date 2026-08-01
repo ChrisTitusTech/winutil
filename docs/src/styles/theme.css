@@ -154,7 +154,7 @@ body {
 .wu-btn-secondary {
 	border: 1px solid var(--sl-color-hairline-light);
 	color: var(--sl-color-white);
-	background: transparent;
+	background: var(--sl-color-gray-6);
 }
 .wu-btn-secondary:hover {
 	border-color: var(--sl-color-accent);
