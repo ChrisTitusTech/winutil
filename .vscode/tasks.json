@@ -3,7 +3,6 @@
 	"tasks": [
 		{
 			"type": "Live Preview",
-			"workspacePath": "c:\\Users\\pttbk\\source\\repos\\TamphanITtools",
 			"problemMatcher": [],
 			"label": "Live Preview: Run Server",
 			"group": {
