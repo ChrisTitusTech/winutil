@@ -1462,7 +1462,7 @@
   },
   "WPFMultiplaneOverlay": {
     "Content": "Multiplane Overlay - Set to:",
-    "Description": "Multiplane Overlay compose multiple image layers, which can sometimes cause issues with graphics cards. Changes to this preference are applied immediately.",
+    "Description": "Multiplane Overlay composes multiple image layers, which can sometimes cause issues with graphics cards. Changes to this preference are applied immediately.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Combobox",

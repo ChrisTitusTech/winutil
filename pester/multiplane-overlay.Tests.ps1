@@ -1,3 +1,7 @@
+#===========================================================================
+# Tests - Multiplane Overlay
+#===========================================================================
+
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilMultiplaneOverlayState.ps1")
