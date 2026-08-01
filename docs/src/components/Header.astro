@@ -26,16 +26,20 @@ const shouldRenderSearch =
 		<nav class="site-nav" aria-label="Top">
 			{/* "Documentation" dropdown. */}
 			<div class="site-nav-dropdown">
-				<button type="button" class="site-nav-link" aria-haspopup="true">Documentation</button>
+				<details name="site-nav-dropdown">
+					<summary class="site-nav-link">Documentation</summary>
+				</details>
 				<div class="site-nav-menu">
 					<a href="/guides/">User Guides</a>
 					<a href="/contributing/">Contribution Guides</a>
-					<a href="/code-reference/architecture/">Developer Docs</a>
+					<a href="/code-reference/architecture/">Code Reference</a>
 				</div>
 			</div>
 			{/* "Help" dropdown. */}
 			<div class="site-nav-dropdown">
-				<button type="button" class="site-nav-link" aria-haspopup="true">Help</button>
+				<details name="site-nav-dropdown">
+					<summary class="site-nav-link">Help</summary>
+				</details>
 				<div class="site-nav-menu">
 					<a href="/faq/">FAQ</a>
 					<a href="/knownissues/">Known Issues</a>
@@ -90,7 +94,7 @@ const shouldRenderSearch =
 			:global(:root:not([data-has-toc])) {
 				--__toc-width: 0rem;
 			}
-			/* Columns: site title (up to the main content edge or title width, whichever is larger), search (remaining space), right-side items (their own width). */
+			/* Columns: site title */
 			.header {
 				--__sidebar-width: max(0rem, var(--sl-content-inline-start, 0rem) - var(--sl-nav-pad-x));
 				--__main-column-fr: calc(
@@ -113,7 +117,7 @@ const shouldRenderSearch =
 		}
 	}
 
-	/* Top nav links + dropdowns, matching the previous Hugo docs site's navbar. */
+	/* Top nav links + dropdowns. */
 	.site-nav {
 		display: flex;
 		align-items: center;
@@ -139,13 +143,25 @@ const shouldRenderSearch =
 		color: var(--sl-color-white);
 	}
 
-	/* Extends the dropdown's own hoverable box down to meet the menu, so the cursor never crosses a dead zone between the trigger and the menu. */
+	/* Extends the hoverable box down to the menu, closing the dead zone between trigger and menu. */
 	.site-nav-dropdown {
 		position: relative;
 		padding-bottom: 0.75rem;
 		margin-bottom: -0.75rem;
 	}
-	/* Dropdown menu panel. */
+	/* No box of its own; only the <summary> lays out. Its `open` state (no JS) is read by .site-nav-menu below. */
+	.site-nav-dropdown > details {
+		display: contents;
+	}
+	.site-nav-dropdown > details > summary {
+		display: inline-flex;
+		align-items: center;
+		list-style: none;
+	}
+	.site-nav-dropdown > details > summary::-webkit-details-marker {
+		display: none;
+	}
+	/* Dropdown menu panel: shown on hover (mouse) or when the sibling <details> is toggled open (touch/keyboard). */
 	.site-nav-menu {
 		display: none;
 		position: absolute;
@@ -163,7 +179,7 @@ const shouldRenderSearch =
 		z-index: 10;
 	}
 	.site-nav-dropdown:hover .site-nav-menu,
-	.site-nav-dropdown:focus-within .site-nav-menu {
+	.site-nav-dropdown:has(details[open]) .site-nav-menu {
 		display: flex;
 	}
 	.site-nav-menu a {
