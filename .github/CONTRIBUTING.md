@@ -70,9 +70,7 @@ graph TD
 ### Fork the Repo
 * Fork the WinUtil Repository [here](https://github.com/ChrisTitusTech/winutil) to create a copy that will be available in your repository list.
 
-![Fork Image](/docs/assets/images/Fork-Button-Dark.png#gh-dark-mode-only)
-
-![Fork Image](/docs/assets/images/Fork-Button-Light.png#only-light#gh-light-mode-only)
+![Fork Image](../docs/src/assets/contributing/Fork-Button-Dark.png)
 
 ### Clone the Fork
 !!! tip
@@ -96,7 +94,7 @@ graph TD
 * Run the following command to compile and run WinUtil:
 * `.\Compile.ps1 -run`
 
-![Compile](/docs/assets/images/Complie.png)
+![Compile](../docs/src/assets/contributing/Complie.png)
 
 
 Open PowerShell as Administrator.
@@ -107,15 +105,15 @@ Open PowerShell as Administrator.
 ### Committing the changes
 * Before committing your changes, please discard changes made to the `winutil.ps1` file, like the following:
 
-![Push Commit Image](/docs/assets/images/Discard-GHD.png)
+![Push Commit Image](../docs/src/assets/contributing/Discard-GHD.png)
 
 * Now, commit your changes once you are happy with the result.
 
-![Commit Image](/docs/assets/images/Commit-GHD.png)
+![Commit Image](../docs/src/assets/contributing/Commit-GHD.png)
 
 * Push the changes to upload them to your fork on github.com.
 
-![Push Commit Image](/docs/assets/images/Push-Commit.png)
+![Push Commit Image](../docs/src/assets/contributing/Push-Commit.png)
 
 ### Making a PR
 * To make a PR on your repo under a new branch linking to the main branch, a button will show and say Preview and Create pull request. Click that button and fill in all the information that is provided on the template. Once all the information is filled in correctly, check your PR to make sure there is no WinUtil.ps1 file attached to the PR. Once everything is good, make the PR and wait for Chris (the maintainer) to accept or deny your PR. Once it is accepted by Chris, you will be able to see your changes in the "/windev" build.
