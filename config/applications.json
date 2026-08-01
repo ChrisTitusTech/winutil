@@ -530,6 +530,15 @@
         "winget": "TechPowerUp.GPU-Z",
         "foss": false
     },
+    "gsudo": {
+        "category": "Pro Tools",
+        "choco": "gsudo",
+        "content": "gsudo",
+        "description": "gsudo is a sudo equivalent for Windows. It allows you to run commands with elevated administrative privileges directly within the current console window.",
+        "link": "https://github.com/gerardog/gsudo",
+        "winget": "gerardog.gsudo",
+        "foss": true
+    },
     "helium": {
         "category": "Browsers",
         "choco": "helium",
@@ -719,15 +728,6 @@
         "winget": "XBMCFoundation.Kodi",
         "foss": true
     },
-    "lightshot": {
-        "category": "Multimedia Tools",
-        "choco": "lightshot",
-        "content": "Lightshot",
-        "description": "The fastest way to take a customizable screenshot.",
-        "link": "https://app.prntscr.com/",
-        "winget": "Skillbrains.Lightshot",
-        "foss": false
-    },
     "lazygit": {
         "category": "Development",
         "choco": "lazygit",
@@ -781,6 +781,15 @@
         "link": "https://element.io/",
         "winget": "Element.Element",
         "foss": true
+    },
+    "minitoolpartitionwizard": {
+        "category": "Utilities",
+        "choco": "minitoolpartitionwizard",
+        "content": "MiniTool Partition Wizard",
+        "description": "Comprehensive free partition manager that performs advanced operations Windows natively cannot, such as merging partitions, converting file systems, and organizing disk capacity.",
+        "link": "https://www.partitionwizard.com/",
+        "winget": "MiniTool.PartitionWizard.Free",
+        "foss": false
     },
     "modrinth": {
         "category": "Games",
@@ -1198,7 +1207,7 @@
     "processmonitor": {
         "category": "Microsoft Tools",
         "choco": "procexp",
-        "content": "SysInternals Process Monitor",
+        "content": "Process Monitor",
         "description": "SysInternals Process Monitor is an advanced monitoring tool that shows real-time file system, registry, and process/thread activity.",
         "link": "https://docs.microsoft.com/en-us/sysinternals/downloads/procmon",
         "winget": "Microsoft.Sysinternals.ProcessMonitor",
@@ -1387,7 +1396,7 @@
     "tcpview": {
         "category": "Microsoft Tools",
         "choco": "tcpview",
-        "content": "SysInternals TCPView",
+        "content": "TCPView",
         "description": "SysInternals TCPView is a network monitoring tool that displays a detailed list of all TCP and UDP endpoints on your system.",
         "link": "https://docs.microsoft.com/en-us/sysinternals/downloads/tcpview",
         "winget": "Microsoft.Sysinternals.TCPView",
@@ -1504,7 +1513,7 @@
     "ungoogled": {
         "category": "Browsers",
         "choco": "ungoogled-chromium",
-        "content": "Ungoogled",
+        "content": "Ungoogled Chromium",
         "description": "Ungoogled Chromium is a version of Chromium without Google's integration for enhanced privacy and control.",
         "link": "https://github.com/Eloston/ungoogled-chromium",
         "winget": "eloston.ungoogled-chromium",
@@ -1522,7 +1531,7 @@
     "everything": {
         "category": "Utilities",
         "choco": "everything",
-        "content": "VoidTools Everything",
+        "content": "Everything",
         "description": "Everything is a search engine that locates files and folders by filename instantly for Windows. Unlike Windows search Everything initially displays every file and folder on your computer (hence the name Everything). You type in a search filter to limit what files and folders are displayed.",
         "link": "https://www.voidtools.com/",
         "winget": "voidtools.Everything",

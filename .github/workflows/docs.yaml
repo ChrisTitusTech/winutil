@@ -1,4 +1,4 @@
-name: Deploy Hugo site to Pages
+name: Deploy Astro site to Pages
 
 on:
   push:
@@ -30,23 +30,13 @@ jobs:
     if: github.repository == 'ChrisTitusTech/winutil'
     runs-on: ubuntu-latest
     env:
-      HUGO_VERSION: 0.156.0
-      HUGO_ENVIRONMENT: production
       TZ: America/Chicago
     steps:
-      - name: Install Hugo CLI
-        run: |
-          wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
-          && sudo dpkg -i ${{ runner.temp }}/hugo.deb
       - name: Checkout
         uses: actions/checkout@v7
         with:
-          submodules: recursive
           fetch-depth: 0
           persist-credentials: false
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v6
 
       - name: Generate Dev Docs from JSON
         shell: pwsh
@@ -65,47 +55,23 @@ jobs:
           branch: docs-update
           delete-branch: true
           add-paths: |
-            docs/content/dev/
+            docs/src/content/docs/code-reference/
             config/tweaks.json
             config/feature.json
           labels: |
             automated
             documentation
+            skip-changelog
 
       - name: Check outputs
         run: |
           echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
           echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
 
-      - name: Install Node.js dependencies
-        run: "cd docs && [[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true"
-      - name: Cache Restore
-        id: cache-restore
-        uses: actions/cache/restore@v6
+      - name: Install, build, and upload your site
+        uses: withastro/action@v6
         with:
-          path: |
-            ${{ runner.temp }}/hugo_cache
-          key: hugo-${{ github.run_id }}
-          restore-keys: hugo-
-      - name: Build with Hugo
-        run: |
-          hugo \
-            --gc \
-            --minify \
-            --cleanDestinationDir \
-            --source docs \
-            --cacheDir "${{ runner.temp }}/hugo_cache"
-      - name: Cache Save
-        id: cache-save
-        uses: actions/cache/save@v6
-        with:
-          path: |
-            ${{ runner.temp }}/hugo_cache
-          key: ${{ steps.cache-restore.outputs.cache-primary-key }}
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: ./docs/public
+          path: docs
 
   deploy:
     if: github.repository == 'ChrisTitusTech/winutil'

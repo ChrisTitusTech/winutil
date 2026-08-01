@@ -44,6 +44,8 @@ public sealed class WinUtilRunspaceCleanupState
 
 public static class WinUtilRunspaceCleanup
 {
+    public static readonly System.Threading.WaitOrTimerCallback Callback = Cleanup;
+
     public static void Cleanup(object state, bool timedOut)
     {
         var cleanupState = state as WinUtilRunspaceCleanupState;
@@ -89,8 +91,7 @@ public static class WinUtilRunspaceCleanup
     $cleanupState = [WinUtilRunspaceCleanupState]::new()
     $cleanupState.PowerShell = $powershell
     $cleanupState.Handle = $handle
-    $cleanupCallback = [System.Threading.WaitOrTimerCallback][WinUtilRunspaceCleanup]::Cleanup
-    [System.Threading.ThreadPool]::RegisterWaitForSingleObject($handle.AsyncWaitHandle, $cleanupCallback, $cleanupState, -1, $true) | Out-Null
+    [System.Threading.ThreadPool]::RegisterWaitForSingleObject($handle.AsyncWaitHandle, [WinUtilRunspaceCleanup]::Callback, $cleanupState, -1, $true) | Out-Null
 
     # Return the handle
     return $handle

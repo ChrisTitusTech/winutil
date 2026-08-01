@@ -14,8 +14,8 @@ function Invoke-WPFButton {
 
     # Use this to get the name of the button
     #[System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")
-    if (-not $sync.ProcessRunning) {
-        Set-WinUtilProgressBar  -label "" -percent 0
+    if (-not $sync.ProcessRunning -and -not $sync.Win11ISOProcessRunning) {
+        Set-WinUtilTweaksProgressIndicator -Visible $false
     }
 
     # Check if button is defined in feature config with function or InvokeScript
@@ -65,6 +65,9 @@ function Invoke-WPFButton {
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
+        "WPFAppxRemoval" {Invoke-WPFTab "WPFTab6BT"}
+        "WPFBackToTweaks" {Invoke-WPFTab "WPFTab2BT"}
+        "WPFInstallSelectedAppx" {Invoke-WPFAppxInstall}
         "WPFRemoveSelectedAppx" {Invoke-WPFAppxRemoval}
         "WPFDefaultAppxSelection" {Invoke-WPFPresets "AppxDefault" -checkboxfilterpattern "WPFAppx*"}
         "WPFSelectAllAppx" {
@@ -74,7 +77,7 @@ function Invoke-WPFButton {
             $sync.configs.appxHashtable.Keys | ForEach-Object {$sync.$_.IsChecked = $false}
         }
         "WPFGetInstalledAppx" {
-            $installedAppxPackages = Get-AppxPackage -AllUsers | Select-Object -ExpandProperty Name
+            $installedAppxPackages = Get-WinUtilInstalledAPPX
             foreach ($appx in $sync.configs.appxHashtable.GetEnumerator()) {
                 if ($appx.Value.PackageId -in $installedAppxPackages) {
                     $sync.$($appx.Key).IsChecked = $true
@@ -83,6 +86,13 @@ function Invoke-WPFButton {
         }
         "WPFCloseButton" {$sync.Form.Close(); Write-Host "Bye bye!"}
         "WPFMinimizeButton" {$sync.Form.WindowState = [Windows.WindowState]::Minimized}
+        "WPFMaximizeButton" {
+            if ($sync.Form.WindowState -eq [Windows.WindowState]::Normal) {
+                $sync.Form.WindowState = [Windows.WindowState]::Maximized
+            } else {
+                $sync.Form.WindowState = [Windows.WindowState]::Normal
+            }
+        }
         "WPFselectedAppsButton" {$sync.selectedAppsPopup.IsOpen = -not $sync.selectedAppsPopup.IsOpen}
     }
 }

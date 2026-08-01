@@ -128,9 +128,6 @@ Invoke-WinutilThemeChange -theme $sync.preferences.theme
 $sync.InitializedTabs = @{}
 Initialize-WinUtilTabContent -TabName "Install"
 
-# Future implementation: Add Windows Version to updates panel
-#Invoke-WPFUIElements -configVariable $sync.configs.updates -targetGridName "updatespanel" -columncount 1
-
 #===========================================================================
 # Store Form Objects In PowerShell
 #===========================================================================
@@ -171,15 +168,6 @@ $sync.keys | ForEach-Object {
             }
         }
 
-        if ($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "TextBlock") {
-            if ($sync["$psitem"].Name.EndsWith("Link")) {
-                $sync["$psitem"].Add_MouseUp({
-                    [System.Object]$Sender = $args[0]
-                    Start-Process $Sender.ToolTip -ErrorAction Stop
-                })
-            }
-
-        }
     }
 }
 
@@ -210,6 +198,8 @@ $sync.SearchBarClearButton.Add_Click({
 })
 
 # add some shortcuts for people that don't like clicking
+function Invoke-WinUtilFontScaleStep([double]$Step) { $sync.FontScalingSlider.Value = [math]::Max(0.75, [math]::Min(2.0, $sync.FontScalingSlider.Value + $Step)); Invoke-WinUtilFontScaling -ScaleFactor $sync.FontScalingSlider.Value }
+
 $commonKeyEvents = {
     # Prevent shortcuts from executing if a process is already running
     if ($sync.ProcessRunning -eq $true) {
@@ -233,13 +223,25 @@ $commonKeyEvents = {
     }
     # Handle Ctrl key combinations for specific actions
     if ($_.KeyboardDevice.Modifiers -eq "Ctrl") {
+        $keyEventArgs = $_
         switch ($_.Key) {
             "F" { $sync.SearchBar.Focus() } # Focus on the search bar
             "Q" { $this.Close() } # Close the application
         }
     }
+    $ctrlShiftModifiers = [Windows.Input.ModifierKeys]::Control -bor [Windows.Input.ModifierKeys]::Shift
+    if ($_.KeyboardDevice.Modifiers -eq "Ctrl" -or $_.KeyboardDevice.Modifiers -eq $ctrlShiftModifiers) {
+        $keyEventArgs = $_
+        switch ($_.Key) {
+            { $_ -in "OemPlus", "Add" } { Invoke-WinUtilFontScaleStep 0.05; $keyEventArgs.Handled = $true }
+            { $_ -in "OemMinus", "Subtract" } { Invoke-WinUtilFontScaleStep -0.05; $keyEventArgs.Handled = $true }
+        }
+    }
 }
 $sync["Form"].Add_PreViewKeyDown($commonKeyEvents)
+$sync["Form"].Add_PreviewMouseWheel({
+    if ([Windows.Input.Keyboard]::Modifiers -eq "Ctrl") { Invoke-WinUtilFontScaleStep $(if ($_.Delta -gt 0) { 0.05 } else { -0.05 }); $_.Handled = $true }
+})
 
 $sync["Form"].Add_MouseLeftButtonDown({
     Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme", "FontScaling")
@@ -271,6 +273,7 @@ $sync["Form"].Add_ContentRendered({
         # Extract screen width and height for the primary monitor
         $screenWidth = $primaryScreen.Bounds.Width
         $screenHeight = $primaryScreen.Bounds.Height
+        $sync.Form.MinWidth = [Math]::Min([double]$sync.Form.MinWidth, [double]$screenWidth)
 
         # Compare with the primary monitor size
         if ($sync.Form.ActualWidth -gt $screenWidth -or $sync.Form.ActualHeight -gt $screenHeight) {
@@ -326,7 +329,7 @@ $searchBarTimer.add_Tick({
     $searchBarTimer.Stop()
     switch ($sync.currentTab) {
         "Install" {
-            Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text
+            Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text -Category $sync.SearchBar.Tag
         }
         "Tweaks" {
             Find-TweaksByNameOrDescription -SearchString $sync.SearchBar.Text
@@ -337,21 +340,45 @@ $searchBarTimer.add_Tick({
     }
 })
 $sync["SearchBar"].Add_TextChanged({
+    if ($sync.SearchBar.Tag -ne $sync.SearchBar.Text) {
+        $sync.SearchBar.Tag = $null
+    }
+
     if ($sync.SearchBar.Text -ne "") {
         $sync.SearchBarClearButton.Visibility = "Visible"
+        $sync.SearchBarIcon.Visibility = "Collapsed"
     } else {
         $sync.SearchBarClearButton.Visibility = "Collapsed"
+        $sync.SearchBarIcon.Visibility = "Visible"
     }
+
+    # Category chip handlers apply their filter immediately.
+    if ($sync.SearchBar.Tag -eq $sync.SearchBar.Text) {
+        return
+    }
+
     if ($searchBarTimer.IsEnabled) {
         $searchBarTimer.Stop()
     }
     $searchBarTimer.Start()
 })
 
+# Quick Category Search Chips
+$sync["WPFSearchChipAll"].Add_Click({ Set-WinUtilAppCategoryFilter })
+$sync["WPFSearchChipBrowsers"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Browsers" })
+$sync["WPFSearchChipCommunications"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Communications" })
+$sync["WPFSearchChipDevelopment"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Development" })
+$sync["WPFSearchChipGames"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Games" })
+$sync["WPFSearchChipMicrosoftTools"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Microsoft Tools" })
+$sync["WPFSearchChipMultimediaTools"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Multimedia Tools" })
+$sync["WPFSearchChipProTools"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Pro Tools" })
+$sync["WPFSearchChipSelfhostedTools"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Selfhosted Tools" })
+$sync["WPFSearchChipUtilities"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Utilities" })
+
 $sync["Form"].Add_Loaded({
     param($e)
     $null = $e
-    $sync.Form.MinWidth = "1000"
+    $sync.Form.MinWidth = "1150"
     $sync["Form"].MaxWidth = [Double]::PositiveInfinity
     $sync["Form"].MaxHeight = [Double]::PositiveInfinity
 })

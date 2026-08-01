@@ -69,6 +69,23 @@ Describe "Initialize-WinUtilTabContent" {
             $targetGridName -eq "appxpanel" -and $columncount -eq 2
         }
     }
+
+    It "checks for existing Win11ISO work when the tab is initialized" {
+        Add-Type -AssemblyName WindowsBase
+        $dispatcher = [pscustomobject]@{}
+        $dispatcher | Add-Member -MemberType ScriptMethod -Name BeginInvoke -Value {
+            param($priority, $action)
+            $action.Invoke()
+        }
+        $script:sync.Form = [pscustomobject]@{ Dispatcher = $dispatcher }
+        Mock Invoke-WinUtilISOCheckExistingWork { }
+
+        Initialize-WinUtilTabContent -TabName "Win11ISO"
+        Initialize-WinUtilTabContent -TabName "Win11ISO"
+
+        Should -Invoke -CommandName Invoke-WinUtilISOCheckExistingWork -Times 1 -Exactly
+        $script:sync.InitializedTabs["Win11ISO"] | Should -BeTrue
+    }
 }
 
 Describe "Startup lazy tab wiring" {
@@ -95,5 +112,13 @@ Describe "Startup lazy tab wiring" {
         $rendererScript | Should -Match '(?s)"Button"\s*\{.*\$button\.Add_Click\(\{.*Invoke-WPFButton \$Sender\.name'
         $rendererScript | Should -Match '\$sync\.Buttons\.Add\(\$button\.Name\)'
         $mainScript | Should -Match '\$sync\.Buttons -notcontains \$psitem'
+    }
+
+    It "binds generated documentation links when lazy panels are rendered" {
+        $rendererScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIElements.ps1") -Raw
+        $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
+
+        $rendererScript | Should -Match '(?s)if \(\$entryInfo\.Link\).*\$textBlock\.Add_MouseUp\(\{.*Start-Process \$Sender\.ToolTip -ErrorAction Stop'
+        $mainScript | Should -Not -Match '\.Name\.EndsWith\("Link"\)'
     }
 }

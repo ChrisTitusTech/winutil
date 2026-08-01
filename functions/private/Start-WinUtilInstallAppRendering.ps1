@@ -9,7 +9,7 @@ function Invoke-WinUtilInstallAppRenderBatch {
     }
 
     if ($sync.currentTab -eq "Install" -and $sync.SearchBar -and -not [string]::IsNullOrWhiteSpace($sync.SearchBar.Text)) {
-        Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text
+        Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text -Category $sync.SearchBar.Tag
     }
 }
 

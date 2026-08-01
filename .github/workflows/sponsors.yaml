@@ -26,13 +26,15 @@ jobs:
         id: cpr
         uses: peter-evans/create-pull-request@v8
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.AUTO_MERGE }}
           commit-message: 'Update sponsors in README'
           title: 'chore: Update Sponsors README'
           body: 'Automated update of sponsors section'
           branch: sponsors-update
           delete-branch: true
-          labels: automated
+          labels: |
+            automated
+            skip-changelog
 
       - name: Check outputs
         run: |

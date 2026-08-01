@@ -172,18 +172,27 @@ namespace Windows.Controls
                     WPFInstallBrowser = [pscustomobject]@{
                         Content = "Firefox"
                         Description = "Fast private browser"
+                        Category = "Browsers"
                     }
                     WPFInstallMedia = [pscustomobject]@{
                         Content = "VLC"
                         Description = "Media player"
+                        Category = "Multimedia Tools"
                     }
                     WPFInstallLiteral = [pscustomobject]@{
                         Content = "Tool [abc]"
                         Description = "Literal wildcard sample"
+                        Category = "Utilities"
                     }
                     WPFInstallEditor = [pscustomobject]@{
                         Content = "Code Editor"
                         Description = "Text editing"
+                        Category = "Development"
+                    }
+                    WPFInstallPowerToys = [pscustomobject]@{
+                        Content = "PowerToys"
+                        Description = "A collection of system utilities"
+                        Category = "Microsoft Tools"
                     }
                 }
             }
@@ -361,6 +370,19 @@ Describe "Find-AppsByNameOrDescription" {
 
         $literalItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
         $mediaItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $category.Visibility | Should -Be ([Windows.Visibility]::Visible)
+    }
+
+    It "filters category chips by exact application category" {
+        $utilityItem = New-WinUtilAppSearchItem -Tag "WPFInstallLiteral"
+        $powerToysItem = New-WinUtilAppSearchItem -Tag "WPFInstallPowerToys"
+        $category = New-WinUtilAppCategory -Label "- Tools" -Items @($utilityItem, $powerToysItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+
+        Find-AppsByNameOrDescription -SearchString "Utilities" -Category "Utilities"
+
+        $utilityItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $powerToysItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
         $category.Visibility | Should -Be ([Windows.Visibility]::Visible)
     }
 }

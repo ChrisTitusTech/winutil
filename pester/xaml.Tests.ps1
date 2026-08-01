@@ -134,20 +134,31 @@ Describe "XAML document" {
             "WPFTab3BT",
             "WPFTab4BT",
             "WPFTab5BT",
-            "WPFTab6BT",
             "SearchBar",
+            "SearchBarIcon",
             "SearchBarClearButton",
+            "WPFSearchChips",
+            "WPFSearchChipAll",
+            "WPFSearchChipBrowsers",
+            "WPFSearchChipCommunications",
+            "WPFSearchChipDevelopment",
+            "WPFSearchChipGames",
+            "WPFSearchChipMicrosoftTools",
+            "WPFSearchChipMultimediaTools",
+            "WPFSearchChipProTools",
+            "WPFSearchChipSelfhostedTools",
+            "WPFSearchChipUtilities",
             "appscategory",
             "appspanel",
             "tweakspanel",
             "featurespanel",
-            "updatespanel",
             "appxpanel",
             "WPFstandard",
             "WPFminimal",
             "WPFAdvanced",
             "WPFClearTweaksSelection",
             "WPFGetInstalledTweaks",
+            "WPFAppxRemoval",
             "WPFTweaksbutton",
             "WPFUndoall",
             "WPFUpdatesdefault",
@@ -157,6 +168,8 @@ Describe "XAML document" {
             "WPFGetInstalledAppx",
             "WPFSelectAllAppx",
             "WPFClearAppxSelection",
+            "WPFBackToTweaks",
+            "WPFInstallSelectedAppx",
             "WPFRemoveSelectedAppx"
         )
 
@@ -164,6 +177,23 @@ Describe "XAML document" {
         if ($missingControls.Count -gt 0) {
             throw ($missingControls -join "`n")
         }
+    }
+
+    It "presents the three Updates profiles with accurate action labels" {
+        $updatesTab = $script:xaml.SelectSingleNode('//*[local-name()="TabItem"][@Name="WPFTab4"]')
+        $profileGrid = $updatesTab.SelectSingleNode('.//*[local-name()="UniformGrid"]')
+        $expectedButtons = @{
+            WPFUpdatessecurity = "Apply Recommended"
+            WPFUpdatesdefault = "Restore Defaults"
+            WPFUpdatesdisable = "Disable Updates"
+        }
+
+        $profileGrid.GetAttribute("Columns") | Should -Be "3"
+        foreach ($buttonName in $expectedButtons.Keys) {
+            $button = $updatesTab.SelectSingleNode(".//*[local-name()='Button'][@Name='$buttonName']")
+            $button.GetAttribute("Content") | Should -Be $expectedButtons[$buttonName]
+        }
+        $updatesTab.SelectSingleNode('.//*[@Name="updatespanel"]') | Should -BeNullOrEmpty
     }
 
     It "contains Win11 Creator controls used by the ISO workflow" {
@@ -222,6 +252,122 @@ Describe "XAML document" {
                 throw "Tab order mismatch at index ${index}: expected $($expectedTabs[$index]), found $($actualTabs[$index])"
             }
         }
+    }
+
+    It "opens AppX removal from Tweaks and provides a return path" {
+        $navPanel = $script:xaml.SelectSingleNode('//*[local-name()="StackPanel"][@Name="NavDockPanel"]')
+        $tweaksTab = $script:xaml.SelectSingleNode('//*[local-name()="TabItem"][@Name="WPFTab2"]')
+        $appxTab = $script:xaml.SelectSingleNode('//*[local-name()="TabItem"][@Name="WPFTab6"]')
+        $openButton = $tweaksTab.SelectSingleNode('.//*[local-name()="Button"][@Name="WPFAppxRemoval"]')
+        $buttonNames = @($openButton.ParentNode.SelectNodes('./*[local-name()="Button"]') | ForEach-Object { $_.GetAttribute("Name") })
+        $getInstalledIndex = [array]::IndexOf($buttonNames, "WPFGetInstalledTweaks")
+        $openAppxIndex = [array]::IndexOf($buttonNames, "WPFAppxRemoval")
+        $buttonSource = Get-Content -Path $script:buttonScriptPath -Raw
+        $tabSource = Get-Content -Path (Join-Path $script:functionRoot "public\Invoke-WPFTab.ps1") -Raw
+
+        $navPanel.SelectSingleNode('./*[local-name()="ToggleButton"][@Name="WPFTab6BT"]') | Should -BeNullOrEmpty
+        $openButton.GetAttribute("Content").Trim() | Should -Be "AppX Removal"
+        $openAppxIndex | Should -Be ($getInstalledIndex + 1)
+        $appxTab.SelectSingleNode('.//*[local-name()="Button"][@Name="WPFBackToTweaks"]') | Should -Not -BeNullOrEmpty
+        $appxTab.SelectSingleNode('.//*[local-name()="Button"][@Name="WPFInstallSelectedAppx"]') | Should -Not -BeNullOrEmpty
+        $appxTab.SelectSingleNode('.//*[local-name()="Button"][@Name="WPFRemoveSelectedAppx"]') | Should -Not -BeNullOrEmpty
+        $buttonSource | Should -Match '"WPFAppxRemoval"\s*\{Invoke-WPFTab "WPFTab6BT"\}'
+        $buttonSource | Should -Match '"WPFBackToTweaks"\s*\{Invoke-WPFTab "WPFTab2BT"\}'
+        $buttonSource | Should -Match '"WPFInstallSelectedAppx"\s*\{Invoke-WPFAppxInstall\}'
+        $tabSource | Should -Match '\$sync\.\$tabNav\.Items\[\$tabNumber\]\.IsSelected = \$true'
+    }
+
+    It "centers top bar controls vertically" {
+        $navPanel = $script:xaml.SelectSingleNode('//*[local-name()="StackPanel"][@Name="NavDockPanel"]')
+        $minimizeButton = $script:xaml.SelectSingleNode('//*[local-name()="Button"][@Name="WPFMinimizeButton"]')
+        $actionPanel = $minimizeButton.ParentNode
+        $topBarButtonNames = @(
+            "ThemeButton",
+            "FontScalingButton",
+            "SettingsButton",
+            "WPFMinimizeButton",
+            "WPFMaximizeButton",
+            "WPFCloseButton"
+        )
+
+        $navPanel.GetAttribute("VerticalAlignment") | Should -Be "Center"
+        $actionPanel.GetAttribute("VerticalAlignment") | Should -Be "Center"
+
+        foreach ($buttonName in $topBarButtonNames) {
+            $button = $script:xaml.SelectSingleNode("//*[local-name()='Button'][@Name='$buttonName']")
+            $button.GetAttribute("VerticalAlignment") | Should -Be "Center"
+        }
+    }
+
+    It "keeps the responsive search controls within the available screen width" {
+        $window = $script:xaml.DocumentElement
+        $searchBar = $script:xaml.SelectSingleNode('//*[local-name()="TextBox"][@Name="SearchBar"]')
+        $searchBorder = $searchBar.ParentNode.ParentNode
+        $mainScript = Get-Content -Path $script:mainScriptPath -Raw
+
+        $window.GetAttribute("MinWidth") | Should -Be "800"
+        $searchBorder.GetAttribute("Width") | Should -BeNullOrEmpty
+        $searchBorder.GetAttribute("HorizontalAlignment") | Should -Be "Stretch"
+        $searchBar.GetAttribute("Width") | Should -BeNullOrEmpty
+        $searchBar.GetAttribute("HorizontalAlignment") | Should -Be "Stretch"
+        $mainScript | Should -Match '\$sync\.Form\.MinWidth = "1150"'
+        $mainScript | Should -Match '\$sync\.Form\.MinWidth = \[Math\]::Min\(\[double\]\$sync\.Form\.MinWidth, \[double\]\$screenWidth\)'
+    }
+
+    It "shows only one search action glyph at a time" {
+        $searchIcon = $script:xaml.SelectSingleNode('//*[local-name()="TextBlock"][@Name="SearchBarIcon"]')
+        $clearButton = $script:xaml.SelectSingleNode('//*[local-name()="Button"][@Name="SearchBarClearButton"]')
+        $mainScript = Get-Content -Path $script:mainScriptPath -Raw
+
+        $searchIcon | Should -Not -BeNullOrEmpty
+        $clearButton | Should -Not -BeNullOrEmpty
+        $mainScript | Should -Match '\$sync\.SearchBarClearButton\.Visibility = "Visible"\s+\$sync\.SearchBarIcon\.Visibility = "Collapsed"'
+        $mainScript | Should -Match '\$sync\.SearchBarClearButton\.Visibility = "Collapsed"\s+\$sync\.SearchBarIcon\.Visibility = "Visible"'
+    }
+
+    It "scopes toggle button styles without leaking into combo boxes" {
+        $resources = $script:xaml.SelectSingleNode('//*[local-name()="Window.Resources"]')
+        $implicitToggleStyles = @($resources.SelectNodes('./*[local-name()="Style"][@TargetType="ToggleButton" or @TargetType="{x:Type ToggleButton}"][not(@x:Key)]', $script:xamlNamespace))
+        $tabStyle = $resources.SelectSingleNode('./*[local-name()="Style"][@x:Key="TabToggleButton"]', $script:xamlNamespace)
+        $comboToggleStyle = $resources.SelectSingleNode('./*[local-name()="Style"][@x:Key="ComboBoxToggleButtonStyle"]', $script:xamlNamespace)
+        $comboStyle = $resources.SelectSingleNode('./*[local-name()="Style"][@TargetType="ComboBox"]')
+        $comboToggle = $comboStyle.SelectSingleNode('.//*[local-name()="ToggleButton"][@Name="ToggleButton"]')
+        $comboItemStyle = $resources.SelectSingleNode('./*[local-name()="Style"][@TargetType="ComboBoxItem"]')
+        $navButtons = @($script:xaml.SelectNodes('//*[local-name()="StackPanel"][@Name="NavDockPanel"]/*[local-name()="ToggleButton"]'))
+
+        $implicitToggleStyles | Should -BeNullOrEmpty
+        $tabStyle | Should -Not -BeNullOrEmpty
+        $comboToggleStyle | Should -Not -BeNullOrEmpty
+        $comboToggle.GetAttribute("Style") | Should -Be "{StaticResource ComboBoxToggleButtonStyle}"
+        $comboItemStyle | Should -Not -BeNullOrEmpty
+        $navButtons.Count | Should -Be 5
+        foreach ($navButton in $navButtons) {
+            $navButton.GetAttribute("Style") | Should -Be "{StaticResource TabToggleButton}"
+        }
+    }
+
+    It "uses state-aware maximize and restore icons" {
+        $themes = Get-WinUtilConfigObject -Name "themes"
+        $minimizeButton = $script:xaml.SelectSingleNode('//*[local-name()="Button"][@Name="WPFMinimizeButton"]')
+        $maximizeButton = $script:xaml.SelectSingleNode('//*[local-name()="Button"][@Name="WPFMaximizeButton"]')
+        $closeButton = $script:xaml.SelectSingleNode('//*[local-name()="Button"][@Name="WPFCloseButton"]')
+        $maximizeStyle = $maximizeButton.SelectSingleNode('./*[local-name()="Button.Style"]/*[local-name()="Style"]')
+        $maximizeIcon = $maximizeStyle.SelectSingleNode('./*[local-name()="Setter"][@Property="Content"]')
+        $maximizedTrigger = $maximizeStyle.SelectSingleNode('./*[local-name()="Style.Triggers"]/*[local-name()="DataTrigger"][@Value="Maximized"]')
+        $restoreIcon = $maximizedTrigger.SelectSingleNode('./*[local-name()="Setter"][@Property="Content"]')
+
+        foreach ($button in @($minimizeButton, $maximizeButton, $closeButton)) {
+            $button.GetAttribute("FontFamily") | Should -Be "Segoe MDL2 Assets"
+            $button.GetAttribute("FontSize") | Should -Be "{DynamicResource CloseIconFontSize}"
+            $button.GetAttribute("Margin") | Should -BeIn @("0", "0,0,0,0")
+        }
+
+        $minimizeButton.GetAttribute("Content") | Should -Be ([string][char]0xE921)
+        $maximizeIcon.GetAttribute("Value") | Should -Be ([string][char]0xE922)
+        $restoreIcon.GetAttribute("Value") | Should -Be ([string][char]0xE923)
+        $closeButton.GetAttribute("Content") | Should -Be ([string][char]0xE8BB)
+        $maximizeStyle.GetAttribute("BasedOn") | Should -Be "{StaticResource HoverButtonStyle}"
+        [int]$themes.shared.CloseIconFontSize | Should -BeLessThan ([int]$themes.shared.SettingsIconFontSize)
     }
 }
 
@@ -289,7 +435,6 @@ Describe "XAML and sync wiring" {
             "appPopup",
             "appPopupSelectedApp",
             "ItemsControl",
-            "InstalledPrograms",
             "ImportInProgress",
             "ScriptsInstallPrograms",
             "keys",
@@ -302,19 +447,15 @@ Describe "XAML and sync wiring" {
             "InitializedTabs",
             "RenderedAssetCache",
             "ToggleStatusCache",
-            "InstallAppAreaBorder",
-            "InstallAppAreaScrollViewer",
-            "InstallAppAreaOverlay",
-            "InstallAppAreaOverlayText",
             "InstallAppRenderQueue",
             "InstallAppEntriesRendered",
-            "ProgressBar",
-            "progressBarTextBlock",
+            "FontScaleFactor",
             "Win11ISOImageInfo",
             "Win11ISODriveLetter",
             "Win11ISOWimPath",
             "Win11ISOImagePath",
             "Win11ISOModifying",
+            "Win11ISOProcessRunning",
             "Win11ISOWorkDir",
             "Win11ISOContentsDir",
             "Win11ISOUSBDisks"

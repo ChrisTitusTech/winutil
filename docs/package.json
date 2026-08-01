@@ -1,0 +1,19 @@
+{
+  "name": "docs-astro",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.41.5",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource/geist-sans": "^5.3.0",
+    "astro": "^7.0.2",
+    "sharp": "^0.35.3"
+  }
+}

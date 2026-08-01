@@ -5,22 +5,51 @@ function Invoke-WPFUpdatesdefault {
         Resets Windows Update settings to default
 
     #>
-    $ErrorActionPreference = 'SilentlyContinue'
     Write-WinUtilLog -Component "Updates" -Message "Resetting Windows Update settings to default."
 
-    Write-Host "Removing Windows Update policy settings..." -ForegroundColor Green
-    Write-WinUtilLog -Component "Updates" -Message "Removing Windows Update policy registry paths."
+    Write-Host "Removing Windows Update settings managed by WinUtil..." -ForegroundColor Green
+    Write-WinUtilLog -Component "Updates" -Message "Removing Windows Update registry values managed by WinUtil."
 
-    Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Recurse -Force
-    Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization" -Recurse -Force
-    Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Recurse -Force
-    Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Recurse -Force
-    Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Recurse -Force
-    Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Recurse -Force
+    $registryValues = @(
+        @{
+            Path = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"
+            Names = @("NoAutoUpdate", "AUOptions", "NoAutoRebootWithLoggedOnUsers", "AUPowerManagement")
+        },
+        @{
+            Path = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate"
+            Names = @("ExcludeWUDriversInQualityUpdate", "DeferFeatureUpdates", "DeferFeatureUpdatesPeriodInDays", "DeferQualityUpdates", "DeferQualityUpdatesPeriodInDays")
+        },
+        @{
+            Path = "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings"
+            Names = @("BranchReadinessLevel", "DeferFeatureUpdatesPeriodInDays", "DeferQualityUpdatesPeriodInDays")
+        },
+        @{
+            Path = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata"
+            Names = @("PreventDeviceMetadataFromNetwork")
+        },
+        @{
+            Path = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching"
+            Names = @("DontPromptForWindowsUpdate", "DontSearchWindowsUpdate", "DriverUpdateWizardWuSearchEnabled")
+        },
+        @{
+            Path = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config"
+            Names = @("DODownloadMode")
+        }
+    )
 
-    Write-Host "Showing Windows Updates in settings..."
-    Write-WinUtilLog -Component "Updates" -Message "Showing Windows Update settings page."
-    Remove-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer -Name SettingsPageVisibility
+    foreach ($registryEntry in $registryValues) {
+        foreach ($valueName in $registryEntry.Names) {
+            Remove-ItemProperty -Path $registryEntry.Path -Name $valueName -ErrorAction SilentlyContinue
+        }
+    }
+
+    $explorerPolicyPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer"
+    $settingsPageVisibility = (Get-ItemProperty -Path $explorerPolicyPath -Name "SettingsPageVisibility" -ErrorAction SilentlyContinue).SettingsPageVisibility
+    if ($settingsPageVisibility -eq "hide:windowsupdate") {
+        Write-Host "Removing WinUtil's legacy Windows Update page restriction..."
+        Write-WinUtilLog -Component "Updates" -Message "Removing the legacy Windows Update settings page restriction."
+        Remove-ItemProperty -Path $explorerPolicyPath -Name "SettingsPageVisibility" -ErrorAction SilentlyContinue
+    }
 
     Write-Host "Reenabling Windows Update Services..." -ForegroundColor Green
     Write-WinUtilLog -Component "Updates" -Message "Restoring Windows Update service startup types."
@@ -35,12 +64,8 @@ function Invoke-WPFUpdatesdefault {
 
     Write-Host "Restored UsoSvc to Automatic."
     Write-WinUtilLog -Component "Updates" -Message "Starting UsoSvc service and restoring startup type to Automatic."
-    Start-Service -Name UsoSvc
     Set-Service -Name UsoSvc -StartupType Automatic
-
-    Write-Host "Restored WaaSMedicSvc to Manual."
-    Write-WinUtilLog -Component "Updates" -Message "Restoring WaaSMedicSvc service to Manual."
-    Set-Service -Name WaaSMedicSvc -StartupType Manual
+    Start-Service -Name UsoSvc
 
     Write-Host "Enabling update related scheduled tasks..." -ForegroundColor Green
     Write-WinUtilLog -Component "Updates" -Message "Enabling update related scheduled tasks."
@@ -54,12 +79,8 @@ function Invoke-WPFUpdatesdefault {
         '\Microsoft\WindowsUpdate\*'
 
     foreach ($Task in $Tasks) {
-        Get-ScheduledTask -TaskPath $Task | Enable-ScheduledTask -ErrorAction SilentlyContinue
+        Get-ScheduledTask -TaskPath $Task -ErrorAction SilentlyContinue | Enable-ScheduledTask -ErrorAction SilentlyContinue
     }
-
-    Write-Host "Windows Local Policies Reset to Default."
-    Write-WinUtilLog -Component "Updates" -Message "Resetting local security policy to defaults with secedit."
-    secedit /configure /cfg "$Env:SystemRoot\inf\defltbase.inf" /db defltbase.sdb
 
     Write-Host "===================================================" -ForegroundColor Green
     Write-Host "---  Windows Update Settings Reset to Default   ---" -ForegroundColor Green

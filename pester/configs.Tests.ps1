@@ -326,6 +326,11 @@ Describe "UI-rendered config entries" {
             foreach ($missingField in (Get-WinUtilMissingRequiredFields -EntryName $entry.Name -Entry $entry.Value -RequiredFields $requiredFields)) {
                 $invalidEntries.Add($missingField)
             }
+
+            if ((Test-WinUtilHasProperty -Object $entry.Value -Name "StoreId") -and
+                $entry.Value.StoreId -notmatch '^(?:[A-Z0-9]{12}|XP[A-Z0-9]{12})$') {
+                $invalidEntries.Add("$($entry.Name) has invalid Microsoft Store ID '$($entry.Value.StoreId)'")
+            }
         }
 
         if ($invalidEntries.Count -gt 0) {

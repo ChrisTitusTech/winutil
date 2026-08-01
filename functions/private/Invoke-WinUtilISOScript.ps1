@@ -1,220 +1,228 @@
 function Invoke-WinUtilISOScript {
     <#
     .SYNOPSIS
-        Applies WinUtil modifications to a mounted Windows 11 install.wim image.
+        Prepares copied Windows setup media without modifying its install image.
 
     .DESCRIPTION
-        Removes AppX bloatware and OneDrive, optionally injects all drivers exported from
-        the running system into install.wim and boot.wim (controlled by the
-        -InjectCurrentSystemDrivers switch), applies offline registry tweaks (hardware
-        bypass, privacy, OOBE, telemetry, update suppression), deletes CEIP/WU
-        scheduled-task definition files, and optionally writes autounattend.xml to the ISO
-        root and removes the support\ folder from the ISO contents directory.
-
-        All setup scripts embedded in the autounattend.xml <Extensions><File> nodes are
-        written directly into the WIM at their target paths under C:\Windows\Setup\Scripts\
-        to ensure they survive Windows Setup stripping unrecognised-namespace XML elements
-        from the Panther copy of the answer file.
-
-        Mounting/dismounting the WIM is the caller's responsibility (e.g. Invoke-WinUtilISO).
-
-    .PARAMETER ScratchDir
-        Mandatory. Full path to the directory where the Windows image is currently mounted.
+        Stages WinUtil's AppX removal, registry tweaks, and scheduled-task cleanup
+        in the answer file for first logon, writes sources\ei.cfg for the selected
+        edition, and optionally adds current-system drivers to one install.wim index.
 
     .PARAMETER ISOContentsDir
-        Optional. Root directory of the extracted ISO contents. When supplied,
-        autounattend.xml is written here and the support\ folder is removed.
+        Root directory of the copied ISO contents.
 
     .PARAMETER AutoUnattendXml
-        Optional. Full XML content for autounattend.xml. If empty, the OOBE bypass
-        file is skipped and a warning is logged.
-
-    .PARAMETER InjectCurrentSystemDrivers
-        Optional. When $true, exports all drivers from the running system and injects
-        them into install.wim and boot.wim index 2 (Windows Setup PE).
-        Defaults to $false.
+        Full XML content for autounattend.xml.
 
     .PARAMETER InstallEditionId
-        Optional. Windows edition ID for the selected image, for example Professional
-        or Core. Used to write sources\ei.cfg so setup does not fall back to an
-        embedded firmware product key for a different edition.
+        Windows setup EditionID for sources\ei.cfg, for example Professional or Core.
+
+    .PARAMETER InstallImagePath
+        Copied install.wim to service when current-system driver injection is enabled.
 
     .PARAMETER InstallImageIndex
-        Optional. Image index that setup should install from the final install.wim.
-        Win11 Creator exports the selected edition to a single-image WIM, so this
-        defaults to 1.
+        Selected edition index in install.wim.
 
     .PARAMETER Log
         Optional ScriptBlock for progress/status logging. Receives a single [string] argument.
-
-    .EXAMPLE
-        Invoke-WinUtilISOScript -ScratchDir "C:\Temp\wim_mount"
-
-    .EXAMPLE
-        Invoke-WinUtilISOScript `
-            -ScratchDir      $mountDir `
-            -ISOContentsDir  $isoRoot `
-            -AutoUnattendXml (Get-Content .\tools\autounattend.xml -Raw) `
-            -Log             { param($m) Write-Host $m }
-
-    .NOTES
-        Author  : Chris Titus @christitustech
-        GitHub  : https://github.com/ChrisTitusTech
     #>
     param (
-        [Parameter(Mandatory)][string]$ScratchDir,
-        [string]$ISOContentsDir = "",
+        [Parameter(Mandatory)][string]$ISOContentsDir,
         [string]$AutoUnattendXml = "",
         [bool]$InjectCurrentSystemDrivers = $false,
         [string]$InstallEditionId = "",
+        [string]$InstallImagePath = "",
         [int]$InstallImageIndex = 1,
         [scriptblock]$Log = { param($m) Write-Output $m }
     )
-    function Set-ISOScriptReg {
-        param ([string]$Path, [string]$Name, [string]$Type, [string]$Value)
-        try {
-            & reg add $Path /v $Name /t $Type /d $Value /f
-            & $Log "Set registry value: $Path\$Name"
-        } catch {
-            & $Log "Error setting registry value: $_"
+
+    function Add-WinUtilISOStagedDrivers {
+        param (
+            [Parameter(Mandatory)][string]$ContentRoot,
+            [Parameter(Mandatory)][string]$InstallImagePath,
+            [Parameter(Mandatory)][int]$InstallImageIndex,
+            [scriptblock]$Logger
+        )
+
+        function Copy-WinUtilISODriverFolder {
+            param (
+                [Parameter(Mandatory)][string]$Source,
+                [Parameter(Mandatory)][string]$Destination
+            )
+
+            $folderName = Split-Path $Source -Leaf
+            $targetPath = Join-Path $Destination $folderName
+            $suffix = 1
+            while (Test-Path -LiteralPath $targetPath) {
+                $targetPath = Join-Path $Destination "${folderName}_$suffix"
+                $suffix++
+            }
+
+            Copy-Item -LiteralPath $Source -Destination $targetPath -Recurse -Force -ErrorAction Stop
+            return $targetPath
         }
-    }
 
-    function Remove-ISOScriptReg {
-        param ([string]$path)
-        try {
-            & reg delete $path /f
-            & $Log "Removed registry key: $path"
-        } catch {
-            & $Log "Error removing registry key: $_"
+        function Test-WinUtilISOStorageDriver {
+            param ([Parameter(Mandatory)][System.IO.FileInfo]$InfFile)
+
+            if ($InfFile.BaseName -match '(?i)(iaahci|iastor|vmd|irst|rst)') {
+                return $true
+            }
+
+            try {
+                return (Get-Content -LiteralPath $InfFile.FullName -Raw -ErrorAction Stop) -match '(?im)^\s*Class\s*=\s*(SCSIAdapter|HDC)\s*(?:;.*)?$'
+            } catch {
+                & $Logger "Warning: could not classify storage driver '$($InfFile.FullName)': $_"
+                return $false
+            }
         }
-    }
 
-    function Add-DriversToImage {
-        param ([string]$MountPath, [string]$DriverDir, [string]$Label = "image", [scriptblock]$Logger)
-        & dism /English "/image:$MountPath" /Add-Driver "/Driver:$DriverDir" /Recurse |
-            ForEach-Object { & $Logger "  dism[$Label]: $_" }
-    }
+        function Invoke-WinUtilISODism {
+            param (
+                [Parameter(Mandatory)][string[]]$Arguments,
+                [Parameter(Mandatory)][string]$Operation
+            )
 
-    function Invoke-BootWimInject {
-        param ([string]$BootWimPath, [string]$DriverDir, [scriptblock]$Logger)
-        Set-ItemProperty -Path $BootWimPath -Name IsReadOnly -Value $false
-        $mountDir = Join-Path $env:TEMP "WinUtil_BootMount_$(Get-Random)"
-        New-Item -Path $mountDir -ItemType Directory -Force
+            $output = @(& dism.exe @Arguments 2>&1)
+            $exitCode = $LASTEXITCODE
+            if ($exitCode -ne 0) {
+                foreach ($line in @($output | Select-Object -Last 20)) {
+                    if (-not [string]::IsNullOrWhiteSpace([string]$line)) {
+                        & $Logger "  dism[$Operation]: $line"
+                    }
+                }
+                throw "DISM $Operation failed with exit code $exitCode."
+            }
+            if ($Operation -ne 'metadata') {
+                & $Logger "DISM $Operation completed."
+            }
+            return $output
+        }
+
+        function Get-WinUtilISOWimMetadata {
+            param ([Parameter(Mandatory)][string]$ImagePath, [Parameter(Mandatory)][int]$Index)
+
+            $metadata = @{}
+            $output = Invoke-WinUtilISODism -Arguments @('/English', '/Get-WimInfo', "/WimFile:$ImagePath", "/Index:$Index") -Operation 'metadata'
+            foreach ($line in $output) {
+                if ([string]$line -match '^\s*([^:]+?)\s*:\s*(.*?)\s*$') {
+                    $metadata[$Matches[1].Trim()] = $Matches[2].Trim()
+                }
+            }
+            return $metadata
+        }
+
+        function Assert-WinUtilISOWimMetadata {
+            param (
+                [Parameter(Mandatory)][hashtable]$Before,
+                [hashtable]$After
+            )
+
+            foreach ($key in 'Languages', 'Installation', 'Edition', 'ProductSuite', 'ProductType') {
+                $beforeValue = [string]$Before[$key]
+                if ($beforeValue -eq '<undefined>' -or ($key -in 'Installation', 'Edition', 'ProductType' -and [string]::IsNullOrWhiteSpace($beforeValue))) {
+                    throw "install.wim metadata is already invalid: $key is undefined. Driver injection was not attempted."
+                }
+                if ($After) {
+                    $afterValue = [string]$After[$key]
+                    if ($afterValue -eq '<undefined>' -or ($beforeValue -and $afterValue -ne $beforeValue)) {
+                        throw "install.wim metadata validation failed after driver injection: $key changed from '$beforeValue' to '$afterValue'."
+                    }
+                }
+            }
+        }
+
+        function Test-WinUtilISOMountedImage {
+            param ([Parameter(Mandatory)][string]$Path)
+
+            return @(& dism.exe /English /Get-MountedImageInfo 2>$null) -match [regex]::Escape($Path)
+        }
+
+        if ([IO.Path]::GetExtension($InstallImagePath) -ne '.wim') {
+            throw 'Current-system driver injection requires install.wim; install.esd cannot be serviced in place.'
+        }
+        if (-not (Test-Path -LiteralPath $InstallImagePath)) {
+            throw "install.wim was not found: $InstallImagePath"
+        }
+        if ($InstallImageIndex -lt 1) {
+            throw 'Current-system driver injection requires a valid install.wim image index.'
+        }
+
+        $driverExportRoot = Join-Path $env:TEMP "WinUtil_DriverExport_$(Get-Date -Format 'yyyyMMdd_HHmmss')_$(([guid]::NewGuid()).ToString('N').Substring(0, 8))"
+        $mountDir = Join-Path (Split-Path -Path $ContentRoot -Parent) 'wim_mount'
+        New-Item -Path $driverExportRoot -ItemType Directory -Force | Out-Null
+        $imageMounted = $false
+
         try {
-            & $Logger "Mounting boot.wim (index 2) for driver injection..."
-            Mount-WindowsImage -ImagePath $BootWimPath -Index 2 -Path $mountDir
-            Add-DriversToImage -MountPath $mountDir -DriverDir $DriverDir -Label "boot" -Logger $Logger
-            & $Logger "Saving boot.wim..."
-            Dismount-WindowsImage -Path $mountDir -Save
-            & $Logger "boot.wim driver injection complete."
-        } catch {
-            & $Logger "Warning: boot.wim driver injection failed: $_"
-            try { Dismount-WindowsImage -Path $mountDir -Discard } catch { & $Logger "Warning: could not discard boot.wim mount: $_" }
+            & $Logger "Exporting current system drivers before modifying install.wim..."
+            $dismLog = Join-Path $env:TEMP "WinUtil_DismDriverExport_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
+            $dismProcess = Start-Process -FilePath "dism.exe" -ArgumentList "/online /export-driver /destination:`"$driverExportRoot`" /LogPath:`"$dismLog`"" -Wait -NoNewWindow -PassThru
+            if ($dismProcess.ExitCode -ne 0) {
+                throw "dism.exe driver export failed with exit code $($dismProcess.ExitCode)."
+            }
+
+            $driverInfs = @(Get-ChildItem -Path $driverExportRoot -Filter '*.inf' -Recurse -File)
+            if ($driverInfs.Count -eq 0) {
+                throw 'DISM exported no driver INF files.'
+            }
+            $driverFolders = @($driverInfs | Group-Object { $_.Directory.FullName })
+            $winpeDriverDir = Join-Path $ContentRoot '$WinpeDriver$'
+            $storageCount = 0
+            $copyFailures = 0
+
+            foreach ($driverFolderGroup in $driverFolders) {
+                $driverFolder = [string]$driverFolderGroup.Name
+                $storageInfs = @($driverFolderGroup.Group | Where-Object { Test-WinUtilISOStorageDriver -InfFile $_ })
+                if ($storageInfs.Count -eq 0) {
+                    continue
+                }
+
+                try {
+                    New-Item -Path $winpeDriverDir -ItemType Directory -Force | Out-Null
+                    $winpeTarget = Copy-WinUtilISODriverFolder -Source $driverFolder -Destination $winpeDriverDir
+                    $storageCount++
+                    & $Logger "Staged boot-storage package '$driverFolder' for WinPE as '$winpeTarget'."
+                } catch {
+                    $copyFailures++
+                    & $Logger "Warning: failed to stage boot-storage package '$driverFolder': $_"
+                }
+            }
+
+            if ($copyFailures -gt 0) {
+                throw "Failed to stage $copyFailures boot-storage driver package folders."
+            }
+
+            & $Logger "Exported $($driverInfs.Count) driver INF files across $($driverFolders.Count) package folders; staged $storageCount boot-storage packages for WinPE."
+            $metadataBefore = Get-WinUtilISOWimMetadata -ImagePath $InstallImagePath -Index $InstallImageIndex
+            Assert-WinUtilISOWimMetadata -Before $metadataBefore
+
+            Set-ItemProperty -LiteralPath $InstallImagePath -Name IsReadOnly -Value $false
+            New-Item -Path $mountDir -ItemType Directory -Force | Out-Null
+            & $Logger "Mounting install.wim index $InstallImageIndex once for driver injection..."
+            Invoke-WinUtilISODism -Arguments @('/English', '/Mount-Image', "/ImageFile:$InstallImagePath", "/Index:$InstallImageIndex", "/MountDir:$mountDir") -Operation 'mount' | Out-Null
+            $imageMounted = $true
+
+            & $Logger "Adding all exported drivers to the selected Windows image in one DISM operation..."
+            Invoke-WinUtilISODism -Arguments @('/English', "/Image:$mountDir", '/Add-Driver', "/Driver:$driverExportRoot", '/Recurse') -Operation 'add-driver' | Out-Null
+
+            & $Logger 'Committing the driver-only install.wim change...'
+            Invoke-WinUtilISODism -Arguments @('/English', '/Unmount-Image', "/MountDir:$mountDir", '/Commit') -Operation 'commit' | Out-Null
+            $imageMounted = $false
+
+            $metadataAfter = Get-WinUtilISOWimMetadata -ImagePath $InstallImagePath -Index $InstallImageIndex
+            Assert-WinUtilISOWimMetadata -Before $metadataBefore -After $metadataAfter
+            & $Logger 'Driver injection complete; install.wim metadata validation passed.'
         } finally {
-            Remove-Item -Path $mountDir -Recurse -Force
-        }
-    }
-
-    function Get-WinUtilISOScriptChildElement {
-        param (
-            [Parameter(Mandatory)][System.Xml.XmlElement]$Parent,
-            [Parameter(Mandatory)][string]$Name,
-            [Parameter(Mandatory)][string]$NamespaceUri
-        )
-
-        foreach ($childNode in $Parent.ChildNodes) {
-            if ($childNode.NodeType -eq [System.Xml.XmlNodeType]::Element -and
-                $childNode.LocalName -eq $Name -and
-                $childNode.NamespaceURI -eq $NamespaceUri) {
-                return [System.Xml.XmlElement]$childNode
+            if ($imageMounted -or (Test-WinUtilISOMountedImage -Path $mountDir)) {
+                try {
+                    Invoke-WinUtilISODism -Arguments @('/English', '/Unmount-Image', "/MountDir:$mountDir", '/Discard') -Operation 'discard' | Out-Null
+                } catch {
+                    & $Logger "Warning: could not discard the failed install.wim mount: $_"
+                }
             }
+            Remove-Item -Path $mountDir -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-Item -Path $driverExportRoot -Recurse -Force -ErrorAction SilentlyContinue
         }
-
-        $childElement = $Parent.OwnerDocument.CreateElement($Name, $NamespaceUri)
-        [void]$Parent.AppendChild($childElement)
-        return $childElement
-    }
-
-    function ConvertTo-WinUtilISOAnswerFile {
-        param (
-            [Parameter(Mandatory)][string]$XmlContent,
-            [int]$ImageIndex = 1
-        )
-
-        if ($ImageIndex -lt 1) { $ImageIndex = 1 }
-
-        $unattendNs = "urn:schemas-microsoft-com:unattend"
-        $wcmNs = "http://schemas.microsoft.com/WMIConfig/2002/State"
-
-        $xmlDoc = [xml]::new()
-        $xmlDoc.PreserveWhitespace = $true
-        $xmlDoc.LoadXml($XmlContent)
-
-        if ($xmlDoc.DocumentElement.NamespaceURI -ne $unattendNs) {
-            throw "Unexpected autounattend.xml namespace: $($xmlDoc.DocumentElement.NamespaceURI)"
-        }
-
-        if (-not $xmlDoc.DocumentElement.HasAttribute("xmlns:wcm")) {
-            $xmlDoc.DocumentElement.SetAttribute("wcm", "http://www.w3.org/2000/xmlns/", $wcmNs)
-        }
-
-        $nsMgr = New-Object System.Xml.XmlNamespaceManager($xmlDoc.NameTable)
-        $nsMgr.AddNamespace("u", $unattendNs)
-
-        $windowsPESettings = $xmlDoc.SelectSingleNode('/u:unattend/u:settings[@pass="windowsPE"]', $nsMgr)
-        if (-not $windowsPESettings) {
-            $windowsPESettings = $xmlDoc.CreateElement("settings", $unattendNs)
-            $windowsPESettings.SetAttribute("pass", "windowsPE")
-            [void]$xmlDoc.DocumentElement.PrependChild($windowsPESettings)
-        }
-
-        $setupComponent = $windowsPESettings.SelectSingleNode('u:component[@name="Microsoft-Windows-Setup"]', $nsMgr)
-        if (-not $setupComponent) {
-            $setupComponent = $xmlDoc.CreateElement("component", $unattendNs)
-            $setupComponent.SetAttribute("name", "Microsoft-Windows-Setup")
-            $setupComponent.SetAttribute("processorArchitecture", "amd64")
-            $setupComponent.SetAttribute("publicKeyToken", "31bf3856ad364e35")
-            $setupComponent.SetAttribute("language", "neutral")
-            $setupComponent.SetAttribute("versionScope", "nonSxS")
-            [void]$windowsPESettings.AppendChild($setupComponent)
-        }
-
-        $productKeyNodes = @($setupComponent.SelectNodes("u:UserData/u:ProductKey", $nsMgr))
-        foreach ($productKeyNode in $productKeyNodes) {
-            $keyNode = $productKeyNode.SelectSingleNode("u:Key", $nsMgr)
-            $keyValue = if ($keyNode) { $keyNode.InnerText.Trim() } else { "" }
-
-            if ([string]::IsNullOrWhiteSpace($keyValue) -or $keyValue -eq "00000-00000-00000-00000-00000") {
-                [void]$productKeyNode.ParentNode.RemoveChild($productKeyNode)
-            }
-        }
-
-        $imageInstall = Get-WinUtilISOScriptChildElement -Parent $setupComponent -Name "ImageInstall" -NamespaceUri $unattendNs
-        $osImage = Get-WinUtilISOScriptChildElement -Parent $imageInstall -Name "OSImage" -NamespaceUri $unattendNs
-        $installFrom = Get-WinUtilISOScriptChildElement -Parent $osImage -Name "InstallFrom" -NamespaceUri $unattendNs
-
-        $existingMetadataNodes = @($installFrom.SelectNodes("u:MetaData", $nsMgr))
-        foreach ($metadataNode in $existingMetadataNodes) {
-            [void]$installFrom.RemoveChild($metadataNode)
-        }
-
-        $metadata = $xmlDoc.CreateElement("MetaData", $unattendNs)
-        $actionAttribute = $xmlDoc.CreateAttribute("wcm", "action", $wcmNs)
-        $actionAttribute.Value = "add"
-        [void]$metadata.Attributes.Append($actionAttribute)
-
-        $keyElement = $xmlDoc.CreateElement("Key", $unattendNs)
-        $keyElement.InnerText = "/IMAGE/INDEX"
-        [void]$metadata.AppendChild($keyElement)
-
-        $valueElement = $xmlDoc.CreateElement("Value", $unattendNs)
-        $valueElement.InnerText = [string]$ImageIndex
-        [void]$metadata.AppendChild($valueElement)
-
-        [void]$installFrom.AppendChild($metadata)
-
-        return $xmlDoc.OuterXml
     }
 
     function Write-WinUtilISOEditionConfig {
@@ -223,10 +231,6 @@ function Invoke-WinUtilISOScript {
             [string]$EditionId,
             [scriptblock]$Logger
         )
-
-        if (-not (Test-Path $ContentRoot)) {
-            return
-        }
 
         $sourcesDir = Join-Path $ContentRoot "sources"
         New-Item -Path $sourcesDir -ItemType Directory -Force | Out-Null
@@ -256,253 +260,281 @@ Retail
         & $Logger "Written sources\ei.cfg for EditionID '$EditionId'."
     }
 
-    # -- 1. Remove provisioned AppX packages ----------------------------------
-    & $Log "Removing provisioned AppX packages..."
+    function Add-WinUtilISOSetupCustomizations {
+        param (
+            [Parameter(Mandatory)][string]$XmlContent,
+            [Parameter(Mandatory)][int]$InstallImageIndex,
+            [scriptblock]$Logger
+        )
 
-    $packages = & dism /English "/image:$ScratchDir" /Get-ProvisionedAppxPackages |
-        ForEach-Object { if ($_ -match 'PackageName : (.*)') { $matches[1] } }
+        $appxPackages = @(
+            'Clipchamp.Clipchamp', 'Microsoft.BingNews', 'Microsoft.BingSearch',
+            'Microsoft.BingWeather', 'Microsoft.GetHelp', 'Microsoft.MicrosoftOfficeHub',
+            'Microsoft.MicrosoftSolitaireCollection', 'Microsoft.MicrosoftStickyNotes',
+            'Microsoft.OutlookForWindows', 'Microsoft.Paint', 'Microsoft.PowerAutomateDesktop',
+            'Microsoft.StartExperiencesApp', 'Microsoft.Todos', 'Microsoft.Windows.DevHome',
+            'Microsoft.WindowsFeedbackHub', 'Microsoft.WindowsSoundRecorder',
+            'Microsoft.ZuneMusic', 'MicrosoftCorporationII.QuickAssist', 'MSTeams'
+        )
 
-    $packagePrefixes = @(
-        'Clipchamp.Clipchamp',
-        'Microsoft.BingNews',
-        'Microsoft.BingSearch',
-        'Microsoft.BingWeather',
-        'Microsoft.GetHelp',
-        'Microsoft.MicrosoftOfficeHub',
-        'Microsoft.MicrosoftSolitaireCollection',
-        'Microsoft.MicrosoftStickyNotes',
-        'Microsoft.OutlookForWindows',
-        'Microsoft.Paint',
-        'Microsoft.PowerAutomateDesktop',
-        'Microsoft.StartExperiencesApp',
-        'Microsoft.Todos',
-        'Microsoft.Windows.DevHome',
-        'Microsoft.WindowsFeedbackHub',
-        'Microsoft.WindowsSoundRecorder',
-        'Microsoft.ZuneMusic',
-        'MicrosoftCorporationII.QuickAssist',
-        'MSTeams'
+        $appxList = ($appxPackages | ForEach-Object { "    '$_'" }) -join "`r`n"
+        $postInstallScript = @"
+`$ErrorActionPreference = 'Continue'
+`$logPath = 'C:\Windows\Setup\Scripts\WinUtil-PostInstall.log'
+Start-Transcript -Path `$logPath -Append -ErrorAction SilentlyContinue
+
+try {
+    Write-Host 'WinUtil: Removing provisioned AppX packages...'
+    `$packages = @(
+$appxList
     )
+    foreach (`$package in `$packages) {
+        Get-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue |
+            Where-Object { `$_.DisplayName -like "*`$package*" } |
+            ForEach-Object { Remove-AppxProvisionedPackage -Online -PackageName `$_.PackageName -ErrorAction SilentlyContinue | Out-Null }
+        Get-AppxPackage -AllUsers -ErrorAction SilentlyContinue |
+            Where-Object { `$_.Name -like "*`$package*" } |
+            ForEach-Object { Remove-AppxPackage -AllUsers -Package `$_.PackageFullName -ErrorAction SilentlyContinue | Out-Null }
+    }
 
-    $packages | Where-Object { $pkg = $_; $packagePrefixes | Where-Object { $pkg -like "*$_*" } } |
-        ForEach-Object { & dism /English "/image:$ScratchDir" /Remove-ProvisionedAppxPackage "/PackageName:$_" }
+    function Set-WinUtilRegistryValue([string]`$Path, [string]`$Name, [string]`$Type, [string]`$Value) {
+        reg.exe add `$Path /v `$Name /t `$Type /d `$Value /f 2>&1 | Out-Null
+    }
 
-    # -- 2. Inject current system drivers (optional) ---------------------------
+    function Set-WinUtilContentDeliveryManagerValues([string]`$HiveRoot) {
+        `$contentDeliveryManager = "`$HiveRoot\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'OemPreInstalledAppsEnabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'PreInstalledAppsEnabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'SilentInstalledAppsEnabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'ContentDeliveryAllowed' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'FeatureManagementEnabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'PreInstalledAppsEverEnabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'SoftLandingEnabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'SubscribedContentEnabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'SubscribedContent-310093Enabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'SubscribedContent-338388Enabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'SubscribedContent-338389Enabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'SubscribedContent-338393Enabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'SubscribedContent-353694Enabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'SubscribedContent-353696Enabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue `$contentDeliveryManager 'SystemPaneSuggestionsEnabled' 'REG_DWORD' '0'
+        reg.exe delete "`$contentDeliveryManager\Subscriptions" /f 2>&1 | Out-Null
+        reg.exe delete "`$contentDeliveryManager\SuggestedApps" /f 2>&1 | Out-Null
+    }
+
+    Write-Host 'WinUtil: Applying registry tweaks...'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager' 'ShippedWithReserves' 'REG_DWORD' '0'
+    Set-WinUtilRegistryValue 'HKLM\SYSTEM\CurrentControlSet\Control\BitLocker' 'PreventDeviceEncryption' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Chat' 'ChatIcon' 'REG_DWORD' '3'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Policies\Microsoft\Windows\OneDrive' 'DisableFileSyncNGSC' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection' 'AllowTelemetry' 'REG_DWORD' '0'
+    Set-WinUtilRegistryValue 'HKLM\SYSTEM\CurrentControlSet\Services\dmwappushservice' 'Start' 'REG_DWORD' '4'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot' 'TurnOffWindowsCopilot' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Policies\Microsoft\Edge' 'HubsSidebarEnabled' 'REG_DWORD' '0'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer' 'DisableSearchBoxSuggestions' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Policies\Microsoft\Teams' 'DisableInstallation' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Mail' 'PreventRun' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Policies\Microsoft\Windows\CloudContent' 'DisableWindowsConsumerFeatures' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Policies\Microsoft\Windows\CloudContent' 'DisableConsumerAccountStateContent' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Policies\Microsoft\Windows\CloudContent' 'DisableCloudOptimizedContent' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Start' 'ConfigureStartPins' 'REG_SZ' '{"pinnedList": [{}]}'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OOBE' 'BypassNRO' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SYSTEM\Setup\LabConfig' 'BypassCPUCheck' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SYSTEM\Setup\LabConfig' 'BypassRAMCheck' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SYSTEM\Setup\LabConfig' 'BypassSecureBootCheck' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SYSTEM\Setup\LabConfig' 'BypassStorageCheck' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SYSTEM\Setup\LabConfig' 'BypassTPMCheck' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SYSTEM\Setup\MoSetup' 'AllowUpgradesWithUnsupportedTPMOrCPU' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Policies\Microsoft\PushToInstall' 'DisablePushToInstall' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Policies\Microsoft\MRT' 'DontOfferThroughWUAU' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler_Oobe\OutlookUpdate' 'workCompleted' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler\OutlookUpdate' 'workCompleted' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler\DevHomeUpdate' 'workCompleted' 'REG_DWORD' '1'
+    reg.exe delete 'HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\OutlookUpdate' /f 2>&1 | Out-Null
+    reg.exe delete 'HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\DevHomeUpdate' /f 2>&1 | Out-Null
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU' 'NoAutoUpdate' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU' 'AUOptions' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU' 'UseWUServer' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate' 'DisableWindowsUpdateAccess' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate' 'WUServer' 'REG_SZ' 'http://localhost:8080'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate' 'WUStatusServer' 'REG_SZ' 'http://localhost:8080'
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler_Oobe\WindowsUpdate' 'workCompleted' 'REG_DWORD' '1'
+    reg.exe delete 'HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\WindowsUpdate' /f 2>&1 | Out-Null
+    Set-WinUtilRegistryValue 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config' 'DODownloadMode' 'REG_DWORD' '0'
+    Set-WinUtilRegistryValue 'HKLM\SYSTEM\CurrentControlSet\Services\BITS' 'Start' 'REG_DWORD' '4'
+    Set-WinUtilRegistryValue 'HKLM\SYSTEM\CurrentControlSet\Services\wuauserv' 'Start' 'REG_DWORD' '4'
+    Set-WinUtilRegistryValue 'HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc' 'Start' 'REG_DWORD' '4'
+    Set-WinUtilRegistryValue 'HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc' 'Start' 'REG_DWORD' '4'
+
+    `$defaultHive = 'HKU\WinUtilDefault'
+    reg.exe load `$defaultHive 'C:\Users\Default\NTUSER.DAT' 2>&1 | Out-Null
+    if (`$LASTEXITCODE -eq 0) {
+        Set-WinUtilRegistryValue "`$defaultHive\Control Panel\UnsupportedHardwareNotificationCache" 'SV1' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue "`$defaultHive\Control Panel\UnsupportedHardwareNotificationCache" 'SV2' 'REG_DWORD' '0'
+        Set-WinUtilContentDeliveryManagerValues `$defaultHive
+        Set-WinUtilRegistryValue "`$defaultHive\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo" 'Enabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue "`$defaultHive\Software\Microsoft\Windows\CurrentVersion\Privacy" 'TailoredExperiencesWithDiagnosticDataEnabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue "`$defaultHive\Software\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy" 'HasAccepted' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue "`$defaultHive\Software\Microsoft\Input\TIPC" 'Enabled' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue "`$defaultHive\Software\Microsoft\InputPersonalization" 'RestrictImplicitInkCollection' 'REG_DWORD' '1'
+        Set-WinUtilRegistryValue "`$defaultHive\Software\Microsoft\InputPersonalization" 'RestrictImplicitTextCollection' 'REG_DWORD' '1'
+        Set-WinUtilRegistryValue "`$defaultHive\Software\Microsoft\InputPersonalization\TrainedDataStore" 'HarvestContacts' 'REG_DWORD' '0'
+        Set-WinUtilRegistryValue "`$defaultHive\Software\Microsoft\Personalization\Settings" 'AcceptedPrivacyPolicy' 'REG_DWORD' '0'
+        reg.exe unload `$defaultHive 2>&1 | Out-Null
+    }
+
+    Set-WinUtilContentDeliveryManagerValues 'HKCU'
+    Set-WinUtilRegistryValue 'HKCU\Control Panel\UnsupportedHardwareNotificationCache' 'SV1' 'REG_DWORD' '0'
+    Set-WinUtilRegistryValue 'HKCU\Control Panel\UnsupportedHardwareNotificationCache' 'SV2' 'REG_DWORD' '0'
+    Set-WinUtilRegistryValue 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' 'TaskbarMn' 'REG_DWORD' '0'
+    Set-WinUtilRegistryValue 'HKCU\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo' 'Enabled' 'REG_DWORD' '0'
+    Set-WinUtilRegistryValue 'HKCU\Software\Microsoft\Windows\CurrentVersion\Privacy' 'TailoredExperiencesWithDiagnosticDataEnabled' 'REG_DWORD' '0'
+    Set-WinUtilRegistryValue 'HKCU\Software\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy' 'HasAccepted' 'REG_DWORD' '0'
+    Set-WinUtilRegistryValue 'HKCU\Software\Microsoft\Input\TIPC' 'Enabled' 'REG_DWORD' '0'
+    Set-WinUtilRegistryValue 'HKCU\Software\Microsoft\InputPersonalization' 'RestrictImplicitInkCollection' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKCU\Software\Microsoft\InputPersonalization' 'RestrictImplicitTextCollection' 'REG_DWORD' '1'
+    Set-WinUtilRegistryValue 'HKCU\Software\Microsoft\InputPersonalization\TrainedDataStore' 'HarvestContacts' 'REG_DWORD' '0'
+    Set-WinUtilRegistryValue 'HKCU\Software\Microsoft\Personalization\Settings' 'AcceptedPrivacyPolicy' 'REG_DWORD' '0'
+
+    Write-Host 'WinUtil: Removing scheduled task definitions...'
+    `$taskPaths = @(
+        'C:\Windows\System32\Tasks\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser',
+        'C:\Windows\System32\Tasks\Microsoft\Windows\Customer Experience Improvement Program',
+        'C:\Windows\System32\Tasks\Microsoft\Windows\Application Experience\ProgramDataUpdater',
+        'C:\Windows\System32\Tasks\Microsoft\Windows\Chkdsk\Proxy',
+        'C:\Windows\System32\Tasks\Microsoft\Windows\Windows Error Reporting\QueueReporting',
+        'C:\Windows\System32\Tasks\Microsoft\Windows\InstallService',
+        'C:\Windows\System32\Tasks\Microsoft\Windows\UpdateOrchestrator',
+        'C:\Windows\System32\Tasks\Microsoft\Windows\UpdateAssistant',
+        'C:\Windows\System32\Tasks\Microsoft\Windows\WaaSMedic',
+        'C:\Windows\System32\Tasks\Microsoft\Windows\WindowsUpdate',
+        'C:\Windows\System32\Tasks\Microsoft\WindowsUpdate'
+    )
+    foreach (`$taskPath in `$taskPaths) { Remove-Item -LiteralPath `$taskPath -Recurse -Force -ErrorAction SilentlyContinue }
+
+    Start-Process -FilePath 'C:\Windows\System32\OneDriveSetup.exe' -ArgumentList '/uninstall' -Wait -ErrorAction SilentlyContinue
+    Write-Host 'WinUtil: Post-install customization complete.'
+} finally {
+    Stop-Transcript -ErrorAction SilentlyContinue
+}
+"@
+
+        $xmlDoc = [xml]::new()
+        $xmlDoc.PreserveWhitespace = $true
+        $xmlDoc.LoadXml($XmlContent)
+        $nsMgr = New-Object System.Xml.XmlNamespaceManager($xmlDoc.NameTable)
+        $nsMgr.AddNamespace('u', 'urn:schemas-microsoft-com:unattend')
+        $nsMgr.AddNamespace('sg', 'https://schneegans.de/windows/unattend-generator/')
+
+        $setupComponent = $xmlDoc.SelectSingleNode('/u:unattend/u:settings[@pass="windowsPE"]/u:component[@name="Microsoft-Windows-Setup"]', $nsMgr)
+        $extensions = $xmlDoc.SelectSingleNode('//sg:Extensions', $nsMgr)
+        $firstLogonFile = $xmlDoc.SelectSingleNode('//sg:File[@path="C:\Windows\Setup\Scripts\FirstLogon.ps1"]', $nsMgr)
+        if (-not $setupComponent -or -not $extensions -or -not $firstLogonFile) {
+            throw 'autounattend.xml is missing a required Windows Setup, Extensions, or FirstLogon.ps1 node.'
+        }
+
+        $imageInstall = $setupComponent.SelectSingleNode('u:ImageInstall', $nsMgr)
+        if (-not $imageInstall) {
+            $imageInstall = $xmlDoc.CreateElement('ImageInstall', $setupComponent.NamespaceURI)
+            [void]$setupComponent.AppendChild($imageInstall)
+        }
+        $osImage = $imageInstall.SelectSingleNode('u:OSImage', $nsMgr)
+        if (-not $osImage) {
+            $osImage = $xmlDoc.CreateElement('OSImage', $setupComponent.NamespaceURI)
+            [void]$imageInstall.AppendChild($osImage)
+        }
+        $installFrom = $osImage.SelectSingleNode('u:InstallFrom', $nsMgr)
+        if (-not $installFrom) {
+            $installFrom = $xmlDoc.CreateElement('InstallFrom', $setupComponent.NamespaceURI)
+            [void]$osImage.AppendChild($installFrom)
+        }
+        foreach ($existingMetadata in @($installFrom.SelectNodes('u:MetaData', $nsMgr))) {
+            [void]$installFrom.RemoveChild($existingMetadata)
+        }
+        $metadata = $xmlDoc.CreateElement('MetaData', $setupComponent.NamespaceURI)
+        $action = $xmlDoc.CreateAttribute('wcm', 'action', 'http://schemas.microsoft.com/WMIConfig/2002/State')
+        $action.Value = 'add'
+        [void]$metadata.Attributes.Append($action)
+        $key = $xmlDoc.CreateElement('Key', $setupComponent.NamespaceURI)
+        $key.InnerText = '/IMAGE/INDEX'
+        [void]$metadata.AppendChild($key)
+        $value = $xmlDoc.CreateElement('Value', $setupComponent.NamespaceURI)
+        $value.InnerText = [string]$InstallImageIndex
+        [void]$metadata.AppendChild($value)
+        [void]$installFrom.AppendChild($metadata)
+
+        $postInstallFile = $xmlDoc.CreateElement('File', $extensions.NamespaceURI)
+        $postInstallFile.SetAttribute('path', 'C:\Windows\Setup\Scripts\WinUtil-PostInstall.ps1')
+        $postInstallFile.InnerText = $postInstallScript
+        [void]$extensions.AppendChild($postInstallFile)
+
+        $firstLogonFile.InnerText = "& 'C:\Windows\Setup\Scripts\WinUtil-PostInstall.ps1';`r`n`r`n$($firstLogonFile.InnerText.Trim())"
+
+        $null = & $Logger 'Added WinUtil post-install AppX, registry, and scheduled-task customizations to autounattend.xml.'
+        return $xmlDoc.OuterXml
+    }
+
+    function Add-WinUtilISOSetupScriptFallback {
+        param (
+            [Parameter(Mandatory)][string]$ContentRoot,
+            [Parameter(Mandatory)][string]$XmlContent,
+            [scriptblock]$Logger
+        )
+
+        $xmlDoc = [xml]::new()
+        $xmlDoc.PreserveWhitespace = $true
+        $xmlDoc.LoadXml($XmlContent)
+        $nsMgr = New-Object System.Xml.XmlNamespaceManager($xmlDoc.NameTable)
+        $nsMgr.AddNamespace('u', 'urn:schemas-microsoft-com:unattend')
+        $nsMgr.AddNamespace('sg', 'https://schneegans.de/windows/unattend-generator/')
+
+        $setupScriptsRoot = Join-Path $ContentRoot 'sources\$OEM$\$$\Setup\Scripts'
+        $stagedCount = 0
+        foreach ($file in $xmlDoc.SelectNodes('//sg:File', $nsMgr)) {
+            $path = $file.GetAttribute('path')
+            if (-not $path.StartsWith('C:\Windows\Setup\Scripts\', [System.StringComparison]::OrdinalIgnoreCase)) {
+                continue
+            }
+
+            $relativePath = $path.Substring('C:\Windows\Setup\Scripts\'.Length)
+            $targetPath = Join-Path $setupScriptsRoot $relativePath
+            New-Item -Path (Split-Path $targetPath -Parent) -ItemType Directory -Force | Out-Null
+
+            $encoding = switch ([System.IO.Path]::GetExtension($targetPath)) {
+                { $_ -in '.ps1', '.xml' } { [System.Text.Encoding]::UTF8; break }
+                { $_ -in '.reg', '.vbs', '.js' } { [System.Text.UnicodeEncoding]::new($false, $true); break }
+                default { [System.Text.Encoding]::Default }
+            }
+            $bytes = $encoding.GetPreamble() + $encoding.GetBytes($file.InnerText.Trim())
+            [System.IO.File]::WriteAllBytes($targetPath, $bytes)
+            $stagedCount++
+        }
+
+        $useConfigurationSet = $xmlDoc.SelectSingleNode('/u:unattend/u:settings[@pass="windowsPE"]/u:component[@name="Microsoft-Windows-Setup"]/u:UseConfigurationSet', $nsMgr)
+        if ($useConfigurationSet) {
+            $useConfigurationSet.InnerText = 'true'
+            [System.IO.File]::WriteAllText((Join-Path $ContentRoot 'autounattend.xml'), $xmlDoc.OuterXml, [System.Text.UTF8Encoding]::new($false))
+        }
+        & $Logger "Staged $stagedCount WinUtil setup script fallback files at '$setupScriptsRoot'."
+    }
+
+    if (-not (Test-Path $ISOContentsDir)) {
+        throw "ISO contents directory does not exist: $ISOContentsDir"
+    }
+
+    if ([string]::IsNullOrWhiteSpace($AutoUnattendXml)) {
+        throw "autounattend.xml content is required to prepare setup media."
+    }
+
+    $preparedAutoUnattendXml = Add-WinUtilISOSetupCustomizations -XmlContent $AutoUnattendXml -InstallImageIndex $InstallImageIndex -Logger $Log
+    $unattendPath = Join-Path $ISOContentsDir "autounattend.xml"
+    [System.IO.File]::WriteAllText($unattendPath, $preparedAutoUnattendXml, [System.Text.UTF8Encoding]::new($false))
+    & $Log "Written autounattend.xml with WinUtil setup customizations to ISO root ($unattendPath)."
+    Add-WinUtilISOSetupScriptFallback -ContentRoot $ISOContentsDir -XmlContent $preparedAutoUnattendXml -Logger $Log
+
+    Write-WinUtilISOEditionConfig -ContentRoot $ISOContentsDir -EditionId $InstallEditionId -Logger $Log
+
     if ($InjectCurrentSystemDrivers) {
-        & $Log "Exporting all drivers from running system..."
-        $driverExportRoot = Join-Path $env:TEMP "WinUtil_DriverExport_$(Get-Random)"
-        New-Item -Path $driverExportRoot -ItemType Directory -Force
-        try {
-            Export-WindowsDriver -Online -Destination $driverExportRoot
-
-            & $Log "Injecting current system drivers into install.wim..."
-            Add-DriversToImage -MountPath $ScratchDir -DriverDir $driverExportRoot -Label "install" -Logger $Log
-            & $Log "install.wim driver injection complete."
-
-            if ($ISOContentsDir -and (Test-Path $ISOContentsDir)) {
-                $bootWim = Join-Path $ISOContentsDir "sources\boot.wim"
-                if (Test-Path $bootWim) {
-                    & $Log "Injecting current system drivers into boot.wim..."
-                    Invoke-BootWimInject -BootWimPath $bootWim -DriverDir $driverExportRoot -Logger $Log
-                } else {
-                    & $Log "Warning: boot.wim not found - skipping boot.wim driver injection."
-                }
-            }
-        } catch {
-            & $Log "Error during driver export/injection: $_"
-        } finally {
-            Remove-Item -Path $driverExportRoot -Recurse -Force
-        }
-    } else {
-        & $Log "Driver injection skipped."
-    }
-
-    # -- 3. Registry tweaks ----------------------------------------------------
-    & $Log "Loading offline registry hives..."
-    reg load HKLM\zCOMPONENTS "$ScratchDir\Windows\System32\config\COMPONENTS"
-    reg load HKLM\zDEFAULT    "$ScratchDir\Windows\System32\config\default"
-    reg load HKLM\zNTUSER     "$ScratchDir\Users\Default\ntuser.dat"
-    reg load HKLM\zSOFTWARE   "$ScratchDir\Windows\System32\config\SOFTWARE"
-    reg load HKLM\zSYSTEM     "$ScratchDir\Windows\System32\config\SYSTEM"
-
-    & $Log "Bypassing system requirements..."
-    Set-ISOScriptReg -Path 'HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache' -Name 'SV1' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache' -Name 'SV2' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache' -Name 'SV1' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache' -Name 'SV2' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zSYSTEM\Setup\LabConfig' -Name 'BypassCPUCheck' -Type 'REG_DWORD' -Value '1'
-    Set-ISOScriptReg -Path 'HKLM\zSYSTEM\Setup\LabConfig' -Name 'BypassRAMCheck' -Type 'REG_DWORD' -Value '1'
-    Set-ISOScriptReg -Path 'HKLM\zSYSTEM\Setup\LabConfig' -Name 'BypassSecureBootCheck' -Type 'REG_DWORD' -Value '1'
-    Set-ISOScriptReg -Path 'HKLM\zSYSTEM\Setup\LabConfig' -Name 'BypassStorageCheck' -Type 'REG_DWORD' -Value '1'
-    Set-ISOScriptReg -Path 'HKLM\zSYSTEM\Setup\LabConfig' -Name 'BypassTPMCheck' -Type 'REG_DWORD' -Value '1'
-    Set-ISOScriptReg -Path 'HKLM\zSYSTEM\Setup\MoSetup' -Name 'AllowUpgradesWithUnsupportedTPMOrCPU' -Type 'REG_DWORD' -Value '1'
-
-    & $Log "Disabling sponsored apps..."
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' -Name 'OemPreInstalledAppsEnabled' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' -Name 'PreInstalledAppsEnabled' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' -Name 'SilentInstalledAppsEnabled' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\CloudContent' -Name 'DisableWindowsConsumerFeatures' -Type 'REG_DWORD' -Value '1'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' -Name 'ContentDeliveryAllowed' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Microsoft\PolicyManager\current\device\Start' -Name 'ConfigureStartPins' -Type 'REG_SZ' -Value '{"pinnedList": [{}]}'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' -Name 'FeatureManagementEnabled' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' -Name 'PreInstalledAppsEverEnabled' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' -Name 'SoftLandingEnabled' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' -Name 'SubscribedContentEnabled' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' -Name 'SubscribedContent-310093Enabled' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' -Name 'SubscribedContent-338388Enabled' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' -Name 'SubscribedContent-338389Enabled' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' -Name 'SubscribedContent-338393Enabled' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' -Name 'SubscribedContent-353694Enabled' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' -Name 'SubscribedContent-353696Enabled' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' -Name 'SystemPaneSuggestionsEnabled' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Policies\Microsoft\PushToInstall' -Name 'DisablePushToInstall' -Type 'REG_DWORD' -Value '1'
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Policies\Microsoft\MRT' -Name 'DontOfferThroughWUAU' -Type 'REG_DWORD' -Value '1'
-    Remove-ISOScriptReg 'HKLM\zNTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager\Subscriptions'
-    Remove-ISOScriptReg 'HKLM\zNTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager\SuggestedApps'
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\CloudContent' -Name 'DisableConsumerAccountStateContent' -Type 'REG_DWORD' -Value '1'
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\CloudContent' -Name 'DisableCloudOptimizedContent' -Type 'REG_DWORD' -Value '1'
-
-    & $Log "Enabling local accounts on OOBE..."
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\OOBE' -Name 'BypassNRO' -Type 'REG_DWORD' -Value '1'
-
-    if ($AutoUnattendXml) {
-        $preparedAutoUnattendXml = $AutoUnattendXml
-        try {
-            $preparedAutoUnattendXml = ConvertTo-WinUtilISOAnswerFile -XmlContent $AutoUnattendXml -ImageIndex $InstallImageIndex
-            & $Log "Prepared autounattend.xml to install image index $InstallImageIndex without forcing a product key."
-        } catch {
-            & $Log "Warning: could not prepare autounattend.xml image selection: $_"
-        }
-
-        try {
-            $xmlDoc = [xml]::new()
-            $xmlDoc.LoadXml($preparedAutoUnattendXml)
-
-            $nsMgr = New-Object System.Xml.XmlNamespaceManager($xmlDoc.NameTable)
-            $nsMgr.AddNamespace("sg", "https://schneegans.de/windows/unattend-generator/")
-
-            $fileNodes = $xmlDoc.SelectNodes("//sg:File", $nsMgr)
-            if ($fileNodes -and $fileNodes.Count -gt 0) {
-                foreach ($fileNode in $fileNodes) {
-                    $absPath  = $fileNode.GetAttribute("path")
-                    $relPath  = $absPath -replace '^[A-Za-z]:[/\\]', ''
-                    $destPath = Join-Path $ScratchDir $relPath
-                    New-Item -Path (Split-Path $destPath -Parent) -ItemType Directory -Force
-
-                    $ext = [IO.Path]::GetExtension($destPath).ToLower()
-                    $encoding = switch ($ext) {
-                        { $_ -in '.ps1', '.xml' }        { [System.Text.Encoding]::UTF8 }
-                        { $_ -in '.reg', '.vbs', '.js' } { [System.Text.UnicodeEncoding]::new($false, $true) }
-                        default                          { [System.Text.Encoding]::Default }
-                    }
-                    [System.IO.File]::WriteAllBytes($destPath, ($encoding.GetPreamble() + $encoding.GetBytes($fileNode.InnerText.Trim())))
-                    & $Log "Pre-staged setup script: $relPath"
-                }
-            } else {
-                & $Log "Warning: no <Extensions><File> nodes found in autounattend.xml - setup scripts not pre-staged."
-            }
-        } catch {
-            & $Log "Warning: could not pre-stage setup scripts from autounattend.xml: $_"
-        }
-
-        if ($ISOContentsDir -and (Test-Path $ISOContentsDir)) {
-            $isoDest = Join-Path $ISOContentsDir "autounattend.xml"
-            Set-Content -Path $isoDest -Value $preparedAutoUnattendXml -Encoding UTF8 -Force
-            & $Log "Written autounattend.xml to ISO root ($isoDest)."
-        }
-    } else {
-        & $Log "Warning: autounattend.xml content is empty - skipping OOBE bypass file."
-    }
-
-    if ($ISOContentsDir -and (Test-Path $ISOContentsDir)) {
-        Write-WinUtilISOEditionConfig -ContentRoot $ISOContentsDir -EditionId $InstallEditionId -Logger $Log
-    }
-
-    & $Log "Disabling reserved storage..."
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager' -Name 'ShippedWithReserves' -Type 'REG_DWORD' -Value '0'
-
-    & $Log "Disabling BitLocker device encryption..."
-    Set-ISOScriptReg -Path 'HKLM\zSYSTEM\ControlSet001\Control\BitLocker' -Name 'PreventDeviceEncryption' -Type 'REG_DWORD' -Value '1'
-
-    & $Log "Disabling Chat icon..."
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\Windows Chat' -Name 'ChatIcon' -Type 'REG_DWORD' -Value '3'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'TaskbarMn' -Type 'REG_DWORD' -Value '0'
-
-    & $Log "Disabling OneDrive folder backup..."
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\OneDrive' -Name 'DisableFileSyncNGSC' -Type 'REG_DWORD' -Value '1'
-
-    & $Log "Disabling telemetry..."
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo' -Name 'Enabled' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\Software\Microsoft\Windows\CurrentVersion\Privacy' -Name 'TailoredExperiencesWithDiagnosticDataEnabled' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\Software\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy' -Name 'HasAccepted' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\Software\Microsoft\Input\TIPC' -Name 'Enabled' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\Software\Microsoft\InputPersonalization' -Name 'RestrictImplicitInkCollection' -Type 'REG_DWORD' -Value '1'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\Software\Microsoft\InputPersonalization' -Name 'RestrictImplicitTextCollection' -Type 'REG_DWORD' -Value '1'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\Software\Microsoft\InputPersonalization\TrainedDataStore' -Name 'HarvestContacts' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zNTUSER\Software\Microsoft\Personalization\Settings' -Name 'AcceptedPrivacyPolicy' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\DataCollection' -Name 'AllowTelemetry' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zSYSTEM\ControlSet001\Services\dmwappushservice' -Name 'Start' -Type 'REG_DWORD' -Value '4'
-
-    & $Log "Preventing installation of DevHome and Outlook..."
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler_Oobe\OutlookUpdate' -Name 'workCompleted' -Type 'REG_DWORD' -Value '1'
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler\OutlookUpdate' -Name 'workCompleted' -Type 'REG_DWORD' -Value '1'
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler\DevHomeUpdate' -Name 'workCompleted' -Type 'REG_DWORD' -Value '1'
-    Remove-ISOScriptReg 'HKLM\zSOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\OutlookUpdate'
-    Remove-ISOScriptReg 'HKLM\zSOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\DevHomeUpdate'
-
-    & $Log "Disabling Copilot..."
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\WindowsCopilot' -Name 'TurnOffWindowsCopilot' -Type 'REG_DWORD' -Value '1'
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Policies\Microsoft\Edge' -Name 'HubsSidebarEnabled' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\Explorer' -Name 'DisableSearchBoxSuggestions' -Type 'REG_DWORD' -Value '1'
-
-    & $Log "Disabling Windows Update during OOBE (re-enabled on first logon via FirstLogon.ps1)..."
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU' -Name 'NoAutoUpdate' -Type 'REG_DWORD' -Value '1'
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU' -Name 'AUOptions' -Type 'REG_DWORD' -Value '1'
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU' -Name 'UseWUServer' -Type 'REG_DWORD' -Value '1'
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\WindowsUpdate' -Name 'DisableWindowsUpdateAccess' -Type 'REG_DWORD' -Value '1'
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\WindowsUpdate' -Name 'WUServer' -Type 'REG_SZ' -Value 'http://localhost:8080'
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\WindowsUpdate' -Name 'WUStatusServer' -Type 'REG_SZ' -Value 'http://localhost:8080'
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler_Oobe\WindowsUpdate' -Name 'workCompleted' -Type 'REG_DWORD' -Value '1'
-    Remove-ISOScriptReg 'HKLM\zSOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\WindowsUpdate'
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config' -Name 'DODownloadMode' -Type 'REG_DWORD' -Value '0'
-    Set-ISOScriptReg -Path 'HKLM\zSYSTEM\ControlSet001\Services\BITS' -Name 'Start' -Type 'REG_DWORD' -Value '4'
-    Set-ISOScriptReg -Path 'HKLM\zSYSTEM\ControlSet001\Services\wuauserv' -Name 'Start' -Type 'REG_DWORD' -Value '4'
-    Set-ISOScriptReg -Path 'HKLM\zSYSTEM\ControlSet001\Services\UsoSvc' -Name 'Start' -Type 'REG_DWORD' -Value '4'
-    Set-ISOScriptReg -Path 'HKLM\zSYSTEM\ControlSet001\Services\WaaSMedicSvc' -Name 'Start' -Type 'REG_DWORD' -Value '4'
-
-    & $Log "Preventing installation of Teams..."
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Policies\Microsoft\Teams' -Name 'DisableInstallation' -Type 'REG_DWORD' -Value '1'
-
-    & $Log "Preventing installation of new Outlook..."
-    Set-ISOScriptReg -Path 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\Windows Mail' -Name 'PreventRun' -Type 'REG_DWORD' -Value '1'
-
-    & $Log "Unloading offline registry hives..."
-    reg unload HKLM\zCOMPONENTS
-    reg unload HKLM\zDEFAULT
-    reg unload HKLM\zNTUSER
-    reg unload HKLM\zSOFTWARE
-    reg unload HKLM\zSYSTEM
-
-    # -- 4. Delete scheduled task definition files -----------------------------
-    & $Log "Deleting scheduled task definition files..."
-    $tasksPath = "$ScratchDir\Windows\System32\Tasks"
-    Remove-Item "$tasksPath\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" -Force
-    Remove-Item "$tasksPath\Microsoft\Windows\Customer Experience Improvement Program"                  -Recurse -Force
-    Remove-Item "$tasksPath\Microsoft\Windows\Application Experience\ProgramDataUpdater"               -Force
-    Remove-Item "$tasksPath\Microsoft\Windows\Chkdsk\Proxy"                                            -Force
-    Remove-Item "$tasksPath\Microsoft\Windows\Windows Error Reporting\QueueReporting"                  -Force
-    Remove-Item "$tasksPath\Microsoft\Windows\InstallService"                                          -Recurse -Force
-    Remove-Item "$tasksPath\Microsoft\Windows\UpdateOrchestrator"                                      -Recurse -Force
-    Remove-Item "$tasksPath\Microsoft\Windows\UpdateAssistant"                                         -Recurse -Force
-    Remove-Item "$tasksPath\Microsoft\Windows\WaaSMedic"                                               -Recurse -Force
-    Remove-Item "$tasksPath\Microsoft\Windows\WindowsUpdate"                                           -Recurse -Force
-    Remove-Item "$tasksPath\Microsoft\WindowsUpdate"                                                   -Recurse -Force
-    & $Log "Scheduled task files deleted."
-
-    # -- 5. Remove ISO support folder -----------------------------------------
-    if ($ISOContentsDir -and (Test-Path $ISOContentsDir)) {
-        & $Log "Removing ISO support\ folder..."
-        Remove-Item -Path (Join-Path $ISOContentsDir "support") -Recurse -Force
-        & $Log "ISO support\ folder removed."
+        Add-WinUtilISOStagedDrivers -ContentRoot $ISOContentsDir -Logger $Log -InstallImagePath $InstallImagePath -InstallImageIndex $InstallImageIndex
     }
 }

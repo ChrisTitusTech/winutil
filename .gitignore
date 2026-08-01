@@ -14,7 +14,7 @@ desktop.ini
 .vscode/
 .idea/
 
-# hugo files
-docs/public/
-docs/.hugo_build.lock
-docs/resources/
+# hugo files (archived docs)
+docs-old/public/
+docs-old/.hugo_build.lock
+docs-old/resources/

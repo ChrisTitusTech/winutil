@@ -21,6 +21,7 @@ Describe "Install app rendering startup contract" {
         $renderScript | Should -Match 'Dispatcher\.BeginInvoke'
         $renderScript | Should -Match 'Invoke-WinUtilInstallAppRenderNextBatch'
         $renderScript | Should -Match 'Initialize-InstallAppEntry'
+        $renderScript | Should -Match 'Find-AppsByNameOrDescription -SearchString \$sync\.SearchBar\.Text -Category \$sync\.SearchBar\.Tag'
         $renderScript | Should -Match '\$sync\.InstallAppEntriesRendered = \$true'
     }
 
@@ -59,7 +60,7 @@ Describe "Install app rendering startup contract" {
             }
 
             function global:Find-AppsByNameOrDescription {
-                param($SearchString)
+                param($SearchString, $Category)
                 throw "Search should not run for an empty search box in this test."
             }
 
