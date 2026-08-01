@@ -347,7 +347,7 @@ foreach ($itemName in $tweakNames) {
 
     $title       = $item.Content -replace '"', '\"'
     $description = if ($item.Description) { $item.Description -replace '"', '\"' } else { '' }
-    $content     = "---`r`ntitle: `"$title`"`r`ndescription: `"$description`"`r`n---`r`n`r`n"
+    $content     = "---`r`ntitle: `"$title`"`r`ndescription: `"$description`"`r`neditUrl: false`r`n---`r`n`r`n"
 
     if ($item.Type -eq "Button") {
         $funcName = $buttonFunctionMap[$itemName]
@@ -406,7 +406,7 @@ foreach ($itemName in $featureNames) {
 
     $title       = $item.Content -replace '"', '\"'
     $description = if ($item.Description) { $item.Description -replace '"', '\"' } else { '' }
-    $content     = "---`r`ntitle: `"$title`"`r`ndescription: `"$description`"`r`n---`r`n`r`n"
+    $content     = "---`r`ntitle: `"$title`"`r`ndescription: `"$description`"`r`neditUrl: false`r`n---`r`n`r`n"
 
     if ($item.category -in $functionEmbedCategories) {
         $funcName = if ($item.function) { $item.function } else { $buttonFunctionMap[$itemName] }
