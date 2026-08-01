@@ -136,10 +136,15 @@ Describe "Stateful combo-box wiring" {
 
         $config.WPFMultiplaneOverlay.Type | Should -Be "Combobox"
         $config.WPFMultiplaneOverlay.ComboItems | Should -Be @("Enabled", "Disabled (Compatibility)", "Fully Disabled")
+        $config.WPFMultiplaneOverlay.ComboDescriptions.Enabled | Should -Match "default overlay behavior"
+        $config.WPFMultiplaneOverlay.ComboDescriptions.'Fully Disabled' | Should -Match "more aggressive method"
         $renderer | Should -Match 'Get-WinUtilMultiplaneOverlayState'
         $renderer | Should -Match 'Set-WinUtilMultiplaneOverlay -State \$selectedItem\.Content'
         $renderer | Should -Match 'Sync-WPFMultiplaneOverlayState -ComboBox \$comboBox'
         $renderer | Should -Match 'Sync-WPFMultiplaneOverlayState -ComboBox \$this'
+        $renderer | Should -Match '\$entryInfo\.ComboDescriptions\.PSObject\.Properties\[\$comboitem\]\.Value'
+        $renderer | Should -Match '\$textBlock\.Text = "\(\?\)"'
+        $renderer | Should -Match '\$textBlock\.ToolTip = \$entryInfo\.Link'
         $renderer | Should -Not -Match 'StateFunction|ApplyFunction|IsApplying'
     }
 }
