@@ -5,13 +5,13 @@
 * Test the latest changes to WinUtil by running the pre-release and reporting issues you are encountering to help us continually improve WinUtil!
 
 #### **Run the latest pre-release**
-   ```ps1
-   irm https://christitus.com/windev | iex
-   ```
 
-!!! bug "Keep in mind"
+```ps1
+irm https://christitus.com/windev | iex
+```
 
-     This is a pre-release and should be treated as such. It exists for developers to test the utility and report or fix bugs before they get added to the stable release. Don't use it in production!
+> [!CAUTION]
+> **Keep in mind:** This is a pre-release and should be treated as such. It exists for developers to test the utility and report or fix bugs before they get added to the stable release. Don't use it in production!
 
 ## Issues
 
@@ -23,19 +23,17 @@
 
 * If you're doing code changes, then you can submit a PR to the `main` branch.
 
-!!! warning "Important"
-
-     Do not use a code formatter, make massive amounts of line changes, or make multiple feature changes. EACH FEATURE CHANGE SHOULD BE IT'S OWN PULL REQUEST!
-
-     Do not open a pull request that adds support for other languages to WinUtil for now, until we decide how we want to move forward with language support.
+> [!IMPORTANT]
+> Do not use a code formatter, make massive amounts of line changes, or make multiple feature changes. EACH FEATURE CHANGE SHOULD BE IT'S OWN PULL REQUEST!
+>
+> Do not open a pull request that adds support for other languages to WinUtil for now, until we decide how we want to move forward with language support.
 
 * When creating pull requests, it is essential to thoroughly document all changes made. This includes, but is not limited to, documenting any additions made to the `tweaks` section and corresponding `undo tweak`, so users are able to remove the newly added tweaks if necessary, and comprehensive documentation is required for all code changes. Document your changes and briefly explain why you made your changes in your Pull Request Description. Failure to adhere to this format may result in the denial of the pull request. Additionally, any code lacking sufficient documentation may also be denied.
 
 * By following these guidelines, we can maintain a high standard of quality and ensure that the codebase remains organized and well-documented.
 
-!!! note
-
-     When creating a function, please include "WPF" or "WinUtil" in the file name so it can be loaded into the runspace.
+> [!NOTE]
+> When creating a function, please include "WPF" or "WinUtil" in the file name so it can be loaded into the runspace.
 
 ## Walk through
 
@@ -47,25 +45,25 @@
 
 ### Overview
 
-``` mermaid
+```mermaid
 %%{init: {"flowchart": {"curve": "cardinal"}} }%%
 graph TD
-  A[Fork Project] --> B[Clone Repository];
-  B --> C[Create New Branch];
-  C --> D[Make Changes];
-  D --> G[Test Changes];
-  G --> H{Tests Passed?};
-  H -->|Yes| E[Commit Changes];
-  H -->|No| J[Fix Issues];
-  J --> G;
-  E --> F[Push Branch];
-  F --> K[Create Pull Request];
-  K --> L[Fill out PR template];
+  A[Fork Project] --> B[Clone Repository];
+  B --> C[Create New Branch];
+  C --> D[Make Changes];
+  D --> G[Test Changes];
+  G --> H{Tests Passed?};
+  H -->|Yes| E[Commit Changes];
+  H -->|No| J[Fix Issues];
+  J --> G;
+  E --> F[Push Branch];
+  F --> K[Create Pull Request];
+  K --> L[Fill out PR template];
   classDef default stroke:#333,stroke-width:4px,font-size:12pt;
 ```
-!!! info
 
-     This is a diagram to guide you through the process. It may vary depending on the type of change you're making.
+> [!NOTE]
+> This is a diagram to guide you through the process. It may vary depending on the type of change you're making.
 
 ### Fork the Repo
 * Fork the WinUtil Repository [here](https://github.com/ChrisTitusTech/winutil) to create a copy that will be available in your repository list.
@@ -73,9 +71,8 @@ graph TD
 ![Fork Image](../docs/src/assets/contributing/Fork-Button-Dark.png)
 
 ### Clone the Fork
-!!! tip
-
-     While you can make your changes directly through the Web, we recommend cloning the repo to your device using the application GitHub Desktop (available in WinUtil) to test your fork easily.
+> [!TIP]
+> While you can make your changes directly through the Web, we recommend cloning the repo to your device using the application GitHub Desktop (available in WinUtil) to test your fork easily.
 
 * Install GitHub Desktop if it is not already installed.
 * Log in using the same GitHub account you used to fork WinUtil.
@@ -111,7 +108,7 @@ Open PowerShell as Administrator.
 
 ![Commit Image](../docs/src/assets/contributing/Commit-GHD.png)
 
-* Push the changes to upload them to your fork on github.com.
+* Push the changes to upload them to your fork on GitHub.
 
 ![Push Commit Image](../docs/src/assets/contributing/Push-Commit.png)
 

@@ -9,10 +9,10 @@ The `devdocs-generator.ps1` script automatically generates Astro/Starlight markd
 
 ## When Does it Run?
 
-- Automatically triggered by the `docs.yaml` GitHub Actions workflow, which generates the `.mdx` files, commits them back to the repo, and then triggers the Astro build to build the site
-- Automatically runs during the pre-release workflow, committing the updated `"link"` properties back to the JSON config files
-- Watches `docs/**`, `config/tweaks.json`, `config/feature.json`, and `functions/**` for changes
-- Supports manual runs via `workflow_dispatch`
+- Automatically runs as part of the `pre-release.yaml` GitHub Actions workflow (manually triggered via `workflow_dispatch`), which regenerates the `.mdx` files and updates the `"link"` properties in the JSON config files
+- `pre-release.yaml` then opens a `docs-update` pull request with those changes; `auto-merge-docs.yaml` auto-approves and merges it into `main`
+- That merge pushes changes under `docs/**`, which triggers `docs.yaml` — but `docs.yaml` only builds and deploys the Astro site, it does not run the generator itself
+- Can also be run manually/locally from `tools/` (`./devdocs-generator.ps1`)
 
 ## What Does It Do?
 
@@ -104,5 +104,5 @@ The script strips common prefixes from the JSON key names using the pattern `WPF
   — if a category `index.mdx` landing page is added inside `tweaks/` or `features/`, uncomment the exclusion in the cleanup step first, or it will be deleted on the next run
 - Category directories are created automatically if they don't exist
 - The `"link"` property added to JSON entries is excluded from the displayed code blocks
-- The `docs` workflow generates the `.mdx` files and commits them back to the repo before the Astro site is built
-- The `pre-release` workflow generates the `"link"` properties and commits them back to the repo
+- The `pre-release` workflow generates both the `.mdx` files and the `"link"` properties, and commits them back to the repo via the `docs-update` PR
+- The `docs` workflow never runs the generator — it only builds and deploys the already-committed Astro site
