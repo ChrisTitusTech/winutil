@@ -25,7 +25,7 @@ The `devdocs-generator.ps1` script automatically generates Astro/Starlight markd
 ### 2. Updates Links in JSON
 
 - Adds or updates a `"link"` property on every entry in both JSON config files
-- Each link points to that entry's documentation page on the Hugo site
+- Each link points to that entry's documentation page on the Astro/Starlight site
 - The updated links are automatically committed back to the JSON config files as part of the pre-release workflow
 
 ### 3. Cleans Up Old Docs
