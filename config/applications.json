@@ -144,7 +144,7 @@
         "foss": true
     },
     "calibre": {
-        "category": "Document",
+        "category": "Multimedia Tools",
         "choco": "calibre",
         "content": "Calibre",
         "description": "Calibre is a powerful and easy-to-use e-book manager, viewer, and converter.",
