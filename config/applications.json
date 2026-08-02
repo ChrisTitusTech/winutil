@@ -18,7 +18,7 @@
         "foss": true
     },
     "adobe": {
-        "category": "Multimedia Tools",
+        "category": "Document",
         "choco": "adobereader",
         "content": "Adobe Acrobat Reader",
         "description": "Adobe Acrobat Reader is a free PDF viewer with essential features for viewing, printing, and annotating PDF documents.",
@@ -144,7 +144,7 @@
         "foss": true
     },
     "calibre": {
-        "category": "Multimedia Tools",
+        "category": "Document",
         "choco": "calibre",
         "content": "Calibre",
         "description": "Calibre is a powerful and easy-to-use e-book manager, viewer, and converter.",
@@ -738,7 +738,7 @@
         "foss": true
     },
     "libreoffice": {
-        "category": "Multimedia Tools",
+        "category": "Document",
         "choco": "libreoffice-fresh",
         "content": "LibreOffice",
         "description": "LibreOffice is a powerful and free office suite, compatible with other major office suites.",
@@ -882,7 +882,7 @@
         "foss": true
     },
     "naps2": {
-        "category": "Multimedia Tools",
+        "category": "Document",
         "choco": "naps2",
         "content": "NAPS2 (Document Scanner)",
         "description": "NAPS2 is a document scanning application that simplifies the process of creating electronic documents.",
@@ -980,7 +980,7 @@
         "foss": true
     },
     "obsidian": {
-        "category": "Multimedia Tools",
+        "category": "Document",
         "choco": "obsidian",
         "content": "Obsidian",
         "description": "Obsidian is a powerful note-taking and knowledge management application.",
@@ -998,7 +998,7 @@
         "foss": false
     },
     "onlyoffice": {
-        "category": "Multimedia Tools",
+        "category": "Document",
         "choco": "onlyoffice",
         "content": "ONLYOFFICE Desktop",
         "description": "ONLYOFFICE Desktop is a comprehensive office suite for document editing and collaboration.",

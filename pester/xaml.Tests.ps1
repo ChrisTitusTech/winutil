@@ -142,6 +142,7 @@ Describe "XAML document" {
             "WPFSearchChipBrowsers",
             "WPFSearchChipCommunications",
             "WPFSearchChipDevelopment",
+            "WPFSearchChipDocument",
             "WPFSearchChipGames",
             "WPFSearchChipMicrosoftTools",
             "WPFSearchChipMultimediaTools",
