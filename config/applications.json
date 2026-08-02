@@ -1117,7 +1117,7 @@
     "pdf-xchange": {
         "category": "Document",
         "choco": "pdfxchangeeditor",
-        "content": "PDF-XChangeEditor",
+        "content": "PDF-XChange Editor",
         "description": "A comprehensive Windows-based software suite and editor for creating, viewing, editing, annotating, and signing PDF files.",
         "link": "https://www.pdf-xchange.com/",
         "winget": "TrackerSoftware.PDF-XChangeEditor",
@@ -1126,9 +1126,9 @@
     "pdf24creator": {
         "category": "Document",
         "choco": "pdf24",
-        "content": "PDF24 creator",
+        "content": "PDF24 Creator",
         "description": "Free and easy-to-use online/desktop PDF tools that make you more productive",
-        "link": "https://tools.pdf24.org/en/",
+        "link": "https://tools.pdf24.org/en/creator",
         "winget": "geeksoftwareGmbH.PDF24Creator",
         "foss": false
     },
