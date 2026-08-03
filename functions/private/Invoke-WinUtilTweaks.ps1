@@ -40,46 +40,44 @@ function Invoke-WinUtilTweaks {
         }
     }
     if ($sync.configs.tweaks.$CheckBox.service) {
-        $sync.configs.tweaks.$CheckBox.service | ForEach-Object {
+        foreach ($item in $sync.configs.tweaks.$CheckBox.service) {
             $changeservice = $true
 
         # The check for !($undo) is required, without it the script will throw an error for accessing unavailable member, which's the 'OriginalService' Property
             if ($KeepServiceStartup -AND !($undo)) {
                 try {
                     # Check if the service exists
-                    $service = Get-Service -Name $psitem.Name -ErrorAction Stop
-                    if(!($service.StartType.ToString() -eq $psitem.$($values.OriginalService))) {
+                    $service = Get-Service -Name $item.Name -ErrorAction Stop
+                    if(!($service.StartType.ToString() -eq $item.$($values.OriginalService))) {
                         $changeservice = $false
                     }
                 } catch [System.ServiceProcess.ServiceNotFoundException] {
-                    Write-Warning "Service $($psitem.Name) was not found."
+                    Write-Warning "Service $($item.Name) was not found."
                 }
             }
 
             if ($changeservice) {
-                Set-WinUtilService -Name $psitem.Name -StartupType $psitem.$($values.Service)
+                Set-WinUtilService -Name $item.Name -StartupType $item.$($values.Service)
             }
         }
     }
     if ($sync.configs.tweaks.$CheckBox.registry) {
-        $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
-            Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
+        foreach ($reg in $sync.configs.tweaks.$CheckBox.registry) {
+            Set-WinUtilRegistry -Name $reg.Name -Path $reg.Path -Type $reg.Type -Value $reg.$($values.registry)
         }
     }
     if ($sync.configs.tweaks.$CheckBox.$($values.ScriptType)) {
-        $sync.configs.tweaks.$CheckBox.$($values.ScriptType) | ForEach-Object {
-            $Scriptblock = [scriptblock]::Create($psitem)
+        foreach ($scr in $sync.configs.tweaks.$CheckBox.$($values.ScriptType)) {
+            $Scriptblock = [scriptblock]::Create($scr)
             Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
         }
     }
 
-    if (!$undo) {
-        if($sync.configs.tweaks.$CheckBox.appx) {
-            $sync.configs.tweaks.$CheckBox.appx | ForEach-Object {
-                Remove-WinUtilAPPX -Name $psitem
-            }
-            Remove-WinUtilProvisionedAPPX -PackageList $sync.configs.tweaks.$CheckBox.appx
+    if (!$undo -and $sync.configs.tweaks.$CheckBox.appx) {
+        foreach ($pkg in $sync.configs.tweaks.$CheckBox.appx) {
+            Remove-WinUtilAPPX -Name $pkg
         }
+        Remove-WinUtilProvisionedAPPX -PackageList $sync.configs.tweaks.$CheckBox.appx
     }
     Write-WinUtilLog -Component "Tweaks" -Message "$action tweak completed: $CheckBox"
 }
