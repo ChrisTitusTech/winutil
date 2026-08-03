@@ -15,10 +15,10 @@ Function Invoke-WinUtilCurrentSystem {
     )
     if ($CheckBox -eq "choco") {
         $apps = (choco list | Select-String -Pattern "^\S+").Matches.Value
-        $sync.configs.applicationsHashtable.GetEnumerator() | ForEach-Object {
-            $packageId = ($_.Value.choco -split ";")[-1].Trim()
+        foreach ($app in $sync.configs.applicationsHashtable.GetEnumerator()) {
+            $packageId = ($app.Value.choco -split ";")[-1].Trim()
             if ($packageId -ne "na" -and $packageId -in $apps) {
-                Write-Output $_.Key
+                Write-Output $app.Key
             }
         }
     }
@@ -36,15 +36,15 @@ Function Invoke-WinUtilCurrentSystem {
         }
         $installedProgramText = $installedProgramOutput -join "`n"
 
-        $sync.configs.applicationsHashtable.GetEnumerator() | ForEach-Object {
-            $packageId = (($_.Value.winget -split ";")[-1] -replace "^msstore:", "").Trim()
+        foreach ($app in $sync.configs.applicationsHashtable.GetEnumerator()) {
+            $packageId = (($app.Value.winget -split ";")[-1] -replace "^msstore:", "").Trim()
             if ([string]::IsNullOrWhiteSpace($packageId) -or $packageId -eq "na") {
-                return
+                continue
             }
 
             $packagePattern = "(?im)[^\S\r\n]{2,}$([regex]::Escape($packageId))(?=[^\S\r\n]{2,}|$)"
             if ($installedProgramText -match $packagePattern) {
-                Write-Output $_.Key
+                Write-Output $app.Key
             }
         }
     }
@@ -53,27 +53,26 @@ Function Invoke-WinUtilCurrentSystem {
 
         if (!(Test-Path 'HKU:\')) {$null = (New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS)}
 
-        $sync.configs.tweaks | Get-Member -MemberType NoteProperty | ForEach-Object {
-
-            $Config = $psitem.Name
-            $entry = $sync.configs.tweaks.$Config
+        foreach ($prop in $sync.configs.tweaks.PSObject.Properties) {
+            $Config = $prop.Name
+            $entry = $prop.Value
             $registryKeys = $entry.registry
             $serviceKeys = $entry.service
             $entryType = $entry.Type
 
             if (($registryKeys -or $serviceKeys) -and $entryType -ne "Combobox") {
-                $Values = @()
+                $allMatch = $true
 
                 if ($entryType -eq "Toggle") {
                     if (-not (Get-WinUtilToggleStatus $Config)) {
-                        $values += $False
+                        $allMatch = $false
                     }
                 } else {
                     $registryMatchCount = 0
                     $registryTotal = 0
 
-                    Foreach ($tweaks in $registryKeys) {
-                        Foreach ($tweak in $tweaks) {
+                    foreach ($tweaks in $registryKeys) {
+                        foreach ($tweak in $tweaks) {
                             $registryTotal++
                             $regstate = $null
 
@@ -83,15 +82,9 @@ Function Invoke-WinUtilCurrentSystem {
 
                             if ($null -eq $regstate) {
                                 switch ($tweak.DefaultState) {
-                                    "true" {
-                                        $regstate = $tweak.Value
-                                    }
-                                    "false" {
-                                        $regstate = $tweak.OriginalValue
-                                    }
-                                    default {
-                                        $regstate = $tweak.OriginalValue
-                                    }
+                                    "true" { $regstate = $tweak.Value }
+                                    "false" { $regstate = $tweak.OriginalValue }
+                                    default { $regstate = $tweak.OriginalValue }
                                 }
                             }
 
@@ -102,25 +95,22 @@ Function Invoke-WinUtilCurrentSystem {
                     }
 
                     if ($registryTotal -gt 0 -and $registryMatchCount -ne $registryTotal) {
-                        $values += $False
+                        $allMatch = $false
                     }
                 }
 
-                Foreach ($tweaks in $serviceKeys) {
-                    Foreach ($tweak in $tweaks) {
-                        $Service = Get-Service -Name $tweak.Name
-
-                        if ($Service) {
-                            $actualValue = $Service.StartType
-                            $expectedValue = $tweak.StartupType
-                            if ($expectedValue -ne $actualValue) {
-                                $values += $False
-                            }
+                foreach ($tweaks in $serviceKeys) {
+                    foreach ($tweak in $tweaks) {
+                        $Service = Get-Service -Name $tweak.Name -ErrorAction SilentlyContinue
+                        if ($Service -and $tweak.StartupType -ne $Service.StartType) {
+                            $allMatch = $false
+                            break
                         }
                     }
+                    if (-not $allMatch) { break }
                 }
 
-                if ($values -notcontains $false) {
+                if ($allMatch) {
                     Write-Output $Config
                 }
             }

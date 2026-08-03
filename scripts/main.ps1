@@ -146,28 +146,16 @@ switch ($sync.preferences.packagemanager) {
     "Winget" {$sync.WingetRadioButton.IsChecked = $true; break}
 }
 
+# Merged Button/ToggleButton registration, direct .GetType().Name (no pipeline overhead)
 $sync.keys | ForEach-Object {
-    if($sync.$psitem) {
-        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton") {
-            if ($sync.Buttons -notcontains $psitem) {
-                $sync["$psitem"].Add_Click({
-                    [System.Object]$Sender = $args[0]
-                    Invoke-WPFButton $Sender.name
-                })
-                $sync.Buttons.Add($psitem) | Out-Null
-            }
+    if ($sync.$psitem -and $sync["$psitem"].GetType().Name -in "Button", "ToggleButton") {
+        if ($sync.Buttons -notcontains $psitem) {
+            $sync["$psitem"].Add_Click({
+                [System.Object]$Sender = $args[0]
+                Invoke-WPFButton $Sender.name
+            })
+            $sync.Buttons.Add($psitem) | Out-Null
         }
-
-        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button") {
-            if ($sync.Buttons -notcontains $psitem) {
-                $sync["$psitem"].Add_Click({
-                    [System.Object]$Sender = $args[0]
-                    Invoke-WPFButton $Sender.name
-                })
-                $sync.Buttons.Add($psitem) | Out-Null
-            }
-        }
-
     }
 }
 
