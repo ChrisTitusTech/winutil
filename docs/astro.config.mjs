@@ -18,16 +18,19 @@ export default defineConfig({
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/ChrisTitusTech/winutil' },
 				{ icon: 'discord', label: 'Discord', href: 'https://discord.gg/RUbZUZyByQ' },
 			],
+			// Global theme overrides (colors, fonts, landing-page section styles).
 			customCss: ['./src/styles/theme.css'],
+			// Custom component overrides, all under src/components/.
 			components: {
 				ThemeProvider: './src/components/ThemeProvider.astro',
-				Hero: './src/components/Hero.astro',
 				Header: './src/components/Header.astro',
+				Hero: './src/components/Hero.astro',
 				Footer: './src/components/Footer.astro',
 			},
 			editLink: {
 				baseUrl: 'https://github.com/ChrisTitusTech/winutil/edit/main/docs/',
 			},
+			// Sidebar groups, top to bottom: User Guide, Code Reference, Help.
 			sidebar: [
 				{
 					label: 'User Guide',
@@ -54,7 +57,7 @@ export default defineConfig({
 					label: 'Help',
 					items: [
 						{ label: 'FAQ', slug: 'faq' },
-						{ label: 'Known Issues', slug: 'known-issues' },
+						{ label: 'Known Issues', slug: 'knownissues' },
 						{ label: 'Contributing', slug: 'contributing' },
 					],
 				},
