@@ -122,10 +122,12 @@ function Complete-WinUtilFaviconFetch {
                 $bitmap.StreamSource = [System.IO.MemoryStream]::new($Operation.Bytes, $false)
                 $bitmap.EndInit()
                 $bitmap.Freeze()
+                $Operation.Sync.FaviconCircuitBreaker.ReportSuccess()
                 $Operation.TargetImage.Source = $bitmap
                 $Operation.TargetImage.Visibility = [Windows.Visibility]::Visible
                 $Operation.Fallback.Visibility = [Windows.Visibility]::Collapsed
             } catch {
+                $Operation.Sync.FaviconCircuitBreaker.ReportFailure()
                 $Operation.TargetImage.Visibility = [Windows.Visibility]::Collapsed
                 $Operation.Fallback.Visibility = [Windows.Visibility]::Visible
             }
@@ -231,7 +233,6 @@ function Invoke-WinUtilFaviconFetch {
             $stream = $response.GetResponseStream()
             $memoryStream = [System.IO.MemoryStream]::new()
             $stream.CopyTo($memoryStream)
-            $circuitBreaker.ReportSuccess()
             return [pscustomobject]@{
                 Status = "Success"
                 Bytes  = $memoryStream.ToArray()

@@ -176,7 +176,9 @@ Describe "WinUtil favicon loading" {
         $scheduleCheck | Should -BeGreaterOrEqual 0
         $scheduleCheck | Should -BeLessThan $beginInvoke
         $fetchScript | Should -Match 'if \(\$circuitBreaker\.IsCancellationRequested\)'
-        $fetchScript | Should -Match '\$circuitBreaker\.ReportSuccess\(\)'
+        $fetchScript | Should -Not -Match '\$circuitBreaker\.ReportSuccess\(\)'
+        $fetchScript | Should -Match '\$Operation\.Sync\.FaviconCircuitBreaker\.ReportSuccess\(\)'
+        $fetchScript | Should -Match '\$Operation\.Sync\.FaviconCircuitBreaker\.ReportFailure\(\)'
         $fetchScript | Should -Match '\$circuitBreaker\.ReportFailure\(\)'
         $fetchScript | Should -Match '\$failureThreshold = 8'
     }
