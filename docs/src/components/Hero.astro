@@ -6,6 +6,7 @@ import { Icon } from '@astrojs/starlight/components';
 // Matches Starlight's internal PAGE_TITLE_ID (used by the skip-to-content link).
 const PAGE_TITLE_ID = '_top';
 
+// Resolve hero content: Starlight's built-in hero fields plus our custom schema extensions.
 const { data } = Astro.locals.starlightRoute.entry;
 const { title = data.title, tagline, image, actions = [] } = data.hero || {};
 const { heroEyebrow, heroCaption, heroBadges = [] } = data;
@@ -15,9 +16,11 @@ if (image && 'file' in image) heroImage = image.file;
 ---
 
 <section class="wu-hero">
+	{/* Full-bleed grid/glow background layer. */}
 	<div class="wu-hero-grid" aria-hidden="true"></div>
 	<div class="wu-hero-glow" aria-hidden="true"></div>
 	<div class="wu-hero-inner">
+		{/* Copy column: eyebrow, heading, tagline, actions, caption. */}
 		<div class="wu-hero-copy">
 			{heroEyebrow && <p class="wu-eyebrow">{heroEyebrow}</p>}
 			<h1 id={PAGE_TITLE_ID} data-page-title set:html={title} />
@@ -42,6 +45,7 @@ if (image && 'file' in image) heroImage = image.file;
 			}
 			{heroCaption && <p class="wu-hero-caption">{heroCaption}</p>}
 		</div>
+		{/* Screenshot framed as a fake browser/app window. */}
 		{
 			heroImage && (
 				<div class="wu-hero-media">
@@ -66,6 +70,7 @@ if (image && 'file' in image) heroImage = image.file;
 			)
 		}
 	</div>
+	{/* Badge row (shields.io / dcbadge images) below the two-column layout. */}
 	{
 		heroBadges.length > 0 && (
 			<div class="wu-hero-bottom">
@@ -138,6 +143,7 @@ if (image && 'file' in image) heroImage = image.file;
 			padding-block: 3rem 2rem;
 		}
 
+		/* Hero copy: eyebrow, heading, tagline, actions, caption. */
 		.wu-hero-copy {
 			text-align: center;
 		}
@@ -198,6 +204,7 @@ if (image && 'file' in image) heroImage = image.file;
 			box-shadow: 0 25px 50px -12px hsl(0 0% 0% / 0.5);
 		}
 
+		/* Window chrome: title bar + traffic-light buttons. */
 		.wu-window-bar {
 			display: flex;
 			align-items: center;
