@@ -111,7 +111,13 @@ function Initialize-InstallAppEntry {
         # Add the border to the corresponding Category
         $TargetElement.Children.Add($border) | Out-Null
         if ($faviconUrl) {
-            Invoke-WinUtilFaviconFetch -AppKey $appKey -Url $faviconUrl -TargetImage $logo -Fallback $fallback
+            try {
+                Invoke-WinUtilFaviconFetch -AppKey $appKey -Url $faviconUrl -TargetImage $logo -Fallback $fallback
+            } catch {
+                # Favicon loading is optional; keep the fallback visible if setup fails.
+                $logo.Visibility = [Windows.Visibility]::Collapsed
+                $fallback.Visibility = [Windows.Visibility]::Visible
+            }
         }
         return $checkbox
     }
