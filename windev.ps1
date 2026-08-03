@@ -6,5 +6,6 @@ $scriptPath = Join-Path $env:TEMP "winutil-$latestTag.ps1"
 
 Invoke-WebRequest -Uri $uri -OutFile $scriptPath -UseBasicParsing -ErrorAction Stop
 
-$powerShellCmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
-& $powerShellCmd -ExecutionPolicy Bypass -NoProfile -File $scriptPath
+$executable = if ($PSVersionTable.PSEdition -eq 'Core') { 'pwsh.exe' } else { 'powershell.exe' }
+$currentPowerShell = Join-Path $PSHOME $executable
+& $currentPowerShell -ExecutionPolicy Bypass -NoProfile -File $scriptPath
