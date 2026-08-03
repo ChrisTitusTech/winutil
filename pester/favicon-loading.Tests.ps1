@@ -196,6 +196,21 @@ Describe "WinUtil favicon loading" {
         $fetchScript | Should -Match 'Fallback\.Visibility = \[Windows\.Visibility\]::Visible'
     }
 
+    It "counts unexpected completion failures without double-counting worker outcomes" {
+        $fetchScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilFaviconFetch.ps1") -Raw
+
+        $fetchScript | Should -Match '\$result\.Status -notin @\("NetworkFailure", "Cancelled"\)'
+        $fetchScript | Should -Match 'if \(-not \$Operation\.Sync\.FaviconCircuitBreaker\.IsCancellationRequested\)'
+    }
+
+    It "cleans up failed favicon submissions" {
+        $fetchScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilFaviconFetch.ps1") -Raw
+
+        $fetchScript | Should -Match '\[object\]::ReferenceEquals\(\$sync\.FaviconOperations\[\$AppKey\], \$operation\)'
+        $fetchScript | Should -Match '\$sync\.FaviconOperations\.Remove\(\$AppKey\)'
+        $fetchScript | Should -Match '\$powershell\.Dispose\(\)\s+throw'
+    }
+
     It "closes favicon workers when the form closes" {
         $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
         $closeScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Close-WinUtilFaviconRunspacePool.ps1") -Raw

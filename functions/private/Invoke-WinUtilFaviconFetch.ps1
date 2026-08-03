@@ -132,10 +132,16 @@ function Complete-WinUtilFaviconFetch {
                 $Operation.Fallback.Visibility = [Windows.Visibility]::Visible
             }
         } else {
+            if ($result.Status -notin @("NetworkFailure", "Cancelled")) {
+                $Operation.Sync.FaviconCircuitBreaker.ReportFailure()
+            }
             $Operation.TargetImage.Visibility = [Windows.Visibility]::Collapsed
             $Operation.Fallback.Visibility = [Windows.Visibility]::Visible
         }
     } catch {
+        if (-not $Operation.Sync.FaviconCircuitBreaker.IsCancellationRequested) {
+            $Operation.Sync.FaviconCircuitBreaker.ReportFailure()
+        }
         $Operation.TargetImage.Visibility = [Windows.Visibility]::Collapsed
         $Operation.Fallback.Visibility = [Windows.Visibility]::Visible
     } finally {
@@ -270,7 +276,15 @@ function Invoke-WinUtilFaviconFetch {
         return
     }
 
-    $sync.FaviconOperations[$AppKey] = $operation
-    $operation.Handle = $powershell.BeginInvoke()
-    Start-WinUtilFaviconPolling
+    try {
+        $sync.FaviconOperations[$AppKey] = $operation
+        $operation.Handle = $powershell.BeginInvoke()
+        Start-WinUtilFaviconPolling
+    } catch {
+        if ($operation -and [object]::ReferenceEquals($sync.FaviconOperations[$AppKey], $operation)) {
+            [void]$sync.FaviconOperations.Remove($AppKey)
+        }
+        $powershell.Dispose()
+        throw
+    }
 }
