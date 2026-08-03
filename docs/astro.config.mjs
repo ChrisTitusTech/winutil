@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import { siteLinks } from './src/site-links.ts';
 
 // https://astro.build/config
 export default defineConfig({
@@ -59,8 +60,10 @@ export default defineConfig({
 						{ label: 'FAQ', slug: 'faq' },
 						{ label: 'Known Issues', slug: 'knownissues' },
 						{ label: 'Contributing', slug: 'contributing' },
+						{ label: siteLinks.forums.label, link: siteLinks.forums.href, attrs: { target: '_blank', rel: 'noreferrer' } },
 					],
 				},
+				{ label: siteLinks.store.label, link: siteLinks.store.href, attrs: { target: '_blank', rel: 'noreferrer' } },
 			],
 		}),
 	],
