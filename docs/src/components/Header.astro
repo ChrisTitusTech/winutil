@@ -7,35 +7,42 @@ import SiteTitle from 'virtual:starlight/components/SiteTitle';
 import SocialIcons from 'virtual:starlight/components/SocialIcons';
 import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
 
-/**
- * Render the `Search` component if Pagefind is enabled or the default search component has been overridden.
- */
+// Render the `Search` component if Pagefind is enabled or the default search component has been overridden.
 const shouldRenderSearch =
 	config.pagefind || config.components.Search !== '@astrojs/starlight/components/Search.astro';
 ---
 
 <div class="header">
+	{/* Site title. */}
 	<div class="title-wrapper sl-flex">
 		<SiteTitle />
 	</div>
+	{/* Search box. */}
 	<div class="sl-flex print:hidden">
 		{shouldRenderSearch && <Search />}
 	</div>
+	{/* Right-side group: nav links, social icons, theme/language pickers. */}
 	<div class="sl-hidden md:sl-flex print:hidden right-group">
 		<nav class="site-nav" aria-label="Top">
-			<a class="site-nav-link" href="/guides/">User Guides</a>
+			{/* "Documentation" dropdown. */}
 			<div class="site-nav-dropdown">
-				<button type="button" class="site-nav-link" aria-haspopup="true">Documentation</button>
+				<details name="site-nav-dropdown">
+					<summary class="site-nav-link">Documentation</summary>
+				</details>
 				<div class="site-nav-menu">
+					<a href="/guides/">User Guides</a>
 					<a href="/contributing/">Contribution Guides</a>
-					<a href="/code-reference/architecture/">Developer Docs</a>
+					<a href="/code-reference/architecture/">Code Reference</a>
 				</div>
 			</div>
+			{/* "Help" dropdown. */}
 			<div class="site-nav-dropdown">
-				<button type="button" class="site-nav-link" aria-haspopup="true">Help</button>
+				<details name="site-nav-dropdown">
+					<summary class="site-nav-link">Help</summary>
+				</details>
 				<div class="site-nav-menu">
 					<a href="/faq/">FAQ</a>
-					<a href="/known-issues/">Known Issues</a>
+					<a href="/knownissues/">Known Issues</a>
 					<a href="https://forum.christitus.com/" target="_blank" rel="noreferrer">Forums</a>
 				</div>
 			</div>
@@ -51,6 +58,7 @@ const shouldRenderSearch =
 
 <style>
 	@layer starlight.core {
+		/* Header shell: title, search, right-side nav group. */
 		.header {
 			display: flex;
 			gap: var(--sl-nav-gap);
@@ -60,14 +68,14 @@ const shouldRenderSearch =
 		}
 
 		.title-wrapper {
-			/* Prevent long titles overflowing and covering the search and menu buttons on narrow viewports. */
+			/* Clips long titles instead of overflowing onto the search/menu buttons; padding/negative margin avoids clipping the focus ring. */
 			overflow: clip;
-			/* Avoid clipping focus ring around title wrapper. */
 			padding: 0.25rem;
 			margin: -0.25rem;
 			min-width: 0;
 		}
 
+		/* Right-side group: nav + social icons, divided by a hairline. */
 		.right-group,
 		.social-icons {
 			gap: 1rem;
@@ -86,6 +94,7 @@ const shouldRenderSearch =
 			:global(:root:not([data-has-toc])) {
 				--__toc-width: 0rem;
 			}
+			/* Columns: site title */
 			.header {
 				--__sidebar-width: max(0rem, var(--sl-content-inline-start, 0rem) - var(--sl-nav-pad-x));
 				--__main-column-fr: calc(
@@ -97,21 +106,18 @@ const shouldRenderSearch =
 				);
 				display: grid;
 				grid-template-columns:
-      /* 1 (site title): runs up until the main content column’s left edge or the width of the title, whichever is the largest  */
 					minmax(
 						calc(var(--__sidebar-width) + max(0rem, var(--__main-column-fr) - var(--sl-nav-gap))),
 						auto
 					)
-					/* 2 (search box): all free space that is available. */
 					1fr
-					/* 3 (right items): use the space that these need. */
 					auto;
 				align-content: center;
 			}
 		}
 	}
 
-	/* Top nav links + dropdowns, matching the previous Hugo docs site's navbar. */
+	/* Top nav links + dropdowns. */
 	.site-nav {
 		display: flex;
 		align-items: center;
@@ -120,6 +126,7 @@ const shouldRenderSearch =
 		border-inline-end: 1px solid var(--sl-color-hairline-light);
 	}
 
+	/* Top nav trigger: shared style for plain links and dropdown triggers. */
 	.site-nav-link {
 		font-size: var(--sl-text-sm);
 		font-weight: 500;
@@ -136,13 +143,25 @@ const shouldRenderSearch =
 		color: var(--sl-color-white);
 	}
 
+	/* Extends the hoverable box down to the menu, closing the dead zone between trigger and menu. */
 	.site-nav-dropdown {
 		position: relative;
-		/* Extends the dropdown's own hoverable box down to meet the menu, so the
-		   cursor never crosses a dead zone between the trigger and the menu. */
 		padding-bottom: 0.75rem;
 		margin-bottom: -0.75rem;
 	}
+	/* No box of its own; only the <summary> lays out. Its `open` state (no JS) is read by .site-nav-menu below. */
+	.site-nav-dropdown > details {
+		display: contents;
+	}
+	.site-nav-dropdown > details > summary {
+		display: inline-flex;
+		align-items: center;
+		list-style: none;
+	}
+	.site-nav-dropdown > details > summary::-webkit-details-marker {
+		display: none;
+	}
+	/* Dropdown menu panel: shown on hover (mouse) or when the sibling <details> is toggled open (touch/keyboard). */
 	.site-nav-menu {
 		display: none;
 		position: absolute;
@@ -160,7 +179,7 @@ const shouldRenderSearch =
 		z-index: 10;
 	}
 	.site-nav-dropdown:hover .site-nav-menu,
-	.site-nav-dropdown:focus-within .site-nav-menu {
+	.site-nav-dropdown:has(details[open]) .site-nav-menu {
 		display: flex;
 	}
 	.site-nav-menu a {
