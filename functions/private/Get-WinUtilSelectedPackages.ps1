@@ -16,9 +16,12 @@ function Get-WinUtilSelectedPackages {
 
     $packagesWinget = [System.Collections.ArrayList]::new()
     $packagesChoco = [System.Collections.ArrayList]::new()
+    $packagesPWA = [System.Collections.ArrayList]::new()  #Tâm thêm vào để add PWA app trong Microsoft store
+
     $packages = @{
         Winget = $packagesWinget
         Choco = $packagesChoco
+        PWA = $packagesPWA #Tâm thêm vào để add PWA app trong Microsoft store
     }
 
     function Add-PackageId {
@@ -36,7 +39,34 @@ function Get-WinUtilSelectedPackages {
         }
     }
 
+    #Hàm Add-PWA được Tâm thêm để thêm các gói PWA vào danh sách cài đặt
+  function Add-PWA {
+    param(
+        [System.Collections.ArrayList]$Target,
+        $Package
+    )
+
+    if ($null -eq $Package.pwa) {
+        return
+    }
+
+    if ([string]::IsNullOrWhiteSpace([string]$Package.pwa)) {
+        return
+    }
+
+    $null = $Target.Add($Package)
+}
+    # đoạn foreach này có sẵn rồi, nhưng Tâm thêm vào đoạn if trước switch sẵn có để add PWA app trong Microsoft store
     foreach ($package in $PackageList) {
+        #đoạn if này được Tâm thêm vào trước switch để add PWA app trong Microsoft store
+            Write-WinUtilLog `-Component "Install" `-Message "DEBUG $($package.content) installType=$($package.installType)"
+        if ($package.installType -eq "pwa") {
+                                                Add-PWA `
+                                                    -Target $packagesPWA `
+                                                    -Package $package
+
+                                                continue
+            }
         switch ($Preference) {
             "Choco" {
                 if ([string]::IsNullOrWhiteSpace([string]$package.choco) -or $package.choco -eq "na") {
@@ -49,6 +79,7 @@ function Get-WinUtilSelectedPackages {
                 Add-PackageId -Target $packagesWinget -PackageId $package.winget
             }
         }
+
     }
 
     return $packages

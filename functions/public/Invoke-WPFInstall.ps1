@@ -31,10 +31,11 @@ function Invoke-WPFInstall {
 
         $packagesWinget = $packagesSorted['Winget']
         $packagesChoco = $packagesSorted['Choco']
-        $totalPackages = @($packagesWinget).Count + @($packagesChoco).Count
+        $packagesPWA = $packagesSorted['PWA']  #Tâm thêm vào để add PWA app trong Microsoft store
+        $totalPackages = @($packagesWinget).Count + @($packagesChoco).Count + @($packagesPWA).Count  #Tâm thêm vào @($packagesPWA).Count để add PWA app trong Microsoft store
         $completedPackages = 0
         $hasUI = $null -ne $sync.Form -and $null -ne $sync.Form.Dispatcher
-        Write-WinUtilLog -Component "Install" -Message "Install package manager split: winget=$(@($packagesWinget).Count), choco=$(@($packagesChoco).Count)"
+        Write-WinUtilLog -Component "Install" -Message "Install package manager split: winget=$(@($packagesWinget).Count), choco=$(@($packagesChoco).Count), pwa=$(@($packagesPWA).Count)"  #Tâm thêm vào pwa=$(@($packagesPWA).Count) để add PWA app trong Microsoft store
 
         try {
             $sync.ProcessRunning = $true
@@ -71,9 +72,10 @@ function Invoke-WPFInstall {
                 if ($hasUI) {
                     Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Installing Chocolatey packages ($position/$totalPackages)" -Percent $startPercent
                 }
-
+ 
                 Install-WinUtilChoco
                 Install-WinUtilProgramChoco -Action Install -Programs $packagesChoco
+
                 $completedPackages += @($packagesChoco).Count
                 $completedPercent = [int](($completedPackages / $totalPackages) * 100)
                 if ($hasUI) {
@@ -81,6 +83,34 @@ function Invoke-WPFInstall {
                     Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -value ($completedPercent / 100) }
                 }
             }
+            # Tâm thêm vào đoạn if này để add PWA app trong Microsoft store
+            if($packagesPWA.Count -gt 0) {
+
+            $position = $completedPackages + 1
+            $startPercent = [int](($completedPackages / $totalPackages) * 100)
+
+            if ($hasUI) {
+                Set-WinUtilTweaksProgressIndicator `
+                    -Visible $true `
+                    -Label "Installing PWA packages ($position/$totalPackages)" `
+                    -Percent $startPercent
+            }
+
+
+            Install-WinUtilPWA -Programs $packagesPWA
+
+
+            $completedPackages += @($packagesPWA).Count
+
+            $completedPercent = [int](($completedPackages / $totalPackages) * 100)
+
+            if ($hasUI) {
+                Set-WinUtilTweaksProgressIndicator `
+                    -Visible $true `
+                    -Label "Installed PWA packages ($completedPackages/$totalPackages)" `
+                    -Percent $completedPercent
+            }
+        }
             Write-Host "==========================================="
             Write-Host "--      Installs have finished          ---"
             Write-Host "==========================================="
