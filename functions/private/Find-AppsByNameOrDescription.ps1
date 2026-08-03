@@ -91,22 +91,17 @@ function Find-AppsByNameOrDescription {
             return
         }
 
-        # Escape wildcard characters for literal matching
-        $escapedSearchString = [System.Management.Automation.WildcardPattern]::Escape($SearchString)
-
+        # IndexOf with OrdinalIgnoreCase is faster than -like with wildcard escaping
         $sync.ItemsControl.Items | ForEach-Object {
-            # Each item is a StackPanel container with Children[0] = label, Children[1] = WrapPanel
             if ($_.Children.Count -ge 2) {
                 $categoryLabel = $_.Children[0]
                 $wrapPanel = $_.Children[1]
                 $categoryHasMatch = $false
-
                 $categoryLabel.Visibility = [Windows.Visibility]::Visible
 
                 foreach ($appControl in $wrapPanel.Children) {
                     $appTag = $appControl.Tag
                     $appEntry = $null
-
                     if (-not [string]::IsNullOrWhiteSpace($appTag) -and $sync.configs.applicationsHashtable.ContainsKey($appTag)) {
                         $appEntry = $sync.configs.applicationsHashtable[$appTag]
                     }
@@ -114,19 +109,16 @@ function Find-AppsByNameOrDescription {
                     if ($null -ne $appEntry) {
                         $categoryMatch = -not $hasCategories -or $activeCategories -contains $appEntry.Category
                         $textMatch = -not $hasSearch -or
-                            $appEntry.Content -like "*$escapedSearchString*" -or
-                            $appEntry.Description -like "*$escapedSearchString*"
+                            ([string]$appEntry.Content).IndexOf($SearchString, [System.StringComparison]::OrdinalIgnoreCase) -ge 0 -or
+                            ([string]$appEntry.Description).IndexOf($SearchString, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
 
                         if ($categoryMatch -and $textMatch) {
                             $appControl.Visibility = [Windows.Visibility]::Visible
                             $categoryHasMatch = $true
-                        }
-                        else {
+                        } else {
                             $appControl.Visibility = [Windows.Visibility]::Collapsed
                         }
-                    }
-                    else {
-                        # Hide app if no entry found (data integrity issue)
+                    } else {
                         $appControl.Visibility = [Windows.Visibility]::Collapsed
                     }
                 }
