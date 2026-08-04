@@ -517,7 +517,31 @@ $sync["WPFWin11ISOCleanResetButton"].Add_Click({
     Invoke-WinUtilISOCleanAndReset
 })
 
+function Remove-WinUtilTempScript {
+    <#
+    .SYNOPSIS
+        Removes the temporary script downloaded by windev.ps1.
+
+    .DESCRIPTION
+        Deletes the current script only when it is a winutil-*.ps1 file in
+        the system temporary directory. This preserves normal file-backed
+        and in-memory WinUtil launches.
+    #>
+
+    $scriptPath = $PSCommandPath
+    $tempPath = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\')
+
+    if (
+        $scriptPath -and
+        [IO.Path]::GetDirectoryName($scriptPath) -eq $tempPath -and
+        [IO.Path]::GetFileName($scriptPath) -like 'winutil-*.ps1'
+    ) {
+        Remove-Item -LiteralPath $scriptPath -Force -ErrorAction SilentlyContinue
+    }
+}
+
 # ──────────────────────────────────────────────────────────────────────────────
 
 $sync["Form"].ShowDialog() | out-null
+Remove-WinUtilTempScript
 Stop-Transcript
