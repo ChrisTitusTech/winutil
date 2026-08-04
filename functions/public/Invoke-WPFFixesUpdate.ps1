@@ -42,9 +42,18 @@ function Invoke-WPFFixesUpdate {
 
     Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Stopping Windows Update Services..." -PercentComplete 10
     # Stop the Windows Update Services
-    foreach ($svc in @("BITS", "wuauserv", "appidsvc", "cryptsvc")) {
-        Write-Progress -Id 2 -ParentId 0 -Activity "Stopping Services" -Status "Stopping $svc..."
-        Stop-Service -Name $svc -Force -ErrorAction SilentlyContinue
+    $services = @("BITS", "wuauserv", "appidsvc", "cryptsvc")
+    for ($i = 0; $i -lt $services.Count; $i++) {
+        $svc = $services[$i]
+        $pct = [int](($i / $services.Count) * 100)
+        Write-Progress -Id 2 -ParentId 0 -Activity "Stopping Services" -Status "Stopping $svc..." -PercentComplete $pct
+        try {
+            Stop-Service -Name $svc -Force -ErrorAction Stop
+        } catch {
+            Write-Progress -Id 2 -ParentId 0 -Activity "Stopping Services" -Status "Failed to stop $svc" -PercentComplete $pct
+            Set-WinUtilTaskbaritem -state "Error" -overlay "warning"
+            throw "Failed to stop service $svc - cannot continue with Windows Update repair: $_"
+        }
     }
     Write-Progress -Id 2 -ParentId 0 -Activity "Stopping Services" -Status "Completed" -PercentComplete 100
 

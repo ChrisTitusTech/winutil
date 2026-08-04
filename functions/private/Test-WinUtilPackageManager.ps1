@@ -15,12 +15,16 @@ function Test-WinUtilPackageManager {
     # Handle missing switch - callers rely on the return value
     if (-not $winget -and -not $choco) { return "not-installed" }
 
-    $cmd = if ($winget) { "winget" } else { "choco" }
-    if (Get-Command $cmd -ErrorAction SilentlyContinue) {
+    $cmds = @()
+    if ($winget) { $cmds += "winget" }
+    if ($choco) { $cmds += "choco" }
+
+    foreach ($cmd in $cmds) {
+        if (-not (Get-Command $cmd -ErrorAction SilentlyContinue)) {
+            Write-Host "$cmd is not installed" -ForegroundColor Red
+            return "not-installed"
+        }
         Write-Host "$cmd is installed" -ForegroundColor Green
-        return "installed"
-    } else {
-        Write-Host "$cmd is not installed" -ForegroundColor Red
-        return "not-installed"
     }
+    return "installed"
 }
