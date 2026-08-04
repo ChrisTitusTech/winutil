@@ -102,7 +102,7 @@ Function Invoke-WinUtilCurrentSystem {
                 foreach ($tweaks in $serviceKeys) {
                     foreach ($tweak in $tweaks) {
                         $Service = Get-Service -Name $tweak.Name -ErrorAction SilentlyContinue
-                        if ($Service -and $tweak.StartupType -ne $Service.StartType) {
+                        if (-not $Service -or $tweak.StartupType -ne $Service.StartType) {
                             $allMatch = $false
                             break
                         }

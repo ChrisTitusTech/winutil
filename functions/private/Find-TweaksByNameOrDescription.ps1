@@ -37,7 +37,23 @@ function Find-TweaksByNameOrDescription {
                 $categoryBorder.Visibility = [Windows.Visibility]::Visible
                 if ($categoryBorder -is [Windows.Controls.Border] -and $categoryBorder.Child -is [Windows.Controls.DockPanel]) {
                     $ic = $categoryBorder.Child.Children | Where-Object { $_ -is [Windows.Controls.ItemsControl] } | Select-Object -First 1
-                    if ($ic) { foreach ($item in $ic.Items) { if ($null -ne $item) { $item.Visibility = [Windows.Visibility]::Visible } } }
+                    if ($ic) {
+                        foreach ($item in $ic.Items) {
+                            if ($null -eq $item) { continue }
+                            if ($item -is [Windows.Controls.Label]) {
+                                $item.Visibility = [Windows.Visibility]::Visible
+                                # Respect collapsed state: labels starting with "+" keep items collapsed
+                                $labelStr = [string]$item.Content
+                                if ($labelStr.StartsWith("+ ")) {
+                                    $collapsed = $true
+                                } else {
+                                    $collapsed = $false
+                                }
+                            } else {
+                                $item.Visibility = if ($collapsed) { [Windows.Visibility]::Collapsed } else { [Windows.Visibility]::Visible }
+                            }
+                        }
+                    }
                 }
             }
             return
@@ -66,10 +82,10 @@ function Find-TweaksByNameOrDescription {
                 # Unified search for both DockPanel and StackPanel items
                 if ($item -is [Windows.Controls.DockPanel] -or $item -is [Windows.Controls.StackPanel]) {
                     $search = Get-ItemSearchText $item
-                    $matches = ($search.Text -and $search.Text.IndexOf($SearchString, [System.StringComparison]::OrdinalIgnoreCase) -ge 0) -or
+                    $isMatch = ($search.Text -and $search.Text.IndexOf($SearchString, [System.StringComparison]::OrdinalIgnoreCase) -ge 0) -or
                                ($search.Tip -and $search.Tip.IndexOf($SearchString, [System.StringComparison]::OrdinalIgnoreCase) -ge 0)
 
-                    if ($matches) {
+                    if ($isMatch) {
                         $item.Visibility = [Windows.Visibility]::Visible
                         $categoryHasMatch = $true
                     } else {
