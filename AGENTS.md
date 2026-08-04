@@ -29,9 +29,9 @@ These rules override everything else in this file when in conflict:
   ```powershell
   .\Compile.ps1 -Run
   ```
-- Install the supported Pester version (one-time). `-SkipPublisherCheck` is required because Windows ships an inbox Pester 3.4.0 signed by Microsoft, and PowerShell Gallery's Pester 5.8.0 has a different signing certificate — `Install-Module` refuses the upgrade without it:
+- Install the supported Pester version (one-time). `-SkipPublisherCheck` is required because Windows ships an inbox Pester 3.4.0 that is catalog-signed, and PowerShell Gallery's Pester 5.8.0 is Authenticode-signed — `Install-Module` refuses the upgrade without it. This does not skip download integrity (still HTTPS + NuGet package hash verification); `-Repository PSGallery` pins the trusted source explicitly rather than relying on whatever repositories happen to be registered:
   ```powershell
-  Install-Module -Name Pester -RequiredVersion 5.8.0 -Scope CurrentUser -Force -SkipPublisherCheck
+  Install-Module -Name Pester -RequiredVersion 5.8.0 -Repository PSGallery -Scope CurrentUser -Force -SkipPublisherCheck
   ```
 - Run tests:
   ```powershell
