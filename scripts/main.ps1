@@ -18,8 +18,8 @@ PPPPPPPPPP                                       TTTTTTTTTT                     
 PPPPPPPPPP                                       TTTTTTTTTT                                TTTTTTTTTT             
 PPPPPPPPPP                                       TTTTTTTTTT                                TTTTTTTTTT             
 
-====Phan Thành Tâm=====
-=====Windows Toolbox=====
+====Phan Thanh Tam - Phong CNTT Becamex - Binh Phuoc=====
+
 "@
 
 # Load the configuration files
