@@ -64,7 +64,10 @@ function Invoke-WinUtilISOMountAndVerify {
             do {
                 Start-Sleep -Milliseconds 500
                 $mountElapsed += 0.5
-                if ($mountElapsed -ge $mountTimeout) { throw "ISO mount timed out after $($mountTimeout)s - drive letter never appeared." }
+                if ($mountElapsed -ge $mountTimeout) {
+                    Dismount-DiskImage -ImagePath $isoPath -ErrorAction SilentlyContinue
+                    throw "ISO mount timed out after $($mountTimeout)s - drive letter never appeared."
+                }
             } until ((Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter)
 
             $driveLetter = (Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter + ":"
@@ -222,6 +225,11 @@ function Invoke-WinUtilISOModify {
             })
             # Write to host only; transcript captures it without file-locking conflicts
             Write-Host "[$ts] $msg"
+            # Also persist to workdir log for resume/export diagnostics
+            if ($sync.ContainsKey("Win11ISOWorkDir") -and $sync["Win11ISOWorkDir"]) {
+                $logFile = Join-Path $sync["Win11ISOWorkDir"] "WinUtil_Win11ISO.log"
+                Add-Content -Path $logFile -Value "[$ts] $msg" -ErrorAction SilentlyContinue
+            }
         }
 
         function SetProgress($label, $pct) {
