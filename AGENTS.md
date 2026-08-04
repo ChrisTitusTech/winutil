@@ -29,7 +29,7 @@ These rules override everything else in this file when in conflict:
   ```powershell
   .\Compile.ps1 -Run
   ```
-- Install the supported Pester version (one-time):
+- Install the supported Pester version (one-time). `-SkipPublisherCheck` is required because Windows ships an inbox Pester 3.4.0 signed by Microsoft, and PowerShell Gallery's Pester 5.8.0 has a different signing certificate — `Install-Module` refuses the upgrade without it:
   ```powershell
   Install-Module -Name Pester -RequiredVersion 5.8.0 -Scope CurrentUser -Force -SkipPublisherCheck
   ```
@@ -38,7 +38,7 @@ These rules override everything else in this file when in conflict:
   Import-Module Pester -RequiredVersion 5.8.0 -Force
   Invoke-Pester -Path 'pester/*.Tests.ps1' -Output Detailed -CI
   ```
-- Run Script Analyzer with project settings when available:
+- Run Script Analyzer with project settings when available. If a locally compiled `winutil.ps1` exists, delete it first — `lint/PSScriptAnalyser.ps1` only excludes rules, not files, so `-Recurse` would also lint the generated script and produce noise against line numbers that don't map to any source file:
   ```powershell
   Invoke-ScriptAnalyzer -Path . -Settings .\lint\PSScriptAnalyser.ps1 -Recurse
   ```
@@ -56,7 +56,9 @@ Prefer the narrowest useful verification while iterating. Use the full relevant 
 
 ## 2. Source Of Truth
 
-Make durable changes only in the source files described in SPEC.md's Repository Layout — never in `winutil.ps1` itself. If behavior changes require the compiled script to change, update the source files and run `.\Compile.ps1` only to verify generation.
+For changes that affect the compiled WinUtil script, make them only in the source files described in SPEC.md's Repository Layout — never in `winutil.ps1` itself. If behavior changes require the compiled script to change, update the source files and run `.\Compile.ps1` only to verify generation.
+
+This scoping applies to compiled-script behavior only. Repository metadata — `AGENTS.md`, `SPEC.md`, `CLAUDE.md`/`GEMINI.md`/`.github/copilot-instructions.md`, `.github/workflows/`, and the root `.gitignore` — is edited directly when a task requires it, per the other sections of this file.
 
 ## 3. Before Editing
 
