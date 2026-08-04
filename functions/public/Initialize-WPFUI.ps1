@@ -7,7 +7,7 @@ function Initialize-WPFUI {
 
     switch ($TargetGridName) {
         "appscategory"{
-            Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName $TargetGridName -columncount 1
+            Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
 
             # Create and configure a popup for displaying selected apps
             $selectedAppsPopup = New-Object Windows.Controls.Primitives.Popup
