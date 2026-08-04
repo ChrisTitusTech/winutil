@@ -4,6 +4,7 @@
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+    $script:originalSync = $global:sync
     $global:sync = [Hashtable]::Synchronized(@{})
     
     # Setup some test variables
@@ -16,10 +17,11 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilVariables.ps1")
 }
 
+AfterAll {
+    $global:sync = $script:originalSync
+}
+
 Describe "Get-WinUtilVariables" {
-    AfterEach {
-        # Clean up any potential side effects if needed
-    }
 
     It "returns all WPF-prefixed keys when no type is provided" {
         $result = Get-WinUtilVariables
