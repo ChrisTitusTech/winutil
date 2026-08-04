@@ -39,9 +39,7 @@ Describe "Initialize-WinUtilTabContent" {
         Initialize-WinUtilTabContent -TabName "Install"
         Initialize-WinUtilTabContent -TabName "Install"
 
-        Should -Invoke -CommandName Invoke-WPFUIElements -Times 1 -Exactly -ParameterFilter {
-            $targetGridName -eq "appscategory" -and $columncount -eq 1
-        }
+
         Should -Invoke -CommandName Initialize-WPFUI -Times 1 -Exactly -ParameterFilter {
             $TargetGridName -eq "appscategory"
         }

@@ -14,7 +14,6 @@ function Initialize-WinUtilTabContent {
 
     switch ($TabName) {
         "Install" {
-            Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
             Initialize-WPFUI -targetGridName "appscategory"
 
             Initialize-WPFUI -targetGridName "appspanel"
