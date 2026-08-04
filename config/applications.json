@@ -152,15 +152,6 @@
         "winget": "Google.Chrome",
         "foss": false
     },
-    "chromium": {
-        "category": "Browsers",
-        "choco": "chromium",
-        "content": "Chromium",
-        "description": "Chromium is the open-source project that serves as the foundation for various web browsers, including Chrome.",
-        "link": "https://github.com/Hibbiki/chromium-win64",
-        "winget": "Hibbiki.Chromium",
-        "foss": true
-    },
     "cinebenchr23": {
         "category": "Pro Tools",
         "choco": "na",
@@ -755,15 +746,6 @@
         "winget": "PuTTY.PuTTY",
         "foss": true
     },
-    "python3": {
-        "category": "Development",
-        "choco": "python",
-        "content": "Python3",
-        "description": "Python is a versatile programming language used for web development, data analysis, artificial intelligence, and more.",
-        "link": "https://www.python.org/",
-        "winget": "Python.Python.3.14",
-        "foss": true
-    },
     "qbittorrent": {
         "category": "Utilities",
         "choco": "qbittorrent",
@@ -863,15 +845,6 @@
         "winget": "Microsoft.Sysinternals.TCPView",
         "foss": false
     },
-    "teams": {
-        "category": "Communications",
-        "choco": "microsoft-teams",
-        "content": "Teams",
-        "description": "Microsoft Teams is a collaboration platform that integrates with Office 365 and offers chat, video conferencing, file sharing, and more.",
-        "link": "https://www.microsoft.com/en-us/microsoft-teams/group-chat-software",
-        "winget": "Microsoft.Teams",
-        "foss": false
-    },
     "teamviewer": {
         "category": "Utilities",
         "choco": "teamviewer9",
@@ -880,15 +853,6 @@
         "link": "https://www.teamviewer.com/",
         "winget": "TeamViewer.TeamViewer",
         "foss": false
-    },
-    "telegram": {
-        "category": "Communications",
-        "choco": "telegram",
-        "content": "Telegram",
-        "description": "Telegram is a cloud-based instant messaging app known for its security features, speed, and simplicity.",
-        "link": "https://telegram.org/",
-        "winget": "Telegram.TelegramDesktop",
-        "foss": true
     },
     "terminal": {
         "category": "Microsoft Tools",
@@ -1050,15 +1014,6 @@
         "description": "HxD is a free hex editor that allows you to edit, view, search, and analyze binary files.",
         "link": "https://mh-nexus.de/en/hxd/",
         "winget": "MHNexus.HxD",
-        "foss": false
-    },
-    "zoom": {
-        "category": "Communications",
-        "choco": "zoom",
-        "content": "Zoom",
-        "description": "Zoom is a popular video conferencing and web conferencing service for online meetings, webinars, and collaborative projects.",
-        "link": "https://zoom.us/",
-        "winget": "Zoom.Zoom",
         "foss": false
     },
     "tightvnc": {
