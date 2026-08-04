@@ -65,7 +65,7 @@ WinUtil is a Windows PowerShell utility with a WPF interface. The repository is 
 - Run tests:
   ```powershell
   Import-Module Pester -RequiredVersion 5.8.0 -Force
-  Invoke-Pester -Path 'pester/*.Tests.ps1' -Output Detailed
+  Invoke-Pester -Path 'pester/*.Tests.ps1' -Output Detailed -CI
   ```
 - Run Script Analyzer with project settings when available:
   ```powershell
@@ -192,7 +192,7 @@ GitHub Actions also runs a compile check and PowerShell Script Analyzer (`lint/P
 ## 10. Generated Files And Git Hygiene
 
 - Treat local `winutil.ps1` changes as disposable compile output.
-- Never stage or commit `winutil.ps1`, `docs/public/`, `docs/resources/`, `binary/`, editor folders, or other ignored build artifacts.
+- Never stage or commit `winutil.ps1`, `binary/`, or anything else ignored by the root `.gitignore` or `docs/.gitignore` — read those files rather than assuming. `docs/public/` is tracked source for static assets (favicons, etc.), not generated output, despite sitting next to `docs/dist/`.
 - Do not remove `.gitignore` rules that keep generated artifacts out of Git.
 - Before finishing, check `git status --short` and separate your changes from pre-existing user changes.
 - Do not revert user changes unless explicitly asked.
