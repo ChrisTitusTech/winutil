@@ -1510,6 +1510,15 @@
         "winget": "TeamSpeakSystems.TeamSpeakClient",
         "foss": false
     },
+    "teamspeak6": {
+        "category": "Communications",
+        "choco": "na",
+        "content": "TeamSpeak 6",
+        "description": "TEAMSPEAK. YOUR TEAM. YOUR RULES. Use crystal clear sound to communicate with your teammates cross-platform with military-grade security, lag-free performance & unparalleled reliability and uptime.",
+        "link": "https://www.teamspeak.com/",
+        "winget": "TeamSpeakSystems.TeamSpeakClient.Beta.6",
+        "foss": false
+    },
     "telegram": {
         "category": "Communications",
         "choco": "telegram",
