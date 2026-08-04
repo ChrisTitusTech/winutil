@@ -142,6 +142,7 @@ Describe "XAML document" {
             "WPFSearchChipBrowsers",
             "WPFSearchChipCommunications",
             "WPFSearchChipDevelopment",
+            "WPFSearchChipDocument",
             "WPFSearchChipGames",
             "WPFSearchChipMicrosoftTools",
             "WPFSearchChipMultimediaTools",
@@ -177,6 +178,15 @@ Describe "XAML document" {
         if ($missingControls.Count -gt 0) {
             throw ($missingControls -join "`n")
         }
+    }
+
+    It "wires the Document search chip to an existing Document category" {
+        $mainScript = Get-Content -Path $script:mainScriptPath -Raw
+        $mainScript | Should -Match '\$sync\["WPFSearchChipDocument"\]\.Add_Click\(\{ Set-WinUtilAppCategoryFilter -Category "Document" \}\)'
+
+        $applications = Get-WinUtilConfigObject -Name "applications"
+        $categories = @($applications.PSObject.Properties | ForEach-Object { $_.Value.category } | Sort-Object -Unique)
+        $categories | Should -Contain "Document"
     }
 
     It "presents the three Updates profiles with accurate action labels" {

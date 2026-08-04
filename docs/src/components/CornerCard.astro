@@ -12,11 +12,13 @@ const { icon, title } = Astro.props;
 ---
 
 <div class="wu-corner-card">
+	{/* Corner brackets decoration. */}
 	<span class="wu-corner-marks" aria-hidden="true">
 		<span class="mark top-left" /><span class="mark top-right" /><span class="mark bottom-left" /><span
 			class="mark bottom-right"
 		/>
 	</span>
+	{/* Icon badge + heading + description. */}
 	<div class="wu-corner-card-icon">
 		<Icon name={icon} size="1.25rem" />
 	</div>
@@ -36,6 +38,7 @@ const { icon, title } = Astro.props;
 			background-color: var(--sl-color-bg);
 		}
 
+		/* Corner brackets decoration (four small L-shaped marks). */
 		.wu-corner-marks {
 			position: absolute;
 			inset: 0;
@@ -93,6 +96,7 @@ const { icon, title } = Astro.props;
 			right: 0;
 		}
 
+		/* Icon badge + heading + description. */
 		.wu-corner-card-icon {
 			display: flex;
 			align-items: center;

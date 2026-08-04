@@ -20,28 +20,12 @@ function Reset-WPFCheckBoxes {
         [Parameter(position=1)]
         [string]$checkboxfilterpattern = "**"
     )
+    $selectedSet = [System.Collections.Generic.HashSet[string]]::new([string[]]@($sync.selectedApps + $sync.selectedTweaks + $sync.selectedFeatures + $sync.selectedAppx), [StringComparer]::OrdinalIgnoreCase)
 
-    $CheckBoxesToCheck = $sync.selectedApps + $sync.selectedTweaks + $sync.selectedFeatures + $sync.selectedAppx
-    $CheckBoxes = foreach ($syncEntry in $sync.GetEnumerator()) {
+    foreach ($syncEntry in $sync.GetEnumerator()) {
         if ($syncEntry.Value -is [System.Windows.Controls.CheckBox] -and $syncEntry.Name -notlike "WPFToggle*" -and $syncEntry.Name -like $checkboxfilterpattern) {
-            $syncEntry
-        }
-    }
-
-    foreach ($CheckBox in $CheckBoxes) {
-        $checkboxName = $CheckBox.Key
-        if (-not $CheckBoxesToCheck) {
-            $sync.$checkBoxName.IsChecked = $false
-            continue
-        }
-
-        # Check if the checkbox name exists in the flattened JSON hashtable
-        if ($CheckBoxesToCheck -contains $checkboxName) {
-            # If it exists, set IsChecked to true
-            $sync.$checkboxName.IsChecked = $true
-        } else {
-            # If it doesn't exist, set IsChecked to false
-            $sync.$checkboxName.IsChecked = $false
+            $checkboxName = $syncEntry.Key
+            $sync.$checkboxName.IsChecked = $selectedSet.Contains($checkboxName)
         }
     }
 
@@ -57,10 +41,9 @@ function Reset-WPFCheckBoxes {
         # Only act on toggles that are explicitly listed in the import - toggles absent
         # from the export file were not part of the saved config and should keep whatever
         # state the live system already has (set during UI initialisation via Get-WinUtilToggleStatus).
-        $importedToggles = $sync.selectedToggles
-        $allToggles = $sync.GetEnumerator() | Where-Object { $_.Key -like "WPFToggle*" -and $_.Value -is [System.Windows.Controls.CheckBox] }
-        foreach ($toggle in $allToggles) {
-            if ($importedToggles -contains $toggle.Key) {
+        $importedToggles = [System.Collections.Generic.HashSet[string]]::new([string[]]@($sync.selectedToggles), [StringComparer]::OrdinalIgnoreCase)
+        foreach ($toggle in $sync.GetEnumerator()) {
+            if ($toggle.Key -like "WPFToggle*" -and $toggle.Value -is [System.Windows.Controls.CheckBox] -and $importedToggles.Contains($toggle.Key)) {
                 $sync[$toggle.Key].IsChecked = $true
             }
             # Toggles not present in the import are intentionally left untouched;

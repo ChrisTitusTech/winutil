@@ -7,7 +7,7 @@
 
 Questa utility è una raccolta di attività Windows che eseguo personalmente su ogni sistema che utilizzo. È progettata per snellire le *installazioni*, rimuovere i componenti superflui tramite *ottimizzazioni*, risolvere problemi tramite la *configurazione*, e riparare *aggiornamenti* di Windows. Sono estremamente selettivo riguardo ai contributi per mantenere questo progetto pulito ed efficiente.
 
-![screen-install](/docs/assets/images/Title-Screen.png)
+![screen-install](/docs/src/assets/branding/title-screen.png)
 
 ## 💡 Come usarlo
 
