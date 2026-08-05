@@ -482,9 +482,11 @@ Describe "Find-TweaksByNameOrDescription" {
 
         $collapsedCategory.Border.Visibility | Should -Be ([Windows.Visibility]::Visible)
         $collapsedCategory.Label.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $collapsedCategory.Label.Content | Should -Be "+ Privacy"
         $collapsedItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
         $expandedCategory.Border.Visibility | Should -Be ([Windows.Visibility]::Visible)
         $expandedCategory.Label.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $expandedCategory.Label.Content | Should -Be "- Explorer"
         $expandedItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
     }
 
