@@ -215,7 +215,7 @@ Invoke-WinUtilISOCleanAndReset (optional)
 **Modification Safety**:
 - All registry changes are documented in a script (reversible)
 - Original ISO never modified; only working copy
-- Logged to `WinUtil_Win11ISO.log` for debugging
+- Logged to a `WinUtil_Win11ISO_*.log` file beside the working directory, so it survives cleanup
 - DISM handles image dismount with automatic cleanup on error
 
 ### Win11 Creator Registry Tweaks

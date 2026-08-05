@@ -466,23 +466,26 @@ Describe "Find-TweaksByNameOrDescription" {
         Remove-WinUtilSearchGlobals
     }
 
-    It "restores category labels and tweak item visibility for empty search" {
-        $labelItem = New-WinUtilTweakLabelItem -Content "Disable Telemetry" -ToolTip "Stop tracking"
-        $stackItem = New-WinUtilTweakCheckboxItem -Content "Show Extensions" -ToolTip "File extension display"
-        $category = New-WinUtilTweakCategory -Label "+ Privacy" -Items @($labelItem, $stackItem)
-        $labelItem.Visibility = [Windows.Visibility]::Collapsed
-        $stackItem.Visibility = [Windows.Visibility]::Collapsed
-        $category.Label.Visibility = [Windows.Visibility]::Collapsed
-        $category.Border.Visibility = [Windows.Visibility]::Collapsed
-        $panel = New-WinUtilTweakPanel -Categories @($category)
+    It "restores category labels and respects collapsed category state for empty search" {
+        $collapsedItem = New-WinUtilTweakLabelItem -Content "Disable Telemetry" -ToolTip "Stop tracking"
+        $expandedItem = New-WinUtilTweakCheckboxItem -Content "Show Extensions" -ToolTip "File extension display"
+        $collapsedCategory = New-WinUtilTweakCategory -Label "+ Privacy" -Items @($collapsedItem)
+        $expandedCategory = New-WinUtilTweakCategory -Label "- Explorer" -Items @($expandedItem)
+        $expandedItem.Visibility = [Windows.Visibility]::Collapsed
+        $collapsedCategory.Label.Visibility = [Windows.Visibility]::Collapsed
+        $collapsedCategory.Border.Visibility = [Windows.Visibility]::Collapsed
+        $expandedCategory.Border.Visibility = [Windows.Visibility]::Collapsed
+        $panel = New-WinUtilTweakPanel -Categories @($collapsedCategory, $expandedCategory)
         New-WinUtilTweakSearchContext -TweaksPanel $panel
 
         Find-TweaksByNameOrDescription -SearchString ""
 
-        $category.Border.Visibility | Should -Be ([Windows.Visibility]::Visible)
-        $category.Label.Visibility | Should -Be ([Windows.Visibility]::Visible)
-        $labelItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
-        $stackItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $collapsedCategory.Border.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $collapsedCategory.Label.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $collapsedItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $expandedCategory.Border.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $expandedCategory.Label.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $expandedItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
     }
 
     It "shows tweak matches by label tooltip and checkbox content" {
