@@ -142,11 +142,13 @@ The **Win11 Creator** is a specialized subsystem within Winutil that creates cus
   - `Invoke-WinUtilISOCheckExistingWork`: Recovers incomplete work sessions
   - `Invoke-WinUtilISOCleanAndReset`: Cleans up temp directories and resets UI
 
-- `Invoke-WinUtilISOScript.ps1`: Prepares the copied setup media
-  - Writes autounattend.xml with the post-install AppX removal, registry tweaks, and scheduled task cleanup
-  - Pre-stages the same setup scripts under `sources\$OEM$` as a fallback
-  - Removes `sources\PID.txt` and writes `sources\ei.cfg` for the selected edition
-  - Injects drivers (optional) from the current system into one install.wim index
+- `Invoke-WinUtilISOScript.ps1`: Applies modifications to mounted install.wim
+  - Removes provisioned AppX packages (40+ bloatware apps)
+  - Injects drivers (optional) from the current system
+  - Removes OneDrive setup files
+  - Applies offline registry tweaks (hardware bypass, privacy, telemetry, OOBE)
+  - Deletes telemetry scheduled task definitions
+  - Pre-stages setup scripts from autounattend.xml
 
 ### Win11 Creator Data Flow
 
@@ -167,14 +169,17 @@ User optionally enables the Driver Injection checkbox
 Invoke-WinUtilISOModify (runs in background runspace)
     ├─ Create work directory: ~WinUtil_Win11ISO_[timestamp]
     ├─ Copy ISO contents to disk (~5-6 GB)
+    ├─ Mount install.wim at selected edition/index
     ├─ Invoke-WinUtilISOScript:
-    │   ├─ Write autounattend.xml with the 40+ AppX removals, 50+ registry tweaks,
-    │   │  scheduled task cleanup, and OneDrive uninstall for first logon
-    │   ├─ Pin the selected edition index in autounattend.xml
-    │   ├─ Pre-stage the setup scripts under sources\$OEM$\$$\Setup\Scripts
-    │   ├─ Remove sources\PID.txt and write sources\ei.cfg for the selected edition
-    │   └─ Export and inject drivers (if enabled, one mount and one commit)
-    ├─ Leave install.wim / install.esd untouched unless drivers were injected
+    │   ├─ Remove 40+ bloat AppX packages
+    │   ├─ Export and inject drivers (if enabled)
+    │   ├─ Remove OneDrive setup
+    │   ├─ Load offline registry hives
+    │   ├─ Apply 50+ registry tweaks (hardware bypass, privacy, telemetry, OOBE, etc.)
+    │   ├─ Delete telemetry scheduled task files
+    │   ├─ Pre-stage setup scripts from autounattend.xml to C:\Windows\Setup\Scripts\
+    │   └─ Unload registry hives
+    ├─ Dismount and save the modified install.wim (~10+ minutes, slowest step)
     ├─ Dismount source ISO
     └─ Report completion, enable export options
     ↓
@@ -190,7 +195,7 @@ Invoke-WinUtilISOExport (user chooses output)
         └─ Output: Bootable USB (minimum 8 GB)
     ↓
 Invoke-WinUtilISOCleanAndReset (optional)
-    └─ Delete temp working directory (~5-6 GB)
+    └─ Delete temp working directory (~10-15 GB)
     └─ Reset UI to initial state
 ```
 
@@ -215,7 +220,7 @@ Invoke-WinUtilISOCleanAndReset (optional)
 
 ### Win11 Creator Registry Tweaks
 
-The `Invoke-WinUtilISOScript` function stages **50+ registry tweaks** that are applied on first logon:
+The `Invoke-WinUtilISOScript` function applies **50+ offline registry tweaks**:
 
 **Hardware Bypass**:
 - TPM 2.0 check bypass
@@ -253,18 +258,18 @@ The `Invoke-WinUtilISOScript` function stages **50+ registry tweaks** that are a
 
 ### Driver Injection Feature
 
-**Optional Enhancement**: When enabled, exports all drivers from the running system and:
-- Adds them to the selected `install.wim` index in one mount and commit
-- Stages the storage driver packages in `$WinpeDriver$` at the ISO root, which Windows Setup loads into WinPE. `boot.wim` is not modified.
+**Optional Enhancement**: When enabled, exports all drivers from the running system and injects them into both:
+- `install.wim` (main OS image)
+- `boot.wim` index 2 (Windows Setup PE environment)
 
 **Use Case**: Enables offline installation on systems with missing drivers.
 
 ### Disk Space Requirements
 
+- **Temporary working directory**: ~10-15 GB
 - **Original ISO**: 4-6 GB
-- **Temporary working directory**: about the size of the source ISO, since the contents are copied as-is
-- **Modified ISO**: about the size of the source ISO
-- **Total needed**: roughly three times the source ISO, plus headroom for the WIM mount when driver injection is enabled
+- **Modified ISO**: close to the source ISO size
+- **Total needed**: ~25 GB for safe operation
 
 ## Data Flow
 

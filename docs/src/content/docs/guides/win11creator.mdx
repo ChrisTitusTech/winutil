@@ -14,7 +14,7 @@ WinUtil includes a built-in **Win11 Creator** tool that lets you take an officia
 ![Win11 Creator tab in WinUtil](../../../assets/screenshots/win11creator-tab-new.png)
 
 :::caution
-You need an **official Windows 11 ISO** from [Microsoft's website](https://www.microsoft.com/en-us/software-download/windows11) before starting. Custom, modified, or non-official ISOs are not supported. The ISO contents are copied to a temporary folder, so allow room for about twice the size of your ISO, plus space for the one you export.
+You need an **official Windows 11 ISO** from [Microsoft's website](https://www.microsoft.com/en-us/software-download/windows11) before starting. Custom, modified, or non-official ISOs are not supported. The process uses ~10–15 GB of temporary disk space, so make sure you have room.
 :::
 
 :::note
@@ -47,16 +47,16 @@ This step takes around 10–30 seconds, depending on your drive speed.
 
 Click **Run Windows ISO Modification and Creator** to start the customization process. WinUtil will:
 
-**App & Component Removal:** (applied on first logon by the staged setup script, not baked into the image)
+**App & Component Removal:**
 - **Remove 40+ bloat apps** — Clipchamp, Teams, Copilot, Dev Home, new Outlook, Bing apps, Solitaire, and more
-- **Uninstall OneDrive**
+- **Delete OneDrive setup** from the image
 
 **System Customization:**
 - **Bypass hardware checks** — removes TPM, Secure Boot, CPU, RAM, and storage requirement enforcement so the ISO installs on unsupported hardware
 - **Enable local account setup** — injects an `autounattend.xml` that skips the Microsoft account screen during OOBE
 - **Disable BitLocker and device encryption** — removes startup overhead
 - **Disable Chat icon** — removes chat taskbar button
-- **Pin the selected edition during setup** — writes `sources\ei.cfg` and setup metadata so OEM firmware keys for a different edition do not force the installer down the wrong product-key path
+- **Pin the selected edition during setup** — writes setup metadata so OEM firmware keys for a different edition do not force the installer down the wrong product-key path
 
 **Privacy & Telemetry Tweaks:**
 - **Disable telemetry** — advertising ID, tailored experiences, input personalization, speech online privacy
@@ -70,9 +70,9 @@ Click **Run Windows ISO Modification and Creator** to start the customization pr
 - **Disable Copilot and search box suggestions**
 
 **Optional: Driver Injection**
-- If enabled, all drivers from your current system are added to the `install.wim` edition you selected, and the storage drivers are also staged in `$WinpeDriver$` so Windows Setup can load them in WinPE. `boot.wim` itself is not modified. Useful for offline installations on machines with missing drivers. This is an optional checkbox in Step 3.
+- If enabled, it injects all drivers from your current system into the install.wim and boot.wim — useful for offline installations on machines with missing drivers. This is an optional checkbox in Step 3.
 
-A live log shows progress as each step completes. Without driver injection this stage is a copy of the ISO contents plus a few small setup files, so it is limited by disk speed. Enabling driver injection adds a single WIM mount and commit, which is by far the slowest part. Do not close WinUtil while it is running.
+A live log shows progress as each step completes. This stage usually takes **10–30 minutes** depending on disk speed. The WIM dismount near the end is the slowest part, so do not close WinUtil while it is running.
 
 :::note
 The resulting ISO is close to the size of the source ISO. WinUtil does not remove the unused editions from `install.wim`; it selects your edition through `sources\ei.cfg` and `autounattend.xml` so Windows Setup installs the right one.
@@ -112,7 +112,7 @@ Double-check you have selected the correct drive before confirming. This operati
 
 ### Step 5 — Clean Up (Optional)
 
-Click **Clean & Reset** to delete the temporary working directory (about the size of your ISO) and return the tool to its initial state, ready for a new ISO. You will be asked to confirm before anything is deleted.
+Click **Clean & Reset** to delete the temporary working directory (~10–15 GB) and return the tool to its initial state, ready for a new ISO. You will be asked to confirm before anything is deleted.
 
 ---
 
@@ -136,7 +136,7 @@ When you install Windows 11 from your modified ISO:
 | "install.wim not found" | Not a valid Windows 11 ISO — download a fresh one from Microsoft |
 | "oscdimg.exe not found" | Run `winget install -e --id Microsoft.OSCDIMG` then retry |
 | USB drive not showing up | Plug it in, wait a few seconds, then click **Refresh** |
-| Modification seems stuck | Without driver injection this stage is a file copy, so check disk activity. With driver injection enabled, the WIM commit is slow — wait at least 10 minutes before assuming it's frozen |
+| Modification seems stuck | The WIM dismount step is slow — wait at least 10 minutes before assuming it's frozen |
 | "Access Denied" error | Make sure WinUtil is running as Administrator |
 | "Setup has failed to validate the product key" | Recreate the ISO with the latest WinUtil. The creator now removes stale `PID.txt`, writes `sources\ei.cfg`, and pins the selected image in `autounattend.xml` so setup does not use an embedded OEM key for a different edition |
 
