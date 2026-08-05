@@ -26,7 +26,7 @@ function Invoke-WinUtilISOWriteUSB {
     $usbDisks    = $sync["Win11ISOUSBDisks"]
 
     if (-not $contentsDir -or -not (Test-Path $contentsDir)) {
-        [System.Windows.MessageBox]::Show("No modified ISO content found. Please complete Steps 1-3 first.", "Not Ready", "OK", "Warning")
+        [System.Windows.MessageBox]::Show("No modified ISO content found. Please run the modification step first.", "Not Ready", "OK", "Warning")
         return
     }
 
@@ -261,6 +261,8 @@ function Invoke-WinUtilISOWriteUSB {
             Log "USB drive is ready for use."
 
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+                $sync["WPFWin11ISODoneLabel"].Text = "The USB drive is ready to boot from."
+                $sync["WPFWin11ISODonePanel"].Visibility = "Visible"
                 [System.Windows.MessageBox]::Show(
                     "USB drive created successfully!`n`nYou can now boot from this drive to install Windows 11.",
                     "USB Ready", "OK", "Info")

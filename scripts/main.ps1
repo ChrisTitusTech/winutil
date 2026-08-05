@@ -517,6 +517,15 @@ $sync["WPFWin11ISOCleanResetButton"].Add_Click({
     Invoke-WinUtilISOCleanAndReset
 })
 
+# The chevrons only show where the neighbouring step is reachable, so each has a single destination
+$sync["WPFWin11ISOBackButton"].Add_Click({
+    $sync["WPFWin11ISOSelectSection"].IsSelected = $true
+})
+
+$sync["WPFWin11ISOForwardButton"].Add_Click({
+    $sync["WPFWin11ISOModifySection"].IsSelected = $true
+})
+
 function Remove-WinUtilTempScript {
     <#
     .SYNOPSIS
