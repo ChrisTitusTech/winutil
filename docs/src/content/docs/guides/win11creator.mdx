@@ -47,18 +47,16 @@ This step takes around 10–30 seconds, depending on your drive speed.
 
 Click **Run Windows ISO Modification and Creator** to start the customization process. WinUtil will:
 
-**App & Component Removal:**
+**App & Component Removal:** (applied on first logon by the staged setup script, not baked into the image)
 - **Remove 40+ bloat apps** — Clipchamp, Teams, Copilot, Dev Home, new Outlook, Bing apps, Solitaire, and more
-- **Delete OneDrive setup** from the image
+- **Uninstall OneDrive**
 
 **System Customization:**
 - **Bypass hardware checks** — removes TPM, Secure Boot, CPU, RAM, and storage requirement enforcement so the ISO installs on unsupported hardware
 - **Enable local account setup** — injects an `autounattend.xml` that skips the Microsoft account screen during OOBE
 - **Disable BitLocker and device encryption** — removes startup overhead
 - **Disable Chat icon** — removes chat taskbar button
-- **Strip unused editions** — keeps only your selected edition, saving 1–2 GB per removed edition
-- **Pin the selected edition during setup** — writes setup metadata so OEM firmware keys for a different edition do not force the installer down the wrong product-key path
-- **Clean the component store** — runs DISM cleanup to reclaim another 300–800 MB
+- **Pin the selected edition during setup** — writes `sources\ei.cfg` and setup metadata so OEM firmware keys for a different edition do not force the installer down the wrong product-key path
 
 **Privacy & Telemetry Tweaks:**
 - **Disable telemetry** — advertising ID, tailored experiences, input personalization, speech online privacy
@@ -74,7 +72,11 @@ Click **Run Windows ISO Modification and Creator** to start the customization pr
 **Optional: Driver Injection**
 - If enabled, it injects all drivers from your current system into the install.wim and boot.wim — useful for offline installations on machines with missing drivers. This is an optional checkbox in Step 3.
 
-A live log shows progress as each step completes. This stage usually takes **10–30 minutes** depending on disk speed. The WIM dismount near the end is the slowest part, so do not close WinUtil while it is running.
+A live log shows progress as each step completes. Without driver injection this stage is a copy of the ISO contents plus a few small setup files, so it is limited by disk speed. Enabling driver injection adds a single WIM mount and commit, which is by far the slowest part. Do not close WinUtil while it is running.
+
+:::note
+The resulting ISO is close to the size of the source ISO. WinUtil does not remove the unused editions from `install.wim`; it selects your edition through `sources\ei.cfg` and `autounattend.xml` so Windows Setup installs the right one.
+:::
 
 ---
 
