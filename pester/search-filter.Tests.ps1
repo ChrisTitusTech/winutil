@@ -433,6 +433,32 @@ Describe "Find-AppsByNameOrDescription" {
         $category.Children[0].Content | Should -Be "- Tools"
         $category.Children[1].Visibility | Should -Be ([Windows.Visibility]::Visible)
     }
+
+    It "re-collapses a category it expanded once the filter is cleared" {
+        $powerToysItem = New-WinUtilAppSearchItem -Tag "WPFInstallPowerToys"
+        $category = New-WinUtilAppCategory -Label "+ Tools" -Items @($powerToysItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+
+        Find-AppsByNameOrDescription -Categories @("Microsoft Tools")
+        $category.Children[0].Content | Should -Be "- Tools"
+
+        Find-AppsByNameOrDescription -SearchString ""
+
+        $category.Children[0].Content | Should -Be "+ Tools"
+        $category.Children[1].Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+    }
+
+    It "leaves a category the user had expanded alone when the filter is cleared" {
+        $powerToysItem = New-WinUtilAppSearchItem -Tag "WPFInstallPowerToys"
+        $category = New-WinUtilAppCategory -Label "- Tools" -Items @($powerToysItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+
+        Find-AppsByNameOrDescription -Categories @("Microsoft Tools")
+        Find-AppsByNameOrDescription -SearchString ""
+
+        $category.Children[0].Content | Should -Be "- Tools"
+        $category.Children[1].Visibility | Should -Be ([Windows.Visibility]::Visible)
+    }
 }
 
 Describe "Find-TweaksByNameOrDescription" {

@@ -48,6 +48,11 @@ function Find-AppsByNameOrDescription {
         return
     }
 
+    # Categories that filtering expanded on the user's behalf, so clearing the filter can undo it
+    if ($null -eq $sync.AppCategoryAutoExpanded) {
+        $sync.AppCategoryAutoExpanded = @{}
+    }
+
     try {
         $activeCategories = @($Categories | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
         $hasSearch = -not [string]::IsNullOrWhiteSpace($SearchString)
@@ -63,6 +68,13 @@ function Find-AppsByNameOrDescription {
                     $wrapPanel = $_.Children[1]
 
                     $categoryLabel.Visibility = [Windows.Visibility]::Visible
+
+                    # A category that filtering expanded goes back to how the user left it
+                    $categoryName = $categoryLabel.Content -replace '^[+-] ', ''
+                    if ($sync.AppCategoryAutoExpanded.ContainsKey($categoryName)) {
+                        $categoryLabel.Content = $categoryLabel.Content -replace "^- ", "+ "
+                        $sync.AppCategoryAutoExpanded.Remove($categoryName)
+                    }
 
                     if ($categoryLabel.Content -like "+*") {
                         $wrapPanel.Visibility = [Windows.Visibility]::Collapsed
@@ -122,9 +134,11 @@ function Find-AppsByNameOrDescription {
                 if ($categoryHasMatch) {
                     $wrapPanel.Visibility = [Windows.Visibility]::Visible
                     $_.Visibility = [Windows.Visibility]::Visible
-                    # Expand it, otherwise the matches stay hidden behind a collapsed header
+                    # Expand it, otherwise the matches stay hidden behind a collapsed header.
+                    # Remember that it was collapsed so clearing the filter can put it back.
                     if ($categoryLabel.Content -like "+*") {
                         $categoryLabel.Content = $categoryLabel.Content -replace "^\+ ", "- "
+                        $sync.AppCategoryAutoExpanded[($categoryLabel.Content -replace '^- ', '')] = $true
                     }
                 }
                 else {
