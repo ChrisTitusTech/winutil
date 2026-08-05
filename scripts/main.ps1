@@ -240,10 +240,10 @@ $sync["Form"].Add_MouseDoubleClick({
     if ($_.OriginalSource.Name -eq "NavDockPanel" -or
         $_.OriginalSource.Name -eq "GridBesideNavDockPanel") {
             if ($sync["Form"].WindowState -eq [Windows.WindowState]::Normal) {
-                $sync["Form"].WindowState = [Windows.WindowState]::Maximized
+                [Windows.SystemCommands]::MaximizeWindow($sync.Form)
             }
             else{
-                $sync["Form"].WindowState = [Windows.WindowState]::Normal
+                [Windows.SystemCommands]::RestoreWindow($sync.Form)
             }
     }
 })
@@ -356,6 +356,7 @@ $sync["WPFSearchChipAll"].Add_Click({ Set-WinUtilAppCategoryFilter })
 $sync["WPFSearchChipBrowsers"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Browsers" })
 $sync["WPFSearchChipCommunications"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Communications" })
 $sync["WPFSearchChipDevelopment"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Development" })
+$sync["WPFSearchChipDocument"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Document" })
 $sync["WPFSearchChipGames"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Games" })
 $sync["WPFSearchChipMicrosoftTools"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Microsoft Tools" })
 $sync["WPFSearchChipMultimediaTools"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Multimedia Tools" })
@@ -504,7 +505,31 @@ $sync["WPFWin11ISOCleanResetButton"].Add_Click({
     Invoke-WinUtilISOCleanAndReset
 })
 
+function Remove-WinUtilTempScript {
+    <#
+    .SYNOPSIS
+        Removes the temporary script downloaded by windev.ps1.
+
+    .DESCRIPTION
+        Deletes the current script only when it is a winutil-*.ps1 file in
+        the system temporary directory. This preserves normal file-backed
+        and in-memory WinUtil launches.
+    #>
+
+    $scriptPath = $PSCommandPath
+    $tempPath = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\')
+
+    if (
+        $scriptPath -and
+        [IO.Path]::GetDirectoryName($scriptPath) -eq $tempPath -and
+        [IO.Path]::GetFileName($scriptPath) -like 'winutil-*.ps1'
+    ) {
+        Remove-Item -LiteralPath $scriptPath -Force -ErrorAction SilentlyContinue
+    }
+}
+
 # ──────────────────────────────────────────────────────────────────────────────
 
 $sync["Form"].ShowDialog() | out-null
+Remove-WinUtilTempScript
 Stop-Transcript

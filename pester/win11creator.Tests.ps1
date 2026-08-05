@@ -191,6 +191,18 @@ Describe "Win11 Creator setup media" {
         $confirmationIndex | Should -BeGreaterThan $guardIndex
     }
 
+    It "clears install.wim read-only attribute before FAT32 splitting" {
+        $splitGuardIndex = $script:writeUsbFunction.IndexOf('$wimSizeMB -gt 3800')
+        $readOnlyResetIndex = $script:writeUsbFunction.IndexOf(
+            'Set-ItemProperty -LiteralPath $installWim -Name IsReadOnly -Value $false'
+        )
+        $splitCommandIndex = $script:writeUsbFunction.IndexOf('Split-WindowsImage')
+
+        $splitGuardIndex | Should -BeGreaterThan -1
+        $readOnlyResetIndex | Should -BeGreaterThan $splitGuardIndex
+        $splitCommandIndex | Should -BeGreaterThan $readOnlyResetIndex
+    }
+
     It "maps Windows edition names to setup edition IDs" {
         . ([scriptblock]::Create($script:editionIdFunction))
 
