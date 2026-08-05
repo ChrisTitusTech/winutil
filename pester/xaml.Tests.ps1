@@ -468,7 +468,8 @@ Describe "XAML and sync wiring" {
             "Win11ISOProcessRunning",
             "Win11ISOWorkDir",
             "Win11ISOContentsDir",
-            "Win11ISOUSBDisks"
+            "Win11ISOUSBDisks",
+            "ActiveJob"
         )
         $allowedNames = @($xamlNames + $generatedNames + $dynamicStateNames) | Sort-Object -Unique
         $bracketReferences = @(

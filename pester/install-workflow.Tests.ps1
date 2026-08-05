@@ -12,6 +12,18 @@ BeforeAll {
     function Show-WinUtilMessage {
         param($Message, $Title, $Button, $Icon)
     }
+    function Start-WinUtilJob {
+        param(
+            [string]$Name,
+            [scriptblock]$ScriptBlock,
+            [hashtable]$Parameters,
+            [string]$Description,
+            [switch]$DisableAppList
+        )
+    }
+    function Write-WinUtilJobProgress {
+        param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay)
+    }
     function Invoke-WPFRunspace {
         param($ArgumentList, $ParameterList, [scriptblock]$ScriptBlock)
     }
@@ -107,41 +119,38 @@ Describe "Invoke-WPFInstall entrypoint" {
     BeforeEach {
         $script:package = New-WinUtilPackage
         New-WinUtilInstallTestContext -Packages @($script:package)
-        $script:capturedInstallScriptBlock = $null
-        $script:capturedInstallParameterList = $null
+        $script:capturedInstallJob = $null
 
         Mock Show-WinUtilMessage { "OK" }
-        Mock Invoke-WPFRunspace {
-            $script:capturedInstallScriptBlock = $ScriptBlock
-            $script:capturedInstallParameterList = $ParameterList
-            [pscustomobject]@{ MockHandle = $true }
+        Mock Start-WinUtilJob {
+            $script:capturedInstallJob = [pscustomobject]@{
+                Name = $Name
+                ScriptBlock = $ScriptBlock
+                Parameters = $Parameters
+                Description = $Description
+                DisableAppList = [bool]$DisableAppList
+            }
         }
         Mock Write-WinUtilLog { }
     }
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name capturedInstallScriptBlock -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name capturedInstallParameterList -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name capturedInstallJob -Scope Script -ErrorAction SilentlyContinue
     }
 
-    It "queues selected packages with the configured package manager preference" {
+    It "queues an install job with the configured package manager preference" {
         Invoke-WPFInstall
 
-        Should -Invoke -CommandName Invoke-WPFRunspace -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock -is [scriptblock] -and
-                $ParameterList.Count -eq 2 -and
-                $ParameterList[0][0] -eq "PackagesToInstall" -and
-                @($ParameterList[0][1]).Count -eq 1 -and
-                @($ParameterList[0][1])[0].winget -eq "Git.Git" -and
-                $ParameterList[1][0] -eq "ManagerPreference" -and
-                $ParameterList[1][1] -eq "Winget"
+        Should -Invoke -CommandName Start-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "Install" -and
+                $ScriptBlock -is [scriptblock] -and
+                $DisableAppList -and
+                @($Parameters.PackagesToInstall).Count -eq 1 -and
+                @($Parameters.PackagesToInstall)[0].winget -eq "Git.Git" -and
+                $Parameters.ManagerPreference -eq "Winget"
         }
         Should -Invoke -CommandName Show-WinUtilMessage -Times 0 -Exactly
-        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
-            $Component -eq "Install" -and
-                $Message -eq "Install selected package(s): Git (winget: Git.Git)"
-        }
     }
 
     It "queues the explicit app popup package over the selected apps" {
@@ -149,14 +158,9 @@ Describe "Invoke-WPFInstall entrypoint" {
 
         Invoke-WPFInstall -PackagesToInstall $explicitPackage
 
-        Should -Invoke -CommandName Invoke-WPFRunspace -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock -is [scriptblock] -and
-                $ParameterList.Count -eq 2 -and
-                $ParameterList[0][0] -eq "PackagesToInstall" -and
-                @($ParameterList[0][1]).Count -eq 1 -and
-                @($ParameterList[0][1])[0].winget -eq "VideoLAN.VLC" -and
-                $ParameterList[1][0] -eq "ManagerPreference" -and
-                $ParameterList[1][1] -eq "Winget"
+        Should -Invoke -CommandName Start-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            @($Parameters.PackagesToInstall).Count -eq 1 -and
+                @($Parameters.PackagesToInstall)[0].winget -eq "VideoLAN.VLC"
         }
         Should -Invoke -CommandName Show-WinUtilMessage -Times 0 -Exactly
     }
@@ -172,72 +176,48 @@ Describe "Invoke-WPFInstall entrypoint" {
                 $Button -eq "OK" -and
                 $Icon -eq "Warning"
         }
-        Should -Invoke -CommandName Invoke-WPFRunspace -Times 0 -Exactly
-    }
-
-    It "prompts and exits when another install process is running" {
-        New-WinUtilInstallTestContext -ProcessRunning $true -Packages @($script:package)
-
-        Invoke-WPFInstall
-
-        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
-            $Message -eq "[Invoke-WPFInstall] An Install process is currently running." -and
-                $Title -eq "WinUtil" -and
-                $Button -eq "OK" -and
-                $Icon -eq "Warning"
-        }
-        Should -Invoke -CommandName Invoke-WPFRunspace -Times 0 -Exactly
+        Should -Invoke -CommandName Start-WinUtilJob -Times 0 -Exactly
     }
 }
 
-Describe "Invoke-WPFInstall runspace body" {
+Describe "Invoke-WPFInstall job body" {
     BeforeEach {
         $script:package = New-WinUtilPackage
         New-WinUtilInstallTestContext -Packages @($script:package)
-        $script:capturedInstallScriptBlock = $null
+        $script:capturedInstallJob = $null
 
         Mock Show-WinUtilMessage { "OK" }
-        Mock Invoke-WPFRunspace {
-            $script:capturedInstallScriptBlock = $ScriptBlock
-            [pscustomobject]@{ MockHandle = $true }
+        Mock Start-WinUtilJob {
+            $script:capturedInstallJob = [pscustomobject]@{
+                ScriptBlock = $ScriptBlock
+                Parameters = $Parameters
+            }
         }
         Mock Get-WinUtilSelectedPackages {
             New-WinUtilPackageSplit -Winget @("Git.Git") -Choco @("vlc")
         }
-        Mock Set-WinUtilTweaksProgressIndicator { }
+        Mock Write-WinUtilJobProgress { }
         Mock Install-WinUtilWinget { }
         Mock Install-WinUtilChoco { }
         Mock Install-WinUtilProgramWinget { }
         Mock Install-WinUtilProgramChoco { }
-        Mock Invoke-WPFUIThread { }
         Mock Write-WinUtilLog { }
         Mock Write-Host { }
     }
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name capturedInstallScriptBlock -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name capturedInstallJob -Scope Script -ErrorAction SilentlyContinue
     }
 
-    It "installs split winget and choco packages and cleans up on success" {
+    It "installs split winget and choco packages and reports progress" {
         Invoke-WPFInstall
 
-        & $script:capturedInstallScriptBlock -PackagesToInstall @($script:package) -ManagerPreference "Winget"
+        $jobParameters = $script:capturedInstallJob.Parameters
+        & $script:capturedInstallJob.ScriptBlock @jobParameters
 
         Should -Invoke -CommandName Get-WinUtilSelectedPackages -Times 1 -Exactly -ParameterFilter {
             @($PackageList).Count -eq 1 -and $Preference -eq "Winget"
-        }
-        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "Preparing app install (0/2)" -and $Percent -eq 0
-        }
-        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "Installed Git.Git (1/2)" -and $Percent -eq 50
-        }
-        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "Installed Chocolatey packages (2/2)" -and $Percent -eq 100
-        }
-        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "App install finished" -and $Percent -eq 100
         }
         Should -Invoke -CommandName Install-WinUtilWinget -Times 1 -Exactly
         Should -Invoke -CommandName Install-WinUtilProgramWinget -Times 1 -Exactly -ParameterFilter {
@@ -247,41 +227,34 @@ Describe "Invoke-WPFInstall runspace body" {
         Should -Invoke -CommandName Install-WinUtilProgramChoco -Times 1 -Exactly -ParameterFilter {
             $Action -eq "Install" -and @($Programs)[0] -eq "vlc"
         }
-        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock.ToString() -like '*$sync.ItemsControl.IsEnabled = $false*'
+        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Installed Git.Git (1/2)" -and $Percent -eq 50
         }
-        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock.ToString() -like '*$sync.ItemsControl.IsEnabled = $true*'
+        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Installed Chocolatey packages (2/2)" -and $Percent -eq 100
         }
-        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock.ToString() -like '*Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"*'
-        }
-        $script:sync.ProcessRunning | Should -BeFalse
     }
 
-    It "shows failure progress, sets taskbar error state, and clears ProcessRunning on failure" {
+    It "logs the package summary from inside the job rather than on the UI thread" {
+        Invoke-WPFInstall
+
+        $jobParameters = $script:capturedInstallJob.Parameters
+        & $script:capturedInstallJob.ScriptBlock @jobParameters
+
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Component -eq "Install" -and
+                $Message -eq "Install selected package(s): Git (winget: Git.Git)"
+        }
+    }
+
+    It "lets a failure surface so the job layer can handle it" {
         Mock Install-WinUtilProgramWinget { throw "winget failed" }
 
         Invoke-WPFInstall
 
-        & $script:capturedInstallScriptBlock -PackagesToInstall @($script:package) -ManagerPreference "Winget"
-
-        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "App install failed" -and $Percent -eq 100
-        }
-        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock.ToString() -like '*$sync.ItemsControl.IsEnabled = $false*'
-        }
-        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock.ToString() -like '*$sync.ItemsControl.IsEnabled = $true*'
-        }
-        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock.ToString() -like '*Set-WinUtilTaskbaritem -state "Error" -overlay "warning"*'
-        }
-        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
-            $Level -eq "ERROR" -and $Component -eq "Install" -and $Message -like "Install workflow failed:*"
-        }
-        $script:sync.ProcessRunning | Should -BeFalse
+        { $jobParameters = $script:capturedInstallJob.Parameters
+        & $script:capturedInstallJob.ScriptBlock @jobParameters } |
+            Should -Throw "winget failed"
     }
 }
 
