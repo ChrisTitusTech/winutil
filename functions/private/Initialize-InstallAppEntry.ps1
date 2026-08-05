@@ -23,7 +23,7 @@ function Initialize-InstallAppEntry {
         $border.Add_MouseLeftButtonUp({
             # Resolve through $sync because the border's child is a layout Grid for FOSS entries
             $childCheckbox = $sync.$($this.Tag)
-            $childCheckBox.IsChecked = -not $childCheckbox.IsChecked
+            $childCheckbox.IsChecked = -not $childCheckbox.IsChecked
         })
         $border.Add_MouseEnter({
             if (($sync.$($this.Tag).IsChecked) -eq $false) {
