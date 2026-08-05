@@ -225,11 +225,8 @@ function Invoke-WinUtilISOModify {
             })
             # Write to host only; transcript captures it without file-locking conflicts
             Write-Host "[$ts] $msg"
-            # Also persist to workdir log for resume/export diagnostics
-            if ($sync.ContainsKey("Win11ISOWorkDir") -and $sync["Win11ISOWorkDir"]) {
-                $logFile = Join-Path $sync["Win11ISOWorkDir"] "WinUtil_Win11ISO.log"
-                Add-Content -Path $logFile -Value "[$ts] $msg" -ErrorAction SilentlyContinue
-            }
+            # Log beside the working directory so it exists from the first line and survives cleanup
+            Add-Content -Path "$workDir.log" -Value "[$ts] $msg" -ErrorAction SilentlyContinue
         }
 
         function SetProgress($label, $pct) {
