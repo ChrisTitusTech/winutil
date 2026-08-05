@@ -1703,9 +1703,10 @@
                                     <Setter Property="HorizontalAlignment" Value="Center"/>
                                     <Setter Property="Margin" Value="0,0,0,14"/>
                                 </Style>
+                                <!-- Headings use the same accent the rest of the app uses for category labels -->
                                 <Style x:Key="Win11StepTitle" TargetType="TextBlock">
                                     <Setter Property="FontSize" Value="{DynamicResource Win11StepTitleFontSize}"/>
-                                    <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource LabelboxForegroundColor}"/>
                                     <Setter Property="HorizontalAlignment" Value="Center"/>
                                     <Setter Property="TextAlignment" Value="Center"/>
                                     <Setter Property="TextWrapping" Value="Wrap"/>
@@ -1730,7 +1731,7 @@
                                 <Style x:Key="Win11StepLabel" TargetType="TextBlock">
                                     <Setter Property="FontSize" Value="{DynamicResource FontSize}"/>
                                     <Setter Property="FontWeight" Value="Bold"/>
-                                    <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource LabelboxForegroundColor}"/>
                                     <Setter Property="Margin" Value="0,0,0,6"/>
                                 </Style>
                                 <Style x:Key="Win11StepButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
@@ -1741,17 +1742,39 @@
                                     <Setter Property="HorizontalAlignment" Value="Stretch"/>
                                     <Setter Property="HorizontalContentAlignment" Value="Center"/>
                                 </Style>
+                                <!-- The implicit TextBlock style would paint these cyan on a label background,
+                                     so button content takes its colour from the button it sits in -->
                                 <Style x:Key="Win11ButtonIcon" TargetType="TextBlock">
                                     <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
                                     <Setter Property="FontSize" Value="{DynamicResource IconFontSize}"/>
                                     <Setter Property="VerticalAlignment" Value="Center"/>
                                     <Setter Property="Margin" Value="0,0,10,0"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Foreground"
+                                            Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"/>
+                                </Style>
+                                <Style x:Key="Win11ButtonText" TargetType="TextBlock">
+                                    <Setter Property="FontSize" Value="{DynamicResource ButtonFontSize}"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Foreground"
+                                            Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"/>
+                                </Style>
+                                <!-- Step headers follow the tab item state instead of the implicit style -->
+                                <Style x:Key="Win11StepHeaderText" TargetType="TextBlock">
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Foreground"
+                                            Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type TabItem}}}"/>
                                 </Style>
                                 <Style x:Key="Win11StepIcon" TargetType="TextBlock">
                                     <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
                                     <Setter Property="FontSize" Value="{DynamicResource IconFontSize}"/>
                                     <Setter Property="VerticalAlignment" Value="Center"/>
                                     <Setter Property="Margin" Value="0,0,8,0"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Foreground"
+                                            Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type TabItem}}}"/>
                                 </Style>
                                 <!-- Read-only information -->
                                 <Style x:Key="Win11InfoPanel" TargetType="Border">
@@ -1788,8 +1811,8 @@
                                 <TabItem.Header>
                                     <StackPanel Style="{StaticResource Win11StepHeader}">
                                         <TextBlock Text="&#xE958;" Style="{StaticResource Win11StepIcon}"/>
-                                        <TextBlock Text="1" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Select ISO" VerticalAlignment="Center"/>
+                                        <TextBlock Text="1" Margin="0,0,8,0" Style="{StaticResource Win11StepHeaderText}"/>
+                                        <TextBlock Text="Select ISO" Style="{StaticResource Win11StepHeaderText}"/>
                                     </StackPanel>
                                 </TabItem.Header>
                                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
@@ -1827,7 +1850,7 @@
                                                             MinWidth="130">
                                                         <StackPanel Orientation="Horizontal">
                                                             <TextBlock Text="&#xE8B7;" Style="{StaticResource Win11ButtonIcon}"/>
-                                                            <TextBlock Text="Browse" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="Browse" Style="{StaticResource Win11ButtonText}"/>
                                                         </StackPanel>
                                                     </Button>
                                                 </Grid>
@@ -1845,7 +1868,7 @@
                                                 Margin="0,0,0,20">
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="&#xE8FB;" Style="{StaticResource Win11ButtonIcon}"/>
-                                                <TextBlock Text="Mount &amp; Verify ISO" VerticalAlignment="Center"/>
+                                                <TextBlock Text="Mount &amp; Verify ISO" Style="{StaticResource Win11ButtonText}"/>
                                             </StackPanel>
                                         </Button>
 
@@ -1868,7 +1891,7 @@
                                                     <StackPanel Orientation="Horizontal">
                                                         <!-- Opens a browser, so the open-in-new-window glyph rather than a download arrow -->
                                                         <TextBlock Text="&#xE8A7;" Style="{StaticResource Win11ButtonIcon}"/>
-                                                        <TextBlock Text="Open Microsoft Download Page" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="Open Microsoft Download Page" Style="{StaticResource Win11ButtonText}"/>
                                                     </StackPanel>
                                                 </Button>
                                             </StackPanel>
@@ -1883,8 +1906,8 @@
                                 <TabItem.Header>
                                     <StackPanel Style="{StaticResource Win11StepHeader}">
                                         <TextBlock Text="&#xE713;" Style="{StaticResource Win11StepIcon}"/>
-                                        <TextBlock Text="2" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Modify Image" VerticalAlignment="Center"/>
+                                        <TextBlock Text="2" Margin="0,0,8,0" Style="{StaticResource Win11StepHeaderText}"/>
+                                        <TextBlock Text="Modify Image" Style="{StaticResource Win11StepHeaderText}"/>
                                     </StackPanel>
                                 </TabItem.Header>
                                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
@@ -1985,7 +2008,7 @@
                                                 Margin="0,0,0,20">
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="&#xE768;" Style="{StaticResource Win11ButtonIcon}"/>
-                                                <TextBlock Text="Run Windows ISO Modification and Creator" VerticalAlignment="Center"/>
+                                                <TextBlock Text="Run Windows ISO Modification and Creator" Style="{StaticResource Win11ButtonText}"/>
                                             </StackPanel>
                                         </Button>
 
@@ -2030,8 +2053,8 @@
                                 <TabItem.Header>
                                     <StackPanel Style="{StaticResource Win11StepHeader}">
                                         <TextBlock Text="&#xE88E;" Style="{StaticResource Win11StepIcon}"/>
-                                        <TextBlock Text="3" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Output" VerticalAlignment="Center"/>
+                                        <TextBlock Text="3" Margin="0,0,8,0" Style="{StaticResource Win11StepHeaderText}"/>
+                                        <TextBlock Text="Output" Style="{StaticResource Win11StepHeaderText}"/>
                                     </StackPanel>
                                 </TabItem.Header>
                                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
@@ -2070,7 +2093,7 @@
                                                 Margin="0,0,0,10">
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="&#xE74E;" Style="{StaticResource Win11ButtonIcon}"/>
-                                                <TextBlock Text="Save as an ISO File" VerticalAlignment="Center"/>
+                                                <TextBlock Text="Save as an ISO File" Style="{StaticResource Win11ButtonText}"/>
                                             </StackPanel>
                                         </Button>
                                         <Button Name="WPFWin11ISOChooseUSBButton"
@@ -2078,7 +2101,7 @@
                                                 Foreground="OrangeRed">
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="&#xE88E;" Style="{StaticResource Win11ButtonIcon}"/>
-                                                <TextBlock Text="Write Directly to a USB Drive (ERASES DRIVE)" VerticalAlignment="Center"/>
+                                                <TextBlock Text="Write Directly to a USB Drive (ERASES DRIVE)" Style="{StaticResource Win11ButtonText}"/>
                                             </StackPanel>
                                         </Button>
 
@@ -2110,7 +2133,7 @@
                                                             MinWidth="130">
                                                         <StackPanel Orientation="Horizontal">
                                                             <TextBlock Text="&#xE895;" Style="{StaticResource Win11ButtonIcon}"/>
-                                                            <TextBlock Text="Refresh" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="Refresh" Style="{StaticResource Win11ButtonText}"/>
                                                         </StackPanel>
                                                     </Button>
                                                 </Grid>
@@ -2119,7 +2142,7 @@
                                                         Foreground="OrangeRed">
                                                     <StackPanel Orientation="Horizontal">
                                                         <TextBlock Text="&#xE7BA;" Style="{StaticResource Win11ButtonIcon}"/>
-                                                        <TextBlock Text="Erase &amp; Write to USB" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="Erase &amp; Write to USB" Style="{StaticResource Win11ButtonText}"/>
                                                     </StackPanel>
                                                 </Button>
                                             </StackPanel>
@@ -2138,7 +2161,7 @@
                                                         ToolTip="Delete the temporary working directory and go back to the first step">
                                                     <StackPanel Orientation="Horizontal">
                                                         <TextBlock Text="&#xE72C;" Style="{StaticResource Win11ButtonIcon}"/>
-                                                        <TextBlock Text="Start Over" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="Start Over" Style="{StaticResource Win11ButtonText}"/>
                                                     </StackPanel>
                                                 </Button>
                                             </StackPanel>
@@ -2197,7 +2220,8 @@
                                            VerticalAlignment="Center" Margin="0,0,8,0"/>
                                 <TextBlock FontSize="{DynamicResource FontSize}"
                                            FontWeight="Bold"
-                                           Foreground="{DynamicResource MainForegroundColor}"
+                                           Background="Transparent"
+                                           Foreground="{DynamicResource LabelboxForegroundColor}"
                                            VerticalAlignment="Center"
                                            Text="Status Log"/>
                             </StackPanel>
