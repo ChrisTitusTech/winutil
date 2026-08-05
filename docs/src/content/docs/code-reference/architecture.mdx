@@ -253,18 +253,18 @@ The `Invoke-WinUtilISOScript` function stages **50+ registry tweaks** that are a
 
 ### Driver Injection Feature
 
-**Optional Enhancement**: When enabled, exports all drivers from the running system and injects them into both:
-- `install.wim` (main OS image)
-- `boot.wim` index 2 (Windows Setup PE environment)
+**Optional Enhancement**: When enabled, exports all drivers from the running system and:
+- Adds them to the selected `install.wim` index in one mount and commit
+- Stages the storage driver packages in `$WinpeDriver$` at the ISO root, which Windows Setup loads into WinPE. `boot.wim` is not modified.
 
 **Use Case**: Enables offline installation on systems with missing drivers.
 
 ### Disk Space Requirements
 
-- **Temporary working directory**: ~10-15 GB
 - **Original ISO**: 4-6 GB
-- **Modified ISO**: 2.5-3.5 GB
-- **Total needed**: ~25 GB for safe operation
+- **Temporary working directory**: about the size of the source ISO, since the contents are copied as-is
+- **Modified ISO**: about the size of the source ISO
+- **Total needed**: roughly three times the source ISO, plus headroom for the WIM mount when driver injection is enabled
 
 ## Data Flow
 
