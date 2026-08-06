@@ -17,12 +17,12 @@ Describe "Rendered asset caching" {
     }
 
     It "renders only the logo overlay before first paint and defers status overlays" {
-        $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
+        $uiScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilUserInterface.ps1") -Raw
 
-        $mainScript | Should -Match 'Initialize-WinUtilTaskbarOverlayAssets -IncludeLogo \$true -IncludeStatusAssets \$false'
-        $mainScript | Should -Match 'Dispatcher\.BeginInvoke\(\[System\.Windows\.Threading\.DispatcherPriority\]::Background, \[action\]\{ Initialize-WinUtilTaskbarOverlayAssets -IncludeLogo \$false -IncludeStatusAssets \$true \}'
-        $mainScript | Should -Not -Match '\$sync\["checkmarkrender"\] = \(Invoke-WinUtilAssets -Type "checkmark"'
-        $mainScript | Should -Not -Match '\$sync\["warningrender"\] = \(Invoke-WinUtilAssets -Type "warning"'
+        $uiScript | Should -Match 'Initialize-WinUtilTaskbarOverlayAssets -IncludeLogo \$true -IncludeStatusAssets \$false'
+        $uiScript | Should -Match 'Dispatcher\.BeginInvoke\(\[System\.Windows\.Threading\.DispatcherPriority\]::Background, \[action\]\{ Initialize-WinUtilTaskbarOverlayAssets -IncludeLogo \$false -IncludeStatusAssets \$true \}'
+        $uiScript | Should -Not -Match '\$sync\["checkmarkrender"\] = \(Invoke-WinUtilAssets -Type "checkmark"'
+        $uiScript | Should -Not -Match '\$sync\["warningrender"\] = \(Invoke-WinUtilAssets -Type "warning"'
     }
 
     It "lazily creates taskbar overlays before assigning them" {

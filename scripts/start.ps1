@@ -61,8 +61,8 @@ $sync.version = "#{replaceme}"
 $sync.configs = @{}
 $sync.Buttons = [System.Collections.Generic.List[PSObject]]::new()
 $sync.preferences = @{}
-$sync.ProcessRunning = $false
-$sync.Win11ISOProcessRunning = $false
+# Name of the job currently running, or $null when idle. Owned by Start-WinUtilJob.
+$sync.ActiveJob = $null
 $sync.selectedAppx = [System.Collections.Generic.List[string]]::new()
 $sync.selectedApps = [System.Collections.Generic.List[string]]::new()
 $sync.selectedTweaks = [System.Collections.Generic.List[string]]::new()
@@ -75,9 +75,11 @@ $winutildir = "$env:LocalAppData\winutil"
 $sync.winutildir = $winutildir
 
 $logdir = "$winutildir\logs"
+# Structured session log, written by Write-WinUtilLog from every thread. The console
+# transcript goes to its own file because Start-Transcript keeps that one open and only
+# ever records the runspace it was started on.
 $sync.logPath = "$logdir\winutil_$dateTime.log"
-$sync.transcriptPath = $sync.logPath
-Start-Transcript -Path $sync.logPath -Append -NoClobber | Out-Null
+Start-Transcript -Path "$logdir\winutil_$dateTime.console.log" -Append -NoClobber | Out-Null
 
 $Host.UI.RawUI.WindowTitle = "WinUtil"
 Clear-Host

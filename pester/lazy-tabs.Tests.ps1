@@ -90,8 +90,8 @@ Describe "Initialize-WinUtilTabContent" {
 
 Describe "Startup lazy tab wiring" {
     It "builds only install tab content before first paint" {
-        $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
-        $startupRegion = $mainScript.Substring(0, $mainScript.IndexOf("# Store Form Objects In PowerShell"))
+        $uiScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilUserInterface.ps1") -Raw
+        $startupRegion = $uiScript.Substring(0, $uiScript.IndexOf("# Store Form Objects In PowerShell"))
 
         $startupRegion | Should -Match 'Initialize-WinUtilTabContent -TabName "Install"'
         $startupRegion | Should -Not -Match 'targetGridName "tweakspanel"'
@@ -107,18 +107,18 @@ Describe "Startup lazy tab wiring" {
 
     It "binds generated button clicks when lazy panels are rendered" {
         $rendererScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIElements.ps1") -Raw
-        $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
+        $uiScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilUserInterface.ps1") -Raw
 
         $rendererScript | Should -Match '(?s)"Button"\s*\{.*\$button\.Add_Click\(\{.*Invoke-WPFButton \$Sender\.name'
         $rendererScript | Should -Match '\$sync\.Buttons\.Add\(\$button\.Name\)'
-        $mainScript | Should -Match '\$sync\.Buttons -notcontains \$psitem'
+        $uiScript | Should -Match '\$sync\.Buttons -notcontains \$psitem'
     }
 
     It "binds generated documentation links when lazy panels are rendered" {
         $rendererScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIElements.ps1") -Raw
-        $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
+        $uiScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilUserInterface.ps1") -Raw
 
         $rendererScript | Should -Match '(?s)if \(\$entryInfo\.Link\).*\$textBlock\.Add_MouseUp\(\{.*Start-Process \$Sender\.ToolTip -ErrorAction Stop'
-        $mainScript | Should -Not -Match '\.Name\.EndsWith\("Link"\)'
+        $uiScript | Should -Not -Match '\.Name\.EndsWith\("Link"\)'
     }
 }

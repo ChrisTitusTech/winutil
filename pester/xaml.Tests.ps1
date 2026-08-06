@@ -8,7 +8,7 @@ BeforeAll {
     $script:functionRoot = Join-Path $script:repoRoot "functions"
     $script:scriptsRoot = Join-Path $script:repoRoot "scripts"
     $script:xamlPath = Join-Path $script:repoRoot "xaml\inputXML.xaml"
-    $script:mainScriptPath = Join-Path $script:scriptsRoot "main.ps1"
+    $script:uiScriptPath = Join-Path $script:functionRoot "private\Start-WinUtilUserInterface.ps1"
     $script:buttonScriptPath = Join-Path $script:functionRoot "public\Invoke-WPFButton.ps1"
     $script:xamlText = Get-Content -Path $script:xamlPath -Raw
     $script:xaml = [xml]$script:xamlText
@@ -181,8 +181,8 @@ Describe "XAML document" {
     }
 
     It "wires the Document search chip to an existing Document category" {
-        $mainScript = Get-Content -Path $script:mainScriptPath -Raw
-        $mainScript | Should -Match '\$sync\["WPFSearchChipDocument"\]\.Add_Click\(\{ Set-WinUtilAppCategoryFilter -Category "Document" \}\)'
+        $uiScript = Get-Content -Path $script:uiScriptPath -Raw
+        $uiScript | Should -Match '\$sync\["WPFSearchChipDocument"\]\.Add_Click\(\{ Set-WinUtilAppCategoryFilter -Category "Document" \}\)'
 
         $applications = Get-WinUtilConfigObject -Name "applications"
         $categories = @($applications.PSObject.Properties | ForEach-Object { $_.Value.category } | Sort-Object -Unique)
@@ -313,26 +313,26 @@ Describe "XAML document" {
         $window = $script:xaml.DocumentElement
         $searchBar = $script:xaml.SelectSingleNode('//*[local-name()="TextBox"][@Name="SearchBar"]')
         $searchBorder = $searchBar.ParentNode.ParentNode
-        $mainScript = Get-Content -Path $script:mainScriptPath -Raw
+        $uiScript = Get-Content -Path $script:uiScriptPath -Raw
 
         $window.GetAttribute("MinWidth") | Should -Be "800"
         $searchBorder.GetAttribute("Width") | Should -BeNullOrEmpty
         $searchBorder.GetAttribute("HorizontalAlignment") | Should -Be "Stretch"
         $searchBar.GetAttribute("Width") | Should -BeNullOrEmpty
         $searchBar.GetAttribute("HorizontalAlignment") | Should -Be "Stretch"
-        $mainScript | Should -Match '\$sync\.Form\.MinWidth = "1150"'
-        $mainScript | Should -Match '\$sync\.Form\.MinWidth = \[Math\]::Min\(\[double\]\$sync\.Form\.MinWidth, \[double\]\$screenWidth\)'
+        $uiScript | Should -Match '\$sync\.Form\.MinWidth = "1150"'
+        $uiScript | Should -Match '\$sync\.Form\.MinWidth = \[Math\]::Min\(\[double\]\$sync\.Form\.MinWidth, \[double\]\$screenWidth\)'
     }
 
     It "shows only one search action glyph at a time" {
         $searchIcon = $script:xaml.SelectSingleNode('//*[local-name()="TextBlock"][@Name="SearchBarIcon"]')
         $clearButton = $script:xaml.SelectSingleNode('//*[local-name()="Button"][@Name="SearchBarClearButton"]')
-        $mainScript = Get-Content -Path $script:mainScriptPath -Raw
+        $uiScript = Get-Content -Path $script:uiScriptPath -Raw
 
         $searchIcon | Should -Not -BeNullOrEmpty
         $clearButton | Should -Not -BeNullOrEmpty
-        $mainScript | Should -Match '\$sync\.SearchBarClearButton\.Visibility = "Visible"\s+\$sync\.SearchBarIcon\.Visibility = "Collapsed"'
-        $mainScript | Should -Match '\$sync\.SearchBarClearButton\.Visibility = "Collapsed"\s+\$sync\.SearchBarIcon\.Visibility = "Visible"'
+        $uiScript | Should -Match '\$sync\.SearchBarClearButton\.Visibility = "Visible"\s+\$sync\.SearchBarIcon\.Visibility = "Collapsed"'
+        $uiScript | Should -Match '\$sync\.SearchBarClearButton\.Visibility = "Collapsed"\s+\$sync\.SearchBarIcon\.Visibility = "Visible"'
     }
 
     It "scopes toggle button styles without leaking into combo boxes" {
@@ -384,10 +384,10 @@ Describe "XAML document" {
 Describe "XAML and sync wiring" {
     It "wires generated config panels to existing target grids" {
         $xamlNames = @(Get-WinUtilXamlRuntimeNamedControls | ForEach-Object { $_.Name })
-        $mainLines = Get-Content -Path $script:mainScriptPath
+        $uiLines = Get-Content -Path $script:uiScriptPath
         $invalidTargets = New-Object System.Collections.Generic.List[string]
 
-        foreach ($line in $mainLines) {
+        foreach ($line in $uiLines) {
             if ($line.TrimStart().StartsWith("#")) {
                 continue
             }
@@ -430,8 +430,9 @@ Describe "XAML and sync wiring" {
             "version",
             "winutildir",
             "logPath",
-            "transcriptPath",
-            "ProcessRunning",
+            "ActiveJob",
+            "UIRunspace",
+            "UIDispatchDelegate",
             "selected",
             "selectedAppx",
             "selectedApps",
@@ -464,12 +465,9 @@ Describe "XAML and sync wiring" {
             "Win11ISODriveLetter",
             "Win11ISOWimPath",
             "Win11ISOImagePath",
-            "Win11ISOModifying",
-            "Win11ISOProcessRunning",
             "Win11ISOWorkDir",
             "Win11ISOContentsDir",
-            "Win11ISOUSBDisks",
-            "ActiveJob"
+            "Win11ISOUSBDisks"
         )
         $allowedNames = @($xamlNames + $generatedNames + $dynamicStateNames) | Sort-Object -Unique
         $bracketReferences = @(
@@ -522,7 +520,7 @@ Describe "WPF handler wiring" {
         )
         $buttonSwitchNames = @(Get-WinUtilButtonSwitchNames)
         $featureNames = @((Get-WinUtilConfigObject -Name "feature").PSObject.Properties.Name)
-        $mainScript = Get-Content -Path $script:mainScriptPath -Raw
+        $uiScript = Get-Content -Path $script:uiScriptPath -Raw
         $unhandledButtons = New-Object System.Collections.Generic.List[string]
 
         foreach ($button in $buttonControls) {
@@ -530,7 +528,7 @@ Describe "WPF handler wiring" {
             $hasFeatureHandler = Test-WinUtilNameInSet -Name $button.Name -Set $featureNames
             $escapedName = [regex]::Escape($button.Name)
             $explicitHandlerPattern = '\$sync\s*(?:\[\s*["'']' + $escapedName + '["'']\s*\]|\.' + $escapedName + ')\.Add_Click'
-            $hasExplicitHandler = $mainScript -imatch $explicitHandlerPattern
+            $hasExplicitHandler = $uiScript -imatch $explicitHandlerPattern
 
             if (-not ($hasSwitchHandler -or $hasFeatureHandler -or $hasExplicitHandler)) {
                 $unhandledButtons.Add($button.Name)
