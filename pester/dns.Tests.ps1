@@ -189,6 +189,19 @@ Describe "Set-WinUtilDNS" {
         }
     }
 
+    It "does not change adapter DNS when DoH registration fails" {
+        Mock Add-DnsClientDohServerAddress { throw "DoH registration failed" }
+
+        Set-WinUtilDNS -DNSProvider "Mullvad"
+
+        Should -Invoke -CommandName Set-DnsClientServerAddress -Times 0 -Exactly
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "ERROR" -and
+                $Component -eq "DNS" -and
+                $Message -like "DNS provider Mullvad was not completed: *"
+        }
+    }
+
     It "resets DNS to DHCP and removes the applied DoH configuration" {
         Mock Test-Path { return $true } -ParameterFilter { $Path -like "*DohInterfaceSettings*" }
         Mock Get-ChildItem {
