@@ -366,6 +366,17 @@ Describe "UI-rendered config entries" {
         }
     }
 
+    It "exposes every configured DNS provider in the DNS combobox" {
+        $dns = Get-WinUtilConfigObject -Name "dns"
+        $tweaks = Get-WinUtilConfigObject -Name "tweaks"
+        $comboItems = @($tweaks.WPFchangedns.ComboItems -split " ")
+        $missingProviders = @($dns.PSObject.Properties.Name | Where-Object { $comboItems -notcontains $_ })
+
+        if ($missingProviders.Count -gt 0) {
+            throw "WPFchangedns missing providers: $($missingProviders -join ', ')"
+        }
+    }
+
     It "contains required feature fields and valid configured functions" {
         $feature = Get-WinUtilConfigObject -Name "feature"
         $functionNames = Get-WinUtilTopLevelFunctionNames
