@@ -11,11 +11,13 @@ function Start-WinUtilJob {
               - refusing to start while another job is running, with one consistent message
               - the busy flag other code checks
               - the progress bar and taskbar item for the whole lifetime of the job
+              - the boxed start and finish banner in the console
               - a start, finish and failure line in the log under the job's own component
               - catching anything the body throws, so a failure cannot leave the UI stuck busy
               - restoring the interface in a finally block whatever happens
 
-            The body only has to do the work and call Write-WinUtilJobProgress.
+            The body only has to do the work and call Write-WinUtilJobProgress. It must not
+            print its own banner or set the busy flag.
 
         .PARAMETER Name
             Short job name. Used as the log component and in progress text, for example Install.
@@ -61,6 +63,7 @@ function Start-WinUtilJob {
 
     $label = if ($Description) { $Description } else { $Name }
     Write-WinUtilLog -Component $Name -Message "$Name job started."
+    Write-WinUtilJobBanner -Message $label
     Write-WinUtilJobProgress -Status "$label..." -Percent 0 -State "Normal" -Overlay "logo"
 
     if ($DisableAppList -and $sync.Form -and $sync.Form.Dispatcher) {
@@ -73,21 +76,23 @@ function Start-WinUtilJob {
     # state it was defined in, and recreating it there keeps it bound to the worker instead.
     Invoke-WPFRunspace -ParameterList @(
         ("JobName", $Name),
+        ("JobLabel", $label),
         ("JobBody", $ScriptBlock.ToString()),
         ("JobParameters", $Parameters),
         ("JobRestoresAppList", [bool]$DisableAppList)
     ) -ScriptBlock {
-        param($JobName, $JobBody, $JobParameters, $JobRestoresAppList)
+        param($JobName, $JobLabel, $JobBody, $JobParameters, $JobRestoresAppList)
 
         try {
             $body = [scriptblock]::Create($JobBody)
             & $body @JobParameters
 
             Write-WinUtilLog -Component $JobName -Message "$JobName job finished."
+            Write-WinUtilJobBanner -Message "$JobLabel finished"
             Write-WinUtilJobProgress -Status "$JobName finished" -Percent 100 -State "None" -Overlay "checkmark"
         } catch {
             Write-WinUtilLog -Level "ERROR" -Component $JobName -Message "$JobName job failed: $($_.Exception.Message)"
-            Write-Host "$JobName failed: $($_.Exception.Message)"
+            Write-WinUtilJobBanner -Message "$JobLabel failed: $($_.Exception.Message)" -Level "ERROR"
             Write-WinUtilJobProgress -Status "$JobName failed" -Percent 100 -State "Error" -Overlay "warning"
         } finally {
             if ($JobRestoresAppList -and $sync.Form -and $sync.Form.Dispatcher) {

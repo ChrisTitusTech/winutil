@@ -60,9 +60,5 @@ function Invoke-WPFAppxRemoval {
             Write-WinUtilJobProgress -Status "Removing provisioned AppX packages" -Percent 90
             Remove-WinUtilProvisionedAPPX -PackageList $packageList.ToArray()
         }
-
-        Write-Host "================================="
-        Write-Host "--   AppX Removal Finished   ---"
-        Write-Host "================================="
     }
 }

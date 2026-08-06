@@ -237,6 +237,12 @@ Describe "Get installed AppX selection" {
 
         Mock Get-WinUtilInstalledAPPX { @("Example.Package") }
         Mock Invoke-WPFAppxInstall { }
+        Mock Write-WinUtilJobProgress { }
+        Mock Invoke-WPFUIThread { $uiParameters = $Parameters; & $ScriptBlock @uiParameters }
+        Mock Start-WinUtilJob {
+            $jobParameters = $Parameters
+            & $ScriptBlock @jobParameters
+        }
     }
 
     AfterEach {
@@ -246,6 +252,9 @@ Describe "Get installed AppX selection" {
     It "selects configured packages returned by the compatibility-safe query" {
         Invoke-WPFButton -Button "WPFGetInstalledAppx"
 
+        Should -Invoke -CommandName Start-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "GetInstalledAppx"
+        }
         Should -Invoke -CommandName Get-WinUtilInstalledAPPX -Times 1 -Exactly
         $script:sync.WPFAppxExample.IsChecked | Should -BeTrue
         $script:sync.WPFAppxMissing.IsChecked | Should -BeFalse

@@ -48,9 +48,5 @@ function Invoke-WPFtweaksbutton {
       $completedSteps++
       Write-WinUtilJobProgress -Percent ([int](($completedSteps / $totalSteps) * 100))
     }
-
-    Write-Host "================================="
-    Write-Host "--     Tweaks are Finished    ---"
-    Write-Host "================================="
   }
 }

@@ -27,7 +27,7 @@ function Invoke-WPFUnInstall {
     $ManagerPreference = $sync.preferences.packagemanager
     Write-WinUtilLog -Component "Uninstall" -Message "Uninstall requested for $(@($PackagesToUninstall).Count) selected package(s) using preference: $ManagerPreference"
 
-    Start-WinUtilJob -Name "Uninstall" -Description "Preparing app uninstall" -DisableAppList -Parameters @{
+    Start-WinUtilJob -Name "Uninstall" -Description "Uninstalling apps" -DisableAppList -Parameters @{
         PackagesToUninstall = $PackagesToUninstall
         ManagerPreference = $ManagerPreference
     } -ScriptBlock {
@@ -66,9 +66,5 @@ function Invoke-WPFUnInstall {
             $completedPackages += @($packagesChoco).Count
             Write-WinUtilJobProgress -Status "Uninstalled Chocolatey packages ($completedPackages/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
         }
-
-        Write-Host "==========================================="
-        Write-Host "--       Uninstalls have finished       ---"
-        Write-Host "==========================================="
     }
 }

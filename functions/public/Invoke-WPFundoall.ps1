@@ -26,9 +26,5 @@ function Invoke-WPFundoall {
             Invoke-WinUtiltweaks $Tweaks[$i] -undo $true
             Write-WinUtilJobProgress -Percent ([int]((($i + 1) / $total) * 100))
         }
-
-        Write-Host "=================================="
-        Write-Host "---  Undo Tweaks are Finished  ---"
-        Write-Host "=================================="
     }
 }

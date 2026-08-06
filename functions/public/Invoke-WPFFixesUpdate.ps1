@@ -30,7 +30,7 @@ function Invoke-WPFFixesUpdate {
     param($Aggressive = $false)
 
     Write-Progress -Id 0 -Activity "Repairing Windows Update" -PercentComplete 0
-    Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
+    Write-WinUtilJobProgress -State "Indeterminate"
     Write-Host "Starting Windows Update Repair..."
     # Wait for the first progress bar to show, otherwise the second one won't show
     Start-Sleep -Milliseconds 200
@@ -192,24 +192,14 @@ function Invoke-WPFFixesUpdate {
     try {
         (New-Object -ComObject Microsoft.Update.AutoUpdate).DetectNow()
     } catch {
-        Set-WinUtilTaskbaritem -state "Error" -overlay "warning"
+        Write-WinUtilLog -Level "ERROR" -Component "Updates" -Message "Failed to create Windows Update COM object: $_"
         Write-Warning "Failed to create Windows Update COM object: $_"
     }
     Start-Process -NoNewWindow -FilePath "wuauclt" -ArgumentList "/resetauthorization", "/detectnow"
     Write-Progress -Id 10 -ParentId 0 -Activity "Forcing discovery" -Status "Completed" -PercentComplete 100
     Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Completed" -PercentComplete 100
 
-    Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
-
-    $ButtonType = [System.Windows.MessageBoxButton]::OK
-    $MessageboxTitle = "Reset Windows Update "
-    $Messageboxbody = ("Stock settings loaded.`n Please reboot your computer")
-    $MessageIcon = [System.Windows.MessageBoxImage]::Information
-
-    [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
-    Write-Host "==============================================="
-    Write-Host "-- Reset All Windows Update Settings to Stock -"
-    Write-Host "==============================================="
+    Show-WinUtilMessage -Message "Stock settings loaded.`n Please reboot your computer" -Title "Reset Windows Update" -Button "OK" -Icon "Information" | Out-Null
 
     # Remove the progress bars
     Write-Progress -Id 0 -Activity "Repairing Windows Update" -Completed

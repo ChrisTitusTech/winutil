@@ -11,7 +11,7 @@ function Invoke-WPFFeatureInstall {
         return
     }
 
-    Start-WinUtilJob -Name "Features" -Description "Preparing Windows Features" -Parameters @{
+    Start-WinUtilJob -Name "Features" -Description "Installing Windows features" -Parameters @{
         Features = @($sync.selectedFeatures)
     } -ScriptBlock {
         param($Features)
@@ -26,9 +26,6 @@ function Invoke-WPFFeatureInstall {
             Write-WinUtilJobProgress -Status "Installed $feature ($completed/$total)" -Percent ([int](($completed / $total) * 100))
         }
 
-        Write-Host "==================================="
-        Write-Host "---   Features are Installed    ---"
-        Write-Host "---  A Reboot may be required   ---"
-        Write-Host "==================================="
+        Write-Host "A reboot may be required."
     }
 }

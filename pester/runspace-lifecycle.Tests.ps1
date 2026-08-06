@@ -82,8 +82,8 @@ Describe "Runspace startup wiring" {
         foreach ($variableName in @("sync", "PARAM_OFFLINE", "inputXML", "WinUtilAutounattendXml")) {
             $sessionStateScript | Should -Match ([regex]::Escape("Name = `"$variableName`""))
         }
-        # Every WinUtil function has to travel, not just the ones matching a name pattern:
-        # the interface runspace builds tabs and job bodies call arbitrary helpers.
+        # The interface runspace builds tabs and job bodies call arbitrary helpers, so every
+        # WinUtil function has to be carried over, not a name-matched subset.
         $sessionStateScript | Should -Match 'foreach \(\$function in \(Get-ChildItem function:\\\)\)'
         $sessionStateScript | Should -Match '\$builtInFunctions\.Contains\(\$function\.Name\)'
         $sessionStateScript | Should -Not -Match "imatch 'winutil\|WPF'"

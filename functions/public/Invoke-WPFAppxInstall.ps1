@@ -4,7 +4,7 @@ function Invoke-WPFAppxInstall {
         return
     }
 
-    Start-WinUtilJob -Name "AppX install" -Description "Preparing AppX install" -Parameters @{
+    Start-WinUtilJob -Name "AppX install" -Description "Installing AppX packages" -Parameters @{
         Selected = @($sync.selectedAppx)
         Apps = $sync.configs.appxHashtable
     } -ScriptBlock {
@@ -22,9 +22,5 @@ function Invoke-WPFAppxInstall {
             Install-WinUtilAPPX -Name $app.PackageId -StoreId $app.StoreId
             Write-WinUtilJobProgress -Status "Installed $($app.Content) ($position/$totalPackages)" -Percent ([int](($position / $totalPackages) * 100))
         }
-
-        Write-Host "================================="
-        Write-Host "--   AppX Install Finished   ---"
-        Write-Host "================================="
     }
 }

@@ -17,7 +17,7 @@ function Invoke-WPFInstall {
     $ManagerPreference = $sync.preferences.packagemanager
     Write-WinUtilLog -Component "Install" -Message "Install requested for $(@($PackagesToInstall).Count) selected package(s) using preference: $ManagerPreference"
 
-    Start-WinUtilJob -Name "Install" -Description "Preparing app install" -DisableAppList -Parameters @{
+    Start-WinUtilJob -Name "Install" -Description "Installing apps" -DisableAppList -Parameters @{
         PackagesToInstall = $PackagesToInstall
         ManagerPreference = $ManagerPreference
     } -ScriptBlock {
@@ -55,9 +55,5 @@ function Invoke-WPFInstall {
             $completedPackages += @($packagesChoco).Count
             Write-WinUtilJobProgress -Status "Installed Chocolatey packages ($completedPackages/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
         }
-
-        Write-Host "==========================================="
-        Write-Host "--      Installs have finished          ---"
-        Write-Host "==========================================="
     }
 }

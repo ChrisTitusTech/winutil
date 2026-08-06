@@ -57,9 +57,6 @@ function Invoke-WPFUpdatesdisable {
         Get-ScheduledTask -TaskPath $Task -ErrorAction SilentlyContinue | Disable-ScheduledTask -ErrorAction SilentlyContinue
     }
 
-    Write-Host "=================================" -ForegroundColor Green
-    Write-Host "--- Windows Update Is Disabled ---" -ForegroundColor Green
-    Write-Host "=================================" -ForegroundColor Green
 
     Write-Host "Note: You must restart your system in order for all changes to take effect." -ForegroundColor Yellow
     Write-WinUtilLog -Component "Updates" -Message "Windows Update disable workflow completed. Restart required."
