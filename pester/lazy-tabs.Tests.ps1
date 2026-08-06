@@ -16,6 +16,7 @@ BeforeAll {
         param([string]$TargetGridName)
     }
     function Invoke-WinUtilISOCheckExistingWork { }
+    function Initialize-WinUtilInstallTabControls { }
 
     . (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilTabContent.ps1")
 }

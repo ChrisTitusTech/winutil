@@ -23,6 +23,7 @@ function Initialize-WinUtilTabContent {
             Measure-WinUtilStep -Scope "UI" -Name "Install tab: app area" -ScriptBlock {
                 Initialize-WPFUI -targetGridName "appspanel"
             }
+            Initialize-WinUtilInstallTabControls
         }
         "Tweaks" {
             Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2

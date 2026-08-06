@@ -113,18 +113,6 @@ function Start-WinUtilUserInterface {
         }
     }
 
-    $sync.ChocoRadioButton.Add_Checked({
-        $sync.preferences.packagemanager = "Choco"
-    })
-    $sync.WingetRadioButton.Add_Checked({
-        $sync.preferences.packagemanager = "Winget"
-    })
-
-    switch ($sync.preferences.packagemanager) {
-        "Choco" {$sync.ChocoRadioButton.IsChecked = $true; break}
-        "Winget" {$sync.WingetRadioButton.IsChecked = $true; break}
-    }
-
     Measure-WinUtilStep -Scope "UI" -Name "wire static button clicks" -ScriptBlock {
         # CheckBox and RadioButton also derive from ButtonBase, so the exact type name is what
         # decides, not -is
@@ -273,11 +261,8 @@ function Start-WinUtilUserInterface {
             $sync.WPFTab1BT.Opacity = 0.5
             $sync.WPFTab1BT.ToolTip = "Internet connection required for installing applications."
 
-            # Disable install-related buttons
-            $sync.WPFInstall.IsEnabled = $false
-            $sync.WPFUninstall.IsEnabled = $false
-            $sync.WPFInstallUpgrade.IsEnabled = $false
-            $sync.WPFGetInstalled.IsEnabled = $false
+            # The install action buttons are generated with the Install tab, so
+            # Initialize-WinUtilInstallTabControls disables them when that tab is built
 
             # Show offline indicator
             Write-Host "Offline mode detected - Install tab disabled." -ForegroundColor Yellow
