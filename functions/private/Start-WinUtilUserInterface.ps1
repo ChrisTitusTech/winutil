@@ -267,7 +267,10 @@ function Start-WinUtilUserInterface {
 
         $sync["Form"].Focus()
         $sync["Form"].Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{ Initialize-WinUtilRunspacePool | Out-Null }) | Out-Null
-        $sync["Form"].Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{ Initialize-WinUtilTaskbarOverlayAssets -IncludeLogo $false -IncludeStatusAssets $true }) | Out-Null
+        $sync["Form"].Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{
+            Initialize-WinUtilTaskbarOverlayAssets -IncludeLogo $true -IncludeStatusAssets $true
+            Set-WinUtilTaskbaritem -overlay "logo"
+        }) | Out-Null
     })
 
     # The SearchBarTimer is used to delay the search operation until the user has stopped typing for a short period
@@ -338,9 +341,6 @@ function Start-WinUtilUserInterface {
 
     $NavLogoPanel = $sync["Form"].FindName("NavLogoPanel")
     $NavLogoPanel.Children.Add((Invoke-WinUtilAssets -Type "logo" -Size 25)) | Out-Null
-    Initialize-WinUtilTaskbarOverlayAssets -IncludeLogo $true -IncludeStatusAssets $false
-
-    Set-WinUtilTaskbaritem -overlay "logo"
 
     $sync["Form"].Add_Activated({
         Set-WinUtilTaskbaritem -overlay "logo"
