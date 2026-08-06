@@ -1314,7 +1314,7 @@
                     </Grid.RowDefinitions>
 
                     <!-- Quick Category Search Chips -->
-                    <WrapPanel Grid.Row="0" Orientation="Horizontal" Margin="5,5,5,5" Name="WPFSearchChips">
+                    <WrapPanel Grid.Row="0" Orientation="Horizontal" Margin="5,5,5,5" Name="WPFSearchChips" Visibility="Collapsed">
                         <TextBlock Text="Filters"
                                    FontSize="{DynamicResource HeaderFontSize}"
                                    FontFamily="{DynamicResource HeaderFontFamily}"
