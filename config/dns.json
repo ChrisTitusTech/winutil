@@ -54,5 +54,47 @@
         "Primary6": "2a10:50c0::bad1:ff",
         "Secondary6": "2a10:50c0::bad2:ff",
         "DohTemplate": "https://family.adguard-dns.com/dns-query"
+    },
+    "Mullvad":{
+        "Primary": "194.242.2.2",
+        "Secondary": "",
+        "Primary6": "2a07:e340::2",
+        "Secondary6": "",
+        "DohTemplate": "https://dns.mullvad.net/dns-query"
+    },
+    "Mullvad_Ads_Trackers":{
+        "Primary": "194.242.2.3",
+        "Secondary": "",
+        "Primary6": "2a07:e340::3",
+        "Secondary6": "",
+        "DohTemplate": "https://adblock.dns.mullvad.net/dns-query"
+    },
+    "Mullvad_Ads_Trackers_Malware":{
+        "Primary": "194.242.2.4",
+        "Secondary": "",
+        "Primary6": "2a07:e340::4",
+        "Secondary6": "",
+        "DohTemplate": "https://base.dns.mullvad.net/dns-query"
+    },
+    "Mullvad_Ads_Trackers_Malware_Social":{
+        "Primary": "194.242.2.5",
+        "Secondary": "",
+        "Primary6": "2a07:e340::5",
+        "Secondary6": "",
+        "DohTemplate": "https://extended.dns.mullvad.net/dns-query"
+    },
+    "Mullvad_Ads_Trackers_Malware_Adult_Gambling":{
+        "Primary": "194.242.2.5",
+        "Secondary": "",
+        "Primary6": "2a07:e340::5",
+        "Secondary6": "",
+        "DohTemplate": "https://family.dns.mullvad.net/dns-query"
+    },
+    "Mullvad_Ads_Trackers_Malware_Adult_Gambling_Social":{
+        "Primary": "194.242.2.9",
+        "Secondary": "",
+        "Primary6": "2a07:e340::9",
+        "Secondary6": "",
+        "DohTemplate": "https://all.dns.mullvad.net/dns-query"
     }
 }
