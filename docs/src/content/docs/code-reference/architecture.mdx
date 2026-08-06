@@ -79,14 +79,15 @@ winutil/
 **Why**: Makes distribution easier (single file) and improves load time.
 
 #### 2. scripts/main.ps1
-**Purpose**: Entry point that initializes the GUI and event system.
+**Purpose**: Entry point that manages the run.
 
 **Responsibilities**:
-- Load XAML and create WPF window
-- Initialize form elements
-- Set up event handlers
 - Load configurations
-- Display the GUI
+- Run the headless `-Preset` and `-Config` paths
+- Start the interface on a dedicated STA runspace and wait for it
+- Report anything the interface thread failed with, then clean up
+
+The interface itself lives in `Start-WinUtilUserInterface`, not here. See [Threading Model](#threading-model).
 
 #### 3. functions/public/
 **Purpose**: User-facing functions that implement main features.
@@ -392,23 +393,64 @@ Update UI
 - `service`: Services to change
 - `OriginalValue/State`: For undo functionality
 
-## PowerShell Runspace
+## Threading Model
 
-Winutil uses PowerShell runspaces for the GUI to remain responsive:
+WinUtil runs on three kinds of thread, and each has one job:
+
+| Thread | Runspace | Responsibility |
+| --- | --- | --- |
+| Main | The one the script started in | Start the interface, wait for it, surface its errors, clean up |
+| Interface | `$sync.UIRunspace`, a dedicated STA runspace | Own the window. Paint and dispatch, nothing else |
+| Workers | `$sync.runspace`, a shared pool | Run everything long: installs, tweaks, features, AppX, Win11 Creator |
+
+All three are created from the same starting point, `New-WinUtilSessionState`, which carries
+`$sync`, the compiled script's globals, and every WinUtil function. That is what lets any
+thread call any helper without the caller injecting function definitions.
 
 ```powershell
-# Create runspace
-$sync.runspace = [runspacefactory]::CreateRunspace()
-$sync.runspace.Open()
-$sync.runspace.SessionStateProxy.SetVariable("sync", $sync)
+# main.ps1 - the interface gets its own thread
+$sync.UIRunspace = [runspacefactory]::CreateRunspace($Host, (New-WinUtilSessionState))
+$sync.UIRunspace.ApartmentState = "STA"
+$sync.UIRunspace.Open()
 
-# Run code in background
-$powershell = [powershell]::Create().AddScript($scriptblock)
-$powershell.Runspace = $sync.runspace
-$handle = $powershell.BeginInvoke()
+$uiShell = [powershell]::Create()
+$uiShell.Runspace = $sync.UIRunspace
+[void]$uiShell.AddScript({ Start-WinUtilUserInterface })
+$uiHandle = $uiShell.BeginInvoke()
+$uiHandle.AsyncWaitHandle.WaitOne()
 ```
 
-**Why**: Prevents UI freezing during long-running operations.
+**Why**: the window never blocks on work, and a failure on the interface thread is reported
+instead of disappearing.
+
+## Long-Running Work
+
+Every long action goes through `Start-WinUtilJob`, which owns the parts each one used to
+repeat: refusing to start while another job runs, the busy flag (`$sync.ActiveJob`), the
+progress bar and taskbar item, a start/finish/failure line in the log, and restoring the
+interface in a `finally` whatever happens.
+
+```powershell
+Start-WinUtilJob -Name "Features" -Description "Installing Windows Features" -Parameters @{
+    Features = @($sync.selectedFeatures)
+} -ScriptBlock {
+    param($Features)
+
+    $total = @($Features).Count
+    $completed = 0
+    foreach ($feature in $Features) {
+        $completed++
+        Write-WinUtilJobProgress -Status "Installing $feature ($completed/$total)" -Percent ([int](($completed / $total) * 100))
+        Invoke-WinUtilFeatureInstall $feature
+    }
+}
+```
+
+The body only has to do the work and call `Write-WinUtilJobProgress`. Anything it throws is
+caught, logged, and shown on the taskbar as a failure.
+
+**Values, not closures**: the body is rebuilt inside the worker from its text, so it receives
+what it needs through `-Parameters` rather than capturing the caller's variables.
 
 ## WPF Event Handling
 
@@ -454,23 +496,21 @@ if (!(Get-Command choco -ErrorAction SilentlyContinue)) {
 choco install $app.choco -y
 ```
 
-## Error Handling
+## Error Handling And Logging
 
-Winutil uses PowerShell error handling:
+A job body does not need its own error handling. `Start-WinUtilJob` catches whatever the body
+throws, logs it, and marks the run as failed on the taskbar, so a failure can never leave the
+interface stuck busy. Only catch inside a body when you have something specific to do first,
+such as cleaning up a mounted image, and then rethrow.
 
 ```powershell
-try {
-    # Attempt operation
-    Invoke-SomeOperation
-}
-catch {
-    Write-Host "Error: $_" -ForegroundColor Red
-    # Log error
-    Add-Content -Path $logfile -Value "ERROR: $_"
-}
+Write-WinUtilLog -Level "ERROR" -Component "Install" -Message "winget install failed: $($_.Exception.Message)"
 ```
 
-**Logging**: Errors and operations are logged for debugging.
+Entries go to `%LocalAppData%\winutil\logs\winutil_<timestamp>.log` from every thread, guarded
+by a named mutex. The console transcript is a separate file in the same directory, because
+`Start-Transcript` keeps its file open and only records the runspace it was started on - so
+anything a worker logged would otherwise never reach disk.
 
 ## Configuration Loading
 
@@ -488,15 +528,23 @@ $sync.configs.features = Get-Content "config/feature.json" | ConvertFrom-Json
 
 ## UI Update Pattern
 
-UI updates must happen on the UI thread:
+Controls may only be touched from the thread that owns the window, so background work reaches
+them through `Invoke-WPFUIThread`:
 
 ```powershell
-$sync.form.Dispatcher.Invoke([action]{
-    $sync.WPFStatusLabel.Content = "Installing..."
-}, "Normal")
+Invoke-WPFUIThread -Parameters @{ Count = $installed.Count } -ScriptBlock {
+    param($Count)
+    $sync.WPFselectedAppsButton.Content = "Selected Apps: $Count"
+}
 ```
 
-**Why**: WPF requires UI updates on the main thread.
+Add `-Async` to post the update instead of waiting for it. `Write-WinUtilJobProgress` and the
+Win11 Creator status log use that so a per-item update never stalls the worker.
+
+**Values, not closures**: the body is rebuilt inside the interface runspace, so it takes what it
+needs through `-Parameters`. Handing over a scriptblock from a worker instead would keep that
+worker's session state, which loses the caller's variables on an async post and costs roughly
+twenty times as much per command - enough to turn a checkbox refresh into a visible freeze.
 
 ## Adding New Features
 
