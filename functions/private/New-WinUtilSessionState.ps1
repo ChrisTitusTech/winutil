@@ -41,7 +41,7 @@ function New-WinUtilSessionState {
         }
 
         $initialSessionState.Commands.Add(
-            (New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $function.Name, (Get-Content function:\$($function.Name)))
+            (New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $function.Name, $function.Definition)
         )
     }
 
