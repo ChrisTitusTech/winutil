@@ -4,6 +4,12 @@ function Write-WinUtilLog {
     .SYNOPSIS
         Writes a timestamped WinUtil log entry to the active session log.
 
+    .DESCRIPTION
+        Called from the interface thread and from every job body, so the append is serialized
+        with a named mutex. The session log is deliberately not the file Start-Transcript owns:
+        a transcript only records the runspace it was started on, so anything a job logged would
+        otherwise never reach disk.
+
     .PARAMETER Message
         The message to write.
 
@@ -26,17 +32,8 @@ function Write-WinUtilLog {
 
     try {
         $logPath = $null
-        $transcriptPath = $null
         if ($null -ne $sync -and $sync.ContainsKey("logPath")) {
             $logPath = $sync.logPath
-        }
-
-        if ($null -ne $sync -and $sync.ContainsKey("transcriptPath")) {
-            $transcriptPath = $sync.transcriptPath
-        }
-
-        if ([string]::IsNullOrWhiteSpace($logPath) -and -not [string]::IsNullOrWhiteSpace($transcriptPath)) {
-            $logPath = $transcriptPath
         }
 
         if ([string]::IsNullOrWhiteSpace($logPath) -and $null -ne $sync -and $sync.ContainsKey("winutildir")) {
@@ -65,15 +62,22 @@ function Write-WinUtilLog {
         $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss.fff"
         $line = "[$timestamp] [$Level] [$Component] $Message"
 
-        if (-not [string]::IsNullOrWhiteSpace($transcriptPath) -and $logPath -eq $transcriptPath) {
-            Write-Host $line
-            return
-        }
-
+        $mutex = [System.Threading.Mutex]::new($false, "WinUtilSessionLog")
+        $held = $false
         try {
+            try {
+                $held = $mutex.WaitOne(2000)
+            } catch [System.Threading.AbandonedMutexException] {
+                # A thread died holding the mutex; ownership transfers to us either way
+                $held = $true
+            }
+
             Add-Content -Path $logPath -Value $line -Encoding UTF8 -ErrorAction Stop
         } catch [System.IO.IOException] {
             Write-Host $line
+        } finally {
+            if ($held) { $mutex.ReleaseMutex() }
+            $mutex.Dispose()
         }
     } catch {
         Write-Warning "Unable to write WinUtil log entry: $($_.Exception.Message)"
