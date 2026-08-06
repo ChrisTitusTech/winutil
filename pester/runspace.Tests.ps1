@@ -184,21 +184,21 @@ Describe "Public runspace callers" {
         }
     }
 
-    It "passes selected tweaks as the runspace argument list for undo all" {
+    It "queues selected tweak undo as a job without executing the body" {
         $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
         $script:sync.selectedTweaks.Add("WPFTweaksServices")
 
         Invoke-WPFundoall
 
-        Should -Invoke -CommandName Invoke-WPFRunspace -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock -is [scriptblock] -and
-                $ArgumentList.Count -eq 2 -and
-                $ArgumentList[0] -eq "WPFTweaksTelemetry" -and
-                $ArgumentList[1] -eq "WPFTweaksServices"
+        Should -Invoke -CommandName Start-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "Undo tweaks" -and
+                $ScriptBlock -is [scriptblock] -and
+                @($Parameters.Tweaks).Count -eq 2 -and
+                @($Parameters.Tweaks)[0] -eq "WPFTweaksTelemetry"
         }
     }
 
-    It "passes selected AppX items and app metadata to the removal runspace" {
+    It "queues AppX removal as a job with the selection and app metadata" {
         $script:sync.selectedAppx.Add("WPFAppxExample")
         $script:sync.configs.appxHashtable["WPFAppxExample"] = [pscustomobject]@{
             Content = "Example"
@@ -207,13 +207,38 @@ Describe "Public runspace callers" {
 
         Invoke-WPFAppxRemoval
 
-        Should -Invoke -CommandName Invoke-WPFRunspace -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock -is [scriptblock] -and
-                $ParameterList.Count -eq 2 -and
-                $ParameterList[0][0] -eq "selected" -and
-                $ParameterList[0][1][0] -eq "WPFAppxExample" -and
-                $ParameterList[1][0] -eq "apps" -and
-                $ParameterList[1][1].ContainsKey("WPFAppxExample")
+        Should -Invoke -CommandName Start-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "AppX" -and
+                $ScriptBlock -is [scriptblock] -and
+                @($Parameters.Selected)[0] -eq "WPFAppxExample" -and
+                $Parameters.Apps.ContainsKey("WPFAppxExample")
+        }
+    }
+
+    It "keeps every long workflow entrypoint on the job layer" {
+        $publicRoot = Join-Path $script:repoRoot "functions\public"
+        $privateRoot = Join-Path $script:repoRoot "functions\private"
+        $entrypoints = @(
+            (Join-Path $publicRoot "Invoke-WPFInstall.ps1"),
+            (Join-Path $publicRoot "Invoke-WPFUnInstall.ps1"),
+            (Join-Path $publicRoot "Invoke-WPFAppxInstall.ps1"),
+            (Join-Path $publicRoot "Invoke-WPFAppxRemoval.ps1"),
+            (Join-Path $publicRoot "Invoke-WPFFeatureInstall.ps1"),
+            (Join-Path $publicRoot "Invoke-WPFGetInstalled.ps1"),
+            (Join-Path $publicRoot "Invoke-WPFOOSU.ps1"),
+            (Join-Path $publicRoot "Invoke-WPFtweaksbutton.ps1"),
+            (Join-Path $publicRoot "Invoke-WPFundoall.ps1"),
+            (Join-Path $privateRoot "Invoke-WinUtilISO.ps1"),
+            (Join-Path $privateRoot "Invoke-WinUtilISOUSB.ps1")
+        )
+
+        foreach ($entrypoint in $entrypoints) {
+            $source = Get-Content -Path $entrypoint -Raw
+            $source | Should -Match 'Start-WinUtilJob -Name'
+            # Job bodies never build their own runspace or busy state
+            $source | Should -Not -Match 'RunspaceFactory\]::CreateRunspace'
+            $source | Should -Not -Match 'Invoke-WPFRunspace'
+            $source | Should -Not -Match '\$sync\.ProcessRunning'
         }
     }
 }

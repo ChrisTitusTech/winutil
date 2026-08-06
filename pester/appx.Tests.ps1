@@ -50,10 +50,7 @@ BeforeAll {
         param($ArgumentList, $ParameterList, [scriptblock]$ScriptBlock)
     }
     function Invoke-WPFUIThread {
-        param([scriptblock]$ScriptBlock)
-    }
-    function Set-WinUtilTweaksProgressIndicator {
-        param($Visible, $Label, $Percent)
+        param([scriptblock]$ScriptBlock, [hashtable]$Parameters, [switch]$Async)
     }
     function powershell.exe { }
     function Get-AppxPackage {
@@ -226,7 +223,7 @@ Describe "Install-WinUtilAPPX" {
 Describe "Get installed AppX selection" {
     BeforeEach {
         $script:sync = [Hashtable]::Synchronized(@{
-            ProcessRunning = $false
+            ActiveJob = $null
             configs = @{
                 feature = @{}
                 appxHashtable = @{
@@ -238,7 +235,6 @@ Describe "Get installed AppX selection" {
             WPFAppxMissing = [pscustomobject]@{ IsChecked = $false }
         })
 
-        Mock Set-WinUtilTweaksProgressIndicator { }
         Mock Get-WinUtilInstalledAPPX { @("Example.Package") }
         Mock Invoke-WPFAppxInstall { }
     }
@@ -356,7 +352,7 @@ Describe "Remove-WinUtilProvisionedAPPX" {
 Describe "Invoke-WPFAppxInstall" {
     BeforeEach {
         $script:sync = [Hashtable]::Synchronized(@{
-            ProcessRunning = $false
+            ActiveJob = $null
             Form = [pscustomobject]@{ Dispatcher = [pscustomobject]@{} }
             selectedAppx = [System.Collections.Generic.List[string]]::new()
             configs = @{
@@ -371,12 +367,10 @@ Describe "Invoke-WPFAppxInstall" {
         })
         $script:capturedAppxInstallScriptBlock = $null
         $script:capturedAppxInstallParameterList = $null
-        $script:appxInstallProcessRunningAtLaunch = $null
 
         Mock Show-WinUtilMessage { "OK" }
         Mock Write-Host { }
         Mock Write-WinUtilLog { }
-        Mock Set-WinUtilTweaksProgressIndicator { }
         Mock Invoke-WPFUIThread { }
         Mock Install-WinUtilAPPX { }
         Mock Write-WinUtilJobProgress { }
@@ -390,7 +384,6 @@ Describe "Invoke-WPFAppxInstall" {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name capturedAppxInstallScriptBlock -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name capturedAppxInstallParameterList -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name appxInstallProcessRunningAtLaunch -Scope Script -ErrorAction SilentlyContinue
     }
 
     It "prompts and exits when no AppX packages are selected for install" {
@@ -444,97 +437,18 @@ Describe "Invoke-WPFAppxInstall" {
         { & $script:capturedAppxInstallScriptBlock @jobParameters } | Should -Throw "Install failed"
     }
 }
-Describe "Invoke-WPFAppxRemoval entrypoint" {
+Describe "Invoke-WPFAppxRemoval" {
     BeforeEach {
         $script:sync = [Hashtable]::Synchronized(@{
-            ProcessRunning = $false
-            selectedAppx = [System.Collections.Generic.List[string]]::new()
-            configs = @{
-                appxHashtable = @{}
-            }
-        })
-        $script:capturedAppxScriptBlock = $null
-        $script:capturedAppxParameterList = $null
-        $script:appxRemovalProcessRunningAtLaunch = $null
-
-        Mock Show-WinUtilMessage { "OK" }
-        Mock Invoke-WPFRunspace {
-            $script:appxRemovalProcessRunningAtLaunch = $script:sync.ProcessRunning
-            $script:capturedAppxScriptBlock = $ScriptBlock
-            $script:capturedAppxParameterList = $ParameterList
-            [pscustomobject]@{ MockHandle = $true }
-        }
-    }
-
-    AfterEach {
-        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name capturedAppxScriptBlock -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name capturedAppxParameterList -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name appxRemovalProcessRunningAtLaunch -Scope Script -ErrorAction SilentlyContinue
-    }
-
-    It "prompts and exits when no AppX packages are selected" {
-        Invoke-WPFAppxRemoval
-
-        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
-            $Message -eq "No AppX Package selected" -and
-                $Title -eq "Error" -and
-                $Button -eq "OK" -and
-                $Icon -eq "Error"
-        }
-        Should -Invoke -CommandName Invoke-WPFRunspace -Times 0 -Exactly
-    }
-
-    It "prevents overlapping AppX removal operations" {
-        $script:sync.ProcessRunning = $true
-        $script:sync.selectedAppx.Add("WPFAppxExample")
-
-        Invoke-WPFAppxRemoval
-
-        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
-            $Message -eq "An AppX process is currently running." -and
-                $Title -eq "WinUtil" -and
-                $Button -eq "OK" -and
-                $Icon -eq "Warning"
-        }
-        Should -Invoke -CommandName Invoke-WPFRunspace -Times 0 -Exactly
-    }
-
-    It "passes selected AppX keys and app metadata to the removal runspace" {
-        $script:sync.selectedAppx.Add("WPFAppxExample")
-        $script:sync.configs.appxHashtable["WPFAppxExample"] = [pscustomobject]@{
-            Content = "Example App"
-            PackageId = "Example.Package"
-        }
-
-        Invoke-WPFAppxRemoval
-        $script:sync.selectedAppx.Add("WPFAppxChangedAfterLaunch")
-
-        $script:appxRemovalProcessRunningAtLaunch | Should -BeTrue
-        $script:capturedAppxParameterList[0][1] | Should -HaveCount 1
-        Should -Invoke -CommandName Show-WinUtilMessage -Times 0 -Exactly
-        Should -Invoke -CommandName Invoke-WPFRunspace -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock -is [scriptblock] -and
-                $ParameterList.Count -eq 2 -and
-                $ParameterList[0][0] -eq "selected" -and
-                $ParameterList[0][1][0] -eq "WPFAppxExample" -and
-                $ParameterList[1][0] -eq "apps" -and
-                $ParameterList[1][1]["WPFAppxExample"].PackageId -eq "Example.Package"
-        }
-    }
-}
-
-Describe "Invoke-WPFAppxRemoval runspace body" {
-    BeforeEach {
-        $script:sync = [Hashtable]::Synchronized(@{
-            ProcessRunning = $false
+            ActiveJob = $null
             Form = [pscustomobject]@{ Dispatcher = [pscustomobject]@{} }
             selectedAppx = [System.Collections.Generic.List[string]]::new()
             configs = @{
                 appxHashtable = @{}
             }
         })
-        $script:capturedAppxScriptBlock = $null
+        $script:capturedAppxRemovalScriptBlock = $null
+        $script:capturedAppxRemovalParameters = $null
         $script:apps = @{
             WPFAppxExample = [pscustomobject]@{
                 Content = "Example App"
@@ -554,15 +468,10 @@ Describe "Invoke-WPFAppxRemoval runspace body" {
             }
         }
 
-        Mock Invoke-WPFRunspace {
-            $script:capturedAppxScriptBlock = $ScriptBlock
-            [pscustomobject]@{ MockHandle = $true }
-        }
         Mock Show-WinUtilMessage { "OK" }
         Mock Write-Host { }
         Mock Write-WinUtilLog { }
-        Mock Set-WinUtilTweaksProgressIndicator { }
-        Mock Invoke-WPFUIThread { }
+        Mock Write-WinUtilJobProgress { }
         Mock Stop-Process { }
         Mock Set-ItemProperty { }
         Mock Get-AppxPackage {
@@ -579,21 +488,54 @@ Describe "Invoke-WPFAppxRemoval runspace body" {
             }
         }
         Mock Uninstall-Package { }
+        Mock Start-WinUtilJob {
+            $script:capturedAppxRemovalScriptBlock = $ScriptBlock
+            $script:capturedAppxRemovalParameters = $Parameters
+        }
     }
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name capturedAppxScriptBlock -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name capturedAppxRemovalScriptBlock -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name capturedAppxRemovalParameters -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name apps -Scope Script -ErrorAction SilentlyContinue
     }
 
-    It "removes selected AppX packages and clears ProcessRunning when finished" {
-        $selected = @("WPFAppxExample")
+    It "prompts and exits when no AppX packages are selected" {
+        Invoke-WPFAppxRemoval
+
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
+            $Message -eq "No AppX Package selected" -and
+                $Title -eq "Error" -and
+                $Button -eq "OK" -and
+                $Icon -eq "Error"
+        }
+        Should -Invoke -CommandName Start-WinUtilJob -Times 0 -Exactly
+    }
+
+    It "queues a removal job with a snapshot of the selection and app metadata" {
         $script:sync.selectedAppx.Add("WPFAppxExample")
         $script:sync.configs.appxHashtable = $script:apps
 
         Invoke-WPFAppxRemoval
-        & $script:capturedAppxScriptBlock -selected $selected -apps $script:apps
+        $script:sync.selectedAppx.Add("WPFAppxChangedAfterLaunch")
+
+        Should -Invoke -CommandName Start-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "AppX" -and $ScriptBlock -is [scriptblock]
+        }
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 0 -Exactly
+        $script:capturedAppxRemovalParameters.Selected | Should -HaveCount 1
+        $script:capturedAppxRemovalParameters.Selected[0] | Should -Be "WPFAppxExample"
+        $script:capturedAppxRemovalParameters.Apps["WPFAppxExample"].PackageId | Should -Be "Example.Package"
+    }
+
+    It "removes the selected packages and reports progress for each one" {
+        $script:sync.selectedAppx.Add("WPFAppxExample")
+        $script:sync.configs.appxHashtable = $script:apps
+
+        Invoke-WPFAppxRemoval
+        $jobParameters = $script:capturedAppxRemovalParameters
+        & $script:capturedAppxRemovalScriptBlock @jobParameters
 
         Should -Invoke -CommandName Get-AppxPackage -Times 1 -Exactly -ParameterFilter {
             $Name -eq "*Example.Package*" -and $AllUsers -eq $true
@@ -604,93 +546,49 @@ Describe "Invoke-WPFAppxRemoval runspace body" {
         Should -Invoke -CommandName Remove-WinUtilProvisionedAPPX -Times 1 -Exactly -ParameterFilter {
             $PackageList.Count -eq 1 -and $PackageList[0] -eq "Example.Package"
         }
-        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "Removing Example App (1/1)" -and $Percent -eq 0
+        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Removing Example App (1/1)" -and $Percent -eq 0
         }
-        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "Removed Example App (1/1)" -and $Percent -eq 90
+        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Removed Example App (1/1)" -and $Percent -eq 90
         }
-        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "AppX removal finished" -and $Percent -eq 100
+        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Removing provisioned AppX packages" -and $Percent -eq 90
         }
-        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock.ToString() -like '*Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"*'
-        }
-        $script:sync.ProcessRunning | Should -BeFalse
     }
 
-    It "shows failure feedback and clears ProcessRunning when removal fails" {
-        $selected = @("WPFAppxExample")
+    It "lets a removal failure surface so the job layer can handle it" {
         $script:sync.selectedAppx.Add("WPFAppxExample")
         $script:sync.configs.appxHashtable = $script:apps
         Mock Remove-WinUtilAPPX { throw "Removal failed" }
 
         Invoke-WPFAppxRemoval
-        & $script:capturedAppxScriptBlock -selected $selected -apps $script:apps
+        $jobParameters = $script:capturedAppxRemovalParameters
 
-        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "AppX removal failed" -and $Percent -eq 100
-        }
-        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock.ToString() -like '*Set-WinUtilTaskbaritem -state "Error" -overlay "warning"*'
-        }
+        { & $script:capturedAppxRemovalScriptBlock @jobParameters } | Should -Throw "Removal failed"
         Should -Invoke -CommandName Remove-WinUtilProvisionedAPPX -Times 0 -Exactly
-        $script:sync.ProcessRunning | Should -BeFalse
     }
 
-    It "removes packages without UI progress during headless autorun" {
-        $selected = @("WPFAppxExample")
-        $script:sync.Remove("Form")
-        $script:sync.selectedAppx.Add("WPFAppxExample")
-        $script:sync.configs.appxHashtable = $script:apps
-
-        Invoke-WPFAppxRemoval
-        & $script:capturedAppxScriptBlock -selected $selected -apps $script:apps
-
-        Should -Invoke -CommandName Remove-AppxPackage -Times 1 -Exactly
-        Should -Invoke -CommandName Remove-WinUtilProvisionedAPPX -Times 1 -Exactly
-        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 0 -Exactly
-        Should -Invoke -CommandName Invoke-WPFUIThread -Times 0 -Exactly
-        $script:sync.ProcessRunning | Should -BeFalse
-    }
-
-    It "shows failure feedback when provisioned package removal fails" {
-        $selected = @("WPFAppxExample")
+    It "lets a provisioned removal failure surface so the job layer can handle it" {
         $script:sync.selectedAppx.Add("WPFAppxExample")
         $script:sync.configs.appxHashtable = $script:apps
         Mock Remove-WinUtilProvisionedAPPX { throw "Provisioned removal failed" }
 
         Invoke-WPFAppxRemoval
-        & $script:capturedAppxScriptBlock -selected $selected -apps $script:apps
+        $jobParameters = $script:capturedAppxRemovalParameters
 
-        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "AppX removal failed" -and $Percent -eq 100
-        }
-        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 0 -Exactly -ParameterFilter {
-            $Label -eq "AppX removal finished"
-        }
-        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock.ToString() -like '*Set-WinUtilTaskbaritem -state "Error" -overlay "warning"*'
-        }
-        Should -Invoke -CommandName Invoke-WPFUIThread -Times 0 -Exactly -ParameterFilter {
-            $ScriptBlock.ToString() -like '*Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"*'
-        }
-        $script:sync.ProcessRunning | Should -BeFalse
+        { & $script:capturedAppxRemovalScriptBlock @jobParameters } | Should -Throw "Provisioned removal failed"
     }
 
     It "applies special cleanup for Xbox overlay, Notepad, and Teams selections" {
-        $selected = @(
-            "WPFAppxMicrosoft_XboxGamingOverlay",
-            "WPFAppxMicrosoft_WindowsNotepad",
-            "WPFAppxMSTeams"
-        )
-        foreach ($key in $selected) {
+        foreach ($key in @("WPFAppxMicrosoft_XboxGamingOverlay", "WPFAppxMicrosoft_WindowsNotepad", "WPFAppxMSTeams")) {
             $script:sync.selectedAppx.Add($key)
         }
         $script:sync.configs.appxHashtable = $script:apps
 
         Invoke-WPFAppxRemoval
-        & $script:capturedAppxScriptBlock -selected $selected -apps $script:apps
+        $jobParameters = $script:capturedAppxRemovalParameters
+        & $script:capturedAppxRemovalScriptBlock @jobParameters
 
         Should -Invoke -CommandName Stop-Process -Times 1 -Exactly -ParameterFilter {
             $Name -eq "GameBarFTServer" -and
@@ -722,6 +620,5 @@ Describe "Invoke-WPFAppxRemoval runspace body" {
             $PackageList[1] -eq "Microsoft.WindowsNotepad" -and
             $PackageList[2] -eq "MSTeams"
         }
-        $script:sync.ProcessRunning | Should -BeFalse
     }
 }

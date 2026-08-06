@@ -11,9 +11,6 @@ BeforeAll {
     function Invoke-WPFRunspace {
         param($ArgumentList, $ParameterList, [scriptblock]$ScriptBlock)
     }
-    function Set-WinUtilTweaksProgressIndicator {
-        param($Visible, $Label, $Percent)
-    }
     function Start-WinUtilJob {
         param([string]$Name, [scriptblock]$ScriptBlock, [hashtable]$Parameters, [string]$Description, [switch]$DisableAppList)
     }

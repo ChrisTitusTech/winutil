@@ -58,8 +58,6 @@ function Start-WinUtilJob {
     }
 
     $sync.ActiveJob = $Name
-    # Kept in step with ActiveJob because existing code and tests read this flag
-    $sync.ProcessRunning = $true
 
     $label = if ($Description) { $Description } else { $Name }
     Write-WinUtilLog -Component $Name -Message "$Name job started."
@@ -98,7 +96,6 @@ function Start-WinUtilJob {
                 }
             }
 
-            $sync.ProcessRunning = $false
             $sync.ActiveJob = $null
         }
     }

@@ -14,8 +14,9 @@ function Invoke-WPFButton {
 
     # Use this to get the name of the button
     #[System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")
-    if (-not $sync.ProcessRunning -and -not $sync.Win11ISOProcessRunning) {
-        Set-WinUtilTweaksProgressIndicator -Visible $false
+    # Clear the progress left behind by the previous job, but never while one is running
+    if (-not $sync.ActiveJob) {
+        Write-WinUtilJobProgress -Hide
     }
 
     # Check if button is defined in feature config with function or InvokeScript

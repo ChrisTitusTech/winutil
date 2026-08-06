@@ -8,8 +8,8 @@ function Write-WinUtilJobProgress {
             item together, and does nothing when there is no window, so job bodies do not need
             their own "is there a UI" checks.
 
-            UI updates are posted rather than waited on. A job that reports progress per item
-            would otherwise block on the dispatcher once per item.
+            The update is posted rather than waited on: a job reporting progress per item would
+            otherwise stall on the interface thread once per item.
 
         .PARAMETER Status
             Text for the progress label
@@ -22,30 +22,46 @@ function Write-WinUtilJobProgress {
 
         .PARAMETER Overlay
             Taskbar overlay icon: logo, checkmark, warning or None
+
+        .PARAMETER Hide
+            Clears and hides the progress bar. Used when leaving a finished job behind rather
+            than while one is running.
     #>
     param(
         [string]$Status,
-        [ValidateRange(0, 100)]
         [int]$Percent = -1,
         [ValidateSet("Normal", "Error", "Paused", "Indeterminate", "None")]
         [string]$State,
-        [string]$Overlay
+        [string]$Overlay,
+        [switch]$Hide
     )
 
-    if ($null -eq $sync.Form -or $null -eq $sync.Form.Dispatcher) {
-        return
-    }
+    Invoke-WPFUIThread -Async -Parameters @{
+        Status = $Status
+        Percent = [Math]::Min([Math]::Max($Percent, -1), 100)
+        State = $State
+        Overlay = $Overlay
+        HideBar = [bool]$Hide
+        HasStatus = $PSBoundParameters.ContainsKey('Status')
+        HasState = $PSBoundParameters.ContainsKey('State')
+        HasOverlay = $PSBoundParameters.ContainsKey('Overlay')
+    } -ScriptBlock {
+        param($Status, $Percent, $State, $Overlay, $HideBar, $HasStatus, $HasState, $HasOverlay)
 
-    $hasStatus = $PSBoundParameters.ContainsKey('Status')
-    $hasPercent = $Percent -ge 0
-    $hasState = $PSBoundParameters.ContainsKey('State')
-    $hasOverlay = $PSBoundParameters.ContainsKey('Overlay')
+        if ($HideBar) {
+            $sync.WPFTweaksProgressBar.Visibility = [Windows.Visibility]::Collapsed
+            $sync.WPFTweaksProgressLabel.Text = ""
+            $sync.WPFTweaksProgressLabel.ToolTip = $null
+            $sync.WPFTweaksProgressValue.Value = 0
+            return
+        }
 
-    $update = {
-        if ($hasStatus -or $hasPercent) {
+        $hasPercent = $Percent -ge 0
+
+        if ($HasStatus -or $hasPercent) {
             $sync.WPFTweaksProgressBar.Visibility = [Windows.Visibility]::Visible
         }
-        if ($hasStatus) {
+        if ($HasStatus) {
             $sync.WPFTweaksProgressLabel.Text = $Status
             $sync.WPFTweaksProgressLabel.ToolTip = $Status
         }
@@ -53,13 +69,11 @@ function Write-WinUtilJobProgress {
             $sync.WPFTweaksProgressValue.Value = $Percent
             $sync.Form.TaskbarItemInfo.ProgressValue = $Percent / 100
         }
-        if ($hasState) {
+        if ($HasState) {
             Set-WinUtilTaskbaritem -state $State
         }
-        if ($hasOverlay) {
+        if ($HasOverlay) {
             Set-WinUtilTaskbaritem -overlay $Overlay
         }
     }
-
-    $null = $sync.Form.Dispatcher.BeginInvoke([Windows.Threading.DispatcherPriority]::Background, [action]$update)
 }

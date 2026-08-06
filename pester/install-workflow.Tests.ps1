@@ -30,9 +30,6 @@ BeforeAll {
     function Get-WinUtilSelectedPackages {
         param($PackageList, [string]$Preference)
     }
-    function Set-WinUtilTweaksProgressIndicator {
-        param($Visible, $Label, $Percent)
-    }
     function Install-WinUtilWinget { }
     function Install-WinUtilChoco { }
     function Install-WinUtilProgramWinget {
@@ -42,7 +39,7 @@ BeforeAll {
         param($Action, $Programs)
     }
     function Invoke-WPFUIThread {
-        param([scriptblock]$ScriptBlock)
+        param([scriptblock]$ScriptBlock, [hashtable]$Parameters, [switch]$Async)
     }
     function Write-WinUtilLog {
         param($Message, $Level, $Component)

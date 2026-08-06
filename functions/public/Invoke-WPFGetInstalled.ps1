@@ -31,17 +31,19 @@ function Invoke-WPFGetInstalled {
 
         Write-WinUtilLog -Component "Install" -Message "Detected $($found.Count) existing item(s) for $Checkbox."
 
-        # Ticking boxes touches the controls, so it happens on the UI thread
-        Invoke-WPFUIThread -ScriptBlock {
+        # Ticking boxes touches the controls, so it happens on the interface thread
+        Invoke-WPFUIThread -Parameters @{ Checkbox = $Checkbox; Found = $found } -ScriptBlock {
+            param($Checkbox, $Found)
+
             if ($Checkbox -eq "winget") {
-                foreach ($name in $found) {
+                foreach ($name in $Found) {
                     if (-not $sync.selectedApps.Contains($name)) {
                         $sync.selectedApps.Add($name)
                     }
                 }
                 Reset-WPFCheckBoxes -checkboxfilterpattern "WPFInstall*"
             } else {
-                foreach ($name in $found) {
+                foreach ($name in $Found) {
                     $sync.$name.ischecked = $true
                 }
             }

@@ -66,14 +66,11 @@ namespace System.Windows.Controls
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFButton.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFToggleAllCategories.ps1")
 
-    function Set-WinUtilTweaksProgressIndicator {
-        param($Visible, $Label, $Percent)
-    }
     function Invoke-WPFRunspace {
         param($ArgumentList, $ParameterList, [scriptblock]$ScriptBlock)
     }
     function Invoke-WPFUIThread {
-        param([scriptblock]$ScriptBlock)
+        param([scriptblock]$ScriptBlock, [hashtable]$Parameters, [switch]$Async)
     }
     function Invoke-WinUtilCurrentSystem {
         param($CheckBox)
@@ -256,7 +253,7 @@ Describe "Invoke-WPFGetInstalled selection state" {
         Mock Write-WinUtilLog { }
         Mock Write-Warning { }
         Mock Write-WinUtilJobProgress { }
-        Mock Invoke-WPFUIThread { & $ScriptBlock }
+        Mock Invoke-WPFUIThread { $uiParameters = $Parameters; & $ScriptBlock @uiParameters }
         Mock Start-WinUtilJob {
             $script:capturedGetInstalledScriptBlock = $ScriptBlock
             $script:capturedGetInstalledParameters = $Parameters

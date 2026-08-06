@@ -7,7 +7,7 @@ function Invoke-WinUtilAutoRun {
 
     function BusyWait {
         Start-Sleep -Milliseconds 100
-        while ($sync.ProcessRunning) {
+        while ($sync.ActiveJob) {
             Start-Sleep -Milliseconds 100
         }
     }

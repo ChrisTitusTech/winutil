@@ -98,7 +98,7 @@ Describe "Win11 Creator setup media" {
     It "starts each new ISO modification in a fresh working directory" {
         foreach ($expectedText in @(
             '$workDir = Join-Path $env:TEMP "WinUtil_Win11ISO_$(Get-Date -Format ''yyyyMMdd_HHmmss'')"',
-            '$workDir = Join-Path $env:TEMP "WinUtil_Win11ISO_$(Get-Date -Format ''yyyyMMdd_HHmmss'')_$(([guid]::NewGuid()).ToString(''N'').Substring(0, 8))"'
+            '$workDir = "$($workDir)_$(([guid]::NewGuid()).ToString(''N'').Substring(0, 8))"'
         )) {
             $script:modifyFunction | Should -Match ([regex]::Escape($expectedText))
         }
@@ -154,22 +154,35 @@ Describe "Win11 Creator setup media" {
         { Assert-WinUtilISOWimMetadata -Before $valid -After $invalidAfter } | Should -Throw '*validation failed*'
     }
 
-    It "tracks every background ISO workflow with the shared busy state" {
-        foreach ($functionText in @(
-            $script:mountAndVerifyFunction,
-            $script:modifyFunction,
-            $script:cleanAndResetFunction,
-            $script:exportFunction,
-            $script:writeUsbFunction
+    It "runs every background ISO workflow through the shared job layer" {
+        $jobNames = @{
+            mountAndVerify = "ISO mount"
+            modify         = "ISO modify"
+            cleanAndReset  = "ISO cleanup"
+            export         = "ISO export"
+            writeUsb       = "USB write"
+        }
+
+        foreach ($entry in @(
+            @{ Text = $script:mountAndVerifyFunction; Name = $jobNames.mountAndVerify },
+            @{ Text = $script:modifyFunction; Name = $jobNames.modify },
+            @{ Text = $script:cleanAndResetFunction; Name = $jobNames.cleanAndReset },
+            @{ Text = $script:exportFunction; Name = $jobNames.export },
+            @{ Text = $script:writeUsbFunction; Name = $jobNames.writeUsb }
         )) {
-            $functionText | Should -Match ([regex]::Escape('$sync["Win11ISOProcessRunning"] = $true'))
-            $functionText | Should -Match ([regex]::Escape('$sync["Win11ISOProcessRunning"] = $false'))
+            $entry.Text | Should -Match ([regex]::Escape("Start-WinUtilJob -Name `"$($entry.Name)`""))
+            # The job layer owns the busy state, the progress bar, and the taskbar item
+            $entry.Text | Should -Not -Match ([regex]::Escape('Win11ISOProcessRunning'))
+            $entry.Text | Should -Not -Match ([regex]::Escape('RunspaceFactory]::CreateRunspace()'))
+            $entry.Text | Should -Not -Match ([regex]::Escape('SessionStateProxy.SetVariable'))
+            $entry.Text | Should -Not -Match ([regex]::Escape('[System.Windows.MessageBox]::Show'))
         }
     }
 
     It "runs ISO mount and verification outside the UI thread" {
-        $script:mountAndVerifyFunction | Should -Match ([regex]::Escape("Invoke-WPFRunspace -ParameterList @(,('isoPath', `$isoPath))"))
-        $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('Invoke-WPFUIThread {'))
+        $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('Start-WinUtilJob -Name "ISO mount"'))
+        $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('IsoPath = $isoPath'))
+        $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('Invoke-WPFUIThread -ScriptBlock {'))
         $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('Write-WinUtilISOLog'))
         $script:mountAndVerifyFunction | Should -Not -Match ([regex]::Escape('Write-Win11ISOLog'))
         $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$sync["WPFWin11ISOBrowseButton"].IsEnabled = $false'))
@@ -178,6 +191,21 @@ Describe "Win11 Creator setup media" {
         $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$sync["WPFWin11ISOMountButton"].IsEnabled = $true'))
         $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$sync["WPFWin11ISOModifyButton"].IsEnabled = $false'))
         $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$sync["WPFWin11ISOModifyButton"].IsEnabled = $true'))
+    }
+
+    It "reports ISO progress and logging through the shared helpers" {
+        $content = Get-Content -Path $script:isoWorkflowPath -Raw
+        $usbContent = Get-Content -Path $script:isoUsbWorkflowPath -Raw
+
+        foreach ($source in @($content, $usbContent)) {
+            $source | Should -Match ([regex]::Escape('Write-WinUtilJobProgress -Status'))
+            # No hand-rolled Log/SetProgress helpers inside job bodies any more
+            $source | Should -Not -Match '(?m)^\s*function (Log|SetProgress)\('
+            $source | Should -Not -Match ([regex]::Escape('$sync["WPFTweaksProgressLabel"]'))
+        }
+
+        # Every status-log line also lands in the session log
+        $content | Should -Match ([regex]::Escape('Write-WinUtilLog -Level $Level -Component "Win11Creator" -Message $Message'))
     }
 
     It "blocks oversized install.esd before USB erase confirmation" {
@@ -512,12 +540,14 @@ Describe "Win11 Creator setup media" {
             $content | Should -Match ([regex]::Escape($expectedText))
         }
 
-        $fallbackIndex = $content.IndexOf('oscdimg.exe not found. Attempting to install via winget...')
-        $notFoundDialogIndex = $content.IndexOf('oscdimg Not Found', $fallbackIndex)
-        $runspaceIndex = $content.IndexOf('[Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()', $fallbackIndex)
+        # The export job stops at the dialog instead of running oscdimg without a binary
+        $exportOscdimgIndex = $script:exportFunction.IndexOf('$oscdimg = Get-WinUtilOscdimgPath')
+        $exportDialogIndex = $script:exportFunction.IndexOf('oscdimg Not Found', $exportOscdimgIndex)
+        $exportRunIndex = $script:exportFunction.IndexOf('Running oscdimg...', $exportOscdimgIndex)
 
-        $fallbackIndex | Should -BeGreaterThan -1
-        $notFoundDialogIndex | Should -BeGreaterThan $fallbackIndex
-        $runspaceIndex | Should -BeGreaterThan $notFoundDialogIndex
+        $exportOscdimgIndex | Should -BeGreaterThan -1
+        $exportDialogIndex | Should -BeGreaterThan $exportOscdimgIndex
+        $exportRunIndex | Should -BeGreaterThan $exportDialogIndex
+        $script:exportFunction | Should -Match ([regex]::Escape('return'))
     }
 }

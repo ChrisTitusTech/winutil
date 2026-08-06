@@ -6,6 +6,7 @@ BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilTweaks.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFtweaksbutton.ps1")
+    . (Join-Path $script:repoRoot "functions\public\Invoke-WPFundoall.ps1")
 
     function Set-WinUtilService {
         param($Name, $StartupType)
@@ -29,13 +30,19 @@ BeforeAll {
         param($ArgumentList, $ParameterList, [scriptblock]$ScriptBlock)
     }
     function Invoke-WPFUIThread {
-        param([scriptblock]$ScriptBlock)
-    }
-    function Set-WinUtilTweaksProgressIndicator {
-        param($Visible, $Label, $Percent)
+        param([scriptblock]$ScriptBlock, [hashtable]$Parameters, [switch]$Async)
     }
     function Write-WinUtilLog {
         param($Message, $Level, $Component)
+    }
+    function Start-WinUtilJob {
+        param([string]$Name, [scriptblock]$ScriptBlock, [hashtable]$Parameters, [string]$Description, [switch]$DisableAppList)
+    }
+    function Write-WinUtilJobProgress {
+        param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay, [switch]$Hide)
+    }
+    function Show-WinUtilMessage {
+        param($Message, $Title, $Button, $Icon)
     }
 
     function script:New-WinUtilTweaksConfig {
@@ -174,65 +181,152 @@ Describe "Invoke-WinUtilTweaks" {
 Describe "Invoke-WPFtweaksbutton" {
     BeforeEach {
         $script:sync = [Hashtable]::Synchronized(@{
-            ProcessRunning = $false
+            ActiveJob = $null
             selectedTweaks = [System.Collections.Generic.List[string]]::new()
             WPFchangedns = [pscustomobject]@{
                 text = "Cloudflare"
             }
         })
+        $script:capturedTweaksJob = $null
 
-        Mock Invoke-WPFRunspace { [pscustomobject]@{ MockHandle = $true } }
         Mock Invoke-WinUtilTweaks { }
+        Mock Set-WinUtilDNS { }
         Mock Invoke-WPFUIThread { }
         Mock Write-WinUtilLog { }
+        Mock Write-WinUtilJobProgress { }
+        Mock Show-WinUtilMessage { "OK" }
         Mock Write-Host { }
+        Mock Start-WinUtilJob {
+            $script:capturedTweaksJob = [pscustomobject]@{
+                ScriptBlock = $ScriptBlock
+                Parameters = $Parameters
+            }
+        }
     }
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name capturedTweaksJob -Scope Script -ErrorAction SilentlyContinue
     }
 
-    It "passes selected tweaks, DNS provider, and progress counters to the tweak runspace" {
+    It "prompts and exits when nothing is selected and DNS is left at the default" {
+        $script:sync.WPFchangedns.text = "Default"
+
+        Invoke-WPFtweaksbutton
+
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
+            $Message -eq "Please check the tweaks you wish to perform."
+        }
+        Should -Invoke -CommandName Start-WinUtilJob -Times 0 -Exactly
+    }
+
+    It "queues a tweak job with the selection and DNS provider" {
         $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
         $script:sync.selectedTweaks.Add("WPFTweaksServices")
 
         Invoke-WPFtweaksbutton
 
-        Should -Invoke -CommandName Invoke-WPFRunspace -Times 1 -Exactly -ParameterFilter {
-            $ParameterList.Count -eq 4 -and
-                $ParameterList[0][0] -eq "tweaks" -and
-                $ParameterList[0][1].Count -eq 2 -and
-                $ParameterList[0][1][0] -eq "WPFTweaksTelemetry" -and
-                $ParameterList[0][1][1] -eq "WPFTweaksServices" -and
-                $ParameterList[1][0] -eq "dnsProvider" -and
-                $ParameterList[1][1] -eq "Cloudflare" -and
-                $ParameterList[2][0] -eq "completedSteps" -and
-                $ParameterList[2][1] -eq 0 -and
-                $ParameterList[3][0] -eq "totalSteps" -and
-                $ParameterList[3][1] -eq 2
+        Should -Invoke -CommandName Start-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "Tweaks" -and $ScriptBlock -is [scriptblock]
+        }
+        $script:capturedTweaksJob.Parameters.Tweaks | Should -HaveCount 2
+        $script:capturedTweaksJob.Parameters.Tweaks[0] | Should -Be "WPFTweaksTelemetry"
+        $script:capturedTweaksJob.Parameters.DnsProvider | Should -Be "Cloudflare"
+    }
+
+    It "applies every selected tweak and the DNS provider inside the job body" {
+        $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
+        $script:sync.selectedTweaks.Add("WPFTweaksServices")
+
+        Invoke-WPFtweaksbutton
+        $jobParameters = $script:capturedTweaksJob.Parameters
+        & $script:capturedTweaksJob.ScriptBlock @jobParameters
+
+        Should -Invoke -CommandName Set-WinUtilDNS -Times 1 -Exactly -ParameterFilter {
+            $DNSProvider -eq "Cloudflare"
+        }
+        Should -Invoke -CommandName Invoke-WinUtilTweaks -Times 2 -Exactly
+        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Applying WPFTweaksTelemetry (1/2)" -and $Percent -eq 0
+        }
+        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Applying WPFTweaksServices (2/2)" -and $Percent -eq 50
         }
     }
 
-    It "runs the restore point first and advances progress before queueing remaining tweaks" {
+    It "takes the restore point before any other tweak runs" {
         $script:sync.selectedTweaks.Add("WPFTweaksRestorePoint")
         $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
+        $script:appliedOrder = [System.Collections.Generic.List[string]]::new()
+        Mock Invoke-WinUtilTweaks { $script:appliedOrder.Add($CheckBox) }
 
         Invoke-WPFtweaksbutton
+        $jobParameters = $script:capturedTweaksJob.Parameters
+        & $script:capturedTweaksJob.ScriptBlock @jobParameters
 
-        Should -Invoke -CommandName Invoke-WinUtilTweaks -Times 1 -Exactly -ParameterFilter {
-            $CheckBox -eq "WPFTweaksRestorePoint"
+        $script:appliedOrder | Should -Be @("WPFTweaksRestorePoint", "WPFTweaksTelemetry")
+        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Creating restore point" -and $Percent -eq 0
         }
-        Should -Invoke -CommandName Invoke-WPFRunspace -Times 1 -Exactly -ParameterFilter {
-            $ParameterList.Count -eq 4 -and
-                $ParameterList[0][0] -eq "tweaks" -and
-                $ParameterList[0][1].Count -eq 1 -and
-                $ParameterList[0][1][0] -eq "WPFTweaksTelemetry" -and
-                $ParameterList[1][0] -eq "dnsProvider" -and
-                $ParameterList[1][1] -eq "Cloudflare" -and
-                $ParameterList[2][0] -eq "completedSteps" -and
-                $ParameterList[2][1] -eq 1 -and
-                $ParameterList[3][0] -eq "totalSteps" -and
-                $ParameterList[3][1] -eq 2
+        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Applying WPFTweaksTelemetry (2/2)" -and $Percent -eq 50
+        }
+    }
+}
+
+Describe "Invoke-WPFundoall" {
+    BeforeEach {
+        $script:sync = [Hashtable]::Synchronized(@{
+            ActiveJob = $null
+            selectedTweaks = [System.Collections.Generic.List[string]]::new()
+        })
+        $script:capturedUndoJob = $null
+
+        Mock Invoke-WinUtilTweaks { }
+        Mock Write-WinUtilLog { }
+        Mock Write-WinUtilJobProgress { }
+        Mock Show-WinUtilMessage { "OK" }
+        Mock Write-Host { }
+        Mock Start-WinUtilJob {
+            $script:capturedUndoJob = [pscustomobject]@{
+                ScriptBlock = $ScriptBlock
+                Parameters = $Parameters
+            }
+        }
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name capturedUndoJob -Scope Script -ErrorAction SilentlyContinue
+    }
+
+    It "prompts and exits when nothing is selected" {
+        Invoke-WPFundoall
+
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
+            $Message -eq "Please check the tweaks you wish to undo."
+        }
+        Should -Invoke -CommandName Start-WinUtilJob -Times 0 -Exactly
+    }
+
+    It "undoes every selected tweak inside the job body" {
+        $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
+        $script:sync.selectedTweaks.Add("WPFTweaksServices")
+
+        Invoke-WPFundoall
+
+        Should -Invoke -CommandName Start-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "Undo tweaks"
+        }
+        $jobParameters = $script:capturedUndoJob.Parameters
+        & $script:capturedUndoJob.ScriptBlock @jobParameters
+
+        Should -Invoke -CommandName Invoke-WinUtilTweaks -Times 2 -Exactly -ParameterFilter { $undo -eq $true }
+        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Undoing WPFTweaksTelemetry (1/2)" -and $Percent -eq 0
+        }
+        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Undoing WPFTweaksServices (2/2)" -and $Percent -eq 50
         }
     }
 }
