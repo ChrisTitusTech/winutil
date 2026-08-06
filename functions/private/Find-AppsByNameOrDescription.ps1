@@ -74,47 +74,38 @@ function Find-AppsByNameOrDescription {
             return
         }
 
-        # Escape wildcard characters for literal matching
-        $escapedSearchString = [System.Management.Automation.WildcardPattern]::Escape($SearchString)
-
-        # Perform search
+        # IndexOf with OrdinalIgnoreCase is faster than -like with wildcard escaping
         $sync.ItemsControl.Items | ForEach-Object {
-            # Each item is a StackPanel container with Children[0] = label, Children[1] = WrapPanel
             if ($_.Children.Count -ge 2) {
                 $categoryLabel = $_.Children[0]
                 $wrapPanel = $_.Children[1]
                 $categoryHasMatch = $false
-
-                # Keep category label visible
                 $categoryLabel.Visibility = [Windows.Visibility]::Visible
+                $isCategoryFilter = -not [string]::IsNullOrWhiteSpace($Category)
 
-                # Search through apps in this category
                 foreach ($appControl in $wrapPanel.Children) {
-                    # Safely retrieve app entry from hashtable
                     $appTag = $appControl.Tag
                     $appEntry = $null
-
                     if (-not [string]::IsNullOrWhiteSpace($appTag) -and $sync.configs.applicationsHashtable.ContainsKey($appTag)) {
                         $appEntry = $sync.configs.applicationsHashtable[$appTag]
                     }
 
-                    # Check if app matches search criteria
                     if ($null -ne $appEntry) {
-                        $categoryMatch = -not [string]::IsNullOrWhiteSpace($Category) -and $appEntry.Category -eq $Category
-                        $contentMatch = [string]::IsNullOrWhiteSpace($Category) -and $appEntry.Content -like "*$escapedSearchString*"
-                        $descriptionMatch = [string]::IsNullOrWhiteSpace($Category) -and $appEntry.Description -like "*$escapedSearchString*"
+                        $matched = $false
+                        if ($isCategoryFilter) {
+                            $matched = $appEntry.Category -eq $Category
+                        } else {
+                            $matched = ([string]$appEntry.Content).IndexOf($SearchString, [System.StringComparison]::OrdinalIgnoreCase) -ge 0 -or
+                                       ([string]$appEntry.Description).IndexOf($SearchString, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
+                        }
 
-                        if ($categoryMatch -or $contentMatch -or $descriptionMatch) {
-                            # Show the App and mark that this category has a match
+                        if ($matched) {
                             $appControl.Visibility = [Windows.Visibility]::Visible
                             $categoryHasMatch = $true
-                        }
-                        else {
+                        } else {
                             $appControl.Visibility = [Windows.Visibility]::Collapsed
                         }
-                    }
-                    else {
-                        # Hide app if no entry found (data integrity issue)
+                    } else {
                         $appControl.Visibility = [Windows.Visibility]::Collapsed
                     }
                 }

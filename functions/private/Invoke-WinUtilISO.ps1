@@ -59,8 +59,15 @@ function Invoke-WinUtilISOMountAndVerify {
         try {
             Mount-DiskImage -ImagePath $isoPath
 
+            # Add 30s timeout to prevent infinite hang on mount failure
+            $mountTimeout = 30; $mountElapsed = 0
             do {
                 Start-Sleep -Milliseconds 500
+                $mountElapsed += 0.5
+                if ($mountElapsed -ge $mountTimeout) {
+                    Dismount-DiskImage -ImagePath $isoPath -ErrorAction SilentlyContinue
+                    throw "ISO mount timed out after $($mountTimeout)s - drive letter never appeared."
+                }
             } until ((Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter)
 
             $driveLetter = (Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter + ":"
@@ -216,7 +223,10 @@ function Invoke-WinUtilISOModify {
                 $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
                 $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
             })
-            Add-Content -Path (Join-Path $workDir "WinUtil_Win11ISO.log") -Value "[$ts] $msg"
+            # Write to host only; transcript captures it without file-locking conflicts
+            Write-Host "[$ts] $msg"
+            # Log beside the working directory so it exists from the first line and survives cleanup
+            Add-Content -Path "$workDir.log" -Value "[$ts] $msg" -ErrorAction SilentlyContinue
         }
 
         function SetProgress($label, $pct) {
@@ -409,7 +419,8 @@ function Invoke-WinUtilISOCleanAndReset {
                 $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
                 $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
             })
-            Add-Content -Path (Join-Path $workDir "WinUtil_Win11ISO.log") -Value "[$ts] $msg"
+            # Write to host; transcript captures it without file-locking conflicts
+            Write-Host "[$ts] $msg"
         }
 
         function SetProgress($label, $pct) {
@@ -446,37 +457,21 @@ function Invoke-WinUtilISOCleanAndReset {
                 }
             }
 
+            # Batch delete instead of file-by-file with per-100 progress
             if ($workDir -and (Test-Path $workDir)) {
-                Log "Scanning files to delete in: $workDir"
-                SetProgress "Scanning files..." 5
-
-                $allFiles = @(Get-ChildItem -Path $workDir -File -Recurse -Force)
-                $allDirs  = @(Get-ChildItem -Path $workDir -Directory -Recurse -Force |
-                    Sort-Object { $_.FullName.Length } -Descending)
-                $total   = $allFiles.Count
-                $deleted = 0
-
-                Log "Found $total files to delete."
-
-                foreach ($f in $allFiles) {
-                    try { Remove-Item -Path $f.FullName -Force } catch { Log "WARNING: could not delete $($f.FullName): $_" }
-                    $deleted++
-                    if ($deleted % 100 -eq 0 -or $deleted -eq $total) {
-                        $pct = [math]::Round(($deleted / [Math]::Max($total, 1)) * 85) + 5
-                        SetProgress "Deleting files in $($f.Directory.Name)... ($deleted / $total)" $pct
-                    }
-                }
-
-                foreach ($d in $allDirs) {
-                    try { Remove-Item -Path $d.FullName -Force } catch { Log "WARNING: could not delete $($d.FullName): $_" }
-                }
-
-                try { Remove-Item -Path $workDir -Recurse -Force } catch { Log "WARNING: could not delete temp directory ${workDir}: $_" }
-
-                if (Test-Path $workDir) {
-                    Log "WARNING: some items could not be deleted in $workDir"
-                } else {
+                Log "Deleting working directory: $workDir"
+                SetProgress "Cleaning up..." 10
+                try {
+                    Remove-Item -Path $workDir -Recurse -Force -ErrorAction Stop
                     Log "Temp directory deleted successfully."
+                } catch {
+                    Log "WARNING: batch delete failed, retrying file-by-file: $_"
+                    Get-ChildItem -Path $workDir -File -Recurse -Force | ForEach-Object {
+                        Remove-Item -Path $_.FullName -Force -ErrorAction SilentlyContinue
+                    }
+                    Remove-Item -Path $workDir -Recurse -Force -ErrorAction SilentlyContinue
+                    if (Test-Path $workDir) { Log "WARNING: some items could not be deleted in $workDir" }
+                    else { Log "Temp directory deleted on retry." }
                 }
             } else {
                 Log "No temp directory found - resetting UI."

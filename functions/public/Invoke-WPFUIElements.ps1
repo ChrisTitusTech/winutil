@@ -53,22 +53,15 @@ function Invoke-WPFUIElements {
         $targetGrid.ColumnDefinitions.Add($colDef) | Out-Null
     }
 
-    # Convert PSCustomObject to Hashtable
-    $configHashtable = @{}
-    $configVariable.PSObject.Properties.Name | ForEach-Object {
-        $configHashtable[$_] = $configVariable.$_
-    }
-
     $radioButtonGroups = @{}
-
     $organizedData = @{}
-    # Iterate through JSON data and organize by panel and category
-    foreach ($entry in $configHashtable.Keys) {
-        $entryInfo = $configHashtable[$entry]
 
-        # Create an object for the application
+    # Iterate through JSON data and organize by panel and category using generic lists
+    foreach ($prop in $configVariable.PSObject.Properties) {
+        $entryInfo = $prop.Value
+
         $entryObject = [PSCustomObject]@{
-            Name        = $entry
+            Name        = $prop.Name
             Category    = $entryInfo.Category
             Content     = $entryInfo.Content
             Panel       = if ($entryInfo.Panel) { $entryInfo.Panel } else { "0" }
@@ -78,20 +71,20 @@ function Invoke-WPFUIElements {
             ComboItems  = $entryInfo.ComboItems
             Checked     = $entryInfo.Checked
             ButtonWidth = $entryInfo.ButtonWidth
-            GroupName   = $entryInfo.GroupName  # Added for RadioButton groupings
+            GroupName   = $entryInfo.GroupName
         }
 
-        if (-not $organizedData.ContainsKey($entryObject.Panel)) {
-            $organizedData[$entryObject.Panel] = @{}
+        $panel = $entryObject.Panel
+        if (-not $organizedData.ContainsKey($panel)) {
+            $organizedData[$panel] = @{}
         }
 
-        if (-not $organizedData[$entryObject.Panel].ContainsKey($entryObject.Category)) {
-            $organizedData[$entryObject.Panel][$entryObject.Category] = @()
+        $cat = $entryObject.Category
+        if (-not $organizedData[$panel].ContainsKey($cat)) {
+            $organizedData[$panel][$cat] = [System.Collections.Generic.List[object]]::new()
         }
 
-        # Store application data in an array under the category
-        $organizedData[$entryObject.Panel][$entryObject.Category] += $entryObject
-
+        $organizedData[$panel][$cat].Add($entryObject)
     }
 
     # Initialize panel count

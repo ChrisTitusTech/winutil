@@ -1,309 +1,111 @@
 function Find-TweaksByNameOrDescription {
     <#
-        .SYNOPSIS
-            Searches through the Tweaks on the Tweaks Tab and hides all entries that do not match the search string
-
-        .DESCRIPTION
-            Filters tweak entries by name or description using literal string matching (no wildcard expansion).
-            Respects collapsed category state and handles null $sync gracefully.
-            Safe for rapid keystroke events; no terminal spam on error conditions.
-
-        .PARAMETER SearchString
-            The string to be searched for. Wildcards are treated as literal characters.
-
-        .NOTES
-            - Uses module-scope $sync (resolved via global/script fallback if needed)
-            - Performs literal matching (no wildcard expansion)
-            - Safely handles missing UI elements and null properties
-            - Protected by try/catch to prevent UI thread crashes
-            - PowerShell 5.1 compatible (no ternary operators, no advanced language features)
+    .SYNOPSIS
+        Filters tweak/appx entries by name or description using literal string matching.
+    .PARAMETER SearchString
+        The string to search for. Treated as a literal (no wildcard expansion).
     #>
     param(
-        [Parameter(Mandatory = $false)]
         [string]$SearchString = ""
     )
 
-    # ------------------------------------------------------------------------------
-    # 1. RESOLVE $SYNC WITH MULTI-LEVEL FALLBACK
-    # ------------------------------------------------------------------------------
+    # $sync is always in scope in the compiled script - no multi-level fallback needed
+    if ($null -eq $sync -or $null -eq $sync.Form) { return }
 
-    if ($null -eq $Sync) {
-        $Sync = $global:sync
-        if ($null -eq $Sync) {
-            $Sync = $script:sync
+    $panelName = if ($sync.currentTab -eq "AppX") { "appxpanel" } else { "tweakspanel" }
+    try { $tweaksPanel = $sync.Form.FindName($panelName) } catch { return }
+    if ($null -eq $tweaksPanel) { return }
+
+    # --- Helper: extract searchable text from a DockPanel or StackPanel item ---
+    function Get-ItemSearchText($item) {
+        $text = ""; $tip = ""
+        if ($item -is [Windows.Controls.DockPanel]) {
+            $label = $item.Children | Where-Object { $_ -is [Windows.Controls.Label] } | Select-Object -First 1
+            if ($label) { $text = [string]$label.Content; $tip = [string]$label.ToolTip }
+        } elseif ($item -is [Windows.Controls.StackPanel]) {
+            $cb = $item.Children | Where-Object { $_ -is [Windows.Controls.CheckBox] } | Select-Object -First 1
+            if ($cb) { $text = [string]$cb.Content; $tip = [string]$cb.ToolTip }
         }
+        return @{ Text = $text; Tip = $tip }
     }
-
-    # Validate that $Sync exists and has required structure
-    if ($null -eq $Sync) {
-        # Silent return - function called on every keystroke; no warning spam
-        return
-    }
-
-    if ($null -eq $Sync.Form) {
-        # Silent return - form not yet initialized
-        return
-    }
-
-    # ------------------------------------------------------------------------------
-    # 2. GET REFERENCE TO TWEAKS OR APPX PANEL
-    # ------------------------------------------------------------------------------
-
-    $panelName = "tweakspanel"
-    if ($null -ne $Sync.currentTab -and $Sync.currentTab -eq "AppX") {
-        $panelName = "appxpanel"
-    }
-
-    $tweaksPanel = $null
-    try {
-        $tweaksPanel = $Sync.Form.FindName($panelName)
-    }
-    catch {
-        # Silent return - panel not found or disposed
-        return
-    }
-
-    if ($null -eq $tweaksPanel) {
-        # Silent return - panel doesn't exist
-        return
-    }
-
-    # ------------------------------------------------------------------------------
-    # 3. HANDLE EMPTY/WHITESPACE SEARCH STRING - RESET TO DEFAULT STATE
-    # ------------------------------------------------------------------------------
-
-    if ([string]::IsNullOrWhiteSpace($SearchString)) {
-        try {
-            $tweaksPanel.Children | ForEach-Object {
-                $categoryBorder = $_
-
-                # Safely set visibility
-                if ($null -ne $categoryBorder) {
-                    $categoryBorder.Visibility = [Windows.Visibility]::Visible
-                }
-
-                # Process each category
-                if ($categoryBorder -is [Windows.Controls.Border]) {
-                    $dockPanel = $null
-                    if ($null -ne $categoryBorder.Child) {
-                        $dockPanel = $categoryBorder.Child
-                    }
-
-                    if ($dockPanel -is [Windows.Controls.DockPanel]) {
-                        $itemsControl = $null
-                        $itemsControl = $dockPanel.Children | Where-Object { $_ -is [Windows.Controls.ItemsControl] } | Select-Object -First 1
-
-                        if ($null -ne $itemsControl) {
-                            # Show all items in the category
-                            foreach ($item in $itemsControl.Items) {
-                                if ($null -ne $item) {
-                                    # Check if it's a category label (first Label in the ItemsControl)
-                                    if ($item -is [Windows.Controls.Label]) {
-                                        $item.Visibility = [Windows.Visibility]::Visible
-                                    }
-                                    elseif ($item -is [Windows.Controls.DockPanel] -or $item -is [Windows.Controls.StackPanel]) {
-                                        # Show all checkbox containers
-                                        $item.Visibility = [Windows.Visibility]::Visible
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        catch {
-            # Silent catch - UI element may be disposed
-            $null = $_
-        }
-
-        return
-    }
-
-    # ------------------------------------------------------------------------------
-    # 4. PERFORM LITERAL SEARCH (NO WILDCARD EXPANSION)
-    # ------------------------------------------------------------------------------
 
     try {
-        # Normalize search term once for the entire operation
-        $searchTerm = $SearchString
-        if ($null -eq $searchTerm) {
-            $searchTerm = ""
-        }
-
-        # Iterate through all categories
-        $tweaksPanel.Children | ForEach-Object {
-            $categoryBorder = $_
-            $categoryHasMatch = $false
-
-            if ($categoryBorder -is [Windows.Controls.Border]) {
-                $dockPanel = $null
-                if ($null -ne $categoryBorder.Child) {
-                    $dockPanel = $categoryBorder.Child
-                }
-
-                if ($dockPanel -is [Windows.Controls.DockPanel]) {
-                    $itemsControl = $null
-                    $itemsControl = $dockPanel.Children | Where-Object { $_ -is [Windows.Controls.ItemsControl] } | Select-Object -First 1
-
-                    if ($null -ne $itemsControl) {
-                        $categoryLabel = $null
-
-                        # Process all items (checkboxes, labels, panels) in the ItemsControl
-                        for ($i = 0; $i -lt $itemsControl.Items.Count; $i++) {
-                            $item = $itemsControl.Items[$i]
-
-                            if ($null -eq $item) {
-                                continue
-                            }
-
-                            # ------------------------------------------------------------
-                            # Check if this is a category label (usually first Label)
-                            # ------------------------------------------------------------
-
+        # Reset visibility when search is cleared
+        if ([string]::IsNullOrWhiteSpace($SearchString)) {
+            foreach ($categoryBorder in $tweaksPanel.Children) {
+                if ($null -eq $categoryBorder) { continue }
+                $categoryBorder.Visibility = [Windows.Visibility]::Visible
+                if ($categoryBorder -is [Windows.Controls.Border] -and $categoryBorder.Child -is [Windows.Controls.DockPanel]) {
+                    $ic = $categoryBorder.Child.Children | Where-Object { $_ -is [Windows.Controls.ItemsControl] } | Select-Object -First 1
+                    if ($ic) {
+                        foreach ($item in $ic.Items) {
+                            if ($null -eq $item) { continue }
                             if ($item -is [Windows.Controls.Label]) {
-                                $categoryLabel = $item
-                                # Initially hide category label; show it only if matches found
-                                $item.Visibility = [Windows.Visibility]::Collapsed
-                            }
-
-                            # ------------------------------------------------------------
-                            # Check if this is a DockPanel containing a tweak checkbox
-                            # ------------------------------------------------------------
-
-                            elseif ($item -is [Windows.Controls.DockPanel]) {
-                                $checkbox = $null
-                                $label = $null
-
-                                # Safely extract checkbox and label
-                                $checkbox = $item.Children | Where-Object { $_ -is [Windows.Controls.CheckBox] } | Select-Object -First 1
-                                $label = $item.Children | Where-Object { $_ -is [Windows.Controls.Label] } | Select-Object -First 1
-
-                                # Check if tweak matches search criteria
-                                $itemMatches = $false
-
-                                if ($null -ne $label) {
-                                    $labelContent = $label.Content
-                                    $labelToolTip = $label.ToolTip
-
-                                    # Safely null-check properties
-                                    if ($null -eq $labelContent) {
-                                        $labelContent = ""
-                                    }
-                                    if ($null -eq $labelToolTip) {
-                                        $labelToolTip = ""
-                                    }
-
-                                    # Convert to string and perform LITERAL matching
-                                    $labelContentStr = [string]$labelContent
-                                    $labelToolTipStr = [string]$labelToolTip
-
-                                    # Use IndexOf for literal matching (no wildcard interpretation)
-                                    $contentMatch = $labelContentStr.IndexOf($searchTerm, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
-                                    $toolTipMatch = $labelToolTipStr.IndexOf($searchTerm, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
-
-                                    if ($contentMatch -or $toolTipMatch) {
-                                        $itemMatches = $true
-                                    }
+                                $item.Visibility = [Windows.Visibility]::Visible
+                                # Respect collapsed state: labels starting with "+" keep items collapsed
+                                $labelStr = [string]$item.Content
+                                if ($labelStr.StartsWith("+ ")) {
+                                    $collapsed = $true
+                                } else {
+                                    $collapsed = $false
                                 }
-
-                                # Set visibility based on match result
-                                if ($itemMatches) {
-                                    $item.Visibility = [Windows.Visibility]::Visible
-                                    $categoryHasMatch = $true
-                                }
-                                else {
-                                    $item.Visibility = [Windows.Visibility]::Collapsed
-                                }
-                            }
-
-                            # ------------------------------------------------------------
-                            # Check if this is a StackPanel containing a tweak checkbox
-                            # ------------------------------------------------------------
-
-                            elseif ($item -is [Windows.Controls.StackPanel]) {
-                                $checkbox = $null
-                                $checkbox = $item.Children | Where-Object { $_ -is [Windows.Controls.CheckBox] } | Select-Object -First 1
-
-                                $itemMatches = $false
-
-                                if ($null -ne $checkbox) {
-                                    $checkboxContent = $checkbox.Content
-                                    $checkboxToolTip = $checkbox.ToolTip
-
-                                    # Safely null-check properties
-                                    if ($null -eq $checkboxContent) {
-                                        $checkboxContent = ""
-                                    }
-                                    if ($null -eq $checkboxToolTip) {
-                                        $checkboxToolTip = ""
-                                    }
-
-                                    # Convert to string and perform LITERAL matching
-                                    $checkboxContentStr = [string]$checkboxContent
-                                    $checkboxToolTipStr = [string]$checkboxToolTip
-
-                                    # Use IndexOf for literal matching (no wildcard interpretation)
-                                    $contentMatch = $checkboxContentStr.IndexOf($searchTerm, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
-                                    $toolTipMatch = $checkboxToolTipStr.IndexOf($searchTerm, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
-
-                                    if ($contentMatch -or $toolTipMatch) {
-                                        $itemMatches = $true
-                                    }
-                                }
-
-                                # Set visibility based on match result
-                                if ($itemMatches) {
-                                    $item.Visibility = [Windows.Visibility]::Visible
-                                    $categoryHasMatch = $true
-                                }
-                                else {
-                                    $item.Visibility = [Windows.Visibility]::Collapsed
-                                }
-                            }
-                        }
-
-                        # ------------------------------------------------------------
-                        # Update category label visibility and expanded/collapsed state
-                        # ------------------------------------------------------------
-
-                        if ($categoryHasMatch) {
-                            # Show category label
-                            if ($null -ne $categoryLabel) {
-                                $categoryLabel.Visibility = [Windows.Visibility]::Visible
-
-                                # Update category label to expanded state (change "+" to "-")
-                                $labelContent = $categoryLabel.Content
-                                if ($null -ne $labelContent) {
-                                    $labelStr = [string]$labelContent
-
-                                    # Safe string replacement without -replace regex
-                                    if ($labelStr.StartsWith("+ ")) {
-                                        $expandedLabel = "- " + $labelStr.Substring(2)
-                                        $categoryLabel.Content = $expandedLabel
-                                    }
-                                }
+                            } else {
+                                $item.Visibility = if ($collapsed) { [Windows.Visibility]::Collapsed } else { [Windows.Visibility]::Visible }
                             }
                         }
                     }
                 }
+            }
+            return
+        }
 
-                # ----------------------------------------------------------------
-                # Set category border visibility based on whether it has matches
-                # ----------------------------------------------------------------
+        # Perform literal search
+        foreach ($categoryBorder in $tweaksPanel.Children) {
+            $categoryHasMatch = $false
+            if (-not ($categoryBorder -is [Windows.Controls.Border])) { continue }
+            if (-not ($categoryBorder.Child -is [Windows.Controls.DockPanel])) { continue }
 
-                if ($categoryHasMatch) {
-                    $categoryBorder.Visibility = [Windows.Visibility]::Visible
+            $ic = $categoryBorder.Child.Children | Where-Object { $_ -is [Windows.Controls.ItemsControl] } | Select-Object -First 1
+            if ($null -eq $ic) { continue }
+
+            $categoryLabel = $null
+            for ($i = 0; $i -lt $ic.Items.Count; $i++) {
+                $item = $ic.Items[$i]
+                if ($null -eq $item) { continue }
+
+                if ($item -is [Windows.Controls.Label]) {
+                    $categoryLabel = $item
+                    $item.Visibility = [Windows.Visibility]::Collapsed
+                    continue
                 }
-                else {
-                    $categoryBorder.Visibility = [Windows.Visibility]::Collapsed
+
+                # Unified search for both DockPanel and StackPanel items
+                if ($item -is [Windows.Controls.DockPanel] -or $item -is [Windows.Controls.StackPanel]) {
+                    $search = Get-ItemSearchText $item
+                    $isMatch = ($search.Text -and $search.Text.IndexOf($SearchString, [System.StringComparison]::OrdinalIgnoreCase) -ge 0) -or
+                               ($search.Tip -and $search.Tip.IndexOf($SearchString, [System.StringComparison]::OrdinalIgnoreCase) -ge 0)
+
+                    if ($isMatch) {
+                        $item.Visibility = [Windows.Visibility]::Visible
+                        $categoryHasMatch = $true
+                    } else {
+                        $item.Visibility = [Windows.Visibility]::Collapsed
+                    }
                 }
             }
+
+            # Update category label and border visibility
+            if ($categoryHasMatch -and $null -ne $categoryLabel) {
+                $categoryLabel.Visibility = [Windows.Visibility]::Visible
+                $labelStr = [string]$categoryLabel.Content
+                if ($labelStr.StartsWith("+ ")) {
+                    $categoryLabel.Content = "- " + $labelStr.Substring(2)
+                }
+            }
+            $categoryBorder.Visibility = if ($categoryHasMatch) { [Windows.Visibility]::Visible } else { [Windows.Visibility]::Collapsed }
         }
-    }
-    catch {
-        # Silent catch - UI elements may be disposed or in unexpected state
-        # Do not log to terminal as this function is called on every keystroke
-        $null = $_
+    } catch {
+        # Log instead of silently swallowing - but only at DEBUG to avoid keystroke spam
+        Write-WinUtilLog -Level "DEBUG" -Component "Search" -Message "Tweaks search error: $($_.Exception.Message)"
     }
 }
