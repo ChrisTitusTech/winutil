@@ -15,7 +15,7 @@ function Set-WinUtilDNS {
 
     if($DNSProvider -eq "Default") {
         Write-WinUtilLog -Component "DNS" -Message "DNS provider is Default; no DNS changes applied."
-        return
+        return $true
     }
 
     try {
@@ -29,7 +29,7 @@ function Set-WinUtilDNS {
             if($null -eq $dns) {
                 Write-Warning "DNS provider $DNSProvider was not found in configuration."
                 Write-WinUtilLog -Level "ERROR" -Component "DNS" -Message "DNS provider $DNSProvider was not found in configuration."
-                return
+                return $false
             }
         }
 
@@ -37,7 +37,7 @@ function Set-WinUtilDNS {
         if ($DNSProvider -ne "DHCP" -and $dns.DohOnly -and -not $dohSupported) {
             Write-Warning "DNS provider $DNSProvider requires DNS over HTTPS, which is not supported on this system."
             Write-WinUtilLog -Level "ERROR" -Component "DNS" -Message "DNS provider $DNSProvider requires DNS over HTTPS, which is not supported on this system."
-            return
+            return $false
         }
 
         $dnscacheBase = "HKLM:\System\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters"
@@ -109,9 +109,11 @@ function Set-WinUtilDNS {
             Clear-DnsClientCache
         }
         Write-WinUtilLog -Component "DNS" -Message "DNS provider change completed: $DNSProvider"
+        return $true
     } catch {
         Write-Warning "DNS provider $DNSProvider was not completed because an error occurred."
         Write-Warning $psitem.Exception.Message
         Write-WinUtilLog -Level "ERROR" -Component "DNS" -Message "DNS provider $DNSProvider was not completed: $($psitem.Exception.Message)"
+        return $false
     }
 }

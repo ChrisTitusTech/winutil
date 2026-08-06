@@ -105,8 +105,9 @@ Describe "Set-WinUtilDNS" {
     }
 
     It "sets IPv4 and IPv6 DNS server addresses separately and applies DoH templates" {
-        Set-WinUtilDNS -DNSProvider "Cloudflare"
+        $result = Set-WinUtilDNS -DNSProvider "Cloudflare"
 
+        $result | Should -BeTrue
         Should -Invoke -CommandName Set-DnsClientServerAddress -Times 1 -Exactly -ParameterFilter {
             $InterfaceIndex -eq 7 -and
                 $ServerAddresses.Count -eq 2 -and
@@ -180,8 +181,9 @@ Describe "Set-WinUtilDNS" {
     It "does not apply a DoH-only provider when DoH is unsupported" {
         Mock Get-Command { return $null } -ParameterFilter { $Name -eq "Add-DnsClientDohServerAddress" }
 
-        Set-WinUtilDNS -DNSProvider "Mullvad"
+        $result = Set-WinUtilDNS -DNSProvider "Mullvad"
 
+        $result | Should -BeFalse
         Should -Invoke -CommandName Set-DnsClientServerAddress -Times 0 -Exactly
         Should -Invoke -CommandName Add-DnsClientDohServerAddress -Times 0 -Exactly
         Should -Invoke -CommandName Write-Warning -Times 1 -Exactly -ParameterFilter {
@@ -192,8 +194,9 @@ Describe "Set-WinUtilDNS" {
     It "does not change adapter DNS when DoH registration fails" {
         Mock Add-DnsClientDohServerAddress { throw "DoH registration failed" }
 
-        Set-WinUtilDNS -DNSProvider "Mullvad"
+        $result = Set-WinUtilDNS -DNSProvider "Mullvad"
 
+        $result | Should -BeFalse
         Should -Invoke -CommandName Set-DnsClientServerAddress -Times 0 -Exactly
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
             $Level -eq "ERROR" -and
@@ -252,12 +255,20 @@ Describe "Set-WinUtilDNS" {
     It "catches DNS setter failures so the tweak runspace can continue" {
         Mock Set-DnsClientServerAddress { throw "DNS failed" }
 
-        { Set-WinUtilDNS -DNSProvider "Cloudflare" } | Should -Not -Throw
+        $result = Set-WinUtilDNS -DNSProvider "Cloudflare"
 
+        $result | Should -BeFalse
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
             $Level -eq "ERROR" -and
                 $Component -eq "DNS" -and
                 $Message -like "DNS provider Cloudflare was not completed: *"
         }
+    }
+
+    It "returns failure for an unknown DNS provider" {
+        $result = Set-WinUtilDNS -DNSProvider "Unknown"
+
+        $result | Should -BeFalse
+        Should -Invoke -CommandName Set-DnsClientServerAddress -Times 0 -Exactly
     }
 }
