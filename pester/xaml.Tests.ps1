@@ -436,6 +436,7 @@ Describe "XAML and sync wiring" {
             "StepTimings",
             "StartedAt",
             "SessionState",
+            "TabWarmupQueue",
             "selected",
             "selectedAppx",
             "selectedApps",
