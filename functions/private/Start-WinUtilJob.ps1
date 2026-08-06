@@ -83,18 +83,23 @@ function Start-WinUtilJob {
     ) -ScriptBlock {
         param($JobName, $JobLabel, $JobBody, $JobParameters, $JobRestoresAppList)
 
+        $jobClock = [System.Diagnostics.Stopwatch]::StartNew()
         try {
             $body = [scriptblock]::Create($JobBody)
             & $body @JobParameters
 
-            Write-WinUtilLog -Component $JobName -Message "$JobName job finished."
+            $jobClock.Stop()
+            Write-WinUtilLog -Component $JobName -Message "$JobName job finished in $($jobClock.ElapsedMilliseconds) ms."
             Write-WinUtilJobBanner -Message "$JobLabel finished"
             Write-WinUtilJobProgress -Status "$JobName finished" -Percent 100 -State "None" -Overlay "checkmark"
         } catch {
-            Write-WinUtilLog -Level "ERROR" -Component $JobName -Message "$JobName job failed: $($_.Exception.Message)"
+            $jobClock.Stop()
+            Write-WinUtilLog -Level "ERROR" -Component $JobName -Message "$JobName job failed after $($jobClock.ElapsedMilliseconds) ms: $($_.Exception.Message)"
             Write-WinUtilJobBanner -Message "$JobLabel failed: $($_.Exception.Message)" -Level "ERROR"
             Write-WinUtilJobProgress -Status "$JobName failed" -Percent 100 -State "Error" -Overlay "warning"
         } finally {
+            Write-WinUtilTimingSummary -Scope $JobName -TotalMilliseconds $jobClock.ElapsedMilliseconds
+
             if ($JobRestoresAppList -and $sync.Form -and $sync.Form.Dispatcher) {
                 Invoke-WPFUIThread -ScriptBlock {
                     if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }

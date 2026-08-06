@@ -4,6 +4,7 @@
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+    . (Join-Path $script:repoRoot "functions\private\Measure-WinUtilStep.ps1")
     . (Join-Path $script:repoRoot "functions\private\Start-WinUtilJob.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIThread.ps1")
 
@@ -188,7 +189,7 @@ Describe "Start-WinUtilJob" {
             -JobRestoresAppList $false
 
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
-            $Component -eq "Example" -and $Message -eq "Example job finished."
+            $Component -eq "Example" -and $Message -like "Example job finished in * ms."
         }
         Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Example finished" -and $Percent -eq 100 -and $State -eq "None" -and $Overlay -eq "checkmark"
@@ -210,7 +211,7 @@ Describe "Start-WinUtilJob" {
         } | Should -Not -Throw
 
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
-            $Level -eq "ERROR" -and $Component -eq "Example" -and $Message -eq "Example job failed: boom"
+            $Level -eq "ERROR" -and $Component -eq "Example" -and $Message -like "Example job failed after * ms: boom"
         }
         Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Example failed" -and $State -eq "Error" -and $Overlay -eq "warning"

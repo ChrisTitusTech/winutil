@@ -54,7 +54,9 @@ function Invoke-WPFUnInstall {
                 $position = $completedPackages + 1
                 Write-WinUtilJobProgress -Status "Uninstalling $program ($position/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
 
-                $results += Install-WinUtilProgramWinget -Action Uninstall -Programs @($program)
+                $results += Measure-WinUtilStep -Scope "Uninstall" -Name "winget $program" -ScriptBlock {
+                    Install-WinUtilProgramWinget -Action Uninstall -Programs @($program)
+                }
                 $completedPackages++
                 Write-WinUtilJobProgress -Status "Uninstalled $program ($completedPackages/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
             }
@@ -64,7 +66,9 @@ function Invoke-WPFUnInstall {
             $position = $completedPackages + 1
             Write-WinUtilJobProgress -Status "Uninstalling Chocolatey packages ($position/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
 
-            $results += Install-WinUtilProgramChoco -Action Uninstall -Programs $packagesChoco
+            $results += Measure-WinUtilStep -Scope "Uninstall" -Name "choco $($packagesChoco -join ', ')" -ScriptBlock {
+                Install-WinUtilProgramChoco -Action Uninstall -Programs $packagesChoco
+            }
             $completedPackages += @($packagesChoco).Count
             Write-WinUtilJobProgress -Status "Uninstalled Chocolatey packages ($completedPackages/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
         }

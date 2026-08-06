@@ -34,17 +34,23 @@ function Invoke-WPFtweaksbutton {
     if ($Tweaks -contains $restorePointTweak) {
       Write-WinUtilJobProgress -Status "Creating restore point" -Percent 0
       Write-WinUtilLog -Component "Tweaks" -Message "Creating restore point before applying selected tweaks."
-      Invoke-WinUtilTweaks $restorePointTweak
+      Measure-WinUtilStep -Scope "Tweaks" -Name $restorePointTweak -ScriptBlock {
+        Invoke-WinUtilTweaks $restorePointTweak
+      }
       $completedSteps = 1
     }
 
     if ($DnsProvider -ne "Default") {
-      Set-WinUtilDNS -DNSProvider $DnsProvider
+      Measure-WinUtilStep -Scope "Tweaks" -Name "Set DNS to $DnsProvider" -ScriptBlock {
+        Set-WinUtilDNS -DNSProvider $DnsProvider
+      }
     }
 
     foreach ($tweak in $tweaksToRun) {
       Write-WinUtilJobProgress -Status "Applying $tweak ($($completedSteps + 1)/$totalSteps)" -Percent ([int](($completedSteps / $totalSteps) * 100))
-      Invoke-WinUtilTweaks $tweak
+      Measure-WinUtilStep -Scope "Tweaks" -Name $tweak -ScriptBlock {
+        Invoke-WinUtilTweaks $tweak
+      }
       $completedSteps++
       Write-WinUtilJobProgress -Percent ([int](($completedSteps / $totalSteps) * 100))
     }

@@ -63,6 +63,9 @@ $sync.Buttons = [System.Collections.Generic.List[PSObject]]::new()
 $sync.preferences = @{}
 # Name of the job currently running, or $null when idle. Owned by Start-WinUtilJob.
 $sync.ActiveJob = $null
+# Every step recorded by Measure-WinUtilStep, from any thread
+$sync.StepTimings = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new())
+$sync.StartedAt = Get-Date
 $sync.selectedAppx = [System.Collections.Generic.List[string]]::new()
 $sync.selectedApps = [System.Collections.Generic.List[string]]::new()
 $sync.selectedTweaks = [System.Collections.Generic.List[string]]::new()

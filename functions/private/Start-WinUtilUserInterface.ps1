@@ -12,14 +12,21 @@ function Start-WinUtilUserInterface {
             place that is allowed to touch controls directly.
     #>
 
-    [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
+    $buildClock = [System.Diagnostics.Stopwatch]::StartNew()
+
+    Measure-WinUtilStep -Scope "UI" -Name "load WPF assemblies" -ScriptBlock {
+        [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
+    }
+
     [xml]$XAML = $inputXML
 
     # Read the XAML file
     $readerOperationSuccessful = $false # There's more cases of failure then success.
     $reader = (New-Object System.Xml.XmlNodeReader $xaml)
     try {
-        $sync["Form"] = [Windows.Markup.XamlReader]::Load( $reader )
+        Measure-WinUtilStep -Scope "UI" -Name "parse XAML" -ScriptBlock {
+            $sync["Form"] = [Windows.Markup.XamlReader]::Load( $reader )
+        }
         $readerOperationSuccessful = $true
     } catch [System.Management.Automation.MethodInvocationException] {
         Write-Host "We ran into a problem with the XAML code.  Check the syntax for this control..." -ForegroundColor Red
@@ -68,17 +75,23 @@ function Start-WinUtilUserInterface {
         })
     })
 
-    Invoke-WinutilThemeChange -theme $sync.preferences.theme
+    Measure-WinUtilStep -Scope "UI" -Name "apply theme" -ScriptBlock {
+        Invoke-WinutilThemeChange -theme $sync.preferences.theme
+    }
 
     # Build only the default tab before first paint; other tabs initialize on first activation.
     $sync.InitializedTabs = @{}
-    Initialize-WinUtilTabContent -TabName "Install"
+    Measure-WinUtilStep -Scope "UI" -Name "build Install tab" -ScriptBlock {
+        Initialize-WinUtilTabContent -TabName "Install"
+    }
 
     #===========================================================================
     # Store Form Objects In PowerShell
     #===========================================================================
 
-    $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
+    Measure-WinUtilStep -Scope "UI" -Name "map named controls" -ScriptBlock {
+        $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
+    }
 
     # How background work reaches the controls. Built here so it carries this runspace's
     # session state: posted work then runs as ordinary interface code instead of as a
@@ -108,15 +121,17 @@ function Start-WinUtilUserInterface {
         "Winget" {$sync.WingetRadioButton.IsChecked = $true; break}
     }
 
-    $sync.keys | ForEach-Object {
-        if($sync.$psitem) {
-            if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -in @("ToggleButton", "Button")) {
-                if ($sync.Buttons -notcontains $psitem) {
-                    $sync["$psitem"].Add_Click({
-                        [System.Object]$Sender = $args[0]
-                        Invoke-WPFButton $Sender.name
-                    })
-                    $sync.Buttons.Add($psitem) | Out-Null
+    Measure-WinUtilStep -Scope "UI" -Name "wire static button clicks" -ScriptBlock {
+        $sync.keys | ForEach-Object {
+            if($sync.$psitem) {
+                if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -in @("ToggleButton", "Button")) {
+                    if ($sync.Buttons -notcontains $psitem) {
+                        $sync["$psitem"].Add_Click({
+                            [System.Object]$Sender = $args[0]
+                            Invoke-WPFButton $Sender.name
+                        })
+                        $sync.Buttons.Add($psitem) | Out-Null
+                    }
                 }
             }
         }
@@ -268,7 +283,6 @@ function Start-WinUtilUserInterface {
         $sync["Form"].Focus()
         $sync["Form"].Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{ Initialize-WinUtilRunspacePool | Out-Null }) | Out-Null
         $sync["Form"].Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{
-            Initialize-WinUtilTaskbarOverlayAssets -IncludeLogo $true -IncludeStatusAssets $true
             Set-WinUtilTaskbaritem -overlay "logo"
         }) | Out-Null
     })
@@ -339,8 +353,10 @@ function Start-WinUtilUserInterface {
         $sync["Form"].MaxHeight = [Double]::PositiveInfinity
     })
 
-    $NavLogoPanel = $sync["Form"].FindName("NavLogoPanel")
-    $NavLogoPanel.Children.Add((Invoke-WinUtilAssets -Type "logo" -Size 25)) | Out-Null
+    Measure-WinUtilStep -Scope "UI" -Name "build nav logo" -ScriptBlock {
+        $NavLogoPanel = $sync["Form"].FindName("NavLogoPanel")
+        $NavLogoPanel.Children.Add((Invoke-WinUtilAssets -Type "logo" -Size 25)) | Out-Null
+    }
 
     $sync["Form"].Add_Activated({
         Set-WinUtilTaskbaritem -overlay "logo"
@@ -468,7 +484,17 @@ Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sy
         Invoke-WinUtilISOCleanAndReset
     })
 
-    Write-WinUtilLog -Component "UI" -Message "Interface built, showing the window."
+    $buildClock.Stop()
+    Write-WinUtilLog -Component "UI" -Message "Interface built in $($buildClock.ElapsedMilliseconds) ms, showing the window."
+    Write-WinUtilTimingSummary -Scope "UI" -TotalMilliseconds $buildClock.ElapsedMilliseconds
+
+    # Input priority runs behind everything already queued, so this fires at the first moment
+    # the window could actually service a click
+    $sync["Form"].Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Input, [action]{
+        $sinceStart = [int]((Get-Date) - $sync.StartedAt).TotalMilliseconds
+        Write-WinUtilLog -Component "UI" -Message "timing: interface ready for input $sinceStart ms after start."
+    }) | Out-Null
+
     $sync["Form"].ShowDialog() | Out-Null
 
     # ShowDialog returns once the window is gone; stop the dispatcher so this runspace can close

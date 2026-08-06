@@ -42,7 +42,9 @@ function Invoke-WPFInstall {
                 $position = $completedPackages + 1
                 Write-WinUtilJobProgress -Status "Installing $program ($position/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
 
-                $results += Install-WinUtilProgramWinget -Action Install -Programs @($program)
+                $results += Measure-WinUtilStep -Scope "Install" -Name "winget $program" -ScriptBlock {
+                    Install-WinUtilProgramWinget -Action Install -Programs @($program)
+                }
                 $completedPackages++
                 Write-WinUtilJobProgress -Status "Installed $program ($completedPackages/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
             }
@@ -53,7 +55,9 @@ function Invoke-WPFInstall {
             Write-WinUtilJobProgress -Status "Installing Chocolatey packages ($position/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
 
             Install-WinUtilChoco
-            $results += Install-WinUtilProgramChoco -Action Install -Programs $packagesChoco
+            $results += Measure-WinUtilStep -Scope "Install" -Name "choco $($packagesChoco -join ', ')" -ScriptBlock {
+                Install-WinUtilProgramChoco -Action Install -Programs $packagesChoco
+            }
             $completedPackages += @($packagesChoco).Count
             Write-WinUtilJobProgress -Status "Installed Chocolatey packages ($completedPackages/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
         }

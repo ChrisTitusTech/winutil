@@ -23,7 +23,9 @@ function Invoke-WPFundoall {
 
         for ($i = 0; $i -lt $total; $i++) {
             Write-WinUtilJobProgress -Status "Undoing $($Tweaks[$i]) ($($i + 1)/$total)" -Percent ([int](($i / $total) * 100))
-            Invoke-WinUtiltweaks $Tweaks[$i] -undo $true
+            Measure-WinUtilStep -Scope "Undo tweaks" -Name $Tweaks[$i] -ScriptBlock {
+                Invoke-WinUtiltweaks $Tweaks[$i] -undo $true
+            }
             Write-WinUtilJobProgress -Percent ([int]((($i + 1) / $total) * 100))
         }
     }
