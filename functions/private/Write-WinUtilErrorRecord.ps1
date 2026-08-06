@@ -35,15 +35,15 @@ function Write-WinUtilErrorRecord {
         if ([string]::IsNullOrWhiteSpace($invocation.ScriptName)) {
             $where = "line $($invocation.ScriptLineNumber)"
         }
-        Write-WinUtilLog -Level "ERROR" -Component $Component -Message "  at $where in $($invocation.MyCommand): $($invocation.Line.Trim())"
+        Write-WinUtilLog -Level "ERROR" -Detail -Component $Component -Message "  at $where in $($invocation.MyCommand): $($invocation.Line.Trim())"
     }
 
-    Write-WinUtilLog -Level "ERROR" -Component $Component -Message "  type $($ErrorRecord.Exception.GetType().FullName), category $($ErrorRecord.CategoryInfo.Category)"
+    Write-WinUtilLog -Level "ERROR" -Detail -Component $Component -Message "  type $($ErrorRecord.Exception.GetType().FullName), category $($ErrorRecord.CategoryInfo.Category)"
 
     if ($ErrorRecord.ScriptStackTrace) {
         foreach ($frame in ($ErrorRecord.ScriptStackTrace -split "`r?`n")) {
             if (-not [string]::IsNullOrWhiteSpace($frame)) {
-                Write-WinUtilLog -Level "ERROR" -Component $Component -Message "  $($frame.Trim())"
+                Write-WinUtilLog -Level "ERROR" -Detail -Component $Component -Message "  $($frame.Trim())"
             }
         }
     }

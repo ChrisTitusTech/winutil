@@ -84,14 +84,35 @@ function Start-WinUtilJob {
         param($JobName, $JobLabel, $JobBody, $JobParameters, $JobRestoresAppList)
 
         $jobClock = [System.Diagnostics.Stopwatch]::StartNew()
+        $errorsBefore = if ($sync.LoggedErrors) { $sync.LoggedErrors.Count } else { 0 }
         try {
             $body = [scriptblock]::Create($JobBody)
-            & $body @JobParameters
+
+            # A worker's warning and error streams are buffered on a PowerShell object nobody
+            # reads, so Write-Warning never reaches the log and Write-Error reaches nothing at
+            # all. Merging them into the output stream is what puts them in front of a reader.
+            & $body @JobParameters 2>&1 3>&1 | ForEach-Object {
+                if ($_ -is [System.Management.Automation.WarningRecord]) {
+                    Write-WinUtilLog -Level "WARN" -Component $JobName -Message $_.Message
+                } elseif ($_ -is [System.Management.Automation.ErrorRecord]) {
+                    Write-WinUtilErrorRecord -ErrorRecord $_ -Component $JobName -Context "Non-terminating error"
+                }
+            }
 
             $jobClock.Stop()
-            Write-WinUtilLog -Component $JobName -Message "$JobName job finished in $($jobClock.ElapsedMilliseconds) ms."
-            Write-WinUtilJobBanner -Message "$JobLabel finished"
-            Write-WinUtilJobProgress -Status "$JobName finished" -Percent 100 -State "None" -Overlay "checkmark"
+
+            # A step can fail without throwing, for example a registry write refused by policy.
+            # The job still finished, but saying so without qualification would be a lie.
+            $newErrors = if ($sync.LoggedErrors) { $sync.LoggedErrors.Count - $errorsBefore } else { 0 }
+            if ($newErrors -gt 0) {
+                Write-WinUtilLog -Level "WARN" -Component $JobName -Message "$JobName job finished in $($jobClock.ElapsedMilliseconds) ms with $newErrors error(s)."
+                Write-WinUtilJobBanner -Message "$JobLabel finished with $newErrors error(s), see the log" -Level "ERROR"
+                Write-WinUtilJobProgress -Status "$JobName finished with $newErrors error(s)" -Percent 100 -State "Paused" -Overlay "warning"
+            } else {
+                Write-WinUtilLog -Component $JobName -Message "$JobName job finished in $($jobClock.ElapsedMilliseconds) ms."
+                Write-WinUtilJobBanner -Message "$JobLabel finished"
+                Write-WinUtilJobProgress -Status "$JobName finished" -Percent 100 -State "None" -Overlay "checkmark"
+            }
         } catch {
             $jobClock.Stop()
             Write-WinUtilErrorRecord -ErrorRecord $_ -Component $JobName -Context "$JobName failed after $($jobClock.ElapsedMilliseconds) ms"

@@ -65,6 +65,8 @@ $sync.preferences = @{}
 $sync.ActiveJob = $null
 # Every step recorded by Measure-WinUtilStep, from any thread
 $sync.StepTimings = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new())
+# Every error logged, so a job can report that something went wrong even when it did not throw
+$sync.LoggedErrors = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new())
 $sync.StartedAt = Get-Date
 $sync.selectedAppx = [System.Collections.Generic.List[string]]::new()
 $sync.selectedApps = [System.Collections.Generic.List[string]]::new()

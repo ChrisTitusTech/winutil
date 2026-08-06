@@ -124,6 +124,10 @@ try {
     Write-WinUtilErrorRecord -ErrorRecord $_ -Component "UI" -Context "Interface thread stopped"
 }
 
+foreach ($uiWarning in $uiShell.Streams.Warning) {
+    Write-WinUtilLog -Level "WARN" -Component "UI" -Message $uiWarning.Message
+}
+
 foreach ($uiError in $uiShell.Streams.Error) {
     Write-WinUtilErrorRecord -ErrorRecord $uiError -Component "UI" -Context "Interface thread"
 }

@@ -27,8 +27,15 @@ function Write-WinUtilLog {
         [ValidateSet("INFO", "WARN", "ERROR", "DEBUG")]
         [string]$Level = "INFO",
 
-        [string]$Component = "WinUtil"
+        [string]$Component = "WinUtil",
+
+        # Continuation of an error already counted, such as a stack frame
+        [switch]$Detail
     )
+
+    if ($Level -eq "ERROR" -and -not $Detail -and $null -ne $sync.LoggedErrors) {
+        $null = $sync.LoggedErrors.Add("[$Component] $Message")
+    }
 
     try {
         $logPath = $null

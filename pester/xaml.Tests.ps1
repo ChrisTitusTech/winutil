@@ -434,6 +434,7 @@ Describe "XAML and sync wiring" {
             "UIRunspace",
             "UIDispatchDelegate",
             "StepTimings",
+            "LoggedErrors",
             "StartedAt",
             "SessionState",
             "TabWarmupQueue",

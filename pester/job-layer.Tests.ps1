@@ -220,6 +220,39 @@ Describe "Start-WinUtilJob" {
         $script:sync.ActiveJob | Should -BeNullOrEmpty
     }
 
+    It "reports a job that logged errors without throwing" {
+        $script:sync.LoggedErrors = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new())
+        Start-WinUtilJob -Name "Example" -ScriptBlock { } | Out-Null
+
+        & $script:capturedRunspaceBody `
+            -JobName "Example" `
+            -JobLabel "Example" `
+            -JobBody '$null = $sync.LoggedErrors.Add("[Registry] refused by policy")' `
+            -JobParameters @{} `
+            -JobRestoresAppList $false
+
+        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Example finished with 1 error(s)" -and $State -eq "Paused" -and $Overlay -eq "warning"
+        }
+        $script:sync.ActiveJob | Should -BeNullOrEmpty
+    }
+
+    It "surfaces warnings and non-terminating errors raised by the body" {
+        $script:sync.LoggedErrors = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new())
+        Start-WinUtilJob -Name "Example" -ScriptBlock { } | Out-Null
+
+        & $script:capturedRunspaceBody `
+            -JobName "Example" `
+            -JobLabel "Example" `
+            -JobBody 'Write-Warning "a warning"' `
+            -JobParameters @{} `
+            -JobRestoresAppList $false
+
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "WARN" -and $Message -eq "a warning"
+        }
+    }
+
     It "restores the app list after a failing job that disabled it" {
         Start-WinUtilJob -Name "Install" -DisableAppList -ScriptBlock { } | Out-Null
         $script:sync.ActiveJob = "Install"
