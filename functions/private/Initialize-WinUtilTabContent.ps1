@@ -14,10 +14,15 @@ function Initialize-WinUtilTabContent {
 
     switch ($TabName) {
         "Install" {
-            Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
-            Initialize-WPFUI -targetGridName "appscategory"
-
-            Initialize-WPFUI -targetGridName "appspanel"
+            Measure-WinUtilStep -Scope "UI" -Name "Install tab: app navigation" -ScriptBlock {
+                Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
+            }
+            Measure-WinUtilStep -Scope "UI" -Name "Install tab: category area" -ScriptBlock {
+                Initialize-WPFUI -targetGridName "appscategory"
+            }
+            Measure-WinUtilStep -Scope "UI" -Name "Install tab: app area" -ScriptBlock {
+                Initialize-WPFUI -targetGridName "appspanel"
+            }
         }
         "Tweaks" {
             Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2

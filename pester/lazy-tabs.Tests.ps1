@@ -4,7 +4,11 @@
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+    . (Join-Path $script:repoRoot "functions\private\Measure-WinUtilStep.ps1")
 
+    function Write-WinUtilLog {
+        param($Message, $Level, $Component)
+    }
     function Invoke-WPFUIElements {
         param($configVariable, [string]$targetGridName, [int]$columncount)
     }
@@ -89,14 +93,15 @@ Describe "Initialize-WinUtilTabContent" {
 }
 
 Describe "Startup lazy tab wiring" {
-    It "builds only install tab content before first paint" {
+    It "builds no tab content before first paint" {
         $uiScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilUserInterface.ps1") -Raw
-        $startupRegion = $uiScript.Substring(0, $uiScript.IndexOf("# Store Form Objects In PowerShell"))
+        $tabScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFTab.ps1") -Raw
 
-        $startupRegion | Should -Match 'Initialize-WinUtilTabContent -TabName "Install"'
-        $startupRegion | Should -Not -Match 'targetGridName "tweakspanel"'
-        $startupRegion | Should -Not -Match 'targetGridName "featurespanel"'
-        $startupRegion | Should -Not -Match 'targetGridName "appxpanel"'
+        # Building a tab costs several hundred milliseconds. ContentRendered activates the
+        # default tab, and activating a tab is what builds it.
+        $uiScript | Should -Not -Match 'Initialize-WinUtilTabContent'
+        $uiScript | Should -Match '(?s)Add_ContentRendered.*Invoke-WPFTab "WPFTab1BT"'
+        $tabScript | Should -Match 'Initialize-WinUtilTabContent -TabName \$sync\.currentTab'
     }
 
     It "initializes tab content when a tab is selected" {
@@ -111,7 +116,7 @@ Describe "Startup lazy tab wiring" {
 
         $rendererScript | Should -Match '(?s)"Button"\s*\{.*\$button\.Add_Click\(\{.*Invoke-WPFButton \$Sender\.name'
         $rendererScript | Should -Match '\$sync\.Buttons\.Add\(\$button\.Name\)'
-        $uiScript | Should -Match '\$sync\.Buttons -notcontains \$psitem'
+        $uiScript | Should -Match '\$sync\.Buttons\.Add\(\$entry\.Key\)'
     }
 
     It "binds generated documentation links when lazy panels are rendered" {

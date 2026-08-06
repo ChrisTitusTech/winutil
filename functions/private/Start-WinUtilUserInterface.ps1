@@ -79,11 +79,9 @@ function Start-WinUtilUserInterface {
         Invoke-WinutilThemeChange -theme $sync.preferences.theme
     }
 
-    # Build only the default tab before first paint; other tabs initialize on first activation.
+    # No tab content is built before first paint. Invoke-WPFTab builds whichever tab it
+    # activates, and ContentRendered activates the default one.
     $sync.InitializedTabs = @{}
-    Measure-WinUtilStep -Scope "UI" -Name "build Install tab" -ScriptBlock {
-        Initialize-WinUtilTabContent -TabName "Install"
-    }
 
     #===========================================================================
     # Store Form Objects In PowerShell
@@ -100,12 +98,18 @@ function Start-WinUtilUserInterface {
     $sync.UIDispatchDelegate = [System.Func[object, object]]{
         param($Work)
 
-        $body = [scriptblock]::Create($Work.Body)
-        $parameters = $Work.Parameters
-        if ($parameters -and $parameters.Count -gt 0) {
-            & $body @parameters
-        } else {
-            & $body
+        try {
+            $body = [scriptblock]::Create($Work.Body)
+            $parameters = $Work.Parameters
+            if ($parameters -and $parameters.Count -gt 0) {
+                & $body @parameters
+            } else {
+                & $body
+            }
+        } catch {
+            # An unhandled failure here would surface as a dispatcher exception with no trace
+            # back to the work that caused it
+            Write-WinUtilErrorRecord -ErrorRecord $_ -Component "UI" -Context "Interface work"
         }
     }
 
@@ -122,18 +126,27 @@ function Start-WinUtilUserInterface {
     }
 
     Measure-WinUtilStep -Scope "UI" -Name "wire static button clicks" -ScriptBlock {
-        $sync.keys | ForEach-Object {
-            if($sync.$psitem) {
-                if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -in @("ToggleButton", "Button")) {
-                    if ($sync.Buttons -notcontains $psitem) {
-                        $sync["$psitem"].Add_Click({
-                            [System.Object]$Sender = $args[0]
-                            Invoke-WPFButton $Sender.name
-                        })
-                        $sync.Buttons.Add($psitem) | Out-Null
-                    }
-                }
+        # CheckBox and RadioButton also derive from ButtonBase, so the exact type name is what
+        # decides, not -is
+        $clickableTypes = [System.Collections.Generic.HashSet[string]]::new([string[]]@("Button", "ToggleButton"), [StringComparer]::OrdinalIgnoreCase)
+        $alreadyWired = [System.Collections.Generic.HashSet[string]]::new([string[]]@($sync.Buttons), [StringComparer]::OrdinalIgnoreCase)
+
+        $clickHandler = {
+            [System.Object]$Sender = $args[0]
+            Invoke-WPFButton $Sender.name
+        }
+
+        foreach ($entry in @($sync.GetEnumerator())) {
+            $control = $entry.Value
+            if ($null -eq $control -or -not $clickableTypes.Contains($control.GetType().Name)) {
+                continue
             }
+            if (-not $alreadyWired.Add([string]$entry.Key)) {
+                continue
+            }
+
+            $control.Add_Click($clickHandler)
+            $sync.Buttons.Add($entry.Key) | Out-Null
         }
     }
 
@@ -285,6 +298,7 @@ function Start-WinUtilUserInterface {
         $sync["Form"].Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{
             Set-WinUtilTaskbaritem -overlay "logo"
         }) | Out-Null
+        $sync["Form"].Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{ Start-WinUtilTabWarmup }) | Out-Null
     })
 
     # The SearchBarTimer is used to delay the search operation until the user has stopped typing for a short period
