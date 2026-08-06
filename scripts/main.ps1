@@ -121,13 +121,11 @@ $uiHandle.AsyncWaitHandle.WaitOne() | Out-Null
 try {
     $uiShell.EndInvoke($uiHandle) | Out-Null
 } catch {
-    Write-Host "The WinUtil interface stopped with an error: $($_.Exception.Message)" -ForegroundColor Red
-    Write-WinUtilLog -Level "ERROR" -Component "UI" -Message "Interface thread failed: $($_.Exception.Message)"
+    Write-WinUtilErrorRecord -ErrorRecord $_ -Component "UI" -Context "Interface thread stopped"
 }
 
 foreach ($uiError in $uiShell.Streams.Error) {
-    Write-Host $uiError -ForegroundColor Red
-    Write-WinUtilLog -Level "ERROR" -Component "UI" -Message $uiError
+    Write-WinUtilErrorRecord -ErrorRecord $uiError -Component "UI" -Context "Interface thread"
 }
 
 $uiShell.Dispose()

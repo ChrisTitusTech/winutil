@@ -24,37 +24,36 @@ function Invoke-WPFButton {
         Write-WinUtilJobProgress -Hide
     }
 
-    # Buttons that only change what the interface shows. Tab switches, selection helpers,
-    # window chrome, and the WPFPanel* entries that hand off to a Windows applet.
-    $interfaceOnly = @(
-        "WPFCloseButton", "WPFMinimizeButton", "WPFMaximizeButton", "WPFselectedAppsButton",
-        "WPFCollapseAllCategories", "WPFExpandAllCategories",
-        "WPFStandard", "WPFMinimal", "WPFAdvanced",
-        "WPFClearTweaksSelection", "WPFClearInstallSelection",
-        "WPFAppxRemoval", "WPFBackToTweaks",
-        "WPFDefaultAppxSelection", "WPFSelectAllAppx", "WPFClearAppxSelection"
+    # Switch-driven buttons that change the system. Anything in feature.json counts too, apart
+    # from the WPFPanel* entries, which only hand off to a Windows applet.
+    #
+    # This is a whitelist on purpose: window chrome and popup toggles also reach here, because
+    # every Button in $sync gets wired to this function, and they must not become jobs.
+    $workButtons = @(
+        "WPFInstallUpgrade", "WPFAddUltPerf", "WPFRemoveUltPerf",
+        "WPFUpdatesdefault", "WPFUpdatesdisable", "WPFUpdatessecurity",
+        "WPFGetInstalledAppx"
     )
 
-    # Workflow entrypoints that start their own job, because they read and validate the current
-    # selection on this thread first, and name the job after what the user actually chose.
-    $selfManaged = @(
-        "WPFInstall", "WPFUninstall", "WPFtweaksbutton", "WPFundoall", "WPFOOSUbutton",
-        "WPFGetInstalled", "WPFGetInstalledTweaks",
-        "WPFInstallSelectedAppx", "WPFRemoveSelectedAppx", "WPFFeatureInstall"
-    )
+    $isConfigWork = $sync.configs.feature.$Button -and $Button -notlike "WPFPanel*"
 
-    if ($Button -like "WPFTab?BT" -or $Button -like "WPFPanel*" -or
-        $interfaceOnly -contains $Button -or $selfManaged -contains $Button) {
-        Invoke-WPFButtonAction -Button $Button
+    if ($isConfigWork -or $workButtons -contains $Button) {
+        Start-WinUtilJob -Name (Get-WinUtilButtonLabel -Button $Button) -Parameters @{
+            Button = $Button
+        } -ScriptBlock {
+            param($Button)
+
+            Invoke-WPFButtonAction -Button $Button
+        }
         return
     }
 
-    Start-WinUtilJob -Name (Get-WinUtilButtonLabel -Button $Button) -Parameters @{
-        Button = $Button
-    } -ScriptBlock {
-        param($Button)
-
+    # A handler that throws on the interface thread would otherwise reach the user as a bare
+    # message with no indication of which control produced it
+    try {
         Invoke-WPFButtonAction -Button $Button
+    } catch {
+        Write-WinUtilErrorRecord -ErrorRecord $_ -Component "UI" -Context "Button '$Button'"
     }
 }
 
@@ -83,7 +82,11 @@ function Get-WinUtilButtonLabel {
         }
     }
 
-    return ($Button -replace '^WPF', '')
+    $fallback = ($Button -replace '^WPF', '')
+    if ([string]::IsNullOrWhiteSpace($fallback)) {
+        return "WinUtil"
+    }
+    return $fallback
 }
 
 function Invoke-WPFButtonAction {

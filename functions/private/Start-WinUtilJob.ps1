@@ -94,7 +94,7 @@ function Start-WinUtilJob {
             Write-WinUtilJobProgress -Status "$JobName finished" -Percent 100 -State "None" -Overlay "checkmark"
         } catch {
             $jobClock.Stop()
-            Write-WinUtilLog -Level "ERROR" -Component $JobName -Message "$JobName job failed after $($jobClock.ElapsedMilliseconds) ms: $($_.Exception.Message)"
+            Write-WinUtilErrorRecord -ErrorRecord $_ -Component $JobName -Context "$JobName failed after $($jobClock.ElapsedMilliseconds) ms"
             Write-WinUtilJobBanner -Message "$JobLabel failed: $($_.Exception.Message)" -Level "ERROR"
             Write-WinUtilJobProgress -Status "$JobName failed" -Percent 100 -State "Error" -Overlay "warning"
         } finally {
