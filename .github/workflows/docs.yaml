@@ -6,24 +6,16 @@ on:
       - main
     paths:
       - "docs/**"
-      - "config/tweaks.json"
-      - "config/feature.json"
-      - "functions/**"
   workflow_dispatch:
 
 permissions:
   contents: read
   pages: write
   id-token: write
-  pull-requests: write
 
 concurrency:
   group: "pages"
   cancel-in-progress: false
-
-defaults:
-  run:
-    shell: bash
 
 jobs:
   build:
@@ -37,36 +29,6 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-
-      - name: Generate Dev Docs from JSON
-        shell: pwsh
-        run: |
-          Set-Location tools
-          ./devdocs-generator.ps1
-
-      - name: Create Pull Request
-        id: cpr
-        uses: peter-evans/create-pull-request@v8
-        with:
-          token: ${{ secrets.AUTO_MERGE }}
-          commit-message: 'chore: Update generated dev docs'
-          title: 'chore: Update Generated Dev Docs'
-          body: 'Automated update of generated documentation from JSON sources'
-          branch: docs-update
-          delete-branch: true
-          add-paths: |
-            docs/src/content/docs/code-reference/
-            config/tweaks.json
-            config/feature.json
-          labels: |
-            automated
-            documentation
-            skip-changelog
-
-      - name: Check outputs
-        run: |
-          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
-          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
 
       - name: Install, build, and upload your site
         uses: withastro/action@v6

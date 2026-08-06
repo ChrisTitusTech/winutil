@@ -139,8 +139,7 @@ body {
 		border-color 0.15s ease,
 		color 0.15s ease;
 }
-/* The right/left-arrow glyph's visual weight sits high in its viewBox, so it
-   reads as floating above the label's baseline without this nudge. */
+/* The right/left-arrow glyph's visual weight sits high in its viewBox, so it reads as floating above the label's baseline without this nudge. */
 .wu-btn .wu-icon-arrow {
 	position: relative;
 	top: 0.05em;
@@ -155,7 +154,7 @@ body {
 .wu-btn-secondary {
 	border: 1px solid var(--sl-color-hairline-light);
 	color: var(--sl-color-white);
-	background: transparent;
+	background: var(--sl-color-gray-6);
 }
 .wu-btn-secondary:hover {
 	border-color: var(--sl-color-accent);
@@ -165,6 +164,11 @@ body {
 .wu-btn > p,
 .wu-trust-item > p {
 	display: contents;
+}
+
+/* Cancels Starlight's automatic 1.5rem margin between the hero and the content column. */
+.wu-hero + .sl-markdown-content {
+	margin-top: 0;
 }
 
 /* Cancels Starlight's automatic 1.5rem inter-block margin inside our own grids/rows (it otherwise lands on item 2+ of each row and breaks alignment). */
@@ -188,6 +192,9 @@ body {
 	padding-block: clamp(3rem, 4vw + 1.5rem, 5.5rem);
 }
 .wu-section--trust {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	padding-block: 2rem;
 }
 .wu-section--tint {
