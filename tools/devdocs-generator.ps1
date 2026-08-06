@@ -271,6 +271,7 @@ $documentedCategories = @(
     "Performance Plans",
     "Features",
     "Fixes",
+    "Diagnostics",
     "Legacy Windows Panels",
     "Powershell Profile Powershell 7+ Only",
     "Remote Access"
@@ -279,6 +280,7 @@ $documentedCategories = @(
 # Categories where Button entries embed a PS function instead of raw JSON
 $functionEmbedCategories = @(
     "Fixes",
+    "Diagnostics",
     "Powershell Profile Powershell 7+ Only",
     "Remote Access"
 )
