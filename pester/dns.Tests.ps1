@@ -54,6 +54,15 @@ Describe "Set-WinUtilDNS" {
                     }
                     Mullvad = [pscustomobject]@{
                         Primary = "194.242.2.2"
+                        Secondary = "194.242.2.3"
+                        Primary6 = "2a07:e340::2"
+                        Secondary6 = "2a07:e340::3"
+                        DohOnly = $true
+                        DohTemplate = "https://dns.mullvad.net/dns-query"
+                        SecondaryDohTemplate = "https://adblock.dns.mullvad.net/dns-query"
+                    }
+                    MullvadNoSecondary = [pscustomobject]@{
+                        Primary = "194.242.2.2"
                         Secondary = ""
                         Primary6 = "2a07:e340::2"
                         Secondary6 = ""
@@ -140,7 +149,7 @@ Describe "Set-WinUtilDNS" {
     }
 
     It "filters empty DNS server addresses" {
-        Set-WinUtilDNS -DNSProvider "Mullvad"
+        Set-WinUtilDNS -DNSProvider "MullvadNoSecondary"
 
         Should -Invoke -CommandName Set-DnsClientServerAddress -Times 1 -Exactly -ParameterFilter {
             $InterfaceIndex -eq 7 -and
@@ -153,6 +162,19 @@ Describe "Set-WinUtilDNS" {
                 $ServerAddresses[0] -eq "2a07:e340::2"
         }
         Should -Invoke -CommandName Add-DnsClientDohServerAddress -Times 2 -Exactly
+    }
+
+    It "applies the matching DoH template to secondary resolvers" {
+        Set-WinUtilDNS -DNSProvider "Mullvad"
+
+        Should -Invoke -CommandName Add-DnsClientDohServerAddress -Times 2 -Exactly -ParameterFilter {
+            $ServerAddress -in @("194.242.2.2", "2a07:e340::2") -and
+                $DohTemplate -eq "https://dns.mullvad.net/dns-query"
+        }
+        Should -Invoke -CommandName Add-DnsClientDohServerAddress -Times 2 -Exactly -ParameterFilter {
+            $ServerAddress -in @("194.242.2.3", "2a07:e340::3") -and
+                $DohTemplate -eq "https://adblock.dns.mullvad.net/dns-query"
+        }
     }
 
     It "does not apply a DoH-only provider when DoH is unsupported" {

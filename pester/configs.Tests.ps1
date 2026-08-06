@@ -340,9 +340,7 @@ Describe "UI-rendered config entries" {
 
     It "contains required DNS fields with parseable IP addresses" {
         $dns = Get-WinUtilConfigObject -Name "dns"
-        $requiredFields = @("Primary", "Primary6")
-        $optionalAddressFields = @("Secondary", "Secondary6")
-        $addressFields = @($requiredFields + $optionalAddressFields)
+        $requiredFields = @("Primary", "Secondary", "Primary6", "Secondary6")
         $invalidEntries = New-Object System.Collections.Generic.List[string]
 
         foreach ($entry in $dns.PSObject.Properties) {
@@ -350,13 +348,7 @@ Describe "UI-rendered config entries" {
                 $invalidEntries.Add($missingField)
             }
 
-            foreach ($field in $optionalAddressFields) {
-                if (-not (Test-WinUtilHasProperty -Object $entry.Value -Name $field)) {
-                    $invalidEntries.Add("$($entry.Name) missing $field")
-                }
-            }
-
-            foreach ($field in $addressFields) {
+            foreach ($field in $requiredFields) {
                 if (-not (Test-WinUtilHasNonEmptyProperty -Object $entry.Value -Name $field)) {
                     continue
                 }
