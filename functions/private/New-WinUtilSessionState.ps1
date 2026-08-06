@@ -11,7 +11,14 @@ function New-WinUtilSessionState {
 
             Only the functions PowerShell itself provides are skipped, since the default
             session state already carries those.
+
+            The result is cached. An InitialSessionState is a template that any number of
+            runspaces can be created from, and building it is not free.
     #>
+
+    if ($sync.SessionState) {
+        return $sync.SessionState
+    }
 
     $initialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
 
@@ -45,5 +52,6 @@ function New-WinUtilSessionState {
         )
     }
 
+    $sync.SessionState = $initialSessionState
     return $initialSessionState
 }

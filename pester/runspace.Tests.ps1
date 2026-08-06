@@ -6,7 +6,8 @@ BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     . (Join-Path $script:repoRoot "functions\private\Close-WinUtilRunspacePool.ps1")
     . (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilRunspacePool.ps1")
-    . (Join-Path $script:repoRoot "functions\public\Invoke-WPFRunspace.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Register-WinUtilRunspaceCleanup.ps1")
+        . (Join-Path $script:repoRoot "functions\public\Invoke-WPFRunspace.ps1")
     function Start-WinUtilJob {
         param([string]$Name, [scriptblock]$ScriptBlock, [hashtable]$Parameters, [string]$Description, [switch]$DisableAppList)
     }

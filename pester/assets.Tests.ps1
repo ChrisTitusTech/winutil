@@ -16,16 +16,18 @@ Describe "Rendered asset caching" {
         $assetScript | Should -Match '\$sync\.RenderedAssetCache\[\$cacheKey\] = \$bitmapImage'
     }
 
-    It "renders no taskbar overlay before first paint" {
+    It "renders the taskbar overlays away from the interface thread" {
         $uiScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilUserInterface.ps1") -Raw
-        $beforeFirstPaint = $uiScript.Substring(0, $uiScript.IndexOf('Add_ContentRendered'))
+        $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
+        $assetScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilAssetRendering.ps1") -Raw
 
-        # Rendering an overlay costs tens of milliseconds and nothing can see it until the
-        # window is up, so it belongs behind first paint.
-        $beforeFirstPaint | Should -Not -Match 'Initialize-WinUtilTaskbarOverlayAssets'
-        $uiScript | Should -Match '(?s)DispatcherPriority\]::Background, \[action\]\{\s+Initialize-WinUtilTaskbarOverlayAssets -IncludeLogo \$true -IncludeStatusAssets \$true\s+Set-WinUtilTaskbaritem -overlay "logo"'
-        $uiScript | Should -Not -Match '\$sync\["checkmarkrender"\] = \(Invoke-WinUtilAssets -Type "checkmark"'
-        $uiScript | Should -Not -Match '\$sync\["warningrender"\] = \(Invoke-WinUtilAssets -Type "warning"'
+        # The interface thread never rasterises an overlay; the main thread does it while
+        # waiting for the window, and Set-WinUtilTaskbaritem covers the case where the render
+        # has not landed yet.
+        $uiScript | Should -Not -Match 'Initialize-WinUtilTaskbarOverlayAssets'
+        $mainScript | Should -Match '(?s)\$uiHandle = \$uiShell\.BeginInvoke\(\).*Start-WinUtilAssetRendering.*\$uiHandle\.AsyncWaitHandle\.WaitOne\(\)'
+        $assetScript | Should -Match '\$runspace\.ApartmentState = "STA"'
+        $assetScript | Should -Match 'Initialize-WinUtilTaskbarOverlayAssets -IncludeLogo \$true -IncludeStatusAssets \$true'
     }
 
     It "lazily creates taskbar overlays before assigning them" {

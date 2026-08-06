@@ -111,6 +111,11 @@ $uiShell.Runspace = $sync.UIRunspace
 
 Write-WinUtilLog -Component "UI" -Message "Starting the interface thread."
 $uiHandle = $uiShell.BeginInvoke()
+
+# This thread has nothing to do but wait, so it pays for the overlay render rather than
+# leaving it to the thread that is building the window
+Start-WinUtilAssetRendering | Out-Null
+
 $uiHandle.AsyncWaitHandle.WaitOne() | Out-Null
 
 try {

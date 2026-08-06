@@ -208,6 +208,7 @@ Describe "Compiled WinUtil sanity" {
 
 Describe "Runspace sanity" {
     BeforeAll {
+        . (Join-Path $script:repoRoot "functions\private\Register-WinUtilRunspaceCleanup.ps1")
         . (Join-Path $script:repoRoot "functions\public\Invoke-WPFRunspace.ps1")
         . (Join-Path $script:repoRoot "functions\private\Close-WinUtilRunspacePool.ps1")
         . (Join-Path $script:repoRoot "functions\private\New-WinUtilSessionState.ps1")
