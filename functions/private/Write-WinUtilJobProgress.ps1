@@ -70,9 +70,9 @@ function Write-WinUtilJobProgress {
             $sync.Form.TaskbarItemInfo.ProgressValue = $Percent / 100
         }
         if ($HasState) {
-            # Indeterminate means the length is unknown, so the bar pulses rather than sitting
-            # at a value that would read as a completed step
-            $sync.WPFTweaksProgressValue.IsIndeterminate = ($State -eq "Indeterminate")
+            # Pulse in place at whatever progress has been reached. IsIndeterminate would make
+            # WPF discard Value and fill the whole bar, which reads as finished.
+            $sync.WPFTweaksProgressValue.Tag = if ($State -eq "Indeterminate") { "Pulse" } else { $null }
             Set-WinUtilTaskbaritem -state $State
         }
         if ($HasOverlay) {

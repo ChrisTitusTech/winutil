@@ -963,8 +963,12 @@
                         <ControlTemplate.Triggers>
                             <!-- Work whose length cannot be measured, such as an installer that
                                  reports nothing until it exits. Pulsing says "still running"
-                                 where a static bar would read as finished. -->
-                            <Trigger Property="IsIndeterminate" Value="True">
+                                 where a static bar would read as finished.
+
+                                 Driven by Tag rather than IsIndeterminate: that property makes
+                                 WPF ignore Value and stretch the indicator across the whole
+                                 track, which would throw away the progress reached so far. -->
+                            <Trigger Property="Tag" Value="Pulse">
                                 <Trigger.EnterActions>
                                     <BeginStoryboard Name="IndeterminatePulse">
                                         <Storyboard>
@@ -976,7 +980,9 @@
                                     </BeginStoryboard>
                                 </Trigger.EnterActions>
                                 <Trigger.ExitActions>
-                                    <StopStoryboard BeginStoryboardName="IndeterminatePulse"/>
+                                    <!-- Remove, not Stop: stopping leaves the indicator at
+                                         whatever opacity the pulse was on -->
+                                    <RemoveStoryboard BeginStoryboardName="IndeterminatePulse"/>
                                 </Trigger.ExitActions>
                             </Trigger>
                         </ControlTemplate.Triggers>
