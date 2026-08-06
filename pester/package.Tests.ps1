@@ -14,9 +14,10 @@ BeforeAll {
     function Write-WinUtilJobBanner {
         param([string]$Message, [string]$Level)
     }
-    function Write-WinUtilJobProgress {
-        param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay, [switch]$Hide)
-    }
+    # The CLI path is what these tests cover; the module path is verified against real winget
+    function Install-WinUtilWinGetClient { $false }
+    function Invoke-WinUtilWinGetCommand { param([string]$Command, [hashtable]$Parameters, [int]$ProgressBase, [int]$ProgressSpan, [string]$Label) }
+    function Write-WinUtilJobProgress { param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay, [switch]$Hide) }
     function Write-WinUtilLog { }
 }
 

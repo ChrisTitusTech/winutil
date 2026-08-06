@@ -435,6 +435,7 @@ Describe "XAML and sync wiring" {
             "UIDispatchDelegate",
             "StepTimings",
             "LoggedErrors",
+            "WinGetClientReady",
             "StartedAt",
             "SessionState",
             "TabWarmupQueue",

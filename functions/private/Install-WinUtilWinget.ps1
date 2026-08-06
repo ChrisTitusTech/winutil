@@ -8,6 +8,9 @@ function Install-WinUtilWinget {
         installs winGet if needed
     #>
     if ((Test-WinUtilPackageManager -winget) -eq "installed") {
+        # The client module is what reports install progress, so make it available while the
+        # user is already waiting rather than on the first package
+        Install-WinUtilWinGetClient | Out-Null
         return
     }
 

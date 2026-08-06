@@ -9,6 +9,10 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Install-WinUtilProgramChoco.ps1")
     . (Join-Path $script:repoRoot "functions\private\Complete-WinUtilPackageRun.ps1")
 
+    # The CLI path is what these tests cover; the module path is verified against real winget
+    function Install-WinUtilWinGetClient { $false }
+    function Invoke-WinUtilWinGetCommand { param([string]$Command, [hashtable]$Parameters, [int]$ProgressBase, [int]$ProgressSpan, [string]$Label) }
+    function Write-WinUtilJobProgress { param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay, [switch]$Hide) }
     function Write-WinUtilLog {
         param($Message, $Level, $Component)
     }
@@ -56,6 +60,122 @@ Describe "Install-WinUtilProgramWinget outcomes" {
         $results = @(Install-WinUtilProgramWinget -Action Install -Programs @("Git.Git", "VideoLAN.VLC"))
 
         $results.Count | Should -Be 2
+    }
+}
+
+Describe "Install-WinUtilProgramWinget through the WinGet client module" {
+    BeforeAll {
+        function New-WinGetResult {
+            param([string]$Status = "Ok", [int]$InstallerErrorCode = 0, [bool]$RebootRequired = $false)
+            [pscustomobject]@{
+                Id = "Git.Git"
+                Name = "Git"
+                Status = $Status
+                InstallerErrorCode = $InstallerErrorCode
+                RebootRequired = $RebootRequired
+            }
+        }
+    }
+
+    BeforeEach {
+        Mock Write-WinUtilLog { }
+        Mock Install-WinUtilWinGetClient { $true }
+        Mock Start-Process { throw "the command line must not be used when the module is available" }
+        # Not installed unless a test says otherwise
+        Mock Invoke-WinUtilWinGetCommand { } -ParameterFilter { $Command -eq "Get-WinGetPackage" }
+    }
+
+    It "prefers the module over the command line" {
+        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult } -ParameterFilter { $Command -ne "Get-WinGetPackage" }
+
+        $result = Install-WinUtilProgramWinget -Action Install -Programs @("Git.Git")
+
+        $result.Outcome | Should -Be "Succeeded"
+        Should -Invoke -CommandName Invoke-WinUtilWinGetCommand -Times 1 -Exactly -ParameterFilter {
+            $Command -eq "Install-WinGetPackage" -and
+                $Parameters.Id -eq "Git.Git" -and
+                $Parameters.Mode -eq "Silent" -and
+                $Label -eq "Git.Git"
+        }
+        Should -Invoke -CommandName Start-Process -Times 0 -Exactly
+    }
+
+    It "passes the progress slice through so the bar moves within a package" {
+        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult }
+
+        Install-WinUtilProgramWinget -Action Install -Programs @("Git.Git") -ProgressBase 40 -ProgressSpan 20 | Out-Null
+
+        Should -Invoke -CommandName Invoke-WinUtilWinGetCommand -Times 1 -Exactly -ParameterFilter {
+            $ProgressBase -eq 40 -and $ProgressSpan -eq 20
+        }
+    }
+
+    It "uses the uninstall cmdlet for an uninstall" {
+        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult }
+
+        Install-WinUtilProgramWinget -Action Uninstall -Programs @("Git.Git") | Out-Null
+
+        Should -Invoke -CommandName Invoke-WinUtilWinGetCommand -Times 1 -Exactly -ParameterFilter {
+            $Command -eq "Uninstall-WinGetPackage"
+        }
+    }
+
+    # Install-WinGetPackage re-downloads and re-runs the installer for a package that is
+    # already present, so an install pass would reinstall the whole machine.
+    It "upgrades a package that is already installed instead of reinstalling it" {
+        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult } -ParameterFilter { $Command -eq "Get-WinGetPackage" }
+        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult -Status "NoApplicableUpgrade" } -ParameterFilter { $Command -eq "Update-WinGetPackage" }
+
+        $result = Install-WinUtilProgramWinget -Action Install -Programs @("Git.Git")
+
+        $result.Outcome | Should -Be "Skipped"
+        Should -Invoke -CommandName Invoke-WinUtilWinGetCommand -Times 1 -Exactly -ParameterFilter {
+            $Command -eq "Update-WinGetPackage"
+        }
+        Should -Invoke -CommandName Invoke-WinUtilWinGetCommand -Times 0 -Exactly -ParameterFilter {
+            $Command -eq "Install-WinGetPackage"
+        }
+    }
+
+    It "installs a package that is not present" {
+        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult } -ParameterFilter { $Command -ne "Get-WinGetPackage" }
+
+        Install-WinUtilProgramWinget -Action Install -Programs @("Git.Git") | Out-Null
+
+        Should -Invoke -CommandName Invoke-WinUtilWinGetCommand -Times 1 -Exactly -ParameterFilter {
+            $Command -eq "Install-WinGetPackage"
+        }
+    }
+
+    It "treats a nothing-to-do status as skipped" {
+        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult -Status "NoApplicableUpgrade" }
+
+        (Install-WinUtilProgramWinget -Action Install -Programs @("Git.Git")).Outcome | Should -Be "Skipped"
+    }
+
+    It "treats an installer error as a failure" {
+        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult -Status "InstallError" -InstallerErrorCode 1603 }
+
+        $result = Install-WinUtilProgramWinget -Action Install -Programs @("Git.Git")
+
+        $result.Outcome | Should -Be "Failed"
+        $result.ExitCode | Should -Be 1603
+    }
+
+    It "treats no result at all as a failure" {
+        Mock Invoke-WinUtilWinGetCommand { }
+
+        (Install-WinUtilProgramWinget -Action Install -Programs @("Git.Git")).Outcome | Should -Be "Failed"
+    }
+
+    It "notes when a package wants a reboot" {
+        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult -RebootRequired $true }
+
+        Install-WinUtilProgramWinget -Action Install -Programs @("Git.Git") | Out-Null
+
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "WARN" -and $Message -like "*needs a reboot*"
+        }
     }
 }
 
