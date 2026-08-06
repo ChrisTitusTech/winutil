@@ -262,172 +262,115 @@ Describe "Invoke-WPFUnInstall entrypoint" {
     BeforeEach {
         $script:package = New-WinUtilPackage
         New-WinUtilInstallTestContext -Packages @($script:package)
-        $script:capturedUninstallScriptBlock = $null
-        $script:capturedUninstallParameterList = $null
+        $script:capturedUninstallJob = $null
 
         Mock Show-WinUtilMessage { "Yes" }
-        Mock Invoke-WPFRunspace {
-            $script:capturedUninstallScriptBlock = $ScriptBlock
-            $script:capturedUninstallParameterList = $ParameterList
-            [pscustomobject]@{ MockHandle = $true }
+        Mock Start-WinUtilJob {
+            $script:capturedUninstallJob = [pscustomobject]@{
+                Name = $Name
+                ScriptBlock = $ScriptBlock
+                Parameters = $Parameters
+                DisableAppList = [bool]$DisableAppList
+            }
         }
         Mock Write-WinUtilLog { }
     }
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name capturedUninstallScriptBlock -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name capturedUninstallParameterList -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name capturedUninstallJob -Scope Script -ErrorAction SilentlyContinue
     }
 
-    It "confirms and queues selected packages with the configured package manager preference" {
-        Invoke-WPFUnInstall -PackagesToUninstall @($script:package)
+    It "confirms and queues an uninstall job with the configured package manager preference" {
+        Invoke-WPFUnInstall
 
         Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
-            $Message -like "*This will uninstall the following applications:*" -and
-                $Message -like "*Git*" -and
-                $Title -eq "Are you sure?" -and
-                "$Button" -eq "YesNo" -and
-                "$Icon" -eq "Information"
+            $Title -eq "Are you sure?" -and $Button -eq "YesNo"
         }
-        Should -Invoke -CommandName Invoke-WPFRunspace -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock -is [scriptblock] -and
-                $ParameterList.Count -eq 2 -and
-                $ParameterList[0][0] -eq "PackagesToUninstall" -and
-                @($ParameterList[0][1]).Count -eq 1 -and
-                @($ParameterList[0][1])[0].winget -eq "Git.Git" -and
-                $ParameterList[1][0] -eq "ManagerPreference" -and
-                $ParameterList[1][1] -eq "Winget"
-        }
-        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
-            $Component -eq "Uninstall" -and
-                $Message -eq "Uninstall selected package(s): Git (winget: Git.Git)"
+        Should -Invoke -CommandName Start-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "Uninstall" -and
+                $ScriptBlock -is [scriptblock] -and
+                $DisableAppList -and
+                @($Parameters.PackagesToUninstall).Count -eq 1 -and
+                @($Parameters.PackagesToUninstall)[0].winget -eq "Git.Git" -and
+                $Parameters.ManagerPreference -eq "Winget"
         }
     }
 
     It "prompts and exits when no packages are selected" {
-        Invoke-WPFUnInstall -PackagesToUninstall @()
+        New-WinUtilInstallTestContext
+
+        Invoke-WPFUnInstall
 
         Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
-            $Message -eq "Please select the program(s) to uninstall" -and
-                $Title -eq "WinUtil" -and
-                $Button -eq "OK" -and
-                $Icon -eq "Warning"
+            $Message -eq "Please select the program(s) to uninstall"
         }
-        Should -Invoke -CommandName Invoke-WPFRunspace -Times 0 -Exactly
-    }
-
-    It "prompts and exits when another install process is running" {
-        $script:sync.ProcessRunning = $true
-
-        Invoke-WPFUnInstall -PackagesToUninstall @($script:package)
-
-        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
-            $Message -eq "[Invoke-WPFUnInstall] Install process is currently running" -and
-                $Title -eq "WinUtil" -and
-                $Button -eq "OK" -and
-                $Icon -eq "Warning"
-        }
-        Should -Invoke -CommandName Invoke-WPFRunspace -Times 0 -Exactly
+        Should -Invoke -CommandName Start-WinUtilJob -Times 0 -Exactly
     }
 
     It "exits without queueing uninstall when confirmation is declined" {
-        Mock Show-WinUtilMessage { "No" } -ParameterFilter { $Title -eq "Are you sure?" }
+        Mock Show-WinUtilMessage { "No" }
 
-        Invoke-WPFUnInstall -PackagesToUninstall @($script:package)
+        Invoke-WPFUnInstall
 
-        Should -Invoke -CommandName Invoke-WPFRunspace -Times 0 -Exactly
+        Should -Invoke -CommandName Start-WinUtilJob -Times 0 -Exactly
     }
 }
 
-Describe "Invoke-WPFUnInstall runspace body" {
+Describe "Invoke-WPFUnInstall job body" {
     BeforeEach {
         $script:package = New-WinUtilPackage
         New-WinUtilInstallTestContext -Packages @($script:package)
-        $script:capturedUninstallScriptBlock = $null
+        $script:capturedUninstallJob = $null
 
         Mock Show-WinUtilMessage { "Yes" }
-        Mock Invoke-WPFRunspace {
-            $script:capturedUninstallScriptBlock = $ScriptBlock
-            [pscustomobject]@{ MockHandle = $true }
+        Mock Start-WinUtilJob {
+            $script:capturedUninstallJob = [pscustomobject]@{
+                ScriptBlock = $ScriptBlock
+                Parameters = $Parameters
+            }
         }
         Mock Get-WinUtilSelectedPackages {
             New-WinUtilPackageSplit -Winget @("Git.Git") -Choco @("vlc")
         }
-        Mock Set-WinUtilTweaksProgressIndicator { }
+        Mock Write-WinUtilJobProgress { }
         Mock Install-WinUtilProgramWinget { }
         Mock Install-WinUtilProgramChoco { }
-        Mock Invoke-WPFUIThread { }
         Mock Write-WinUtilLog { }
         Mock Write-Host { }
-        Mock New-Item { }
     }
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name capturedUninstallScriptBlock -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name capturedUninstallJob -Scope Script -ErrorAction SilentlyContinue
     }
 
-    It "uninstalls split winget and choco packages and cleans up on success" {
-        Invoke-WPFUnInstall -PackagesToUninstall @($script:package)
+    It "uninstalls split winget and choco packages and reports progress" {
+        Invoke-WPFUnInstall
 
-        & $script:capturedUninstallScriptBlock -PackagesToUninstall @($script:package) -ManagerPreference "Winget"
+        $jobParameters = $script:capturedUninstallJob.Parameters
+        & $script:capturedUninstallJob.ScriptBlock @jobParameters
 
-        Should -Invoke -CommandName Get-WinUtilSelectedPackages -Times 1 -Exactly -ParameterFilter {
-            @($PackageList).Count -eq 1 -and $Preference -eq "Winget"
-        }
-        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "Preparing app uninstall (0/2)" -and $Percent -eq 0
-        }
-        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "Uninstalled Git.Git (1/2)" -and $Percent -eq 50
-        }
-        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "Uninstalled Chocolatey packages (2/2)" -and $Percent -eq 100
-        }
-        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "App uninstall finished" -and $Percent -eq 100
-        }
         Should -Invoke -CommandName Install-WinUtilProgramWinget -Times 1 -Exactly -ParameterFilter {
             $Action -eq "Uninstall" -and @($Programs)[0] -eq "Git.Git"
         }
         Should -Invoke -CommandName Install-WinUtilProgramChoco -Times 1 -Exactly -ParameterFilter {
             $Action -eq "Uninstall" -and @($Programs)[0] -eq "vlc"
         }
-        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock.ToString() -like '*$sync.ItemsControl.IsEnabled = $false*'
+        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Uninstalled Git.Git (1/2)" -and $Percent -eq 50
         }
-        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock.ToString() -like '*$sync.ItemsControl.IsEnabled = $true*'
+        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Uninstalled Chocolatey packages (2/2)" -and $Percent -eq 100
         }
-        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock.ToString() -like '*Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"*'
-        }
-        $script:sync.ProcessRunning | Should -BeFalse
     }
 
-    It "shows failure progress, sets taskbar error state, and clears ProcessRunning on failure" {
+    It "lets a failure surface so the job layer can handle it" {
         Mock Install-WinUtilProgramWinget { throw "winget failed" }
 
-        Invoke-WPFUnInstall -PackagesToUninstall @($script:package)
+        Invoke-WPFUnInstall
 
-        & $script:capturedUninstallScriptBlock -PackagesToUninstall @($script:package) -ManagerPreference "Winget"
-
-        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "App uninstall failed" -and $Percent -eq 100
-        }
-        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock.ToString() -like '*$sync.ItemsControl.IsEnabled = $false*'
-        }
-        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock.ToString() -like '*$sync.ItemsControl.IsEnabled = $true*'
-        }
-        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock.ToString() -like '*Set-WinUtilTaskbaritem -state "Error" -overlay "warning"*'
-        }
-        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
-            $Level -eq "ERROR" -and $Component -eq "Uninstall" -and $Message -like "Uninstall workflow failed:*"
-        }
-        $script:sync.ProcessRunning | Should -BeFalse
+        $jobParameters = $script:capturedUninstallJob.Parameters
+        { & $script:capturedUninstallJob.ScriptBlock @jobParameters } | Should -Throw "winget failed"
     }
 }

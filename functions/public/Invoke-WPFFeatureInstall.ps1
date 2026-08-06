@@ -6,31 +6,25 @@ function Invoke-WPFFeatureInstall {
 
     #>
 
-    if($sync.ProcessRunning) {
-        $msg = "[Invoke-WPFFeatureInstall] Install process is currently running."
-        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+    if ($null -eq $sync.selectedFeatures -or $sync.selectedFeatures.Count -eq 0) {
+        Show-WinUtilMessage -Message "No Windows Feature selected" -Title "WinUtil" -Button "OK" -Icon "Warning"
         return
     }
 
-    Invoke-WPFRunspace -ScriptBlock {
-        $Features = $sync.selectedFeatures
-        $sync.ProcessRunning = $true
-        if ($Features.count -eq 1) {
-            Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" }
-        } else {
-            Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" }
+    Start-WinUtilJob -Name "Features" -Description "Preparing Windows Features" -Parameters @{
+        Features = @($sync.selectedFeatures)
+    } -ScriptBlock {
+        param($Features)
+
+        $total = @($Features).Count
+        $completed = 0
+
+        foreach ($feature in $Features) {
+            $completed++
+            Write-WinUtilJobProgress -Status "Installing $feature ($completed/$total)" -Percent ([int]((($completed - 1) / $total) * 100))
+            Invoke-WinUtilFeatureInstall $feature
+            Write-WinUtilJobProgress -Status "Installed $feature ($completed/$total)" -Percent ([int](($completed / $total) * 100))
         }
-
-        $x = 0
-
-        $Features | ForEach-Object {
-            Invoke-WinUtilFeatureInstall $_
-            $X++
-            Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -value ($x/$Features.Count) }
-        }
-
-        $sync.ProcessRunning = $false
-        Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" }
 
         Write-Host "==================================="
         Write-Host "---   Features are Installed    ---"

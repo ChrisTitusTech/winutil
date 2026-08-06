@@ -37,6 +37,12 @@ BeforeAll {
     function Write-WinUtilLog {
         param($Message, $Level, $Component)
     }
+    function Start-WinUtilJob {
+        param([string]$Name, [scriptblock]$ScriptBlock, [hashtable]$Parameters, [string]$Description, [switch]$DisableAppList)
+    }
+    function Write-WinUtilJobProgress {
+        param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay)
+    }
     function Show-WinUtilMessage {
         param($Message, $Title, $Button, $Icon)
     }
@@ -373,11 +379,10 @@ Describe "Invoke-WPFAppxInstall" {
         Mock Set-WinUtilTweaksProgressIndicator { }
         Mock Invoke-WPFUIThread { }
         Mock Install-WinUtilAPPX { }
-        Mock Invoke-WPFRunspace {
-            $script:appxInstallProcessRunningAtLaunch = $script:sync.ProcessRunning
+        Mock Write-WinUtilJobProgress { }
+        Mock Start-WinUtilJob {
             $script:capturedAppxInstallScriptBlock = $ScriptBlock
-            $script:capturedAppxInstallParameterList = $ParameterList
-            [pscustomobject]@{ MockHandle = $true }
+            $script:capturedAppxInstallParameters = $Parameters
         }
     }
 
@@ -397,67 +402,48 @@ Describe "Invoke-WPFAppxInstall" {
                 $Button -eq "OK" -and
                 $Icon -eq "Error"
         }
-        Should -Invoke -CommandName Invoke-WPFRunspace -Times 0 -Exactly
+        Should -Invoke -CommandName Start-WinUtilJob -Times 0 -Exactly
     }
 
-    It "prevents overlapping AppX install operations" {
-        $script:sync.ProcessRunning = $true
+    It "queues an install job for the selected AppX packages" {
         $script:sync.selectedAppx.Add("WPFAppxExample")
 
         Invoke-WPFAppxInstall
 
-        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
-            $Message -eq "An AppX process is currently running." -and
-                $Title -eq "WinUtil" -and
-                $Button -eq "OK" -and
-                $Icon -eq "Warning"
+        Should -Invoke -CommandName Start-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "AppX install"
         }
-        Should -Invoke -CommandName Invoke-WPFRunspace -Times 0 -Exactly
+        $script:capturedAppxInstallParameters.Selected[0] | Should -Be "WPFAppxExample"
     }
 
     It "installs selected AppX packages with their Store IDs" {
         $script:sync.selectedAppx.Add("WPFAppxExample")
 
         Invoke-WPFAppxInstall
-        $script:appxInstallProcessRunningAtLaunch | Should -BeTrue
-        & $script:capturedAppxInstallScriptBlock -selected @("WPFAppxExample") -apps $script:sync.configs.appxHashtable
+        $jobParameters = $script:capturedAppxInstallParameters
+        & $script:capturedAppxInstallScriptBlock @jobParameters
 
-        $script:capturedAppxInstallParameterList[0][1][0] | Should -Be "WPFAppxExample"
         Should -Invoke -CommandName Install-WinUtilAPPX -Times 1 -Exactly -ParameterFilter {
             $Name -eq "Example.Package" -and $StoreId -eq "9EXAMPLE1234"
         }
-        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "Installing Example App (1/1)" -and $Percent -eq 0
+        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Installing Example App (1/1)" -and $Percent -eq 0
         }
-        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "Installed Example App (1/1)" -and $Percent -eq 100
+        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Installed Example App (1/1)" -and $Percent -eq 100
         }
-        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "AppX install finished" -and $Percent -eq 100
-        }
-        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock.ToString() -like '*Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"*'
-        }
-        $script:sync.ProcessRunning | Should -BeFalse
     }
 
-    It "shows failure feedback and clears ProcessRunning when install fails" {
+    It "lets an install failure surface so the job layer can handle it" {
         $script:sync.selectedAppx.Add("WPFAppxExample")
         Mock Install-WinUtilAPPX { throw "Install failed" }
 
         Invoke-WPFAppxInstall
-        & $script:capturedAppxInstallScriptBlock -selected @("WPFAppxExample") -apps $script:sync.configs.appxHashtable
+        $jobParameters = $script:capturedAppxInstallParameters
 
-        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "AppX install failed" -and $Percent -eq 100
-        }
-        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock.ToString() -like '*Set-WinUtilTaskbaritem -state "Error" -overlay "warning"*'
-        }
-        $script:sync.ProcessRunning | Should -BeFalse
+        { & $script:capturedAppxInstallScriptBlock @jobParameters } | Should -Throw "Install failed"
     }
 }
-
 Describe "Invoke-WPFAppxRemoval entrypoint" {
     BeforeEach {
         $script:sync = [Hashtable]::Synchronized(@{

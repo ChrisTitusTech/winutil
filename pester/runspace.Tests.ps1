@@ -7,6 +7,12 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Close-WinUtilRunspacePool.ps1")
     . (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilRunspacePool.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFRunspace.ps1")
+    function Start-WinUtilJob {
+        param([string]$Name, [scriptblock]$ScriptBlock, [hashtable]$Parameters, [string]$Description, [switch]$DisableAppList)
+    }
+    function Show-WinUtilMessage {
+        param($Message, $Title, $Button, $Icon)
+    }
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFFeatureInstall.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFAppxRemoval.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFundoall.ps1")
@@ -159,19 +165,22 @@ Describe "Public runspace callers" {
         })
 
         Mock Invoke-WPFRunspace { [pscustomobject]@{ MockHandle = $true } }
+        Mock Start-WinUtilJob { }
     }
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
     }
 
-    It "queues selected feature installation without executing the runspace body" {
+    It "queues selected feature installation as a job without executing the body" {
         $script:sync.selectedFeatures.Add("WPFFeaturesSandbox")
 
         Invoke-WPFFeatureInstall
 
-        Should -Invoke -CommandName Invoke-WPFRunspace -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock -is [scriptblock] -and $null -eq $ArgumentList -and $null -eq $ParameterList
+        Should -Invoke -CommandName Start-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "Features" -and
+                $ScriptBlock -is [scriptblock] -and
+                @($Parameters.Features)[0] -eq "WPFFeaturesSandbox"
         }
     }
 
