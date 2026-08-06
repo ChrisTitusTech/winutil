@@ -19,6 +19,10 @@ Function Install-WinUtilProgramWinget {
     .PARAMETER ProgressSpan
         How much of the overall bar this package accounts for.
 
+    .PARAMETER Label
+        How the package should be named in the progress text. Callers working through a list
+        pass the position in it, so the status keeps saying where the run is overall.
+
     #>
     param (
         [Parameter(Mandatory=$true)]
@@ -30,7 +34,9 @@ Function Install-WinUtilProgramWinget {
 
         [int]$ProgressBase = 0,
 
-        [int]$ProgressSpan = 0
+        [int]$ProgressSpan = 0,
+
+        [string]$Label
     )
 
     # WinGet reports "there was nothing to do" through the exit code rather than as success
@@ -100,8 +106,9 @@ Function Install-WinUtilProgramWinget {
                 $command = if ($isInstalled) { "Update-WinGetPackage" } else { "Install-WinGetPackage" }
             }
 
+            $progressLabel = if ($Label) { $Label } else { $program }
             $results = Invoke-WinUtilWinGetCommand -Command $command -Parameters $parameters `
-                -ProgressBase $ProgressBase -ProgressSpan $ProgressSpan -Label $program
+                -ProgressBase $ProgressBase -ProgressSpan $ProgressSpan -Label $progressLabel
             $result = @($results)[0]
 
             if ($null -eq $result) {

@@ -111,6 +111,17 @@ Describe "Install-WinUtilProgramWinget through the WinGet client module" {
         }
     }
 
+    # Without it the status reads as a package on its own, losing where the run is overall
+    It "keeps the caller's label so the position in the run stays visible" {
+        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult } -ParameterFilter { $Command -ne "Get-WinGetPackage" }
+
+        Install-WinUtilProgramWinget -Action Install -Programs @("Git.Git") -Label "Git.Git (2/7)" | Out-Null
+
+        Should -Invoke -CommandName Invoke-WinUtilWinGetCommand -Times 1 -Exactly -ParameterFilter {
+            $Command -ne "Get-WinGetPackage" -and $Label -eq "Git.Git (2/7)"
+        }
+    }
+
     It "uses the uninstall cmdlet for an uninstall" {
         Mock Invoke-WinUtilWinGetCommand { New-WinGetResult } -ParameterFilter { $Command -eq "Get-WinGetPackage" }
         Mock Invoke-WinUtilWinGetCommand { New-WinGetResult } -ParameterFilter { $Command -eq "Uninstall-WinGetPackage" }
