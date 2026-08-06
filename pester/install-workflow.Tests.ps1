@@ -38,6 +38,9 @@ BeforeAll {
     function Install-WinUtilProgramChoco {
         param($Action, $Programs)
     }
+    function Complete-WinUtilPackageRun {
+        param([string]$Action, [object[]]$Results)
+    }
     function Invoke-WPFUIThread {
         param([scriptblock]$ScriptBlock, [hashtable]$Parameters, [switch]$Async)
     }

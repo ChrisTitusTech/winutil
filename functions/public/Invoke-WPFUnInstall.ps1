@@ -47,12 +47,14 @@ function Invoke-WPFUnInstall {
             New-Item -Path "$Env:SystemRoot\SystemApps\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\MicrosoftEdge.exe" -Force
         }
 
+        $results = @()
+
         if ($packagesWinget.Count -gt 0) {
             foreach ($program in $packagesWinget) {
                 $position = $completedPackages + 1
                 Write-WinUtilJobProgress -Status "Uninstalling $program ($position/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
 
-                Install-WinUtilProgramWinget -Action Uninstall -Programs @($program)
+                $results += Install-WinUtilProgramWinget -Action Uninstall -Programs @($program)
                 $completedPackages++
                 Write-WinUtilJobProgress -Status "Uninstalled $program ($completedPackages/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
             }
@@ -62,9 +64,11 @@ function Invoke-WPFUnInstall {
             $position = $completedPackages + 1
             Write-WinUtilJobProgress -Status "Uninstalling Chocolatey packages ($position/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
 
-            Install-WinUtilProgramChoco -Action Uninstall -Programs $packagesChoco
+            $results += Install-WinUtilProgramChoco -Action Uninstall -Programs $packagesChoco
             $completedPackages += @($packagesChoco).Count
             Write-WinUtilJobProgress -Status "Uninstalled Chocolatey packages ($completedPackages/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
         }
+
+        Complete-WinUtilPackageRun -Action "Uninstall" -Results $results
     }
 }

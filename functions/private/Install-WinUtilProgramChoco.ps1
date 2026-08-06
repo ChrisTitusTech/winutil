@@ -1,4 +1,14 @@
 function Install-WinUtilProgramChoco {
+    <#
+
+    .SYNOPSIS
+        Installs or uninstalls packages with Chocolatey and reports the outcome
+
+    .DESCRIPTION
+        Chocolatey takes the whole package list in one call, so the result covers the batch
+        rather than an entry per package.
+
+    #>
     param (
         [Parameter(Mandatory=$true)]
         [ValidateSet("Install", "Uninstall")]
@@ -16,5 +26,24 @@ function Install-WinUtilProgramChoco {
 
     Write-WinUtilLog -Component "Package" -Message "$Action choco package(s): $($Programs -join ', ')"
     $process = Start-Process -FilePath choco -ArgumentList $arguments -NoNewWindow -Wait -PassThru
-    Write-WinUtilLog -Component "Package" -Message "$Action choco package(s) completed: $($Programs -join ', ') (exit code: $($process.ExitCode))"
+    $exitCode = $process.ExitCode
+
+    # 1641 and 3010 mean the work succeeded and Windows wants a reboot
+    if ($exitCode -in @(0, 1641, 3010)) {
+        $outcome = "Succeeded"
+    } else {
+        $outcome = "Failed"
+    }
+
+    $level = if ($outcome -eq "Failed") { "ERROR" } else { "INFO" }
+    Write-WinUtilLog -Level $level -Component "Package" -Message "$Action choco package(s) $($outcome.ToLowerInvariant()): $($Programs -join ', ') (exit code: $exitCode)"
+
+    [pscustomobject]@{
+        Package = ($Programs -join ', ')
+        Manager = "choco"
+        Action = $Action
+        ExitCode = $exitCode
+        Outcome = $outcome
+        Detail = "exit code $exitCode"
+    }
 }

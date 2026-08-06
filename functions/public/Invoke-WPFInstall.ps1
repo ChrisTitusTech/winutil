@@ -34,13 +34,15 @@ function Invoke-WPFInstall {
         $completedPackages = 0
         Write-WinUtilLog -Component "Install" -Message "Install package manager split: winget=$(@($packagesWinget).Count), choco=$(@($packagesChoco).Count)"
 
+        $results = @()
+
         if ($packagesWinget.Count -gt 0 -and $packagesWinget -ne "0") {
             Install-WinUtilWinget
             foreach ($program in $packagesWinget) {
                 $position = $completedPackages + 1
                 Write-WinUtilJobProgress -Status "Installing $program ($position/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
 
-                Install-WinUtilProgramWinget -Action Install -Programs @($program)
+                $results += Install-WinUtilProgramWinget -Action Install -Programs @($program)
                 $completedPackages++
                 Write-WinUtilJobProgress -Status "Installed $program ($completedPackages/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
             }
@@ -51,9 +53,11 @@ function Invoke-WPFInstall {
             Write-WinUtilJobProgress -Status "Installing Chocolatey packages ($position/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
 
             Install-WinUtilChoco
-            Install-WinUtilProgramChoco -Action Install -Programs $packagesChoco
+            $results += Install-WinUtilProgramChoco -Action Install -Programs $packagesChoco
             $completedPackages += @($packagesChoco).Count
             Write-WinUtilJobProgress -Status "Installed Chocolatey packages ($completedPackages/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
         }
+
+        Complete-WinUtilPackageRun -Action "Install" -Results $results
     }
 }
