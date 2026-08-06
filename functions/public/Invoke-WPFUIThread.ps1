@@ -26,6 +26,10 @@ function Invoke-WPFUIThread {
         .PARAMETER Async
             Post the work and return immediately instead of waiting for it. Use for progress and
             log updates, which must never stall the caller.
+
+        .PARAMETER PassThru
+            Return what the body produced. Off by default so that a caller who only wanted a
+            control updated does not get stray output mixed into its own return value.
     #>
     param(
         [Parameter(Mandatory, Position = 0)]
@@ -33,7 +37,9 @@ function Invoke-WPFUIThread {
 
         [hashtable]$Parameters = @{},
 
-        [switch]$Async
+        [switch]$Async,
+
+        [switch]$PassThru
     )
 
     $dispatcher = $sync.Form.Dispatcher
@@ -42,7 +48,9 @@ function Invoke-WPFUIThread {
     }
 
     if (-not $Async -and $dispatcher.CheckAccess()) {
-        return (& $ScriptBlock @Parameters)
+        $inlineResult = & $ScriptBlock @Parameters
+        if ($PassThru) { return $inlineResult }
+        return
     }
 
     $executor = $sync.UIDispatchDelegate
@@ -52,7 +60,9 @@ function Invoke-WPFUIThread {
             $null = $dispatcher.BeginInvoke([Windows.Threading.DispatcherPriority]::Background, [action]$ScriptBlock)
             return
         }
-        return $dispatcher.Invoke([action]$ScriptBlock)
+        $fallbackResult = $dispatcher.Invoke([action]$ScriptBlock)
+        if ($PassThru) { return $fallbackResult }
+        return
     }
 
     $work = @{
@@ -65,5 +75,6 @@ function Invoke-WPFUIThread {
         return
     }
 
-    return $dispatcher.Invoke($executor, @($work))
+    $result = $dispatcher.Invoke($executor, @($work))
+    if ($PassThru) { return $result }
 }

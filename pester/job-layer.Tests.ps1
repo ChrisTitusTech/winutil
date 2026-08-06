@@ -5,12 +5,13 @@
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     . (Join-Path $script:repoRoot "functions\private\Start-WinUtilJob.ps1")
+    . (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIThread.ps1")
 
     function Invoke-WPFRunspace {
         param($ArgumentList, $ParameterList, [scriptblock]$ScriptBlock)
     }
-    function Invoke-WPFUIThread {
-        param([scriptblock]$ScriptBlock, [hashtable]$Parameters, [switch]$Async)
+    function Write-WinUtilJobBanner {
+        param([string]$Message, [string]$Level)
     }
     function Write-WinUtilLog {
         param($Message, $Level, $Component)
@@ -59,6 +60,37 @@ Describe "Interface thread dispatch" {
             $source | Should -Match ([regex]::Escape('Invoke-WPFUIThread -Async -Parameters @{'))
             $source | Should -Not -Match ([regex]::Escape('GetNewClosure'))
         }
+    }
+}
+
+Describe "Invoke-WPFUIThread output" {
+    BeforeEach {
+        $dispatcher = [pscustomobject]@{ HasShutdownStarted = $false }
+        $dispatcher | Add-Member -MemberType ScriptMethod -Name CheckAccess -Value { $true }
+        $script:sync = [Hashtable]::Synchronized(@{
+            Form = [pscustomobject]@{ Dispatcher = $dispatcher }
+        })
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+    }
+
+    # Output from the body must not join the caller's own return value: a caller that only
+    # wanted a control updated would otherwise return an array and every index read wrong.
+    It "swallows the body's output by default" {
+        @(Invoke-WPFUIThread -ScriptBlock { "stray" }).Count | Should -Be 0
+    }
+
+    It "returns the body's output when asked" {
+        Invoke-WPFUIThread -PassThru -ScriptBlock { "wanted" } | Should -Be "wanted"
+    }
+
+    It "passes values in rather than relying on the caller's scope" {
+        Invoke-WPFUIThread -PassThru -Parameters @{ Value = 7 } -ScriptBlock {
+            param($Value)
+            $Value * 2
+        } | Should -Be 14
     }
 }
 

@@ -11,6 +11,12 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Install-WinUtilProgramChoco.ps1")
 
     function Invoke-WPFUIThread { }
+    function Write-WinUtilJobBanner {
+        param([string]$Message, [string]$Level)
+    }
+    function Write-WinUtilJobProgress {
+        param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay, [switch]$Hide)
+    }
     function Write-WinUtilLog { }
 }
 
@@ -69,6 +75,15 @@ Describe "Get-WinUtilSelectedPackages" {
 
         (@($result["Choco"]) -join "|") | Should -Be "git|vlc"
         @($result["Winget"]).Count | Should -Be 0
+    }
+
+    It "returns exactly one object so the caller can index the split" {
+        # A stray value on the output stream would make this an array, and every package list
+        # would then read back empty.
+        $result = @(Get-WinUtilSelectedPackages -PackageList @([pscustomobject]@{ winget = "Git.Git" }) -Preference "Winget")
+
+        $result.Count | Should -Be 1
+        (@($result[0]["Winget"]) -join "|") | Should -Be "Git.Git"
     }
 
     It "returns empty package lists for an empty selection" {

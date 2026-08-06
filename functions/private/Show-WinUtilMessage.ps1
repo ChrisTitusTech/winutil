@@ -21,7 +21,7 @@ function Show-WinUtilMessage {
         return [System.Windows.MessageBox]::Show($Message, $Title, $Button, $Icon)
     }
 
-    return Invoke-WPFUIThread -Parameters @{
+    return Invoke-WPFUIThread -PassThru -Parameters @{
         Message = $Message
         Title = $Title
         Button = $Button
