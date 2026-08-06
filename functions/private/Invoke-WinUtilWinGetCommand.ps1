@@ -47,21 +47,57 @@ function Invoke-WinUtilWinGetCommand {
 
         $handle = $shell.BeginInvoke()
 
+        # The module reports a download as a percentage but an install only as 0 then 100, and
+        # the install is often half the wall-clock time. Giving the download the first half of
+        # the slice keeps the bar from looking finished while the installer is still running.
+        $downloadShare = 0.5
+        $started = [System.Diagnostics.Stopwatch]::StartNew()
         $reported = ""
+        $indeterminate = $false
+
+        # A byte sample can be superseded within milliseconds, so the whole collection is
+        # scanned rather than only its last entry. The records accumulate, so nothing is lost
+        # to a slow poll.
+        $downloadPattern = '[\d.]+\s*[KMGT]?B\s*/'
+        $lastPercent = -1
+
         while (-not $handle.IsCompleted) {
-            $latest = @($shell.Streams.Progress)[-1]
+            $records = @($shell.Streams.Progress)
+            $latest = $records[-1]
             if ($latest) {
-                $status = if ($Label) { "$Label - $($latest.StatusDescription)" } else { $latest.StatusDescription }
-                # The module uses -1 for phases it cannot measure, such as post-install
-                if ($latest.PercentComplete -ge 0 -and $ProgressSpan -gt 0) {
-                    $percent = $ProgressBase + [int](($latest.PercentComplete / 100) * $ProgressSpan)
-                    Write-WinUtilJobProgress -Status $status -Percent $percent
-                } elseif ($status -ne $reported) {
-                    Write-WinUtilJobProgress -Status $status
+                $measured = @($records | Where-Object { $_.StatusDescription -match $downloadPattern -and $_.PercentComplete -ge 0 })
+                $downloading = $latest.StatusDescription -match "^\s*Downloading" -or $latest.StatusDescription -match $downloadPattern
+
+                if ($downloading -and $ProgressSpan -gt 0) {
+                    if ($indeterminate) {
+                        Write-WinUtilJobProgress -State "Normal"
+                        $indeterminate = $false
+                    }
+                    $best = if ($measured.Count -gt 0) { ($measured | Measure-Object -Property PercentComplete -Maximum).Maximum } else { 0 }
+                    $percent = $ProgressBase + [int](($best / 100) * $ProgressSpan * $downloadShare)
+                    if ($percent -ne $lastPercent -or $latest.StatusDescription -ne $reported) {
+                        Write-WinUtilJobProgress -Status "$Label - $($latest.StatusDescription)" -Percent $percent
+                        $lastPercent = $percent
+                        $reported = $latest.StatusDescription
+                    }
+                } else {
+                    # The installer reports nothing until it exits, so show that it is running
+                    if (-not $indeterminate -and $ProgressSpan -gt 0) {
+                        Write-WinUtilJobProgress -Percent ($ProgressBase + [int]($ProgressSpan * $downloadShare)) -State "Indeterminate"
+                        $indeterminate = $true
+                    }
+                    $status = "$Label - $($latest.StatusDescription) ($([int]$started.Elapsed.TotalSeconds)s)"
+                    if ($status -ne $reported) {
+                        Write-WinUtilJobProgress -Status $status
+                        $reported = $status
+                    }
                 }
-                $reported = $status
             }
-            Start-Sleep -Milliseconds 150
+            Start-Sleep -Milliseconds 100
+        }
+
+        if ($indeterminate) {
+            Write-WinUtilJobProgress -State "Normal"
         }
 
         $output = $shell.EndInvoke($handle)

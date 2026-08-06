@@ -111,13 +111,43 @@ Describe "Install-WinUtilProgramWinget through the WinGet client module" {
     }
 
     It "uses the uninstall cmdlet for an uninstall" {
-        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult }
+        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult } -ParameterFilter { $Command -eq "Get-WinGetPackage" }
+        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult } -ParameterFilter { $Command -eq "Uninstall-WinGetPackage" }
 
         Install-WinUtilProgramWinget -Action Uninstall -Programs @("Git.Git") | Out-Null
 
         Should -Invoke -CommandName Invoke-WinUtilWinGetCommand -Times 1 -Exactly -ParameterFilter {
             $Command -eq "Uninstall-WinGetPackage"
         }
+    }
+
+    # Asking winget to remove something it cannot see returns UninstallError, which reads as a
+    # failed run for a package the user does not have.
+    It "skips uninstalling a package that is not installed" {
+        $result = Install-WinUtilProgramWinget -Action Uninstall -Programs @("Git.Git")
+
+        $result.Outcome | Should -Be "Skipped"
+        $result.Detail | Should -Be "not installed"
+        Should -Invoke -CommandName Invoke-WinUtilWinGetCommand -Times 0 -Exactly -ParameterFilter {
+            $Command -eq "Uninstall-WinGetPackage"
+        }
+    }
+
+    It "reports the extended error code when a package fails" {
+        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult } -ParameterFilter { $Command -eq "Get-WinGetPackage" }
+        Mock Invoke-WinUtilWinGetCommand {
+            [pscustomobject]@{
+                Status = "UninstallError"
+                InstallerErrorCode = 0
+                ExtendedErrorCode = "Exception from HRESULT: 0x8A15004F"
+                RebootRequired = $false
+            }
+        } -ParameterFilter { $Command -eq "Uninstall-WinGetPackage" }
+
+        $result = Install-WinUtilProgramWinget -Action Uninstall -Programs @("Git.Git")
+
+        $result.Outcome | Should -Be "Failed"
+        $result.Detail | Should -Match "0x8A15004F"
     }
 
     # Install-WinGetPackage re-downloads and re-runs the installer for a package that is

@@ -68,23 +68,36 @@ Function Install-WinUtilProgramWinget {
                 MatchOption = "EqualsCaseInsensitive"
             }
 
+            # Both actions need to know whether the package is there before acting on it
+            $existing = Invoke-WinUtilWinGetCommand -Command "Get-WinGetPackage" -Parameters @{
+                Id = $program
+                MatchOption = "EqualsCaseInsensitive"
+                ErrorAction = "SilentlyContinue"
+            }
+            $isInstalled = @($existing).Count -gt 0 -and $null -ne @($existing)[0]
+
             if ($Action -eq "Uninstall") {
+                if (-not $isInstalled) {
+                    # Asking winget to remove something it cannot see is an error, but for the
+                    # user the package is already gone
+                    Write-WinUtilLog -Component "Package" -Message "Uninstall winget package skipped: $program (not installed)"
+                    [pscustomobject]@{
+                        Package = $program
+                        Manager = "winget"
+                        Action = $Action
+                        ExitCode = 0
+                        Outcome = "Skipped"
+                        Detail = "not installed"
+                    }
+                    continue
+                }
                 $command = "Uninstall-WinGetPackage"
             } else {
                 # Install-WinGetPackage re-downloads and re-runs the installer for a package
                 # that is already present, so an install pass would reinstall everything the
                 # machine already has. Update-WinGetPackage upgrades it or reports
                 # NoApplicableUpgrade, which is what "install or upgrade" should mean.
-                $existing = Invoke-WinUtilWinGetCommand -Command "Get-WinGetPackage" -Parameters @{
-                    Id = $program
-                    MatchOption = "EqualsCaseInsensitive"
-                    ErrorAction = "SilentlyContinue"
-                }
-                $command = if (@($existing).Count -gt 0 -and $null -ne @($existing)[0]) {
-                    "Update-WinGetPackage"
-                } else {
-                    "Install-WinGetPackage"
-                }
+                $command = if ($isInstalled) { "Update-WinGetPackage" } else { "Install-WinGetPackage" }
             }
 
             $results = Invoke-WinUtilWinGetCommand -Command $command -Parameters $parameters `
@@ -105,7 +118,9 @@ Function Install-WinUtilProgramWinget {
                     $detail = $status
                 } else {
                     $outcome = "Failed"
-                    $detail = "status $status$(if ($exitCode -ne 0) { ", installer error $exitCode" })"
+                    $detail = "status $status"
+                    if ($exitCode -ne 0) { $detail += ", installer error $exitCode" }
+                    if ($result.ExtendedErrorCode) { $detail += ", $($result.ExtendedErrorCode)" }
                 }
 
                 if ($result.RebootRequired) {

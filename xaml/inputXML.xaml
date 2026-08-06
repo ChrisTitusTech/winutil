@@ -960,6 +960,26 @@
                                 <Border Name="PART_Indicator" CornerRadius="4" Background="{DynamicResource ProgressBarForegroundColor}" HorizontalAlignment="Left"/>
                             </Grid>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <!-- Work whose length cannot be measured, such as an installer that
+                                 reports nothing until it exits. Pulsing says "still running"
+                                 where a static bar would read as finished. -->
+                            <Trigger Property="IsIndeterminate" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard Name="IndeterminatePulse">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="PART_Indicator"
+                                                             Storyboard.TargetProperty="Opacity"
+                                                             From="1.0" To="0.35" Duration="0:0:0.9"
+                                                             AutoReverse="True" RepeatBehavior="Forever"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <StopStoryboard BeginStoryboardName="IndeterminatePulse"/>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
