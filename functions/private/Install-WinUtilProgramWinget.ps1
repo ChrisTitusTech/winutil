@@ -118,9 +118,26 @@ Function Install-WinUtilProgramWinget {
                     $detail = $status
                 } else {
                     $outcome = "Failed"
-                    $detail = "status $status"
-                    if ($exitCode -ne 0) { $detail += ", installer error $exitCode" }
-                    if ($result.ExtendedErrorCode) { $detail += ", $($result.ExtendedErrorCode)" }
+
+                    # The module returns an HRESULT where the command line prints a sentence.
+                    # It is the same number, so the same table explains it.
+                    $wingetCode = 0
+                    $extended = $result.ExtendedErrorCode
+                    if ($extended -is [System.Exception]) {
+                        $wingetCode = $extended.HResult
+                    } elseif ($extended -and "$extended" -match '0x([0-9A-Fa-f]{8})') {
+                        # These codes have the high bit set, so the unsigned value has to be
+                        # wrapped rather than cast, which would overflow
+                        $unsigned = [uint32]("0x$($Matches[1])")
+                        $wingetCode = if ($unsigned -gt [int]::MaxValue) { [int]($unsigned - 4294967296) } else { [int]$unsigned }
+                    }
+
+                    $explanation = Get-WinUtilWinGetErrorMessage -Code $wingetCode
+                    if (-not $explanation -and $exitCode -ne 0) {
+                        $explanation = "The installer returned $exitCode."
+                    }
+
+                    $detail = if ($explanation) { "$status - $explanation" } else { "status $status" }
                 }
 
                 if ($result.RebootRequired) {
@@ -145,7 +162,7 @@ Function Install-WinUtilProgramWinget {
                 $detail = $nothingToDo[$exitCode]
             } else {
                 $outcome = "Failed"
-                $detail = "exit code $exitCode"
+                $detail = Get-WinUtilWinGetErrorMessage -Code $exitCode
             }
         }
 

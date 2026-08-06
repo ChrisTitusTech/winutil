@@ -22,12 +22,30 @@ function Write-WinUtilJobBanner {
         [string]$Level = "INFO"
     )
 
-    $line = "-- $Message --"
-    $border = "=" * $line.Length
+    # Wrapped, because a failure listing several packages would otherwise draw a box wider
+    # than the console
+    $width = 76
+    $words = $Message -split '\s+'
+    $lines = [System.Collections.Generic.List[string]]::new()
+    $current = ""
+    foreach ($word in $words) {
+        if ($current.Length -gt 0 -and ($current.Length + 1 + $word.Length) -gt $width) {
+            $lines.Add($current)
+            $current = $word
+        } else {
+            $current = if ($current.Length -eq 0) { $word } else { "$current $word" }
+        }
+    }
+    if ($current.Length -gt 0) { $lines.Add($current) }
+
+    $longest = ($lines | Measure-Object -Property Length -Maximum).Maximum
+    $border = "=" * ($longest + 6)
     $colour = if ($Level -eq "ERROR") { "Red" } else { "Cyan" }
 
     Write-Host ""
     Write-Host $border -ForegroundColor $colour
-    Write-Host $line -ForegroundColor $colour
+    foreach ($line in $lines) {
+        Write-Host ("-- {0}$(' ' * ($longest - $line.Length)) --" -f $line) -ForegroundColor $colour
+    }
     Write-Host $border -ForegroundColor $colour
 }

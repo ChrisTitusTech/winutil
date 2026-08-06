@@ -5,6 +5,7 @@
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilWinGetErrorMessage.ps1")
     . (Join-Path $script:repoRoot "functions\private\Install-WinUtilProgramWinget.ps1")
     . (Join-Path $script:repoRoot "functions\private\Install-WinUtilProgramChoco.ps1")
     . (Join-Path $script:repoRoot "functions\private\Complete-WinUtilPackageRun.ps1")
@@ -253,7 +254,7 @@ Describe "Complete-WinUtilPackageRun" {
         )
 
         { Complete-WinUtilPackageRun -Action "Install" -Results $results } |
-            Should -Throw "1 of 2 package(s) failed: b"
+            Should -Throw "1 of 2 package(s) failed: b. *"
     }
 
     It "accepts an empty run" {
