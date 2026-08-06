@@ -52,6 +52,14 @@ Describe "Set-WinUtilDNS" {
                         Secondary6 = "2606:4700:4700::1001"
                         DohTemplate = "https://cloudflare-dns.com/dns-query"
                     }
+                    Mullvad = [pscustomobject]@{
+                        Primary = "194.242.2.2"
+                        Secondary = ""
+                        Primary6 = "2a07:e340::2"
+                        Secondary6 = ""
+                        DohOnly = $true
+                        DohTemplate = "https://dns.mullvad.net/dns-query"
+                    }
                 }
             }
         })
@@ -129,6 +137,34 @@ Describe "Set-WinUtilDNS" {
                 $AutoUpgrade -eq $true
         }
         Should -Invoke -CommandName Add-DnsClientDohServerAddress -Times 3 -Exactly
+    }
+
+    It "filters empty DNS server addresses" {
+        Set-WinUtilDNS -DNSProvider "Mullvad"
+
+        Should -Invoke -CommandName Set-DnsClientServerAddress -Times 1 -Exactly -ParameterFilter {
+            $InterfaceIndex -eq 7 -and
+                $ServerAddresses.Count -eq 1 -and
+                $ServerAddresses[0] -eq "194.242.2.2"
+        }
+        Should -Invoke -CommandName Set-DnsClientServerAddress -Times 1 -Exactly -ParameterFilter {
+            $InterfaceIndex -eq 7 -and
+                $ServerAddresses.Count -eq 1 -and
+                $ServerAddresses[0] -eq "2a07:e340::2"
+        }
+        Should -Invoke -CommandName Add-DnsClientDohServerAddress -Times 2 -Exactly
+    }
+
+    It "does not apply a DoH-only provider when DoH is unsupported" {
+        Mock Get-Command { return $null } -ParameterFilter { $Name -eq "Add-DnsClientDohServerAddress" }
+
+        Set-WinUtilDNS -DNSProvider "Mullvad"
+
+        Should -Invoke -CommandName Set-DnsClientServerAddress -Times 0 -Exactly
+        Should -Invoke -CommandName Add-DnsClientDohServerAddress -Times 0 -Exactly
+        Should -Invoke -CommandName Write-Warning -Times 1 -Exactly -ParameterFilter {
+            $Message -eq "DNS provider Mullvad requires DNS over HTTPS, which is not supported on this system."
+        }
     }
 
     It "resets DNS to DHCP and removes the applied DoH configuration" {

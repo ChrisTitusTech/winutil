@@ -34,6 +34,12 @@ function Set-WinUtilDNS {
         }
 
         $dohSupported = [bool](Get-Command Add-DnsClientDohServerAddress -ErrorAction SilentlyContinue)
+        if ($DNSProvider -ne "DHCP" -and $dns.DohOnly -and -not $dohSupported) {
+            Write-Warning "DNS provider $DNSProvider requires DNS over HTTPS, which is not supported on this system."
+            Write-WinUtilLog -Level "ERROR" -Component "DNS" -Message "DNS provider $DNSProvider requires DNS over HTTPS, which is not supported on this system."
+            return
+        }
+
         $dnscacheBase = "HKLM:\System\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters"
 
         Foreach ($Adapter in $Adapters) {
@@ -64,10 +70,12 @@ function Set-WinUtilDNS {
                     Remove-Item -Path $dohInterfaceSettings -Recurse -Force -ErrorAction SilentlyContinue
                 }
             } else {
+                $ipv4Addresses = @(@($dns.Primary, $dns.Secondary) | Where-Object { $_ })
+                $ipv6Addresses = @(@($dns.Primary6, $dns.Secondary6) | Where-Object { $_ })
                 Write-WinUtilLog -Component "DNS" -Message "Setting IPv4 DNS on adapter $($Adapter.Name) (ifIndex: $($Adapter.ifIndex)) to $($dns.Primary), $($dns.Secondary)."
-                Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ServerAddresses ($dns.Primary, $dns.Secondary)
+                Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ServerAddresses $ipv4Addresses
                 Write-WinUtilLog -Component "DNS" -Message "Setting IPv6 DNS on adapter $($Adapter.Name) (ifIndex: $($Adapter.ifIndex)) to $($dns.Primary6), $($dns.Secondary6)."
-                Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ServerAddresses ($dns.Primary6, $dns.Secondary6)
+                Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ServerAddresses $ipv6Addresses
 
                 if ($dohSupported -and $dns.DohTemplate) {
                     $ips = @($dns.Primary, $dns.Secondary, $dns.Primary6, $dns.Secondary6) | Where-Object { $_ }

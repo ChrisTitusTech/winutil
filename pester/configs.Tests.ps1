@@ -340,7 +340,9 @@ Describe "UI-rendered config entries" {
 
     It "contains required DNS fields with parseable IP addresses" {
         $dns = Get-WinUtilConfigObject -Name "dns"
-        $requiredFields = @("Primary", "Secondary", "Primary6", "Secondary6")
+        $requiredFields = @("Primary", "Primary6")
+        $optionalAddressFields = @("Secondary", "Secondary6")
+        $addressFields = @($requiredFields + $optionalAddressFields)
         $invalidEntries = New-Object System.Collections.Generic.List[string]
 
         foreach ($entry in $dns.PSObject.Properties) {
@@ -348,7 +350,13 @@ Describe "UI-rendered config entries" {
                 $invalidEntries.Add($missingField)
             }
 
-            foreach ($field in $requiredFields) {
+            foreach ($field in $optionalAddressFields) {
+                if (-not (Test-WinUtilHasProperty -Object $entry.Value -Name $field)) {
+                    $invalidEntries.Add("$($entry.Name) missing $field")
+                }
+            }
+
+            foreach ($field in $addressFields) {
                 if (-not (Test-WinUtilHasNonEmptyProperty -Object $entry.Value -Name $field)) {
                     continue
                 }
@@ -363,6 +371,17 @@ Describe "UI-rendered config entries" {
 
         if ($invalidEntries.Count -gt 0) {
             throw ($invalidEntries -join "`n")
+        }
+    }
+
+    It "exposes every configured DNS provider in the DNS combobox" {
+        $dns = Get-WinUtilConfigObject -Name "dns"
+        $tweaks = Get-WinUtilConfigObject -Name "tweaks"
+        $comboItems = @($tweaks.WPFchangedns.ComboItems -split " ")
+        $missingProviders = @($dns.PSObject.Properties.Name | Where-Object { $comboItems -notcontains $_ })
+
+        if ($missingProviders.Count -gt 0) {
+            throw "WPFchangedns missing providers: $($missingProviders -join ', ')"
         }
     }
 
