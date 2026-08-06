@@ -32,8 +32,9 @@ function Invoke-WPFTab {
 
     # Always reset the filter for the current tab
     if ($sync.currentTab -eq "Install") {
-        # Reset Install tab filter
-        Find-AppsByNameOrDescription -SearchString ""
+        # Reset the search text, but keep the categories the chips are still showing as selected
+        $selectedCategories = if ($sync.SelectedAppCategories) { $sync.SelectedAppCategories.ToArray() } else { @() }
+        Find-AppsByNameOrDescription -SearchString "" -Categories $selectedCategories
     } elseif ($sync.currentTab -eq "Tweaks") {
         # Reset Tweaks tab filter
         Find-TweaksByNameOrDescription -SearchString ""
