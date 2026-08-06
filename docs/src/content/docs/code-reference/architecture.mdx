@@ -425,10 +425,14 @@ instead of disappearing.
 
 ## Long-Running Work
 
-Every long action goes through `Start-WinUtilJob`, which owns the parts each one used to
-repeat: refusing to start while another job runs, the busy flag (`$sync.ActiveJob`), the
-progress bar and taskbar item, a start/finish/failure line in the log, and restoring the
-interface in a `finally` whatever happens.
+Every long action goes through `Start-WinUtilJob`, which owns everything a running operation
+needs: refusing to start while another job runs, the busy flag (`$sync.ActiveJob`), the progress
+bar and taskbar item, the boxed console banner, a start/finish/failure line in the log, and
+restoring the interface in a `finally` whatever happens.
+
+`Invoke-WPFButton` decides what counts as a long action. Anything that changes the system gets a
+job; anything that only changes what the interface is showing runs on the interface thread.
+That single classification is why no workflow arranges its own progress, banner or busy state.
 
 ```powershell
 Start-WinUtilJob -Name "Features" -Description "Installing Windows Features" -Parameters @{
