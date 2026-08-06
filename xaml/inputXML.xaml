@@ -1314,7 +1314,7 @@
                     </Grid.RowDefinitions>
 
                     <!-- Quick Category Search Chips -->
-                    <WrapPanel Grid.Row="0" Orientation="Horizontal" Margin="5,5,5,5" Name="WPFSearchChips" Visibility="Collapsed">
+                    <WrapPanel Grid.Row="0" Orientation="Horizontal" Margin="5,5,5,5" Name="WPFSearchChips">
                         <TextBlock Text="Filters"
                                    FontSize="{DynamicResource HeaderFontSize}"
                                    FontFamily="{DynamicResource HeaderFontFamily}"
@@ -1322,16 +1322,17 @@
                                    Background="Transparent"
                                    VerticalAlignment="Center"
                                    Margin="15,0,8,0"/>
-                        <Button Name="WPFSearchChipAll"             Visibility="Collapsed"          Content="All"               Style="{StaticResource FilterChipStyle}"/>
-                        <Button Name="WPFSearchChipBrowsers"        Visibility="Collapsed"          Content="Browsers"          Style="{StaticResource FilterChipStyle}"/>
-                        <Button Name="WPFSearchChipCommunications"  Visibility="Collapsed"          Content="Communications"    Style="{StaticResource FilterChipStyle}"/>
-                        <Button Name="WPFSearchChipDevelopment"     Visibility="Collapsed"          Content="Development"       Style="{StaticResource FilterChipStyle}"/>
-                        <Button Name="WPFSearchChipGames"           Visibility="Collapsed"          Content="Games"             Style="{StaticResource FilterChipStyle}"/>
-                        <Button Name="WPFSearchChipMicrosoftTools"  Visibility="Collapsed"          Content="Microsoft Tools"   Style="{StaticResource FilterChipStyle}"/>
-                        <Button Name="WPFSearchChipMultimediaTools" Visibility="Collapsed"          Content="Multimedia Tools"  Style="{StaticResource FilterChipStyle}"/>
-                        <Button Name="WPFSearchChipProTools"        Visibility="Collapsed"          Content="Pro Tools"         Style="{StaticResource FilterChipStyle}"/>
-                        <Button Name="WPFSearchChipSelfhostedTools" Visibility="Collapsed"          Content="Selfhosted Tools"  Style="{StaticResource FilterChipStyle}"/>
-                        <Button Name="WPFSearchChipUtilities"       Visibility="Collapsed"          Content="Utilities"         Style="{StaticResource FilterChipStyle}"/>
+                        <Button Name="WPFSearchChipAll"             Content="All"               Style="{StaticResource FilterChipStyle}"/>
+                        <Button Name="WPFSearchChipBrowsers"        Content="Browsers"          Style="{StaticResource FilterChipStyle}"/>
+                        <Button Name="WPFSearchChipCommunications"  Content="Communications"    Style="{StaticResource FilterChipStyle}"/>
+                        <Button Name="WPFSearchChipDevelopment"     Content="Development"       Style="{StaticResource FilterChipStyle}"/>
+                        <Button Name="WPFSearchChipDocument"        Content="Document"          Style="{StaticResource FilterChipStyle}"/>
+                        <Button Name="WPFSearchChipGames"           Content="Games"             Style="{StaticResource FilterChipStyle}"/>
+                        <Button Name="WPFSearchChipMicrosoftTools"  Content="Microsoft Tools"   Style="{StaticResource FilterChipStyle}"/>
+                        <Button Name="WPFSearchChipMultimediaTools" Content="Multimedia Tools"  Style="{StaticResource FilterChipStyle}"/>
+                        <Button Name="WPFSearchChipProTools"        Content="Pro Tools"         Style="{StaticResource FilterChipStyle}"/>
+                        <Button Name="WPFSearchChipSelfhostedTools" Content="Selfhosted Tools"  Style="{StaticResource FilterChipStyle}"/>
+                        <Button Name="WPFSearchChipUtilities"       Content="Utilities"         Style="{StaticResource FilterChipStyle}"/>
                     </WrapPanel>
 
                     <Grid Grid.Row="1" Margin="{DynamicResource TabContentMargin}">
