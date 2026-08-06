@@ -13,6 +13,8 @@
     "FontSize": "12",
     "FontFamily": "Arial",
     "HeaderFontSize": "16",
+    "Win11StepTitleFontSize": "22",
+    "Win11StepHeroFontSize": "40",
     "HeaderFontFamily": "Consolas, Monaco",
     "CheckBoxBulletDecoratorSize": "14",
     "CheckBoxMargin": "15,0,0,2",

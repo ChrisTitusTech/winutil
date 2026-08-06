@@ -23,27 +23,26 @@ This workflow is intended for fresh Windows installs, not in-place upgrades of a
 
 ---
 
+The tab is a three step wizard. The step you are on is shown in the header row, and you can click an earlier step to go back to it until the image has been modified. The status log on the right stays visible throughout.
+
 ### Step 1 — Select Your Official Windows 11 ISO
 
 1. Open WinUtil and go to the **Win11 Creator** tab.
 2. Click **Browse** and select your **official Windows 11 ISO file** from Microsoft (must be 4 GB or larger). Custom or modified ISOs are not supported.
 3. The file path and size will appear on screen once selected.
-
----
-
-### Step 2 — Mount & Verify
-
-1. Click **Mount & Verify ISO**.
-2. WinUtil mounts the ISO, checks for a valid `install.wim` or `install.esd`, and reads the available editions (Home, Pro, Enterprise, etc.).
-3. Once verified, select your desired **edition** from the dropdown — Pro is selected by default if available.
+4. Click **Mount & Verify ISO**. WinUtil mounts the ISO, checks for a valid `install.wim` or `install.esd`, and reads the available editions (Home, Pro, Enterprise, etc.).
 
 :::note
-This step takes around 10–30 seconds, depending on your drive speed.
+Mounting and verification takes around 10–30 seconds, depending on your drive speed.
 :::
 
 ---
 
-### Step 3 — Run the Modification
+### Step 2 — Modify the Image
+
+Once the ISO is verified, WinUtil moves to this step and shows the mounted drive and image file. Choose your **edition** from the dropdown — Pro is selected by default if available — and tick **Inject current system drivers** if you want them.
+
+Then click **Run Windows ISO Modification and Creator** to start the customization process. WinUtil will:
 
 Click **Run Windows ISO Modification and Creator** to start the customization process. WinUtil will:
 
@@ -72,13 +71,13 @@ Click **Run Windows ISO Modification and Creator** to start the customization pr
 - **Disable Copilot and search box suggestions**
 
 **Optional: Driver Injection**
-- If enabled, it injects all drivers from your current system into the install.wim and boot.wim — useful for offline installations on machines with missing drivers. This is an optional checkbox in Step 3.
+- If enabled, it injects all drivers from your current system into the install.wim and boot.wim — useful for offline installations on machines with missing drivers. This is an optional checkbox in Step 2.
 
 A live log shows progress as each step completes. This stage usually takes **10–30 minutes** depending on disk speed. The WIM dismount near the end is the slowest part, so do not close WinUtil while it is running.
 
 ---
 
-### Step 4 — Export Your Result
+### Step 3 — Export Your Result
 
 Once the modification is complete, choose how to save your image:
 
@@ -110,7 +109,7 @@ Double-check you have selected the correct drive before confirming. This operati
 
 ### Step 5 — Clean Up (Optional)
 
-Click **Clean & Reset** to delete the temporary working directory (~10–15 GB) and return the tool to its initial state, ready for a new ISO. You will be asked to confirm before anything is deleted.
+Click **Start Over** to delete the temporary working directory (~10–15 GB) and return the tool to its initial state, ready for a new ISO. You will be asked to confirm before anything is deleted.
 
 ---
 
