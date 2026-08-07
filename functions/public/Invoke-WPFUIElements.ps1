@@ -111,36 +111,38 @@ function Invoke-WPFUIElements {
         $dockPanelContainer = New-Object Windows.Controls.DockPanel
         $border.Child = $dockPanelContainer
 
-        # Create an ItemsControl for application content
-        $itemsControl = New-Object Windows.Controls.ItemsControl
-        $itemsControl.HorizontalAlignment = 'Stretch'
-        $itemsControl.VerticalAlignment = 'Stretch'
+        # Create a ScrollViewer to make panel contents scrollable and accessible
+        $scrollViewer = New-Object Windows.Controls.ScrollViewer
+        $scrollViewer.VerticalScrollBarVisibility = "Auto"
+        $scrollViewer.HorizontalScrollBarVisibility = "Disabled"
+        $scrollViewer.HorizontalAlignment = 'Stretch'
+        $scrollViewer.VerticalAlignment = 'Stretch'
 
-        # Set the ItemsPanel to a VirtualizingStackPanel
-        $itemsPanelTemplate = New-Object Windows.Controls.ItemsPanelTemplate
-        $factory = New-Object Windows.FrameworkElementFactory ([Windows.Controls.VirtualizingStackPanel])
-        $itemsPanelTemplate.VisualTree = $factory
-        $itemsControl.ItemsPanel = $itemsPanelTemplate
+        # Create a StackPanel for application content controls
+        $stackPanelContainer = New-Object Windows.Controls.StackPanel
+        $stackPanelContainer.HorizontalAlignment = 'Stretch'
+        $stackPanelContainer.VerticalAlignment = 'Stretch'
+        $scrollViewer.Content = $stackPanelContainer
 
-        # Set virtualization properties
-        $itemsControl.SetValue([Windows.Controls.VirtualizingStackPanel]::IsVirtualizingProperty, $true)
-        $itemsControl.SetValue([Windows.Controls.VirtualizingStackPanel]::VirtualizationModeProperty, [Windows.Controls.VirtualizationMode]::Recycling)
-
-        # Add the ItemsControl directly to the DockPanel
-        [Windows.Controls.DockPanel]::SetDock($itemsControl, [Windows.Controls.Dock]::Bottom)
-        $dockPanelContainer.Children.Add($itemsControl) | Out-Null
+        # Add the ScrollViewer directly to the DockPanel
+        [Windows.Controls.DockPanel]::SetDock($scrollViewer, [Windows.Controls.Dock]::Bottom)
+        $dockPanelContainer.Children.Add($scrollViewer) | Out-Null
         $panelcount++
 
-        # Now proceed with adding category labels and entries to $itemsControl
+        # Now proceed with adding category labels and entries to $stackPanelContainer
         foreach ($category in ($organizedData[$panelKey].Keys | Sort-Object)) {
             $count++
 
             $label = New-Object Windows.Controls.Label
-            $label.Content = $category -replace ".*__", ""
+            $categoryCleanName = $category -replace ".*__", ""
+            $label.Content = $categoryCleanName
+            $label.Focusable = $true
+            $label.IsTabStop = $true
+            [System.Windows.Automation.AutomationProperties]::SetName($label, $categoryCleanName)
             $label.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "HeaderFontSize")
             $label.SetResourceReference([Windows.Controls.Control]::FontFamilyProperty, "HeaderFontFamily")
             $label.UseLayoutRounding = $true
-            $itemsControl.Items.Add($label) | Out-Null
+            $stackPanelContainer.Children.Add($label) | Out-Null
             $sync[$category] = $label
 
             # Sort entries by type (checkboxes first, then buttons, then comboboxes, notes last) and then alphabetically by Content
@@ -175,7 +177,7 @@ function Invoke-WPFUIElements {
                         $label.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "MainForegroundColor")
                         $label.UseLayoutRounding = $true
                         $dockPanel.Children.Add($label) | Out-Null
-                        $itemsControl.Items.Add($dockPanel) | Out-Null
+                        $stackPanelContainer.Children.Add($dockPanel) | Out-Null
 
                         $sync[$entryInfo.Name] = $checkBox
                         $sync[$entryInfo.Name].IsChecked = (Get-WinUtilToggleStatus $entryInfo.Name)
@@ -213,7 +215,7 @@ function Invoke-WPFUIElements {
                             contentOff = if ($entryInfo.Content.Count -ge 2) { $entryInfo.Content[1] } else { $contentOn }
                         }
 
-                        $itemsControl.Items.Add($toggleButton) | Out-Null
+                        $stackPanelContainer.Children.Add($toggleButton) | Out-Null
 
                         $sync[$entryInfo.Name] = $toggleButton
 
@@ -272,7 +274,7 @@ function Invoke-WPFUIElements {
                         }
 
                         $horizontalStackPanel.Children.Add($comboBox) | Out-Null
-                        $itemsControl.Items.Add($horizontalStackPanel) | Out-Null
+                        $stackPanelContainer.Children.Add($horizontalStackPanel) | Out-Null
 
                         $comboBox.SelectedIndex = 0
 
@@ -304,7 +306,7 @@ function Invoke-WPFUIElements {
                             $button.Width = [math]::Max($baseWidth, 350)
                         }
                         [System.Windows.Automation.AutomationProperties]::SetName($button, $entryInfo.Content)
-                        $itemsControl.Items.Add($button) | Out-Null
+                        $stackPanelContainer.Children.Add($button) | Out-Null
 
                         $sync[$entryInfo.Name] = $button
 
@@ -331,7 +333,7 @@ function Invoke-WPFUIElements {
                             $radioButtonGroups[$entryInfo.GroupName] = $groupStackPanel
 
                             # Add the group container to the ItemsControl
-                            $itemsControl.Items.Add($groupStackPanel) | Out-Null
+                            $stackPanelContainer.Children.Add($groupStackPanel) | Out-Null
                         }
                         else {
                             # Retrieve the existing group container
@@ -376,7 +378,7 @@ function Invoke-WPFUIElements {
                         $textBlock.Inlines.Add($bulletBadge)
                         $textBlock.Inlines.Add($textRun)
 
-                        $itemsControl.Items.Add($textBlock) | Out-Null
+                        $stackPanelContainer.Children.Add($textBlock) | Out-Null
                     }
 
                     default {
@@ -436,7 +438,7 @@ function Invoke-WPFUIElements {
                             $sync[$textBlock.Name] = $textBlock
                         }
 
-                        $itemsControl.Items.Add($horizontalStackPanel) | Out-Null
+                        $stackPanelContainer.Children.Add($horizontalStackPanel) | Out-Null
                         $sync[$entryInfo.Name] = $checkBox
 
                         $sync[$entryInfo.Name].Add_Checked({
