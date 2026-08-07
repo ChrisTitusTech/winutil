@@ -88,5 +88,5 @@ function Invoke-WPFtweaksbutton {
     Write-Host "--     Tweaks are Finished    ---"
     Write-Host "================================="
     Write-WinUtilLog -Component "Tweaks" -Message "Tweaks workflow completed."
-  }
+  } | Out-Null
 }

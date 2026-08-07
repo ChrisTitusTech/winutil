@@ -163,6 +163,7 @@ When the user corrects an agent approach, add or tighten one concrete rule here 
 - Import Pester 5.8.0 before running tests so `Invoke-Pester -Output Detailed -CI` does not resolve to Windows' inbox Pester 3.4.0.
 - Keep package install/uninstall process launches simple unless explicitly requested; do not add a separate stdout/stderr process logging helper for winget or Chocolatey.
 - When the active log file is owned by `Start-Transcript`, do not call `Add-Content` against that file; write to host output so the transcript captures the line in the same log file without recording a terminating-error diagnostic.
+- Keep UI helpers such as `Invoke-WPFUIThread` and `Set-WinUtilTweaksProgressIndicator` safe to call without a window; the `-Preset` and `-Config` paths run the workflows before the form is created and before PresentationCore is loaded.
 - Log install/uninstall package names and package-manager IDs before queuing background runspace work; do not rely on runspace host output for the package identity.
 - For Win11 Creator, start each new ISO modification in a fresh `WinUtil_Win11ISO_*` temp directory; existing-work detection is only for resuming/exporting already modified media.
 - For Win11 Creator driver injection, keep offline WIM servicing to one mount, one `/Add-Driver`, and one commit; do not export editions or run unrelated WIM cleanup, and reject damaged metadata before ISO export.
