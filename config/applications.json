@@ -494,6 +494,15 @@
         "winget": "GitHub.GitHubDesktop",
         "foss": true
     },
+    "godothub": {
+        "category": "Development",
+        "choco": "godothub",
+        "content": "Godot Hub",
+        "description": "Project and Version Manager for Godot Game Engine",
+        "link": "https://github.com/RykoTheDev/GodotHub",
+        "winget": "RykoTheDev.GodotHub",
+        "foss": true
+    },
     "gog": {
         "category": "Games",
         "choco": "goggalaxy",
