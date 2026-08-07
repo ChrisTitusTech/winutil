@@ -132,6 +132,15 @@
         "winget": "Logitech.OptionPlus",
         "foss": false
     },
+    "mremoteng": {
+        "category": "TamPhan",
+        "choco": "mRemoteNG",
+        "content": "mRemoteNG",
+        "description": "mRemoteNG is a free and open-source remote desktop connection manager.",
+        "link": "https://mremoteng.org/",
+        "winget": "mRemoteNG.mRemoteNG",
+        "foss": true
+    },
     "notepadplus": {
         "category": "TamPhan",
         "choco": "notepadplusplus",
@@ -202,6 +211,15 @@
         "description": "Synology Drive Client is a cloud storage client that allows users to sync files between their local devices and Synology NAS.",
         "link": "https://www.synology.com/en-us/dsm/feature/drive",
         "winget": "Synology.DriveClient",
+        "foss": false
+    },
+    "teamviewer": {
+        "category": "TamPhan",
+        "choco": "teamviewer",
+        "content": "TeamViewer",
+        "description": "TeamViewer is a remote desktop software that allows users to control remote computers over the internet.",
+        "link": "https://www.teamviewer.com/",
+        "winget": "TeamViewer.TeamViewer",
         "foss": false
     },
     "tiktok": {
