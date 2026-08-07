@@ -180,7 +180,7 @@
     "link": "https://winutil.christitus.com/code-reference/features/fixes/winget"
   },
   "WPFPanelComputer": {
-    "Content": "Computer Management",
+    "Content": "Computer Management (compmgmt.msc)",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
@@ -191,7 +191,7 @@
     "link": "https://winutil.christitus.com/code-reference/features/legacy-windows-panels/computer"
   },
   "WPFPanelControl": {
-    "Content": "Control Panel",
+    "Content": "Control Panel (control)",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
@@ -202,7 +202,7 @@
     "link": "https://winutil.christitus.com/code-reference/features/legacy-windows-panels/control"
   },
   "WPFPanelMouse": {
-    "Content": "Mouse Properties",
+    "Content": "Mouse Properties (main.cpl)",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
@@ -213,7 +213,7 @@
     "link": "https://winutil.christitus.com/code-reference/features/legacy-windows-panels/mouse"
   },
   "WPFPanelNetwork": {
-    "Content": "Network Connections",
+    "Content": "Network Connections (ncpa.cpl)",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
@@ -224,7 +224,7 @@
     "link": "https://winutil.christitus.com/code-reference/features/legacy-windows-panels/network"
   },
   "WPFPanelPower": {
-    "Content": "Power Panel",
+    "Content": "Power Panel (powercfg.cpl)",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
@@ -235,7 +235,7 @@
     "link": "https://winutil.christitus.com/code-reference/features/legacy-windows-panels/power"
   },
   "WPFPanelPrinter": {
-    "Content": "Printer Panel",
+    "Content": "Printer Panel (ms-settings:printers)",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
@@ -246,7 +246,7 @@
     "link": "https://winutil.christitus.com/code-reference/features/legacy-windows-panels/printer"
   },
   "WPFPanelPrograms": {
-    "Content": "Programs and Features",
+    "Content": "Programs and Features (appwiz.cpl)",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
@@ -257,7 +257,7 @@
     "link": "https://winutil.christitus.com/code-reference/features/legacy-windows-panels/programs"
   },
   "WPFPanelRegion": {
-    "Content": "Region",
+    "Content": "Region (intl.cpl)",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
@@ -268,7 +268,7 @@
     "link": "https://winutil.christitus.com/code-reference/features/legacy-windows-panels/region"
   },
   "WPFPanelSecurity": {
-    "Content": "Security and Maintenance",
+    "Content": "Security and Maintenance (wscui.cpl)",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
@@ -279,7 +279,7 @@
     "link": "https://winutil.christitus.com/code-reference/features/legacy-windows-panels/security"
   },
   "WPFPanelSound": {
-    "Content": "Sound Settings",
+    "Content": "Sound Settings (mmsys.cpl)",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
@@ -290,7 +290,7 @@
     "link": "https://winutil.christitus.com/code-reference/features/legacy-windows-panels/sound"
   },
   "WPFPanelSystem": {
-    "Content": "System Properties",
+    "Content": "System Properties (sysdm.cpl)",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
@@ -301,7 +301,7 @@
     "link": "https://winutil.christitus.com/code-reference/features/legacy-windows-panels/system"
   },
   "WPFPanelTimedate": {
-    "Content": "Time and Date",
+    "Content": "Time and Date (timedate.cpl)",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
@@ -312,7 +312,7 @@
     "link": "https://winutil.christitus.com/code-reference/features/legacy-windows-panels/timedate"
   },
   "WPFPanelFirewall": {
-    "Content": "Windows Defender Firewall",
+    "Content": "Windows Defender Firewall (firewall.cpl)",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
@@ -323,7 +323,7 @@
     "link": "https://winutil.christitus.com/code-reference/features/legacy-windows-panels/firewall"
   },
   "WPFPanelRestore": {
-    "Content": "Windows Restore",
+    "Content": "Windows Restore (rstrui.exe)",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
