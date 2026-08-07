@@ -31,21 +31,23 @@ jobs:
           Set-ExecutionPolicy Bypass -Scope Process -Force; ./Compile.ps1
         continue-on-error: false # Directly fail the job on error, removing the need for a separate check
 
-      - name: Create Pull Request for Updated JSON Links
+      - name: Create Pull Request for Updated Docs and JSON Links
         id: cpr
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.AUTO_MERGE }}
-          commit-message: 'chore: Update documentation links in JSON configs'
-          title: 'chore: Update documentation links in JSON configs'
-          body: 'Automated update of documentation links in JSON configs from pre-release build'
+          commit-message: 'chore: Update generated dev docs and JSON links'
+          title: 'chore: Update generated dev docs and JSON links'
+          body: 'Automated update of generated documentation and JSON config links from pre-release build'
           branch: docs-update
           delete-branch: true
           add-paths: |
+            docs/src/content/docs/code-reference/
             config/tweaks.json
             config/feature.json
           labels: |
             automated
+            documentation
             skip-changelog
 
       - name: Check outputs

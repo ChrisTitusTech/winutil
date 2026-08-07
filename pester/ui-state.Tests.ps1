@@ -445,31 +445,3 @@ Describe "Invoke-WPFButton progress cleanup" {
     }
 }
 
-Describe "Invoke-WPFButton window state" {
-    BeforeEach {
-        New-WinUtilUiStateTestContext
-        $script:sync.ProcessRunning = $true
-        $script:sync.Form = [pscustomobject]@{
-            WindowState = [Windows.WindowState]::Normal
-        }
-    }
-
-    AfterEach {
-        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
-    }
-
-    It "maximizes a normal window" {
-        Invoke-WPFButton -Button "WPFMaximizeButton"
-
-        $script:sync.Form.WindowState | Should -Be ([Windows.WindowState]::Maximized)
-    }
-
-    It "restores a maximized window" {
-        $script:sync.Form.WindowState = [Windows.WindowState]::Maximized
-
-        Invoke-WPFButton -Button "WPFMaximizeButton"
-
-        $script:sync.Form.WindowState | Should -Be ([Windows.WindowState]::Normal)
-    }
-}

@@ -66,7 +66,6 @@ BeforeAll {
             $selectedApps.Add($key)
         }
 
-        $script:AppTitle = "Winutil"
         $script:sync = [Hashtable]::Synchronized(@{
             ProcessRunning = $ProcessRunning
             selectedApps = $selectedApps
@@ -122,7 +121,6 @@ Describe "Invoke-WPFInstall entrypoint" {
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name AppTitle -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name capturedInstallScriptBlock -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name capturedInstallParameterList -Scope Script -ErrorAction SilentlyContinue
     }
@@ -146,6 +144,23 @@ Describe "Invoke-WPFInstall entrypoint" {
         }
     }
 
+    It "queues the explicit app popup package over the selected apps" {
+        $explicitPackage = New-WinUtilPackage -Name "VLC" -Winget "VideoLAN.VLC" -Choco "vlc"
+
+        Invoke-WPFInstall -PackagesToInstall $explicitPackage
+
+        Should -Invoke -CommandName Invoke-WPFRunspace -Times 1 -Exactly -ParameterFilter {
+            $ScriptBlock -is [scriptblock] -and
+                $ParameterList.Count -eq 2 -and
+                $ParameterList[0][0] -eq "PackagesToInstall" -and
+                @($ParameterList[0][1]).Count -eq 1 -and
+                @($ParameterList[0][1])[0].winget -eq "VideoLAN.VLC" -and
+                $ParameterList[1][0] -eq "ManagerPreference" -and
+                $ParameterList[1][1] -eq "Winget"
+        }
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 0 -Exactly
+    }
+
     It "prompts and exits when no packages are selected" {
         New-WinUtilInstallTestContext
 
@@ -153,7 +168,7 @@ Describe "Invoke-WPFInstall entrypoint" {
 
         Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
             $Message -eq "Please select the program(s) to install or upgrade." -and
-                $Title -eq "Winutil" -and
+                $Title -eq "WinUtil" -and
                 $Button -eq "OK" -and
                 $Icon -eq "Warning"
         }
@@ -167,7 +182,7 @@ Describe "Invoke-WPFInstall entrypoint" {
 
         Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
             $Message -eq "[Invoke-WPFInstall] An Install process is currently running." -and
-                $Title -eq "Winutil" -and
+                $Title -eq "WinUtil" -and
                 $Button -eq "OK" -and
                 $Icon -eq "Warning"
         }
@@ -201,7 +216,6 @@ Describe "Invoke-WPFInstall runspace body" {
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name AppTitle -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name capturedInstallScriptBlock -Scope Script -ErrorAction SilentlyContinue
     }
 
@@ -289,7 +303,6 @@ Describe "Invoke-WPFUnInstall entrypoint" {
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name AppTitle -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name capturedUninstallScriptBlock -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name capturedUninstallParameterList -Scope Script -ErrorAction SilentlyContinue
     }
@@ -324,7 +337,7 @@ Describe "Invoke-WPFUnInstall entrypoint" {
 
         Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
             $Message -eq "Please select the program(s) to uninstall" -and
-                $Title -eq "Winutil" -and
+                $Title -eq "WinUtil" -and
                 $Button -eq "OK" -and
                 $Icon -eq "Warning"
         }
@@ -338,7 +351,7 @@ Describe "Invoke-WPFUnInstall entrypoint" {
 
         Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
             $Message -eq "[Invoke-WPFUnInstall] Install process is currently running" -and
-                $Title -eq "Winutil" -and
+                $Title -eq "WinUtil" -and
                 $Button -eq "OK" -and
                 $Icon -eq "Warning"
         }
@@ -379,7 +392,6 @@ Describe "Invoke-WPFUnInstall runspace body" {
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name AppTitle -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name capturedUninstallScriptBlock -Scope Script -ErrorAction SilentlyContinue
     }
 
