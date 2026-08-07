@@ -1,0 +1,55 @@
+---
+title: "Microsoft OneDrive - Remove"
+description: "Denies permission to remove OneDrive user files, then uses its own uninstaller to remove it and restores the original permission afterward."
+editUrl: false
+---
+
+:::note
+This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
+:::
+
+```json title="config/tweaks.json"
+  "WPFTweaksRemoveOneDrive": {
+    "Content": "Microsoft OneDrive - Remove",
+    "Description": "Denies permission to remove OneDrive user files, then uses its own uninstaller to remove it and restores the original permission afterward.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "InvokeScript": [
+      "
+      # Deny permission to remove OneDrive folder
+      icacls $Env:OneDrive /deny \"Administrators:(D,DC)\"
+
+      Write-Host \"Uninstalling OneDrive...\"
+      Start-Process -FilePath (Join-Path $Env:SystemRoot \"System32\\OneDriveSetup.exe\") -ArgumentList '/uninstall' -Wait
+
+      # Some of OneDrive files use explorer, and OneDrive uses FileCoAuth
+      Write-Host \"Removing leftover OneDrive Files...\"
+
+      Stop-Process -Name FileCoAuth,Explorer
+
+      Remove-Item \"$Env:LocalAppData\\Microsoft\\OneDrive\" -Recurse -Force
+      Remove-Item \"$Env:ProgramData\\Microsoft OneDrive\" -Recurse -Force
+
+      # Grant back permission to access OneDrive folder
+      icacls $Env:OneDrive /grant \"Administrators:(D,DC)\"
+
+      if (-not (Get-ChildItem -Path $Env:OneDrive)) {
+          Remove-Item -Path $Env:OneDrive -Recurse
+          [Environment]::SetEnvironmentVariable('OneDrive', $null, 'User')
+      }
+
+      # Disable OneSyncSvc
+      Set-Service -Name OneSyncSvc -StartupType Disabled
+      "
+    ],
+    "UndoScript": [
+      "
+      Write-Host \"Installing OneDrive\"
+      winget install Microsoft.Onedrive --source winget
+
+      # Enabled OneSyncSvc
+      Set-Service -Name OneSyncSvc -StartupType Automatic
+      "
+    ],
+  }
+```

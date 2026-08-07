@@ -1,7 +1,7 @@
 <#
     .DESCRIPTION
-    Generates Hugo markdown docs from config/tweaks.json and config/feature.json.
-    Run by the GitHub Actions docs workflow before Hugo build.
+    Generates Astro/Starlight markdown docs from config/tweaks.json and config/feature.json.
+    Run by the GitHub Actions docs workflow before the Astro build.
 #>
 
 function Update-Progress {
@@ -81,10 +81,28 @@ function Get-RawJsonBlock {
         }
     }
 
+    # Include the item's own closing brace, stripped of the trailing comma that
+    # only exists to separate it from the next sibling in the parent object.
+    $closingLine = $JsonLines[$endIndex] -replace ',\s*$', ''
+
     return @{
         LineNumber = $startIndex + 1
-        RawText    = ($JsonLines[$startIndex..$lastContentIndex] -join "`r`n")
+        RawText    = (($JsonLines[$startIndex..$lastContentIndex] + $closingLine) -join "`r`n")
     }
+}
+
+function Get-GeneratedFromNote {
+    # Builds the Starlight ":::note" aside pointing back at the source file for an entry.
+    param (
+        [Parameter(Mandatory)]
+        [string]$SourceRelativePath
+    )
+
+    $githubUrl = "https://github.com/ChrisTitusTech/winutil/blob/main/$SourceRelativePath"
+    $note  = ":::note`r`n"
+    $note += "This page is generated from [``$SourceRelativePath``]($githubUrl). Do not edit this page directly.`r`n"
+    $note += ":::`r`n`r`n"
+    return $note
 }
 
 function Get-ButtonFunctionMapping {
@@ -237,8 +255,8 @@ $repoRoot  = Resolve-Path "$scriptDir/.."
 
 $tweaksJsonPath      = "$repoRoot/config/tweaks.json"
 $featuresJsonPath    = "$repoRoot/config/feature.json"
-$tweaksOutputDir     = "$repoRoot/docs/content/dev/tweaks"
-$featuresOutputDir   = "$repoRoot/docs/content/dev/features"
+$tweaksOutputDir     = "$repoRoot/docs/src/content/docs/code-reference/tweaks"
+$featuresOutputDir   = "$repoRoot/docs/src/content/docs/code-reference/features"
 $publicFunctionsDir  = "$repoRoot/functions/public"
 $privateFunctionsDir = "$repoRoot/functions/private"
 
@@ -282,21 +300,25 @@ Update-Progress "Building button-to-function mapping" 30
 $buttonFunctionMap = Get-ButtonFunctionMapping -ButtonFilePath "$publicFunctionsDir/Invoke-WPFButton.ps1"
 
 Update-Progress "Updating documentation links in JSON" 40
-Add-LinkAttributeToJson -JsonFilePath $tweaksJsonPath   -UrlPrefix "$baseUrl/dev/tweaks"   -ItemNameToCut $itemnametocut
-Add-LinkAttributeToJson -JsonFilePath $featuresJsonPath -UrlPrefix "$baseUrl/dev/features" -ItemNameToCut $itemnametocut
+Add-LinkAttributeToJson -JsonFilePath $tweaksJsonPath   -UrlPrefix "$baseUrl/code-reference/tweaks"   -ItemNameToCut $itemnametocut
+Add-LinkAttributeToJson -JsonFilePath $featuresJsonPath -UrlPrefix "$baseUrl/code-reference/features" -ItemNameToCut $itemnametocut
 
 # Reload lines after link update so line numbers in docs are accurate
 $tweaksLines   = Get-Content -Path $tweaksJsonPath
 $featuresLines = Get-Content -Path $featuresJsonPath
 
 # ==============================================================================
-# Clean up old generated .md files (preserve _index.md)
+# Clean up old generated .mdx files
 # ==============================================================================
 
 Update-Progress "Cleaning up old generated docs" 45
 foreach ($dir in @($tweaksOutputDir, $featuresOutputDir)) {
-    Get-ChildItem -Path $dir -Recurse -Filter *.md | Where-Object {
-        $_.Name -ne "_index.md"
+    if (-Not (Test-Path -Path $dir)) { continue }
+    Get-ChildItem -Path $dir -Recurse -Filter *.mdx | Where-Object {
+        # No category index.mdx pages exist yet. If one is added later as a
+        # category landing page, uncomment this line to keep it from being wiped.
+        # $_.Name -ne "index.mdx"
+        $true
     } | Remove-Item -Force
 }
 
@@ -319,25 +341,28 @@ foreach ($itemName in $tweakNames) {
     $category    = $item.category -replace '[^a-zA-Z0-9]', '-'
     $displayName = $itemName -replace $itemnametocut, ''
     $categoryDir = "$tweaksOutputDir/$category"
-    $filename    = "$categoryDir/$displayName.md"
+    $filename    = "$categoryDir/$displayName.mdx"
 
     if (-Not (Test-Path -Path $categoryDir)) { New-Item -ItemType Directory -Path $categoryDir | Out-Null }
 
-    $title   = $item.Content -replace '"', '\"'
-    $content = "---`r`ntitle: `"$title`"`r`ndescription: `"`"`r`n---`r`n`r`n"
+    $title       = $item.Content -replace '"', '\"'
+    $description = if ($item.Description) { $item.Description -replace '"', '\"' } else { '' }
+    $content     = "---`r`ntitle: `"$title`"`r`ndescription: `"$description`"`r`neditUrl: false`r`n---`r`n`r`n"
 
     if ($item.Type -eq "Button") {
         $funcName = $buttonFunctionMap[$itemName]
         if ($funcName -and $functionFiles.ContainsKey($funcName)) {
             $func     = $functionFiles[$funcName]
-            $content += "``````powershell {filename=`"$($func.RelativePath)`",linenos=inline,linenostart=1}`r`n"
+            $content += Get-GeneratedFromNote -SourceRelativePath $func.RelativePath
+            $content += "``````powershell title=`"$($func.RelativePath)`"`r`n"
             $content += $func.Content + "`r`n"
             $content += "```````r`n"
         }
     } else {
         $jsonBlock = Get-RawJsonBlock -ItemName $itemName -JsonLines $tweaksLines
         if ($jsonBlock) {
-            $content += "``````json {filename=`"config/tweaks.json`",linenos=inline,linenostart=$($jsonBlock.LineNumber)}`r`n"
+            $content += Get-GeneratedFromNote -SourceRelativePath "config/tweaks.json"
+            $content += "``````json title=`"config/tweaks.json`"`r`n"
             $content += $jsonBlock.RawText + "`r`n"
             $content += "```````r`n"
         }
@@ -375,25 +400,28 @@ foreach ($itemName in $featureNames) {
     $category    = $item.category -replace '[^a-zA-Z0-9]', '-'
     $displayName = $itemName -replace $itemnametocut, ''
     $categoryDir = "$featuresOutputDir/$category"
-    $filename    = "$categoryDir/$displayName.md"
+    $filename    = "$categoryDir/$displayName.mdx"
 
     if (-Not (Test-Path -Path $categoryDir)) { New-Item -ItemType Directory -Path $categoryDir | Out-Null }
 
-    $title   = $item.Content -replace '"', '\"'
-    $content = "---`r`ntitle: `"$title`"`r`ndescription: `"`"`r`n---`r`n`r`n"
+    $title       = $item.Content -replace '"', '\"'
+    $description = if ($item.Description) { $item.Description -replace '"', '\"' } else { '' }
+    $content     = "---`r`ntitle: `"$title`"`r`ndescription: `"$description`"`r`neditUrl: false`r`n---`r`n`r`n"
 
     if ($item.category -in $functionEmbedCategories) {
         $funcName = if ($item.function) { $item.function } else { $buttonFunctionMap[$itemName] }
         if ($funcName -and $functionFiles.ContainsKey($funcName)) {
             $func     = $functionFiles[$funcName]
-            $content += "``````powershell {filename=`"$($func.RelativePath)`",linenos=inline,linenostart=1}`r`n"
+            $content += Get-GeneratedFromNote -SourceRelativePath $func.RelativePath
+            $content += "``````powershell title=`"$($func.RelativePath)`"`r`n"
             $content += $func.Content + "`r`n"
             $content += "```````r`n"
         }
     } else {
         $jsonBlock = Get-RawJsonBlock -ItemName $itemName -JsonLines $featuresLines
         if ($jsonBlock) {
-            $content += "``````json {filename=`"config/feature.json`",linenos=inline,linenostart=$($jsonBlock.LineNumber)}`r`n"
+            $content += Get-GeneratedFromNote -SourceRelativePath "config/feature.json"
+            $content += "``````json title=`"config/feature.json`"`r`n"
             $content += $jsonBlock.RawText + "`r`n"
             $content += "```````r`n"
         }

@@ -143,11 +143,12 @@ function Invoke-WPFUIElements {
             $itemsControl.Items.Add($label) | Out-Null
             $sync[$category] = $label
 
-            # Sort entries by type (checkboxes first, then buttons, then comboboxes) and then alphabetically by Content
+            # Sort entries by type (checkboxes first, then buttons, then comboboxes, notes last) and then alphabetically by Content
             $entries = $organizedData[$panelKey][$category] | Sort-Object @{Expression = {
                 switch ($_.Type) {
                     'Button' { 1 }
                     'Combobox' { 2 }
+                    'Note' { 3 }
                     default { 0 }
                 }
             }}, Content
@@ -327,6 +328,7 @@ function Invoke-WPFUIElements {
                             $groupStackPanel = New-Object Windows.Controls.StackPanel
                             $groupStackPanel.Orientation = "Vertical"
                             [System.Windows.Automation.AutomationProperties]::SetName($groupStackPanel, $entryInfo.GroupName)
+                            $radioButtonGroups[$entryInfo.GroupName] = $groupStackPanel
 
                             # Add the group container to the ItemsControl
                             $itemsControl.Items.Add($groupStackPanel) | Out-Null
@@ -363,17 +365,15 @@ function Invoke-WPFUIElements {
                         $textBlock.Margin = "5,5,5,5"
                         $textBlock.UseLayoutRounding = $true
 
-                        $bulletRun = New-Object Windows.Documents.Run
-                        $bulletRun.Text = [char]0x25CF
-                        $bulletRun.Foreground = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(110, 255, 114))
-                        $bulletRun.FontSize = 11.5
+                        $bulletBadge = [Windows.Documents.InlineUIContainer]::new((New-WinUtilFossBadge -Size 18 -Round))
+                        $bulletBadge.BaselineAlignment = [Windows.BaselineAlignment]::Center
 
                         $textRun = New-Object Windows.Documents.Run
                         $textRun.Text = " $($entryInfo.Content)"
                         $textRun.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
                         $textRun.Foreground = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(19, 143, 83))
 
-                        $textBlock.Inlines.Add($bulletRun)
+                        $textBlock.Inlines.Add($bulletBadge)
                         $textBlock.Inlines.Add($textRun)
 
                         $itemsControl.Items.Add($textBlock) | Out-Null

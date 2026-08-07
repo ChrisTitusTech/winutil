@@ -1,0 +1,483 @@
+/* WinUtil docs theme: grayscale palette with WinUtil blue (#0567ff) as the single accent, dark by default. */
+@import './fonts.css';
+
+:root {
+	--sl-font: 'Geist', var(--sl-font-system);
+	--sl-font-mono: 'JetBrains Mono Variable', var(--sl-font-system-mono);
+
+	/* WinUtil brand blue, matching the app logo (#0567ff). */
+	--wu-accent-h: 216;
+	--wu-accent: hsl(var(--wu-accent-h) 100% 51%);
+	--wu-accent-dim: hsl(var(--wu-accent-h) 90% 45%);
+
+	--wu-radius-sm: 0.5rem;
+	--wu-radius: 0.625rem;
+	--wu-radius-lg: 1rem;
+}
+
+/* Dark mode (default). */
+:root,
+::backdrop {
+	--sl-color-accent-low: hsl(var(--wu-accent-h) 60% 18%);
+	--sl-color-accent: var(--wu-accent);
+	--sl-color-accent-high: hsl(var(--wu-accent-h) 100% 85%);
+
+	--sl-color-white: #fafafa;
+	--sl-color-gray-1: #ededed;
+	--sl-color-gray-2: #b8b8b8;
+	--sl-color-gray-3: #8c8c8c;
+	--sl-color-gray-4: #4a4a4a;
+	--sl-color-gray-5: #2a2a2a;
+	--sl-color-gray-6: #171717;
+	--sl-color-black: #0a0a0a;
+
+	--sl-color-bg: #0a0a0a;
+	--sl-color-bg-nav: #0d0d0d;
+	--sl-color-bg-sidebar: #0d0d0d;
+	--sl-color-bg-inline-code: #1b1b1b;
+	--sl-color-hairline-light: #2a2a2a;
+	--sl-color-hairline: #1e1e1e;
+	--sl-color-hairline-shade: #000;
+}
+
+/* Light mode. */
+:root[data-theme='light'],
+[data-theme='light'] ::backdrop {
+	--sl-color-accent-low: hsl(var(--wu-accent-h) 90% 92%);
+	--sl-color-accent: var(--wu-accent-dim);
+	--sl-color-accent-high: hsl(var(--wu-accent-h) 80% 34%);
+
+	--sl-color-white: #0a0a0a;
+	--sl-color-gray-1: #171717;
+	--sl-color-gray-2: #333333;
+	--sl-color-gray-3: #737373;
+	--sl-color-gray-4: #a3a3a3;
+	--sl-color-gray-5: #d9d9d9;
+	--sl-color-gray-6: #f1f1f1;
+	--sl-color-gray-7: #fafafa;
+	--sl-color-black: #ffffff;
+
+	--sl-color-bg: #ffffff;
+	--sl-color-bg-nav: #fafafa;
+	--sl-color-bg-inline-code: #f1f1f1;
+	--sl-color-hairline-light: #ececec;
+	--sl-color-hairline-shade: #ececec;
+}
+
+/* Heading weight/tracking. */
+.sl-markdown-content :is(h1, h2, h3, h4, h5, h6) {
+	font-weight: 600;
+	letter-spacing: -0.01em;
+}
+
+/* Rounded code blocks/inline code. */
+.sl-markdown-content code:not(:where(.not-content *)) {
+	border-radius: var(--wu-radius-sm);
+	border: 1px solid var(--sl-color-hairline-light);
+}
+.sl-markdown-content pre:not(:where(.not-content *)) {
+	border-radius: var(--wu-radius);
+	border: 1px solid var(--sl-color-hairline-light);
+}
+.starlight-aside {
+	border-radius: 0 var(--wu-radius-sm) var(--wu-radius-sm) 0;
+}
+
+/* Windows-style minimize/maximize/close glyph for the code blocks */
+.expressive-code .frame.is-terminal .header::before {
+	left: auto !important;
+	right: 0.85rem !important;
+	width: 4.75rem !important;
+	height: 0.7rem !important;
+	opacity: 0.85 !important;
+	--ec-frm-trmIcon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 16' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M4 8h12'/%3E%3Crect x='42' y='3.5' width='12' height='9' rx='0.5'/%3E%3Cpath d='M80 3l12 10M92 3L80 13'/%3E%3C/svg%3E");
+}
+
+/* Cards (CardGrid / LinkCard): rounded, accent border on hover. */
+.sl-markdown-content .card,
+a.link-card {
+	border-radius: var(--wu-radius) !important;
+	transition:
+		border-color 0.15s ease,
+		transform 0.15s ease;
+}
+.sl-markdown-content .card:hover,
+a.link-card:hover {
+	border-color: var(--sl-color-accent);
+}
+
+/* Sidebar + nav background/border. */
+.sidebar-pane,
+header.header {
+	background-color: var(--sl-color-bg-nav);
+	border-color: var(--sl-color-hairline-light);
+}
+
+/* Prevents a horizontal scrollbar from the hero's full-bleed 100vw background trick. */
+body {
+	overflow-x: hidden;
+}
+
+/* ============================================================
+   Landing page marketing sections.
+   ============================================================ */
+
+/* Shared buttons (hero actions + mid-page + final CTA). */
+.wu-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5em;
+	height: 2.5rem;
+	padding-inline: 1.5rem;
+	border-radius: var(--wu-radius-sm);
+	font-size: var(--sl-text-sm);
+	font-weight: 500;
+	line-height: 1;
+	text-decoration: none;
+	transition:
+		filter 0.15s ease,
+		border-color 0.15s ease,
+		color 0.15s ease;
+}
+/* The right/left-arrow glyph's visual weight sits high in its viewBox, so it reads as floating above the label's baseline without this nudge. */
+.wu-btn .wu-icon-arrow {
+	position: relative;
+	top: 0.05em;
+}
+.wu-btn-primary {
+	background: var(--wu-accent);
+	color: #fff;
+}
+.wu-btn-primary:hover {
+	filter: brightness(1.1);
+}
+.wu-btn-secondary {
+	border: 1px solid var(--sl-color-hairline-light);
+	color: var(--sl-color-white);
+	background: var(--sl-color-gray-6);
+}
+.wu-btn-secondary:hover {
+	border-color: var(--sl-color-accent);
+	color: var(--sl-color-accent);
+}
+/* Neutralizes any stray <p> MDX wraps around icon+text content, so it never breaks the flex row. */
+.wu-btn > p,
+.wu-trust-item > p {
+	display: contents;
+}
+
+/* Cancels Starlight's automatic 1.5rem margin between the hero and the content column. */
+.wu-hero + .sl-markdown-content {
+	margin-top: 0;
+}
+
+/* Cancels Starlight's automatic 1.5rem inter-block margin inside our own grids/rows (it otherwise lands on item 2+ of each row and breaks alignment). */
+.sl-markdown-content .wu-section,
+.sl-markdown-content .wu-solution-grid > *,
+.sl-markdown-content .wu-feature-grid > *,
+.sl-markdown-content .wu-timeline > *,
+.sl-markdown-content .wu-problem-list > *,
+.sl-markdown-content .wu-benefit-list > *,
+.sl-markdown-content .wu-trust-bar > *,
+.sl-markdown-content .wu-badges > *,
+.sl-markdown-content .wu-btn-row > * {
+	margin-top: 0;
+}
+
+/* Section shell: full-bleed hairline dividers, alternating tint, 72rem reading width. */
+.wu-section {
+	margin-inline: calc(-1 * var(--sl-content-pad-x));
+	padding-inline: var(--sl-content-pad-x);
+	border-bottom: 1px solid var(--sl-color-hairline-light);
+	padding-block: clamp(3rem, 4vw + 1.5rem, 5.5rem);
+}
+.wu-section--trust {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding-block: 2rem;
+}
+.wu-section--tint {
+	background-color: var(--sl-color-gray-7, var(--sl-color-gray-6));
+}
+:root:not([data-theme='light']) .wu-section--tint {
+	background-color: color-mix(in srgb, var(--sl-color-gray-6) 60%, transparent);
+}
+.wu-section-inner {
+	max-width: 72rem;
+	margin-inline: auto;
+}
+.wu-text-narrow {
+	max-width: 44rem;
+	margin-inline: auto;
+}
+
+.wu-section-head {
+	max-width: 42rem;
+	margin: 0 auto 2.5rem;
+	text-align: center;
+}
+.wu-section-head h2 {
+	margin: 0;
+	font-size: var(--sl-text-3xl);
+	font-weight: 700;
+	letter-spacing: -0.01em;
+	color: var(--sl-color-white);
+}
+.wu-section-head p {
+	margin: 0.75rem 0 0;
+	font-size: var(--sl-text-lg);
+	color: var(--sl-color-gray-3);
+}
+.wu-section-head.wu-align-left {
+	text-align: left;
+	margin-inline: 0;
+	max-width: none;
+}
+
+/* Shields.io / dcbadge release, download, and Discord badges. */
+.wu-badges {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 1.5rem;
+}
+.wu-badges img {
+	height: 1.75rem;
+	width: auto;
+	display: block;
+}
+
+/* Trust bar: icon + label chips under the hero. */
+.wu-trust-bar {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	gap: 0.75rem 1.25rem;
+}
+.wu-trust-item {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: var(--sl-text-sm);
+	font-weight: 500;
+	color: var(--sl-color-gray-3);
+}
+.wu-trust-item svg {
+	color: var(--sl-color-accent);
+	width: 1rem;
+	height: 1rem;
+}
+
+/* Problem list: bullet-circle + text, left aligned. */
+.wu-problem-list {
+	display: flex;
+	flex-direction: column;
+	gap: 1.1rem;
+	margin: 2.5rem 0 0;
+	padding: 0;
+	list-style: none;
+}
+.wu-problem-list li {
+	display: flex;
+	align-items: flex-start;
+	gap: 1rem;
+	color: var(--sl-color-gray-3);
+}
+.wu-problem-list .wu-bullet {
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.5rem;
+	height: 1.5rem;
+	margin-top: 0.15rem;
+	border-radius: 999px;
+	background: var(--sl-color-gray-6);
+}
+.wu-problem-list .wu-bullet svg {
+	width: 0.85rem;
+	height: 0.85rem;
+	color: var(--sl-color-gray-3);
+}
+
+/* Solution grid: icon-in-box above title + description. */
+.wu-solution-grid {
+	display: grid;
+	gap: 2rem;
+	margin-top: 3rem;
+}
+.wu-solution {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+.wu-solution-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.5rem;
+	height: 2.5rem;
+	border-radius: var(--wu-radius-sm);
+	background: var(--sl-color-gray-6);
+	color: var(--sl-color-accent);
+}
+.wu-solution h3 {
+	margin: 0;
+	font-size: var(--sl-text-lg);
+	font-weight: 600;
+	color: var(--sl-color-white);
+}
+.wu-solution p {
+	margin: 0;
+	font-size: var(--sl-text-sm);
+	line-height: var(--sl-line-height);
+	color: var(--sl-color-gray-3);
+}
+
+/* Feature grid: wraps <CornerCard> instances. */
+.wu-feature-grid {
+	display: grid;
+	gap: 1.25rem;
+	margin-top: 3rem;
+}
+
+/* Step timeline ("how it works"): connecting line through each numbered circle. */
+.wu-timeline {
+	position: relative;
+	max-width: 36rem;
+	margin: 3rem auto 0;
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+}
+.wu-timeline::before {
+	content: '';
+	position: absolute;
+	left: 1.25rem;
+	top: 1.25rem;
+	bottom: 1.25rem;
+	width: 1px;
+	background: var(--sl-color-hairline-light);
+}
+.wu-timeline-step {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding-left: 3.5rem;
+}
+.wu-timeline-number {
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.5rem;
+	height: 2.5rem;
+	border-radius: 999px;
+	border: 1px solid var(--sl-color-hairline-light);
+	background: var(--sl-color-bg);
+	font-weight: 700;
+	color: var(--sl-color-accent);
+}
+.wu-timeline-step h3 {
+	margin: 0;
+	font-size: var(--sl-text-lg);
+	font-weight: 600;
+	color: var(--sl-color-white);
+}
+.wu-timeline-step p {
+	margin: 0;
+	color: var(--sl-color-gray-3);
+}
+.wu-timeline-step code {
+	border-radius: var(--wu-radius-sm);
+}
+
+/* Benefit checklist. */
+.wu-benefit-list {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	margin: 2.5rem 0 0;
+	padding: 0;
+	list-style: none;
+}
+.wu-benefit-list li {
+	display: flex;
+	align-items: flex-start;
+	gap: 1rem;
+	color: var(--sl-color-white);
+}
+.wu-benefit-list .wu-check {
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.5rem;
+	height: 1.5rem;
+	margin-top: 0.15rem;
+	border-radius: 999px;
+	background: hsl(var(--wu-accent-h) 100% 51% / 0.12);
+}
+.wu-benefit-list .wu-check svg {
+	width: 0.85rem;
+	height: 0.85rem;
+	color: var(--sl-color-accent);
+}
+
+/* Final call to action. */
+.wu-cta {
+	text-align: center;
+}
+.wu-cta h2 {
+	margin: 0;
+	font-size: var(--sl-text-3xl);
+	font-weight: 700;
+	letter-spacing: -0.01em;
+	color: var(--sl-color-white);
+}
+.wu-cta > p:first-of-type {
+	margin: 0.75rem 0 0;
+	font-size: var(--sl-text-lg);
+	color: var(--sl-color-gray-3);
+}
+.wu-cta .wu-btn-row {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.75rem;
+	margin-top: 2rem;
+}
+.wu-cta p.wu-cta-footnote {
+	margin-top: 2rem;
+	font-size: var(--sl-text-sm);
+	color: var(--sl-color-gray-3);
+}
+
+/* Grid breakpoints: 1 col mobile, 2 col tablet, 3 col desktop. */
+@media (min-width: 40em) {
+	.wu-solution-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+	.wu-feature-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+@media (min-width: 60em) {
+	.wu-solution-grid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+	.wu-feature-grid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+	.wu-timeline {
+		gap: 2.5rem;
+	}
+}

@@ -1,0 +1,90 @@
+---
+import EditLink from 'virtual:starlight/components/EditLink';
+import LastUpdated from 'virtual:starlight/components/LastUpdated';
+import Pagination from 'virtual:starlight/components/Pagination';
+import config from 'virtual:starlight/user-config';
+import { Icon } from '@astrojs/starlight/components';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="sl-flex">
+	{/* Edit link + last-updated timestamp, and prev/next pagination. */}
+	<div class="meta sl-flex">
+		<EditLink />
+		<LastUpdated />
+	</div>
+	<Pagination />
+
+	{/* "Built with Starlight" credit (only shown if Starlight's `credits` config is enabled). */}
+	{
+		config.credits && (
+			<a class="kudos sl-flex" href="https://starlight.astro.build">
+				<Icon name={'starlight'} /> {Astro.locals.t('builtWithStarlight.label')}
+			</a>
+		)
+	}
+
+	{/* Copyright line. */}
+	<div class="site-footer-copyright">© {year} <a href="https://christitus.com">Chris Titus Tech</a>. All rights reserved.</div>
+</footer>
+
+<style>
+	@layer starlight.core {
+		/* Footer layout: stacked meta row + pagination. */
+		footer {
+			flex-direction: column;
+			gap: 1.5rem;
+		}
+		.meta {
+			gap: 0.75rem 3rem;
+			justify-content: space-between;
+			flex-wrap: wrap;
+			margin-top: 3rem;
+			font-size: var(--sl-text-sm);
+			color: var(--sl-color-gray-3);
+		}
+		.meta > :global(p:only-child) {
+			margin-inline-start: auto;
+		}
+
+		/* "Built with Starlight" credit link. */
+		.kudos {
+			align-items: center;
+			gap: 0.5em;
+			margin: 1.5rem auto;
+			font-size: var(--sl-text-xs);
+			text-decoration: none;
+			color: var(--sl-color-gray-3);
+		}
+		.kudos:hover {
+			color: var(--sl-color-white);
+		}
+	}
+
+	@layer starlight.components {
+		.kudos :global(svg) {
+			color: var(--sl-color-orange);
+		}
+	}
+
+	/* Collapse the meta/pagination rows entirely when they have nothing in them (e.g. editUrl: false and no prev/next), instead of leaving an empty gap. */
+	footer .meta:empty,
+	footer :global(.pagination-links):empty {
+		display: none;
+		margin: 0;
+	}
+
+	/* Site-wide copyright line, matching the previous Hugo docs site's footer. The divider above it comes from Starlight's own .content-panel border. */
+	.site-footer-copyright {
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-3);
+	}
+	.site-footer-copyright a {
+		color: inherit;
+		text-decoration: underline;
+	}
+	.site-footer-copyright a:hover {
+		color: var(--sl-color-white);
+	}
+</style>

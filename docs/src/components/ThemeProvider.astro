@@ -1,0 +1,38 @@
+---
+// Overrides Starlight's default ThemeProvider: dark by default regardless of OS preference, unless the visitor has explicitly picked a theme before.
+import { Icon } from '@astrojs/starlight/components';
+---
+
+<script is:inline>
+	window.StarlightThemeProvider = (() => {
+		// Apply the resolved theme to <html> immediately, before paint, to avoid a flash of the wrong theme.
+		const storedTheme =
+			typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
+		const theme = storedTheme || 'dark';
+		document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+		// Re-syncs each theme-select picker's icon + value after the visitor changes theme.
+		return {
+			updatePickers(theme = storedTheme || 'auto') {
+				document.querySelectorAll('starlight-theme-select').forEach((picker) => {
+					const select = picker.querySelector('select');
+					if (select) select.value = theme;
+					/** @type {HTMLTemplateElement | null} */
+					const tmpl = document.querySelector(`#theme-icons`);
+					const newIcon = tmpl && tmpl.content.querySelector('.' + theme);
+					if (newIcon) {
+						const oldIcon = picker.querySelector('svg.label-icon');
+						if (oldIcon) {
+							oldIcon.replaceChildren(...newIcon.cloneNode(true).childNodes);
+						}
+					}
+				});
+			},
+		};
+	})();
+</script>
+
+<template id="theme-icons">
+	<Icon name="sun" class="light" />
+	<Icon name="moon" class="dark" />
+	<Icon name="laptop" class="auto" />
+</template>

@@ -241,6 +241,7 @@ function Invoke-WinUtilISOWriteUSB {
                 $wimSizeMB = [math]::Round((Get-Item $installWim).Length / 1MB)
                 if ($wimSizeMB -gt 3800) {
                     Log "install.wim is $wimSizeMB MB - splitting for FAT32 compatibility... This will take several minutes."
+                    Set-ItemProperty -LiteralPath $installWim -Name IsReadOnly -Value $false
                     $splitDest = Join-Path $usbDrive "sources\install.swm"
                     New-Item -ItemType Directory -Path (Split-Path $splitDest) -Force
                     Split-WindowsImage -ImagePath $installWim -SplitImagePath $splitDest -FileSize 3800 -CheckIntegrity

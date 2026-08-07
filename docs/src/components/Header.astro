@@ -1,0 +1,331 @@
+---
+import config from 'virtual:starlight/user-config';
+
+import LanguageSelect from 'virtual:starlight/components/LanguageSelect';
+import Search from 'virtual:starlight/components/Search';
+import SiteTitle from 'virtual:starlight/components/SiteTitle';
+import SocialIcons from 'virtual:starlight/components/SocialIcons';
+import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
+import { Icon } from '@astrojs/starlight/components';
+import { siteLinks } from '../site-links';
+
+// Render the `Search` component if Pagefind is enabled or the default search component has been overridden.
+const shouldRenderSearch =
+	config.pagefind || config.components.Search !== '@astrojs/starlight/components/Search.astro';
+
+// Pages with a sidebar already have Starlight's own mobile menu toggle; only splash pages need this one.
+const { hasSidebar } = Astro.locals.starlightRoute;
+---
+
+<div class="header">
+	{/* Site title. */}
+	<div class="title-wrapper sl-flex">
+		<SiteTitle />
+	</div>
+	<div class="mobile-actions sl-flex">
+		{/* Search box. */}
+		<div class="sl-flex print:hidden">
+			{shouldRenderSearch && <Search />}
+		</div>
+		{
+			!hasSidebar && (
+				<div class="site-nav-toggle sl-flex md:sl-hidden print:hidden">
+					<button type="button" aria-expanded="false" aria-controls="site-nav-panel" aria-label="Site navigation">
+						<Icon name="bars" class="open-menu" />
+						<Icon name="close" class="close-menu" />
+					</button>
+					<div id="site-nav-panel" class="site-nav-panel">
+						<div class="site-nav-panel-group">
+							<p class="site-nav-panel-heading">Documentation</p>
+							<a href="/guides/">User Guides</a>
+							<a href="/contributing/">Contribution Guides</a>
+							<a href="/code-reference/architecture/">Code Reference</a>
+						</div>
+						<div class="site-nav-panel-group">
+							<p class="site-nav-panel-heading">Help</p>
+							<a href="/faq/">FAQ</a>
+							<a href="/knownissues/">Known Issues</a>
+							<a href={siteLinks.forums.href} target="_blank" rel="noreferrer">{siteLinks.forums.label}</a>
+						</div>
+						<a class="site-nav-panel-link" href={siteLinks.store.href} target="_blank" rel="noreferrer">{siteLinks.store.label}</a>
+					</div>
+				</div>
+			)
+		}
+	</div>
+	{/* Right-side group: nav links, social icons, theme/language pickers. */}
+	<div class="sl-hidden md:sl-flex print:hidden right-group">
+		<nav class="site-nav" aria-label="Top">
+			{/* "Documentation" dropdown. */}
+			<div class="site-nav-dropdown">
+				<details name="site-nav-dropdown">
+					<summary class="site-nav-link">Documentation</summary>
+				</details>
+				<div class="site-nav-menu">
+					<a href="/guides/">User Guides</a>
+					<a href="/contributing/">Contribution Guides</a>
+					<a href="/code-reference/architecture/">Code Reference</a>
+				</div>
+			</div>
+			{/* "Help" dropdown. */}
+			<div class="site-nav-dropdown">
+				<details name="site-nav-dropdown">
+					<summary class="site-nav-link">Help</summary>
+				</details>
+				<div class="site-nav-menu">
+					<a href="/faq/">FAQ</a>
+					<a href="/knownissues/">Known Issues</a>
+					<a href={siteLinks.forums.href} target="_blank" rel="noreferrer">{siteLinks.forums.label}</a>
+				</div>
+			</div>
+			<a class="site-nav-link" href={siteLinks.store.href} target="_blank" rel="noreferrer">{siteLinks.store.label}</a>
+		</nav>
+		<div class="sl-flex social-icons">
+			<SocialIcons />
+		</div>
+		<ThemeSelect />
+		<LanguageSelect />
+	</div>
+</div>
+
+<script>
+	const toggle = document.querySelector<HTMLElement>('.site-nav-toggle');
+	const btn = toggle?.querySelector('button');
+
+	if (toggle && btn) {
+		const setExpanded = (expanded: boolean) => btn.setAttribute('aria-expanded', String(expanded));
+
+		btn.addEventListener('click', () => setExpanded(btn.getAttribute('aria-expanded') !== 'true'));
+		toggle.addEventListener('keyup', (e) => {
+			if (e.code === 'Escape') {
+				setExpanded(false);
+				btn.focus();
+			}
+		});
+		// Collapse the panel if the viewport grows past the mobile breakpoint.
+		matchMedia('(min-width: 50em)').addEventListener('change', () => setExpanded(false));
+	}
+</script>
+
+<style>
+	@layer starlight.core {
+		/* Header shell: title, search, right-side nav group. */
+		.header {
+			display: flex;
+			gap: var(--sl-nav-gap);
+			justify-content: space-between;
+			align-items: center;
+			height: 100%;
+		}
+
+		.title-wrapper {
+			/* Clips long titles instead of overflowing onto the search/menu buttons; padding/negative margin avoids clipping the focus ring. */
+			overflow: clip;
+			padding: 0.25rem;
+			margin: -0.25rem;
+			min-width: 0;
+		}
+
+		.mobile-actions {
+			align-items: center;
+			gap: 0.75rem;
+		}
+
+		/* Right-side group: nav + social icons, divided by a hairline. */
+		.right-group,
+		.social-icons {
+			gap: 1rem;
+			align-items: center;
+		}
+		.social-icons::after {
+			content: '';
+			height: 2rem;
+			border-inline-end: 1px solid var(--sl-color-hairline-light);
+		}
+
+		@media (min-width: 50rem) {
+			:global(:root[data-has-sidebar]) {
+				--__sidebar-pad: calc(2 * var(--sl-nav-pad-x));
+			}
+			:global(:root:not([data-has-toc])) {
+				--__toc-width: 0rem;
+			}
+			/* Columns: site title */
+			.header {
+				--__sidebar-width: max(0rem, var(--sl-content-inline-start, 0rem) - var(--sl-nav-pad-x));
+				--__main-column-fr: calc(
+					(
+							100% + var(--__sidebar-pad, 0rem) - var(--__toc-width, var(--sl-sidebar-width)) -
+								(2 * var(--__toc-width, var(--sl-nav-pad-x))) - var(--sl-content-inline-start, 0rem) -
+								var(--sl-content-width)
+						) / 2
+				);
+				display: grid;
+				grid-template-columns:
+					minmax(
+						calc(var(--__sidebar-width) + max(0rem, var(--__main-column-fr) - var(--sl-nav-gap))),
+						auto
+					)
+					1fr
+					auto;
+				align-content: center;
+			}
+		}
+	}
+
+	/* Top nav links + dropdowns. */
+	.site-nav {
+		display: flex;
+		align-items: center;
+		gap: 1.25rem;
+		padding-inline-end: 1.25rem;
+		border-inline-end: 1px solid var(--sl-color-hairline-light);
+	}
+
+	/* Top nav trigger: shared style for plain links and dropdown triggers. */
+	.site-nav-link {
+		font-size: var(--sl-text-sm);
+		font-weight: 500;
+		color: var(--sl-color-gray-2);
+		background: none;
+		border: none;
+		padding: 0;
+		font-family: inherit;
+		cursor: pointer;
+		white-space: nowrap;
+		text-decoration: none;
+	}
+	.site-nav-link:hover {
+		color: var(--sl-color-white);
+	}
+
+	/* Extends the hoverable box down to the menu, closing the dead zone between trigger and menu. */
+	.site-nav-dropdown {
+		position: relative;
+		padding-bottom: 0.75rem;
+		margin-bottom: -0.75rem;
+	}
+	/* No box of its own; only the <summary> lays out. Its `open` state (no JS) is read by .site-nav-menu below. */
+	.site-nav-dropdown > details {
+		display: contents;
+	}
+	.site-nav-dropdown > details > summary {
+		display: inline-flex;
+		align-items: center;
+		list-style: none;
+	}
+	.site-nav-dropdown > details > summary::-webkit-details-marker {
+		display: none;
+	}
+	/* Dropdown menu panel: shown on hover (mouse) or when the sibling <details> is toggled open (touch/keyboard). */
+	.site-nav-menu {
+		display: none;
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		transform: translateX(-50%);
+		min-width: 11rem;
+		padding: 0.5rem;
+		flex-direction: column;
+		gap: 0.125rem;
+		background: var(--sl-color-bg-nav);
+		border: 1px solid var(--sl-color-hairline-light);
+		border-radius: var(--wu-radius-sm, 0.5rem);
+		box-shadow: var(--sl-shadow-lg);
+		z-index: 10;
+	}
+	.site-nav-dropdown:hover .site-nav-menu,
+	.site-nav-dropdown:has(details[open]) .site-nav-menu {
+		display: flex;
+	}
+	.site-nav-menu a {
+		padding: 0.4rem 0.6rem;
+		border-radius: var(--wu-radius-sm, 0.5rem);
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-gray-2);
+		text-decoration: none;
+		white-space: nowrap;
+	}
+	.site-nav-menu a:hover {
+		color: var(--sl-color-white);
+		background: var(--sl-color-gray-6);
+	}
+
+	/* Mobile equivalent of the site-nav, shown via a toggle button since the desktop nav is hidden below `md`. */
+	.site-nav-toggle button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.25rem;
+		height: 2.25rem;
+		border: 0;
+		border-radius: var(--wu-radius-sm, 0.5rem);
+		padding: 0;
+		background: none;
+		color: var(--sl-color-gray-2);
+		cursor: pointer;
+	}
+	.site-nav-toggle button:hover {
+		color: var(--sl-color-white);
+	}
+	.site-nav-toggle button svg {
+		width: 1.25rem;
+		height: 1.25rem;
+	}
+	.site-nav-toggle button[aria-expanded='true'] .open-menu,
+	.site-nav-toggle button:not([aria-expanded='true']) .close-menu {
+		display: none;
+	}
+
+	.site-nav-panel {
+		display: none;
+		position: fixed;
+		inset-inline: 0;
+		top: var(--sl-nav-height);
+		z-index: var(--sl-z-index-menu);
+		flex-direction: column;
+		gap: 0.25rem;
+		max-height: calc(100vh - var(--sl-nav-height));
+		overflow-y: auto;
+		padding: 1rem var(--sl-nav-pad-x) 1.5rem;
+		background: var(--sl-color-bg-nav);
+		border-bottom: 1px solid var(--sl-color-hairline-shade);
+	}
+	.site-nav-toggle button[aria-expanded='true'] ~ .site-nav-panel {
+		display: flex;
+	}
+	.site-nav-panel-link {
+		padding: 0.5rem 0.25rem;
+		font-size: var(--sl-text-sm);
+		font-weight: 500;
+		color: var(--sl-color-gray-2);
+		text-decoration: none;
+	}
+	.site-nav-panel-link:hover {
+		color: var(--sl-color-white);
+	}
+	.site-nav-panel-group {
+		display: flex;
+		flex-direction: column;
+		border-top: 1px solid var(--sl-color-hairline-light);
+		padding-top: 0.5rem;
+	}
+	.site-nav-panel-heading {
+		margin: 0 0 0.25rem;
+		padding: 0 0.25rem;
+		font-size: var(--sl-text-xs);
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.02em;
+		color: var(--sl-color-gray-3);
+	}
+	.site-nav-panel-group a {
+		padding: 0.5rem 0.25rem;
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-gray-2);
+		text-decoration: none;
+	}
+	.site-nav-panel-group a:hover {
+		color: var(--sl-color-white);
+	}
+</style>

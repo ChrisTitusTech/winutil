@@ -1,0 +1,301 @@
+---
+// Custom hero override: eyebrow, heading, tagline, actions, badges, screenshot.
+import { Image } from 'astro:assets';
+import { Icon } from '@astrojs/starlight/components';
+
+// Matches Starlight's internal PAGE_TITLE_ID (used by the skip-to-content link).
+const PAGE_TITLE_ID = '_top';
+
+// Resolve hero content: Starlight's built-in hero fields plus our custom schema extensions.
+const { data } = Astro.locals.starlightRoute.entry;
+const { title = data.title, tagline, image, actions = [] } = data.hero || {};
+const { heroEyebrow, heroCaption, heroBadges = [] } = data;
+
+let heroImage: ImageMetadata | undefined;
+if (image && 'file' in image) heroImage = image.file;
+---
+
+<section class="wu-hero">
+	{/* Full-bleed grid/glow background layer. */}
+	<div class="wu-hero-grid" aria-hidden="true"></div>
+	<div class="wu-hero-glow" aria-hidden="true"></div>
+	<div class="wu-hero-inner">
+		{/* Copy column: eyebrow, heading, tagline, actions, caption. */}
+		<div class="wu-hero-copy">
+			{heroEyebrow && <p class="wu-eyebrow">{heroEyebrow}</p>}
+			<h1 id={PAGE_TITLE_ID} data-page-title set:html={title} />
+			{tagline && <p class="wu-hero-tagline" set:html={tagline} />}
+			{
+				actions.length > 0 && (
+					<div class="wu-hero-actions">
+						{actions.map(({ icon, link: href, text, variant = 'primary' }) => (
+							<a href={href} class:list={['wu-btn', variant === 'primary' ? 'wu-btn-primary' : 'wu-btn-secondary']}>
+								{text}
+								{icon?.name && (
+									<Icon
+										name={icon.name}
+										size="1.5em"
+										class:list={[(icon.name === 'right-arrow' || icon.name === 'left-arrow') && 'wu-icon-arrow']}
+									/>
+								)}
+							</a>
+						))}
+					</div>
+				)
+			}
+			{heroCaption && <p class="wu-hero-caption">{heroCaption}</p>}
+		</div>
+		{/* Screenshot framed as a fake browser/app window. */}
+		{
+			heroImage && (
+				<div class="wu-hero-media">
+					<div class="wu-window">
+						<div class="wu-window-bar">
+							<span class="wu-window-title">winutil.ps1</span>
+							<div class="wu-caption-buttons">
+								<span class="wu-cap-btn wu-cap-min" aria-hidden="true">
+									<svg viewBox="0 0 10 10"><path d="M0 5h10" /></svg>
+								</span>
+								<span class="wu-cap-btn wu-cap-max" aria-hidden="true">
+									<svg viewBox="0 0 10 10"><rect x="0.5" y="0.5" width="9" height="9" /></svg>
+								</span>
+								<span class="wu-cap-btn wu-cap-close" aria-hidden="true">
+									<svg viewBox="0 0 10 10"><path d="M0 0l10 10M10 0L0 10" /></svg>
+								</span>
+							</div>
+						</div>
+						<Image src={heroImage} alt={image?.alt || ''} width={1200} loading="eager" decoding="async" />
+					</div>
+				</div>
+			)
+		}
+	</div>
+	{/* Badge row (shields.io / dcbadge images) below the two-column layout. */}
+	{
+		heroBadges.length > 0 && (
+			<div class="wu-hero-bottom">
+				<div class="wu-badges">
+					{heroBadges.map(({ src, alt, href }) =>
+						href ? (
+							<a href={href}>
+								<img src={src} alt={alt} />
+							</a>
+						) : (
+							<img src={src} alt={alt} />
+						)
+					)}
+				</div>
+			</div>
+		)
+	}
+</section>
+
+<style>
+	@layer starlight.core {
+		/* Outer hero shell; pulled up to close Starlight's fixed 1.5rem ContentPanel padding. */
+		.wu-hero {
+			position: relative;
+			border-bottom: 1px solid var(--sl-color-hairline-light);
+			margin-inline: calc(-1 * var(--sl-content-pad-x));
+			padding-inline: var(--sl-content-pad-x);
+			margin-top: -1.5rem;
+			padding-top: 1.5rem;
+		}
+
+		/* Full-bleed grid/glow background, forced behind all hero content via negative z-index. */
+		.wu-hero-grid,
+		.wu-hero-glow {
+			position: absolute;
+			z-index: -1;
+			top: 0;
+			bottom: 0;
+			left: 50%;
+			width: 100vw;
+			margin-left: -50vw;
+			pointer-events: none;
+		}
+
+		.wu-hero-grid {
+			background-image:
+				linear-gradient(90deg, var(--sl-color-hairline-light) 1px, transparent 1px),
+				linear-gradient(var(--sl-color-hairline-light) 1px, transparent 1px);
+			background-size: 40px 40px;
+			mask-image: radial-gradient(at top, #000 60%, transparent 100%);
+			-webkit-mask-image: radial-gradient(at top, #000 60%, transparent 100%);
+			opacity: 0.6;
+		}
+
+		.wu-hero-glow {
+			background: radial-gradient(
+				ellipse at center,
+				hsl(var(--wu-accent-h) 100% 61% / 0.14) 0%,
+				hsl(var(--wu-accent-h) 100% 61% / 0.05) 28%,
+				transparent 68%
+			);
+		}
+
+		/* Two-column layout: copy left, screenshot right (stacked on mobile). */
+		.wu-hero-inner {
+			position: relative;
+			z-index: 1;
+			display: grid;
+			gap: 3rem;
+			padding-block: 3rem 2rem;
+		}
+
+		/* Hero copy: eyebrow, heading, tagline, actions, caption. */
+		.wu-hero-copy {
+			text-align: center;
+		}
+
+		.wu-eyebrow {
+			margin: 0 0 1rem;
+			font-size: var(--sl-text-sm);
+			font-weight: 600;
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+			color: var(--sl-color-accent);
+		}
+
+		.wu-hero-copy h1 {
+			margin: 0;
+			font-size: clamp(var(--sl-text-4xl), calc(0.25rem + 5vw), var(--sl-text-6xl));
+			font-weight: 700;
+			line-height: 1.1;
+			letter-spacing: -0.02em;
+			color: var(--sl-color-white);
+		}
+
+		.wu-hero-tagline {
+			margin: 1.5rem auto 0;
+			max-width: 40rem;
+			font-size: var(--sl-text-lg);
+			line-height: var(--sl-line-height);
+			color: var(--sl-color-gray-2);
+		}
+
+		.wu-hero-actions {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+			gap: 0.75rem;
+			margin-top: 2.5rem;
+		}
+
+		.wu-hero-caption {
+			margin: 1.5rem 0 0;
+			font-size: var(--sl-text-sm);
+			color: var(--sl-color-gray-3);
+		}
+
+		/* Screenshot framed in a fake browser window (traffic-light dots + title bar). */
+		.wu-hero-media {
+			display: flex;
+			justify-content: center;
+		}
+
+		.wu-window {
+			width: 100%;
+			max-width: 56rem;
+			overflow: hidden;
+			border-radius: var(--wu-radius-lg);
+			border: 1px solid var(--sl-color-hairline-light);
+			background: var(--sl-color-gray-6);
+			box-shadow: 0 25px 50px -12px hsl(0 0% 0% / 0.5);
+		}
+
+		/* Window chrome: title bar + traffic-light buttons. */
+		.wu-window-bar {
+			display: flex;
+			align-items: center;
+			gap: 0.4rem;
+			padding-inline-start: 0.85rem;
+			border-bottom: 1px solid var(--sl-color-hairline-light);
+			background: var(--sl-color-black);
+		}
+
+		.wu-window-title {
+			font-size: var(--sl-text-xs);
+			color: var(--sl-color-gray-3);
+			flex: 1;
+		}
+
+		.wu-caption-buttons {
+			display: flex;
+			height: 2.1rem;
+		}
+
+		.wu-cap-btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 2.75rem;
+			height: 100%;
+			color: var(--sl-color-gray-3);
+		}
+
+		.wu-cap-btn svg {
+			width: 0.65rem;
+			height: 0.65rem;
+			fill: none;
+			stroke: currentColor;
+			stroke-width: 1;
+		}
+
+		.wu-cap-max svg {
+			fill: none;
+		}
+
+		.wu-cap-close svg {
+			fill: none;
+		}
+
+		.wu-cap-btn:hover {
+			background: var(--sl-color-gray-5);
+		}
+		.wu-cap-close:hover {
+			background: #e81123;
+			color: white;
+		}
+
+		.wu-window :global(img) {
+			display: block;
+			width: 100%;
+			height: auto;
+		}
+
+		/* Badge row below the two-column layout, centered full-width. */
+		.wu-hero-bottom {
+			position: relative;
+			z-index: 1;
+			display: flex;
+			justify-content: center;
+			padding-bottom: 2.5rem;
+		}
+		.wu-hero-bottom .wu-badges {
+			margin: 0;
+		}
+
+		/* Desktop breakpoint: side-by-side columns, left-aligned copy. */
+		@media (min-width: 50rem) {
+			.wu-hero-inner {
+				grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+				align-items: center;
+				gap: 2rem;
+				padding-block: 5rem 3rem;
+			}
+			.wu-hero-copy {
+				text-align: left;
+			}
+			.wu-hero-tagline {
+				margin-inline: 0;
+			}
+			.wu-hero-actions {
+				justify-content: flex-start;
+			}
+			.wu-hero-bottom {
+				padding-bottom: 3rem;
+			}
+		}
+	}
+</style>

@@ -1,0 +1,33 @@
+---
+title: "Background Apps - Disable"
+description: "Disables all Microsoft Store apps from running in the background, which has to be done individually since Windows 11."
+editUrl: false
+---
+
+:::note
+This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
+:::
+
+```json title="config/tweaks.json"
+  "WPFTweaksDisableBGapps": {
+    "Content": "Background Apps - Disable",
+    "Description": "Disables all Microsoft Store apps from running in the background, which has to be done individually since Windows 11.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications",
+        "Name": "GlobalUserDisabled",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0"
+      }
+    ],
+  }
+```
+
+## Registry Changes
+
+Applications and System Components store and retrieve configuration data to modify Windows settings, so we can use the registry to change many settings in one place.
+
+You can find information about the registry on [Wikipedia](https://en.wikipedia.org/wiki/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).
