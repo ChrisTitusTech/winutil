@@ -4,161 +4,175 @@
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilMultiplaneOverlayState.ps1")
-    . (Join-Path $script:repoRoot "functions\private\Set-WinUtilMultiplaneOverlay.ps1")
+    $script:config = Get-Content (Join-Path $script:repoRoot "config\tweaks.json") -Raw | ConvertFrom-Json
+    $script:states = $script:config.WPFMultiplaneOverlay.registry
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilRegistryComboState.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilRegistryComboValue.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Set-WinUtilRegistryComboState.ps1")
 
     function Set-WinUtilRegistry {
         param($Name, $Path, $Type, $Value)
     }
 }
 
-Describe "Get-WinUtilMultiplaneOverlayState" {
-    It "reports Enabled when neither registry value disables MPO" {
-        Mock Get-ItemProperty {
-            [pscustomobject]@{ OverlayTestMode = 0; DisableOverlays = 0 }
-        }
-
-        Get-WinUtilMultiplaneOverlayState | Should -Be "Enabled"
+Describe "Multiplane Overlay configuration" {
+    It "keeps every state and registry action in tweaks.json" {
+        $script:config.WPFMultiplaneOverlay.Type | Should -Be "Combobox"
+        $script:config.WPFMultiplaneOverlay.ComboItems | Should -Be @("Enabled", "Disabled (Compatibility)", "Fully Disabled")
+        $script:states.Count | Should -Be 2
+        $script:states[0].Values.PSObject.Properties.Name | Should -Be $script:config.WPFMultiplaneOverlay.ComboItems
+        $script:states[0].Values.PSObject.Properties.Value | Should -Be @("<RemoveEntry>", "5", "5")
+        $script:states[1].Values.PSObject.Properties.Value | Should -Be @("<RemoveEntry>", "<RemoveEntry>", "1")
     }
 
-    It "reports Disabled (Compatibility) when only OverlayTestMode is enabled" {
+    It "uses the generic combo registry handler" {
+        $renderer = Get-Content (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIElements.ps1") -Raw
+
+        $renderer | Should -Match 'Get-WinUtilRegistryComboState'
+        $renderer | Should -Match 'Set-WinUtilRegistryComboState'
+        $renderer | Should -Not -Match 'WPFMultiplaneOverlay'
+    }
+}
+
+Describe "Get-WinUtilRegistryComboState" {
+    It "treats missing registry properties and paths as absent" -TestCases @(
+        @{ Exception = [System.Management.Automation.PSArgumentException]::new("Property is missing") }
+        @{ Exception = [System.Management.Automation.ItemNotFoundException]::new("Path is missing") }
+    ) {
+        param($Exception)
+        Mock Get-ItemProperty { throw $Exception }
+
+        Get-WinUtilRegistryComboState -Registry $script:states | Should -Be "Enabled"
+    }
+
+    It "reports Enabled when the values are absent or zero" -TestCases @(
+        @{ OverlayTestMode = $null; DisableOverlays = $null }
+        @{ OverlayTestMode = 0; DisableOverlays = 0 }
+    ) {
+        param($OverlayTestMode, $DisableOverlays)
         Mock Get-ItemProperty {
             if ($Name -eq "OverlayTestMode") {
-                return [pscustomobject]@{ OverlayTestMode = 5 }
+                return [pscustomobject]@{ OverlayTestMode = $OverlayTestMode }
             }
-            return [pscustomobject]@{ DisableOverlays = 0 }
+            [pscustomobject]@{ DisableOverlays = $DisableOverlays }
         }
 
-        Get-WinUtilMultiplaneOverlayState | Should -Be "Disabled (Compatibility)"
+        Get-WinUtilRegistryComboState -Registry $script:states | Should -Be "Enabled"
     }
 
-    It "reports Fully Disabled when DisableOverlays is enabled" {
+    It "reports each disabled state" -TestCases @(
+        @{ OverlayTestMode = 5; DisableOverlays = $null; Expected = "Disabled (Compatibility)" }
+        @{ OverlayTestMode = 5; DisableOverlays = 1; Expected = "Fully Disabled" }
+    ) {
+        param($OverlayTestMode, $DisableOverlays, $Expected)
         Mock Get-ItemProperty {
             if ($Name -eq "OverlayTestMode") {
-                return [pscustomobject]@{ OverlayTestMode = 5 }
+                return [pscustomobject]@{ OverlayTestMode = $OverlayTestMode }
             }
-            return [pscustomobject]@{ DisableOverlays = 1 }
+            [pscustomobject]@{ DisableOverlays = $DisableOverlays }
         }
 
-        Get-WinUtilMultiplaneOverlayState | Should -Be "Fully Disabled"
+        Get-WinUtilRegistryComboState -Registry $script:states | Should -Be $Expected
     }
 
-    It "rejects a partial fully disabled state" {
+    It "rejects an unsupported combination" {
         Mock Get-ItemProperty {
             if ($Name -eq "OverlayTestMode") {
                 return [pscustomobject]@{ OverlayTestMode = 0 }
             }
-            return [pscustomobject]@{ DisableOverlays = 1 }
+            [pscustomobject]@{ DisableOverlays = 1 }
         }
 
-        { Get-WinUtilMultiplaneOverlayState } | Should -Throw "Unexpected Multiplane Overlay registry state*"
+        { Get-WinUtilRegistryComboState -Registry $script:states } | Should -Throw "Registry values do not match a supported state."
     }
 }
 
-Describe "Set-WinUtilMultiplaneOverlay" {
+Describe "Set-WinUtilRegistryComboState" {
     BeforeEach {
         $script:registryValues = @{ OverlayTestMode = 0; DisableOverlays = 0 }
         Mock Get-ItemProperty {
-            if ($Name -eq "OverlayTestMode") {
-                return [pscustomobject]@{ OverlayTestMode = $script:registryValues.OverlayTestMode }
+            param($Path, $Name)
+            $registryName = [string]$Name
+            if ($script:registryValues.ContainsKey($registryName)) {
+                $result = [pscustomobject]@{}
+                $result | Add-Member -NotePropertyName $registryName -NotePropertyValue $script:registryValues[$registryName]
+                return $result
             }
-            return [pscustomobject]@{ DisableOverlays = $script:registryValues.DisableOverlays }
+            [pscustomobject]@{}
         }
         Mock Set-WinUtilRegistry {
+            param($Name, $Path, $Type, $Value)
             if ($Value -eq "<RemoveEntry>") {
                 $script:registryValues.Remove($Name)
-                return
+            } else {
+                $script:registryValues[$Name] = [int]$Value
             }
-            $script:registryValues[$Name] = [int]$Value
         }
     }
 
-    It "writes the compatibility values" {
-        Set-WinUtilMultiplaneOverlay -State "Disabled (Compatibility)"
+    It "applies each configured state" -TestCases @(
+        @{ State = "Enabled"; OverlayTestMode = $null; DisableOverlays = $null }
+        @{ State = "Disabled (Compatibility)"; OverlayTestMode = 5; DisableOverlays = $null }
+        @{ State = "Fully Disabled"; OverlayTestMode = 5; DisableOverlays = 1 }
+    ) {
+        param($State, $OverlayTestMode, $DisableOverlays)
 
-        Should -Invoke Set-WinUtilRegistry -Times 1 -Exactly -ParameterFilter {
-            $Name -eq "OverlayTestMode" -and $Value -eq 5
-        }
-        Should -Invoke Set-WinUtilRegistry -Times 1 -Exactly -ParameterFilter {
-            $Name -eq "DisableOverlays" -and $Value -eq 0
-        }
+        Set-WinUtilRegistryComboState -Registry $script:states -State $State
+
+        $script:registryValues.OverlayTestMode | Should -Be $OverlayTestMode
+        $script:registryValues.DisableOverlays | Should -Be $DisableOverlays
     }
 
-    It "writes the fully disabled values" {
-        Set-WinUtilMultiplaneOverlay -State "Fully Disabled"
-
-        Should -Invoke Set-WinUtilRegistry -Times 1 -Exactly -ParameterFilter {
-            $Name -eq "OverlayTestMode" -and $Value -eq 5
-        }
-        Should -Invoke Set-WinUtilRegistry -Times 1 -Exactly -ParameterFilter {
-            $Name -eq "DisableOverlays" -and $Value -eq 1
-        }
-    }
-
-    It "throws and restores the previous values when the requested state cannot be verified" {
+    It "restores previous values when verification fails" {
         Mock Set-WinUtilRegistry {
+            param($Name, $Path, $Type, $Value)
             if ($Name -eq "DisableOverlays" -and $Value -eq 1) {
                 return
             }
-            $script:registryValues[$Name] = [int]$Value
+            if ($Value -eq "<RemoveEntry>") {
+                $script:registryValues.Remove($Name)
+            } else {
+                $script:registryValues[$Name] = [int]$Value
+            }
         }
 
-        { Set-WinUtilMultiplaneOverlay -State "Fully Disabled" } | Should -Throw "Unable to apply Multiplane Overlay state*"
+        { Set-WinUtilRegistryComboState -Registry $script:states -State "Fully Disabled" } | Should -Throw "Unable to apply registry state*"
         $script:registryValues.OverlayTestMode | Should -Be 0
         $script:registryValues.DisableOverlays | Should -Be 0
     }
 
-    It "removes values created by a failed update when they did not previously exist" {
+    It "restores absence when a state cannot be applied" {
         $script:registryValues.Clear()
-        Mock Get-ItemProperty {
-            if ($Name -eq "OverlayTestMode") {
-                return [pscustomobject]@{ OverlayTestMode = $script:registryValues.OverlayTestMode }
-            }
-            return [pscustomobject]@{ DisableOverlays = $script:registryValues.DisableOverlays }
-        }
         Mock Set-WinUtilRegistry {
+            param($Name, $Path, $Type, $Value)
             if ($Name -eq "DisableOverlays" -and $Value -eq 1) {
                 return
             }
             if ($Value -eq "<RemoveEntry>") {
                 $script:registryValues.Remove($Name)
-                return
+            } else {
+                $script:registryValues[$Name] = [int]$Value
             }
-            $script:registryValues[$Name] = [int]$Value
         }
 
-        { Set-WinUtilMultiplaneOverlay -State "Fully Disabled" } | Should -Throw "Unable to apply Multiplane Overlay state*"
+        { Set-WinUtilRegistryComboState -Registry $script:states -State "Fully Disabled" } | Should -Throw "Unable to apply registry state*"
         $script:registryValues.ContainsKey("OverlayTestMode") | Should -BeFalse
         $script:registryValues.ContainsKey("DisableOverlays") | Should -BeFalse
     }
-}
 
-Describe "Stateful combo-box wiring" {
-    It "configures the MPO entry and applies state changes immediately" {
-        $config = Get-Content (Join-Path $script:repoRoot "config\tweaks.json") -Raw | ConvertFrom-Json
-        $renderer = Get-Content (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIElements.ps1") -Raw
+    It "reports when the previous values cannot be restored" {
+        Mock Set-WinUtilRegistry {
+            param($Name, $Path, $Type, $Value)
+            if (($Name -eq "DisableOverlays" -and $Value -eq 1) -or ($Name -eq "OverlayTestMode" -and $Value -eq 0)) {
+                return
+            }
+            if ($Value -eq "<RemoveEntry>") {
+                $script:registryValues.Remove($Name)
+            } else {
+                $script:registryValues[$Name] = [int]$Value
+            }
+        }
 
-        $config.WPFMultiplaneOverlay.Type | Should -Be "Combobox"
-        $config.WPFMultiplaneOverlay.ComboItems | Should -Be @("Enabled", "Disabled (Compatibility)", "Fully Disabled")
-        $config.WPFMultiplaneOverlay.ComboDescriptions.Enabled | Should -Match "default overlay behavior"
-        $config.WPFMultiplaneOverlay.ComboDescriptions.'Fully Disabled' | Should -Match "more aggressive method"
-        $renderer | Should -Match 'Get-WinUtilMultiplaneOverlayState'
-        $renderer | Should -Match 'Set-WinUtilMultiplaneOverlay -State \$selectedItem\.Content'
-        $renderer | Should -Match 'Sync-WPFMultiplaneOverlayState -ComboBox \$comboBox'
-        $renderer | Should -Match 'Sync-WPFMultiplaneOverlayState -ComboBox \$this'
-        $renderer | Should -Match '\$entryInfo\.ComboDescriptions\.PSObject\.Properties\[\$comboitem\]\.Value'
-        $renderer | Should -Match '\$textBlock\.Text = "\(\?\)"'
-        $renderer | Should -Match '\$textBlock\.ToolTip = \$entryInfo\.Link'
-        $renderer | Should -Not -Match 'StateFunction|ApplyFunction|IsApplying'
-    }
-}
-
-Describe "Unknown MPO state UI handling" {
-    It "provides a non-selectable recovery item without weakening state validation" {
-        $stateSync = Get-Content (Join-Path $script:repoRoot "functions\private\Sync-WPFMultiplaneOverlayState.ps1") -Raw
-
-        $stateSync | Should -Match 'Custom / Unknown - select a state'
-        $stateSync | Should -Match '\$unknownStateItem\.IsEnabled = \$false'
-        $stateSync | Should -Match 'Select one of the supported states to replace these values\.'
+        { Set-WinUtilRegistryComboState -Registry $script:states -State "Fully Disabled" } | Should -Throw "*previous registry state could not be restored*"
     }
 }
