@@ -42,25 +42,36 @@ These rules override everything else in this file when in conflict:
   ```powershell
   Invoke-ScriptAnalyzer -Path . -Settings .\lint\PSScriptAnalyser.ps1 -Recurse
   ```
-- Docs site dev server (run from `docs/`):
+- Docs site dev server (run from `docs/`; see Section 2 for why this goes through Docker):
   ```powershell
-  npm install
-  npm run dev
+  docker compose up winutil-astro
   ```
 - Docs site production build (run from `docs/`):
   ```powershell
-  npm run build
+  docker compose run --rm winutil-astro npm run build
   ```
 
 Prefer the narrowest useful verification while iterating. Use the full relevant check before finishing.
 
-## 2. Source Of Truth
+## 2. Dependency Installs, Builds, And Dev Servers
+
+Given the current wave of npm/pnpm/yarn supply-chain worms (malicious postinstall/preinstall scripts, credential-stealing packages): **never run npm/pnpm/yarn/npx directly on the host, full stop.** The docs site (`docs/`) is the only npm-based project in this repo; always run its tooling inside Docker via `docs/Dockerfile` and `docs/docker-compose.yml` (service `winutil-astro`).
+
+- Never run `npm install`, `npm run <script>`, `npx <pkg>`, `pnpm`, or `yarn` directly on the host shell in `docs/`. Use `docker compose run --rm winutil-astro <command>` / `docker compose up winutil-astro` instead (see Section 1 for the exact commands).
+- If a task needs a new docs dependency, add it to `docs/package.json` yourself, then rebuild: `docker compose build winutil-astro` (run from `docs/`). Don't install packages on the host, even temporarily, "just to check something."
+- If Docker isn't available on the host, propose the install command for the current OS and wait for confirmation before running it — don't fall back to running npm on the host instead. If the daemon just isn't running (Docker is installed but not started), tell the user rather than trying to start it yourself.
+- Treat any `postinstall`/`preinstall` lifecycle script in a new dependency as worth flagging to the user before installing — summarize what it does.
+- Don't put real secrets in files that get copied into the docs build image; keep them out of the build context (`docs/.dockerignore`) unless explicitly mounted at runtime.
+- The container mounts `docs/` as a volume, so file edits on the host are reflected inside the container immediately — no rebuild needed for normal code changes, only when `docs/package.json`/`docs/package-lock.json` change.
+- This Docker requirement is specific to `docs/`. The rest of the repo is PowerShell (`Compile.ps1`, Pester, Script Analyzer) and runs directly on the host per Section 1.
+
+## 3. Source Of Truth
 
 For changes that affect the compiled WinUtil script, make them only in the source files described in SPEC.md's Repository Layout — never in `winutil.ps1` itself. If behavior changes require the compiled script to change, update the source files and run `.\Compile.ps1` only to verify generation.
 
 This scoping applies to compiled-script behavior only. Repository metadata — `AGENTS.md`, `SPEC.md`, `CLAUDE.md`/`GEMINI.md`/`.github/copilot-instructions.md`, `.github/workflows/`, and the root `.gitignore` — is edited directly when a task requires it, per the other sections of this file.
 
-## 3. Before Editing
+## 4. Before Editing
 
 - State the plan in one or two sentences before editing. For non-trivial work, include the verification you intend to run.
 - Read the files you will touch and the files that call them.
@@ -68,7 +79,7 @@ This scoping applies to compiled-script behavior only. Repository metadata — `
 - Surface assumptions when they affect behavior, compatibility, or user data.
 - If two approaches have meaningful tradeoffs, name them before choosing. Trivial tasks can proceed directly.
 
-## 4. Coding Guidelines
+## 5. Coding Guidelines
 
 - Prefer the minimum code that solves the stated problem.
 - Keep PowerShell functions in one function file when practical, with the file name matching the primary function name.
@@ -81,7 +92,7 @@ This scoping applies to compiled-script behavior only. Repository metadata — `
 - Clean up orphans created by your own changes, such as unused variables or functions made obsolete by the edit.
 - Avoid broad formatting-only edits, especially in JSON config files, XAML, docs, and generated output.
 
-## 5. Runtime And Safety Rules
+## 6. Runtime And Safety Rules
 
 - WinUtil performs system-level Windows changes; treat registry, services, AppX removal, package manager, Windows Update, ISO, and unattended setup changes as high-risk (see SPEC.md's Safety Requirements).
 - Prefer existing helper functions for WinGet, Chocolatey, registry, services, progress, and UI updates.
@@ -90,7 +101,7 @@ This scoping applies to compiled-script behavior only. Repository metadata — `
 - Avoid storing credentials, secrets, or machine-specific paths in repo files.
 - Preserve logging and user feedback patterns for long-running or destructive operations.
 
-## 6. Surgical Changes
+## 7. Surgical Changes
 
 - Do not improve adjacent code, comments, formatting, imports, or docs unless required.
 - Do not refactor working code because you are already in the file.
@@ -98,7 +109,7 @@ This scoping applies to compiled-script behavior only. Repository metadata — `
 - Keep diffs reviewable. Every changed line should trace to the user's request.
 - If a change starts spreading across unrelated areas, pause and reassess the plan.
 
-## 7. Verification
+## 8. Verification
 
 Define success in terms that can be checked, then check it.
 
@@ -112,7 +123,7 @@ Define success in terms that can be checked, then check it.
 
 If a check cannot be run, say exactly why and what residual risk remains. See SPEC.md's Testing And CI for what GitHub Actions runs on every push.
 
-## 8. Generated Files And Git Hygiene
+## 9. Generated Files And Git Hygiene
 
 - Treat local `winutil.ps1` changes as disposable compile output.
 - Never stage or commit `winutil.ps1`, `binary/`, or anything else ignored by the root `.gitignore` or `docs/.gitignore` — read those files rather than assuming. `docs/public/` is tracked source for static assets, not generated output.
@@ -122,7 +133,7 @@ If a check cannot be run, say exactly why and what residual risk remains. See SP
 - Commit messages, when requested, should be descriptive: short subject under 72 characters, body explaining why when needed.
 - When committing, split changes into small, logical commits rather than one large commit, so each commit's diff is reviewable as a single group of related changes.
 
-## 9. Documentation Expectations
+## 10. Documentation Expectations
 
 - Update `docs/src/content/docs/guides/` when user-facing behavior changes.
 - Update `docs/src/content/docs/code-reference/architecture.mdx` and other hand-written developer docs when architecture, build flow, config schema, or contribution workflow changes — but never hand-edit the auto-generated `code-reference/tweaks/` or `code-reference/features/` subfolders (see Non-Negotiables).
@@ -131,7 +142,7 @@ If a check cannot be run, say exactly why and what residual risk remains. See SP
 - Put detailed user and developer documentation under `docs/`.
 - Keep SPEC.md aligned with project/architecture changes, and this file aligned with process changes.
 
-## 10. Communication Style
+## 11. Communication Style
 
 - Be direct and concise. Start with the answer or action.
 - No flattery, filler, ceremonial closings, or fake certainty.
@@ -139,7 +150,7 @@ If a check cannot be run, say exactly why and what residual risk remains. See SP
 - Report what changed, how it was verified, and anything not done.
 - If the user asks for a review, lead with findings and file/line references.
 
-## 11. When To Ask
+## 12. When To Ask
 
 Ask before proceeding when:
 
@@ -154,7 +165,7 @@ Proceed without asking when:
 - Ambiguity can be resolved by reading the code or running a local command.
 - The user already answered the question in this session.
 
-## 12. Project Learnings
+## 13. Project Learnings
 
 When the user corrects an agent approach, add or tighten one concrete rule here before ending the session. Keep this section short and prune rules that no longer matter.
 
