@@ -76,6 +76,8 @@ function Invoke-WPFUIElements {
             Description = $entryInfo.description
             Type        = $entryInfo.type
             ComboItems  = $entryInfo.ComboItems
+            ComboDescriptions = $entryInfo.ComboDescriptions
+            Registry    = $entryInfo.registry
             Checked     = $entryInfo.Checked
             ButtonWidth = $entryInfo.ButtonWidth
             GroupName   = $entryInfo.GroupName  # Added for RadioButton groupings
@@ -247,6 +249,7 @@ function Invoke-WPFUIElements {
                         $label = New-Object Windows.Controls.Label
                         $label.Content = $entryInfo.Content
                         $label.HorizontalAlignment = "Left"
+                        $label.ToolTip = $entryInfo.Description
                         $label.VerticalAlignment = "Center"
                         $label.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
                         $label.UseLayoutRounding = $true
@@ -261,11 +264,27 @@ function Invoke-WPFUIElements {
                         $comboBox.SetResourceReference([Windows.Controls.Control]::MarginProperty, "ButtonMargin")
                         $comboBox.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
                         $comboBox.UseLayoutRounding = $true
+                        $comboBox.Tag = [pscustomobject]@{
+                            Registry = $entryInfo.Registry
+                            State = $null
+                        }
                         [System.Windows.Automation.AutomationProperties]::SetName($comboBox, $entryInfo.Content)
 
-                        foreach ($comboitem in ($entryInfo.ComboItems -split " ")) {
+                        $comboItems = if ($entryInfo.ComboItems -is [string]) {
+                            $entryInfo.ComboItems -split " "
+                        } else {
+                            @($entryInfo.ComboItems)
+                        }
+
+                        foreach ($comboitem in $comboItems) {
                             $comboBoxItem = New-Object Windows.Controls.ComboBoxItem
                             $comboBoxItem.Content = $comboitem
+                            if ($entryInfo.ComboDescriptions) {
+                                $comboDescription = $entryInfo.ComboDescriptions.PSObject.Properties[$comboitem].Value
+                                if ($comboDescription) {
+                                    $comboBoxItem.ToolTip = $comboDescription
+                                }
+                            }
                             $comboBoxItem.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
                             $comboBoxItem.UseLayoutRounding = $true
                             $comboBox.Items.Add($comboBoxItem) | Out-Null
@@ -274,22 +293,82 @@ function Invoke-WPFUIElements {
                         $horizontalStackPanel.Children.Add($comboBox) | Out-Null
                         $itemsControl.Items.Add($horizontalStackPanel) | Out-Null
 
-                        $comboBox.SelectedIndex = 0
+                        if ($entryInfo.Registry -and @($entryInfo.Registry)[0].Values) {
+                            try {
+                                $comboBox.Tag.State = Get-WinUtilRegistryComboState -Registry $entryInfo.Registry
+                                $comboBox.SelectedIndex = @($comboBox.Items.Content).IndexOf([string]$comboBox.Tag.State)
+                            } catch {
+                                $unknownStateItem = New-Object Windows.Controls.ComboBoxItem
+                                $unknownStateItem.Content = "Custom / Unknown - select a state"
+                                $unknownStateItem.IsEnabled = $false
+                                $unknownStateItem.ToolTip = "$($_.Exception.Message) Select one of the supported states to replace these values."
+                                $comboBox.Items.Add($unknownStateItem) | Out-Null
+                                $comboBox.SelectedItem = $unknownStateItem
+                                $comboBox.ToolTip = $unknownStateItem.ToolTip
+                            }
+                        } else {
+                            $comboBox.SelectedIndex = 0
+                        }
 
                         # Set initial text
                         if ($comboBox.Items.Count -gt 0) {
-                            $comboBox.Text = $comboBox.Items[0].Content
+                            $comboBox.Text = $comboBox.SelectedItem.Content
                         }
+
+                        $sync[$entryInfo.Name] = $comboBox
 
                         # Add SelectionChanged event handler to update the text property
                         $comboBox.Add_SelectionChanged({
                             $selectedItem = $this.SelectedItem
                             if ($selectedItem) {
                                 $this.Text = $selectedItem.Content
+                                $registry = $this.Tag.Registry
+                                if ($registry -and $selectedItem.IsEnabled -and $selectedItem.Content -ne $this.Tag.State) {
+                                    try {
+                                        Set-WinUtilRegistryComboState -Registry $registry -State $selectedItem.Content
+                                        $this.Tag.State = $selectedItem.Content
+                                        $this.ToolTip = $null
+                                        $unknownStateItem = @($this.Items) | Where-Object Content -EQ "Custom / Unknown - select a state" | Select-Object -First 1
+                                        if ($unknownStateItem) {
+                                            $this.Items.Remove($unknownStateItem)
+                                        }
+                                    } catch {
+                                        $applyError = $_.Exception.Message
+                                        if ([string]::IsNullOrWhiteSpace($applyError)) {
+                                            $applyError = "Unable to apply registry state '$($selectedItem.Content)'."
+                                        }
+                                        $previousState = if ($this.Tag.State) { $this.Tag.State } else { "Custom / Unknown - select a state" }
+                                        $this.SelectedItem = @($this.Items) | Where-Object Content -EQ $previousState | Select-Object -First 1
+                                        [System.Windows.MessageBox]::Show(
+                                            $applyError,
+                                            "WinUtil",
+                                            [System.Windows.MessageBoxButton]::OK,
+                                            [System.Windows.MessageBoxImage]::Warning
+                                        ) | Out-Null
+                                    }
+                                }
                             }
                         })
 
-                        $sync[$entryInfo.Name] = $comboBox
+                        if ($entryInfo.Registry -and @($entryInfo.Registry)[0].Values -and $entryInfo.Link) {
+                            $textBlock = New-Object Windows.Controls.TextBlock
+                            $textBlock.Name = $comboBox.Name + "Link"
+                            $textBlock.Text = "(?)"
+                            $textBlock.ToolTip = $entryInfo.Link
+                            $textBlock.Style = $HoverTextBlockStyle
+                            $textBlock.UseLayoutRounding = $true
+                            $textBlock.VerticalAlignment = "Center"
+                            $textBlock.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
+                            $textBlock.Tag = $comboBox
+
+                            $textBlock.Add_MouseUp({
+                                [System.Object]$Sender = $args[0]
+                                Start-Process $Sender.ToolTip -ErrorAction Stop
+                            })
+
+                            $horizontalStackPanel.Children.Add($textBlock) | Out-Null
+                            $sync[$textBlock.Name] = $textBlock
+                        }
                     }
 
                     "Button" {
