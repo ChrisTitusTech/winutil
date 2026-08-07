@@ -2,7 +2,7 @@ services:
   winutil-astro:
     build: .
     ports:
-      - "4321:4321"
+      - "127.0.0.1:4321:4321"
     volumes:
       - .:/app
       - astro_node_modules:/app/node_modules
