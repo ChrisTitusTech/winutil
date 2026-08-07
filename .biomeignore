@@ -1,4 +1,0 @@
-# Biome ignore rules for PowerShell JSON config files
-config/*.json
-**/config/*.json
-*.json
