@@ -1950,5 +1950,23 @@
       "link": "https://www.docker.com/products/docker-desktop/",
       "winget": "Docker.DockerDesktop",
       "foss": false
+    },
+        "intellijidea": {
+      "category": "Development",
+      "choco": "intellijidea-community",
+      "content": "IntelliJ IDEA Community Edition",
+      "description": "IntelliJ IDEA Community Edition is a free Java and Kotlin IDE from JetBrains, providing powerful code analysis, debugging, and development tools.",
+      "link": "https://www.jetbrains.com/idea/",
+      "winget": "JetBrains.IntelliJIDEA.Community",
+      "foss": true
+    },
+    "fork": {
+      "category": "Development",
+      "choco": "fork",
+      "content": "Fork (Git Client)",
+      "description": "Fork is a fast and friendly Git client for Windows and macOS, providing an intuitive interface for managing repositories, commits, branches, and other Git workflows.",
+      "link": "https://git-fork.com/",
+      "winget": "Fork.Fork",
+      "foss": false
     }
 }
