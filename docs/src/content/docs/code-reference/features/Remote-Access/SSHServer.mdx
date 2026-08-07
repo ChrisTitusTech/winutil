@@ -1,0 +1,29 @@
+---
+title: "OpenSSH Server - Enable"
+description: ""
+editUrl: false
+---
+
+:::note
+This page is generated from [`functions/public/Invoke-WPFSSHServer.ps1`](https://github.com/ChrisTitusTech/winutil/blob/main/functions/public/Invoke-WPFSSHServer.ps1). Do not edit this page directly.
+:::
+
+```powershell title="functions/public/Invoke-WPFSSHServer.ps1"
+function Invoke-WPFSSHServer {
+    <#
+
+    .SYNOPSIS
+        Invokes the OpenSSH Server install in a runspace
+
+  #>
+
+    Invoke-WPFRunspace -ScriptBlock {
+
+        Invoke-WinUtilSSHServer
+
+        Write-Host "======================================="
+        Write-Host "--     OpenSSH Server installed!    ---"
+        Write-Host "======================================="
+    }
+}
+```

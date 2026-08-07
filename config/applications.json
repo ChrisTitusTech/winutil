@@ -18,7 +18,7 @@
         "foss": true
     },
     "adobe": {
-        "category": "Multimedia Tools",
+        "category": "Document",
         "choco": "adobereader",
         "content": "Adobe Acrobat Reader",
         "description": "Adobe Acrobat Reader is a free PDF viewer with essential features for viewing, printing, and annotating PDF documents.",
@@ -458,6 +458,15 @@
         "winget": "flux.flux",
         "foss": false
     },
+    "foxpdfreader": {
+        "category": "Document",
+        "choco": "foxitreader",
+        "content": "Foxit PDF Reader",
+        "description": "Foxit PDF Reader is a free PDF viewer with a familiar ribbon-style interface.",
+        "link": "https://www.foxit.com/pdf-reader/",
+        "winget": "Foxit.FoxitReader",
+        "foss": false
+    },
     "geforcenow": {
         "category": "Games",
         "choco": "nvidia-geforce-now",
@@ -710,6 +719,15 @@
         "winget": "sylikc.JPEGView",
         "foss": true
     },
+    "joplin": {
+        "category": "Document",
+        "choco": "joplin",
+        "content": "Joplin",
+        "description": "Joplin is an open-source note-taking and to-do application with synchronization capabilities.",
+        "link": "https://joplinapp.org/",
+        "winget": "Joplin.Joplin",
+        "foss": true
+    },
     "keepassxc": {
         "category": "Utilities",
         "choco": "keepassxc",
@@ -747,7 +765,7 @@
         "foss": true
     },
     "libreoffice": {
-        "category": "Multimedia Tools",
+        "category": "Document",
         "choco": "libreoffice-fresh",
         "content": "LibreOffice",
         "description": "LibreOffice is a powerful and free office suite, compatible with other major office suites.",
@@ -891,9 +909,9 @@
         "foss": true
     },
     "naps2": {
-        "category": "Multimedia Tools",
+        "category": "Document",
         "choco": "naps2",
-        "content": "NAPS2 (Document Scanner)",
+        "content": "NAPS2 (Scanner)",
         "description": "NAPS2 is a document scanning application that simplifies the process of creating electronic documents.",
         "link": "https://www.naps2.com/",
         "winget": "Cyanfish.NAPS2",
@@ -989,13 +1007,22 @@
         "foss": true
     },
     "obsidian": {
-        "category": "Multimedia Tools",
+        "category": "Document",
         "choco": "obsidian",
         "content": "Obsidian",
         "description": "Obsidian is a powerful note-taking and knowledge management application.",
         "link": "https://obsidian.md/",
         "winget": "Obsidian.Obsidian",
         "foss": false
+    },
+    "okular": {
+        "category": "Document",
+        "choco": "okular",
+        "content": "Okular",
+        "description": "Okular is a versatile document viewer with advanced features.",
+        "link": "https://okular.kde.org/",
+        "winget": "KDE.Okular",
+        "foss": true
     },
     "onedrive": {
         "category": "Microsoft Tools",
@@ -1007,7 +1034,7 @@
         "foss": false
     },
     "onlyoffice": {
-        "category": "Multimedia Tools",
+        "category": "Document",
         "choco": "onlyoffice",
         "content": "ONLYOFFICE Desktop",
         "description": "ONLYOFFICE Desktop is a comprehensive office suite for document editing and collaboration.",
@@ -1094,6 +1121,42 @@
         "description": "PeaZip is a free, open-source file archiver utility that supports multiple archive formats and provides encryption features.",
         "link": "https://peazip.github.io/",
         "winget": "Giorgiotani.Peazip",
+        "foss": true
+    },
+    "pdf-xchange": {
+        "category": "Document",
+        "choco": "pdfxchangeeditor",
+        "content": "PDF-XChange Editor",
+        "description": "A comprehensive Windows-based software suite and editor for creating, viewing, editing, annotating, and signing PDF files.",
+        "link": "https://www.pdf-xchange.com/",
+        "winget": "TrackerSoftware.PDF-XChangeEditor",
+        "foss": false
+    },
+    "pdf24creator": {
+        "category": "Document",
+        "choco": "pdf24",
+        "content": "PDF24 Creator",
+        "description": "Free and easy-to-use online/desktop PDF tools that make you more productive",
+        "link": "https://tools.pdf24.org/en/creator",
+        "winget": "geeksoftwareGmbH.PDF24Creator",
+        "foss": false
+    },
+    "pdfgear": {
+        "category": "Document",
+        "choco": "pdfgear",
+        "content": "PDFgear",
+        "description": "PDFgear is a piece of full-featured PDF management software for Windows, macOS, and mobile, and it's completely free to use.",
+        "link": "https://www.pdfgear.com/",
+        "winget": "PDFgear.PDFgear",
+        "foss": false
+    },
+    "pdfsam": {
+        "category": "Document",
+        "choco": "pdfsam",
+        "content": "PDFsam Basic",
+        "description": "PDFsam Basic is a free and open-source tool for splitting, merging, and rotating PDF files.",
+        "link": "https://pdfsam.org/",
+        "winget": "PDFsam.PDFsam",
         "foss": true
     },
     "playnite": {
@@ -1348,6 +1411,15 @@
         "winget": "WhirlwindFX.SignalRgb",
         "foss": false
     },
+    "simplenote": {
+        "category": "Document",
+        "choco": "simplenote",
+        "content": "Simplenote",
+        "description": "Simplenote is an easy way to keep notes, lists, ideas and more.",
+        "link": "https://simplenote.com/",
+        "winget": "Automattic.Simplenote",
+        "foss": true
+    },
     "simplewall": {
         "category": "Pro Tools",
         "choco": "simplewall",
@@ -1393,6 +1465,15 @@
         "winget": "SublimeHQ.SublimeText.4",
         "foss": false
     },
+    "sumatra": {
+        "category": "Document",
+        "choco": "sumatrapdf",
+        "content": "Sumatra PDF",
+        "description": "Sumatra PDF is a lightweight and fast PDF viewer with minimalistic design.",
+        "link": "https://www.sumatrapdfreader.org/free-pdf-reader.html",
+        "winget": "SumatraPDF.SumatraPDF",
+        "foss": true
+    },
     "sunshine": {
         "category": "Selfhosted Tools",
         "choco": "sunshine",
@@ -1436,6 +1517,15 @@
         "description": "TEAMSPEAK. YOUR TEAM. YOUR RULES. Use crystal clear sound to communicate with your teammates cross-platform with military-grade security, lag-free performance & unparalleled reliability and uptime.",
         "link": "https://www.teamspeak.com/",
         "winget": "TeamSpeakSystems.TeamSpeakClient",
+        "foss": false
+    },
+    "teamspeak6": {
+        "category": "Communications",
+        "choco": "na",
+        "content": "TeamSpeak 6",
+        "description": "TEAMSPEAK. YOUR TEAM. YOUR RULES. Use crystal clear sound to communicate with your teammates cross-platform with military-grade security, lag-free performance & unparalleled reliability and uptime.",
+        "link": "https://www.teamspeak.com/",
+        "winget": "TeamSpeakSystems.TeamSpeakClient.Beta.6",
         "foss": false
     },
     "telegram": {
@@ -1735,6 +1825,15 @@
         "winget": "MHNexus.HxD",
         "foss": false
     },
+    "xournal": {
+        "category": "Document",
+        "choco": "xournalplusplus",
+        "content": "Xournal++",
+        "description": "Xournal++ is an open-source handwriting notetaking software with PDF annotation capabilities.",
+        "link": "https://xournalpp.github.io/",
+        "winget": "Xournal++.Xournal++",
+        "foss": true
+    },
     "yarn": {
         "category": "Development",
         "choco": "yarn",
@@ -1814,6 +1913,15 @@
         "description": "Zed is a modern, high-performance code editor designed from the ground up for speed and collaboration.",
         "link": "https://zed.dev/",
         "winget": "ZedIndustries.Zed",
+        "foss": true
+    },
+    "zotero": {
+        "category": "Document",
+        "choco": "zotero",
+        "content": "Zotero",
+        "description": "Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share your research materials.",
+        "link": "https://www.zotero.org/",
+        "winget": "DigitalScholar.Zotero",
         "foss": true
     },
     "deskflow": {
