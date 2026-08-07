@@ -27,9 +27,9 @@ function Set-WinUtilDNS {
             Write-Host "Auto-selected fastest DNS provider: $DNSProvider ($($validFastest.LatencyMs) ms)"
             Write-WinUtilLog -Component "DNS" -Message "Auto-selected fastest DNS provider: $DNSProvider ($($validFastest.LatencyMs) ms)"
         } else {
-            $DNSProvider = "Cloudflare"
-            Write-Warning "Could not measure DNS latency; defaulting to Cloudflare."
-            Write-WinUtilLog -Component "DNS" -Message "Benchmark timeout; defaulting to Cloudflare."
+            Write-Warning "Could not measure DNS latency to any provider; keeping current network adapter DNS settings."
+            Write-WinUtilLog -Component "DNS" -Message "Benchmark timeout or all probes failed; aborting DNS change to preserve existing settings."
+            return
         }
     }
 

@@ -2,7 +2,7 @@ function Get-WinUtilDNSBenchmark {
     <#
 
     .SYNOPSIS
-        Benchmarks configured DNS providers by measuring TCP port 53 latency (RTT in ms) to determine the fastest DNS server.
+        Benchmarks neutral DNS providers by measuring TCP port 53 latency (RTT in ms) to determine the fastest DNS server.
 
     .PARAMETER TimeoutMs
         Maximum timeout in milliseconds for each connection test. Default is 1500ms.
@@ -36,22 +36,34 @@ function Get-WinUtilDNSBenchmark {
         $primaryIp = $prop.Value.Primary
         if (-not $primaryIp) { continue }
 
+        # Skip specialized policy/filtering variants (e.g. Malware, Adult, Family) for neutral auto-selection
+        if ($providerName -like "*Malware*" -or $providerName -like "*Adult*" -or $providerName -like "*Family*") {
+            continue
+        }
+
         $latency = 9999
-        $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+        $client = [System.Net.Sockets.TcpClient]::new()
         try {
-            $client = New-Object System.Net.Sockets.TcpClient
+            $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
             $asyncResult = $client.BeginConnect($primaryIp, 53, $null, $null)
             $success = $asyncResult.AsyncWaitHandle.WaitOne($TimeoutMs, $false)
             $stopwatch.Stop()
+
             if ($success -and $client.Connected) {
+                try {
+                    $client.EndConnect($asyncResult)
+                } catch { }
                 $latency = [int]$stopwatch.ElapsedMilliseconds
-                $client.Close()
             } else {
                 $latency = 9999
-                if ($client) { $client.Close() }
             }
         } catch {
             $latency = 9999
+        } finally {
+            if ($null -ne $client) {
+                try { $client.Close() } catch { }
+                try { $client.Dispose() } catch { }
+            }
         }
 
         $results.Add([PSCustomObject]@{
@@ -64,7 +76,7 @@ function Get-WinUtilDNSBenchmark {
     $sortedResults = @($results | Sort-Object LatencyMs)
     if ($sortedResults.Count -gt 0 -and $sortedResults[0].LatencyMs -lt 9999) {
         $fastest = $sortedResults[0]
-        Write-WinUtilLog -Component "DNS" -Message "DNS Benchmark completed. Fastest: $($fastest.Provider) ($($fastest.LatencyMs) ms)"
+        Write-WinUtilLog -Component "DNS" -Message "DNS Benchmark completed. Fastest neutral provider: $($fastest.Provider) ($($fastest.LatencyMs) ms)"
     } else {
         Write-WinUtilLog -Component "DNS" -Message "DNS Benchmark completed. Could not determine latency for providers."
     }
