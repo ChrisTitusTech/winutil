@@ -791,6 +791,14 @@
         "winget": "mpc-qt.mpc-qt",
         "foss": true
     },
+    "mpv": {
+        "category": "Multimedia Tools",
+        "content": "mpv",
+        "description": "mpv is a free, open source, and cross-platform media player supporting a wide variety of media formats, codecs, and subtitle types.",
+        "link": "https://mpv.io/",
+        "winget": "shinchiro.mpv",
+        "foss": true
+    },
     "matrix": {
         "category": "Communications",
         "choco": "element-desktop",
