@@ -12,6 +12,7 @@ BeforeAll {
         param([string]$TargetGridName)
     }
     function Invoke-WinUtilISOCheckExistingWork { }
+    function Reset-WPFCheckBoxes { param([bool]$doToggles) }
 
     . (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilTabContent.ps1")
 }
@@ -29,6 +30,7 @@ Describe "Initialize-WinUtilTabContent" {
 
         Mock Invoke-WPFUIElements { }
         Mock Initialize-WPFUI { }
+        Mock Reset-WPFCheckBoxes { }
     }
 
     AfterEach {
@@ -49,6 +51,21 @@ Describe "Initialize-WinUtilTabContent" {
             $TargetGridName -eq "appspanel"
         }
         $script:sync.InitializedTabs["Install"] | Should -BeTrue
+    }
+
+    It "re-applies checkbox selections after building a tab's controls" {
+        Initialize-WinUtilTabContent -TabName "Tweaks"
+
+        Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly -ParameterFilter {
+            $doToggles -eq $true
+        }
+    }
+
+    It "does not re-apply checkbox selections on a tab that's already built" {
+        Initialize-WinUtilTabContent -TabName "Tweaks"
+        Initialize-WinUtilTabContent -TabName "Tweaks"
+
+        Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly
     }
 
     It "initializes deferred config-backed tabs once" {
