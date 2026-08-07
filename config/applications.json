@@ -506,7 +506,7 @@
     "godothub": {
         "category": "Development",
         "content": "Godot Hub",
-        "description": "Project and Version Manager for Godot Game Engine",
+        "description": "Project and Version Manager for Godot Game Engine with tons of QoL features.",
         "link": "https://github.com/RykoTheDev/GodotHub",
         "winget": "Ryko.GodotHub",
         "foss": true
