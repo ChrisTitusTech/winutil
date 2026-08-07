@@ -458,6 +458,15 @@
         "winget": "flux.flux",
         "foss": false
     },
+    "foobar": {
+        "category": "Multimedia Tools",
+        "choco": "foobar2000",
+        "content": "foobar2000 (Music Player)",
+        "description": "foobar2000 is a highly customizable and extensible music player for Windows, known for its modular design and advanced features.",
+        "link": "https://www.foobar2000.org/",
+        "winget": "PeterPawlowski.foobar2000",
+        "foss": false
+    },
     "foxpdfreader": {
         "category": "Document",
         "choco": "foxitreader",
