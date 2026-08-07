@@ -503,6 +503,14 @@
         "winget": "GitHub.GitHubDesktop",
         "foss": true
     },
+    "godothub": {
+        "category": "Development",
+        "content": "Godot Hub",
+        "description": "Godot Hub is a project and version manager for the Godot game engine with many quality-of-life features.",
+        "link": "https://github.com/RykoTheDev/GodotHub",
+        "winget": "Ryko.GodotHub",
+        "foss": true
+    },
     "gog": {
         "category": "Games",
         "choco": "goggalaxy",
