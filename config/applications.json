@@ -1941,7 +1941,7 @@
         "content": "Lua",
         "link": "https://github.com/rjpcomputing/luaforwindows",
         "foss": true
-    }
+    },
             "docker": {
       "category": "Development",
       "choco": "docker-desktop",
@@ -1950,7 +1950,7 @@
       "link": "https://www.docker.com/products/docker-desktop/",
       "winget": "Docker.DockerDesktop",
       "foss": false
-    }
+    },
         "intellijidea": {
       "category": "Development",
       "choco": "intellijidea-community",
@@ -1959,7 +1959,7 @@
       "link": "https://www.jetbrains.com/idea/",
       "winget": "JetBrains.IntelliJIDEA.Community",
       "foss": true
-    }
+    },
         "fork": {
       "category": "Development",
       "choco": "fork",
