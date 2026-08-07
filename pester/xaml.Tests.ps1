@@ -284,7 +284,7 @@ Describe "XAML document" {
         $buttonSource | Should -Match '"WPFAppxRemoval"\s*\{Invoke-WPFTab "WPFTab6BT"\}'
         $buttonSource | Should -Match '"WPFBackToTweaks"\s*\{Invoke-WPFTab "WPFTab2BT"\}'
         $buttonSource | Should -Match '"WPFInstallSelectedAppx"\s*\{Invoke-WPFAppxInstall\}'
-        $tabSource | Should -Match '\$sync\.\$tabNav\.Items\[\$tabNumber\]\.IsSelected = \$true'
+        $tabSource | Should -Match '\$sync\.WPFTabNav\.Items\[\$tabNumber\]\.IsSelected = \$true'
     }
 
     It "centers top bar controls vertically" {

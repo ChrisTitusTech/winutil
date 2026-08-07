@@ -22,7 +22,11 @@ function Invoke-WPFUIElements {
         [string]$targetGridName,
 
         [Parameter(Mandatory, Position = 2)]
-        [int]$columncount
+        [int]$columncount,
+
+        # Let the interface answer between batches of entries. Only for content nobody is
+        # waiting on: a user who just clicked the tab is better served by finishing at once.
+        [switch]$Yield
     )
 
     $window = $sync.form
@@ -153,6 +157,18 @@ function Invoke-WPFUIElements {
             }}, Content
             foreach ($entryInfo in $entries) {
                 $count++
+
+                # Constructing a panel's worth of controls in one go holds the interface for
+                # hundreds of milliseconds. Draining the queue every so often keeps a click
+                # responsive while speculative content is still being built.
+                if ($Yield -and ($count % 20) -eq 0 -and $sync.Form -and -not $sync.Form.Dispatcher.HasShutdownStarted) {
+                    $frame = New-Object Windows.Threading.DispatcherFrame
+                    $null = $sync.Form.Dispatcher.BeginInvoke(
+                        [Windows.Threading.DispatcherPriority]::Background,
+                        [action]{ $frame.Continue = $false })
+                    [Windows.Threading.Dispatcher]::PushFrame($frame)
+                }
+
                 # Create the UI elements based on the entry type
                 switch ($entryInfo.Type) {
                     "Toggle" {

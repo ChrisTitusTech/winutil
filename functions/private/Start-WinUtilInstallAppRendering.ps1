@@ -4,8 +4,26 @@ function Invoke-WinUtilInstallAppRenderBatch {
         $CategoryBatch
     )
 
-    foreach ($appKey in $CategoryBatch.AppKeys) {
+    # A category is not a unit of work: the largest holds several times as many apps as the
+    # smallest, so rendering one per pass hands the interface a stall of unpredictable length.
+    $batchLimit = 25
+    $remaining = $null
+    $keys = $CategoryBatch.AppKeys
+    if ($keys.Count -gt $batchLimit) {
+        $remaining = $keys[$batchLimit..($keys.Count - 1)]
+        $keys = $keys[0..($batchLimit - 1)]
+    }
+
+    foreach ($appKey in $keys) {
         $sync.$appKey = Initialize-InstallAppEntry -TargetElement $CategoryBatch.TargetElement -AppKey $appKey
+    }
+
+    if ($remaining) {
+        $sync.InstallAppRenderQueue.Enqueue([pscustomobject]@{
+            Category = $CategoryBatch.Category
+            TargetElement = $CategoryBatch.TargetElement
+            AppKeys = @($remaining)
+        })
     }
 
     if ($sync.currentTab -eq "Install" -and $sync.SearchBar -and -not [string]::IsNullOrWhiteSpace($sync.SearchBar.Text)) {

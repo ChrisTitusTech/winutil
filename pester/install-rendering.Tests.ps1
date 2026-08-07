@@ -113,8 +113,24 @@ Describe "Install app rendering startup contract" {
     It "keeps app-entry metadata lookup independent from the old caller scope" {
         $entryScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Initialize-InstallAppEntry.ps1") -Raw
 
-        $entryScript | Should -Match '\$app = \$sync\.configs\.applicationsHashtable\.\$appKey'
+        $entryScript | Should -Match '\$app = \$sync\.configs\.applicationsHashtable\[\$appKey\]'
         $entryScript | Should -Not -Match '\$Apps\.\$appKey'
+    }
+
+    It "groups apps by category through the hashtable indexer" {
+        # Dynamic member lookup goes through the PSObject adapter and costs about seventy times
+        # as much per app, which is most of the Install tab build
+        $listScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Initialize-InstallCategoryAppList.ps1") -Raw
+
+        $listScript | Should -Match '\$Apps\[\$appKey\]\.Category'
+        $listScript | Should -Not -Match '\$Apps\.\$appKey'
+    }
+
+    It "bounds a render pass so one large category cannot stall the interface" {
+        $renderScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilInstallAppRendering.ps1") -Raw
+
+        $renderScript | Should -Match '\$batchLimit\s*=\s*\d+'
+        $renderScript | Should -Match '\$sync\.InstallAppRenderQueue\.Enqueue'
     }
 
     It "restores delayed app checkbox state from selected apps" {

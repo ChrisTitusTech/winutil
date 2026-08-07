@@ -13,7 +13,7 @@ function Initialize-InstallAppEntry {
             $appKey
         )
 
-        $app = $sync.configs.applicationsHashtable.$appKey
+        $app = $sync.configs.applicationsHashtable[$appKey]
 
         # Create the outer Border for the application type
         $border = New-Object Windows.Controls.Border

@@ -47,7 +47,7 @@ function Invoke-WinUtilTabWarmupStep {
     $tab = $sync.TabWarmupQueue.Dequeue()
     try {
         Measure-WinUtilStep -Scope "UI" -Name "warm $tab tab" -ScriptBlock {
-            Initialize-WinUtilTabContent -TabName $tab
+            Initialize-WinUtilTabContent -TabName $tab -Yield
         }
     } catch {
         Write-WinUtilErrorRecord -ErrorRecord $_ -Component "UI" -Context "Warming the $tab tab"
