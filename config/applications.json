@@ -1942,24 +1942,6 @@
         "link": "https://github.com/rjpcomputing/luaforwindows",
         "foss": true
     },
-            "docker": {
-      "category": "Development",
-      "choco": "docker-desktop",
-      "content": "Docker Desktop",
-      "description": "Docker Desktop is a desktop application for building, running, and managing containerized applications with Docker.",
-      "link": "https://www.docker.com/products/docker-desktop/",
-      "winget": "Docker.DockerDesktop",
-      "foss": false
-    },
-        "intellijidea": {
-      "category": "Development",
-      "choco": "intellijidea-community",
-      "content": "IntelliJ IDEA Community Edition",
-      "description": "IntelliJ IDEA Community Edition is a free Java and Kotlin IDE from JetBrains, providing powerful code analysis, debugging, and development tools.",
-      "link": "https://www.jetbrains.com/idea/",
-      "winget": "JetBrains.IntelliJIDEA.Community",
-      "foss": true
-    },
         "fork": {
       "category": "Development",
       "choco": "fork",
