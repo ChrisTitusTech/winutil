@@ -42,7 +42,7 @@ All commands are run from the `docs/` directory, from a terminal:
 | `docker compose build`                             | Builds the dev image (needed after Dockerfile or dependency changes) |
 | `docker compose up winutil-astro`                                | Starts local dev server at `localhost:4321`      |
 | `docker compose run --rm winutil-astro npm run build`   | Build the production site to `./dist/`           |
-| `docker compose run --rm winutil-astro npm run preview` | Preview the build locally, before deploying      |
+| `docker compose run --rm --service-ports winutil-astro npm run preview -- --host 0.0.0.0` | Preview the build locally, before deploying      |
 | `docker compose run --rm winutil-astro npm run astro ...` | Run CLI commands like `astro add`, `astro check` |
 | `docker compose down`                              | Stop and remove the dev container                |
 
