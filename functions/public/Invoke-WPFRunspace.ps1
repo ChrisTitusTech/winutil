@@ -31,6 +31,13 @@ function Invoke-WPFRunspace {
         $ParameterList
     )
 
+    # Starting work into a pool that is closing gives that instance a runspace it can never run
+    # on, and it throws on a thread pool thread where nothing is catching
+    if ($sync.ShuttingDown) {
+        Write-WinUtilLog -Level "WARN" -Component "UI" -Message "Refused to start background work, WinUtil is closing."
+        return $null
+    }
+
     Initialize-WinUtilRunspacePool | Out-Null
 
     # Create a PowerShell instance
@@ -51,6 +58,8 @@ function Invoke-WPFRunspace {
     }
 
     $powershell.RunspacePool = $sync.runspace
+
+    Register-WinUtilActiveShell -PowerShell $powershell
 
     # Execute the RunspacePool
     $handle = $powershell.BeginInvoke()

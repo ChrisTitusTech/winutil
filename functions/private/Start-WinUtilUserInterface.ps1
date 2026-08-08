@@ -154,6 +154,16 @@ function Start-WinUtilUserInterface {
     $sync["Form"].title = $sync["Form"].title + " " + $sync.version
     # Set the commands that will run when the form is closed
     $sync["Form"].Add_Closing({
+        param($eventSender, $closingArgs)
+
+        # Closing with work in flight used to tear the worker pool down underneath it, which
+        # ended the process with an unhandled runspace error rather than a clean exit
+        if ($sync.ActiveJob -and -not $sync.ForceClose) {
+            $closingArgs.Cancel = $true
+            Invoke-WinUtilCloseRequest -RunningJob $sync.ActiveJob
+            return
+        }
+
         Write-WinUtilLog -Component "UI" -Message "Window closing, shutting down the worker pool."
         Close-WinUtilRunspacePool
         [System.GC]::Collect()

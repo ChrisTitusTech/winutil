@@ -7,6 +7,7 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Measure-WinUtilStep.ps1")
     . (Join-Path $script:repoRoot "functions\private\Write-WinUtilErrorRecord.ps1")
     . (Join-Path $script:repoRoot "functions\private\Start-WinUtilJob.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilCloseRequest.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIThread.ps1")
 
     function Invoke-WPFRunspace {
