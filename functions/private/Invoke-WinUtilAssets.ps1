@@ -132,16 +132,26 @@ function Invoke-WinUtilAssets {
   }
 
   if (-not $render) {
+      # A square box with the artwork centred in it, so the control occupies the size it was
+      # given rather than the artwork's own proportions, and sits away from whatever is next to
+      # it. The logo is taller than it is wide, so fitting it tightly pushed it against the edge.
+      $longest = [Math]::Max($bounds.Width, $bounds.Height)
+      $padding = $longest * 0.08
+      $side = $longest + ($padding * 2)
+
       $canvas = New-Object Windows.Controls.Canvas
-      $canvas.Width = $bounds.Width
-      $canvas.Height = $bounds.Height
+      $canvas.Width = $side
+      $canvas.Height = $side
+
+      $left = $padding + (($longest - $bounds.Width) / 2) - $bounds.X
+      $top = $padding + (($longest - $bounds.Height) / 2) - $bounds.Y
 
       foreach ($shape in $shapes) {
           $path = New-Object Windows.Shapes.Path
           $path.Data = $shape.Geometry
           $path.Fill = $shape.Brush
-          $path.SetValue([Windows.Controls.Canvas]::LeftProperty, -$bounds.X)
-          $path.SetValue([Windows.Controls.Canvas]::TopProperty, -$bounds.Y)
+          $path.SetValue([Windows.Controls.Canvas]::LeftProperty, $left)
+          $path.SetValue([Windows.Controls.Canvas]::TopProperty, $top)
           $canvas.Children.Add($path) | Out-Null
       }
 

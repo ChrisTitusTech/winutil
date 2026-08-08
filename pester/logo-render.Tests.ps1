@@ -111,6 +111,52 @@ Describe "Rasterising" {
     }
 }
 
+Describe "The control form of an asset" {
+    It "is square, whatever shape the artwork is" {
+        # fitting the box to the artwork made the logo, which is taller than it is wide, sit
+        # against the edge of whatever it was placed next to
+        $viewbox = Invoke-WinUtilAssets -Type "logo" -Size 25
+
+        $viewbox.Width | Should -Be 25
+        $viewbox.Height | Should -Be 25
+        $viewbox.Child.Width | Should -Be $viewbox.Child.Height
+    }
+
+    It "leaves the artwork some room inside that square" {
+        $canvas = (Invoke-WinUtilAssets -Type "logo" -Size 25).Child
+
+        $bounds = [Windows.Rect]::Empty
+        foreach ($shape in (Get-WinUtilAssetGeometry -Type "logo")) {
+            $bounds = [Windows.Rect]::Union($bounds, $shape.Geometry.Bounds)
+        }
+        $longest = [Math]::Max($bounds.Width, $bounds.Height)
+
+        $canvas.Width | Should -BeGreaterThan $longest
+        # a little air, not half the box
+        ($canvas.Width / $longest) | Should -BeLessThan 1.3
+    }
+
+    It "centres it, so the margins match on both sides" {
+        $canvas = (Invoke-WinUtilAssets -Type "logo" -Size 25).Child
+        $bounds = [Windows.Rect]::Empty
+        foreach ($shape in (Get-WinUtilAssetGeometry -Type "logo")) {
+            $bounds = [Windows.Rect]::Union($bounds, $shape.Geometry.Bounds)
+        }
+
+        $first = $canvas.Children[0]
+        $left = [Windows.Controls.Canvas]::GetLeft($first)
+        $top = [Windows.Controls.Canvas]::GetTop($first)
+
+        $leftMargin = $left + $bounds.X
+        $rightMargin = $canvas.Width - ($left + $bounds.X + $bounds.Width)
+        $topMargin = $top + $bounds.Y
+        $bottomMargin = $canvas.Height - ($top + $bounds.Y + $bounds.Height)
+
+        [Math]::Abs($leftMargin - $rightMargin) | Should -BeLessThan 0.01
+        [Math]::Abs($topMargin - $bottomMargin) | Should -BeLessThan 0.01
+    }
+}
+
 Describe "Window icon" {
     It "asks the system for the sizes it wants rather than picking one" {
         # the metrics already account for the display scaling, which is what makes it sharp on
