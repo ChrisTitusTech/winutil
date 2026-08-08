@@ -62,6 +62,19 @@ Describe "Install-WinUtilProgramWinget outcomes" {
 
         $results.Count | Should -Be 2
     }
+
+    It "treats a reboot requirement as success, not failure" {
+        # 3010 and 1641 mean the installer worked and Windows wants a restart. Counting them as
+        # failures marks a whole upgrade run broken when nothing went wrong.
+        foreach ($code in @(3010, 1641)) {
+            Mock Start-Process { [pscustomobject]@{ ExitCode = $code } }.GetNewClosure()
+
+            $result = Install-WinUtilProgramWinget -Action Install -Programs @("Git.Git")
+
+            $result.Outcome | Should -Be "Succeeded" -Because "exit code $code means the install worked"
+            $result.Detail | Should -Match "restart"
+        }
+    }
 }
 
 Describe "Install-WinUtilProgramWinget through the WinGet client module" {
@@ -99,6 +112,17 @@ Describe "Install-WinUtilProgramWinget through the WinGet client module" {
                 $Label -eq "Git.Git"
         }
         Should -Invoke -CommandName Start-Process -Times 0 -Exactly
+    }
+
+    It "treats an Ok status with a reboot exit code as success" {
+        # Seen upgrading VCRedist on a real machine: status Ok, installer code 3010. Requiring a
+        # zero exit code there reported a working upgrade as a failed one.
+        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult -Status "Ok" -InstallerErrorCode 3010 -RebootRequired $true } -ParameterFilter { $Command -ne "Get-WinGetPackage" }
+
+        $result = Install-WinUtilProgramWinget -Action Install -Programs @("Git.Git")
+
+        $result.Outcome | Should -Be "Succeeded"
+        $result.Detail | Should -Match "restart"
     }
 
     It "passes the progress slice through so the bar moves within a package" {

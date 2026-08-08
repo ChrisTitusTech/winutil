@@ -47,6 +47,13 @@ Function Install-WinUtilProgramWinget {
     # The module says the same thing through a status name
     $nothingToDoStatus = @("NoApplicableUpgrade", "PackageAlreadyInstalled", "NoApplicableInstallers")
 
+    # The installer worked and wants a restart to finish. Windows reports that as its own exit
+    # code rather than as zero, and treating it as a failure marks working installs as broken.
+    $rebootExitCodes = @{
+        3010 = "installed, a restart is needed to finish"
+        1641 = "installed, the installer started a restart"
+    }
+
     $useModule = Install-WinUtilWinGetClient
 
     foreach ($program in $Programs) {
@@ -120,6 +127,9 @@ Function Install-WinUtilProgramWinget {
                 if ($status -eq "Ok" -and $exitCode -eq 0) {
                     $outcome = "Succeeded"
                     $detail = "status Ok"
+                } elseif ($status -eq "Ok" -and $rebootExitCodes.ContainsKey($exitCode)) {
+                    $outcome = "Succeeded"
+                    $detail = $rebootExitCodes[$exitCode]
                 } elseif ($nothingToDoStatus -contains $status) {
                     $outcome = "Skipped"
                     $detail = $status
@@ -164,6 +174,9 @@ Function Install-WinUtilProgramWinget {
             if ($exitCode -eq 0) {
                 $outcome = "Succeeded"
                 $detail = "exit code 0"
+            } elseif ($rebootExitCodes.ContainsKey($exitCode)) {
+                $outcome = "Succeeded"
+                $detail = $rebootExitCodes[$exitCode]
             } elseif ($nothingToDo.ContainsKey($exitCode)) {
                 $outcome = "Skipped"
                 $detail = $nothingToDo[$exitCode]

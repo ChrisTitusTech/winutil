@@ -18,7 +18,15 @@ function Show-WinUtilMessage {
     Write-WinUtilLog -Component "Dialog" -Message "$Title : $($Message -replace '\r?\n', ' ')"
 
     if ($null -eq $sync.Form -or $null -eq $sync.Form.Dispatcher) {
-        return [System.Windows.MessageBox]::Show($Message, $Title, $Button, $Icon)
+        # A worker runspace has no WPF assemblies loaded, so the type does not resolve there
+        # until it is asked for. Without this the prompt throws instead of appearing.
+        try {
+            [void][System.Reflection.Assembly]::LoadWithPartialName('PresentationFramework')
+            return [System.Windows.MessageBox]::Show($Message, $Title, $Button, $Icon)
+        } catch {
+            Write-WinUtilLog -Level "WARN" -Component "Dialog" -Message "No window to show '$Title' on, continuing without asking."
+            return "OK"
+        }
     }
 
     return Invoke-WPFUIThread -PassThru -Parameters @{
