@@ -28,13 +28,13 @@ function Start-WinUtilUIHeartbeat {
         $gap = ($now - $sync.UIHeartbeatLast).TotalMilliseconds
         $sync.UIHeartbeatLast = $now
 
-        # 60ms is roughly where a delay stops reading as instant
-        if ($gap -gt 60) {
-            $null = $sync.UIStalls.Add([pscustomobject]@{
-                AtMs = [int]($now - $sync.UIHeartbeatStart).TotalMilliseconds
-                Milliseconds = [int]$gap
-            })
-        }
+        # Every gap, not just the long ones. A thread kept busy by a stream of short pieces of
+        # work never shows a single long stall, but everything the user does still waits behind
+        # whatever piece is running, and that is what reads as lag.
+        $null = $sync.UIStalls.Add([pscustomobject]@{
+            AtMs = [int]($now - $sync.UIHeartbeatStart).TotalMilliseconds
+            Milliseconds = [int]$gap
+        })
     })
     $timer.Start()
     $sync.UIHeartbeatTimer = $timer
@@ -64,17 +64,32 @@ function Stop-WinUtilUIHeartbeat {
         $sync.UIHeartbeatTimer = $null
     }
 
-    $stalls = @($sync.UIStalls)
-    if ($stalls.Count -eq 0) {
-        Write-WinUtilLog -Component "UI" -Message "stall report: the interface never stopped answering for more than 60 ms."
+    $samples = @($sync.UIStalls)
+    if ($samples.Count -eq 0) {
+        Write-WinUtilLog -Component "UI" -Message "stall report: no samples were taken."
         return
     }
 
-    $total = ($stalls | Measure-Object -Property Milliseconds -Sum).Sum
-    $worst = ($stalls | Measure-Object -Property Milliseconds -Maximum).Maximum
-    Write-WinUtilLog -Component "UI" -Message "stall report: $($stalls.Count) stall(s) over 60 ms, $total ms unresponsive in total, worst $worst ms."
+    function Get-Percentile {
+        param($Sorted, [double]$Fraction)
+        $index = [Math]::Min($Sorted.Count - 1, [Math]::Max(0, [int][Math]::Ceiling($Sorted.Count * $Fraction) - 1))
+        return $Sorted[$index]
+    }
 
-    foreach ($stall in ($stalls | Sort-Object Milliseconds -Descending | Select-Object -First 15)) {
-        Write-WinUtilLog -Component "UI" -Detail -Message "stall of $($stall.Milliseconds) ms at $($stall.AtMs) ms after the window appeared"
+    # The window the user actually complains about is while the app list is filling in
+    foreach ($window in @(
+            @{ Name = "first 3s"; From = 0; To = 3000 },
+            @{ Name = "3s to 10s"; From = 3000; To = 10000 },
+            @{ Name = "whole run"; From = 0; To = [int]::MaxValue })) {
+
+        $inWindow = @($samples | Where-Object { $_.AtMs -ge $window.From -and $_.AtMs -lt $window.To })
+        if ($inWindow.Count -eq 0) { continue }
+
+        $values = @($inWindow | ForEach-Object { $_.Milliseconds } | Sort-Object)
+        $overFifty = @($values | Where-Object { $_ -gt 50 }).Count
+
+        Write-WinUtilLog -Component "UI" -Message ("stall report {0}: {1} samples, median {2} ms, p90 {3} ms, p99 {4} ms, worst {5} ms, {6} over 50 ms" -f `
+            $window.Name, $inWindow.Count, (Get-Percentile -Sorted $values -Fraction 0.5), (Get-Percentile -Sorted $values -Fraction 0.9),
+            (Get-Percentile -Sorted $values -Fraction 0.99), $values[-1], $overFifty)
     }
 }

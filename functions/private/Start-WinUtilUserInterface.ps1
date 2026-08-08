@@ -146,6 +146,10 @@ function Start-WinUtilUserInterface {
     $sync["Form"].TaskbarItemInfo = New-Object System.Windows.Shell.TaskbarItemInfo
     Set-WinUtilTaskbaritem -state "None"
 
+    # Wired before the window is shown, so work queued during startup already knows to stand
+    # aside for anything the user does
+    Register-WinUtilInputWatch
+
     # Set the titlebar
     $sync["Form"].title = $sync["Form"].title + " " + $sync.version
     # Set the commands that will run when the form is closed

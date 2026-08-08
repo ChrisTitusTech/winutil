@@ -445,6 +445,7 @@ Describe "XAML and sync wiring" {
             "UIHeartbeatStart",
             "UIHeartbeatTimer",
             "UIHeartbeatReportTimer",
+            "LastInputAt",
             "IconImages",
             "PendingIcons",
             "selected",

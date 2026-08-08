@@ -61,6 +61,9 @@ Describe "Install app rendering startup contract" {
 
             function global:Start-WinUtilIconFetch { }
 
+            function global:Test-WinUtilDeferBackgroundWork { param($RequiresTab) $false }
+            function global:Invoke-WinUtilWhenIdle { param($Callback, $DelayMilliseconds) }
+
             function global:Measure-WinUtilStep {
                 param($Scope, $Name, [scriptblock]$ScriptBlock)
                 & $ScriptBlock

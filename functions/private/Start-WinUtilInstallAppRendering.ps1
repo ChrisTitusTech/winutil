@@ -48,6 +48,18 @@ function Complete-WinUtilInstallAppRendering {
 }
 
 function Invoke-WinUtilInstallAppRenderNextBatch {
+    # Nothing here is worth a moment of the user's time: the entries are either not on screen or
+    # being drawn while they are trying to do something else.
+    #
+    # Tabs that have never been built come first. This list is already on screen and filling in,
+    # while another tab is empty until it is built, so a click on one costs the whole build. The
+    # list finishing a little later is not felt; a tab that takes half a second to open is.
+    $tabsPending = $sync.TabWarmupQueue -and $sync.TabWarmupQueue.Count -gt 0
+    if ($sync.InstallAppRenderQueue.Count -gt 0 -and ($tabsPending -or (Test-WinUtilDeferBackgroundWork -RequiresTab "Install"))) {
+        Invoke-WinUtilWhenIdle -Callback { Invoke-WinUtilInstallAppRenderNextBatch }
+        return
+    }
+
     if ($sync.InstallAppRenderQueue.Count -gt 0) {
         $categoryBatch = $sync.InstallAppRenderQueue.Dequeue()
         Invoke-WinUtilInstallAppRenderBatch -CategoryBatch $categoryBatch
