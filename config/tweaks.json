@@ -1086,8 +1086,13 @@
     "panel": "1",
     "InvokeScript": [
       "
-      Remove-Item -Path \"$Env:Temp\\*\" -Recurse -Force
-      Remove-Item -Path \"$Env:SystemRoot\\Temp\\*\" -Recurse -Force
+      $before = @(Get-ChildItem -Path \"$Env:Temp\", \"$Env:SystemRoot\\Temp\" -Force -ErrorAction SilentlyContinue).Count
+      # A temp folder always holds files something has open, including this run's own. Those are
+      # skipped rather than reported, or every cleanup would look like a failed one.
+      Remove-Item -Path \"$Env:Temp\\*\" -Recurse -Force -ErrorAction SilentlyContinue
+      Remove-Item -Path \"$Env:SystemRoot\\Temp\\*\" -Recurse -Force -ErrorAction SilentlyContinue
+      $after = @(Get-ChildItem -Path \"$Env:Temp\", \"$Env:SystemRoot\\Temp\" -Force -ErrorAction SilentlyContinue).Count
+      Write-Host \"Removed $($before - $after) temporary item(s); $after still in use.\"
       "
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/deletetempfiles"

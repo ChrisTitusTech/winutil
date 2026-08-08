@@ -16,7 +16,11 @@ function Invoke-WPFImpex {
     #>
     param(
         $type,
-        $Config = $null
+        $Config = $null,
+
+        # Add to the current selection instead of replacing it. Used when a preset has already
+        # set a baseline that the imported file is meant to extend.
+        [switch]$Merge
     )
 
     function ConfigDialog {
@@ -78,19 +82,19 @@ function Invoke-WPFImpex {
                     $flattenedJson = $jsonFile
 
                     if (-not $flattenedJson) {
-                        [System.Windows.MessageBox]::Show(
-                            "The selected file contains no settings to import. No changes have been made.",
-                            "Empty Configuration", "OK", "Warning")
+                        Show-WinUtilMessage -Message "The selected file contains no settings to import. No changes have been made." -Title "Empty Configuration" -Button "OK" -Icon "Warning" | Out-Null
                         return
                     }
 
                     # Clear all existing selections before importing so the import replaces
                     # the current state rather than merging with it
-                    $sync.selectedAppx = [System.Collections.Generic.List[string]]::new()
-                    $sync.selectedApps = [System.Collections.Generic.List[string]]::new()
-                    $sync.selectedTweaks = [System.Collections.Generic.List[string]]::new()
-                    $sync.selectedToggles = [System.Collections.Generic.List[string]]::new()
-                    $sync.selectedFeatures = [System.Collections.Generic.List[string]]::new()
+                    if (-not $Merge) {
+                        $sync.selectedAppx = [System.Collections.Generic.List[string]]::new()
+                        $sync.selectedApps = [System.Collections.Generic.List[string]]::new()
+                        $sync.selectedTweaks = [System.Collections.Generic.List[string]]::new()
+                        $sync.selectedToggles = [System.Collections.Generic.List[string]]::new()
+                        $sync.selectedFeatures = [System.Collections.Generic.List[string]]::new()
+                    }
 
                     Update-WinUtilSelections -flatJson $flattenedJson
 

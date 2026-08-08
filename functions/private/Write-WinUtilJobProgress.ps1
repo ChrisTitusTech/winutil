@@ -36,6 +36,15 @@ function Write-WinUtilJobProgress {
         [switch]$Hide
     )
 
+    # With no window there is nothing to post to, and every update would be thrown away. A
+    # headless run is the one that most needs to say what it is doing.
+    if ($null -eq $sync.Form -or $null -eq $sync.Form.Dispatcher) {
+        if (-not $Hide) {
+            Write-WinUtilConsoleProgress -Status $Status -Percent $Percent
+        }
+        return
+    }
+
     Invoke-WPFUIThread -Async -Parameters @{
         Status = $Status
         Percent = [Math]::Min([Math]::Max($Percent, -1), 100)

@@ -439,6 +439,7 @@ Describe "XAML and sync wiring" {
             "StartedAt",
             "SessionState",
             "TabWarmupQueue",
+            "ConsoleProgressState",
             "selected",
             "selectedAppx",
             "selectedApps",

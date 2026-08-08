@@ -52,8 +52,8 @@ Describe "Runspace startup wiring" {
         $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
         $uiScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilUserInterface.ps1") -Raw
 
-        $mainScript | Should -Match 'if \(\$Preset\) \{\s+Initialize-WinUtilRunspacePool'
-        $mainScript | Should -Match 'if \(\$Config\) \{\s+Initialize-WinUtilRunspacePool'
+        $mainScript | Should -Match 'if \(\$Preset -or \$Config\) \{'
+        $mainScript | Should -Match 'Initialize-WinUtilRunspacePool \| Out-Null'
         $uiScript | Should -Match 'Dispatcher\.BeginInvoke\(\[System\.Windows\.Threading\.DispatcherPriority\]::Background, \[action\]\{ Initialize-WinUtilRunspacePool'
         $mainScript | Should -Match 'Close-WinUtilRunspacePool'
     }

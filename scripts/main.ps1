@@ -61,34 +61,40 @@ function Remove-WinUtilTempScript {
 # Headless runs never build a window
 #===========================================================================
 
-if ($Preset) {
-    Initialize-WinUtilRunspacePool | Out-Null
+if ($Preset -or $Config) {
+    $headlessCode = 1
+    try {
+        Initialize-WinUtilRunspacePool | Out-Null
 
-    # Selects the tweaks from $Preset varible
-    Update-WinUtilSelections -flatJson $sync.configs.preset.$Preset
+        if ($Preset) {
+            if (-not $sync.configs.preset.$Preset) {
+                throw "There is no preset called '$Preset'. Available: $(($sync.configs.preset.PSObject.Properties.Name) -join ', ')"
+            }
+            Write-WinUtilLog -Component "AutoRun" -Message "Applying preset '$Preset'."
+            Update-WinUtilSelections -flatJson $sync.configs.preset.$Preset
+        }
 
-    # Run tweaks that were selected by Update-WinUtilSelections
-    Invoke-WinUtilAutoRun
+        # Both may be given: the preset sets a baseline and the config adds to it
+        if ($Config) {
+            Write-WinUtilLog -Component "AutoRun" -Message "Importing selections from '$Config'."
+            Invoke-WPFImpex -type "import" -Config $Config -Merge:([bool]$Preset)
+        }
 
-    # Cleanup and exit
-    Close-WinUtilRunspacePool
-    [System.GC]::Collect()
-    Stop-Transcript
-    return
-}
+        $summary = Invoke-WinUtilAutoRun
+        $headlessCode = Write-WinUtilAutoRunSummary -Summary $summary
+    } catch {
+        Write-WinUtilErrorRecord -ErrorRecord $_ -Component "AutoRun" -Context "Headless run"
+        Write-Host "WinUtil could not complete the headless run: $($_.Exception.Message)" -ForegroundColor Red
+        $headlessCode = 1
+    } finally {
+        Close-WinUtilRunspacePool
+        [System.GC]::Collect()
+        Remove-WinUtilTempScript
+        Stop-Transcript | Out-Null
+    }
 
-if ($Config) {
-    Initialize-WinUtilRunspacePool | Out-Null
-
-    Invoke-WPFImpex -type "import" -Config $Config
-
-    Invoke-WinUtilAutoRun
-
-    # Cleanup and exit
-    Close-WinUtilRunspacePool
-    [System.GC]::Collect()
-    Stop-Transcript
-    return
+    # An automated caller has nothing else to go on, so the code has to carry the outcome
+    exit $headlessCode
 }
 
 #===========================================================================

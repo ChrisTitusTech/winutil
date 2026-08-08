@@ -44,6 +44,15 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
     }
 
     $powershellCmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
+
+    # A headless caller is waiting on this process for an outcome, so the elevated run has to be
+    # waited on and its code handed back. A terminal tab is skipped for the same reason: the
+    # exit code of wt.exe is its own, not the run's.
+    if ($Config -or $Preset) {
+        $elevated = Start-Process $powershellCmd -ArgumentList "-ExecutionPolicy Bypass -NoProfile -Command `"$script`"" -Verb RunAs -Wait -PassThru
+        exit $elevated.ExitCode
+    }
+
     $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { "$powershellCmd" }
 
     if ($processCmd -eq "wt.exe") {
