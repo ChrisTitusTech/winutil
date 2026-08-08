@@ -59,6 +59,13 @@ Describe "Install app rendering startup contract" {
                 return "entry:$AppKey"
             }
 
+            function global:Start-WinUtilIconFetch { }
+
+            function global:Measure-WinUtilStep {
+                param($Scope, $Name, [scriptblock]$ScriptBlock)
+                & $ScriptBlock
+            }
+
             function global:Find-AppsByNameOrDescription {
                 param($SearchString, $Category)
                 throw "Search should not run for an empty search box in this test."
@@ -129,8 +136,16 @@ Describe "Install app rendering startup contract" {
     It "bounds a render pass so one large category cannot stall the interface" {
         $renderScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilInstallAppRendering.ps1") -Raw
 
-        $renderScript | Should -Match '\$batchLimit\s*=\s*\d+'
+        # a deadline, not a count: how long N entries take depends on the machine
+        $renderScript | Should -Match '\$budgetMs\s*=\s*\d+'
+        $renderScript | Should -Match '\$clock\.ElapsedMilliseconds -ge \$budgetMs'
         $renderScript | Should -Match '\$sync\.InstallAppRenderQueue\.Enqueue'
+
+        # the count has to come out of the timed block, not be assigned inside it: a scriptblock
+        # writing to an outer variable updates a copy, and the pass would redraw the same
+        # entries for ever
+        $renderScript | Should -Match '\$rendered = Measure-WinUtilStep'
+        $renderScript | Should -Not -Match '\$rendered\+\+'
     }
 
     It "restores delayed app checkbox state from selected apps" {

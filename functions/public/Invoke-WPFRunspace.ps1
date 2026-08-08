@@ -41,6 +41,12 @@ function Invoke-WPFRunspace {
     [void]$powershell.AddArgument($ArgumentList)
 
     foreach ($parameter in $ParameterList) {
+        # A single pair written as @(("Name", $value)) collapses to a two element array, and
+        # indexing it then yields the first two characters of the name. Caught here because the
+        # result is a worker that runs with the wrong arguments and reports nothing.
+        if ($parameter -is [string] -or $parameter.Count -ne 2) {
+            throw "ParameterList takes name and value pairs. Received '$parameter'. A single pair needs a leading comma: -ParameterList (,('Name', `$value))"
+        }
         [void]$powershell.AddParameter($parameter[0], $parameter[1])
     }
 

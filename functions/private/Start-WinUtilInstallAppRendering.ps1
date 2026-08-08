@@ -4,25 +4,34 @@ function Invoke-WinUtilInstallAppRenderBatch {
         $CategoryBatch
     )
 
-    # A category is not a unit of work: the largest holds several times as many apps as the
-    # smallest, so rendering one per pass hands the interface a stall of unpredictable length.
-    $batchLimit = 25
-    $remaining = $null
-    $keys = $CategoryBatch.AppKeys
-    if ($keys.Count -gt $batchLimit) {
-        $remaining = $keys[$batchLimit..($keys.Count - 1)]
-        $keys = $keys[0..($batchLimit - 1)]
+    # A count is not a unit of time. How long a fixed number of entries takes depends on the
+    # machine and on the category, so the pass runs to a deadline instead and hands back
+    # whatever it did not reach. That caps how long a click can be left waiting.
+    $budgetMs = 25
+    $keys = @($CategoryBatch.AppKeys)
+
+    # The count is the step's return value rather than a variable the loop updates: a scriptblock
+    # runs in a child scope, so assigning to an outer variable from inside it silently writes to
+    # a copy, and the pass would re-queue everything it had just drawn.
+    $rendered = Measure-WinUtilStep -Scope "AppRender" -Name $CategoryBatch.Category -ScriptBlock {
+        $clock = [System.Diagnostics.Stopwatch]::StartNew()
+        $done = 0
+        foreach ($appKey in $keys) {
+            $sync.$appKey = Initialize-InstallAppEntry -TargetElement $CategoryBatch.TargetElement -AppKey $appKey
+            $done++
+            # at least one per pass, or a slow machine would never finish the list
+            if ($clock.ElapsedMilliseconds -ge $budgetMs) {
+                break
+            }
+        }
+        $done
     }
 
-    foreach ($appKey in $keys) {
-        $sync.$appKey = Initialize-InstallAppEntry -TargetElement $CategoryBatch.TargetElement -AppKey $appKey
-    }
-
-    if ($remaining) {
+    if ($rendered -lt $keys.Count) {
         $sync.InstallAppRenderQueue.Enqueue([pscustomobject]@{
             Category = $CategoryBatch.Category
             TargetElement = $CategoryBatch.TargetElement
-            AppKeys = @($remaining)
+            AppKeys = @($keys[$rendered..($keys.Count - 1)])
         })
     }
 
@@ -33,6 +42,9 @@ function Invoke-WinUtilInstallAppRenderBatch {
 
 function Complete-WinUtilInstallAppRendering {
     $sync.InstallAppEntriesRendered = $true
+
+    # Once the list is drawn, whatever had no cached icon is fetched on a worker
+    Start-WinUtilIconFetch
 }
 
 function Invoke-WinUtilInstallAppRenderNextBatch {
@@ -58,6 +70,8 @@ function Start-WinUtilInstallAppRendering {
     }
 
     $sync.InstallAppEntriesRendered = $false
+    if ($null -eq $sync.IconImages) { $sync.IconImages = [hashtable]::Synchronized(@{}) }
+    if ($null -eq $sync.PendingIcons) { $sync.PendingIcons = [hashtable]::Synchronized(@{}) }
 
     if ($sync.Form -and $sync.Form.Dispatcher) {
         $sync.Form.Dispatcher.BeginInvoke(

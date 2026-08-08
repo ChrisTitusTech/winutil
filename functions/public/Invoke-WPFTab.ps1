@@ -8,11 +8,18 @@ function Invoke-WPFTab {
     .PARAMETER ClickedTab
         The name of the tab that was clicked
 
+    .PARAMETER Yield
+        Build the tab's content in slices, letting the interface answer between them. For the
+        tab opened at startup, where the window is already on screen and filling in gradually
+        reads better than holding the thread until it is complete.
+
     #>
 
     Param (
         [Parameter(Mandatory,position=0)]
-        [string]$ClickedTab
+        [string]$ClickedTab,
+
+        [switch]$Yield
     )
 
     $tabNumber = [int]($ClickedTab -replace "WPFTab","" -replace "BT","") - 1
@@ -31,7 +38,7 @@ function Invoke-WPFTab {
     }
 
     Measure-WinUtilStep -Scope "Tab" -Name "$ClickedTab content" -ScriptBlock {
-        Initialize-WinUtilTabContent -TabName $sync.currentTab
+        Initialize-WinUtilTabContent -TabName $sync.currentTab -Yield:$Yield
     }
 
     Measure-WinUtilStep -Scope "Tab" -Name "$ClickedTab filter reset" -ScriptBlock {

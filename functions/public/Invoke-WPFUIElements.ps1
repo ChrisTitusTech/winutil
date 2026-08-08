@@ -102,7 +102,7 @@ function Invoke-WPFUIElements {
     $panelcount = 0
 
     # Iterate through 'organizedData' by panel, category, and application
-    $count = 0
+    $yieldClock = [System.Diagnostics.Stopwatch]::StartNew()
     foreach ($panelKey in ($organizedData.Keys | Sort-Object)) {
         # Create a Border for each column
         $border = New-Object Windows.Controls.Border
@@ -137,7 +137,6 @@ function Invoke-WPFUIElements {
 
         # Now proceed with adding category labels and entries to $itemsControl
         foreach ($category in ($organizedData[$panelKey].Keys | Sort-Object)) {
-            $count++
 
             $label = New-Object Windows.Controls.Label
             $label.Content = $category -replace ".*__", ""
@@ -156,12 +155,12 @@ function Invoke-WPFUIElements {
                 }
             }}, Content
             foreach ($entryInfo in $entries) {
-                $count++
 
                 # Constructing a panel's worth of controls in one go holds the interface for
-                # hundreds of milliseconds. Draining the queue every so often keeps a click
-                # responsive while speculative content is still being built.
-                if ($Yield -and ($count % 20) -eq 0 -and $sync.Form -and -not $sync.Form.Dispatcher.HasShutdownStarted) {
+                # hundreds of milliseconds. Draining the queue on a deadline rather than every
+                # nth entry keeps the wait bounded whatever the entries cost to build.
+                if ($Yield -and $yieldClock.ElapsedMilliseconds -ge 25 -and $sync.Form -and -not $sync.Form.Dispatcher.HasShutdownStarted) {
+                    $yieldClock.Restart()
                     $frame = New-Object Windows.Threading.DispatcherFrame
                     $null = $sync.Form.Dispatcher.BeginInvoke(
                         [Windows.Threading.DispatcherPriority]::Background,
