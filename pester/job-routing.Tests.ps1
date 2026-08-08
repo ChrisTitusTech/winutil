@@ -85,6 +85,20 @@ Describe "Work routing" {
         }
     }
 
+    It "never leaves the runspace handle in the pipeline" {
+        # Invoke-WPFRunspace returns an IAsyncResult. An unassigned call prints it to the
+        # console, or folds it into whatever the calling workflow returns.
+        $offenders = @()
+        foreach ($file in (Get-ChildItem -Path $script:functionRoot -Filter *.ps1 -Recurse)) {
+            if ($file.Name -eq "Invoke-WPFRunspace.ps1") { continue }
+            foreach ($line in ((Get-Content -Path $file.FullName -Raw) -split "`r?`n")) {
+                if ($line -match '^\s*Invoke-WPFRunspace\b') { $offenders += "$($file.Name): $($line.Trim())" }
+            }
+        }
+
+        if ($offenders.Count -gt 0) { throw ($offenders -join "`n") }
+    }
+
     It "runs workers on the shared pool rather than a runspace per call" {
         $runspaceScript = Get-Content -Path (Join-Path $script:functionRoot "public\Invoke-WPFRunspace.ps1") -Raw
 

@@ -74,7 +74,9 @@ function Start-WinUtilJob {
 
     # The body is rebuilt inside the runspace from its text. A scriptblock carries the session
     # state it was defined in, and recreating it there keeps it bound to the worker instead.
-    Invoke-WPFRunspace -ParameterList @(
+    # The handle is of no use to the caller, and printing it puts an IAsyncResult table on the
+    # console every time a button is pressed
+    $null = Invoke-WPFRunspace -ParameterList @(
         ("JobName", $Name),
         ("JobLabel", $label),
         ("JobBody", $ScriptBlock.ToString()),
