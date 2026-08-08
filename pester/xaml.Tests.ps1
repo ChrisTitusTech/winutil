@@ -482,6 +482,7 @@ Describe "XAML and sync wiring" {
             "warningrender",
             "InitializedTabs",
             "RenderedAssetCache",
+            "WindowIconHandles",
             "ToggleStatusCache",
             "InstallAppRenderQueue",
             "InstallAppEntriesRendered",
