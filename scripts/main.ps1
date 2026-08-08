@@ -142,6 +142,10 @@ $uiShell.Dispose()
 $sync.UIRunspace.Dispose()
 $sync.Remove("UIRunspace")
 
+# The window may have been closed over a job that the user chose to let finish. It is still on
+# the worker pool, so the pool cannot be closed until it is done.
+Wait-WinUtilRemainingWork
+
 Close-WinUtilRunspacePool
 [System.GC]::Collect()
 

@@ -108,13 +108,15 @@ Describe "The close question" {
         Mock Write-WinUtilJobProgress { }
     }
 
-    It "waits for the job when asked to let it finish" {
+    It "hands the job to the console and closes the window when asked to let it finish" {
         Mock Show-WinUtilMessage { "Yes" }
+        Mock Write-Host { }
 
         Invoke-WinUtilCloseRequest -RunningJob "Install"
 
-        $sync.CloseWhenIdle | Should -BeTrue
-        $sync.ForceClose | Should -Not -BeTrue
+        # the window goes now; the job carries on without it
+        $sync.FinishInConsole | Should -BeTrue
+        $sync.ForceClose | Should -BeTrue
     }
 
     It "keeps the window open when the close is cancelled" {
@@ -122,7 +124,7 @@ Describe "The close question" {
 
         Invoke-WinUtilCloseRequest -RunningJob "Install"
 
-        $sync.CloseWhenIdle | Should -Not -BeTrue
+        $sync.FinishInConsole | Should -Not -BeTrue
         $sync.ForceClose | Should -Not -BeTrue
     }
 
@@ -131,8 +133,8 @@ Describe "The close question" {
         # that reads "Ja"
         $source = Get-Content -Path (Join-Path $script:functionRoot "private\Invoke-WinUtilCloseRequest.ps1") -Raw
 
-        $source | Should -Match 'Wait for it to finish before closing'
-        $source | Should -Not -Match '(?m)^Yes\s+wait'
+        $source | Should -Match 'Close the window and let it finish in the console\?'
+        $source | Should -Not -Match '(?m)^Yes\s+'
     }
 
     It "offers all three choices" {
@@ -141,30 +143,65 @@ Describe "The close question" {
         Invoke-WinUtilCloseRequest -RunningJob "Install"
 
         Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
-            $Button -eq "YesNoCancel" -and $Message -like "*Install*" -and $Message -like "*Wait for it to finish*"
+            $Button -eq "YesNoCancel" -and $Message -like "*Install*" -and $Message -like "*console*"
         }
     }
 }
 
-Describe "Completing a pending close" {
+Describe "Waiting for work that outlived the window" {
     BeforeEach {
         $global:sync = [hashtable]::Synchronized(@{})
         Mock Write-WinUtilLog { }
+        Mock Write-Host { }
     }
 
-    It "does nothing when no close is pending" {
-        $sync.CloseWhenIdle = $false
+    It "returns at once when nothing was left running" {
+        $sync.FinishInConsole = $true
+        $sync.ActiveJob = $null
 
-        { Complete-WinUtilPendingClose } | Should -Not -Throw
+        { Wait-WinUtilRemainingWork } | Should -Not -Throw
     }
 
-    It "does not throw when the window has already gone" {
-        $sync.CloseWhenIdle = $true
-        $sync.Form = $null
+    It "does not wait when the window was closed normally" {
+        # a job cannot be active without FinishInConsole, but the guard must hold either way
+        $sync.FinishInConsole = $false
+        $sync.ActiveJob = "Install"
 
-        { Complete-WinUtilPendingClose } | Should -Not -Throw
-        # cleared, so a later job cannot try to close a window that is not there
-        $sync.CloseWhenIdle | Should -BeFalse
+        $clock = [Diagnostics.Stopwatch]::StartNew()
+        Wait-WinUtilRemainingWork
+        $clock.Elapsed.TotalSeconds | Should -BeLessThan 2
+    }
+
+    It "waits until the job clears the busy flag" {
+        $sync.FinishInConsole = $true
+        $sync.ActiveJob = "Install"
+
+        # something else clears it, the way a worker's finally does
+        $timer = New-Object System.Timers.Timer
+        $timer.Interval = 700
+        $timer.AutoReset = $false
+        Register-ObjectEvent -InputObject $timer -EventName Elapsed -Action { $global:sync.ActiveJob = $null } | Out-Null
+        $timer.Start()
+
+        $clock = [Diagnostics.Stopwatch]::StartNew()
+        Wait-WinUtilRemainingWork
+        $clock.Stop()
+
+        $sync.ActiveJob | Should -BeNullOrEmpty
+        $clock.Elapsed.TotalMilliseconds | Should -BeGreaterThan 500
+        $timer.Dispose()
+        Get-EventSubscriber | Where-Object { $_.SourceObject -is [System.Timers.Timer] } | Unregister-Event
+    }
+
+    It "gives up rather than keeping the process alive for ever" {
+        $sync.FinishInConsole = $true
+        $sync.ActiveJob = "Install"
+
+        $clock = [Diagnostics.Stopwatch]::StartNew()
+        Wait-WinUtilRemainingWork -TimeoutMinutes ([double]0.01)
+        $clock.Stop()
+
+        $clock.Elapsed.TotalSeconds | Should -BeLessThan 10
     }
 }
 
@@ -189,17 +226,46 @@ Describe "Shutdown wiring" {
         $close | Should -Match '\$sync\.ShuttingDown = \$true'
     }
 
+    It "keeps the worker pool alive when the job is to finish in the console" {
+        # closing the pool there would stop the very work the user asked to let finish
+        $ui = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilUserInterface.ps1") -Raw
+
+        $ui | Should -Match 'if \(\$sync\.FinishInConsole\) \{[\s\S]{0,400}?return'
+        $closeAt = $ui.IndexOf("Close-WinUtilRunspacePool")
+        $guardAt = $ui.IndexOf('if ($sync.FinishInConsole)')
+        $guardAt | Should -BeGreaterThan 0
+        $guardAt | Should -BeLessThan $closeAt
+    }
+
+    It "waits for that work on the main thread before closing the pool" {
+        $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
+
+        $waitAt = $mainScript.IndexOf("Wait-WinUtilRemainingWork")
+        $closeAt = $mainScript.LastIndexOf("Close-WinUtilRunspacePool")
+
+        $waitAt | Should -BeGreaterThan 0
+        $closeAt | Should -BeGreaterThan $waitAt
+    }
+
+    It "reports progress to the console once the window has gone" {
+        # the dispatcher still accepts posts after shutdown and drops them, so a closed window
+        # has to count as no window or the run goes silent
+        $progress = Get-Content -Path (Join-Path $script:functionRoot "private\Write-WinUtilJobProgress.ps1") -Raw
+
+        $progress | Should -Match '\$sync\.Form\.Dispatcher\.HasShutdownStarted'
+    }
+
     It "refuses to queue new work once shutdown has begun" {
         $runspace = Get-Content -Path (Join-Path $script:functionRoot "public\Invoke-WPFRunspace.ps1") -Raw
         $job = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilJob.ps1") -Raw
 
         $runspace | Should -Match 'if \(\$sync\.ShuttingDown\)'
-        $job | Should -Match 'if \(\$sync\.ShuttingDown -or \$sync\.CloseWhenIdle\)'
+        $job | Should -Match 'if \(\$sync\.ShuttingDown -or \$sync\.FinishInConsole\)'
     }
 
-    It "closes once the awaited job finishes" {
+    It "clears the busy flag last, since the main thread waits on it" {
         $job = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilJob.ps1") -Raw
 
-        $job | Should -Match 'Complete-WinUtilPendingClose'
+        $job | Should -Match '\$sync\.ActiveJob = \$null\s*\}'
     }
 }

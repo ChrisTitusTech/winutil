@@ -5,9 +5,8 @@ function Invoke-WinUtilCloseRequest {
 
         .DESCRIPTION
             An install or a set of tweaks that is halfway through is not something to end without
-            asking. The choice is to let it finish and close afterwards, or to stop it and close
-            now. Either way the pool is shut down in order rather than pulled away from work that
-            is still using it.
+            asking. Either it finishes without the window, reporting to the console until it is
+            done and then exiting, or it is stopped and everything closes now.
 
         .PARAMETER RunningJob
             The name of the job in flight, so the question names what is at stake.
@@ -22,66 +21,104 @@ function Invoke-WinUtilCloseRequest {
     $answer = Show-WinUtilMessage -Button "YesNoCancel" -Icon "Warning" -Title "$RunningJob is still running" -Message @"
 $RunningJob has not finished yet.
 
-Wait for it to finish before closing WinUtil?
+Close the window and let it finish in the console?
 
-If you do not wait, it will be stopped. Cancel keeps WinUtil open.
+WinUtil will exit on its own once it is done. If you do not, it will be
+stopped and everything closes now. Cancel keeps WinUtil open.
 "@
 
     switch ("$answer") {
         "Yes" {
-            $sync.CloseWhenIdle = $true
-            Write-WinUtilLog -Component "UI" -Message "Close requested: waiting for $RunningJob to finish first."
-            Write-WinUtilJobProgress -Status "$RunningJob is finishing, WinUtil will close when it is done"
+            Write-WinUtilLog -Component "UI" -Message "Close requested: closing the window, $RunningJob continues in the console."
+            $sync.FinishInConsole = $true
+            $sync.ForceClose = $true
 
-            # It may have finished between the question and the answer, in which case nothing is
-            # left to raise the completion that would close the window
-            if (-not $sync.ActiveJob) {
-                Complete-WinUtilPendingClose
-            }
+            Write-Host ""
+            Write-Host "WinUtil's window is closed. $RunningJob is still running here, and this window will close when it finishes." -ForegroundColor Cyan
+            Write-Host ""
+
+            # Posted rather than closed from inside the handler that is already unwinding
+            Request-WinUtilWindowClose
         }
         "No" {
             Write-WinUtilLog -Component "UI" -Message "Close requested: stopping $RunningJob."
             Write-WinUtilJobProgress -Status "Stopping $RunningJob" -State "Indeterminate"
             $sync.ForceClose = $true
 
-            # Posted rather than run here: the dialog is still unwinding, and stopping can take a
-            # moment that would otherwise look like the window had frozen
-            $sync.Form.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{
+            # Stopping can take a moment that would otherwise look like the window had frozen
+            Request-WinUtilWindowClose -Before {
                 Close-WinUtilRunspacePool
                 $sync.ActiveJob = $null
-                $sync.Form.Close()
-            }) | Out-Null
+            }
         }
         default {
-            $sync.CloseWhenIdle = $false
             Write-WinUtilLog -Component "UI" -Message "Close cancelled, $RunningJob is still running."
         }
     }
 }
 
-function Complete-WinUtilPendingClose {
+function Request-WinUtilWindowClose {
     <#
         .SYNOPSIS
-            Closes the window once the job it was waiting on has finished
+            Closes the window from outside the handler that is currently cancelling the close
 
-        .DESCRIPTION
-            Called from a worker as its job ends, so the close itself is posted to the thread that
-            owns the window.
+        .PARAMETER Before
+            Work to do on the interface thread first, before the window goes.
     #>
-
-    if (-not $sync.CloseWhenIdle) {
-        return
-    }
-
-    $sync.CloseWhenIdle = $false
-    $sync.ForceClose = $true
+    param(
+        [scriptblock]$Before
+    )
 
     if ($null -eq $sync.Form -or $null -eq $sync.Form.Dispatcher -or $sync.Form.Dispatcher.HasShutdownStarted) {
         return
     }
 
+    $sync.PendingCloseWork = $Before
     $sync.Form.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{
-        Write-WinUtilLog -Component "UI" -Message "The job that was running has finished, closing now."
+        if ($sync.PendingCloseWork) {
+            & $sync.PendingCloseWork
+            $sync.PendingCloseWork = $null
+        }
         $sync.Form.Close()
     }) | Out-Null
+}
+
+function Wait-WinUtilRemainingWork {
+    <#
+        .SYNOPSIS
+            Waits for work that outlived the window, reporting to the console
+
+        .DESCRIPTION
+            Runs on the main thread once the interface has gone. The job itself is still on the
+            worker pool and keeps logging, so there is nothing to do here but wait for it and
+            keep the wait visible.
+
+        .PARAMETER TimeoutMinutes
+            An upper bound, so a worker that never returns cannot keep the process alive for good.
+    #>
+    param(
+        [int]$TimeoutMinutes = 120
+    )
+
+    if (-not $sync.FinishInConsole -or -not $sync.ActiveJob) {
+        return
+    }
+
+    $job = $sync.ActiveJob
+    Write-WinUtilLog -Component "UI" -Message "Window closed, waiting for $job to finish."
+    Write-Host "Waiting for $job to finish..." -ForegroundColor Cyan
+
+    $clock = [System.Diagnostics.Stopwatch]::StartNew()
+    while ($sync.ActiveJob -and $clock.Elapsed.TotalMinutes -lt $TimeoutMinutes) {
+        Start-Sleep -Milliseconds 250
+    }
+
+    if ($sync.ActiveJob) {
+        Write-WinUtilLog -Level "WARN" -Component "UI" -Message "$job did not finish within $TimeoutMinutes minutes, exiting anyway."
+        Write-Host "$job is taking longer than $TimeoutMinutes minutes. Exiting." -ForegroundColor Yellow
+        return
+    }
+
+    Write-WinUtilLog -Component "UI" -Message "$job finished after the window closed, in $([int]$clock.Elapsed.TotalSeconds)s."
+    Write-Host "$job finished. Closing." -ForegroundColor Green
 }

@@ -54,7 +54,7 @@ function Start-WinUtilJob {
         [switch]$DisableAppList
     )
 
-    if ($sync.ShuttingDown -or $sync.CloseWhenIdle) {
+    if ($sync.ShuttingDown -or $sync.FinishInConsole) {
         Write-WinUtilLog -Level "WARN" -Component $Name -Message "Refused to start $Name, WinUtil is closing."
         return $null
     }
@@ -134,10 +134,9 @@ function Start-WinUtilJob {
                 }
             }
 
+            # Last thing done, because the main thread may be waiting on exactly this to know
+            # the run is over and the process can exit
             $sync.ActiveJob = $null
-
-            # Someone may have asked to close and chosen to let this finish first
-            Complete-WinUtilPendingClose
         }
     }
 }

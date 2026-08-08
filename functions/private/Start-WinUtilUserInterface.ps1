@@ -164,6 +164,13 @@ function Start-WinUtilUserInterface {
             return
         }
 
+        # Work that is meant to outlive the window needs the pool it is running on. main.ps1
+        # waits for it and shuts the pool down once it is done.
+        if ($sync.FinishInConsole) {
+            Write-WinUtilLog -Component "UI" -Message "Window closing, leaving $($sync.ActiveJob) to finish in the console."
+            return
+        }
+
         Write-WinUtilLog -Component "UI" -Message "Window closing, shutting down the worker pool."
         Close-WinUtilRunspacePool
         [System.GC]::Collect()
