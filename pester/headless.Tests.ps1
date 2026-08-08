@@ -61,7 +61,20 @@ Describe "Headless reporting" {
     It "throttles repeated progress so package downloads do not bury the log" {
         $console = Get-Content -Path (Join-Path $script:functionRoot "private\Write-WinUtilConsoleProgress.ps1") -Raw
 
-        $console | Should -Match 'TotalMilliseconds -lt 1000'
+        $console | Should -Match 'TotalMilliseconds -lt \$throttleMs'
+        # redirected output has no cursor to rewrite, so it is throttled hard instead
+        $console | Should -Match 'if \(\$redirected\) \{ 1000 \} else \{ 150 \}'
+    }
+
+    It "rewrites the progress line in place on a console" {
+        # one line per update scrolls a screenful for a single install
+        $console = Get-Content -Path (Join-Path $script:functionRoot "private\Write-WinUtilConsoleProgress.ps1") -Raw
+
+        $console | Should -Match '\[Console\]::IsOutputRedirected'
+        $console | Should -Match 'Write-Host \("`r\$line"'
+        $console | Should -Match '-NoNewline'
+        # and a line left open has to be closed before anything else prints
+        $console | Should -Match 'function Complete-WinUtilConsoleProgress'
     }
 }
 

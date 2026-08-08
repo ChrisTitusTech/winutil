@@ -1903,10 +1903,28 @@
 
         <!-- Window-level progress indicator - visible regardless of active tab -->
         <Border Name="WPFTweaksProgressBar" Grid.Row="3" Background="{DynamicResource MainBackgroundColor}" Visibility="Collapsed" Padding="10,6">
-            <StackPanel Orientation="Vertical">
-                <TextBlock Name="WPFTweaksProgressLabel" Text="" Foreground="{DynamicResource MainForegroundColor}" FontSize="13" Background="Transparent" Margin="0,0,0,4"/>
-                <ProgressBar Name="WPFTweaksProgressValue" Height="6" Minimum="0" Maximum="100" Value="0" Style="{StaticResource RoundedProgressBarStyle}"/>
-            </StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Vertical">
+                    <TextBlock Name="WPFTweaksProgressLabel" Text="" Foreground="{DynamicResource MainForegroundColor}" FontSize="13" Background="Transparent" Margin="0,0,0,4"/>
+                    <ProgressBar Name="WPFTweaksProgressValue" Height="6" Minimum="0" Maximum="100" Value="0" Style="{StaticResource RoundedProgressBarStyle}"/>
+                </StackPanel>
+                <Button Name="WPFPauseJobButton" Grid.Column="1"
+                        Style="{StaticResource HoverButtonStyle}"
+                        BorderBrush="Transparent"
+                        Background="{DynamicResource MainBackgroundColor}"
+                        Foreground="{DynamicResource MainForegroundColor}"
+                        FontFamily="Segoe MDL2 Assets"
+                        FontSize="{DynamicResource SettingsIconFontSize}"
+                        Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
+                        Margin="10,0,0,0"
+                        VerticalAlignment="Center"
+                        Content="&#xE769;"
+                        ToolTip="Pause after the current step"/>
+            </Grid>
         </Border>
     </Grid>
 </Window>

@@ -66,6 +66,14 @@ function Start-WinUtilJob {
 
     $sync.ActiveJob = $Name
 
+    # A pause left over from the previous run would hold this one before it started
+    $sync.JobPaused = $false
+    if ($sync.WPFPauseJobButton) {
+        $sync.WPFPauseJobButton.Content = [char]0xE769
+        $sync.WPFPauseJobButton.ToolTip = "Pause after the current step"
+        $sync.WPFPauseJobButton.IsEnabled = $true
+    }
+
     $label = if ($Description) { $Description } else { $Name }
     Write-WinUtilLog -Component $Name -Message "$Name job started."
     Write-WinUtilJobBanner -Message $label
@@ -90,6 +98,10 @@ function Start-WinUtilJob {
     ) -ScriptBlock {
         param($JobName, $JobLabel, $JobBody, $JobParameters, $JobRestoresAppList)
 
+        # Marks this runspace as the one doing the work, so a pause holds here and not in
+        # whoever asked for it
+        $global:WinUtilIsJobWorker = $true
+
         $jobClock = [System.Diagnostics.Stopwatch]::StartNew()
         $errorsBefore = if ($sync.LoggedErrors) { $sync.LoggedErrors.Count } else { 0 }
         try {
@@ -108,6 +120,10 @@ function Start-WinUtilJob {
 
             $jobClock.Stop()
 
+            # The body has returned, so there is nothing left to hold. Without this the finish
+            # reporting itself would pause, leaving the job marked as running for ever.
+            $sync.JobPaused = $false
+
             # A step can fail without throwing, for example a registry write refused by policy.
             # The job still finished, but saying so without qualification would be a lie.
             $newErrors = if ($sync.LoggedErrors) { $sync.LoggedErrors.Count - $errorsBefore } else { 0 }
@@ -122,11 +138,18 @@ function Start-WinUtilJob {
             }
         } catch {
             $jobClock.Stop()
+            $sync.JobPaused = $false
             Write-WinUtilErrorRecord -ErrorRecord $_ -Component $JobName -Context "$JobName failed after $($jobClock.ElapsedMilliseconds) ms"
             Write-WinUtilJobBanner -Message "$JobLabel failed: $($_.Exception.Message)" -Level "ERROR"
             Write-WinUtilJobProgress -Status "$JobName failed" -Percent 100 -State "Error" -Overlay "warning"
         } finally {
             Write-WinUtilTimingSummary -Scope $JobName -TotalMilliseconds $jobClock.ElapsedMilliseconds
+
+            # Nothing left to pause once the run is over
+            $sync.JobPaused = $false
+            Invoke-WPFUIThread -ScriptBlock {
+                if ($sync.WPFPauseJobButton) { $sync.WPFPauseJobButton.IsEnabled = $false }
+            }
 
             if ($JobRestoresAppList -and $sync.Form -and $sync.Form.Dispatcher) {
                 Invoke-WPFUIThread -ScriptBlock {

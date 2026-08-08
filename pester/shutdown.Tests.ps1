@@ -12,6 +12,7 @@ BeforeAll {
     function Write-WinUtilLog { param($Level, $Component, $Message, [switch]$Detail) }
     function Write-WinUtilJobProgress { param($Status, $Percent, $State, $Overlay, [switch]$Hide) }
     function Show-WinUtilMessage { param($Message, $Title, $Button, $Icon) }
+    function Complete-WinUtilConsoleProgress { }
 }
 
 Describe "Tracking what is running" {

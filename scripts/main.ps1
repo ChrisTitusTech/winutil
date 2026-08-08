@@ -150,4 +150,5 @@ Close-WinUtilRunspacePool
 [System.GC]::Collect()
 
 Remove-WinUtilTempScript
+Write-Host "Bye bye!" -ForegroundColor Cyan
 Stop-Transcript

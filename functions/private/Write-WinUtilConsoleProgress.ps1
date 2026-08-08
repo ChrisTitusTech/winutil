@@ -5,9 +5,12 @@ function Write-WinUtilConsoleProgress {
 
         .DESCRIPTION
             The progress bar is the only thing telling a user how far along a job is, so a
-            headless run needs the same information in the only place it has. Package download
-            progress arrives several times a second, which would bury everything else, so a line
-            is printed when the wording changes or after a second of the same wording.
+            headless run needs the same information in the only place it has.
+
+            On a console the line is rewritten in place, because a package that reports every
+            few hundred milliseconds would otherwise scroll a screenful for one install. When
+            output is redirected there is no cursor to move, so each update is its own line and
+            they are throttled hard instead.
     #>
     param(
         [string]$Status,
@@ -19,7 +22,12 @@ function Write-WinUtilConsoleProgress {
     }
 
     if ($null -eq $sync.ConsoleProgressState) {
-        $sync.ConsoleProgressState = [hashtable]::Synchronized(@{ LastText = ""; LastWrite = [datetime]::MinValue })
+        $sync.ConsoleProgressState = [hashtable]::Synchronized(@{
+            LastText = ""
+            LastWrite = [datetime]::MinValue
+            LineLength = 0
+            LineOpen = $false
+        })
     }
     $state = $sync.ConsoleProgressState
 
@@ -28,9 +36,12 @@ function Write-WinUtilConsoleProgress {
         return
     }
 
+    $redirected = [Console]::IsOutputRedirected
+    $throttleMs = if ($redirected) { 1000 } else { 150 }
+
     $now = Get-Date
     $sameText = $text -eq $state.LastText
-    if ($sameText -and ($now - $state.LastWrite).TotalMilliseconds -lt 1000) {
+    if ($sameText -and ($now - $state.LastWrite).TotalMilliseconds -lt $throttleMs) {
         return
     }
 
@@ -38,5 +49,37 @@ function Write-WinUtilConsoleProgress {
     $state.LastWrite = $now
 
     $prefix = if ($Percent -ge 0) { "[{0,3}%] " -f $Percent } else { "[   =] " }
-    Write-Host "$prefix$text" -ForegroundColor DarkCyan
+    $line = "$prefix$text"
+
+    if ($redirected) {
+        Write-Host $line -ForegroundColor DarkCyan
+        return
+    }
+
+    # Pad to the previous length so a shorter line does not leave the tail of the longer one
+    $padding = [Math]::Max(0, $state.LineLength - $line.Length)
+    Write-Host ("`r$line" + (" " * $padding)) -NoNewline -ForegroundColor DarkCyan
+    $state.LineLength = $line.Length
+    $state.LineOpen = $true
+}
+
+function Complete-WinUtilConsoleProgress {
+    <#
+        .SYNOPSIS
+            Ends the progress line so the next thing printed starts on its own
+
+        .DESCRIPTION
+            The line is rewritten in place and therefore left without a newline. Anything else
+            reaching the console has to close it first, or it lands on top of the progress.
+    #>
+
+    $state = $sync.ConsoleProgressState
+    if ($null -eq $state -or -not $state.LineOpen) {
+        return
+    }
+
+    Write-Host ""
+    $state.LineOpen = $false
+    $state.LineLength = 0
+    $state.LastText = ""
 }

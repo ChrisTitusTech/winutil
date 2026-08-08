@@ -22,6 +22,9 @@ function Write-WinUtilJobBanner {
         [string]$Level = "INFO"
     )
 
+    # A progress line is rewritten in place and left open, so the box would be drawn on top of it
+    Complete-WinUtilConsoleProgress
+
     # Wrapped, because a failure listing several packages would otherwise draw a box wider
     # than the console
     $width = 76

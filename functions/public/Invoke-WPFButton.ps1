@@ -176,7 +176,9 @@ function Invoke-WPFButtonAction {
                 }
             }
         }
-        "WPFCloseButton" {$sync.Form.Close(); Write-Host "Bye bye!"}
+        # Closing may be declined, or leave a job running that outlives the window, so the
+        # goodbye belongs at the point the process actually ends rather than here
+        "WPFCloseButton" {$sync.Form.Close()}
         "WPFMinimizeButton" {[Windows.SystemCommands]::MinimizeWindow($sync.Form)}
         "WPFMaximizeButton" {
             if ($sync.Form.WindowState -eq [Windows.WindowState]::Normal) {
@@ -186,5 +188,6 @@ function Invoke-WPFButtonAction {
             }
         }
         "WPFselectedAppsButton" {$sync.selectedAppsPopup.IsOpen = -not $sync.selectedAppsPopup.IsOpen}
+        "WPFPauseJobButton" {Set-WinUtilJobPaused -Paused (-not $sync.JobPaused)}
     }
 }
