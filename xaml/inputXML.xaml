@@ -1167,6 +1167,9 @@
                                         TickFrequency="0.25"
                                         TickPlacement="BottomRight"
                                         IsSnapToTickEnabled="True"
+                                        IsMoveToPointEnabled="True"
+                                        SmallChange="0.25"
+                                        LargeChange="0.25"
                                         Width="120"
                                         VerticalAlignment="Center"/>
                                 <TextBlock Text="Large"
