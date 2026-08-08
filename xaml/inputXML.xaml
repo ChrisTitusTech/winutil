@@ -1935,7 +1935,7 @@
                         Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
                         Margin="4,0,0,0"
                         VerticalAlignment="Center"
-                        Content="&#xE73B;"
+                        Content="&#xE711;"
                         ToolTip="Stop the running action"/>
             </Grid>
         </Border>

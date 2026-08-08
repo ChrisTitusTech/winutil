@@ -70,7 +70,7 @@ function Start-WinUtilJob {
     $sync.JobPaused = $false
     $sync.StopRequested = $false
     if ($sync.WPFPauseJobButton) {
-        $sync.WPFPauseJobButton.Content = [char]0xE769
+        $sync.WPFPauseJobButton.Content = [string]([char]0xE769)
         $sync.WPFPauseJobButton.ToolTip = "Pause after the current step"
         $sync.WPFPauseJobButton.IsEnabled = $true
     }

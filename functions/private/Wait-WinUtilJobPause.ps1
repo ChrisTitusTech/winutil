@@ -51,7 +51,7 @@ function Set-WinUtilJobPaused {
 
     if ($sync.WPFPauseJobButton) {
         # Play glyph to resume, pause glyph to pause
-        $sync.WPFPauseJobButton.Content = if ($Paused) { [char]0xE768 } else { [char]0xE769 }
+        $sync.WPFPauseJobButton.Content = if ($Paused) { [string]([char]0xE768) } else { [string]([char]0xE769) }
         $sync.WPFPauseJobButton.ToolTip = if ($Paused) { "Resume" } else { "Pause after the current step" }
     }
 
