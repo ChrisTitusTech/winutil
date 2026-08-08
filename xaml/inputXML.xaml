@@ -1907,6 +1907,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Vertical">
                     <TextBlock Name="WPFTweaksProgressLabel" Text="" Foreground="{DynamicResource MainForegroundColor}" FontSize="13" Background="Transparent" Margin="0,0,0,4"/>
@@ -1924,6 +1925,18 @@
                         VerticalAlignment="Center"
                         Content="&#xE769;"
                         ToolTip="Pause after the current step"/>
+                <Button Name="WPFStopJobButton" Grid.Column="2"
+                        Style="{StaticResource HoverButtonStyle}"
+                        BorderBrush="Transparent"
+                        Background="{DynamicResource MainBackgroundColor}"
+                        Foreground="{DynamicResource MainForegroundColor}"
+                        FontFamily="Segoe MDL2 Assets"
+                        FontSize="{DynamicResource SettingsIconFontSize}"
+                        Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
+                        Margin="4,0,0,0"
+                        VerticalAlignment="Center"
+                        Content="&#xE71A;"
+                        ToolTip="Stop the running action"/>
             </Grid>
         </Border>
     </Grid>

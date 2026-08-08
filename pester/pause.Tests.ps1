@@ -103,6 +103,111 @@ Describe "Set-WinUtilJobPaused" {
     }
 }
 
+Describe "Stop-WinUtilJobIfRequested" {
+    BeforeAll {
+        . (Join-Path $script:functionRoot "private\Stop-WinUtilRunningJob.ps1")
+    }
+
+    BeforeEach {
+        $global:sync = [hashtable]::Synchronized(@{})
+        Mock Write-WinUtilLog { }
+    }
+
+    It "does nothing when no stop was asked for" {
+        $sync.StopRequested = $false
+        $global:WinUtilIsJobWorker = $true
+
+        { Stop-WinUtilJobIfRequested } | Should -Not -Throw
+    }
+
+    It "ends the run when a stop was asked for" {
+        $sync.StopRequested = $true
+        $global:WinUtilIsJobWorker = $true
+
+        { Stop-WinUtilJobIfRequested } | Should -Throw
+    }
+
+    It "throws a cancellation, so the run is reported as stopped and not as broken" {
+        $sync.StopRequested = $true
+        $global:WinUtilIsJobWorker = $true
+
+        $caught = $null
+        try { Stop-WinUtilJobIfRequested } catch { $caught = $_.Exception }
+
+        $caught | Should -BeOfType [System.OperationCanceledException]
+    }
+
+    It "never unwinds the thread that asked for the stop" {
+        # the button handler goes through the same progress call
+        $sync.StopRequested = $true
+        $global:WinUtilIsJobWorker = $false
+
+        { Stop-WinUtilJobIfRequested } | Should -Not -Throw
+    }
+}
+
+Describe "Stop-WinUtilRunningJob" {
+    BeforeAll {
+        . (Join-Path $script:functionRoot "private\Stop-WinUtilRunningJob.ps1")
+        function Show-WinUtilMessage { param($Message, $Title, $Button, $Icon) }
+        function Stop-WinUtilActiveWork { param($TimeoutSeconds) $true }
+        function Start-WinUtilJobStopWatchdog { param($Job, $GraceSeconds) }
+    }
+
+    BeforeEach {
+        $global:sync = [hashtable]::Synchronized(@{})
+        $sync.ActiveJob = "Install"
+        Mock Write-WinUtilLog { }
+        Mock Write-WinUtilJobProgress { }
+        Mock Start-WinUtilJobStopWatchdog { }
+    }
+
+    It "does nothing when nothing is running" {
+        $sync.ActiveJob = $null
+        Mock Show-WinUtilMessage { "Yes" }
+
+        Stop-WinUtilRunningJob
+
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 0 -Exactly
+    }
+
+    It "asks before stopping" {
+        Mock Show-WinUtilMessage { "No" }
+
+        Stop-WinUtilRunningJob
+
+        $sync.StopRequested | Should -Not -BeTrue
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
+            $Button -eq "YesNo" -and $Message -like "*Install*"
+        }
+    }
+
+    It "asks the run to stop when confirmed" {
+        Mock Show-WinUtilMessage { "Yes" }
+
+        Stop-WinUtilRunningJob
+
+        $sync.StopRequested | Should -BeTrue
+    }
+
+    It "releases a pause, or the run would never notice the stop" {
+        Mock Show-WinUtilMessage { "Yes" }
+        $sync.JobPaused = $true
+
+        Stop-WinUtilRunningJob
+
+        $sync.JobPaused | Should -BeFalse
+    }
+
+    It "arms a watchdog, because a long single step reaches no safe point" {
+        Mock Show-WinUtilMessage { "Yes" }
+
+        Stop-WinUtilRunningJob
+
+        Should -Invoke -CommandName Start-WinUtilJobStopWatchdog -Times 1 -Exactly
+    }
+}
+
 Describe "Pause wiring" {
     It "holds at the point every loop reports progress" {
         # a command already running cannot be suspended; the gap between steps can
@@ -157,10 +262,36 @@ Describe "Pause wiring" {
 
     It "sits beside the progress bar" {
         $xaml = [xml](Get-Content -Path (Join-Path $script:repoRoot "xaml\inputXML.xaml") -Raw)
-        $button = $xaml.SelectSingleNode('//*[local-name()="Button"][@Name="WPFPauseJobButton"]')
 
-        $button | Should -Not -BeNullOrEmpty
-        # inside the progress bar's own border, so it appears and hides with it
-        $button.ParentNode.ParentNode.GetAttribute("Name") | Should -Be "WPFTweaksProgressBar"
+        foreach ($name in @("WPFPauseJobButton", "WPFStopJobButton")) {
+            $button = $xaml.SelectSingleNode("//*[local-name()='Button'][@Name='$name']")
+            $button | Should -Not -BeNullOrEmpty -Because "$name should exist"
+            # inside the progress bar's own border, so it appears and hides with it
+            $button.ParentNode.ParentNode.GetAttribute("Name") | Should -Be "WPFTweaksProgressBar"
+        }
+    }
+
+    It "reports a stopped run as stopped rather than failed" {
+        $job = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilJob.ps1") -Raw
+
+        $job | Should -Match 'catch \[System\.OperationCanceledException\]'
+        $job | Should -Match 'Write-WinUtilJobBanner -Message "\$JobLabel stopped"'
+    }
+
+    It "clears the stop before reporting it, or the report throws it again" {
+        $job = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilJob.ps1") -Raw
+
+        $cancelAt = $job.IndexOf('catch [System.OperationCanceledException]')
+        $clearAt = $job.IndexOf('$sync.StopRequested = $false', $cancelAt)
+        $reportAt = $job.IndexOf('Write-WinUtilJobProgress -Status "$JobName stopped"', $cancelAt)
+
+        $clearAt | Should -BeGreaterThan $cancelAt
+        $clearAt | Should -BeLessThan $reportAt
+    }
+
+    It "is reachable from the stop button" {
+        $button = Get-Content -Path (Join-Path $script:functionRoot "public\Invoke-WPFButton.ps1") -Raw
+
+        $button | Should -Match '"WPFStopJobButton" \{Stop-WinUtilRunningJob\}'
     }
 }

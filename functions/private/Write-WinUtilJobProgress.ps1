@@ -37,8 +37,9 @@ function Write-WinUtilJobProgress {
     )
 
     # Every loop reports its progress, which makes this the one place a run reliably passes
-    # between steps, and therefore where it can be held without interrupting a command
+    # between steps, and therefore where it can be held or ended without cutting into a command
     Wait-WinUtilJobPause
+    Stop-WinUtilJobIfRequested
 
     # With no window there is nothing to post to, and every update would be thrown away. A
     # headless run is the one that most needs to say what it is doing. A window that has been

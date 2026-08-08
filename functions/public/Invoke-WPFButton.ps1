@@ -189,5 +189,6 @@ function Invoke-WPFButtonAction {
         }
         "WPFselectedAppsButton" {$sync.selectedAppsPopup.IsOpen = -not $sync.selectedAppsPopup.IsOpen}
         "WPFPauseJobButton" {Set-WinUtilJobPaused -Paused (-not $sync.JobPaused)}
+        "WPFStopJobButton" {Stop-WinUtilRunningJob}
     }
 }
