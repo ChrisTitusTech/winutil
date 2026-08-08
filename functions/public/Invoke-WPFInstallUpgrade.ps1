@@ -18,8 +18,9 @@ function Invoke-WPFInstallUpgrade {
         Write-WinUtilLog -Component "Install" -Message "Upgrading all Chocolatey packages."
         Write-WinUtilJobProgress -Status "Upgrading all Chocolatey packages" -State "Indeterminate"
 
+        # "all" is choco's own name for every installed package, so this stays one call
         $result = Measure-WinUtilStep -Scope "Install" -Name "choco upgrade all" -ScriptBlock {
-            Install-WinUtilProgramChoco -Action Install -Programs @("all")
+            Install-WinUtilProgramChoco -Action Upgrade -Programs @("all")
         }
         Complete-WinUtilPackageRun -Action "Upgrade" -Results @($result)
         return

@@ -99,6 +99,24 @@ Describe "Work routing" {
         if ($offenders.Count -gt 0) { throw ($offenders -join "`n") }
     }
 
+    It "never blocks on a message box that nobody can answer" {
+        # Showing a modal with no window never returns and takes the worker with it, which is
+        # worse than the exception it replaced
+        $dialogScript = Get-Content -Path (Join-Path $script:functionRoot "private\Show-WinUtilMessage.ps1") -Raw
+
+        $noWindowBranch = ($dialogScript -split 'return Invoke-WPFUIThread')[0]
+        $noWindowBranch | Should -Not -Match 'MessageBox\]::Show'
+        $noWindowBranch | Should -Match '"OK"'
+    }
+
+    It "requires an explicit yes before removing software" {
+        # "not No" also matches a prompt that was dismissed or never shown
+        $uninstall = Get-Content -Path (Join-Path $script:functionRoot "public\Invoke-WPFUnInstall.ps1") -Raw
+
+        $uninstall | Should -Match '\$confirm -ne "Yes"'
+        $uninstall | Should -Not -Match '\$confirm -eq "No"'
+    }
+
     It "runs workers on the shared pool rather than a runspace per call" {
         $runspaceScript = Get-Content -Path (Join-Path $script:functionRoot "public\Invoke-WPFRunspace.ps1") -Raw
 

@@ -246,20 +246,42 @@ Describe "Install-WinUtilProgramWinget through the WinGet client module" {
 }
 
 Describe "Install-WinUtilProgramChoco outcomes" {
+    BeforeAll {
+        function choco { $global:LASTEXITCODE = 0 }
+    }
+
     BeforeEach {
         Mock Write-WinUtilLog { }
+        Mock Write-WinUtilJobProgress { }
     }
 
     It "treats a reboot-required exit code as success" {
-        Mock Start-Process { [pscustomobject]@{ ExitCode = 3010 } }
+        Mock choco { $global:LASTEXITCODE = 3010 }
 
-        (Install-WinUtilProgramChoco -Action Install -Programs @("git")).Outcome | Should -Be "Succeeded"
+        $result = Install-WinUtilProgramChoco -Action Install -Programs @("git")
+        $result.Outcome | Should -Be "Succeeded"
+        $result.Detail | Should -Match "restart"
     }
 
     It "reports a non-zero exit code as a failure" {
-        Mock Start-Process { [pscustomobject]@{ ExitCode = 1 } }
+        Mock choco { $global:LASTEXITCODE = 1 }
 
         (Install-WinUtilProgramChoco -Action Install -Programs @("git")).Outcome | Should -Be "Failed"
+    }
+
+    It "reports nothing-to-do as skipped rather than failed" {
+        Mock choco { $global:LASTEXITCODE = 2 }
+
+        (Install-WinUtilProgramChoco -Action Install -Programs @("git")).Outcome | Should -Be "Skipped"
+    }
+
+    It "explains a failure using the reason choco printed" {
+        Mock choco { $global:LASTEXITCODE = 1; "git is not installed. Cannot uninstall a non-existent package." }
+
+        $result = Install-WinUtilProgramChoco -Action Uninstall -Programs @("git")
+
+        $result.Outcome | Should -Be "Failed"
+        $result.Detail | Should -Match "not installed"
     }
 }
 

@@ -22,7 +22,9 @@ function Invoke-WPFUnInstall {
 
     $confirm = Show-WinUtilMessage -Message $Messageboxbody -Title $MessageboxTitle -Button $ButtonType -Icon $MessageIcon
 
-    if($confirm -eq "No") {return}
+    # Explicit consent, not the absence of a refusal: a dismissed or unanswerable prompt must
+    # not remove the user's software
+    if ($confirm -ne "Yes") { return }
 
     $ManagerPreference = $sync.preferences.packagemanager
     Write-WinUtilLog -Component "Uninstall" -Message "Uninstall requested for $(@($PackagesToUninstall).Count) selected package(s) using preference: $ManagerPreference"
@@ -69,8 +71,10 @@ function Invoke-WPFUnInstall {
             $position = $completedPackages + 1
             Write-WinUtilJobProgress -Status "Uninstalling Chocolatey packages ($position/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
 
+            $chocoBase = [int](($completedPackages / $totalPackages) * 100)
+            $chocoSpan = [int]((@($packagesChoco).Count / $totalPackages) * 100)
             $results += Measure-WinUtilStep -Scope "Uninstall" -Name "choco $($packagesChoco -join ', ')" -ScriptBlock {
-                Install-WinUtilProgramChoco -Action Uninstall -Programs $packagesChoco
+                Install-WinUtilProgramChoco -Action Uninstall -Programs $packagesChoco -ProgressBase $chocoBase -ProgressSpan $chocoSpan
             }
             $completedPackages += @($packagesChoco).Count
             Write-WinUtilJobProgress -Status "Uninstalled Chocolatey packages ($completedPackages/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))

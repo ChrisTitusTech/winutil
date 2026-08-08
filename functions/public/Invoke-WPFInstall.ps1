@@ -58,8 +58,10 @@ function Invoke-WPFInstall {
             Write-WinUtilJobProgress -Status "Installing Chocolatey packages ($position/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
 
             Install-WinUtilChoco
+            $chocoBase = [int](($completedPackages / $totalPackages) * 100)
+            $chocoSpan = [int]((@($packagesChoco).Count / $totalPackages) * 100)
             $results += Measure-WinUtilStep -Scope "Install" -Name "choco $($packagesChoco -join ', ')" -ScriptBlock {
-                Install-WinUtilProgramChoco -Action Install -Programs $packagesChoco
+                Install-WinUtilProgramChoco -Action Install -Programs $packagesChoco -ProgressBase $chocoBase -ProgressSpan $chocoSpan
             }
             $completedPackages += @($packagesChoco).Count
             Write-WinUtilJobProgress -Status "Installed Chocolatey packages ($completedPackages/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
