@@ -557,6 +557,15 @@
         "winget": "GitHub.GitHubDesktop",
         "foss": true
     },
+    "godotengine": {
+        "category": "Development",
+        "choco": "godot",
+        "content": "Godot Engine",
+        "description": "Godot is a free and open-source, cross-platform 2D and 3D game engine.",
+        "link": "https://godotengine.org/",
+        "winget": "GodotEngine.GodotEngine",
+        "foss": true
+    },
     "gog": {
         "category": "Games",
         "choco": "goggalaxy",
@@ -1392,6 +1401,24 @@
         "winget": "RevoUninstaller.RevoUninstaller",
         "foss": false
     },
+    "seelenui": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "Seelen UI",
+        "description": "Seelen UI is a fully customizable desktop environment for Windows with tiling window management, a custom taskbar, and theming.",
+        "link": "https://seelen.io/",
+        "winget": "Seelen.SeelenUI",
+        "foss": true
+    },
+    "wezterm": {
+        "category": "Development",
+        "choco": "wezterm",
+        "content": "WezTerm",
+        "description": "WezTerm is a GPU-accelerated cross-platform terminal emulator and multiplexer implemented in Rust.",
+        "link": "https://wezterm.org/",
+        "winget": "wez.wezterm",
+        "foss": true
+    },
     "WiseProgramUninstaller": {
         "category": "Utilities",
         "choco": "na",
@@ -1400,6 +1427,15 @@
         "link": "https://www.wisecleaner.com/wise-program-uninstaller.html",
         "winget": "WiseCleaner.WiseProgramUninstaller",
         "foss": false
+    },
+    "windhawk": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "Windhawk",
+        "description": "Windhawk is a customization marketplace for Windows programs, letting you install community-made mods for the shell, taskbar, and more.",
+        "link": "https://windhawk.net/",
+        "winget": "RamenSoftware.Windhawk",
+        "foss": true
     },
     "rufus": {
         "category": "Utilities",
