@@ -36,5 +36,5 @@ function Invoke-WPFFeatureInstall {
         Write-Host "---   Features are Installed    ---"
         Write-Host "---  A Reboot may be required   ---"
         Write-Host "==================================="
-    }
+    } | Out-Null
 }

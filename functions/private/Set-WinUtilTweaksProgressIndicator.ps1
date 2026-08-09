@@ -18,6 +18,10 @@ function Set-WinUtilTweaksProgressIndicator {
         [int]$Percent
     )
 
+    if ($null -eq $sync.form -or $null -eq $sync.form.Dispatcher) {
+        return
+    }
+
     $indicatorVisible = if ($Visible) { [Windows.Visibility]::Visible } else { [Windows.Visibility]::Collapsed }
     $indicatorLabel = $Label
     $hasLabel = $PSBoundParameters.ContainsKey('Label')
