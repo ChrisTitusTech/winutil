@@ -2,6 +2,7 @@ BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     Add-Type -AssemblyName PresentationFramework
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilFaviconUrl.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Close-WinUtilFaviconRunspacePool.ps1")
     . (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilFaviconRunspacePool.ps1")
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilFaviconFetch.ps1")
 }
@@ -72,7 +73,8 @@ Describe "WinUtil favicon loading" {
         $fetchScript | Should -Match 'Status = "NetworkFailure"'
         $fetchScript | Should -Match 'Status = "Cancelled"'
         $entryScript | Should -Match 'Get-WinUtilFaviconUrl -Link \$app\.link'
-        $entryScript | Should -Match 'Invoke-WinUtilFaviconFetch -AppKey \$appKey'
+        $entryScript | Should -Match '\$sync\.FaviconQueue\.Enqueue'
+        $entryScript | Should -Not -Match 'Invoke-WinUtilFaviconFetch'
         $entryScript | Should -Not -Match '\$logo\.Source = "https://www\.google\.com/s2/favicons'
     }
 
@@ -183,6 +185,188 @@ Describe "WinUtil favicon loading" {
         $fetchScript | Should -Match '\$failureThreshold = 8'
     }
 
+    It "submits only enough requests to fill the dedicated pool" {
+        $previousSync = Get-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
+        try {
+            $breaker = [pscustomobject]@{ IsCancellationRequested = $false }
+            $breaker | Add-Member -MemberType ScriptMethod -Name Cancel -Value { $this.IsCancellationRequested = $true }
+            $pool = [pscustomobject]@{}
+            $pool | Add-Member -MemberType ScriptMethod -Name GetMaxRunspaces -Value { 2 }
+            $global:sync = [hashtable]::Synchronized(@{
+                FaviconCircuitBreaker = $breaker
+                FaviconRunspace       = $pool
+                FaviconOperations     = [hashtable]::Synchronized(@{})
+                FaviconQueue          = [System.Collections.Queue]::new()
+            })
+
+            1..5 | ForEach-Object {
+                $global:sync.FaviconQueue.Enqueue([pscustomobject]@{
+                    AppKey      = "App$_"
+                    Url         = "https://example.com/$_"
+                    TargetImage = [Windows.Controls.Image]::new()
+                    Fallback    = [Windows.Controls.TextBlock]::new()
+                })
+            }
+
+            Mock Invoke-WinUtilFaviconFetch {
+                $global:sync.FaviconOperations[$AppKey] = [pscustomobject]@{ AppKey = $AppKey }
+            }
+
+            Invoke-WinUtilFaviconQueuePump
+
+            $global:sync.FaviconOperations.Count | Should -Be 2
+            $global:sync.FaviconQueue.Count | Should -Be 3
+            Should -Invoke -CommandName Invoke-WinUtilFaviconFetch -Times 2 -Exactly
+        } finally {
+            if ($previousSync) {
+                Set-Variable -Name sync -Value $previousSync.Value -Scope Global
+            } else {
+                Remove-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
+            }
+        }
+    }
+
+    It "refills available capacity after a favicon operation completes" {
+        $previousSync = Get-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
+        try {
+            $breaker = [pscustomobject]@{ IsCancellationRequested = $false }
+            $breaker | Add-Member -MemberType ScriptMethod -Name ReportFailure -Value { }
+            $breaker | Add-Member -MemberType ScriptMethod -Name ReportSuccess -Value { }
+            $pool = [pscustomobject]@{}
+            $pool | Add-Member -MemberType ScriptMethod -Name GetMaxRunspaces -Value { 1 }
+            $worker = [pscustomobject]@{ Disposed = $false }
+            $worker | Add-Member -MemberType ScriptMethod -Name EndInvoke -Value {
+                param($handle)
+                return [pscustomobject]@{ Status = "Cancelled"; Bytes = $null }
+            }
+            $worker | Add-Member -MemberType ScriptMethod -Name Dispose -Value { $this.Disposed = $true }
+            $global:sync = [hashtable]::Synchronized(@{
+                FaviconCircuitBreaker = $breaker
+                FaviconRunspace       = $pool
+                FaviconOperations     = [hashtable]::Synchronized(@{})
+                FaviconQueue          = [System.Collections.Queue]::new()
+            })
+            $global:sync.FaviconQueue.Enqueue([pscustomobject]@{
+                AppKey      = "NextApp"
+                Url         = "https://example.com/next"
+                TargetImage = [Windows.Controls.Image]::new()
+                Fallback    = [Windows.Controls.TextBlock]::new()
+            })
+            $operation = [pscustomobject]@{
+                AppKey      = "CurrentApp"
+                PowerShell  = $worker
+                Handle      = $null
+                Sync        = $global:sync
+                TargetImage = [Windows.Controls.Image]::new()
+                Fallback    = [Windows.Controls.TextBlock]::new()
+                Bytes       = $null
+            }
+            $global:sync.FaviconOperations[$operation.AppKey] = $operation
+
+            Mock Invoke-WinUtilFaviconFetch {
+                $global:sync.FaviconOperations[$AppKey] = [pscustomobject]@{ AppKey = $AppKey }
+            }
+
+            Complete-WinUtilFaviconFetch -Operation $operation
+
+            $worker.Disposed | Should -BeTrue
+            $global:sync.FaviconQueue.Count | Should -Be 0
+            $global:sync.FaviconOperations.ContainsKey("NextApp") | Should -BeTrue
+            Should -Invoke -CommandName Invoke-WinUtilFaviconFetch -Times 1 -Exactly
+        } finally {
+            if ($previousSync) {
+                Set-Variable -Name sync -Value $previousSync.Value -Scope Global
+            } else {
+                Remove-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
+            }
+        }
+    }
+
+    It "drops pending requests when the circuit breaker is open" {
+        $previousSync = Get-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
+        try {
+            $pool = [pscustomobject]@{}
+            $pool | Add-Member -MemberType ScriptMethod -Name GetMaxRunspaces -Value { 2 }
+            $global:sync = [hashtable]::Synchronized(@{
+                FaviconCircuitBreaker = [pscustomobject]@{ IsCancellationRequested = $true }
+                FaviconRunspace       = $pool
+                FaviconOperations     = [hashtable]::Synchronized(@{})
+                FaviconQueue          = [System.Collections.Queue]::new()
+            })
+            $global:sync.FaviconQueue.Enqueue([pscustomobject]@{ AppKey = "PendingApp" })
+            Mock Invoke-WinUtilFaviconFetch { }
+
+            Invoke-WinUtilFaviconQueuePump
+
+            $global:sync.FaviconQueue.Count | Should -Be 0
+            Should -Invoke -CommandName Invoke-WinUtilFaviconFetch -Times 0 -Exactly
+        } finally {
+            if ($previousSync) {
+                Set-Variable -Name sync -Value $previousSync.Value -Scope Global
+            } else {
+                Remove-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
+            }
+        }
+    }
+
+    It "stops pending work when request submission fails" {
+        $previousSync = Get-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
+        try {
+            $breaker = [pscustomobject]@{ IsCancellationRequested = $false }
+            $breaker | Add-Member -MemberType ScriptMethod -Name Cancel -Value { $this.IsCancellationRequested = $true }
+            $pool = [pscustomobject]@{}
+            $pool | Add-Member -MemberType ScriptMethod -Name GetMaxRunspaces -Value { 2 }
+            $global:sync = [hashtable]::Synchronized(@{
+                FaviconCircuitBreaker = $breaker
+                FaviconRunspace       = $pool
+                FaviconOperations     = [hashtable]::Synchronized(@{})
+                FaviconQueue          = [System.Collections.Queue]::new()
+            })
+            1..2 | ForEach-Object {
+                $global:sync.FaviconQueue.Enqueue([pscustomobject]@{
+                    AppKey      = "App$_"
+                    Url         = "https://example.com/$_"
+                    TargetImage = [Windows.Controls.Image]::new()
+                    Fallback    = [Windows.Controls.TextBlock]::new()
+                })
+            }
+            Mock Invoke-WinUtilFaviconFetch { throw "submission failed" }
+
+            { Invoke-WinUtilFaviconQueuePump } | Should -Not -Throw
+
+            $breaker.IsCancellationRequested | Should -BeTrue
+            $global:sync.FaviconQueue.Count | Should -Be 0
+            Should -Invoke -CommandName Invoke-WinUtilFaviconFetch -Times 1 -Exactly
+        } finally {
+            if ($previousSync) {
+                Set-Variable -Name sync -Value $previousSync.Value -Scope Global
+            } else {
+                Remove-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
+            }
+        }
+    }
+
+    It "clears pending requests when favicon setup fails" {
+        $previousSync = Get-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
+        try {
+            $global:sync = [hashtable]::Synchronized(@{ FaviconQueue = [System.Collections.Queue]::new() })
+            $global:sync.FaviconQueue.Enqueue([pscustomobject]@{ AppKey = "PendingApp" })
+            Mock Initialize-WinUtilFaviconCircuitBreaker { throw "setup failed" }
+            Mock Close-WinUtilFaviconRunspacePool { }
+
+            { Start-WinUtilFaviconLoading } | Should -Not -Throw
+
+            $global:sync.FaviconQueue.Count | Should -Be 0
+            Should -Invoke -CommandName Close-WinUtilFaviconRunspacePool -Times 1 -Exactly
+        } finally {
+            if ($previousSync) {
+                Set-Variable -Name sync -Value $previousSync.Value -Scope Global
+            } else {
+                Remove-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
+            }
+        }
+    }
+
     It "applies results and fallback state through the WPF dispatcher" {
         $fetchScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilFaviconFetch.ps1") -Raw
 
@@ -220,5 +404,23 @@ Describe "WinUtil favicon loading" {
         $closeScript | Should -Match 'FaviconCircuitBreaker\.Cancel\(\)'
         $closeScript | Should -Match '\.Dispose\(\)'
         $closeScript | Should -Match 'FaviconRunspace\.Close\(\)'
+    }
+
+    It "removes pending favicon requests during shutdown" {
+        $previousSync = Get-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
+        try {
+            $global:sync = [hashtable]::Synchronized(@{ FaviconQueue = [System.Collections.Queue]::new() })
+            $global:sync.FaviconQueue.Enqueue([pscustomobject]@{ AppKey = "PendingApp" })
+
+            Close-WinUtilFaviconRunspacePool
+
+            $global:sync.ContainsKey("FaviconQueue") | Should -BeFalse
+        } finally {
+            if ($previousSync) {
+                Set-Variable -Name sync -Value $previousSync.Value -Scope Global
+            } else {
+                Remove-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
+            }
+        }
     }
 }

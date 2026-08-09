@@ -460,6 +460,7 @@ Describe "XAML and sync wiring" {
             "ToggleStatusCache",
             "InstallAppRenderQueue",
             "InstallAppEntriesRendered",
+            "FaviconQueue",
             "FaviconOperations",
             "FaviconCircuitBreaker",
             "FaviconRunspace",

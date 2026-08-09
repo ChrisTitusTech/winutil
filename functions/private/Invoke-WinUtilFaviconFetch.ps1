@@ -147,6 +147,7 @@ function Complete-WinUtilFaviconFetch {
     } finally {
         $Operation.PowerShell.Dispose()
         $Operation.Sync.FaviconOperations.Remove($Operation.AppKey)
+        Invoke-WinUtilFaviconQueuePump
     }
 }
 
@@ -177,10 +178,91 @@ function Start-WinUtilFaviconPolling {
     $sync.FaviconTimer.Start()
 }
 
+function Invoke-WinUtilFaviconQueuePump {
+    <#
+        .SYNOPSIS
+            Fills the dedicated favicon runspace pool from the pending request queue.
+    #>
+    if ($null -eq $sync.FaviconQueue -or
+        $null -eq $sync.FaviconCircuitBreaker -or
+        $null -eq $sync.FaviconRunspace -or
+        $null -eq $sync.FaviconOperations) {
+        return
+    }
+
+    if ($sync.FaviconCircuitBreaker.IsCancellationRequested) {
+        $sync.FaviconQueue.Clear()
+        return
+    }
+
+    try {
+        $maximumActiveOperations = $sync.FaviconRunspace.GetMaxRunspaces()
+    } catch {
+        $sync.FaviconCircuitBreaker.Cancel()
+        $sync.FaviconQueue.Clear()
+        return
+    }
+
+    while ($sync.FaviconQueue.Count -gt 0 -and
+        $sync.FaviconOperations.Count -lt $maximumActiveOperations -and
+        -not $sync.FaviconCircuitBreaker.IsCancellationRequested) {
+        $request = $sync.FaviconQueue.Dequeue()
+        try {
+            Invoke-WinUtilFaviconFetch `
+                -AppKey $request.AppKey `
+                -Url $request.Url `
+                -TargetImage $request.TargetImage `
+                -Fallback $request.Fallback
+        } catch {
+            # Submission infrastructure failed. Favicon loading is optional, so stop
+            # pending work while preserving the already-rendered fallback entries.
+            $sync.FaviconCircuitBreaker.Cancel()
+            $sync.FaviconQueue.Clear()
+            return
+        }
+    }
+
+    if ($sync.FaviconCircuitBreaker.IsCancellationRequested) {
+        $sync.FaviconQueue.Clear()
+    }
+}
+
+function Start-WinUtilFaviconLoading {
+    <#
+        .SYNOPSIS
+            Initializes favicon infrastructure and starts bounded request submission.
+    #>
+    if ($null -eq $sync.FaviconQueue -or $sync.FaviconQueue.Count -eq 0) {
+        return
+    }
+
+    try {
+        Initialize-WinUtilFaviconCircuitBreaker
+        if ($sync.FaviconCircuitBreaker.IsCancellationRequested) {
+            $sync.FaviconQueue.Clear()
+            return
+        }
+
+        Initialize-WinUtilFaviconRunspacePool | Out-Null
+        if ($null -eq $sync.FaviconOperations) {
+            $sync.FaviconOperations = [hashtable]::Synchronized(@{})
+        }
+
+        Start-WinUtilFaviconPolling
+        Invoke-WinUtilFaviconQueuePump
+    } catch {
+        $sync.FaviconQueue.Clear()
+        try {
+            Close-WinUtilFaviconRunspacePool
+        } catch {
+        }
+    }
+}
+
 function Invoke-WinUtilFaviconFetch {
     <#
         .SYNOPSIS
-            Queues one application favicon for bounded background downloading.
+            Submits one queued application favicon for background downloading.
         .PARAMETER AppKey
             The unique application key associated with the favicon operation.
         .PARAMETER Url
@@ -204,14 +286,8 @@ function Invoke-WinUtilFaviconFetch {
         [Windows.Controls.TextBlock]$Fallback
     )
 
-    Initialize-WinUtilFaviconCircuitBreaker
     if ($sync.FaviconCircuitBreaker.IsCancellationRequested) {
         return
-    }
-
-    Initialize-WinUtilFaviconRunspacePool | Out-Null
-    if ($null -eq $sync.FaviconOperations) {
-        $sync.FaviconOperations = [hashtable]::Synchronized(@{})
     }
 
     $requestTimeoutMilliseconds = 5000
@@ -279,7 +355,6 @@ function Invoke-WinUtilFaviconFetch {
     try {
         $sync.FaviconOperations[$AppKey] = $operation
         $operation.Handle = $powershell.BeginInvoke()
-        Start-WinUtilFaviconPolling
     } catch {
         if ($operation -and [object]::ReferenceEquals($sync.FaviconOperations[$AppKey], $operation)) {
             [void]$sync.FaviconOperations.Remove($AppKey)

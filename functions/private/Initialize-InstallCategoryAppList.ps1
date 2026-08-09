@@ -26,6 +26,7 @@ function Initialize-InstallCategoryAppList {
             $appsByCategory[$category] += $appKey
         }
         $sync.InstallAppRenderQueue = [System.Collections.Queue]::new()
+        $sync.FaviconQueue = [System.Collections.Queue]::new()
 
         foreach ($category in $($appsByCategory.Keys | Sort-Object)) {
             # Create a container for category label + apps

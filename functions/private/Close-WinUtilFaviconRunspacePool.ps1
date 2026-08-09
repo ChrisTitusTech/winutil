@@ -16,6 +16,11 @@ function Close-WinUtilFaviconRunspacePool {
         $sync.Remove("FaviconTimer")
     }
 
+    if ($sync.ContainsKey("FaviconQueue") -and $null -ne $sync.FaviconQueue) {
+        $sync.FaviconQueue.Clear()
+        $sync.Remove("FaviconQueue")
+    }
+
     if ($sync.FaviconOperations) {
         foreach ($operation in @($sync.FaviconOperations.Values)) {
             try {

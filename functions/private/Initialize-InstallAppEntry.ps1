@@ -117,13 +117,16 @@ function Initialize-InstallAppEntry {
         # Add the border to the corresponding Category
         $TargetElement.Children.Add($border) | Out-Null
         if ($faviconUrl) {
-            try {
-                Invoke-WinUtilFaviconFetch -AppKey $appKey -Url $faviconUrl -TargetImage $logo -Fallback $fallback
-            } catch {
-                # Favicon loading is optional; keep the fallback visible if setup fails.
-                $logo.Visibility = [Windows.Visibility]::Collapsed
-                $fallback.Visibility = [Windows.Visibility]::Visible
+            if ($null -eq $sync.FaviconQueue) {
+                $sync.FaviconQueue = [System.Collections.Queue]::new()
             }
+
+            $sync.FaviconQueue.Enqueue([pscustomobject]@{
+                AppKey      = $appKey
+                Url         = $faviconUrl
+                TargetImage = $logo
+                Fallback    = $fallback
+            })
         }
         return $checkbox
     }
