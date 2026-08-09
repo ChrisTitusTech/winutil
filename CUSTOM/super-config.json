@@ -2,10 +2,12 @@
   "WPFInstall": [
     "WPFInstall7zip",
     "WPFInstallautoruns",
+    "WPFInstallcinebenchr23",
     "WPFInstalldiscord",
     "WPFInstalldotnet6",
     "WPFInstalldotnet8",
     "WPFInstalldotnet9",
+    "WPFInstalldotnet10",
     "WPFInstalldropbox",
     "WPFInstallgsudo",
     "WPFInstallitunes",
@@ -13,13 +15,14 @@
     "WPFInstallnotepadplus",
     "WPFInstallobsidian",
     "WPFInstallpowertoys",
+    "WPFInstallprotonmail",
     "WPFInstallprotonvpn",
     "WPFInstallrevo",
     "WPFInstallstartallback",
     "WPFInstallsteam",
     "WPFInstallvlc",
     "WPFInstallvscode",
-    "WPFInstallzen-browser"
+    "WPFInstallZenBrowser"
   ],
   "WPFTweaks": [
     "WPFAppxMicrosoft_WindowsFeedbackHub",
