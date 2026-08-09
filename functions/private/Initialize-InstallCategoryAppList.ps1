@@ -62,6 +62,11 @@ function Initialize-InstallCategoryAppList {
                     # The WrapPanel is the second child
                     $wrapPanel = $categoryContainer.Children[1]
 
+                    # An explicit click wins over anything filtering expanded automatically
+                    if ($sync.AppCategoryAutoExpanded) {
+                        $sync.AppCategoryAutoExpanded.Remove(($categoryToggle.Content -replace '^[+-] ', ''))
+                    }
+
                     # Toggle visibility
                     if ($wrapPanel.Visibility -eq [Windows.Visibility]::Visible) {
                         $wrapPanel.Visibility = [Windows.Visibility]::Collapsed

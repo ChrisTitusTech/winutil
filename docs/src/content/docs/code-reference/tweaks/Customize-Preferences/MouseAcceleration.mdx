@@ -1,0 +1,51 @@
+---
+title: "Mouse Acceleration"
+description: "Makes it so Cursor movement is affected by the speed of your physical mouse movements."
+editUrl: false
+---
+
+:::note
+This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
+:::
+
+```json title="config/tweaks.json"
+  "WPFToggleMouseAcceleration": {
+    "Content": "Mouse Acceleration",
+    "Description": "Makes it so Cursor movement is affected by the speed of your physical mouse movements.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Mouse",
+        "Name": "MouseSpeed",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "true"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Mouse",
+        "Name": "MouseThreshold1",
+        "Value": "6",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "true"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Mouse",
+        "Name": "MouseThreshold2",
+        "Value": "10",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "true"
+      }
+    ],
+  }
+```
+
+## Registry Changes
+
+Applications and System Components store and retrieve configuration data to modify Windows settings, so we can use the registry to change many settings in one place.
+
+You can find information about the registry on [Wikipedia](https://en.wikipedia.org/wiki/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).

@@ -1,0 +1,127 @@
+---
+// Feature card with small corner brackets instead of a shadow/colored border.
+import { Icon } from '@astrojs/starlight/components';
+import type { ComponentProps } from 'astro/types';
+
+interface Props {
+	icon: ComponentProps<typeof Icon>['name'];
+	title: string;
+}
+
+const { icon, title } = Astro.props;
+---
+
+<div class="wu-corner-card">
+	{/* Corner brackets decoration. */}
+	<span class="wu-corner-marks" aria-hidden="true">
+		<span class="mark top-left" /><span class="mark top-right" /><span class="mark bottom-left" /><span
+			class="mark bottom-right"
+		/>
+	</span>
+	{/* Icon badge + heading + description. */}
+	<div class="wu-corner-card-icon">
+		<Icon name={icon} size="1.25rem" />
+	</div>
+	<h3><slot name="title">{title}</slot></h3>
+	<div class="wu-corner-card-desc"><slot /></div>
+</div>
+
+<style>
+	@layer starlight.core {
+		.wu-corner-card {
+			position: relative;
+			display: flex;
+			flex-direction: column;
+			gap: 0.75rem;
+			padding: 1.5rem;
+			border: 1px solid var(--sl-color-hairline-light);
+			background-color: var(--sl-color-bg);
+		}
+
+		/* Corner brackets decoration (four small L-shaped marks). */
+		.wu-corner-marks {
+			position: absolute;
+			inset: 0;
+			pointer-events: none;
+			opacity: 0.5;
+		}
+		.mark {
+			position: absolute;
+			background: var(--sl-color-gray-4);
+		}
+		.mark.top-left,
+		.mark.top-right {
+			top: -1px;
+			height: 1px;
+			width: 0.9rem;
+		}
+		.mark.bottom-left,
+		.mark.bottom-right {
+			bottom: -1px;
+			height: 1px;
+			width: 0.9rem;
+		}
+		.mark.top-left,
+		.mark.bottom-left {
+			left: -1px;
+		}
+		.mark.top-right,
+		.mark.bottom-right {
+			right: -1px;
+		}
+		.mark.top-left::after,
+		.mark.top-right::after,
+		.mark.bottom-left::after,
+		.mark.bottom-right::after {
+			content: '';
+			position: absolute;
+			background: var(--sl-color-gray-4);
+			width: 1px;
+			height: 0.9rem;
+		}
+		.mark.top-left::after,
+		.mark.top-right::after {
+			top: 0;
+		}
+		.mark.bottom-left::after,
+		.mark.bottom-right::after {
+			bottom: 0;
+		}
+		.mark.top-left::after,
+		.mark.bottom-left::after {
+			left: 0;
+		}
+		.mark.top-right::after,
+		.mark.bottom-right::after {
+			right: 0;
+		}
+
+		/* Icon badge + heading + description. */
+		.wu-corner-card-icon {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 2.5rem;
+			height: 2.5rem;
+			border-radius: var(--wu-radius-sm);
+			background-color: var(--sl-color-gray-6);
+			color: var(--sl-color-accent);
+		}
+
+		.wu-corner-card h3 {
+			margin: 0;
+			font-size: var(--sl-text-lg);
+			font-weight: 600;
+			color: var(--sl-color-white);
+		}
+
+		.wu-corner-card-desc {
+			font-size: var(--sl-text-sm);
+			line-height: var(--sl-line-height);
+			color: var(--sl-color-gray-3);
+		}
+		.wu-corner-card-desc :global(p) {
+			margin: 0;
+		}
+	}
+</style>

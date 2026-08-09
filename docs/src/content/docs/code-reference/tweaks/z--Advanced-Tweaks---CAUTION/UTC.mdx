@@ -1,0 +1,33 @@
+---
+title: "Date & Time - Set Time to UTC"
+description: "Essential for computers that are dual booting. Fixes the time sync with Linux systems."
+editUrl: false
+---
+
+:::note
+This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
+:::
+
+```json title="config/tweaks.json"
+  "WPFTweaksUTC": {
+    "Content": "Date & Time - Set Time to UTC",
+    "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux systems.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
+        "Name": "RealTimeIsUniversal",
+        "Value": "1",
+        "Type": "QWord",
+        "OriginalValue": "0"
+      }
+    ],
+  }
+```
+
+## Registry Changes
+
+Applications and System Components store and retrieve configuration data to modify Windows settings, so we can use the registry to change many settings in one place.
+
+You can find information about the registry on [Wikipedia](https://en.wikipedia.org/wiki/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).

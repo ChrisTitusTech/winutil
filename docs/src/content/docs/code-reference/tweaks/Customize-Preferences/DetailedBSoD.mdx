@@ -1,0 +1,43 @@
+---
+title: "BSoD Verbose Mode"
+description: "Gives more information when you blue screen."
+editUrl: false
+---
+
+:::note
+This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
+:::
+
+```json title="config/tweaks.json"
+  "WPFToggleDetailedBSoD": {
+    "Content": "BSoD Verbose Mode",
+    "Description": "Gives more information when you blue screen.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\CrashControl",
+        "Name": "DisplayParameters",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\CrashControl",
+        "Name": "DisableEmoticon",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "false"
+      }
+    ],
+  }
+```
+
+## Registry Changes
+
+Applications and System Components store and retrieve configuration data to modify Windows settings, so we can use the registry to change many settings in one place.
+
+You can find information about the registry on [Wikipedia](https://en.wikipedia.org/wiki/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).

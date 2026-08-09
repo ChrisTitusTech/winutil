@@ -1,0 +1,24 @@
+---
+title: "Disk Cleanup - Run"
+description: "Runs Disk Cleanup on Drive C: and removes old Windows Updates."
+editUrl: false
+---
+
+:::note
+This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
+:::
+
+```json title="config/tweaks.json"
+  "WPFTweaksDiskCleanup": {
+    "Content": "Disk Cleanup - Run",
+    "Description": "Runs Disk Cleanup on Drive C: and removes old Windows Updates.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "InvokeScript": [
+      "
+      cleanmgr.exe /d C: /VERYLOWDISK
+      Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
+      "
+    ],
+  }
+```

@@ -1,0 +1,321 @@
+---
+title: Frequently Asked Questions
+description: Common questions about installing, running, and troubleshooting WinUtil.
+---
+
+## General questions
+
+### Is Windows 10 still supported?
+
+No. Windows 10 is no longer supported by WinUtil because it reached the end of support on **October 14, 2025**. WinUtil is focused on Windows 11.
+
+### How do I uninstall WinUtil?
+
+You do not need to uninstall WinUtil. Because it runs as a PowerShell script, it is loaded into memory only while it is open. Once you close it, it is removed from memory and does not remain installed on your system.
+
+### Is WinUtil safe to use?
+
+Yes, WinUtil is open source, and the code is publicly available on GitHub. Thousands of users run it daily. However, like any system modification tool, you should:
+
+- Run it as Administrator (required)
+- Create a restore point before major changes
+- Understand what tweaks you're applying
+- Run only from the [official source](https://github.com/ChrisTitusTech/winutil/)
+
+### Do I need to keep running WinUtil?
+
+No. Once you've applied tweaks or installed applications, you can close WinUtil. Changes persist after closing. You only need to run WinUtil again when you want to make additional changes or undo tweaks.
+
+### Does WinUtil require internet access?
+
+- **For downloading**: Yes, installing applications requires the internet
+- **For tweaks**: No, most tweaks work offline
+- **Initial run**: Yes, to run the latest script
+
+### How often is WinUtil updated?
+
+WinUtil is actively maintained with frequent updates. New features, bug fixes, and application additions are released regularly. The script auto-downloads the latest version each time you run it.
+
+## Installation & running
+
+### How do I run WinUtil?
+
+1. Open PowerShell as Administrator
+2. Run: `irm "https://christitus.com/win" | iex`
+3. Wait for the GUI to appear
+
+### Why do I need Administrator rights?
+
+WinUtil makes system-level changes (registry edits, service modifications, software installation) that require elevated permissions. Without admin rights, most features won't work.
+
+### The script won't download. What do I do?
+
+Try these solutions in order:
+
+1. **Use the direct GitHub link**:
+
+   ```powershell
+   irm https://github.com/ChrisTitusTech/winutil/releases/latest/download/Winutil.ps1 | iex
+   ```
+
+2. **Force TLS 1.2**:
+
+   ```powershell
+   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+   irm "https://christitus.com/win" | iex
+   ```
+
+   :::note
+   On Windows 11, you usually do not need the TLS 1.2 command. Use it only if you encounter download or security protocol errors.
+   :::
+
+3. **Change DNS** to Cloudflare (1.1.1.1) or Google (8.8.8.8)
+4. **Use a VPN** if GitHub is blocked in your region
+
+### I get an "Execution Policy" error. How do I fix it?
+
+Run this command first to allow script execution:
+
+```powershell
+Set-ExecutionPolicy Unrestricted -Scope Process -Force
+irm "https://christitus.com/win" | iex
+```
+
+This only affects the current PowerShell session and is safe.
+
+## Tweaks & modifications
+
+### I applied a tweak and now something doesn't work. What do I do?
+
+If you applied a tweak and it breaks something, you can revert it:
+
+1. Open WinUtil again
+2. Go to the **Tweaks** tab
+3. Select the same tweak you applied
+4. Click **Undo Selected Tweaks**
+5. The system will revert to the previous state
+
+Alternatively, use System Restore if you created a restore point.
+
+### Which tweaks are safe to apply?
+
+**Safe for everyone (Essential Tweaks)**:
+
+- Disable Telemetry
+- Disable Activity History
+- Disable Location Tracking
+- Delete Temporary Files
+- Run Disk Cleanup
+- Create Restore Point
+
+**Advanced Tweaks** should only be run by advanced users.
+
+### Will tweaks survive Windows Updates?
+
+Most tweaks persist through updates, but some may be reset by major Windows feature updates. You may need to reapply certain tweaks afterwards.
+
+### Can I create my own tweak presets?
+
+Currently, WinUtil uses predefined presets (Standard, Minimal). Custom presets aren't directly supported in the GUI, but you can script your preferred configuration.
+
+### What's the difference between Essential and Advanced tweaks?
+
+- **Essential Tweaks**: Safe for most users, improve performance/privacy with minimal risk
+- **Advanced Tweaks**: More aggressive changes that may break functionality or compatibility. Use with caution.
+
+## Application installation
+
+### How does WinUtil install applications?
+
+WinUtil uses Windows Package Manager (WinGet) and Chocolatey to automate installations. It downloads applications from official sources and installs them silently without bloatware.
+
+### Can I install multiple applications at once?
+
+Yes! Check the boxes for all applications you want, then click "Install Selected". They'll install sequentially.
+
+### WinGet isn't working. How do I fix it?
+
+1. Go to the **Config** tab
+2. Find the **Fixes** section
+3. Click **WinGet Reinstall**
+4. Wait for completion
+5. Try installing applications again
+
+### Do installed applications have bloatware or bundled software?
+
+No. WinGet and Chocolatey install clean versions of applications without bundled offers, toolbars, or bloatware.
+
+### Can I uninstall applications through WinUtil?
+
+WinUtil primarily focuses on installing and managing applications rather than providing a full GUI for uninstalling every program. To remove applications you can:
+
+- Use Windows Settings > Apps > Installed apps to uninstall programs.
+- Use package manager commands in PowerShell (for example `winget uninstall <package>` or `choco uninstall <package>`).
+- Some packages installed by WinUtil (AppX/MSIX) include removal helpers; check the app entry or use WinUtil's remove helpers when available.
+
+### Will installed apps auto-update?
+
+Applications with built-in update mechanisms will auto-update. You can also update them via WinGet/Chocolatey commands or through WinUtil's "Upgrade Selected" feature.
+
+## Updates & maintenance
+
+### Should I disable Windows Updates?
+
+Generally, **no**. Security updates are important. However, you might:
+
+- Use "Security Updates Only" to avoid feature updates
+- Pause updates temporarily for stability
+- Disable only during critical work periods
+
+### How do I re-enable updates after disabling them?
+
+1. Open WinUtil
+2. Go to the **Updates** tab
+3. Click **Default Updates**
+4. Updates will resume normally
+
+### What's the difference between "Security Updates Only" and "Disable Updates"?
+
+- **Security Updates Only**: Installs critical security patches, blocks feature updates (major versions)
+- **Disable Updates**: Blocks ALL updates including security (not recommended)
+
+## Troubleshooting
+
+### WinUtil won't open after running the command
+
+Possible causes:
+
+1. **Antivirus blocking**: Add PowerShell exception
+2. **Not run as Admin**: Restart PowerShell as Administrator
+3. **Corrupted download**: Close PowerShell, reopen, try again
+4. **Windows Defender**: Allow the script
+
+### My antivirus flags WinUtil as malicious
+
+This is a false positive. WinUtil makes system changes that antivirus programs may flag. The code is open source and audited. Add an exception if needed.
+
+### An application failed to install
+
+Troubleshooting steps:
+
+1. Check your internet connection
+2. Try installing just that one application
+3. Review error messages in the output panel
+4. Check if the antivirus is blocking
+5. Try the WinGet Reinstall fix
+
+### Network tweaks broke my internet connection
+
+1. Open WinUtil
+2. Go to **Config** > **Fixes**
+3. Click **Reset Network**
+4. Restart your computer
+5. Connection should be restored
+
+### I can't access certain Windows features after applying tweaks
+
+Undo the tweaks that might have affected those features:
+
+1. Reopen WinUtil
+2. Select the tweaks you applied
+3. Click **Undo Selected Tweaks**
+
+If that doesn't work, use System Restore to revert to a previous state.
+
+## Advanced topics
+
+### Can I run WinUtil on Windows Server?
+
+Yes, WinUtil works on Windows Server editions, though some features may not be applicable or may behave differently.
+
+### Does WinUtil work with Windows LTSC?
+
+Yes, WinUtil works with Windows 10/11 LTSC editions. Some applications may not be available depending on your configuration.
+
+### Can I use WinUtil in a corporate/enterprise environment?
+
+Yes, but check your organization's policies first. Some tweaks may conflict with Group Policy or other corporate requirements.
+
+### How do I automate WinUtil for multiple PCs?
+
+See the [Automation Guide](/guides/automation/) for details on:
+
+- Configuration files
+- PowerShell parameters
+- Batch deployment
+- Silent installation
+
+### Can I contribute to WinUtil?
+
+Yes! Contributions are welcome:
+
+- Report bugs on GitHub Issues
+- Submit pull requests for fixes/features
+- Improve documentation
+- Help others in Discord
+
+See the [Contributing Guide](/contributing/) for details.
+
+## Privacy & security
+
+### Does WinUtil collect any data?
+
+No, WinUtil itself doesn't collect or transmit any user data. It's a local PowerShell script.
+
+### What telemetry does the Disable Telemetry tweak block?
+
+It disables:
+
+- Windows diagnostic data collection
+- Activity history tracking
+- Feedback requests
+- Usage statistics
+- Error reporting (optional)
+
+### Will removing Microsoft Store affect security updates?
+
+No, Windows security updates are independent of the Microsoft Store.
+
+## Performance
+
+### Will WinUtil make my PC faster?
+
+Tweaks can improve performance by:
+
+- Reducing background processes
+- Disabling unnecessary services
+- Cleaning temporary files
+- Optimizing startup programs
+
+Results may vary depending on your system.
+
+### What's the best preset for gaming?
+
+Use the **Desktop** preset, then additionally apply:
+
+- Disable GameDVR
+- Ultimate Performance power plan
+- Disable full-screen optimizations (Advanced)
+- Set display for performance (Advanced)
+
+### How much RAM does WinUtil use?
+
+WinUtil itself uses about 50-100 MB while running. Once closed, it is removed from memory.
+
+## Error messages
+
+### "Access Denied" errors
+
+- Ensure PowerShell is running as Administrator
+- Check if the antivirus is blocking changes
+- Verify you have ownership of files/registry keys
+
+## Still need help?
+
+Can't find your answer? Try these resources:
+
+- **[Known Issues](/knownissues/)** — Check if it's a known problem
+- **[User Guide](/guides/getting-started/)** — Comprehensive documentation
+- **[Discord Community](https://discord.gg/RUbZUZyByQ)** — Get help from other users
+- **[GitHub Issues](https://github.com/ChrisTitusTech/winutil/issues)** — Report bugs
+- **[YouTube Tutorial](https://www.youtube.com/watch?v=6UQZ5oQg8XA)** — Video walkthrough

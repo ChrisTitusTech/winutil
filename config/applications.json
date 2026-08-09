@@ -18,7 +18,7 @@
         "foss": true
     },
     "adobe": {
-        "category": "Multimedia Tools",
+        "category": "Document",
         "choco": "adobereader",
         "content": "Adobe Acrobat Reader",
         "description": "Adobe Acrobat Reader is a free PDF viewer with essential features for viewing, printing, and annotating PDF documents.",
@@ -123,6 +123,15 @@
         "description": "Brave is a privacy-focused web browser that blocks ads and trackers, offering a faster and safer browsing experience.",
         "link": "https://www.brave.com",
         "winget": "Brave.Brave",
+        "foss": true
+    },
+    "bruno": {
+        "category": "Development",
+        "choco": "bruno",
+        "content": "Bruno",
+        "description": "Bruno is a local-first API client that stores collections as plain text files for version control and collaboration.",
+        "link": "https://www.usebruno.com/",
+        "winget": "Bruno.Bruno",
         "foss": true
     },
     "bulkcrapuninstaller": {
@@ -323,6 +332,15 @@
         "winget": "SpikeHD.Dorion",
         "foss": true
     },
+    "dockerdesktop": {
+        "category": "Development",
+        "choco": "docker-desktop",
+        "content": "Docker Desktop",
+        "description": "Docker Desktop provides a local environment for building, running, and testing containerized applications on Windows.",
+        "link": "https://www.docker.com/products/docker-desktop/",
+        "winget": "Docker.DockerDesktop",
+        "foss": false
+    },
     "dotnet6": {
         "category": "Microsoft Tools",
         "choco": "dotnet-6.0-runtime",
@@ -458,6 +476,33 @@
         "winget": "flux.flux",
         "foss": false
     },
+    "foobar": {
+        "category": "Multimedia Tools",
+        "choco": "foobar2000",
+        "content": "foobar2000 (Music Player)",
+        "description": "foobar2000 is a highly customizable and extensible music player for Windows, known for its modular design and advanced features.",
+        "link": "https://www.foobar2000.org/",
+        "winget": "PeterPawlowski.foobar2000",
+        "foss": false
+    },
+    "fnm": {
+        "category": "Development",
+        "choco": "fnm",
+        "content": "Fast Node Manager",
+        "description": "Fast Node Manager (fnm) is a fast, cross-platform tool for installing and switching between Node.js versions.",
+        "link": "https://github.com/Schniz/fnm",
+        "winget": "Schniz.fnm",
+        "foss": true
+    },
+    "foxpdfreader": {
+        "category": "Document",
+        "choco": "foxitreader",
+        "content": "Foxit PDF Reader",
+        "description": "Foxit PDF Reader is a free PDF viewer with a familiar ribbon-style interface.",
+        "link": "https://www.foxit.com/pdf-reader/",
+        "winget": "Foxit.FoxitReader",
+        "foss": false
+    },
     "geforcenow": {
         "category": "Games",
         "choco": "nvidia-geforce-now",
@@ -483,6 +528,24 @@
         "description": "Git is a distributed version control system widely used for tracking changes in source code during software development.",
         "link": "https://git-scm.com/",
         "winget": "Git.Git",
+        "foss": true
+    },
+    "gitextensions": {
+        "category": "Development",
+        "choco": "gitextensions",
+        "content": "Git Extensions",
+        "description": "Git Extensions is a graphical Git client for Windows with repository, history, and commit management tools.",
+        "link": "https://gitextensions.github.io/",
+        "winget": "GitExtensionsTeam.GitExtensions",
+        "foss": true
+    },
+    "githubcli": {
+        "category": "Development",
+        "choco": "gh",
+        "content": "GitHub CLI",
+        "description": "GitHub CLI brings pull requests, issues, releases, and other GitHub workflows to the terminal.",
+        "link": "https://cli.github.com/",
+        "winget": "GitHub.cli",
         "foss": true
     },
     "githubdesktop": {
@@ -701,6 +764,15 @@
         "winget": "sylikc.JPEGView",
         "foss": true
     },
+    "joplin": {
+        "category": "Document",
+        "choco": "joplin",
+        "content": "Joplin",
+        "description": "Joplin is an open-source note-taking and to-do application with synchronization capabilities.",
+        "link": "https://joplinapp.org/",
+        "winget": "Joplin.Joplin",
+        "foss": true
+    },
     "keepassxc": {
         "category": "Utilities",
         "choco": "keepassxc",
@@ -738,7 +810,7 @@
         "foss": true
     },
     "libreoffice": {
-        "category": "Multimedia Tools",
+        "category": "Document",
         "choco": "libreoffice-fresh",
         "content": "LibreOffice",
         "description": "LibreOffice is a powerful and free office suite, compatible with other major office suites.",
@@ -771,6 +843,14 @@
         "description": "Media Player Classic Qute Theater",
         "link": "https://github.com/mpc-qt/mpc-qt",
         "winget": "mpc-qt.mpc-qt",
+        "foss": true
+    },
+    "mpv": {
+        "category": "Multimedia Tools",
+        "content": "mpv",
+        "description": "mpv is a free, open source, and cross-platform media player supporting a wide variety of media formats, codecs, and subtitle types.",
+        "link": "https://mpv.io/",
+        "winget": "shinchiro.mpv",
         "foss": true
     },
     "matrix": {
@@ -882,9 +962,9 @@
         "foss": true
     },
     "naps2": {
-        "category": "Multimedia Tools",
+        "category": "Document",
         "choco": "naps2",
-        "content": "NAPS2 (Document Scanner)",
+        "content": "NAPS2 (Scanner)",
         "description": "NAPS2 is a document scanning application that simplifies the process of creating electronic documents.",
         "link": "https://www.naps2.com/",
         "winget": "Cyanfish.NAPS2",
@@ -980,13 +1060,22 @@
         "foss": true
     },
     "obsidian": {
-        "category": "Multimedia Tools",
+        "category": "Document",
         "choco": "obsidian",
         "content": "Obsidian",
         "description": "Obsidian is a powerful note-taking and knowledge management application.",
         "link": "https://obsidian.md/",
         "winget": "Obsidian.Obsidian",
         "foss": false
+    },
+    "okular": {
+        "category": "Document",
+        "choco": "okular",
+        "content": "Okular",
+        "description": "Okular is a versatile document viewer with advanced features.",
+        "link": "https://okular.kde.org/",
+        "winget": "KDE.Okular",
+        "foss": true
     },
     "onedrive": {
         "category": "Microsoft Tools",
@@ -998,7 +1087,7 @@
         "foss": false
     },
     "onlyoffice": {
-        "category": "Multimedia Tools",
+        "category": "Document",
         "choco": "onlyoffice",
         "content": "ONLYOFFICE Desktop",
         "description": "ONLYOFFICE Desktop is a comprehensive office suite for document editing and collaboration.",
@@ -1087,6 +1176,42 @@
         "winget": "Giorgiotani.Peazip",
         "foss": true
     },
+    "pdf-xchange": {
+        "category": "Document",
+        "choco": "pdfxchangeeditor",
+        "content": "PDF-XChange Editor",
+        "description": "A comprehensive Windows-based software suite and editor for creating, viewing, editing, annotating, and signing PDF files.",
+        "link": "https://www.pdf-xchange.com/",
+        "winget": "TrackerSoftware.PDF-XChangeEditor",
+        "foss": false
+    },
+    "pdf24creator": {
+        "category": "Document",
+        "choco": "pdf24",
+        "content": "PDF24 Creator",
+        "description": "Free and easy-to-use online/desktop PDF tools that make you more productive",
+        "link": "https://tools.pdf24.org/en/creator",
+        "winget": "geeksoftwareGmbH.PDF24Creator",
+        "foss": false
+    },
+    "pdfgear": {
+        "category": "Document",
+        "choco": "pdfgear",
+        "content": "PDFgear",
+        "description": "PDFgear is a piece of full-featured PDF management software for Windows, macOS, and mobile, and it's completely free to use.",
+        "link": "https://www.pdfgear.com/",
+        "winget": "PDFgear.PDFgear",
+        "foss": false
+    },
+    "pdfsam": {
+        "category": "Document",
+        "choco": "pdfsam",
+        "content": "PDFsam Basic",
+        "description": "PDFsam Basic is a free and open-source tool for splitting, merging, and rotating PDF files.",
+        "link": "https://pdfsam.org/",
+        "winget": "PDFsam.PDFsam",
+        "foss": true
+    },
     "playnite": {
         "category": "Games",
         "choco": "playnite",
@@ -1122,6 +1247,15 @@
         "link": "https://ohmyposh.dev/",
         "winget": "JanDeDobbeleer.OhMyPosh",
         "foss": true
+    },
+    "postman": {
+        "category": "Development",
+        "choco": "postman",
+        "content": "Postman",
+        "description": "Postman is an API platform and desktop client for designing, testing, documenting, and collaborating on APIs.",
+        "link": "https://www.postman.com/downloads/",
+        "winget": "Postman.Postman",
+        "foss": false
     },
     "powershell": {
         "category": "Microsoft Tools",
@@ -1339,6 +1473,15 @@
         "winget": "WhirlwindFX.SignalRgb",
         "foss": false
     },
+    "simplenote": {
+        "category": "Document",
+        "choco": "simplenote",
+        "content": "Simplenote",
+        "description": "Simplenote is an easy way to keep notes, lists, ideas and more.",
+        "link": "https://simplenote.com/",
+        "winget": "Automattic.Simplenote",
+        "foss": true
+    },
     "simplewall": {
         "category": "Pro Tools",
         "choco": "simplewall",
@@ -1366,6 +1509,15 @@
         "winget": "StartIsBack.StartAllBack",
         "foss": false
     },
+    "starship": {
+        "category": "Development",
+        "choco": "starship",
+        "content": "Starship (Shell Prompt)",
+        "description": "Starship is a fast, customizable, cross-platform prompt for PowerShell and other shells.",
+        "link": "https://starship.rs/",
+        "winget": "Starship.Starship",
+        "foss": true
+    },
     "steam": {
         "category": "Games",
         "choco": "steam-client",
@@ -1373,6 +1525,15 @@
         "description": "Steam is a digital distribution platform for purchasing and playing video games, offering multiplayer gaming, video streaming, and more.",
         "link": "https://store.steampowered.com/about/",
         "winget": "Valve.Steam",
+        "foss": false
+    },
+    "roblox": {
+        "category": "Games",
+        "choco": "na",
+        "content": "Roblox",
+        "description": "Roblox is a platform and game creation system that allows users to create and play games developed by the community.",
+        "link": "https://www.roblox.com/",
+        "winget": "Roblox.Roblox",
         "foss": false
     },
     "sublimetext": {
@@ -1383,6 +1544,15 @@
         "link": "https://www.sublimetext.com/",
         "winget": "SublimeHQ.SublimeText.4",
         "foss": false
+    },
+    "sumatra": {
+        "category": "Document",
+        "choco": "sumatrapdf",
+        "content": "Sumatra PDF",
+        "description": "Sumatra PDF is a lightweight and fast PDF viewer with minimalistic design.",
+        "link": "https://www.sumatrapdfreader.org/free-pdf-reader.html",
+        "winget": "SumatraPDF.SumatraPDF",
+        "foss": true
     },
     "sunshine": {
         "category": "Selfhosted Tools",
@@ -1427,6 +1597,15 @@
         "description": "TEAMSPEAK. YOUR TEAM. YOUR RULES. Use crystal clear sound to communicate with your teammates cross-platform with military-grade security, lag-free performance & unparalleled reliability and uptime.",
         "link": "https://www.teamspeak.com/",
         "winget": "TeamSpeakSystems.TeamSpeakClient",
+        "foss": false
+    },
+    "teamspeak6": {
+        "category": "Communications",
+        "choco": "na",
+        "content": "TeamSpeak 6",
+        "description": "TEAMSPEAK. YOUR TEAM. YOUR RULES. Use crystal clear sound to communicate with your teammates cross-platform with military-grade security, lag-free performance & unparalleled reliability and uptime.",
+        "link": "https://www.teamspeak.com/",
+        "winget": "TeamSpeakSystems.TeamSpeakClient.Beta.6",
         "foss": false
     },
     "telegram": {
@@ -1526,6 +1705,15 @@
         "description": "Unity is a powerful game development platform for creating 2D, 3D, augmented reality, and virtual reality games.",
         "link": "https://unity.com/",
         "winget": "Unity.UnityHub",
+        "foss": false
+    },
+    "vagrant": {
+        "category": "Development",
+        "choco": "vagrant",
+        "content": "Vagrant",
+        "description": "Vagrant builds and manages reproducible virtual machine development environments from declarative configuration.",
+        "link": "https://developer.hashicorp.com/vagrant",
+        "winget": "Hashicorp.Vagrant",
         "foss": false
     },
     "everything": {
@@ -1726,6 +1914,15 @@
         "winget": "MHNexus.HxD",
         "foss": false
     },
+    "xournal": {
+        "category": "Document",
+        "choco": "xournalplusplus",
+        "content": "Xournal++",
+        "description": "Xournal++ is an open-source handwriting notetaking software with PDF annotation capabilities.",
+        "link": "https://xournalpp.github.io/",
+        "winget": "Xournal++.Xournal++",
+        "foss": true
+    },
     "yarn": {
         "category": "Development",
         "choco": "yarn",
@@ -1805,6 +2002,15 @@
         "description": "Zed is a modern, high-performance code editor designed from the ground up for speed and collaboration.",
         "link": "https://zed.dev/",
         "winget": "ZedIndustries.Zed",
+        "foss": true
+    },
+    "zotero": {
+        "category": "Document",
+        "choco": "zotero",
+        "content": "Zotero",
+        "description": "Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share your research materials.",
+        "link": "https://www.zotero.org/",
+        "winget": "DigitalScholar.Zotero",
         "foss": true
     },
     "deskflow": {
