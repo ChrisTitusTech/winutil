@@ -49,7 +49,7 @@ function Invoke-WPFUIElements {
     # Add ColumnDefinitions to the target Grid
     for ($i = 0; $i -lt $columncount; $i++) {
         $colDef = New-Object Windows.Controls.ColumnDefinition
-        $colDef.Width = New-Object Windows.GridLength(1, [Windows.GridUnitType]::Star)
+        $colDef.Width = New-Object System.Windows.GridLength([double]1, [System.Windows.GridUnitType]::Star)
         $targetGrid.ColumnDefinitions.Add($colDef) | Out-Null
     }
 
@@ -111,22 +111,39 @@ function Invoke-WPFUIElements {
         $dockPanelContainer = New-Object Windows.Controls.DockPanel
         $border.Child = $dockPanelContainer
 
-        # Create a ScrollViewer to make panel contents scrollable and accessible
-        $scrollViewer = New-Object Windows.Controls.ScrollViewer
-        $scrollViewer.VerticalScrollBarVisibility = "Auto"
-        $scrollViewer.HorizontalScrollBarVisibility = "Disabled"
-        $scrollViewer.HorizontalAlignment = 'Stretch'
-        $scrollViewer.VerticalAlignment = 'Stretch'
-
         # Create a StackPanel for application content controls
         $stackPanelContainer = New-Object Windows.Controls.StackPanel
         $stackPanelContainer.HorizontalAlignment = 'Stretch'
         $stackPanelContainer.VerticalAlignment = 'Stretch'
-        $scrollViewer.Content = $stackPanelContainer
 
-        # Add the ScrollViewer directly to the DockPanel
-        [Windows.Controls.DockPanel]::SetDock($scrollViewer, [Windows.Controls.Dock]::Bottom)
-        $dockPanelContainer.Children.Add($scrollViewer) | Out-Null
+        # Check if the target grid (or any ancestor) is already inside a ScrollViewer
+        $hasOuterScrollViewer = $false
+        $currentElement = $targetGrid
+        while ($null -ne $currentElement) {
+            if ($currentElement -is [System.Windows.Controls.ScrollViewer] -or $currentElement.GetType().Name -eq "ScrollViewer") {
+                $hasOuterScrollViewer = $true
+                break
+            }
+            $currentElement = $currentElement.Parent
+        }
+
+        if ($hasOuterScrollViewer) {
+            # Add StackPanel directly to DockPanel without nesting a ScrollViewer
+            [Windows.Controls.DockPanel]::SetDock($stackPanelContainer, [Windows.Controls.Dock]::Bottom)
+            $dockPanelContainer.Children.Add($stackPanelContainer) | Out-Null
+        }
+        else {
+            # Create a ScrollViewer for targets that do not already have an outer ScrollViewer
+            $scrollViewer = New-Object Windows.Controls.ScrollViewer
+            $scrollViewer.VerticalScrollBarVisibility = "Auto"
+            $scrollViewer.HorizontalScrollBarVisibility = "Disabled"
+            $scrollViewer.HorizontalAlignment = 'Stretch'
+            $scrollViewer.VerticalAlignment = 'Stretch'
+            $scrollViewer.Content = $stackPanelContainer
+
+            [Windows.Controls.DockPanel]::SetDock($scrollViewer, [Windows.Controls.Dock]::Bottom)
+            $dockPanelContainer.Children.Add($scrollViewer) | Out-Null
+        }
         $panelcount++
 
         # Now proceed with adding category labels and entries to $stackPanelContainer

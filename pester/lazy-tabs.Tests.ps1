@@ -121,4 +121,11 @@ Describe "Startup lazy tab wiring" {
         $rendererScript | Should -Match '(?s)if \(\$entryInfo\.Link\).*\$textBlock\.Add_MouseUp\(\{.*Start-Process \$Sender\.ToolTip -ErrorAction Stop'
         $mainScript | Should -Not -Match '\.Name\.EndsWith\("Link"\)'
     }
+
+    It "checks for an existing outer ScrollViewer before nesting an inner ScrollViewer" {
+        $rendererScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIElements.ps1") -Raw
+
+        $rendererScript | Should -Match '\$hasOuterScrollViewer'
+        $rendererScript | Should -Match 'if\s*\(\$hasOuterScrollViewer\)'
+    }
 }
