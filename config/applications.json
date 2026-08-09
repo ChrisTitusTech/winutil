@@ -484,6 +484,7 @@
         "link": "https://www.foobar2000.org/",
         "winget": "PeterPawlowski.foobar2000",
         "foss": false
+    },
     "fnm": {
         "category": "Development",
         "choco": "fnm",
