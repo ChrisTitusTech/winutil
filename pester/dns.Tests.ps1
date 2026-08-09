@@ -10,7 +10,8 @@ BeforeAll {
         param(
             $InterfaceIndex,
             $ServerAddresses,
-            [switch]$ResetServerAddresses
+            [switch]$ResetServerAddresses,
+            $ErrorAction
         )
     }
     function netsh {
@@ -252,8 +253,8 @@ Describe "Set-WinUtilDNS" {
         Should -Invoke -CommandName Remove-DnsClientDohServerAddress -Times 4 -Exactly
     }
 
-    It "catches DNS setter failures so the tweak runspace can continue" {
-        Mock Set-DnsClientServerAddress { throw "DNS failed" }
+    It "catches non-terminating DNS setter failures so the tweak runspace can continue" {
+        Mock Set-DnsClientServerAddress { Write-Error "DNS failed" -ErrorAction $ErrorAction }
 
         $result = Set-WinUtilDNS -DNSProvider "Cloudflare"
 
