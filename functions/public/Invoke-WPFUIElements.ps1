@@ -271,7 +271,11 @@ function Invoke-WPFUIElements {
                         [System.Windows.Automation.AutomationProperties]::SetName($comboBox, $entryInfo.Content)
 
                         $comboItems = if ($entryInfo.ComboItems -is [string]) {
-                            $entryInfo.ComboItems -split " "
+                            if ($entryInfo.ComboItems.Contains("|")) {
+                                $entryInfo.ComboItems -split "\|"
+                            } else {
+                                $entryInfo.ComboItems -split " "
+                            }
                         } else {
                             @($entryInfo.ComboItems)
                         }

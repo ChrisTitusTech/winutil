@@ -1465,11 +1465,7 @@
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Combobox",
-    "ComboItems": [
-      "Enabled",
-      "Disabled (Compatibility)",
-      "Fully Disabled"
-    ],
+    "ComboItems": "Enabled|Disabled (Compatibility)|Fully Disabled",
     "ComboDescriptions": {
       "Enabled": "Uses Windows' default overlay behavior.",
       "Disabled (Compatibility)": "Disables MPO using OverlayTestMode=5, the less aggressive compatibility method.",

@@ -439,7 +439,15 @@ Describe "UI-rendered config entries" {
                 }
                 $statefulRegistry = @($entry.Value.registry | Where-Object Values)
                 if ($statefulRegistry.Count -gt 0) {
-                    $comboItems = @($entry.Value.ComboItems)
+                    $comboItems = if ($entry.Value.ComboItems -is [string]) {
+                        if ($entry.Value.ComboItems.Contains("|")) {
+                            @($entry.Value.ComboItems -split "\|")
+                        } else {
+                            @($entry.Value.ComboItems -split " ")
+                        }
+                    } else {
+                        @($entry.Value.ComboItems)
+                    }
                     if ($statefulRegistry.Count -ne @($entry.Value.registry).Count) {
                         $invalidEntries.Add("$($entry.Name) registry states must all use Values")
                     } else {

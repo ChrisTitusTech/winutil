@@ -18,9 +18,11 @@ BeforeAll {
 Describe "Multiplane Overlay configuration" {
     It "keeps every state and registry action in tweaks.json" {
         $script:config.WPFMultiplaneOverlay.Type | Should -Be "Combobox"
-        $script:config.WPFMultiplaneOverlay.ComboItems | Should -Be @("Enabled", "Disabled (Compatibility)", "Fully Disabled")
+        $script:config.WPFMultiplaneOverlay.ComboItems | Should -BeOfType [string]
+        $comboItems = @($script:config.WPFMultiplaneOverlay.ComboItems -split "\|")
+        $comboItems | Should -Be @("Enabled", "Disabled (Compatibility)", "Fully Disabled")
         $script:states.Count | Should -Be 2
-        $script:states[0].Values.PSObject.Properties.Name | Should -Be $script:config.WPFMultiplaneOverlay.ComboItems
+        $script:states[0].Values.PSObject.Properties.Name | Should -Be $comboItems
         $script:states[0].Values.PSObject.Properties.Value | Should -Be @("<RemoveEntry>", "5", "5")
         $script:states[1].Values.PSObject.Properties.Value | Should -Be @("<RemoveEntry>", "<RemoveEntry>", "1")
     }
