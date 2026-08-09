@@ -15,6 +15,12 @@ export default defineConfig({
 				replacesTitle: true,
 			},
 			favicon: '/favicon.svg',
+			head: [
+				{ tag: 'meta', attrs: { property: 'og:image', content: 'https://winutil.christitus.com/social-preview.png' } },
+				{ tag: 'meta', attrs: { property: 'og:image:width', content: '1200' } },
+				{ tag: 'meta', attrs: { property: 'og:image:height', content: '630' } },
+				{ tag: 'meta', attrs: { name: 'twitter:image', content: 'https://winutil.christitus.com/social-preview.png' } },
+			],
 			social: [
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/ChrisTitusTech/winutil' },
 				{ icon: 'discord', label: 'Discord', href: 'https://discord.gg/RUbZUZyByQ' },
