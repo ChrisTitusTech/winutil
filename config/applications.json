@@ -1527,6 +1527,15 @@
         "winget": "Valve.Steam",
         "foss": false
     },
+    "roblox": {
+        "category": "Games",
+        "choco": "na",
+        "content": "Roblox",
+        "description": "Roblox is a platform and game creation system that allows users to create and play games developed by the community.",
+        "link": "https://www.roblox.com/",
+        "winget": "Roblox.Roblox",
+        "foss": false
+    },
     "sublimetext": {
         "category": "Development",
         "choco": "sublimetext4",
