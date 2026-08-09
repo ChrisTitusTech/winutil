@@ -18,6 +18,21 @@ function Set-WinUtilDNS {
         return
     }
 
+    if($DNSProvider -eq "Fastest") {
+        Write-WinUtilLog -Component "DNS" -Message "Auto-detecting fastest DNS provider via latency benchmark..."
+        $benchmark = Get-WinUtilDNSBenchmark
+        $validFastest = $benchmark | Where-Object { $_.LatencyMs -lt 9999 } | Select-Object -First 1
+        if ($validFastest) {
+            $DNSProvider = $validFastest.Provider
+            Write-Host "Auto-selected fastest DNS provider: $DNSProvider ($($validFastest.LatencyMs) ms)"
+            Write-WinUtilLog -Component "DNS" -Message "Auto-selected fastest DNS provider: $DNSProvider ($($validFastest.LatencyMs) ms)"
+        } else {
+            Write-Warning "Could not measure DNS latency to any provider; keeping current network adapter DNS settings."
+            Write-WinUtilLog -Component "DNS" -Message "Benchmark timeout or all probes failed; aborting DNS change to preserve existing settings."
+            return
+        }
+    }
+
     try {
         $Adapters = Get-NetAdapter | Where-Object {$_.Status -eq "Up"}
         Write-Host "Ensuring DNS is set to $DNSProvider on the following interfaces:"
