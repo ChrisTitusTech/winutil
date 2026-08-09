@@ -440,7 +440,11 @@ Describe "UI-rendered config entries" {
                 $statefulRegistry = @($entry.Value.registry | Where-Object Values)
                 if ($statefulRegistry.Count -gt 0) {
                     $comboItems = if ($entry.Value.ComboItems -is [string]) {
-                        @($entry.Value.ComboItems -split "\|")
+                        if ($entry.Value.ComboItems.Contains("|")) {
+                            @($entry.Value.ComboItems -split "\|")
+                        } else {
+                            @($entry.Value.ComboItems -split " ")
+                        }
                     } else {
                         @($entry.Value.ComboItems)
                     }
