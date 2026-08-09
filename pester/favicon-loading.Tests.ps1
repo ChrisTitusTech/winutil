@@ -17,14 +17,10 @@ Describe "WinUtil favicon loading" {
         Get-WinUtilFaviconUrl -Link " " | Should -BeNullOrEmpty
     }
 
-    It "uses a dedicated pool capped between two and eight workers" {
+    It "uses a dedicated pool sized to the available logical processors" {
         $poolScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilFaviconRunspacePool.ps1") -Raw
 
-        $poolScript | Should -Match '\[Environment\]::ProcessorCount / 2'
-        $poolScript | Should -Match '\$minimumWorkers = 2'
-        $poolScript | Should -Match '\$maximumWorkers = 8'
-        $poolScript | Should -Match '\[Math\]::Max\(\$halfProcessors, \$minimumWorkers\)'
-        $poolScript | Should -Match '\[Math\]::Min\(\$maxThreads, \$maximumWorkers\)'
+        $poolScript | Should -Match '\$maxthreads = \[Math\]::Max\(1, \[int\]\$env:NUMBER_OF_PROCESSORS\)'
         $poolScript | Should -Match 'CreateRunspacePool'
     }
 

@@ -3,9 +3,9 @@ function Initialize-WinUtilFaviconRunspacePool {
         .SYNOPSIS
             Creates or returns the dedicated runspace pool used for favicon downloads.
         .DESCRIPTION
-            Uses half the available logical processors while keeping concurrency between
-            two and eight workers so favicon requests remain responsive without creating
-            an excessive burst of connections.
+            Uses the machine's available logical processor count, with a minimum of one
+            worker. The pool remains dedicated to favicon downloads so this work stays
+            isolated from other WinUtil runspaces.
     #>
     if ($sync.FaviconRunspace -and $sync.FaviconRunspace.RunspacePoolStateInfo.State -eq [System.Management.Automation.Runspaces.RunspacePoolState]::Opened) {
         return $sync.FaviconRunspace
@@ -26,11 +26,7 @@ function Initialize-WinUtilFaviconRunspacePool {
         }
     }
 
-    $minimumWorkers = 2
-    $maximumWorkers = 8
-    $halfProcessors = [Math]::Floor([Environment]::ProcessorCount / 2)
-    $maxThreads = [Math]::Max($halfProcessors, $minimumWorkers)
-    $maxThreads = [Math]::Min($maxThreads, $maximumWorkers)
+    $maxthreads = [Math]::Max(1, [int]$env:NUMBER_OF_PROCESSORS)
     $initialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
 
     $sync.FaviconRunspace = [runspacefactory]::CreateRunspacePool(
