@@ -149,8 +149,6 @@ The **Win11 Creator** is a specialized subsystem within Winutil that creates cus
   - Applies offline registry tweaks (hardware bypass, privacy, telemetry, OOBE)
   - Deletes telemetry scheduled task definitions
   - Pre-stages setup scripts from autounattend.xml
-  - Removes unused Windows editions
-  - Cleans component store via DISM
 
 ### Win11 Creator Data Flow
 
@@ -181,16 +179,14 @@ Invoke-WinUtilISOModify (runs in background runspace)
     │   ├─ Delete telemetry scheduled task files
     │   ├─ Pre-stage setup scripts from autounattend.xml to C:\Windows\Setup\Scripts\
     │   └─ Unload registry hives
-    ├─ DISM /Cleanup-Image /StartComponentCleanup /ResetBase (saves 300-800 MB)
     ├─ Dismount and save the modified install.wim (~10+ minutes, slowest step)
-    ├─ Export selected edition only (removes all other editions, saves 1-2 GB each)
     ├─ Dismount source ISO
     └─ Report completion, enable export options
     ↓
 Invoke-WinUtilISOExport (user chooses output)
     ├─ Option 1: Save as ISO
     │   ├─ Build bootable ISO via oscdimg.exe (BIOS/UEFI dual-boot)
-    │   └─ Output: Win11_Modified_[date].iso (2.5-3.5 GB)
+    │   └─ Output: Win11_Modified_[date].iso (close to the source ISO size)
     │
     └─ Option 2: Write to USB
         ├─ Format USB as GPT
@@ -272,7 +268,7 @@ The `Invoke-WinUtilISOScript` function applies **50+ offline registry tweaks**:
 
 - **Temporary working directory**: ~10-15 GB
 - **Original ISO**: 4-6 GB
-- **Modified ISO**: 2.5-3.5 GB
+- **Modified ISO**: close to the source ISO size
 - **Total needed**: ~25 GB for safe operation
 
 ## Data Flow
@@ -389,6 +385,8 @@ Update UI
 - `Description`: What it does
 - `category`: Essential/Advanced/Customize
 - `registry`: Registry changes to make
+- `registry[].Values`: Per-state values for a registry-backed combobox
+- `registry[].DefaultValue`: Effective value when the registry entry is absent
 - `service`: Services to change
 - `OriginalValue/State`: For undo functionality
 

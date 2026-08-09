@@ -182,7 +182,8 @@ Describe "XAML document" {
 
     It "wires the Document search chip to an existing Document category" {
         $mainScript = Get-Content -Path $script:mainScriptPath -Raw
-        $mainScript | Should -Match '\$sync\["WPFSearchChipDocument"\]\.Add_Click\(\{ Set-WinUtilAppCategoryFilter -Category "Document" \}\)'
+        $mainScript | Should -Match '@\{ Name = "WPFSearchChipDocument";\s+Category = "Document" \}'
+        $mainScript | Should -Match '\$sync\["WPFSearchChipDocument"\]\.Add_Click\(\{ Invoke-WinUtilAppCategoryChip -Chip \$this \}\)'
 
         $applications = Get-WinUtilConfigObject -Name "applications"
         $categories = @($applications.PSObject.Properties | ForEach-Object { $_.Value.category } | Sort-Object -Unique)
@@ -468,7 +469,10 @@ Describe "XAML and sync wiring" {
             "Win11ISOProcessRunning",
             "Win11ISOWorkDir",
             "Win11ISOContentsDir",
-            "Win11ISOUSBDisks"
+            "Win11ISOUSBDisks",
+            "AppCategoryChips",
+            "SelectedAppCategories",
+            "AppCategoryAutoExpanded"
         )
         $allowedNames = @($xamlNames + $generatedNames + $dynamicStateNames) | Sort-Object -Unique
         $bracketReferences = @(

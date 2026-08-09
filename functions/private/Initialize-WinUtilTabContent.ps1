@@ -36,4 +36,7 @@ function Initialize-WinUtilTabContent {
     }
 
     $sync.InitializedTabs[$TabName] = $true
+
+    # Sync freshly built controls to any selections already in $sync.selected* (import/preset).
+    Reset-WPFCheckBoxes -doToggles $true
 }

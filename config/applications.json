@@ -125,6 +125,15 @@
         "winget": "Brave.Brave",
         "foss": true
     },
+    "bruno": {
+        "category": "Development",
+        "choco": "bruno",
+        "content": "Bruno",
+        "description": "Bruno is a local-first API client that stores collections as plain text files for version control and collaboration.",
+        "link": "https://www.usebruno.com/",
+        "winget": "Bruno.Bruno",
+        "foss": true
+    },
     "bulkcrapuninstaller": {
         "category": "Utilities",
         "choco": "bulk-crap-uninstaller",
@@ -323,6 +332,15 @@
         "winget": "SpikeHD.Dorion",
         "foss": true
     },
+    "dockerdesktop": {
+        "category": "Development",
+        "choco": "docker-desktop",
+        "content": "Docker Desktop",
+        "description": "Docker Desktop provides a local environment for building, running, and testing containerized applications on Windows.",
+        "link": "https://www.docker.com/products/docker-desktop/",
+        "winget": "Docker.DockerDesktop",
+        "foss": false
+    },
     "dotnet6": {
         "category": "Microsoft Tools",
         "choco": "dotnet-6.0-runtime",
@@ -458,6 +476,24 @@
         "winget": "flux.flux",
         "foss": false
     },
+    "foobar": {
+        "category": "Multimedia Tools",
+        "choco": "foobar2000",
+        "content": "foobar2000 (Music Player)",
+        "description": "foobar2000 is a highly customizable and extensible music player for Windows, known for its modular design and advanced features.",
+        "link": "https://www.foobar2000.org/",
+        "winget": "PeterPawlowski.foobar2000",
+        "foss": false
+    },
+    "fnm": {
+        "category": "Development",
+        "choco": "fnm",
+        "content": "Fast Node Manager",
+        "description": "Fast Node Manager (fnm) is a fast, cross-platform tool for installing and switching between Node.js versions.",
+        "link": "https://github.com/Schniz/fnm",
+        "winget": "Schniz.fnm",
+        "foss": true
+    },
     "foxpdfreader": {
         "category": "Document",
         "choco": "foxitreader",
@@ -492,6 +528,24 @@
         "description": "Git is a distributed version control system widely used for tracking changes in source code during software development.",
         "link": "https://git-scm.com/",
         "winget": "Git.Git",
+        "foss": true
+    },
+    "gitextensions": {
+        "category": "Development",
+        "choco": "gitextensions",
+        "content": "Git Extensions",
+        "description": "Git Extensions is a graphical Git client for Windows with repository, history, and commit management tools.",
+        "link": "https://gitextensions.github.io/",
+        "winget": "GitExtensionsTeam.GitExtensions",
+        "foss": true
+    },
+    "githubcli": {
+        "category": "Development",
+        "choco": "gh",
+        "content": "GitHub CLI",
+        "description": "GitHub CLI brings pull requests, issues, releases, and other GitHub workflows to the terminal.",
+        "link": "https://cli.github.com/",
+        "winget": "GitHub.cli",
         "foss": true
     },
     "githubdesktop": {
@@ -789,6 +843,14 @@
         "description": "Media Player Classic Qute Theater",
         "link": "https://github.com/mpc-qt/mpc-qt",
         "winget": "mpc-qt.mpc-qt",
+        "foss": true
+    },
+    "mpv": {
+        "category": "Multimedia Tools",
+        "content": "mpv",
+        "description": "mpv is a free, open source, and cross-platform media player supporting a wide variety of media formats, codecs, and subtitle types.",
+        "link": "https://mpv.io/",
+        "winget": "shinchiro.mpv",
         "foss": true
     },
     "matrix": {
@@ -1186,6 +1248,15 @@
         "winget": "JanDeDobbeleer.OhMyPosh",
         "foss": true
     },
+    "postman": {
+        "category": "Development",
+        "choco": "postman",
+        "content": "Postman",
+        "description": "Postman is an API platform and desktop client for designing, testing, documenting, and collaborating on APIs.",
+        "link": "https://www.postman.com/downloads/",
+        "winget": "Postman.Postman",
+        "foss": false
+    },
     "powershell": {
         "category": "Microsoft Tools",
         "choco": "powershell-core",
@@ -1438,6 +1509,15 @@
         "winget": "StartIsBack.StartAllBack",
         "foss": false
     },
+    "starship": {
+        "category": "Development",
+        "choco": "starship",
+        "content": "Starship (Shell Prompt)",
+        "description": "Starship is a fast, customizable, cross-platform prompt for PowerShell and other shells.",
+        "link": "https://starship.rs/",
+        "winget": "Starship.Starship",
+        "foss": true
+    },
     "steam": {
         "category": "Games",
         "choco": "steam-client",
@@ -1445,6 +1525,15 @@
         "description": "Steam is a digital distribution platform for purchasing and playing video games, offering multiplayer gaming, video streaming, and more.",
         "link": "https://store.steampowered.com/about/",
         "winget": "Valve.Steam",
+        "foss": false
+    },
+    "roblox": {
+        "category": "Games",
+        "choco": "na",
+        "content": "Roblox",
+        "description": "Roblox is a platform and game creation system that allows users to create and play games developed by the community.",
+        "link": "https://www.roblox.com/",
+        "winget": "Roblox.Roblox",
         "foss": false
     },
     "sublimetext": {
@@ -1616,6 +1705,15 @@
         "description": "Unity is a powerful game development platform for creating 2D, 3D, augmented reality, and virtual reality games.",
         "link": "https://unity.com/",
         "winget": "Unity.UnityHub",
+        "foss": false
+    },
+    "vagrant": {
+        "category": "Development",
+        "choco": "vagrant",
+        "content": "Vagrant",
+        "description": "Vagrant builds and manages reproducible virtual machine development environments from declarative configuration.",
+        "link": "https://developer.hashicorp.com/vagrant",
+        "winget": "Hashicorp.Vagrant",
         "foss": false
     },
     "everything": {
