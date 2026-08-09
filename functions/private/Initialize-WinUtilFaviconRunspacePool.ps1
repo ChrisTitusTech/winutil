@@ -26,7 +26,7 @@ function Initialize-WinUtilFaviconRunspacePool {
         }
     }
 
-    $maxthreads = [Math]::Max(1, [int]$env:NUMBER_OF_PROCESSORS)
+    $maxThreads = [Environment]::ProcessorCount
     $initialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
 
     $sync.FaviconRunspace = [runspacefactory]::CreateRunspacePool(

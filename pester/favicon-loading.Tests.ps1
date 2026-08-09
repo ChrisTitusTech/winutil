@@ -20,7 +20,7 @@ Describe "WinUtil favicon loading" {
     It "uses a dedicated pool sized to the available logical processors" {
         $poolScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilFaviconRunspacePool.ps1") -Raw
 
-        $poolScript | Should -Match '\$maxthreads = \[Math\]::Max\(1, \[int\]\$env:NUMBER_OF_PROCESSORS\)'
+        $poolScript | Should -Match '\$maxThreads = \[Environment\]::ProcessorCount'
         $poolScript | Should -Match 'CreateRunspacePool'
     }
 
