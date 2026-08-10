@@ -33,7 +33,13 @@ function Invoke-WPFInstall {
 
         $packagesWinget = $packagesSorted['Winget']
         $packagesChoco = $packagesSorted['Choco']
-        $totalPackages = @($packagesWinget).Count + @($packagesChoco).Count
+        $packagesGithub = $packagesSorted['Github']
+        $totalPackages = @($packagesWinget).Count + @($packagesChoco).Count + @($packagesGithub).Count
+
+            if (@($packagesGithub).Count -gt 0) {
+                Install-WinUtilProgramGithub -Packages @($packagesGithub)
+                $completedPackages += @($packagesGithub).Count
+            }
         $completedPackages = 0
         $hasUI = $null -ne $sync.Form -and $null -ne $sync.Form.Dispatcher
         Write-WinUtilLog -Component "Install" -Message "Install package manager split: winget=$(@($packagesWinget).Count), choco=$(@($packagesChoco).Count)"
