@@ -424,6 +424,7 @@
         "installType": "github",
         "repo": "EmuDeck/emudeck-electron",
         "assetPattern": "EmuDeck-Setup-*.exe",
+        "runAsDesktopUser": true,
         "foss": true
     },
     "emulationstation-desktopedition": {
