@@ -21,6 +21,24 @@ function Invoke-WPFUnInstall {
         return
     }
 
+    $githubPackages = @(
+    $PackagesToUninstall | Where-Object {
+        $_.installType -eq "github"
+    }
+)
+
+    if ($githubPackages.Count -gt 0) {
+        $packageNames = $githubPackages.content -join ", "
+
+        Show-WinUtilMessage `
+            -Message "WinUtil cannot uninstall the following GitHub-release installer package(s): $packageNames.`n`nPlease uninstall them through Windows Settings > Apps > Installed apps, or use the application's own uninstaller." `
+            -Title "Manual uninstall required" `
+            -Button "OK" `
+            -Icon "Warning"
+
+        return
+    }
+
     $ButtonType = "YesNo"
     $MessageboxTitle = "Are you sure?"
     $Messageboxbody = ("This will uninstall the following applications: `n $($PackagesToUninstall | Select-Object Name, Description| Out-String)")
