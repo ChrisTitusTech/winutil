@@ -971,7 +971,7 @@
         "foss": true
     },
     "tailscale": {
-        "category": "Selfhosted Tools(?)",
+        "category": "Selfhosted Tools",
         "choco": "tailscale",
         "content": "Tailscale",
         "description": "Tailscale is a zero-config mesh VPN built on WireGuard, letting you securely connect your devices together without manual firewall or port-forwarding setup.",
