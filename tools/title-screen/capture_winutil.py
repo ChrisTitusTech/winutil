@@ -341,6 +341,7 @@ def capture_window(
     # A compatible memory DC receives the pixels rendered by PrintWindow. The
     # previously selected GDI object must be restored before deleting the bitmap.
     previous_bitmap = gdi32.SelectObject(memory_dc, bitmap)
+    bitmap_selected = True
     buffer_size = width * height * 4
     pixel_buffer = ctypes.create_string_buffer(buffer_size)
 
@@ -371,6 +372,10 @@ def capture_window(
         bitmap_info.bmiHeader.biBitCount = 32
         bitmap_info.bmiHeader.biCompression = BI_RGB
 
+        # GetDIBits requires the source bitmap not to be selected into a DC.
+        gdi32.SelectObject(memory_dc, previous_bitmap)
+        bitmap_selected = False
+
         scan_lines = gdi32.GetDIBits(
             memory_dc,
             bitmap,
@@ -387,7 +392,8 @@ def capture_window(
     finally:
         # GDI handles are process-global and are not reclaimed promptly by Python.
         # Always release them, including when PrintWindow or GetDIBits fails.
-        gdi32.SelectObject(memory_dc, previous_bitmap)
+        if bitmap_selected:
+            gdi32.SelectObject(memory_dc, previous_bitmap)
         gdi32.DeleteObject(bitmap)
         gdi32.DeleteDC(memory_dc)
         user32.ReleaseDC(hwnd, window_dc)
