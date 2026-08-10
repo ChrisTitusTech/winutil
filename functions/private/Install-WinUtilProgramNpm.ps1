@@ -28,7 +28,17 @@ Function Install-WinUtilProgramNpm {
 
         $npmVerb = if ($Action -eq "Uninstall") { "uninstall" } else { "install" }
         Write-WinUtilLog -Component "Package" -Message "$Action $name via npm ($npmPackage)"
-        $process = Start-Process -FilePath "npm" -ArgumentList @($npmVerb, "-g", $npmPackage) -NoNewWindow -Wait -PassThru
+        $process = $null
+        try {
+            $process = Start-Process -FilePath "npm" -ArgumentList @($npmVerb, "-g", $npmPackage) -NoNewWindow -Wait -PassThru
+        } catch {
+            Write-WinUtilLog -Level "ERROR" -Component "Package" -Message "Failed to run npm $npmVerb for ${name}: $_"
+            continue
+        }
+        if ($null -eq $process) {
+            Write-WinUtilLog -Level "ERROR" -Component "Package" -Message "npm $npmVerb for $name returned no process information."
+            continue
+        }
         Write-WinUtilLog -Component "Package" -Message "$name npm $($npmVerb) completed (exit code: $($process.ExitCode))"
 
         # Some npm-distributed tools need a separate step to actually start running (or set up
