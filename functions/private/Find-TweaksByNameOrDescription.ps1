@@ -36,9 +36,11 @@ function Find-TweaksByNameOrDescription {
                 if ($null -eq $categoryBorder) { continue }
                 $categoryBorder.Visibility = [Windows.Visibility]::Visible
                 if ($categoryBorder -is [Windows.Controls.Border] -and $categoryBorder.Child -is [Windows.Controls.DockPanel]) {
-                    $ic = $categoryBorder.Child.Children | Where-Object { $_ -is [Windows.Controls.ItemsControl] } | Select-Object -First 1
-                    if ($ic) {
-                        foreach ($item in $ic.Items) {
+                    $container = $categoryBorder.Child.Children | Where-Object { $_ -is [Windows.Controls.ItemsControl] -or $_ -is [Windows.Controls.StackPanel] -or $_ -is [Windows.Controls.ScrollViewer] } | Select-Object -First 1
+                    if ($container) {
+                        $targetPanel = if ($container -is [Windows.Controls.ScrollViewer]) { $container.Content } else { $container }
+                        $items = if ($targetPanel -is [Windows.Controls.ItemsControl]) { $targetPanel.Items } else { $targetPanel.Children }
+                        foreach ($item in $items) {
                             if ($null -eq $item) { continue }
                             if ($item -is [Windows.Controls.Label]) {
                                 $item.Visibility = [Windows.Visibility]::Visible
@@ -65,12 +67,15 @@ function Find-TweaksByNameOrDescription {
             if (-not ($categoryBorder -is [Windows.Controls.Border])) { continue }
             if (-not ($categoryBorder.Child -is [Windows.Controls.DockPanel])) { continue }
 
-            $ic = $categoryBorder.Child.Children | Where-Object { $_ -is [Windows.Controls.ItemsControl] } | Select-Object -First 1
-            if ($null -eq $ic) { continue }
+            $container = $categoryBorder.Child.Children | Where-Object { $_ -is [Windows.Controls.ItemsControl] -or $_ -is [Windows.Controls.StackPanel] -or $_ -is [Windows.Controls.ScrollViewer] } | Select-Object -First 1
+            if ($null -eq $container) { continue }
+
+            $targetPanel = if ($container -is [Windows.Controls.ScrollViewer]) { $container.Content } else { $container }
+            $items = if ($targetPanel -is [Windows.Controls.ItemsControl]) { $targetPanel.Items } else { $targetPanel.Children }
 
             $categoryLabel = $null
-            for ($i = 0; $i -lt $ic.Items.Count; $i++) {
-                $item = $ic.Items[$i]
+            for ($i = 0; $i -lt $items.Count; $i++) {
+                $item = $items[$i]
                 if ($null -eq $item) { continue }
 
                 if ($item -is [Windows.Controls.Label]) {
