@@ -18,9 +18,11 @@ Function Install-WinUtilProgramDirect {
             continue
         }
 
-        $ext = [IO.Path]::GetExtension($url)
-        if ([string]::IsNullOrEmpty($ext)) { $ext = ".exe" }
-        $dest = Join-Path $env:TEMP "$name$ext"
+         $urlPath = try { ([uri]$url).GetLeftPart([System.UriPartial]::Path) } catch { $url }
+         $ext = [IO.Path]::GetExtension($urlPath)
+         if ([string]::IsNullOrEmpty($ext)) { $ext = ".exe" }
+         $safeName = ($name -replace "[$([regex]::Escape([string]::Join('', [IO.Path]::GetInvalidFileNameChars())))]", '_')
+         $dest = Join-Path $env:TEMP "$safeName$ext"
 
         Write-WinUtilLog -Component "Package" -Message "Downloading $name from $url"
         try {
