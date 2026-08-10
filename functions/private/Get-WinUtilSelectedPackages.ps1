@@ -21,11 +21,13 @@ function Get-WinUtilSelectedPackages {
     $packagesWinget = [System.Collections.ArrayList]::new()
     $packagesChoco = [System.Collections.ArrayList]::new()
     $packagesGithub = [System.Collections.ArrayList]::new()
+    $packagesNpm = [System.Collections.ArrayList]::new()
 
     $packages = @{
         Winget = $packagesWinget
         Choco  = $packagesChoco
         Github = $packagesGithub
+        Npm    = $packagesNpm
     }
 
     function Add-PackageId {
@@ -48,6 +50,11 @@ function Get-WinUtilSelectedPackages {
         # GitHub installers need the entire object, not a Winget/Choco ID.
         if ($package.installType -eq "github") {
             $null = $packagesGithub.Add($package)
+            continue
+        }
+
+        if ($package.installType -eq "npm") {
+            $null = $packagesNpm.Add($package)
             continue
         }
 
