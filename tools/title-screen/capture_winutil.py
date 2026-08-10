@@ -162,6 +162,7 @@ gdi32.GetDIBits.restype = ctypes.c_int
 
 
 def _window_text(hwnd) -> str:
+    """Return the title of a top-level window."""
     length = user32.GetWindowTextLengthW(hwnd)
     buffer = ctypes.create_unicode_buffer(length + 1)
     user32.GetWindowTextW(hwnd, buffer, length + 1)
@@ -169,16 +170,19 @@ def _window_text(hwnd) -> str:
 
 
 def _window_class(hwnd) -> str:
+    """Return the Win32 class name of a top-level window."""
     buffer = ctypes.create_unicode_buffer(256)
     user32.GetClassNameW(hwnd, buffer, len(buffer))
     return buffer.value
 
 
 def _is_winutil_window(title: str, class_name: str) -> bool:
+    """Return whether a title and class identify the WinUtil WPF window."""
     return "winutil" in title.lower() and "hwndwrapper" in class_name.lower()
 
 
 def _describe_window(hwnd, title: str, class_name: str, width: int, height: int):
+    """Print the window identity, DPI scale, and physical capture size."""
     dpi = user32.GetDpiForWindow(hwnd)
     scale = dpi / 96.0 if dpi > 0 else 1.0
     print(
@@ -388,8 +392,8 @@ def capture_window(
         gdi32.DeleteDC(memory_dc)
         user32.ReleaseDC(hwnd, window_dc)
 
-    # GDI writes BGRA bytes. Declaring that raw layout lets Pillow reorder the
-    # channels while retaining the alpha byte used by the later compositor.
+    # GDI writes BGR color bytes, but BI_RGB does not define the fourth byte as
+    # alpha. Decode the channel order, then make the window capture fully opaque.
     image = Image.frombytes(
         "RGBA",
         (width, height),
@@ -397,6 +401,7 @@ def capture_window(
         "raw",
         "BGRA",
     )
+    image.putalpha(255)
     # PrintWindow can report success while returning a blank surface across an
     # integrity-level boundary, so reject all-black and all-white captures.
     extrema = image.getextrema()

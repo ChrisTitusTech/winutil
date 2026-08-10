@@ -29,6 +29,7 @@ BOTTOM_SPLIT = 0.86
 
 
 def _contains_content(pixel) -> bool:
+    """Return whether a pixel is brighter than the near-black DWM shadow."""
     return any(channel > BRIGHTNESS_THRESHOLD for channel in pixel[:3])
 
 
@@ -90,6 +91,7 @@ def _find_content_bounds(image: Image.Image) -> tuple[int, int, int, int]:
 
 
 def _apply_frame(image: Image.Image) -> Image.Image:
+    """Return a copy with the title-screen border drawn inside its bounds."""
     framed = image.copy()
     width, height = framed.size
     draw = ImageDraw.Draw(framed)
