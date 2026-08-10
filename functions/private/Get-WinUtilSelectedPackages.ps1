@@ -14,11 +14,13 @@ function Get-WinUtilSelectedPackages {
         Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" }
     }
 
+    $packagesGithub = [System.Collections.ArrayList]::new()
     $packagesWinget = [System.Collections.ArrayList]::new()
     $packagesChoco = [System.Collections.ArrayList]::new()
     $packages = @{
         Winget = $packagesWinget
         Choco = $packagesChoco
+        Github = $packagesGithub
     }
 
     function Add-PackageId {
@@ -37,6 +39,11 @@ function Get-WinUtilSelectedPackages {
     }
 
     foreach ($package in $PackageList) {
+        if ($package.installType -eq "github") {
+            $null = $packagesGithub.Add($package)
+            continue
+        }
+
         switch ($Preference) {
             "Choco" {
                 if ([string]::IsNullOrWhiteSpace([string]$package.choco) -or $package.choco -eq "na") {
