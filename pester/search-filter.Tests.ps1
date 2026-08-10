@@ -14,6 +14,21 @@ namespace Windows
         Visible,
         Collapsed
     }
+
+    public class Thickness
+    {
+        public double Left { get; set; }
+        public double Top { get; set; }
+        public double Right { get; set; }
+        public double Bottom { get; set; }
+        public Thickness(double left, double top, double right, double bottom)
+        {
+            Left = left;
+            Top = top;
+            Right = right;
+            Bottom = bottom;
+        }
+    }
 }
 "@
     }
@@ -27,24 +42,47 @@ namespace System.Windows.Controls
         public bool? IsChecked { get; set; }
     }
 
-    public class Label
-    {
-        public object Content { get; set; }
-    }
-
-    public class WrapPanel
-    {
-        public object Visibility { get; set; }
-    }
-
     public class StackPanel
     {
         public System.Collections.ArrayList Children { get; private set; }
+        public object Orientation { get; set; }
+        public object HorizontalAlignment { get; set; }
+        public object Tag { get; set; }
+        public object Margin { get; set; }
+        public object Visibility { get; set; }
 
         public StackPanel()
         {
             Children = new System.Collections.ArrayList();
         }
+    }
+
+    public class WrapPanel
+    {
+        public System.Collections.ArrayList Children { get; private set; }
+        public object Orientation { get; set; }
+        public object HorizontalAlignment { get; set; }
+        public object VerticalAlignment { get; set; }
+        public object Margin { get; set; }
+        public object Visibility { get; set; }
+        public object Tag { get; set; }
+
+        public WrapPanel()
+        {
+            Children = new System.Collections.ArrayList();
+        }
+    }
+
+    public class Label
+    {
+        public object Content { get; set; }
+        public object Tag { get; set; }
+        public object Cursor { get; set; }
+        public object HorizontalAlignment { get; set; }
+        public object Visibility { get; set; }
+
+        public void SetResourceReference(object prop, object resource) {}
+        public void Add_MouseLeftButtonUp(System.Management.Automation.ScriptBlock handler) {}
     }
 }
 "@
@@ -110,8 +148,21 @@ namespace Windows.Controls
 "@
     }
 
+    . (Join-Path $script:repoRoot "functions\private\Test-WinUtilPackageManager.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Find-WinUtilPackageManagerApps.ps1")
     . (Join-Path $script:repoRoot "functions\private\Find-AppsByNameOrDescription.ps1")
     . (Join-Path $script:repoRoot "functions\private\Find-TweaksByNameOrDescription.ps1")
+
+    function global:Invoke-WPFRunspace {
+        param($ScriptBlock, $ParameterList)
+        $params = @{}
+        if ($null -ne $ParameterList) {
+            foreach ($p in $ParameterList) {
+                $params[$p[0]] = $p[1]
+            }
+        }
+        & $ScriptBlock @params
+    }
 
     function script:New-WinUtilSearchCollection {
         return ,[System.Collections.ArrayList]::new()
@@ -164,6 +215,7 @@ namespace Windows.Controls
         }
 
         $script:sync = [Hashtable]::Synchronized(@{
+            MockedTest = $true
             ItemsControl = [pscustomobject]@{
                 Items = $items
             }
@@ -173,6 +225,8 @@ namespace Windows.Controls
                         Content = "Firefox"
                         Description = "Fast private browser"
                         Category = "Browsers"
+                        winget = "Browser.App"
+                        choco = "browserapp"
                     }
                     WPFInstallMedia = [pscustomobject]@{
                         Content = "VLC"
@@ -310,11 +364,61 @@ namespace Windows.Controls
     }
 
     function script:Remove-WinUtilSearchGlobals {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
     }
 }
 
+Describe "Find-WinUtilPackageManagerApps" {
+    BeforeAll {
+        function global:winget { param([Parameter(ValueFromRemainingArguments=$true)]$Arguments) }
+        function global:choco { param([Parameter(ValueFromRemainingArguments=$true)]$Arguments) }
+    }
+
+    It "returns empty array when SearchString is empty" {
+        $result = Find-WinUtilPackageManagerApps -SearchString ""
+        @($result).Count | Should -Be 0
+    }
+
+    It "parses winget search output into objects" {
+        Mock winget {
+            $global:LASTEXITCODE = 0
+            return "Name  Id  Version  Source`n-------------------------`nNmap  Insecure.Nmap  7.95  winget"
+        }
+
+        $result = Find-WinUtilPackageManagerApps -SearchString "nmap" -ManagerPreference "Winget"
+        @($result).Count | Should -Be 1
+        $result[0].Name | Should -Be "Nmap"
+        $result[0].Id | Should -Be "Insecure.Nmap"
+    }
+
+    It "parses choco search output into objects" {
+        Mock choco {
+            $global:LASTEXITCODE = 0
+            return "nmap|7.95.0"
+        }
+
+        $result = Find-WinUtilPackageManagerApps -SearchString "nmap" -ManagerPreference "Choco"
+        @($result).Count | Should -Be 1
+        $result[0].Name | Should -Be "nmap"
+        $result[0].Id | Should -Be "nmap"
+    }
+
+    It "handles search failure gracefully" {
+        Mock winget { throw "Winget error" }
+
+        $result = Find-WinUtilPackageManagerApps -SearchString "error" -ManagerPreference "Winget"
+        @($result).Count | Should -Be 0
+    }
+}
+
 Describe "Find-AppsByNameOrDescription" {
+    BeforeAll {
+        Add-Type -AssemblyName PresentationFramework -ErrorAction SilentlyContinue
+        Add-Type -AssemblyName PresentationCore -ErrorAction SilentlyContinue
+        Add-Type -AssemblyName WindowsBase -ErrorAction SilentlyContinue
+        function global:Initialize-InstallAppEntry { param($TargetElement, $appKey) }
+    }
     AfterEach {
         Remove-WinUtilSearchGlobals
     }
@@ -399,6 +503,50 @@ Describe "Find-AppsByNameOrDescription" {
         $category.Visibility | Should -Be ([Windows.Visibility]::Visible)
     }
 
+    It "deduplicates package manager search results against curated applications" {
+        $browserItem = New-WinUtilAppSearchItem -Tag "WPFInstallBrowser"
+        $category = New-WinUtilAppCategory -Label "- Browsers" -Items @($browserItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+
+        Mock Find-WinUtilPackageManagerApps {
+            if ($ManagerPreference -eq "Choco") {
+                return ,@([pscustomobject]@{ Name = "Browser App"; Id = "browserapp" })
+            } else {
+                return ,@([pscustomobject]@{ Name = "Browser App"; Id = "Browser.App" })
+            }
+        }
+
+        Find-AppsByNameOrDescription -SearchString "Browser"
+        $sync.preferences = [pscustomobject]@{ packagemanager = "Choco" }
+        Find-AppsByNameOrDescription -SearchString "Browser2"
+
+        # Should not create dynamic entry for Browser.App since it's already in applicationsHashtable
+        Should -Invoke Find-WinUtilPackageManagerApps -Times 2
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_Browser_App") | Should -Be $false
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_choco_browserapp") | Should -Be $false
+    }
+
+    It "creates dynamic entry for non-curated package manager search results" {
+        $browserItem = New-WinUtilAppSearchItem -Tag "WPFInstallBrowser"
+        $category = New-WinUtilAppCategory -Label "- Browsers" -Items @($browserItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+
+        Mock Find-WinUtilPackageManagerApps {
+            return ,@([pscustomobject]@{ Name = "Some New App"; Id = "Some.New.App" })
+        }
+        Mock Get-WinUtilPackageLink {
+            return "https://example.com"
+        }
+        Mock Initialize-InstallAppEntry {}
+
+        Find-AppsByNameOrDescription -SearchString "Some"
+
+        Should -Invoke Find-WinUtilPackageManagerApps -Times 2
+        Should -Invoke Get-WinUtilPackageLink -Times 2 -Exactly
+        Should -Invoke Initialize-InstallAppEntry -Times 1 -Exactly
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_Some_New_App") | Should -Be $true
+        $sync.configs.applicationsHashtable["WPFInstall_dynamic_winget_Some_New_App"].isDynamic | Should -Be $true
+    }
     It "shows apps from every selected category when several chips are active" {
         $utilityItem = New-WinUtilAppSearchItem -Tag "WPFInstallLiteral"
         $powerToysItem = New-WinUtilAppSearchItem -Tag "WPFInstallPowerToys"

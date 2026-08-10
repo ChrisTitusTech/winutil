@@ -134,11 +134,19 @@ Initialize-WinUtilTabContent -TabName "Install"
 
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
 
+function Update-WinUtilInstallSearchResults {
+    if ($sync.currentTab -eq "Install" -and -not [string]::IsNullOrWhiteSpace($sync.SearchBar.Text)) {
+        Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text -Categories $sync.SelectedAppCategories.ToArray()
+    }
+}
+
 $sync.ChocoRadioButton.Add_Checked({
     $sync.preferences.packagemanager = "Choco"
+    Update-WinUtilInstallSearchResults
 })
 $sync.WingetRadioButton.Add_Checked({
     $sync.preferences.packagemanager = "Winget"
+    Update-WinUtilInstallSearchResults
 })
 
 switch ($sync.preferences.packagemanager) {
