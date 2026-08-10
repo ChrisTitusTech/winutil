@@ -71,7 +71,14 @@ function Invoke-WPFtweaksbutton {
     }
 
     if ($dnsProvider -ne "Default") {
-      Set-WinUtilDNS -DNSProvider $dnsProvider
+      $dnsResult = @(Set-WinUtilDNS -DNSProvider $dnsProvider)
+      if ($dnsResult[-1] -ne $true) {
+        Set-WinUtilTweaksProgressIndicator -Visible $true -Label "DNS change failed" -Percent 100
+        $sync.ProcessRunning = $false
+        Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Error" -overlay "warning" }
+        Write-WinUtilLog -Level "ERROR" -Component "Tweaks" -Message "Tweaks workflow stopped because the DNS change failed."
+        return
+      }
     }
 
     for ($i = 0; $i -lt $tweaks.Count; $i++) {
