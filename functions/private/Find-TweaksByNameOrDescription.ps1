@@ -12,6 +12,10 @@ function Find-TweaksByNameOrDescription {
     # $sync is always in scope in the compiled script - no multi-level fallback needed
     if ($null -eq $sync -or $null -eq $sync.Form) { return }
 
+    if ($null -eq $sync.TweakCategoryAutoExpanded) {
+        $sync.TweakCategoryAutoExpanded = @{}
+    }
+
     $panelName = if ($sync.currentTab -eq "AppX") { "appxpanel" } else { "tweakspanel" }
     try { $tweaksPanel = $sync.Form.FindName($panelName) } catch { return }
     if ($null -eq $tweaksPanel) { return }
@@ -44,8 +48,15 @@ function Find-TweaksByNameOrDescription {
                             if ($null -eq $item) { continue }
                             if ($item -is [Windows.Controls.Label]) {
                                 $item.Visibility = [Windows.Visibility]::Visible
-                                # Respect collapsed state: labels starting with "+" keep items collapsed
+                                # A category that filtering expanded goes back to how the user left it
                                 $labelStr = [string]$item.Content
+                                $categoryName = $labelStr -replace '^[+-] ', ''
+                                if ($sync.TweakCategoryAutoExpanded.ContainsKey($categoryName)) {
+                                    $item.Content = $labelStr -replace "^- ", "+ "
+                                    $labelStr = [string]$item.Content
+                                    $sync.TweakCategoryAutoExpanded.Remove($categoryName)
+                                }
+                                # Respect collapsed state: labels starting with "+" keep items collapsed
                                 if ($labelStr.StartsWith("+ ")) {
                                     $collapsed = $true
                                 } else {
@@ -105,6 +116,7 @@ function Find-TweaksByNameOrDescription {
                 $labelStr = [string]$categoryLabel.Content
                 if ($labelStr.StartsWith("+ ")) {
                     $categoryLabel.Content = "- " + $labelStr.Substring(2)
+                    $sync.TweakCategoryAutoExpanded[($labelStr.Substring(2))] = $true
                 }
             }
             $categoryBorder.Visibility = if ($categoryHasMatch) { [Windows.Visibility]::Visible } else { [Windows.Visibility]::Collapsed }
