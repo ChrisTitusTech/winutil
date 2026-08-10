@@ -961,6 +961,15 @@
         "winget": "Netbird.Netbird",
         "foss": true
     },
+    "tailscale": {
+        "category": "Selfhosted Tools",
+        "choco": "tailscale",
+        "content": "Tailscale",
+        "description": "The Tailscale client allows you to connect all your devices using WireGuard®, without the hassle. Tailscale makes it as easy as installing an app and signing in.",
+        "link": "https://tailscale.com/",
+        "winget": "Tailscale.Tailscale",
+        "foss": true
+    },
     "naps2": {
         "category": "Document",
         "choco": "naps2",
