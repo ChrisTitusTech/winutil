@@ -301,7 +301,7 @@
   },
   "WPFTweaksDisableGDID": {
     "Content": "Disable GDID Reporting (Global Device Identifier)",
-    "Description": "Disables the CDPSvc/CDPUserSvc/DoSvc chain that registers and reports Windows' Global Device Identifier (GDID) to Microsoft, and blocks its known endpoints via hosts. Leaves wlidsvc untouched so Microsoft account sign-in keeps working. Does NOT erase an already-issued GDID - only stops future reporting. Breaks Delivery Optimization peer caching, Phone Link/'Continue on PC', and nearby sharing.",
+    "Description": "Disables the CDPSvc/CDPUserSvc/DoSvc chain that registers and reports Windows' Global Device Identifier (GDID) to Microsoft, and blocks its known endpoints via hosts. Leaves wlidsvc untouched so Microsoft account sign-in keeps working. Does NOT erase an already-issued GDID - only stops future reporting. Breaks Delivery Optimization peer caching, Phone Link/'Continue on PC', and nearby sharing. YOU MUST RESTART/SHUTDOWN PC for this to work",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [

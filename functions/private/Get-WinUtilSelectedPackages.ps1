@@ -39,11 +39,6 @@ function Get-WinUtilSelectedPackages {
     }
 
     foreach ($package in $PackageList) {
-        if ($package.installType -eq "github") {
-            $null = $packagesGithub.Add($package)
-            continue
-        }
-
         switch ($Preference) {
             "Choco" {
                 if ([string]::IsNullOrWhiteSpace([string]$package.choco) -or $package.choco -eq "na") {
@@ -54,6 +49,12 @@ function Get-WinUtilSelectedPackages {
             }
             "Winget" {
                 Add-PackageId -Target $packagesWinget -PackageId $package.winget
+            }
+            "Github" {
+                if ($package.installType -eq "github") {
+                        $null = $packagesGithub.Add($package)
+                continue
+            }
             }
         }
     }
