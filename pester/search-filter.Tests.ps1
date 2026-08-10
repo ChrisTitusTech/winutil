@@ -521,7 +521,7 @@ Describe "Find-AppsByNameOrDescription" {
         Find-AppsByNameOrDescription -SearchString "Browser2"
 
         # Should not create dynamic entry for Browser.App since it's already in applicationsHashtable
-        Should -Invoke Find-WinUtilPackageManagerApps -Times 2
+        Should -Invoke Find-WinUtilPackageManagerApps -Times 4
         $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_Browser_App") | Should -Be $false
         $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_choco_browserapp") | Should -Be $false
     }
