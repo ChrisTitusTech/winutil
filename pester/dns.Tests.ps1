@@ -206,6 +206,23 @@ Describe "Set-WinUtilDNS" {
         }
     }
 
+    It "falls back to plain DNS when optional DoH registration fails" {
+        Mock Add-DnsClientDohServerAddress { throw "DoH registration failed" }
+
+        $result = Set-WinUtilDNS -DNSProvider "Cloudflare"
+
+        $result | Should -BeTrue
+        Should -Invoke -CommandName Set-DnsClientServerAddress -Times 2 -Exactly
+        Should -Invoke -CommandName Write-Warning -Times 1 -Exactly -ParameterFilter {
+            $Message -eq "DNS over HTTPS setup for provider Cloudflare failed; continuing with plain DNS."
+        }
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "WARN" -and
+                $Component -eq "DNS" -and
+                $Message -like "DNS over HTTPS setup for provider Cloudflare failed; continuing with plain DNS: *"
+        }
+    }
+
     It "resets DNS to DHCP and removes the applied DoH configuration" {
         Mock Test-Path { return $true } -ParameterFilter { $Path -like "*DohInterfaceSettings*" }
         Mock Get-ChildItem {

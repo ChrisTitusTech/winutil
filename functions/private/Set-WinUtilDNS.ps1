@@ -74,28 +74,37 @@ function Set-WinUtilDNS {
                 $ipv6Addresses = @(@($dns.Primary6, $dns.Secondary6) | Where-Object { $_ })
 
                 if ($dohSupported -and $dns.DohTemplate) {
-                    $ips = @($dns.Primary, $dns.Secondary, $dns.Primary6, $dns.Secondary6) | Where-Object { $_ }
-                    foreach ($ip in $ips) {
-                        $dohTemplate = if ($dns.SecondaryDohTemplate -and @($dns.Secondary, $dns.Secondary6) -contains $ip) {
-                            $dns.SecondaryDohTemplate
-                        } else {
-                            $dns.DohTemplate
+                    try {
+                        $ips = @($dns.Primary, $dns.Secondary, $dns.Primary6, $dns.Secondary6) | Where-Object { $_ }
+                        foreach ($ip in $ips) {
+                            $dohTemplate = if ($dns.SecondaryDohTemplate -and @($dns.Secondary, $dns.Secondary6) -contains $ip) {
+                                $dns.SecondaryDohTemplate
+                            } else {
+                                $dns.DohTemplate
+                            }
+                            $existing = Get-DnsClientDohServerAddress -ServerAddress $ip -ErrorAction SilentlyContinue
+                            if ($existing) {
+                                Set-DnsClientDohServerAddress -ServerAddress $ip -DohTemplate $dohTemplate -AllowFallbackToUdp $false -AutoUpgrade $true -ErrorAction Stop
+                            } else {
+                                Write-WinUtilLog -Component "DNS" -Message "Registering DoH template for $ip."
+                                Add-DnsClientDohServerAddress -ServerAddress $ip -DohTemplate $dohTemplate -AllowFallbackToUdp $false -AutoUpgrade $true -ErrorAction Stop
+                            }
+
+                            $leaf = if ($ip.Contains(':')) { 'Doh6' } else { 'Doh' }
+                            $regPath = "$interfaceParams\DohInterfaceSettings\$leaf\$ip"
+
+                            if (-not (Test-Path $regPath)) {
+                                New-Item -Path $regPath -Force -ErrorAction Stop | Out-Null
+                            }
+                            New-ItemProperty -Path $regPath -Name "DohFlags" -Value 1 -PropertyType QWord -Force -ErrorAction Stop | Out-Null
                         }
-                        $existing = Get-DnsClientDohServerAddress -ServerAddress $ip -ErrorAction SilentlyContinue
-                        if ($existing) {
-                            Set-DnsClientDohServerAddress -ServerAddress $ip -DohTemplate $dohTemplate -AllowFallbackToUdp $false -AutoUpgrade $true -ErrorAction Stop
-                        } else {
-                            Write-WinUtilLog -Component "DNS" -Message "Registering DoH template for $ip."
-                            Add-DnsClientDohServerAddress -ServerAddress $ip -DohTemplate $dohTemplate -AllowFallbackToUdp $false -AutoUpgrade $true -ErrorAction Stop
+                    } catch {
+                        if ($dns.DohOnly) {
+                            throw
                         }
-                        
-                        $leaf = if ($ip.Contains(':')) { 'Doh6' } else { 'Doh' }
-                        $regPath = "$interfaceParams\DohInterfaceSettings\$leaf\$ip"
-                        
-                        if (-not (Test-Path $regPath)) {
-                            New-Item -Path $regPath -Force -ErrorAction Stop | Out-Null
-                        }
-                        New-ItemProperty -Path $regPath -Name "DohFlags" -Value 1 -PropertyType QWord -Force -ErrorAction Stop | Out-Null
+
+                        Write-Warning "DNS over HTTPS setup for provider $DNSProvider failed; continuing with plain DNS."
+                        Write-WinUtilLog -Level "WARN" -Component "DNS" -Message "DNS over HTTPS setup for provider $DNSProvider failed; continuing with plain DNS: $($psitem.Exception.Message)"
                     }
                 }
 
