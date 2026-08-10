@@ -34,11 +34,12 @@ function Invoke-WPFInstall {
         $packagesWinget = $packagesSorted['Winget']
         $packagesChoco = $packagesSorted['Choco']
         $packagesGithub = $packagesSorted['Github']
-        $totalPackages = @($packagesWinget).Count + @($packagesChoco).Count + @($packagesGithub).Count
+        $packagesNpm = $packagesSorted['Npm']
+        $totalPackages = @($packagesWinget).Count + @($packagesChoco).Count + @($packagesGithub).Count + @($packagesNpm).Count
 
         $completedPackages = 0
         $hasUI = $null -ne $sync.Form -and $null -ne $sync.Form.Dispatcher
-        Write-WinUtilLog -Component "Install" -Message "Install package manager split: winget=$(@($packagesWinget).Count), choco=$(@($packagesChoco).Count)"
+        Write-WinUtilLog -Component "Install" -Message "Install package manager split: winget=$(@($packagesWinget).Count), choco=$(@($packagesChoco).Count), github=$(@($packagesGithub).Count), npm=$(@($packagesNpm).Count)"
 
         try {
             $sync.ProcessRunning = $true
@@ -105,10 +106,31 @@ function Invoke-WPFInstall {
                 }
             }
 
+            if (@($packagesNpm).Count -gt 0) {
+                $position = $completedPackages + 1
+                $startPercent = [int](($completedPackages / $totalPackages) * 100)
+
+                if ($hasUI) {
+                    Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Installing npm package(s) ($position/$totalPackages)" -Percent $startPercent
+                }
+
+                Install-WinUtilProgramNpm -Packages @($packagesNpm)
+
+                $completedPackages += @($packagesNpm).Count
+                $completedPercent = [int](($completedPackages / $totalPackages) * 100)
+
+            if ($hasUI) {
+                    Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Installed npm package(s) ($completedPackages/$totalPackages)" -Percent $completedPercent
+                Invoke-WPFUIThread -ScriptBlock {
+            Set-WinUtilTaskbaritem -value ($completedPercent / 100)
+        }
+    }
+}
+
             Write-Host "==========================================="
             Write-Host "--      Installs have finished          ---"
             Write-Host "==========================================="
-            Write-WinUtilLog -Component "Install" -Message "Install package manager split: winget=$(@($packagesWinget).Count), choco=$(@($packagesChoco).Count), github=$(@($packagesGithub).Count)"
+            Write-WinUtilLog -Component "Install" -Message "Install package manager split: winget=$(@($packagesWinget).Count), choco=$(@($packagesChoco).Count), github=$(@($packagesGithub).Count), npm=$(@($packagesNpm).Count)"
             if ($hasUI) {
                 Set-WinUtilTweaksProgressIndicator -Visible $true -Label "App install finished" -Percent 100
                 Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" }
