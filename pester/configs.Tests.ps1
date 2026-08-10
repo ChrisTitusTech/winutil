@@ -374,6 +374,17 @@ Describe "UI-rendered config entries" {
         }
     }
 
+    It "exposes every configured DNS provider in the DNS combobox" {
+        $dns = Get-WinUtilConfigObject -Name "dns"
+        $tweaks = Get-WinUtilConfigObject -Name "tweaks"
+        $comboItems = @($tweaks.WPFchangedns.ComboItems -split " ")
+        $missingProviders = @($dns.PSObject.Properties.Name | Where-Object { $comboItems -notcontains $_ })
+
+        if ($missingProviders.Count -gt 0) {
+            throw "WPFchangedns missing providers: $($missingProviders -join ', ')"
+        }
+    }
+
     It "contains required feature fields and valid configured functions" {
         $feature = Get-WinUtilConfigObject -Name "feature"
         $functionNames = Get-WinUtilTopLevelFunctionNames
@@ -439,7 +450,15 @@ Describe "UI-rendered config entries" {
                 }
                 $statefulRegistry = @($entry.Value.registry | Where-Object Values)
                 if ($statefulRegistry.Count -gt 0) {
-                    $comboItems = @($entry.Value.ComboItems)
+                    $comboItems = if ($entry.Value.ComboItems -is [string]) {
+                        if ($entry.Value.ComboItems.Contains("|")) {
+                            @($entry.Value.ComboItems -split "\|")
+                        } else {
+                            @($entry.Value.ComboItems -split " ")
+                        }
+                    } else {
+                        @($entry.Value.ComboItems)
+                    }
                     if ($statefulRegistry.Count -ne @($entry.Value.registry).Count) {
                         $invalidEntries.Add("$($entry.Name) registry states must all use Values")
                     } else {

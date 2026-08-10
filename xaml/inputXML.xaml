@@ -1257,6 +1257,8 @@
                     HorizontalAlignment="Right" VerticalAlignment="Center"
                     Margin="0,0,2,0"
                     FontFamily="Segoe MDL2 Assets"
+                    ToolTip="Settings"
+                    AutomationProperties.Name="Settings"
                     Content="&#xE713;"/>
                     <Popup Name="SettingsPopup"
                     IsOpen="False"
