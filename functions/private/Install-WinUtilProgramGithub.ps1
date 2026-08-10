@@ -69,8 +69,7 @@ Function Install-WinUtilProgramGithub {
                 # application on completion that never exits, which would make -Wait block
                 # forever. Launch and move on instead of waiting; don't delete the downloaded
                 # file since the process may still be reading it after we return.
-                $proc = Start-Process -FilePath $dest -PassThru
-                Set-WinUtilProcessForeground -Process $proc
+                Start-Process -FilePath $dest
                 Write-WinUtilLog -Component "Package" -Message "$name installer launched - it may need you to finish a setup wizard. WinUtil will not wait for it to close."
             }
         } catch {
