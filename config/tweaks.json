@@ -299,6 +299,35 @@
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/disablewarningforunsignedrdp"
   },
+  "WPFTweaksDisableGDID": {
+    "Content": "Disable GDID Reporting (Global Device Identifier)",
+    "Description": "Disables the CDPSvc/CDPUserSvc/DoSvc chain that registers and reports Windows' Global Device Identifier (GDID) to Microsoft, and blocks its known endpoints via hosts. Leaves wlidsvc untouched so Microsoft account sign-in keeps working. Does NOT erase an already-issued GDID - only stops future reporting. Breaks Delivery Optimization peer caching, Phone Link/'Continue on PC', and nearby sharing.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "InvokeScript": [
+      "$gdidServices = @('CDPSvc','DoSvc','CDPUserSvc')",
+      "foreach ($svc in $gdidServices) {",
+      "  Stop-Service -Name $svc -Force -ErrorAction SilentlyContinue",
+      "  Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Services\\$svc\" -Name 'Start' -Type DWord -Value 4 -Force -ErrorAction SilentlyContinue",
+      "}",
+      "$hostsPath = \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\"",
+      "$gdidHosts = @('dds.microsoft.com','fd.dds.microsoft.com','aad.cs.dds.microsoft.com','cdpcs.access.microsoft.com','geo.prod.do.dsp.mp.microsoft.com')",
+      "$existing = Get-Content -Path $hostsPath -ErrorAction SilentlyContinue",
+      "$toAdd = foreach ($h in $gdidHosts) { if ($existing -notmatch [regex]::Escape($h)) { \"0.0.0.0`t$h`t# WinUtil GDID block\" } }",
+      "if ($toAdd) { Add-Content -Path $hostsPath -Value $toAdd -Force }"
+    ],
+    "UndoScript": [
+      "Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\CDPSvc' -Name 'Start' -Type DWord -Value 3 -Force -ErrorAction SilentlyContinue",
+      "Start-Service -Name 'CDPSvc' -ErrorAction SilentlyContinue",
+      "Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\CDPUserSvc' -Name 'Start' -Type DWord -Value 3 -Force -ErrorAction SilentlyContinue",
+      "Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\DoSvc' -Name 'Start' -Type DWord -Value 2 -Force -ErrorAction SilentlyContinue",
+      "Start-Service -Name 'DoSvc' -ErrorAction SilentlyContinue",
+      "$hostsPath = \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\"",
+      "$content = Get-Content -Path $hostsPath -ErrorAction SilentlyContinue",
+      "if ($content) { Set-Content -Path $hostsPath -Value ($content | Where-Object { $_ -notmatch '# WinUtil GDID block' }) -Force }"
+    ],
+    "link": "https://github.com/Korben00/no-gdid"
+  },
   "WPFTweaksEdgeDebloat": {
     "Content": "Microsoft Edge - Debloat",
     "Description": "Disables various telemetry options, popups, and other annoyances in Edge.",
