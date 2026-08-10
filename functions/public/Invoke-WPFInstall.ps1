@@ -21,6 +21,10 @@ function Invoke-WPFInstall {
         return
     }
 
+    if ($null -eq $packagesGithub) {
+        $packagesGithub = @()
+    }
+
     $ManagerPreference = $sync.preferences.packagemanager
     Write-WinUtilLog -Component "Install" -Message "Install requested for $(@($PackagesToInstall).Count) selected package(s) using preference: $ManagerPreference"
     $packageSummary = Get-WinUtilPackageLogSummary -Packages $PackagesToInstall -Preference $ManagerPreference
