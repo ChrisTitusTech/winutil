@@ -194,11 +194,22 @@ Describe "Applications config" {
             }
         }
 
-        if (-not ($hasWinget -or $hasChoco -or $hasGithub)) {
-            $invalidEntries.Add("$entryName missing winget/choco/GitHub install source")
-        }
-    }
+        if (-not ($hasWinget -or $hasChoco -or $hasGithub -or $hasNpm)) {
+    $invalidEntries.Add("$entryName missing winget/choco/GitHub/npm install source")
+}
 
+    $isNpmInstaller = $entryFields -contains "installType" -and
+    $app.installType -eq "npm"
+
+    $hasNpmPackage = $entryFields -contains "npmPackage" -and
+    -not [string]::IsNullOrWhiteSpace([string]$app.npmPackage)
+
+    $hasNpm = $isNpmInstaller -and $hasNpmPackage
+
+    if ($isNpmInstaller -and -not $hasNpmPackage) {
+    $invalidEntries.Add("$entryName npm installer missing npmPackage")
+}
+    
     if ($invalidEntries.Count -gt 0) {
         throw ($invalidEntries -join "`n")
     }
