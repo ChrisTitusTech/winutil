@@ -22,20 +22,29 @@ function Invoke-WPFUnInstall {
     }
 
     $githubPackages = @(
-    $PackagesToUninstall | Where-Object {
-        $_.installType -eq "github"
-    }
-)
+            $PackagesToUninstall | Where-Object {
+            $_.installType -eq "github"
+        }
+    )
 
     if ($githubPackages.Count -gt 0) {
         $packageNames = $githubPackages.content -join ", "
 
         Show-WinUtilMessage `
-            -Message "WinUtil cannot uninstall the following GitHub-release installer package(s): $packageNames.`n`nPlease uninstall them through Windows Settings > Apps > Installed apps, or use the application's own uninstaller." `
+            -Message "WinUtil cannot automatically uninstall the following GitHub-release installer package(s): $packageNames.`n`nThey will be skipped. Uninstall them through Windows Settings > Apps > Installed apps, or use the application's own uninstaller." `
             -Title "Manual uninstall required" `
             -Button "OK" `
             -Icon "Warning"
 
+            # Continue the uninstall workflow using only Winget/Chocolatey-capable apps.
+        $PackagesToUninstall = @(
+            $PackagesToUninstall | Where-Object {
+                $_.installType -ne "github"
+            }
+        )
+    }
+
+    if ($PackagesToUninstall.Count -eq 0) {
         return
     }
 
