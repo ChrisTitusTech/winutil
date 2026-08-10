@@ -37,7 +37,16 @@ Open the resulting PNG and check that:
 - no desktop background or other windows are visible.
 
 The automation works whether WinUtil starts in Light or Dark mode. It leaves the
-window on the Tweaks tab in Light mode. This is integrated into a GitHub action so there's no need to modify the actual title-screen manually.
+window on the Tweaks tab in Light mode.
+
+## Automation
+
+The title screen is updated through a manually triggered GitHub Actions workflow.
+When the generated image changes, the workflow opens or updates a pull request
+for review. It does not merge the pull request automatically.
+
+Failed runs upload the capture log, UI Automation inspection, and available image
+as diagnostic artifacts for 14 days.
 
 ## Tests
 
