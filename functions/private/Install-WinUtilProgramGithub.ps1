@@ -48,7 +48,10 @@ Function Install-WinUtilProgramGithub {
             continue
         }
 
-        $dest = Join-Path $env:TEMP $asset.name
+        $downloadDirectory = Join-Path $env:PUBLIC "Downloads\WinUtil"
+        New-Item -ItemType Directory -Path $downloadDirectory -Force | Out-Null
+
+        $dest = Join-Path $downloadDirectory $asset.name
         Write-WinUtilLog -Component "Package" -Message "Downloading $($asset.name) for $name"
         try {
             Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $dest -UseBasicParsing -TimeoutSec 120
@@ -64,14 +67,16 @@ Function Install-WinUtilProgramGithub {
                 Write-WinUtilLog -Component "Package" -Message "$name installed."
                 Remove-Item $dest -Force -ErrorAction SilentlyContinue
             } else {
-                # No known silent-install flag for these community-released installers, so this
-                # runs interactively - and some interactive installers launch a long-running
-                # application on completion that never exits, which would make -Wait block
-                # forever. Launch and move on instead of waiting; don't delete the downloaded
-                # file since the process may still be reading it after we return.
-                Start-Process -FilePath $dest
-                Write-WinUtilLog -Component "Package" -Message "$name installer launched - it may need you to finish a setup wizard. WinUtil will not wait for it to close."
-            }
+                if ($package.runAsDesktopUser -eq $true) {
+                    Start-WinUtilProcessAsDesktopUser -FilePath $dest
+
+                    Write-WinUtilLog -Component "Package" -Message "$name installer launched as the desktop user. WinUtil will not wait for its setup wizard to close."
+                } else {
+                    Start-Process -FilePath $dest
+
+                    Write-WinUtilLog -Component "Package" -Message "$name installer launched. WinUtil will not wait for its setup wizard to close."
+    }
+}
         } catch {
             Write-WinUtilLog -Level "ERROR" -Component "Package" -Message "Failed to run installer for ${name}: $_"
             Remove-Item $dest -Force -ErrorAction SilentlyContinue
