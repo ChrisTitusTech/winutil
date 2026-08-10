@@ -143,36 +143,64 @@ Describe "Applications config" {
     }
 
     It "contains required display fields and at least one install source" -TestCases $testCase {
-        param([string]$Path)
+    param([string]$Path)
 
-        $applications = Get-Content -Path $Path -Raw | ConvertFrom-Json
-        $requiredFields = @("category", "content", "description", "link")
-        $invalidEntries = New-Object System.Collections.Generic.List[string]
+    $applications = Get-Content -Path $Path -Raw | ConvertFrom-Json
+    $requiredFields = @("category", "content", "description", "link")
+    $invalidEntries = New-Object System.Collections.Generic.List[string]
 
-        foreach ($entry in $applications.PSObject.Properties) {
-            $entryFields = @($entry.Value.PSObject.Properties.Name)
+    foreach ($entry in $applications.PSObject.Properties) {
+        $entryName = $entry.Name
+        $app = $entry.Value
+        $entryFields = @($app.PSObject.Properties.Name)
 
-            foreach ($field in $requiredFields) {
-                if ($entryFields -notcontains $field -or [string]::IsNullOrWhiteSpace([string]$entry.Value.$field)) {
-                    $invalidEntries.Add("$($entry.Name) missing $field")
-                }
-            }
-
-            $hasInstallSource = $false
-            foreach ($sourceField in @("winget", "choco")) {
-                if ($entryFields -contains $sourceField -and -not [string]::IsNullOrWhiteSpace([string]$entry.Value.$sourceField)) {
-                    $hasInstallSource = $true
-                }
-            }
-
-            if (-not $hasInstallSource) {
-                $invalidEntries.Add("$($entry.Name) missing winget/choco install source")
+        foreach ($field in $requiredFields) {
+            if ($entryFields -notcontains $field -or
+                [string]::IsNullOrWhiteSpace([string]$app.$field)) {
+                $invalidEntries.Add("$entryName missing $field")
             }
         }
 
-        if ($invalidEntries.Count -gt 0) {
-            throw ($invalidEntries -join "`n")
+        $hasWinget = $entryFields -contains "winget" -and
+            -not [string]::IsNullOrWhiteSpace([string]$app.winget) -and
+            $app.winget -ne "na"
+
+        $hasChoco = $entryFields -contains "choco" -and
+            -not [string]::IsNullOrWhiteSpace([string]$app.choco) -and
+            $app.choco -ne "na"
+
+        $isGithubInstaller = $entryFields -contains "installType" -and
+            $app.installType -eq "github"
+
+        $hasGithubRepo = $entryFields -contains "repo" -and
+            -not [string]::IsNullOrWhiteSpace([string]$app.repo)
+
+        $hasGithubAssetPattern = $entryFields -contains "assetPattern" -and
+            -not [string]::IsNullOrWhiteSpace([string]$app.assetPattern)
+
+        $hasGithub = $isGithubInstaller -and
+            $hasGithubRepo -and
+            $hasGithubAssetPattern
+
+        if ($isGithubInstaller) {
+            if (-not $hasGithubRepo) {
+                $invalidEntries.Add("$entryName GitHub installer missing repo")
+            } elseif ($app.repo -notmatch '^[^/\s]+/[^/\s]+$') {
+                $invalidEntries.Add("$entryName GitHub repo must use owner/repository format")
+            }
+
+            if (-not $hasGithubAssetPattern) {
+                $invalidEntries.Add("$entryName GitHub installer missing assetPattern")
+            }
         }
+
+        if (-not ($hasWinget -or $hasChoco -or $hasGithub)) {
+            $invalidEntries.Add("$entryName missing winget/choco/GitHub install source")
+        }
+    }
+
+    if ($invalidEntries.Count -gt 0) {
+        throw ($invalidEntries -join "`n")
     }
 }
 
