@@ -77,7 +77,7 @@ function Invoke-WPFImpex {
                         Write-WinUtilLog -Component "Impex" -Message "Detected legacy WinUtil config structure; flattening import object."
                         $flattenedJson = @()
                         foreach ($prop in $jsonFile.PSObject.Properties) {
-                            if ($null -ne $prop.Value) {
+                            if ($prop.Name -ne "Install" -and $null -ne $prop.Value) {
                                 $flattenedJson += @($prop.Value)
                             }
                         }
