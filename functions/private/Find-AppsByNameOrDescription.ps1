@@ -125,13 +125,14 @@ function Find-AppsByNameOrDescription {
         $sync.AnyCuratedMatch = $false
         # IndexOf with OrdinalIgnoreCase is faster than -like with wildcard escaping
         foreach ($itemCtrl in $sync.ItemsControl.Items) {
-            if ($null -ne $itemCtrl.PSObject.Properties['Tag'] -and $itemCtrl.Tag -eq "CategoryContainer_PackageManagerResults") {
+            $_ = $itemCtrl
+            if ($null -ne $_.PSObject.Properties['Tag'] -and $_.Tag -eq "CategoryContainer_PackageManagerResults") {
                 continue
             }
 
-            if ($itemCtrl.Children.Count -ge 2) {
-                $categoryLabel = $itemCtrl.Children[0]
-                $wrapPanel = $itemCtrl.Children[1]
+            if ($_.Children.Count -ge 2) {
+                $categoryLabel = $_.Children[0]
+                $wrapPanel = $_.Children[1]
                 $categoryHasMatch = $false
                 $categoryLabel.Visibility = [Windows.Visibility]::Visible
 
@@ -160,7 +161,7 @@ function Find-AppsByNameOrDescription {
 
                 if ($categoryHasMatch) {
                     $wrapPanel.Visibility = [Windows.Visibility]::Visible
-                    $itemCtrl.Visibility = [Windows.Visibility]::Visible
+                    $_.Visibility = [Windows.Visibility]::Visible
                     # Expand it, otherwise the matches stay hidden behind a collapsed header.
                     # Remember that it was collapsed so clearing the filter can put it back.
                     if ($categoryLabel.Content -like "+*") {
@@ -169,7 +170,7 @@ function Find-AppsByNameOrDescription {
                     }
                 }
                 else {
-                    $itemCtrl.Visibility = [Windows.Visibility]::Collapsed
+                    $_.Visibility = [Windows.Visibility]::Collapsed
                 }
             }
         }
@@ -382,72 +383,77 @@ function Find-AppsByNameOrDescription {
                         ) -ScriptBlock {
                             param($SearchString, $Manager)
 
-                            if ($sync.LatestPackageManagerSearch -ne $SearchString) { return }
-
-                            $pmResults = @()
-                            if (Get-Command Find-WinUtilPackageManagerApps -ErrorAction SilentlyContinue) {
-                                $pmResults = @(Find-WinUtilPackageManagerApps -SearchString $SearchString -ManagerPreference $Manager)
-                            }
-
-                            if ($sync.LatestPackageManagerSearch -ne $SearchString) { return }
-
-                            # deduplicate against curated catalog package IDs and app keys
-                            $curatedIds = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
-                            foreach ($key in $sync.configs.applicationsHashtable.Keys) {
-                                $entry = $sync.configs.applicationsHashtable[$key]
-                                if ($entry.isDynamic -ne $true) {
-                                    if ($entry.winget) {
-                                        $w = ($entry.winget -replace '^msstore:', '').Trim()
-                                        if ($w -and $w -ne "na") { [void]$curatedIds.Add($w) }
-                                    }
-                                    if ($entry.choco) {
-                                        $c = $entry.choco.Trim()
-                                        if ($c -and $c -ne "na") { [void]$curatedIds.Add($c) }
-                                    }
-                                    if ($key) { [void]$curatedIds.Add($key) }
-                                }
-                            }
-
-                            $newResults = @(foreach ($res in $pmResults) { if (-not $curatedIds.Contains($res.Id)) { $res } })
-
-                            if ($sync.LatestPackageManagerSearch -ne $SearchString) { return }
-
-                            $finalResults = @()
-                            $limit = [Math]::Min($newResults.Count, 15)
-                            for ($i = 0; $i -lt $limit; $i++) {
+                            try {
                                 if ($sync.LatestPackageManagerSearch -ne $SearchString) { return }
-                                $res = $newResults[$i]
-                                $linkUrl = ""
-                                if (Get-Command Get-WinUtilPackageLink -ErrorAction SilentlyContinue) {
-                                    $linkUrl = Get-WinUtilPackageLink -PackageId $res.Id -Manager $Manager
-                                }
-                                $finalResults += [pscustomobject]@{
-                                    Id = $res.Id
-                                    Name = $res.Name
-                                    LinkUrl = $linkUrl
-                                }
-                            }
 
-                            if ($sync.LatestPackageManagerSearch -ne $SearchString) { return }
-
-                            $dispatcher = $null
-                            if ($null -ne $sync.ItemsControl -and $null -ne $sync.ItemsControl.Dispatcher) {
-                                $dispatcher = $sync.ItemsControl.Dispatcher
-                            }
-                            elseif ($null -ne $sync.Form -and $null -ne $sync.Form.Dispatcher) {
-                                $dispatcher = $sync.Form.Dispatcher
-                            }
-
-                            if ($null -ne $dispatcher) {
-                                $action = [System.Action[System.Object, System.Object, System.Object]] {
-                                    param($fResults, $mgr, $sString)
-                                    if ($sync.LatestPackageManagerSearch -ne $sString) { return }
-                                    & $sync.UpdatePackageManagerUI -finalResults $fResults -Manager $mgr -SearchString $sString
+                                $pmResults = @()
+                                if (Get-Command Find-WinUtilPackageManagerApps -ErrorAction SilentlyContinue) {
+                                    $pmResults = @(Find-WinUtilPackageManagerApps -SearchString $SearchString -ManagerPreference $Manager)
                                 }
-                                $dispatcher.Invoke($action, [object[]]@($finalResults, $Manager, $SearchString))
+
+                                if ($sync.LatestPackageManagerSearch -ne $SearchString) { return }
+
+                                # deduplicate against curated catalog package IDs and app keys
+                                $curatedIds = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+                                foreach ($key in $sync.configs.applicationsHashtable.Keys) {
+                                    $entry = $sync.configs.applicationsHashtable[$key]
+                                    if ($entry.isDynamic -ne $true) {
+                                        if ($entry.winget) {
+                                            $w = ($entry.winget -replace '^msstore:', '').Trim()
+                                            if ($w -and $w -ne "na") { [void]$curatedIds.Add($w) }
+                                        }
+                                        if ($entry.choco) {
+                                            $c = $entry.choco.Trim()
+                                            if ($c -and $c -ne "na") { [void]$curatedIds.Add($c) }
+                                        }
+                                        if ($key) { [void]$curatedIds.Add($key) }
+                                    }
+                                }
+
+                                $newResults = @(foreach ($res in $pmResults) { if (-not $curatedIds.Contains($res.Id)) { $res } })
+
+                                if ($sync.LatestPackageManagerSearch -ne $SearchString) { return }
+
+                                $finalResults = @()
+                                $limit = [Math]::Min($newResults.Count, 15)
+                                for ($i = 0; $i -lt $limit; $i++) {
+                                    if ($sync.LatestPackageManagerSearch -ne $SearchString) { return }
+                                    $res = $newResults[$i]
+                                    $linkUrl = ""
+                                    if (Get-Command Get-WinUtilPackageLink -ErrorAction SilentlyContinue) {
+                                        $linkUrl = Get-WinUtilPackageLink -PackageId $res.Id -Manager $Manager
+                                    }
+                                    $finalResults += [pscustomobject]@{
+                                        Id = $res.Id
+                                        Name = $res.Name
+                                        LinkUrl = $linkUrl
+                                    }
+                                }
+
+                                if ($sync.LatestPackageManagerSearch -ne $SearchString) { return }
+
+                                $dispatcher = $null
+                                if ($null -ne $sync.ItemsControl -and $null -ne $sync.ItemsControl.Dispatcher) {
+                                    $dispatcher = $sync.ItemsControl.Dispatcher
+                                }
+                                elseif ($null -ne $sync.Form -and $null -ne $sync.Form.Dispatcher) {
+                                    $dispatcher = $sync.Form.Dispatcher
+                                }
+
+                                if ($null -ne $dispatcher) {
+                                    $action = [System.Action[System.Object, System.Object, System.Object]] {
+                                        param($fResults, $mgr, $sString)
+                                        if ($sync.LatestPackageManagerSearch -ne $sString) { return }
+                                        & $sync.UpdatePackageManagerUI -finalResults $fResults -Manager $mgr -SearchString $sString
+                                    }
+                                    $dispatcher.Invoke($action, [object[]]@($finalResults, $Manager, $SearchString))
+                                }
+                                elseif ($null -ne $sync.MockedTest -and $sync.MockedTest) {
+                                    & $sync.UpdatePackageManagerUI -finalResults $finalResults -Manager $Manager -SearchString $SearchString
+                                }
                             }
-                            elseif ($null -ne $sync.MockedTest -and $sync.MockedTest) {
-                                & $sync.UpdatePackageManagerUI -finalResults $finalResults -Manager $Manager -SearchString $SearchString
+                            finally {
+                                $sync.PackageManagerSearchInFlight.Remove("${SearchString}_${Manager}")
                             }
                         } | Out-Null
                     }
