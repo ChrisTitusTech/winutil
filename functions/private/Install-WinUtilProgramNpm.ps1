@@ -1,8 +1,14 @@
 Function Install-WinUtilProgramNpm {
     <#
     .SYNOPSIS
-        Installs or uninstalls a global npm package. Requires Node.js/npm to already be on
-        PATH - packages using this installType should declare "nodejs" in their "requires".
+        Installs or uninstalls a global npm package.
+
+    .DESCRIPTION
+        Requires Node.js/npm to be available on PATH. Packages using this
+        installType should declare "nodejs" in their "requires" field.
+
+        Throws on failures so the calling WinUtil workflow can update the UI,
+        taskbar state, logs, and progress correctly.
     #>
     param (
         [ValidateSet("Install", "Uninstall")]
@@ -16,43 +22,76 @@ Function Install-WinUtilProgramNpm {
         $name = $package.content
         $npmPackage = $package.npmPackage
 
+        if ([string]::IsNullOrWhiteSpace($name)) {
+            $name = $npmPackage
+        }
+
         if ([string]::IsNullOrWhiteSpace($npmPackage)) {
-            Write-WinUtilLog -Level "ERROR" -Component "Package" -Message "npm $($Action.ToLower()) for $name is missing npmPackage."
-            continue
+            $message = "npm $($Action.ToLower()) for $name is missing npmPackage."
+            Write-WinUtilLog -Level "ERROR" -Component "Package" -Message $message
+            throw $message
         }
 
         if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
-            Write-WinUtilLog -Level "ERROR" -Component "Package" -Message "npm is not on PATH - can't $($Action.ToLower()) $name."
-            continue
+            $message = "npm is not on PATH - can't $($Action.ToLower()) $name."
+            Write-WinUtilLog -Level "ERROR" -Component "Package" -Message $message
+            throw $message
         }
 
-        $npmVerb = if ($Action -eq "Uninstall") { "uninstall" } else { "install" }
+        $npmVerb = if ($Action -eq "Uninstall") {
+            "uninstall"
+        } else {
+            "install"
+        }
+
         Write-WinUtilLog -Component "Package" -Message "$Action $name via npm ($npmPackage)"
-        $process = $null
-        try {
-            $process = Start-Process -FilePath "npm" -ArgumentList @($npmVerb, "-g", $npmPackage) -NoNewWindow -Wait -PassThru
-        } catch {
-            Write-WinUtilLog -Level "ERROR" -Component "Package" -Message "Failed to run npm $npmVerb for ${name}: $_"
-            continue
-        }
-        if ($null -eq $process) {
-            Write-WinUtilLog -Level "ERROR" -Component "Package" -Message "npm $npmVerb for $name returned no process information."
-            continue
-        }
-        Write-WinUtilLog -Component "Package" -Message "$name npm $($npmVerb) completed (exit code: $($process.ExitCode))"
 
-        # Some npm-distributed tools need a separate step to actually start running (or set up
-        # their own auto-start) after the package itself is installed - e.g. Prismcast installs
-        # as a dormant CLI until "prismcast service install" registers and starts it as a
-        # background service.
-        if ($Action -eq "Install" -and $process.ExitCode -eq 0 -and -not [string]::IsNullOrWhiteSpace($package.postInstallCommand)) {
+        $process = $null
+
+        try {
+            $process = Start-Process `
+                -FilePath "npm" `
+                -ArgumentList @($npmVerb, "-g", $npmPackage) `
+                -NoNewWindow `
+                -Wait `
+                -PassThru
+        } catch {
+            $message = "Failed to run npm $npmVerb for ${name}: $($_.Exception.Message)"
+            Write-WinUtilLog -Level "ERROR" -Component "Package" -Message $message
+            throw $message
+        }
+
+        if ($null -eq $process) {
+            $message = "npm $npmVerb for $name returned no process information."
+            Write-WinUtilLog -Level "ERROR" -Component "Package" -Message $message
+            throw $message
+        }
+
+        if ($process.ExitCode -ne 0) {
+            $message = "npm $npmVerb failed for $name (exit code: $($process.ExitCode))."
+            Write-WinUtilLog -Level "ERROR" -Component "Package" -Message $message
+            throw $message
+        }
+
+        Write-WinUtilLog -Component "Package" -Message "$name npm $npmVerb completed (exit code: 0)"
+
+        # npm packages such as Prismcast can require a separate post-install
+        # action, for example registering and starting a background service.
+        if (
+            $Action -eq "Install" -and
+            -not [string]::IsNullOrWhiteSpace([string]$package.postInstallCommand)
+        ) {
             Write-WinUtilLog -Component "Package" -Message "Running post-install step for $name`: $($package.postInstallCommand)"
+
             try {
-                & ([scriptblock]::Create($package.postInstallCommand))
-                Write-WinUtilLog -Component "Package" -Message "$name post-install step completed"
+                & ([scriptblock]::Create([string]$package.postInstallCommand))
             } catch {
-                Write-WinUtilLog -Level "ERROR" -Component "Package" -Message "Post-install step failed for ${name}: $_"
+                $message = "Post-install step failed for ${name}: $($_.Exception.Message)"
+                Write-WinUtilLog -Level "ERROR" -Component "Package" -Message $message
+                throw $message
             }
+
+            Write-WinUtilLog -Component "Package" -Message "$name post-install step completed"
         }
     }
 }
