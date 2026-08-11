@@ -81,6 +81,7 @@ function Invoke-WPFUIElements {
             Checked     = $entryInfo.Checked
             ButtonWidth = $entryInfo.ButtonWidth
             GroupName   = $entryInfo.GroupName  # Added for RadioButton groupings
+            ToolTip     = Get-WinUtilConfigToolTip -Description $entryInfo.description -ConfigKey $entry
         }
 
         if (-not $organizedData.ContainsKey($entryObject.Panel)) {
@@ -190,7 +191,7 @@ function Invoke-WPFUIElements {
 
                         $label = New-Object Windows.Controls.Label
                         $label.Content = $entryInfo.Content
-                        $label.ToolTip = $entryInfo.Description
+                        $label.ToolTip = $entryInfo.ToolTip
                         $label.HorizontalAlignment = "Left"
                         $label.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
                         $label.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "MainForegroundColor")
@@ -224,7 +225,7 @@ function Invoke-WPFUIElements {
                         $toggleButton = New-Object Windows.Controls.Primitives.ToggleButton
                         $toggleButton.Name = $entryInfo.Name
                         $toggleButton.Content = $entryInfo.Content[1]
-                        $toggleButton.ToolTip = $entryInfo.Description
+                        $toggleButton.ToolTip = $entryInfo.ToolTip
                         $toggleButton.HorizontalAlignment = "Left"
                         $toggleButton.Style = $ToggleButtonStyle
                         [System.Windows.Automation.AutomationProperties]::SetName($toggleButton, $entryInfo.Content[0])
@@ -268,7 +269,7 @@ function Invoke-WPFUIElements {
                         $label = New-Object Windows.Controls.Label
                         $label.Content = $entryInfo.Content
                         $label.HorizontalAlignment = "Left"
-                        $label.ToolTip = $entryInfo.Description
+                        $label.ToolTip = $entryInfo.ToolTip
                         $label.VerticalAlignment = "Center"
                         $label.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
                         $label.UseLayoutRounding = $true
@@ -398,6 +399,7 @@ function Invoke-WPFUIElements {
                         $button = New-Object Windows.Controls.Button
                         $button.Name = $entryInfo.Name
                         $button.Content = $entryInfo.Content
+                        $button.ToolTip = $entryInfo.ToolTip
                         $button.HorizontalAlignment = "Left"
                         $button.SetResourceReference([Windows.Controls.Control]::MarginProperty, "ButtonMargin")
                         $button.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
@@ -448,7 +450,7 @@ function Invoke-WPFUIElements {
                         $radioButton.HorizontalAlignment = "Left"
                         $radioButton.SetResourceReference([Windows.Controls.Control]::MarginProperty, "CheckBoxMargin")
                         $radioButton.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
-                        $radioButton.ToolTip = $entryInfo.Description
+                        $radioButton.ToolTip = $entryInfo.ToolTip
                         $radioButton.UseLayoutRounding = $true
                         [System.Windows.Automation.AutomationProperties]::SetName($radioButton, $entryInfo.Content)
 
@@ -490,7 +492,7 @@ function Invoke-WPFUIElements {
                         $checkBox.Name = $entryInfo.Name
                         $checkBox.Content = $entryInfo.Content
                         $checkBox.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
-                        $checkBox.ToolTip = $entryInfo.Description
+                        $checkBox.ToolTip = $entryInfo.ToolTip
                         $checkBox.SetResourceReference([Windows.Controls.Control]::MarginProperty, "CheckBoxMargin")
                         $checkBox.UseLayoutRounding = $true
                         [System.Windows.Automation.AutomationProperties]::SetName($checkBox, $entryInfo.Content)

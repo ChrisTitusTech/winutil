@@ -29,6 +29,8 @@ To create your own config file:
 3. Choose **Export**.
 4. Save the exported JSON file.
 
+When editing a configuration manually, hover over an application or tweak in WinUtil to see its configuration key, such as `WPFInstallfirefox` or `WPFTweaksTelemetry`.
+
 Once you have exported a config, launch WinUtil with it using this command:
 ```powershell
 & ([ScriptBlock]::Create((irm "https://christitus.com/win"))) -Config "C:\Path\To\Config.json"
