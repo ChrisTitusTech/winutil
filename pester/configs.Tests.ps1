@@ -189,6 +189,14 @@ Describe "Tweaks config" {
             foreach ($registryEntry in @($tweak.Value.registry)) {
                 if ($null -eq $registryEntry) { continue }
 
+                if ($registryEntry.Values) {
+                    if ($registryEntry.PSObject.Properties.Name -notcontains "DefaultValue" -or
+                        [string]::IsNullOrWhiteSpace([string]$registryEntry.DefaultValue)) {
+                        $invalidTweaks.Add("$($tweak.Name),registry")
+                    }
+                    continue
+                }
+
                 if ($registryEntry.PSObject.Properties.Name -notcontains "OriginalValue" -or
                     [string]::IsNullOrWhiteSpace([string]$registryEntry.OriginalValue)) {
                     $invalidTweaks.Add("$($tweak.Name),registry")
@@ -366,6 +374,17 @@ Describe "UI-rendered config entries" {
         }
     }
 
+    It "exposes every configured DNS provider in the DNS combobox" {
+        $dns = Get-WinUtilConfigObject -Name "dns"
+        $tweaks = Get-WinUtilConfigObject -Name "tweaks"
+        $comboItems = @($tweaks.WPFchangedns.ComboItems -split " ")
+        $missingProviders = @($dns.PSObject.Properties.Name | Where-Object { $comboItems -notcontains $_ })
+
+        if ($missingProviders.Count -gt 0) {
+            throw "WPFchangedns missing providers: $($missingProviders -join ', ')"
+        }
+    }
+
     It "contains required feature fields and valid configured functions" {
         $feature = Get-WinUtilConfigObject -Name "feature"
         $functionNames = Get-WinUtilTopLevelFunctionNames
@@ -429,6 +448,27 @@ Describe "UI-rendered config entries" {
                 if (-not (Test-WinUtilHasNonEmptyProperty -Object $entry.Value -Name "ComboItems")) {
                     $invalidEntries.Add("$($entry.Name) combobox missing ComboItems")
                 }
+                $statefulRegistry = @($entry.Value.registry | Where-Object Values)
+                if ($statefulRegistry.Count -gt 0) {
+                    $comboItems = if ($entry.Value.ComboItems -is [string]) {
+                        if ($entry.Value.ComboItems.Contains("|")) {
+                            @($entry.Value.ComboItems -split "\|")
+                        } else {
+                            @($entry.Value.ComboItems -split " ")
+                        }
+                    } else {
+                        @($entry.Value.ComboItems)
+                    }
+                    if ($statefulRegistry.Count -ne @($entry.Value.registry).Count) {
+                        $invalidEntries.Add("$($entry.Name) registry states must all use Values")
+                    } else {
+                    foreach ($setting in $statefulRegistry) {
+                        if (Compare-Object $comboItems @($setting.Values.PSObject.Properties.Name)) {
+                            $invalidEntries.Add("$($entry.Name) ComboItems and registry states do not match")
+                        }
+                    }
+                    }
+                }
             } else {
                 if (-not (Test-WinUtilHasNonEmptyProperty -Object $entry.Value -Name "Description")) {
                     $invalidEntries.Add("$($entry.Name) missing Description")
@@ -442,7 +482,12 @@ Describe "UI-rendered config entries" {
             foreach ($registryEntry in @($entry.Value.registry)) {
                 if ($null -eq $registryEntry) { continue }
 
-                foreach ($missingField in (Get-WinUtilMissingRequiredFields -EntryName "$($entry.Name),registry" -Entry $registryEntry -RequiredFields @("Path", "Name", "Type", "Value", "OriginalValue"))) {
+                $requiredRegistryFields = if ($entry.Value.Type -eq "Combobox" -and $statefulRegistry.Count -gt 0) {
+                    @("Path", "Name", "Type", "DefaultValue", "Values")
+                } else {
+                    @("Path", "Name", "Type", "Value", "OriginalValue")
+                }
+                foreach ($missingField in (Get-WinUtilMissingRequiredFields -EntryName "$($entry.Name),registry" -Entry $registryEntry -RequiredFields $requiredRegistryFields)) {
                     $invalidEntries.Add($missingField)
                 }
             }

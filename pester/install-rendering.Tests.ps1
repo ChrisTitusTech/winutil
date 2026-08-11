@@ -21,7 +21,9 @@ Describe "Install app rendering startup contract" {
         $renderScript | Should -Match 'Dispatcher\.BeginInvoke'
         $renderScript | Should -Match 'Invoke-WinUtilInstallAppRenderNextBatch'
         $renderScript | Should -Match 'Initialize-InstallAppEntry'
-        $renderScript | Should -Match 'Find-AppsByNameOrDescription -SearchString \$sync\.SearchBar\.Text -Category \$sync\.SearchBar\.Tag'
+        $renderScript | Should -Match 'Find-AppsByNameOrDescription -SearchString \$sync\.SearchBar\.Text -Categories \$selectedCategories'
+        # A batch has to be filtered when either filter is on, not only when there is search text
+        $renderScript | Should -Match '\$selectedCategories\.Count -gt 0'
         $renderScript | Should -Match '\$sync\.InstallAppEntriesRendered = \$true'
     }
 

@@ -322,7 +322,7 @@ function Start-WinUtilUserInterface {
         $searchBarTimer.Stop()
         switch ($sync.currentTab) {
             "Install" {
-                Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text -Category $sync.SearchBar.Tag
+                Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text -Categories $sync.SelectedAppCategories.ToArray()
             }
             "Tweaks" {
                 Find-TweaksByNameOrDescription -SearchString $sync.SearchBar.Text
@@ -333,10 +333,6 @@ function Start-WinUtilUserInterface {
         }
     })
     $sync["SearchBar"].Add_TextChanged({
-        if ($sync.SearchBar.Tag -ne $sync.SearchBar.Text) {
-            $sync.SearchBar.Tag = $null
-        }
-
         if ($sync.SearchBar.Text -ne "") {
             $sync.SearchBarClearButton.Visibility = "Visible"
             $sync.SearchBarIcon.Visibility = "Collapsed"
@@ -345,29 +341,32 @@ function Start-WinUtilUserInterface {
             $sync.SearchBarIcon.Visibility = "Visible"
         }
 
-        # Category chip handlers apply their filter immediately.
-        if ($sync.SearchBar.Tag -eq $sync.SearchBar.Text) {
-            return
-        }
-
         if ($searchBarTimer.IsEnabled) {
             $searchBarTimer.Stop()
         }
         $searchBarTimer.Start()
     })
 
-    # Quick Category Search Chips
-    $sync["WPFSearchChipAll"].Add_Click({ Set-WinUtilAppCategoryFilter })
-    $sync["WPFSearchChipBrowsers"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Browsers" })
-    $sync["WPFSearchChipCommunications"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Communications" })
-    $sync["WPFSearchChipDevelopment"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Development" })
-    $sync["WPFSearchChipDocument"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Document" })
-    $sync["WPFSearchChipGames"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Games" })
-    $sync["WPFSearchChipMicrosoftTools"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Microsoft Tools" })
-    $sync["WPFSearchChipMultimediaTools"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Multimedia Tools" })
-    $sync["WPFSearchChipProTools"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Pro Tools" })
-    $sync["WPFSearchChipSelfhostedTools"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Selfhosted Tools" })
-    $sync["WPFSearchChipUtilities"].Add_Click({ Set-WinUtilAppCategoryFilter -Category "Utilities" })
+    # Category filter chips. The chip carries its category in Tag, so one handler covers all of them.
+    $sync.AppCategoryChips = @(
+        @{ Name = "WPFSearchChipAll";             Category = "" }
+        @{ Name = "WPFSearchChipBrowsers";        Category = "Browsers" }
+        @{ Name = "WPFSearchChipCommunications";  Category = "Communications" }
+        @{ Name = "WPFSearchChipDevelopment";     Category = "Development" }
+        @{ Name = "WPFSearchChipDocument";        Category = "Document" }
+        @{ Name = "WPFSearchChipGames";           Category = "Games" }
+        @{ Name = "WPFSearchChipMicrosoftTools";  Category = "Microsoft Tools" }
+        @{ Name = "WPFSearchChipMultimediaTools"; Category = "Multimedia Tools" }
+        @{ Name = "WPFSearchChipProTools";        Category = "Pro Tools" }
+        @{ Name = "WPFSearchChipSelfhostedTools"; Category = "Selfhosted Tools" }
+        @{ Name = "WPFSearchChipUtilities";       Category = "Utilities" }
+    )
+    $sync.SelectedAppCategories = [System.Collections.Generic.List[string]]::new()
+
+    foreach ($appCategoryChip in $sync.AppCategoryChips) {
+        $sync[$appCategoryChip.Name].Tag = $appCategoryChip.Category
+        $sync[$appCategoryChip.Name].Add_Click({ Invoke-WinUtilAppCategoryChip -Chip $this })
+    }
 
     $sync["Form"].Add_Loaded({
         param($e)

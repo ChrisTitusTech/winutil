@@ -83,7 +83,7 @@ Function Invoke-WinUtilCurrentSystem {
             $serviceKeys = $entry.service
             $entryType = $entry.Type
 
-            if ($registryKeys -or $serviceKeys) {
+            if (($registryKeys -or $serviceKeys) -and $entryType -ne "Combobox") {
                 $Values = @()
 
                 if ($entryType -eq "Toggle") {

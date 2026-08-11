@@ -1,5 +1,6 @@
 name: "Feature request"
 description: "Suggest a new feature or improvement for the project."
+title: "[Feature Request] - <your summary here>"
 labels: ["enhancement"]
 
 body:

@@ -18,8 +18,9 @@ function Get-WinUtilAppEntryHandlers {
 
     $script:WinUtilAppEntryHandlers = @{
         BorderClick = {
-            $childCheckbox = ($this.Child | Where-Object {$_.Template.TargetType -eq [System.Windows.Controls.Checkbox]})[0]
-            $childCheckBox.isChecked = -not $childCheckbox.IsChecked
+            # Resolve through $sync because the border's child is a layout Grid for FOSS entries
+            $childCheckbox = $sync.$($this.Tag)
+            $childCheckbox.IsChecked = -not $childCheckbox.IsChecked
         }
         MouseEnter = {
             if (($sync.$($this.Tag).IsChecked) -eq $false) {
@@ -38,14 +39,15 @@ function Get-WinUtilAppEntryHandlers {
             $sync.appPopup.PlacementTarget = $this
             $sync.appPopup.IsOpen = $true
         }
+        # The checkbox sits inside the entry layout Grid, so the border is one level further up
         Checked = {
-            Invoke-WPFSelectedCheckboxesUpdate -type "Add" -checkboxName $this.Parent.Tag
-            $borderElement = $this.Parent
+            Invoke-WPFSelectedCheckboxesUpdate -type "Add" -checkboxName $this.Tag
+            $borderElement = $this.Parent.Parent
             $borderElement.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallSelectedColor")
         }
         Unchecked = {
-            Invoke-WPFSelectedCheckboxesUpdate -type "Remove" -checkboxName $this.Parent.Tag
-            $borderElement = $this.Parent
+            Invoke-WPFSelectedCheckboxesUpdate -type "Remove" -checkboxName $this.Tag
+            $borderElement = $this.Parent.Parent
             $borderElement.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallUnselectedColor")
         }
         ImageFailed = {

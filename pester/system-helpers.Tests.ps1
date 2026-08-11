@@ -152,7 +152,6 @@ Describe "Set-WinUtilRegistry" {
         $registryPath = "HKLM:\Software\WinUtilTest"
         $script:testPathResults["HKU:\"] = $true
         $script:testPathResults[$registryPath] = $true
-
         Set-WinUtilRegistry -Path $registryPath -Name "ObsoleteValue" -Type "String" -Value "<RemoveEntry>"
 
         Should -Invoke -CommandName Set-ItemProperty -Times 0 -Exactly
@@ -163,6 +162,7 @@ Describe "Set-WinUtilRegistry" {
                 $ErrorAction -eq "Stop"
         }
     }
+
 }
 
 Describe "Set-WinUtilService" {

@@ -49,6 +49,9 @@ function Initialize-WinUtilTabContent {
                 }
             }
         }
+        # Controls built just now start unchecked, so anything already chosen by an import or a
+        # preset has to be applied to them once they exist
+        Reset-WPFCheckBoxes -doToggles $true
     } catch {
         # A half built tab must be allowed to rebuild rather than staying empty forever
         $sync.InitializedTabs[$TabName] = $false

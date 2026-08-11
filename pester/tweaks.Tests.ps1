@@ -191,7 +191,8 @@ Describe "Invoke-WPFtweaksbutton" {
         $script:capturedTweaksJob = $null
 
         Mock Invoke-WinUtilTweaks { }
-        Mock Set-WinUtilDNS { }
+        # the real one returns $true on success, and the workflow now stops when it does not
+        Mock Set-WinUtilDNS { return $true }
         Mock Invoke-WPFUIThread { }
         Mock Write-WinUtilLog { }
         Mock Write-WinUtilJobProgress { }
@@ -253,6 +254,29 @@ Describe "Invoke-WPFtweaksbutton" {
         Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Applying WPFTweaksServices (2/2)" -and $Percent -eq 50
         }
+    }
+
+    It "stops the run when the DNS change fails" {
+        # carrying on would leave the machine half configured, so the job ends and reports it
+        $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
+        Mock Set-WinUtilDNS { return $false }
+
+        Invoke-WPFtweaksbutton
+        $jobParameters = $script:capturedTweaksJob.Parameters
+
+        { & $script:capturedTweaksJob.ScriptBlock @jobParameters } | Should -Throw -ExpectedMessage "*DNS change to Cloudflare failed*"
+        Should -Invoke -CommandName Invoke-WinUtilTweaks -Times 0 -Exactly
+    }
+
+    It "carries on when the DNS change succeeds" {
+        $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
+        Mock Set-WinUtilDNS { return $true }
+
+        Invoke-WPFtweaksbutton
+        $jobParameters = $script:capturedTweaksJob.Parameters
+        & $script:capturedTweaksJob.ScriptBlock @jobParameters
+
+        Should -Invoke -CommandName Invoke-WinUtilTweaks -Times 1 -Exactly
     }
 
     It "takes the restore point before any other tweak runs" {

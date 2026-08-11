@@ -41,8 +41,14 @@ function Invoke-WPFtweaksbutton {
     }
 
     if ($DnsProvider -ne "Default") {
-      Measure-WinUtilStep -Scope "Tweaks" -Name "Set DNS to $DnsProvider" -ScriptBlock {
-        Set-WinUtilDNS -DNSProvider $DnsProvider
+      $dnsResult = Measure-WinUtilStep -Scope "Tweaks" -Name "Set DNS to $DnsProvider" -ScriptBlock {
+        @(Set-WinUtilDNS -DNSProvider $DnsProvider)
+      }
+
+      # Carrying on after the DNS change failed leaves the machine half configured, so the run
+      # ends here and the job layer reports it
+      if (@($dnsResult)[-1] -ne $true) {
+        throw "The DNS change to $DnsProvider failed, so the remaining tweaks were not applied."
       }
     }
 

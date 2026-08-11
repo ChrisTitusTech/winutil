@@ -17,6 +17,7 @@ BeforeAll {
     }
     function Invoke-WinUtilISOCheckExistingWork { }
     function Initialize-WinUtilInstallTabControls { }
+    function Reset-WPFCheckBoxes { param([bool]$doToggles) }
 
     . (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilTabContent.ps1")
 }
@@ -34,6 +35,7 @@ Describe "Initialize-WinUtilTabContent" {
 
         Mock Invoke-WPFUIElements { }
         Mock Initialize-WPFUI { }
+        Mock Reset-WPFCheckBoxes { }
     }
 
     AfterEach {
@@ -73,6 +75,22 @@ Describe "Initialize-WinUtilTabContent" {
         Should -Invoke -CommandName Invoke-WPFUIElements -Times 1 -Exactly -ParameterFilter {
             $targetGridName -eq "appxpanel" -and $columncount -eq 2
         }
+    }
+
+    It "re-applies checkbox selections after building a tab's controls" {
+        # controls built just now start unchecked, so an import or a preset has to reach them
+        Initialize-WinUtilTabContent -TabName "Tweaks"
+
+        Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly -ParameterFilter {
+            $doToggles -eq $true
+        }
+    }
+
+    It "does not re-apply checkbox selections on a tab that is already built" {
+        Initialize-WinUtilTabContent -TabName "Tweaks"
+        Initialize-WinUtilTabContent -TabName "Tweaks"
+
+        Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly
     }
 
     It "checks for existing Win11ISO work when the tab is initialized" {

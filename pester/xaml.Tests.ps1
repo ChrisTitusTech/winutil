@@ -184,7 +184,9 @@ Describe "XAML document" {
 
     It "wires the Document search chip to an existing Document category" {
         $uiScript = Get-Content -Path $script:uiScriptPath -Raw
-        $uiScript | Should -Match '\$sync\["WPFSearchChipDocument"\]\.Add_Click\(\{ Set-WinUtilAppCategoryFilter -Category "Document" \}\)'
+        # The chips are wired where the rest of the interface is built, not in main.ps1
+        $uiScript | Should -Match '@\{ Name = "WPFSearchChipDocument";\s+Category = "Document" \}'
+        $uiScript | Should -Match 'Add_Click\(\{ Invoke-WinUtilAppCategoryChip -Chip \$this \}\)'
 
         $applications = Get-WinUtilConfigObject -Name "applications"
         $categories = @($applications.PSObject.Properties | ForEach-Object { $_.Value.category } | Sort-Object -Unique)
@@ -481,6 +483,9 @@ Describe "XAML and sync wiring" {
             "checkmarkrender",
             "warningrender",
             "InitializedTabs",
+            "AppCategoryChips",
+            "SelectedAppCategories",
+            "AppCategoryAutoExpanded",
             "RenderedAssetCache",
             "WindowIconHandles",
             "ToggleStatusCache",
@@ -556,7 +561,10 @@ Describe "WPF handler wiring" {
             $explicitHandlerPattern = '\$sync\s*(?:\[\s*["'']' + $escapedName + '["'']\s*\]|\.' + $escapedName + ')\.Add_Click'
             $hasExplicitHandler = $uiScript -imatch $explicitHandlerPattern
 
-            if (-not ($hasSwitchHandler -or $hasFeatureHandler -or $hasExplicitHandler)) {
+            # The category chips share one handler, wired from the list that names them
+            $hasChipHandler = $uiScript -imatch ('@\{\s*Name\s*=\s*"' + $escapedName + '"')
+
+            if (-not ($hasSwitchHandler -or $hasFeatureHandler -or $hasExplicitHandler -or $hasChipHandler)) {
                 $unhandledButtons.Add($button.Name)
             }
         }

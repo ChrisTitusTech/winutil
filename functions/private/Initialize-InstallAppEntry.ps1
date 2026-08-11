@@ -80,13 +80,6 @@ function Initialize-InstallAppEntry {
         $appName.Text = $app.content
 
         # Add FOSS label after the name if FOSS
-        if ($app.foss -eq $true) {
-            $fossRun = [System.Windows.Documents.Run]::new(" $([char]0x25CF)")
-            $fossRun.Foreground = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(110, 255, 114))
-            $fossRun.FontSize = 11.5
-
-            [void]$appName.Inlines.Add($fossRun)
-        }
         [void]$contentPanel.Children.Add($appName)
         $checkBox.Content = $contentPanel
 
@@ -94,7 +87,21 @@ function Initialize-InstallAppEntry {
         $checkBox.SetValue([Windows.Automation.AutomationProperties]::NameProperty, $app.content)
         $border.SetValue([Windows.Automation.AutomationProperties]::NameProperty, $app.content)
 
-        $border.Child = $checkBox
+        # Keep the same layout for every entry so the checkbox handlers can reach the border
+        $entryLayout = New-Object Windows.Controls.Grid
+        [void]$entryLayout.Children.Add($checkBox)
+
+        # Mark FOSS apps with a corner badge, bled into the border padding so it sits on the edge
+        if ($app.foss -eq $true) {
+            $fossBadge = New-WinUtilFossBadge
+            $fossBadge.HorizontalAlignment = "Right"
+            $fossBadge.VerticalAlignment = "Top"
+            $fossBadge.Margin = New-Object Windows.Thickness(0, -4, -6, 0)
+
+            [void]$entryLayout.Children.Add($fossBadge)
+        }
+
+        $border.Child = $entryLayout
         if ($sync.selectedApps -contains $appKey) {
             $checkBox.IsChecked = $true
         }
