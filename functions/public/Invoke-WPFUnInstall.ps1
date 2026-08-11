@@ -70,10 +70,14 @@ function Invoke-WPFUnInstall {
         $packagesWinget = $packagesSorted['Winget']
         $packagesChoco = $packagesSorted['Choco']
         $packagesNpm = $packagesSorted['Npm']
+
         $totalPackages = @($packagesWinget).Count + `
-                 @($packagesChoco).Count + `
-                 @($packagesNpm).Count        $completedPackages = 0
+                         @($packagesChoco).Count + `
+                         @($packagesNpm).Count
+
+        $completedPackages = 0
         $hasUI = $null -ne $sync.Form -and $null -ne $sync.Form.Dispatcher
+
         Write-WinUtilLog -Component "Uninstall" -Message "Uninstall package manager split: winget=$(@($packagesWinget).Count), choco=$(@($packagesChoco).Count), npm=$(@($packagesNpm).Count)"
 
         try {
