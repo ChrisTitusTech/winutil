@@ -476,7 +476,11 @@ Describe "XAML and sync wiring" {
             "Win11ISOUSBDisks",
             "AppCategoryChips",
             "SelectedAppCategories",
-            "AppCategoryAutoExpanded"
+            "AppCategoryAutoExpanded",
+            "AnyCuratedMatch",
+            "LastAutoExpandSearch",
+            "PackageManagerSearchCache",
+            "PackageManagerSearchInFlight"
         )
         $allowedNames = @($xamlNames + $generatedNames + $dynamicStateNames) | Sort-Object -Unique
         $bracketReferences = @(
