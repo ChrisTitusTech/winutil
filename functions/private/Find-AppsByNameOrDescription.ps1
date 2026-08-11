@@ -122,15 +122,16 @@ function Find-AppsByNameOrDescription {
             return
         }
 
+        $sync.AnyCuratedMatch = $false
         # IndexOf with OrdinalIgnoreCase is faster than -like with wildcard escaping
-        $sync.ItemsControl.Items | ForEach-Object {
-            if ($null -ne $_.PSObject.Properties['Tag'] -and $_.Tag -eq "CategoryContainer_PackageManagerResults") {
-                return
+        foreach ($itemCtrl in $sync.ItemsControl.Items) {
+            if ($null -ne $itemCtrl.PSObject.Properties['Tag'] -and $itemCtrl.Tag -eq "CategoryContainer_PackageManagerResults") {
+                continue
             }
 
-            if ($_.Children.Count -ge 2) {
-                $categoryLabel = $_.Children[0]
-                $wrapPanel = $_.Children[1]
+            if ($itemCtrl.Children.Count -ge 2) {
+                $categoryLabel = $itemCtrl.Children[0]
+                $wrapPanel = $itemCtrl.Children[1]
                 $categoryHasMatch = $false
                 $categoryLabel.Visibility = [Windows.Visibility]::Visible
 
@@ -149,6 +150,7 @@ function Find-AppsByNameOrDescription {
                         if ($categoryMatch -and $textMatch) {
                             $appControl.Visibility = [Windows.Visibility]::Visible
                             $categoryHasMatch = $true
+                            $sync.AnyCuratedMatch = $true
                         } else {
                             $appControl.Visibility = [Windows.Visibility]::Collapsed
                         }
@@ -158,7 +160,7 @@ function Find-AppsByNameOrDescription {
 
                 if ($categoryHasMatch) {
                     $wrapPanel.Visibility = [Windows.Visibility]::Visible
-                    $_.Visibility = [Windows.Visibility]::Visible
+                    $itemCtrl.Visibility = [Windows.Visibility]::Visible
                     # Expand it, otherwise the matches stay hidden behind a collapsed header.
                     # Remember that it was collapsed so clearing the filter can put it back.
                     if ($categoryLabel.Content -like "+*") {
@@ -167,7 +169,7 @@ function Find-AppsByNameOrDescription {
                     }
                 }
                 else {
-                    $_.Visibility = [Windows.Visibility]::Collapsed
+                    $itemCtrl.Visibility = [Windows.Visibility]::Collapsed
                 }
             }
         }
@@ -179,6 +181,8 @@ function Find-AppsByNameOrDescription {
 
             if ($null -eq $sync.PackageManagerSearchCache) {
                 $sync.PackageManagerSearchCache = [Hashtable]::Synchronized(@{})
+                $sync.PackageManagerSearchInFlight = [Hashtable]::Synchronized(@{})
+                $sync.LastAutoExpandSearch = ""
             }
 
             $sync.UpdatePackageManagerUI = {
@@ -188,6 +192,7 @@ function Find-AppsByNameOrDescription {
 
                 # Cache the results
                 $sync.PackageManagerSearchCache["${SearchString}_${Manager}"] = $finalResults
+                $sync.PackageManagerSearchInFlight.Remove("${SearchString}_${Manager}")
 
                 # Only update the UI if the results are for the currently selected manager
                 $currentManager = if ($null -ne $sync.preferences -and $null -ne $sync.preferences.packagemanager) { $sync.preferences.packagemanager } else { "Winget" }
@@ -221,7 +226,8 @@ function Find-AppsByNameOrDescription {
                     }
 
                     $lbl = New-Object System.Windows.Controls.Label
-                    $lbl.Content = "- Package Manager Results"
+                    $prefix = if ($sync.AnyCuratedMatch) { "+" } else { "-" }
+                    $lbl.Content = "$prefix Package Manager Results"
                     $lbl.Tag = "CategoryToggleButton_PM"
                     if ("Windows.Controls.Control" -as [type]) {
                         $lbl.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "HeaderFontSize")
@@ -255,7 +261,7 @@ function Find-AppsByNameOrDescription {
                     $pmWrap.HorizontalAlignment = "Left"
                     $pmWrap.VerticalAlignment = "Top"
                     $pmWrap.Margin = New-Object Windows.Thickness(0, 0, 0, 0)
-                    $pmWrap.Visibility = [Windows.Visibility]::Visible
+                    $pmWrap.Visibility = if ($sync.AnyCuratedMatch) { [Windows.Visibility]::Collapsed } else { [Windows.Visibility]::Visible }
                     $pmWrap.Tag = "CategoryWrapPanel_PackageManagerResults"
 
                     if ($null -ne $pmContainer.Children) { $null = $pmContainer.Children.Add($pmWrap) }
@@ -329,6 +335,23 @@ function Find-AppsByNameOrDescription {
                             }
                         }
                     }
+
+                    if ($null -ne $pmWrap -and $pmWrap.Children.Count -gt 0) {
+                        $pmContainer.Visibility = [Windows.Visibility]::Visible
+                        $lbl = $pmContainer.Children[0]
+                        
+                        # ponytail: auto-expand only when no curated match, preserve state otherwise
+                        if ($sync.LastAutoExpandSearch -ne $SearchString) {
+                            $sync.LastAutoExpandSearch = $SearchString
+                            $shouldExpand = -not $sync.AnyCuratedMatch
+                            $pmWrap.Visibility = if ($shouldExpand) { [Windows.Visibility]::Visible } else { [Windows.Visibility]::Collapsed }
+                            $prefix = if ($shouldExpand) { "-" } else { "+" }
+                        } else {
+                            $prefix = if ([string]$lbl.Content -like "+*") { "+" } else { "-" }
+                        }
+                        
+                        $lbl.Content = "$prefix Package Manager Results ($($pmWrap.Children.Count))"
+                    }
                     else {
                         $pmContainer.Visibility = [Windows.Visibility]::Collapsed
                     }
@@ -350,7 +373,9 @@ function Find-AppsByNameOrDescription {
             if (Get-Command Invoke-WPFRunspace -ErrorAction SilentlyContinue) {
                 # Multi-thread: Spawn searches for both Winget and Choco
                 foreach ($mgr in @("Winget", "Choco")) {
-                    if (-not $sync.PackageManagerSearchCache.ContainsKey("${SearchString}_${mgr}")) {
+                    $searchKey = "${SearchString}_${mgr}"
+                    if (-not $sync.PackageManagerSearchCache.ContainsKey($searchKey) -and -not $sync.PackageManagerSearchInFlight.ContainsKey($searchKey)) {
+                        $sync.PackageManagerSearchInFlight[$searchKey] = $true
                         Invoke-WPFRunspace -ParameterList @(
                             @("SearchString", $SearchString),
                             @("Manager", $mgr)
