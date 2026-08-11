@@ -33,7 +33,7 @@ Function Set-WinUtilService {
 
         # Service exists, proceed with changing properties -- while handling auto delayed start for PWSH 5
         if (($PSVersionTable.PSVersion.Major -lt 7) -and ($StartupType -eq "AutomaticDelayedStart")) {
-            sc.exe config $Name start=delayed-auto
+            sc.exe config $Name start= delayed-auto
         } else {
             $service | Set-Service -StartupType $StartupType -ErrorAction Stop
         }
