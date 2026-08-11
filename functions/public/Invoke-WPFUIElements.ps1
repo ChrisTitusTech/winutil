@@ -65,6 +65,11 @@ function Invoke-WPFUIElements {
     # Iterate through JSON data and organize by panel and category
     foreach ($entry in $configHashtable.Keys) {
         $entryInfo = $configHashtable[$entry]
+        $entryToolTip = $entryInfo.description
+        $isConfigSelectionEntry = [string]::IsNullOrWhiteSpace([string]$entryInfo.type) -and $entry -match '^(WPFTweaks|WPFFeature|WPFAppx)'
+        if ($isConfigSelectionEntry) {
+            $entryToolTip = Get-WinUtilConfigToolTip -Description $entryInfo.description -ConfigKey $entry
+        }
 
         # Create an object for the application
         $entryObject = [PSCustomObject]@{
@@ -81,6 +86,7 @@ function Invoke-WPFUIElements {
             Checked     = $entryInfo.Checked
             ButtonWidth = $entryInfo.ButtonWidth
             GroupName   = $entryInfo.GroupName  # Added for RadioButton groupings
+            ToolTip     = $entryToolTip
         }
 
         if (-not $organizedData.ContainsKey($entryObject.Panel)) {
@@ -490,7 +496,7 @@ function Invoke-WPFUIElements {
                         $checkBox.Name = $entryInfo.Name
                         $checkBox.Content = $entryInfo.Content
                         $checkBox.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
-                        $checkBox.ToolTip = $entryInfo.Description
+                        $checkBox.ToolTip = $entryInfo.ToolTip
                         $checkBox.SetResourceReference([Windows.Controls.Control]::MarginProperty, "CheckBoxMargin")
                         $checkBox.UseLayoutRounding = $true
                         [System.Windows.Automation.AutomationProperties]::SetName($checkBox, $entryInfo.Content)
