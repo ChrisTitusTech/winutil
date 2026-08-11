@@ -437,15 +437,6 @@
         "winget": "ES-DE.EmulationStation-DE",
         "foss": true
     },
-    "emulationstation": {
-        "category": "Games",
-        "choco": "emulationstation",
-        "content": "Emulationstation",
-        "description": "A graphical and themeable emulator front-end that allows you to access all your favorite games in one place, even without a keyboard.",
-        "link": "https://emulationstation.org",
-        "winget": "Emulationstation.Emulationstation",
-        "foss": true
-    },
     "enteauth": {
         "category": "Utilities",
         "choco": "ente-auth",
