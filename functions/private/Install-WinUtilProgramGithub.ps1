@@ -32,20 +32,23 @@ Function Install-WinUtilProgramGithub {
                 $allReleases = Invoke-RestMethod -Uri "https://api.github.com/repos/$repo/releases" -Headers $headers -TimeoutSec 30
                 $release = $allReleases | Select-Object -First 1
             } catch {
-                Write-WinUtilLog -Level "ERROR" -Component "Package" -Message "Failed to query releases for ${repo}: $_"
-                continue
+                $message = "Failed to query releases for ${repo}: $($_.Exception.Message)"
+                Write-WinUtilLog -Level "ERROR" -Component "Package" -Message $message
+                throw $message
             }
         }
 
         if (-not $release) {
-            Write-WinUtilLog -Level "ERROR" -Component "Package" -Message "No releases found for $repo"
-            continue
+            $message = "No releases found for $repo"
+            Write-WinUtilLog -Level "ERROR" -Component "Package" -Message $message
+            throw $message
         }
 
         $asset = $release.assets | Where-Object { $_.name -like $assetPattern } | Select-Object -First 1
         if (-not $asset) {
-            Write-WinUtilLog -Level "ERROR" -Component "Package" -Message "No asset matching '$assetPattern' found in latest release of $repo"
-            continue
+            $message = "No asset matching '$assetPattern' found in latest release of $repo"
+            Write-WinUtilLog -Level "ERROR" -Component "Package" -Message $message
+            throw $message
         }
 
         $downloadDirectory = Join-Path $env:PUBLIC "Downloads\WinUtil"
@@ -56,8 +59,9 @@ Function Install-WinUtilProgramGithub {
         try {
             Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $dest -UseBasicParsing -TimeoutSec 120
         } catch {
-            Write-WinUtilLog -Level "ERROR" -Component "Package" -Message "Failed to download ${name}: $_"
-            continue
+            $message = "GitHub install for $name is missing repo/assetPattern."
+            Write-WinUtilLog -Level "ERROR" -Component "Package" -Message $message
+            throw $message
         }
 
         Write-WinUtilLog -Component "Package" -Message "Installing $name"
@@ -78,8 +82,10 @@ Function Install-WinUtilProgramGithub {
     }
 }
         } catch {
-            Write-WinUtilLog -Level "ERROR" -Component "Package" -Message "Failed to run installer for ${name}: $_"
+            $message = "Failed to run installer for ${name}: $($_.Exception.Message)"
+            Write-WinUtilLog -Level "ERROR" -Component "Package" -Message $message
             Remove-Item $dest -Force -ErrorAction SilentlyContinue
+            throw $message
         }
     }
 }
