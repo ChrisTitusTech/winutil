@@ -66,9 +66,8 @@ function Invoke-WPFUIElements {
     foreach ($entry in $configHashtable.Keys) {
         $entryInfo = $configHashtable[$entry]
         $entryToolTip = $entryInfo.description
-        $isSelectableEntry = [string]::IsNullOrWhiteSpace([string]$entryInfo.type) -or $entryInfo.type -in @("Toggle", "ToggleButton")
-        $isImportableKey = $entry -match '^(WPFTweaks|WPFToggle|WPFFeature|WPFAppx)'
-        if ($isSelectableEntry -and $isImportableKey) {
+        $isConfigSelectionEntry = [string]::IsNullOrWhiteSpace([string]$entryInfo.type) -and $entry -match '^(WPFTweaks|WPFFeature|WPFAppx)'
+        if ($isConfigSelectionEntry) {
             $entryToolTip = Get-WinUtilConfigToolTip -Description $entryInfo.description -ConfigKey $entry
         }
 
@@ -197,7 +196,7 @@ function Invoke-WPFUIElements {
 
                         $label = New-Object Windows.Controls.Label
                         $label.Content = $entryInfo.Content
-                        $label.ToolTip = $entryInfo.ToolTip
+                        $label.ToolTip = $entryInfo.Description
                         $label.HorizontalAlignment = "Left"
                         $label.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
                         $label.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "MainForegroundColor")
@@ -231,7 +230,7 @@ function Invoke-WPFUIElements {
                         $toggleButton = New-Object Windows.Controls.Primitives.ToggleButton
                         $toggleButton.Name = $entryInfo.Name
                         $toggleButton.Content = $entryInfo.Content[1]
-                        $toggleButton.ToolTip = $entryInfo.ToolTip
+                        $toggleButton.ToolTip = $entryInfo.Description
                         $toggleButton.HorizontalAlignment = "Left"
                         $toggleButton.Style = $ToggleButtonStyle
                         [System.Windows.Automation.AutomationProperties]::SetName($toggleButton, $entryInfo.Content[0])
