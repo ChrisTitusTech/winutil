@@ -65,6 +65,12 @@ function Invoke-WPFUIElements {
     # Iterate through JSON data and organize by panel and category
     foreach ($entry in $configHashtable.Keys) {
         $entryInfo = $configHashtable[$entry]
+        $entryToolTip = $entryInfo.description
+        $isSelectableEntry = [string]::IsNullOrWhiteSpace([string]$entryInfo.type) -or $entryInfo.type -in @("Toggle", "ToggleButton")
+        $isImportableKey = $entry -match '^(WPFTweaks|WPFToggle|WPFFeature|WPFAppx)'
+        if ($isSelectableEntry -and $isImportableKey) {
+            $entryToolTip = Get-WinUtilConfigToolTip -Description $entryInfo.description -ConfigKey $entry
+        }
 
         # Create an object for the application
         $entryObject = [PSCustomObject]@{
@@ -81,7 +87,7 @@ function Invoke-WPFUIElements {
             Checked     = $entryInfo.Checked
             ButtonWidth = $entryInfo.ButtonWidth
             GroupName   = $entryInfo.GroupName  # Added for RadioButton groupings
-            ToolTip     = Get-WinUtilConfigToolTip -Description $entryInfo.description -ConfigKey $entry
+            ToolTip     = $entryToolTip
         }
 
         if (-not $organizedData.ContainsKey($entryObject.Panel)) {
@@ -269,7 +275,7 @@ function Invoke-WPFUIElements {
                         $label = New-Object Windows.Controls.Label
                         $label.Content = $entryInfo.Content
                         $label.HorizontalAlignment = "Left"
-                        $label.ToolTip = $entryInfo.ToolTip
+                        $label.ToolTip = $entryInfo.Description
                         $label.VerticalAlignment = "Center"
                         $label.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
                         $label.UseLayoutRounding = $true
@@ -399,7 +405,6 @@ function Invoke-WPFUIElements {
                         $button = New-Object Windows.Controls.Button
                         $button.Name = $entryInfo.Name
                         $button.Content = $entryInfo.Content
-                        $button.ToolTip = $entryInfo.ToolTip
                         $button.HorizontalAlignment = "Left"
                         $button.SetResourceReference([Windows.Controls.Control]::MarginProperty, "ButtonMargin")
                         $button.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
@@ -450,7 +455,7 @@ function Invoke-WPFUIElements {
                         $radioButton.HorizontalAlignment = "Left"
                         $radioButton.SetResourceReference([Windows.Controls.Control]::MarginProperty, "CheckBoxMargin")
                         $radioButton.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
-                        $radioButton.ToolTip = $entryInfo.ToolTip
+                        $radioButton.ToolTip = $entryInfo.Description
                         $radioButton.UseLayoutRounding = $true
                         [System.Windows.Automation.AutomationProperties]::SetName($radioButton, $entryInfo.Content)
 

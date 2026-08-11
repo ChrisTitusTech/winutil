@@ -32,7 +32,19 @@ Describe "Configuration tooltip rendering" {
     It "uses configuration-key tooltips for generated tweak controls" {
         $rendererScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIElements.ps1") -Raw
 
-        $rendererScript | Should -Match 'ToolTip\s*= Get-WinUtilConfigToolTip -Description \$entryInfo\.description -ConfigKey \$entry'
-        $rendererScript | Should -Not -Match '\.ToolTip = \$entryInfo\.Description'
+        $rendererScript | Should -Match '\$isSelectableEntry = .*"Toggle", "ToggleButton"'
+        $rendererScript | Should -Match '\$isImportableKey = \$entry -match.*WPFTweaks.*WPFToggle.*WPFFeature.*WPFAppx'
+        $rendererScript | Should -Match '\$entryToolTip = Get-WinUtilConfigToolTip -Description \$entryInfo\.description -ConfigKey \$entry'
+        $rendererScript | Should -Match '\$label\.ToolTip = \$entryInfo\.ToolTip'
+        $rendererScript | Should -Match '\$toggleButton\.ToolTip = \$entryInfo\.ToolTip'
+        $rendererScript | Should -Match '\$checkBox\.ToolTip = \$entryInfo\.ToolTip'
+    }
+
+    It "keeps non-selectable controls out of configuration-key tooltips" {
+        $rendererScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIElements.ps1") -Raw
+
+        $rendererScript | Should -Not -Match '\$button\.ToolTip = \$entryInfo\.ToolTip'
+        $rendererScript | Should -Match '\$label\.ToolTip = \$entryInfo\.Description'
+        $rendererScript | Should -Match '\$radioButton\.ToolTip = \$entryInfo\.Description'
     }
 }
