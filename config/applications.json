@@ -417,7 +417,7 @@
         "category": "Games",
         "choco": "",
         "content": "EmulationStation Desktop Edition",
-        "_comment": "This and emulationstation are two completely different things. ES-DE is your frontend for everything and has it's own set of emulators. Emulationstation is a graphical frontend for RetroArch.",
+        "_comment": "This and emulationstation are two completely different things. ES-DE is your frontend for everything and has its own set of emulators. Emulationstation is a graphical frontend for RetroArch.",
         "description": "EmulationStation Desktop Edition is a frontend for browsing and launching games from your multi-platform game collection.",
         "link": "https://es-de.org/",
         "winget": "ES-DE.EmulationStation-DE",
