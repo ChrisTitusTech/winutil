@@ -413,20 +413,6 @@
         "winget": "Microsoft.Edge",
         "foss": false
     },
-    "emudeck": {
-        "category": "Emulation",
-        "content": "EmuDeck for Windows",
-        "description": "Emulation setup and configuration tool for Windows.",
-        "link": "https://github.com/EmuDeck/emudeck-electron",
-        "icon": "https://avatars.githubusercontent.com/u/106240535?s=200&v=4",
-        "iconScale": 1.0,
-        "handle": "@EmuDeck",
-        "installType": "github",
-        "repo": "EmuDeck/emudeck-electron",
-        "assetPattern": "EmuDeck-Setup-*.exe",
-        "runAsDesktopUser": true,
-        "foss": true
-    },
     "emulationstation-desktopedition": {
         "category": "Games",
         "choco": "",
