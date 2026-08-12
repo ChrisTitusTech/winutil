@@ -217,6 +217,16 @@ Describe "Tweaks config" {
             throw ($invalidTweaks -join "`n")
         }
     }
+
+    It "keeps the location service disabled" -TestCases $testCase {
+        param([string]$Path)
+
+        $tweaks = Get-Content -Path $Path -Raw | ConvertFrom-Json
+        $locationServices = @($tweaks.WPFTweaksLocation.service | Where-Object Name -eq "lfsvc")
+
+        $locationServices | Should -HaveCount 1
+        $locationServices[0].StartupType | Should -Be "Disabled"
+    }
 }
 
 Describe "Preset config" {
