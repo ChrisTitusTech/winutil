@@ -551,13 +551,20 @@ function Invoke-WinUtilISOExport {
 
     $outputISO = $dlg.FileName
 
-    # Locate oscdimg.exe (Windows ADK or winget per-user install)
+    # Windows ADK installation
     $oscdimg = Get-ChildItem "C:\Program Files (x86)\Windows Kits" -Recurse -Filter "oscdimg.exe" |
                Select-Object -First 1 -ExpandProperty FullName
     if (-not $oscdimg) {
+        # Per-user winget installation
         $oscdimg = Get-ChildItem "$env:LOCALAPPDATA\Microsoft\WinGet\Packages" -Recurse -Filter "oscdimg.exe" |
                    Where-Object { $_.FullName -match 'Microsoft\.OSCDIMG' } |
                    Select-Object -First 1 -ExpandProperty FullName
+    }
+
+    if (-not $oscdimg) {
+        # Installation available through PATH, including machine-wide winget links
+        $oscdimg = Get-Command oscdimg.exe -CommandType Application -ErrorAction SilentlyContinue |
+                   Select-Object -First 1 -ExpandProperty Source
     }
 
     if (-not $oscdimg) {
