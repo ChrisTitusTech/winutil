@@ -369,6 +369,10 @@ namespace Windows.Controls
     }
 }
 
+AfterAll {
+    Remove-Item Function:\global:Invoke-WPFRunspace -ErrorAction SilentlyContinue
+}
+
 Describe "Find-WinUtilPackageManagerApps" {
     BeforeAll {
         function global:winget { param([Parameter(ValueFromRemainingArguments=$true)]$Arguments) }
@@ -408,6 +412,33 @@ Describe "Find-WinUtilPackageManagerApps" {
         Mock winget { throw "Winget error" }
 
         $result = Find-WinUtilPackageManagerApps -SearchString "error" -ManagerPreference "Winget"
+        @($result).Count | Should -Be 0
+    }
+
+    It "handles non-zero exit code with error output for winget" {
+        Mock winget {
+            $global:LASTEXITCODE = 1
+            return "An unexpected error occurred.`nCheck the logs."
+        }
+        $result = Find-WinUtilPackageManagerApps -SearchString "error" -ManagerPreference "Winget"
+        @($result).Count | Should -Be 0
+    }
+
+    It "handles malformed tabular output for winget" {
+        Mock winget {
+            $global:LASTEXITCODE = 0
+            return "Name  Id  Version  Source`n-------------------------`nMalformed Line Without Enough Columns"
+        }
+        $result = Find-WinUtilPackageManagerApps -SearchString "malformed" -ManagerPreference "Winget"
+        @($result).Count | Should -Be 0
+    }
+
+    It "handles non-zero exit code with error output for choco" {
+        Mock choco {
+            $global:LASTEXITCODE = 1
+            return "Error: Chocolatey encountered an issue"
+        }
+        $result = Find-WinUtilPackageManagerApps -SearchString "error" -ManagerPreference "Choco"
         @($result).Count | Should -Be 0
     }
 }

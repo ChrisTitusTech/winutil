@@ -207,14 +207,17 @@ function Invoke-WinUtilISOModify {
 
     $isoScriptFuncDef   = "function Invoke-WinUtilISOScript {`n" + ${function:Invoke-WinUtilISOScript}.ToString() + "`n}"
     $win11ISOLogFuncDef = "function Write-WinUtilISOLog {`n"     + ${function:Write-WinUtilISOLog}.ToString()     + "`n}"
+    $writeLogFuncDef    = "function Write-WinUtilLog {`n"        + ${function:Write-WinUtilLog}.ToString()        + "`n}"
     $runspace.SessionStateProxy.SetVariable("isoScriptFuncDef",   $isoScriptFuncDef)
     $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef", $win11ISOLogFuncDef)
+    $runspace.SessionStateProxy.SetVariable("writeLogFuncDef",    $writeLogFuncDef)
 
     $script = [Management.Automation.PowerShell]::Create()
     $script.Runspace = $runspace
     $script.AddScript({
         . ([scriptblock]::Create($isoScriptFuncDef))
         . ([scriptblock]::Create($win11ISOLogFuncDef))
+        . ([scriptblock]::Create($writeLogFuncDef))
 
         function Log($msg) {
             $ts = (Get-Date).ToString("HH:mm:ss")
@@ -223,10 +226,7 @@ function Invoke-WinUtilISOModify {
                 $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
                 $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
             })
-            # Write to host only; transcript captures it without file-locking conflicts
-            Write-Host "[$ts] $msg"
-            # Log beside the working directory so it exists from the first line and survives cleanup
-            Add-Content -Path "$workDir.log" -Value "[$ts] $msg" -ErrorAction SilentlyContinue
+            Write-WinUtilLog -Component "ISO" -Message $msg
         }
 
         function SetProgress($label, $pct) {
@@ -470,7 +470,10 @@ function Invoke-WinUtilISOCleanAndReset {
                         Remove-Item -Path $_.FullName -Force -ErrorAction SilentlyContinue
                     }
                     Remove-Item -Path $workDir -Recurse -Force -ErrorAction SilentlyContinue
-                    if (Test-Path $workDir) { Log "WARNING: some items could not be deleted in $workDir" }
+                    if (Test-Path $workDir) {
+                        Log "ERROR: some items could not be deleted in $workDir. Clean aborted."
+                        return
+                    }
                     else { Log "Temp directory deleted on retry." }
                 }
             } else {

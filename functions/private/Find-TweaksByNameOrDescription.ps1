@@ -1,3 +1,16 @@
+# --- Helper: extract searchable text from a DockPanel or StackPanel item ---
+function Get-ItemSearchText($item) {
+    $text = ""; $tip = ""
+    if ($item -is [Windows.Controls.DockPanel]) {
+        $label = $item.Children | Where-Object { $_ -is [Windows.Controls.Label] } | Select-Object -First 1
+        if ($label) { $text = [string]$label.Content; $tip = [string]$label.ToolTip }
+    } elseif ($item -is [Windows.Controls.StackPanel]) {
+        $cb = $item.Children | Where-Object { $_ -is [Windows.Controls.CheckBox] } | Select-Object -First 1
+        if ($cb) { $text = [string]$cb.Content; $tip = [string]$cb.ToolTip }
+    }
+    return @{ Text = $text; Tip = $tip }
+}
+
 function Find-TweaksByNameOrDescription {
     <#
     .SYNOPSIS
@@ -16,19 +29,6 @@ function Find-TweaksByNameOrDescription {
     try { $tweaksPanel = $sync.Form.FindName($panelName) } catch { return }
     if ($null -eq $tweaksPanel) { return }
 
-    # --- Helper: extract searchable text from a DockPanel or StackPanel item ---
-    function Get-ItemSearchText($item) {
-        $text = ""; $tip = ""
-        if ($item -is [Windows.Controls.DockPanel]) {
-            $label = $item.Children | Where-Object { $_ -is [Windows.Controls.Label] } | Select-Object -First 1
-            if ($label) { $text = [string]$label.Content; $tip = [string]$label.ToolTip }
-        } elseif ($item -is [Windows.Controls.StackPanel]) {
-            $cb = $item.Children | Where-Object { $_ -is [Windows.Controls.CheckBox] } | Select-Object -First 1
-            if ($cb) { $text = [string]$cb.Content; $tip = [string]$cb.ToolTip }
-        }
-        return @{ Text = $text; Tip = $tip }
-    }
-
     try {
         # Reset visibility when search is cleared
         if ([string]::IsNullOrWhiteSpace($SearchString)) {
@@ -40,6 +40,7 @@ function Find-TweaksByNameOrDescription {
                     if ($container) {
                         $targetPanel = if ($container -is [Windows.Controls.ScrollViewer]) { $container.Content } else { $container }
                         $items = if ($targetPanel -is [Windows.Controls.ItemsControl]) { $targetPanel.Items } else { $targetPanel.Children }
+                        $collapsed = $false
                         foreach ($item in $items) {
                             if ($null -eq $item) { continue }
                             if ($item -is [Windows.Controls.Label]) {
