@@ -177,6 +177,6 @@ When the user corrects an agent approach, add or tighten one concrete rule here 
 - Keep UI helpers such as `Invoke-WPFUIThread` and `Set-WinUtilTweaksProgressIndicator` safe to call without a window; the `-Preset` and `-Config` paths run the workflows before the form is created and before PresentationCore is loaded.
 - Log install/uninstall package names and package-manager IDs before queuing background runspace work; do not rely on runspace host output for the package identity.
 - For Win11 Creator, start each new ISO modification in a fresh `WinUtil_Win11ISO_*` temp directory; existing-work detection is only for resuming/exporting already modified media.
-- For Win11 Creator driver injection, keep offline WIM servicing to one mount, one `/Add-Driver`, and one commit; do not export editions or run unrelated WIM cleanup, and reject damaged metadata before ISO export.
+- For Win11 Creator driver injection, keep current-system export on `DISM /Online /Export-Driver`, use PnPUtil only for driver inventory/translation, and keep offline WIM servicing to one mount, one `/Add-Driver`, and one commit.
 - For Script Analyzer cleanup, fix actionable source warnings first and do not globally suppress accepted convention warnings such as plural names, `ShouldProcess` on UI helpers, `$global:sync`, or compile-time cross-file false positives.
 - For DNS DHCP reset, keep the cmdlet reset and explicitly set IPv4 and IPv6 DNS source to DHCP.

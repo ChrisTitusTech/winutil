@@ -36,6 +36,219 @@ function Invoke-WinUtilISOScript {
         [scriptblock]$Log = { param($m) Write-Output $m }
     )
 
+    function Format-WinUtilISOElapsed {
+        param ([Parameter(Mandatory)][System.Diagnostics.Stopwatch]$Stopwatch)
+
+        return $Stopwatch.Elapsed.ToString('hh\:mm\:ss\.fff')
+    }
+
+    function Get-WinUtilISODriverPackageInventory {
+        param (
+            [Parameter(Mandatory)][string]$DriverRoot,
+            [scriptblock]$Logger
+        )
+
+        $driverInfs = @(Get-ChildItem -LiteralPath $DriverRoot -Filter '*.inf' -Recurse -File)
+        $packages = @($driverInfs | Group-Object { $_.Directory.FullName } | ForEach-Object {
+            [pscustomobject]@{
+                Directory = [string]$_.Name
+                InfNames  = @($_.Group | ForEach-Object Name)
+            }
+        })
+
+        $null = & $Logger "Inventoried $($driverInfs.Count) INF files across $($packages.Count) exported package directories."
+        return $packages
+    }
+
+    function Get-WinUtilISOActiveStorageDriverMapping {
+        param ([scriptblock]$Logger)
+
+        try {
+            $driverByDeviceId = @{}
+            foreach ($driver in @(Get-CimInstance -ClassName Win32_PnPSignedDriver -ErrorAction Stop)) {
+                if ($driver.DeviceID -and $driver.InfName) {
+                    $driverByDeviceId[[string]$driver.DeviceID] = $driver
+                }
+            }
+
+            $systemDrive = if ($env:SystemDrive) { $env:SystemDrive } else { 'C:' }
+            $logicalDisk = Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$systemDrive'" -ErrorAction Stop
+            if (-not $logicalDisk) {
+                throw "The system volume '$systemDrive' was not found."
+            }
+
+            $partitions = @(Get-CimAssociatedInstance -InputObject $logicalDisk -Association Win32_LogicalDiskToPartition -ErrorAction Stop)
+            if ($partitions.Count -eq 0) {
+                throw "No partition was associated with system volume '$systemDrive'."
+            }
+
+            $systemDisks = @($partitions | ForEach-Object {
+                Get-CimAssociatedInstance -InputObject $_ -Association Win32_DiskDriveToDiskPartition -ErrorAction Stop
+            })
+            $diskDeviceIds = @($systemDisks | Where-Object PNPDeviceID | ForEach-Object { [string]$_.PNPDeviceID } | Sort-Object -Unique)
+            if ($diskDeviceIds.Count -ne 1) {
+                throw "Expected one physical disk for system volume '$systemDrive', but found $($diskDeviceIds.Count)."
+            }
+
+            $publishedInfNames = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+            $visitedDeviceIds = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+            $deviceId = $diskDeviceIds[0]
+            $maximumParentDepth = 64
+
+            for ($depth = 0; $deviceId; $depth++) {
+                if ($depth -ge $maximumParentDepth) {
+                    throw "The PnP parent chain exceeded $maximumParentDepth devices starting at '$($diskDeviceIds[0])'."
+                }
+                if (-not $visitedDeviceIds.Add($deviceId)) {
+                    throw "The PnP parent chain contains a cycle at '$deviceId'."
+                }
+
+                if ($driverByDeviceId.ContainsKey($deviceId)) {
+                    $driver = $driverByDeviceId[$deviceId]
+                    [void]$publishedInfNames.Add([string]$driver.InfName)
+                    $null = & $Logger "Active storage-path device '$deviceId' uses published INF '$($driver.InfName)'."
+                }
+
+                $parent = Get-PnpDeviceProperty -InstanceId $deviceId -KeyName 'DEVPKEY_Device_Parent' -ErrorAction Stop
+                $deviceId = if ($parent.Data) { [string]$parent.Data } else { $null }
+            }
+            if ($publishedInfNames.Count -eq 0) {
+                throw "No signed driver was mapped to the PnP chain starting at '$($diskDeviceIds[0])'."
+            }
+        } catch {
+            throw "WinPE driver classification failed while discovering the active system-disk path: $_"
+        }
+
+        $activeOemInfNames = @($publishedInfNames | Where-Object { $_ -match '(?i)^oem\d+\.inf$' })
+        $inboxInfNames = @($publishedInfNames | Where-Object { $_ -notmatch '(?i)^oem\d+\.inf$' })
+        if ($inboxInfNames.Count -gt 0) {
+            $null = & $Logger "Ignoring inbox INF names on the active storage path: $($inboxInfNames -join ', ')."
+        }
+        if ($activeOemInfNames.Count -eq 0) {
+            $null = & $Logger 'Active storage-path discovery found no third-party OEM INF requiring WinPE staging.'
+            return @()
+        }
+
+        $pnputilOutput = @(& pnputil.exe /enum-drivers /format csv 2>&1)
+        $pnputilExitCode = $LASTEXITCODE
+        if ($pnputilExitCode -ne 0) {
+            throw "WinPE driver classification failed: PnPUtil driver inventory exited with code $pnputilExitCode."
+        }
+
+        $csvText = ($pnputilOutput | ForEach-Object { [string]$_ }) -join "`r`n"
+        if ([string]::IsNullOrWhiteSpace($csvText)) {
+            throw 'WinPE driver classification failed: PnPUtil returned empty CSV output.'
+        }
+
+        try {
+            $driverInventory = @($csvText | ConvertFrom-Csv -ErrorAction Stop)
+        } catch {
+            throw "WinPE driver classification failed: PnPUtil CSV could not be parsed: $_"
+        }
+        if ($driverInventory.Count -eq 0) {
+            throw 'WinPE driver classification failed: PnPUtil CSV contained no driver records.'
+        }
+
+        $inventoryProperties = @($driverInventory[0].PSObject.Properties.Name)
+        if ('DriverName' -notin $inventoryProperties -or 'OriginalName' -notin $inventoryProperties) {
+            throw 'WinPE driver classification failed: PnPUtil CSV is missing DriverName or OriginalName.'
+        }
+        foreach ($inventoryDriver in $driverInventory) {
+            if ([string]::IsNullOrWhiteSpace([string]$inventoryDriver.DriverName) -or
+                [string]::IsNullOrWhiteSpace([string]$inventoryDriver.OriginalName)) {
+                throw 'WinPE driver classification failed: PnPUtil CSV contains an unusable DriverName or OriginalName value.'
+            }
+        }
+
+        $activeMappings = [System.Collections.Generic.List[object]]::new()
+        foreach ($publishedInfName in $activeOemInfNames) {
+            $inventoryMatches = @($driverInventory | Where-Object { $_.DriverName -eq $publishedInfName })
+            if ($inventoryMatches.Count -gt 1) {
+                throw "WinPE driver classification failed: PnPUtil returned multiple records for published INF '$publishedInfName'."
+            }
+            if ($inventoryMatches.Count -eq 0) {
+                throw "WinPE driver classification failed: PnPUtil did not translate published INF '$publishedInfName'."
+            }
+
+            $originalInfName = [string]$inventoryMatches[0].OriginalName
+            $activeMappings.Add([pscustomobject]@{
+                PublishedInfName = [string]$publishedInfName
+                OriginalInfName  = $originalInfName
+            })
+            $null = & $Logger "Mapped active driver '$publishedInfName' to original INF '$originalInfName'."
+        }
+
+        return @($activeMappings)
+    }
+
+    function Select-WinUtilISOWinPEDriverPackage {
+        param (
+            [Parameter(Mandatory)][AllowEmptyCollection()][object[]]$Packages,
+            [scriptblock]$Logger
+        )
+
+        $activeDrivers = @(Get-WinUtilISOActiveStorageDriverMapping -Logger $Logger)
+        if ($activeDrivers.Count -eq 0) {
+            return @()
+        }
+
+        $selectedDirectories = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+        foreach ($activeDriver in $activeDrivers) {
+            $matchingPackages = @($Packages | Where-Object { $_.InfNames -contains $activeDriver.OriginalInfName })
+            if ($matchingPackages.Count -eq 0) {
+                throw "WinPE driver classification failed: active published INF '$($activeDriver.PublishedInfName)' maps to original INF '$($activeDriver.OriginalInfName)', but no exported package directory contains it."
+            }
+            if ($matchingPackages.Count -gt 1) {
+                $directories = $matchingPackages.Directory -join "', '"
+                throw "WinPE driver classification is ambiguous: active published INF '$($activeDriver.PublishedInfName)' maps to original INF '$($activeDriver.OriginalInfName)', which exists in multiple exported package directories: '$directories'."
+            }
+
+            [void]$selectedDirectories.Add([string]$matchingPackages[0].Directory)
+        }
+
+        $amdRaidInfNames = @('rcbottom.inf', 'rcraid.inf', 'rccfg.inf')
+        $selectedPackages = @($Packages | Where-Object { $selectedDirectories.Contains([string]$_.Directory) })
+        $selectedAmdRaidInfs = @($selectedPackages | ForEach-Object InfNames | Where-Object { $_ -in $amdRaidInfNames })
+        if ($selectedAmdRaidInfs.Count -gt 0) {
+            foreach ($amdRaidInfName in $amdRaidInfNames) {
+                $matchingPackages = @($Packages | Where-Object { $_.InfNames -contains $amdRaidInfName })
+                if ($matchingPackages.Count -eq 0) {
+                    throw "WinPE driver classification failed: active AMD RAID package requires '$amdRaidInfName', but no exported package directory contains it."
+                }
+                if ($matchingPackages.Count -gt 1) {
+                    $directories = $matchingPackages.Directory -join "', '"
+                    throw "WinPE driver classification is ambiguous: AMD RAID dependency '$amdRaidInfName' exists in multiple exported package directories: '$directories'."
+                }
+                [void]$selectedDirectories.Add([string]$matchingPackages[0].Directory)
+            }
+        }
+
+        $selectedPackages = @($Packages | Where-Object { $selectedDirectories.Contains([string]$_.Directory) })
+        foreach ($package in $selectedPackages) {
+            $null = & $Logger "Selected active WinPE driver package '$($package.Directory)'."
+        }
+        return $selectedPackages
+    }
+
+    function Copy-WinUtilISODriverPackage {
+        param (
+            [Parameter(Mandatory)][string]$Source,
+            [Parameter(Mandatory)][string]$Destination
+        )
+
+        New-Item -Path $Destination -ItemType Directory -Force | Out-Null
+        $folderName = Split-Path $Source -Leaf
+        $targetPath = Join-Path $Destination $folderName
+        $suffix = 1
+        while (Test-Path -LiteralPath $targetPath) {
+            $targetPath = Join-Path $Destination "${folderName}_$suffix"
+            $suffix++
+        }
+
+        Copy-Item -LiteralPath $Source -Destination $targetPath -Recurse -Force -ErrorAction Stop
+        return $targetPath
+    }
+
     function Add-WinUtilISOStagedDrivers {
         param (
             [Parameter(Mandatory)][string]$ContentRoot,
@@ -44,57 +257,27 @@ function Invoke-WinUtilISOScript {
             [scriptblock]$Logger
         )
 
-        function Copy-WinUtilISODriverFolder {
-            param (
-                [Parameter(Mandatory)][string]$Source,
-                [Parameter(Mandatory)][string]$Destination
-            )
-
-            $folderName = Split-Path $Source -Leaf
-            $targetPath = Join-Path $Destination $folderName
-            $suffix = 1
-            while (Test-Path -LiteralPath $targetPath) {
-                $targetPath = Join-Path $Destination "${folderName}_$suffix"
-                $suffix++
-            }
-
-            Copy-Item -LiteralPath $Source -Destination $targetPath -Recurse -Force -ErrorAction Stop
-            return $targetPath
-        }
-
-        function Test-WinUtilISOStorageDriver {
-            param ([Parameter(Mandatory)][System.IO.FileInfo]$InfFile)
-
-            if ($InfFile.BaseName -match '(?i)(iaahci|iastor|vmd|irst|rst)') {
-                return $true
-            }
-
-            try {
-                return (Get-Content -LiteralPath $InfFile.FullName -Raw -ErrorAction Stop) -match '(?im)^\s*Class\s*=\s*(SCSIAdapter|HDC)\s*(?:;.*)?$'
-            } catch {
-                & $Logger "Warning: could not classify storage driver '$($InfFile.FullName)': $_"
-                return $false
-            }
-        }
-
         function Invoke-WinUtilISODism {
             param (
                 [Parameter(Mandatory)][string[]]$Arguments,
                 [Parameter(Mandatory)][string]$Operation
             )
 
+            $operationTimer = [System.Diagnostics.Stopwatch]::StartNew()
             $output = @(& dism.exe @Arguments 2>&1)
             $exitCode = $LASTEXITCODE
+            $operationTimer.Stop()
+            $elapsed = Format-WinUtilISOElapsed -Stopwatch $operationTimer
             if ($exitCode -ne 0) {
                 foreach ($line in @($output | Select-Object -Last 20)) {
                     if (-not [string]::IsNullOrWhiteSpace([string]$line)) {
                         & $Logger "  dism[$Operation]: $line"
                     }
                 }
-                throw "DISM $Operation failed with exit code $exitCode."
+                throw "DISM $Operation failed with exit code $exitCode after $elapsed."
             }
             if ($Operation -ne 'metadata') {
-                & $Logger "DISM $Operation completed."
+                $null = & $Logger "DISM $Operation completed in $elapsed."
             }
             return $output
         }
@@ -156,43 +339,57 @@ function Invoke-WinUtilISOScript {
         try {
             & $Logger "Exporting current system drivers before modifying install.wim..."
             $dismLog = Join-Path $env:TEMP "WinUtil_DismDriverExport_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
-            $dismProcess = Start-Process -FilePath "dism.exe" -ArgumentList "/online /export-driver /destination:`"$driverExportRoot`" /LogPath:`"$dismLog`"" -Wait -NoNewWindow -PassThru
-            if ($dismProcess.ExitCode -ne 0) {
-                throw "dism.exe driver export failed with exit code $($dismProcess.ExitCode)."
+            $driverExportTimer = [System.Diagnostics.Stopwatch]::StartNew()
+            try {
+                $dismProcess = Start-Process -FilePath "dism.exe" -ArgumentList "/online /export-driver /destination:`"$driverExportRoot`" /LogPath:`"$dismLog`"" -Wait -NoNewWindow -PassThru
+            } catch {
+                $driverExportTimer.Stop()
+                throw "dism.exe driver export failed after $(Format-WinUtilISOElapsed -Stopwatch $driverExportTimer): $_"
+            } finally {
+                if ($driverExportTimer.IsRunning) {
+                    $driverExportTimer.Stop()
+                }
             }
+            $driverExportElapsed = Format-WinUtilISOElapsed -Stopwatch $driverExportTimer
+            if ($dismProcess.ExitCode -ne 0) {
+                throw "dism.exe driver export failed with exit code $($dismProcess.ExitCode) after $driverExportElapsed."
+            }
+            $null = & $Logger "Driver export completed in $driverExportElapsed."
 
-            $driverInfs = @(Get-ChildItem -Path $driverExportRoot -Filter '*.inf' -Recurse -File)
+            $driverInfs = @(Get-ChildItem -LiteralPath $driverExportRoot -Filter '*.inf' -Recurse -File)
             if ($driverInfs.Count -eq 0) {
                 throw 'DISM exported no driver INF files.'
             }
-            $driverFolders = @($driverInfs | Group-Object { $_.Directory.FullName })
-            $winpeDriverDir = Join-Path $ContentRoot '$WinpeDriver$'
-            $storageCount = 0
+
+            $classificationTimer = [System.Diagnostics.Stopwatch]::StartNew()
+            try {
+                $driverPackages = @(Get-WinUtilISODriverPackageInventory -DriverRoot $driverExportRoot -Logger $Logger)
+                $winpeDriverPackages = @(Select-WinUtilISOWinPEDriverPackage -Packages $driverPackages -Logger $Logger)
+            } catch {
+                $classificationTimer.Stop()
+                $null = & $Logger "Driver inventory/classification failed after $(Format-WinUtilISOElapsed -Stopwatch $classificationTimer)."
+                throw
+            }
+            $classificationTimer.Stop()
+            $null = & $Logger "Driver inventory/classification completed in $(Format-WinUtilISOElapsed -Stopwatch $classificationTimer)."
+
+            $winpeDriverDir = Join-Path $ContentRoot '$WinPEDriver$'
             $copyFailures = 0
-
-            foreach ($driverFolderGroup in $driverFolders) {
-                $driverFolder = [string]$driverFolderGroup.Name
-                $storageInfs = @($driverFolderGroup.Group | Where-Object { Test-WinUtilISOStorageDriver -InfFile $_ })
-                if ($storageInfs.Count -eq 0) {
-                    continue
-                }
-
+            foreach ($driverPackage in $winpeDriverPackages) {
                 try {
-                    New-Item -Path $winpeDriverDir -ItemType Directory -Force | Out-Null
-                    $winpeTarget = Copy-WinUtilISODriverFolder -Source $driverFolder -Destination $winpeDriverDir
-                    $storageCount++
-                    & $Logger "Staged boot-storage package '$driverFolder' for WinPE as '$winpeTarget'."
+                    $winpeTarget = Copy-WinUtilISODriverPackage -Source $driverPackage.Directory -Destination $winpeDriverDir
+                    $null = & $Logger "Staged active storage package '$($driverPackage.Directory)' for WinPE as '$winpeTarget'."
                 } catch {
                     $copyFailures++
-                    & $Logger "Warning: failed to stage boot-storage package '$driverFolder': $_"
+                    $null = & $Logger "Warning: failed to stage active storage package '$($driverPackage.Directory)': $_"
                 }
             }
 
             if ($copyFailures -gt 0) {
-                throw "Failed to stage $copyFailures boot-storage driver package folders."
+                throw "Failed to stage $copyFailures active storage driver package directories."
             }
 
-            & $Logger "Exported $($driverInfs.Count) driver INF files across $($driverFolders.Count) package folders; staged $storageCount boot-storage packages for WinPE."
+            $null = & $Logger "Exported $($driverInfs.Count) driver INF files across $($driverPackages.Count) package directories; staged $($winpeDriverPackages.Count) active packages for WinPE."
             $metadataBefore = Get-WinUtilISOWimMetadata -ImagePath $InstallImagePath -Index $InstallImageIndex
             Assert-WinUtilISOWimMetadata -Before $metadataBefore
 
@@ -512,7 +709,7 @@ $appxList
 
         $useConfigurationSet = $xmlDoc.SelectSingleNode('/u:unattend/u:settings[@pass="windowsPE"]/u:component[@name="Microsoft-Windows-Setup"]/u:UseConfigurationSet', $nsMgr)
         if ($useConfigurationSet) {
-            $useConfigurationSet.InnerText = 'true'
+            $useConfigurationSet.InnerText = 'false'
             [System.IO.File]::WriteAllText((Join-Path $ContentRoot 'autounattend.xml'), $xmlDoc.OuterXml, [System.Text.UTF8Encoding]::new($false))
         }
         & $Logger "Staged $stagedCount WinUtil setup script fallback files at '$setupScriptsRoot'."

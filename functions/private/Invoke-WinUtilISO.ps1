@@ -293,14 +293,14 @@ function Invoke-WinUtilISOModify {
             $sync["Win11ISOWorkDir"]     = $workDir
             $sync["Win11ISOContentsDir"] = $isoContents
 
-            SetProgress "Modification complete" 100
-            Log "install.wim modification complete. Choose an output option in Step 4."
+            SetProgress "Setup media ready" 100
+            Log "Setup media preparation complete. Choose an output option in Step 4."
 
             $sync["WPFWin11ISOOutputSection"].Dispatcher.Invoke([action]{
                 $sync["WPFWin11ISOOutputSection"].Visibility = "Visible"
             })
         } catch {
-            Log "ERROR during modification: $_"
+            Log "ERROR during setup media preparation: $_"
 
             try {
                 $mountedISO = Get-DiskImage -ImagePath $isoPath
@@ -319,8 +319,8 @@ function Invoke-WinUtilISOModify {
 
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 [System.Windows.MessageBox]::Show(
-                    "An error occurred during install.wim modification:`n`n$_",
-                    "Modification Error", "OK", "Error")
+                    "An error occurred during setup media preparation:`n`n$_",
+                    "Preparation Error", "OK", "Error")
             })
         } finally {
             Start-Sleep -Milliseconds 800
@@ -615,6 +615,7 @@ function Invoke-WinUtilISOExport {
             })
         }
 
+        $isoSaveTimer = $null
         try {
             Write-WinUtilISOLog "Exporting to ISO: $outputISO"
             SetProgress "Building ISO..." 10
@@ -634,6 +635,7 @@ function Invoke-WinUtilISOExport {
 
             $proc = [System.Diagnostics.Process]::new()
             $proc.StartInfo = $psi
+            $isoSaveTimer = [System.Diagnostics.Stopwatch]::StartNew()
             $proc.Start()
 
             # Stream stdout line-by-line as oscdimg runs
@@ -643,6 +645,8 @@ function Invoke-WinUtilISOExport {
             }
 
             $proc.WaitForExit()
+            $isoSaveTimer.Stop()
+            $isoSaveElapsed = $isoSaveTimer.Elapsed.ToString('hh\:mm\:ss\.fff')
 
             # Flush any stderr after process exits
             $stderr = $proc.StandardError.ReadToEnd()
@@ -652,12 +656,13 @@ function Invoke-WinUtilISOExport {
 
             if ($proc.ExitCode -eq 0) {
                 SetProgress "ISO exported" 100
+                Write-WinUtilISOLog "OSCDIMG save completed in $isoSaveElapsed."
                 Write-WinUtilISOLog "ISO exported successfully: $outputISO"
                 $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                     [System.Windows.MessageBox]::Show("ISO exported successfully!`n`n$outputISO", "Export Complete", "OK", "Info")
                 })
             } else {
-                Write-WinUtilISOLog "oscdimg exited with code $($proc.ExitCode)."
+                Write-WinUtilISOLog "OSCDIMG save failed with exit code $($proc.ExitCode) after $isoSaveElapsed."
                 $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                     [System.Windows.MessageBox]::Show(
                         "oscdimg exited with code $($proc.ExitCode).`nCheck the status log for details.",
@@ -665,7 +670,11 @@ function Invoke-WinUtilISOExport {
                 })
             }
         } catch {
-            Write-WinUtilISOLog "ERROR during ISO export: $_"
+            if ($isoSaveTimer -and $isoSaveTimer.IsRunning) {
+                $isoSaveTimer.Stop()
+            }
+            $timing = if ($isoSaveTimer) { " after $($isoSaveTimer.Elapsed.ToString('hh\:mm\:ss\.fff'))" } else { '' }
+            Write-WinUtilISOLog "ERROR during ISO export$timing`: $_"
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 [System.Windows.MessageBox]::Show("ISO export failed:`n`n$_", "Error", "OK", "Error")
             })

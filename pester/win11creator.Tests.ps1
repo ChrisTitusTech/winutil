@@ -43,6 +43,12 @@ Describe "Win11 Creator setup media" {
         $script:writeUsbFunction = Get-WinUtilFunctionText -Path $script:isoUsbWorkflowPath -FunctionName "Invoke-WinUtilISOWriteUSB"
         $script:editionIdFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Get-WinUtilEditionIdFromName"
         $script:wimMetadataAssertionFunction = Get-WinUtilFunctionText -Path $script:isoScriptPath -FunctionName "Assert-WinUtilISOWimMetadata"
+        $script:driverClassifierFunctions = @(
+            'Get-WinUtilISODriverPackageInventory',
+            'Get-WinUtilISOActiveStorageDriverMapping',
+            'Select-WinUtilISOWinPEDriverPackage',
+            'Copy-WinUtilISODriverPackage'
+        ) | ForEach-Object { Get-WinUtilFunctionText -Path $script:isoScriptPath -FunctionName $_ }
     }
 
     It "autounattend template does not force a product key" {
@@ -131,11 +137,13 @@ Describe "Win11 Creator setup media" {
         }
     }
 
-    It "stages only boot-storage drivers in WinPE" {
+    It "uses active storage-path inventory without adding another driver delivery path" {
         $isoScriptContent = Get-Content -Path $script:isoScriptPath -Raw
 
-        $isoScriptContent | Should -Match ([regex]::Escape("Join-Path `$ContentRoot '`$WinpeDriver$'"))
-        $isoScriptContent | Should -Match 'SCSIAdapter\|HDC'
+        $isoScriptContent | Should -Match ([regex]::Escape("Join-Path `$ContentRoot '`$WinPEDriver$'"))
+        $isoScriptContent | Should -Match ([regex]::Escape("Get-PnpDeviceProperty -InstanceId `$deviceId -KeyName 'DEVPKEY_Device_Parent'"))
+        $isoScriptContent | Should -Match ([regex]::Escape('& pnputil.exe /enum-drivers /format csv'))
+        $isoScriptContent | Should -Not -Match 'Class\s*=\s*\(SCSIAdapter\|HDC\)'
         $isoScriptContent | Should -Not -Match ([regex]::Escape('sources\$OEM$\$$\Drivers'))
         $isoScriptContent | Should -Not -Match ([regex]::Escape('WinUtil-InstallDrivers.ps1'))
         $isoScriptContent | Should -Not -Match ([regex]::Escape('SetupComplete.cmd'))
@@ -154,6 +162,247 @@ Describe "Win11 Creator setup media" {
         { Assert-WinUtilISOWimMetadata -Before $valid -After $invalidAfter } | Should -Throw '*validation failed*'
     }
 
+    It "maps the active system-disk parent chain from published to original INF names" {
+        . ([scriptblock]::Create($script:driverClassifierFunctions[1]))
+
+        $logicalDisk = New-CimInstance -ClassName Win32_LogicalDisk -ClientOnly -Property @{ DeviceID = $env:SystemDrive }
+        $partition = New-CimInstance -ClassName Win32_DiskPartition -ClientOnly -Property @{ DeviceID = 'Disk #0, Partition #1' }
+        Mock Get-CimInstance {
+            param($ClassName)
+            if ($ClassName -eq 'Win32_PnPSignedDriver') {
+                return @(
+                    [pscustomobject]@{ DeviceID = 'SCSI\DISK0'; InfName = 'disk.inf' },
+                    [pscustomobject]@{ DeviceID = 'PCI\STORAGE0'; InfName = 'oem10.inf' }
+                )
+            }
+            if ($ClassName -eq 'Win32_LogicalDisk') {
+                return $logicalDisk
+            }
+        }
+        Mock Get-CimAssociatedInstance {
+            param($Association)
+            if ($Association -eq 'Win32_LogicalDiskToPartition') {
+                return $partition
+            }
+            return [pscustomobject]@{ PNPDeviceID = 'SCSI\DISK0' }
+        }
+        Mock Get-PnpDeviceProperty {
+            param($InstanceId)
+            [pscustomobject]@{ Data = if ($InstanceId -eq 'SCSI\DISK0') { 'PCI\STORAGE0' } else { $null } }
+        }
+        function pnputil.exe {
+            $global:LASTEXITCODE = 0
+            'DriverName,OriginalName,ProviderName'
+            '"oem10.inf","iaStorVD.inf","Intel"'
+        }
+
+        try {
+            $logs = [System.Collections.Generic.List[string]]::new()
+            $mappings = @(Get-WinUtilISOActiveStorageDriverMapping -Logger { param($message) $null = $logs.Add([string]$message) })
+
+            $mappings.Count | Should -Be 1
+            $mappings[0].PublishedInfName | Should -Be 'oem10.inf'
+            $mappings[0].OriginalInfName | Should -Be 'iaStorVD.inf'
+            ($logs -join '|') | Should -Match 'Ignoring inbox INF names.*disk\.inf'
+            ($logs -join '|') | Should -Match "Mapped active driver 'oem10.inf' to original INF 'iaStorVD.inf'"
+            Should -Invoke Get-PnpDeviceProperty -Times 2 -Exactly
+        } finally {
+            Remove-Item Function:\pnputil.exe -ErrorAction SilentlyContinue
+        }
+    }
+
+    It "allows a verified inbox-only active path to produce an empty WinPE mapping" {
+        . ([scriptblock]::Create($script:driverClassifierFunctions[1]))
+
+        $logicalDisk = New-CimInstance -ClassName Win32_LogicalDisk -ClientOnly -Property @{ DeviceID = $env:SystemDrive }
+        $partition = New-CimInstance -ClassName Win32_DiskPartition -ClientOnly -Property @{ DeviceID = 'Disk #0, Partition #1' }
+        Mock Get-CimInstance {
+            param($ClassName)
+            if ($ClassName -eq 'Win32_PnPSignedDriver') {
+                return [pscustomobject]@{ DeviceID = 'SCSI\DISK0'; InfName = 'disk.inf' }
+            }
+            if ($ClassName -eq 'Win32_LogicalDisk') {
+                return $logicalDisk
+            }
+        }
+        Mock Get-CimAssociatedInstance {
+            param($Association)
+            if ($Association -eq 'Win32_LogicalDiskToPartition') {
+                return $partition
+            }
+            return [pscustomobject]@{ PNPDeviceID = 'SCSI\DISK0' }
+        }
+        Mock Get-PnpDeviceProperty { [pscustomobject]@{ Data = $null } }
+        function pnputil.exe { throw 'PnPUtil should not run without an active OEM INF.' }
+
+        try {
+            $logs = [System.Collections.Generic.List[string]]::new()
+            @(Get-WinUtilISOActiveStorageDriverMapping -Logger { param($message) $null = $logs.Add([string]$message) }).Count | Should -Be 0
+            ($logs -join '|') | Should -Match 'no third-party OEM INF requiring WinPE staging'
+        } finally {
+            Remove-Item Function:\pnputil.exe -ErrorAction SilentlyContinue
+        }
+    }
+
+    It "fails explicitly for unusable PnPUtil driver inventory" -TestCases @(
+        @{ InventoryOutput = @(); ExitCode = 5; ExpectedError = '*PnPUtil driver inventory exited with code 5*' }
+        @{ InventoryOutput = @(); ExitCode = 0; ExpectedError = '*empty CSV output*' }
+        @{ InventoryOutput = @('DriverName,OriginalName'); ExitCode = 0; ExpectedError = '*contained no driver records*' }
+        @{ InventoryOutput = @('DriverName,DriverName,OriginalName', '"oem10.inf","duplicate","storage.inf"'); ExitCode = 0; ExpectedError = '*CSV could not be parsed*' }
+        @{ InventoryOutput = @('DriverName,ProviderName', '"oem10.inf","Vendor"'); ExitCode = 0; ExpectedError = '*missing DriverName or OriginalName*' }
+        @{ InventoryOutput = @('DriverName,OriginalName', '"oem10.inf",""'); ExitCode = 0; ExpectedError = '*unusable DriverName or OriginalName*' }
+        @{ InventoryOutput = @('DriverName,OriginalName', '"oem10.inf","storage.inf"', '"oem10.inf","storage-old.inf"'); ExitCode = 0; ExpectedError = '*multiple records for published INF ''oem10.inf''*' }
+        @{ InventoryOutput = @('DriverName,OriginalName', '"oem11.inf","other.inf"'); ExitCode = 0; ExpectedError = '*did not translate published INF ''oem10.inf''*' }
+    ) {
+        param($InventoryOutput, $ExitCode, $ExpectedError)
+
+        . ([scriptblock]::Create($script:driverClassifierFunctions[1]))
+        $logicalDisk = New-CimInstance -ClassName Win32_LogicalDisk -ClientOnly -Property @{ DeviceID = $env:SystemDrive }
+        $partition = New-CimInstance -ClassName Win32_DiskPartition -ClientOnly -Property @{ DeviceID = 'Disk #0, Partition #1' }
+        Mock Get-CimInstance {
+            param($ClassName)
+            if ($ClassName -eq 'Win32_PnPSignedDriver') {
+                return [pscustomobject]@{ DeviceID = 'SCSI\DISK0'; InfName = 'oem10.inf' }
+            }
+            if ($ClassName -eq 'Win32_LogicalDisk') {
+                return $logicalDisk
+            }
+        }
+        Mock Get-CimAssociatedInstance {
+            param($Association)
+            if ($Association -eq 'Win32_LogicalDiskToPartition') {
+                return $partition
+            }
+            return [pscustomobject]@{ PNPDeviceID = 'SCSI\DISK0' }
+        }
+        Mock Get-PnpDeviceProperty { [pscustomobject]@{ Data = $null } }
+        $script:testPnPUtilOutput = $InventoryOutput
+        $script:testPnPUtilExitCode = $ExitCode
+        function pnputil.exe {
+            $global:LASTEXITCODE = $script:testPnPUtilExitCode
+            $script:testPnPUtilOutput
+        }
+
+        try {
+            { Get-WinUtilISOActiveStorageDriverMapping -Logger { param($message) $null = $message } } | Should -Throw $ExpectedError
+        } finally {
+            Remove-Item Function:\pnputil.exe -ErrorAction SilentlyContinue
+        }
+    }
+
+    It "selects only uniquely resolved active packages" {
+        . ([scriptblock]::Create($script:driverClassifierFunctions[2]))
+        function Get-WinUtilISOActiveStorageDriverMapping {
+            param([scriptblock]$Logger)
+            $null = $Logger
+            [pscustomobject]@{ PublishedInfName = 'oem10.inf'; OriginalInfName = 'storage.inf' }
+        }
+
+        $packages = @(
+            [pscustomobject]@{ Directory = 'storage'; InfNames = @('storage.inf') },
+            [pscustomobject]@{ Directory = 'network'; InfNames = @('network.inf') },
+            [pscustomobject]@{ Directory = 'audio'; InfNames = @('audio.inf') }
+        )
+
+        $selected = @(Select-WinUtilISOWinPEDriverPackage -Packages $packages -Logger { param($message) $null = $message })
+        $selected.Count | Should -Be 1
+        $selected[0].Directory | Should -Be 'storage'
+    }
+
+    It "rejects missing and duplicate exported matches for an active OEM INF" -TestCases @(
+        @{ Packages = @([pscustomobject]@{ Directory = 'other'; InfNames = @('other.inf') }); ExpectedError = '*no exported package directory contains it*' }
+        @{ Packages = @([pscustomobject]@{ Directory = 'first'; InfNames = @('storage.inf') }, [pscustomobject]@{ Directory = 'second'; InfNames = @('storage.inf') }); ExpectedError = '*multiple exported package directories*' }
+    ) {
+        param($Packages, $ExpectedError)
+
+        . ([scriptblock]::Create($script:driverClassifierFunctions[2]))
+        function Get-WinUtilISOActiveStorageDriverMapping {
+            param([scriptblock]$Logger)
+            $null = $Logger
+            [pscustomobject]@{ PublishedInfName = 'oem10.inf'; OriginalInfName = 'storage.inf' }
+        }
+
+        $packagesUnderTest = $Packages
+        { Select-WinUtilISOWinPEDriverPackage -Packages $packagesUnderTest -Logger { param($message) $null = $message } } | Should -Throw $ExpectedError
+    }
+
+    It "completes the AMD RAID trio without selecting unrelated packages" {
+        . ([scriptblock]::Create($script:driverClassifierFunctions[2]))
+        function Get-WinUtilISOActiveStorageDriverMapping {
+            param([scriptblock]$Logger)
+            $null = $Logger
+            [pscustomobject]@{ PublishedInfName = 'oem42.inf'; OriginalInfName = 'rcbottom.inf' }
+        }
+
+        $packages = @(
+            [pscustomobject]@{ Directory = 'bottom'; InfNames = @('rcbottom.inf') },
+            [pscustomobject]@{ Directory = 'raid'; InfNames = @('rcraid.inf') },
+            [pscustomobject]@{ Directory = 'config'; InfNames = @('rccfg.inf') },
+            [pscustomobject]@{ Directory = 'unrelated'; InfNames = @('network.inf') }
+        )
+
+        $selected = @(Select-WinUtilISOWinPEDriverPackage -Packages $packages -Logger { param($message) $null = $message })
+        @($selected.Directory) | Should -HaveCount 3
+        @($selected.Directory) | Should -Contain 'bottom'
+        @($selected.Directory) | Should -Contain 'raid'
+        @($selected.Directory) | Should -Contain 'config'
+        @($selected.Directory) | Should -Not -Contain 'unrelated'
+    }
+
+    It "rejects missing or ambiguous AMD RAID dependencies" -TestCases @(
+        @{
+            Packages = @(
+                [pscustomobject]@{ Directory = 'bottom'; InfNames = @('rcbottom.inf') },
+                [pscustomobject]@{ Directory = 'config'; InfNames = @('rccfg.inf') }
+            )
+            ExpectedError = "*requires 'rcraid.inf'*"
+        }
+        @{
+            Packages = @(
+                [pscustomobject]@{ Directory = 'bottom'; InfNames = @('rcbottom.inf') },
+                [pscustomobject]@{ Directory = 'raid-one'; InfNames = @('rcraid.inf') },
+                [pscustomobject]@{ Directory = 'raid-two'; InfNames = @('rcraid.inf') },
+                [pscustomobject]@{ Directory = 'config'; InfNames = @('rccfg.inf') }
+            )
+            ExpectedError = "*AMD RAID dependency 'rcraid.inf'*multiple exported package directories*"
+        }
+    ) {
+        param($Packages, $ExpectedError)
+
+        . ([scriptblock]::Create($script:driverClassifierFunctions[2]))
+        function Get-WinUtilISOActiveStorageDriverMapping {
+            param([scriptblock]$Logger)
+            $null = $Logger
+            [pscustomobject]@{ PublishedInfName = 'oem42.inf'; OriginalInfName = 'rcbottom.inf' }
+        }
+
+        $packagesUnderTest = $Packages
+        { Select-WinUtilISOWinPEDriverPackage -Packages $packagesUnderTest -Logger { param($message) $null = $message } } | Should -Throw $ExpectedError
+    }
+
+    It "copies complete exported package directories for WinPE" {
+        . ([scriptblock]::Create($script:driverClassifierFunctions[3]))
+        $testRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilPackageCopy_$([guid]::NewGuid())"
+        $source = Join-Path $testRoot 'source\storage-package'
+        $destination = Join-Path $testRoot '$WinPEDriver$'
+
+        try {
+            New-Item -Path (Join-Path $source 'subdir') -ItemType Directory -Force | Out-Null
+            Set-Content -Path (Join-Path $source 'storage.inf') -Value 'inf' -Encoding ASCII
+            Set-Content -Path (Join-Path $source 'storage.cat') -Value 'cat' -Encoding ASCII
+            Set-Content -Path (Join-Path $source 'storage.sys') -Value 'sys' -Encoding ASCII
+            Set-Content -Path (Join-Path $source 'subdir\coinstaller.dll') -Value 'dll' -Encoding ASCII
+
+            $copiedPath = Copy-WinUtilISODriverPackage -Source $source -Destination $destination
+            Test-Path (Join-Path $copiedPath 'storage.inf') | Should -BeTrue
+            Test-Path (Join-Path $copiedPath 'storage.cat') | Should -BeTrue
+            Test-Path (Join-Path $copiedPath 'storage.sys') | Should -BeTrue
+            Test-Path (Join-Path $copiedPath 'subdir\coinstaller.dll') | Should -BeTrue
+        } finally {
+            Remove-Item -Path $testRoot -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+
     It "tracks every background ISO workflow with the shared busy state" {
         foreach ($functionText in @(
             $script:mountAndVerifyFunction,
@@ -165,6 +414,13 @@ Describe "Win11 Creator setup media" {
             $functionText | Should -Match ([regex]::Escape('$sync["Win11ISOProcessRunning"] = $true'))
             $functionText | Should -Match ([regex]::Escape('$sync["Win11ISOProcessRunning"] = $false'))
         }
+    }
+
+    It "times OSCDIMG save and uses setup-media completion wording" {
+        $script:exportFunction | Should -Match ([regex]::Escape('$isoSaveTimer = [System.Diagnostics.Stopwatch]::StartNew()'))
+        $script:exportFunction | Should -Match 'OSCDIMG save completed in \$isoSaveElapsed'
+        $script:modifyFunction | Should -Match ([regex]::Escape('Setup media preparation complete. Choose an output option in Step 4.'))
+        $script:modifyFunction | Should -Not -Match ([regex]::Escape('install.wim modification complete'))
     }
 
     It "runs ISO mount and verification outside the UI thread" {
@@ -315,7 +571,7 @@ Describe "Win11 Creator setup media" {
         }
     }
 
-    It "stages storage drivers for WinPE and adds all drivers to one install.wim index" {
+    It "stages the active storage package and services all exported drivers in one WIM lifecycle" {
         $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoDrivers_$([guid]::NewGuid())"
         $installWim = Join-Path $contentRoot 'sources\install.wim'
         $template = Get-Content -Path $script:autoUnattendPath -Raw
@@ -352,22 +608,45 @@ Describe "Win11 Creator setup media" {
 
             $exportRoot = $destinationMatch.Groups[1].Value
             $fixtures = @(
-                @{ Path = 'system_pkg'; Name = 'chipset.inf'; Class = 'System' },
-                @{ Path = 'storage_pkg'; Name = 'iaStorAC.inf'; Class = 'System' },
-                @{ Path = 'scsi_pkg'; Name = 'controller.inf'; Class = 'SCSIAdapter' },
-                @{ Path = 'net_pkg'; Name = 'network.inf'; Class = 'Net' },
-                @{ Path = 'group_a\duplicate'; Name = 'audio.inf'; Class = 'Media' },
-                @{ Path = 'group_b\duplicate'; Name = 'extension.inf'; Class = 'Extension' }
+                @{ Path = 'storage_pkg'; Name = 'iaStorAC.inf' },
+                @{ Path = 'net_pkg'; Name = 'network.inf' }
             )
 
             foreach ($fixture in $fixtures) {
                 $fixturePath = Join-Path $exportRoot $fixture.Path
                 New-Item -Path $fixturePath -ItemType Directory -Force | Out-Null
-                Set-Content -Path (Join-Path $fixturePath $fixture.Name) -Value "[Version]`r`nClass=$($fixture.Class)" -Encoding ASCII
+                Set-Content -Path (Join-Path $fixturePath $fixture.Name) -Value '[Version]' -Encoding ASCII
+                Set-Content -Path (Join-Path $fixturePath "$($fixture.Name).cat") -Value 'catalog' -Encoding ASCII
+                Set-Content -Path (Join-Path $fixturePath "$($fixture.Name).sys") -Value 'binary' -Encoding ASCII
             }
 
             return [pscustomobject]@{ ExitCode = 0 }
         } -ParameterFilter { $FilePath -eq 'dism.exe' }
+
+        $logicalDisk = New-CimInstance -ClassName Win32_LogicalDisk -ClientOnly -Property @{ DeviceID = $env:SystemDrive }
+        $partition = New-CimInstance -ClassName Win32_DiskPartition -ClientOnly -Property @{ DeviceID = 'Disk #0, Partition #1' }
+        Mock Get-CimInstance {
+            param($ClassName)
+            if ($ClassName -eq 'Win32_PnPSignedDriver') {
+                return [pscustomobject]@{ DeviceID = 'SCSI\DISK0'; InfName = 'oem10.inf' }
+            }
+            if ($ClassName -eq 'Win32_LogicalDisk') {
+                return $logicalDisk
+            }
+        }
+        Mock Get-CimAssociatedInstance {
+            param($Association)
+            if ($Association -eq 'Win32_LogicalDiskToPartition') {
+                return $partition
+            }
+            return [pscustomobject]@{ PNPDeviceID = 'SCSI\DISK0' }
+        }
+        Mock Get-PnpDeviceProperty { [pscustomobject]@{ Data = $null } }
+        function pnputil.exe {
+            $global:LASTEXITCODE = 0
+            'DriverName,OriginalName,ProviderName'
+            '"oem10.inf","iaStorAC.inf","Intel"'
+        }
 
         try {
             New-Item -Path (Split-Path $installWim -Parent) -ItemType Directory -Force | Out-Null
@@ -378,11 +657,11 @@ Describe "Win11 Creator setup media" {
                 $logs.Add([string]$message)
             }
 
-            $winpeDriverRoot = Join-Path $contentRoot '$WinpeDriver$'
-            @(Get-ChildItem -Path $winpeDriverRoot -Directory).Count | Should -Be 2
-            Test-Path (Join-Path $winpeDriverRoot 'system_pkg\chipset.inf') | Should -BeFalse
+            $winpeDriverRoot = Join-Path $contentRoot '$WinPEDriver$'
+            @(Get-ChildItem -Path $winpeDriverRoot -Directory).Count | Should -Be 1
             Test-Path (Join-Path $winpeDriverRoot 'storage_pkg\iaStorAC.inf') | Should -BeTrue
-            Test-Path (Join-Path $winpeDriverRoot 'scsi_pkg\controller.inf') | Should -BeTrue
+            Test-Path (Join-Path $winpeDriverRoot 'storage_pkg\iaStorAC.inf.cat') | Should -BeTrue
+            Test-Path (Join-Path $winpeDriverRoot 'storage_pkg\iaStorAC.inf.sys') | Should -BeTrue
             Test-Path (Join-Path $winpeDriverRoot 'net_pkg\network.inf') | Should -BeFalse
 
             @($script:dismCalls | Where-Object { $_ -match '/Mount-Image' }).Count | Should -Be 1
@@ -390,15 +669,62 @@ Describe "Win11 Creator setup media" {
             @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Commit' }).Count | Should -Be 1
             @($script:dismCalls | Where-Object { $_ -match '/Get-WimInfo' }).Count | Should -Be 2
             ($script:dismCalls -join "`n") | Should -Not -Match '/Cleanup-Image|/Export-Image'
+            ($script:dismCalls | Where-Object { $_ -match '/Add-Driver' }) | Should -Match '/Driver:.*WinUtil_DriverExport_.*\|/Recurse'
+            ($script:dismCalls | Where-Object { $_ -match '/Add-Driver' }) | Should -Not -Match '\$WinPEDriver\$'
+            Should -Invoke Start-Process -Times 1 -Exactly -ParameterFilter {
+                $FilePath -eq 'dism.exe' -and $ArgumentList -match '/online /export-driver /destination:'
+            }
 
             [xml]$answerFile = Get-Content -Path (Join-Path $contentRoot 'autounattend.xml') -Raw
             $nsMgr = New-Object System.Xml.XmlNamespaceManager($answerFile.NameTable)
             $nsMgr.AddNamespace('sg', 'https://schneegans.de/windows/unattend-generator/')
             $answerFile.SelectSingleNode('//sg:File[@path="C:\Windows\Setup\Scripts\WinUtil-InstallDrivers.ps1"]', $nsMgr) | Should -BeNullOrEmpty
-            ($logs -join '|') | Should -Match 'staged 2 boot-storage packages for WinPE'
+            ($logs -join '|') | Should -Match 'staged 1 active packages for WinPE'
             ($logs -join '|') | Should -Match 'install.wim metadata validation passed'
-            ($logs -join '|') | Should -Match 'DISM mount completed.'
+            ($logs -join '|') | Should -Match 'Driver export completed in \d{2}:\d{2}:\d{2}\.\d{3}'
+            ($logs -join '|') | Should -Match 'Driver inventory/classification completed in \d{2}:\d{2}:\d{2}\.\d{3}'
+            ($logs -join '|') | Should -Match 'DISM mount completed in \d{2}:\d{2}:\d{2}\.\d{3}'
+            ($logs -join '|') | Should -Match 'DISM add-driver completed in \d{2}:\d{2}:\d{2}\.\d{3}'
+            ($logs -join '|') | Should -Match 'DISM commit completed in \d{2}:\d{2}:\d{2}\.\d{3}'
             ($logs -join '|') | Should -Not -Match '100.0%'
+        } finally {
+            Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
+            Remove-Item Function:\pnputil.exe -ErrorAction SilentlyContinue
+            Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    It "preserves DISM export failure and no-INF cleanup semantics" -TestCases @(
+        @{ ExitCode = 5; ExpectedError = '*dism.exe driver export failed with exit code 5*' }
+        @{ ExitCode = 0; ExpectedError = '*DISM exported no driver INF files*' }
+    ) {
+        param($ExitCode, $ExpectedError)
+
+        $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoExportFailure_$([guid]::NewGuid())"
+        $installWim = Join-Path $contentRoot 'sources\install.wim'
+        $script:mockExportRoot = $null
+        $script:mockExportExitCode = $ExitCode
+
+        function dism.exe {
+            $global:LASTEXITCODE = 0
+        }
+        Mock Start-Process {
+            param($ArgumentList)
+            $destinationMatch = [regex]::Match([string]$ArgumentList, '/destination:"([^"]+)"')
+            $script:mockExportRoot = $destinationMatch.Groups[1].Value
+            [pscustomobject]@{ ExitCode = $script:mockExportExitCode }
+        } -ParameterFilter { $FilePath -eq 'dism.exe' }
+
+        try {
+            New-Item -Path (Split-Path $installWim -Parent) -ItemType Directory -Force | Out-Null
+            Set-Content -Path $installWim -Value 'mock-wim'
+            . $script:isoScriptPath
+
+            { Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml (Get-Content -Path $script:autoUnattendPath -Raw) -InjectCurrentSystemDrivers $true -InstallImagePath $installWim -InstallEditionId 'Professional' } |
+                Should -Throw $ExpectedError
+
+            $script:mockExportRoot | Should -Not -BeNullOrEmpty
+            Test-Path -LiteralPath $script:mockExportRoot | Should -BeFalse
         } finally {
             Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
             Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
@@ -436,6 +762,10 @@ Describe "Win11 Creator setup media" {
         Mock Start-Process {
             param($FilePath, $ArgumentList)
 
+            if ($FilePath -ne 'dism.exe') {
+                throw "Unexpected process in driver export mock: $FilePath"
+            }
+
             $destinationMatch = [regex]::Match([string]$ArgumentList, '/destination:"([^"]+)"')
             $exportRoot = $destinationMatch.Groups[1].Value
             $fixturePath = Join-Path $exportRoot 'storage_pkg'
@@ -443,6 +773,31 @@ Describe "Win11 Creator setup media" {
             Set-Content -Path (Join-Path $fixturePath 'iaStorAC.inf') -Value "[Version]`r`nClass=System" -Encoding ASCII
             return [pscustomobject]@{ ExitCode = 0 }
         } -ParameterFilter { $FilePath -eq 'dism.exe' }
+
+        $logicalDisk = New-CimInstance -ClassName Win32_LogicalDisk -ClientOnly -Property @{ DeviceID = $env:SystemDrive }
+        $partition = New-CimInstance -ClassName Win32_DiskPartition -ClientOnly -Property @{ DeviceID = 'Disk #0, Partition #1' }
+        Mock Get-CimInstance {
+            param($ClassName)
+            if ($ClassName -eq 'Win32_PnPSignedDriver') {
+                return [pscustomobject]@{ DeviceID = 'SCSI\DISK0'; InfName = 'oem10.inf' }
+            }
+            if ($ClassName -eq 'Win32_LogicalDisk') {
+                return $logicalDisk
+            }
+        }
+        Mock Get-CimAssociatedInstance {
+            param($Association)
+            if ($Association -eq 'Win32_LogicalDiskToPartition') {
+                return $partition
+            }
+            return [pscustomobject]@{ PNPDeviceID = 'SCSI\DISK0' }
+        }
+        Mock Get-PnpDeviceProperty { [pscustomobject]@{ Data = $null } }
+        function pnputil.exe {
+            $global:LASTEXITCODE = 0
+            'DriverName,OriginalName,ProviderName'
+            '"oem10.inf","iaStorAC.inf","Intel"'
+        }
 
         try {
             New-Item -Path (Split-Path $installWim -Parent) -ItemType Directory -Force | Out-Null
@@ -456,6 +811,7 @@ Describe "Win11 Creator setup media" {
             @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Discard' }).Count | Should -Be 1
         } finally {
             Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
+            Remove-Item Function:\pnputil.exe -ErrorAction SilentlyContinue
             Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
         }
     }
@@ -468,7 +824,7 @@ Describe "Win11 Creator setup media" {
             . $script:isoScriptPath
             Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml (Get-Content -Path $script:autoUnattendPath -Raw) -InjectCurrentSystemDrivers $false -InstallEditionId 'Core'
 
-            Test-Path (Join-Path $contentRoot '$WinpeDriver$') | Should -BeFalse
+            Test-Path (Join-Path $contentRoot '$WinPEDriver$') | Should -BeFalse
             [xml]$answerFile = Get-Content -Path (Join-Path $contentRoot 'autounattend.xml') -Raw
             $nsMgr = New-Object System.Xml.XmlNamespaceManager($answerFile.NameTable)
             $nsMgr.AddNamespace('sg', 'https://schneegans.de/windows/unattend-generator/')
@@ -478,21 +834,50 @@ Describe "Win11 Creator setup media" {
         }
     }
 
-    It "enables configuration-set fallback when staging OEM setup scripts" {
+    It "forces an existing UseConfigurationSet node to false" {
         $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoFallback_$([guid]::NewGuid())"
 
         try {
             New-Item -Path $contentRoot -ItemType Directory -Force | Out-Null
+            [xml]$template = Get-Content -Path $script:autoUnattendPath -Raw
+            $templateNs = New-Object System.Xml.XmlNamespaceManager($template.NameTable)
+            $templateNs.AddNamespace('u', 'urn:schemas-microsoft-com:unattend')
+            $template.SelectSingleNode('/u:unattend/u:settings[@pass="windowsPE"]/u:component[@name="Microsoft-Windows-Setup"]/u:UseConfigurationSet', $templateNs).InnerText = 'true'
             . $script:isoScriptPath
-            Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml (Get-Content -Path $script:autoUnattendPath -Raw) -InstallEditionId 'Core'
+            Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template.OuterXml -InstallEditionId 'Core'
 
             [xml]$answerFile = Get-Content -Path (Join-Path $contentRoot 'autounattend.xml') -Raw
             $nsMgr = New-Object System.Xml.XmlNamespaceManager($answerFile.NameTable)
             $nsMgr.AddNamespace('u', 'urn:schemas-microsoft-com:unattend')
 
             $answerFile.SelectSingleNode('/u:unattend/u:settings[@pass="windowsPE"]/u:component[@name="Microsoft-Windows-Setup"]/u:UseConfigurationSet', $nsMgr).InnerText |
-                Should -Be 'true'
+                Should -Be 'false'
             Test-Path (Join-Path $contentRoot 'sources\$OEM$\$$\Setup\Scripts\FirstLogon.ps1') | Should -BeTrue
+        } finally {
+            Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    It "leaves an absent UseConfigurationSet node absent" {
+        $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoNoConfigurationSet_$([guid]::NewGuid())"
+
+        try {
+            New-Item -Path $contentRoot -ItemType Directory -Force | Out-Null
+            [xml]$template = Get-Content -Path $script:autoUnattendPath -Raw
+            $templateNs = New-Object System.Xml.XmlNamespaceManager($template.NameTable)
+            $templateNs.AddNamespace('u', 'urn:schemas-microsoft-com:unattend')
+            $configurationSetNode = $template.SelectSingleNode('/u:unattend/u:settings[@pass="windowsPE"]/u:component[@name="Microsoft-Windows-Setup"]/u:UseConfigurationSet', $templateNs)
+            [void]$configurationSetNode.ParentNode.RemoveChild($configurationSetNode)
+
+            . $script:isoScriptPath
+            Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template.OuterXml -InstallEditionId 'Core'
+
+            [xml]$answerFile = Get-Content -Path (Join-Path $contentRoot 'autounattend.xml') -Raw
+            $nsMgr = New-Object System.Xml.XmlNamespaceManager($answerFile.NameTable)
+            $nsMgr.AddNamespace('u', 'urn:schemas-microsoft-com:unattend')
+            $answerFile.SelectSingleNode('/u:unattend/u:settings[@pass="windowsPE"]/u:component[@name="Microsoft-Windows-Setup"]/u:UseConfigurationSet', $nsMgr) |
+                Should -BeNullOrEmpty
+            $answerFile.OuterXml | Should -Not -Match '<UseConfigurationSet>true</UseConfigurationSet>'
         } finally {
             Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
         }
