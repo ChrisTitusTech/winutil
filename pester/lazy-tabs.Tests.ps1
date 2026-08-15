@@ -12,6 +12,7 @@ BeforeAll {
         param([string]$TargetGridName)
     }
     function Invoke-WinUtilISOCheckExistingWork { }
+    function Reset-WPFCheckBoxes { param([bool]$doToggles) }
 
     . (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilTabContent.ps1")
 }
@@ -29,6 +30,7 @@ Describe "Initialize-WinUtilTabContent" {
 
         Mock Invoke-WPFUIElements { }
         Mock Initialize-WPFUI { }
+        Mock Reset-WPFCheckBoxes { }
     }
 
     AfterEach {
@@ -47,6 +49,21 @@ Describe "Initialize-WinUtilTabContent" {
             $TargetGridName -eq "appspanel"
         }
         $script:sync.InitializedTabs["Install"] | Should -BeTrue
+    }
+
+    It "re-applies checkbox selections after building a tab's controls" {
+        Initialize-WinUtilTabContent -TabName "Tweaks"
+
+        Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly -ParameterFilter {
+            $doToggles -eq $true
+        }
+    }
+
+    It "does not re-apply checkbox selections on a tab that's already built" {
+        Initialize-WinUtilTabContent -TabName "Tweaks"
+        Initialize-WinUtilTabContent -TabName "Tweaks"
+
+        Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly
     }
 
     It "initializes deferred config-backed tabs once" {
@@ -118,5 +135,12 @@ Describe "Startup lazy tab wiring" {
 
         $rendererScript | Should -Match '(?s)if \(\$entryInfo\.Link\).*\$textBlock\.Add_MouseUp\(\{.*Start-Process \$Sender\.ToolTip -ErrorAction Stop'
         $mainScript | Should -Not -Match '\.Name\.EndsWith\("Link"\)'
+    }
+
+    It "checks for an existing outer ScrollViewer before nesting an inner ScrollViewer" {
+        $rendererScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIElements.ps1") -Raw
+
+        $rendererScript | Should -Match '\$hasOuterScrollViewer'
+        $rendererScript | Should -Match 'if\s*\(\$hasOuterScrollViewer\)'
     }
 }

@@ -96,5 +96,5 @@ function Invoke-WPFAppxRemoval {
             $sync.ProcessRunning = $false
         }
 
-    }
+    } | Out-Null
 }
