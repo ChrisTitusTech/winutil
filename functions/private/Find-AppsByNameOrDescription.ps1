@@ -227,7 +227,7 @@ function Find-AppsByNameOrDescription {
                     }
 
                     $lbl = New-Object System.Windows.Controls.Label
-                    $prefix = if ($sync.AnyCuratedMatch) { "+" } else { "-" }
+                    $prefix = "+"
                     $lbl.Content = "$prefix Package Manager Results"
                     $lbl.Tag = "CategoryToggleButton_PM"
                     if ("Windows.Controls.Control" -as [type]) {
@@ -262,7 +262,7 @@ function Find-AppsByNameOrDescription {
                     $pmWrap.HorizontalAlignment = "Left"
                     $pmWrap.VerticalAlignment = "Top"
                     $pmWrap.Margin = New-Object Windows.Thickness(0, 0, 0, 0)
-                    $pmWrap.Visibility = if ($sync.AnyCuratedMatch) { [Windows.Visibility]::Collapsed } else { [Windows.Visibility]::Visible }
+                    $pmWrap.Visibility = [Windows.Visibility]::Collapsed
                     $pmWrap.Tag = "CategoryWrapPanel_PackageManagerResults"
 
                     if ($null -ne $pmContainer.Children) { $null = $pmContainer.Children.Add($pmWrap) }
@@ -341,12 +341,11 @@ function Find-AppsByNameOrDescription {
                         $pmContainer.Visibility = [Windows.Visibility]::Visible
                         $lbl = $pmContainer.Children[0]
                         
-                        # ponytail: auto-expand only when no curated match, preserve state otherwise
+                        # ponytail: always collapse by default on new searches
                         if ($sync.LastAutoExpandSearch -ne $SearchString) {
                             $sync.LastAutoExpandSearch = $SearchString
-                            $shouldExpand = -not $sync.AnyCuratedMatch
-                            $pmWrap.Visibility = if ($shouldExpand) { [Windows.Visibility]::Visible } else { [Windows.Visibility]::Collapsed }
-                            $prefix = if ($shouldExpand) { "-" } else { "+" }
+                            $pmWrap.Visibility = [Windows.Visibility]::Collapsed
+                            $prefix = "+"
                         } else {
                             $prefix = if ([string]$lbl.Content -like "+*") { "+" } else { "-" }
                         }
