@@ -51,13 +51,12 @@ Describe "zh-CN coverage of static XAML text" {
         $missing = New-Object System.Collections.Generic.List[string]
 
         # Tab button inline text, e.g. "<Underline>I</Underline>nstall" -> "Install".
-        # The full match contains the underline and TextBlock tags; strip them so
-        # the accent letter and the rest combine back into the visible text.
-        # Already-covered keys (Install/Tweaks/Config/Updates/Win11 Creator) are
-        # skipped like the attribute scan below, otherwise this would never pass.
-        [regex]::Matches($xaml, '<Underline>[^<]+</Underline>([^<]+)</TextBlock>') | ForEach-Object {
-            $text = ($_.Groups[0].Value -replace '<Underline>|</Underline>|</TextBlock>', '').Trim()
-            if ($text -and $covered -notcontains $text -and $missing -notcontains $text) { $missing.Add("tab:$text") }
+        # The two groups restore the full text (accent letter + rest). Already-covered
+        # keys (Install/Tweaks/Config/Updates/Win11 Creator) are skipped like the
+        # attribute scan below, otherwise this would never pass.
+        [regex]::Matches($xaml, '<Underline>([^<]+)</Underline>([^<]+)</TextBlock>') | ForEach-Object {
+            $text = ($_.Groups[1].Value + $_.Groups[2].Value).Trim()
+            if ($text -and $covered -notcontains $text) { $missing.Add("tab:$text") }
         }
 
         # String-valued attributes: Text, Content, ToolTip, Header, Title
