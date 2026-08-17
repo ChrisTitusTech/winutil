@@ -474,7 +474,8 @@ Describe "XAML and sync wiring" {
             "SelectedAppCategories",
             "AppCategoryAutoExpanded",
             "language",
-            "TextTable"
+            "TextTable",
+            "ReverseTextTable"
         )
         $allowedNames = @($xamlNames + $generatedNames + $dynamicStateNames) | Sort-Object -Unique
         $bracketReferences = @(

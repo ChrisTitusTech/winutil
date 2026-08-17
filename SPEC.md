@@ -76,7 +76,7 @@ Because the final script is concatenated, code cannot rely on runtime module imp
 - UI layout lives in `xaml/inputXML.xaml`.
 - Named WPF controls are discovered and stored in `$sync`.
 - Button/action wiring follows a naming convention: an element named like `WPFThingButton` maps to a function named like `Invoke-WPFThingButton`.
-- UI text is localized at runtime: English source strings stay in XAML and config, and `Get-WinUtilText` translates them against the active language table (`$sync.TextTable`). `Apply-WinUtilUILanguage` replaces static XAML text on load and on language switch (two-stage: whole-text match first, then per-LineBreak-segment); `Invoke-WPFUIElements` localizes config-driven entries at render time; `Set-WinUtilLanguage` switches language, persists to `%LocalAppData%\winutil\preferences.json`, and rebuilds rendered tabs. `$sync.currentTab` uses fixed identifiers ("Install", "Tweaks", ...) and never reads `TabItem.Header`, which is localized display text.
+- UI text is localized at runtime: English source strings stay in XAML and config, and `Get-WinUtilText` translates them against the active language table (`$sync.TextTable`). `Invoke-WinUtilUILanguage` replaces static XAML text on load and on language switch (two-stage: whole-text match first, then per-LineBreak-segment); `Invoke-WPFUIElements` localizes config-driven entries at render time; `Set-WinUtilLanguage` switches language, persists to `%LocalAppData%\winutil\preferences.json`, and rebuilds rendered tabs. `$sync.currentTab` uses fixed identifiers ("Install", "Tweaks", ...) and never reads `TabItem.Header`, which is localized display text.
 
 ## Configuration Contract
 

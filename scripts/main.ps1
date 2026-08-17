@@ -394,7 +394,7 @@ $sync["Form"].Add_Loaded({
     $sync.Form.MinWidth = "1150"
     $sync["Form"].MaxWidth = [Double]::PositiveInfinity
     $sync["Form"].MaxHeight = [Double]::PositiveInfinity
-    Apply-WinUtilUILanguage
+    Invoke-WinUtilUILanguage
 })
 
 $NavLogoPanel = $sync["Form"].FindName("NavLogoPanel")

@@ -4,8 +4,11 @@
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+    # Tests build WPF controls directly; pwsh does not auto-load
+    # PresentationFramework, unlike Windows PowerShell's GAC type resolution.
+    Add-Type -AssemblyName PresentationFramework
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilText.ps1")
-    . (Join-Path $script:repoRoot "functions\private\Apply-WinUtilUILanguage.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilUILanguage.ps1")
     $global:sync = [hashtable]::Synchronized(@{})
     $sync.TextTable = @{
         "Install" = "安装"
@@ -18,16 +21,18 @@ BeforeAll {
         "Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system." = "注意：悬停查看项目说明。"
         "Recommended selections are for normal users and if you are unsure do NOT check anything else!" = "推荐选择适用于普通用户。"
     }
+    # Stash for restoring state in the reverse-restore tests below.
+    $script:zhTable = $sync.TextTable
 }
 
-Describe "Apply-WinUtilUILanguage runtime traversal" {
+Describe "Invoke-WinUtilUILanguage runtime traversal" {
     It "translates tab button underline text" {
         $sync.Form = New-Object System.Windows.Window
         $tb = New-Object System.Windows.Controls.TextBlock
         $tb.Inlines.Add((New-Object System.Windows.Documents.Underline -ArgumentList (New-Object System.Windows.Documents.Run -ArgumentList "I")))
         $tb.Inlines.Add((New-Object System.Windows.Documents.Run -ArgumentList "nstall"))
         $sync.Form.Content = $tb
-        Apply-WinUtilUILanguage
+        Invoke-WinUtilUILanguage
         $tb.Text | Should -Be "安装"
     }
 
@@ -46,7 +51,7 @@ Describe "Apply-WinUtilUILanguage runtime traversal" {
         $tb = [System.Windows.Markup.XamlReader]::Parse($xaml)
         $sync.Form = New-Object System.Windows.Window
         $sync.Form.Content = $tb
-        Apply-WinUtilUILanguage
+        Invoke-WinUtilUILanguage
         $tb.Text | Should -Be "- 版本：Windows 11`n- Language : your preferred language`n- Architecture : 64-bit (x64)"
     }
 
@@ -55,7 +60,7 @@ Describe "Apply-WinUtilUILanguage runtime traversal" {
         $tb = [System.Windows.Markup.XamlReader]::Parse($xaml)
         $sync.Form = New-Object System.Windows.Window
         $sync.Form.Content = $tb
-        Apply-WinUtilUILanguage
+        Invoke-WinUtilUILanguage
         $tb.Text | Should -Be "混合译文`nmore"
     }
 
@@ -66,7 +71,7 @@ Describe "Apply-WinUtilUILanguage runtime traversal" {
         $tb = [System.Windows.Markup.XamlReader]::Parse($xaml)
         $sync.Form = New-Object System.Windows.Window
         $sync.Form.Content = $tb
-        Apply-WinUtilUILanguage
+        Invoke-WinUtilUILanguage
         $tb.Text | Should -Be "拼接译文"
     }
 
@@ -82,7 +87,7 @@ Describe "Apply-WinUtilUILanguage runtime traversal" {
         $tb = [System.Windows.Markup.XamlReader]::Parse($xaml)
         $sync.Form = New-Object System.Windows.Window
         $sync.Form.Content = $tb
-        Apply-WinUtilUILanguage
+        Invoke-WinUtilUILanguage
         $tb.Text | Should -Be "注意：悬停查看项目说明。`n推荐选择适用于普通用户。"
         $tb.Inlines.Count | Should -Be 0
     }
@@ -92,7 +97,7 @@ Describe "Apply-WinUtilUILanguage runtime traversal" {
         $tb = [System.Windows.Markup.XamlReader]::Parse($xaml)
         $sync.Form = New-Object System.Windows.Window
         $sync.Form.Content = $tb
-        Apply-WinUtilUILanguage
+        Invoke-WinUtilUILanguage
         $tb.Text | Should -Be "甲`n乙"
     }
 
@@ -103,7 +108,7 @@ Describe "Apply-WinUtilUILanguage runtime traversal" {
         $tb.Text = "Run Tweaks"
         $border.Child = $tb
         $sync.Form.Content = $border
-        Apply-WinUtilUILanguage
+        Invoke-WinUtilUILanguage
         $tb.Text | Should -Be "运行调整"
     }
 
@@ -121,7 +126,7 @@ Describe "Apply-WinUtilUILanguage runtime traversal" {
         $border.Child = $stack
         $popup.Child = $border
         $sync.Form.Content = $popup
-        Apply-WinUtilUILanguage
+        Invoke-WinUtilUILanguage
         $mi.Header | Should -Be "运行调整"
         $tb.Text | Should -Be "运行调整"
     }
@@ -140,7 +145,7 @@ Describe "Apply-WinUtilUILanguage runtime traversal" {
         $stack.Children.Add($tb1) | Out-Null
         $stack.Children.Add($tb2) | Out-Null
         $sync.Form.Content = $stack
-        Apply-WinUtilUILanguage
+        Invoke-WinUtilUILanguage
         $tb1.ToolTip | Should -Be "运行调整"
         $tt.Content | Should -Be "运行调整"
     }
@@ -150,7 +155,7 @@ Describe "Apply-WinUtilUILanguage runtime traversal" {
         $btn = New-Object System.Windows.Controls.Button
         $btn.Content = "Run Tweaks"
         $sync.Form.Content = $btn
-        Apply-WinUtilUILanguage
+        Invoke-WinUtilUILanguage
         $btn.Content | Should -Be "运行调整"
     }
 
@@ -160,8 +165,8 @@ Describe "Apply-WinUtilUILanguage runtime traversal" {
         $tb.Inlines.Add((New-Object System.Windows.Documents.Underline -ArgumentList (New-Object System.Windows.Documents.Run -ArgumentList "I")))
         $tb.Inlines.Add((New-Object System.Windows.Documents.Run -ArgumentList "nstall"))
         $sync.Form.Content = $tb
-        Apply-WinUtilUILanguage
-        Apply-WinUtilUILanguage
+        Invoke-WinUtilUILanguage
+        Invoke-WinUtilUILanguage
         $tb.Text | Should -Be "安装"
         # A second pass sees no Inlines and must not touch anything.
         $tb.Inlines.Count | Should -Be 0
@@ -176,10 +181,116 @@ Describe "Apply-WinUtilUILanguage runtime traversal" {
         $tb.Inlines.Add((New-Object System.Windows.Documents.Underline -ArgumentList (New-Object System.Windows.Documents.Run -ArgumentList "I")))
         $tb.Inlines.Add((New-Object System.Windows.Documents.Run -ArgumentList "nstall"))
         $sync.Form.Content = $tb
-        Apply-WinUtilUILanguage
+        Invoke-WinUtilUILanguage
         # Text was never set and the underline structure survives for styling.
         $tb.Text | Should -Be ""
         $tb.Inlines.Count | Should -Be 2
         $tb.Inlines[0].GetType().Name | Should -Be "Underline"
+    }
+}
+
+Describe "Invoke-WinUtilUILanguage reverse restore" {
+    BeforeEach {
+        # The previous describe leaves an empty table; start each scenario from
+        # the full Chinese table with no reverse table.
+        $sync.TextTable = $script:zhTable
+        $sync.ReverseTextTable = $null
+    }
+
+    It "restores a whole-text key back to English" {
+        $sync.Form = New-Object System.Windows.Window
+        $tb = New-Object System.Windows.Controls.TextBlock
+        $tb.Inlines.Add((New-Object System.Windows.Documents.Run -ArgumentList "AAA"))
+        $tb.Inlines.Add((New-Object System.Windows.Documents.LineBreak))
+        $tb.Inlines.Add((New-Object System.Windows.Documents.Run -ArgumentList "BBB"))
+        $sync.Form.Content = $tb
+        Invoke-WinUtilUILanguage
+        $tb.Text | Should -Be "拼接译文"
+
+        $sync.TextTable = $null
+        $sync.ReverseTextTable = @{
+            "拼接译文" = "AAABBB"
+            "甲" = "A"
+            "乙" = "B"
+            "运行调整" = "Run Tweaks"
+        }
+        Invoke-WinUtilUILanguage
+        $tb.Text | Should -Be "AAABBB"
+    }
+
+    It "restores every LineBreak segment back to English" {
+        $xaml = '<TextBlock xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">A<LineBreak/>B</TextBlock>'
+        $tb = [System.Windows.Markup.XamlReader]::Parse($xaml)
+        $sync.Form = New-Object System.Windows.Window
+        $sync.Form.Content = $tb
+        Invoke-WinUtilUILanguage
+        $tb.Text | Should -Be "甲`n乙"
+
+        $sync.TextTable = $null
+        $sync.ReverseTextTable = @{
+            "拼接译文" = "AAABBB"
+            "甲" = "A"
+            "乙" = "B"
+            "运行调整" = "Run Tweaks"
+        }
+        Invoke-WinUtilUILanguage
+        $tb.Text | Should -Be "A`nB"
+    }
+
+    It "is idempotent across repeated reverse runs" {
+        $sync.Form = New-Object System.Windows.Window
+        $tb = New-Object System.Windows.Controls.TextBlock
+        $tb.Inlines.Add((New-Object System.Windows.Documents.Run -ArgumentList "AAA"))
+        $tb.Inlines.Add((New-Object System.Windows.Documents.LineBreak))
+        $tb.Inlines.Add((New-Object System.Windows.Documents.Run -ArgumentList "BBB"))
+        $sync.Form.Content = $tb
+        Invoke-WinUtilUILanguage
+        $tb.Text | Should -Be "拼接译文"
+
+        $sync.TextTable = $null
+        $sync.ReverseTextTable = @{
+            "拼接译文" = "AAABBB"
+            "甲" = "A"
+            "乙" = "B"
+            "运行调整" = "Run Tweaks"
+        }
+        Invoke-WinUtilUILanguage
+        Invoke-WinUtilUILanguage
+        $tb.Text | Should -Be "AAABBB"
+    }
+
+    It "restores string Content and ToolTip in reverse mode" {
+        $sync.Form = New-Object System.Windows.Window
+        $btn = New-Object System.Windows.Controls.Button
+        $btn.Content = "Run Tweaks"
+        $btn.ToolTip = "Run Tweaks"
+        $sync.Form.Content = $btn
+        Invoke-WinUtilUILanguage
+        $btn.Content | Should -Be "运行调整"
+        $btn.ToolTip | Should -Be "运行调整"
+
+        $sync.TextTable = $null
+        $sync.ReverseTextTable = @{
+            "拼接译文" = "AAABBB"
+            "甲" = "A"
+            "乙" = "B"
+            "运行调整" = "Run Tweaks"
+        }
+        Invoke-WinUtilUILanguage
+        $btn.Content | Should -Be "Run Tweaks"
+        $btn.ToolTip | Should -Be "Run Tweaks"
+    }
+
+    It "leaves English text untouched when the reverse table has no entry" {
+        $sync.TextTable = $null
+        $sync.ReverseTextTable = @{
+            "运行调整" = "Run Tweaks"
+        }
+        $sync.Form = New-Object System.Windows.Window
+        $tb = New-Object System.Windows.Controls.TextBlock
+        $tb.Text = "Untranslated English Text"
+        $sync.Form.Content = $tb
+        Invoke-WinUtilUILanguage
+        $tb.Text | Should -Be "Untranslated English Text"
     }
 }

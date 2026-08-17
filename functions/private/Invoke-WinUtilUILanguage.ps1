@@ -38,12 +38,40 @@ function Get-WinUtilInlineSegments {
     return ,$segments
 }
 
-function Apply-WinUtilUILanguage {
+function Get-WinUtilLanguageText {
+    <#
+    .SYNOPSIS
+        Resolves a string against the current language state. With an active
+        TextTable it translates forward (English key -> translated text). With
+        no TextTable but a ReverseTextTable (switching back to English) it
+        translates backward (translated text -> English key). Falls back to the
+        original string when nothing matches.
+    #>
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Text
+    )
+
+    if ($null -ne $sync.TextTable -and $sync.TextTable.Count -gt 0) {
+        if ($sync.TextTable.ContainsKey($Text)) {
+            return $sync.TextTable[$Text]
+        }
+        return $Text
+    }
+
+    if ($null -ne $sync.ReverseTextTable -and $sync.ReverseTextTable.ContainsKey($Text)) {
+        return $sync.ReverseTextTable[$Text]
+    }
+
+    return $Text
+}
+
+function Invoke-WinUtilUILanguage {
     <#
     .SYNOPSIS
         Walks the window's visual tree and replaces static string text with the
-        current language translation. Idempotent: already-translated text is not
-        a dictionary key, so it is left untouched.
+        current language translation, or restores the English key when switching
+        back to English. Idempotent: text that matches nothing is left untouched.
     #>
 
     $stack = [System.Collections.Generic.Stack[object]]::new()
@@ -52,6 +80,9 @@ function Apply-WinUtilUILanguage {
     while ($stack.Count -gt 0) {
         $node = $stack.Pop()
         if ($null -eq $node) { continue }
+
+        # Reverse mode: English target, translated text needs restoring.
+        $reverseMode = $null -eq $sync.TextTable -and $null -ne $sync.ReverseTextTable
 
         # TextBlock: translate in two stages against the mixed key shapes in
         # i18n.json. Stage 1 looks up the whole content joined without a
@@ -70,19 +101,28 @@ function Apply-WinUtilUILanguage {
                 }
             } elseif (-not [string]::IsNullOrWhiteSpace($node.Text)) {
                 # Text-only TextBlock (Inlines cleared after a previous pass).
-                $segments.Add($node.Text)
+                # In reverse mode the text was joined with newlines, so split
+                # it back into segments so each one resolves to its English key.
+                if ($reverseMode) {
+                    foreach ($segment in ($node.Text -split "`n")) {
+                        $segments.Add($segment)
+                    }
+                } else {
+                    $segments.Add($node.Text)
+                }
             }
 
             if ($segments.Count -gt 0) {
                 $fullText = $segments -join ""
-                $translatedFull = if ($fullText) { Get-WinUtilText $fullText } else { $fullText }
+                $translatedFull = if ($fullText) { Get-WinUtilLanguageText $fullText } else { $fullText }
                 if ($translatedFull -ne $fullText) {
                     $node.Text = $translatedFull
                     $node.Inlines.Clear()
                 } else {
-                    # Empty segments stay empty — Get-WinUtilText rejects them.
+                    # Empty segments stay empty — Get-WinUtilLanguageText
+                    # rejects them.
                     $translatedSegments = @(foreach ($segment in $segments) {
-                        if ([string]::IsNullOrEmpty($segment)) { $segment } else { Get-WinUtilText $segment }
+                        if ([string]::IsNullOrEmpty($segment)) { $segment } else { Get-WinUtilLanguageText $segment }
                     })
                     $changed = $false
                     for ($i = 0; $i -lt $segments.Count; $i++) {
@@ -100,20 +140,20 @@ function Apply-WinUtilUILanguage {
         if ($node.Content -is [string] -and
             $node -is [System.Windows.Controls.ContentControl] -and
             $node -isnot [System.Windows.Controls.TextBox]) {
-            $node.Content = Get-WinUtilText $node.Content
+            $node.Content = Get-WinUtilLanguageText $node.Content
         }
 
         # MenuItem Header / TabItem Header
         if (($node -is [System.Windows.Controls.MenuItem] -or $node -is [System.Windows.Controls.TabItem]) -and
             $node.Header -is [string]) {
-            $node.Header = Get-WinUtilText $node.Header
+            $node.Header = Get-WinUtilLanguageText $node.Header
         }
 
         # ToolTip: string property, or ToolTip object with string Content
         if ($node.ToolTip -is [string]) {
-            $node.ToolTip = Get-WinUtilText $node.ToolTip
+            $node.ToolTip = Get-WinUtilLanguageText $node.ToolTip
         } elseif ($node.ToolTip -is [System.Windows.Controls.ToolTip] -and $node.ToolTip.Content -is [string]) {
-            $node.ToolTip.Content = Get-WinUtilText $node.ToolTip.Content
+            $node.ToolTip.Content = Get-WinUtilLanguageText $node.ToolTip.Content
         }
 
         # Descend: Content element, Children, Items (TabItem lives in Items, not
