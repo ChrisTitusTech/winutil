@@ -76,6 +76,7 @@ Because the final script is concatenated, code cannot rely on runtime module imp
 - UI layout lives in `xaml/inputXML.xaml`.
 - Named WPF controls are discovered and stored in `$sync`.
 - Button/action wiring follows a naming convention: an element named like `WPFThingButton` maps to a function named like `Invoke-WPFThingButton`.
+- UI text is localized at runtime: English source strings stay in XAML and config, and `Get-WinUtilText` translates them against the active language table (`$sync.TextTable`). `Apply-WinUtilUILanguage` replaces static XAML text on load and on language switch (two-stage: whole-text match first, then per-LineBreak-segment); `Invoke-WPFUIElements` localizes config-driven entries at render time; `Set-WinUtilLanguage` switches language, persists to `%LocalAppData%\winutil\preferences.json`, and rebuilds rendered tabs. `$sync.currentTab` uses fixed identifiers ("Install", "Tweaks", ...) and never reads `TabItem.Header`, which is localized display text.
 
 ## Configuration Contract
 
@@ -83,6 +84,7 @@ Because the final script is concatenated, code cannot rely on runtime module imp
 - `config/applications.json` defines installable applications; each entry includes the fields expected by tests and UI code, such as package manager IDs, category, display content, description, and link.
 - `config/tweaks.json` defines Windows tweaks; registry and service changes include original values or original states when applicable so undo workflows can restore user systems.
 - Preset and navigation files reference valid config keys. Renaming a config key requires updating all presets, UI references, docs, and code paths together.
+- `config/i18n.json` defines UI language packs. Each language is a top-level key with `meta.code`, `meta.name`, and `strings`. Translation keys are the English source strings; unknown keys fall back to the English original at runtime. `applications.json` display names (brand names) are not translated. The file is UTF-8 (no BOM); readers must pass `-Encoding UTF8`, and `Compile.ps1` writes the compiled script with a BOM so Windows PowerShell 5.1 decodes embedded Chinese text correctly.
 
 ## Safety Requirements
 

@@ -91,6 +91,7 @@ This scoping applies to compiled-script behavior only. Repository metadata — `
 - Do not add abstractions, configurability, hooks, or "future extensibility" unless the task needs them now.
 - Clean up orphans created by your own changes, such as unused variables or functions made obsolete by the edit.
 - Avoid broad formatting-only edits, especially in JSON config files, XAML, docs, and generated output.
+- New user-facing UI text must be English source strings; add the translation to `config/i18n.json` (key = English source, value = translation) rather than hard-coding non-English text in XAML or PowerShell.
 
 ## 6. Runtime And Safety Rules
 
