@@ -64,6 +64,8 @@ if ($Config) {
     return
 }
 
+Initialize-WinUtilLanguage
+
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
 
@@ -392,6 +394,7 @@ $sync["Form"].Add_Loaded({
     $sync.Form.MinWidth = "1150"
     $sync["Form"].MaxWidth = [Double]::PositiveInfinity
     $sync["Form"].MaxHeight = [Double]::PositiveInfinity
+    Apply-WinUtilUILanguage
 })
 
 $NavLogoPanel = $sync["Form"].FindName("NavLogoPanel")
