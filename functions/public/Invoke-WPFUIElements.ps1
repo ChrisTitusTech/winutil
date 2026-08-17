@@ -323,6 +323,9 @@ function Invoke-WPFUIElements {
                             } catch {
                                 $unknownStateItem = New-Object Windows.Controls.ComboBoxItem
                                 $unknownStateItem.Content = Get-WinUtilText "Custom / Unknown - select a state"
+                                # Language-independent marker: the Content is localized, so
+                                # searches and the retry fallback match this instead of a string.
+                                $unknownStateItem.Tag = "UnknownStateItem"
                                 $unknownStateItem.IsEnabled = $false
                                 $unknownStateItem.ToolTip = "$($_.Exception.Message) Select one of the supported states to replace these values."
                                 $comboBox.Items.Add($unknownStateItem) | Out-Null
@@ -351,7 +354,7 @@ function Invoke-WPFUIElements {
                                         Set-WinUtilRegistryComboState -Registry $registry -State $selectedItem.Content
                                         $this.Tag.State = $selectedItem.Content
                                         $this.ToolTip = $null
-                                        $unknownStateItem = @($this.Items) | Where-Object Content -EQ "Custom / Unknown - select a state" | Select-Object -First 1
+                                        $unknownStateItem = @($this.Items) | Where-Object Tag -EQ "UnknownStateItem" | Select-Object -First 1
                                         if ($unknownStateItem) {
                                             $this.Items.Remove($unknownStateItem)
                                         }
@@ -360,8 +363,16 @@ function Invoke-WPFUIElements {
                                         if ([string]::IsNullOrWhiteSpace($applyError)) {
                                             $applyError = Get-WinUtilFormattedText -Template "Unable to apply registry state '{0}'." -FormatArgs @($selectedItem.Content)
                                         }
-                                        $previousState = if ($this.Tag.State) { $this.Tag.State } else { "Custom / Unknown - select a state" }
-                                        $this.SelectedItem = @($this.Items) | Where-Object Content -EQ $previousState | Select-Object -First 1
+                                        $previousItem = if ($this.Tag.State) {
+                                            @($this.Items) | Where-Object Content -EQ $this.Tag.State | Select-Object -First 1
+                                        } else {
+                                            # The sentinel item (localized Content) is the prior
+                                            # selection when no state was ever applied.
+                                            @($this.Items) | Where-Object Tag -EQ "UnknownStateItem" | Select-Object -First 1
+                                        }
+                                        if ($previousItem) {
+                                            $this.SelectedItem = $previousItem
+                                        }
                                         [System.Windows.MessageBox]::Show(
                                             $applyError,
                                             "WinUtil",

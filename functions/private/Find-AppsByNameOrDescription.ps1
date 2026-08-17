@@ -69,8 +69,16 @@ function Find-AppsByNameOrDescription {
 
                     $categoryLabel.Visibility = [Windows.Visibility]::Visible
 
-                    # A category that filtering expanded goes back to how the user left it
-                    $categoryName = $categoryLabel.Content -replace '^[+-] ', ''
+                    # A category that filtering expanded goes back to how the user left it.
+                    # The raw category comes from the WrapPanel Tag when available
+                    # (rendered by Initialize-InstallCategoryAppList); the label content
+                    # fallback keeps the key stable in tests and older rendered content.
+                    $wrapPanel = $_.Children[1]
+                    $categoryName = if ($wrapPanel.Tag -is [string] -and $wrapPanel.Tag -like "CategoryWrapPanel_*") {
+                        $wrapPanel.Tag.Substring("CategoryWrapPanel_".Length)
+                    } else {
+                        $categoryLabel.Content -replace '^[+-] ', ''
+                    }
                     if ($sync.AppCategoryAutoExpanded.ContainsKey($categoryName)) {
                         $categoryLabel.Content = $categoryLabel.Content -replace "^- ", "+ "
                         $sync.AppCategoryAutoExpanded.Remove($categoryName)
@@ -140,7 +148,15 @@ function Find-AppsByNameOrDescription {
                     # Remember that it was collapsed so clearing the filter can put it back.
                     if ($categoryLabel.Content -like "+*") {
                         $categoryLabel.Content = $categoryLabel.Content -replace "^\+ ", "- "
-                        $sync.AppCategoryAutoExpanded[($categoryLabel.Content -replace '^- ', '')] = $true
+                        # Key by the raw category so an explicit click (which uses
+                        # the same raw key) can remove the entry, and the entry
+                        # survives language switches.
+                        $categoryKey = if ($wrapPanel.Tag -is [string] -and $wrapPanel.Tag -like "CategoryWrapPanel_*") {
+                            $wrapPanel.Tag.Substring("CategoryWrapPanel_".Length)
+                        } else {
+                            $categoryLabel.Content -replace '^- ', ''
+                        }
+                        $sync.AppCategoryAutoExpanded[$categoryKey] = $true
                     }
                 }
                 else {
