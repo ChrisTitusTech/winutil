@@ -103,7 +103,7 @@
         "choco": "na",
         "winget": "Blizzard.BattleNet",
         "content": "Battle.net",
-        "description": "Battle.net is a launcher for games created and developed by Actvision Blizzard",
+        "description": "Battle.net is a launcher for games created and developed by Activision Blizzard",
         "link": "https://battle.net",
         "foss": false
     },
