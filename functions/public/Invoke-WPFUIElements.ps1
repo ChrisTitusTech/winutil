@@ -154,10 +154,10 @@ function Invoke-WPFUIElements {
 
             $label = New-Object Windows.Controls.Label
             $categoryCleanName = $category -replace ".*__", ""
-            $label.Content = $categoryCleanName
+            $label.Content = Get-WinUtilText $categoryCleanName
             $label.Focusable = $true
             $label.IsTabStop = $true
-            [System.Windows.Automation.AutomationProperties]::SetName($label, $categoryCleanName)
+            [System.Windows.Automation.AutomationProperties]::SetName($label, (Get-WinUtilText $categoryCleanName))
             $label.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "HeaderFontSize")
             $label.SetResourceReference([Windows.Controls.Control]::FontFamilyProperty, "HeaderFontFamily")
             $label.UseLayoutRounding = $true
@@ -179,18 +179,18 @@ function Invoke-WPFUIElements {
                 switch ($entryInfo.Type) {
                     "Toggle" {
                         $dockPanel = New-Object Windows.Controls.DockPanel
-                        [System.Windows.Automation.AutomationProperties]::SetName($dockPanel, $entryInfo.Content)
+                        [System.Windows.Automation.AutomationProperties]::SetName($dockPanel, (Get-WinUtilText $entryInfo.Content))
                         $checkBox = New-Object Windows.Controls.CheckBox
                         $checkBox.Name = $entryInfo.Name
                         $checkBox.HorizontalAlignment = "Right"
                         $checkBox.UseLayoutRounding = $true
-                        [System.Windows.Automation.AutomationProperties]::SetName($checkBox, $entryInfo.Content)
+                        [System.Windows.Automation.AutomationProperties]::SetName($checkBox, (Get-WinUtilText $entryInfo.Content))
                         $dockPanel.Children.Add($checkBox) | Out-Null
                         $checkBox.Style = $ColorfulToggleSwitchStyle
 
                         $label = New-Object Windows.Controls.Label
-                        $label.Content = $entryInfo.Content
-                        $label.ToolTip = $entryInfo.Description
+                        $label.Content = Get-WinUtilText $entryInfo.Content
+                        $label.ToolTip = Get-WinUtilText $entryInfo.Description
                         $label.HorizontalAlignment = "Left"
                         $label.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
                         $label.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, "MainForegroundColor")
@@ -223,11 +223,11 @@ function Invoke-WPFUIElements {
                     "ToggleButton" {
                         $toggleButton = New-Object Windows.Controls.Primitives.ToggleButton
                         $toggleButton.Name = $entryInfo.Name
-                        $toggleButton.Content = $entryInfo.Content[1]
-                        $toggleButton.ToolTip = $entryInfo.Description
+                        $toggleButton.Content = Get-WinUtilText $entryInfo.Content[1]
+                        $toggleButton.ToolTip = Get-WinUtilText $entryInfo.Description
                         $toggleButton.HorizontalAlignment = "Left"
                         $toggleButton.Style = $ToggleButtonStyle
-                        [System.Windows.Automation.AutomationProperties]::SetName($toggleButton, $entryInfo.Content[0])
+                        [System.Windows.Automation.AutomationProperties]::SetName($toggleButton, (Get-WinUtilText $entryInfo.Content[0]))
 
                         $toggleButton.Tag = @{
                             contentOn = if ($entryInfo.Content.Count -ge 1) { $entryInfo.Content[0] } else { "" }
@@ -239,11 +239,11 @@ function Invoke-WPFUIElements {
                         $sync[$entryInfo.Name] = $toggleButton
 
                         $sync[$entryInfo.Name].Add_Checked({
-                            $this.Content = $this.Tag.contentOn
+                            $this.Content = Get-WinUtilText $this.Tag.contentOn
                         })
 
                         $sync[$entryInfo.Name].Add_Unchecked({
-                            $this.Content = $this.Tag.contentOff
+                            $this.Content = Get-WinUtilText $this.Tag.contentOff
                         })
 
                         if ($null -eq $sync.Buttons) {
@@ -263,12 +263,12 @@ function Invoke-WPFUIElements {
                         $horizontalStackPanel = New-Object Windows.Controls.StackPanel
                         $horizontalStackPanel.Orientation = "Horizontal"
                         $horizontalStackPanel.Margin = "0,5,0,0"
-                        [System.Windows.Automation.AutomationProperties]::SetName($horizontalStackPanel, $entryInfo.Content)
+                        [System.Windows.Automation.AutomationProperties]::SetName($horizontalStackPanel, (Get-WinUtilText $entryInfo.Content))
 
                         $label = New-Object Windows.Controls.Label
-                        $label.Content = $entryInfo.Content
+                        $label.Content = Get-WinUtilText $entryInfo.Content
                         $label.HorizontalAlignment = "Left"
-                        $label.ToolTip = $entryInfo.Description
+                        $label.ToolTip = Get-WinUtilText $entryInfo.Description
                         $label.VerticalAlignment = "Center"
                         $label.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
                         $label.UseLayoutRounding = $true
@@ -287,7 +287,7 @@ function Invoke-WPFUIElements {
                             Registry = $entryInfo.Registry
                             State = $null
                         }
-                        [System.Windows.Automation.AutomationProperties]::SetName($comboBox, $entryInfo.Content)
+                        [System.Windows.Automation.AutomationProperties]::SetName($comboBox, (Get-WinUtilText $entryInfo.Content))
 
                         $comboItems = if ($entryInfo.ComboItems -is [string]) {
                             if ($entryInfo.ComboItems.Contains("|")) {
@@ -305,7 +305,7 @@ function Invoke-WPFUIElements {
                             if ($entryInfo.ComboDescriptions) {
                                 $comboDescription = $entryInfo.ComboDescriptions.PSObject.Properties[$comboitem].Value
                                 if ($comboDescription) {
-                                    $comboBoxItem.ToolTip = $comboDescription
+                                    $comboBoxItem.ToolTip = Get-WinUtilText $comboDescription
                                 }
                             }
                             $comboBoxItem.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
@@ -322,7 +322,7 @@ function Invoke-WPFUIElements {
                                 $comboBox.SelectedIndex = @($comboBox.Items.Content).IndexOf([string]$comboBox.Tag.State)
                             } catch {
                                 $unknownStateItem = New-Object Windows.Controls.ComboBoxItem
-                                $unknownStateItem.Content = "Custom / Unknown - select a state"
+                                $unknownStateItem.Content = Get-WinUtilText "Custom / Unknown - select a state"
                                 $unknownStateItem.IsEnabled = $false
                                 $unknownStateItem.ToolTip = "$($_.Exception.Message) Select one of the supported states to replace these values."
                                 $comboBox.Items.Add($unknownStateItem) | Out-Null
