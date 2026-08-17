@@ -397,7 +397,7 @@ function Invoke-WPFUIElements {
                     "Button" {
                         $button = New-Object Windows.Controls.Button
                         $button.Name = $entryInfo.Name
-                        $button.Content = $entryInfo.Content
+                        $button.Content = Get-WinUtilText $entryInfo.Content
                         $button.HorizontalAlignment = "Left"
                         $button.SetResourceReference([Windows.Controls.Control]::MarginProperty, "ButtonMargin")
                         $button.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
@@ -405,7 +405,7 @@ function Invoke-WPFUIElements {
                             $baseWidth = [int]$entryInfo.ButtonWidth
                             $button.Width = [math]::Max($baseWidth, 350)
                         }
-                        [System.Windows.Automation.AutomationProperties]::SetName($button, $entryInfo.Content)
+                        [System.Windows.Automation.AutomationProperties]::SetName($button, (Get-WinUtilText $entryInfo.Content))
                         $stackPanelContainer.Children.Add($button) | Out-Null
 
                         $sync[$entryInfo.Name] = $button
@@ -444,13 +444,13 @@ function Invoke-WPFUIElements {
                         $radioButton = New-Object Windows.Controls.RadioButton
                         $radioButton.Name = $entryInfo.Name
                         $radioButton.GroupName = $entryInfo.GroupName
-                        $radioButton.Content = $entryInfo.Content
+                        $radioButton.Content = Get-WinUtilText $entryInfo.Content
                         $radioButton.HorizontalAlignment = "Left"
                         $radioButton.SetResourceReference([Windows.Controls.Control]::MarginProperty, "CheckBoxMargin")
                         $radioButton.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
-                        $radioButton.ToolTip = $entryInfo.Description
+                        $radioButton.ToolTip = Get-WinUtilText $entryInfo.Description
                         $radioButton.UseLayoutRounding = $true
-                        [System.Windows.Automation.AutomationProperties]::SetName($radioButton, $entryInfo.Content)
+                        [System.Windows.Automation.AutomationProperties]::SetName($radioButton, (Get-WinUtilText $entryInfo.Content))
 
                         if ($entryInfo.Checked -eq $true) {
                             $radioButton.IsChecked = $true
@@ -471,7 +471,7 @@ function Invoke-WPFUIElements {
                         $bulletBadge.BaselineAlignment = [Windows.BaselineAlignment]::Center
 
                         $textRun = New-Object Windows.Documents.Run
-                        $textRun.Text = " $($entryInfo.Content)"
+                        $textRun.Text = " $(Get-WinUtilText $entryInfo.Content)"
                         $textRun.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
                         $textRun.Foreground = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(19, 143, 83))
 
@@ -484,16 +484,16 @@ function Invoke-WPFUIElements {
                     default {
                         $horizontalStackPanel = New-Object Windows.Controls.StackPanel
                         $horizontalStackPanel.Orientation = "Horizontal"
-                        [System.Windows.Automation.AutomationProperties]::SetName($horizontalStackPanel, $entryInfo.Content)
+                        [System.Windows.Automation.AutomationProperties]::SetName($horizontalStackPanel, (Get-WinUtilText $entryInfo.Content))
 
                         $checkBox = New-Object Windows.Controls.CheckBox
                         $checkBox.Name = $entryInfo.Name
-                        $checkBox.Content = $entryInfo.Content
+                        $checkBox.Content = Get-WinUtilText $entryInfo.Content
                         $checkBox.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
-                        $checkBox.ToolTip = $entryInfo.Description
+                        $checkBox.ToolTip = Get-WinUtilText $entryInfo.Description
                         $checkBox.SetResourceReference([Windows.Controls.Control]::MarginProperty, "CheckBoxMargin")
                         $checkBox.UseLayoutRounding = $true
-                        [System.Windows.Automation.AutomationProperties]::SetName($checkBox, $entryInfo.Content)
+                        [System.Windows.Automation.AutomationProperties]::SetName($checkBox, (Get-WinUtilText $entryInfo.Content))
                         if ($entryInfo.Checked -eq $true) {
                             $checkBox.IsChecked = $entryInfo.Checked
                         }

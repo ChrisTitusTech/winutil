@@ -159,3 +159,39 @@ Describe "zh-CN coverage of config-driven text" {
         }
     }
 }
+
+Describe "Invoke-WPFUIElements localization injection" {
+    BeforeAll {
+        $script:uiSource = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIElements.ps1") -Raw -Encoding UTF8
+    }
+
+    It "injects Get-WinUtilText into the Button render branch" {
+        $script:uiSource.Contains('$button.Content = Get-WinUtilText $entryInfo.Content') | Should -Be $true
+        $script:uiSource.Contains('SetName($button, (Get-WinUtilText $entryInfo.Content))') | Should -Be $true
+    }
+
+    It "injects Get-WinUtilText into the RadioButton render branch" {
+        $script:uiSource.Contains('$radioButton.Content = Get-WinUtilText $entryInfo.Content') | Should -Be $true
+        $script:uiSource.Contains('$radioButton.ToolTip = Get-WinUtilText $entryInfo.Description') | Should -Be $true
+        $script:uiSource.Contains('SetName($radioButton, (Get-WinUtilText $entryInfo.Content))') | Should -Be $true
+    }
+
+    It "injects Get-WinUtilText into the Note render branch" {
+        $script:uiSource.Contains('$textRun.Text = " $(Get-WinUtilText $entryInfo.Content)"') | Should -Be $true
+    }
+
+    It "injects Get-WinUtilText into the default render branch" {
+        $script:uiSource.Contains('$checkBox.Content = Get-WinUtilText $entryInfo.Content') | Should -Be $true
+        $script:uiSource.Contains('$checkBox.ToolTip = Get-WinUtilText $entryInfo.Description') | Should -Be $true
+        $script:uiSource.Contains('SetName($checkBox, (Get-WinUtilText $entryInfo.Content))') | Should -Be $true
+        $script:uiSource.Contains('SetName($horizontalStackPanel, (Get-WinUtilText $entryInfo.Content))') | Should -Be $true
+    }
+
+    It "keeps non-translatable values out of Get-WinUtilText" {
+        # GroupName is a runtime grouping key, ComboBoxItem.Content and link
+        # ToolTips are keys/URLs, not display text.
+        $script:uiSource.Contains('$radioButton.GroupName = Get-WinUtilText') | Should -Be $false
+        $script:uiSource.Contains('$comboBoxItem.Content = Get-WinUtilText') | Should -Be $false
+        $script:uiSource.Contains('$textBlock.ToolTip = Get-WinUtilText $entryInfo.Link') | Should -Be $false
+    }
+}
