@@ -5,6 +5,7 @@
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilText.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilFormattedText.ps1")
     $sync = [hashtable]::Synchronized(@{})
 }
 
@@ -62,6 +63,28 @@ Describe "Get-WinUtilText" {
     It "returns an empty string unchanged (config entries without Description)" {
         $sync.TextTable = @{ "Run Tweaks" = "运行调整" }
         Get-WinUtilText -String "" | Should -Be ""
+    }
+}
+
+Describe "Get-WinUtilFormattedText" {
+    It "formats a translated template with placeholders" {
+        $sync.TextTable = @{ "Installing {0} ({1}/{2})" = "正在安装 {0}（{1}/{2}）" }
+        Get-WinUtilFormattedText -Template "Installing {0} ({1}/{2})" -FormatArgs @("Chrome", 1, 5) | Should -Be "正在安装 Chrome（1/5）"
+    }
+
+    It "formats the English template when no translation exists" {
+        $sync.TextTable = @{}
+        Get-WinUtilFormattedText -Template "Installing {0} ({1}/{2})" -FormatArgs @("Chrome", 1, 5) | Should -Be "Installing Chrome (1/5)"
+    }
+
+    It "falls back to the English template when the translation has an invalid format" {
+        $sync.TextTable = @{ "Installing {0} ({1}/{2})" = "正在安装 {0" }
+        Get-WinUtilFormattedText -Template "Installing {0} ({1}/{2})" -FormatArgs @("Chrome", 1, 5) | Should -Be "Installing Chrome (1/5)"
+    }
+
+    It "returns an empty string unchanged" {
+        $sync.TextTable = @{}
+        Get-WinUtilFormattedText -Template "" -FormatArgs @("x") | Should -Be ""
     }
 }
 
@@ -180,6 +203,52 @@ Describe "zh-CN coverage of config-driven text" {
         if ($missing.Count -gt 0) {
             throw "Application text/categories not covered by zh-CN: $($missing -join ' | ')"
         }
+    }
+}
+
+Describe "zh-CN coverage of runtime text" {
+    It "covers MessageBox, progress-label, and status-log literals in function sources" {
+        $i18n = Get-Content -Path (Join-Path $script:repoRoot "config\i18n.json") -Raw -Encoding UTF8 | ConvertFrom-Json
+        $covered = @($i18n."zh-CN".strings.PSObject.Properties.Name)
+        $missing = New-Object System.Collections.Generic.List[string]
+
+        # Literal UI strings handed to these call sites must be i18n.json keys.
+        # The English template (with {n} placeholders) is the key, so templates
+        # passed to Get-WinUtilFormattedText are covered too. Values containing
+        # an interpolation ($ or ` escape) are dynamic and skipped.
+        $patterns = @(
+            'MessageBox\]::Show\("([^"]+)"',
+            'Show-WinUtilMessage -Message "([^"]+)"',
+            '-Label "([^"]+)"',
+            '-Template "([^"]+)"',
+            'Get-WinUtilText "([^"]+)"',
+            'Write-WinUtilISOLog "([^"]+)"',
+            '\.Title\s*=\s*"([^"]+)"',
+            '\.Filter\s*=\s*"([^"]+)"',
+            'Items\.Add\("([^"]+)"'
+        )
+        foreach ($file in (Get-ChildItem -Path (Join-Path $script:repoRoot "functions") -Recurse -Filter *.ps1)) {
+            $text = Get-Content -Path $file.FullName -Raw -Encoding UTF8
+            foreach ($pattern in $patterns) {
+                [regex]::Matches($text, $pattern) | ForEach-Object {
+                    $value = $_.Groups[1].Value
+                    # PowerShell escape sequences in the source (e.g. `n) become
+                    # the real characters the JSON pack stores.
+                    $value = $value -replace '\`n', "`n"
+                    if ($value -match '[\$`{]' -and $value -notmatch '\{\d+\}') { return }
+                    if ($covered -notcontains $value) { $missing.Add("$($file.Name):$value") }
+                }
+            }
+        }
+
+        if ($missing.Count -gt 0) {
+            throw "Runtime text not covered by zh-CN: $($missing -join ' | ')"
+        }
+    }
+
+    It "localizes the install app name at render time" {
+        $source = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Initialize-InstallAppEntry.ps1") -Raw -Encoding UTF8
+        $source.Contains('$appName.Text = Get-WinUtilText $app.content') | Should -Be $true
     }
 }
 

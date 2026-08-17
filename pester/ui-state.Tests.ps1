@@ -59,6 +59,8 @@ namespace System.Windows.Controls
 "@
     }
 
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilText.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilFormattedText.ps1")
     . (Join-Path $script:repoRoot "functions\private\Update-WinUtilSelections.ps1")
     . (Join-Path $script:repoRoot "functions\private\Reset-WPFCheckBoxes.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFGetInstalled.ps1")

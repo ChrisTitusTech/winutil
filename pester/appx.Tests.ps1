@@ -4,6 +4,8 @@
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilText.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilFormattedText.ps1")
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilInstalledAPPX.ps1")
     . (Join-Path $script:repoRoot "functions\private\Install-WinUtilAPPX.ps1")
     . (Join-Path $script:repoRoot "functions\private\Remove-WinUtilAPPX.ps1")
