@@ -246,7 +246,7 @@ $sync["Form"].Add_PreviewMouseWheel({
 })
 
 $sync["Form"].Add_MouseLeftButtonDown({
-    Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme", "FontScaling")
+    Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme", "FontScaling", "Language")
     $sync["Form"].DragMove()
 })
 
@@ -263,7 +263,7 @@ $sync["Form"].Add_MouseDoubleClick({
 })
 
 $sync["Form"].Add_Deactivated({
-    Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme", "FontScaling")
+    Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme", "FontScaling", "Language")
 })
 
 $sync["Form"].Add_ContentRendered({
@@ -415,7 +415,7 @@ $sync["Form"].Add_Activated({
 })
 
 $sync["ThemeButton"].Add_Click({
-    Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "Theme" = "Toggle"; "FontScaling" = "Hide" }
+    Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "Theme" = "Toggle"; "FontScaling" = "Hide"; "Language" = "Hide" }
 })
 $sync["AutoThemeMenuItem"].Add_Click({
     Invoke-WPFPopup -Action "Hide" -Popups @("Theme")
@@ -431,7 +431,7 @@ $sync["LightThemeMenuItem"].Add_Click({
 })
 
 $sync["SettingsButton"].Add_Click({
-    Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Toggle"; "Theme" = "Hide"; "FontScaling" = "Hide" }
+    Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Toggle"; "Theme" = "Hide"; "FontScaling" = "Hide"; "Language" = "Hide" }
 })
 $sync["LanguageButton"].Add_Click({
     Invoke-WPFPopup -PopupActionTable @{ "Language" = "Toggle"; "Settings" = "Hide"; "Theme" = "Hide"; "FontScaling" = "Hide" }
