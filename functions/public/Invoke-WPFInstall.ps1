@@ -42,11 +42,8 @@ function Invoke-WPFInstall {
                 $position = $completedPackages + 1
                 Step-WinUtilJob -Status "Installing $program ($position/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
 
-                $slice = [int](100 / $totalPackages)
                 $results += Measure-WinUtilStep -Scope "Install" -Name "winget $program" -ScriptBlock {
-                    Install-WinUtilProgramWinget -Action Install -Programs @($program) `
-                        -ProgressBase ([int](($completedPackages / $totalPackages) * 100)) -ProgressSpan $slice `
-                        -Label "$program ($position/$totalPackages)"
+                    Install-WinUtilProgramWinget -Action Install -Programs @($program)
                 }
                 $completedPackages++
                 Step-WinUtilJob -Status "Installed $program ($completedPackages/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))

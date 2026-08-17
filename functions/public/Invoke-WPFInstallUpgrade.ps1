@@ -46,13 +46,10 @@ function Invoke-WPFInstallUpgrade {
 
     foreach ($package in $upgradable) {
         $position = $completed + 1
-        $base = [int](($completed / $total) * 100)
-        Step-WinUtilJob -Status "Upgrading $package ($position/$total)" -Percent $base
+        Step-WinUtilJob -Status "Upgrading $package ($position/$total)" -Percent ([int](($completed / $total) * 100))
 
         $results += Measure-WinUtilStep -Scope "Install" -Name "winget upgrade $package" -ScriptBlock {
-            Install-WinUtilProgramWinget -Action Upgrade -Programs @($package) `
-                -ProgressBase $base -ProgressSpan ([int](100 / $total)) `
-                -Label "$package ($position/$total)"
+            Install-WinUtilProgramWinget -Action Upgrade -Programs @($package)
         }
 
         $completed++
@@ -67,14 +64,6 @@ function Get-WinUtilUpgradablePackage {
     .SYNOPSIS
         Returns the package identifiers WinGet reports as having an update available
     #>
-
-    if (Install-WinUtilWinGetClient) {
-        $packages = Invoke-WinUtilWinGetCommand -Command "Get-WinGetPackage" -Label "Checking for updates"
-        return @($packages |
-            Where-Object { $_.IsUpdateAvailable } |
-            ForEach-Object { $_.Id } |
-            Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
-    }
 
     # The command line prints a table, and its own header and separator rows are not packages
     $output = & winget upgrade --include-unknown --accept-source-agreements 2>&1 | Out-String
