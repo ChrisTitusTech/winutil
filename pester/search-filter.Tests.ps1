@@ -112,6 +112,7 @@ namespace Windows.Controls
 
     . (Join-Path $script:repoRoot "functions\private\Find-AppsByNameOrDescription.ps1")
     . (Join-Path $script:repoRoot "functions\private\Find-TweaksByNameOrDescription.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilText.ps1")
 
     function script:New-WinUtilSearchCollection {
         return ,[System.Collections.ArrayList]::new()
@@ -582,10 +583,38 @@ Describe "Find-TweaksByNameOrDescription" {
         $nonMatchItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
     }
 
-    It "does not match the translated label text when searching in Chinese" {
-        # The Chinese term appears in the rendered ToolTip but not in the
-        # English config source, so it must not match (Chinese search terms are
-        # out of scope, same as the Install tab).
+    It "matches the localized config text when searching in Chinese" {
+        # With an active language table the search matches the translated
+        # Content/Description too, so terms typed in the display language work.
+        $telemetryItem = New-WinUtilTweakLabelItem -Name "WPFTweaksActivity" -Content "活动历史 - 禁用" -ToolTip "清除最近的文档、剪贴板和运行历史。"
+        $nonMatchItem = New-WinUtilTweakLabelItem -Name "WPFTweaksHiber" -Content "休眠 - 禁用" -ToolTip "休眠主要面向笔记本电脑。"
+        $category = New-WinUtilTweakCategory -Label "+ 核心调整" -Items @($telemetryItem, $nonMatchItem)
+        $panel = New-WinUtilTweakPanel -Categories @($category)
+        $configs = @{
+            tweaks = [pscustomobject]@{
+                WPFTweaksActivity = [pscustomobject]@{
+                    Content = "Activity History - Disable"
+                    Description = "Erases recent docs, clipboard, and run history."
+                }
+                WPFTweaksHiber = [pscustomobject]@{
+                    Content = "Hibernation - Disable"
+                    Description = "Hibernation is meant for laptops."
+                }
+            }
+        }
+        New-WinUtilTweakSearchContext -TweaksPanel $panel -Configs $configs
+        $sync.TextTable = @{ "Erases recent docs, clipboard, and run history." = "清除最近的文档、剪贴板和运行历史。" }
+
+        Find-TweaksByNameOrDescription -SearchString "剪贴板"
+
+        $telemetryItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $nonMatchItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $category.Border.Visibility | Should -Be ([Windows.Visibility]::Visible)
+    }
+
+    It "does not match translated text when no language table is active" {
+        # Without TextTable the localized lookup falls back to the English
+        # source, so a Chinese term matches nothing.
         $telemetryItem = New-WinUtilTweakLabelItem -Name "WPFTweaksActivity" -Content "活动历史 - 禁用" -ToolTip "清除最近的文档、剪贴板和运行历史。"
         $category = New-WinUtilTweakCategory -Label "+ 核心调整" -Items @($telemetryItem)
         $panel = New-WinUtilTweakPanel -Categories @($category)
@@ -598,6 +627,7 @@ Describe "Find-TweaksByNameOrDescription" {
             }
         }
         New-WinUtilTweakSearchContext -TweaksPanel $panel -Configs $configs
+        $sync.TextTable = $null
 
         Find-TweaksByNameOrDescription -SearchString "剪贴板"
 

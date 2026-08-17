@@ -220,9 +220,15 @@ function Find-TweaksByNameOrDescription {
                                 if ($null -ne $configEntry) {
                                     $contentStr = [string]$configEntry.Content
                                     $descStr = [string]$configEntry.Description
+                                    # Match the English source and the localized text, so
+                                    # searches typed in the active display language work.
+                                    $localizedContent = Get-WinUtilText $contentStr
+                                    $localizedDesc = Get-WinUtilText $descStr
 
-                                    $contentMatch = $contentStr.IndexOf($searchTerm, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
-                                    $descMatch = $descStr.IndexOf($searchTerm, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
+                                    $contentMatch = $contentStr.IndexOf($searchTerm, [System.StringComparison]::OrdinalIgnoreCase) -ge 0 -or
+                                        $localizedContent.IndexOf($searchTerm, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
+                                    $descMatch = $descStr.IndexOf($searchTerm, [System.StringComparison]::OrdinalIgnoreCase) -ge 0 -or
+                                        $localizedDesc.IndexOf($searchTerm, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
 
                                     if ($contentMatch -or $descMatch) {
                                         $itemMatches = $true
@@ -284,9 +290,15 @@ function Find-TweaksByNameOrDescription {
                                 if ($null -ne $configEntry) {
                                     $contentStr = [string]$configEntry.Content
                                     $descStr = [string]$configEntry.Description
+                                    # Match the English source and the localized text, so
+                                    # searches typed in the active display language work.
+                                    $localizedContent = Get-WinUtilText $contentStr
+                                    $localizedDesc = Get-WinUtilText $descStr
 
-                                    $contentMatch = $contentStr.IndexOf($searchTerm, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
-                                    $descMatch = $descStr.IndexOf($searchTerm, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
+                                    $contentMatch = $contentStr.IndexOf($searchTerm, [System.StringComparison]::OrdinalIgnoreCase) -ge 0 -or
+                                        $localizedContent.IndexOf($searchTerm, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
+                                    $descMatch = $descStr.IndexOf($searchTerm, [System.StringComparison]::OrdinalIgnoreCase) -ge 0 -or
+                                        $localizedDesc.IndexOf($searchTerm, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
 
                                     if ($contentMatch -or $descMatch) {
                                         $itemMatches = $true
