@@ -76,7 +76,7 @@ function Install-WinUtilProgramChoco {
             $detail = $nothingToDo[$exitCode]
         } else {
             $outcome = "Failed"
-            $detail = Get-WinUtilChocoErrorMessage -Code $exitCode -Output $output
+            $detail = "exit code $exitCode"
         }
 
         $level = if ($outcome -eq "Failed") { "ERROR" } else { "INFO" }
@@ -104,29 +104,4 @@ function Install-WinUtilProgramChoco {
             Detail = $detail
         }
     }
-}
-
-function Get-WinUtilChocoErrorMessage {
-    <#
-    .SYNOPSIS
-        Turns a Chocolatey exit code into a sentence that says what to do about it
-    #>
-    param(
-        [int]$Code,
-        $Output
-    )
-
-    switch ($Code) {
-        1 { $message = "Chocolatey reported an error." }
-        -1 { $message = "Chocolatey could not be run." }
-        default { $message = "Chocolatey exited with code $Code." }
-    }
-
-    # Choco puts the actual cause in its output, so the most specific line it printed says more
-    # than the code does
-    $text = @($Output) | ForEach-Object { [string]$_ } | Where-Object { $_ -match 'not installed|not found|cannot|unable|denied|failed' } | Select-Object -First 1
-    if ($text) {
-        return "$message $($text.Trim())"
-    }
-    return $message
 }

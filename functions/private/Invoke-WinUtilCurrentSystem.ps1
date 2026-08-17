@@ -24,28 +24,6 @@ Function Invoke-WinUtilCurrentSystem {
     }
 
     if ($checkbox -eq "winget") {
-        # Get-WinGetPackage returns the installed set as objects, including the entries winget
-        # only knows from Add/Remove Programs. Those carry a real name but an ARP id, so an app
-        # installed outside winget is only recognisable by name.
-        if (Install-WinUtilWinGetClient) {
-            $installed = @(Get-WinGetPackage -ErrorAction Stop)
-            $installedIds = [System.Collections.Generic.HashSet[string]]::new([string[]]@($installed | ForEach-Object { $_.Id }), [StringComparer]::OrdinalIgnoreCase)
-            $installedNames = [System.Collections.Generic.HashSet[string]]::new([string[]]@($installed | ForEach-Object { $_.Name }), [StringComparer]::OrdinalIgnoreCase)
-            Write-WinUtilLog -Component "Install" -Message "WinGet reports $($installed.Count) installed package(s)."
-
-            $sync.configs.applicationsHashtable.GetEnumerator() | ForEach-Object {
-                $packageId = (($_.Value.winget -split ";")[-1] -replace "^msstore:", "").Trim()
-                if ([string]::IsNullOrWhiteSpace($packageId) -or $packageId -eq "na") {
-                    return
-                }
-
-                if ($installedIds.Contains($packageId) -or $installedNames.Contains([string]$_.Value.Content)) {
-                    Write-Output $_.Key
-                }
-            }
-            return
-        }
-
         $originalEncoding = [Console]::OutputEncoding
         try {
             [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()

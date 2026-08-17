@@ -37,7 +37,7 @@ Describe "Work routing" {
 
         $upgrade | Should -Match 'Get-WinUtilUpgradablePackage'
         $upgrade | Should -Match 'foreach \(\$package in \$upgradable\)'
-        $upgrade | Should -Match 'Install-WinUtilProgramWinget -Action Install'
+        $upgrade | Should -Match 'Install-WinUtilProgramWinget -Action Upgrade'
         $upgrade | Should -Match 'Complete-WinUtilPackageRun'
         $upgrade | Should -Not -Match 'Start-Process'
     }

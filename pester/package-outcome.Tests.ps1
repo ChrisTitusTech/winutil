@@ -95,12 +95,10 @@ Describe "Install-WinUtilProgramWinget through the WinGet client module" {
         Mock Write-WinUtilLog { }
         Mock Install-WinUtilWinGetClient { $true }
         Mock Start-Process { throw "the command line must not be used when the module is available" }
-        # Not installed unless a test says otherwise
-        Mock Invoke-WinUtilWinGetCommand { } -ParameterFilter { $Command -eq "Get-WinGetPackage" }
     }
 
     It "prefers the module over the command line" {
-        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult } -ParameterFilter { $Command -ne "Get-WinGetPackage" }
+        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult }
 
         $result = Install-WinUtilProgramWinget -Action Install -Programs @("Git.Git")
 
@@ -117,7 +115,7 @@ Describe "Install-WinUtilProgramWinget through the WinGet client module" {
     It "treats an Ok status with a reboot exit code as success" {
         # Seen upgrading VCRedist on a real machine: status Ok, installer code 3010. Requiring a
         # zero exit code there reported a working upgrade as a failed one.
-        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult -Status "Ok" -InstallerErrorCode 3010 -RebootRequired $true } -ParameterFilter { $Command -ne "Get-WinGetPackage" }
+        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult -Status "Ok" -InstallerErrorCode 3010 -RebootRequired $true }
 
         $result = Install-WinUtilProgramWinget -Action Install -Programs @("Git.Git")
 
@@ -137,17 +135,16 @@ Describe "Install-WinUtilProgramWinget through the WinGet client module" {
 
     # Without it the status reads as a package on its own, losing where the run is overall
     It "keeps the caller's label so the position in the run stays visible" {
-        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult } -ParameterFilter { $Command -ne "Get-WinGetPackage" }
+        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult }
 
         Install-WinUtilProgramWinget -Action Install -Programs @("Git.Git") -Label "Git.Git (2/7)" | Out-Null
 
         Should -Invoke -CommandName Invoke-WinUtilWinGetCommand -Times 1 -Exactly -ParameterFilter {
-            $Command -ne "Get-WinGetPackage" -and $Label -eq "Git.Git (2/7)"
+            $Label -eq "Git.Git (2/7)"
         }
     }
 
     It "uses the uninstall cmdlet for an uninstall" {
-        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult } -ParameterFilter { $Command -eq "Get-WinGetPackage" }
         Mock Invoke-WinUtilWinGetCommand { New-WinGetResult } -ParameterFilter { $Command -eq "Uninstall-WinGetPackage" }
 
         Install-WinUtilProgramWinget -Action Uninstall -Programs @("Git.Git") | Out-Null
@@ -157,20 +154,7 @@ Describe "Install-WinUtilProgramWinget through the WinGet client module" {
         }
     }
 
-    # Asking winget to remove something it cannot see returns UninstallError, which reads as a
-    # failed run for a package the user does not have.
-    It "skips uninstalling a package that is not installed" {
-        $result = Install-WinUtilProgramWinget -Action Uninstall -Programs @("Git.Git")
-
-        $result.Outcome | Should -Be "Skipped"
-        $result.Detail | Should -Be "not installed"
-        Should -Invoke -CommandName Invoke-WinUtilWinGetCommand -Times 0 -Exactly -ParameterFilter {
-            $Command -eq "Uninstall-WinGetPackage"
-        }
-    }
-
     It "reports the extended error code when a package fails" {
-        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult } -ParameterFilter { $Command -eq "Get-WinGetPackage" }
         Mock Invoke-WinUtilWinGetCommand {
             [pscustomobject]@{
                 Status = "UninstallError"
@@ -186,13 +170,11 @@ Describe "Install-WinUtilProgramWinget through the WinGet client module" {
         $result.Detail | Should -Match "0x8A15004F"
     }
 
-    # Install-WinGetPackage re-downloads and re-runs the installer for a package that is
-    # already present, so an install pass would reinstall the whole machine.
-    It "upgrades a package that is already installed instead of reinstalling it" {
-        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult } -ParameterFilter { $Command -eq "Get-WinGetPackage" }
+    # The action picks the cmdlet, so an upgrade run upgrades rather than re-running installers
+    It "uses the upgrade cmdlet for an upgrade" {
         Mock Invoke-WinUtilWinGetCommand { New-WinGetResult -Status "NoApplicableUpgrade" } -ParameterFilter { $Command -eq "Update-WinGetPackage" }
 
-        $result = Install-WinUtilProgramWinget -Action Install -Programs @("Git.Git")
+        $result = Install-WinUtilProgramWinget -Action Upgrade -Programs @("Git.Git")
 
         $result.Outcome | Should -Be "Skipped"
         Should -Invoke -CommandName Invoke-WinUtilWinGetCommand -Times 1 -Exactly -ParameterFilter {
@@ -204,7 +186,7 @@ Describe "Install-WinUtilProgramWinget through the WinGet client module" {
     }
 
     It "installs a package that is not present" {
-        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult } -ParameterFilter { $Command -ne "Get-WinGetPackage" }
+        Mock Invoke-WinUtilWinGetCommand { New-WinGetResult }
 
         Install-WinUtilProgramWinget -Action Install -Programs @("Git.Git") | Out-Null
 
@@ -275,13 +257,14 @@ Describe "Install-WinUtilProgramChoco outcomes" {
         (Install-WinUtilProgramChoco -Action Install -Programs @("git")).Outcome | Should -Be "Skipped"
     }
 
-    It "explains a failure using the reason choco printed" {
+    # The reason is in choco's own output, which is logged; the result carries the code
+    It "reports the exit code when choco fails" {
         Mock choco { $global:LASTEXITCODE = 1; "git is not installed. Cannot uninstall a non-existent package." }
 
         $result = Install-WinUtilProgramChoco -Action Uninstall -Programs @("git")
 
         $result.Outcome | Should -Be "Failed"
-        $result.Detail | Should -Match "not installed"
+        $result.Detail | Should -Be "exit code 1"
     }
 }
 

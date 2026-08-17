@@ -50,7 +50,7 @@ function Invoke-WPFInstallUpgrade {
         Write-WinUtilJobProgress -Status "Upgrading $package ($position/$total)" -Percent $base
 
         $results += Measure-WinUtilStep -Scope "Install" -Name "winget upgrade $package" -ScriptBlock {
-            Install-WinUtilProgramWinget -Action Install -Programs @($package) `
+            Install-WinUtilProgramWinget -Action Upgrade -Programs @($package) `
                 -ProgressBase $base -ProgressSpan ([int](100 / $total)) `
                 -Label "$package ($position/$total)"
         }

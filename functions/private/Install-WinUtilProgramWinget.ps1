@@ -26,7 +26,7 @@ Function Install-WinUtilProgramWinget {
     #>
     param (
         [Parameter(Mandatory=$true)]
-        [ValidateSet("Install", "Uninstall")]
+        [ValidateSet("Install", "Uninstall", "Upgrade")]
         [string]$Action,
 
         [Parameter(Mandatory=$true)]
@@ -81,36 +81,13 @@ Function Install-WinUtilProgramWinget {
                 MatchOption = "EqualsCaseInsensitive"
             }
 
-            # Both actions need to know whether the package is there before acting on it
-            $existing = Invoke-WinUtilWinGetCommand -Command "Get-WinGetPackage" -Parameters @{
-                Id = $program
-                MatchOption = "EqualsCaseInsensitive"
-                ErrorAction = "SilentlyContinue"
-            }
-            $isInstalled = @($existing).Count -gt 0 -and $null -ne @($existing)[0]
-
-            if ($Action -eq "Uninstall") {
-                if (-not $isInstalled) {
-                    # Asking winget to remove something it cannot see is an error, but for the
-                    # user the package is already gone
-                    Write-WinUtilLog -Component "Package" -Message "Uninstall winget package skipped: $program (not installed)"
-                    [pscustomobject]@{
-                        Package = $program
-                        Manager = "winget"
-                        Action = $Action
-                        ExitCode = 0
-                        Outcome = "Skipped"
-                        Detail = "not installed"
-                    }
-                    continue
-                }
-                $command = "Uninstall-WinGetPackage"
-            } else {
-                # Install-WinGetPackage re-downloads and re-runs the installer for a package
-                # that is already present, so an install pass would reinstall everything the
-                # machine already has. Update-WinGetPackage upgrades it or reports
-                # NoApplicableUpgrade, which is what "install or upgrade" should mean.
-                $command = if ($isInstalled) { "Update-WinGetPackage" } else { "Install-WinGetPackage" }
+            # The action decides the cmdlet, the same way it decides the command line verb, so
+            # both paths do what the caller asked and neither has to probe the machine first.
+            # Nothing to do comes back as a status and is reported as skipped.
+            $command = switch ($Action) {
+                "Uninstall" { "Uninstall-WinGetPackage" }
+                "Upgrade"   { "Update-WinGetPackage" }
+                default     { "Install-WinGetPackage" }
             }
 
             $progressLabel = if ($Label) { $Label } else { $program }
@@ -162,10 +139,10 @@ Function Install-WinUtilProgramWinget {
                 }
             }
         } else {
-            if ($Action -eq 'Install') {
-                $arguments = @("install", "--id", $program, "--accept-package-agreements", "--accept-source-agreements", "--source", $source, "--silent")
-            } else {
-                $arguments = @("uninstall", "--id", $program, "--source", $source, "--silent")
+            $arguments = switch ($Action) {
+                "Uninstall" { @("uninstall", "--id", $program, "--source", $source, "--silent") }
+                "Upgrade"   { @("upgrade", "--id", $program, "--accept-package-agreements", "--accept-source-agreements", "--source", $source, "--silent") }
+                default     { @("install", "--id", $program, "--accept-package-agreements", "--accept-source-agreements", "--source", $source, "--silent") }
             }
 
             $process = Start-Process -FilePath winget -ArgumentList $arguments -NoNewWindow -Wait -PassThru
