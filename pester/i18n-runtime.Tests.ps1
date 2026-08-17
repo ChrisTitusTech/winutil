@@ -25,6 +25,36 @@ BeforeAll {
     $script:zhTable = $sync.TextTable
 }
 
+Describe "Invoke-WinUtilUILanguage on the real window XAML" {
+    It "translates the tab buttons when loaded through XmlNodeReader (slow Text setter path)" {
+        # Regression: with non-empty Inlines containing a Span (the tab
+        # underline), WPF's Text setter desyncs Text from Inlines, so clearing
+        # Inlines after setting Text leaves the getter returning empty. This
+        # loads the full window exactly like main.ps1 does.
+        [xml]$xaml = Get-Content -Path (Join-Path $script:repoRoot "xaml\inputXML.xaml") -Raw -Encoding UTF8
+        $reader = New-Object System.Xml.XmlNodeReader $xaml
+        $window = [System.Windows.Markup.XamlReader]::Load($reader)
+        $sync.Form = $window
+        # Use the real language pack so the tab keys are present.
+        $i18n = Get-Content -Path (Join-Path $script:repoRoot "config\i18n.json") -Raw -Encoding UTF8 | ConvertFrom-Json
+        $realTable = @{}
+        $i18n."zh-CN".strings.PSObject.Properties | ForEach-Object { $realTable[$_.Name] = [string]$_.Value }
+        $sync.TextTable = $realTable
+
+        Invoke-WinUtilUILanguage
+
+        $tabNames = @("WPFTab1BT", "WPFTab2BT", "WPFTab3BT", "WPFTab4BT", "WPFTab5BT")
+        $expected = @("安装", "调整", "配置", "更新", "Win11 制作")
+        for ($i = 0; $i -lt $tabNames.Count; $i++) {
+            $textBlock = $window.FindName($tabNames[$i]).Content
+            $textBlock.Text | Should -Be $expected[$i]
+        }
+
+        # Restore the small fixture table so later tests are not polluted.
+        $sync.TextTable = $script:zhTable
+    }
+}
+
 Describe "Invoke-WinUtilUILanguage runtime traversal" {
     It "translates tab button underline text" {
         $sync.Form = New-Object System.Windows.Window
@@ -89,7 +119,8 @@ Describe "Invoke-WinUtilUILanguage runtime traversal" {
         $sync.Form.Content = $tb
         Invoke-WinUtilUILanguage
         $tb.Text | Should -Be "注意：悬停查看项目说明。`n推荐选择适用于普通用户。"
-        $tb.Inlines.Count | Should -Be 0
+        # The Text setter rebuilds a single Run holding the text.
+        $tb.Inlines.Count | Should -Be 1
     }
 
     It "translates every segment that has a key" {
@@ -168,8 +199,9 @@ Describe "Invoke-WinUtilUILanguage runtime traversal" {
         Invoke-WinUtilUILanguage
         Invoke-WinUtilUILanguage
         $tb.Text | Should -Be "安装"
-        # A second pass sees no Inlines and must not touch anything.
-        $tb.Inlines.Count | Should -Be 0
+        # A second pass sees the single Run created by the Text setter and
+        # resolves it back to the same translation (idempotent).
+        $tb.Inlines.Count | Should -Be 1
     }
 
     It "leaves inline styling intact when nothing translates" {

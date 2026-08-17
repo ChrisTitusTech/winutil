@@ -81,6 +81,7 @@ function Invoke-WinUtilUILanguage {
         $node = $stack.Pop()
         if ($null -eq $node) { continue }
 
+        try {
         # Reverse mode: English target, translated text needs restoring.
         $reverseMode = $null -eq $sync.TextTable -and $null -ne $sync.ReverseTextTable
 
@@ -95,9 +96,11 @@ function Invoke-WinUtilUILanguage {
             $segments = New-Object System.Collections.Generic.List[string]
             if ($node.Inlines -and $node.Inlines.Count -gt 0) {
                 # Text set by XAML or code lives in the first inline Run, so
-                # only the Inlines are collected.
+                # only the Inlines are collected. Literal newlines (from a
+                # previous stage-2 rejoin or code-set text) are split back into
+                # segments so each line resolves against its own key.
                 foreach ($segment in (Get-WinUtilInlineSegments $node.Inlines)) {
-                    $segments.Add($segment)
+                    foreach ($sub in ($segment -split "`n")) { $segments.Add($sub) }
                 }
             } elseif (-not [string]::IsNullOrWhiteSpace($node.Text)) {
                 # Text-only TextBlock (Inlines cleared after a previous pass).
@@ -116,8 +119,12 @@ function Invoke-WinUtilUILanguage {
                 $fullText = $segments -join ""
                 $translatedFull = if ($fullText) { Get-WinUtilLanguageText $fullText } else { $fullText }
                 if ($translatedFull -ne $fullText) {
-                    $node.Text = $translatedFull
+                    # Clear before set: with non-empty Inlines (e.g. an Underline
+                    # span in the tab buttons) the Text setter takes a slow path
+                    # and Text/Inlines stay desynced, so clearing afterwards
+                    # leaves the getter returning empty text.
                     $node.Inlines.Clear()
+                    $node.Text = $translatedFull
                 } else {
                     # Empty segments stay empty — Get-WinUtilLanguageText
                     # rejects them.
@@ -129,8 +136,8 @@ function Invoke-WinUtilUILanguage {
                         if ($translatedSegments[$i] -ne $segments[$i]) { $changed = $true; break }
                     }
                     if ($changed) {
-                        $node.Text = $translatedSegments -join "`n"
                         $node.Inlines.Clear()
+                        $node.Text = $translatedSegments -join "`n"
                     }
                 }
             }
@@ -169,6 +176,9 @@ function Invoke-WinUtilUILanguage {
         }
         if ($node.Child -and $node.Child -is [System.Windows.DependencyObject]) {
             $stack.Push($node.Child)
+        }
+        } catch {
+            Write-WinUtilLog -Component "i18n" -Message "Traversal error at $($node.GetType().Name): $_"
         }
     }
 }
