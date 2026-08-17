@@ -1120,7 +1120,8 @@
                             Name="SearchBar"
                             Foreground="{DynamicResource MainForegroundColor}" Background="{DynamicResource MainBackgroundColor}"
                             Padding="3,3,30,0"
-                            ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter">
+                            ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter"
+                            AutomationProperties.Name="Search">
                         </TextBox>
                         <TextBlock
                             Name="SearchBarIcon"
@@ -1136,6 +1137,7 @@
                     VerticalAlignment="Center" HorizontalAlignment="Right"
                     Name="SearchBarClearButton"
                     Style="{StaticResource SearchBarClearButtonStyle}"
+                    AutomationProperties.Name="Clear Search"
                     Margin="0,0,20,0" Visibility="Collapsed">
                 </Button>
 
@@ -1153,6 +1155,7 @@
                     FontFamily="Segoe MDL2 Assets"
                     Content="N/A"
                     ToolTip="Change the WinUtil UI Theme"
+                    AutomationProperties.Name="Theme"
                 />
                     <Popup Name="ThemePopup"
                     IsOpen="False"
@@ -1191,6 +1194,7 @@
                     FontFamily="Segoe MDL2 Assets"
                     Content="&#xE8D3;"
                     ToolTip="Adjust Font Scaling for Accessibility"
+                    AutomationProperties.Name="Font Scaling"
                 />
                     <Popup Name="FontScalingPopup"
                     IsOpen="False"
