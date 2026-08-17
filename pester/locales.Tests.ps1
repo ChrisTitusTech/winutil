@@ -106,3 +106,56 @@ Describe "zh-CN coverage of static XAML text" {
         }
     }
 }
+
+Describe "zh-CN coverage of config-driven text" {
+    It "covers Content and Description of tweaks, features, appx, appnavigation" {
+        $i18n = Get-Content -Path (Join-Path $script:repoRoot "config\i18n.json") -Raw -Encoding UTF8 | ConvertFrom-Json
+        $covered = @($i18n."zh-CN".strings.PSObject.Properties.Name)
+        $missing = New-Object System.Collections.Generic.List[string]
+
+        foreach ($name in @("tweaks", "feature", "appx", "appnavigation")) {
+            $cfg = Get-Content -Path (Join-Path $script:repoRoot "config\$name.json") -Raw -Encoding UTF8 | ConvertFrom-Json
+            foreach ($entry in $cfg.PSObject.Properties) {
+                $values = @()
+                if ($entry.Value.Content) { $values += $entry.Value.Content }
+                if ($entry.Value.Description) { $values += $entry.Value.Description }
+                foreach ($value in $values) {
+                    if ($value -is [array]) {
+                        foreach ($item in $value) { if ($item -and $covered -notcontains $item) { $missing.Add("$name/$($entry.Name):$item") } }
+                    } elseif ($value -and $covered -notcontains $value) {
+                        $missing.Add("$name/$($entry.Name):$value")
+                    }
+                }
+            }
+        }
+
+        if ($missing.Count -gt 0) {
+            throw "Config text not covered by zh-CN: $($missing -join ' | ')"
+        }
+    }
+
+    It "covers application descriptions and all categories" {
+        $i18n = Get-Content -Path (Join-Path $script:repoRoot "config\i18n.json") -Raw -Encoding UTF8 | ConvertFrom-Json
+        $covered = @($i18n."zh-CN".strings.PSObject.Properties.Name)
+        $missing = New-Object System.Collections.Generic.List[string]
+
+        $apps = Get-Content -Path (Join-Path $script:repoRoot "config\applications.json") -Raw -Encoding UTF8 | ConvertFrom-Json
+        foreach ($entry in $apps.PSObject.Properties) {
+            if ($entry.Value.description -and $covered -notcontains $entry.Value.description) {
+                $missing.Add("applications/$($entry.Name):$($entry.Value.description)")
+            }
+        }
+
+        foreach ($name in @("tweaks", "feature", "applications")) {
+            $cfg = Get-Content -Path (Join-Path $script:repoRoot "config\$name.json") -Raw -Encoding UTF8 | ConvertFrom-Json
+            foreach ($entry in $cfg.PSObject.Properties) {
+                $cat = $entry.Value.category
+                if ($cat -and $covered -notcontains $cat) { $missing.Add("$name/category:$cat") }
+            }
+        }
+
+        if ($missing.Count -gt 0) {
+            throw "Application text/categories not covered by zh-CN: $($missing -join ' | ')"
+        }
+    }
+}
