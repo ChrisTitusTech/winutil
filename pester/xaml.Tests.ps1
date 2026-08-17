@@ -472,7 +472,9 @@ Describe "XAML and sync wiring" {
             "Win11ISOUSBDisks",
             "AppCategoryChips",
             "SelectedAppCategories",
-            "AppCategoryAutoExpanded"
+            "AppCategoryAutoExpanded",
+            "language",
+            "TextTable"
         )
         $allowedNames = @($xamlNames + $generatedNames + $dynamicStateNames) | Sort-Object -Unique
         $bracketReferences = @(

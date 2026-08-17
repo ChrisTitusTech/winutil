@@ -1,3 +1,29 @@
+function Get-WinUtilInlineText {
+    <#
+    .SYNOPSIS
+        Flattens an InlineCollection to plain text. Run contributes its Text;
+        Span subclasses (Underline/Bold/Italic) contribute their nested Inlines
+        recursively; LineBreak and anything else contribute nothing. The
+        no-separator concat matches how i18n.json keys were generated for
+        inline-only content (e.g. the USB warning: Run + LineBreak + Run becomes
+        one key with no separator).
+    #>
+    param(
+        [Parameter(Mandatory = $true)]
+        $Inlines
+    )
+
+    $sb = [System.Text.StringBuilder]::new()
+    foreach ($inline in $Inlines) {
+        if ($inline -is [System.Windows.Documents.Run]) {
+            $null = $sb.Append($inline.Text)
+        } elseif ($inline -is [System.Windows.Documents.Span] -and $inline.Inlines.Count -gt 0) {
+            $null = $sb.Append((Get-WinUtilInlineText $inline.Inlines))
+        }
+    }
+    return $sb.ToString()
+}
+
 function Apply-WinUtilUILanguage {
     <#
     .SYNOPSIS
@@ -14,15 +40,16 @@ function Apply-WinUtilUILanguage {
         if ($null -eq $node) { continue }
 
         # TextBlock: direct Text, or Inlines (e.g. tab buttons "<Underline>I</Underline>nstall").
-        # Inlines are flattened, translated, and replaced with plain Text.
+        # When Text is set it holds the text XamlReader produced — for mixed
+        # content that is the leading line, which is exactly what the i18n.json
+        # key contains. Inline-only content is flattened (Run text, nested Span
+        # inlines, LineBreak adds no separator), translated, and replaced with
+        # plain Text.
         if ($node -is [System.Windows.Controls.TextBlock]) {
             if (-not [string]::IsNullOrWhiteSpace($node.Text)) {
                 $node.Text = Get-WinUtilText $node.Text
             } elseif ($node.Inlines -and $node.Inlines.Count -gt 0) {
-                $fullText = @($node.Inlines | ForEach-Object {
-                    if ($_.Text) { $_.Text }
-                    elseif ($_.Children) { @($_.Children | ForEach-Object { $_.Text }) -join "" }
-                }) -join ""
+                $fullText = Get-WinUtilInlineText $node.Inlines
                 if ($fullText) {
                     $node.Text = Get-WinUtilText $fullText
                     $node.Inlines.Clear()
@@ -50,7 +77,8 @@ function Apply-WinUtilUILanguage {
             $node.ToolTip.Content = Get-WinUtilText $node.ToolTip.Content
         }
 
-        # Descend: Content element, Children, Items (TabItem lives in Items, not Children)
+        # Descend: Content element, Children, Items (TabItem lives in Items, not
+        # Children), Child (Decorator like Border, and Popup).
         if ($node.Content -and $node.Content -isnot [string] -and $node.Content -is [System.Windows.DependencyObject]) {
             $stack.Push($node.Content)
         }
@@ -59,6 +87,9 @@ function Apply-WinUtilUILanguage {
         }
         if ($node.Items) {
             foreach ($item in $node.Items) { $stack.Push($item) }
+        }
+        if ($node.Child -and $node.Child -is [System.Windows.DependencyObject]) {
+            $stack.Push($node.Child)
         }
     }
 }
