@@ -8,6 +8,8 @@ BeforeAll {
     # PresentationFramework, unlike Windows PowerShell's GAC type resolution.
     Add-Type -AssemblyName PresentationFramework
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilText.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilInlineSegments.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilLanguageText.ps1")
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilUILanguage.ps1")
     $global:sync = [hashtable]::Synchronized(@{})
     $sync.TextTable = @{
@@ -49,13 +51,17 @@ Describe "Invoke-WinUtilUILanguage on the real window XAML" {
             $textBlock = $window.FindName($tabNames[$i]).Content
             $textBlock.Text | Should -Be $expected[$i]
         }
-
-        # Restore the small fixture table so later tests are not polluted.
-        $sync.TextTable = $script:zhTable
     }
 }
 
 Describe "Invoke-WinUtilUILanguage runtime traversal" {
+    BeforeEach {
+        # Start every scenario from the full Chinese table with no reverse
+        # table so fixture state does not leak between describes or runs.
+        $sync.TextTable = $script:zhTable
+        $sync.ReverseTextTable = $null
+    }
+
     It "translates tab button underline text" {
         $sync.Form = New-Object System.Windows.Window
         $tb = New-Object System.Windows.Controls.TextBlock
@@ -311,6 +317,34 @@ Describe "Invoke-WinUtilUILanguage reverse restore" {
         Invoke-WinUtilUILanguage
         $btn.Content | Should -Be "Run Tweaks"
         $btn.ToolTip | Should -Be "Run Tweaks"
+    }
+
+    It "restores distinct controls that share one translation from their recorded originals" {
+        # "Documentation" and "Document" both translate to 文档; the reverse
+        # table alone maps 文档 to only one English key. The Uid record taken
+        # on the forward pass restores each control to its own English key.
+        $sync.Form = New-Object System.Windows.Window
+        $menuItem = New-Object System.Windows.Controls.MenuItem
+        $menuItem.Header = "Documentation"
+        $chip = New-Object System.Windows.Controls.Primitives.ToggleButton
+        $chip.Content = "Document"
+        $stack = New-Object System.Windows.Controls.StackPanel
+        $stack.Children.Add($menuItem) | Out-Null
+        $stack.Children.Add($chip) | Out-Null
+        $sync.Form.Content = $stack
+        $sync.TextTable = @{
+            "Documentation" = "文档"
+            "Document" = "文档"
+        }
+        Invoke-WinUtilUILanguage
+        $menuItem.Header | Should -Be "文档"
+        $chip.Content | Should -Be "文档"
+
+        $sync.TextTable = $null
+        $sync.ReverseTextTable = @{ "文档" = "Documentation" }
+        Invoke-WinUtilUILanguage
+        $menuItem.Header | Should -Be "Documentation"
+        $chip.Content | Should -Be "Document"
     }
 
     It "leaves English text untouched when the reverse table has no entry" {

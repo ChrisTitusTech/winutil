@@ -473,6 +473,36 @@ Describe "Find-AppsByNameOrDescription" {
         $category.Children[0].Content | Should -Be "- Tools"
         $category.Children[1].Visibility | Should -Be ([Windows.Visibility]::Visible)
     }
+
+    It "matches apps by translated Content when a language table is active" {
+        # With an active TextTable the search also matches the translated
+        # Content, so terms typed in the display language find the app.
+        $browserItem = New-WinUtilAppSearchItem -Tag "WPFInstallBrowser"
+        $mediaItem = New-WinUtilAppSearchItem -Tag "WPFInstallMedia"
+        $category = New-WinUtilAppCategory -Label "+ 浏览器" -Items @($browserItem, $mediaItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+        $sync.TextTable = @{ "Firefox" = "火狐浏览器" }
+
+        Find-AppsByNameOrDescription -SearchString "火狐"
+
+        $browserItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $mediaItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $category.Children[1].Visibility | Should -Be ([Windows.Visibility]::Visible)
+    }
+
+    It "matches apps by translated Description when a language table is active" {
+        $browserItem = New-WinUtilAppSearchItem -Tag "WPFInstallBrowser"
+        $mediaItem = New-WinUtilAppSearchItem -Tag "WPFInstallMedia"
+        $category = New-WinUtilAppCategory -Label "+ 浏览器" -Items @($browserItem, $mediaItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+        $sync.TextTable = @{ "Fast private browser" = "快速隐私浏览器" }
+
+        Find-AppsByNameOrDescription -SearchString "隐私"
+
+        $browserItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $mediaItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $category.Children[1].Visibility | Should -Be ([Windows.Visibility]::Visible)
+    }
 }
 
 Describe "Find-TweaksByNameOrDescription" {
