@@ -72,6 +72,35 @@ Describe "zh-CN coverage of static XAML text" {
             }
         }
 
+        # TextBlock content: bare text nodes and Run text, split by LineBreak into
+        # per-segment keys like the runtime fallback. Whitespace is collapsed the
+        # way XAML parsing does (segments trimmed, runs of whitespace folded to a
+        # single space). Icon-only glyphs (e.g. "&#xE721;") have no letters or
+        # digits and are not translatable.
+        [xml]$xamlDoc = Get-Content -Path (Join-Path $script:repoRoot "xaml\inputXML.xaml") -Raw -Encoding UTF8
+        foreach ($tb in $xamlDoc.SelectNodes('//*[local-name()="TextBlock"]')) {
+            $segments = New-Object System.Collections.Generic.List[string]
+            $current = ""
+            foreach ($child in $tb.ChildNodes) {
+                if ($child.NodeType -eq [System.Xml.XmlNodeType]::Text) {
+                    $current += $child.InnerText
+                } elseif ($child.LocalName -eq "LineBreak") {
+                    if ($current.Trim()) { $segments.Add($current) }
+                    $current = ""
+                } elseif ($child.NodeType -eq [System.Xml.XmlNodeType]::Element) {
+                    # InnerText includes nested Run/Underline text
+                    $current += $child.InnerText
+                }
+            }
+            if ($current.Trim()) { $segments.Add($current) }
+            foreach ($segment in $segments) {
+                $folded = [regex]::Replace($segment.Trim(), '\s+', ' ')
+                if ($folded -and $folded -match '[A-Za-z0-9]' -and $covered -notcontains $folded -and $missing -notcontains $folded) {
+                    $missing.Add($folded)
+                }
+            }
+        }
+
         if ($missing.Count -gt 0) {
             throw "XAML text not covered by zh-CN: $($missing -join ' | ')"
         }
