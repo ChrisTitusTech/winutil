@@ -127,6 +127,16 @@ namespace System.Windows.Controls
                         Content = "Git"
                     }
                 }
+                appxHashtable = @{
+                    WPFAppxExample = [pscustomobject]@{}
+                }
+                tweaks = [pscustomobject]@{
+                    WPFTweaksTelemetry = [pscustomobject]@{}
+                    WPFToggleDarkMode = [pscustomobject]@{}
+                }
+                feature = [pscustomobject]@{
+                    WPFFeatureSandbox = [pscustomobject]@{}
+                }
             }
             WPFselectedAppsButton = [pscustomobject]@{
                 Content = ""
@@ -173,6 +183,51 @@ Describe "Update-WinUtilSelections" {
         @($script:sync.selectedToggles) | Should -Be @("WPFToggleDarkMode")
         @($script:sync.selectedFeatures) | Should -Be @("WPFFeatureSandbox")
         @($script:sync.selectedAppx) | Should -Be @("WPFAppxExample")
+    }
+
+    It "replaces selections only after every imported key is validated" {
+        $script:sync.selectedApps.Add("WPFInstallExisting")
+        $script:sync.selectedTweaks.Add("WPFTweaksExisting")
+
+        Update-WinUtilSelections -flatJson @(
+            "WPFInstallGit",
+            "WPFFeatureSandbox"
+        ) -Replace
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallGit")
+        @($script:sync.selectedTweaks) | Should -Be @()
+        @($script:sync.selectedFeatures) | Should -Be @("WPFFeatureSandbox")
+    }
+
+    It "preserves existing selections when an imported key is unsupported" {
+        $script:sync.selectedApps.Add("WPFInstallExisting")
+        $script:sync.selectedTweaks.Add("WPFTweaksExisting")
+
+        {
+            Update-WinUtilSelections -flatJson @(
+                "WPFInstallGit",
+                "NotAWinUtilKey"
+            ) -Replace
+        } | Should -Throw "Unsupported selection key 'NotAWinUtilKey'."
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallExisting")
+        @($script:sync.selectedTweaks) | Should -Be @("WPFTweaksExisting")
+        @($script:sync.selectedFeatures) | Should -Be @()
+    }
+
+    It "preserves existing selections when an imported key is not in the current catalog" {
+        $script:sync.selectedApps.Add("WPFInstallExisting")
+
+        {
+            Update-WinUtilSelections -flatJson @(
+                "WPFInstallGit",
+                "WPFInstallUnknown"
+            ) -Replace
+        } | Should -Throw "Unknown selection key 'WPFInstallUnknown'."
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallExisting")
+        @($script:sync.selectedTweaks) | Should -Be @()
+        @($script:sync.selectedFeatures) | Should -Be @()
     }
 }
 
