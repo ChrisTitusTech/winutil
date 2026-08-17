@@ -27,7 +27,10 @@ function Invoke-WPFTab {
             $sync["$ClickedTab"].IsChecked = $true
         }
     }
-    $sync.currentTab = $sync.$tabNav.Items[$tabNumber].Header
+    # currentTab must stay language-independent: TabItem.Header gets localized,
+    # while switch statements in main.ps1 and Initialize-WinUtilTabContent match
+    # against these fixed identifiers.
+    $sync.currentTab = @("Install", "Tweaks", "Config", "Updates", "Win11ISO", "AppX")[$tabNumber]
     Initialize-WinUtilTabContent -TabName $sync.currentTab
 
     # Always reset the filter for the current tab
