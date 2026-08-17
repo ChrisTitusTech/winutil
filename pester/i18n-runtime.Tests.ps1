@@ -13,6 +13,8 @@ BeforeAll {
         "- Edition : Windows 11" = "- 版本：Windows 11"
         "AAABBB" = "拼接译文"
         "HEADtail" = "混合译文"
+        "A" = "甲"
+        "B" = "乙"
     }
 }
 
@@ -27,43 +29,52 @@ Describe "Apply-WinUtilUILanguage runtime traversal" {
         $tb.Text | Should -Be "安装"
     }
 
-    It "translates the leading line of mixed content text" {
+    It "translates the leading line of mixed content text and keeps the rest" {
         # XamlReader collapses the XML whitespace: "Edition  :" becomes
-        # "Edition :", and the Text property carries only the leading line,
-        # which is exactly the i18n.json key.
+        # "Edition :" in the first segment. Whole-content lookup misses, so the
+        # per-segment stage translates the leading line and rejoins with
+        # newlines, keeping the untranslated lines.
         $xaml = @"
 <TextBlock xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" TextWrapping="Wrap">
                                             - Edition  : Windows 11
                                             <LineBreak/>- Language : your preferred language
+                                            <LineBreak/>- Architecture : 64-bit (x64)
                                         </TextBlock>
 "@
         $tb = [System.Windows.Markup.XamlReader]::Parse($xaml)
         $sync.Form = New-Object System.Windows.Window
         $sync.Form.Content = $tb
         Apply-WinUtilUILanguage
-        $tb.Text | Should -Be "- 版本：Windows 11"
+        $tb.Text | Should -Be "- 版本：Windows 11`n- Language : your preferred language`n- Architecture : 64-bit (x64)"
     }
 
-    It "translates Text plus Inlines content as one key" {
-        # A TextBlock with both a Text attribute and inline content reports the
-        # merged text in .Text; the translation replaces it wholesale.
+    It "translates Text plus Inlines content per segment" {
         $xaml = '<TextBlock xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Text="HEAD">tail<LineBreak/>more</TextBlock>'
         $tb = [System.Windows.Markup.XamlReader]::Parse($xaml)
         $sync.Form = New-Object System.Windows.Window
         $sync.Form.Content = $tb
         Apply-WinUtilUILanguage
-        $tb.Text | Should -Be "混合译文"
+        $tb.Text | Should -Be "混合译文`nmore"
     }
 
-    It "flattens Run plus LineBreak plus Run with no separator" {
-        # Mirrors the USB warning shape: <Run/><LineBreak/>text. LineBreak
-        # contributes no separator, matching the generated i18n.json key.
+    It "flattens Run plus LineBreak plus Run with no separator as one key" {
+        # Mirrors the USB warning shape: <Run/><LineBreak/>text. The whole
+        # content joined without a separator matches the generated key.
         $xaml = '<TextBlock xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><Run>AAA</Run><LineBreak/>BBB</TextBlock>'
         $tb = [System.Windows.Markup.XamlReader]::Parse($xaml)
         $sync.Form = New-Object System.Windows.Window
         $sync.Form.Content = $tb
         Apply-WinUtilUILanguage
         $tb.Text | Should -Be "拼接译文"
+    }
+
+    It "translates every segment that has a key" {
+        $xaml = '<TextBlock xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">A<LineBreak/>B</TextBlock>'
+        $tb = [System.Windows.Markup.XamlReader]::Parse($xaml)
+        $sync.Form = New-Object System.Windows.Window
+        $sync.Form.Content = $tb
+        Apply-WinUtilUILanguage
+        $tb.Text | Should -Be "甲`n乙"
     }
 
     It "traverses Border.Child" {
@@ -133,9 +144,23 @@ Describe "Apply-WinUtilUILanguage runtime traversal" {
         Apply-WinUtilUILanguage
         Apply-WinUtilUILanguage
         $tb.Text | Should -Be "安装"
-        # Setting Text rebuilds the Inlines as a single Run; a second pass must
-        # not re-clear or re-translate it.
-        $tb.Inlines.Count | Should -Be 1
-        $tb.Inlines[0].Text | Should -Be "安装"
+        # A second pass sees no Inlines and must not touch anything.
+        $tb.Inlines.Count | Should -Be 0
+    }
+
+    It "leaves inline styling intact when nothing translates" {
+        # English mode: empty table, every lookup falls back. The tab underline
+        # structure must survive untouched.
+        $sync.TextTable = @{}
+        $sync.Form = New-Object System.Windows.Window
+        $tb = New-Object System.Windows.Controls.TextBlock
+        $tb.Inlines.Add((New-Object System.Windows.Documents.Underline -ArgumentList (New-Object System.Windows.Documents.Run -ArgumentList "I")))
+        $tb.Inlines.Add((New-Object System.Windows.Documents.Run -ArgumentList "nstall"))
+        $sync.Form.Content = $tb
+        Apply-WinUtilUILanguage
+        # Text was never set and the underline structure survives for styling.
+        $tb.Text | Should -Be ""
+        $tb.Inlines.Count | Should -Be 2
+        $tb.Inlines[0].GetType().Name | Should -Be "Underline"
     }
 }
