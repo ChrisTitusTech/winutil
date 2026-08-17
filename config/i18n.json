@@ -1,0 +1,31 @@
+{
+  "zh-CN": {
+    "meta": {
+      "code": "zh-CN",
+      "name": "简体中文"
+    },
+    "strings": {
+      "Install": "安装",
+      "Tweaks": "调整",
+      "Config": "配置",
+      "Updates": "更新",
+      "Win11 Creator": "Win11 制作",
+      "AppX": "AppX",
+      "Run Tweaks": "运行调整",
+      "Undo Selected Tweaks": "撤销所选调整",
+      "Import": "导入",
+      "Export": "导出",
+      "About": "关于",
+      "Documentation": "文档",
+      "Sponsors": "赞助商",
+      "Settings": "设置",
+      "Minimize": "最小化",
+      "Maximize": "最大化",
+      "Restore": "还原",
+      "Close": "关闭",
+      "Language": "语言",
+      "English": "English",
+      "Custom / Unknown - select a state": "自定义 / 未知 - 请选择状态"
+    }
+  }
+}
