@@ -39,7 +39,14 @@ $script += "`$WinUtilAutounattendXml = @'`r`n$autounattendXml`r`n'@"
 
 $script += Get-Content -Path scripts\main.ps1 -Raw
 
-Set-Content -Path winutil.ps1 -Value ([string][char]0xFEFF + $script)
+# Write via .NET API so the encoding is identical on PowerShell 5.1 (Set-Content
+# defaults to ANSI) and 7+ (utf8NoBOM): UTF8Encoding($false) omits a BOM, so the
+# prepended [char]0xFEFF becomes the BOM on both versions ([Type]::new() is PS 5.0+).
+[System.IO.File]::WriteAllText(
+    (Join-Path (Get-Location) "winutil.ps1"),
+    [string][char]0xFEFF + $script,
+    [System.Text.UTF8Encoding]::new($false)
+)
 
 if ($Run) {
     .\Winutil.ps1
