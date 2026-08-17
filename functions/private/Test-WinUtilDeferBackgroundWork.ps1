@@ -65,6 +65,10 @@ function Invoke-WinUtilWhenIdle {
         .PARAMETER Callback
             What to run once the wait is over.
 
+        .PARAMETER Argument
+            Passed to the callback. Carried on the timer rather than captured, so the callback
+            resolves its commands where it was written instead of in a copied scope.
+
         .PARAMETER DelayMilliseconds
             How long to wait before looking again.
     #>
@@ -72,22 +76,24 @@ function Invoke-WinUtilWhenIdle {
         [Parameter(Mandatory)]
         [scriptblock]$Callback,
 
+        $Argument,
+
         [int]$DelayMilliseconds = 150
     )
 
-    if ($null -eq $sync.Form -or $null -eq $sync.Form.Dispatcher -or $sync.Form.Dispatcher.HasShutdownStarted) {
+    if (-not (Test-WinUtilUIAlive)) {
         return
     }
 
     $timer = New-Object System.Windows.Threading.DispatcherTimer([System.Windows.Threading.DispatcherPriority]::Background)
     $timer.Interval = [timespan]::FromMilliseconds($DelayMilliseconds)
-    $timer.Tag = $Callback
+    $timer.Tag = @{ Callback = $Callback; Argument = $Argument }
     # Sender taken from the argument, matching how the rest of this codebase handles timer ticks
     $timer.Add_Tick({
         param($eventSender)
         $ticked = [System.Windows.Threading.DispatcherTimer]$eventSender
         $ticked.Stop()
-        & $ticked.Tag
+        & $ticked.Tag.Callback $ticked.Tag.Argument
     })
     $timer.Start()
 }

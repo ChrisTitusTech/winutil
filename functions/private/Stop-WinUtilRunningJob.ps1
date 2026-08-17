@@ -90,7 +90,7 @@ function Start-WinUtilJobStopWatchdog {
         [int]$GraceSeconds = 20
     )
 
-    if ($null -eq $sync.Form -or $null -eq $sync.Form.Dispatcher -or $sync.Form.Dispatcher.HasShutdownStarted) {
+    if (-not (Test-WinUtilUIAlive)) {
         return
     }
 

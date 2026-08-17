@@ -81,7 +81,7 @@ function Start-WinUtilJob {
     Write-WinUtilJobBanner -Message $label
     Write-WinUtilJobProgress -Status "$label..." -Percent 0 -State "Normal" -Overlay "logo"
 
-    if ($DisableAppList -and $sync.Form -and $sync.Form.Dispatcher) {
+    if ($DisableAppList -and (Test-WinUtilUIAlive)) {
         Invoke-WPFUIThread -ScriptBlock {
             if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $false }
         }
@@ -165,7 +165,7 @@ function Start-WinUtilJob {
                 if ($sync.WPFStopJobButton) { $sync.WPFStopJobButton.IsEnabled = $false }
             }
 
-            if ($JobRestoresAppList -and $sync.Form -and $sync.Form.Dispatcher) {
+            if ($JobRestoresAppList -and (Test-WinUtilUIAlive)) {
                 Invoke-WPFUIThread -ScriptBlock {
                     if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }
                 }

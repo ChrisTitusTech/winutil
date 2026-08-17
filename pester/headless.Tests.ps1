@@ -55,7 +55,7 @@ Describe "Headless reporting" {
         $progress | Should -Match 'Write-WinUtilConsoleProgress'
         # the headless branch has to come before the dispatcher post, which would discard it
         $headlessBranch = ($progress -split 'Invoke-WPFUIThread -Async')[0]
-        $headlessBranch | Should -Match 'null -eq \$sync\.Form'
+        $headlessBranch | Should -Match 'Test-WinUtilUIAlive'
     }
 
     It "throttles repeated progress so package downloads do not bury the log" {

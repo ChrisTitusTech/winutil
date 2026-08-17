@@ -45,7 +45,7 @@ function Write-WinUtilJobProgress {
     # headless run is the one that most needs to say what it is doing. A window that has been
     # closed over running work counts as no window: its dispatcher accepts posts and discards
     # them, so the console is the only place left to report.
-    if ($null -eq $sync.Form -or $null -eq $sync.Form.Dispatcher -or $sync.Form.Dispatcher.HasShutdownStarted) {
+    if (-not (Test-WinUtilUIAlive)) {
         if (-not $Hide) {
             Write-WinUtilConsoleProgress -Status $Status -Percent $Percent
         }

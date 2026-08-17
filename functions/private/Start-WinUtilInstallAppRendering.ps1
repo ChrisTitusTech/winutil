@@ -53,35 +53,6 @@ function Complete-WinUtilInstallAppRendering {
     Start-WinUtilIconFetch
 }
 
-function Invoke-WinUtilInstallAppRenderNextBatch {
-    # Nothing here is worth a moment of the user's time: the entries are either not on screen or
-    # being drawn while they are trying to do something else.
-    #
-    # Tabs that have never been built come first. This list is already on screen and filling in,
-    # while another tab is empty until it is built, so a click on one costs the whole build. The
-    # list finishing a little later is not felt; a tab that takes half a second to open is.
-    $tabsPending = $sync.TabWarmupQueue -and $sync.TabWarmupQueue.Count -gt 0
-    if ($sync.InstallAppRenderQueue.Count -gt 0 -and ($tabsPending -or (Test-WinUtilDeferBackgroundWork -RequiresTab "Install"))) {
-        Invoke-WinUtilWhenIdle -Callback { Invoke-WinUtilInstallAppRenderNextBatch }
-        return
-    }
-
-    if ($sync.InstallAppRenderQueue.Count -gt 0) {
-        $categoryBatch = $sync.InstallAppRenderQueue.Dequeue()
-        Invoke-WinUtilInstallAppRenderBatch -CategoryBatch $categoryBatch
-    }
-
-    if ($sync.InstallAppRenderQueue.Count -gt 0) {
-        $sync.Form.Dispatcher.BeginInvoke(
-            [System.Windows.Threading.DispatcherPriority]::Background,
-            [action]{ Invoke-WinUtilInstallAppRenderNextBatch }
-        ) | Out-Null
-        return
-    }
-
-    Complete-WinUtilInstallAppRendering
-}
-
 function Start-WinUtilInstallAppRendering {
     if ($null -eq $sync.InstallAppRenderQueue) {
         return
@@ -91,18 +62,15 @@ function Start-WinUtilInstallAppRendering {
     if ($null -eq $sync.IconImages) { $sync.IconImages = [hashtable]::Synchronized(@{}) }
     if ($null -eq $sync.PendingIcons) { $sync.PendingIcons = [hashtable]::Synchronized(@{}) }
 
-    if ($sync.Form -and $sync.Form.Dispatcher) {
-        $sync.Form.Dispatcher.BeginInvoke(
-            [System.Windows.Threading.DispatcherPriority]::Background,
-            [action]{ Invoke-WinUtilInstallAppRenderNextBatch }
-        ) | Out-Null
-        return
-    }
-
-    while ($sync.InstallAppRenderQueue.Count -gt 0) {
-        $categoryBatch = $sync.InstallAppRenderQueue.Dequeue()
-        Invoke-WinUtilInstallAppRenderBatch -CategoryBatch $categoryBatch
-    }
-
-    Complete-WinUtilInstallAppRendering
+    Start-WinUtilBackgroundQueue -Name "InstallAppRender" -Queue $sync.InstallAppRenderQueue `
+        -RequiresTab "Install" `
+        -Step { param($CategoryBatch) Invoke-WinUtilInstallAppRenderBatch -CategoryBatch $CategoryBatch } `
+        -OnComplete { Complete-WinUtilInstallAppRendering } `
+        -DeferWhile {
+            # Tabs that have never been built come first. This list is already on screen and
+            # filling in, while another tab is empty until it is built, so a click on one costs
+            # the whole build. The list finishing a little later is not felt; a tab that takes
+            # half a second to open is.
+            $sync.TabWarmupQueue -and $sync.TabWarmupQueue.Count -gt 0
+        }
 }

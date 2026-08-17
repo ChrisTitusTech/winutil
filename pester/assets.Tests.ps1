@@ -13,7 +13,7 @@ Describe "Rendered asset caching" {
         $assetScript | Should -Match 'RenderedAssetCache'
         $assetScript | Should -Match '\$cacheKey = "\$\(\(\[string\]\$type\)\.ToLowerInvariant\(\)\)\|\$Size"'
         $assetScript | Should -Match 'return \$sync\.RenderedAssetCache\[\$cacheKey\]'
-        $assetScript | Should -Match '\$sync\.RenderedAssetCache\[\$cacheKey\] = \$bitmap'
+        $assetScript | Should -Match '\$sync\.RenderedAssetCache\[\$cacheKey\] = \$bitmapImage'
     }
 
     It "renders the taskbar overlays away from the interface thread" {

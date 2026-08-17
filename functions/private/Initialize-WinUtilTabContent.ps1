@@ -44,7 +44,7 @@ function Initialize-WinUtilTabContent {
                 Invoke-WPFUIElements -configVariable $sync.configs.appx -targetGridName "appxpanel" -columncount 2 -Yield:$Yield
             }
             "Win11ISO" {
-                if ($sync.Form -and $sync.Form.Dispatcher) {
+                if (Test-WinUtilUIAlive) {
                     $sync.Form.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{ Invoke-WinUtilISOCheckExistingWork }) | Out-Null
                 }
             }

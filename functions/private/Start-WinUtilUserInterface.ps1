@@ -51,9 +51,6 @@ function Start-WinUtilUserInterface {
     $themeState = @{ LastChange = [datetime]::MinValue }
     $debounceInterval = [timespan]::FromSeconds(2)
     $sync.Form.Add_Loaded({
-        # Needs the handle, which only exists once the window is loaded
-        Set-WinUtilWindowIcon
-
         $interopHelper = New-Object System.Windows.Interop.WindowInteropHelper $sync.Form
         $hwndSource = [System.Windows.Interop.HwndSource]::FromHwnd($interopHelper.Handle)
         $hwndSource.AddHook({
@@ -308,7 +305,6 @@ function Start-WinUtilUserInterface {
             Set-WinUtilTaskbaritem -overlay "logo"
         }) | Out-Null
         $sync["Form"].Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{ Start-WinUtilTabWarmup }) | Out-Null
-        Start-WinUtilUIHeartbeat
     })
 
     # The SearchBarTimer is used to delay the search operation until the user has stopped typing for a short period

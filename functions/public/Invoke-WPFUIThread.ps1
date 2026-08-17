@@ -1,3 +1,17 @@
+function Test-WinUtilUIAlive {
+    <#
+        .SYNOPSIS
+            Whether there is a window that can still be posted to
+
+        .DESCRIPTION
+            False for a headless run, and equally for a window that has been closed over running
+            work: a shut down dispatcher accepts posts and discards them, so it is no more use
+            than no window at all. Every caller that reaches the interface asks this first.
+    #>
+
+    return $null -ne $sync.Form -and $null -ne $sync.Form.Dispatcher -and -not $sync.Form.Dispatcher.HasShutdownStarted
+}
+
 function Invoke-WPFUIThread {
     <#
         .SYNOPSIS
@@ -42,10 +56,10 @@ function Invoke-WPFUIThread {
         [switch]$PassThru
     )
 
-    $dispatcher = $sync.Form.Dispatcher
-    if ($null -eq $dispatcher -or $dispatcher.HasShutdownStarted) {
+    if (-not (Test-WinUtilUIAlive)) {
         return
     }
+    $dispatcher = $sync.Form.Dispatcher
 
     if (-not $Async -and $dispatcher.CheckAccess()) {
         $inlineResult = & $ScriptBlock @Parameters

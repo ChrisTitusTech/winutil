@@ -17,9 +17,10 @@ Describe "Install app rendering startup contract" {
 
     It "renders queued apps through dispatcher callbacks when a form dispatcher exists" {
         $renderScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilInstallAppRendering.ps1") -Raw
+        $queueScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilBackgroundQueue.ps1") -Raw
 
-        $renderScript | Should -Match 'Dispatcher\.BeginInvoke'
-        $renderScript | Should -Match 'Invoke-WinUtilInstallAppRenderNextBatch'
+        $queueScript | Should -Match 'Dispatcher\.BeginInvoke'
+        $renderScript | Should -Match 'Start-WinUtilBackgroundQueue -Name "InstallAppRender"'
         $renderScript | Should -Match 'Initialize-InstallAppEntry'
         $renderScript | Should -Match 'Find-AppsByNameOrDescription -SearchString \$sync\.SearchBar\.Text -Categories \$selectedCategories'
         # A batch has to be filtered when either filter is on, not only when there is search text
@@ -39,6 +40,8 @@ Describe "Install app rendering startup contract" {
 
     It "drains queued app batches on the WPF dispatcher without timer scope errors" {
         Add-Type -AssemblyName WindowsBase
+        function global:Test-WinUtilUIAlive { $null -ne $sync.Form -and $null -ne $sync.Form.Dispatcher }
+        . (Join-Path $script:repoRoot "functions\private\Start-WinUtilBackgroundQueue.ps1")
         . (Join-Path $script:repoRoot "functions\private\Start-WinUtilInstallAppRendering.ps1")
 
         $previousSync = Get-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue

@@ -20,7 +20,7 @@ function Show-WinUtilMessage {
 
     Write-WinUtilLog -Component "Dialog" -Message "$Title : $($Message -replace '\r?\n', ' ')"
 
-    if ($null -eq $sync.Form -or $null -eq $sync.Form.Dispatcher) {
+    if (-not (Test-WinUtilUIAlive)) {
         # Anything with a choice is answered with the one that does not go ahead, so a prompt
         # nobody saw can never stand in for consent
         $unattended = if ("$Button" -eq "OK") { "OK" } else { "No" }

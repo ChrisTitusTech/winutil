@@ -7,6 +7,9 @@ BeforeAll {
     $script:functionRoot = Join-Path $script:repoRoot "functions"
 
     . (Join-Path $script:functionRoot "private\Stop-WinUtilActiveWork.ps1")
+
+    function Test-WinUtilUIAlive { $null -ne $sync.Form -and $null -ne $sync.Form.Dispatcher }
+
     . (Join-Path $script:functionRoot "private\Invoke-WinUtilCloseRequest.ps1")
 
     function Write-WinUtilLog { param($Level, $Component, $Message, [switch]$Detail) }
@@ -252,8 +255,10 @@ Describe "Shutdown wiring" {
         # the dispatcher still accepts posts after shutdown and drops them, so a closed window
         # has to count as no window or the run goes silent
         $progress = Get-Content -Path (Join-Path $script:functionRoot "private\Write-WinUtilJobProgress.ps1") -Raw
+        $alive = Get-Content -Path (Join-Path $script:functionRoot "public\Invoke-WPFUIThread.ps1") -Raw
 
-        $progress | Should -Match '\$sync\.Form\.Dispatcher\.HasShutdownStarted'
+        $progress | Should -Match 'Test-WinUtilUIAlive'
+        $alive | Should -Match '\$sync\.Form\.Dispatcher\.HasShutdownStarted'
     }
 
     It "refuses to queue new work once shutdown has begun" {

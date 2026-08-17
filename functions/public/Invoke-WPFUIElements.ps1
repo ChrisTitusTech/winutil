@@ -181,7 +181,7 @@ function Invoke-WPFUIElements {
                 # Constructing a panel's worth of controls in one go holds the interface for
                 # hundreds of milliseconds. Draining the queue on a deadline rather than every
                 # nth entry keeps the wait bounded whatever the entries cost to build.
-                if ($Yield -and $yieldClock.ElapsedMilliseconds -ge 25 -and $sync.Form -and -not $sync.Form.Dispatcher.HasShutdownStarted) {
+                if ($Yield -and $yieldClock.ElapsedMilliseconds -ge 25 -and (Test-WinUtilUIAlive)) {
                     $yieldClock.Restart()
                     $frame = New-Object Windows.Threading.DispatcherFrame
                     $null = $sync.Form.Dispatcher.BeginInvoke(

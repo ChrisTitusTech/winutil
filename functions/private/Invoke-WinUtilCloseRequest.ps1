@@ -73,7 +73,7 @@ function Request-WinUtilWindowClose {
         [scriptblock]$Before
     )
 
-    if ($null -eq $sync.Form -or $null -eq $sync.Form.Dispatcher -or $sync.Form.Dispatcher.HasShutdownStarted) {
+    if (-not (Test-WinUtilUIAlive)) {
         return
     }
 

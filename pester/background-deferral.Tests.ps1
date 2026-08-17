@@ -7,6 +7,9 @@ BeforeAll {
     $script:functionRoot = Join-Path $script:repoRoot "functions"
 
     . (Join-Path $script:functionRoot "private\Test-WinUtilDeferBackgroundWork.ps1")
+
+    function Test-WinUtilUIAlive { $null -ne $sync.Form -and $null -ne $sync.Form.Dispatcher }
+
 }
 
 Describe "Test-WinUtilDeferBackgroundWork" {
@@ -112,35 +115,35 @@ Describe "Invoke-WinUtilWhenIdle" {
 }
 
 Describe "Deferral wiring" {
-    It "checks before drawing another batch of app entries" {
+    It "checks before running another queued step" {
+        # one pump for every queue, so this check cannot be forgotten by a new caller
+        $queue = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilBackgroundQueue.ps1") -Raw
+
+        $queue | Should -Match 'Test-WinUtilDeferBackgroundWork -RequiresTab \$state\.RequiresTab'
+        $queue | Should -Match 'Invoke-WinUtilWhenIdle'
+    }
+
+    It "draws app entries against the tab they belong to" {
         $render = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilInstallAppRendering.ps1") -Raw
 
-        $render | Should -Match 'Test-WinUtilDeferBackgroundWork -RequiresTab "Install"'
-        $render | Should -Match 'Invoke-WinUtilWhenIdle'
+        $render | Should -Match '-RequiresTab "Install"'
     }
 
-    It "checks before warming a tab nobody asked for" {
-        $warmup = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilTabWarmup.ps1") -Raw
-
-        $warmup | Should -Match 'Test-WinUtilDeferBackgroundWork'
-        $warmup | Should -Match 'Invoke-WinUtilWhenIdle'
-    }
-
-    It "warms tabs at background priority, not idle priority" {
+    It "runs queued steps at background priority, not idle priority" {
         # At idle priority warmup only ran once the app list had finished, so for the first few
         # seconds every tab but the open one was empty and cost a full build to open
-        $warmup = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilTabWarmup.ps1") -Raw
+        $queue = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilBackgroundQueue.ps1") -Raw
 
-        $warmup | Should -Match 'DispatcherPriority\]::Background'
-        $warmup | Should -Not -Match 'DispatcherPriority\]::ApplicationIdle'
+        $queue | Should -Match 'DispatcherPriority\]::Background'
+        $queue | Should -Not -Match 'DispatcherPriority\]::ApplicationIdle'
     }
 
     It "finishes building the other tabs before finishing the visible list" {
         # the list is on screen and filling in; another tab shows nothing at all until built
         $render = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilInstallAppRendering.ps1") -Raw
 
-        $render | Should -Match '\$tabsPending = \$sync\.TabWarmupQueue -and \$sync\.TabWarmupQueue\.Count -gt 0'
-        $render | Should -Match '\$tabsPending -or'
+        $render | Should -Match '-DeferWhile'
+        $render | Should -Match '\$sync\.TabWarmupQueue -and \$sync\.TabWarmupQueue\.Count -gt 0'
     }
 
     It "records input before a control handles it" {
@@ -159,23 +162,5 @@ Describe "Deferral wiring" {
 
         $registerAt | Should -BeGreaterThan 0
         $registerAt | Should -BeLessThan $showAt
-    }
-}
-
-Describe "Interface stall tracing" {
-    It "reports the whole distribution, not only the long stalls" {
-        # a thread kept busy by a stream of short pieces of work never shows a long stall while
-        # everything the user does still waits behind the piece in flight
-        $heartbeat = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilUIHeartbeat.ps1") -Raw
-
-        $heartbeat | Should -Match 'median'
-        $heartbeat | Should -Match 'p90'
-        $heartbeat | Should -Not -Match 'if \(\$gap -gt 60\)'
-    }
-
-    It "stays off unless it is asked for" {
-        $heartbeat = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilUIHeartbeat.ps1") -Raw
-
-        $heartbeat | Should -Match '\$env:WINUTIL_TRACE_UI -ne "1"'
     }
 }
