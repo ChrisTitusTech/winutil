@@ -18,7 +18,7 @@ function Invoke-WPFSelectedCheckboxesUpdate ($type, $checkboxName) {
     }
 
     if ($listName -eq "selectedApps" -and $selectionChanged) {
-        $sync.WPFselectedAppsButton.Content = "Selected Apps: $($sync.selectedApps.Count)"
+        $sync.WPFselectedAppsButton.Content = Get-WinUtilFormattedText -Template "Selected Apps: {0}" -FormatArgs @($sync.selectedApps.Count)
         $sync.selectedAppsstackPanel.Children.Clear()
         $sync.selectedApps | Sort-Object | ForEach-Object {
             Add-SelectedAppsMenuItem -name $sync.configs.applicationsHashtable.$_.Content -key $_

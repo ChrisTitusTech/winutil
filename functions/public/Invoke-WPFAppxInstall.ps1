@@ -1,11 +1,11 @@
 function Invoke-WPFAppxInstall {
     if ($sync.ProcessRunning) {
-        Show-WinUtilMessage -Message "An AppX process is currently running." -Title "WinUtil" -Button "OK" -Icon "Warning"
+        Show-WinUtilMessage -Message (Get-WinUtilText "An AppX process is currently running.") -Title "WinUtil" -Button "OK" -Icon "Warning"
         return
     }
 
     if ($null -eq $sync.selectedAppx -or $sync.selectedAppx.Count -eq 0) {
-        Show-WinUtilMessage -Message "No AppX Package selected" -Title "Error" -Button "OK" -Icon "Error"
+        Show-WinUtilMessage -Message (Get-WinUtilText "No AppX Package selected") -Title (Get-WinUtilText "Error") -Button "OK" -Icon "Error"
         return
     }
 
@@ -22,7 +22,7 @@ function Invoke-WPFAppxInstall {
         try {
             Write-WinUtilLog -Component "AppX" -Message "Starting AppX install for $totalPackages selected package(s)."
             if ($hasUI) {
-                Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Preparing AppX install (0/$totalPackages)" -Percent 0
+                Set-WinUtilTweaksProgressIndicator -Visible $true -Label (Get-WinUtilFormattedText -Template "Preparing AppX install (0/{0})" -FormatArgs @($totalPackages)) -Percent 0
                 Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" }
             }
 
@@ -33,14 +33,14 @@ function Invoke-WPFAppxInstall {
                 $startPercent = [int](($index / $totalPackages) * 100)
 
                 if ($hasUI) {
-                    Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Installing $($app.Content) ($position/$totalPackages)" -Percent $startPercent
+                    Set-WinUtilTweaksProgressIndicator -Visible $true -Label (Get-WinUtilFormattedText -Template "Installing {0} ({1}/{2})" -FormatArgs @($app.Content, $position, $totalPackages)) -Percent $startPercent
                 }
                 Write-Host "Installing $($app.Content)"
                 Install-WinUtilAPPX -Name $app.PackageId -StoreId $app.StoreId
 
                 $completedPercent = [int](($position / $totalPackages) * 100)
                 if ($hasUI) {
-                    Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Installed $($app.Content) ($position/$totalPackages)" -Percent $completedPercent
+                    Set-WinUtilTweaksProgressIndicator -Visible $true -Label (Get-WinUtilFormattedText -Template "Installed {0} ({1}/{2})" -FormatArgs @($app.Content, $position, $totalPackages)) -Percent $completedPercent
                     Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -value ($completedPercent / 100) }
                 }
             }
@@ -50,14 +50,14 @@ function Invoke-WPFAppxInstall {
             Write-Host "================================="
             Write-WinUtilLog -Component "AppX" -Message "AppX install finished."
             if ($hasUI) {
-                Set-WinUtilTweaksProgressIndicator -Visible $true -Label "AppX install finished" -Percent 100
+                Set-WinUtilTweaksProgressIndicator -Visible $true -Label (Get-WinUtilText "AppX install finished") -Percent 100
                 Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" }
             }
         }
         catch {
             Write-WinUtilLog -Level "ERROR" -Component "AppX" -Message "AppX install failed: $($_.Exception.Message)"
             if ($hasUI) {
-                Set-WinUtilTweaksProgressIndicator -Visible $true -Label "AppX install failed" -Percent 100
+                Set-WinUtilTweaksProgressIndicator -Visible $true -Label (Get-WinUtilText "AppX install failed") -Percent 100
                 Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Error" -overlay "warning" }
             }
         }

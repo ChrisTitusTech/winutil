@@ -202,8 +202,8 @@ function Invoke-WPFFixesUpdate {
     Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
 
     $ButtonType = [System.Windows.MessageBoxButton]::OK
-    $MessageboxTitle = "Reset Windows Update "
-    $Messageboxbody = ("Stock settings loaded.`n Please reboot your computer")
+    $MessageboxTitle = Get-WinUtilText "Reset Windows Update "
+    $Messageboxbody = Get-WinUtilText "Stock settings loaded.`n Please reboot your computer"
     $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
     [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)

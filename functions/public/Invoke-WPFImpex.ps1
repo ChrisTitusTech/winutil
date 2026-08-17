@@ -26,7 +26,7 @@ function Invoke-WPFImpex {
                 "import" { $FileBrowser = New-Object System.Windows.Forms.OpenFileDialog }
             }
             $FileBrowser.InitialDirectory = [Environment]::GetFolderPath('Desktop')
-            $FileBrowser.Filter = "JSON Files (*.json)|*.json"
+            $FileBrowser.Filter = Get-WinUtilText "JSON Files (*.json)|*.json"
             $FileBrowser.ShowDialog() | Out-Null
 
             if ($FileBrowser.FileName -eq "") {
@@ -47,8 +47,8 @@ function Invoke-WPFImpex {
                     $allConfs = ($sync.selectedApps + $sync.selectedTweaks + $sync.selectedToggles + $sync.selectedFeatures + $sync.selectedAppx) | ForEach-Object { [string]$_ }
                     if (-not $allConfs) {
                         [System.Windows.MessageBox]::Show(
-                            "No settings are selected to export. Please select at least one app, tweak, toggle, feature, or AppX package before exporting.",
-                            "Nothing to Export", "OK", "Warning")
+                            (Get-WinUtilText "No settings are selected to export. Please select at least one app, tweak, toggle, feature, or AppX package before exporting."),
+                            (Get-WinUtilText "Nothing to Export"), "OK", "Warning")
                         return
                     }
                     $jsonFile = $allConfs | ConvertTo-Json
@@ -79,8 +79,8 @@ function Invoke-WPFImpex {
 
                     if (-not $flattenedJson) {
                         [System.Windows.MessageBox]::Show(
-                            "The selected file contains no settings to import. No changes have been made.",
-                            "Empty Configuration", "OK", "Warning")
+                            (Get-WinUtilText "The selected file contains no settings to import. No changes have been made."),
+                            (Get-WinUtilText "Empty Configuration"), "OK", "Warning")
                         return
                     }
 

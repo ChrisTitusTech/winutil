@@ -358,7 +358,7 @@ function Invoke-WPFUIElements {
                                     } catch {
                                         $applyError = $_.Exception.Message
                                         if ([string]::IsNullOrWhiteSpace($applyError)) {
-                                            $applyError = "Unable to apply registry state '$($selectedItem.Content)'."
+                                            $applyError = Get-WinUtilFormattedText -Template "Unable to apply registry state '{0}'." -FormatArgs @($selectedItem.Content)
                                         }
                                         $previousState = if ($this.Tag.State) { $this.Tag.State } else { "Custom / Unknown - select a state" }
                                         $this.SelectedItem = @($this.Items) | Where-Object Content -EQ $previousState | Select-Object -First 1

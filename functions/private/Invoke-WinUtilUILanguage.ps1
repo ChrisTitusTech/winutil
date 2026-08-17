@@ -163,6 +163,12 @@ function Invoke-WinUtilUILanguage {
             $node.ToolTip.Content = Get-WinUtilLanguageText $node.ToolTip.Content
         }
 
+        # AutomationProperties.Name (accessibility name)
+        $autoName = [System.Windows.Automation.AutomationProperties]::GetName($node)
+        if (-not [string]::IsNullOrWhiteSpace($autoName)) {
+            [System.Windows.Automation.AutomationProperties]::SetName($node, (Get-WinUtilLanguageText $autoName))
+        }
+
         # Descend: Content element, Children, Items (TabItem lives in Items, not
         # Children), Child (Decorator like Border, and Popup).
         if ($node.Content -and $node.Content -isnot [string] -and $node.Content -is [System.Windows.DependencyObject]) {

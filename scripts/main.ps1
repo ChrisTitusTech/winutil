@@ -395,6 +395,13 @@ $sync["Form"].Add_Loaded({
     $sync["Form"].MaxWidth = [Double]::PositiveInfinity
     $sync["Form"].MaxHeight = [Double]::PositiveInfinity
     Invoke-WinUtilUILanguage
+    # The ISO status log is a TextBox (not translated by the tree walk), so its
+    # default line is localized here; Write-WinUtilISOLog compares against the
+    # same localized text when replacing it.
+    $statusLog = $sync["WPFWin11ISOStatusLog"]
+    if ($statusLog -and $statusLog.Text -eq "Ready. Please select a Windows 11 ISO to begin.") {
+        $statusLog.Text = Get-WinUtilText "Ready. Please select a Windows 11 ISO to begin."
+    }
 })
 
 $NavLogoPanel = $sync["Form"].FindName("NavLogoPanel")

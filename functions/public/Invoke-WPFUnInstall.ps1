@@ -10,20 +10,20 @@ function Invoke-WPFUnInstall {
     #>
 
     if($sync.ProcessRunning) {
-        $msg = "[Invoke-WPFUnInstall] Install process is currently running"
+        $msg = Get-WinUtilText "[Invoke-WPFUnInstall] Install process is currently running"
         Show-WinUtilMessage -Message $msg -Title "WinUtil" -Button "OK" -Icon "Warning"
         return
     }
 
     if ($PackagesToUninstall.Count -eq 0) {
-        $WarningMsg = "Please select the program(s) to uninstall"
+        $WarningMsg = Get-WinUtilText "Please select the program(s) to uninstall"
         Show-WinUtilMessage -Message $WarningMsg -Title "WinUtil" -Button "OK" -Icon "Warning"
         return
     }
 
     $ButtonType = "YesNo"
-    $MessageboxTitle = "Are you sure?"
-    $Messageboxbody = ("This will uninstall the following applications: `n $($PackagesToUninstall | Select-Object Name, Description| Out-String)")
+    $MessageboxTitle = Get-WinUtilText "Are you sure?"
+    $Messageboxbody = Get-WinUtilFormattedText -Template "This will uninstall the following applications: `n {0}" -FormatArgs @(($PackagesToUninstall | Select-Object Name, Description| Out-String))
     $MessageIcon = "Information"
 
     $confirm = Show-WinUtilMessage -Message $Messageboxbody -Title $MessageboxTitle -Button $ButtonType -Icon $MessageIcon
@@ -50,7 +50,7 @@ function Invoke-WPFUnInstall {
         try {
             $sync.ProcessRunning = $true
             if ($hasUI) {
-                Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Preparing app uninstall (0/$totalPackages)" -Percent 0
+                Set-WinUtilTweaksProgressIndicator -Visible $true -Label (Get-WinUtilFormattedText -Template "Preparing app uninstall (0/{0})" -FormatArgs @($totalPackages)) -Percent 0
                 Invoke-WPFUIThread -ScriptBlock {
                     if ($null -ne $sync.ItemsControl) {
                         $sync.ItemsControl.IsEnabled = $false
@@ -68,14 +68,14 @@ function Invoke-WPFUnInstall {
                     $position = $completedPackages + 1
                     $startPercent = [int](($completedPackages / $totalPackages) * 100)
                     if ($hasUI) {
-                        Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Uninstalling $program ($position/$totalPackages)" -Percent $startPercent
+                        Set-WinUtilTweaksProgressIndicator -Visible $true -Label (Get-WinUtilFormattedText -Template "Uninstalling {0} ({1}/{2})" -FormatArgs @($program, $position, $totalPackages)) -Percent $startPercent
                     }
 
                     Install-WinUtilProgramWinget -Action Uninstall -Programs @($program)
                     $completedPackages++
                     $completedPercent = [int](($completedPackages / $totalPackages) * 100)
                     if ($hasUI) {
-                        Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Uninstalled $program ($completedPackages/$totalPackages)" -Percent $completedPercent
+                        Set-WinUtilTweaksProgressIndicator -Visible $true -Label (Get-WinUtilFormattedText -Template "Uninstalled {0} ({1}/{2})" -FormatArgs @($program, $completedPackages, $totalPackages)) -Percent $completedPercent
                         Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -value ($completedPercent / 100) }
                     }
                 }
@@ -84,14 +84,14 @@ function Invoke-WPFUnInstall {
                 $position = $completedPackages + 1
                 $startPercent = [int](($completedPackages / $totalPackages) * 100)
                 if ($hasUI) {
-                    Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Uninstalling Chocolatey packages ($position/$totalPackages)" -Percent $startPercent
+                    Set-WinUtilTweaksProgressIndicator -Visible $true -Label (Get-WinUtilFormattedText -Template "Uninstalling Chocolatey packages ({0}/{1})" -FormatArgs @($position, $totalPackages)) -Percent $startPercent
                 }
 
                 Install-WinUtilProgramChoco -Action Uninstall -Programs $packagesChoco
                 $completedPackages += @($packagesChoco).Count
                 $completedPercent = [int](($completedPackages / $totalPackages) * 100)
                 if ($hasUI) {
-                    Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Uninstalled Chocolatey packages ($completedPackages/$totalPackages)" -Percent $completedPercent
+                    Set-WinUtilTweaksProgressIndicator -Visible $true -Label (Get-WinUtilFormattedText -Template "Uninstalled Chocolatey packages ({0}/{1})" -FormatArgs @($completedPackages, $totalPackages)) -Percent $completedPercent
                     Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -value ($completedPercent / 100) }
                 }
             }
@@ -100,7 +100,7 @@ function Invoke-WPFUnInstall {
             Write-Host "==========================================="
             Write-WinUtilLog -Component "Uninstall" -Message "Uninstall workflow completed."
             if ($hasUI) {
-                Set-WinUtilTweaksProgressIndicator -Visible $true -Label "App uninstall finished" -Percent 100
+                Set-WinUtilTweaksProgressIndicator -Visible $true -Label (Get-WinUtilText "App uninstall finished") -Percent 100
                 Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" }
             }
         } catch {
@@ -109,7 +109,7 @@ function Invoke-WPFUnInstall {
             Write-Host "==========================================="
             Write-WinUtilLog -Level "ERROR" -Component "Uninstall" -Message "Uninstall workflow failed: $($_.Exception.Message)"
             if ($hasUI) {
-                Set-WinUtilTweaksProgressIndicator -Visible $true -Label "App uninstall failed" -Percent 100
+                Set-WinUtilTweaksProgressIndicator -Visible $true -Label (Get-WinUtilText "App uninstall failed") -Percent 100
                 Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Error" -overlay "warning" }
             }
         } finally {

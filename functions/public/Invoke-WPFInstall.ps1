@@ -41,7 +41,7 @@ function Invoke-WPFInstall {
         try {
             $sync.ProcessRunning = $true
             if ($hasUI) {
-                Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Preparing app install (0/$totalPackages)" -Percent 0
+                Set-WinUtilTweaksProgressIndicator -Visible $true -Label (Get-WinUtilFormattedText -Template "Preparing app install (0/{0})" -FormatArgs @($totalPackages)) -Percent 0
                 Invoke-WPFUIThread -ScriptBlock {
                     if ($null -ne $sync.ItemsControl) {
                         $sync.ItemsControl.IsEnabled = $false
@@ -55,14 +55,14 @@ function Invoke-WPFInstall {
                     $position = $completedPackages + 1
                     $startPercent = [int](($completedPackages / $totalPackages) * 100)
                     if ($hasUI) {
-                        Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Installing $program ($position/$totalPackages)" -Percent $startPercent
+                        Set-WinUtilTweaksProgressIndicator -Visible $true -Label (Get-WinUtilFormattedText -Template "Installing {0} ({1}/{2})" -FormatArgs @($program, $position, $totalPackages)) -Percent $startPercent
                     }
 
                     Install-WinUtilProgramWinget -Action Install -Programs @($program)
                     $completedPackages++
                     $completedPercent = [int](($completedPackages / $totalPackages) * 100)
                     if ($hasUI) {
-                        Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Installed $program ($completedPackages/$totalPackages)" -Percent $completedPercent
+                        Set-WinUtilTweaksProgressIndicator -Visible $true -Label (Get-WinUtilFormattedText -Template "Installed {0} ({1}/{2})" -FormatArgs @($program, $completedPackages, $totalPackages)) -Percent $completedPercent
                         Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -value ($completedPercent / 100) }
                     }
                 }
@@ -71,7 +71,7 @@ function Invoke-WPFInstall {
                 $position = $completedPackages + 1
                 $startPercent = [int](($completedPackages / $totalPackages) * 100)
                 if ($hasUI) {
-                    Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Installing Chocolatey packages ($position/$totalPackages)" -Percent $startPercent
+                    Set-WinUtilTweaksProgressIndicator -Visible $true -Label (Get-WinUtilFormattedText -Template "Installing Chocolatey packages ({0}/{1})" -FormatArgs @($position, $totalPackages)) -Percent $startPercent
                 }
 
                 Install-WinUtilChoco
@@ -79,7 +79,7 @@ function Invoke-WPFInstall {
                 $completedPackages += @($packagesChoco).Count
                 $completedPercent = [int](($completedPackages / $totalPackages) * 100)
                 if ($hasUI) {
-                    Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Installed Chocolatey packages ($completedPackages/$totalPackages)" -Percent $completedPercent
+                    Set-WinUtilTweaksProgressIndicator -Visible $true -Label (Get-WinUtilFormattedText -Template "Installed Chocolatey packages ({0}/{1})" -FormatArgs @($completedPackages, $totalPackages)) -Percent $completedPercent
                     Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -value ($completedPercent / 100) }
                 }
             }
@@ -88,7 +88,7 @@ function Invoke-WPFInstall {
             Write-Host "==========================================="
             Write-WinUtilLog -Component "Install" -Message "Install workflow completed."
             if ($hasUI) {
-                Set-WinUtilTweaksProgressIndicator -Visible $true -Label "App install finished" -Percent 100
+                Set-WinUtilTweaksProgressIndicator -Visible $true -Label (Get-WinUtilText "App install finished") -Percent 100
                 Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" }
             }
         } catch {
@@ -97,7 +97,7 @@ function Invoke-WPFInstall {
             Write-Host "==========================================="
             Write-WinUtilLog -Level "ERROR" -Component "Install" -Message "Install workflow failed: $($_.Exception.Message)"
             if ($hasUI) {
-                Set-WinUtilTweaksProgressIndicator -Visible $true -Label "App install failed" -Percent 100
+                Set-WinUtilTweaksProgressIndicator -Visible $true -Label (Get-WinUtilText "App install failed") -Percent 100
                 Invoke-WPFUIThread -ScriptBlock { Set-WinUtilTaskbaritem -state "Error" -overlay "warning" }
             }
         } finally {
