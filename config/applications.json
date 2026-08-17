@@ -101,11 +101,11 @@
     "battlenet": {
         "category": "Games",
         "choco": "na",
-        "winget": "Blizzard.BattleNet"
+        "winget": "Blizzard.BattleNet",
         "content": "Battle.net",
-        "desciption": "Battle.net is a launcher for games created and developed by Actvision Blizzard",
+        "description": "Battle.net is a launcher for games created and developed by Actvision Blizzard",
         "link": "https://battle.net",
-        "foss": true
+        "foss": false
     },
     "bitwarden": {
         "category": "Utilities",
