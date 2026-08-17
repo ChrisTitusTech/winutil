@@ -58,6 +58,11 @@ Describe "Get-WinUtilText" {
         $sync.TextTable = @{ "Run Tweaks" = "运行调整" }
         Get-WinUtilText -String "Something Untranslated" | Should -Be "Something Untranslated"
     }
+
+    It "returns an empty string unchanged (config entries without Description)" {
+        $sync.TextTable = @{ "Run Tweaks" = "运行调整" }
+        Get-WinUtilText -String "" | Should -Be ""
+    }
 }
 
 Describe "zh-CN coverage of static XAML text" {

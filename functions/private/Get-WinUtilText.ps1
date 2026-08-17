@@ -6,8 +6,14 @@ function Get-WinUtilText {
     #>
     param(
         [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
         [string]$String
     )
+
+    # Some config entries have no Description; empty strings pass through unchanged.
+    if ([string]::IsNullOrEmpty($String)) {
+        return $String
+    }
 
     if ($null -eq $sync.TextTable -or $sync.TextTable.Count -eq 0) {
         return $String
