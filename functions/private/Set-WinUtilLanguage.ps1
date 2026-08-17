@@ -25,7 +25,12 @@ function Set-WinUtilLanguage {
             $reverse = @{}
             if ($null -ne $previousTextTable) {
                 foreach ($entry in $previousTextTable.GetEnumerator()) {
-                    $reverse[[string]$entry.Value] = [string]$entry.Key
+                    # Duplicate translation values (e.g. "Documentation" and
+                    # "Document" both translate to 文档) restore to the first
+                    # key seen, keeping the reverse table deterministic.
+                    if (-not $reverse.ContainsKey([string]$entry.Value)) {
+                        $reverse[[string]$entry.Value] = [string]$entry.Key
+                    }
                 }
             }
             $sync.ReverseTextTable = $reverse

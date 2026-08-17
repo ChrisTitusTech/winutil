@@ -23,6 +23,24 @@ Describe "i18n config" {
             [string]$string.Value | Should -Not -BeNullOrEmpty
         }
     }
+
+    It "has no new duplicate translation values" {
+        # A duplicate value maps to a single key in the reverse table, so a
+        # control can restore to a sibling English key after switching back to
+        # English. The two existing pairs are accepted; any new duplicate must
+        # be resolved in i18n.json.
+        $knownDuplicates = @("清除选择", "文档")
+        $i18n = Get-Content -Path (Join-Path $script:repoRoot "config\i18n.json") -Raw -Encoding UTF8 | ConvertFrom-Json
+        $newDuplicates = @(
+            $i18n."zh-CN".strings.PSObject.Properties |
+                Group-Object -Property Value |
+                Where-Object { $_.Count -gt 1 -and $knownDuplicates -notcontains $_.Name } |
+                ForEach-Object { $_.Name }
+        )
+        if ($newDuplicates.Count -gt 0) {
+            throw "Duplicate translation values not in the known list: $($newDuplicates -join ', ')"
+        }
+    }
 }
 
 Describe "Get-WinUtilText" {
