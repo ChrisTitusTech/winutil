@@ -15,6 +15,8 @@ BeforeAll {
         "HEADtail" = "混合译文"
         "A" = "甲"
         "B" = "乙"
+        "Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system." = "注意：悬停查看项目说明。"
+        "Recommended selections are for normal users and if you are unsure do NOT check anything else!" = "推荐选择适用于普通用户。"
     }
 }
 
@@ -66,6 +68,23 @@ Describe "Apply-WinUtilUILanguage runtime traversal" {
         $sync.Form.Content = $tb
         Apply-WinUtilUILanguage
         $tb.Text | Should -Be "拼接译文"
+    }
+
+    It "translates every LineBreak segment of a mixed-content note" {
+        # The Tweaks note shape: each segment has its own key, so stage 2 must
+        # translate all of them and rejoin with newlines.
+        $xaml = @"
+<TextBlock xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Padding="10">
+    Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
+    <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else!
+</TextBlock>
+"@
+        $tb = [System.Windows.Markup.XamlReader]::Parse($xaml)
+        $sync.Form = New-Object System.Windows.Window
+        $sync.Form.Content = $tb
+        Apply-WinUtilUILanguage
+        $tb.Text | Should -Be "注意：悬停查看项目说明。`n推荐选择适用于普通用户。"
+        $tb.Inlines.Count | Should -Be 0
     }
 
     It "translates every segment that has a key" {

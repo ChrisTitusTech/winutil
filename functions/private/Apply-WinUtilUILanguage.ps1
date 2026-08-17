@@ -57,27 +57,41 @@ function Apply-WinUtilUILanguage {
         # i18n.json. Stage 1 looks up the whole content joined without a
         # separator (tab buttons "Install", USB warning). Stage 2 falls back to
         # per-LineBreak-segment lookups and rejoins with newlines, keeping
-        # untranslated segments (e.g. "Note: Hover over items ..." plus a second
-        # line that has no key). Untranslated text is left untouched so inline
-        # styling such as the tab underline survives.
-        if ($node -is [System.Windows.Controls.TextBlock] -and
-            $node.Inlines -and $node.Inlines.Count -gt 0) {
-            $segments = Get-WinUtilInlineSegments $node.Inlines
-            $fullText = $segments -join ""
-
-            $translatedFull = Get-WinUtilText $fullText
-            if ($translatedFull -ne $fullText) {
-                $node.Text = $translatedFull
-                $node.Inlines.Clear()
-            } else {
-                $translatedSegments = @(foreach ($segment in $segments) { Get-WinUtilText $segment })
-                $changed = $false
-                for ($i = 0; $i -lt $segments.Count; $i++) {
-                    if ($translatedSegments[$i] -ne $segments[$i]) { $changed = $true; break }
+        # untranslated segments in the original text. When nothing translates,
+        # the text is left untouched so inline styling such as the tab
+        # underline survives.
+        if ($node -is [System.Windows.Controls.TextBlock]) {
+            $segments = New-Object System.Collections.Generic.List[string]
+            if ($node.Inlines -and $node.Inlines.Count -gt 0) {
+                # Text set by XAML or code lives in the first inline Run, so
+                # only the Inlines are collected.
+                foreach ($segment in (Get-WinUtilInlineSegments $node.Inlines)) {
+                    $segments.Add($segment)
                 }
-                if ($changed) {
-                    $node.Text = $translatedSegments -join "`n"
+            } elseif (-not [string]::IsNullOrWhiteSpace($node.Text)) {
+                # Text-only TextBlock (Inlines cleared after a previous pass).
+                $segments.Add($node.Text)
+            }
+
+            if ($segments.Count -gt 0) {
+                $fullText = $segments -join ""
+                $translatedFull = if ($fullText) { Get-WinUtilText $fullText } else { $fullText }
+                if ($translatedFull -ne $fullText) {
+                    $node.Text = $translatedFull
                     $node.Inlines.Clear()
+                } else {
+                    # Empty segments stay empty — Get-WinUtilText rejects them.
+                    $translatedSegments = @(foreach ($segment in $segments) {
+                        if ([string]::IsNullOrEmpty($segment)) { $segment } else { Get-WinUtilText $segment }
+                    })
+                    $changed = $false
+                    for ($i = 0; $i -lt $segments.Count; $i++) {
+                        if ($translatedSegments[$i] -ne $segments[$i]) { $changed = $true; break }
+                    }
+                    if ($changed) {
+                        $node.Text = $translatedSegments -join "`n"
+                        $node.Inlines.Clear()
+                    }
                 }
             }
         }
