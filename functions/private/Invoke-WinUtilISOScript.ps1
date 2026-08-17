@@ -44,19 +44,18 @@ function Invoke-WinUtilISOScript {
 
     function Get-WinUtilISODriverPackageInventory {
         param (
-            [Parameter(Mandatory)][string]$DriverRoot,
+            [Parameter(Mandatory)][AllowEmptyCollection()][System.IO.FileInfo[]]$DriverInfs,
             [scriptblock]$Logger
         )
 
-        $driverInfs = @(Get-ChildItem -LiteralPath $DriverRoot -Filter '*.inf' -Recurse -File)
-        $packages = @($driverInfs | Group-Object { $_.Directory.FullName } | ForEach-Object {
+        $packages = @($DriverInfs | Group-Object { $_.Directory.FullName } | ForEach-Object {
             [pscustomobject]@{
                 Directory = [string]$_.Name
                 InfNames  = @($_.Group | ForEach-Object Name)
             }
         })
 
-        $null = & $Logger "Inventoried $($driverInfs.Count) INF files across $($packages.Count) exported package directories."
+        $null = & $Logger "Inventoried $($DriverInfs.Count) INF files across $($packages.Count) exported package directories."
         return $packages
     }
 
@@ -90,6 +89,11 @@ function Invoke-WinUtilISOScript {
                 throw "Expected one physical disk for system volume '$systemDrive', but found $($diskDeviceIds.Count)."
             }
 
+            # Devices with Setup Class outside this set (chipset/platform "System" devices, ACPI,
+            # generic PCI bridges, ...) are where WinPE driver staging stops climbing: they sit in
+            # the disk's PnP ancestry but are not demonstrably needed to enumerate the disk/controller.
+            $storageEnumerationDeviceClasses = @('DiskDrive', 'SCSIAdapter', 'HDC', 'USB', 'SDHost', 'PCMCIA')
+
             $publishedInfNames = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
             $visitedDeviceIds = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
             $deviceId = $diskDeviceIds[0]
@@ -103,10 +107,15 @@ function Invoke-WinUtilISOScript {
                     throw "The PnP parent chain contains a cycle at '$deviceId'."
                 }
 
-                if ($driverByDeviceId.ContainsKey($deviceId)) {
-                    $driver = $driverByDeviceId[$deviceId]
+                $driver = $driverByDeviceId[$deviceId]
+                if ($depth -gt 0 -and (-not $driver -or [string]$driver.DeviceClass -notin $storageEnumerationDeviceClasses)) {
+                    $null = & $Logger "Stopped at PnP ancestor '$deviceId' outside the storage-enumeration device classes."
+                    break
+                }
+
+                if ($driver) {
                     [void]$publishedInfNames.Add([string]$driver.InfName)
-                    $null = & $Logger "Active storage-path device '$deviceId' uses published INF '$($driver.InfName)'."
+                    $null = & $Logger "Active storage-path device '$deviceId' uses published INF '$($driver.InfName)' (class '$($driver.DeviceClass)')."
                 }
 
                 $parent = Get-PnpDeviceProperty -InstanceId $deviceId -KeyName 'DEVPKEY_Device_Parent' -ErrorAction Stop
@@ -363,7 +372,7 @@ function Invoke-WinUtilISOScript {
 
             $classificationTimer = [System.Diagnostics.Stopwatch]::StartNew()
             try {
-                $driverPackages = @(Get-WinUtilISODriverPackageInventory -DriverRoot $driverExportRoot -Logger $Logger)
+                $driverPackages = @(Get-WinUtilISODriverPackageInventory -DriverInfs $driverInfs -Logger $Logger)
                 $winpeDriverPackages = @(Select-WinUtilISOWinPEDriverPackage -Packages $driverPackages -Logger $Logger)
             } catch {
                 $classificationTimer.Stop()

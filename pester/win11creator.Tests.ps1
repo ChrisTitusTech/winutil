@@ -171,8 +171,8 @@ Describe "Win11 Creator setup media" {
             param($ClassName)
             if ($ClassName -eq 'Win32_PnPSignedDriver') {
                 return @(
-                    [pscustomobject]@{ DeviceID = 'SCSI\DISK0'; InfName = 'disk.inf' },
-                    [pscustomobject]@{ DeviceID = 'PCI\STORAGE0'; InfName = 'oem10.inf' }
+                    [pscustomobject]@{ DeviceID = 'SCSI\DISK0'; InfName = 'disk.inf'; DeviceClass = 'DiskDrive' },
+                    [pscustomobject]@{ DeviceID = 'PCI\STORAGE0'; InfName = 'oem10.inf'; DeviceClass = 'SCSIAdapter' }
                 )
             }
             if ($ClassName -eq 'Win32_LogicalDisk') {
@@ -206,6 +206,98 @@ Describe "Win11 Creator setup media" {
             ($logs -join '|') | Should -Match 'Ignoring inbox INF names.*disk\.inf'
             ($logs -join '|') | Should -Match "Mapped active driver 'oem10.inf' to original INF 'iaStorVD.inf'"
             Should -Invoke Get-PnpDeviceProperty -Times 2 -Exactly
+        } finally {
+            Remove-Item Function:\pnputil.exe -ErrorAction SilentlyContinue
+        }
+    }
+
+    It "excludes OEM INFs on ancestors beyond the storage-enumeration device classes" {
+        . ([scriptblock]::Create($script:driverClassifierFunctions[1]))
+
+        $logicalDisk = New-CimInstance -ClassName Win32_LogicalDisk -ClientOnly -Property @{ DeviceID = $env:SystemDrive }
+        $partition = New-CimInstance -ClassName Win32_DiskPartition -ClientOnly -Property @{ DeviceID = 'Disk #0, Partition #1' }
+        Mock Get-CimInstance {
+            param($ClassName)
+            if ($ClassName -eq 'Win32_PnPSignedDriver') {
+                return @(
+                    [pscustomobject]@{ DeviceID = 'SCSI\DISK0'; InfName = 'disk.inf'; DeviceClass = 'DiskDrive' },
+                    [pscustomobject]@{ DeviceID = 'PCI\STORAGE0'; InfName = 'stornvme.inf'; DeviceClass = 'SCSIAdapter' },
+                    [pscustomobject]@{ DeviceID = 'PCI\ROOTPORT0'; InfName = 'oem2.inf'; DeviceClass = 'System' }
+                )
+            }
+            if ($ClassName -eq 'Win32_LogicalDisk') {
+                return $logicalDisk
+            }
+        }
+        Mock Get-CimAssociatedInstance {
+            param($Association)
+            if ($Association -eq 'Win32_LogicalDiskToPartition') {
+                return $partition
+            }
+            return [pscustomobject]@{ PNPDeviceID = 'SCSI\DISK0' }
+        }
+        Mock Get-PnpDeviceProperty {
+            param($InstanceId)
+            $parentByDeviceId = @{ 'SCSI\DISK0' = 'PCI\STORAGE0'; 'PCI\STORAGE0' = 'PCI\ROOTPORT0' }
+            [pscustomobject]@{ Data = $parentByDeviceId[$InstanceId] }
+        }
+        function pnputil.exe { throw 'PnPUtil should not run for a device outside the storage-enumeration classes.' }
+
+        try {
+            $logs = [System.Collections.Generic.List[string]]::new()
+            @(Get-WinUtilISOActiveStorageDriverMapping -Logger { param($message) $null = $logs.Add([string]$message) }).Count | Should -Be 0
+            Should -Invoke Get-PnpDeviceProperty -Times 2 -Exactly
+            ($logs -join '|') | Should -Not -Match 'oem2\.inf'
+            ($logs -join '|') | Should -Match "Stopped at PnP ancestor 'PCI\\ROOTPORT0' outside the storage-enumeration device classes"
+        } finally {
+            Remove-Item Function:\pnputil.exe -ErrorAction SilentlyContinue
+        }
+    }
+
+    It "includes an OEM controller two hops above the disk when every ancestor is a storage-enumeration class" {
+        . ([scriptblock]::Create($script:driverClassifierFunctions[1]))
+
+        $logicalDisk = New-CimInstance -ClassName Win32_LogicalDisk -ClientOnly -Property @{ DeviceID = $env:SystemDrive }
+        $partition = New-CimInstance -ClassName Win32_DiskPartition -ClientOnly -Property @{ DeviceID = 'Disk #0, Partition #1' }
+        Mock Get-CimInstance {
+            param($ClassName)
+            if ($ClassName -eq 'Win32_PnPSignedDriver') {
+                return @(
+                    [pscustomobject]@{ DeviceID = 'SCSI\DISK0'; InfName = 'disk.inf'; DeviceClass = 'DiskDrive' },
+                    [pscustomobject]@{ DeviceID = 'PCI\NVME0'; InfName = 'stornvme.inf'; DeviceClass = 'SCSIAdapter' },
+                    [pscustomobject]@{ DeviceID = 'PCI\VMD0'; InfName = 'oem5.inf'; DeviceClass = 'SCSIAdapter' }
+                )
+            }
+            if ($ClassName -eq 'Win32_LogicalDisk') {
+                return $logicalDisk
+            }
+        }
+        Mock Get-CimAssociatedInstance {
+            param($Association)
+            if ($Association -eq 'Win32_LogicalDiskToPartition') {
+                return $partition
+            }
+            return [pscustomobject]@{ PNPDeviceID = 'SCSI\DISK0' }
+        }
+        Mock Get-PnpDeviceProperty {
+            param($InstanceId)
+            $parentByDeviceId = @{ 'SCSI\DISK0' = 'PCI\NVME0'; 'PCI\NVME0' = 'PCI\VMD0' }
+            [pscustomobject]@{ Data = $parentByDeviceId[$InstanceId] }
+        }
+        function pnputil.exe {
+            $global:LASTEXITCODE = 0
+            'DriverName,OriginalName,ProviderName'
+            '"oem5.inf","iaStorAVC.inf","Intel"'
+        }
+
+        try {
+            $logs = [System.Collections.Generic.List[string]]::new()
+            $mappings = @(Get-WinUtilISOActiveStorageDriverMapping -Logger { param($message) $null = $logs.Add([string]$message) })
+
+            $mappings.Count | Should -Be 1
+            $mappings[0].PublishedInfName | Should -Be 'oem5.inf'
+            $mappings[0].OriginalInfName | Should -Be 'iaStorAVC.inf'
+            Should -Invoke Get-PnpDeviceProperty -Times 3 -Exactly
         } finally {
             Remove-Item Function:\pnputil.exe -ErrorAction SilentlyContinue
         }
