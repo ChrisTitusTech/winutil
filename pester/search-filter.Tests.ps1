@@ -222,11 +222,15 @@ namespace Windows.Controls
     function script:New-WinUtilTweakLabelItem {
         param(
             [string]$Content,
-            [string]$ToolTip = ""
+            [string]$ToolTip = "",
+            [string]$Name = ""
         )
 
         $item = [Windows.Controls.DockPanel]::new()
         $checkbox = [Windows.Controls.CheckBox]::new()
+        if ($Name) {
+            $checkbox | Add-Member -NotePropertyName Name -NotePropertyValue $Name -Force
+        }
         $label = [Windows.Controls.Label]::new()
         $label.Content = $Content
         $label.ToolTip = $ToolTip
@@ -239,11 +243,15 @@ namespace Windows.Controls
     function script:New-WinUtilTweakCheckboxItem {
         param(
             [string]$Content,
-            [string]$ToolTip = ""
+            [string]$ToolTip = "",
+            [string]$Name = ""
         )
 
         $item = [Windows.Controls.StackPanel]::new()
         $checkbox = [Windows.Controls.CheckBox]::new()
+        if ($Name) {
+            $checkbox | Add-Member -NotePropertyName Name -NotePropertyValue $Name -Force
+        }
         $checkbox.Content = $Content
         $checkbox.ToolTip = $ToolTip
         $null = $item.Children.Add($checkbox)
@@ -299,13 +307,18 @@ namespace Windows.Controls
         param(
             $TweaksPanel,
             $AppxPanel = $null,
-            [string]$CurrentTab = "Tweaks"
+            [string]$CurrentTab = "Tweaks",
+            $Configs = $null
         )
 
-        $script:sync = [Hashtable]::Synchronized(@{
+        $context = @{
             currentTab = $CurrentTab
             Form = New-WinUtilFakeSearchForm -TweaksPanel $TweaksPanel -AppxPanel $AppxPanel
-        })
+        }
+        if ($null -ne $Configs) {
+            $context.configs = $Configs
+        }
+        $script:sync = [Hashtable]::Synchronized($context)
         $global:sync = $script:sync
     }
 
@@ -538,5 +551,78 @@ Describe "Find-TweaksByNameOrDescription" {
         $appxItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
         $tweakCategory.Border.Visibility | Should -Be ([Windows.Visibility]::Visible)
         $tweakItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+    }
+
+    It "matches tweaks against English config strings when the UI text is translated" {
+        # zh-CN: the label renders translated text, but the search matches the
+        # English Content/Description from config via the checkbox Name.
+        $telemetryItem = New-WinUtilTweakLabelItem -Name "WPFTweaksActivity" -Content "活动历史 - 禁用" -ToolTip "清除最近的文档、剪贴板和运行历史。"
+        $nonMatchItem = New-WinUtilTweakLabelItem -Name "WPFTweaksHiber" -Content "休眠 - 禁用" -ToolTip "休眠主要面向笔记本电脑。"
+        $category = New-WinUtilTweakCategory -Label "+ 核心调整" -Items @($telemetryItem, $nonMatchItem)
+        $panel = New-WinUtilTweakPanel -Categories @($category)
+        $configs = @{
+            tweaks = [pscustomobject]@{
+                WPFTweaksActivity = [pscustomobject]@{
+                    Content = "Activity History - Disable"
+                    Description = "Erases recent docs, clipboard, and run history."
+                }
+                WPFTweaksHiber = [pscustomobject]@{
+                    Content = "Hibernation - Disable"
+                    Description = "Hibernation is meant for laptops."
+                }
+            }
+        }
+        New-WinUtilTweakSearchContext -TweaksPanel $panel -Configs $configs
+
+        Find-TweaksByNameOrDescription -SearchString "clipboard"
+
+        $category.Border.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $category.Label.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $telemetryItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $nonMatchItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+    }
+
+    It "does not match the translated label text when searching in Chinese" {
+        # The Chinese term appears in the rendered ToolTip but not in the
+        # English config source, so it must not match (Chinese search terms are
+        # out of scope, same as the Install tab).
+        $telemetryItem = New-WinUtilTweakLabelItem -Name "WPFTweaksActivity" -Content "活动历史 - 禁用" -ToolTip "清除最近的文档、剪贴板和运行历史。"
+        $category = New-WinUtilTweakCategory -Label "+ 核心调整" -Items @($telemetryItem)
+        $panel = New-WinUtilTweakPanel -Categories @($category)
+        $configs = @{
+            tweaks = [pscustomobject]@{
+                WPFTweaksActivity = [pscustomobject]@{
+                    Content = "Activity History - Disable"
+                    Description = "Erases recent docs, clipboard, and run history."
+                }
+            }
+        }
+        New-WinUtilTweakSearchContext -TweaksPanel $panel -Configs $configs
+
+        Find-TweaksByNameOrDescription -SearchString "剪贴板"
+
+        $telemetryItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $category.Border.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+    }
+
+    It "matches AppX entries against the appx config when AppX is the current tab" {
+        $appxItem = New-WinUtilTweakCheckboxItem -Name "WPFAppxMicrosoft_GetHelp" -Content "获取帮助" -ToolTip "提供自动化故障排除指南。"
+        $category = New-WinUtilTweakCategory -Label "+ Microsoft 应用" -Items @($appxItem)
+        $panel = New-WinUtilTweakPanel -Categories @($category)
+        $configs = @{
+            tweaks = [pscustomobject]@{}
+            appx = [pscustomobject]@{
+                WPFAppxMicrosoft_GetHelp = [pscustomobject]@{
+                    Content = "Get Help"
+                    Description = "Provides access to automated troubleshooting guides, support documentation, and direct Microsoft customer assistance."
+                }
+            }
+        }
+        New-WinUtilTweakSearchContext -TweaksPanel $panel -AppxPanel $panel -CurrentTab "AppX" -Configs $configs
+
+        Find-TweaksByNameOrDescription -SearchString "troubleshooting"
+
+        $appxItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $category.Border.Visibility | Should -Be ([Windows.Visibility]::Visible)
     }
 }

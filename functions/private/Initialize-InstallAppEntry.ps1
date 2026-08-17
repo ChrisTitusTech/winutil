@@ -19,7 +19,7 @@ function Initialize-InstallAppEntry {
         $border = New-Object Windows.Controls.Border
         $border.Style = $sync.Form.Resources.AppEntryBorderStyle
         $border.Tag = $appKey
-        $border.ToolTip = $app.description
+        $border.ToolTip = Get-WinUtilText $app.description
         $border.Add_MouseLeftButtonUp({
             # Resolve through $sync because the border's child is a layout Grid for FOSS entries
             $childCheckbox = $sync.$($this.Tag)

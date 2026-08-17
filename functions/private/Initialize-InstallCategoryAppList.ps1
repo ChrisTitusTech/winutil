@@ -33,7 +33,7 @@ function Initialize-InstallCategoryAppList {
             $categoryContainer.Orientation = "Vertical"
             $categoryContainer.Margin = New-Object Windows.Thickness(0, 0, 0, 0)
             $categoryContainer.HorizontalAlignment = [Windows.HorizontalAlignment]::Stretch
-            [System.Windows.Automation.AutomationProperties]::SetName($categoryContainer, $Category)
+            [System.Windows.Automation.AutomationProperties]::SetName($categoryContainer, (Get-WinUtilText $Category))
 
             # Bind Width to the ItemsControl's ActualWidth to force full-row layout in WrapPanel
             $binding = New-Object Windows.Data.Binding
@@ -43,7 +43,7 @@ function Initialize-InstallCategoryAppList {
 
             # Add category label to container
             $toggleButton = New-Object Windows.Controls.Label
-            $toggleButton.Content = "- $Category"
+            $toggleButton.Content = "- " + (Get-WinUtilText $Category)
             $toggleButton.Tag = "CategoryToggleButton"
             $toggleButton.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "HeaderFontSize")
             $toggleButton.SetResourceReference([Windows.Controls.Control]::FontFamilyProperty, "HeaderFontFamily")

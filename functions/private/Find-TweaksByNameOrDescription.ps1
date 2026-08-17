@@ -54,6 +54,20 @@ function Find-TweaksByNameOrDescription {
         $panelName = "appxpanel"
     }
 
+    # English source strings for the active panel. Entries are matched against
+    # these instead of the rendered control text, so searching keeps working
+    # when the UI text is translated (the label shows the localized text, the
+    # config holds the English original).
+    $configSource = $null
+    if ($null -ne $Sync.configs) {
+        if ($panelName -eq "appxpanel") {
+            $configSource = $Sync.configs.appx
+        }
+        else {
+            $configSource = $Sync.configs.tweaks
+        }
+    }
+
     $tweaksPanel = $null
     try {
         $tweaksPanel = $Sync.Form.FindName($panelName)
@@ -194,7 +208,27 @@ function Find-TweaksByNameOrDescription {
                                 # Check if tweak matches search criteria
                                 $itemMatches = $false
 
-                                if ($null -ne $label) {
+                                # The checkbox Name is the config key holding the English
+                                # Content/Description. Match against those source strings
+                                # first so searches survive translated UI text; fall back
+                                # to the rendered text for entries without a config key.
+                                $configEntry = $null
+                                if ($null -ne $checkbox -and -not [string]::IsNullOrWhiteSpace($checkbox.Name) -and $null -ne $configSource) {
+                                    $configEntry = $configSource.PSObject.Properties[$checkbox.Name].Value
+                                }
+
+                                if ($null -ne $configEntry) {
+                                    $contentStr = [string]$configEntry.Content
+                                    $descStr = [string]$configEntry.Description
+
+                                    $contentMatch = $contentStr.IndexOf($searchTerm, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
+                                    $descMatch = $descStr.IndexOf($searchTerm, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
+
+                                    if ($contentMatch -or $descMatch) {
+                                        $itemMatches = $true
+                                    }
+                                }
+                                elseif ($null -ne $label) {
                                     $labelContent = $label.Content
                                     $labelToolTip = $label.ToolTip
 
@@ -239,7 +273,26 @@ function Find-TweaksByNameOrDescription {
 
                                 $itemMatches = $false
 
-                                if ($null -ne $checkbox) {
+                                # Match against the English config strings via the
+                                # checkbox Name first, like the DockPanel branch above;
+                                # fall back to the rendered text without a config key.
+                                $configEntry = $null
+                                if ($null -ne $checkbox -and -not [string]::IsNullOrWhiteSpace($checkbox.Name) -and $null -ne $configSource) {
+                                    $configEntry = $configSource.PSObject.Properties[$checkbox.Name].Value
+                                }
+
+                                if ($null -ne $configEntry) {
+                                    $contentStr = [string]$configEntry.Content
+                                    $descStr = [string]$configEntry.Description
+
+                                    $contentMatch = $contentStr.IndexOf($searchTerm, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
+                                    $descMatch = $descStr.IndexOf($searchTerm, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
+
+                                    if ($contentMatch -or $descMatch) {
+                                        $itemMatches = $true
+                                    }
+                                }
+                                elseif ($null -ne $checkbox) {
                                     $checkboxContent = $checkbox.Content
                                     $checkboxToolTip = $checkbox.ToolTip
 
