@@ -1,15 +1,23 @@
-function Write-WinUtilJobProgress {
+function Step-WinUtilJob {
     <#
         .SYNOPSIS
-            Reports progress from inside a WinUtil job
+            Advances a job to its next reportable point, honouring a pause or stop on the way
 
         .DESCRIPTION
-            The only progress call a job body needs. It drives the progress bar and the taskbar
-            item together, and does nothing when there is no window, so job bodies do not need
-            their own "is there a UI" checks.
+            Named for what it does rather than what it prints. Reporting progress is only half of
+            it: every loop calls this, which makes it the one place a run reliably passes between
+            steps, and therefore the only place it can be held or ended without cutting into a
+            command already in flight.
 
-            The update is posted rather than waited on: a job reporting progress per item would
-            otherwise stall on the interface thread once per item.
+            So this can block, for as long as the run is paused, and it can throw
+            OperationCanceledException when a stop has been asked for. Calling it from a finally
+            or from a catch that is already reporting a failure will re-raise that stop, which is
+            why the job layer clears the flags before its own finish reporting.
+
+            The progress half drives the bar and the taskbar item together and does nothing when
+            there is no window, so job bodies need no "is there a UI" checks of their own. The
+            update is posted rather than waited on, since a job reporting per item would otherwise
+            stall on the interface thread once per item.
 
         .PARAMETER Status
             Text for the progress label

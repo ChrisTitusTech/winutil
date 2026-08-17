@@ -40,7 +40,7 @@ BeforeAll {
     function Start-WinUtilJob {
         param([string]$Name, [scriptblock]$ScriptBlock, [hashtable]$Parameters, [string]$Description, [switch]$DisableAppList)
     }
-    function Write-WinUtilJobProgress {
+    function Step-WinUtilJob {
         param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay)
     }
     function Show-WinUtilMessage {
@@ -237,7 +237,7 @@ Describe "Get installed AppX selection" {
 
         Mock Get-WinUtilInstalledAPPX { @("Example.Package") }
         Mock Invoke-WPFAppxInstall { }
-        Mock Write-WinUtilJobProgress { }
+        Mock Step-WinUtilJob { }
         Mock Invoke-WPFUIThread { $uiParameters = $Parameters; & $ScriptBlock @uiParameters }
         Mock Start-WinUtilJob {
             $jobParameters = $Parameters
@@ -382,7 +382,7 @@ Describe "Invoke-WPFAppxInstall" {
         Mock Write-WinUtilLog { }
         Mock Invoke-WPFUIThread { }
         Mock Install-WinUtilAPPX { }
-        Mock Write-WinUtilJobProgress { }
+        Mock Step-WinUtilJob { }
         Mock Start-WinUtilJob {
             $script:capturedAppxInstallScriptBlock = $ScriptBlock
             $script:capturedAppxInstallParameters = $Parameters
@@ -428,10 +428,10 @@ Describe "Invoke-WPFAppxInstall" {
         Should -Invoke -CommandName Install-WinUtilAPPX -Times 1 -Exactly -ParameterFilter {
             $Name -eq "Example.Package" -and $StoreId -eq "9EXAMPLE1234"
         }
-        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Installing Example App (1/1)" -and $Percent -eq 0
         }
-        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Installed Example App (1/1)" -and $Percent -eq 100
         }
     }
@@ -480,7 +480,7 @@ Describe "Invoke-WPFAppxRemoval" {
         Mock Show-WinUtilMessage { "OK" }
         Mock Write-Host { }
         Mock Write-WinUtilLog { }
-        Mock Write-WinUtilJobProgress { }
+        Mock Step-WinUtilJob { }
         Mock Stop-Process { }
         Mock Set-ItemProperty { }
         Mock Get-AppxPackage {
@@ -555,13 +555,13 @@ Describe "Invoke-WPFAppxRemoval" {
         Should -Invoke -CommandName Remove-WinUtilProvisionedAPPX -Times 1 -Exactly -ParameterFilter {
             $PackageList.Count -eq 1 -and $PackageList[0] -eq "Example.Package"
         }
-        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Removing Example App (1/1)" -and $Percent -eq 0
         }
-        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Removed Example App (1/1)" -and $Percent -eq 90
         }
-        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Removing provisioned AppX packages" -and $Percent -eq 90
         }
     }

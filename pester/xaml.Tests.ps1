@@ -382,6 +382,10 @@ Describe "XAML and sync wiring" {
             "winutildir",
             "logPath",
             "ActiveJob",
+            "ActiveJobToken",
+            # Intrinsic to the synchronized hashtable rather than WinUtil state; the job layer
+            # locks on it to claim and release the active job slot
+            "SyncRoot",
             "UIRunspace",
             "UIDispatchDelegate",
             "StepTimings",

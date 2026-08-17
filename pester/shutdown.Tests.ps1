@@ -12,7 +12,7 @@ BeforeAll {
     . (Join-Path $script:functionRoot "private\Invoke-WinUtilCloseRequest.ps1")
 
     function Write-WinUtilLog { param($Level, $Component, $Message, [switch]$Detail) }
-    function Write-WinUtilJobProgress { param($Status, $Percent, $State, $Overlay, [switch]$Hide) }
+    function Step-WinUtilJob { param($Status, $Percent, $State, $Overlay, [switch]$Hide) }
     function Show-WinUtilMessage { param($Message, $Title, $Button, $Icon) }
     function Complete-WinUtilConsoleProgress { }
 }
@@ -108,7 +108,7 @@ Describe "The close question" {
         $global:sync = [hashtable]::Synchronized(@{})
         $sync.ActiveJob = "Install"
         Mock Write-WinUtilLog { }
-        Mock Write-WinUtilJobProgress { }
+        Mock Step-WinUtilJob { }
     }
 
     It "hands the job to the console and closes the window when asked to let it finish" {

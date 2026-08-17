@@ -10,7 +10,7 @@ function Invoke-WinUtilInstallPSProfile {
     #>
 
     if (-not (Get-Command pwsh -ErrorAction SilentlyContinue)) {
-        Write-WinUtilJobProgress -Status "Installing PowerShell 7" -State "Indeterminate"
+        Step-WinUtilJob -Status "Installing PowerShell 7" -State "Indeterminate"
         Write-WinUtilLog -Component "Feature" -Message "PowerShell 7 not found, installing it first."
 
         Install-WinUtilWinget
@@ -21,7 +21,7 @@ function Invoke-WinUtilInstallPSProfile {
         }
     }
 
-    Write-WinUtilJobProgress -Status "Running the profile setup" -State "Indeterminate"
+    Step-WinUtilJob -Status "Running the profile setup" -State "Indeterminate"
 
     $setupUrl = "https://github.com/ChrisTitusTech/powershell-profile/raw/main/setup.ps1"
     $output = & pwsh -NoProfile -NonInteractive -Command "irm '$setupUrl' | iex" 2>&1

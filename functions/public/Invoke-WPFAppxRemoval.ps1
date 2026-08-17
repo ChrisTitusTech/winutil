@@ -25,7 +25,7 @@ function Invoke-WPFAppxRemoval {
             $key = $Selected[$index]
             $app = $Apps[$key]
             $position = $index + 1
-            Write-WinUtilJobProgress -Status "Removing $($app.Content) ($position/$total)" -Percent ([int](($index / $total) * 90))
+            Step-WinUtilJob -Status "Removing $($app.Content) ($position/$total)" -Percent ([int](($index / $total) * 90))
 
             if ($key -eq "WPFAppxMicrosoft_XboxGamingOverlay") {
                 # Making sure Game Bar isn't running
@@ -53,11 +53,11 @@ function Invoke-WPFAppxRemoval {
                 Get-Package -Name "Microsoft Teams*" -ErrorAction SilentlyContinue | Uninstall-Package -Force
             }
 
-            Write-WinUtilJobProgress -Status "Removed $($app.Content) ($position/$total)" -Percent ([int](($position / $total) * 90))
+            Step-WinUtilJob -Status "Removed $($app.Content) ($position/$total)" -Percent ([int](($position / $total) * 90))
         }
 
         if ($packageList.Count -gt 0) {
-            Write-WinUtilJobProgress -Status "Removing provisioned AppX packages" -Percent 90
+            Step-WinUtilJob -Status "Removing provisioned AppX packages" -Percent 90
             Remove-WinUtilProvisionedAPPX -PackageList $packageList.ToArray()
         }
     }

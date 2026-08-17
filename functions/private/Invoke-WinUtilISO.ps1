@@ -107,7 +107,7 @@ function Invoke-WinUtilISOMountAndVerify {
 
         try {
             Write-WinUtilISOLog "Mounting ISO: $IsoPath"
-            Write-WinUtilJobProgress -Status "Mounting ISO..." -Percent 10
+            Step-WinUtilJob -Status "Mounting ISO..." -Percent 10
 
             Mount-DiskImage -ImagePath $IsoPath
 
@@ -118,7 +118,7 @@ function Invoke-WinUtilISOMountAndVerify {
             $driveLetter = (Get-DiskImage -ImagePath $IsoPath | Get-Volume).DriveLetter + ":"
             Write-WinUtilISOLog "Mounted at drive $driveLetter"
 
-            Write-WinUtilJobProgress -Status "Verifying ISO contents..." -Percent 30
+            Step-WinUtilJob -Status "Verifying ISO contents..." -Percent 30
 
             $wimPath = Join-Path $driveLetter "sources\install.wim"
             $esdPath = Join-Path $driveLetter "sources\install.esd"
@@ -132,7 +132,7 @@ function Invoke-WinUtilISOMountAndVerify {
 
             $activeWim = if (Test-Path $wimPath) { $wimPath } else { $esdPath }
 
-            Write-WinUtilJobProgress -Status "Reading image metadata..." -Percent 55
+            Step-WinUtilJob -Status "Reading image metadata..." -Percent 55
             $imageInfo = Get-WindowsImage -ImagePath $activeWim | Select-Object ImageIndex, ImageName
 
             if (-not ($imageInfo | Where-Object { $_.ImageName -match "Windows 11" })) {
@@ -240,12 +240,12 @@ function Invoke-WinUtilISOModify {
 
             $isoContents = Join-Path $WorkDir "iso_contents"
             New-Item -ItemType Directory -Path $isoContents -Force | Out-Null
-            Write-WinUtilJobProgress -Status "Copying ISO contents..." -Percent 10
+            Step-WinUtilJob -Status "Copying ISO contents..." -Percent 10
 
             Write-WinUtilISOLog "Copying ISO contents from $DriveLetter to $isoContents..."
             & robocopy $DriveLetter $isoContents /E /NFL /NDL /NJH /NJS
             Write-WinUtilISOLog "ISO contents copied."
-            Write-WinUtilJobProgress -Status "Preparing setup media..." -Percent 25
+            Step-WinUtilJob -Status "Preparing setup media..." -Percent 25
 
             $sourceImageFileName = Split-Path $WimPath -Leaf
             $localWim = Join-Path $isoContents "sources\$sourceImageFileName"
@@ -262,21 +262,21 @@ function Invoke-WinUtilISOModify {
                 -InstallEditionId (Get-WinUtilEditionIdFromName -EditionName $SelectedEditionName) `
                 -Log { param($m) Write-WinUtilISOLog $m }
 
-            Write-WinUtilJobProgress -Status "Preserving install image..." -Percent 70
+            Step-WinUtilJob -Status "Preserving install image..." -Percent 70
             if ($InjectDrivers) {
                 Write-WinUtilISOLog "Added current-system drivers to $sourceImageFileName index $SelectedWimIndex with one mount and commit."
             } else {
                 Write-WinUtilISOLog "Preserved the original $sourceImageFileName without mounting, exporting, or modifying it."
             }
 
-            Write-WinUtilJobProgress -Status "Dismounting source ISO..." -Percent 80
+            Step-WinUtilJob -Status "Dismounting source ISO..." -Percent 80
             Write-WinUtilISOLog "Dismounting original ISO..."
             Dismount-DiskImage -ImagePath $IsoPath
 
             $sync["Win11ISOWorkDir"]     = $WorkDir
             $sync["Win11ISOContentsDir"] = $isoContents
 
-            Write-WinUtilJobProgress -Status "Modification complete" -Percent 100
+            Step-WinUtilJob -Status "Modification complete" -Percent 100
             Write-WinUtilISOLog "install.wim modification complete. Choose an output option in Step 4."
 
             Invoke-WPFUIThread -ScriptBlock {
@@ -370,13 +370,13 @@ function Invoke-WinUtilISOCleanAndReset {
                     if ($mountedImages) {
                         foreach ($img in $mountedImages) {
                             Write-WinUtilISOLog "Dismounting WIM at: $($img.Path) (discarding changes)..."
-                            Write-WinUtilJobProgress -Status "Dismounting WIM image..." -Percent 3
+                            Step-WinUtilJob -Status "Dismounting WIM image..." -Percent 3
                             Dismount-WindowsImage -Path $img.Path -Discard
                             Write-WinUtilISOLog "WIM dismounted successfully."
                         }
                     } elseif (Test-Path $mountDir) {
                         Write-WinUtilISOLog "No mounted WIM reported by Get-WindowsImage. Running DISM /Cleanup-Wim as a precaution..."
-                        Write-WinUtilJobProgress -Status "Running DISM cleanup..." -Percent 3
+                        Step-WinUtilJob -Status "Running DISM cleanup..." -Percent 3
                         & dism /English /Cleanup-Wim | ForEach-Object { Write-WinUtilISOLog $_ }
                     }
                 } catch {
@@ -388,7 +388,7 @@ function Invoke-WinUtilISOCleanAndReset {
 
             if ($WorkDir -and (Test-Path $WorkDir)) {
                 Write-WinUtilISOLog "Scanning files to delete in: $WorkDir"
-                Write-WinUtilJobProgress -Status "Scanning files..." -Percent 5
+                Step-WinUtilJob -Status "Scanning files..." -Percent 5
 
                 $allFiles = @(Get-ChildItem -Path $WorkDir -File -Recurse -Force)
                 $allDirs  = @(Get-ChildItem -Path $WorkDir -Directory -Recurse -Force |
@@ -403,7 +403,7 @@ function Invoke-WinUtilISOCleanAndReset {
                     $deleted++
                     if ($deleted % 100 -eq 0 -or $deleted -eq $total) {
                         $pct = [math]::Round(($deleted / [Math]::Max($total, 1)) * 85) + 5
-                        Write-WinUtilJobProgress -Status "Deleting files in $($f.Directory.Name)... ($deleted / $total)" -Percent $pct
+                        Step-WinUtilJob -Status "Deleting files in $($f.Directory.Name)... ($deleted / $total)" -Percent $pct
                     }
                 }
 
@@ -422,7 +422,7 @@ function Invoke-WinUtilISOCleanAndReset {
                 Write-WinUtilISOLog "No temp directory found - resetting UI."
             }
 
-            Write-WinUtilJobProgress -Status "Resetting UI..." -Percent 95
+            Step-WinUtilJob -Status "Resetting UI..." -Percent 95
             Write-WinUtilISOLog "Resetting interface..."
 
             $sync["Win11ISOWorkDir"]     = $null
@@ -445,7 +445,7 @@ function Invoke-WinUtilISOCleanAndReset {
                 $sync["WPFWin11ISOModifyButton"].IsEnabled       = $true
                 $sync["WPFWin11ISOStatusLog"].Text               = "Ready. Please select a Windows 11 ISO to begin."
             }
-            Write-WinUtilJobProgress -Hide
+            Step-WinUtilJob -Hide
         } finally {
             Invoke-WPFUIThread -ScriptBlock { $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $true }
         }
@@ -486,7 +486,7 @@ function Invoke-WinUtilISOExport {
             }
 
             Write-WinUtilISOLog "Exporting to ISO: $OutputISO"
-            Write-WinUtilJobProgress -Status "Building ISO..." -Percent 10
+            Step-WinUtilJob -Status "Building ISO..." -Percent 10
 
             $bootData    = "2#p0,e,b`"$ContentsDir\boot\etfsboot.com`"#pEF,e,b`"$ContentsDir\efi\microsoft\boot\efisys.bin`""
             $oscdimgArgs = @("-m", "-o", "-u2", "-udfver102", "-bootdata:$bootData", "-l`"CTOS_MODIFIED`"", "`"$ContentsDir`"", "`"$OutputISO`"")
@@ -523,7 +523,7 @@ function Invoke-WinUtilISOExport {
                 throw "oscdimg exited with code $($proc.ExitCode). Check the status log for details."
             }
 
-            Write-WinUtilJobProgress -Status "ISO exported" -Percent 100
+            Step-WinUtilJob -Status "ISO exported" -Percent 100
             Write-WinUtilISOLog "ISO exported successfully: $OutputISO"
             Show-WinUtilMessage -Message "ISO exported successfully!`n`n$OutputISO" -Title "Export Complete" -Button "OK" -Icon "Info" | Out-Null
         } catch {

@@ -70,25 +70,25 @@ function Invoke-WinUtilWinGetCommand {
 
                 if ($downloading -and $ProgressSpan -gt 0) {
                     if ($indeterminate) {
-                        Write-WinUtilJobProgress -State "Normal"
+                        Step-WinUtilJob -State "Normal"
                         $indeterminate = $false
                     }
                     $best = if ($measured.Count -gt 0) { ($measured | Measure-Object -Property PercentComplete -Maximum).Maximum } else { 0 }
                     $percent = $ProgressBase + [int](($best / 100) * $ProgressSpan * $downloadShare)
                     if ($percent -ne $lastPercent -or $latest.StatusDescription -ne $reported) {
-                        Write-WinUtilJobProgress -Status "$Label - $($latest.StatusDescription)" -Percent $percent
+                        Step-WinUtilJob -Status "$Label - $($latest.StatusDescription)" -Percent $percent
                         $lastPercent = $percent
                         $reported = $latest.StatusDescription
                     }
                 } else {
                     # The installer reports nothing until it exits, so show that it is running
                     if (-not $indeterminate -and $ProgressSpan -gt 0) {
-                        Write-WinUtilJobProgress -Percent ($ProgressBase + [int]($ProgressSpan * $downloadShare)) -State "Indeterminate"
+                        Step-WinUtilJob -Percent ($ProgressBase + [int]($ProgressSpan * $downloadShare)) -State "Indeterminate"
                         $indeterminate = $true
                     }
                     $status = "$Label - $($latest.StatusDescription) ($([int]$started.Elapsed.TotalSeconds)s)"
                     if ($status -ne $reported) {
-                        Write-WinUtilJobProgress -Status $status
+                        Step-WinUtilJob -Status $status
                         $reported = $status
                     }
                 }
@@ -97,7 +97,7 @@ function Invoke-WinUtilWinGetCommand {
         }
 
         if ($indeterminate) {
-            Write-WinUtilJobProgress -State "Normal"
+            Step-WinUtilJob -State "Normal"
         }
 
         $output = $shell.EndInvoke($handle)

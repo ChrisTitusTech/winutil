@@ -16,7 +16,7 @@ function Start-WinUtilJob {
               - catching anything the body throws, so a failure cannot leave the UI stuck busy
               - restoring the interface in a finally block whatever happens
 
-            The body only has to do the work and call Write-WinUtilJobProgress. It must not
+            The body only has to do the work and call Step-WinUtilJob. It must not
             print its own banner or set the busy flag.
 
         .PARAMETER Name
@@ -37,7 +37,7 @@ function Start-WinUtilJob {
         .EXAMPLE
             Start-WinUtilJob -Name "Install" -Parameters @{ Packages = $packages } -ScriptBlock {
                 param($Packages)
-                Write-WinUtilJobProgress -Status "Installing" -Percent 10
+                Step-WinUtilJob -Status "Installing" -Percent 10
             }
     #>
     param(
@@ -59,12 +59,31 @@ function Start-WinUtilJob {
         return $null
     }
 
-    if ($sync.ActiveJob) {
-        Show-WinUtilMessage -Message "$($sync.ActiveJob) is still running. Wait for it to finish before starting another action." -Title "WinUtil" -Button "OK" -Icon "Warning" | Out-Null
-        return $null
+    # Claimed under the collection's own lock. Interface events are serialised by the dispatcher,
+    # but a headless run, a scheduled caller or a job body starting another job are not, and a
+    # plain test-then-assign there lets two jobs both believe they own the slot.
+    #
+    # The token identifies this run rather than its name, because a worker that was cut off can
+    # still be unwinding when the next job starts, and releasing the slot by name would hand away
+    # a claim that now belongs to that next job.
+    $jobToken = [guid]::NewGuid().ToString()
+    $blockedBy = $null
+    [System.Threading.Monitor]::Enter($sync.SyncRoot)
+    try {
+        if ($sync.ActiveJob) {
+            $blockedBy = $sync.ActiveJob
+        } else {
+            $sync.ActiveJob = $Name
+            $sync.ActiveJobToken = $jobToken
+        }
+    } finally {
+        [System.Threading.Monitor]::Exit($sync.SyncRoot)
     }
 
-    $sync.ActiveJob = $Name
+    if ($blockedBy) {
+        Show-WinUtilMessage -Message "$blockedBy is still running. Wait for it to finish before starting another action." -Title "WinUtil" -Button "OK" -Icon "Warning" | Out-Null
+        return $null
+    }
 
     # A pause or stop left from the previous run would hold or end this one before it started
     $sync.JobPaused = $false
@@ -79,7 +98,7 @@ function Start-WinUtilJob {
     $label = if ($Description) { $Description } else { $Name }
     Write-WinUtilLog -Component $Name -Message "$Name job started."
     Write-WinUtilJobBanner -Message $label
-    Write-WinUtilJobProgress -Status "$label..." -Percent 0 -State "Normal" -Overlay "logo"
+    Step-WinUtilJob -Status "$label..." -Percent 0 -State "Normal" -Overlay "logo"
 
     if ($DisableAppList -and (Test-WinUtilUIAlive)) {
         Invoke-WPFUIThread -ScriptBlock {
@@ -96,9 +115,10 @@ function Start-WinUtilJob {
         ("JobLabel", $label),
         ("JobBody", $ScriptBlock.ToString()),
         ("JobParameters", $Parameters),
-        ("JobRestoresAppList", [bool]$DisableAppList)
+        ("JobRestoresAppList", [bool]$DisableAppList),
+        ("JobToken", $jobToken)
     ) -ScriptBlock {
-        param($JobName, $JobLabel, $JobBody, $JobParameters, $JobRestoresAppList)
+        param($JobName, $JobLabel, $JobBody, $JobParameters, $JobRestoresAppList, $JobToken)
 
         # Marks this runspace as the one doing the work, so a pause holds here and not in
         # whoever asked for it
@@ -134,11 +154,11 @@ function Start-WinUtilJob {
             if ($newErrors -gt 0) {
                 Write-WinUtilLog -Level "WARN" -Component $JobName -Message "$JobName job finished in $($jobClock.ElapsedMilliseconds) ms with $newErrors error(s)."
                 Write-WinUtilJobBanner -Message "$JobLabel finished with $newErrors error(s), see the log" -Level "ERROR"
-                Write-WinUtilJobProgress -Status "$JobName finished with $newErrors error(s)" -Percent 100 -State "Paused" -Overlay "warning"
+                Step-WinUtilJob -Status "$JobName finished with $newErrors error(s)" -Percent 100 -State "Paused" -Overlay "warning"
             } else {
                 Write-WinUtilLog -Component $JobName -Message "$JobName job finished in $($jobClock.ElapsedMilliseconds) ms."
                 Write-WinUtilJobBanner -Message "$JobLabel finished"
-                Write-WinUtilJobProgress -Status "$JobName finished" -Percent 100 -State "None" -Overlay "checkmark"
+                Step-WinUtilJob -Status "$JobName finished" -Percent 100 -State "None" -Overlay "checkmark"
             }
         } catch [System.OperationCanceledException] {
             # Asked to stop rather than gone wrong, so it is not reported as a failure
@@ -147,33 +167,55 @@ function Start-WinUtilJob {
             $sync.StopRequested = $false
             Write-WinUtilLog -Level "WARN" -Component $JobName -Message "$JobName stopped after $($jobClock.ElapsedMilliseconds) ms at the user's request."
             Write-WinUtilJobBanner -Message "$JobLabel stopped"
-            Write-WinUtilJobProgress -Status "$JobName stopped" -Percent 100 -State "Paused" -Overlay "warning"
+            Step-WinUtilJob -Status "$JobName stopped" -Percent 100 -State "Paused" -Overlay "warning"
         } catch {
             $jobClock.Stop()
             $sync.JobPaused = $false
             $sync.StopRequested = $false
             Write-WinUtilErrorRecord -ErrorRecord $_ -Component $JobName -Context "$JobName failed after $($jobClock.ElapsedMilliseconds) ms"
             Write-WinUtilJobBanner -Message "$JobLabel failed: $($_.Exception.Message)" -Level "ERROR"
-            Write-WinUtilJobProgress -Status "$JobName failed" -Percent 100 -State "Error" -Overlay "warning"
+            Step-WinUtilJob -Status "$JobName failed" -Percent 100 -State "Error" -Overlay "warning"
         } finally {
             Write-WinUtilTimingSummary -Scope $JobName -TotalMilliseconds $jobClock.ElapsedMilliseconds
 
-            # Nothing left to pause once the run is over
-            $sync.JobPaused = $false
-            Invoke-WPFUIThread -ScriptBlock {
-                if ($sync.WPFPauseJobButton) { $sync.WPFPauseJobButton.IsEnabled = $false }
-                if ($sync.WPFStopJobButton) { $sync.WPFStopJobButton.IsEnabled = $false }
+            # Whether this run still owns the slot. A worker the watchdog cut off can reach here
+            # long after the next job has claimed it, and everything below releases shared state.
+            $stillOwns = $false
+            [System.Threading.Monitor]::Enter($sync.SyncRoot)
+            try {
+                $stillOwns = $sync.ActiveJobToken -eq $JobToken
+            } finally {
+                [System.Threading.Monitor]::Exit($sync.SyncRoot)
             }
 
-            if ($JobRestoresAppList -and (Test-WinUtilUIAlive)) {
+            if ($stillOwns) {
+                # Nothing left to pause once the run is over
+                $sync.JobPaused = $false
                 Invoke-WPFUIThread -ScriptBlock {
-                    if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }
+                    if ($sync.WPFPauseJobButton) { $sync.WPFPauseJobButton.IsEnabled = $false }
+                    if ($sync.WPFStopJobButton) { $sync.WPFStopJobButton.IsEnabled = $false }
                 }
-            }
 
-            # Last thing done, because the main thread may be waiting on exactly this to know
-            # the run is over and the process can exit
-            $sync.ActiveJob = $null
+                if ($JobRestoresAppList -and (Test-WinUtilUIAlive)) {
+                    Invoke-WPFUIThread -ScriptBlock {
+                        if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }
+                    }
+                }
+
+                # Last thing done, because the main thread may be waiting on exactly this to know
+                # the run is over and the process can exit
+                [System.Threading.Monitor]::Enter($sync.SyncRoot)
+                try {
+                    if ($sync.ActiveJobToken -eq $JobToken) {
+                        $sync.ActiveJobToken = $null
+                        $sync.ActiveJob = $null
+                    }
+                } finally {
+                    [System.Threading.Monitor]::Exit($sync.SyncRoot)
+                }
+            } else {
+                Write-WinUtilLog -Level "WARN" -Component $JobName -Message "$JobName unwound after another job had started; leaving its state alone."
+            }
         }
     }
 }

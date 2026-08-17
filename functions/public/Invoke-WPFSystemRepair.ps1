@@ -18,7 +18,7 @@ function Invoke-WPFSystemRepair {
 
     $completed = 0
     foreach ($step in $steps) {
-        Write-WinUtilJobProgress -Status "$($step.Label) ($($completed + 1)/$($steps.Count))" -Percent ([int](($completed / $steps.Count) * 100))
+        Step-WinUtilJob -Status "$($step.Label) ($($completed + 1)/$($steps.Count))" -Percent ([int](($completed / $steps.Count) * 100))
         Write-WinUtilLog -Component "SystemRepair" -Message $step.Label
         Start-Process cmd.exe -ArgumentList $step.Arguments -NoNewWindow -Wait
         $completed++

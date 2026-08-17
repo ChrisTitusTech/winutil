@@ -57,9 +57,9 @@ function Set-WinUtilJobPaused {
 
     if ($Paused) {
         Write-WinUtilLog -Component "UI" -Message "Pause requested, the run will hold after the current step."
-        Write-WinUtilJobProgress -Status "Pausing after the current step" -State "Paused"
+        Step-WinUtilJob -Status "Pausing after the current step" -State "Paused"
     } else {
         Write-WinUtilLog -Component "UI" -Message "Resume requested."
-        Write-WinUtilJobProgress -State "Normal"
+        Step-WinUtilJob -State "Normal"
     }
 }

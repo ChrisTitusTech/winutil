@@ -8,7 +8,7 @@ BeforeAll {
     . (Join-Path $script:functionRoot "private\Wait-WinUtilJobPause.ps1")
 
     function Write-WinUtilLog { param($Level, $Component, $Message, [switch]$Detail) }
-    function Write-WinUtilJobProgress { param($Status, $Percent, $State, $Overlay, [switch]$Hide) }
+    function Step-WinUtilJob { param($Status, $Percent, $State, $Overlay, [switch]$Hide) }
 }
 
 Describe "Wait-WinUtilJobPause" {
@@ -75,7 +75,7 @@ Describe "Set-WinUtilJobPaused" {
         $global:sync = [hashtable]::Synchronized(@{})
         $sync.WPFPauseJobButton = [pscustomobject]@{ Content = ""; ToolTip = ""; IsEnabled = $true }
         Mock Write-WinUtilLog { }
-        Mock Write-WinUtilJobProgress { }
+        Mock Step-WinUtilJob { }
     }
 
     It "sets the flag and shows a resume glyph when pausing" {
@@ -157,7 +157,7 @@ Describe "Stop-WinUtilRunningJob" {
         $global:sync = [hashtable]::Synchronized(@{})
         $sync.ActiveJob = "Install"
         Mock Write-WinUtilLog { }
-        Mock Write-WinUtilJobProgress { }
+        Mock Step-WinUtilJob { }
         Mock Start-WinUtilJobStopWatchdog { }
     }
 

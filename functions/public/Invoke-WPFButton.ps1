@@ -21,7 +21,7 @@ function Invoke-WPFButton {
 
     # Clear the progress left behind by the previous job, but never while one is running
     if (-not $sync.ActiveJob) {
-        Write-WinUtilJobProgress -Hide
+        Step-WinUtilJob -Hide
     }
 
     # Switch-driven buttons that change the system. Anything in feature.json counts too, apart

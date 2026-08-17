@@ -84,7 +84,7 @@ namespace System.Windows.Controls
     function Start-WinUtilJob {
         param([string]$Name, [scriptblock]$ScriptBlock, [hashtable]$Parameters, [string]$Description, [switch]$DisableAppList)
     }
-    function Write-WinUtilJobProgress {
+    function Step-WinUtilJob {
         param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay)
     }
     function Write-WinUtilLog {
@@ -252,7 +252,7 @@ Describe "Invoke-WPFGetInstalled selection state" {
         Mock Set-WinUtilTaskbaritem { }
         Mock Write-WinUtilLog { }
         Mock Write-Warning { }
-        Mock Write-WinUtilJobProgress { }
+        Mock Step-WinUtilJob { }
         Mock Invoke-WPFUIThread { $uiParameters = $Parameters; & $ScriptBlock @uiParameters }
         Mock Start-WinUtilJob {
             $script:capturedGetInstalledScriptBlock = $ScriptBlock

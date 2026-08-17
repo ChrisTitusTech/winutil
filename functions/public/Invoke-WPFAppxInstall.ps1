@@ -17,10 +17,10 @@ function Invoke-WPFAppxInstall {
             $app = $Apps[$Selected[$index]]
             $position = $index + 1
 
-            Write-WinUtilJobProgress -Status "Installing $($app.Content) ($position/$totalPackages)" -Percent ([int](($index / $totalPackages) * 100))
+            Step-WinUtilJob -Status "Installing $($app.Content) ($position/$totalPackages)" -Percent ([int](($index / $totalPackages) * 100))
             Write-Host "Installing $($app.Content)"
             Install-WinUtilAPPX -Name $app.PackageId -StoreId $app.StoreId
-            Write-WinUtilJobProgress -Status "Installed $($app.Content) ($position/$totalPackages)" -Percent ([int](($position / $totalPackages) * 100))
+            Step-WinUtilJob -Status "Installed $($app.Content) ($position/$totalPackages)" -Percent ([int](($position / $totalPackages) * 100))
         }
     }
 }

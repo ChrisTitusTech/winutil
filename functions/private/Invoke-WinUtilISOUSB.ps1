@@ -90,7 +90,7 @@ function Invoke-WinUtilISOWriteUSB {
 
         try {
             Write-WinUtilISOLog "Starting USB write to Disk $DiskNumber..."
-            Write-WinUtilJobProgress -Status "Formatting USB drive..." -Percent 10
+            Step-WinUtilJob -Status "Formatting USB drive..." -Percent 10
 
             # Phase 1: Clean disk via diskpart (retry once if the drive is not yet ready)
             $dpFile1 = Join-Path $env:TEMP "winutil_diskpart_$(Get-Random).txt"
@@ -143,7 +143,7 @@ function Invoke-WinUtilISOWriteUSB {
             diskpart /s $dpFile2 | Where-Object { $_ -match '\S' } | ForEach-Object { Write-WinUtilISOLog "  diskpart: $_" }
             Remove-Item $dpFile2 -Force
 
-            Write-WinUtilJobProgress -Status "Formatting USB partition..." -Percent 25
+            Step-WinUtilJob -Status "Formatting USB partition..." -Percent 25
             Start-Sleep -Seconds 3
             Update-Disk -Number $DiskNumber
 
@@ -165,7 +165,7 @@ function Invoke-WinUtilISOWriteUSB {
                 Format-Volume -FileSystem FAT32 -NewFileSystemLabel $volLabel -Force -Confirm:$false
             Write-WinUtilISOLog "Partition $($winpePart.PartitionNumber) formatted as FAT32."
 
-            Write-WinUtilJobProgress -Status "Assigning drive letters..." -Percent 30
+            Step-WinUtilJob -Status "Assigning drive letters..." -Percent 30
             Start-Sleep -Seconds 2
             Update-Disk -Number $DiskNumber
 
@@ -206,7 +206,7 @@ function Invoke-WinUtilISOWriteUSB {
                 throw "Insufficient free space on USB partition. Required: $contentSizeGB GB, available: $partitionFreeGB GB."
             }
 
-            Write-WinUtilJobProgress -Status "Copying Windows 11 files to USB..." -Percent 45
+            Step-WinUtilJob -Status "Copying Windows 11 files to USB..." -Percent 45
 
             # Copy files; split install.wim if > 4 GB (FAT32 limit)
             $installWim = Join-Path $ContentsDir "sources\install.wim"
@@ -228,9 +228,9 @@ function Invoke-WinUtilISOWriteUSB {
                 & robocopy $ContentsDir $usbDrive /E /NFL /NDL /NJH /NJS
             }
 
-            Write-WinUtilJobProgress -Status "Finalising USB drive..." -Percent 90
+            Step-WinUtilJob -Status "Finalising USB drive..." -Percent 90
             Write-WinUtilISOLog "Files copied to USB."
-            Write-WinUtilJobProgress -Status "USB write complete" -Percent 100
+            Step-WinUtilJob -Status "USB write complete" -Percent 100
             Write-WinUtilISOLog "USB drive is ready for use."
 
             Show-WinUtilMessage -Message "USB drive created successfully!`n`nYou can now boot from this drive to install Windows 11." -Title "USB Ready" -Button "OK" -Icon "Info" | Out-Null

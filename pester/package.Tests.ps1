@@ -18,7 +18,7 @@ BeforeAll {
     # The CLI path is what these tests cover; the module path is verified against real winget
     function Install-WinUtilWinGetClient { $false }
     function Invoke-WinUtilWinGetCommand { param([string]$Command, [hashtable]$Parameters, [int]$ProgressBase, [int]$ProgressSpan, [string]$Label) }
-    function Write-WinUtilJobProgress { param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay, [switch]$Hide) }
+    function Step-WinUtilJob { param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay, [switch]$Hide) }
     function Write-WinUtilLog { }
 }
 
@@ -168,7 +168,7 @@ Describe "Install-WinUtilProgramChoco" {
 
     BeforeEach {
         Mock Write-WinUtilLog { }
-        Mock Write-WinUtilJobProgress { }
+        Mock Step-WinUtilJob { }
         Mock choco { $global:LASTEXITCODE = 0 }
     }
 
@@ -210,7 +210,7 @@ Describe "Install-WinUtilProgramChoco" {
     It "moves the progress bar through the list" {
         Install-WinUtilProgramChoco -Action Install -Programs @("git", "vlc") -ProgressBase 0 -ProgressSpan 100
 
-        Should -Invoke -CommandName Write-WinUtilJobProgress -ParameterFilter { $Status -like "*git (1/2)*" }
-        Should -Invoke -CommandName Write-WinUtilJobProgress -ParameterFilter { $Status -like "*vlc (2/2)*" }
+        Should -Invoke -CommandName Step-WinUtilJob -ParameterFilter { $Status -like "*git (1/2)*" }
+        Should -Invoke -CommandName Step-WinUtilJob -ParameterFilter { $Status -like "*vlc (2/2)*" }
     }
 }

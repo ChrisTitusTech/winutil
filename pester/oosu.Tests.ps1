@@ -14,7 +14,7 @@ BeforeAll {
     function Start-WinUtilJob {
         param([string]$Name, [scriptblock]$ScriptBlock, [hashtable]$Parameters, [string]$Description, [switch]$DisableAppList)
     }
-    function Write-WinUtilJobProgress {
+    function Step-WinUtilJob {
         param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay)
     }
     function Show-WinUtilMessage {
@@ -67,7 +67,7 @@ Describe "Invoke-WPFOOSU" {
                 Parameters = $Parameters
             }
         }
-        Mock Write-WinUtilJobProgress { }
+        Mock Step-WinUtilJob { }
         Mock Show-WinUtilMessage { }
         Mock Write-WinUtilLog { }
         Mock Start-Process { }
@@ -95,10 +95,10 @@ Describe "Invoke-WPFOOSU" {
         $jobParameters = $script:capturedJob.Parameters
         & $script:capturedJob.ScriptBlock @jobParameters
 
-        Should -Invoke Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Downloading O&O ShutUp10++ (35%)" -and $Percent -eq 35
         }
-        Should -Invoke Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Launching O&O ShutUp10++" -and $Percent -eq 100
         }
         Should -Invoke Start-Process -Times 1 -Exactly -ParameterFilter {

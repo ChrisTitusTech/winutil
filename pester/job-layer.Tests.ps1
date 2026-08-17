@@ -18,7 +18,7 @@ BeforeAll {
     function Write-WinUtilLog {
         param($Message, $Level, $Component)
     }
-    function Write-WinUtilJobProgress {
+    function Step-WinUtilJob {
         param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay, [switch]$Hide)
     }
     function Show-WinUtilMessage {
@@ -37,14 +37,14 @@ BeforeAll {
 }
 
 Describe "Interface thread dispatch" {
-    # Work handed to the interface thread must arrive as body text plus parameters. A
-    # scriptblock marshalled from a worker runspace keeps that runspace's session state, which
-    # both loses the caller's variables on an async post and costs roughly twenty times as much
-    
+    # Work handed to the interface thread must arrive as body text plus parameters. A scriptblock
+    # marshalled from a worker runspace keeps that runspace's session state, so every command it
+    # invokes is resolved back through the originating runspace. Measured on 400 invocations:
+    # 5354 ms marshalled against 3 ms rebuilt from text.
 
     It "passes deferred values as parameters rather than capturing them" {
         foreach ($path in @(
-            "functions\private\Write-WinUtilJobProgress.ps1",
+            "functions\private\Step-WinUtilJob.ps1",
             "functions\private\Invoke-WinUtilISO.ps1"
         )) {
             $source = Get-Content -Path (Join-Path $script:repoRoot $path) -Raw
@@ -99,7 +99,7 @@ Describe "Start-WinUtilJob" {
 
         Mock Show-WinUtilMessage { "OK" }
         Mock Write-WinUtilLog { }
-        Mock Write-WinUtilJobProgress { }
+        Mock Step-WinUtilJob { }
         Mock Invoke-WPFUIThread { & $ScriptBlock }
         Mock Invoke-WPFRunspace {
             $script:activeJobAtQueueTime = $script:sync.ActiveJob
@@ -127,7 +127,7 @@ Describe "Start-WinUtilJob" {
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
             $Component -eq "Example" -and $Message -eq "Example job started."
         }
-        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Example..." -and $Percent -eq 0
         }
     }
@@ -135,7 +135,7 @@ Describe "Start-WinUtilJob" {
     It "uses the description for the initial progress text" {
         Start-WinUtilJob -Name "Example" -Description "Doing the thing" -ScriptBlock { } | Out-Null
 
-        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Doing the thing..." -and $Percent -eq 0 -and $State -eq "Normal" -and $Overlay -eq "logo"
         }
     }
@@ -151,6 +151,21 @@ Describe "Start-WinUtilJob" {
             $Message -like "Install is still running*"
         }
         $script:sync.ActiveJob | Should -Be "Install"
+    }
+
+    It "claims the slot with a token that identifies the run, not just its name" {
+        Start-WinUtilJob -Name "Install" -ScriptBlock { } | Out-Null
+        $first = $script:sync.ActiveJobToken
+
+        $first | Should -Not -BeNullOrEmpty
+        $script:capturedRunspaceArgs["JobToken"] | Should -Be $first
+
+        # a second run of the same name gets its own token, so a late worker cannot release it
+        $script:sync.ActiveJob = $null
+        $script:sync.ActiveJobToken = $null
+        Start-WinUtilJob -Name "Install" -ScriptBlock { } | Out-Null
+
+        $script:sync.ActiveJobToken | Should -Not -Be $first
     }
 
     It "passes the body text and its parameters to the worker" {
@@ -177,12 +192,13 @@ Describe "Start-WinUtilJob" {
             -JobName "Example" `
             -JobBody '$null = $true' `
             -JobParameters @{} `
-            -JobRestoresAppList $false
+            -JobRestoresAppList $false `
+            -JobToken $script:capturedRunspaceArgs["JobToken"]
 
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
             $Component -eq "Example" -and $Message -like "Example job finished in * ms."
         }
-        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Example finished" -and $Percent -eq 100 -and $State -eq "None" -and $Overlay -eq "checkmark"
         }
         $script:sync.ActiveJob | Should -BeNullOrEmpty
@@ -198,13 +214,14 @@ Describe "Start-WinUtilJob" {
                 -JobName "Example" `
                 -JobBody 'throw "boom"' `
                 -JobParameters @{} `
-                -JobRestoresAppList $false
+                -JobRestoresAppList $false `
+            -JobToken $script:capturedRunspaceArgs["JobToken"]
         } | Should -Not -Throw
 
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
             $Level -eq "ERROR" -and $Component -eq "Example" -and $Message -like "*failed after * ms : boom"
         }
-        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Example failed" -and $State -eq "Error" -and $Overlay -eq "warning"
         }
         $script:sync.ActiveJob | Should -BeNullOrEmpty
@@ -219,9 +236,10 @@ Describe "Start-WinUtilJob" {
             -JobLabel "Example" `
             -JobBody '$null = $sync.LoggedErrors.Add("[Registry] refused by policy")' `
             -JobParameters @{} `
-            -JobRestoresAppList $false
+            -JobRestoresAppList $false `
+            -JobToken $script:capturedRunspaceArgs["JobToken"]
 
-        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Example finished with 1 error(s)" -and $State -eq "Paused" -and $Overlay -eq "warning"
         }
         $script:sync.ActiveJob | Should -BeNullOrEmpty
@@ -236,7 +254,8 @@ Describe "Start-WinUtilJob" {
             -JobLabel "Example" `
             -JobBody 'Write-Warning "a warning"' `
             -JobParameters @{} `
-            -JobRestoresAppList $false
+            -JobRestoresAppList $false `
+            -JobToken $script:capturedRunspaceArgs["JobToken"]
 
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
             $Level -eq "WARN" -and $Message -eq "a warning"
@@ -252,7 +271,8 @@ Describe "Start-WinUtilJob" {
             -JobName "Install" `
             -JobBody 'throw "boom"' `
             -JobParameters @{} `
-            -JobRestoresAppList $true
+            -JobRestoresAppList $true `
+            -JobToken $script:capturedRunspaceArgs["JobToken"]
 
         $script:sync.ItemsControl.IsEnabled | Should -BeTrue
         $script:sync.ActiveJob | Should -BeNullOrEmpty

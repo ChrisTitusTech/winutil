@@ -26,7 +26,7 @@ function Install-WinUtilWinGetClient {
     try {
         if (-not (Get-Module -ListAvailable -Name Microsoft.WinGet.Client)) {
             Write-WinUtilLog -Component "Package" -Message "Installing the Microsoft.WinGet.Client module."
-            Write-WinUtilJobProgress -Status "Preparing the WinGet client" -State "Indeterminate"
+            Step-WinUtilJob -Status "Preparing the WinGet client" -State "Indeterminate"
 
             if (-not (Get-PackageProvider -Name NuGet -ListAvailable -ErrorAction SilentlyContinue)) {
                 Install-PackageProvider -Name NuGet -Force -Scope CurrentUser -ErrorAction Stop | Out-Null

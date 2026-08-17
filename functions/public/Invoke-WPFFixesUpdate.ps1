@@ -30,7 +30,7 @@ function Invoke-WPFFixesUpdate {
     param($Aggressive = $false)
 
     Write-Progress -Id 0 -Activity "Repairing Windows Update" -PercentComplete 0
-    Write-WinUtilJobProgress -State "Indeterminate"
+    Step-WinUtilJob -State "Indeterminate"
     Write-Host "Starting Windows Update Repair..."
     # Wait for the first progress bar to show, otherwise the second one won't show
     Start-Sleep -Milliseconds 200

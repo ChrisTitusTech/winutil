@@ -12,11 +12,11 @@ function Invoke-WPFInstallUpgrade {
     #>
 
     if ($sync.ChocoRadioButton.IsChecked) {
-        Write-WinUtilJobProgress -Status "Preparing Chocolatey" -State "Indeterminate"
+        Step-WinUtilJob -Status "Preparing Chocolatey" -State "Indeterminate"
         Install-WinUtilChoco
 
         Write-WinUtilLog -Component "Install" -Message "Upgrading all Chocolatey packages."
-        Write-WinUtilJobProgress -Status "Upgrading all Chocolatey packages" -State "Indeterminate"
+        Step-WinUtilJob -Status "Upgrading all Chocolatey packages" -State "Indeterminate"
 
         # "all" is choco's own name for every installed package, so this stays one call
         $result = Measure-WinUtilStep -Scope "Install" -Name "choco upgrade all" -ScriptBlock {
@@ -26,15 +26,15 @@ function Invoke-WPFInstallUpgrade {
         return
     }
 
-    Write-WinUtilJobProgress -Status "Preparing WinGet" -State "Indeterminate"
+    Step-WinUtilJob -Status "Preparing WinGet" -State "Indeterminate"
     Install-WinUtilWinget
 
-    Write-WinUtilJobProgress -Status "Looking for available updates" -State "Indeterminate"
+    Step-WinUtilJob -Status "Looking for available updates" -State "Indeterminate"
     $upgradable = Get-WinUtilUpgradablePackage
 
     if (@($upgradable).Count -eq 0) {
         Write-WinUtilLog -Component "Install" -Message "No packages have an update available."
-        Write-WinUtilJobProgress -Status "Everything is up to date" -Percent 100
+        Step-WinUtilJob -Status "Everything is up to date" -Percent 100
         return
     }
 
@@ -47,7 +47,7 @@ function Invoke-WPFInstallUpgrade {
     foreach ($package in $upgradable) {
         $position = $completed + 1
         $base = [int](($completed / $total) * 100)
-        Write-WinUtilJobProgress -Status "Upgrading $package ($position/$total)" -Percent $base
+        Step-WinUtilJob -Status "Upgrading $package ($position/$total)" -Percent $base
 
         $results += Measure-WinUtilStep -Scope "Install" -Name "winget upgrade $package" -ScriptBlock {
             Install-WinUtilProgramWinget -Action Upgrade -Programs @($package) `
@@ -56,7 +56,7 @@ function Invoke-WPFInstallUpgrade {
         }
 
         $completed++
-        Write-WinUtilJobProgress -Status "Upgraded $package ($completed/$total)" -Percent ([int](($completed / $total) * 100))
+        Step-WinUtilJob -Status "Upgraded $package ($completed/$total)" -Percent ([int](($completed / $total) * 100))
     }
 
     Complete-WinUtilPackageRun -Action "Upgrade" -Results $results

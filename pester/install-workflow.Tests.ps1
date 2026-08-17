@@ -22,7 +22,7 @@ BeforeAll {
             [switch]$DisableAppList
         )
     }
-    function Write-WinUtilJobProgress {
+    function Step-WinUtilJob {
         param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay)
     }
     function Invoke-WPFRunspace {
@@ -197,7 +197,7 @@ Describe "Invoke-WPFInstall job body" {
         Mock Get-WinUtilSelectedPackages {
             New-WinUtilPackageSplit -Winget @("Git.Git") -Choco @("vlc")
         }
-        Mock Write-WinUtilJobProgress { }
+        Mock Step-WinUtilJob { }
         Mock Install-WinUtilWinget { }
         Mock Install-WinUtilChoco { }
         Mock Install-WinUtilProgramWinget { }
@@ -228,10 +228,10 @@ Describe "Invoke-WPFInstall job body" {
         Should -Invoke -CommandName Install-WinUtilProgramChoco -Times 1 -Exactly -ParameterFilter {
             $Action -eq "Install" -and @($Programs)[0] -eq "vlc"
         }
-        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Installed Git.Git (1/2)" -and $Percent -eq 50
         }
-        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Installed Chocolatey packages (2/2)" -and $Percent -eq 100
         }
     }
@@ -334,7 +334,7 @@ Describe "Invoke-WPFUnInstall job body" {
         Mock Get-WinUtilSelectedPackages {
             New-WinUtilPackageSplit -Winget @("Git.Git") -Choco @("vlc")
         }
-        Mock Write-WinUtilJobProgress { }
+        Mock Step-WinUtilJob { }
         Mock Install-WinUtilProgramWinget { }
         Mock Install-WinUtilProgramChoco { }
         Mock Write-WinUtilLog { }
@@ -358,10 +358,10 @@ Describe "Invoke-WPFUnInstall job body" {
         Should -Invoke -CommandName Install-WinUtilProgramChoco -Times 1 -Exactly -ParameterFilter {
             $Action -eq "Uninstall" -and @($Programs)[0] -eq "vlc"
         }
-        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Uninstalled Git.Git (1/2)" -and $Percent -eq 50
         }
-        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Uninstalled Chocolatey packages (2/2)" -and $Percent -eq 100
         }
     }

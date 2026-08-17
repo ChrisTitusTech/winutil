@@ -197,7 +197,7 @@ Describe "Win11 Creator setup media" {
         $usbContent = Get-Content -Path $script:isoUsbWorkflowPath -Raw
 
         foreach ($source in @($content, $usbContent)) {
-            $source | Should -Match ([regex]::Escape('Write-WinUtilJobProgress -Status'))
+            $source | Should -Match ([regex]::Escape('Step-WinUtilJob -Status'))
             $source | Should -Not -Match '(?m)^\s*function (Log|SetProgress)\('
             $source | Should -Not -Match ([regex]::Escape('$sync["WPFTweaksProgressLabel"]'))
         }

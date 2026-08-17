@@ -54,7 +54,7 @@ function Invoke-WPFUnInstall {
         if ($packagesWinget.Count -gt 0) {
             foreach ($program in $packagesWinget) {
                 $position = $completedPackages + 1
-                Write-WinUtilJobProgress -Status "Uninstalling $program ($position/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
+                Step-WinUtilJob -Status "Uninstalling $program ($position/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
 
                 $slice = [int](100 / $totalPackages)
                 $results += Measure-WinUtilStep -Scope "Uninstall" -Name "winget $program" -ScriptBlock {
@@ -63,13 +63,13 @@ function Invoke-WPFUnInstall {
                         -Label "$program ($position/$totalPackages)"
                 }
                 $completedPackages++
-                Write-WinUtilJobProgress -Status "Uninstalled $program ($completedPackages/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
+                Step-WinUtilJob -Status "Uninstalled $program ($completedPackages/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
             }
         }
 
         if ($packagesChoco.Count -gt 0) {
             $position = $completedPackages + 1
-            Write-WinUtilJobProgress -Status "Uninstalling Chocolatey packages ($position/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
+            Step-WinUtilJob -Status "Uninstalling Chocolatey packages ($position/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
 
             $chocoBase = [int](($completedPackages / $totalPackages) * 100)
             $chocoSpan = [int]((@($packagesChoco).Count / $totalPackages) * 100)
@@ -77,7 +77,7 @@ function Invoke-WPFUnInstall {
                 Install-WinUtilProgramChoco -Action Uninstall -Programs $packagesChoco -ProgressBase $chocoBase -ProgressSpan $chocoSpan
             }
             $completedPackages += @($packagesChoco).Count
-            Write-WinUtilJobProgress -Status "Uninstalled Chocolatey packages ($completedPackages/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
+            Step-WinUtilJob -Status "Uninstalled Chocolatey packages ($completedPackages/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
         }
 
         Complete-WinUtilPackageRun -Action "Uninstall" -Results $results

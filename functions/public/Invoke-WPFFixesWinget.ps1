@@ -8,6 +8,6 @@ function Invoke-WPFFixesWinget {
         BravoNorris for the fantastic idea of a button to reinstall WinGet
     #>
 
-    Write-WinUtilJobProgress -Status "Repairing WinGet" -State "Indeterminate"
+    Step-WinUtilJob -Status "Repairing WinGet" -State "Indeterminate"
     Install-WinUtilWinget
 }

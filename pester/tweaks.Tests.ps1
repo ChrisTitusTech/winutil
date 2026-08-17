@@ -39,7 +39,7 @@ BeforeAll {
     function Start-WinUtilJob {
         param([string]$Name, [scriptblock]$ScriptBlock, [hashtable]$Parameters, [string]$Description, [switch]$DisableAppList)
     }
-    function Write-WinUtilJobProgress {
+    function Step-WinUtilJob {
         param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay, [switch]$Hide)
     }
     function Show-WinUtilMessage {
@@ -195,7 +195,7 @@ Describe "Invoke-WPFtweaksbutton" {
         Mock Set-WinUtilDNS { return $true }
         Mock Invoke-WPFUIThread { }
         Mock Write-WinUtilLog { }
-        Mock Write-WinUtilJobProgress { }
+        Mock Step-WinUtilJob { }
         Mock Show-WinUtilMessage { "OK" }
         Mock Write-Host { }
         Mock Start-WinUtilJob {
@@ -248,10 +248,10 @@ Describe "Invoke-WPFtweaksbutton" {
             $DNSProvider -eq "Cloudflare"
         }
         Should -Invoke -CommandName Invoke-WinUtilTweaks -Times 2 -Exactly
-        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Applying WPFTweaksTelemetry (1/2)" -and $Percent -eq 0
         }
-        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Applying WPFTweaksServices (2/2)" -and $Percent -eq 50
         }
     }
@@ -290,10 +290,10 @@ Describe "Invoke-WPFtweaksbutton" {
         & $script:capturedTweaksJob.ScriptBlock @jobParameters
 
         $script:appliedOrder | Should -Be @("WPFTweaksRestorePoint", "WPFTweaksTelemetry")
-        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Creating restore point" -and $Percent -eq 0
         }
-        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Applying WPFTweaksTelemetry (2/2)" -and $Percent -eq 50
         }
     }
@@ -309,7 +309,7 @@ Describe "Invoke-WPFundoall" {
 
         Mock Invoke-WinUtilTweaks { }
         Mock Write-WinUtilLog { }
-        Mock Write-WinUtilJobProgress { }
+        Mock Step-WinUtilJob { }
         Mock Show-WinUtilMessage { "OK" }
         Mock Write-Host { }
         Mock Start-WinUtilJob {
@@ -347,10 +347,10 @@ Describe "Invoke-WPFundoall" {
         & $script:capturedUndoJob.ScriptBlock @jobParameters
 
         Should -Invoke -CommandName Invoke-WinUtilTweaks -Times 2 -Exactly -ParameterFilter { $undo -eq $true }
-        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Undoing WPFTweaksTelemetry (1/2)" -and $Percent -eq 0
         }
-        Should -Invoke -CommandName Write-WinUtilJobProgress -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Undoing WPFTweaksServices (2/2)" -and $Percent -eq 50
         }
     }

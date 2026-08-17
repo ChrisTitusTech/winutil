@@ -10,7 +10,7 @@ function Get-WinUtilSelectedPackages {
 
     # A single package has no meaningful percentage to show
     if ($PackageList.count -eq 1) {
-        Write-WinUtilJobProgress -State "Indeterminate"
+        Step-WinUtilJob -State "Indeterminate"
     }
 
     $packagesWinget = [System.Collections.ArrayList]::new()

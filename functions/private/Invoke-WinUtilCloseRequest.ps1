@@ -46,7 +46,7 @@ stopped and everything closes now. Cancel keeps WinUtil open.
         }
         "No" {
             Write-WinUtilLog -Component "UI" -Message "Close requested: stopping $RunningJob."
-            Write-WinUtilJobProgress -Status "Stopping $RunningJob" -State "Indeterminate"
+            Step-WinUtilJob -Status "Stopping $RunningJob" -State "Indeterminate"
             $sync.ForceClose = $true
 
             # Stopping can take a moment that would otherwise look like the window had frozen

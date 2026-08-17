@@ -61,7 +61,7 @@ finishes first. Whatever has not been done yet will be skipped.
     # A run that is holding would never reach the point where it notices the stop
     $sync.JobPaused = $false
 
-    Write-WinUtilJobProgress -Status "Stopping $job" -State "Indeterminate"
+    Step-WinUtilJob -Status "Stopping $job" -State "Indeterminate"
     if ($sync.WPFStopJobButton) { $sync.WPFStopJobButton.IsEnabled = $false }
     if ($sync.WPFPauseJobButton) { $sync.WPFPauseJobButton.IsEnabled = $false }
 
@@ -96,13 +96,16 @@ function Start-WinUtilJobStopWatchdog {
 
     $timer = New-Object System.Windows.Threading.DispatcherTimer([System.Windows.Threading.DispatcherPriority]::Background)
     $timer.Interval = [timespan]::FromMilliseconds(500)
-    $timer.Tag = @{ Job = $Job; Deadline = (Get-Date).AddSeconds($GraceSeconds) }
+    # The run being cut off is identified by its token, so a watchdog that fires late cannot
+    # release a slot that the next job has already claimed
+    $timer.Tag = @{ Job = $Job; Token = $sync.ActiveJobToken; Deadline = (Get-Date).AddSeconds($GraceSeconds) }
     $timer.Add_Tick({
         param($eventSender)
         $ticked = [System.Windows.Threading.DispatcherTimer]$eventSender
         $state = $ticked.Tag
 
-        if (-not $sync.ActiveJob) {
+        # Gone, or replaced by a later run that this watchdog has no business touching
+        if (-not $sync.ActiveJob -or $sync.ActiveJobToken -ne $state.Token) {
             $ticked.Stop()
             Write-WinUtilLog -Component "UI" -Message "$($state.Job) stopped."
             $sync.StopRequested = $false
@@ -116,10 +119,24 @@ function Start-WinUtilJobStopWatchdog {
         $ticked.Stop()
         Write-WinUtilLog -Level "WARN" -Component "UI" -Message "$($state.Job) did not stop on its own, cutting it off."
         Stop-WinUtilActiveWork -TimeoutSeconds 10 | Out-Null
-        $sync.ActiveJob = $null
+
+        $released = $false
+        [System.Threading.Monitor]::Enter($sync.SyncRoot)
+        try {
+            if ($sync.ActiveJobToken -eq $state.Token) {
+                $sync.ActiveJobToken = $null
+                $sync.ActiveJob = $null
+                $released = $true
+            }
+        } finally {
+            [System.Threading.Monitor]::Exit($sync.SyncRoot)
+        }
+
         $sync.StopRequested = $false
-        Write-WinUtilJobProgress -Status "$($state.Job) stopped" -Percent 100 -State "Paused" -Overlay "warning"
-        if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }
+        if ($released) {
+            Step-WinUtilJob -Status "$($state.Job) stopped" -Percent 100 -State "Paused" -Overlay "warning"
+            if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }
+        }
     })
     $timer.Start()
     $sync.StopWatchdogTimer = $timer

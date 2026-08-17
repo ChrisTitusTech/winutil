@@ -9,7 +9,7 @@ function Install-WinUtilChoco {
     }
 
     Write-WinUtilLog -Component "Package" -Message "Chocolatey is not installed, installing it now."
-    Write-WinUtilJobProgress -Status "Installing Chocolatey" -State "Indeterminate"
+    Step-WinUtilJob -Status "Installing Chocolatey" -State "Indeterminate"
 
     $installScript = Invoke-WebRequest -Uri https://community.chocolatey.org/install.ps1 -UseBasicParsing
     Invoke-Command -ScriptBlock ([scriptblock]::Create($installScript.Content))

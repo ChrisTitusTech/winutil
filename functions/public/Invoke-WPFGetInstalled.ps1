@@ -19,7 +19,7 @@ function Invoke-WPFGetInstalled {
     } -ScriptBlock {
         param($Checkbox, $ManagerPreference)
 
-        Write-WinUtilJobProgress -Status "Checking what is already installed" -State "Indeterminate"
+        Step-WinUtilJob -Status "Checking what is already installed" -State "Indeterminate"
 
         $found = @()
         if ($Checkbox -eq "winget") {

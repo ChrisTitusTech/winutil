@@ -22,11 +22,11 @@ function Invoke-WPFundoall {
         Write-WinUtilLog -Component "Tweaks" -Message "Undo tweaks requested: $total selected tweak(s)."
 
         for ($i = 0; $i -lt $total; $i++) {
-            Write-WinUtilJobProgress -Status "Undoing $($Tweaks[$i]) ($($i + 1)/$total)" -Percent ([int](($i / $total) * 100))
+            Step-WinUtilJob -Status "Undoing $($Tweaks[$i]) ($($i + 1)/$total)" -Percent ([int](($i / $total) * 100))
             Measure-WinUtilStep -Scope "Undo tweaks" -Name $Tweaks[$i] -ScriptBlock {
                 Invoke-WinUtiltweaks $Tweaks[$i] -undo $true
             }
-            Write-WinUtilJobProgress -Percent ([int]((($i + 1) / $total) * 100))
+            Step-WinUtilJob -Percent ([int]((($i + 1) / $total) * 100))
         }
     }
 }
