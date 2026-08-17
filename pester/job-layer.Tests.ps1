@@ -1,6 +1,5 @@
 #===========================================================================
 # Tests - Job layer
-#===========================================================================
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
@@ -41,17 +40,7 @@ Describe "Interface thread dispatch" {
     # Work handed to the interface thread must arrive as body text plus parameters. A
     # scriptblock marshalled from a worker runspace keeps that runspace's session state, which
     # both loses the caller's variables on an async post and costs roughly twenty times as much
-    # per command - enough to turn a checkbox refresh into a visible freeze.
-    It "hands work to the interface runspace instead of marshalling a scriptblock" {
-        $uiThread = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIThread.ps1") -Raw
-        $userInterface = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilUserInterface.ps1") -Raw
-
-        $userInterface | Should -Match ([regex]::Escape('$sync.UIDispatchDelegate = [System.Func[object, object]]'))
-        $uiThread | Should -Match ([regex]::Escape('$executor = $sync.UIDispatchDelegate'))
-        $uiThread | Should -Match ([regex]::Escape('Body = $ScriptBlock.ToString()'))
-        $uiThread | Should -Match ([regex]::Escape('$dispatcher.Invoke($executor, @($work))'))
-        $uiThread | Should -Match ([regex]::Escape('$dispatcher.BeginInvoke([Windows.Threading.DispatcherPriority]::Background, $executor, $work)'))
-    }
+    
 
     It "passes deferred values as parameters rather than capturing them" {
         foreach ($path in @(

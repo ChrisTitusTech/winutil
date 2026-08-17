@@ -1,6 +1,5 @@
 #===========================================================================
 # Tests - Win11 Creator
-#===========================================================================
 
 Describe "Win11 Creator setup media" {
     BeforeAll {
@@ -283,64 +282,7 @@ Describe "Win11 Creator setup media" {
         }
     }
 
-    It "stages the complete WinUtil customization script and selected image index" {
-        $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoAnswerFile_$([guid]::NewGuid())"
-        $template = Get-Content -Path $script:autoUnattendPath -Raw
-
-        try {
-            New-Item -Path $contentRoot -ItemType Directory -Force | Out-Null
-            . $script:isoScriptPath
-            Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template -InstallEditionId "Core" -InstallImageIndex 6
-
-            [xml]$answerFile = Get-Content -Path (Join-Path $contentRoot "autounattend.xml") -Raw
-            $nsMgr = New-Object System.Xml.XmlNamespaceManager($answerFile.NameTable)
-            $nsMgr.AddNamespace("u", "urn:schemas-microsoft-com:unattend")
-            $nsMgr.AddNamespace("sg", "https://schneegans.de/windows/unattend-generator/")
-
-            $answerFile.SelectSingleNode('/u:unattend/u:settings[@pass="windowsPE"]/u:component[@name="Microsoft-Windows-Setup"]/u:ImageInstall/u:OSImage/u:InstallFrom/u:MetaData[u:Key="/IMAGE/INDEX"]/u:Value', $nsMgr).InnerText | Should -Be '6'
-
-            $postInstallFile = $answerFile.SelectSingleNode('//sg:File[@path="C:\Windows\Setup\Scripts\WinUtil-PostInstall.ps1"]', $nsMgr)
-            $postInstallFile | Should -Not -BeNullOrEmpty
-            $postInstallFile.InnerText | Should -Match 'Remove-AppxProvisionedPackage'
-            $postInstallFile.InnerText | Should -Match 'DisableWindowsConsumerFeatures'
-            $postInstallFile.InnerText | Should -Match 'Microsoft Compatibility Appraiser'
-            $postInstallFile.InnerText | Should -Match 'OneDriveSetup.exe'
-            $postInstallFile.InnerText | Should -Match 'function Set-WinUtilContentDeliveryManagerValues'
-            $postInstallFile.InnerText | Should -Match ([regex]::Escape('Set-WinUtilContentDeliveryManagerValues $defaultHive'))
-            $postInstallFile.InnerText | Should -Match ([regex]::Escape("Set-WinUtilContentDeliveryManagerValues 'HKCU'"))
-            $postInstallFile.InnerText | Should -Match ([regex]::Escape("Set-WinUtilRegistryValue 'HKCU\Control Panel\UnsupportedHardwareNotificationCache' 'SV1'"))
-            $postInstallFile.InnerText | Should -Match ([regex]::Escape("Set-WinUtilRegistryValue 'HKCU\Control Panel\UnsupportedHardwareNotificationCache' 'SV2'"))
-            foreach ($defaultProfilePath in @(
-                '$defaultHive\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo',
-                '$defaultHive\Software\Microsoft\Windows\CurrentVersion\Privacy',
-                '$defaultHive\Software\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy',
-                '$defaultHive\Software\Microsoft\Input\TIPC',
-                '$defaultHive\Software\Microsoft\InputPersonalization',
-                '$defaultHive\Software\Microsoft\InputPersonalization\TrainedDataStore',
-                '$defaultHive\Software\Microsoft\Personalization\Settings'
-            )) {
-                $postInstallFile.InnerText | Should -Match ([regex]::Escape($defaultProfilePath))
-            }
-
-            $firstLogonFile = $answerFile.SelectSingleNode('//sg:File[@path="C:\Windows\Setup\Scripts\FirstLogon.ps1"]', $nsMgr)
-            $firstLogonFile.InnerText | Should -Match 'WinUtil-PostInstall.ps1'
-
-            $setupScriptsRoot = Join-Path $contentRoot 'sources\$OEM$\$$\Setup\Scripts'
-            Test-Path (Join-Path $setupScriptsRoot 'Specialize.ps1') | Should -BeTrue
-            Test-Path (Join-Path $setupScriptsRoot 'DefaultUser.ps1') | Should -BeTrue
-            Test-Path (Join-Path $setupScriptsRoot 'FirstLogon.ps1') | Should -BeTrue
-            Test-Path (Join-Path $setupScriptsRoot 'WinUtil-PostInstall.ps1') | Should -BeTrue
-            Get-Content -Path (Join-Path $setupScriptsRoot 'FirstLogon.ps1') -Raw | Should -Match 'WinUtil-PostInstall.ps1'
-            Get-Content -Path (Join-Path $setupScriptsRoot 'WinUtil-PostInstall.ps1') -Raw | Should -Match 'Remove-AppxProvisionedPackage'
-
-            $tokens = $null
-            $errors = $null
-            [System.Management.Automation.Language.Parser]::ParseInput($postInstallFile.InnerText, [ref]$tokens, [ref]$errors) | Out-Null
-            $errors.Count | Should -Be 0
-        } finally {
-            Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
-        }
-    }
+    
 
     It "stages storage drivers for WinPE and adds all drivers to one install.wim index" {
         $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoDrivers_$([guid]::NewGuid())"

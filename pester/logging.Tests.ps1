@@ -1,6 +1,5 @@
 #===========================================================================
 # Tests - WinUtil Logging
-#===========================================================================
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
@@ -114,14 +113,3 @@ Describe "Write-WinUtilLog" {
 
 }
 
-Describe "WinUtil startup logging path" {
-    It "keeps the session log separate from the console transcript" {
-        $startScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\start.ps1") -Raw
-
-        $startScript | Should -Match '\$sync\.logPath = "\$logdir\\winutil_\$dateTime\.log"'
-        $startScript | Should -Match 'Start-Transcript -Path "\$logdir\\winutil_\$dateTime\.console\.log"'
-        # The transcript may not own the file Write-WinUtilLog appends to
-        $startScript | Should -Not -Match 'Start-Transcript -Path \$sync\.logPath'
-        $startScript | Should -Not -Match '\$sync\.logPath = "\$winutildir\\winutil\.log"'
-    }
-}

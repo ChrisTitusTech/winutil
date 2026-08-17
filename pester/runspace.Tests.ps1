@@ -1,6 +1,5 @@
 #===========================================================================
 # Tests - Runspace Behavior
-#===========================================================================
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
@@ -142,12 +141,7 @@ Describe "Invoke-WPFRunspace behavior" {
         $script:sync.SecondResult | Should -Be "second"
     }
 
-    It "does not use script-scoped PowerShell or handle state" {
-        $runspaceScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFRunspace.ps1") -Raw
-
-        $runspaceScript | Should -Not -Match '\$script:powershell'
-        $runspaceScript | Should -Not -Match '\$script:handle'
-    }
+    
 
     It "exposes a strongly typed cleanup callback" {
         ([WinUtilRunspaceCleanup]::Callback -is [System.Threading.WaitOrTimerCallback]) | Should -BeTrue

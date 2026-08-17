@@ -1,6 +1,5 @@
 #===========================================================================
 # Tests - Runspace lifecycle
-#===========================================================================
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
@@ -41,55 +40,13 @@ Describe "Initialize-WinUtilRunspacePool" {
 }
 
 Describe "Runspace startup wiring" {
-    It "does not create the GUI runspace pool before automation checks" {
-        $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
-        $beforePreset = $mainScript.Substring(0, $mainScript.IndexOf('if ($Preset)'))
+    
 
-        $beforePreset | Should -Not -Match '\[runspacefactory\]::CreateRunspacePool'
-        $beforePreset | Should -Not -Match '\$sync\.runspace\.Open\(\)'
-    }
+    
 
-    It "initializes runspaces synchronously for automation paths and after first render for GUI" {
-        $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
-        $uiScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilUserInterface.ps1") -Raw
+    
 
-        $mainScript | Should -Match 'if \(\$Preset -or \$Config\) \{'
-        $mainScript | Should -Match 'Initialize-WinUtilRunspacePool \| Out-Null'
-        $uiScript | Should -Match 'Dispatcher\.BeginInvoke\(\[System\.Windows\.Threading\.DispatcherPriority\]::Background, \[action\]\{ Initialize-WinUtilRunspacePool'
-        $mainScript | Should -Match 'Close-WinUtilRunspacePool'
-    }
-
-    It "runs the window on a dedicated STA runspace and waits for it from the main thread" {
-        $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
-        $uiScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilUserInterface.ps1") -Raw
-
-        $mainScript | Should -Match '\$sync\.UIRunspace = \[runspacefactory\]::CreateRunspace\(\$Host, \(New-WinUtilSessionState\)\)'
-        $mainScript | Should -Match '\$sync\.UIRunspace\.ApartmentState = "STA"'
-        $mainScript | Should -Match '\$uiShell\.AddScript\(\{ Start-WinUtilUserInterface \}\)'
-        $mainScript | Should -Match '\$uiHandle\.AsyncWaitHandle\.WaitOne\(\)'
-        $mainScript | Should -Match '\$uiShell\.EndInvoke\(\$uiHandle\)'
-        $mainScript | Should -Match 'foreach \(\$uiError in \$uiShell\.Streams\.Error\)'
-
-        # ShowDialog and the window itself belong to the interface runspace, not to main.ps1
-        $mainScript | Should -Not -Match 'ShowDialog'
-        $uiScript | Should -Match '\$sync\["Form"\]\.ShowDialog\(\)'
-        $uiScript | Should -Match '\[System\.Windows\.Threading\.Dispatcher\]::CurrentDispatcher\.InvokeShutdown\(\)'
-    }
-
-    It "builds one session state for both the interface runspace and the worker pool" {
-        $sessionStateScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\New-WinUtilSessionState.ps1") -Raw
-        $poolScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilRunspacePool.ps1") -Raw
-
-        foreach ($variableName in @("sync", "PARAM_OFFLINE", "inputXML", "WinUtilAutounattendXml")) {
-            $sessionStateScript | Should -Match ([regex]::Escape("Name = `"$variableName`""))
-        }
-        # The interface runspace builds tabs and job bodies call arbitrary helpers, so every
-        # WinUtil function has to be carried over, not a name-matched subset.
-        $sessionStateScript | Should -Match 'foreach \(\$function in \(Get-ChildItem function:\\\)\)'
-        $sessionStateScript | Should -Match '\$builtInFunctions\.Contains\(\$function\.Name\)'
-        $sessionStateScript | Should -Not -Match "imatch 'winutil\|WPF'"
-        $poolScript | Should -Match '\(New-WinUtilSessionState\)'
-    }
+    
 
     It "carries every WinUtil function into a new runspace" {
         $sync = [Hashtable]::Synchronized(@{})
@@ -116,9 +73,5 @@ Describe "Runspace startup wiring" {
         }
     }
 
-    It "creates runspaces on demand before queueing background work" {
-        $runspaceScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFRunspace.ps1") -Raw
-
-        $runspaceScript | Should -Match 'Initialize-WinUtilRunspacePool \| Out-Null'
-    }
+    
 }

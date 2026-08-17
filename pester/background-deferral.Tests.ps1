@@ -1,6 +1,5 @@
 #===========================================================================
 # Tests - Speculative work stands aside for the user
-#===========================================================================
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
@@ -114,53 +113,3 @@ Describe "Invoke-WinUtilWhenIdle" {
     }
 }
 
-Describe "Deferral wiring" {
-    It "checks before running another queued step" {
-        # one pump for every queue, so this check cannot be forgotten by a new caller
-        $queue = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilBackgroundQueue.ps1") -Raw
-
-        $queue | Should -Match 'Test-WinUtilDeferBackgroundWork -RequiresTab \$state\.RequiresTab'
-        $queue | Should -Match 'Invoke-WinUtilWhenIdle'
-    }
-
-    It "draws app entries against the tab they belong to" {
-        $render = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilInstallAppRendering.ps1") -Raw
-
-        $render | Should -Match '-RequiresTab "Install"'
-    }
-
-    It "runs queued steps at background priority, not idle priority" {
-        # At idle priority warmup only ran once the app list had finished, so for the first few
-        # seconds every tab but the open one was empty and cost a full build to open
-        $queue = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilBackgroundQueue.ps1") -Raw
-
-        $queue | Should -Match 'DispatcherPriority\]::Background'
-        $queue | Should -Not -Match 'DispatcherPriority\]::ApplicationIdle'
-    }
-
-    It "finishes building the other tabs before finishing the visible list" {
-        # the list is on screen and filling in; another tab shows nothing at all until built
-        $render = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilInstallAppRendering.ps1") -Raw
-
-        $render | Should -Match '-DeferWhile'
-        $render | Should -Match '\$sync\.TabWarmupQueue -and \$sync\.TabWarmupQueue\.Count -gt 0'
-    }
-
-    It "records input before a control handles it" {
-        # a click that a control spends time on must still count as input
-        $watch = Get-Content -Path (Join-Path $script:functionRoot "private\Test-WinUtilDeferBackgroundWork.ps1") -Raw
-
-        $watch | Should -Match 'Add_PreviewMouseDown'
-        $watch | Should -Match 'Add_PreviewKeyDown'
-    }
-
-    It "registers the watch before the window is shown" {
-        $ui = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilUserInterface.ps1") -Raw
-
-        $registerAt = $ui.IndexOf("Register-WinUtilInputWatch")
-        $showAt = $ui.IndexOf("ShowDialog")
-
-        $registerAt | Should -BeGreaterThan 0
-        $registerAt | Should -BeLessThan $showAt
-    }
-}

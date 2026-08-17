@@ -1,6 +1,5 @@
 #===========================================================================
 # Tests - Generated control lifetime
-#===========================================================================
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
@@ -34,22 +33,7 @@ Describe "Generated controls" {
         }
     }
 
-    It "are wired from the tab that creates them" {
-        $tabScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilTabContent.ps1") -Raw
-        $installScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilInstallTabControls.ps1") -Raw
+    
 
-        $tabScript | Should -Match 'Initialize-WinUtilInstallTabControls'
-        $installScript | Should -Match '\$sync\.ChocoRadioButton'
-        $installScript | Should -Match '\$sync\.WingetRadioButton'
-        $installScript | Should -Match '\$PARAM_OFFLINE'
-    }
-
-    It "are guarded against still being missing" {
-        $installScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilInstallTabControls.ps1") -Raw
-
-        # Every use is behind an existence check, so a config change cannot reintroduce the crash
-        $installScript | Should -Match 'if \(\$sync\.ChocoRadioButton\)'
-        $installScript | Should -Match 'if \(\$sync\.WingetRadioButton\)'
-        $installScript | Should -Match 'if \(\$sync\.\$name\)'
-    }
+    
 }

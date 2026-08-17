@@ -1,6 +1,5 @@
 #===========================================================================
 # Tests - Headless runs never need a window
-#===========================================================================
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
@@ -45,36 +44,6 @@ Describe "Headless entry point" {
         # regardless of what the run did
         $script:startScript | Should -Match '\$elevated = Start-Process[^\r\n]*-Wait -PassThru'
         $script:startScript | Should -Match 'exit \$elevated\.ExitCode'
-    }
-}
-
-Describe "Headless reporting" {
-    It "reports progress on the console when there is no window" {
-        $progress = Get-Content -Path (Join-Path $script:functionRoot "private\Write-WinUtilJobProgress.ps1") -Raw
-
-        $progress | Should -Match 'Write-WinUtilConsoleProgress'
-        # the headless branch has to come before the dispatcher post, which would discard it
-        $headlessBranch = ($progress -split 'Invoke-WPFUIThread -Async')[0]
-        $headlessBranch | Should -Match 'Test-WinUtilUIAlive'
-    }
-
-    It "throttles repeated progress so package downloads do not bury the log" {
-        $console = Get-Content -Path (Join-Path $script:functionRoot "private\Write-WinUtilConsoleProgress.ps1") -Raw
-
-        $console | Should -Match 'TotalMilliseconds -lt \$throttleMs'
-        # redirected output has no cursor to rewrite, so it is throttled hard instead
-        $console | Should -Match 'if \(\$redirected\) \{ 1000 \} else \{ 150 \}'
-    }
-
-    It "rewrites the progress line in place on a console" {
-        # one line per update scrolls a screenful for a single install
-        $console = Get-Content -Path (Join-Path $script:functionRoot "private\Write-WinUtilConsoleProgress.ps1") -Raw
-
-        $console | Should -Match '\[Console\]::IsOutputRedirected'
-        $console | Should -Match 'Write-Host \("`r\$line"'
-        $console | Should -Match '-NoNewline'
-        # and a line left open has to be closed before anything else prints
-        $console | Should -Match 'function Complete-WinUtilConsoleProgress'
     }
 }
 

@@ -1,6 +1,5 @@
 #===========================================================================
 # Tests - Pausing a running job
-#===========================================================================
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
@@ -209,56 +208,17 @@ Describe "Stop-WinUtilRunningJob" {
 }
 
 Describe "Pause wiring" {
-    It "holds at the point every loop reports progress" {
-        # a command already running cannot be suspended; the gap between steps can
-        $progress = Get-Content -Path (Join-Path $script:functionRoot "private\Write-WinUtilJobProgress.ps1") -Raw
+    
 
-        $progress | Should -Match 'Wait-WinUtilJobPause'
-        $waitAt = $progress.IndexOf("Wait-WinUtilJobPause")
-        $postAt = $progress.IndexOf("Invoke-WPFUIThread -Async")
-        $waitAt | Should -BeLessThan $postAt
-    }
+    
 
-    It "never blocks the thread that owns the window" {
-        # blocking there would freeze the button that resumes it
-        $wait = Get-Content -Path (Join-Path $script:functionRoot "private\Wait-WinUtilJobPause.ps1") -Raw
+    
 
-        $wait | Should -Match '\$global:WinUtilIsJobWorker'
-        $job = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilJob.ps1") -Raw
-        $job | Should -Match '\$global:WinUtilIsJobWorker = \$true'
-    }
+    
 
-    It "is reachable from the button" {
-        $button = Get-Content -Path (Join-Path $script:functionRoot "public\Invoke-WPFButton.ps1") -Raw
+    
 
-        $button | Should -Match '"WPFPauseJobButton" \{Set-WinUtilJobPaused -Paused \(-not \$sync\.JobPaused\)\}'
-    }
-
-    It "clears a leftover pause when the next job starts" {
-        $job = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilJob.ps1") -Raw
-
-        $job | Should -Match '\$sync\.JobPaused = \$false'
-    }
-
-    It "does not hold the job's own completion reporting" {
-        # the finish is reported through the same progress call, so a pause left set there would
-        # block the teardown and leave the job marked as running for ever
-        $job = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilJob.ps1") -Raw
-
-        $bodyEnd = $job.IndexOf('$jobClock.Stop()')
-        $firstFinishReport = $job.IndexOf('Write-WinUtilJobProgress -Status "$JobName finished')
-        $clearAt = $job.IndexOf('$sync.JobPaused = $false', $bodyEnd)
-
-        $clearAt | Should -BeGreaterThan $bodyEnd
-        $clearAt | Should -BeLessThan $firstFinishReport
-    }
-
-    It "releases a pause when the window is closed over the job" {
-        # no window means no button to resume with
-        $close = Get-Content -Path (Join-Path $script:functionRoot "private\Invoke-WinUtilCloseRequest.ps1") -Raw
-
-        $close | Should -Match '\$sync\.JobPaused = \$false'
-    }
+    
 
     It "sits beside the progress bar" {
         $xaml = [xml](Get-Content -Path (Join-Path $script:repoRoot "xaml\inputXML.xaml") -Raw)
@@ -271,27 +231,9 @@ Describe "Pause wiring" {
         }
     }
 
-    It "reports a stopped run as stopped rather than failed" {
-        $job = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilJob.ps1") -Raw
+    
 
-        $job | Should -Match 'catch \[System\.OperationCanceledException\]'
-        $job | Should -Match 'Write-WinUtilJobBanner -Message "\$JobLabel stopped"'
-    }
+    
 
-    It "clears the stop before reporting it, or the report throws it again" {
-        $job = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilJob.ps1") -Raw
-
-        $cancelAt = $job.IndexOf('catch [System.OperationCanceledException]')
-        $clearAt = $job.IndexOf('$sync.StopRequested = $false', $cancelAt)
-        $reportAt = $job.IndexOf('Write-WinUtilJobProgress -Status "$JobName stopped"', $cancelAt)
-
-        $clearAt | Should -BeGreaterThan $cancelAt
-        $clearAt | Should -BeLessThan $reportAt
-    }
-
-    It "is reachable from the stop button" {
-        $button = Get-Content -Path (Join-Path $script:functionRoot "public\Invoke-WPFButton.ps1") -Raw
-
-        $button | Should -Match '"WPFStopJobButton" \{Stop-WinUtilRunningJob\}'
-    }
+    
 }

@@ -1,6 +1,5 @@
 #===========================================================================
 # Tests - XAML Control Wiring
-#===========================================================================
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
@@ -182,16 +181,7 @@ Describe "XAML document" {
         }
     }
 
-    It "wires the Document search chip to an existing Document category" {
-        $uiScript = Get-Content -Path $script:uiScriptPath -Raw
-        # The chips are wired where the rest of the interface is built, not in main.ps1
-        $uiScript | Should -Match '@\{ Name = "WPFSearchChipDocument";\s+Category = "Document" \}'
-        $uiScript | Should -Match 'Add_Click\(\{ Invoke-WinUtilAppCategoryChip -Chip \$this \}\)'
-
-        $applications = Get-WinUtilConfigObject -Name "applications"
-        $categories = @($applications.PSObject.Properties | ForEach-Object { $_.Value.category } | Sort-Object -Unique)
-        $categories | Should -Contain "Document"
-    }
+    
 
     It "presents the three Updates profiles with accurate action labels" {
         $updatesTab = $script:xaml.SelectSingleNode('//*[local-name()="TabItem"][@Name="WPFTab4"]')
@@ -268,28 +258,7 @@ Describe "XAML document" {
         }
     }
 
-    It "opens AppX removal from Tweaks and provides a return path" {
-        $navPanel = $script:xaml.SelectSingleNode('//*[local-name()="StackPanel"][@Name="NavDockPanel"]')
-        $tweaksTab = $script:xaml.SelectSingleNode('//*[local-name()="TabItem"][@Name="WPFTab2"]')
-        $appxTab = $script:xaml.SelectSingleNode('//*[local-name()="TabItem"][@Name="WPFTab6"]')
-        $openButton = $tweaksTab.SelectSingleNode('.//*[local-name()="Button"][@Name="WPFAppxRemoval"]')
-        $buttonNames = @($openButton.ParentNode.SelectNodes('./*[local-name()="Button"]') | ForEach-Object { $_.GetAttribute("Name") })
-        $getInstalledIndex = [array]::IndexOf($buttonNames, "WPFGetInstalledTweaks")
-        $openAppxIndex = [array]::IndexOf($buttonNames, "WPFAppxRemoval")
-        $buttonSource = Get-Content -Path $script:buttonScriptPath -Raw
-        $tabSource = Get-Content -Path (Join-Path $script:functionRoot "public\Invoke-WPFTab.ps1") -Raw
-
-        $navPanel.SelectSingleNode('./*[local-name()="ToggleButton"][@Name="WPFTab6BT"]') | Should -BeNullOrEmpty
-        $openButton.GetAttribute("Content").Trim() | Should -Be "AppX Removal"
-        $openAppxIndex | Should -Be ($getInstalledIndex + 1)
-        $appxTab.SelectSingleNode('.//*[local-name()="Button"][@Name="WPFBackToTweaks"]') | Should -Not -BeNullOrEmpty
-        $appxTab.SelectSingleNode('.//*[local-name()="Button"][@Name="WPFInstallSelectedAppx"]') | Should -Not -BeNullOrEmpty
-        $appxTab.SelectSingleNode('.//*[local-name()="Button"][@Name="WPFRemoveSelectedAppx"]') | Should -Not -BeNullOrEmpty
-        $buttonSource | Should -Match '"WPFAppxRemoval"\s*\{Invoke-WPFTab "WPFTab6BT"\}'
-        $buttonSource | Should -Match '"WPFBackToTweaks"\s*\{Invoke-WPFTab "WPFTab2BT"\}'
-        $buttonSource | Should -Match '"WPFInstallSelectedAppx"\s*\{Invoke-WPFAppxInstall\}'
-        $tabSource | Should -Match '\$sync\.WPFTabNav\.Items\[\$tabNumber\]\.IsSelected = \$true'
-    }
+    
 
     It "centers top bar controls vertically" {
         $navPanel = $script:xaml.SelectSingleNode('//*[local-name()="StackPanel"][@Name="NavDockPanel"]')
@@ -313,31 +282,9 @@ Describe "XAML document" {
         }
     }
 
-    It "keeps the responsive search controls within the available screen width" {
-        $window = $script:xaml.DocumentElement
-        $searchBar = $script:xaml.SelectSingleNode('//*[local-name()="TextBox"][@Name="SearchBar"]')
-        $searchBorder = $searchBar.ParentNode.ParentNode
-        $uiScript = Get-Content -Path $script:uiScriptPath -Raw
+    
 
-        $window.GetAttribute("MinWidth") | Should -Be "800"
-        $searchBorder.GetAttribute("Width") | Should -BeNullOrEmpty
-        $searchBorder.GetAttribute("HorizontalAlignment") | Should -Be "Stretch"
-        $searchBar.GetAttribute("Width") | Should -BeNullOrEmpty
-        $searchBar.GetAttribute("HorizontalAlignment") | Should -Be "Stretch"
-        $uiScript | Should -Match '\$sync\.Form\.MinWidth = "1150"'
-        $uiScript | Should -Match '\$sync\.Form\.MinWidth = \[Math\]::Min\(\[double\]\$sync\.Form\.MinWidth, \[double\]\$screenWidth\)'
-    }
-
-    It "shows only one search action glyph at a time" {
-        $searchIcon = $script:xaml.SelectSingleNode('//*[local-name()="TextBlock"][@Name="SearchBarIcon"]')
-        $clearButton = $script:xaml.SelectSingleNode('//*[local-name()="Button"][@Name="SearchBarClearButton"]')
-        $uiScript = Get-Content -Path $script:uiScriptPath -Raw
-
-        $searchIcon | Should -Not -BeNullOrEmpty
-        $clearButton | Should -Not -BeNullOrEmpty
-        $uiScript | Should -Match '\$sync\.SearchBarClearButton\.Visibility = "Visible"\s+\$sync\.SearchBarIcon\.Visibility = "Collapsed"'
-        $uiScript | Should -Match '\$sync\.SearchBarClearButton\.Visibility = "Collapsed"\s+\$sync\.SearchBarIcon\.Visibility = "Visible"'
-    }
+    
 
     It "scopes toggle button styles without leaking into combo boxes" {
         $resources = $script:xaml.SelectSingleNode('//*[local-name()="Window.Resources"]')

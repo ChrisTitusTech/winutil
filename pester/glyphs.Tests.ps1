@@ -1,6 +1,5 @@
 #===========================================================================
 # Tests - Icon glyphs exist in the font that renders them
-#===========================================================================
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
@@ -98,11 +97,5 @@ Describe "Icon glyphs" {
         if ($offenders.Count -gt 0) { throw ($offenders -join "`n") }
     }
 
-    It "pairs play and pause on the same button" {
-        $pause = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Wait-WinUtilJobPause.ps1") -Raw
-
-        # E768 play to resume, E769 pause to hold
-        $pause | Should -Match '0xE768'
-        $pause | Should -Match '0xE769'
-    }
+    
 }

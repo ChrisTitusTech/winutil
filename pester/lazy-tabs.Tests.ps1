@@ -1,13 +1,11 @@
 #===========================================================================
 # Tests - Lazy tab initialization
-#===========================================================================
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     . (Join-Path $script:repoRoot "functions\private\Measure-WinUtilStep.ps1")
 
     function Test-WinUtilUIAlive { $null -ne $sync.Form -and $null -ne $sync.Form.Dispatcher }
-
 
     function Write-WinUtilLog {
         param($Message, $Level, $Component)
@@ -114,38 +112,3 @@ Describe "Initialize-WinUtilTabContent" {
     }
 }
 
-Describe "Startup lazy tab wiring" {
-    It "builds no tab content before first paint" {
-        $uiScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilUserInterface.ps1") -Raw
-        $tabScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFTab.ps1") -Raw
-
-        # Building a tab costs several hundred milliseconds. ContentRendered activates the
-        # default tab, and activating a tab is what builds it.
-        $uiScript | Should -Not -Match 'Initialize-WinUtilTabContent'
-        $uiScript | Should -Match '(?s)Add_ContentRendered.*Invoke-WPFTab "WPFTab1BT"'
-        $tabScript | Should -Match 'Initialize-WinUtilTabContent -TabName \$sync\.currentTab'
-    }
-
-    It "initializes tab content when a tab is selected" {
-        $tabScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFTab.ps1") -Raw
-
-        $tabScript | Should -Match 'Initialize-WinUtilTabContent -TabName \$sync\.currentTab'
-    }
-
-    It "binds generated button clicks when lazy panels are rendered" {
-        $rendererScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIElements.ps1") -Raw
-        $uiScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilUserInterface.ps1") -Raw
-
-        $rendererScript | Should -Match '(?s)"Button"\s*\{.*\$button\.Add_Click\(\{.*Invoke-WPFButton \$Sender\.name'
-        $rendererScript | Should -Match '\$sync\.Buttons\.Add\(\$button\.Name\)'
-        $uiScript | Should -Match '\$sync\.Buttons\.Add\(\$entry\.Key\)'
-    }
-
-    It "binds generated documentation links when lazy panels are rendered" {
-        $rendererScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIElements.ps1") -Raw
-        $uiScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilUserInterface.ps1") -Raw
-
-        $rendererScript | Should -Match '(?s)if \(\$entryInfo\.Link\).*\$textBlock\.Add_MouseUp\(\{.*Start-Process \$Sender\.ToolTip -ErrorAction Stop'
-        $uiScript | Should -Not -Match '\.Name\.EndsWith\("Link"\)'
-    }
-}

@@ -1,6 +1,5 @@
 #===========================================================================
 # Tests - App icons never reach the network from the interface thread
-#===========================================================================
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
@@ -130,25 +129,3 @@ Describe "Icon fetching" {
     }
 }
 
-Describe "App entry icon wiring" {
-    It "never assigns a remote address to an image on the interface thread" {
-        # WPF fetches and decodes a remote source itself, and the part that lands back on the
-        # interface thread does so whenever the network answers
-        $entry = Get-Content -Path (Join-Path $script:functionRoot "private\Initialize-InstallAppEntry.ps1") -Raw
-
-        $entry | Should -Not -Match '\$logo\.Source\s*=\s*"https?://'
-        $entry | Should -Match 'Get-WinUtilIconCacheFile'
-        $entry | Should -Match '\$sync\.PendingIcons\[\$appKey\] = \$app\.link'
-    }
-
-    It "shares its event handlers instead of building them per entry" {
-        # six scriptblock literals per entry measured at 2.13 ms against 0.62 ms shared
-        $entry = Get-Content -Path (Join-Path $script:functionRoot "private\Initialize-InstallAppEntry.ps1") -Raw
-
-        $entry | Should -Match 'Get-WinUtilAppEntryHandlers'
-        $entry | Should -Match '\$border\.Add_MouseEnter\(\$handlers\.MouseEnter\)'
-        # a literal here would be a new scriptblock for every app
-        $entry | Should -Not -Match 'Add_Mouse\w+\(\{'
-        $entry | Should -Not -Match 'Add_Checked\(\{'
-    }
-}

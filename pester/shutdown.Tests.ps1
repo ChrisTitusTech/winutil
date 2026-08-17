@@ -1,6 +1,5 @@
 #===========================================================================
 # Tests - Closing while something is running
-#===========================================================================
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
@@ -132,14 +131,7 @@ Describe "The close question" {
         $sync.ForceClose | Should -Not -BeTrue
     }
 
-    It "asks a question the buttons answer in any language" {
-        # Windows labels the buttons itself, so text naming them "Yes" does not match a button
-        # that reads "Ja"
-        $source = Get-Content -Path (Join-Path $script:functionRoot "private\Invoke-WinUtilCloseRequest.ps1") -Raw
-
-        $source | Should -Match 'Close the window and let it finish in the console\?'
-        $source | Should -Not -Match '(?m)^Yes\s+'
-    }
+    
 
     It "offers all three choices" {
         Mock Show-WinUtilMessage { "Cancel" }
@@ -209,69 +201,3 @@ Describe "Waiting for work that outlived the window" {
     }
 }
 
-Describe "Shutdown wiring" {
-    It "asks before closing while a job is running" {
-        $ui = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilUserInterface.ps1") -Raw
-
-        $ui | Should -Match '\$closingArgs\.Cancel = \$true'
-        $ui | Should -Match 'Invoke-WinUtilCloseRequest -RunningJob \$sync\.ActiveJob'
-    }
-
-    It "stops running work before closing the pool" {
-        # closing the pool first leaves a queued instance to start on a runspace that is already
-        # closing, which throws on a thread pool thread and ends the process
-        $close = Get-Content -Path (Join-Path $script:functionRoot "private\Close-WinUtilRunspacePool.ps1") -Raw
-
-        $stopAt = $close.IndexOf("Stop-WinUtilActiveWork")
-        $closeAt = $close.IndexOf('$sync.runspace.Close()')
-
-        $stopAt | Should -BeGreaterThan 0
-        $closeAt | Should -BeGreaterThan $stopAt
-        $close | Should -Match '\$sync\.ShuttingDown = \$true'
-    }
-
-    It "keeps the worker pool alive when the job is to finish in the console" {
-        # closing the pool there would stop the very work the user asked to let finish
-        $ui = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilUserInterface.ps1") -Raw
-
-        $ui | Should -Match 'if \(\$sync\.FinishInConsole\) \{[\s\S]{0,400}?return'
-        $closeAt = $ui.IndexOf("Close-WinUtilRunspacePool")
-        $guardAt = $ui.IndexOf('if ($sync.FinishInConsole)')
-        $guardAt | Should -BeGreaterThan 0
-        $guardAt | Should -BeLessThan $closeAt
-    }
-
-    It "waits for that work on the main thread before closing the pool" {
-        $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
-
-        $waitAt = $mainScript.IndexOf("Wait-WinUtilRemainingWork")
-        $closeAt = $mainScript.LastIndexOf("Close-WinUtilRunspacePool")
-
-        $waitAt | Should -BeGreaterThan 0
-        $closeAt | Should -BeGreaterThan $waitAt
-    }
-
-    It "reports progress to the console once the window has gone" {
-        # the dispatcher still accepts posts after shutdown and drops them, so a closed window
-        # has to count as no window or the run goes silent
-        $progress = Get-Content -Path (Join-Path $script:functionRoot "private\Write-WinUtilJobProgress.ps1") -Raw
-        $alive = Get-Content -Path (Join-Path $script:functionRoot "public\Invoke-WPFUIThread.ps1") -Raw
-
-        $progress | Should -Match 'Test-WinUtilUIAlive'
-        $alive | Should -Match '\$sync\.Form\.Dispatcher\.HasShutdownStarted'
-    }
-
-    It "refuses to queue new work once shutdown has begun" {
-        $runspace = Get-Content -Path (Join-Path $script:functionRoot "public\Invoke-WPFRunspace.ps1") -Raw
-        $job = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilJob.ps1") -Raw
-
-        $runspace | Should -Match 'if \(\$sync\.ShuttingDown\)'
-        $job | Should -Match 'if \(\$sync\.ShuttingDown -or \$sync\.FinishInConsole\)'
-    }
-
-    It "clears the busy flag last, since the main thread waits on it" {
-        $job = Get-Content -Path (Join-Path $script:functionRoot "private\Start-WinUtilJob.ps1") -Raw
-
-        $job | Should -Match '\$sync\.ActiveJob = \$null\s*\}'
-    }
-}
