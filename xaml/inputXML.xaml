@@ -1247,6 +1247,31 @@
                     </Border>
                 </Popup>
 
+                    <Button Name="LanguageButton"
+                        Style="{StaticResource HoverButtonStyle}"
+                        BorderBrush="Transparent"
+                    Background="{DynamicResource MainBackgroundColor}"
+                    Foreground="{DynamicResource MainForegroundColor}"
+                    FontSize="{DynamicResource SettingsIconFontSize}"
+                    Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
+                    HorizontalAlignment="Right" VerticalAlignment="Center"
+                    Margin="0,0,2,0"
+                    FontFamily="Segoe MDL2 Assets"
+                    ToolTip="Change the UI Language"
+                    AutomationProperties.Name="Language"
+                    Content="&#xE8D2;"/>
+                    <Popup Name="LanguagePopup"
+                    IsOpen="False"
+                    PlacementTarget="{Binding ElementName=LanguageButton}" Placement="Bottom"
+                    HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <Border Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
+                        <StackPanel Background="{DynamicResource MainBackgroundColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="English" Name="EnglishLanguageMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="简体中文" Name="ChineseLanguageMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
+                        </StackPanel>
+                    </Border>
+                </Popup>
+
                     <Button Name="SettingsButton"
                         Style="{StaticResource HoverButtonStyle}"
                         BorderBrush="Transparent"

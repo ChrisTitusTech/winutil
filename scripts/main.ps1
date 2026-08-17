@@ -426,6 +426,17 @@ $sync["LightThemeMenuItem"].Add_Click({
 $sync["SettingsButton"].Add_Click({
     Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Toggle"; "Theme" = "Hide"; "FontScaling" = "Hide" }
 })
+$sync["LanguageButton"].Add_Click({
+    Invoke-WPFPopup -PopupActionTable @{ "Language" = "Toggle"; "Settings" = "Hide"; "Theme" = "Hide"; "FontScaling" = "Hide" }
+})
+$sync["EnglishLanguageMenuItem"].Add_Click({
+    Invoke-WPFPopup -Action "Hide" -Popups @("Language")
+    Set-WinUtilLanguage -Language "en"
+})
+$sync["ChineseLanguageMenuItem"].Add_Click({
+    Invoke-WPFPopup -Action "Hide" -Popups @("Language")
+    Set-WinUtilLanguage -Language "zh-CN"
+})
 $sync["ImportMenuItem"].Add_Click({
     Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
     Invoke-WPFImpex -type "import"
