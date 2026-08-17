@@ -12,7 +12,7 @@ BeforeAll {
 
 Describe "i18n config" {
     It "contains zh-CN with meta and strings" {
-        $i18n = Get-Content -Path (Join-Path $script:repoRoot "config\i18n.json") -Raw | ConvertFrom-Json
+        $i18n = Get-Content -Path (Join-Path $script:repoRoot "config\i18n.json") -Raw -Encoding UTF8 | ConvertFrom-Json
         $i18n."zh-CN" | Should -Not -BeNullOrEmpty
         $i18n."zh-CN".meta.code | Should -Be "zh-CN"
         $i18n."zh-CN".meta.name | Should -Be "简体中文"
@@ -20,7 +20,7 @@ Describe "i18n config" {
     }
 
     It "has no empty translation values" {
-        $i18n = Get-Content -Path (Join-Path $script:repoRoot "config\i18n.json") -Raw | ConvertFrom-Json
+        $i18n = Get-Content -Path (Join-Path $script:repoRoot "config\i18n.json") -Raw -Encoding UTF8 | ConvertFrom-Json
         foreach ($string in $i18n."zh-CN".strings.PSObject.Properties) {
             [string]$string.Value | Should -Not -BeNullOrEmpty
         }

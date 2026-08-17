@@ -28,7 +28,7 @@ BeforeAll {
 function script:Get-WinUtilConfigObject {
     param([string]$Name)
 
-    Get-Content -Path (Join-Path $script:configRoot "$Name.json") -Raw | ConvertFrom-Json
+    Get-Content -Path (Join-Path $script:configRoot "$Name.json") -Raw -Encoding UTF8 | ConvertFrom-Json
 }
 
 function script:Test-WinUtilHasProperty {
@@ -120,7 +120,7 @@ Describe "Config files" {
             param([string]$Name, [string]$Path)
 
             try {
-                Get-Content -Path $Path -Raw | ConvertFrom-Json | Out-Null
+                Get-Content -Path $Path -Raw -Encoding UTF8 | ConvertFrom-Json | Out-Null
             } catch {
                 throw "Failed to import ${Name}: $_"
             }
@@ -570,7 +570,7 @@ Describe "Embedded config scripts" {
         $invalidScripts = New-Object System.Collections.Generic.List[string]
 
         foreach ($configFile in (Get-ChildItem -Path $script:configRoot -Filter *.json)) {
-            $config = Get-Content -Path $configFile.FullName -Raw | ConvertFrom-Json
+            $config = Get-Content -Path $configFile.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
             foreach ($entry in $config.PSObject.Properties) {
                 foreach ($field in @("InvokeScript", "UndoScript")) {
                     if (-not (Test-WinUtilHasProperty -Object $entry.Value -Name $field)) {

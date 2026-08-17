@@ -15,7 +15,7 @@ $script += Get-ChildItem -Path functions -Recurse -File | ForEach-Object {
 }
 
 Get-ChildItem config | ForEach-Object {
-    $obj = Get-Content -Path $_.FullName -Raw | ConvertFrom-Json
+    $obj = Get-Content -Path $_.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
 
     if ($_.Name -eq "applications.json") {
         $fixed = [ordered]@{}
@@ -39,7 +39,7 @@ $script += "`$WinUtilAutounattendXml = @'`r`n$autounattendXml`r`n'@"
 
 $script += Get-Content -Path scripts\main.ps1 -Raw
 
-Set-Content -Path winutil.ps1 -Value $script
+Set-Content -Path winutil.ps1 -Value ([string][char]0xFEFF + $script)
 
 if ($Run) {
     .\Winutil.ps1
