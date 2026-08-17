@@ -360,6 +360,19 @@ Describe "Find-AppsByNameOrDescription" {
         $editorItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
     }
 
+    It "matches apps by preset key" {
+        $browserItem = New-WinUtilAppSearchItem -Tag "WPFInstallBrowser"
+        $mediaItem = New-WinUtilAppSearchItem -Tag "WPFInstallMedia"
+        $category = New-WinUtilAppCategory -Label "- Browsers" -Items @($browserItem, $mediaItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+
+        Find-AppsByNameOrDescription -SearchString "WPFInstallBrowser"
+
+        $browserItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $mediaItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $category.Visibility | Should -Be ([Windows.Visibility]::Visible)
+    }
+
     It "treats wildcard characters as literal app search text" {
         $literalItem = New-WinUtilAppSearchItem -Tag "WPFInstallLiteral"
         $mediaItem = New-WinUtilAppSearchItem -Tag "WPFInstallMedia"

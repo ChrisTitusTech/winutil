@@ -115,7 +115,8 @@ function Find-AppsByNameOrDescription {
                         $categoryMatch = -not $hasCategories -or $activeCategories -contains $appEntry.Category
                         $textMatch = -not $hasSearch -or
                             $appEntry.Content -like "*$escapedSearchString*" -or
-                            $appEntry.Description -like "*$escapedSearchString*"
+                            $appEntry.Description -like "*$escapedSearchString*" -or
+                            $appTag -like "*$escapedSearchString*"
 
                         if ($categoryMatch -and $textMatch) {
                             $appControl.Visibility = [Windows.Visibility]::Visible
