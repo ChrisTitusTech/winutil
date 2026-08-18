@@ -16,7 +16,7 @@ jobs:
               uses: actions/github-script@v9
               with:
                 script: |
-                  const trustedUsers = ["ChrisTitusTech", "FluffyPunk", "FallenGME", "mewclouds", "MyDrift-user", "Real-MullaC", "CodingWonders", "og-mrk"];
+                    const trustedUsers = ["ChrisTitusTech", "FluffyPunk", "FallenGME", "mewclouds", "MyDrift-user", "Real-MullaC", "CodingWonders", "og-mrk"];
                     const commentAuthor = context.payload.comment.user.login;
 
                     if (!trustedUsers.includes(commentAuthor)) {
@@ -65,7 +65,6 @@ jobs:
                              comment_id: comment.id
                           });
                         }
-                    }
                     const triageOffMatch = comment.body.match(/\/triageoff/);
                     if (triageOffMatch) {
                         const issue = await eventHolder.get({
