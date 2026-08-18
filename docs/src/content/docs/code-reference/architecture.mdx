@@ -442,13 +442,13 @@ Start-WinUtilJob -Name "Features" -Description "Installing Windows Features" -Pa
     $completed = 0
     foreach ($feature in $Features) {
         $completed++
-        Write-WinUtilJobProgress -Status "Installing $feature ($completed/$total)" -Percent ([int](($completed / $total) * 100))
+        Step-WinUtilJob -Status "Installing $feature ($completed/$total)" -Percent ([int](($completed / $total) * 100))
         Invoke-WinUtilFeatureInstall $feature
     }
 }
 ```
 
-The body only has to do the work and call `Write-WinUtilJobProgress`. Anything it throws is
+The body only has to do the work and call `Step-WinUtilJob`. Anything it throws is
 caught, logged, and shown on the taskbar as a failure.
 
 **Values, not closures**: the body is rebuilt inside the worker from its text, so it receives
@@ -540,7 +540,7 @@ Invoke-WPFUIThread -Parameters @{ Count = $installed.Count } -ScriptBlock {
 }
 ```
 
-Add `-Async` to post the update instead of waiting for it. `Write-WinUtilJobProgress` and the
+Add `-Async` to post the update instead of waiting for it. `Step-WinUtilJob` and the
 Win11 Creator status log use that so a per-item update never stalls the worker.
 
 **Values, not closures**: the body is rebuilt inside the interface runspace, so it takes what it
