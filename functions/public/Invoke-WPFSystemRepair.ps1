@@ -10,10 +10,13 @@ function Invoke-WPFSystemRepair {
         3. DISM - Repair a corrupted Windows operating system image
     #>
 
+    # SuccessCodes carries the non-zero exits a step treats as success. Only DISM has one:
+    # 3010 is ERROR_SUCCESS_REBOOT_REQUIRED, meaning the image was repaired and the change
+    # lands on restart. The same number from chkdsk or sfc does not mean that.
     $steps = @(
-        @{ Label = "Checking the disk for errors"; Arguments = "/c chkdsk /scan /perf" },
-        @{ Label = "Scanning protected system files"; Arguments = "/c sfc /scannow" },
-        @{ Label = "Repairing the Windows image"; Arguments = "/c dism /online /cleanup-image /restorehealth" }
+        @{ Label = "Checking the disk for errors";      Arguments = "/c chkdsk /scan /perf";                        SuccessCodes = @() },
+        @{ Label = "Scanning protected system files";   Arguments = "/c sfc /scannow";                              SuccessCodes = @() },
+        @{ Label = "Repairing the Windows image";       Arguments = "/c dism /online /cleanup-image /restorehealth"; SuccessCodes = @(3010) }
     )
 
     $completed = 0
@@ -23,9 +26,14 @@ function Invoke-WPFSystemRepair {
         # Start-Process does not throw on a nonzero exit, so without this a failed chkdsk, sfc
         # or dism run would still be reported as a completed repair
         $process = Start-Process cmd.exe -ArgumentList $step.Arguments -NoNewWindow -Wait -PassThru
-        if ($process.ExitCode -ne 0) {
-            throw "$($step.Label) failed with exit code $($process.ExitCode)."
+        $exitCode = $process.ExitCode
+
+        if ($exitCode -eq 3010 -and $step.SuccessCodes -contains 3010) {
+            Write-WinUtilLog -Level "WARN" -Component "SystemRepair" -Message "$($step.Label) finished; a restart is needed for the repair to take effect."
+        } elseif ($exitCode -ne 0) {
+            throw "$($step.Label) failed with exit code $exitCode."
         }
+
         $completed++
     }
 }
