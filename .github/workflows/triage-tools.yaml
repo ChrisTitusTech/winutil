@@ -99,5 +99,3 @@ jobs:
                             comment_id: comment.id
                         });
                     }
-                    }
-                    
