@@ -38,6 +38,7 @@ jobs:
                             repo,
                             issue_number: issueNumber
                         });
+                        console.log(issue)
                         if (issue.labels.some(label => label.name === "needs-triage")) {
                             await eventHolder.createComment({
                               owner,
