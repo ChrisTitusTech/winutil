@@ -24,8 +24,7 @@ jobs:
                         return;
                     }
 
-                    const eventHolder = context.payload.issue ? github.rest.issues : github.rest.pulls;
-                    const eventType = context.payload.issue ? "issue" : "pull request";
+                    const eventType = context.payload.pull_request ? "pull request" : "issue";
 
                     const comment = context.payload.comment;
                     const {owner, repo} = context.issue;
@@ -44,7 +43,7 @@ jobs:
                               owner,
                               repo,
                               issue_number: issueNumber,
-                              body: `The issue already has the 'needs-triage' label. For removing label, do /triageoff.`
+                              body: `The ${eventType} already has the 'needs-triage' label. For removing label, do /triageoff.`
                             });
                       } else {
                           await eventHolder.addLabels({
@@ -57,12 +56,48 @@ jobs:
                              owner,
                              repo,
                              issue_number: issueNumber,
-                             body: `${commentAuthor} has asked maintainer for a triage on this issue.`
+                             body: `${commentAuthor} has asked maintainer for a triage on this ${eventType}.`
                           });
-                          await eventHolder.deleteComment({
+                        }
+                        await eventHolder.deleteComment({
                              owner,
                              repo,
                              comment_id: comment.id
                           });
                         }
                     }
+                    const triageOffMatch = comment.body.match(/\/triageoff/);
+                    if (triageOffMatch) {
+                        const issue = await eventHolder.get({
+                            owner,
+                            repo,
+                            issue_number: issueNumber
+                        });
+                        if (issue.data.labels.some(label => label.name === "needs-triage")) {
+                            await eventHolder.removeLabel({
+                                owner,
+                                repo,
+                                issue_number: issueNumber,
+                                name: "needs-triage"
+                            });
+                            await eventHolder.createComment({
+                                owner,
+                                repo,
+                                issue_number: issueNumber,
+                                body: `${commentAuthor} removed triage request from this issue.`
+                            });
+                        } else {
+                            await eventHolder.createComment({
+                                owner,
+                                repo,
+                                issue_number: issueNumber,
+                                body: `The issue is not requested for triage.`
+                            });
+                        }
+                        await eventHolder.deleteComment({
+                            owner,
+                            repo,
+                            comment_id: comment.id
+                        });
+                    }
+                    
