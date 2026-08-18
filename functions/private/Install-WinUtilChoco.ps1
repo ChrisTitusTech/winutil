@@ -11,7 +11,10 @@ function Install-WinUtilChoco {
     Write-WinUtilLog -Component "Package" -Message "Chocolatey is not installed, installing it now."
     Step-WinUtilJob -Status "Installing Chocolatey" -State "Indeterminate"
 
-    $installScript = Invoke-WebRequest -Uri https://community.chocolatey.org/install.ps1 -UseBasicParsing
+    # Windows PowerShell 5.1 can negotiate a protocol the site refuses, which the official
+    # bootstrap sets explicitly for the same reason
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor [System.Net.SecurityProtocolType]::Tls12
+    $installScript = Invoke-WebRequest -Uri https://community.chocolatey.org/install.ps1 -UseBasicParsing -TimeoutSec 60
     Invoke-Command -ScriptBlock ([scriptblock]::Create($installScript.Content))
 
     # The installer extends PATH for new processes, which this one is not

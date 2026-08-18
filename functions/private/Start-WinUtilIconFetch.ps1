@@ -136,6 +136,9 @@ function Start-WinUtilIconFetch {
                         $batch[$item.Key] = $bitmap
                         $fetched++
                     } else {
+                        # An error page or a truncated body would otherwise sit in the cache and
+                        # be skipped by the Test-Path above on every later run
+                        Remove-Item -LiteralPath $file -Force -ErrorAction SilentlyContinue
                         $failed++
                     }
                 } catch {

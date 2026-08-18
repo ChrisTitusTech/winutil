@@ -85,7 +85,9 @@ function Invoke-WinUtilWhenIdle {
         return
     }
 
-    $timer = New-Object System.Windows.Threading.DispatcherTimer([System.Windows.Threading.DispatcherPriority]::Background)
+    # Bound to the interface dispatcher explicitly: the default picks up the calling thread's,
+    # which is only correct while every caller reaches here through a UI post
+    $timer = New-Object System.Windows.Threading.DispatcherTimer([System.Windows.Threading.DispatcherPriority]::Background, $sync.Form.Dispatcher)
     $timer.Interval = [timespan]::FromMilliseconds($DelayMilliseconds)
     $timer.Tag = @{ Callback = $Callback; Argument = $Argument }
     # Sender taken from the argument, matching how the rest of this codebase handles timer ticks

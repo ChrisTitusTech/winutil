@@ -194,10 +194,13 @@ Describe "Waiting for work that outlived the window" {
         $sync.ActiveJob = "Install"
 
         $clock = [Diagnostics.Stopwatch]::StartNew()
-        Wait-WinUtilRemainingWork -TimeoutMinutes ([double]0.01)
+        Wait-WinUtilRemainingWork -TimeoutMinutes 0.02
         $clock.Stop()
 
+        # it waited rather than returning at once, and gave up rather than waiting for ever
+        $clock.Elapsed.TotalSeconds | Should -BeGreaterThan 0.5
         $clock.Elapsed.TotalSeconds | Should -BeLessThan 10
+        $sync.ActiveJob | Should -Be "Install"
     }
 }
 

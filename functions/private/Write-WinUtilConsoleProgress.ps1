@@ -40,8 +40,14 @@ function Write-WinUtilConsoleProgress {
     $throttleMs = if ($redirected) { 1000 } else { 150 }
 
     $now = Get-Date
-    $sameText = $text -eq $state.LastText
-    if ($sameText -and ($now - $state.LastWrite).TotalMilliseconds -lt $throttleMs) {
+    $sinceLast = ($now - $state.LastWrite).TotalMilliseconds
+
+    # Redirected output cannot be rewritten in place, so every update is its own line and the
+    # throttle has to hold whether or not the text changed: a job reporting per package changes
+    # it on every call, which is exactly the case that scrolls a screenful.
+    if ($redirected) {
+        if ($sinceLast -lt $throttleMs) { return }
+    } elseif ($text -eq $state.LastText -and $sinceLast -lt $throttleMs) {
         return
     }
 

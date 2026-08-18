@@ -32,6 +32,10 @@ Function Install-WinUtilProgramWinget {
     $rebootExitCodes = @{
         3010 = "installed, a restart is needed to finish"
         1641 = "installed, the installer started a restart"
+        # WinGet's own equivalents. -1978334966 is deliberately absent: it means a reboot is
+        # required before the install can proceed, which is not a completed install.
+        -1978334967 = "installed, a restart is needed to finish"
+        -1978334965 = "installed, the installer started a restart"
     }
 
     foreach ($program in $Programs) {

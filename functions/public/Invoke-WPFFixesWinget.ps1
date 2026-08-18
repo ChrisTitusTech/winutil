@@ -9,5 +9,5 @@ function Invoke-WPFFixesWinget {
     #>
 
     Step-WinUtilJob -Status "Repairing WinGet" -State "Indeterminate"
-    Install-WinUtilWinget
+    Install-WinUtilWinget -Force
 }

@@ -49,7 +49,14 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
     # waited on and its code handed back. A terminal tab is skipped for the same reason: the
     # exit code of wt.exe is its own, not the run's.
     if ($Config -or $Preset) {
-        $elevated = Start-Process $powershellCmd -ArgumentList "-ExecutionPolicy Bypass -NoProfile -Command `"$script`"" -Verb RunAs -Wait -PassThru
+        # A declined UAC prompt throws, which would leave $elevated null and exit 0: the caller
+        # waiting on this process would read that as a successful run
+        try {
+            $elevated = Start-Process $powershellCmd -ArgumentList "-ExecutionPolicy Bypass -NoProfile -Command `"$script`"" -Verb RunAs -Wait -PassThru -ErrorAction Stop
+        } catch {
+            Write-Host "Elevation was declined or failed: $($_.Exception.Message)" -ForegroundColor Red
+            exit 1
+        }
         exit $elevated.ExitCode
     }
 
@@ -89,6 +96,10 @@ $winutildir = "$env:LocalAppData\winutil"
 $sync.winutildir = $winutildir
 
 $logdir = "$winutildir\logs"
+# Start-Transcript fails outright when the directory is missing, which is every first run
+if (-not (Test-Path $logdir)) {
+    New-Item -ItemType Directory -Path $logdir -Force | Out-Null
+}
 # Structured session log, written by Write-WinUtilLog from every thread. The console
 # transcript goes to its own file because Start-Transcript keeps that one open and only
 # ever records the runspace it was started on.

@@ -25,9 +25,15 @@ Describe "Sliders" {
         # a click on it toggled between the two ends.
         foreach ($slider in @($script:xaml.SelectNodes('//*[local-name()="Slider"]'))) {
             $name = $slider.GetAttribute("Name")
-            $minimum = [double]$slider.GetAttribute("Minimum")
-            $maximum = [double]$slider.GetAttribute("Maximum")
+            $minimumText = $slider.GetAttribute("Minimum")
+            $maximumText = $slider.GetAttribute("Maximum")
             $largeChange = $slider.GetAttribute("LargeChange")
+
+            # a missing attribute comes back as an empty string, which throws on the cast below
+            $minimumText | Should -Not -BeNullOrEmpty -Because "$name should declare a Minimum"
+            $maximumText | Should -Not -BeNullOrEmpty -Because "$name should declare a Maximum"
+            $minimum = [double]$minimumText
+            $maximum = [double]$maximumText
 
             $largeChange | Should -Not -BeNullOrEmpty -Because "$name should say how far a page moves"
             ([double]$largeChange) | Should -BeLessOrEqual (($maximum - $minimum) / 2) -Because "$name pages a sensible amount"
@@ -39,6 +45,11 @@ Describe "Sliders" {
 
         $slider | Should -Not -BeNullOrEmpty
         $slider.GetAttribute("IsSnapToTickEnabled") | Should -Be "True"
-        $slider.GetAttribute("SmallChange") | Should -Be $slider.GetAttribute("TickFrequency")
+
+        # both absent would compare two empty strings and pass for the very regression this
+        # test exists to catch
+        $tickFrequency = $slider.GetAttribute("TickFrequency")
+        $tickFrequency | Should -Not -BeNullOrEmpty -Because "the slider should declare its tick spacing"
+        $slider.GetAttribute("SmallChange") | Should -Be $tickFrequency
     }
 }

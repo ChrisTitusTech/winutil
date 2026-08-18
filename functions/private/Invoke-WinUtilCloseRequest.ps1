@@ -101,7 +101,9 @@ function Wait-WinUtilRemainingWork {
             An upper bound, so a worker that never returns cannot keep the process alive for good.
     #>
     param(
-        [int]$TimeoutMinutes = 120
+        # Double rather than int: an int silently truncates a fractional value to zero, which
+        # turns the bound into "do not wait at all"
+        [double]$TimeoutMinutes = 120
     )
 
     if (-not $sync.FinishInConsole -or -not $sync.ActiveJob) {

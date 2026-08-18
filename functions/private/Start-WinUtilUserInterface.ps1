@@ -68,7 +68,8 @@ function Start-WinUtilUserInterface {
                 if ($currentTime - $themeState.LastChange -gt $debounceInterval) {
                     Invoke-WinutilThemeChange -theme "Auto"
                     $themeState.LastChange = $currentTime
-                    $handled = $true
+                    # [ref] out-parameter: assigning to $handled would only replace the local
+                    $handled.Value = $true
                 }
             }
             return 0

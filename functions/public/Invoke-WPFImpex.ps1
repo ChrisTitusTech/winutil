@@ -50,9 +50,9 @@ function Invoke-WPFImpex {
                 if ($Config) {
                     $allConfs = ($sync.selectedApps + $sync.selectedTweaks + $sync.selectedToggles + $sync.selectedFeatures + $sync.selectedAppx) | ForEach-Object { [string]$_ }
                     if (-not $allConfs) {
-                        [System.Windows.MessageBox]::Show(
-                            "No settings are selected to export. Please select at least one app, tweak, toggle, feature, or AppX package before exporting.",
-                            "Nothing to Export", "OK", "Warning")
+                        Show-WinUtilMessage -Message (
+                            "No settings are selected to export. Please select at least one app, tweak, toggle, feature, or AppX package before exporting."
+                        ) -Title "Nothing to Export" -Button "OK" -Icon "Warning" | Out-Null
                         return
                     }
                     $jsonFile = $allConfs | ConvertTo-Json

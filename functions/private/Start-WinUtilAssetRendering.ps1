@@ -30,7 +30,10 @@ function Start-WinUtilAssetRendering {
     })
 
     $handle = $shell.BeginInvoke()
-    Register-WinUtilRunspaceCleanup -PowerShell $shell -Handle $handle
+
+    # The cleanup callback disposes the instance but knows nothing of the runspace created for
+    # it here, which would otherwise stay open for the life of the session
+    Register-WinUtilRunspaceCleanup -PowerShell $shell -Handle $handle -Runspace $runspace
 
     return $handle
 }

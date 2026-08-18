@@ -79,6 +79,13 @@ function Write-WinUtilLog {
                 $held = $true
             }
 
+            if (-not $held) {
+                # Writing anyway is what interleaves lines, and the wait only times out when
+                # contention is at its worst
+                Write-Host $line
+                return
+            }
+
             Add-Content -Path $logPath -Value $line -Encoding UTF8 -ErrorAction Stop
         } catch [System.IO.IOException] {
             Write-Host $line

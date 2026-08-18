@@ -66,7 +66,13 @@ function Start-WinUtilBackgroundQueue {
     # the thread either, so it is simply done
     if (-not (Test-WinUtilUIAlive)) {
         while ($Queue.Count -gt 0) {
-            & $Step $Queue.Dequeue()
+            # One failing item must not abandon the rest, skip OnComplete and strand the state,
+            # which is how the dispatcher path already behaves
+            try {
+                & $Step $Queue.Dequeue()
+            } catch {
+                Write-WinUtilErrorRecord -ErrorRecord $_ -Component "UI" -Context "Background queue '$Name'"
+            }
         }
         if ($OnComplete) { & $OnComplete }
         $sync.BackgroundQueues.Remove($Name)
