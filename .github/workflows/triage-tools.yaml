@@ -99,7 +99,7 @@ jobs:
                             comment_id: comment.id
                         });
                     }
-                    const notPlannedMatch = comment.body.match(/\/notplanned\s+(\w+)/);
+                    const notPlannedMatch = comment.body.match(/\/np\s+(\w+)/);
                     if (notPlannedMatch && eventType === "issue") {
                         switch (notPlannedMatch[1]) {
                             case "wontfix":
