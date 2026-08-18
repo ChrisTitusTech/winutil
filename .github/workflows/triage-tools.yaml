@@ -102,13 +102,18 @@ jobs:
                     if (notPlannedMatch && eventType === "issue") {
                         switch (notPlannedMatch[1]) {
                             case "wontfix":
+                                await github.rest.issues.addLabels({
+                                    owner,
+                                    repo,
+                                    issue_number: issueNumber,
+                                    labels: ["wontfix"]
+                                });
                                 await github.rest.issues.update({
                                     owner,
                                     repo,
                                     issue_number: issueNumber,
                                     state: "closed",
-                                    state_reason: "not_planned",
-                                    labels: ["wontfix"]
+                                    state_reason: "not_planned"
                                 });
                                 await github.rest.issues.createComment({
                                     owner,
