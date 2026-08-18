@@ -16,11 +16,20 @@ jobs:
               uses: actions/github-script@v9
               with:
                 script: |
-                    const trustedUsers = ["ChrisTitusTech", "FluffyPunk", "FallenGME", "mewclouds", "MyDrift-user", "Real-MullaC", "CodingWonders", "og-mrk"];
-                    const commentAuthor = context.payload.comment.user.login;
+                    const trustedUsers = [
+                        7896101, // ChrisTitusTech
+                        57459428, // FluffyPunk
+                        125669256", // FallenGME
+                        90123670, // mewclouds
+                        121827219, // MyDrift-user
+                        17331812, // Callum
+                        101426328, // CodingWonders
+                        70659536 // og-mrk
+                        ];
+                    const commentAuthor = context.payload.comment.user;
 
-                    if (!trustedUsers.includes(commentAuthor)) {
-                        console.log(`Comment author ${commentAuthor} is not a trusted user. Exiting.`);
+                    if (!trustedUsers.includes(commentAuthor.id)) {
+                        console.log(`Comment author ${commentAuthor.login} is not a trusted user. Exiting.`);
                         return;
                     }
 
@@ -55,7 +64,7 @@ jobs:
                              owner,
                              repo,
                              issue_number: issueNumber,
-                             body: `${commentAuthor} has asked maintainer for a triage on this ${eventType}.`
+                             body: `${commentAuthor.login} has asked maintainer for a triage on this ${eventType}.`
                           });
                         }
                         await github.rest.issues.deleteComment({
@@ -82,7 +91,7 @@ jobs:
                                 owner,
                                 repo,
                                 issue_number: issueNumber,
-                                body: `${commentAuthor} removed triage request from this ${eventType}.`
+                                body: `${commentAuthor.login} removed triage request from this ${eventType}.`
                             });
                         } else {
                             await github.rest.issues.createComment({
@@ -119,7 +128,7 @@ jobs:
                                     owner,
                                     repo,
                                     issue_number: issueNumber,
-                                    body: `${commentAuthor} marked this ${eventType} as not fixable`
+                                    body: `${commentAuthor.login} marked this ${eventType} as not fixable`
                                 });
                                 break;
                             case "notrelated":
@@ -135,7 +144,7 @@ jobs:
                                     owner,
                                     repo,
                                     issue_number: issueNumber,
-                                    body: `${commentAuthor} marked this ${eventType} as not related to the project`
+                                    body: `${commentAuthor.login} marked this ${eventType} as not related to the project`
                                 });
                                 break;
                             default:
@@ -150,7 +159,7 @@ jobs:
                                     owner,
                                     repo,
                                     issue_number: issueNumber,
-                                    body: `${commentAuthor} marked this ${eventType} as not planned.`
+                                    body: `${commentAuthor.login} marked this ${eventType} as not planned.`
                                 });
                                 break;
                         };
@@ -187,7 +196,7 @@ jobs:
                                 owner,
                                 repo,
                                 issue_number: issueNumber,
-                                body: `${commentAuthor} marked this ${eventType} as a duplicate of #${duplicateIssueNumber}.`
+                                body: `${commentAuthor.login} marked this ${eventType} as a duplicate of #${duplicateIssueNumber}.`
                             });
                             await github.rest.issues.deleteComment({
                                 owner,
