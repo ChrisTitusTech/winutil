@@ -152,13 +152,13 @@ jobs:
                     const duplicateMatch = comment.body.match(/\/duplicate\s+(\S+)/);
                     if (duplicateMatch && eventType === "issue") {
                         const duplicateIssueNumber = parseInt(duplicateMatch[1].replace("#", ""));
-                        const duplicateIssue = await eventHolder.get({
+                        const duplicateIssue = await github.rest.issues.get({
                             owner,
                             repo,
                             issue_number: duplicateIssueNumber
                         });
                         if (duplicateIssue) {
-                            await eventHolder.update({
+                            await github.rest.issues.update({
                                 owner,
                                 repo,
                                 issue_number: issueNumber,
@@ -166,19 +166,19 @@ jobs:
                                 state_reason: "duplicate",
                                 duplicate_issue_id: duplicateIssueNumber
                             });
-                            await eventHolder.createComment({
+                            await github.rest.issues.createComment({
                                 owner,
                                 repo,
                                 issue_number: issueNumber,
                                 body: `${commentAuthor} marked this ${eventType} as a duplicate of #${duplicateIssueNumber}.`
                             });
-                            await eventHolder.deleteComment({
+                            await github.rest.issues.deleteComment({
                                 owner,
                                 repo,
                                 comment_id: comment.id
                             });
                         } else {
-                            await eventHolder.createComment({
+                            await github.rest.issues.createComment({
                                 owner,
                                 repo,
                                 issue_number: issueNumber,
