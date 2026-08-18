@@ -103,7 +103,7 @@ jobs:
                     if (notPlannedMatch && eventType === "issue") {
                         switch (notPlannedMatch[1]) {
                             case "wontfix":
-                                await eventHolder.update({
+                                await github.rest.issues.update({
                                     owner,
                                     repo,
                                     issue_number: issueNumber,
@@ -111,20 +111,15 @@ jobs:
                                     state_reason: "not_planned",
                                     labels: ["wontfix"]
                                 });
-                                await eventHolder.createComment({
+                                await github.rest.issues.createComment({
                                     owner,
                                     repo,
                                     issue_number: issueNumber,
                                     body: `${commentAuthor} marked this ${eventType} as not fixable`
                                 });
-                                await eventHolder.removeComment({
-                                    owner,
-                                    repo,
-                                    comment_id: comment.id
-                                });
                                 break;
                             case "notrelated":
-                                await eventHolder.update({
+                                await github.rest.issues.update({
                                     owner,
                                     repo,
                                     issue_number: issueNumber,
@@ -132,30 +127,25 @@ jobs:
                                     state_reason: "not_planned",
                                     labels: ["not-related"]
                                 });
-                                await eventHolder.createComment({
+                                await github.rest.issues.createComment({
                                     owner,
                                     repo,
                                     issue_number: issueNumber,
                                     body: `${commentAuthor} marked this ${eventType} as not related to the project`
                                 });
-                                await eventHolder.removeComment({
-                                    owner,
-                                    repo,
-                                    comment_id: comment.id
-                                });
                                 break;
                             default:
-                                await eventHolder.createComment({
+                                await github.rest.issues.createComment({
                                     owner,
                                     repo,
                                     issue_number: issueNumber,
                                     body: `${commentAuthor} marked this ${eventType} as not planned.`
                                 });
-                                await eventHolder.removeComment({
-                                    owner,
-                                    repo,
-                                    comment_id: comment.id
-                                });
                                 break;
                         };
+                        await github.rest.issues.deleteComment({
+                            owner,
+                            repo,
+                            comment_id: comment.id
+                        });
                     }
