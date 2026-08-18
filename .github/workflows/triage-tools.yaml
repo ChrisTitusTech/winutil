@@ -63,7 +63,5 @@ jobs:
                              repo,
                              comment_id: comment.id
                           });
-                    }
-                                break;
-                        };
+                        }
                     }
