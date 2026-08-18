@@ -1,0 +1,69 @@
+name: Repo Contributors' Triage Tools
+
+on:
+    issue_comment: 
+        types: [created, edited]
+
+jobs:
+    triage-tools:
+        runs-on: ubuntu-latest
+        permissions: 
+            issues: write
+            pull-requests: write
+            contents: read
+        steps:
+            - name: Process message
+              uses: actions/github-script@v9
+              with:
+                script: |
+                  const trustedUsers = ["ChrisTitusTech", "FluffyPunk", "FallenGME", "mewclouds", "MyDrift-user", "Real-MullaC", "CodingWonders", "og-mrk"];
+                    const commentAuthor = context.payload.comment.user.login;
+
+                    if (!trustedUsers.includes(commentAuthor)) {
+                        console.log(`Comment author ${commentAuthor} is not a trusted user. Exiting.`);
+                        return;
+                    }
+
+                    const eventHolder = context.payload.issue ? github.rest.issues : github.rest.pulls;
+                    const eventType = context.payload.issue ? "issue" : "pull request";
+
+                    const comment = context.payload.comment;
+                    const {owner, repo} = context.issue;
+                    const issueNumber = context.issue.number;
+
+                    const triageMatch = comment.body.match(/\/triage/);
+                    if (triageMatch) {
+                        const issue = await eventHolder.get({
+                            owner,
+                            repo,
+                            issue_number: issueNumber
+                        });
+                        if (issue.labels.some(label => label.name === "needs-triage")) {
+                            await eventHolder.createComment({
+                              owner,
+                              repo,
+                              issue_number: issueNumber,
+                              body: `The issue already has the 'needs-triage' label. For removing label, do /triageoff.`
+                            });
+                      } else {
+                          await eventHolder.addLabels({
+                             owner,
+                             repo,
+                             issue_number: issueNumber,
+                             labels: ["needs-triage"]
+                          });
+                          await eventHolder.createComment({
+                             owner,
+                             repo,
+                             issue_number: issueNumber,
+                             body: `${commentAuthor} has asked maintainer for a triage on this issue.`
+                          });
+                          await eventHolder.removeComment({
+                             owner,
+                             repo,
+                             comment_id: comment.id
+                          });
+                    }
+                                break;
+                        };
+                    }
