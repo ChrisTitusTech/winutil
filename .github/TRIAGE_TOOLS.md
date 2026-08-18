@@ -6,14 +6,14 @@ Trusted members of the repository can use this workflow to triage issues and PRs
 - `/np wontfix` - closes the issue with not planned status and tagging with 'wontfix' label.
 - `/np notrelated` - closes the issue with not planned status and tagging with 'not related' label. Used in cases when the issue is not related to the project.
 - `/np <any word>` - closes the issue with not planned status.
-- `/duplicate <issue number>` - closes the issue with duplicate status. GH API is bugged, so it won't add issue number to status, but GH Actions will leave a comment.
+- `/duplicate <issue number>` - closes the issue with duplicate status. GH API is bugged and sometimes it adds link to status, sometimes not. 
 
-Any of this command will delete your message leave a log by GH Actions to avoid any possible sabotage.
+Issuing a command will delete your message leave a log by GH Actions to avoid any possible sabotage.
 
 # Notes for future
 
 - No, custom labels won't be supported due to maintaining clean structure of project.
-- To become able to use this workflow, you should be a trusted member and included directly by owner of project or by PR from other trusted member.
+- To become able to use this workflow, you should be included directly by owner of project or by PR from other trusted member.
 - Any abuse of this workflow can and will lead to revoking of your access to this workflow and/or banning from the project.
 - Note for Chris: I wanted to make something similar for discussions, but GH API has no docs for it, so result is next - triage for both issues and PRs and ability to close stupid issues from people who can't read.
 
