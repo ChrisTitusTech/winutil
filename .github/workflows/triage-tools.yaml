@@ -30,7 +30,7 @@ jobs:
                     const {owner, repo} = context.issue;
                     const issueNumber = context.issue.number;
 
-                    const triageMatch = comment.body.match(/\/triage/);
+                    const triageMatch = comment.body.match(/\/triage\b/);
                     if (triageMatch) {
                         const issue = await github.rest.issues.get({
                             owner,
@@ -65,7 +65,7 @@ jobs:
                              comment_id: comment.id
                           });
                         }
-                    const triageOffMatch = comment.body.match(/\/triageoff/);
+                    const triageOffMatch = comment.body.match(/\/triageoff\b/);
                     if (triageOffMatch) {
                         const issue = await github.rest.issues.get({
                             owner,
