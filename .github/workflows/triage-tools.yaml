@@ -19,7 +19,7 @@ jobs:
                     const trustedUsers = [
                         7896101, // ChrisTitusTech
                         57459428, // FluffyPunk
-                        125669256", // FallenGME
+                        125669256, // FallenGME
                         90123670, // mewclouds
                         121827219, // MyDrift-user
                         17331812, // Callum
