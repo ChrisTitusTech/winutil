@@ -59,7 +59,7 @@ jobs:
                              issue_number: issueNumber,
                              body: `${commentAuthor} has asked maintainer for a triage on this issue.`
                           });
-                          await eventHolder.removeComment({
+                          await eventHolder.deleteComment({
                              owner,
                              repo,
                              comment_id: comment.id
