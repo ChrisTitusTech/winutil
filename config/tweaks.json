@@ -1168,22 +1168,6 @@
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/disablebgapps"
   },
-  "WPFTweaksDisableFSO": {
-    "Content": "Fullscreen Optimizations - Disable",
-    "Description": "Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "registry": [
-      {
-        "Path": "HKCU:\\System\\GameConfigStore",
-        "Name": "GameDVR_DXGIHonorFSEWindowsCompatible",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0"
-      }
-    ],
-    "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/disablefso"
-  },
   "WPFTweaksDisableExplorerAutoDiscovery": {
     "Content": "File Explorer Automatic Folder Discovery - Disable",
     "Description": "Windows Explorer automatically tries to guess the type of the folder based on its contents, slowing down the browsing experience. WARNING! Will disable File Explorer grouping.",
