@@ -20,4 +20,4 @@ Any of this command will delete your message leave a log by GH Actions to avoid 
 # Known bugs
 
 - I'm too lazy to make a proper check for command being at the start of the message, so if you write something like "I think this is a duplicate /duplicate 123" it will still work and your message will be deleted. So please write your comment and command in separate messages. If someone fixes this, delete this note.
-- Writing "/np" without any word won't work because of regex, so please write "/np <any word>" instead of just "/np". If someone fixes this, delete this note.
+- Writing "/np" without any word won't work because of regex, so please write `/np <any word>` instead of just "/np". If someone fixes this, delete this note.
