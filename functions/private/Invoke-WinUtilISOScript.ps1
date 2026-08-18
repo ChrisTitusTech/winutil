@@ -36,12 +36,6 @@ function Invoke-WinUtilISOScript {
         [scriptblock]$Log = { param($m) Write-Output $m }
     )
 
-    function Format-WinUtilISOElapsed {
-        param ([Parameter(Mandatory)][System.Diagnostics.Stopwatch]$Stopwatch)
-
-        return $Stopwatch.Elapsed.ToString('hh\:mm\:ss\.fff')
-    }
-
     function Get-WinUtilISODriverPackageInventory {
         param (
             [Parameter(Mandatory)][AllowEmptyCollection()][System.IO.FileInfo[]]$DriverInfs,
@@ -272,21 +266,18 @@ function Invoke-WinUtilISOScript {
                 [Parameter(Mandatory)][string]$Operation
             )
 
-            $operationTimer = [System.Diagnostics.Stopwatch]::StartNew()
             $output = @(& dism.exe @Arguments 2>&1)
             $exitCode = $LASTEXITCODE
-            $operationTimer.Stop()
-            $elapsed = Format-WinUtilISOElapsed -Stopwatch $operationTimer
             if ($exitCode -ne 0) {
                 foreach ($line in @($output | Select-Object -Last 20)) {
                     if (-not [string]::IsNullOrWhiteSpace([string]$line)) {
                         & $Logger "  dism[$Operation]: $line"
                     }
                 }
-                throw "DISM $Operation failed with exit code $exitCode after $elapsed."
+                throw "DISM $Operation failed with exit code $exitCode."
             }
             if ($Operation -ne 'metadata') {
-                $null = & $Logger "DISM $Operation completed in $elapsed."
+                $null = & $Logger "DISM $Operation completed."
             }
             return $output
         }
@@ -348,39 +339,23 @@ function Invoke-WinUtilISOScript {
         try {
             & $Logger "Exporting current system drivers before modifying install.wim..."
             $dismLog = Join-Path $env:TEMP "WinUtil_DismDriverExport_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
-            $driverExportTimer = [System.Diagnostics.Stopwatch]::StartNew()
             try {
                 $dismProcess = Start-Process -FilePath "dism.exe" -ArgumentList "/online /export-driver /destination:`"$driverExportRoot`" /LogPath:`"$dismLog`"" -Wait -NoNewWindow -PassThru
             } catch {
-                $driverExportTimer.Stop()
-                throw "dism.exe driver export failed after $(Format-WinUtilISOElapsed -Stopwatch $driverExportTimer): $_"
-            } finally {
-                if ($driverExportTimer.IsRunning) {
-                    $driverExportTimer.Stop()
-                }
+                throw "dism.exe driver export failed: $_"
             }
-            $driverExportElapsed = Format-WinUtilISOElapsed -Stopwatch $driverExportTimer
             if ($dismProcess.ExitCode -ne 0) {
-                throw "dism.exe driver export failed with exit code $($dismProcess.ExitCode) after $driverExportElapsed."
+                throw "dism.exe driver export failed with exit code $($dismProcess.ExitCode)."
             }
-            $null = & $Logger "Driver export completed in $driverExportElapsed."
+            $null = & $Logger "Driver export completed."
 
             $driverInfs = @(Get-ChildItem -LiteralPath $driverExportRoot -Filter '*.inf' -Recurse -File)
             if ($driverInfs.Count -eq 0) {
                 throw 'DISM exported no driver INF files.'
             }
 
-            $classificationTimer = [System.Diagnostics.Stopwatch]::StartNew()
-            try {
-                $driverPackages = @(Get-WinUtilISODriverPackageInventory -DriverInfs $driverInfs -Logger $Logger)
-                $winpeDriverPackages = @(Select-WinUtilISOWinPEDriverPackage -Packages $driverPackages -Logger $Logger)
-            } catch {
-                $classificationTimer.Stop()
-                $null = & $Logger "Driver inventory/classification failed after $(Format-WinUtilISOElapsed -Stopwatch $classificationTimer)."
-                throw
-            }
-            $classificationTimer.Stop()
-            $null = & $Logger "Driver inventory/classification completed in $(Format-WinUtilISOElapsed -Stopwatch $classificationTimer)."
+            $driverPackages = @(Get-WinUtilISODriverPackageInventory -DriverInfs $driverInfs -Logger $Logger)
+            $winpeDriverPackages = @(Select-WinUtilISOWinPEDriverPackage -Packages $driverPackages -Logger $Logger)
 
             $winpeDriverDir = Join-Path $ContentRoot '$WinPEDriver$'
             $copyFailures = 0

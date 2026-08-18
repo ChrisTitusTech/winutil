@@ -615,7 +615,6 @@ function Invoke-WinUtilISOExport {
             })
         }
 
-        $isoSaveTimer = $null
         try {
             Write-WinUtilISOLog "Exporting to ISO: $outputISO"
             SetProgress "Building ISO..." 10
@@ -635,7 +634,6 @@ function Invoke-WinUtilISOExport {
 
             $proc = [System.Diagnostics.Process]::new()
             $proc.StartInfo = $psi
-            $isoSaveTimer = [System.Diagnostics.Stopwatch]::StartNew()
             $proc.Start()
 
             # Stream stdout line-by-line as oscdimg runs
@@ -645,8 +643,6 @@ function Invoke-WinUtilISOExport {
             }
 
             $proc.WaitForExit()
-            $isoSaveTimer.Stop()
-            $isoSaveElapsed = $isoSaveTimer.Elapsed.ToString('hh\:mm\:ss\.fff')
 
             # Flush any stderr after process exits
             $stderr = $proc.StandardError.ReadToEnd()
@@ -656,13 +652,12 @@ function Invoke-WinUtilISOExport {
 
             if ($proc.ExitCode -eq 0) {
                 SetProgress "ISO exported" 100
-                Write-WinUtilISOLog "OSCDIMG save completed in $isoSaveElapsed."
                 Write-WinUtilISOLog "ISO exported successfully: $outputISO"
                 $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                     [System.Windows.MessageBox]::Show("ISO exported successfully!`n`n$outputISO", "Export Complete", "OK", "Info")
                 })
             } else {
-                Write-WinUtilISOLog "OSCDIMG save failed with exit code $($proc.ExitCode) after $isoSaveElapsed."
+                Write-WinUtilISOLog "oscdimg exited with code $($proc.ExitCode)."
                 $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                     [System.Windows.MessageBox]::Show(
                         "oscdimg exited with code $($proc.ExitCode).`nCheck the status log for details.",
@@ -670,11 +665,7 @@ function Invoke-WinUtilISOExport {
                 })
             }
         } catch {
-            if ($isoSaveTimer -and $isoSaveTimer.IsRunning) {
-                $isoSaveTimer.Stop()
-            }
-            $timing = if ($isoSaveTimer) { " after $($isoSaveTimer.Elapsed.ToString('hh\:mm\:ss\.fff'))" } else { '' }
-            Write-WinUtilISOLog "ERROR during ISO export$timing`: $_"
+            Write-WinUtilISOLog "ERROR during ISO export: $_"
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 [System.Windows.MessageBox]::Show("ISO export failed:`n`n$_", "Error", "OK", "Error")
             })

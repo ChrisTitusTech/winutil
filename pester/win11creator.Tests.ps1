@@ -508,9 +508,7 @@ Describe "Win11 Creator setup media" {
         }
     }
 
-    It "times OSCDIMG save and uses setup-media completion wording" {
-        $script:exportFunction | Should -Match ([regex]::Escape('$isoSaveTimer = [System.Diagnostics.Stopwatch]::StartNew()'))
-        $script:exportFunction | Should -Match 'OSCDIMG save completed in \$isoSaveElapsed'
+    It "uses setup-media completion wording" {
         $script:modifyFunction | Should -Match ([regex]::Escape('Setup media preparation complete. Choose an output option in Step 4.'))
         $script:modifyFunction | Should -Not -Match ([regex]::Escape('install.wim modification complete'))
     }
@@ -773,11 +771,10 @@ Describe "Win11 Creator setup media" {
             $answerFile.SelectSingleNode('//sg:File[@path="C:\Windows\Setup\Scripts\WinUtil-InstallDrivers.ps1"]', $nsMgr) | Should -BeNullOrEmpty
             ($logs -join '|') | Should -Match 'staged 1 active packages for WinPE'
             ($logs -join '|') | Should -Match 'install.wim metadata validation passed'
-            ($logs -join '|') | Should -Match 'Driver export completed in \d{2}:\d{2}:\d{2}\.\d{3}'
-            ($logs -join '|') | Should -Match 'Driver inventory/classification completed in \d{2}:\d{2}:\d{2}\.\d{3}'
-            ($logs -join '|') | Should -Match 'DISM mount completed in \d{2}:\d{2}:\d{2}\.\d{3}'
-            ($logs -join '|') | Should -Match 'DISM add-driver completed in \d{2}:\d{2}:\d{2}\.\d{3}'
-            ($logs -join '|') | Should -Match 'DISM commit completed in \d{2}:\d{2}:\d{2}\.\d{3}'
+            ($logs -join '|') | Should -Match 'Driver export completed'
+            ($logs -join '|') | Should -Match 'DISM mount completed'
+            ($logs -join '|') | Should -Match 'DISM add-driver completed'
+            ($logs -join '|') | Should -Match 'DISM commit completed'
             ($logs -join '|') | Should -Not -Match '100.0%'
         } finally {
             Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
