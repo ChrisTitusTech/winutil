@@ -32,34 +32,34 @@ jobs:
 
                     const triageMatch = comment.body.match(/\/triage/);
                     if (triageMatch) {
-                        const issue = await eventHolder.get({
+                        const issue = await github.rest.issues.get({
                             owner,
                             repo,
                             issue_number: issueNumber
                         });
                         console.log(issue)
                         if (issue.data.labels.some(label => label.name === "needs-triage")) {
-                            await eventHolder.createComment({
+                            await github.rest.issues.createComment({
                               owner,
                               repo,
                               issue_number: issueNumber,
                               body: `The ${eventType} already has the 'needs-triage' label. For removing label, do /triageoff.`
                             });
                       } else {
-                          await eventHolder.addLabels({
+                          await github.rest.issues.addLabels({
                              owner,
                              repo,
                              issue_number: issueNumber,
                              labels: ["needs-triage"]
                           });
-                          await eventHolder.createComment({
+                          await github.rest.issues.createComment({
                              owner,
                              repo,
                              issue_number: issueNumber,
                              body: `${commentAuthor} has asked maintainer for a triage on this ${eventType}.`
                           });
                         }
-                        await eventHolder.deleteComment({
+                        await github.rest.issues.deleteComment({
                              owner,
                              repo,
                              comment_id: comment.id
@@ -67,36 +67,37 @@ jobs:
                         }
                     const triageOffMatch = comment.body.match(/\/triageoff/);
                     if (triageOffMatch) {
-                        const issue = await eventHolder.get({
+                        const issue = await github.rest.issues.get({
                             owner,
                             repo,
                             issue_number: issueNumber
                         });
                         if (issue.data.labels.some(label => label.name === "needs-triage")) {
-                            await eventHolder.removeLabel({
+                            await github.rest.issues.removeLabel({
                                 owner,
                                 repo,
                                 issue_number: issueNumber,
                                 name: "needs-triage"
                             });
-                            await eventHolder.createComment({
+                            await github.rest.issues.createComment({
                                 owner,
                                 repo,
                                 issue_number: issueNumber,
                                 body: `${commentAuthor} removed triage request from this issue.`
                             });
                         } else {
-                            await eventHolder.createComment({
+                            await github.rest.issues.createComment({
                                 owner,
                                 repo,
                                 issue_number: issueNumber,
                                 body: `The issue is not requested for triage.`
                             });
                         }
-                        await eventHolder.deleteComment({
+                        await github.rest.issues.deleteComment({
                             owner,
                             repo,
                             comment_id: comment.id
                         });
+                    }
                     }
                     
