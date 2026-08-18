@@ -220,12 +220,12 @@ function Invoke-WinUtilISOWriteUSB {
                     Split-WindowsImage -ImagePath $installWim -SplitImagePath $splitDest -FileSize 3800 -CheckIntegrity
                     Write-WinUtilISOLog "install.wim split complete."
                     Write-WinUtilISOLog "Copying remaining files to USB..."
-                    & robocopy $ContentsDir $usbDrive /E /XF install.wim /NFL /NDL /NJH /NJS
+                    Invoke-WinUtilRobocopy -Source $ContentsDir -Destination $usbDrive -Arguments @("/E","/XF","install.wim","/NFL","/NDL","/NJH","/NJS")
                 } else {
-                    & robocopy $ContentsDir $usbDrive /E /NFL /NDL /NJH /NJS
+                    Invoke-WinUtilRobocopy -Source $ContentsDir -Destination $usbDrive -Arguments @("/E","/NFL","/NDL","/NJH","/NJS")
                 }
             } else {
-                & robocopy $ContentsDir $usbDrive /E /NFL /NDL /NJH /NJS
+                Invoke-WinUtilRobocopy -Source $ContentsDir -Destination $usbDrive -Arguments @("/E","/NFL","/NDL","/NJH","/NJS")
             }
 
             Step-WinUtilJob -Status "Finalising USB drive..." -Percent 90

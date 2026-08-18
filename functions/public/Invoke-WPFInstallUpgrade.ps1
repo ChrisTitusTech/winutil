@@ -67,16 +67,29 @@ function Get-WinUtilUpgradablePackage {
         Returns the package identifiers WinGet reports as having an update available
     #>
 
-    # The command line prints a table, and its own header and separator rows are not packages
-    $output = & winget upgrade --include-unknown --accept-source-agreements 2>&1 | Out-String
-    $ids = New-Object System.Collections.Generic.List[string]
+    # The table is localised and its columns are truncated to the console width, so a shape
+    # matched out of it is not an identifier: a wrapped version, a translated header or a
+    # diagnostic line all match the same pattern. Every candidate is therefore confirmed against
+    # winget itself before it is upgraded, and stderr is kept out of the parse.
+    $output = & winget upgrade --include-unknown --accept-source-agreements 2>$null | Out-String
+
+    $candidates = New-Object System.Collections.Generic.List[string]
     foreach ($line in ($output -split "`r?`n")) {
         if ($line -match '^\s*\S.*?\s{2,}(?<id>[\w\.\-\+]+)\s{2,}\S+\s{2,}\S+') {
-            $id = $Matches['id']
-            if ($id -notin @("Id", "----")) {
-                $ids.Add($id)
-            }
+            $null = $candidates.Add($Matches['id'])
         }
     }
+
+    $ids = New-Object System.Collections.Generic.List[string]
+    foreach ($candidate in ($candidates | Sort-Object -Unique)) {
+        # An exact-id query returns nothing for a header, a separator or a stray column value
+        $confirmed = & winget list --id $candidate --exact --accept-source-agreements 2>$null | Out-String
+        if ($confirmed -match [regex]::Escape($candidate)) {
+            $null = $ids.Add($candidate)
+        } else {
+            Write-WinUtilLog -Component "Install" -Message "Ignoring '$candidate' from the upgrade table: winget does not report it as an installed package."
+        }
+    }
+
     return @($ids)
 }

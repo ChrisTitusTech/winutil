@@ -24,11 +24,15 @@ function Invoke-WinUtilInstallPSProfile {
     Step-WinUtilJob -Status "Running the profile setup" -State "Indeterminate"
 
     $setupUrl = "https://github.com/ChrisTitusTech/powershell-profile/raw/main/setup.ps1"
-    $output = & pwsh -NoProfile -NonInteractive -Command "irm '$setupUrl' | iex" 2>&1
+    # Stop in the child, so a setup failure is a nonzero exit rather than a logged error and a
+    # exit code of zero
+    $output = & pwsh -NoProfile -NonInteractive -Command "`$ErrorActionPreference = 'Stop'; irm '$setupUrl' | iex" 2>&1
     $exitCode = $LASTEXITCODE
 
+    $failures = 0
     foreach ($line in @($output)) {
         if ($line -is [System.Management.Automation.ErrorRecord]) {
+            $failures++
             Write-WinUtilErrorRecord -ErrorRecord $line -Component "Feature" -Context "PowerShell profile setup"
         } elseif (-not [string]::IsNullOrWhiteSpace($line)) {
             Write-WinUtilLog -Component "Feature" -Message ([string]$line).Trim()
@@ -37,6 +41,10 @@ function Invoke-WinUtilInstallPSProfile {
 
     if ($exitCode -ne 0) {
         throw "The profile setup script exited with code $exitCode."
+    }
+
+    if ($failures -gt 0) {
+        throw "The profile setup script reported $failures error(s); see the log."
     }
 
     Write-WinUtilLog -Component "Feature" -Message "CTT PowerShell profile installed. Open a new PowerShell 7 session to use it."

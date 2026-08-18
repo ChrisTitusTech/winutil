@@ -9,7 +9,8 @@ function Initialize-WinUtilRunspacePool {
     }
 
     if ($sync.runspace) {
-        Close-WinUtilRunspacePool
+        # A replacement, not a shutdown
+        Close-WinUtilRunspacePool -Recycle
     }
 
     # Set the maximum number of threads for the RunspacePool to the number of threads on the machine.

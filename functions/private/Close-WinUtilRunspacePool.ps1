@@ -10,7 +10,13 @@ function Close-WinUtilRunspacePool {
             flight is therefore asked to stop, and waited for, before the pool is closed.
     #>
     param(
-        [int]$StopTimeoutSeconds = 15
+        [int]$StopTimeoutSeconds = 15,
+
+        # Replacing a pool that is no longer usable, rather than shutting WinUtil down. The
+        # difference matters: ShuttingDown is what makes the job layer refuse work, and nothing
+        # resets it, so recycling through the shutdown path would reject every later action for
+        # the rest of the session.
+        [switch]$Recycle
     )
 
     if ($null -eq $sync -or -not $sync.ContainsKey("runspace") -or $null -eq $sync.runspace) {
@@ -18,7 +24,9 @@ function Close-WinUtilRunspacePool {
     }
 
     # Set before stopping, so nothing that is winding down queues fresh work behind us
-    $sync.ShuttingDown = $true
+    if (-not $Recycle) {
+        $sync.ShuttingDown = $true
+    }
 
     try {
         Stop-WinUtilActiveWork -TimeoutSeconds $StopTimeoutSeconds | Out-Null

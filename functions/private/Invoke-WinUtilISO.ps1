@@ -1,3 +1,30 @@
+function Invoke-WinUtilRobocopy {
+    <#
+        .SYNOPSIS
+            Runs robocopy and fails the job when files were not copied
+
+        .DESCRIPTION
+            robocopy reports through its exit code rather than by throwing, and codes below 8
+            are success: 1 means files were copied, 3 means copied plus extras. 8 and above mean
+            at least one file did not make it, which produces media that looks complete and does
+            not boot.
+    #>
+    param(
+        [Parameter(Mandatory)][string]$Source,
+        [Parameter(Mandatory)][string]$Destination,
+        [string[]]$Arguments = @()
+    )
+
+    & robocopy $Source $Destination @Arguments
+    $code = $LASTEXITCODE
+
+    if ($code -ge 8) {
+        throw "robocopy could not copy every file from $Source to $Destination (exit code $code)."
+    }
+
+    Write-WinUtilISOLog "robocopy finished with exit code $code."
+}
+
 function Write-WinUtilISOLog {
     <#
     .SYNOPSIS
@@ -109,13 +136,23 @@ function Invoke-WinUtilISOMountAndVerify {
             Write-WinUtilISOLog "Mounting ISO: $IsoPath"
             Step-WinUtilJob -Status "Mounting ISO..." -Percent 10
 
-            Mount-DiskImage -ImagePath $IsoPath
+            Mount-DiskImage -ImagePath $IsoPath -ErrorAction Stop
 
-            do {
+            # Bounded, because a damaged or already-mounted image may never present a drive
+            # letter. The job layer runs one job at a time, so waiting here forever would block
+            # every other action and the shutdown wait for the rest of the session.
+            $letter = $null
+            $mountClock = [System.Diagnostics.Stopwatch]::StartNew()
+            while (-not $letter -and $mountClock.Elapsed.TotalSeconds -lt 60) {
                 Start-Sleep -Milliseconds 500
-            } until ((Get-DiskImage -ImagePath $IsoPath | Get-Volume).DriveLetter)
+                $letter = (Get-DiskImage -ImagePath $IsoPath | Get-Volume).DriveLetter
+            }
 
-            $driveLetter = (Get-DiskImage -ImagePath $IsoPath | Get-Volume).DriveLetter + ":"
+            if (-not $letter) {
+                throw "The ISO mounted but no drive letter appeared within 60 seconds: $IsoPath"
+            }
+
+            $driveLetter = "${letter}:"
             Write-WinUtilISOLog "Mounted at drive $driveLetter"
 
             Step-WinUtilJob -Status "Verifying ISO contents..." -Percent 30
@@ -244,7 +281,7 @@ function Invoke-WinUtilISOModify {
             Step-WinUtilJob -Status "Copying ISO contents..." -Percent 10
 
             Write-WinUtilISOLog "Copying ISO contents from $DriveLetter to $isoContents..."
-            & robocopy $DriveLetter $isoContents /E /NFL /NDL /NJH /NJS
+            Invoke-WinUtilRobocopy -Source $DriveLetter -Destination $isoContents -Arguments @("/E","/NFL","/NDL","/NJH","/NJS")
             Write-WinUtilISOLog "ISO contents copied."
             Step-WinUtilJob -Status "Preparing setup media..." -Percent 25
 
@@ -504,19 +541,33 @@ function Invoke-WinUtilISOExport {
 
             $proc = [System.Diagnostics.Process]::new()
             $proc.StartInfo = $psi
-            $proc.Start() | Out-Null
 
-            # Stream stdout line-by-line as oscdimg runs
-            while (-not $proc.StandardOutput.EndOfStream) {
-                $line = $proc.StandardOutput.ReadLine()
-                if ($line.Trim()) { Write-WinUtilISOLog $line }
+            # stderr is collected as it arrives rather than after the process exits. Reading it
+            # last deadlocks: once the stderr pipe fills, oscdimg blocks on its write and stops
+            # producing stdout, while this loop waits for stdout that will never come.
+            $stderrLines = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new())
+            $proc.EnableRaisingEvents = $true
+            $errorHandler = Register-ObjectEvent -InputObject $proc -EventName ErrorDataReceived -Action {
+                if ($EventArgs.Data) { $null = $Event.MessageData.Add($EventArgs.Data) }
+            } -MessageData $stderrLines
+
+            try {
+                $proc.Start() | Out-Null
+                $proc.BeginErrorReadLine()
+
+                # Stream stdout line-by-line as oscdimg runs
+                while (-not $proc.StandardOutput.EndOfStream) {
+                    $line = $proc.StandardOutput.ReadLine()
+                    if ($line.Trim()) { Write-WinUtilISOLog $line }
+                }
+
+                $proc.WaitForExit()
+            } finally {
+                Unregister-Event -SourceIdentifier $errorHandler.Name -ErrorAction SilentlyContinue
+                $errorHandler | Remove-Job -Force -ErrorAction SilentlyContinue
             }
 
-            $proc.WaitForExit()
-
-            # Flush any stderr after process exits
-            $stderr = $proc.StandardError.ReadToEnd()
-            foreach ($line in ($stderr -split "`r?`n")) {
+            foreach ($line in @($stderrLines)) {
                 if ($line.Trim()) { Write-WinUtilISOLog -Level "WARN" -Message "[stderr]$line" }
             }
 
@@ -537,19 +588,42 @@ function Invoke-WinUtilISOExport {
     }
 }
 
+function Find-WinUtilOscdimg {
+    <#
+    .SYNOPSIS
+        Looks for oscdimg.exe in every place it is known to land
+
+    .DESCRIPTION
+        PATH first, since that covers an ADK installed anywhere and a manual copy, then the
+        default ADK location, then the per-user WinGet package root. Used both before and after
+        the install attempt, so a package that lands outside the per-user root is still found.
+    #>
+
+    $onPath = Get-Command oscdimg.exe -ErrorAction SilentlyContinue
+    if ($onPath) { return $onPath.Source }
+
+    foreach ($root in @(
+            "${env:ProgramFiles(x86)}\Windows Kits",
+            "$env:ProgramFiles\Windows Kits",
+            "$env:LOCALAPPDATA\Microsoft\WinGet\Packages")) {
+
+        if (-not $root -or -not (Test-Path $root)) { continue }
+
+        $found = Get-ChildItem $root -Recurse -Filter "oscdimg.exe" -ErrorAction SilentlyContinue |
+                 Select-Object -First 1 -ExpandProperty FullName
+        if ($found) { return $found }
+    }
+
+    return $null
+}
+
 function Get-WinUtilOscdimgPath {
     <#
     .SYNOPSIS
         Returns the path to oscdimg.exe, installing it through winget when it is missing.
     #>
 
-    $oscdimg = Get-ChildItem "C:\Program Files (x86)\Windows Kits" -Recurse -Filter "oscdimg.exe" -ErrorAction SilentlyContinue |
-               Select-Object -First 1 -ExpandProperty FullName
-    if (-not $oscdimg) {
-        $oscdimg = Get-ChildItem "$env:LOCALAPPDATA\Microsoft\WinGet\Packages" -Recurse -Filter "oscdimg.exe" -ErrorAction SilentlyContinue |
-                   Where-Object { $_.FullName -match 'Microsoft\.OSCDIMG' } |
-                   Select-Object -First 1 -ExpandProperty FullName
-    }
+    $oscdimg = Find-WinUtilOscdimg
     if ($oscdimg) { return $oscdimg }
 
     Write-WinUtilISOLog "oscdimg.exe not found. Attempting to install via winget..."
@@ -560,9 +634,10 @@ function Get-WinUtilOscdimgPath {
         $winget = Get-Command winget
         $result = & $winget install -e --id Microsoft.OSCDIMG --accept-package-agreements --accept-source-agreements
         Write-WinUtilISOLog "winget output: $result"
-        $oscdimg = Get-ChildItem "$env:LOCALAPPDATA\Microsoft\WinGet\Packages" -Recurse -Filter "oscdimg.exe" -ErrorAction SilentlyContinue |
-                   Where-Object { $_.FullName -match 'Microsoft\.OSCDIMG' } |
-                   Select-Object -First 1 -ExpandProperty FullName
+
+        # The same search as before the install: winget honours a configured scope and package
+        # root, so the file does not necessarily land under the per-user package directory
+        $oscdimg = Find-WinUtilOscdimg
     } catch {
         Write-WinUtilISOLog -Level "WARN" -Message "winget not available or install failed: $_"
     }
