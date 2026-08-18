@@ -24,7 +24,7 @@ jobs:
                         return;
                     }
 
-                    const eventType = context.payload.pull_request ? "pull request" : "issue";
+                    const eventType = context.payload.issue.pull_request ? "pull request" : "issue";
 
                     const comment = context.payload.comment;
                     const {owner, repo} = context.issue;
@@ -82,14 +82,14 @@ jobs:
                                 owner,
                                 repo,
                                 issue_number: issueNumber,
-                                body: `${commentAuthor} removed triage request from this issue.`
+                                body: `${commentAuthor} removed triage request from this ${eventType}.`
                             });
                         } else {
                             await github.rest.issues.createComment({
                                 owner,
                                 repo,
                                 issue_number: issueNumber,
-                                body: `The issue is not requested for triage.`
+                                body: `The ${eventType} is not requested for triage.`
                             });
                         }
                         await github.rest.issues.deleteComment({
