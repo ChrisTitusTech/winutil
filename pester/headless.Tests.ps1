@@ -12,6 +12,7 @@ BeforeAll {
     # Stubs so the mocks below have something to replace; the real ones live in other files
     function Write-WinUtilLog { param($Level, $Component, $Message, [switch]$Detail) }
     function Write-WinUtilTimingSummary { param($Scope, $TotalMilliseconds) }
+    function Clear-WinUtilActiveJob { param([string]$Token) $sync.ActiveJobToken = $null; $sync.ActiveJob = $null; return $true }
     function Write-WinUtilErrorRecord { param($ErrorRecord, $Component, $Context) }
     function Invoke-WPFtweaksbutton { }
     function Invoke-WPFToggleSelections { }

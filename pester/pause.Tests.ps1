@@ -2,6 +2,11 @@
 # Tests - Pausing a running job
 
 BeforeAll {
+    function Test-WinUtilUIAlive { $null -ne $sync.Form -and $null -ne $sync.Form.Dispatcher }
+    function Invoke-WPFUIThread {
+        param([scriptblock]$ScriptBlock, [hashtable]$Parameters = @{}, [switch]$Async, [switch]$PassThru)
+        & $ScriptBlock @Parameters
+    }
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     $script:functionRoot = Join-Path $script:repoRoot "functions"
 
@@ -73,6 +78,8 @@ Describe "Wait-WinUtilJobPause" {
 Describe "Set-WinUtilJobPaused" {
     BeforeEach {
         $global:sync = [hashtable]::Synchronized(@{})
+        # the glyph update goes through the interface thread, so the fixture needs a window
+        $sync.Form = [pscustomobject]@{ Dispatcher = [pscustomobject]@{ HasShutdownStarted = $false } }
         $sync.WPFPauseJobButton = [pscustomobject]@{ Content = ""; ToolTip = ""; IsEnabled = $true }
         Mock Write-WinUtilLog { }
         Mock Step-WinUtilJob { }

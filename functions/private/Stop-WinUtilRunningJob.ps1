@@ -77,6 +77,10 @@ function Start-WinUtilJobStopWatchdog {
             Asking is not enough on its own: a job inside one long command reaches no safe point
             until that command returns. After the grace period the worker is stopped outright.
 
+            Every tick runs on the interface thread, so nothing here waits. The stop is issued
+            once and later ticks watch for it to take effect, rather than sleeping on the thread
+            that has to keep the window responsive.
+
         .PARAMETER Job
             The job that was asked to stop, for the log.
 
@@ -98,7 +102,7 @@ function Start-WinUtilJobStopWatchdog {
     $timer.Interval = [timespan]::FromMilliseconds(500)
     # The run being cut off is identified by its token, so a watchdog that fires late cannot
     # release a slot that the next job has already claimed
-    $timer.Tag = @{ Job = $Job; Token = $sync.ActiveJobToken; Deadline = (Get-Date).AddSeconds($GraceSeconds) }
+    $timer.Tag = @{ Job = $Job; Token = $sync.ActiveJobToken; Deadline = (Get-Date).AddSeconds($GraceSeconds); CutOff = $null }
     $timer.Add_Tick({
         param($eventSender)
         $ticked = [System.Windows.Threading.DispatcherTimer]$eventSender
@@ -112,28 +116,26 @@ function Start-WinUtilJobStopWatchdog {
             return
         }
 
-        if ((Get-Date) -lt $state.Deadline) {
+        # Every branch below runs on the interface thread, so none of them may wait. The stop is
+        # issued once and its progress is watched on later ticks instead.
+        if (-not $state.CutOff) {
+            if ((Get-Date) -lt $state.Deadline) {
+                return
+            }
+
+            Write-WinUtilLog -Level "WARN" -Component "UI" -Message "$($state.Job) did not stop on its own, cutting it off."
+            Stop-WinUtilActiveWork -NoWait | Out-Null
+            $state.CutOff = (Get-Date)
+            return
+        }
+
+        if ((Test-WinUtilActiveWorkRunning) -and ((Get-Date) - $state.CutOff).TotalSeconds -lt 10) {
             return
         }
 
         $ticked.Stop()
-        Write-WinUtilLog -Level "WARN" -Component "UI" -Message "$($state.Job) did not stop on its own, cutting it off."
-        Stop-WinUtilActiveWork -TimeoutSeconds 10 | Out-Null
-
-        $released = $false
-        [System.Threading.Monitor]::Enter($sync.SyncRoot)
-        try {
-            if ($sync.ActiveJobToken -eq $state.Token) {
-                $sync.ActiveJobToken = $null
-                $sync.ActiveJob = $null
-                $released = $true
-            }
-        } finally {
-            [System.Threading.Monitor]::Exit($sync.SyncRoot)
-        }
-
         $sync.StopRequested = $false
-        if ($released) {
+        if (Clear-WinUtilActiveJob -Token $state.Token) {
             Step-WinUtilJob -Status "$($state.Job) stopped" -Percent 100 -State "Paused" -Overlay "warning"
             if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }
         }

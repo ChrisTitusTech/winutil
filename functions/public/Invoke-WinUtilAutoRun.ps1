@@ -79,7 +79,7 @@ function Invoke-WinUtilAutoRun {
 
         if ($timedOut) {
             # A job that never cleared the flag would make every later step refuse to start
-            $sync.ActiveJob = $null
+            $null = Clear-WinUtilActiveJob
         }
     }
 

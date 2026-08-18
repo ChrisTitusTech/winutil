@@ -1968,6 +1968,7 @@
                         Margin="10,0,0,0"
                         VerticalAlignment="Center"
                         Content="&#xE769;"
+                        AutomationProperties.Name="Pause after the current step"
                         ToolTip="Pause after the current step"/>
                 <Button Name="WPFStopJobButton" Grid.Column="2"
                         Style="{StaticResource HoverButtonStyle}"
@@ -1980,6 +1981,7 @@
                         Margin="4,0,0,0"
                         VerticalAlignment="Center"
                         Content="&#xE711;"
+                        AutomationProperties.Name="Stop the running action"
                         ToolTip="Stop the running action"/>
             </Grid>
         </Border>

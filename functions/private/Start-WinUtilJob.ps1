@@ -59,6 +59,15 @@ function Start-WinUtilJob {
         return $null
     }
 
+    # A job body that starts another job runs it inline. The outer job already owns the slot,
+    # the banner and the reporting, so claiming again would refuse the inner call and skip the
+    # work silently: that is what happened to the Install Features button, which reaches here
+    # once through its feature.json entry and again from Invoke-WPFFeatureInstall.
+    if ($global:WinUtilIsJobWorker) {
+        & $ScriptBlock @Parameters
+        return $null
+    }
+
     # Claimed under the collection's own lock. Interface events are serialised by the dispatcher,
     # but a headless run, a scheduled caller or a job body starting another job are not, and a
     # plain test-then-assign there lets two jobs both believe they own the slot.
@@ -88,12 +97,16 @@ function Start-WinUtilJob {
     # A pause or stop left from the previous run would hold or end this one before it started
     $sync.JobPaused = $false
     $sync.StopRequested = $false
-    if ($sync.WPFPauseJobButton) {
-        $sync.WPFPauseJobButton.Content = [string]([char]0xE769)
-        $sync.WPFPauseJobButton.ToolTip = "Pause after the current step"
-        $sync.WPFPauseJobButton.IsEnabled = $true
+    if (Test-WinUtilUIAlive) {
+        Invoke-WPFUIThread -ScriptBlock {
+            if ($sync.WPFPauseJobButton) {
+                $sync.WPFPauseJobButton.Content = [string]([char]0xE769)
+                $sync.WPFPauseJobButton.ToolTip = "Pause after the current step"
+                $sync.WPFPauseJobButton.IsEnabled = $true
+            }
+            if ($sync.WPFStopJobButton) { $sync.WPFStopJobButton.IsEnabled = $true }
+        }
     }
-    if ($sync.WPFStopJobButton) { $sync.WPFStopJobButton.IsEnabled = $true }
 
     $label = if ($Description) { $Description } else { $Name }
     Write-WinUtilLog -Component $Name -Message "$Name job started."
@@ -176,6 +189,10 @@ function Start-WinUtilJob {
             Write-WinUtilJobBanner -Message "$JobLabel failed: $($_.Exception.Message)" -Level "ERROR"
             Step-WinUtilJob -Status "$JobName failed" -Percent 100 -State "Error" -Overlay "warning"
         } finally {
+            # Pool runspaces are reused, so leaving this set would make the next piece of
+            # background work on this runspace believe it is a job worker
+            $global:WinUtilIsJobWorker = $false
+
             Write-WinUtilTimingSummary -Scope $JobName -TotalMilliseconds $jobClock.ElapsedMilliseconds
 
             # Whether this run still owns the slot. A worker the watchdog cut off can reach here
@@ -204,18 +221,37 @@ function Start-WinUtilJob {
 
                 # Last thing done, because the main thread may be waiting on exactly this to know
                 # the run is over and the process can exit
-                [System.Threading.Monitor]::Enter($sync.SyncRoot)
-                try {
-                    if ($sync.ActiveJobToken -eq $JobToken) {
-                        $sync.ActiveJobToken = $null
-                        $sync.ActiveJob = $null
-                    }
-                } finally {
-                    [System.Threading.Monitor]::Exit($sync.SyncRoot)
-                }
+                $null = Clear-WinUtilActiveJob -Token $JobToken
             } else {
                 Write-WinUtilLog -Level "WARN" -Component $JobName -Message "$JobName unwound after another job had started; leaving its state alone."
             }
         }
+    }
+}
+
+function Clear-WinUtilActiveJob {
+    <#
+        .SYNOPSIS
+            Releases the active job slot, clearing its name and its token together
+
+        .DESCRIPTION
+            Clearing the name alone leaves the token set, where it can still match a later run
+            and keep the job layer from accepting work. Every release goes through here.
+
+        .PARAMETER Token
+            Release only if this run still owns the slot. Omit to release whatever holds it.
+    #>
+    param([string]$Token)
+
+    [System.Threading.Monitor]::Enter($sync.SyncRoot)
+    try {
+        if (-not $Token -or $sync.ActiveJobToken -eq $Token) {
+            $sync.ActiveJobToken = $null
+            $sync.ActiveJob = $null
+            return $true
+        }
+        return $false
+    } finally {
+        [System.Threading.Monitor]::Exit($sync.SyncRoot)
     }
 }

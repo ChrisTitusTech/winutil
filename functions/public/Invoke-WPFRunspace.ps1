@@ -59,10 +59,13 @@ function Invoke-WPFRunspace {
 
     $powershell.RunspacePool = $sync.runspace
 
-    Register-WinUtilActiveShell -PowerShell $powershell
-
     # Execute the RunspacePool
     $handle = $powershell.BeginInvoke()
+
+    # Registered after the invocation starts. A NotStarted instance is indistinguishable from a
+    # finished one to the pruning pass, so registering first let a concurrent registration drop
+    # this shell and leave its work invisible to shutdown.
+    Register-WinUtilActiveShell -PowerShell $powershell
 
     Register-WinUtilRunspaceCleanup -PowerShell $powershell -Handle $handle
 

@@ -127,7 +127,8 @@ function Invoke-WinUtilISOMountAndVerify {
                 Dismount-DiskImage -ImagePath $IsoPath
                 Write-WinUtilISOLog -Level "ERROR" -Message "install.wim/install.esd not found - not a valid Windows ISO."
                 Show-WinUtilMessage -Message "This does not appear to be a valid Windows ISO.`n`ninstall.wim / install.esd was not found." -Title "Invalid ISO" -Button "OK" -Icon "Error" | Out-Null
-                return
+                # Returning here would let the job layer report the run as finished
+                throw "install.wim / install.esd was not found in $IsoPath."
             }
 
             $activeWim = if (Test-Path $wimPath) { $wimPath } else { $esdPath }
@@ -139,7 +140,7 @@ function Invoke-WinUtilISOMountAndVerify {
                 Dismount-DiskImage -ImagePath $IsoPath
                 Write-WinUtilISOLog -Level "ERROR" -Message "No 'Windows 11' edition found in the image."
                 Show-WinUtilMessage -Message "No Windows 11 edition was found in this ISO.`n`nOnly official Windows 11 ISOs are supported." -Title "Not a Windows 11 ISO" -Button "OK" -Icon "Error" | Out-Null
-                return
+                throw "No Windows 11 edition was found in $IsoPath."
             }
 
             $sync["Win11ISOImageInfo"] = $imageInfo
@@ -482,7 +483,7 @@ function Invoke-WinUtilISOExport {
             $oscdimg = Get-WinUtilOscdimgPath
             if (-not $oscdimg) {
                 Show-WinUtilMessage -Message "oscdimg.exe could not be found or installed automatically.`n`nPlease install it manually:`n  winget install -e --id Microsoft.OSCDIMG`n`nOr install the Windows ADK from:`nhttps://learn.microsoft.com/windows-hardware/get-started/adk-install" -Title "oscdimg Not Found" -Button "OK" -Icon "Warning" | Out-Null
-                return
+                throw "oscdimg.exe could not be found or installed automatically."
             }
 
             Write-WinUtilISOLog "Exporting to ISO: $OutputISO"

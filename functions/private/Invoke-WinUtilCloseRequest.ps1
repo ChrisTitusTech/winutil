@@ -52,7 +52,7 @@ stopped and everything closes now. Cancel keeps WinUtil open.
             # Stopping can take a moment that would otherwise look like the window had frozen
             Request-WinUtilWindowClose -Before {
                 Close-WinUtilRunspacePool
-                $sync.ActiveJob = $null
+                $null = Clear-WinUtilActiveJob
             }
         }
         default {

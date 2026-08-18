@@ -20,7 +20,12 @@ function Invoke-WPFSystemRepair {
     foreach ($step in $steps) {
         Step-WinUtilJob -Status "$($step.Label) ($($completed + 1)/$($steps.Count))" -Percent ([int](($completed / $steps.Count) * 100))
         Write-WinUtilLog -Component "SystemRepair" -Message $step.Label
-        Start-Process cmd.exe -ArgumentList $step.Arguments -NoNewWindow -Wait
+        # Start-Process does not throw on a nonzero exit, so without this a failed chkdsk, sfc
+        # or dism run would still be reported as a completed repair
+        $process = Start-Process cmd.exe -ArgumentList $step.Arguments -NoNewWindow -Wait -PassThru
+        if ($process.ExitCode -ne 0) {
+            throw "$($step.Label) failed with exit code $($process.ExitCode)."
+        }
         $completed++
     }
 }

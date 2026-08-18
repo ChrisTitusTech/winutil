@@ -69,12 +69,31 @@ function Invoke-WPFUIThread {
 
     $executor = $sync.UIDispatchDelegate
     if ($null -eq $executor) {
-        # No interface runspace to hand the work to; fall back to marshalling the block itself
+        # No interface runspace to hand the work to, so the block itself is marshalled. It still
+        # has to receive its parameters and still has to return what it produced: [action] takes
+        # neither, which silently dropped both and left Show-WinUtilMessage with no answer.
         if ($Async) {
-            $null = $dispatcher.BeginInvoke([Windows.Threading.DispatcherPriority]::Background, [action]$ScriptBlock)
+            # The values travel as the dispatcher's argument, since this call returns before the
+            # block runs and anything captured from here would be gone by then
+            $null = $dispatcher.BeginInvoke(
+                [Windows.Threading.DispatcherPriority]::Background,
+                [System.Windows.Threading.DispatcherOperationCallback]{
+                    param($Work)
+                    $body = $Work.Body
+                    $arguments = $Work.Parameters
+                    if ($arguments -and $arguments.Count -gt 0) {
+                        $null = & $body @arguments
+                    } else {
+                        $null = & $body
+                    }
+                    return $null
+                },
+                @{ Body = $ScriptBlock; Parameters = $Parameters })
             return
         }
-        $fallbackResult = $dispatcher.Invoke([action]$ScriptBlock)
+
+        # Synchronous, so this frame is still alive while the block runs and can be captured from
+        $fallbackResult = $dispatcher.Invoke([System.Func[object]]{ & $ScriptBlock @Parameters })
         if ($PassThru) { return $fallbackResult }
         return
     }

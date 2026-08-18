@@ -49,10 +49,16 @@ function Set-WinUtilJobPaused {
 
     $sync.JobPaused = $Paused
 
-    if ($sync.WPFPauseJobButton) {
-        # Play glyph to resume, pause glyph to pause
-        $sync.WPFPauseJobButton.Content = if ($Paused) { [string]([char]0xE768) } else { [string]([char]0xE769) }
-        $sync.WPFPauseJobButton.ToolTip = if ($Paused) { "Resume" } else { "Pause after the current step" }
+    if (Test-WinUtilUIAlive) {
+        Invoke-WPFUIThread -Parameters @{ Paused = $Paused } -ScriptBlock {
+            param($Paused)
+
+            if ($sync.WPFPauseJobButton) {
+                # Play glyph to resume, pause glyph to pause
+                $sync.WPFPauseJobButton.Content = if ($Paused) { [string]([char]0xE768) } else { [string]([char]0xE769) }
+                $sync.WPFPauseJobButton.ToolTip = if ($Paused) { "Resume" } else { "Pause after the current step" }
+            }
+        }
     }
 
     if ($Paused) {
