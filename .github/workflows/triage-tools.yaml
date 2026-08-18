@@ -164,7 +164,7 @@ jobs:
                                 issue_number: issueNumber,
                                 state: "closed",
                                 state_reason: "duplicate",
-                                duplicate_issue_id: duplicateIssueNumber
+                                duplicate_issue_id: duplicateIssue.id
                             });
                             await github.rest.issues.createComment({
                                 owner,
