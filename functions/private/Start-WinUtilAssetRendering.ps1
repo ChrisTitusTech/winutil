@@ -31,9 +31,12 @@ function Start-WinUtilAssetRendering {
 
     $handle = $shell.BeginInvoke()
 
-    # The cleanup callback disposes the instance but knows nothing of the runspace created for
-    # it here, which would otherwise stay open for the life of the session
-    Register-WinUtilRunspaceCleanup -PowerShell $shell -Handle $handle -Runspace $runspace
+    # The runspace lives until the process exits. Disposing it from the cleanup callback would
+    # mean changing the compiled helper type, and that type is only created once per session:
+    # a session already holding the old shape silently keeps it, and every later call fails on
+    # the property that is not there. One STA runspace for the lifetime of the app is the
+    # cheaper trade.
+    Register-WinUtilRunspaceCleanup -PowerShell $shell -Handle $handle
 
     return $handle
 }

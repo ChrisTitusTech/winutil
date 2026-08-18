@@ -406,6 +406,7 @@ Describe "XAML and sync wiring" {
             "StopWatchdogTimer",
             "IconImages",
             "PendingIcons",
+            "IconFetchRunning",
             "selected",
             "selectedAppx",
             "selectedApps",

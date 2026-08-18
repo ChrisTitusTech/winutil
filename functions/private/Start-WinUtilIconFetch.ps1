@@ -86,6 +86,17 @@ function Start-WinUtilIconFetch {
         return
     }
 
+    # One fetch at a time. This is called after every render batch so icons appear while the
+    # list is still filling in rather than only once all of it has been drawn; anything that
+    # accumulates while a fetch runs is picked up when that fetch ends.
+    [System.Threading.Monitor]::Enter($sync.SyncRoot)
+    try {
+        if ($sync.IconFetchRunning) { return }
+        $sync.IconFetchRunning = $true
+    } finally {
+        [System.Threading.Monitor]::Exit($sync.SyncRoot)
+    }
+
     # Copied out so the worker is not reading a collection the interface thread still appends to
     $work = @($pending.GetEnumerator() | ForEach-Object { [pscustomobject]@{ Key = $_.Key; Link = $_.Value } })
     $sync.PendingIcons = [hashtable]::Synchronized(@{})
@@ -94,10 +105,13 @@ function Start-WinUtilIconFetch {
 
     # The leading comma matters: @(("IconWork", $work)) is a two element array, not a list
     # holding one pair, and the parameter loop would read its characters as a name and a value
-    $null = Invoke-WPFRunspace -ParameterList (, ("IconWork", $work)) -ScriptBlock {
+    $handle = Invoke-WPFRunspace -ParameterList (, ("IconWork", $work)) -ScriptBlock {
         param($IconWork)
 
-        $client = New-Object System.Net.WebClient
+        Add-Type -AssemblyName System.Net.Http
+        $client = [System.Net.Http.HttpClient]::new()
+        $client.Timeout = [timespan]::FromSeconds(20)
+
         $fetched = 0
         $failed = 0
         $batch = @{}
@@ -122,42 +136,82 @@ function Start-WinUtilIconFetch {
         }
 
         try {
-            foreach ($item in $IconWork) {
-                $file = Get-WinUtilIconCacheFile -Link $item.Link
-                try {
-                    if (-not (Test-Path $file)) {
-                        $url = "https://www.google.com/s2/favicons?sz=64&domain_url=$([uri]::EscapeDataString($item.Link))"
-                        $bytes = $client.DownloadData($url)
-                        [System.IO.File]::WriteAllBytes($file, $bytes)
-                    }
+            # Requested in waves rather than one at a time. Setting a remote address on an Image
+            # let WPF fetch every icon at once, so downloading them serially here turned a first
+            # run with an empty cache from seconds into minutes of blank entries.
+            $waveSize = 8
 
-                    $bitmap = Get-WinUtilFrozenIcon -Path $file
-                    if ($bitmap) {
-                        $batch[$item.Key] = $bitmap
-                        $fetched++
-                    } else {
-                        # An error page or a truncated body would otherwise sit in the cache and
-                        # be skipped by the Test-Path above on every later run
+            for ($offset = 0; $offset -lt @($IconWork).Count; $offset += $waveSize) {
+                $last = [Math]::Min($offset + $waveSize - 1, @($IconWork).Count - 1)
+                $wave = @($IconWork[$offset..$last])
+
+                # Started together, then collected: the wait is the slowest of the wave rather
+                # than the sum of all of them
+                $requests = @()
+                foreach ($item in $wave) {
+                    $file = Get-WinUtilIconCacheFile -Link $item.Link
+                    if (Test-Path $file) {
+                        $requests += $null
+                        continue
+                    }
+                    $url = "https://www.google.com/s2/favicons?sz=64&domain_url=$([uri]::EscapeDataString($item.Link))"
+                    try {
+                        $requests += $client.GetByteArrayAsync($url)
+                    } catch {
+                        $requests += $null
+                    }
+                }
+
+                for ($index = 0; $index -lt $wave.Count; $index++) {
+                    $item = $wave[$index]
+                    $file = Get-WinUtilIconCacheFile -Link $item.Link
+
+                    try {
+                        $request = $requests[$index]
+                        if ($null -ne $request) {
+                            $bytes = $request.GetAwaiter().GetResult()
+                            if ($bytes.Length -gt 0) {
+                                [System.IO.File]::WriteAllBytes($file, $bytes)
+                            }
+                        }
+
+                        $bitmap = if (Test-Path $file) { Get-WinUtilFrozenIcon -Path $file } else { $null }
+                        if ($bitmap) {
+                            $batch[$item.Key] = $bitmap
+                            $fetched++
+                        } else {
+                            # An error page or a truncated body would otherwise sit in the cache
+                            # and be skipped by the Test-Path above on every later run
+                            Remove-Item -LiteralPath $file -Force -ErrorAction SilentlyContinue
+                            $failed++
+                        }
+                    } catch {
                         Remove-Item -LiteralPath $file -Force -ErrorAction SilentlyContinue
                         $failed++
                     }
-                } catch {
-                    $failed++
                 }
 
-                # Handed over a few at a time, so the interface does an assignment now and then
-                # rather than several hundred at once when the last one lands
-                if ($batch.Count -ge 12) {
-                    Publish-Batch -Icons $batch
-                    $batch = @{}
-                }
+                # Handed over a wave at a time, so the interface does a handful of assignments
+                # now and then rather than several hundred when the last one lands
+                Publish-Batch -Icons $batch
+                $batch = @{}
             }
 
             Publish-Batch -Icons $batch
         } finally {
             $client.Dispose()
+            $sync.IconFetchRunning = $false
         }
 
         Write-WinUtilLog -Component "Icons" -Message "Icon fetch finished: $fetched cached, $failed unavailable."
+
+        if ($sync.PendingIcons -and $sync.PendingIcons.Count -gt 0) {
+            Start-WinUtilIconFetch
+        }
+    }
+
+    if ($null -eq $handle) {
+        # Refused, so no worker will run and nothing would clear the gate
+        $sync.IconFetchRunning = $false
     }
 }
