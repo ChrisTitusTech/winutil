@@ -149,3 +149,41 @@ jobs:
                             comment_id: comment.id
                         });
                     }
+                    const duplicateMatch = comment.body.match(/\/duplicate\s+(\S+)/);
+                    if (duplicateMatch && eventType === "issue") {
+                        const duplicateIssueNumber = parseInt(duplicateMatch[1].replace("#", ""));
+                        const duplicateIssue = await eventHolder.get({
+                            owner,
+                            repo,
+                            issue_number: duplicateIssueNumber
+                        });
+                        if (duplicateIssue) {
+                            await eventHolder.update({
+                                owner,
+                                repo,
+                                issue_number: issueNumber,
+                                state: "closed",
+                                state_reason: "duplicate",
+                                duplicate_issue_id: duplicateIssueNumber
+                            });
+                            await eventHolder.createComment({
+                                owner,
+                                repo,
+                                issue_number: issueNumber,
+                                body: `${commentAuthor} marked this ${eventType} as a duplicate of #${duplicateIssueNumber}.`
+                            });
+                            await eventHolder.deleteComment({
+                                owner,
+                                repo,
+                                comment_id: comment.id
+                            });
+                        } else {
+                            await eventHolder.createComment({
+                                owner,
+                                repo,
+                                issue_number: issueNumber,
+                                body: `The issue #${duplicateIssueNumber} does not exist.`
+                            });
+                            return;
+                        }
+                    }
