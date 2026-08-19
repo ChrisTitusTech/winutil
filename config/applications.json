@@ -2048,5 +2048,14 @@
         "content": "Lua",
         "link": "https://github.com/rjpcomputing/luaforwindows",
         "foss": true
+    },
+    "CloudflareWARP": {
+        "category":"Pro Tools",
+        "choco": "warp",
+        "winget": "Cloudflare.Warp",
+        "description": "The Cloudflare WARP client allows individuals to have a faster, more secure, and more private experience online.",
+        "content": "Cloudflare WARP",
+        "link": "https://developers.cloudflare.com/warp-client/",
+        "foss": false
     }
 }
