@@ -1,0 +1,207 @@
+name: Generate WinUtil title screen
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: winutil-title-screen
+  cancel-in-progress: true
+
+jobs:
+  generate:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    env:
+      WINUTIL_CAPTURE_WIDTH: "1920"
+      WINUTIL_CAPTURE_HEIGHT: "1080"
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@v9.0.0
+        with:
+          version: "0.12.0"
+          python-version: "3.13"
+          enable-cache: false
+
+      - name: Set display resolution
+        run: |
+          # Set-DisplayResolution is provided by Windows PowerShell's ServerCore
+          # module, so this step intentionally calls powershell.exe from pwsh.
+          & powershell.exe -NoLogo -NoProfile -Command @'
+          Set-DisplayResolution `
+              -Width $env:WINUTIL_CAPTURE_WIDTH `
+              -Height $env:WINUTIL_CAPTURE_HEIGHT `
+              -Force
+          '@
+
+          if ($LASTEXITCODE -ne 0) {
+              throw "Failed to set the runner display resolution."
+          }
+
+          Add-Type @"
+          using System.Runtime.InteropServices;
+
+          public static class ResolutionCheck {
+              [DllImport("user32.dll")]
+              public static extern int GetSystemMetrics(int index);
+          }
+          "@
+
+          $actualWidth = [ResolutionCheck]::GetSystemMetrics(0)
+          $actualHeight = [ResolutionCheck]::GetSystemMetrics(1)
+          if (
+              $actualWidth -ne [int]$env:WINUTIL_CAPTURE_WIDTH -or
+              $actualHeight -ne [int]$env:WINUTIL_CAPTURE_HEIGHT
+          ) {
+              throw (
+                  "The hosted runner rejected the requested resolution. " +
+                  "Requested: $env:WINUTIL_CAPTURE_WIDTH" +
+                  "x$env:WINUTIL_CAPTURE_HEIGHT; " +
+                  "actual: ${actualWidth}x${actualHeight}."
+              )
+          }
+
+      - name: Report display environment
+        run: |
+          Add-Type @"
+          using System.Runtime.InteropServices;
+
+          public static class DisplayInfo {
+              [DllImport("user32.dll")]
+              public static extern int GetSystemMetrics(int index);
+          }
+          "@
+
+          $width = [DisplayInfo]::GetSystemMetrics(0)
+          $height = [DisplayInfo]::GetSystemMetrics(1)
+          $sessionId = [Diagnostics.Process]::GetCurrentProcess().SessionId
+
+          Write-Host "Resolution: ${width}x${height}"
+          Write-Host "Session ID: $sessionId"
+          Write-Host "User: $env:USERNAME"
+
+      - name: Compile WinUtil
+        run: |
+          Set-ExecutionPolicy Bypass -Scope Process -Force
+          ./Compile.ps1
+
+      - name: Launch WinUtil
+        run: |
+          $scriptPath = Join-Path $env:GITHUB_WORKSPACE "winutil.ps1"
+          $command = "& '$scriptPath'"
+          $bytes = [Text.Encoding]::Unicode.GetBytes($command)
+          $encodedCommand = [Convert]::ToBase64String($bytes)
+
+          # Hide the console host while leaving the WPF window available.
+          $process = Start-Process powershell.exe -ArgumentList @(
+              "-NoLogo",
+              "-NoProfile",
+              "-ExecutionPolicy", "Bypass",
+              "-EncodedCommand", $encodedCommand
+          ) -WindowStyle Hidden -PassThru
+
+          "WINUTIL_HOST_PID=$($process.Id)" |
+              Out-File $env:GITHUB_ENV -Append -Encoding utf8
+
+          $deadline = (Get-Date).AddSeconds(90)
+          do {
+              Start-Sleep -Seconds 2
+              # A versioned title excludes the unversioned console host.
+              $window = Get-Process |
+                  Where-Object { $_.MainWindowTitle -match '^WinUtil\s+\d' } |
+                  Select-Object -First 1
+          } until ($window -or (Get-Date) -ge $deadline)
+
+          if (-not $window) {
+              throw "WinUtil did not expose a window within 90 seconds."
+          }
+
+          Write-Host "WinUtil HWND: $($window.MainWindowHandle)"
+          Write-Host "WinUtil title: $($window.MainWindowTitle)"
+
+          # The exact HWND avoids desktop-enumeration ambiguity. Python validates
+          # the title and WPF class before using it.
+          "WINUTIL_HWND=$($window.MainWindowHandle)" |
+              Out-File $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Generate title screen
+        working-directory: tools/title-screen
+        run: |
+          & uv run --locked python automate_title_screen.py `
+              --output ..\..\docs\src\assets\branding\title-screen.png 2>&1 |
+              Tee-Object -FilePath "$env:RUNNER_TEMP\title-screen-capture.log"
+
+          if ($LASTEXITCODE -ne 0) {
+              throw "Title-screen automation exited with code $LASTEXITCODE."
+          }
+
+      - name: Create title-screen update pull request
+        id: cpr
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.AUTO_MERGE }}
+          add-paths: docs/src/assets/branding/title-screen.png
+          base: main
+          branch: title-screen-update
+          delete-branch: true
+          commit-message: "docs: update WinUtil title screen"
+          title: "docs: update WinUtil title screen"
+          body: |
+            Regenerates the WinUtil Light and Dark title-screen composite from the current main branch.
+
+            Source workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          labels: |
+            automated
+            documentation
+            skip-changelog
+
+      - name: Report pull request
+        if: steps.cpr.outputs.pull-request-url
+        env:
+          PR_OPERATION: ${{ steps.cpr.outputs.pull-request-operation }}
+          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
+        run: |
+          Write-Host "Pull request $env:PR_OPERATION`: $env:PR_URL"
+
+      - name: Inspect UI Automation on failure
+        if: failure()
+        continue-on-error: true
+        working-directory: tools/title-screen
+        run: |
+          uv run --locked python inspect_winutil.py `
+              "$env:RUNNER_TEMP\winutil-title-screen-inspect.txt"
+
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: winutil-title-screen-failure-${{ github.run_number }}
+          path: |
+            docs/src/assets/branding/title-screen.png
+            ${{ runner.temp }}/title-screen-capture.log
+            ${{ runner.temp }}/winutil-title-screen-inspect.txt
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Close WinUtil
+        if: always()
+        run: |
+          if ($env:WINUTIL_HOST_PID) {
+              Stop-Process `
+                  -Id ([int]$env:WINUTIL_HOST_PID) `
+                  -Force `
+                  -ErrorAction SilentlyContinue
+          }
