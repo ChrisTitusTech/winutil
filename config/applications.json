@@ -1964,7 +1964,7 @@
         "choco": "glazewm",
         "content": "GlazeWM",
         "description": "GlazeWM is a tiling window manager for Windows inspired by i3 and Polybar.",
-        "link": "https://glazewm.com/",
+        "link": "https://github.com/glzr-io/glazewm",
         "winget": "glzr-io.glazewm",
         "foss": true
     },
@@ -2037,7 +2037,7 @@
         "winget": "rjpcomputing.luaforwindows",
         "description": "A 'batteries included environment' for the Lua scripting language on Windows.",
         "content": "Lua",
-        "link": "https://www.lua.org/",
+        "link": "https://github.com/rjpcomputing/luaforwindows",
         "foss": true
     }
 }
