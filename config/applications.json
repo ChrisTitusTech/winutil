@@ -2077,7 +2077,7 @@
         "link": "https://github.com/rjpcomputing/luaforwindows",
         "foss": true
     },
-    "cf-warp": {
+    "cloudflare-warp": {
         "category": "Utilities",
         "choco": "warp",
         "winget": "Cloudflare.Warp",
