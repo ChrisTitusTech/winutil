@@ -84,15 +84,9 @@ function Invoke-WPFImpex {
                         return
                     }
 
-                    # Clear all existing selections before importing so the import replaces
-                    # the current state rather than merging with it
-                    $sync.selectedAppx = [System.Collections.Generic.List[string]]::new()
-                    $sync.selectedApps = [System.Collections.Generic.List[string]]::new()
-                    $sync.selectedTweaks = [System.Collections.Generic.List[string]]::new()
-                    $sync.selectedToggles = [System.Collections.Generic.List[string]]::new()
-                    $sync.selectedFeatures = [System.Collections.Generic.List[string]]::new()
-
-                    Update-WinUtilSelections -flatJson $flattenedJson
+                    # Build and validate every imported selection before replacing the current
+                    # state. This keeps a malformed config from leaving partial selections behind.
+                    Update-WinUtilSelections -flatJson $flattenedJson -Replace
 
                     if ($sync.Form) {
                         Reset-WPFCheckBoxes -doToggles $true
