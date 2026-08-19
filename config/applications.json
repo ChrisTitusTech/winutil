@@ -175,7 +175,7 @@
         "choco": "na",
         "content": "ChatGPT Desktop",
         "description": "The official ChatGPT desktop app for Windows, distributed through the Microsoft Store.",
-        "link": "https://apps.microsoft.com/detail/9nt1r1c2hh7j",
+        "link": "https://openai.com/chatgpt/download/",
         "winget": "msstore:9NT1R1C2HH7J",
         "foss": false
     },
@@ -202,7 +202,7 @@
         "choco": "chromium",
         "content": "Chromium",
         "description": "Chromium is the open-source project that serves as the foundation for various web browsers, including Chrome.",
-        "link": "https://github.com/Hibbiki/chromium-win64",
+        "link": "https://www.chromium.org/",
         "winget": "Hibbiki.Chromium",
         "foss": true
     },
@@ -328,7 +328,7 @@
         "choco": "dorion",
         "content": "Dorion",
         "description": "Tiny alternative Discord client with a smaller footprint, snappier startup, themes, plugins and more!",
-        "link": "https://github.com/SpikeHD/Dorion",
+        "link": "https://spikehd.dev/projects/dorion/",
         "winget": "SpikeHD.Dorion",
         "foss": true
     },
@@ -436,7 +436,7 @@
         "choco": "files",
         "content": "Files",
         "description": "Alternative file explorer.",
-        "link": "https://github.com/files-community/Files",
+        "link": "https://files.community",
         "winget": "FilesCommunity.Files",
         "foss": true
     },
@@ -607,7 +607,7 @@
         "choco": "helium",
         "content": "Helium",
         "description": "Private, fast, and honest web browser.",
-        "link": "https://github.com/imputnet/helium/",
+        "link": "https://helium.computer",
         "winget": "ImputNet.Helium",
         "foss": true
     },
@@ -616,7 +616,7 @@
         "choco": "hugo-extended",
         "content": "Hugo",
         "description": "The world's fastest framework for building websites.",
-        "link": "https://github.com/gohugoio/hugo/",
+        "link": "https://gohugo.io",
         "winget": "Hugo.Hugo.Extended",
         "foss": true
     },
@@ -733,7 +733,7 @@
         "choco": "jellyfin-media-player",
         "content": "Jellyfin Media Player",
         "description": "Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library.",
-        "link": "https://github.com/jellyfin/jellyfin-media-player",
+        "link": "https://jellyfin.org/",
         "winget": "Jellyfin.JellyfinMediaPlayer",
         "foss": true
     },
@@ -823,7 +823,7 @@
         "choco": "librewolf",
         "content": "LibreWolf",
         "description": "LibreWolf is a privacy-focused web browser based on Firefox, with additional privacy and security enhancements.",
-        "link": "https://librewolf-community.gitlab.io/",
+        "link": "https://librewolf.net/",
         "winget": "LibreWolf.LibreWolf",
         "foss": true
     },
@@ -841,7 +841,7 @@
         "choco": "mediainfo",
         "content": "mpc-qt",
         "description": "Media Player Classic Qute Theater",
-        "link": "https://github.com/mpc-qt/mpc-qt",
+        "link": "https://mpc-qt.github.io",
         "winget": "mpc-qt.mpc-qt",
         "foss": true
     },
@@ -894,7 +894,7 @@
         "choco": "mpc-hc-clsid2",
         "content": "Media Player Classic - Home Cinema",
         "description": "Media Player Classic - Home Cinema (MPC-HC) is a free and open-source video and audio player for Windows. MPC-HC is based on the original Guliverkli project and contains many additional features and bug fixes.",
-        "link": "https://github.com/clsid2/mpc-hc/",
+        "link": "https://mpc-hc.org/",
         "winget": "clsid2.mpc-hc",
         "foss": true
     },
@@ -921,7 +921,7 @@
         "choco": "mullvad-app",
         "content": "Mullvad VPN",
         "description": "This is the VPN client software for the Mullvad VPN service.",
-        "link": "https://github.com/mullvad/mullvadvpn-app",
+        "link": "https://mullvad.net/",
         "winget": "MullvadVPN.MullvadVPN",
         "foss": true
     },
@@ -948,7 +948,7 @@
         "choco": "nanazip",
         "content": "NanaZip",
         "description": "NanaZip is a fast and efficient file compression and decompression tool.",
-        "link": "https://github.com/M2Team/NanaZip",
+        "link": "https://nanazip.org",
         "winget": "M2Team.NanaZip",
         "foss": true
     },
@@ -1559,7 +1559,7 @@
         "choco": "sunshine",
         "content": "Sunshine/GameStream Server",
         "description": "Sunshine is a GameStream server that allows you to remotely play PC games on Android devices, offering low-latency streaming.",
-        "link": "https://github.com/LizardByte/Sunshine",
+        "link": "https://app.lizardbyte.dev/Sunshine/",
         "winget": "LizardByte.Sunshine",
         "foss": true
     },
@@ -1676,7 +1676,7 @@
         "choco": "translucenttb",
         "content": "TranslucentTB",
         "description": "TranslucentTB is a tool that allows you to customize the transparency of the Windows Taskbar.",
-        "link": "https://github.com/TranslucentTB/TranslucentTB",
+        "link": "https://translucenttb.github.io",
         "winget": "CharlesMilette.TranslucentTB",
         "foss": true
     },
@@ -1757,7 +1757,7 @@
         "choco": "na",
         "content": "Vesktop",
         "description": "A cross platform electron-based desktop app aiming to give you a snappier Discord experience with Vencord pre-installed.",
-        "link": "https://github.com/Vencord/Vesktop",
+        "link": "https://vesktop.dev",
         "winget": "Vencord.Vesktop",
         "foss": true
     },
@@ -1847,7 +1847,7 @@
         "choco": "na",
         "content": "WhatsApp Desktop",
         "description": "WhatsApp Desktop is the official Windows desktop messaging app from Meta, distributed through the Microsoft Store.",
-        "link": "https://apps.microsoft.com/detail/9nksqgp7f2nh",
+        "link": "https://www.whatsapp.com/download",
         "winget": "msstore:9NKSQGP7F2NH",
         "foss": false
     },
