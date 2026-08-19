@@ -14,6 +14,41 @@ function Write-WinUtilISOLog {
     })
 }
 
+function Set-WinUtilISOStep {
+    <#
+        .SYNOPSIS
+            Selects a page of the Win11 Creator wizard and sets which pages can be navigated back to
+        .DESCRIPTION
+            Safe to call from a background runspace - it marshals to the UI thread itself.
+        .PARAMETER Step
+            Select, Modify, Working or Output
+        .PARAMETER Label
+            Headline shown on the working page while a long operation runs
+    #>
+    param(
+        [ValidateSet("Select", "Modify", "Working", "Output")]
+        [string]$Step,
+        [string]$Label
+    )
+
+    $apply = {
+        if ($Label) { $sync["WPFWin11ISOWorkingLabel"].Text = $Label }
+
+        # Earlier pages stay reachable until the image has been modified, after that only output applies
+        $sync["WPFWin11ISOSelectSection"].IsEnabled = $Step -in @("Select", "Modify")
+        $sync["WPFWin11ISOModifySection"].IsEnabled = $Step -eq "Modify"
+        $sync["WPFWin11ISOOutputSection"].IsEnabled = $Step -eq "Output"
+
+        $sync["WPFWin11ISO$($Step)Section"].IsSelected = $true
+    }
+
+    if ($sync["WPFWin11ISOSteps"].Dispatcher.CheckAccess()) {
+        & $apply
+    } else {
+        $sync["WPFWin11ISOSteps"].Dispatcher.Invoke([action]$apply)
+    }
+}
+
 function Invoke-WinUtilISOBrowse {
     Add-Type -AssemblyName System.Windows.Forms
 
@@ -30,10 +65,10 @@ function Invoke-WinUtilISOBrowse {
     $sync["WPFWin11ISOPath"].Text           = $isoPath
     $sync["WPFWin11ISOFileInfo"].Text       = "File size: $fileSizeGB GB"
     $sync["WPFWin11ISOFileInfo"].Visibility = "Visible"
-    $sync["WPFWin11ISOMountSection"].Visibility       = "Visible"
     $sync["WPFWin11ISOVerifyResultPanel"].Visibility  = "Collapsed"
-    $sync["WPFWin11ISOModifySection"].Visibility      = "Collapsed"
-    $sync["WPFWin11ISOOutputSection"].Visibility      = "Collapsed"
+
+    # A different ISO invalidates anything already mounted, so lock the later steps again
+    Set-WinUtilISOStep -Step "Select"
 
     Write-WinUtilISOLog "ISO selected: $isoPath  ($fileSizeGB GB)"
 }
@@ -47,6 +82,7 @@ function Invoke-WinUtilISOMountAndVerify {
     }
 
     Write-WinUtilISOLog "Mounting ISO: $isoPath"
+    Set-WinUtilISOStep -Step "Working" -Label "Mounting and verifying the ISO"
     Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Mounting ISO..." -Percent 10
     $sync["WPFWin11ISOBrowseButton"].IsEnabled = $false
     $sync["WPFWin11ISOMountButton"].IsEnabled = $false
@@ -104,7 +140,9 @@ function Invoke-WinUtilISOMountAndVerify {
             $sync["Win11ISOImagePath"]   = $isoPath
 
             Invoke-WPFUIThread {
-                $sync["WPFWin11ISOMountDriveLetter"].Text = "Mounted at: $driveLetter   |   Image file: $(Split-Path $activeWim -Leaf)"
+                # Each value sits behind its own icon in the verified panel, so no labels or separators here
+                $sync["WPFWin11ISOMountDriveLetter"].Text = $driveLetter
+                $sync["WPFWin11ISOImageFile"].Text       = Split-Path $activeWim -Leaf
                 $sync["WPFWin11ISOEditionComboBox"].Items.Clear()
                 foreach ($img in $imageInfo) {
                     [void]$sync["WPFWin11ISOEditionComboBox"].Items.Add("$($img.ImageIndex): $($img.ImageName)")
@@ -119,8 +157,8 @@ function Invoke-WinUtilISOMountAndVerify {
                     $sync["WPFWin11ISOEditionComboBox"].SelectedIndex = if ($proIndex -ge 0) { $proIndex } else { 0 }
                 }
                 $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Visible"
-                $sync["WPFWin11ISOModifySection"].Visibility = "Visible"
                 $sync["WPFWin11ISOModifyButton"].IsEnabled = $true
+                Set-WinUtilISOStep -Step "Modify"
             }
 
             Set-WinUtilTweaksProgressIndicator -Visible $true -Label "ISO verified" -Percent 100
@@ -140,6 +178,10 @@ function Invoke-WinUtilISOMountAndVerify {
                 $sync["WPFWin11ISOBrowseButton"].IsEnabled = $true
                 $sync["WPFWin11ISOMountButton"].IsEnabled = $true
                 $sync["Win11ISOProcessRunning"] = $false
+                # Still on the working page means mount or verification failed - go back to the ISO picker
+                if ($sync["WPFWin11ISOWorkingSection"].IsSelected) {
+                    Set-WinUtilISOStep -Step "Select"
+                }
             }
         }
     }
@@ -152,7 +194,7 @@ function Invoke-WinUtilISOModify {
 
     if (-not $isoPath) {
         [System.Windows.MessageBox]::Show(
-            "No verified ISO found. Please complete Steps 1 and 2 first.",
+            "No verified ISO found. Please select and verify an ISO first.",
             "Not Ready", "OK", "Warning")
         return
     }
@@ -170,6 +212,7 @@ function Invoke-WinUtilISOModify {
     $sync["WPFWin11ISOModifyButton"].IsEnabled = $false
     $sync["Win11ISOModifying"] = $true
     $sync["Win11ISOProcessRunning"] = $true
+    Set-WinUtilISOStep -Step "Working" -Label "Modifying install.wim"
 
     $workDir = Join-Path $env:TEMP "WinUtil_Win11ISO_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
     if (Test-Path $workDir) {
@@ -200,14 +243,17 @@ function Invoke-WinUtilISOModify {
 
     $isoScriptFuncDef   = "function Invoke-WinUtilISOScript {`n" + ${function:Invoke-WinUtilISOScript}.ToString() + "`n}"
     $win11ISOLogFuncDef = "function Write-WinUtilISOLog {`n"     + ${function:Write-WinUtilISOLog}.ToString()     + "`n}"
+    $isoStepFuncDef     = "function Set-WinUtilISOStep {`n"      + ${function:Set-WinUtilISOStep}.ToString()      + "`n}"
     $runspace.SessionStateProxy.SetVariable("isoScriptFuncDef",   $isoScriptFuncDef)
     $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef", $win11ISOLogFuncDef)
+    $runspace.SessionStateProxy.SetVariable("isoStepFuncDef",     $isoStepFuncDef)
 
     $script = [Management.Automation.PowerShell]::Create()
     $script.Runspace = $runspace
     $script.AddScript({
         . ([scriptblock]::Create($isoScriptFuncDef))
         . ([scriptblock]::Create($win11ISOLogFuncDef))
+        . ([scriptblock]::Create($isoStepFuncDef))
 
         function Log($msg) {
             $ts = (Get-Date).ToString("HH:mm:ss")
@@ -253,11 +299,6 @@ function Invoke-WinUtilISOModify {
         }
 
         try {
-            $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
-                $sync["WPFWin11ISOSelectSection"].Visibility = "Collapsed"
-                $sync["WPFWin11ISOMountSection"].Visibility  = "Collapsed"
-                $sync["WPFWin11ISOModifySection"].Visibility = "Collapsed"
-            })
 
             Log "Creating working directory: $workDir"
             $isoContents = Join-Path $workDir "iso_contents"
@@ -294,11 +335,9 @@ function Invoke-WinUtilISOModify {
             $sync["Win11ISOContentsDir"] = $isoContents
 
             SetProgress "Modification complete" 100
-            Log "install.wim modification complete. Choose an output option in Step 4."
+            Log "install.wim modification complete. Choose an output option in the last step."
 
-            $sync["WPFWin11ISOOutputSection"].Dispatcher.Invoke([action]{
-                $sync["WPFWin11ISOOutputSection"].Visibility = "Visible"
-            })
+            Set-WinUtilISOStep -Step "Output"
         } catch {
             Log "ERROR during modification: $_"
 
@@ -332,10 +371,9 @@ function Invoke-WinUtilISOModify {
                 $sync["WPFTweaksProgressLabel"].ToolTip   = ""
                 $sync["WPFTweaksProgressValue"].Value     = 0
                 $sync["WPFWin11ISOModifyButton"].IsEnabled = $true
-                if ($sync["WPFWin11ISOOutputSection"].Visibility -ne "Visible") {
-                    $sync["WPFWin11ISOSelectSection"].Visibility = "Visible"
-                    $sync["WPFWin11ISOMountSection"].Visibility  = "Visible"
-                    $sync["WPFWin11ISOModifySection"].Visibility = "Visible"
+                # Still on the working page means the modification failed - go back to it
+                if ($sync["WPFWin11ISOWorkingSection"].IsSelected) {
+                    Set-WinUtilISOStep -Step "Modify"
                 }
             })
         }
@@ -363,18 +401,15 @@ function Invoke-WinUtilISOCheckExistingWork {
     $sync["Win11ISOWorkDir"]     = $existingWorkDir.FullName
     $sync["Win11ISOContentsDir"] = $isoContents
 
-    $sync["WPFWin11ISOSelectSection"].Visibility = "Collapsed"
-    $sync["WPFWin11ISOMountSection"].Visibility  = "Collapsed"
-    $sync["WPFWin11ISOModifySection"].Visibility = "Collapsed"
-    $sync["WPFWin11ISOOutputSection"].Visibility = "Visible"
+    Set-WinUtilISOStep -Step "Output"
 
     $modified = $existingWorkDir.LastWriteTime.ToString("yyyy-MM-dd HH:mm")
     Write-WinUtilISOLog "Existing working directory found: $($existingWorkDir.FullName)"
-    Write-WinUtilISOLog "Last modified: $modified - Skipping Steps 1-3 and resuming at Step 4."
-    Write-WinUtilISOLog "Click 'Clean & Reset' if you want to start over with a new ISO."
+    Write-WinUtilISOLog "Last modified: $modified - Skipping the earlier steps and resuming at the output step."
+    Write-WinUtilISOLog "Click 'Start Over' if you want to begin again with a new ISO."
 
     [System.Windows.MessageBox]::Show(
-        "A previous WinUtil ISO working directory was found:`n`n$($existingWorkDir.FullName)`n`n(Last modified: $modified)`n`nStep 4 (output options) has been restored so you can save the already-modified image.`n`nClick 'Clean & Reset' in Step 4 if you want to start over.",
+        "A previous WinUtil ISO working directory was found:`n`n$($existingWorkDir.FullName)`n`n(Last modified: $modified)`n`nThe output step has been restored so you can save the already-modified image.`n`nClick 'Start Over' there if you want to begin again.",
         "Existing Work Found", "OK", "Info")
 }
 
@@ -384,7 +419,7 @@ function Invoke-WinUtilISOCleanAndReset {
     if ($workDir -and (Test-Path $workDir)) {
         $confirm = [System.Windows.MessageBox]::Show(
             "This will delete the temporary working directory:`n`n$workDir`n`nAnd reset the interface back to the start.`n`nContinue?",
-            "Clean & Reset", "YesNo", "Warning")
+            "Start Over", "YesNo", "Warning")
         if ($confirm -ne "Yes") { return }
     }
 
@@ -395,12 +430,15 @@ function Invoke-WinUtilISOCleanAndReset {
     $runspace.ApartmentState = "STA"
     $runspace.ThreadOptions  = "ReuseThread"
     $runspace.Open()
-    $runspace.SessionStateProxy.SetVariable("sync",    $sync)
-    $runspace.SessionStateProxy.SetVariable("workDir", $workDir)
+    $isoStepFuncDef = "function Set-WinUtilISOStep {`n" + ${function:Set-WinUtilISOStep}.ToString() + "`n}"
+    $runspace.SessionStateProxy.SetVariable("sync",           $sync)
+    $runspace.SessionStateProxy.SetVariable("workDir",        $workDir)
+    $runspace.SessionStateProxy.SetVariable("isoStepFuncDef", $isoStepFuncDef)
 
     $script = [Management.Automation.PowerShell]::Create()
     $script.Runspace = $runspace
     $script.AddScript({
+        . ([scriptblock]::Create($isoStepFuncDef))
 
         function Log($msg) {
             $ts = (Get-Date).ToString("HH:mm:ss")
@@ -495,15 +533,14 @@ function Invoke-WinUtilISOCleanAndReset {
                 $sync["Win11ISOUSBDisks"]    = $null
 
                 $sync["WPFWin11ISOPath"].Text                   = "No ISO selected..."
-                $sync["WPFWin11ISOFileInfo"].Visibility          = "Collapsed"
+                # Hidden, not collapsed, so the page does not shift when an ISO is picked again
+                $sync["WPFWin11ISOFileInfo"].Visibility          = "Hidden"
                 $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Collapsed"
                 $sync["WPFWin11ISOOptionUSB"].Visibility         = "Collapsed"
-                $sync["WPFWin11ISOOutputSection"].Visibility     = "Collapsed"
-                $sync["WPFWin11ISOModifySection"].Visibility     = "Collapsed"
-                $sync["WPFWin11ISOMountSection"].Visibility      = "Collapsed"
-                $sync["WPFWin11ISOSelectSection"].Visibility     = "Visible"
+                $sync["WPFWin11ISODonePanel"].Visibility         = "Collapsed"
                 $sync["WPFWin11ISOModifyButton"].IsEnabled       = $true
                 $sync["WPFWin11ISOCleanResetButton"].IsEnabled   = $true
+                Set-WinUtilISOStep -Step "Select"
 
                 $sync["WPFTweaksProgressBar"].Visibility = "Collapsed"
                 $sync["WPFTweaksProgressLabel"].Text      = ""
@@ -513,7 +550,7 @@ function Invoke-WinUtilISOCleanAndReset {
                 $sync["WPFWin11ISOStatusLog"].Text   = "Ready. Please select a Windows 11 ISO to begin."
             })
         } catch {
-            Log "ERROR during Clean & Reset: $_"
+            Log "ERROR during Start Over: $_"
             $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
                 $sync["WPFTweaksProgressBar"].Visibility = "Collapsed"
                 $sync["WPFTweaksProgressLabel"].Text      = ""
@@ -562,7 +599,7 @@ function Invoke-WinUtilISOExport {
 
     if (-not $contentsDir -or -not (Test-Path $contentsDir)) {
         [System.Windows.MessageBox]::Show(
-            "No modified ISO content found.  Please complete Steps 1-3 first.",
+            "No modified ISO content found.  Please run the modification step first.",
             "Not Ready", "OK", "Warning")
         return
     }
@@ -673,6 +710,8 @@ function Invoke-WinUtilISOExport {
                 SetProgress "ISO exported" 100
                 Write-WinUtilISOLog "ISO exported successfully: $outputISO"
                 $sync["WPFWin11ISOStatusLog"].Dispatcher.Invoke([action]{
+                    $sync["WPFWin11ISODoneLabel"].Text = "ISO saved to $outputISO"
+                    $sync["WPFWin11ISODonePanel"].Visibility = "Visible"
                     [System.Windows.MessageBox]::Show("ISO exported successfully!`n`n$outputISO", "Export Complete", "OK", "Info")
                 })
             } else {
