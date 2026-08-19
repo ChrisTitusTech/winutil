@@ -1222,7 +1222,8 @@
                                         TickPlacement="BottomRight"
                                         IsSnapToTickEnabled="True"
                                         Width="120"
-                                        VerticalAlignment="Center"/>
+                                        VerticalAlignment="Center"
+                                        AutomationProperties.Name="Font Scaling"/>
                                 <TextBlock Text="Large"
                                            FontSize="{DynamicResource ButtonFontSize}"
                                            Foreground="{DynamicResource MainForegroundColor}"
