@@ -311,7 +311,10 @@ Describe "Invoke-WPFImpex import selection state" {
 
         @($script:sync.selectedApps) | Should -Be @("WPFInstallGit")
         Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly
-        Should -Invoke -CommandName Write-WinUtilLog -Times 0 -Exactly
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Component -eq "Impex" -and
+            $Message -eq "Detected legacy WinUtil config structure; flattening import object."
+        }
         Should -Invoke -CommandName Show-WinUtilMessage -Times 0 -Exactly
         Should -Invoke -CommandName Write-Error -Times 0 -Exactly
     }
@@ -336,6 +339,30 @@ Describe "Invoke-WPFImpex import selection state" {
         Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
             $Title -eq "Unsupported Legacy Configuration"
         }
+        Should -Invoke -CommandName Write-Error -Times 0 -Exactly
+    }
+
+    It "imports legacy selection groups without treating Install metadata as a selection" {
+        $legacyConfigPath = Join-Path $TestDrive "legacy-config.json"
+        [ordered]@{
+            Install = @(
+                [pscustomobject]@{
+                    winget = "Git.Git"
+                    choco = "git"
+                }
+            )
+            WPFInstall = @("WPFInstallGit")
+            WPFTweaks = @("WPFTweaksTelemetry")
+            WPFToggle = @("WPFToggleDarkMode")
+            WPFFeature = @("WPFFeatureSandbox")
+        } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $legacyConfigPath
+
+        Invoke-WPFImpex -type "import" -Config $legacyConfigPath
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallGit")
+        @($script:sync.selectedTweaks) | Should -Be @("WPFTweaksTelemetry")
+        @($script:sync.selectedToggles) | Should -Be @("WPFToggleDarkMode")
+        @($script:sync.selectedFeatures) | Should -Be @("WPFFeatureSandbox")
         Should -Invoke -CommandName Write-Error -Times 0 -Exactly
     }
 

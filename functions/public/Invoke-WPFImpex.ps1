@@ -77,6 +77,7 @@ function Invoke-WPFImpex {
                         $null -ne $jsonFile.PSObject.Properties["Install"] -and
                         $null -ne $jsonFile.PSObject.Properties["WPFInstall"]
                     if ($isLegacyConfig) {
+                        Write-WinUtilLog -Component "Impex" -Message "Detected legacy WinUtil config structure; flattening import object."
                         # Legacy exports stored checkbox keys in WPFInstall and duplicated package
                         # source metadata in Install. Current package IDs come from the app catalog,
                         # so only the selection-key properties are restored.
