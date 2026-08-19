@@ -82,7 +82,7 @@ function Invoke-WPFImpex {
                         # so only the selection-key properties are restored.
                         $flattenedJson = @(
                             foreach ($property in $jsonFile.PSObject.Properties) {
-                                if ($property.Name -eq "Install") {
+                                if ($property.Name -notmatch '^WPF(?:Install|Tweaks|Toggle|Feature|Appx)') {
                                     continue
                                 }
 

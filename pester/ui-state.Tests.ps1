@@ -299,6 +299,23 @@ Describe "Invoke-WPFImpex import selection state" {
         Should -Invoke -CommandName Write-Error -Times 0 -Exactly
     }
 
+    It "ignores unrelated string metadata in a legacy configuration" {
+        $configPath = Join-Path $TestDrive "legacy-config-with-metadata.json"
+        [pscustomobject]@{
+            Install = @([pscustomobject]@{ winget = "Git.Git"; choco = "git" })
+            WPFInstall = @("WPFInstallGit")
+            ExportVersion = "1.0"
+        } | ConvertTo-Json -Depth 3 | Set-Content -LiteralPath $configPath
+
+        Invoke-WPFImpex -type "import" -Config $configPath
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallGit")
+        Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly
+        Should -Invoke -CommandName Write-WinUtilLog -Times 0 -Exactly
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 0 -Exactly
+        Should -Invoke -CommandName Write-Error -Times 0 -Exactly
+    }
+
     It "preserves selections when every legacy entry is retired" {
         $script:sync.selectedApps.Add("WPFInstallExisting")
         $configPath = Join-Path $TestDrive "retired-legacy-config.json"
