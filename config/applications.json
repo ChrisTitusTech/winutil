@@ -1577,7 +1577,7 @@
         "choco": "microsoft-teams",
         "content": "Teams",
         "description": "Microsoft Teams is a collaboration platform that integrates with Office 365 and offers chat, video conferencing, file sharing, and more.",
-        "link": "https://www.microsoft.com/en-us/microsoft-teams/group-chat-software",
+        "link": "https://teams.live.com/free",
         "winget": "Microsoft.Teams",
         "foss": false
     },
