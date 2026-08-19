@@ -40,6 +40,12 @@ This is useful for:
 - Reusing a known-good baseline after reinstalling Windows
 - Standardizing deployments for labs, workstations, or personal setups
 
+:::caution[Keep exported configurations current]
+Exported configurations contain the WinUtil catalog keys that existed when the file was created. If a later WinUtil version removes or renames one of those keys, the import is rejected before any current selections are changed. PowerShell reports the stale entry as `Unknown selection key '<key>'`.
+
+To recover, compare the reported key with the current files in the [WinUtil configuration catalog](https://github.com/ChrisTitusTech/winutil/tree/main/config). Remove or replace the stale key in your JSON file, or create and export a new configuration with the current WinUtil version, then run the import again. Re-export long-lived baselines after catalog changes so they remain compatible.
+:::
+
 :::note
 Run the command in an elevated PowerShell session so WinUtil can apply system-level changes.
 :::
