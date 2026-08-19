@@ -5,9 +5,9 @@ function Find-AppsByNameOrDescription {
 
         .DESCRIPTION
             Search text and categories are independent filters that both have to pass. An entry is
-            shown when its name or description matches the search text, and when its category is in
-            the selected set. An empty search matches everything, and an empty category set matches
-            every category.
+            shown when its name, description, or application preset key matches the search text, and
+            when its category is in the selected set. An empty search matches everything, and an empty
+            category set matches every category.
 
             While either filter is active the matching categories are expanded, since a collapsed
             category would otherwise hide the very results that were asked for. With no filter at
@@ -115,7 +115,8 @@ function Find-AppsByNameOrDescription {
                         $categoryMatch = -not $hasCategories -or $activeCategories -contains $appEntry.Category
                         $textMatch = -not $hasSearch -or
                             $appEntry.Content -like "*$escapedSearchString*" -or
-                            $appEntry.Description -like "*$escapedSearchString*"
+                            $appEntry.Description -like "*$escapedSearchString*" -or
+                            $appTag -like "*$escapedSearchString*"
 
                         if ($categoryMatch -and $textMatch) {
                             $appControl.Visibility = [Windows.Visibility]::Visible
