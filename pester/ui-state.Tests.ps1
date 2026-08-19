@@ -48,12 +48,17 @@ namespace System.Windows.Controls
 
     public class WrapPanel
     {
-        public global::Windows.Visibility Visibility { get; set; }
+        public object Visibility { get; set; }
     }
 
     public class StackPanel
     {
-        public System.Collections.ArrayList Children { get; } = new System.Collections.ArrayList();
+        public System.Collections.ArrayList Children { get; private set; }
+
+        public StackPanel()
+        {
+            Children = new System.Collections.ArrayList();
+        }
     }
 }
 "@
@@ -61,6 +66,7 @@ namespace System.Windows.Controls
 
     . (Join-Path $script:repoRoot "functions\private\Update-WinUtilSelections.ps1")
     . (Join-Path $script:repoRoot "functions\private\Reset-WPFCheckBoxes.ps1")
+    . (Join-Path $script:repoRoot "functions\public\Invoke-WPFImpex.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFGetInstalled.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFSelectedCheckboxesUpdate.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFButton.ps1")
@@ -228,6 +234,61 @@ Describe "Update-WinUtilSelections" {
         @($script:sync.selectedApps) | Should -Be @("WPFInstallExisting")
         @($script:sync.selectedTweaks) | Should -Be @()
         @($script:sync.selectedFeatures) | Should -Be @()
+    }
+}
+
+Describe "Invoke-WPFImpex import selection state" {
+    BeforeEach {
+        New-WinUtilUiStateTestContext
+        $script:sync.Form = [pscustomobject]@{}
+
+        Mock Reset-WPFCheckBoxes { }
+        Mock Write-Error { }
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
+    }
+
+    It "replaces selections and resets the UI after a valid import" {
+        $script:sync.selectedApps.Add("WPFInstallExisting")
+        $script:sync.selectedTweaks.Add("WPFTweaksExisting")
+        $configPath = Join-Path $TestDrive "valid-config.json"
+        @(
+            "WPFInstallGit",
+            "WPFFeatureSandbox"
+        ) | ConvertTo-Json | Set-Content -LiteralPath $configPath
+
+        Invoke-WPFImpex -type "import" -Config $configPath
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallGit")
+        @($script:sync.selectedTweaks) | Should -Be @()
+        @($script:sync.selectedFeatures) | Should -Be @("WPFFeatureSandbox")
+        Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly -ParameterFilter {
+            $doToggles -eq $true
+        }
+        Should -Invoke -CommandName Write-Error -Times 0 -Exactly
+    }
+
+    It "preserves selections and does not reset the UI after an invalid import" {
+        $script:sync.selectedApps.Add("WPFInstallExisting")
+        $script:sync.selectedTweaks.Add("WPFTweaksExisting")
+        $configPath = Join-Path $TestDrive "invalid-config.json"
+        @(
+            "WPFInstallGit",
+            "WPFInstallUnknown"
+        ) | ConvertTo-Json | Set-Content -LiteralPath $configPath
+
+        Invoke-WPFImpex -type "import" -Config $configPath
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallExisting")
+        @($script:sync.selectedTweaks) | Should -Be @("WPFTweaksExisting")
+        @($script:sync.selectedFeatures) | Should -Be @()
+        Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 0 -Exactly
+        Should -Invoke -CommandName Write-Error -Times 1 -Exactly -ParameterFilter {
+            $Message -like "An error occurred while importing: *Unknown selection key 'WPFInstallUnknown'.*"
+        }
     }
 }
 
