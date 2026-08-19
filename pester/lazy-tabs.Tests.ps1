@@ -8,12 +8,10 @@ BeforeAll {
     function Invoke-WPFUIElements {
         param($configVariable, [string]$targetGridName, [int]$columncount)
     }
-    function Initialize-WPFUI {
-        param([string]$TargetGridName)
-    }
     function Invoke-WinUtilISOCheckExistingWork { }
     function Reset-WPFCheckBoxes { param([bool]$doToggles) }
 
+    . (Join-Path $script:repoRoot "functions\public\Initialize-WPFUI.ps1")
     . (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilTabContent.ps1")
 }
 
@@ -100,6 +98,32 @@ Describe "Initialize-WinUtilTabContent" {
 
         Should -Invoke -CommandName Invoke-WinUtilISOCheckExistingWork -Times 1 -Exactly
         $script:sync.InitializedTabs["Win11ISO"] | Should -BeTrue
+    }
+}
+
+Describe "Initialize-WPFUI" {
+    BeforeEach {
+        $script:sync = [Hashtable]::Synchronized(@{
+            configs = @{
+                appnavigation = [pscustomobject]@{}
+            }
+        })
+
+        Mock Invoke-WPFUIElements { throw "App category rendered" }
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+    }
+
+    It "renders app navigation through the app category target" {
+        { Initialize-WPFUI -TargetGridName "appscategory" } | Should -Throw "App category rendered"
+
+        Should -Invoke -CommandName Invoke-WPFUIElements -Times 1 -Exactly -ParameterFilter {
+            $configVariable -eq $script:sync.configs.appnavigation -and
+            $targetGridName -eq "appscategory" -and
+            $columncount -eq 1
+        }
     }
 }
 

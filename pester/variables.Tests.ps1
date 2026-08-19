@@ -4,9 +4,12 @@
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-    $script:originalSync = $global:sync
+    $script:originalSyncVariable = Get-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
+    if ($script:originalSyncVariable) {
+        $script:originalSyncValue = $script:originalSyncVariable.Value
+    }
     $global:sync = [Hashtable]::Synchronized(@{})
-    
+
     # Setup some test variables
     $global:sync["WPFTestString"] = "I am a string"
     $global:sync["WPFTestObj1"] = [PSCustomObject]@{ Name = "Test1" }
@@ -18,7 +21,11 @@ BeforeAll {
 }
 
 AfterAll {
-    $global:sync = $script:originalSync
+    if ($script:originalSyncVariable) {
+        Set-Variable -Name sync -Value $script:originalSyncValue -Scope Global -Force
+    } else {
+        Remove-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
+    }
 }
 
 Describe "Get-WinUtilVariables" {
