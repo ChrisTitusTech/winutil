@@ -271,6 +271,30 @@ Describe "Invoke-WPFImpex import selection state" {
         Should -Invoke -CommandName Write-Error -Times 0 -Exactly
     }
 
+    It "imports legacy selection groups without treating Install metadata as a selection" {
+        $legacyConfigPath = Join-Path $TestDrive "legacy-config.json"
+        [ordered]@{
+            Install = @(
+                [pscustomobject]@{
+                    winget = "Git.Git"
+                    choco = "git"
+                }
+            )
+            WPFInstall = @("WPFInstallGit")
+            WPFTweaks = @("WPFTweaksTelemetry")
+            WPFToggle = @("WPFToggleDarkMode")
+            WPFFeature = @("WPFFeatureSandbox")
+        } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $legacyConfigPath
+
+        Invoke-WPFImpex -type "import" -Config $legacyConfigPath
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallGit")
+        @($script:sync.selectedTweaks) | Should -Be @("WPFTweaksTelemetry")
+        @($script:sync.selectedToggles) | Should -Be @("WPFToggleDarkMode")
+        @($script:sync.selectedFeatures) | Should -Be @("WPFFeatureSandbox")
+        Should -Invoke -CommandName Write-Error -Times 0 -Exactly
+    }
+
     It "preserves selections and does not reset the UI after an invalid import" {
         $script:sync.selectedApps.Add("WPFInstallExisting")
         $script:sync.selectedTweaks.Add("WPFTweaksExisting")
