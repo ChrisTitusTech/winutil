@@ -7,6 +7,23 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilEntryToolTip.ps1")
     . (Join-Path $script:repoRoot "functions\private\Update-WinUtilSelections.ps1")
 
+    $applications = Get-Content (Join-Path $script:repoRoot "config\applications.json") -Raw | ConvertFrom-Json
+    $applicationsHashtable = @{}
+    foreach ($property in $applications.PSObject.Properties) {
+        $applicationsHashtable["WPFInstall$($property.Name)"] = $property.Value
+    }
+    $appx = Get-Content (Join-Path $script:repoRoot "config\appx.json") -Raw | ConvertFrom-Json
+    $appxHashtable = @{}
+    foreach ($property in $appx.PSObject.Properties) {
+        $appxHashtable[$property.Name] = $property.Value
+    }
+    $script:selectionConfigs = @{
+        applicationsHashtable = $applicationsHashtable
+        tweaks                 = Get-Content (Join-Path $script:repoRoot "config\tweaks.json") -Raw | ConvertFrom-Json
+        feature                = Get-Content (Join-Path $script:repoRoot "config\feature.json") -Raw | ConvertFrom-Json
+        appxHashtable          = $appxHashtable
+    }
+
     # Map each control type the renderer handles to whether its branch adds the preset key.
     # Read from the source AST so re-adding the helper to an unsupported branch fails the test.
     $script:rendererClauses = @{}
@@ -21,6 +38,9 @@ BeforeAll {
         $script:rendererClauses[$clauseName] = [bool]($clause.Item2.Extent.Text -match 'Get-WinUtilEntryToolTip')
     }
     $script:rendererClauses["default"] = [bool]($typeSwitch.Default.Extent.Text -match 'Get-WinUtilEntryToolTip')
+
+    $appRendererPath = Join-Path $script:repoRoot "functions\private\Initialize-InstallAppEntry.ps1"
+    $script:appRenderer = Get-Content $appRendererPath -Raw
 
     # Every entry the renderer draws, with the branch that draws it
     $script:renderedEntries = foreach ($configName in "appnavigation", "tweaks", "feature", "appx") {
@@ -62,11 +82,16 @@ Describe "Get-WinUtilEntryToolTip" {
 }
 
 Describe "Preset key tooltips" {
-    It "leaves comboboxes and radio buttons unlabelled" {
-        # Neither control is representable in a preset file: it stores a flat list of
-        # keys, with no room for a combobox's selected value or a radio group's choice.
+    It "leaves unsupported controls unlabelled" {
+        # Comboboxes and radio buttons are not representable in the flat preset format.
+        # Toggle keys can be imported, but preset execution does not apply their state.
+        $script:rendererClauses["Toggle"] | Should -BeFalse
         $script:rendererClauses["Combobox"] | Should -BeFalse
         $script:rendererClauses["RadioButton"] | Should -BeFalse
+    }
+
+    It "labels entries created by the application renderer" {
+        $script:appRenderer | Should -Match '\$border\.ToolTip\s*=\s*Get-WinUtilEntryToolTip\s+-Description\s+\$app\.description\s+-Key\s+\$appKey'
     }
 
     It "labels every entry with a key the preset importer accepts" {
@@ -80,6 +105,7 @@ Describe "Preset key tooltips" {
                 selectedToggles  = [System.Collections.Generic.List[string]]::new()
                 selectedFeatures = [System.Collections.Generic.List[string]]::new()
                 selectedAppx     = [System.Collections.Generic.List[string]]::new()
+                configs          = $script:selectionConfigs
             }
 
             { Update-WinUtilSelections -flatJson @($entry.Key) } |
