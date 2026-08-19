@@ -1,0 +1,212 @@
+name: Repo Contributors' Issue Triage Tools
+
+on:
+  issue_comment:
+    types: [created, edited]
+
+jobs:
+  triage-tools:
+    if: ${{ !github.event.issue.pull_request }}
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: none
+      contents: none
+    steps:
+      - name: Process issue command
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const trustedUsers = [
+              7896101, // ChrisTitusTech
+              57459428, // FluffyPunk
+              125669256, // FallenGME
+              90123670, // mewclouds
+              121827219, // MyDrift-user
+              17331812, // Callum
+              101426328, // CodingWonders
+              70659536 // og-mrk
+            ];
+
+            if (context.payload.issue.pull_request) {
+              console.log("Pull request comments are not supported. Exiting.");
+              return;
+            }
+
+            const comment = context.payload.comment;
+            const commentAuthor = comment.user;
+
+            if (!trustedUsers.includes(commentAuthor.id)) {
+              console.log(`Comment author ${commentAuthor.login} is not a trusted user. Exiting.`);
+              return;
+            }
+
+            const {owner, repo} = context.repo;
+            const issueNumber = context.issue.number;
+            const command = comment.body.trim().toLowerCase();
+            const triageMatch = command.match(/^\/triage$/);
+            const triageOffMatch = command.match(/^\/triageoff$/);
+            const notPlannedMatch = command.match(/^\/np(?:\s+(\w+))?$/);
+            const duplicateMatch = command.match(/^\/duplicate\s+#?(\d+)$/);
+
+            if (triageMatch) {
+              const issue = await github.rest.issues.get({
+                owner,
+                repo,
+                issue_number: issueNumber
+              });
+
+              if (issue.data.labels.some(label => label.name === "needs-triage")) {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: "This issue already has the 'needs-triage' label. Use /triageoff to remove it."
+                });
+              } else {
+                await github.rest.issues.addLabels({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  labels: ["needs-triage"]
+                });
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: `${commentAuthor.login} requested maintainer triage for this issue.`
+                });
+              }
+            } else if (triageOffMatch) {
+              const issue = await github.rest.issues.get({
+                owner,
+                repo,
+                issue_number: issueNumber
+              });
+
+              if (issue.data.labels.some(label => label.name === "needs-triage")) {
+                await github.rest.issues.removeLabel({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  name: "needs-triage"
+                });
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: `${commentAuthor.login} removed the triage request from this issue.`
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: "This issue is not currently marked for triage."
+                });
+              }
+            } else if (notPlannedMatch) {
+              const reason = notPlannedMatch[1];
+
+              if (reason === "wontfix") {
+                await github.rest.issues.addLabels({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  labels: ["wontfix"]
+                });
+              } else if (reason === "notrelated") {
+                await github.rest.issues.addLabels({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  labels: ["not-related"]
+                });
+              }
+
+              await github.rest.issues.update({
+                owner,
+                repo,
+                issue_number: issueNumber,
+                state: "closed",
+                state_reason: "not_planned"
+              });
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issueNumber,
+                body: `${commentAuthor.login} closed this issue as not planned.`
+              });
+            } else if (duplicateMatch) {
+              const duplicateIssueNumber = Number(duplicateMatch[1]);
+
+              if (!Number.isSafeInteger(duplicateIssueNumber) || duplicateIssueNumber < 1) {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: "The duplicate target must be a positive issue number."
+                });
+              } else if (duplicateIssueNumber === issueNumber) {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: "An issue cannot be marked as a duplicate of itself."
+                });
+              } else {
+                let duplicateIssue;
+                try {
+                  const response = await github.rest.issues.get({
+                    owner,
+                    repo,
+                    issue_number: duplicateIssueNumber
+                  });
+                  duplicateIssue = response.data;
+                } catch (error) {
+                  if (error.status !== 404) {
+                    throw error;
+                  }
+                }
+
+                if (duplicateIssue?.pull_request) {
+                  await github.rest.issues.createComment({
+                    owner,
+                    repo,
+                    issue_number: issueNumber,
+                    body: `#${duplicateIssueNumber} is a pull request, not an issue.`
+                  });
+                } else if (duplicateIssue) {
+                  await github.rest.issues.update({
+                    owner,
+                    repo,
+                    issue_number: issueNumber,
+                    state: "closed",
+                    state_reason: "duplicate",
+                    duplicate_issue_id: duplicateIssue.id
+                  });
+                  await github.rest.issues.createComment({
+                    owner,
+                    repo,
+                    issue_number: issueNumber,
+                    body: `${commentAuthor.login} closed this issue as a duplicate of #${duplicateIssueNumber}.`
+                  });
+                } else {
+                  await github.rest.issues.createComment({
+                    owner,
+                    repo,
+                    issue_number: issueNumber,
+                    body: `Issue #${duplicateIssueNumber} does not exist.`
+                  });
+                }
+              }
+            } else {
+              console.log("Comment does not contain a supported issue command. Exiting.");
+              return;
+            }
+
+            await github.rest.issues.deleteComment({
+              owner,
+              repo,
+              comment_id: comment.id
+            });

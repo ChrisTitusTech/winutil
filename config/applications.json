@@ -2078,12 +2078,12 @@
         "foss": true
     },
     "CloudflareWARP": {
-        "category":"Pro Tools",
+        "category": "Utilities",
         "choco": "warp",
         "winget": "Cloudflare.Warp",
-        "description": "The Cloudflare WARP client allows individuals to have a faster, more secure, and more private experience online.",
+        "description": "WARP is a freemium VPN service provided by Cloudflare. Includes usage of Cloudflare's DNS",
         "content": "Cloudflare WARP",
-        "link": "https://developers.cloudflare.com/warp-client/",
+        "link": "https://one.one.one.one",
         "foss": false
     }
 }
