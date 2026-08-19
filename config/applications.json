@@ -422,6 +422,16 @@
         "winget": "Microsoft.Edge",
         "foss": false
     },
+    "es-de": {
+        "category": "Games",
+        "choco": "",
+        "content": "EmulationStation Desktop Edition",
+        "_comment": "This and emulationstation are two completely different things. ES-DE is your frontend for everything and has its own set of emulators. Emulationstation is a graphical frontend for RetroArch.",
+        "description": "EmulationStation Desktop Edition is a frontend for browsing and launching games from your multi-platform game collection.",
+        "link": "https://es-de.org/",
+        "winget": "ES-DE.EmulationStation-DE",
+        "foss": true
+    },
     "enteauth": {
         "category": "Utilities",
         "choco": "ente-auth",
@@ -970,6 +980,15 @@
         "winget": "Netbird.Netbird",
         "foss": true
     },
+    "tailscale": {
+        "category": "Utilities",
+        "choco": "tailscale",
+        "content": "Tailscale",
+        "description": "The Tailscale client allows you to connect all your devices using WireGuard®, without the hassle. Tailscale makes it as easy as installing an app and signing in.",
+        "link": "https://tailscale.com/",
+        "winget": "Tailscale.Tailscale",
+        "foss": false
+    },
     "naps2": {
         "category": "Document",
         "choco": "naps2",
@@ -1382,6 +1401,15 @@
         "link": "https://www.qbittorrent.org/",
         "winget": "qBittorrent.qBittorrent",
         "foss": true
+    },
+    "qownnotes": {
+      "category": "Document",
+      "choco": "qownnotes",
+      "content": "QOwnNotes",
+      "description": "QOwnNotes is a free open-source note taking app with Nextcloud/ownCloud integration.",
+      "link": "https://www.qownnotes.org/",
+      "winget": "pbek.QOwnNotes",
+      "foss": true  
     },
     "qtox": {
         "category": "Communications",
