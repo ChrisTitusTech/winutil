@@ -10,13 +10,32 @@ function Invoke-WPFSystemRepair {
         3. DISM - Repair a corrupted Windows operating system image
     #>
 
-    # SuccessCodes carries the non-zero exits a step treats as success. Only DISM has one:
-    # 3010 is ERROR_SUCCESS_REBOOT_REQUIRED, meaning the image was repaired and the change
-    # lands on restart. The same number from chkdsk or sfc does not mean that.
+    # SuccessCodes maps the non-zero exits a step treats as success to what they mean. The codes
+    # are per step because the same number means different things: 1 and 2 are ordinary chkdsk
+    # outcomes, while 1 from sfc is a failure, and 3010 is a repaired image from DISM only.
     $steps = @(
-        @{ Label = "Checking the disk for errors";      Arguments = "/c chkdsk /scan /perf";                        SuccessCodes = @() },
-        @{ Label = "Scanning protected system files";   Arguments = "/c sfc /scannow";                              SuccessCodes = @() },
-        @{ Label = "Repairing the Windows image";       Arguments = "/c dism /online /cleanup-image /restorehealth"; SuccessCodes = @(3010) }
+        @{
+            Label = "Checking the disk for errors"
+            Arguments = "/c chkdsk /scan /perf"
+            # 3 is left out: the disk could not be checked, or has errors an online scan cannot
+            # fix, and the steps after this one are not worth running on a disk in that state.
+            SuccessCodes = @{
+                1 = "errors were found and fixed"
+                2 = "cleanup was performed, or was skipped because /f was not given"
+            }
+        },
+        @{
+            Label = "Scanning protected system files"
+            Arguments = "/c sfc /scannow"
+            SuccessCodes = @{}
+        },
+        @{
+            Label = "Repairing the Windows image"
+            Arguments = "/c dism /online /cleanup-image /restorehealth"
+            SuccessCodes = @{
+                3010 = "a restart is needed for the repair to take effect"
+            }
+        }
     )
 
     $completed = 0
@@ -28,10 +47,12 @@ function Invoke-WPFSystemRepair {
         $process = Start-Process cmd.exe -ArgumentList $step.Arguments -NoNewWindow -Wait -PassThru
         $exitCode = $process.ExitCode
 
-        if ($exitCode -eq 3010 -and $step.SuccessCodes -contains 3010) {
-            Write-WinUtilLog -Level "WARN" -Component "SystemRepair" -Message "$($step.Label) finished; a restart is needed for the repair to take effect."
-        } elseif ($exitCode -ne 0) {
-            throw "$($step.Label) failed with exit code $exitCode."
+        if ($exitCode -ne 0) {
+            if ($step.SuccessCodes.ContainsKey($exitCode)) {
+                Write-WinUtilLog -Level "WARN" -Component "SystemRepair" -Message "$($step.Label) finished: $($step.SuccessCodes[$exitCode])."
+            } else {
+                throw "$($step.Label) failed with exit code $exitCode."
+            }
         }
 
         $completed++
