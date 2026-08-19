@@ -264,8 +264,9 @@ Describe "App navigation config" {
     It "is wired to an existing XAML target grid" {
         $mainScript = Get-Content -Path $script:mainScriptPath -Raw
         $tabInitializerScript = Get-Content -Path (Join-Path $script:repoRoot "functions/private/Initialize-WinUtilTabContent.ps1") -Raw
+        $uiInitializerScript = Get-Content -Path (Join-Path $script:repoRoot "functions/public/Initialize-WPFUI.ps1") -Raw
         $targetGridMatch = [regex]::Match(
-            "$mainScript`n$tabInitializerScript",
+            "$mainScript`n$tabInitializerScript`n$uiInitializerScript",
             'Invoke-WPFUIElements\s+-configVariable\s+\$sync\.configs\.appnavigation\s+-targetGridName\s+"([^"]+)"'
         )
 

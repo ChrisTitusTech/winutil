@@ -43,7 +43,9 @@ This is useful for:
 - Standardizing deployments for labs, workstations, or personal setups
 
 :::caution[Keep exported configurations current]
-Exported configurations contain the WinUtil catalog keys that existed when the file was created. If a later WinUtil version removes or renames one of those keys, the import is rejected before any current selections are changed. PowerShell reports the stale entry as `Unknown selection key '<key>'`.
+Exported configurations contain the WinUtil catalog keys that existed when the file was created. Current exports use a flat JSON format: one string when a single setting is selected, or an array of strings when several settings are selected. If a later WinUtil version removes or renames any imported key, the entire import is rejected before current selections are changed. PowerShell reports the stale entry as `Unknown selection key '<key>'`.
+
+Older WinUtil versions exported a JSON object with `Install` package metadata and grouped `WPFInstall`, `WPFTweaks`, `WPFToggle`, and `WPFFeature` selections. When importing one of these legacy files, WinUtil restores the keys that still exist and skips retired keys, recording them as a warning in the WinUtil log. If the file contains no supported selections, the import makes no changes.
 
 To recover, compare the reported key with the current files in the [WinUtil configuration catalog](https://github.com/ChrisTitusTech/winutil/tree/main/config). Remove or replace the stale key in your JSON file, or create and export a new configuration with the current WinUtil version, then run the import again. Re-export long-lived baselines after catalog changes so they remain compatible.
 :::
