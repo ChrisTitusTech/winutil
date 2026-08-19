@@ -73,9 +73,17 @@ function Invoke-WPFImpex {
                         Write-Error "Failed to load the JSON file from the specified path or URL: $_"
                         return
                     }
-                    # TODO how to handle old style? detected json type then flatten it in a func?
-                    # $flattenedJson = $jsonFile.PSObject.Properties.Where({ $_.Name -ne "Install" }).ForEach({ $_.Value })
-                    $flattenedJson = $jsonFile
+                    if ($null -ne $jsonFile -and $jsonFile.PSObject.Properties['Install']) {
+                        Write-WinUtilLog -Component "Impex" -Message "Detected legacy WinUtil config structure; flattening import object."
+                        $flattenedJson = @()
+                        foreach ($prop in $jsonFile.PSObject.Properties) {
+                            if ($prop.Name -ne "Install" -and $null -ne $prop.Value) {
+                                $flattenedJson += @($prop.Value)
+                            }
+                        }
+                    } else {
+                        $flattenedJson = $jsonFile
+                    }
 
                     if (-not $flattenedJson) {
                         [System.Windows.MessageBox]::Show(
