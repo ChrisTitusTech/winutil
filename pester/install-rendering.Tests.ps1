@@ -11,6 +11,7 @@ Describe "Install app rendering startup contract" {
         $categoryScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Initialize-InstallCategoryAppList.ps1") -Raw
 
         $categoryScript | Should -Match '\$sync\.InstallAppRenderQueue = \[System\.Collections\.Queue\]::new\(\)'
+        $categoryScript | Should -Match '\$sync\.FaviconQueue = \[System\.Collections\.Queue\]::new\(\)'
         $categoryScript | Should -Match 'Start-WinUtilInstallAppRendering'
         $categoryScript | Should -Match 'Pre-group apps by category before creating WPF controls'
     }
@@ -44,6 +45,7 @@ Describe "Install app rendering startup contract" {
         $previousSync = Get-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
         $previousInitializeAppEntry = Get-Item -Path Function:\Initialize-InstallAppEntry -ErrorAction SilentlyContinue
         $previousSearch = Get-Item -Path Function:\Find-AppsByNameOrDescription -ErrorAction SilentlyContinue
+        $previousStartFaviconLoading = Get-Item -Path Function:\Start-WinUtilFaviconLoading -ErrorAction SilentlyContinue
         $errorCountBefore = $global:Error.Count
 
         try {
@@ -52,18 +54,24 @@ Describe "Install app rendering startup contract" {
             $global:sync.SearchBar = [pscustomobject]@{ Text = "" }
             $global:sync.Form = [pscustomobject]@{ Dispatcher = [System.Windows.Threading.Dispatcher]::CurrentDispatcher }
             $global:sync.InstallAppRenderQueue = [System.Collections.Queue]::new()
+            $global:sync.FaviconQueue = [System.Collections.Queue]::new()
+            $global:sync.FaviconQueue.Enqueue([pscustomobject]@{ AppKey = "QueuedFavicon" })
 
-            $renderedApps = [System.Collections.Generic.List[string]]::new()
+            $renderSequence = [System.Collections.Generic.List[string]]::new()
 
             function global:Initialize-InstallAppEntry {
                 param($TargetElement, $AppKey)
-                $renderedApps.Add($AppKey)
+                $renderSequence.Add($AppKey)
                 return "entry:$AppKey"
             }
 
             function global:Find-AppsByNameOrDescription {
                 param($SearchString, $Category)
                 throw "Search should not run for an empty search box in this test."
+            }
+
+            function global:Start-WinUtilFaviconLoading {
+                $renderSequence.Add("Favicons")
             }
 
             $global:sync.InstallAppRenderQueue.Enqueue([pscustomobject]@{ TargetElement = [pscustomobject]@{}; AppKeys = @("AppA", "AppB") })
@@ -79,7 +87,7 @@ Describe "Install app rendering startup contract" {
                 param($eventSender)
                 $timer = [System.Windows.Threading.DispatcherTimer]$eventSender
 
-                if ($global:sync.InstallAppEntriesRendered -or $timeout.Elapsed.TotalSeconds -gt 5) {
+                if ($renderSequence -contains "Favicons" -or $timeout.Elapsed.TotalSeconds -gt 5) {
                     $timer.Stop()
                     $frame.Continue = $false
                 }
@@ -90,7 +98,7 @@ Describe "Install app rendering startup contract" {
 
             $global:sync.InstallAppEntriesRendered | Should -BeTrue
             $global:sync.InstallAppRenderQueue.Count | Should -Be 0
-            @($renderedApps) | Should -Be @("AppA", "AppB", "AppC")
+            @($renderSequence) | Should -Be @("AppA", "AppB", "AppC", "Favicons")
             $global:Error.Count | Should -Be $errorCountBefore
         } finally {
             if ($previousSync) {
@@ -101,7 +109,8 @@ Describe "Install app rendering startup contract" {
 
             foreach ($functionBackup in @(
                     @{ Name = "Initialize-InstallAppEntry"; Backup = $previousInitializeAppEntry },
-                    @{ Name = "Find-AppsByNameOrDescription"; Backup = $previousSearch }
+                    @{ Name = "Find-AppsByNameOrDescription"; Backup = $previousSearch },
+                    @{ Name = "Start-WinUtilFaviconLoading"; Backup = $previousStartFaviconLoading }
                 )) {
                 if ($functionBackup.Backup) {
                     Set-Item -Path "Function:\$($functionBackup.Name)" -Value $functionBackup.Backup.ScriptBlock

@@ -21,6 +21,20 @@ function Invoke-WinUtilInstallAppRenderBatch {
 
 function Complete-WinUtilInstallAppRendering {
     $sync.InstallAppEntriesRendered = $true
+
+    if ($null -eq $sync.FaviconQueue -or $sync.FaviconQueue.Count -eq 0) {
+        return
+    }
+
+    if ($sync.Form -and $sync.Form.Dispatcher) {
+        $sync.Form.Dispatcher.BeginInvoke(
+            [System.Windows.Threading.DispatcherPriority]::Background,
+            [action]{ Start-WinUtilFaviconLoading }
+        ) | Out-Null
+        return
+    }
+
+    Start-WinUtilFaviconLoading
 }
 
 function Invoke-WinUtilInstallAppRenderNextBatch {

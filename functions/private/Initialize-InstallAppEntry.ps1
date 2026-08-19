@@ -73,15 +73,15 @@ function Initialize-InstallAppEntry {
         $fallback = New-Object Windows.Controls.TextBlock
         $fallback.Text = $app.content.TrimStart(".").Substring(0, 1).ToUpper()
         $fallback.FontWeight = "Bold"; $fallback.HorizontalAlignment = "Center"; $fallback.VerticalAlignment = "Center"
-        if ($app.link) { $fallback.Visibility = "Collapsed" }
         $fallback.SetResourceReference([Windows.Controls.TextBlock]::FontSizeProperty, "AppEntryFontSize")
         $fallback.SetResourceReference([Windows.Controls.TextBlock]::ForegroundProperty, "ToggleButtonOnColor")
         [void]$icon.Children.Add($fallback)
+        $faviconUrl = $null
         if ($app.link) {
             $logo = New-Object Windows.Controls.Image
             $logo.Stretch = [Windows.Media.Stretch]::Uniform
-            $logo.Source = "https://www.google.com/s2/favicons?sz=64&domain_url=$([uri]::EscapeDataString($app.link))"
-            $logo.Add_ImageFailed({ $this.Visibility = "Collapsed"; $this.Parent.Children[0].Visibility = "Visible" })
+            $logo.Visibility = [Windows.Visibility]::Collapsed
+            $faviconUrl = Get-WinUtilFaviconUrl -Link $app.link
             [void]$icon.Children.Add($logo)
         }
         [void]$contentPanel.Children.Add($icon)
@@ -116,5 +116,17 @@ function Initialize-InstallAppEntry {
         }
         # Add the border to the corresponding Category
         $TargetElement.Children.Add($border) | Out-Null
+        if ($faviconUrl) {
+            if ($null -eq $sync.FaviconQueue) {
+                $sync.FaviconQueue = [System.Collections.Queue]::new()
+            }
+
+            $sync.FaviconQueue.Enqueue([pscustomobject]@{
+                AppKey      = $appKey
+                Url         = $faviconUrl
+                TargetImage = $logo
+                Fallback    = $fallback
+            })
+        }
         return $checkbox
     }
