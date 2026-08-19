@@ -307,12 +307,14 @@
                                    AllowsTransparency="True"
                                    PopupAnimation="Slide">
                                 <Border Name="DropDownBorder"
+                                        MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
                                         Background="{TemplateBinding Background}"
                                         BorderBrush="{DynamicResource BorderColor}"
                                         BorderThickness="1"
                                         CornerRadius="4">
                                     <ScrollViewer>
-                                        <ItemsPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,2"/>
+                                        <!-- Stretched, so an item's highlight spans the popup rather than just its text -->
+                                        <ItemsPresenter HorizontalAlignment="Stretch" Margin="4,2"/>
                                     </ScrollViewer>
                                 </Border>
                             </Popup>
@@ -322,8 +324,11 @@
             </Setter>
         </Style>
         <Style TargetType="ComboBoxItem">
-            <Setter Property="Background" Value="{DynamicResource ComboBoxBackgroundColor}"/>
+            <!-- Transparent rather than its own colour: the item used to paint one background and
+                 the popup another, which read as a stack of labels on a mismatched sheet -->
+            <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="{DynamicResource ComboBoxForegroundColor}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
             <Setter Property="Padding" Value="6,3"/>
             <Setter Property="ContentTemplate">
                 <Setter.Value>
@@ -2050,23 +2055,37 @@
                             <!-- ─── Working page: selected while a step runs, no header of its own ─── -->
                             <TabItem Name="WPFWin11ISOWorkingSection" Visibility="Collapsed">
                                 <StackPanel Style="{StaticResource Win11StepColumn}">
-                                    <TextBlock Text="&#xE895;" Style="{StaticResource Win11StepHero}"
-                                               RenderTransformOrigin="0.5,0.5">
+                                    <!-- BitmapCache because this is text: without it WPF re-rasterises the
+                                         glyph every frame on the interface thread and the spin stutters.
+                                         Cached, the rotation is a transform on an image the GPU already has. -->
+                                    <TextBlock Text="&#xE895;"
+                                               RenderTransformOrigin="0.5,0.5"
+                                               CacheMode="BitmapCache">
                                         <TextBlock.RenderTransform>
                                             <RotateTransform Angle="0"/>
                                         </TextBlock.RenderTransform>
-                                        <TextBlock.Triggers>
-                                            <!-- Spins for as long as the working page is up, so the UI reads as busy -->
-                                            <EventTrigger RoutedEvent="TextBlock.Loaded">
-                                                <BeginStoryboard>
-                                                    <Storyboard RepeatBehavior="Forever">
-                                                        <DoubleAnimation
-                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
-                                                            From="0" To="360" Duration="0:0:1.4"/>
-                                                    </Storyboard>
-                                                </BeginStoryboard>
-                                            </EventTrigger>
-                                        </TextBlock.Triggers>
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource Win11StepHero}">
+                                                <Style.Triggers>
+                                                    <!-- Tied to visibility, not to Loaded: the working page stays loaded
+                                                         while collapsed, so a Loaded trigger left it spinning forever -->
+                                                    <DataTrigger Binding="{Binding IsVisible, RelativeSource={RelativeSource Self}}" Value="True">
+                                                        <DataTrigger.EnterActions>
+                                                            <BeginStoryboard Name="Win11ISOSpin">
+                                                                <Storyboard RepeatBehavior="Forever">
+                                                                    <DoubleAnimation
+                                                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                                                        From="0" To="360" Duration="0:0:1.4"/>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </DataTrigger.EnterActions>
+                                                        <DataTrigger.ExitActions>
+                                                            <StopStoryboard BeginStoryboardName="Win11ISOSpin"/>
+                                                        </DataTrigger.ExitActions>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
                                     </TextBlock>
                                     <TextBlock Name="WPFWin11ISOWorkingLabel"
                                                Style="{StaticResource Win11StepTitle}"
