@@ -413,7 +413,7 @@
         "winget": "Microsoft.Edge",
         "foss": false
     },
-    "emulationstation-desktopedition": {
+    "es-de": {
         "category": "Games",
         "choco": "",
         "content": "EmulationStation Desktop Edition",
