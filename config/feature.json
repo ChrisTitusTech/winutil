@@ -179,6 +179,15 @@
     "function": "Invoke-WPFFixesWinget",
     "link": "https://winutil.christitus.com/code-reference/features/fixes/winget"
   },
+  "WPFExportEnvironmentReport": {
+    "Content": "Export Environment Report",
+    "category": "Diagnostics",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFExportEnvironmentReport",
+    "link": "https://winutil.christitus.com/code-reference/features/diagnostics/exportenvironmentreport"
+  },
   "WPFPanelComputer": {
     "Content": "Computer Management",
     "category": "Legacy Windows Panels",
