@@ -12,13 +12,18 @@ function Invoke-WinUtilAutoRun {
         Returns a summary of what ran so the caller can decide the exit code. Nothing here
         touches the interface, so it behaves the same whether a window exists or not.
 
+    .PARAMETER StopTimeoutSeconds
+        How long a step that timed out is given to stop before the run gives up on the rest.
+
     .PARAMETER StepTimeoutSeconds
         How long a single action may take before the run gives up on it. Without a ceiling an
         installer waiting on something that will never arrive hangs the run for good.
 
     #>
     param(
-        [int]$StepTimeoutSeconds = 3600
+        [int]$StepTimeoutSeconds = 3600,
+
+        [int]$StopTimeoutSeconds = 30
     )
 
     $steps = @(
@@ -78,8 +83,22 @@ function Invoke-WinUtilAutoRun {
         Write-WinUtilLog -Component "AutoRun" -Message "$($step.Name): $outcome after $([int]$stepClock.Elapsed.TotalSeconds)s."
 
         if ($timedOut) {
+            # The worker is still on the pool. Clearing the slot on its own would let the next
+            # step start beside it, so two runs would be changing the machine at once.
+            Stop-WinUtilActiveWork -NoWait | Out-Null
+
+            $stopDeadline = (Get-Date).AddSeconds($StopTimeoutSeconds)
+            while ((Test-WinUtilActiveWorkRunning) -and (Get-Date) -lt $stopDeadline) {
+                Start-Sleep -Milliseconds 200
+            }
+
             # A job that never cleared the flag would make every later step refuse to start
             $null = Clear-WinUtilActiveJob
+
+            if (Test-WinUtilActiveWorkRunning) {
+                Write-WinUtilLog -Level "ERROR" -Component "AutoRun" -Message "$($step.Name) could not be stopped, so the remaining steps are abandoned rather than run beside it."
+                break
+            }
         }
     }
 

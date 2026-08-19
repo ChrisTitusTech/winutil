@@ -57,7 +57,9 @@ Function Install-WinUtilProgramWinget {
 
         $arguments = switch ($Action) {
             "Uninstall" { @("uninstall", "--id", $program, "--source", $source, "--silent") }
-            "Upgrade"   { @("upgrade", "--id", $program, "--accept-package-agreements", "--accept-source-agreements", "--source", $source, "--silent") }
+            # --include-unknown because the scan that found these ran with it: without it winget
+            # refuses every package whose installed version it could not read
+            "Upgrade"   { @("upgrade", "--id", $program, "--accept-package-agreements", "--accept-source-agreements", "--source", $source, "--include-unknown", "--silent") }
             default     { @("install", "--id", $program, "--accept-package-agreements", "--accept-source-agreements", "--source", $source, "--silent") }
         }
 

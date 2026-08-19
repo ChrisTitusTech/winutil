@@ -24,8 +24,10 @@ function Invoke-WPFButton {
         Step-WinUtilJob -Hide
     }
 
-    # Switch-driven buttons that change the system. Anything in feature.json counts too, apart
-    # from the WPFPanel* entries, which only hand off to a Windows applet.
+    # Switch-driven buttons that change the system. Anything in feature.json counts too. The
+    # WPFPanel* entries are the exception only when they hand off to a Windows applet, which is
+    # what a missing function means; the two that carry one change the system themselves and
+    # would otherwise run their waits on the interface thread with no job to pause or stop.
     #
     # This is a whitelist on purpose: window chrome and popup toggles also reach here, because
     # every Button in $sync gets wired to this function, and they must not become jobs.
@@ -35,7 +37,8 @@ function Invoke-WPFButton {
         "WPFGetInstalledAppx"
     )
 
-    $isConfigWork = $sync.configs.feature.$Button -and $Button -notlike "WPFPanel*"
+    $featureEntry = $sync.configs.feature.$Button
+    $isConfigWork = $featureEntry -and ($Button -notlike "WPFPanel*" -or $featureEntry.function)
 
     if ($isConfigWork -or $workButtons -contains $Button) {
         Start-WinUtilJob -Name (Get-WinUtilButtonLabel -Button $Button) -Parameters @{

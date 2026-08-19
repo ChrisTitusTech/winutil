@@ -13,6 +13,9 @@ BeforeAll {
     function Write-WinUtilLog { param($Level, $Component, $Message, [switch]$Detail) }
     function Write-WinUtilTimingSummary { param($Scope, $TotalMilliseconds) }
     function Clear-WinUtilActiveJob { param([string]$Token) $sync.ActiveJobToken = $null; $sync.ActiveJob = $null; return $true }
+    # A timed out step stops its worker before the next one starts, so the run needs both of these
+    function Stop-WinUtilActiveWork { param([switch]$NoWait) }
+    function Test-WinUtilActiveWorkRunning { return $false }
     function Write-WinUtilErrorRecord { param($ErrorRecord, $Component, $Context) }
     function Invoke-WPFtweaksbutton { }
     function Invoke-WPFToggleSelections { }
@@ -107,6 +110,23 @@ Describe "Invoke-WinUtilAutoRun" {
         $summary.TimedOut | Should -Be 1
         # and the flag must be released, or every later step would be refused
         $sync.ActiveJob | Should -BeNullOrEmpty
+    }
+
+    It "abandons the remaining steps when a timed out worker will not stop" {
+        $sync.selectedTweaks.Add("WPFTweaksAH")
+        $sync.selectedApps.Add("WPFInstall7zip")
+        # the first step times out, and its worker is still running afterwards
+        Mock Invoke-WPFtweaksbutton { $sync.ActiveJob = "Tweaks" }
+        Mock Invoke-WPFInstall { }
+        Mock Stop-WinUtilActiveWork { }
+        Mock Test-WinUtilActiveWorkRunning { return $true }
+
+        $summary = Invoke-WinUtilAutoRun -StepTimeoutSeconds 1 -StopTimeoutSeconds 1
+
+        $summary.TimedOut | Should -Be 1
+        # the later step must not run beside work that is still changing the machine
+        Should -Invoke -CommandName Invoke-WPFInstall -Times 0 -Exactly
+        Should -Invoke -CommandName Stop-WinUtilActiveWork -Times 1 -Exactly
     }
 
     It "counts a step's errors against the run" {

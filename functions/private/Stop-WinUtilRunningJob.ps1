@@ -102,7 +102,7 @@ function Start-WinUtilJobStopWatchdog {
     $timer.Interval = [timespan]::FromMilliseconds(500)
     # The run being cut off is identified by its token, so a watchdog that fires late cannot
     # release a slot that the next job has already claimed
-    $timer.Tag = @{ Job = $Job; Token = $sync.ActiveJobToken; Deadline = (Get-Date).AddSeconds($GraceSeconds); CutOff = $null }
+    $timer.Tag = @{ Job = $Job; Token = $sync.ActiveJobToken; Deadline = (Get-Date).AddSeconds($GraceSeconds); CutOff = $null; Reported = $false }
     $timer.Add_Tick({
         param($eventSender)
         $ticked = [System.Windows.Threading.DispatcherTimer]$eventSender
@@ -129,7 +129,15 @@ function Start-WinUtilJobStopWatchdog {
             return
         }
 
-        if ((Test-WinUtilActiveWorkRunning) -and ((Get-Date) - $state.CutOff).TotalSeconds -lt 10) {
+        # Held until the worker has actually gone. Releasing the slot on a timer would let the
+        # user start a second run while the first is still inside a native command that neither
+        # the stop nor the cut off could interrupt, which is the overlap this layer exists to
+        # prevent. The tick is cheap, so it keeps watching instead.
+        if (Test-WinUtilActiveWorkRunning) {
+            if (-not $state.Reported) {
+                $state.Reported = $true
+                Write-WinUtilLog -Level "WARN" -Component "UI" -Message "$($state.Job) has not stopped yet, so no other work can start until it does."
+            }
             return
         }
 

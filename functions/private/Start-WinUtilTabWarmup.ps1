@@ -13,8 +13,11 @@ function Start-WinUtilTabWarmup {
             user clicks is still empty and costs a full build to open.
     #>
 
+    # Win11ISO is left out on purpose: building it runs the existing work check, which reports
+    # on a machine that has none and raises the resume prompt on one that does, both while the
+    # user is somewhere else entirely. That check belongs to opening the tab, not to warming it.
     $pending = [System.Collections.Queue]::new()
-    foreach ($tab in @("Tweaks", "Config", "AppX", "Win11ISO")) {
+    foreach ($tab in @("Tweaks", "Config", "AppX")) {
         if (-not $sync.InitializedTabs[$tab]) {
             $pending.Enqueue($tab)
         }
