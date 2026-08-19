@@ -73,12 +73,26 @@ function Invoke-WPFImpex {
                         Write-Error "Failed to load the JSON file from the specified path or URL: $_"
                         return
                     }
-                    if ($jsonFile -is [System.Management.Automation.PSCustomObject]) {
-                        # Old style config detected: object with properties
-                        $flattenedJson = @()
-                        $jsonFile.PSObject.Properties.Where({ $_.Name -ne "Install" }).ForEach({
-                            $flattenedJson += $_.Value
-                        })
+                    $isLegacyConfig = $jsonFile -is [System.Management.Automation.PSCustomObject] -and
+                        $null -ne $jsonFile.PSObject.Properties["Install"] -and
+                        $null -ne $jsonFile.PSObject.Properties["WPFInstall"]
+                    if ($isLegacyConfig) {
+                        # Legacy exports stored checkbox keys in WPFInstall and duplicated package
+                        # source metadata in Install. Current package IDs come from the app catalog,
+                        # so only the selection-key properties are restored.
+                        $flattenedJson = @(
+                            foreach ($property in $jsonFile.PSObject.Properties) {
+                                if ($property.Name -eq "Install") {
+                                    continue
+                                }
+
+                                foreach ($selection in @($property.Value)) {
+                                    if ($selection -is [string] -and -not [string]::IsNullOrWhiteSpace($selection)) {
+                                        $selection
+                                    }
+                                }
+                            }
+                        )
                     } else {
                         # New style config: flat array of strings
                         $flattenedJson = $jsonFile
@@ -91,9 +105,37 @@ function Invoke-WPFImpex {
                         return
                     }
 
-                    # Build and validate every imported selection before replacing the current
-                    # state. This keeps a malformed config from leaving partial selections behind.
-                    Update-WinUtilSelections -flatJson $flattenedJson -Replace
+                    # Modern configs stay strict. Legacy configs can reference entries that no
+                    # longer exist, so restore supported selections and report the retired keys.
+                    if ($isLegacyConfig) {
+                        $skippedSelections = @(Update-WinUtilSelections -flatJson $flattenedJson -Replace -SkipUnknown)
+
+                        if ($skippedSelections.Count -gt 0) {
+                            $skippedSummary = $skippedSelections -join ", "
+                            Write-WinUtilLog -Component "Impex" -Level "WARN" -Message "Skipped unsupported legacy selections: $skippedSummary"
+                        }
+
+                        if ($skippedSelections.Count -eq @($flattenedJson).Count) {
+                            if ($sync.Form) {
+                                Show-WinUtilMessage -Message "This legacy configuration contains no settings supported by this version of WinUtil. No changes have been made." -Title "Unsupported Legacy Configuration" -Icon "Warning" | Out-Null
+                            }
+                            return
+                        }
+
+                        if ($skippedSelections.Count -gt 0) {
+                            $skippedDisplay = @($skippedSelections | Select-Object -First 10) -join ", "
+                            if ($skippedSelections.Count -gt 10) {
+                                $skippedDisplay += "`n...and $($skippedSelections.Count - 10) more. See the WinUtil log for details."
+                            }
+                            if ($sync.Form) {
+                                Show-WinUtilMessage -Message "Supported settings were imported. The following retired settings were skipped:`n`n$skippedDisplay" -Title "Legacy Configuration Partially Imported" -Icon "Warning" | Out-Null
+                            }
+                        }
+                    } else {
+                        # Build and validate every imported selection before replacing the current
+                        # state. This keeps a malformed config from leaving partial selections behind.
+                        Update-WinUtilSelections -flatJson $flattenedJson -Replace
+                    }
 
                     if ($sync.Form) {
                         Reset-WPFCheckBoxes -doToggles $true

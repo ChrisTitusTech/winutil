@@ -93,6 +93,9 @@ namespace System.Windows.Controls
     function Write-WinUtilLog {
         param($Message, $Level, $Component)
     }
+    function Show-WinUtilMessage {
+        param($Message, $Title, $Button, $Icon)
+    }
 
     function script:New-WinUtilFakeCheckBox {
         param([bool]$IsChecked = $false)
@@ -244,6 +247,8 @@ Describe "Invoke-WPFImpex import selection state" {
 
         Mock Reset-WPFCheckBoxes { }
         Mock Write-Error { }
+        Mock Write-WinUtilLog { }
+        Mock Show-WinUtilMessage { }
     }
 
     AfterEach {
@@ -267,6 +272,52 @@ Describe "Invoke-WPFImpex import selection state" {
         @($script:sync.selectedFeatures) | Should -Be @("WPFFeatureSandbox")
         Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly -ParameterFilter {
             $doToggles -eq $true
+        }
+        Should -Invoke -CommandName Write-Error -Times 0 -Exactly
+    }
+
+    It "imports supported legacy selections and reports retired entries" {
+        $configPath = Join-Path $script:repoRoot "pester\fixtures\legacy-config.json"
+
+        Invoke-WPFImpex -type "import" -Config $configPath
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallGit")
+        @($script:sync.selectedTweaks) | Should -Be @("WPFTweaksTelemetry")
+        @($script:sync.selectedFeatures) | Should -Be @("WPFFeatureSandbox")
+        Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly -ParameterFilter {
+            $doToggles -eq $true
+        }
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Component -eq "Impex" -and
+            $Level -eq "WARN" -and
+            $Message -eq "Skipped unsupported legacy selections: WPFInstallRetired"
+        }
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
+            $Title -eq "Legacy Configuration Partially Imported" -and
+            $Message -like "*WPFInstallRetired*"
+        }
+        Should -Invoke -CommandName Write-Error -Times 0 -Exactly
+    }
+
+    It "preserves selections when every legacy entry is retired" {
+        $script:sync.selectedApps.Add("WPFInstallExisting")
+        $configPath = Join-Path $TestDrive "retired-legacy-config.json"
+        [pscustomobject]@{
+            Install = @([pscustomobject]@{ winget = "Retired.App"; choco = "retired-app" })
+            WPFTweaks = @()
+            WPFFeature = @()
+            WPFInstall = @("WPFInstallRetired")
+        } | ConvertTo-Json -Depth 3 | Set-Content -LiteralPath $configPath
+
+        Invoke-WPFImpex -type "import" -Config $configPath
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallExisting")
+        Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 0 -Exactly
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Message -eq "Skipped unsupported legacy selections: WPFInstallRetired"
+        }
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
+            $Title -eq "Unsupported Legacy Configuration"
         }
         Should -Invoke -CommandName Write-Error -Times 0 -Exactly
     }

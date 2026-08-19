@@ -3,7 +3,9 @@ function Update-WinUtilSelections {
         [Parameter(Mandatory)]
         [string[]]$flatJson,
 
-        [switch]$Replace
+        [switch]$Replace,
+
+        [switch]$SkipUnknown
     )
 
     $nextSelections = @{
@@ -25,6 +27,10 @@ function Update-WinUtilSelections {
         }
 
         if (-not $listName) {
+            if ($SkipUnknown) {
+                $cbkey
+                continue
+            }
             throw "Unsupported selection key '$cbkey'."
         }
 
@@ -47,10 +53,19 @@ function Update-WinUtilSelections {
         }
 
         if (-not $isKnownSelection) {
+            if ($SkipUnknown) {
+                $cbkey
+                continue
+            }
             throw "Unknown selection key '$cbkey'."
         }
 
         $nextSelections[$listName].Add($cbkey)
+    }
+
+    $validSelectionCount = ($nextSelections.Values | ForEach-Object { $_.Count } | Measure-Object -Sum).Sum
+    if ($SkipUnknown -and $validSelectionCount -eq 0) {
+        return
     }
 
     if ($Replace) {
