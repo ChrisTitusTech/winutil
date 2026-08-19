@@ -98,6 +98,15 @@
         "winget": "AutoHotkey.AutoHotkey",
         "foss": true
     },
+    "battlenet": {
+        "category": "Games",
+        "choco": "na",
+        "winget": "Blizzard.BattleNet",
+        "content": "Battle.net",
+        "description": "Battle.net is a launcher for games created and developed by Activision Blizzard",
+        "link": "https://battle.net",
+        "foss": false
+    },
     "bitwarden": {
         "category": "Utilities",
         "choco": "bitwarden",
