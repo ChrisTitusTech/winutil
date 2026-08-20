@@ -557,6 +557,73 @@ Describe "Find-AppsByNameOrDescription" {
         $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_choco_browserapp") | Should -Be $false
     }
 
+    It "splits compound package IDs when deduplicating" {
+        $compoundItem = New-WinUtilAppSearchItem -Tag "WPFInstallCompound"
+        $sync.configs.applicationsHashtable["WPFInstallCompound"] = [pscustomobject]@{
+            winget = "msstore:FirstApp; SecondApp; ThirdApp "
+            choco = " FirstChoco ; SecondChoco"
+            isDynamic = $false
+        }
+        $category = New-WinUtilAppCategory -Label "- Tools" -Items @($compoundItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+
+        Mock Find-WinUtilPackageManagerApps {
+            if ($ManagerPreference -eq "Winget") {
+                return ,@([pscustomobject]@{ Name = "App 2"; Id = "SecondApp" }, [pscustomobject]@{ Name = "App 4"; Id = "FourthApp" })
+            } else {
+                return ,@([pscustomobject]@{ Name = "Choco 1"; Id = "FirstChoco" }, [pscustomobject]@{ Name = "Choco 3"; Id = "ThirdChoco" })
+            }
+        }
+        Mock Get-WinUtilPackageLink { return "https://example.com" }
+        Mock Initialize-InstallAppEntry {}
+
+        Find-AppsByNameOrDescription -SearchString "App"
+        $sync.preferences = [pscustomobject]@{ packagemanager = "Choco" }
+        Find-AppsByNameOrDescription -SearchString "Choco"
+
+        # Should skip SecondApp and FirstChoco because they are in the compound IDs
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_SecondApp") | Should -Be $false
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_FourthApp") | Should -Be $true
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_choco_FirstChoco") | Should -Be $false
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_choco_ThirdChoco") | Should -Be $true
+    }
+
+    It "filters curated applications by active package manager availability" {
+        $wingetOnlyItem = New-WinUtilAppSearchItem -Tag "WPFInstallWingetOnly"
+        $sync.configs.applicationsHashtable["WPFInstallWingetOnly"] = [pscustomobject]@{
+            Content = "Winget Only App"
+            winget = "App.WingetOnly"
+            choco = "na"
+        }
+        $chocoOnlyItem = New-WinUtilAppSearchItem -Tag "WPFInstallChocoOnly"
+        $sync.configs.applicationsHashtable["WPFInstallChocoOnly"] = [pscustomobject]@{
+            Content = "Choco Only App"
+            winget = ""
+            choco = "app-choco-only"
+        }
+        $bothItem = New-WinUtilAppSearchItem -Tag "WPFInstallBoth"
+        $sync.configs.applicationsHashtable["WPFInstallBoth"] = [pscustomobject]@{
+            Content = "Both App"
+            winget = "App.Both"
+            choco = "app-both"
+        }
+        $category = New-WinUtilAppCategory -Label "- Tools" -Items @($wingetOnlyItem, $chocoOnlyItem, $bothItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+
+        # Winget is default
+        Find-AppsByNameOrDescription -SearchString ""
+        $wingetOnlyItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $chocoOnlyItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $bothItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+
+        # Switch to Choco
+        $sync.preferences = [pscustomobject]@{ packagemanager = "Choco" }
+        Find-AppsByNameOrDescription -SearchString ""
+        $wingetOnlyItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $chocoOnlyItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $bothItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+    }
+
     It "creates dynamic entry for non-curated package manager search results" {
         $browserItem = New-WinUtilAppSearchItem -Tag "WPFInstallBrowser"
         $category = New-WinUtilAppCategory -Label "- Browsers" -Items @($browserItem)

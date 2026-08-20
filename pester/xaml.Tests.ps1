@@ -462,7 +462,7 @@ Describe "XAML and sync wiring" {
             "InstallAppEntriesRendered",
             "FontScaleFactor",
             "PackageLinkCache",
-            "LatestPackageManagerSearch",
+            "LatestPackageManagerRequestToken",
             "UpdatePackageManagerUI",
             "MockedTest",
             "Win11ISOImageInfo",

@@ -408,9 +408,13 @@ function Invoke-WinUtilISOCleanAndReset {
     $runspace.SessionStateProxy.SetVariable("sync",    $sync)
     $runspace.SessionStateProxy.SetVariable("workDir", $workDir)
 
+    $writeLogFuncDef = "function Write-WinUtilLog {`n" + ${function:Write-WinUtilLog}.ToString() + "`n}"
+    $runspace.SessionStateProxy.SetVariable("writeLogFuncDef", $writeLogFuncDef)
+
     $script = [Management.Automation.PowerShell]::Create()
     $script.Runspace = $runspace
     $script.AddScript({
+        . ([scriptblock]::Create($writeLogFuncDef))
 
         function Log($msg) {
             $ts = (Get-Date).ToString("HH:mm:ss")
@@ -419,8 +423,7 @@ function Invoke-WinUtilISOCleanAndReset {
                 $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
                 $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
             })
-            # Write to host; transcript captures it without file-locking conflicts
-            Write-Host "[$ts] $msg"
+            Write-WinUtilLog -Component "ISO" -Message $msg
         }
 
         function SetProgress($label, $pct) {
@@ -472,7 +475,7 @@ function Invoke-WinUtilISOCleanAndReset {
                     Remove-Item -Path $workDir -Recurse -Force -ErrorAction SilentlyContinue
                     if (Test-Path $workDir) {
                         Log "ERROR: some items could not be deleted in $workDir. Clean aborted."
-                        return
+                        throw "Clean aborted because some items could not be deleted in $workDir."
                     }
                     else { Log "Temp directory deleted on retry." }
                 }

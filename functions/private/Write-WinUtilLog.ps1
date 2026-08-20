@@ -49,7 +49,14 @@ function Write-WinUtilLog {
 
         $line = "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff')] [$Level] [$Component] $Message"
 
-        if ($isTranscript) { Write-Host $line; return }
+        if ($isTranscript) {
+            if ($null -ne $sync -and $null -ne $sync.Form -and $null -ne $sync.Form.Dispatcher -and -not $sync.Form.Dispatcher.CheckAccess()) {
+                $sync.Form.Dispatcher.Invoke([action]{ Write-Host $line })
+            } else {
+                Write-Host $line
+            }
+            return
+        }
 
         try { Add-Content -Path $logPath -Value $line -Encoding UTF8 -ErrorAction Stop }
         catch [System.IO.IOException] { Write-Host $line }
