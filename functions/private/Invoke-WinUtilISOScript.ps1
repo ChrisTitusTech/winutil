@@ -77,6 +77,121 @@ function Invoke-WinUtilISOScript {
             }
         }
 
+        function Test-WinUtilISODriverExtensionClass {
+            param ([Parameter(Mandatory)][System.IO.FileInfo]$InfFile)
+
+            try {
+                return (Get-Content -LiteralPath $InfFile.FullName -Raw -ErrorAction Stop) -match '(?im)^\s*Class\s*=\s*Extension\s*(?:;.*)?$'
+            } catch {
+                & $Logger "Warning: could not classify driver '$($InfFile.FullName)': $_"
+                return $false
+            }
+        }
+
+        function Get-WinUtilISODriverPackageVersion {
+            param ([Parameter(Mandatory)][System.IO.FileInfo]$InfFile)
+
+            try {
+                $infText = Get-Content -LiteralPath $InfFile.FullName -Raw -ErrorAction Stop
+            } catch {
+                & $Logger "Warning: could not read '$($InfFile.FullName)' to determine its driver version: $_"
+                return $null
+            }
+
+            $match = [regex]::Match($infText, '(?im)^\s*DriverVer\s*=\s*(?<date>\d{1,2}/\d{1,2}/\d{4})\s*,\s*(?<version>\d+(?:\.\d+){0,3})\s*(?:;.*)?$')
+            if (-not $match.Success) {
+                return $null
+            }
+
+            try {
+                $date = [datetime]::ParseExact($match.Groups['date'].Value, 'M/d/yyyy', [System.Globalization.CultureInfo]::InvariantCulture)
+                $versionText = $match.Groups['version'].Value
+                if (($versionText.Split('.')).Count -lt 2) {
+                    $versionText = "$versionText.0"
+                }
+                $version = [version]$versionText
+            } catch {
+                & $Logger "Warning: could not parse DriverVer '$($match.Value.Trim())' in '$($InfFile.FullName)': $_"
+                return $null
+            }
+
+            return [pscustomobject]@{
+                Date    = $date
+                Version = $version
+                Raw     = "$($match.Groups['date'].Value),$($match.Groups['version'].Value)"
+            }
+        }
+
+        function Select-WinUtilISOStagedDriverPackages {
+            param (
+                [Parameter(Mandatory)][AllowEmptyCollection()][object[]]$DriverFolderGroups,
+                [scriptblock]$Logger
+            )
+
+            $survivingFolders = [System.Collections.Generic.List[string]]::new()
+            $dedupGroups = @{}
+
+            foreach ($driverFolderGroup in $DriverFolderGroups) {
+                $driverFolder = [string]$driverFolderGroup.Name
+                $isExtension = [bool]@($driverFolderGroup.Group | Where-Object { Test-WinUtilISODriverExtensionClass -InfFile $_ }).Count
+
+                if ($isExtension) {
+                    & $Logger "Excluding extension-class driver package '$driverFolder' from Add-Driver (Class=Extension is not a serviceable hardware driver)."
+                    continue
+                }
+
+                # DISM names exported package folders <infname>_<arch>_<hash>; grouping on infname+arch
+                # (dropping the hash) is what lets us recognize two exports of the same driver.
+                $leafName = Split-Path -Path $driverFolder -Leaf
+                $dedupKey = $leafName
+                $nameMatch = [regex]::Match($leafName, '(?i)^(?<infname>.+)_(?<arch>x86|amd64|arm64|arm|wow)_[0-9a-f]{16}$')
+                if ($nameMatch.Success) {
+                    $dedupKey = "$($nameMatch.Groups['infname'].Value.ToLowerInvariant())_$($nameMatch.Groups['arch'].Value.ToLowerInvariant())"
+                }
+
+                if (-not $dedupGroups.ContainsKey($dedupKey)) {
+                    $dedupGroups[$dedupKey] = [System.Collections.Generic.List[object]]::new()
+                }
+                $dedupGroups[$dedupKey].Add($driverFolderGroup)
+            }
+
+            foreach ($dedupKey in $dedupGroups.Keys) {
+                $candidates = $dedupGroups[$dedupKey]
+                if ($candidates.Count -eq 1) {
+                    $survivingFolders.Add([string]$candidates[0].Name)
+                    continue
+                }
+
+                $ranked = @($candidates | ForEach-Object {
+                    $primaryVersion = ($_.Group | ForEach-Object { Get-WinUtilISODriverPackageVersion -InfFile $_ } | Where-Object { $_ }) |
+                        Sort-Object -Property Date, Version -Descending | Select-Object -First 1
+                    [pscustomobject]@{ Folder = [string]$_.Name; Version = $primaryVersion }
+                })
+
+                $withVersion = @($ranked | Where-Object { $_.Version })
+                if ($withVersion.Count -eq 0) {
+                    & $Logger "Warning: could not determine DriverVer for any duplicate of '$dedupKey'; keeping all $($ranked.Count) package(s) rather than guessing."
+                    foreach ($candidate in $ranked) {
+                        $survivingFolders.Add($candidate.Folder)
+                    }
+                    continue
+                }
+
+                $kept = $withVersion | Sort-Object -Property @{ Expression = { $_.Version.Date } }, @{ Expression = { $_.Version.Version } } -Descending | Select-Object -First 1
+                $survivingFolders.Add($kept.Folder)
+
+                foreach ($candidate in $ranked) {
+                    if ($candidate.Folder -eq $kept.Folder) {
+                        continue
+                    }
+                    $droppedVersion = if ($candidate.Version) { $candidate.Version.Raw } else { 'unknown' }
+                    & $Logger "Excluding stale duplicate driver package '$($candidate.Folder)' (DriverVer $droppedVersion) superseded by '$($kept.Folder)' (DriverVer $($kept.Version.Raw))."
+                }
+            }
+
+            return @($survivingFolders)
+        }
+
         function Invoke-WinUtilISODism {
             param (
                 [Parameter(Mandatory)][string[]]$Arguments,
@@ -192,7 +307,20 @@ function Invoke-WinUtilISOScript {
                 throw "Failed to stage $copyFailures boot-storage driver package folders."
             }
 
-            & $Logger "Exported $($driverInfs.Count) driver INF files across $($driverFolders.Count) package folders; staged $storageCount boot-storage packages for WinPE."
+            $stagedDriverFolders = @(Select-WinUtilISOStagedDriverPackages -DriverFolderGroups $driverFolders -Logger $Logger)
+            if ($stagedDriverFolders.Count -eq 0) {
+                throw 'All exported driver packages were excluded (Extension class or stale duplicates); nothing left to inject.'
+            }
+            $excludedFolders = @($driverFolders.Name | Where-Object { $_ -notin $stagedDriverFolders })
+            foreach ($excludedFolder in $excludedFolders) {
+                try {
+                    Remove-Item -LiteralPath $excludedFolder -Recurse -Force -ErrorAction Stop
+                } catch {
+                    throw "Failed to remove excluded driver package '$excludedFolder' before injection: $_"
+                }
+            }
+
+            & $Logger "Exported $($stagedDriverFolders.Count) of $($driverFolders.Count) driver packages ($storageCount staged for WinPE, $($excludedFolders.Count) excluded)."
             $metadataBefore = Get-WinUtilISOWimMetadata -ImagePath $InstallImagePath -Index $InstallImageIndex
             Assert-WinUtilISOWimMetadata -Before $metadataBefore
 
