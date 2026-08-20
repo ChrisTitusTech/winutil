@@ -490,6 +490,34 @@ function Invoke-WinUtilISOCleanAndReset {
     }
 }
 
+function Get-WinUtilOSCDImgPath {
+    # Windows ADK installation
+    $oscdimg = Get-ChildItem "C:\Program Files (x86)\Windows Kits" -Recurse -Filter "oscdimg.exe" -ErrorAction SilentlyContinue |
+               Select-Object -First 1 -ExpandProperty FullName
+    if (-not $oscdimg) {
+        # Per-user winget installation
+        $oscdimg = Get-ChildItem "$env:LOCALAPPDATA\Microsoft\WinGet\Packages" -Recurse -Filter "oscdimg.exe" -ErrorAction SilentlyContinue |
+                   Where-Object { $_.FullName -match 'Microsoft\.OSCDIMG' } |
+                   Select-Object -First 1 -ExpandProperty FullName
+    }
+
+    if (-not $oscdimg) {
+        # Installation available through the current process PATH
+        $oscdimg = Get-Command oscdimg.exe -CommandType Application -ErrorAction SilentlyContinue |
+                   Select-Object -First 1 -ExpandProperty Source
+    }
+
+    if (-not $oscdimg) {
+        # WinGet links that may not yet be available through the current process PATH
+        $oscdimg = @(
+            "$env:LOCALAPPDATA\Microsoft\WinGet\Links\oscdimg.exe"
+            "$env:ProgramFiles\WinGet\Links\oscdimg.exe"
+        ) | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+    }
+
+    return $oscdimg
+}
+
 function Invoke-WinUtilISOExport {
     $contentsDir = $sync["Win11ISOContentsDir"]
 

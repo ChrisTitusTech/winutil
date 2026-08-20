@@ -48,12 +48,17 @@ namespace System.Windows.Controls
 
     public class WrapPanel
     {
-        public global::Windows.Visibility Visibility { get; set; }
+        public object Visibility { get; set; }
     }
 
     public class StackPanel
     {
-        public System.Collections.ArrayList Children { get; } = new System.Collections.ArrayList();
+        public System.Collections.ArrayList Children { get; private set; }
+
+        public StackPanel()
+        {
+            Children = new System.Collections.ArrayList();
+        }
     }
 }
 "@
@@ -61,6 +66,7 @@ namespace System.Windows.Controls
 
     . (Join-Path $script:repoRoot "functions\private\Update-WinUtilSelections.ps1")
     . (Join-Path $script:repoRoot "functions\private\Reset-WPFCheckBoxes.ps1")
+    . (Join-Path $script:repoRoot "functions\public\Invoke-WPFImpex.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFGetInstalled.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFSelectedCheckboxesUpdate.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFButton.ps1")
@@ -89,6 +95,9 @@ namespace System.Windows.Controls
     }
     function Write-WinUtilLog {
         param($Message, $Level, $Component)
+    }
+    function Show-WinUtilMessage {
+        param($Message, $Title, $Button, $Icon)
     }
 
     function script:New-WinUtilFakeCheckBox {
@@ -129,6 +138,16 @@ namespace System.Windows.Controls
                     WPFInstallGit = [pscustomobject]@{
                         Content = "Git"
                     }
+                }
+                appxHashtable = @{
+                    WPFAppxExample = [pscustomobject]@{}
+                }
+                tweaks = [pscustomobject]@{
+                    WPFTweaksTelemetry = [pscustomobject]@{}
+                    WPFToggleDarkMode = [pscustomobject]@{}
+                }
+                feature = [pscustomobject]@{
+                    WPFFeatureSandbox = [pscustomobject]@{}
                 }
             }
             WPFselectedAppsButton = [pscustomobject]@{
@@ -176,6 +195,198 @@ Describe "Update-WinUtilSelections" {
         @($script:sync.selectedToggles) | Should -Be @("WPFToggleDarkMode")
         @($script:sync.selectedFeatures) | Should -Be @("WPFFeatureSandbox")
         @($script:sync.selectedAppx) | Should -Be @("WPFAppxExample")
+    }
+
+    It "replaces selections only after every imported key is validated" {
+        $script:sync.selectedApps.Add("WPFInstallExisting")
+        $script:sync.selectedTweaks.Add("WPFTweaksExisting")
+
+        Update-WinUtilSelections -flatJson @(
+            "WPFInstallGit",
+            "WPFFeatureSandbox"
+        ) -Replace
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallGit")
+        @($script:sync.selectedTweaks) | Should -Be @()
+        @($script:sync.selectedFeatures) | Should -Be @("WPFFeatureSandbox")
+    }
+
+    It "preserves existing selections when an imported key is unsupported" {
+        $script:sync.selectedApps.Add("WPFInstallExisting")
+        $script:sync.selectedTweaks.Add("WPFTweaksExisting")
+
+        {
+            Update-WinUtilSelections -flatJson @(
+                "WPFInstallGit",
+                "NotAWinUtilKey"
+            ) -Replace
+        } | Should -Throw "Unsupported selection key 'NotAWinUtilKey'."
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallExisting")
+        @($script:sync.selectedTweaks) | Should -Be @("WPFTweaksExisting")
+        @($script:sync.selectedFeatures) | Should -Be @()
+    }
+
+    It "preserves existing selections when an imported key is not in the current catalog" {
+        $script:sync.selectedApps.Add("WPFInstallExisting")
+
+        {
+            Update-WinUtilSelections -flatJson @(
+                "WPFInstallGit",
+                "WPFInstallUnknown"
+            ) -Replace
+        } | Should -Throw "Unknown selection key 'WPFInstallUnknown'."
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallExisting")
+        @($script:sync.selectedTweaks) | Should -Be @()
+        @($script:sync.selectedFeatures) | Should -Be @()
+    }
+}
+
+Describe "Invoke-WPFImpex import selection state" {
+    BeforeEach {
+        New-WinUtilUiStateTestContext
+        $script:sync.Form = [pscustomobject]@{}
+
+        Mock Reset-WPFCheckBoxes { }
+        Mock Write-Error { }
+        Mock Write-WinUtilLog { }
+        Mock Show-WinUtilMessage { }
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
+    }
+
+    It "replaces selections and resets the UI after a valid import" {
+        $script:sync.selectedApps.Add("WPFInstallExisting")
+        $script:sync.selectedTweaks.Add("WPFTweaksExisting")
+        $configPath = Join-Path $TestDrive "valid-config.json"
+        @(
+            "WPFInstallGit",
+            "WPFFeatureSandbox"
+        ) | ConvertTo-Json | Set-Content -LiteralPath $configPath
+
+        Invoke-WPFImpex -type "import" -Config $configPath
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallGit")
+        @($script:sync.selectedTweaks) | Should -Be @()
+        @($script:sync.selectedFeatures) | Should -Be @("WPFFeatureSandbox")
+        Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly -ParameterFilter {
+            $doToggles -eq $true
+        }
+        Should -Invoke -CommandName Write-Error -Times 0 -Exactly
+    }
+
+    It "imports supported legacy selections and reports retired entries" {
+        $configPath = Join-Path $script:repoRoot "pester\fixtures\legacy-config.json"
+
+        Invoke-WPFImpex -type "import" -Config $configPath
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallGit")
+        @($script:sync.selectedTweaks) | Should -Be @("WPFTweaksTelemetry")
+        @($script:sync.selectedFeatures) | Should -Be @("WPFFeatureSandbox")
+        Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly -ParameterFilter {
+            $doToggles -eq $true
+        }
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Component -eq "Impex" -and
+            $Level -eq "WARN" -and
+            $Message -eq "Skipped unsupported legacy selections: WPFInstallRetired"
+        }
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
+            $Title -eq "Legacy Configuration Partially Imported" -and
+            $Message -like "*WPFInstallRetired*"
+        }
+        Should -Invoke -CommandName Write-Error -Times 0 -Exactly
+    }
+
+    It "ignores unrelated string metadata in a legacy configuration" {
+        $configPath = Join-Path $TestDrive "legacy-config-with-metadata.json"
+        [pscustomobject]@{
+            Install = @([pscustomobject]@{ winget = "Git.Git"; choco = "git" })
+            WPFInstall = @("WPFInstallGit")
+            ExportVersion = "1.0"
+        } | ConvertTo-Json -Depth 3 | Set-Content -LiteralPath $configPath
+
+        Invoke-WPFImpex -type "import" -Config $configPath
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallGit")
+        Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Component -eq "Impex" -and
+            $Message -eq "Detected legacy WinUtil config structure; flattening import object."
+        }
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 0 -Exactly
+        Should -Invoke -CommandName Write-Error -Times 0 -Exactly
+    }
+
+    It "preserves selections when every legacy entry is retired" {
+        $script:sync.selectedApps.Add("WPFInstallExisting")
+        $configPath = Join-Path $TestDrive "retired-legacy-config.json"
+        [pscustomobject]@{
+            Install = @([pscustomobject]@{ winget = "Retired.App"; choco = "retired-app" })
+            WPFTweaks = @()
+            WPFFeature = @()
+            WPFInstall = @("WPFInstallRetired")
+        } | ConvertTo-Json -Depth 3 | Set-Content -LiteralPath $configPath
+
+        Invoke-WPFImpex -type "import" -Config $configPath
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallExisting")
+        Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 0 -Exactly
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Message -eq "Skipped unsupported legacy selections: WPFInstallRetired"
+        }
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
+            $Title -eq "Unsupported Legacy Configuration"
+        }
+        Should -Invoke -CommandName Write-Error -Times 0 -Exactly
+    }
+
+    It "imports legacy selection groups without treating Install metadata as a selection" {
+        $legacyConfigPath = Join-Path $TestDrive "legacy-config.json"
+        [ordered]@{
+            Install = @(
+                [pscustomobject]@{
+                    winget = "Git.Git"
+                    choco = "git"
+                }
+            )
+            WPFInstall = @("WPFInstallGit")
+            WPFTweaks = @("WPFTweaksTelemetry")
+            WPFToggle = @("WPFToggleDarkMode")
+            WPFFeature = @("WPFFeatureSandbox")
+        } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $legacyConfigPath
+
+        Invoke-WPFImpex -type "import" -Config $legacyConfigPath
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallGit")
+        @($script:sync.selectedTweaks) | Should -Be @("WPFTweaksTelemetry")
+        @($script:sync.selectedToggles) | Should -Be @("WPFToggleDarkMode")
+        @($script:sync.selectedFeatures) | Should -Be @("WPFFeatureSandbox")
+        Should -Invoke -CommandName Write-Error -Times 0 -Exactly
+    }
+
+    It "preserves selections and does not reset the UI after an invalid import" {
+        $script:sync.selectedApps.Add("WPFInstallExisting")
+        $script:sync.selectedTweaks.Add("WPFTweaksExisting")
+        $configPath = Join-Path $TestDrive "invalid-config.json"
+        @(
+            "WPFInstallGit",
+            "WPFInstallUnknown"
+        ) | ConvertTo-Json | Set-Content -LiteralPath $configPath
+
+        Invoke-WPFImpex -type "import" -Config $configPath
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallExisting")
+        @($script:sync.selectedTweaks) | Should -Be @("WPFTweaksExisting")
+        @($script:sync.selectedFeatures) | Should -Be @()
+        Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 0 -Exactly
+        Should -Invoke -CommandName Write-Error -Times 1 -Exactly -ParameterFilter {
+            $Message -like "An error occurred while importing: *Unknown selection key 'WPFInstallUnknown'.*"
+        }
     }
 }
 

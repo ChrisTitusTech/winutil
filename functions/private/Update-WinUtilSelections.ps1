@@ -1,15 +1,22 @@
-function Update-WinUtilSelections ($flatJson) {
-    <#
-        .SYNOPSIS
-            Sorts imported entry names into the selection lists they belong to
-    #>
+function Update-WinUtilSelections {
+    param(
+        [Parameter(Mandatory)]
+        [string[]]$flatJson,
 
-    $unknown = New-Object System.Collections.Generic.List[string]
+        [switch]$Replace,
+
+        [switch]$SkipUnknown
+    )
+
+    $nextSelections = @{
+        selectedApps     = [System.Collections.Generic.List[string]]::new()
+        selectedTweaks   = [System.Collections.Generic.List[string]]::new()
+        selectedToggles  = [System.Collections.Generic.List[string]]::new()
+        selectedFeatures = [System.Collections.Generic.List[string]]::new()
+        selectedAppx     = [System.Collections.Generic.List[string]]::new()
+    }
 
     foreach ($cbkey in $flatJson) {
-        if ([string]::IsNullOrWhiteSpace($cbkey)) {
-            continue
-        }
 
         $listName = switch -Regex ($cbkey) {
             '^WPFInstall' { 'selectedApps' }
@@ -19,19 +26,62 @@ function Update-WinUtilSelections ($flatJson) {
             '^WPFAppx'    { 'selectedAppx' }
         }
 
-        # A name from a hand written or outdated file matches nothing, and adding to the list
-        # that is not there fails with an error that never names the entry that caused it
         if (-not $listName) {
-            $unknown.Add([string]$cbkey)
-            continue
+            if ($SkipUnknown) {
+                $cbkey
+                continue
+            }
+            throw "Unsupported selection key '$cbkey'."
         }
 
-        if ($sync.$listName -notcontains $cbkey) {
-            $sync.$listName.Add($cbkey)
+        $isKnownSelection = switch ($listName) {
+            'selectedApps' {
+                $sync.configs.applicationsHashtable.ContainsKey($cbkey)
+            }
+            'selectedTweaks' {
+                $null -ne $sync.configs.tweaks.PSObject.Properties[$cbkey]
+            }
+            'selectedToggles' {
+                $null -ne $sync.configs.tweaks.PSObject.Properties[$cbkey]
+            }
+            'selectedFeatures' {
+                $null -ne $sync.configs.feature.PSObject.Properties[$cbkey]
+            }
+            'selectedAppx' {
+                $sync.configs.appxHashtable.ContainsKey($cbkey)
+            }
         }
+
+        if (-not $isKnownSelection) {
+            if ($SkipUnknown) {
+                $cbkey
+                continue
+            }
+            throw "Unknown selection key '$cbkey'."
+        }
+
+        $nextSelections[$listName].Add($cbkey)
     }
 
-    if ($unknown.Count -gt 0) {
-        Write-WinUtilLog -Level "WARN" -Component "AutoRun" -Message "Ignored $($unknown.Count) entr(y/ies) that match no WinUtil item: $($unknown -join ', ')"
+    $validSelectionCount = ($nextSelections.Values | ForEach-Object { $_.Count } | Measure-Object -Sum).Sum
+    if ($SkipUnknown -and $validSelectionCount -eq 0) {
+        return
+    }
+
+    if ($Replace) {
+        foreach ($listName in $nextSelections.Keys) {
+            $sync[$listName] = $nextSelections[$listName]
+        }
+        return
+    }
+
+    foreach ($listName in $nextSelections.Keys) {
+        foreach ($cbkey in $nextSelections[$listName]) {
+            # Appending, so the same entry can already be there: a preset and a config that both
+            # name it would otherwise select it twice
+            if ($sync.$listName -notcontains $cbkey) {
+                $sync.$listName.Add($cbkey)
+            }
+        }
     }
 }

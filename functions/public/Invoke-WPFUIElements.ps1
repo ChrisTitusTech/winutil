@@ -239,7 +239,7 @@ function Invoke-WPFUIElements {
                         $toggleButton = New-Object Windows.Controls.Primitives.ToggleButton
                         $toggleButton.Name = $entryInfo.Name
                         $toggleButton.Content = $entryInfo.Content[1]
-                        $toggleButton.ToolTip = $entryInfo.Description
+                        $toggleButton.ToolTip = Get-WinUtilEntryToolTip -Description $entryInfo.Description -Key $entryInfo.Name
                         $toggleButton.HorizontalAlignment = "Left"
                         $toggleButton.Style = $ToggleButtonStyle
                         [System.Windows.Automation.AutomationProperties]::SetName($toggleButton, $entryInfo.Content[0])
@@ -505,7 +505,7 @@ function Invoke-WPFUIElements {
                         $checkBox.Name = $entryInfo.Name
                         $checkBox.Content = $entryInfo.Content
                         $checkBox.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
-                        $checkBox.ToolTip = $entryInfo.Description
+                        $checkBox.ToolTip = Get-WinUtilEntryToolTip -Description $entryInfo.Description -Key $entryInfo.Name
                         $checkBox.SetResourceReference([Windows.Controls.Control]::MarginProperty, "CheckBoxMargin")
                         $checkBox.UseLayoutRounding = $true
                         [System.Windows.Automation.AutomationProperties]::SetName($checkBox, $entryInfo.Content)

@@ -20,7 +20,7 @@ function Initialize-InstallAppEntry {
         $border = New-Object Windows.Controls.Border
         $border.Style = $sync.Form.Resources.AppEntryBorderStyle
         $border.Tag = $appKey
-        $border.ToolTip = $app.description
+        $border.ToolTip = Get-WinUtilEntryToolTip -Description $app.description -Key $appKey
         $border.Add_MouseLeftButtonUp($handlers.BorderClick)
         $border.Add_MouseEnter($handlers.MouseEnter)
         $border.Add_MouseLeave($handlers.MouseLeave)

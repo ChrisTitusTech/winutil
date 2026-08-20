@@ -71,7 +71,12 @@ if ($Preset -or $Config) {
                 throw "There is no preset called '$Preset'. Available: $(($sync.configs.preset.PSObject.Properties.Name) -join ', ')"
             }
             Write-WinUtilLog -Component "AutoRun" -Message "Applying preset '$Preset'."
-            Update-WinUtilSelections -flatJson $sync.configs.preset.$Preset
+            # SkipUnknown so a retired entry in a preset is named and stepped over rather than
+            # ending a headless run that has nobody to read the error
+            $skipped = @(Update-WinUtilSelections -flatJson $sync.configs.preset.$Preset -SkipUnknown)
+            if ($skipped.Count -gt 0) {
+                Write-WinUtilLog -Level "WARN" -Component "AutoRun" -Message "Preset '$Preset' names $($skipped.Count) entr(y/ies) this version does not have: $($skipped -join ', ')"
+            }
         }
 
         # Both may be given: the preset sets a baseline and the config adds to it

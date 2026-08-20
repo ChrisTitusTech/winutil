@@ -198,6 +198,14 @@ Describe "Update-WinUtilSelections" {
         foreach ($list in @("selectedApps","selectedTweaks","selectedToggles","selectedFeatures","selectedAppx")) {
             $sync.$list = [System.Collections.Generic.List[string]]::new()
         }
+        # The selection sorter now checks each key against the real catalogue before taking it,
+        # so the fixture has to carry the configs it reads
+        $sync.configs = @{
+            applicationsHashtable = @{ "WPFInstall7zip" = @{} }
+            appxHashtable         = @{ "WPFAppxBing" = @{} }
+            tweaks                = [pscustomobject]@{ "WPFTweaksDiskCleanup" = @{}; "WPFToggleDarkMode" = @{} }
+            feature               = [pscustomobject]@{ "WPFFeaturesdotnet" = @{} }
+        }
         Mock Write-WinUtilLog { }
     }
 
@@ -211,14 +219,13 @@ Describe "Update-WinUtilSelections" {
         $sync.selectedAppx | Should -Contain "WPFAppxBing"
     }
 
-    It "names an unrecognised entry instead of failing on a null list" {
-        # $sync.$null.Add() throws "you cannot call a method on a null-valued expression",
-        # which never says which entry was at fault
-        { Update-WinUtilSelections -flatJson @("NotAWinUtilEntry") } | Should -Not -Throw
+    It "hands back an unrecognised entry rather than throwing, which is what the headless run relies on" {
+        # The headless path passes SkipUnknown so a retired entry names itself and the run goes
+        # on. Without it the call is strict, which is what the window wants.
+        $skipped = @(Update-WinUtilSelections -flatJson @("NotAWinUtilEntry") -SkipUnknown)
 
-        Should -Invoke -CommandName Write-WinUtilLog -ParameterFilter {
-            $Level -eq "WARN" -and $Message -like "*NotAWinUtilEntry*"
-        }
+        $skipped | Should -Contain "NotAWinUtilEntry"
+        { Update-WinUtilSelections -flatJson @("NotAWinUtilEntry") } | Should -Throw
     }
 
     It "does not select the same entry twice when a preset and a config both list it" {
