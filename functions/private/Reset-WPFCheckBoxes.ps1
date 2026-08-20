@@ -22,7 +22,9 @@ function Reset-WPFCheckBoxes {
     )
     $selectedSet = [System.Collections.Generic.HashSet[string]]::new([string[]]@($sync.selectedApps + $sync.selectedTweaks + $sync.selectedFeatures + $sync.selectedAppx), [StringComparer]::OrdinalIgnoreCase)
 
-    foreach ($syncEntry in $sync.GetEnumerator()) {
+    # Snapshotted: setting IsChecked runs handlers that add to $sync, and the tab warmup is
+    # building controls into it at the same time, either of which invalidates a live enumerator
+    foreach ($syncEntry in @($sync.GetEnumerator())) {
         if ($syncEntry.Value -is [System.Windows.Controls.CheckBox] -and $syncEntry.Name -notlike "WPFToggle*" -and $syncEntry.Name -like $checkboxfilterpattern) {
             $checkboxName = $syncEntry.Key
             $sync.$checkboxName.IsChecked = $selectedSet.Contains($checkboxName)
@@ -45,7 +47,7 @@ function Reset-WPFCheckBoxes {
         # from the export file were not part of the saved config and should keep whatever
         # state the live system already has (set during UI initialisation via Get-WinUtilToggleStatus).
         $importedToggles = [System.Collections.Generic.HashSet[string]]::new([string[]]@($sync.selectedToggles), [StringComparer]::OrdinalIgnoreCase)
-        foreach ($toggle in $sync.GetEnumerator()) {
+        foreach ($toggle in @($sync.GetEnumerator())) {
             if ($toggle.Key -like "WPFToggle*" -and $toggle.Value -is [System.Windows.Controls.CheckBox] -and $importedToggles.Contains($toggle.Key)) {
                 $sync[$toggle.Key].IsChecked = $true
             }

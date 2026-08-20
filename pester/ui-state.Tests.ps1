@@ -243,6 +243,31 @@ Describe "Update-WinUtilSelections" {
     }
 }
 
+Describe "Reset-WPFCheckBoxes over a changing sync" {
+    It "survives entries being added to sync while it runs" {
+        # The tab warmup builds controls into $sync while this runs, and setting IsChecked runs
+        # handlers that add to it as well. Enumerating $sync live threw "Collection was modified".
+        $global:sync = [hashtable]::Synchronized(@{})
+        # the grower has to actually change state, or its handler never runs and nothing grows
+        $sync.selectedApps = [System.Collections.Generic.List[string]]::new()
+        $sync.selectedApps.Add("WPFInstallgrower")
+        $sync.selectedTweaks = [System.Collections.Generic.List[string]]::new()
+        $sync.selectedFeatures = [System.Collections.Generic.List[string]]::new()
+        $sync.selectedAppx = [System.Collections.Generic.List[string]]::new()
+        $sync.selectedToggles = [System.Collections.Generic.List[string]]::new()
+
+        # a checkbox that grows $sync the moment it is set, standing in for the real handlers
+        $grower = New-Object System.Windows.Controls.CheckBox
+        $grower.Add_Checked({ $sync["grown_$([guid]::NewGuid().ToString('N'))"] = 1 })
+        $grower.Add_Unchecked({ $sync["grown_$([guid]::NewGuid().ToString('N'))"] = 1 })
+        $sync["WPFInstallgrower"] = $grower
+
+        foreach ($i in 1..40) { $sync["WPFInstallfiller$i"] = (New-Object System.Windows.Controls.CheckBox) }
+
+        { Reset-WPFCheckBoxes -doToggles $true } | Should -Not -Throw
+    }
+}
+
 Describe "Invoke-WPFImpex import selection state" {
     BeforeEach {
         New-WinUtilUiStateTestContext
