@@ -1958,43 +1958,11 @@
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Vertical">
                     <TextBlock Name="WPFTweaksProgressLabel" Text="" Foreground="{DynamicResource MainForegroundColor}" FontSize="13" Background="Transparent" Margin="0,0,0,4"/>
                     <ProgressBar Name="WPFTweaksProgressValue" Height="6" Minimum="0" Maximum="100" Value="0" Style="{StaticResource RoundedProgressBarStyle}"/>
                 </StackPanel>
-                <!-- Collapsed until a job runs: a finished run has nothing left to pause or stop -->
-                <Button Name="WPFPauseJobButton" Grid.Column="1"
-                        Style="{StaticResource HoverButtonStyle}"
-                        BorderBrush="Transparent"
-                        Background="{DynamicResource MainBackgroundColor}"
-                        Foreground="{DynamicResource MainForegroundColor}"
-                        FontFamily="Segoe MDL2 Assets"
-                        FontSize="{DynamicResource IconFontSize}"
-                        Width="{DynamicResource JobButtonSize}" Height="{DynamicResource JobButtonSize}"
-                        Visibility="Collapsed"
-                        Margin="10,0,0,0"
-                        VerticalAlignment="Center"
-                        Content="&#xE769;"
-                        AutomationProperties.Name="Pause after the current step"
-                        ToolTip="Pause after the current step"/>
-                <!-- Collapsed until a job runs: a finished run has nothing left to pause or stop -->
-                <Button Name="WPFStopJobButton" Grid.Column="2"
-                        Style="{StaticResource HoverButtonStyle}"
-                        BorderBrush="Transparent"
-                        Background="{DynamicResource MainBackgroundColor}"
-                        Foreground="{DynamicResource MainForegroundColor}"
-                        FontFamily="Segoe MDL2 Assets"
-                        FontSize="{DynamicResource IconFontSize}"
-                        Width="{DynamicResource JobButtonSize}" Height="{DynamicResource JobButtonSize}"
-                        Visibility="Collapsed"
-                        Margin="4,0,0,0"
-                        VerticalAlignment="Center"
-                        Content="&#xE711;"
-                        AutomationProperties.Name="Stop the running action"
-                        ToolTip="Stop the running action"/>
             </Grid>
         </Border>
     </Grid>

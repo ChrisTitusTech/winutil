@@ -12,8 +12,6 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Step-WinUtilJob.ps1")
 
     function Test-WinUtilUIAlive { return $true }
-    function Wait-WinUtilJobPause { }
-    function Stop-WinUtilJobIfRequested { }
     function Write-WinUtilConsoleProgress { param([string]$Status, [int]$Percent) }
     function Write-WinUtilLog { param($Message, $Level, $Component) }
     function Set-WinUtilTaskbaritem { param($state, $overlay, $value) }

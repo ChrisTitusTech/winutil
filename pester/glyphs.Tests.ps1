@@ -63,19 +63,6 @@ Describe "Icon glyphs" {
         if ($missing.Count -gt 0) { throw ($missing -join "`n") }
     }
 
-    It "uses a stop glyph that reads as one at button size" {
-        # A square is a blank block at 16pt whether it is filled or hollow, and reads as the box
-        # a font draws for a code point it does not have. U+E711 is the cancel cross Windows
-        # uses for ending an operation.
-        $xaml = Get-Content -Path (Join-Path $script:repoRoot "xaml\inputXML.xaml") -Raw
-        $stopButton = ([regex]::Match($xaml, '<Button Name="WPFStopJobButton"[\s\S]*?/>')).Value
-
-        $stopButton | Should -Match 'Content="&#xE711;"'
-        foreach ($square in @("E71A", "E73B", "E004")) {
-            $stopButton | Should -Not -Match $square
-        }
-    }
-
     It "assigns icon content as a string, never as a char" {
         # A char reaching Content is not laid out with the control's own icon font. It falls back
         # to whatever font claims the code point, which renders it in that font's colour and

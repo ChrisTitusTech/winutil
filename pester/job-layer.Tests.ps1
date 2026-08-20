@@ -119,25 +119,6 @@ Describe "Start-WinUtilJob" {
         Remove-Variable -Name activeJobAtQueueTime -Scope Script -ErrorAction SilentlyContinue
     }
 
-    It "shows the pause and stop buttons while a job runs and hides them when it ends" {
-        $script:sync.WPFPauseJobButton = [pscustomobject]@{ IsEnabled = $false; Visibility = "Collapsed"; Content = ""; ToolTip = "" }
-        $script:sync.WPFStopJobButton  = [pscustomobject]@{ IsEnabled = $false; Visibility = "Collapsed" }
-
-        Start-WinUtilJob -Name "Example" -ScriptBlock { } | Out-Null
-
-        # visible once the run owns the slot
-        $script:sync.WPFPauseJobButton.Visibility | Should -Be "Visible"
-        $script:sync.WPFStopJobButton.Visibility | Should -Be "Visible"
-
-        # now run the worker body through to its finally
-        $script:sync.ActiveJobToken = $script:capturedRunspaceArgs["JobToken"]
-        & $script:capturedRunspaceBody @script:capturedRunspaceArgs
-
-        # nothing left to pause or stop, so they go rather than sitting there greyed out
-        $script:sync.WPFPauseJobButton.Visibility | Should -Be "Collapsed"
-        $script:sync.WPFStopJobButton.Visibility | Should -Be "Collapsed"
-    }
-
     It "claims the busy state before the work is queued" {
         Start-WinUtilJob -Name "Example" -ScriptBlock { } | Out-Null
 

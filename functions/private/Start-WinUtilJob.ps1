@@ -94,24 +94,6 @@ function Start-WinUtilJob {
         return $null
     }
 
-    # A pause or stop left from the previous run would hold or end this one before it started
-    $sync.JobPaused = $false
-    $sync.StopRequested = $false
-    if (Test-WinUtilUIAlive) {
-        Invoke-WPFUIThread -ScriptBlock {
-            if ($sync.WPFPauseJobButton) {
-                $sync.WPFPauseJobButton.Content = [string]([char]0xE769)
-                $sync.WPFPauseJobButton.ToolTip = "Pause after the current step"
-                $sync.WPFPauseJobButton.IsEnabled = $true
-                $sync.WPFPauseJobButton.Visibility = "Visible"
-            }
-            if ($sync.WPFStopJobButton) {
-                $sync.WPFStopJobButton.IsEnabled = $true
-                $sync.WPFStopJobButton.Visibility = "Visible"
-            }
-        }
-    }
-
     $label = if ($Description) { $Description } else { $Name }
     Write-WinUtilLog -Component $Name -Message "$Name job started."
     Write-WinUtilJobBanner -Message $label
@@ -159,12 +141,6 @@ function Start-WinUtilJob {
 
             $jobClock.Stop()
 
-            # The body has returned, so there is nothing left to hold or to end. Without this the
-            # finish reporting itself would pause, or throw the stop again from inside the
-            # handler that is reporting it.
-            $sync.JobPaused = $false
-            $sync.StopRequested = $false
-
             # A step can fail without throwing, for example a registry write refused by policy.
             # The job still finished, but saying so without qualification would be a lie.
             $newErrors = if ($sync.LoggedErrors) { $sync.LoggedErrors.Count - $errorsBefore } else { 0 }
@@ -177,18 +153,8 @@ function Start-WinUtilJob {
                 Write-WinUtilJobBanner -Message "$JobLabel finished"
                 Step-WinUtilJob -Status "$JobName finished" -Percent 100 -State "None" -Overlay "checkmark"
             }
-        } catch [System.OperationCanceledException] {
-            # Asked to stop rather than gone wrong, so it is not reported as a failure
-            $jobClock.Stop()
-            $sync.JobPaused = $false
-            $sync.StopRequested = $false
-            Write-WinUtilLog -Level "WARN" -Component $JobName -Message "$JobName stopped after $($jobClock.ElapsedMilliseconds) ms at the user's request."
-            Write-WinUtilJobBanner -Message "$JobLabel stopped"
-            Step-WinUtilJob -Status "$JobName stopped" -Percent 100 -State "Paused" -Overlay "warning"
         } catch {
             $jobClock.Stop()
-            $sync.JobPaused = $false
-            $sync.StopRequested = $false
             Write-WinUtilErrorRecord -ErrorRecord $_ -Component $JobName -Context "$JobName failed after $($jobClock.ElapsedMilliseconds) ms"
             Write-WinUtilJobBanner -Message "$JobLabel failed: $($_.Exception.Message)" -Level "ERROR"
             Step-WinUtilJob -Status "$JobName failed" -Percent 100 -State "Error" -Overlay "warning"
@@ -211,20 +177,6 @@ function Start-WinUtilJob {
 
             if ($stillOwns) {
                 # Nothing left to pause once the run is over
-                $sync.JobPaused = $false
-                # Hidden rather than just disabled: the progress bar stays to report how the run
-                # ended, but there is nothing left for these two to act on
-                Invoke-WPFUIThread -ScriptBlock {
-                    if ($sync.WPFPauseJobButton) {
-                        $sync.WPFPauseJobButton.IsEnabled = $false
-                        $sync.WPFPauseJobButton.Visibility = "Collapsed"
-                    }
-                    if ($sync.WPFStopJobButton) {
-                        $sync.WPFStopJobButton.IsEnabled = $false
-                        $sync.WPFStopJobButton.Visibility = "Collapsed"
-                    }
-                }
-
                 if ($JobRestoresAppList -and (Test-WinUtilUIAlive)) {
                     Invoke-WPFUIThread -ScriptBlock {
                         if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }

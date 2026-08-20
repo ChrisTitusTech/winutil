@@ -44,11 +44,6 @@ function Step-WinUtilJob {
         [switch]$Hide
     )
 
-    # Every loop reports its progress, which makes this the one place a run reliably passes
-    # between steps, and therefore where it can be held or ended without cutting into a command
-    Wait-WinUtilJobPause
-    Stop-WinUtilJobIfRequested
-
     # With no window there is nothing to post to, and every update would be thrown away. A
     # headless run is the one that most needs to say what it is doing. A window that has been
     # closed over running work counts as no window: its dispatcher accepts posts and discards
