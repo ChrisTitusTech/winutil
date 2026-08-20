@@ -277,11 +277,14 @@ function Invoke-WinUtilISOModify {
             $selectedEditionId = Get-WinUtilEditionIdFromName -EditionName $selectedEditionName
 
             Log "Writing autounattend.xml and edition selection..."
-            Invoke-WinUtilISOScript -ISOContentsDir $isoContents -AutoUnattendXml $autounattendContent -InjectCurrentSystemDrivers $injectDrivers -InstallImagePath $localWim -InstallImageIndex $selectedWimIndex -InstallEditionId $selectedEditionId -Log { param($m) Log $m }
+            $driversInjected = [ref]$false
+            Invoke-WinUtilISOScript -ISOContentsDir $isoContents -AutoUnattendXml $autounattendContent -InjectCurrentSystemDrivers $injectDrivers -InstallImagePath $localWim -InstallImageIndex $selectedWimIndex -InstallEditionId $selectedEditionId -Log { param($m) Log $m } -DriversInjected $driversInjected
 
             SetProgress "Preserving install image..." 70
-            if ($injectDrivers) {
+            if ($driversInjected.Value) {
                 Log "Added current-system drivers to $sourceImageFileName index $selectedWimIndex with one mount and commit."
+            } elseif ($injectDrivers) {
+                Log "No current-system drivers needed injection into $sourceImageFileName index $selectedWimIndex; install.wim was left unchanged."
             } else {
                 Log "Preserved the original $sourceImageFileName without mounting, exporting, or modifying it."
             }
