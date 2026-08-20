@@ -1,49 +1,30 @@
 function Test-WinUtilPackageManager {
     <#
-
     .SYNOPSIS
-        Checks if WinGet and/or Choco are installed
-
+        Checks if WinGet and/or Choco are installed.
     .PARAMETER winget
-        Check if WinGet is installed
-
+        Check if WinGet is installed.
     .PARAMETER choco
-        Check if Chocolatey is installed
-
+        Check if Chocolatey is installed.
     #>
-
     Param(
         [System.Management.Automation.SwitchParameter]$winget,
         [System.Management.Automation.SwitchParameter]$choco
     )
 
-    if ($winget) {
-        if (Get-Command winget -ErrorAction SilentlyContinue) {
-            Write-Host "===========================================" -ForegroundColor Green
-            Write-Host "---        WinGet is installed          ---" -ForegroundColor Green
-            Write-Host "===========================================" -ForegroundColor Green
-            $status = "installed"
-        } else {
-            Write-Host "===========================================" -ForegroundColor Red
-            Write-Host "---      WinGet is not installed        ---" -ForegroundColor Red
-            Write-Host "===========================================" -ForegroundColor Red
-            $status = "not-installed"
-        }
-    }
+    # Handle missing switch - callers rely on the return value
+    if (-not $winget -and -not $choco) { return "not-installed" }
 
-    if ($choco) {
-        if (Get-Command choco -ErrorAction SilentlyContinue) {
-            Write-Host "===========================================" -ForegroundColor Green
-            Write-Host "---      Chocolatey is installed        ---" -ForegroundColor Green
-            Write-Host "===========================================" -ForegroundColor Green
-            $status = "installed"
-        } else {
-            Write-Host "===========================================" -ForegroundColor Red
-            Write-Host "---    Chocolatey is not installed      ---" -ForegroundColor Red
-            Write-Host "===========================================" -ForegroundColor Red
-            $status = "not-installed"
-        }
-    }
+    $cmds = @()
+    if ($winget) { $cmds += "winget" }
+    if ($choco) { $cmds += "choco" }
 
-    return $status
+    foreach ($cmd in $cmds) {
+        if (-not (Get-Command $cmd -ErrorAction SilentlyContinue)) {
+            Write-Host "$cmd is not installed" -ForegroundColor Red
+            return "not-installed"
+        }
+        Write-Host "$cmd is installed" -ForegroundColor Green
+    }
+    return "installed"
 }

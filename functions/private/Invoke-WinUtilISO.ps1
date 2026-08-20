@@ -57,13 +57,45 @@ function Invoke-WinUtilISOMountAndVerify {
         param($isoPath)
 
         try {
-            Mount-DiskImage -ImagePath $isoPath
+            $rs = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
+            $rs.Open()
+            $ps = [Management.Automation.PowerShell]::Create().AddScript({
+                param($ImagePath)
+                Mount-DiskImage -ImagePath $ImagePath -ErrorAction Stop | Out-Null
+                
+                $dl = $null
+                for ($i = 0; $i -lt 30; $i++) {
+                    $dl = (Get-DiskImage -ImagePath $ImagePath -ErrorAction SilentlyContinue | Get-Volume -ErrorAction SilentlyContinue).DriveLetter
+                    if ($dl) { return $dl }
+                    Start-Sleep -Milliseconds 500
+                }
+                throw "Drive letter never appeared."
+            }).AddArgument($isoPath)
+            
+            $ps.Runspace = $rs
+            $asyncResult = $ps.BeginInvoke()
 
-            do {
-                Start-Sleep -Milliseconds 500
-            } until ((Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter)
-
-            $driveLetter = (Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter + ":"
+            try {
+                $mountTimeout = 30; $mountElapsed = 0
+                do {
+                    Start-Sleep -Milliseconds 500
+                    $mountElapsed += 0.5
+                    if ($mountElapsed -ge $mountTimeout) {
+                        if (-not $asyncResult.IsCompleted) { $ps.Stop() }
+                        Dismount-DiskImage -ImagePath $isoPath -ErrorAction Stop
+                        throw "ISO mount timed out after $($mountTimeout)s."
+                    }
+                } until ($asyncResult.IsCompleted)
+                
+                $output = $ps.EndInvoke($asyncResult)
+                if ($ps.HadErrors) {
+                    throw $ps.Streams.Error[0].Exception
+                }
+                $driveLetter = "$($output[0]):"
+            } finally {
+                $ps.Dispose()
+                $rs.Dispose()
+            }
             Write-WinUtilISOLog "Mounted at drive $driveLetter"
 
             Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Verifying ISO contents..." -Percent 30
@@ -128,6 +160,11 @@ function Invoke-WinUtilISOMountAndVerify {
         } catch {
             $errorMessage = $_
             Write-WinUtilISOLog "ERROR during mount/verify: $errorMessage"
+            try {
+                Dismount-DiskImage -ImagePath $isoPath -ErrorAction Stop
+            } catch {
+                Write-WinUtilISOLog "WARN: Failed to dismount ISO during error recovery."
+            }
             Invoke-WPFUIThread {
                 [System.Windows.MessageBox]::Show(
                     "An error occurred while mounting or verifying the ISO:`n`n$errorMessage",
@@ -200,14 +237,17 @@ function Invoke-WinUtilISOModify {
 
     $isoScriptFuncDef   = "function Invoke-WinUtilISOScript {`n" + ${function:Invoke-WinUtilISOScript}.ToString() + "`n}"
     $win11ISOLogFuncDef = "function Write-WinUtilISOLog {`n"     + ${function:Write-WinUtilISOLog}.ToString()     + "`n}"
+    $writeLogFuncDef    = "function Write-WinUtilLog {`n"        + ${function:Write-WinUtilLog}.ToString()        + "`n}"
     $runspace.SessionStateProxy.SetVariable("isoScriptFuncDef",   $isoScriptFuncDef)
     $runspace.SessionStateProxy.SetVariable("win11ISOLogFuncDef", $win11ISOLogFuncDef)
+    $runspace.SessionStateProxy.SetVariable("writeLogFuncDef",    $writeLogFuncDef)
 
     $script = [Management.Automation.PowerShell]::Create()
     $script.Runspace = $runspace
     $script.AddScript({
         . ([scriptblock]::Create($isoScriptFuncDef))
         . ([scriptblock]::Create($win11ISOLogFuncDef))
+        . ([scriptblock]::Create($writeLogFuncDef))
 
         function Log($msg) {
             $ts = (Get-Date).ToString("HH:mm:ss")
@@ -216,7 +256,7 @@ function Invoke-WinUtilISOModify {
                 $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
                 $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
             })
-            Add-Content -Path (Join-Path $workDir "WinUtil_Win11ISO.log") -Value "[$ts] $msg"
+            Write-WinUtilLog -Component "ISO" -Message $msg
         }
 
         function SetProgress($label, $pct) {
@@ -398,9 +438,13 @@ function Invoke-WinUtilISOCleanAndReset {
     $runspace.SessionStateProxy.SetVariable("sync",    $sync)
     $runspace.SessionStateProxy.SetVariable("workDir", $workDir)
 
+    $writeLogFuncDef = "function Write-WinUtilLog {`n" + ${function:Write-WinUtilLog}.ToString() + "`n}"
+    $runspace.SessionStateProxy.SetVariable("writeLogFuncDef", $writeLogFuncDef)
+
     $script = [Management.Automation.PowerShell]::Create()
     $script.Runspace = $runspace
     $script.AddScript({
+        . ([scriptblock]::Create($writeLogFuncDef))
 
         function Log($msg) {
             $ts = (Get-Date).ToString("HH:mm:ss")
@@ -409,7 +453,7 @@ function Invoke-WinUtilISOCleanAndReset {
                 $sync["WPFWin11ISOStatusLog"].CaretIndex = $sync["WPFWin11ISOStatusLog"].Text.Length
                 $sync["WPFWin11ISOStatusLog"].ScrollToEnd()
             })
-            Add-Content -Path (Join-Path $workDir "WinUtil_Win11ISO.log") -Value "[$ts] $msg"
+            Write-WinUtilLog -Component "ISO" -Message $msg
         }
 
         function SetProgress($label, $pct) {
@@ -446,37 +490,24 @@ function Invoke-WinUtilISOCleanAndReset {
                 }
             }
 
+            # Batch delete instead of file-by-file with per-100 progress
             if ($workDir -and (Test-Path $workDir)) {
-                Log "Scanning files to delete in: $workDir"
-                SetProgress "Scanning files..." 5
-
-                $allFiles = @(Get-ChildItem -Path $workDir -File -Recurse -Force)
-                $allDirs  = @(Get-ChildItem -Path $workDir -Directory -Recurse -Force |
-                    Sort-Object { $_.FullName.Length } -Descending)
-                $total   = $allFiles.Count
-                $deleted = 0
-
-                Log "Found $total files to delete."
-
-                foreach ($f in $allFiles) {
-                    try { Remove-Item -Path $f.FullName -Force } catch { Log "WARNING: could not delete $($f.FullName): $_" }
-                    $deleted++
-                    if ($deleted % 100 -eq 0 -or $deleted -eq $total) {
-                        $pct = [math]::Round(($deleted / [Math]::Max($total, 1)) * 85) + 5
-                        SetProgress "Deleting files in $($f.Directory.Name)... ($deleted / $total)" $pct
-                    }
-                }
-
-                foreach ($d in $allDirs) {
-                    try { Remove-Item -Path $d.FullName -Force } catch { Log "WARNING: could not delete $($d.FullName): $_" }
-                }
-
-                try { Remove-Item -Path $workDir -Recurse -Force } catch { Log "WARNING: could not delete temp directory ${workDir}: $_" }
-
-                if (Test-Path $workDir) {
-                    Log "WARNING: some items could not be deleted in $workDir"
-                } else {
+                Log "Deleting working directory: $workDir"
+                SetProgress "Cleaning up..." 10
+                try {
+                    Remove-Item -Path $workDir -Recurse -Force -ErrorAction Stop
                     Log "Temp directory deleted successfully."
+                } catch {
+                    Log "WARNING: batch delete failed, retrying file-by-file: $_"
+                    Get-ChildItem -Path $workDir -File -Recurse -Force | ForEach-Object {
+                        Remove-Item -Path $_.FullName -Force -ErrorAction SilentlyContinue
+                    }
+                    Remove-Item -Path $workDir -Recurse -Force -ErrorAction SilentlyContinue
+                    if (Test-Path $workDir) {
+                        Log "ERROR: some items could not be deleted in $workDir. Clean aborted."
+                        throw "Clean aborted because some items could not be deleted in $workDir."
+                    }
+                    else { Log "Temp directory deleted on retry." }
                 }
             } else {
                 Log "No temp directory found - resetting UI."

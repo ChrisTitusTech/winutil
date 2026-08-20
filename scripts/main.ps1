@@ -134,11 +134,42 @@ Initialize-WinUtilTabContent -TabName "Install"
 
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
 
+function Update-WinUtilInstallSearchResults {
+    if ($sync.currentTab -eq "Install") {
+        $manager = $sync.preferences.packagemanager
+        $incompatibleApps = @()
+        if ($null -ne $sync.selectedApps) {
+            foreach ($appKey in $sync.selectedApps) {
+                $appEntry = if ($sync.configs.applicationsHashtable.ContainsKey($appKey)) { $sync.configs.applicationsHashtable[$appKey] } else { $null }
+                if ($null -ne $appEntry) {
+                    $val = if ($manager -eq "Winget") { $appEntry.winget } else { $appEntry.choco }
+                    if ([string]::IsNullOrWhiteSpace($val) -or $val -match '(?i)^na$') {
+                        $incompatibleApps += $appKey
+                    }
+                }
+            }
+        }
+        foreach ($appKey in $incompatibleApps) {
+            if ($null -ne $sync.$appKey) {
+                $sync.$appKey.IsChecked = $false
+            } else {
+                if (Get-Command Invoke-WPFSelectedCheckboxesUpdate -ErrorAction SilentlyContinue) {
+                    Invoke-WPFSelectedCheckboxesUpdate -type "Remove" -checkboxName $appKey
+                }
+            }
+        }
+
+        Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text -Categories $sync.SelectedAppCategories.ToArray()
+    }
+}
+
 $sync.ChocoRadioButton.Add_Checked({
     $sync.preferences.packagemanager = "Choco"
+    Update-WinUtilInstallSearchResults
 })
 $sync.WingetRadioButton.Add_Checked({
     $sync.preferences.packagemanager = "Winget"
+    Update-WinUtilInstallSearchResults
 })
 
 switch ($sync.preferences.packagemanager) {
@@ -146,28 +177,16 @@ switch ($sync.preferences.packagemanager) {
     "Winget" {$sync.WingetRadioButton.IsChecked = $true; break}
 }
 
+# Merged Button/ToggleButton registration, direct .GetType().Name (no pipeline overhead)
 $sync.keys | ForEach-Object {
-    if($sync.$psitem) {
-        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton") {
-            if ($sync.Buttons -notcontains $psitem) {
-                $sync["$psitem"].Add_Click({
-                    [System.Object]$Sender = $args[0]
-                    Invoke-WPFButton $Sender.name
-                })
-                $sync.Buttons.Add($psitem) | Out-Null
-            }
+    if ($sync.$psitem -and $sync["$psitem"].GetType().Name -in "Button", "ToggleButton") {
+        if ($sync.Buttons -notcontains $psitem) {
+            $sync["$psitem"].Add_Click({
+                [System.Object]$Sender = $args[0]
+                Invoke-WPFButton $Sender.name
+            })
+            $sync.Buttons.Add($psitem) | Out-Null
         }
-
-        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button") {
-            if ($sync.Buttons -notcontains $psitem) {
-                $sync["$psitem"].Add_Click({
-                    [System.Object]$Sender = $args[0]
-                    Invoke-WPFButton $Sender.name
-                })
-                $sync.Buttons.Add($psitem) | Out-Null
-            }
-        }
-
     }
 }
 
