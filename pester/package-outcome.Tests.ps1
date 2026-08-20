@@ -14,6 +14,9 @@ BeforeAll {
     function Write-WinUtilLog {
         param($Message, $Level, $Component)
     }
+    function Invoke-WinUtilUnelevated {
+        param([string]$FilePath, [string[]]$ArgumentList, [int]$TimeoutSeconds)
+    }
 }
 
 Describe "Install-WinUtilProgramWinget outcomes" {
@@ -29,6 +32,39 @@ Describe "Install-WinUtilProgramWinget outcomes" {
         $result.Outcome | Should -Be "Succeeded"
         $result.Package | Should -Be "Git.Git"
         $result.Manager | Should -Be "winget"
+    }
+
+    It "retries as the signed in user when WinGet refuses a user scope package" {
+        # WinGet answers APPINSTALLER_CLI_ERROR_ADMIN_CONTEXT_ACTION_PROHIBITED for anything
+        # installed in user scope while elevated, and WinUtil is always elevated
+        Mock Start-Process { [pscustomobject]@{ ExitCode = -1978335107 } }
+        Mock Invoke-WinUtilUnelevated { [pscustomobject]@{ ExitCode = 0; Output = ""; TimedOut = $false } }
+
+        $result = Install-WinUtilProgramWinget -Action Uninstall -Programs @("MullvadVPN.MullvadBrowser")
+
+        $result.Outcome | Should -Be "Succeeded"
+        Should -Invoke -CommandName Invoke-WinUtilUnelevated -Times 1 -Exactly -ParameterFilter {
+            $FilePath -eq "winget" -and ($ArgumentList -join " ") -like "*uninstall*MullvadVPN.MullvadBrowser*"
+        }
+    }
+
+    It "reports the failure when the retry as the signed in user also fails" {
+        Mock Start-Process { [pscustomobject]@{ ExitCode = -1978335107 } }
+        Mock Invoke-WinUtilUnelevated { [pscustomobject]@{ ExitCode = -1978335212; Output = ""; TimedOut = $false } }
+
+        $result = Install-WinUtilProgramWinget -Action Uninstall -Programs @("MullvadVPN.MullvadBrowser")
+
+        $result.Outcome | Should -Be "Failed"
+    }
+
+    It "does not go looking for the signed in user when the command simply worked" {
+        Mock Start-Process { [pscustomobject]@{ ExitCode = 0 } }
+        Mock Invoke-WinUtilUnelevated { [pscustomobject]@{ ExitCode = 0; Output = ""; TimedOut = $false } }
+
+        $result = Install-WinUtilProgramWinget -Action Uninstall -Programs @("Some.Package")
+
+        $result.Outcome | Should -Be "Succeeded"
+        Should -Invoke -CommandName Invoke-WinUtilUnelevated -Times 0 -Exactly
     }
 
     It "reports an already installed package as skipped rather than failed" {
