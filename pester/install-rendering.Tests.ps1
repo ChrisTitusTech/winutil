@@ -38,7 +38,6 @@ Describe "Install app rendering startup contract" {
                 return "entry:$AppKey"
             }
 
-            function global:Start-WinUtilIconFetch { }
 
             function global:Test-WinUtilDeferBackgroundWork { param($RequiresTab) $false }
             function global:Invoke-WinUtilWhenIdle { param($Callback, $DelayMilliseconds) }

@@ -52,23 +52,8 @@ function Initialize-InstallAppEntry {
         if ($app.link) {
             $logo = New-Object Windows.Controls.Image
             $logo.Stretch = [Windows.Media.Stretch]::Uniform
+            $logo.Source = "https://www.google.com/s2/favicons?sz=64&domain_url=$([uri]::EscapeDataString($app.link))"
             $logo.Add_ImageFailed($handlers.ImageFailed)
-
-            # A remote address here would make WPF fetch and decode on this thread. Anything
-            # already on disk is decoded now; the rest is left to the worker so the network is
-            # never waited on while the list is being drawn.
-            $cacheFile = Get-WinUtilIconCacheFile -Link $app.link
-            $cached = if (Test-Path $cacheFile) { Get-WinUtilFrozenIcon -Path $cacheFile } else { $null }
-
-            if ($cached) {
-                $logo.Source = $cached
-                $fallback.Visibility = "Collapsed"
-            } else {
-                $logo.Visibility = "Collapsed"
-                $fallback.Visibility = "Visible"
-                $sync.IconImages[$appKey] = $logo
-                $sync.PendingIcons[$appKey] = $app.link
-            }
 
             [void]$icon.Children.Add($logo)
         }

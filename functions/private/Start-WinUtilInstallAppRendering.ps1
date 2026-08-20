@@ -37,7 +37,6 @@ function Invoke-WinUtilInstallAppRenderBatch {
 
     # Whatever this batch left without an icon is fetched now rather than at the end of the
     # whole list: waiting meant no icon appeared until every entry had been drawn.
-    Start-WinUtilIconFetch
 
     # Entries render in batches, so a filter that is already active has to be applied to each new
     # batch. Categories count as an active filter just like search text does.
@@ -54,7 +53,6 @@ function Complete-WinUtilInstallAppRendering {
     $sync.InstallAppEntriesRendered = $true
 
     # Once the list is drawn, whatever had no cached icon is fetched on a worker
-    Start-WinUtilIconFetch
 }
 
 function Start-WinUtilInstallAppRendering {
@@ -63,8 +61,6 @@ function Start-WinUtilInstallAppRendering {
     }
 
     $sync.InstallAppEntriesRendered = $false
-    if ($null -eq $sync.IconImages) { $sync.IconImages = [hashtable]::Synchronized(@{}) }
-    if ($null -eq $sync.PendingIcons) { $sync.PendingIcons = [hashtable]::Synchronized(@{}) }
 
     Start-WinUtilBackgroundQueue -Name "InstallAppRender" -Queue $sync.InstallAppRenderQueue `
         -RequiresTab "Install" `

@@ -404,8 +404,6 @@ Describe "XAML and sync wiring" {
             "JobPaused",
             "StopRequested",
             "StopWatchdogTimer",
-            "IconImages",
-            "PendingIcons",
             "IconFetchRunning",
             "selected",
             "selectedAppx",
