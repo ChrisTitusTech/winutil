@@ -60,9 +60,9 @@ function Initialize-WPFUI {
             $appPopup.Child = $appPopupStackPanel
 
             $appButtons = @(
-            [PSCustomObject]@{ Name = "Install";    Icon = [string]([char]0xE118) },
-            [PSCustomObject]@{ Name = "Uninstall";  Icon = [string]([char]0xE74D) },
-            [PSCustomObject]@{ Name = "Info";       Icon = [string]([char]0xE946) }
+            [PSCustomObject]@{ Name = "Install";    Icon = [char]0xE118 },
+            [PSCustomObject]@{ Name = "Uninstall";  Icon = [char]0xE74D },
+            [PSCustomObject]@{ Name = "Info";       Icon = [char]0xE946 }
             )
             foreach ($button in $appButtons) {
                 $newButton = New-Object Windows.Controls.Button

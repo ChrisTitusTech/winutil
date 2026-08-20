@@ -137,15 +137,15 @@ function Invoke-WinutilThemeChange {
             }
 
             Set-WinutilTheme -currentTheme $theme
-            $themeButtonIcon = [string]([char]0xF08C)
+            $themeButtonIcon = [char]0xF08C
         }
         "Dark" {
             Set-WinutilTheme -currentTheme $sync.preferences.theme
-            $themeButtonIcon = [string]([char]0xE708)
+            $themeButtonIcon = [char]0xE708
            }
         "Light" {
             Set-WinutilTheme -currentTheme $sync.preferences.theme
-            $themeButtonIcon = [string]([char]0xE706)
+            $themeButtonIcon = [char]0xE706
         }
     }
 
