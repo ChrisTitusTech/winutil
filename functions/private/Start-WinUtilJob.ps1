@@ -103,8 +103,12 @@ function Start-WinUtilJob {
                 $sync.WPFPauseJobButton.Content = [string]([char]0xE769)
                 $sync.WPFPauseJobButton.ToolTip = "Pause after the current step"
                 $sync.WPFPauseJobButton.IsEnabled = $true
+                $sync.WPFPauseJobButton.Visibility = "Visible"
             }
-            if ($sync.WPFStopJobButton) { $sync.WPFStopJobButton.IsEnabled = $true }
+            if ($sync.WPFStopJobButton) {
+                $sync.WPFStopJobButton.IsEnabled = $true
+                $sync.WPFStopJobButton.Visibility = "Visible"
+            }
         }
     }
 
@@ -208,9 +212,17 @@ function Start-WinUtilJob {
             if ($stillOwns) {
                 # Nothing left to pause once the run is over
                 $sync.JobPaused = $false
+                # Hidden rather than just disabled: the progress bar stays to report how the run
+                # ended, but there is nothing left for these two to act on
                 Invoke-WPFUIThread -ScriptBlock {
-                    if ($sync.WPFPauseJobButton) { $sync.WPFPauseJobButton.IsEnabled = $false }
-                    if ($sync.WPFStopJobButton) { $sync.WPFStopJobButton.IsEnabled = $false }
+                    if ($sync.WPFPauseJobButton) {
+                        $sync.WPFPauseJobButton.IsEnabled = $false
+                        $sync.WPFPauseJobButton.Visibility = "Collapsed"
+                    }
+                    if ($sync.WPFStopJobButton) {
+                        $sync.WPFStopJobButton.IsEnabled = $false
+                        $sync.WPFStopJobButton.Visibility = "Collapsed"
+                    }
                 }
 
                 if ($JobRestoresAppList -and (Test-WinUtilUIAlive)) {

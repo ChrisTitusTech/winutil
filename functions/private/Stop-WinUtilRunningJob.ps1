@@ -145,6 +145,8 @@ function Start-WinUtilJobStopWatchdog {
         $sync.StopRequested = $false
         if (Clear-WinUtilActiveJob -Token $state.Token) {
             Step-WinUtilJob -Status "$($state.Job) stopped" -Percent 100 -State "Paused" -Overlay "warning"
+            if ($sync.WPFPauseJobButton) { $sync.WPFPauseJobButton.Visibility = "Collapsed" }
+            if ($sync.WPFStopJobButton) { $sync.WPFStopJobButton.Visibility = "Collapsed" }
             if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }
         }
     })
