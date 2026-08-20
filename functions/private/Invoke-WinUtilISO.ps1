@@ -59,36 +59,43 @@ function Invoke-WinUtilISOMountAndVerify {
         try {
             $rs = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
             $rs.Open()
-            $ps = [Management.Automation.PowerShell]::Create().AddCommand('Mount-DiskImage').AddParameter('ImagePath', $isoPath)
+            $ps = [Management.Automation.PowerShell]::Create().AddScript({
+                param($ImagePath)
+                Mount-DiskImage -ImagePath $ImagePath -ErrorAction Stop | Out-Null
+                
+                $dl = $null
+                for ($i = 0; $i -lt 30; $i++) {
+                    $dl = (Get-DiskImage -ImagePath $ImagePath -ErrorAction SilentlyContinue | Get-Volume -ErrorAction SilentlyContinue).DriveLetter
+                    if ($dl) { return $dl }
+                    Start-Sleep -Milliseconds 500
+                }
+                throw "Drive letter never appeared."
+            }).AddArgument($isoPath)
+            
             $ps.Runspace = $rs
             $asyncResult = $ps.BeginInvoke()
 
-            # Add 30s timeout to prevent infinite hang on mount failure
-            $mountTimeout = 30; $mountElapsed = 0
-            $mounted = $false
-            do {
-                Start-Sleep -Milliseconds 500
-                $mountElapsed += 0.5
-                if ($mountElapsed -ge $mountTimeout) {
-                    if (-not $asyncResult.IsCompleted) { $ps.Stop() }
-                    $ps.Dispose()
-                    $rs.Dispose()
-                    
-                    Dismount-DiskImage -ImagePath $isoPath -ErrorAction Stop
-                    throw "ISO mount timed out after $($mountTimeout)s - drive letter never appeared."
-                }
+            try {
+                $mountTimeout = 30; $mountElapsed = 0
+                do {
+                    Start-Sleep -Milliseconds 500
+                    $mountElapsed += 0.5
+                    if ($mountElapsed -ge $mountTimeout) {
+                        if (-not $asyncResult.IsCompleted) { $ps.Stop() }
+                        Dismount-DiskImage -ImagePath $isoPath -ErrorAction Stop
+                        throw "ISO mount timed out after $($mountTimeout)s."
+                    }
+                } until ($asyncResult.IsCompleted)
                 
-                if ($asyncResult.IsCompleted) {
-                    $driveLetter = (Get-DiskImage -ImagePath $isoPath -ErrorAction SilentlyContinue | Get-Volume -ErrorAction SilentlyContinue).DriveLetter
-                    if ($driveLetter) { $mounted = $true }
+                $output = $ps.EndInvoke($asyncResult)
+                if ($ps.HadErrors) {
+                    throw $ps.Streams.Error[0].Exception
                 }
-            } until ($mounted)
-            
-            $ps.EndInvoke($asyncResult) | Out-Null
-            $ps.Dispose()
-            $rs.Dispose()
-
-            $driveLetter = (Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter + ":"
+                $driveLetter = "$($output[0]):"
+            } finally {
+                $ps.Dispose()
+                $rs.Dispose()
+            }
             Write-WinUtilISOLog "Mounted at drive $driveLetter"
 
             Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Verifying ISO contents..." -Percent 30

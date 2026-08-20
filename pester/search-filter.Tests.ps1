@@ -15,6 +15,14 @@ namespace Windows
         Collapsed
     }
 
+    public enum HorizontalAlignment
+    {
+        Left,
+        Center,
+        Right,
+        Stretch
+    }
+
     public class Thickness
     {
         public double Left { get; set; }
@@ -581,14 +589,18 @@ Describe "Find-AppsByNameOrDescription" {
         }
         Mock Get-WinUtilPackageLink { return "https://example.com" }
         Mock Initialize-InstallAppEntry {}
-
+        $sync.preferences = [pscustomobject]@{ packagemanager = "Winget" }
         Find-AppsByNameOrDescription -SearchString "App"
+        
+        # Should skip SecondApp because it is in the compound ID
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_SecondApp") | Should -Be $false
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_FourthApp") | Should -Be $true
+
         $sync.preferences = [pscustomobject]@{ packagemanager = "Choco" }
         Find-AppsByNameOrDescription -SearchString "Choco"
 
-        # Should skip SecondApp and FirstChoco because they are in the compound IDs
-        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_SecondApp") | Should -Be $false
-        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_FourthApp") | Should -Be $true
+        # Should skip FirstChoco because it is in the compound ID. Winget dynamic results are cleared.
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_FourthApp") | Should -Be $false
         $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_choco_FirstChoco") | Should -Be $false
         $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_choco_ThirdChoco") | Should -Be $true
     }
