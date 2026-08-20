@@ -55,6 +55,18 @@ Describe "Initialize-WinUtilTabContent" {
         $script:sync.InitializedTabs["Install"] | Should -BeTrue
     }
 
+    It "leaves the app navigation to Initialize-WPFUI so its buttons keep their handlers" {
+        # Rendering it here as well built the navigation twice. The second pass cleared the
+        # first one's controls, and because the "already wired" guard goes by name the
+        # replacements counted as wired and never got a click handler, so Install and
+        # Uninstall did nothing at all.
+        Initialize-WinUtilTabContent -TabName "Install"
+
+        Should -Invoke -CommandName Invoke-WPFUIElements -Times 0 -Exactly -ParameterFilter {
+            $targetGridName -eq "appscategory"
+        }
+    }
+
     It "initializes deferred config-backed tabs once" {
         Initialize-WinUtilTabContent -TabName "Tweaks"
         Initialize-WinUtilTabContent -TabName "Config"

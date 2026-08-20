@@ -23,9 +23,10 @@ function Initialize-WinUtilTabContent {
     try {
         switch ($TabName) {
             "Install" {
-                Measure-WinUtilStep -Scope "UI" -Name "Install tab: app navigation" -ScriptBlock {
-                    Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1 -Yield:$Yield
-                }
+                # Initialize-WPFUI renders the app navigation itself. Rendering it here as well
+                # built it twice, and the second pass cleared the first one's controls: the
+                # "already wired" guard is by name, so the replacements were taken for wired and
+                # never got a click handler. That left Install and Uninstall doing nothing at all.
                 Measure-WinUtilStep -Scope "UI" -Name "Install tab: category area" -ScriptBlock {
                     Initialize-WPFUI -targetGridName "appscategory"
                 }
