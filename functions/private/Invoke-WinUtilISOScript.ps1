@@ -25,6 +25,10 @@ function Invoke-WinUtilISOScript {
 
     .PARAMETER Log
         Optional ScriptBlock for progress/status logging. Receives a single [string] argument.
+
+    .PARAMETER DriversInjected
+        Optional [ref] set to $true only if driver injection actually mounted and committed
+        install.wim; stays $false if injection was skipped (disabled, or nothing survived filtering).
     #>
     param (
         [Parameter(Mandatory)][string]$ISOContentsDir,
@@ -33,7 +37,8 @@ function Invoke-WinUtilISOScript {
         [string]$InstallEditionId = "",
         [string]$InstallImagePath = "",
         [int]$InstallImageIndex = 1,
-        [scriptblock]$Log = { param($m) Write-Output $m }
+        [scriptblock]$Log = { param($m) Write-Output $m },
+        [ref]$DriversInjected = [ref]$false
     )
 
     function Add-WinUtilISOStagedDrivers {
@@ -41,8 +46,10 @@ function Invoke-WinUtilISOScript {
             [Parameter(Mandatory)][string]$ContentRoot,
             [Parameter(Mandatory)][string]$InstallImagePath,
             [Parameter(Mandatory)][int]$InstallImageIndex,
-            [scriptblock]$Logger
+            [scriptblock]$Logger,
+            [ref]$DriversInjected = [ref]$false
         )
+        $DriversInjected.Value = $false
 
         function Copy-WinUtilISODriverFolder {
             param (
@@ -81,9 +88,9 @@ function Invoke-WinUtilISOScript {
             param ([Parameter(Mandatory)][System.IO.FileInfo]$InfFile)
 
             try {
-                return (Get-Content -LiteralPath $InfFile.FullName -Raw -ErrorAction Stop) -match '(?im)^\s*Class\s*=\s*Extension\s*(?:;.*)?$'
+                return (Get-Content -LiteralPath $InfFile.FullName -Raw -ErrorAction Stop) -match '(?im)^\s*Class\s*=\s*"?Extension"?\s*(?:;.*)?$'
             } catch {
-                & $Logger "Warning: could not classify driver '$($InfFile.FullName)': $_"
+                $null = & $Logger "Warning: could not classify driver '$($InfFile.FullName)': $_"
                 return $false
             }
         }
@@ -94,7 +101,7 @@ function Invoke-WinUtilISOScript {
             try {
                 $infText = Get-Content -LiteralPath $InfFile.FullName -Raw -ErrorAction Stop
             } catch {
-                & $Logger "Warning: could not read '$($InfFile.FullName)' to determine its driver version: $_"
+                $null = & $Logger "Warning: could not read '$($InfFile.FullName)' to determine its driver version: $_"
                 return $null
             }
 
@@ -114,7 +121,7 @@ function Invoke-WinUtilISOScript {
                 }
                 $version = [version]$versionText
             } catch {
-                & $Logger "Warning: could not parse DriverVer '$($match.Value.Trim())' in '$($InfFile.FullName)': $_"
+                $null = & $Logger "Warning: could not parse DriverVer '$($match.Value.Trim())' in '$($InfFile.FullName)': $_"
                 return $null
             }
 
@@ -123,6 +130,23 @@ function Invoke-WinUtilISOScript {
                 Version = $version
                 Raw     = if ($match.Groups['version'].Success) { "$($match.Groups['date'].Value),$($match.Groups['version'].Value)" } else { $match.Groups['date'].Value }
             }
+        }
+
+        function Get-WinUtilISODriverProvider {
+            param ([Parameter(Mandatory)][System.IO.FileInfo]$InfFile)
+
+            try {
+                $infText = Get-Content -LiteralPath $InfFile.FullName -Raw -ErrorAction Stop
+            } catch {
+                $null = & $Logger "Warning: could not read '$($InfFile.FullName)' to determine its provider: $_"
+                return ''
+            }
+
+            $match = [regex]::Match($infText, '(?im)^\s*Provider\s*=\s*(?<provider>.+?)\s*(?:;.*)?$')
+            if (-not $match.Success) {
+                return ''
+            }
+            return $match.Groups['provider'].Value.ToLowerInvariant()
         }
 
         function Select-WinUtilISOStagedDriverPackages {
@@ -155,7 +179,8 @@ function Invoke-WinUtilISOScript {
                 $dedupKey = $driverFolder
                 $nameMatch = [regex]::Match($leafName, '(?i)^(?<infname>.+)_(?<arch>x86|amd64|arm64|arm|wow)_[0-9a-f]{16}$')
                 if ($nameMatch.Success) {
-                    $dedupKey = "$($nameMatch.Groups['infname'].Value.ToLowerInvariant())_$($nameMatch.Groups['arch'].Value.ToLowerInvariant())"
+                    $provider = Get-WinUtilISODriverProvider -InfFile $driverFolderGroup.Group[0]
+                    $dedupKey = "$($nameMatch.Groups['infname'].Value.ToLowerInvariant())_$($nameMatch.Groups['arch'].Value.ToLowerInvariant())_$provider"
                 }
 
                 if (-not $dedupGroups.ContainsKey($dedupKey)) {
@@ -317,6 +342,9 @@ function Invoke-WinUtilISOScript {
             }
 
             $stagedDriverFolders = @(Select-WinUtilISOStagedDriverPackages -DriverFolderGroups $driverFolders -Logger $Logger)
+            $metadataBefore = Get-WinUtilISOWimMetadata -ImagePath $InstallImagePath -Index $InstallImageIndex
+            Assert-WinUtilISOWimMetadata -Before $metadataBefore
+
             if ($stagedDriverFolders.Count -eq 0) {
                 # Nothing safe to inject (e.g. every exported package was an Extension-class add-on)
                 # isn't a failure: leave install.wim untouched and continue building the ISO.
@@ -332,8 +360,6 @@ function Invoke-WinUtilISOScript {
                 }
 
                 & $Logger "Exported $($stagedDriverFolders.Count) of $($driverFolders.Count) driver packages ($storageCount staged for WinPE, $($excludedFolders.Count) excluded)."
-                $metadataBefore = Get-WinUtilISOWimMetadata -ImagePath $InstallImagePath -Index $InstallImageIndex
-                Assert-WinUtilISOWimMetadata -Before $metadataBefore
 
                 Set-ItemProperty -LiteralPath $InstallImagePath -Name IsReadOnly -Value $false
                 New-Item -Path $mountDir -ItemType Directory -Force | Out-Null
@@ -351,6 +377,7 @@ function Invoke-WinUtilISOScript {
                 $metadataAfter = Get-WinUtilISOWimMetadata -ImagePath $InstallImagePath -Index $InstallImageIndex
                 Assert-WinUtilISOWimMetadata -Before $metadataBefore -After $metadataAfter
                 & $Logger 'Driver injection complete; install.wim metadata validation passed.'
+                $DriversInjected.Value = $true
             }
         } finally {
             if ($imageMounted -or (Test-WinUtilISOMountedImage -Path $mountDir)) {
@@ -675,6 +702,6 @@ $appxList
     Write-WinUtilISOEditionConfig -ContentRoot $ISOContentsDir -EditionId $InstallEditionId -Logger $Log
 
     if ($InjectCurrentSystemDrivers) {
-        Add-WinUtilISOStagedDrivers -ContentRoot $ISOContentsDir -Logger $Log -InstallImagePath $InstallImagePath -InstallImageIndex $InstallImageIndex
+        Add-WinUtilISOStagedDrivers -ContentRoot $ISOContentsDir -Logger $Log -InstallImagePath $InstallImagePath -InstallImageIndex $InstallImageIndex -DriversInjected $DriversInjected
     }
 }
