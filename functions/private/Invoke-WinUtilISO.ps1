@@ -124,7 +124,7 @@ function Invoke-WinUtilISOMountAndVerify {
     Start-WinUtilJob -Name "ISO mount" -Description "Mounting ISO" -Parameters @{
         IsoPath = $isoPath
     } -ScriptBlock {
-        param($IsoPath)
+        param($isoPath)
 
         Invoke-WPFUIThread -ScriptBlock {
             $sync["WPFWin11ISOBrowseButton"].IsEnabled = $false
@@ -133,10 +133,10 @@ function Invoke-WinUtilISOMountAndVerify {
         }
 
         try {
-            Write-WinUtilISOLog "Mounting ISO: $IsoPath"
+            Write-WinUtilISOLog "Mounting ISO: $isoPath"
             Step-WinUtilJob -Status "Mounting ISO..." -Percent 10
 
-            Mount-DiskImage -ImagePath $IsoPath -ErrorAction Stop
+            Mount-DiskImage -ImagePath $isoPath -ErrorAction Stop
 
             # Bounded, because a damaged or already-mounted image may never present a drive
             # letter. The job layer runs one job at a time, so waiting here forever would block
@@ -145,11 +145,11 @@ function Invoke-WinUtilISOMountAndVerify {
             $mountClock = [System.Diagnostics.Stopwatch]::StartNew()
             while (-not $letter -and $mountClock.Elapsed.TotalSeconds -lt 60) {
                 Start-Sleep -Milliseconds 500
-                $letter = (Get-DiskImage -ImagePath $IsoPath | Get-Volume).DriveLetter
+                $letter = (Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter
             }
 
             if (-not $letter) {
-                throw "The ISO mounted but no drive letter appeared within 60 seconds: $IsoPath"
+                throw "The ISO mounted but no drive letter appeared within 60 seconds: $isoPath"
             }
 
             $driveLetter = "${letter}:"
@@ -161,11 +161,11 @@ function Invoke-WinUtilISOMountAndVerify {
             $esdPath = Join-Path $driveLetter "sources\install.esd"
 
             if (-not (Test-Path $wimPath) -and -not (Test-Path $esdPath)) {
-                Dismount-DiskImage -ImagePath $IsoPath
+                Dismount-DiskImage -ImagePath $isoPath
                 Write-WinUtilISOLog -Level "ERROR" -Message "install.wim/install.esd not found - not a valid Windows ISO."
                 Show-WinUtilMessage -Message "This does not appear to be a valid Windows ISO.`n`ninstall.wim / install.esd was not found." -Title "Invalid ISO" -Button "OK" -Icon "Error" | Out-Null
                 # Returning here would let the job layer report the run as finished
-                throw "install.wim / install.esd was not found in $IsoPath."
+                throw "install.wim / install.esd was not found in $isoPath."
             }
 
             $activeWim = if (Test-Path $wimPath) { $wimPath } else { $esdPath }
@@ -174,27 +174,27 @@ function Invoke-WinUtilISOMountAndVerify {
             $imageInfo = Get-WindowsImage -ImagePath $activeWim | Select-Object ImageIndex, ImageName
 
             if (-not ($imageInfo | Where-Object { $_.ImageName -match "Windows 11" })) {
-                Dismount-DiskImage -ImagePath $IsoPath
+                Dismount-DiskImage -ImagePath $isoPath
                 Write-WinUtilISOLog -Level "ERROR" -Message "No 'Windows 11' edition found in the image."
                 Show-WinUtilMessage -Message "No Windows 11 edition was found in this ISO.`n`nOnly official Windows 11 ISOs are supported." -Title "Not a Windows 11 ISO" -Button "OK" -Icon "Error" | Out-Null
-                throw "No Windows 11 edition was found in $IsoPath."
+                throw "No Windows 11 edition was found in $isoPath."
             }
 
             $sync["Win11ISOImageInfo"] = $imageInfo
             $sync["Win11ISODriveLetter"] = $driveLetter
             $sync["Win11ISOWimPath"]     = $activeWim
-            $sync["Win11ISOImagePath"]   = $IsoPath
+            $sync["Win11ISOImagePath"]   = $isoPath
 
             Invoke-WPFUIThread -Parameters @{
                 DriveLetter = $driveLetter
                 ImageFileName = Split-Path $activeWim -Leaf
                 ImageInfo = $imageInfo
             } -ScriptBlock {
-                param($DriveLetter, $ImageFileName, $ImageInfo)
+                param($DriveLetter, $ImageFileName, $imageInfo)
 
                 $sync["WPFWin11ISOMountDriveLetter"].Text = "Mounted at: $DriveLetter   |   Image file: $ImageFileName"
                 $sync["WPFWin11ISOEditionComboBox"].Items.Clear()
-                foreach ($img in $ImageInfo) {
+                foreach ($img in $imageInfo) {
                     [void]$sync["WPFWin11ISOEditionComboBox"].Items.Add("$($img.ImageIndex): $($img.ImageName)")
                 }
                 if ($sync["WPFWin11ISOEditionComboBox"].Items.Count -gt 0) {
@@ -263,7 +263,7 @@ function Invoke-WinUtilISOModify {
         AutounattendContent = $autounattendContent
         InjectDrivers       = $sync["WPFWin11ISOInjectDrivers"].IsChecked -eq $true
     } -ScriptBlock {
-        param($IsoPath, $DriveLetter, $WimPath, $WorkDir, $SelectedWimIndex, $SelectedEditionName, $AutounattendContent, $InjectDrivers)
+        param($isoPath, $DriveLetter, $WimPath, $workDir, $SelectedWimIndex, $SelectedEditionName, $AutounattendContent, $InjectDrivers)
 
         Invoke-WPFUIThread -ScriptBlock {
             $sync["WPFWin11ISOModifyButton"].IsEnabled = $false
@@ -274,9 +274,9 @@ function Invoke-WinUtilISOModify {
 
         try {
             Write-WinUtilISOLog "Selected edition: $SelectedEditionName (Index $SelectedWimIndex)"
-            Write-WinUtilISOLog "Creating working directory: $WorkDir"
+            Write-WinUtilISOLog "Creating working directory: $workDir"
 
-            $isoContents = Join-Path $WorkDir "iso_contents"
+            $isoContents = Join-Path $workDir "iso_contents"
             New-Item -ItemType Directory -Path $isoContents -Force | Out-Null
             Step-WinUtilJob -Status "Copying ISO contents..." -Percent 10
 
@@ -309,9 +309,9 @@ function Invoke-WinUtilISOModify {
 
             Step-WinUtilJob -Status "Dismounting source ISO..." -Percent 80
             Write-WinUtilISOLog "Dismounting original ISO..."
-            Dismount-DiskImage -ImagePath $IsoPath
+            Dismount-DiskImage -ImagePath $isoPath
 
-            $sync["Win11ISOWorkDir"]     = $WorkDir
+            $sync["Win11ISOWorkDir"]     = $workDir
             $sync["Win11ISOContentsDir"] = $isoContents
 
             Step-WinUtilJob -Status "Modification complete" -Percent 100
@@ -324,17 +324,17 @@ function Invoke-WinUtilISOModify {
             Write-WinUtilISOLog -Level "ERROR" -Message "Modification failed: $_"
 
             try {
-                $mountedISO = Get-DiskImage -ImagePath $IsoPath
+                $mountedISO = Get-DiskImage -ImagePath $isoPath
                 if ($mountedISO -and $mountedISO.Attached) {
                     Write-WinUtilISOLog "Cleaning up: dismounting source ISO..."
-                    Dismount-DiskImage -ImagePath $IsoPath
+                    Dismount-DiskImage -ImagePath $isoPath
                 }
             } catch { Write-WinUtilISOLog -Level "WARN" -Message "Could not dismount ISO during cleanup: $_" }
 
             try {
-                if (Test-Path $WorkDir) {
-                    Write-WinUtilISOLog "Cleaning up: removing temp directory $WorkDir..."
-                    Remove-Item -Path $WorkDir -Recurse -Force
+                if (Test-Path $workDir) {
+                    Write-WinUtilISOLog "Cleaning up: removing temp directory $workDir..."
+                    Remove-Item -Path $workDir -Recurse -Force
                 }
             } catch { Write-WinUtilISOLog -Level "WARN" -Message "Could not remove temp directory during cleanup: $_" }
 
@@ -396,15 +396,15 @@ function Invoke-WinUtilISOCleanAndReset {
     Start-WinUtilJob -Name "ISO cleanup" -Description "Cleaning up" -Parameters @{
         WorkDir = $workDir
     } -ScriptBlock {
-        param($WorkDir)
+        param($workDir)
 
         Invoke-WPFUIThread -ScriptBlock { $sync["WPFWin11ISOCleanResetButton"].IsEnabled = $false }
 
         try {
-            if ($WorkDir) {
-                $mountDir = Join-Path $WorkDir "wim_mount"
+            if ($workDir) {
+                $mountDir = Join-Path $workDir "wim_mount"
                 try {
-                    $mountedImages = Get-WindowsImage -Mounted | Where-Object { $_.Path -like "$WorkDir*" }
+                    $mountedImages = Get-WindowsImage -Mounted | Where-Object { $_.Path -like "$workDir*" }
                     if ($mountedImages) {
                         foreach ($img in $mountedImages) {
                             Write-WinUtilISOLog "Dismounting WIM at: $($img.Path) (discarding changes)..."
@@ -424,12 +424,12 @@ function Invoke-WinUtilISOCleanAndReset {
                 }
             }
 
-            if ($WorkDir -and (Test-Path $WorkDir)) {
-                Write-WinUtilISOLog "Scanning files to delete in: $WorkDir"
+            if ($workDir -and (Test-Path $workDir)) {
+                Write-WinUtilISOLog "Scanning files to delete in: $workDir"
                 Step-WinUtilJob -Status "Scanning files..." -Percent 5
 
-                $allFiles = @(Get-ChildItem -Path $WorkDir -File -Recurse -Force)
-                $allDirs  = @(Get-ChildItem -Path $WorkDir -Directory -Recurse -Force |
+                $allFiles = @(Get-ChildItem -Path $workDir -File -Recurse -Force)
+                $allDirs  = @(Get-ChildItem -Path $workDir -Directory -Recurse -Force |
                     Sort-Object { $_.FullName.Length } -Descending)
                 $total   = $allFiles.Count
                 $deleted = 0
@@ -449,10 +449,10 @@ function Invoke-WinUtilISOCleanAndReset {
                     try { Remove-Item -Path $d.FullName -Force } catch { Write-WinUtilISOLog -Level "WARN" -Message "Could not delete $($d.FullName): $_" }
                 }
 
-                try { Remove-Item -Path $WorkDir -Recurse -Force } catch { Write-WinUtilISOLog -Level "WARN" -Message "Could not delete temp directory ${WorkDir}: $_" }
+                try { Remove-Item -Path $workDir -Recurse -Force } catch { Write-WinUtilISOLog -Level "WARN" -Message "Could not delete temp directory ${WorkDir}: $_" }
 
-                if (Test-Path $WorkDir) {
-                    Write-WinUtilISOLog -Level "WARN" -Message "Some items could not be deleted in $WorkDir"
+                if (Test-Path $workDir) {
+                    Write-WinUtilISOLog -Level "WARN" -Message "Some items could not be deleted in $workDir"
                 } else {
                     Write-WinUtilISOLog "Temp directory deleted successfully."
                 }
@@ -540,7 +540,7 @@ function Invoke-WinUtilISOExport {
         ContentsDir = $contentsDir
         OutputISO   = $dlg.FileName
     } -ScriptBlock {
-        param($ContentsDir, $OutputISO)
+        param($contentsDir, $outputISO)
 
         Invoke-WPFUIThread -ScriptBlock { $sync["WPFWin11ISOChooseISOButton"].IsEnabled = $false }
 
@@ -551,11 +551,11 @@ function Invoke-WinUtilISOExport {
                 throw "oscdimg.exe could not be found or installed automatically."
             }
 
-            Write-WinUtilISOLog "Exporting to ISO: $OutputISO"
+            Write-WinUtilISOLog "Exporting to ISO: $outputISO"
             Step-WinUtilJob -Status "Building ISO..." -Percent 10
 
-            $bootData    = "2#p0,e,b`"$ContentsDir\boot\etfsboot.com`"#pEF,e,b`"$ContentsDir\efi\microsoft\boot\efisys.bin`""
-            $oscdimgArgs = @("-m", "-o", "-u2", "-udfver102", "-bootdata:$bootData", "-l`"CTOS_MODIFIED`"", "`"$ContentsDir`"", "`"$OutputISO`"")
+            $bootData    = "2#p0,e,b`"$contentsDir\boot\etfsboot.com`"#pEF,e,b`"$contentsDir\efi\microsoft\boot\efisys.bin`""
+            $oscdimgArgs = @("-m", "-o", "-u2", "-udfver102", "-bootdata:$bootData", "-l`"CTOS_MODIFIED`"", "`"$contentsDir`"", "`"$outputISO`"")
 
             Write-WinUtilISOLog "Running oscdimg..."
 
@@ -604,8 +604,8 @@ function Invoke-WinUtilISOExport {
             }
 
             Step-WinUtilJob -Status "ISO exported" -Percent 100
-            Write-WinUtilISOLog "ISO exported successfully: $OutputISO"
-            Show-WinUtilMessage -Message "ISO exported successfully!`n`n$OutputISO" -Title "Export Complete" -Button "OK" -Icon "Info" | Out-Null
+            Write-WinUtilISOLog "ISO exported successfully: $outputISO"
+            Show-WinUtilMessage -Message "ISO exported successfully!`n`n$outputISO" -Title "Export Complete" -Button "OK" -Icon "Info" | Out-Null
         } catch {
             Write-WinUtilISOLog -Level "ERROR" -Message "ISO export failed: $_"
             Show-WinUtilMessage -Message "ISO export failed:`n`n$_" -Title "Error" -Button "OK" -Icon "Error" | Out-Null

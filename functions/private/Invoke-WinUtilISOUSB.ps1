@@ -84,7 +84,7 @@ function Invoke-WinUtilISOWriteUSB {
         DiskNumber  = $diskNum
         ContentsDir = $contentsDir
     } -ScriptBlock {
-        param($DiskNumber, $ContentsDir)
+        param($DiskNumber, $contentsDir)
 
         Invoke-WPFUIThread -ScriptBlock { $sync["WPFWin11ISOWriteUSBButton"].IsEnabled = $false }
 
@@ -186,7 +186,7 @@ function Invoke-WinUtilISOWriteUSB {
             if (-not (Test-Path $usbDrive)) { throw "Drive $usbDrive is not accessible after letter assignment." }
             Write-WinUtilISOLog "USB data partition: $usbDrive"
 
-            $contentSizeBytes = (Get-ChildItem -LiteralPath $ContentsDir -File -Recurse -Force | Measure-Object -Property Length -Sum).Sum
+            $contentSizeBytes = (Get-ChildItem -LiteralPath $contentsDir -File -Recurse -Force | Measure-Object -Property Length -Sum).Sum
             if (-not $contentSizeBytes) { $contentSizeBytes = 0 }
             $usbVolume = Get-Volume -DriveLetter $usbLetter
             $partitionCapacityBytes = [int64]$usbVolume.Size
@@ -209,7 +209,7 @@ function Invoke-WinUtilISOWriteUSB {
             Step-WinUtilJob -Status "Copying Windows 11 files to USB..." -Percent 45
 
             # Copy files; split install.wim if > 4 GB (FAT32 limit)
-            $installWim = Join-Path $ContentsDir "sources\install.wim"
+            $installWim = Join-Path $contentsDir "sources\install.wim"
             if (Test-Path $installWim) {
                 $wimSizeMB = [math]::Round((Get-Item $installWim).Length / 1MB)
                 if ($wimSizeMB -gt 3800) {
@@ -220,12 +220,12 @@ function Invoke-WinUtilISOWriteUSB {
                     Split-WindowsImage -ImagePath $installWim -SplitImagePath $splitDest -FileSize 3800 -CheckIntegrity
                     Write-WinUtilISOLog "install.wim split complete."
                     Write-WinUtilISOLog "Copying remaining files to USB..."
-                    Invoke-WinUtilRobocopy -Source $ContentsDir -Destination $usbDrive -Arguments @("/E","/XF","install.wim","/NFL","/NDL","/NJH","/NJS")
+                    Invoke-WinUtilRobocopy -Source $contentsDir -Destination $usbDrive -Arguments @("/E","/XF","install.wim","/NFL","/NDL","/NJH","/NJS")
                 } else {
-                    Invoke-WinUtilRobocopy -Source $ContentsDir -Destination $usbDrive -Arguments @("/E","/NFL","/NDL","/NJH","/NJS")
+                    Invoke-WinUtilRobocopy -Source $contentsDir -Destination $usbDrive -Arguments @("/E","/NFL","/NDL","/NJH","/NJS")
                 }
             } else {
-                Invoke-WinUtilRobocopy -Source $ContentsDir -Destination $usbDrive -Arguments @("/E","/NFL","/NDL","/NJH","/NJS")
+                Invoke-WinUtilRobocopy -Source $contentsDir -Destination $usbDrive -Arguments @("/E","/NFL","/NDL","/NJH","/NJS")
             }
 
             Step-WinUtilJob -Status "Finalising USB drive..." -Percent 90
