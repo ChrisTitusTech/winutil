@@ -913,13 +913,16 @@
             </Setter>
         </Style>
         <Style x:Key="RoundedProgressBarStyle" TargetType="ProgressBar">
+            <!-- The fill follows Foreground so a run that ended badly can say so; the job layer
+                 points it at the error or warning colour and back again -->
+            <Setter Property="Foreground" Value="{DynamicResource ProgressBarForegroundColor}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ProgressBar">
                         <Border CornerRadius="4" Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource MainForegroundColor}" BorderThickness="1">
                             <Grid ClipToBounds="True">
                                 <Border Name="PART_Track" CornerRadius="4" Background="Transparent"/>
-                                <Border Name="PART_Indicator" CornerRadius="4" Background="{DynamicResource ProgressBarForegroundColor}" HorizontalAlignment="Left"/>
+                                <Border Name="PART_Indicator" CornerRadius="4" Background="{TemplateBinding Foreground}" HorizontalAlignment="Left"/>
                             </Grid>
                         </Border>
                         <ControlTemplate.Triggers>

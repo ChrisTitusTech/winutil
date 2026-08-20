@@ -97,6 +97,17 @@ function Step-WinUtilJob {
             # Pulse in place at whatever progress has been reached. IsIndeterminate would make
             # WPF discard Value and fill the whole bar, which reads as finished.
             $sync.WPFTweaksProgressValue.Tag = if ($State -eq "Indeterminate") { "Pulse" } else { $null }
+
+            # The bar carries the outcome too. Only the taskbar item used to, so a run that
+            # finished with errors still left a full green bar behind. By resource reference
+            # rather than a fixed brush, so switching theme repaints it.
+            $barColor = switch ($State) {
+                "Error"  { "ProgressBarErrorColor" }
+                "Paused" { "ProgressBarWarningColor" }
+                default  { "ProgressBarForegroundColor" }
+            }
+            $sync.WPFTweaksProgressValue.SetResourceReference([Windows.Controls.Control]::ForegroundProperty, $barColor)
+
             Set-WinUtilTaskbaritem -state $State
         }
         if ($HasOverlay) {
