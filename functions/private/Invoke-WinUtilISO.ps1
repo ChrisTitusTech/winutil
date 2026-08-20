@@ -57,18 +57,36 @@ function Invoke-WinUtilISOMountAndVerify {
         param($isoPath)
 
         try {
-            Mount-DiskImage -ImagePath $isoPath
+            $rs = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
+            $rs.Open()
+            $ps = [Management.Automation.PowerShell]::Create().AddCommand('Mount-DiskImage').AddParameter('ImagePath', $isoPath)
+            $ps.Runspace = $rs
+            $asyncResult = $ps.BeginInvoke()
 
             # Add 30s timeout to prevent infinite hang on mount failure
             $mountTimeout = 30; $mountElapsed = 0
+            $mounted = $false
             do {
                 Start-Sleep -Milliseconds 500
                 $mountElapsed += 0.5
                 if ($mountElapsed -ge $mountTimeout) {
-                    Dismount-DiskImage -ImagePath $isoPath -ErrorAction SilentlyContinue
+                    if (-not $asyncResult.IsCompleted) { $ps.Stop() }
+                    $ps.Dispose()
+                    $rs.Dispose()
+                    
+                    Dismount-DiskImage -ImagePath $isoPath -ErrorAction Stop
                     throw "ISO mount timed out after $($mountTimeout)s - drive letter never appeared."
                 }
-            } until ((Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter)
+                
+                if ($asyncResult.IsCompleted) {
+                    $driveLetter = (Get-DiskImage -ImagePath $isoPath -ErrorAction SilentlyContinue | Get-Volume -ErrorAction SilentlyContinue).DriveLetter
+                    if ($driveLetter) { $mounted = $true }
+                }
+            } until ($mounted)
+            
+            $ps.EndInvoke($asyncResult) | Out-Null
+            $ps.Dispose()
+            $rs.Dispose()
 
             $driveLetter = (Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter + ":"
             Write-WinUtilISOLog "Mounted at drive $driveLetter"
@@ -135,6 +153,11 @@ function Invoke-WinUtilISOMountAndVerify {
         } catch {
             $errorMessage = $_
             Write-WinUtilISOLog "ERROR during mount/verify: $errorMessage"
+            try {
+                Dismount-DiskImage -ImagePath $isoPath -ErrorAction Stop
+            } catch {
+                Write-WinUtilISOLog "WARN: Failed to dismount ISO during error recovery."
+            }
             Invoke-WPFUIThread {
                 [System.Windows.MessageBox]::Show(
                     "An error occurred while mounting or verifying the ISO:`n`n$errorMessage",

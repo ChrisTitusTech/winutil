@@ -28,7 +28,7 @@ function Write-WinUtilLog {
                 $logPath = $sync.logPath
             } elseif ($sync.ContainsKey("transcriptPath") -and -not [string]::IsNullOrWhiteSpace($sync.transcriptPath)) {
                 $logPath = $sync.transcriptPath
-            } elseif ($sync.ContainsKey("winutildir")) {
+            } elseif ($sync.ContainsKey("winutildir") -and -not [string]::IsNullOrWhiteSpace($sync.winutildir)) {
                 $logPath = Join-Path (Join-Path $sync.winutildir "logs") "winutil_$(Get-Date -Format 'yyyy-MM-dd_HH-mm-ss').log"
                 $sync.logPath = $logPath
             }
@@ -59,7 +59,7 @@ function Write-WinUtilLog {
         }
 
         try { Add-Content -Path $logPath -Value $line -Encoding UTF8 -ErrorAction Stop }
-        catch [System.IO.IOException] { Write-Host $line }
+        catch [System.IO.IOException], [System.UnauthorizedAccessException], [System.Security.SecurityException] { Write-Host $line }
     } catch {
         Write-Warning "Unable to write WinUtil log entry: $($_.Exception.Message)"
     }

@@ -378,6 +378,10 @@ Describe "Find-WinUtilPackageManagerApps" {
         function global:winget { param([Parameter(ValueFromRemainingArguments=$true)]$Arguments) }
         function global:choco { param([Parameter(ValueFromRemainingArguments=$true)]$Arguments) }
     }
+    AfterAll {
+        Remove-Item Function:\global:winget -ErrorAction SilentlyContinue
+        Remove-Item Function:\global:choco -ErrorAction SilentlyContinue
+    }
 
     It "returns empty array when SearchString is empty" {
         $result = Find-WinUtilPackageManagerApps -SearchString ""
@@ -559,13 +563,14 @@ Describe "Find-AppsByNameOrDescription" {
 
     It "splits compound package IDs when deduplicating" {
         $compoundItem = New-WinUtilAppSearchItem -Tag "WPFInstallCompound"
+        $category = New-WinUtilAppCategory -Label "- Tools" -Items @($compoundItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+
         $sync.configs.applicationsHashtable["WPFInstallCompound"] = [pscustomobject]@{
             winget = "msstore:FirstApp; SecondApp; ThirdApp "
             choco = " FirstChoco ; SecondChoco"
             isDynamic = $false
         }
-        $category = New-WinUtilAppCategory -Label "- Tools" -Items @($compoundItem)
-        New-WinUtilAppSearchContext -Categories @($category)
 
         Mock Find-WinUtilPackageManagerApps {
             if ($ManagerPreference -eq "Winget") {
@@ -590,25 +595,26 @@ Describe "Find-AppsByNameOrDescription" {
 
     It "filters curated applications by active package manager availability" {
         $wingetOnlyItem = New-WinUtilAppSearchItem -Tag "WPFInstallWingetOnly"
+        $chocoOnlyItem = New-WinUtilAppSearchItem -Tag "WPFInstallChocoOnly"
+        $bothItem = New-WinUtilAppSearchItem -Tag "WPFInstallBoth"
+        $category = New-WinUtilAppCategory -Label "- Tools" -Items @($wingetOnlyItem, $chocoOnlyItem, $bothItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+
         $sync.configs.applicationsHashtable["WPFInstallWingetOnly"] = [pscustomobject]@{
             Content = "Winget Only App"
             winget = "App.WingetOnly"
             choco = "na"
         }
-        $chocoOnlyItem = New-WinUtilAppSearchItem -Tag "WPFInstallChocoOnly"
         $sync.configs.applicationsHashtable["WPFInstallChocoOnly"] = [pscustomobject]@{
             Content = "Choco Only App"
             winget = ""
             choco = "app-choco-only"
         }
-        $bothItem = New-WinUtilAppSearchItem -Tag "WPFInstallBoth"
         $sync.configs.applicationsHashtable["WPFInstallBoth"] = [pscustomobject]@{
             Content = "Both App"
             winget = "App.Both"
             choco = "app-both"
         }
-        $category = New-WinUtilAppCategory -Label "- Tools" -Items @($wingetOnlyItem, $chocoOnlyItem, $bothItem)
-        New-WinUtilAppSearchContext -Categories @($category)
 
         # Winget is default
         Find-AppsByNameOrDescription -SearchString ""

@@ -82,10 +82,6 @@ function Find-AppsByNameOrDescription {
         $activeCategories = @($Categories | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
         $hasSearch = -not [string]::IsNullOrWhiteSpace($SearchString)
         $hasCategories = $activeCategories.Count -gt 0
-
-        $activeCategories = @($Categories | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
-        $hasSearch = -not [string]::IsNullOrWhiteSpace($SearchString)
-        $hasCategories = $activeCategories.Count -gt 0
         $manager = if ($null -ne $sync.preferences -and $null -ne $sync.preferences.packagemanager) { $sync.preferences.packagemanager } else { "Winget" }
         $requestToken = if ($hasSearch -and -not $hasCategories) { [guid]::NewGuid().ToString() } else { $null }
         $sync.LatestPackageManagerRequestToken = $requestToken
@@ -163,8 +159,6 @@ function Find-AppsByNameOrDescription {
 
         # 2. Query package manager repositories for non-curated apps
         if (-not [string]::IsNullOrWhiteSpace($SearchString) -and -not $hasCategories) {
-            $manager = if ($null -ne $sync.preferences -and $null -ne $sync.preferences.packagemanager) { $sync.preferences.packagemanager } else { "Winget" }
-
             if ($null -eq $sync.PackageManagerSearchCache) {
                 $sync.PackageManagerSearchCache = [Hashtable]::Synchronized(@{})
                 $sync.PackageManagerSearchInFlight = [Hashtable]::Synchronized(@{})
@@ -260,7 +254,12 @@ function Find-AppsByNameOrDescription {
                         # Remove stale UI elements
                         $staleUI = @()
                         foreach ($c in $pmWrap.Children) {
-                            if ($c.Tag -like "WPFInstall_dynamic_*") { $staleUI += $c }
+                            if ($c.Tag -like "WPFInstall_dynamic_*") { 
+                                if ($null -ne $sync.selectedApps -and $sync.selectedApps.Contains($c.Tag)) {
+                                    continue
+                                }
+                                $staleUI += $c 
+                            }
                         }
                         foreach ($s in $staleUI) {
                             $pmWrap.Children.Remove($s)
