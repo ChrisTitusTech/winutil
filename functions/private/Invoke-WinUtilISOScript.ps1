@@ -98,14 +98,17 @@ function Invoke-WinUtilISOScript {
                 return $null
             }
 
-            $match = [regex]::Match($infText, '(?im)^\s*DriverVer\s*=\s*(?<date>\d{1,2}/\d{1,2}/\d{4})\s*,\s*(?<version>\d+(?:\.\d+){0,3})\s*(?:;.*)?$')
+            # The version component of DriverVer is optional per the INF spec (date-only entries
+            # are valid); treat a missing version as 0.0 so date-only entries still rank correctly
+            # instead of being discarded as unparseable.
+            $match = [regex]::Match($infText, '(?im)^\s*DriverVer\s*=\s*(?<date>\d{1,2}/\d{1,2}/\d{4})\s*(?:,\s*(?<version>\d+(?:\.\d+){0,3}))?\s*(?:;.*)?$')
             if (-not $match.Success) {
                 return $null
             }
 
             try {
                 $date = [datetime]::ParseExact($match.Groups['date'].Value, 'M/d/yyyy', [System.Globalization.CultureInfo]::InvariantCulture)
-                $versionText = $match.Groups['version'].Value
+                $versionText = if ($match.Groups['version'].Success) { $match.Groups['version'].Value } else { '0' }
                 if (($versionText.Split('.')).Count -lt 2) {
                     $versionText = "$versionText.0"
                 }
@@ -118,7 +121,7 @@ function Invoke-WinUtilISOScript {
             return [pscustomobject]@{
                 Date    = $date
                 Version = $version
-                Raw     = "$($match.Groups['date'].Value),$($match.Groups['version'].Value)"
+                Raw     = if ($match.Groups['version'].Success) { "$($match.Groups['date'].Value),$($match.Groups['version'].Value)" } else { $match.Groups['date'].Value }
             }
         }
 
@@ -136,14 +139,20 @@ function Invoke-WinUtilISOScript {
                 $isExtension = [bool]@($driverFolderGroup.Group | Where-Object { Test-WinUtilISODriverExtensionClass -InfFile $_ }).Count
 
                 if ($isExtension) {
-                    & $Logger "Excluding extension-class driver package '$driverFolder' from Add-Driver (Class=Extension is not a serviceable hardware driver)."
+                    # $null = discards $Logger's own output; this function's return value is captured
+                    # by the caller, and an emitting logger (e.g. this function's own default) would
+                    # otherwise leak into the surviving-folder list.
+                    $null = & $Logger "Excluding extension-class driver package '$driverFolder' from Add-Driver (Class=Extension is not a serviceable hardware driver)."
                     continue
                 }
 
                 # DISM names exported package folders <infname>_<arch>_<hash>; grouping on infname+arch
-                # (dropping the hash) is what lets us recognize two exports of the same driver.
+                # (dropping the hash) is what lets us recognize two exports of the same driver. When a
+                # folder doesn't match that pattern, fall back to the full path rather than the leaf name:
+                # two unrelated folders at different depths (e.g. group_a\duplicate and group_b\duplicate)
+                # can share a leaf name, and the full path is guaranteed unique per group.
                 $leafName = Split-Path -Path $driverFolder -Leaf
-                $dedupKey = $leafName
+                $dedupKey = $driverFolder
                 $nameMatch = [regex]::Match($leafName, '(?i)^(?<infname>.+)_(?<arch>x86|amd64|arm64|arm|wow)_[0-9a-f]{16}$')
                 if ($nameMatch.Success) {
                     $dedupKey = "$($nameMatch.Groups['infname'].Value.ToLowerInvariant())_$($nameMatch.Groups['arch'].Value.ToLowerInvariant())"
@@ -170,7 +179,7 @@ function Invoke-WinUtilISOScript {
 
                 $withVersion = @($ranked | Where-Object { $_.Version })
                 if ($withVersion.Count -eq 0) {
-                    & $Logger "Warning: could not determine DriverVer for any duplicate of '$dedupKey'; keeping all $($ranked.Count) package(s) rather than guessing."
+                    $null = & $Logger "Warning: could not determine DriverVer for any duplicate of '$dedupKey'; keeping all $($ranked.Count) package(s) rather than guessing."
                     foreach ($candidate in $ranked) {
                         $survivingFolders.Add($candidate.Folder)
                     }
@@ -185,7 +194,7 @@ function Invoke-WinUtilISOScript {
                         continue
                     }
                     $droppedVersion = if ($candidate.Version) { $candidate.Version.Raw } else { 'unknown' }
-                    & $Logger "Excluding stale duplicate driver package '$($candidate.Folder)' (DriverVer $droppedVersion) superseded by '$($kept.Folder)' (DriverVer $($kept.Version.Raw))."
+                    $null = & $Logger "Excluding stale duplicate driver package '$($candidate.Folder)' (DriverVer $droppedVersion) superseded by '$($kept.Folder)' (DriverVer $($kept.Version.Raw))."
                 }
             }
 
@@ -309,37 +318,40 @@ function Invoke-WinUtilISOScript {
 
             $stagedDriverFolders = @(Select-WinUtilISOStagedDriverPackages -DriverFolderGroups $driverFolders -Logger $Logger)
             if ($stagedDriverFolders.Count -eq 0) {
-                throw 'All exported driver packages were excluded (Extension class or stale duplicates); nothing left to inject.'
-            }
-            $excludedFolders = @($driverFolders.Name | Where-Object { $_ -notin $stagedDriverFolders })
-            foreach ($excludedFolder in $excludedFolders) {
-                try {
-                    Remove-Item -LiteralPath $excludedFolder -Recurse -Force -ErrorAction Stop
-                } catch {
-                    throw "Failed to remove excluded driver package '$excludedFolder' before injection: $_"
+                # Nothing safe to inject (e.g. every exported package was an Extension-class add-on)
+                # isn't a failure: leave install.wim untouched and continue building the ISO.
+                & $Logger 'No drivers found to inject: every exported package was excluded (Extension class or stale duplicate). Skipping driver injection; install.wim is unchanged.'
+            } else {
+                $excludedFolders = @($driverFolders.Name | Where-Object { $_ -notin $stagedDriverFolders })
+                foreach ($excludedFolder in $excludedFolders) {
+                    try {
+                        Remove-Item -LiteralPath $excludedFolder -Recurse -Force -ErrorAction Stop
+                    } catch {
+                        throw "Failed to remove excluded driver package '$excludedFolder' before injection: $_"
+                    }
                 }
+
+                & $Logger "Exported $($stagedDriverFolders.Count) of $($driverFolders.Count) driver packages ($storageCount staged for WinPE, $($excludedFolders.Count) excluded)."
+                $metadataBefore = Get-WinUtilISOWimMetadata -ImagePath $InstallImagePath -Index $InstallImageIndex
+                Assert-WinUtilISOWimMetadata -Before $metadataBefore
+
+                Set-ItemProperty -LiteralPath $InstallImagePath -Name IsReadOnly -Value $false
+                New-Item -Path $mountDir -ItemType Directory -Force | Out-Null
+                & $Logger "Mounting install.wim index $InstallImageIndex once for driver injection..."
+                Invoke-WinUtilISODism -Arguments @('/English', '/Mount-Image', "/ImageFile:$InstallImagePath", "/Index:$InstallImageIndex", "/MountDir:$mountDir") -Operation 'mount' | Out-Null
+                $imageMounted = $true
+
+                & $Logger "Adding all exported drivers to the selected Windows image in one DISM operation..."
+                Invoke-WinUtilISODism -Arguments @('/English', "/Image:$mountDir", '/Add-Driver', "/Driver:$driverExportRoot", '/Recurse') -Operation 'add-driver' | Out-Null
+
+                & $Logger 'Committing the driver-only install.wim change...'
+                Invoke-WinUtilISODism -Arguments @('/English', '/Unmount-Image', "/MountDir:$mountDir", '/Commit') -Operation 'commit' | Out-Null
+                $imageMounted = $false
+
+                $metadataAfter = Get-WinUtilISOWimMetadata -ImagePath $InstallImagePath -Index $InstallImageIndex
+                Assert-WinUtilISOWimMetadata -Before $metadataBefore -After $metadataAfter
+                & $Logger 'Driver injection complete; install.wim metadata validation passed.'
             }
-
-            & $Logger "Exported $($stagedDriverFolders.Count) of $($driverFolders.Count) driver packages ($storageCount staged for WinPE, $($excludedFolders.Count) excluded)."
-            $metadataBefore = Get-WinUtilISOWimMetadata -ImagePath $InstallImagePath -Index $InstallImageIndex
-            Assert-WinUtilISOWimMetadata -Before $metadataBefore
-
-            Set-ItemProperty -LiteralPath $InstallImagePath -Name IsReadOnly -Value $false
-            New-Item -Path $mountDir -ItemType Directory -Force | Out-Null
-            & $Logger "Mounting install.wim index $InstallImageIndex once for driver injection..."
-            Invoke-WinUtilISODism -Arguments @('/English', '/Mount-Image', "/ImageFile:$InstallImagePath", "/Index:$InstallImageIndex", "/MountDir:$mountDir") -Operation 'mount' | Out-Null
-            $imageMounted = $true
-
-            & $Logger "Adding all exported drivers to the selected Windows image in one DISM operation..."
-            Invoke-WinUtilISODism -Arguments @('/English', "/Image:$mountDir", '/Add-Driver', "/Driver:$driverExportRoot", '/Recurse') -Operation 'add-driver' | Out-Null
-
-            & $Logger 'Committing the driver-only install.wim change...'
-            Invoke-WinUtilISODism -Arguments @('/English', '/Unmount-Image', "/MountDir:$mountDir", '/Commit') -Operation 'commit' | Out-Null
-            $imageMounted = $false
-
-            $metadataAfter = Get-WinUtilISOWimMetadata -ImagePath $InstallImagePath -Index $InstallImageIndex
-            Assert-WinUtilISOWimMetadata -Before $metadataBefore -After $metadataAfter
-            & $Logger 'Driver injection complete; install.wim metadata validation passed.'
         } finally {
             if ($imageMounted -or (Test-WinUtilISOMountedImage -Path $mountDir)) {
                 try {
