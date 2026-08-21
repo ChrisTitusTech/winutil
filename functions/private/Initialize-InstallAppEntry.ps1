@@ -19,10 +19,11 @@ function Initialize-InstallAppEntry {
         $border = New-Object Windows.Controls.Border
         $border.Style = $sync.Form.Resources.AppEntryBorderStyle
         $border.Tag = $appKey
-        $border.ToolTip = $app.description
+        $border.ToolTip = Get-WinUtilEntryToolTip -Description $app.description -Key $appKey
         $border.Add_MouseLeftButtonUp({
-            $childCheckbox = ($this.Child | Where-Object {$_.Template.TargetType -eq [System.Windows.Controls.Checkbox]})[0]
-            $childCheckBox.isChecked = -not $childCheckbox.IsChecked
+            # Resolve through $sync because the border's child is a layout Grid for FOSS entries
+            $childCheckbox = $sync.$($this.Tag)
+            $childCheckbox.IsChecked = -not $childCheckbox.IsChecked
         })
         $border.Add_MouseEnter({
             if (($sync.$($this.Tag).IsChecked) -eq $false) {
@@ -48,15 +49,16 @@ function Initialize-InstallAppEntry {
         # Store the original appKey in Tag
         $checkBox.Tag = $appKey
         $checkbox.Style = $sync.Form.Resources.AppEntryCheckboxStyle
+        # The checkbox sits inside the entry layout Grid, so the border is one level further up
         $checkbox.Add_Checked({
-            Invoke-WPFSelectedCheckboxesUpdate -type "Add" -checkboxName $this.Parent.Tag
-            $borderElement = $this.Parent
+            Invoke-WPFSelectedCheckboxesUpdate -type "Add" -checkboxName $this.Tag
+            $borderElement = $this.Parent.Parent
             $borderElement.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallSelectedColor")
         })
 
         $checkbox.Add_Unchecked({
-            Invoke-WPFSelectedCheckboxesUpdate -type "Remove" -checkboxName $this.Parent.Tag
-            $borderElement = $this.Parent
+            Invoke-WPFSelectedCheckboxesUpdate -type "Remove" -checkboxName $this.Tag
+            $borderElement = $this.Parent.Parent
             $borderElement.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallUnselectedColor")
         })
 
@@ -88,15 +90,6 @@ function Initialize-InstallAppEntry {
         $appName = New-Object Windows.Controls.TextBlock
         $appName.Style = $sync.Form.Resources.AppEntryNameStyle
         $appName.Text = $app.content
-
-        # Add FOSS label after the name if FOSS
-        if ($app.foss -eq $true) {
-            $fossRun = [System.Windows.Documents.Run]::new(" $([char]0x25CF)")
-            $fossRun.Foreground = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(110, 255, 114))
-            $fossRun.FontSize = 11.5
-
-            [void]$appName.Inlines.Add($fossRun)
-        }
         [void]$contentPanel.Children.Add($appName)
         $checkBox.Content = $contentPanel
 
@@ -104,7 +97,20 @@ function Initialize-InstallAppEntry {
         $checkBox.SetValue([Windows.Automation.AutomationProperties]::NameProperty, $app.content)
         $border.SetValue([Windows.Automation.AutomationProperties]::NameProperty, $app.content)
 
-        $border.Child = $checkBox
+        # Keep the same layout for every entry so the checkbox handlers can reach the border
+        $entryLayout = New-Object Windows.Controls.Grid
+        [void]$entryLayout.Children.Add($checkBox)
+
+        # Mark FOSS apps with a corner badge, bled into the border padding so it sits on the edge
+        if ($app.foss -eq $true) {
+            $fossBadge = New-WinUtilFossBadge
+            $fossBadge.HorizontalAlignment = "Right"
+            $fossBadge.VerticalAlignment = "Top"
+            $fossBadge.Margin = New-Object Windows.Thickness(0, -4, -6, 0)
+
+            [void]$entryLayout.Children.Add($fossBadge)
+        }
+        $border.Child = $entryLayout
         if ($sync.selectedApps -contains $appKey) {
             $checkBox.IsChecked = $true
         }

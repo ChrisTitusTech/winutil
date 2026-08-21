@@ -8,11 +8,10 @@ BeforeAll {
     function Invoke-WPFUIElements {
         param($configVariable, [string]$targetGridName, [int]$columncount)
     }
-    function Initialize-WPFUI {
-        param([string]$TargetGridName)
-    }
     function Invoke-WinUtilISOCheckExistingWork { }
+    function Reset-WPFCheckBoxes { param([bool]$doToggles) }
 
+    . (Join-Path $script:repoRoot "functions\public\Initialize-WPFUI.ps1")
     . (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilTabContent.ps1")
 }
 
@@ -29,6 +28,7 @@ Describe "Initialize-WinUtilTabContent" {
 
         Mock Invoke-WPFUIElements { }
         Mock Initialize-WPFUI { }
+        Mock Reset-WPFCheckBoxes { }
     }
 
     AfterEach {
@@ -39,9 +39,7 @@ Describe "Initialize-WinUtilTabContent" {
         Initialize-WinUtilTabContent -TabName "Install"
         Initialize-WinUtilTabContent -TabName "Install"
 
-        Should -Invoke -CommandName Invoke-WPFUIElements -Times 1 -Exactly -ParameterFilter {
-            $targetGridName -eq "appscategory" -and $columncount -eq 1
-        }
+
         Should -Invoke -CommandName Initialize-WPFUI -Times 1 -Exactly -ParameterFilter {
             $TargetGridName -eq "appscategory"
         }
@@ -49,6 +47,21 @@ Describe "Initialize-WinUtilTabContent" {
             $TargetGridName -eq "appspanel"
         }
         $script:sync.InitializedTabs["Install"] | Should -BeTrue
+    }
+
+    It "re-applies checkbox selections after building a tab's controls" {
+        Initialize-WinUtilTabContent -TabName "Tweaks"
+
+        Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly -ParameterFilter {
+            $doToggles -eq $true
+        }
+    }
+
+    It "does not re-apply checkbox selections on a tab that's already built" {
+        Initialize-WinUtilTabContent -TabName "Tweaks"
+        Initialize-WinUtilTabContent -TabName "Tweaks"
+
+        Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly
     }
 
     It "initializes deferred config-backed tabs once" {
@@ -88,6 +101,32 @@ Describe "Initialize-WinUtilTabContent" {
     }
 }
 
+Describe "Initialize-WPFUI" {
+    BeforeEach {
+        $script:sync = [Hashtable]::Synchronized(@{
+            configs = @{
+                appnavigation = [pscustomobject]@{}
+            }
+        })
+
+        Mock Invoke-WPFUIElements { throw "App category rendered" }
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+    }
+
+    It "renders app navigation through the app category target" {
+        { Initialize-WPFUI -TargetGridName "appscategory" } | Should -Throw "App category rendered"
+
+        Should -Invoke -CommandName Invoke-WPFUIElements -Times 1 -Exactly -ParameterFilter {
+            $configVariable -eq $script:sync.configs.appnavigation -and
+            $targetGridName -eq "appscategory" -and
+            $columncount -eq 1
+        }
+    }
+}
+
 Describe "Startup lazy tab wiring" {
     It "builds only install tab content before first paint" {
         $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
@@ -120,5 +159,12 @@ Describe "Startup lazy tab wiring" {
 
         $rendererScript | Should -Match '(?s)if \(\$entryInfo\.Link\).*\$textBlock\.Add_MouseUp\(\{.*Start-Process \$Sender\.ToolTip -ErrorAction Stop'
         $mainScript | Should -Not -Match '\.Name\.EndsWith\("Link"\)'
+    }
+
+    It "checks for an existing outer ScrollViewer before nesting an inner ScrollViewer" {
+        $rendererScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIElements.ps1") -Raw
+
+        $rendererScript | Should -Match '\$hasOuterScrollViewer'
+        $rendererScript | Should -Match 'if\s*\(\$hasOuterScrollViewer\)'
     }
 }

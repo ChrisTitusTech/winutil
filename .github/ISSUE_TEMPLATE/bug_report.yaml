@@ -1,5 +1,6 @@
 name: "Bug report"
 description: "Report a bug to help us identify and fix issues in the project."
+title: "[Bug Report] - <your summary here>"
 labels: ["bug"]
 
 body:

@@ -169,6 +169,7 @@ Describe "Invoke-WinUtilTweaks" {
             $Name -eq "DiagTrack" -and $StartupType -eq "Disabled"
         }
     }
+
 }
 
 Describe "Invoke-WPFtweaksbutton" {
@@ -180,9 +181,14 @@ Describe "Invoke-WPFtweaksbutton" {
                 text = "Cloudflare"
             }
         })
+        $script:capturedTweaksScriptBlock = $null
 
-        Mock Invoke-WPFRunspace { [pscustomobject]@{ MockHandle = $true } }
+        Mock Invoke-WPFRunspace {
+            $script:capturedTweaksScriptBlock = $ScriptBlock
+            [pscustomobject]@{ MockHandle = $true }
+        }
         Mock Invoke-WinUtilTweaks { }
+        Mock Set-WinUtilTweaksProgressIndicator { }
         Mock Invoke-WPFUIThread { }
         Mock Write-WinUtilLog { }
         Mock Write-Host { }
@@ -190,6 +196,7 @@ Describe "Invoke-WPFtweaksbutton" {
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name capturedTweaksScriptBlock -Scope Script -ErrorAction SilentlyContinue
     }
 
     It "passes selected tweaks, DNS provider, and progress counters to the tweak runspace" {
@@ -234,5 +241,27 @@ Describe "Invoke-WPFtweaksbutton" {
                 $ParameterList[3][0] -eq "totalSteps" -and
                 $ParameterList[3][1] -eq 2
         }
+    }
+
+    It "stops the tweak workflow when the DNS change fails" {
+        $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
+        Mock Set-WinUtilDNS { return $false }
+
+        Invoke-WPFtweaksbutton
+        & $script:capturedTweaksScriptBlock -tweaks @("WPFTweaksTelemetry") -dnsProvider "Mullvad" -completedSteps 0 -totalSteps 1
+
+        Should -Invoke -CommandName Invoke-WinUtilTweaks -Times 0 -Exactly
+        Should -Invoke -CommandName Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
+            $Visible -eq $true -and $Label -eq "DNS change failed" -and $Percent -eq 100
+        }
+        Should -Invoke -CommandName Invoke-WPFUIThread -Times 1 -Exactly -ParameterFilter {
+            $ScriptBlock.ToString() -like '*Set-WinUtilTaskbaritem -state "Error" -overlay "warning"*'
+        }
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "ERROR" -and
+                $Component -eq "Tweaks" -and
+                $Message -eq "Tweaks workflow stopped because the DNS change failed."
+        }
+        $script:sync.ProcessRunning | Should -BeFalse
     }
 }
