@@ -35,6 +35,15 @@
         "winget": "Brave.Brave",
         "foss": true
     },
+    "bulkrenameutility": {
+        "category": "TamPhan",
+        "choco": "bulkrenameutility",
+        "content": "Bulk Rename Utility",
+        "description": "Bulk Rename Utility is a powerful tool for renaming multiple files at once, supporting various renaming methods and patterns.",
+        "link": "https://www.bulkrenameutility.com/",
+        "winget": "TGRMNSoftware.BulkRenameUtility",
+        "foss": false
+    },
     "ccleaner": {
         "category": "TamPhan",
         "choco": "ccleaner.portable",
