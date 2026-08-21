@@ -4,9 +4,9 @@ function Invoke-WinUtilCloseRequest {
             Asks what to do about work that is still running when the window is closed
 
         .DESCRIPTION
-            An install or a set of tweaks that is halfway through is not something to end without
-            asking. Either it finishes without the window, reporting to the console until it is
-            done and then exiting, or it is stopped and everything closes now.
+            A half finished install or tweak run is not ended without asking. Either it finishes
+            without the window, reporting to the console and then exiting, or it is stopped and
+            everything closes now.
 
         .PARAMETER RunningJob
             The name of the job in flight, so the question names what is at stake.
@@ -16,8 +16,8 @@ function Invoke-WinUtilCloseRequest {
         [string]$RunningJob
     )
 
-    # The question carries the meaning rather than a list naming the buttons: Windows labels
-    # them in its own language, so "Yes" in the text does not match a button reading "Ja".
+    # The question carries the meaning rather than naming buttons: Windows labels them in its own
+    # language, so "Yes" in the text would not match a button reading "Ja".
     $answer = Show-WinUtilMessage -Button "YesNoCancel" -Icon "Warning" -Title "$RunningJob is still running" -Message @"
 $RunningJob has not finished yet.
 
@@ -89,12 +89,11 @@ function Wait-WinUtilRemainingWork {
             Waits for work that outlived the window, reporting to the console
 
         .DESCRIPTION
-            Runs on the main thread once the interface has gone. The job itself is still on the
-            worker pool and keeps logging, so there is nothing to do here but wait for it and
-            keep the wait visible.
+            Runs on the main thread once the interface has gone. The job is still on the worker
+            pool and keeps logging, so this only waits and keeps the wait visible.
 
         .PARAMETER TimeoutMinutes
-            An upper bound, so a worker that never returns cannot keep the process alive for good.
+            Upper bound, so a worker that never returns cannot keep the process alive.
     #>
     param(
         # Double rather than int: an int silently truncates a fractional value to zero, which

@@ -5,25 +5,17 @@ function Start-WinUtilJob {
             error handling applied around it
 
         .DESCRIPTION
-            Every long running WinUtil action goes through here instead of repeating the same
-            ceremony. The job layer owns:
-
-              - refusing to start while another job is running, with one consistent message
-              - the busy flag other code checks
-              - the progress bar and taskbar item for the whole lifetime of the job
-              - the boxed start and finish banner in the console
-              - a start, finish and failure line in the log under the job's own component
-              - catching anything the body throws, so a failure cannot leave the UI stuck busy
-              - restoring the interface in a finally block whatever happens
-
-            The body only has to do the work and call Step-WinUtilJob. It must not
-            print its own banner or set the busy flag.
+            One job at a time. Owns the busy flag, the progress bar, the taskbar item, the
+            console banner and the log lines for the job's lifetime. The body does the work and
+            calls Step-WinUtilJob; it must not print a banner or set the busy flag itself. A body
+            that throws is caught and the interface restored in a finally, so a failure cannot
+            leave the UI stuck busy.
 
         .PARAMETER Name
-            Short job name. Used as the log component and in progress text, for example Install.
+            Log component and progress text, for example Install.
 
         .PARAMETER ScriptBlock
-            The work to run. Receives the entries of Parameters as named parameters.
+            The work. Receives Parameters as named parameters.
 
         .PARAMETER Parameters
             Values passed to the body by name.
@@ -59,17 +51,17 @@ function Start-WinUtilJob {
         return $null
     }
 
-    # A job body that starts another job runs it inline: the outer job already owns the slot and
-    # the reporting, so claiming again would refuse the inner call and skip its work silently.
-    # Feature installs arrive twice, from feature.json and from Invoke-WPFFeatureInstall.
+    # A nested job runs inline: the outer already owns the slot and the reporting, so claiming
+    # again would refuse it and skip its work. Feature installs arrive twice, from feature.json
+    # and from Invoke-WPFFeatureInstall.
     if ($global:WinUtilIsJobWorker) {
         & $ScriptBlock @Parameters
         return $null
     }
 
-    # Locked because a headless or scheduled caller is not serialised by the dispatcher, and a
-    # test-then-assign there lets two jobs both believe they own the slot. The token identifies
-    # the run, so a worker still unwinding cannot release a slot the next job now holds.
+    # Locked: a headless or scheduled caller is not serialised by the dispatcher, where
+    # test-then-assign lets two jobs both own the slot. The token identifies the run, so a worker
+    # still unwinding cannot release a slot the next job holds.
     $jobToken = [guid]::NewGuid().ToString()
     $blockedBy = $null
     [System.Threading.Monitor]::Enter($sync.SyncRoot)
@@ -100,10 +92,9 @@ function Start-WinUtilJob {
         }
     }
 
-    # The body is rebuilt inside the runspace from its text. A scriptblock carries the session
-    # state it was defined in, and recreating it there keeps it bound to the worker instead.
-    # The handle is of no use to the caller, and printing it puts an IAsyncResult table on the
-    # console every time a button is pressed
+    # Rebuilt from its text inside the runspace: a scriptblock carries the session state it was
+    # defined in, and recreating it there binds it to the worker. The handle is discarded,
+    # printing it puts an IAsyncResult table on the console on every button press.
     $null = Invoke-WPFRunspace -ParameterList @(
         ("JobName", $Name),
         ("JobLabel", $label),
@@ -123,9 +114,8 @@ function Start-WinUtilJob {
         try {
             $body = [scriptblock]::Create($JobBody)
 
-            # A worker's warning and error streams are buffered on a PowerShell object nobody
-            # reads, so Write-Warning never reaches the log and Write-Error reaches nothing at
-            # all. Merging them into the output stream is what puts them in front of a reader.
+            # A worker's warning and error streams buffer on a PowerShell object nobody reads.
+            # Merging them into the output stream is what gets them to the log.
             & $body @JobParameters 2>&1 3>&1 | ForEach-Object {
                 if ($_ -is [System.Management.Automation.WarningRecord]) {
                     Write-WinUtilLog -Level "WARN" -Component $JobName -Message $_.Message
@@ -159,8 +149,8 @@ function Start-WinUtilJob {
 
             Write-WinUtilTimingSummary -Scope $JobName -TotalMilliseconds $jobClock.ElapsedMilliseconds
 
-            # Whether this run still owns the slot. A worker the watchdog cut off can reach here
-            # long after the next job has claimed it, and everything below releases shared state.
+            # A worker the watchdog cut off can reach here after the next job claimed the slot,
+            # and everything below releases shared state.
             $stillOwns = $false
             [System.Threading.Monitor]::Enter($sync.SyncRoot)
             try {
@@ -176,8 +166,7 @@ function Start-WinUtilJob {
                     }
                 }
 
-                # Last thing done, because the main thread may be waiting on exactly this to know
-                # the run is over and the process can exit
+                # Last, because the main thread may be waiting on it to know the run is over
                 $null = Clear-WinUtilActiveJob -Token $JobToken
             } else {
                 Write-WinUtilLog -Level "WARN" -Component $JobName -Message "$JobName unwound after another job had started; leaving its state alone."
@@ -192,11 +181,10 @@ function Clear-WinUtilActiveJob {
             Releases the active job slot, clearing its name and its token together
 
         .DESCRIPTION
-            Clearing the name alone leaves the token set, where it can still match a later run
-            and keep the job layer from accepting work. Every release goes through here.
+            A token left set still matches a later run and blocks new work.
 
         .PARAMETER Token
-            Release only if this run still owns the slot. Omit to release whatever holds it.
+            Release only if this run still owns the slot. Omit to release unconditionally.
     #>
     param([string]$Token)
 

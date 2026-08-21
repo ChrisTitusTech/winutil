@@ -4,8 +4,8 @@ function Register-WinUtilInputWatch {
             Records when the user last did something, so background work can step aside
 
         .DESCRIPTION
-            Preview events are used because they run before the control handles the input, so
-            the timestamp is set even for a click that a control goes on to spend time on.
+            Preview events run before the control handles the input, so the timestamp is set
+            even for a click the control then spends time on.
     #>
 
     $sync.LastInputAt = [datetime]::MinValue
@@ -22,17 +22,13 @@ function Test-WinUtilDeferBackgroundWork {
             Whether speculative work should wait rather than run now
 
         .DESCRIPTION
-            Background priority puts work behind input in the queue, but it does not make a piece
-            of work interruptible: whatever is running has to finish before a click is looked at.
-            A steady stream of short pieces therefore never shows up as one long stall while
-            still leaving everything the user does waiting behind the piece in flight.
-
-            Two reasons to wait. The user is doing something, in which case the thread is better
-            spent on them; or what is being built is not on screen, in which case it is not worth
-            competing with what is.
+            Background priority queues work behind input but does not make it interruptible:
+            whatever is running must finish before a click is looked at, which is why the pieces
+            are kept short. Waits while the user is active, or while the work draws into a tab
+            that is not on screen.
 
         .PARAMETER RequiresTab
-            The tab this work draws into. Work for a tab the user is not looking at waits.
+            The tab this work draws into. Work for a hidden tab waits.
     #>
     param(
         [string]$RequiresTab
@@ -59,15 +55,15 @@ function Invoke-WinUtilWhenIdle {
             Runs a callback once the interface is not being used
 
         .DESCRIPTION
-            A one shot timer rather than a dispatcher post, because a post at background priority
-            would run straight away and the point is to leave a gap.
+            A one shot timer, not a dispatcher post: a post at background priority runs straight
+            away and the point is to leave a gap.
 
         .PARAMETER Callback
             What to run once the wait is over.
 
         .PARAMETER Argument
             Passed to the callback. Carried on the timer rather than captured, so the callback
-            resolves its commands where it was written instead of in a copied scope.
+            resolves commands where it was written, not in a copied scope.
 
         .PARAMETER DelayMilliseconds
             How long to wait before looking again.

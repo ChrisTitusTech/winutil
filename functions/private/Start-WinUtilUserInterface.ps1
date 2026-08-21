@@ -93,8 +93,8 @@ function Start-WinUtilUserInterface {
     }
 
     # Built here so it carries this runspace's session state: posted work then runs as ordinary
-    # interface code rather than a cross-runspace nested pipeline, which is far slower.
-    # Invoke-WPFUIThread is the caller-facing side of this.
+    # interface code, not a much slower cross-runspace nested pipeline. Invoke-WPFUIThread is the
+    # caller-facing side.
     $sync.UIDispatchDelegate = [System.Func[object, object]]{
         param($Work)
 

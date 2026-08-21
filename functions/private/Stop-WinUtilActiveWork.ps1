@@ -18,10 +18,9 @@ function Register-WinUtilActiveShell {
             Records a PowerShell instance that is running on the worker pool
 
         .DESCRIPTION
-            Closing the pool while an instance is still queued leaves that instance to start on a
-            runspace that is already closing. It throws there, on a thread pool thread, where
-            nothing is catching, and the process is taken down with it. Knowing what is in flight
-            is what makes it possible to stop them first.
+            An instance still queued when the pool closes starts on a closing runspace, throws on
+            a thread pool thread where nothing catches, and takes the process down with it.
+            Tracking what is in flight is what lets those be stopped first.
     #>
     param(
         [Parameter(Mandatory)]
@@ -56,8 +55,8 @@ function Get-WinUtilActiveShell {
             A snapshot of the tracked instances, copied under the collection's own lock
 
         .DESCRIPTION
-            Enumerating a synchronized ArrayList is not itself synchronized, so a concurrent Add
-            or Remove throws mid-loop. Copying under SyncRoot is what the type documents.
+            Enumerating a synchronized ArrayList is not itself synchronized; a concurrent Add or
+            Remove throws mid-loop. SyncRoot is the documented fix.
     #>
 
     if ($null -eq $sync.ActiveShells) {
@@ -78,12 +77,12 @@ function Stop-WinUtilActiveWork {
             Asks everything running on the worker pool to stop, and waits for it
 
         .DESCRIPTION
-            Stop is a request rather than a kill: a command already inside an installer keeps
-            going until that command returns. The wait is bounded so a worker that never comes
-            back cannot keep the window open for ever.
+            Stop is a request, not a kill: a command already inside an installer runs until it
+            returns. The wait is bounded so a worker that never returns cannot hold the window
+            open.
 
         .PARAMETER TimeoutSeconds
-            How long to wait for the work to end before giving up on it.
+            How long to wait before giving up on it.
     #>
     param(
         [int]$TimeoutSeconds = 15,

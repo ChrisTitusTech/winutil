@@ -5,15 +5,12 @@ function Start-WinUtilAssetRendering {
 
         .DESCRIPTION
             Rasterising the overlays costs the interface thread time it could spend getting the
-            window up. The bitmaps are frozen before they are published, which is what makes it
-            safe to build them anywhere.
+            window up. The bitmaps are frozen before publication, so they can be built anywhere.
 
-            Started early so the render overlaps the rest of the interface build. If the render
-            has not finished by the time an overlay is asked for, Set-WinUtilTaskbaritem falls
-            back to rendering it in place, so nothing waits on this.
+            Nothing waits on this: if the render has not finished when an overlay is asked for,
+            Set-WinUtilTaskbaritem renders it in place.
 
-            The runspace needs STA because RenderTargetBitmap does; the shared worker pool is
-            not, which is why this does not use it.
+            Needs STA for RenderTargetBitmap, which the shared worker pool is not.
     #>
 
     $runspace = [runspacefactory]::CreateRunspace((New-WinUtilSessionState))
@@ -31,8 +28,8 @@ function Start-WinUtilAssetRendering {
 
     $handle = $shell.BeginInvoke()
 
-    # One STA runspace for the lifetime of the app: disposing it from the cleanup callback would
-    # mean reshaping the compiled helper type, which is only created once per session.
+    # One STA runspace for the app's lifetime: disposing it from the cleanup callback would mean
+    # reshaping the compiled helper type, which is built once per session.
     Register-WinUtilRunspaceCleanup -PowerShell $shell -Handle $handle
 
     return $handle

@@ -4,12 +4,9 @@ function Measure-WinUtilStep {
             Times one step of a pipeline and records it for the timing summary
 
         .DESCRIPTION
-            Wrap any step whose cost is worth knowing. The step's own output passes through
-            untouched, so this can be dropped around an existing expression without changing
-            what the caller receives.
-
-            Every recorded step reaches the session log as a "timing:" line and is kept in
-            $sync.StepTimings so the summary can rank them afterwards.
+            Output passes through untouched, so this can wrap an existing expression without
+            changing what the caller receives. Each step is logged as a "timing:" line and kept
+            in $sync.StepTimings for the summary to rank.
 
         .PARAMETER Name
             What the step is, as it should read in the log.
@@ -60,8 +57,8 @@ function Write-WinUtilTimingSummary {
             How many of the slowest steps to list.
 
         .PARAMETER TotalMilliseconds
-            The measured wall-clock total. Without it the summary adds the steps up, which
-            misses whatever happened between them.
+            Wall clock total. Without it the summary sums the steps, missing whatever happened
+            between them.
     #>
     param(
         [Parameter(Mandatory)]

@@ -4,18 +4,17 @@ function Start-WinUtilBackgroundQueue {
             Drains a queue of interface work one item at a time, between the things the user does
 
         .DESCRIPTION
-            Anything that has to be built on the interface thread but that nobody is waiting for
-            goes through here: unopened tabs, app list entries. Doing it all in one pass holds the
-            thread for as long as the whole list takes, so instead one item is done per queued
-            operation and the interface gets a chance to answer input between them.
+            For work that must run on the interface thread but that nobody waits on: unopened
+            tabs, app list entries. One item per queued operation, so input is answered between
+            them instead of after the whole list.
 
-            The step is re-posted rather than looped, because only returning to the dispatcher
-            lets it service input. It is posted as a compiled action rather than through
-            Invoke-WPFUIThread, whose body crosses runspaces as text and would be recompiled on
-            every one of the hundreds of posts a full app list costs.
+            Re-posted rather than looped: only returning to the dispatcher lets it service input.
+            Posted as a compiled action rather than through Invoke-WPFUIThread, whose body
+            crosses runspaces as text and would recompile on each of the hundreds of posts a full
+            app list costs.
 
         .PARAMETER Name
-            Identifies the queue in $sync, so a pump can find its own state when it is re-posted.
+            Identifies the queue in $sync so a re-posted pump finds its state.
 
         .PARAMETER Queue
             The queue to drain. Items mean whatever Step says they mean.
@@ -24,14 +23,13 @@ function Start-WinUtilBackgroundQueue {
             Runs one item. Receives the dequeued item.
 
         .PARAMETER OnComplete
-            Runs once, on the interface thread, after the last item.
+            Runs once on the interface thread after the last item.
 
         .PARAMETER RequiresTab
-            Work drawing into this tab waits while the user is looking at another one.
+            Work drawing into this tab waits while another tab is shown.
 
         .PARAMETER DeferWhile
-            Additional reason to hold off, tested each time round. Used to let a more urgent
-            queue go first.
+            Extra reason to hold off, tested each round. Lets a more urgent queue go first.
     #>
     param(
         [Parameter(Mandatory)]
@@ -62,12 +60,11 @@ function Start-WinUtilBackgroundQueue {
         DeferWhile = $DeferWhile
     }
 
-    # With no window there is no dispatcher to spread the work over, and nothing competing for
-    # the thread either, so it is simply done
+    # No window means no dispatcher to spread over and nothing competing for the thread
     if (-not (Test-WinUtilUIAlive)) {
         while ($Queue.Count -gt 0) {
-            # One failing item must not abandon the rest, skip OnComplete and strand the state,
-            # which is how the dispatcher path already behaves
+            # One failing item must not abandon the rest or strand the state, matching the
+            # dispatcher path
             try {
                 & $Step $Queue.Dequeue()
             } catch {
