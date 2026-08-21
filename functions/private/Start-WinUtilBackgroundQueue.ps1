@@ -99,10 +99,8 @@ function Request-WinUtilBackgroundQueueStep {
         return
     }
 
-    # The name travels as the dispatcher's own argument rather than being captured. A plain
-    # [action] block would resolve $Name when the dispatcher gets to it, by which time this
-    # function has returned and the variable is gone; a closure would carry the value but bind
-    # command lookup to a copied scope, which is not where these functions live.
+    # The name travels as the dispatcher's argument, not captured: this function has returned by
+    # the time the block runs, and a closure would bind command lookup to a copied scope.
     $null = $sync.Form.Dispatcher.BeginInvoke(
         [System.Windows.Threading.DispatcherPriority]::Background,
         [System.Windows.Threading.DispatcherOperationCallback]{
@@ -135,8 +133,7 @@ function Invoke-WinUtilBackgroundQueueStep {
         $defer = (Test-WinUtilDeferBackgroundWork -RequiresTab $state.RequiresTab) -or
                  ($state.DeferWhile -and (& $state.DeferWhile))
 
-        # Nothing here is worth a moment of the user's time, so it waits and looks again rather
-        # than competing with whatever they are doing
+            # Waits rather than competing with whatever the user is doing
         if ($defer) {
             Invoke-WinUtilWhenIdle -Argument $Name -Callback {
                 param($QueueName)

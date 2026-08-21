@@ -69,9 +69,8 @@ function Invoke-WPFUIThread {
 
     $executor = $sync.UIDispatchDelegate
     if ($null -eq $executor) {
-        # No interface runspace to hand the work to, so the block itself is marshalled. It still
-        # has to receive its parameters and still has to return what it produced: [action] takes
-        # neither, which silently dropped both and left Show-WinUtilMessage with no answer.
+        # No interface runspace to hand the work to, so the block itself is marshalled. It has to
+        # receive its parameters and return what it produced, and [action] carries neither.
         if ($Async) {
             # The values travel as the dispatcher's argument, since this call returns before the
             # block runs and anything captured from here would be gone by then

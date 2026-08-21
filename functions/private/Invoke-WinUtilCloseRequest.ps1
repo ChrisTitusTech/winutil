@@ -33,9 +33,6 @@ stopped and everything closes now. Cancel keeps WinUtil open.
             $sync.FinishInConsole = $true
             $sync.ForceClose = $true
 
-            # Once the window is gone there is no button left to resume with, so a run that is
-            # holding would never reach its end
-
             Write-Host ""
             Write-Host "WinUtil's window is closed. $RunningJob is still running here, and this window will close when it finishes." -ForegroundColor Cyan
             Write-Host ""

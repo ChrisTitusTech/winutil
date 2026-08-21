@@ -27,7 +27,7 @@ function Invoke-WPFButton {
     # Switch-driven buttons that change the system. Anything in feature.json counts too. The
     # WPFPanel* entries are the exception only when they hand off to a Windows applet, which is
     # what a missing function means; the two that carry one change the system themselves and
-    # would otherwise run their waits on the interface thread with no job to pause or stop.
+    # would otherwise run their waits on the interface thread with nothing reporting them.
     #
     # This is a whitelist on purpose: window chrome and popup toggles also reach here, because
     # every Button in $sync gets wired to this function, and they must not become jobs.

@@ -35,9 +35,6 @@ function Invoke-WinUtilInstallAppRenderBatch {
         })
     }
 
-    # Whatever this batch left without an icon is fetched now rather than at the end of the
-    # whole list: waiting meant no icon appeared until every entry had been drawn.
-
     # Entries render in batches, so a filter that is already active has to be applied to each new
     # batch. Categories count as an active filter just like search text does.
     if ($sync.currentTab -eq "Install" -and $sync.SearchBar) {
@@ -52,7 +49,6 @@ function Invoke-WinUtilInstallAppRenderBatch {
 function Complete-WinUtilInstallAppRendering {
     $sync.InstallAppEntriesRendered = $true
 
-    # Once the list is drawn, whatever had no cached icon is fetched on a worker
 }
 
 function Start-WinUtilInstallAppRendering {

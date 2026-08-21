@@ -92,10 +92,9 @@ function Start-WinUtilUserInterface {
         $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
     }
 
-    # How background work reaches the controls. Built here so it carries this runspace's
-    # session state: posted work then runs as ordinary interface code instead of as a
-    # cross-runspace nested pipeline, which is orders of magnitude slower. Invoke-WPFUIThread
-    # is the caller-facing side of this.
+    # Built here so it carries this runspace's session state: posted work then runs as ordinary
+    # interface code rather than a cross-runspace nested pipeline, which is far slower.
+    # Invoke-WPFUIThread is the caller-facing side of this.
     $sync.UIDispatchDelegate = [System.Func[object, object]]{
         param($Work)
 
@@ -157,8 +156,8 @@ function Start-WinUtilUserInterface {
     $sync["Form"].Add_Closing({
         param($eventSender, $closingArgs)
 
-        # Closing with work in flight used to tear the worker pool down underneath it, which
-        # ended the process with an unhandled runspace error rather than a clean exit
+        # The pool cannot be torn down under work that is still running: the runspace error that
+        # follows is unhandled and ends the process
         if ($sync.ActiveJob -and -not $sync.ForceClose) {
             $closingArgs.Cancel = $true
             Invoke-WinUtilCloseRequest -RunningJob $sync.ActiveJob

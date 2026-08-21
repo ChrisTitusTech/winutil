@@ -44,10 +44,8 @@ function Step-WinUtilJob {
         [switch]$Hide
     )
 
-    # With no window there is nothing to post to, and every update would be thrown away. A
-    # headless run is the one that most needs to say what it is doing. A window that has been
-    # closed over running work counts as no window: its dispatcher accepts posts and discards
-    # them, so the console is the only place left to report.
+    # With no window every update is thrown away, and a window closed over running work counts
+    # as none: its dispatcher accepts posts and discards them. The console is what is left.
     if (-not (Test-WinUtilUIAlive)) {
         if (-not $Hide) {
             Write-WinUtilConsoleProgress -Status $Status -Percent $Percent
@@ -93,9 +91,7 @@ function Step-WinUtilJob {
             # WPF discard Value and fill the whole bar, which reads as finished.
             $sync.WPFTweaksProgressValue.Tag = if ($State -eq "Indeterminate") { "Pulse" } else { $null }
 
-            # The bar carries the outcome too. Only the taskbar item used to, so a run that
-            # finished with errors still left a full green bar behind. By resource reference
-            # rather than a fixed brush, so switching theme repaints it.
+            # By resource reference rather than a fixed brush, so switching theme repaints it
             $barColor = switch ($State) {
                 "Error"  { "ProgressBarErrorColor" }
                 "Paused" { "ProgressBarWarningColor" }

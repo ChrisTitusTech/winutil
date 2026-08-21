@@ -49,8 +49,7 @@ function Invoke-WPFRunspace {
 
     foreach ($parameter in $ParameterList) {
         # A single pair written as @(("Name", $value)) collapses to a two element array, and
-        # indexing it then yields the first two characters of the name. Caught here because the
-        # result is a worker that runs with the wrong arguments and reports nothing.
+        # indexing it then yields the first two characters of the name
         if ($parameter -is [string] -or $parameter.Count -ne 2) {
             throw "ParameterList takes name and value pairs. Received '$parameter'. A single pair needs a leading comma: -ParameterList (,('Name', `$value))"
         }
@@ -62,9 +61,8 @@ function Invoke-WPFRunspace {
     # Execute the RunspacePool
     $handle = $powershell.BeginInvoke()
 
-    # Registered after the invocation starts. A NotStarted instance is indistinguishable from a
-    # finished one to the pruning pass, so registering first let a concurrent registration drop
-    # this shell and leave its work invisible to shutdown.
+    # Registered after the invocation starts: a NotStarted instance is indistinguishable from a
+    # finished one to the pruning pass, which would drop it and hide its work from shutdown
     Register-WinUtilActiveShell -PowerShell $powershell
 
     Register-WinUtilRunspaceCleanup -PowerShell $powershell -Handle $handle

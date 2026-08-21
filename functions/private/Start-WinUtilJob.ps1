@@ -59,22 +59,17 @@ function Start-WinUtilJob {
         return $null
     }
 
-    # A job body that starts another job runs it inline. The outer job already owns the slot,
-    # the banner and the reporting, so claiming again would refuse the inner call and skip the
-    # work silently: that is what happened to the Install Features button, which reaches here
-    # once through its feature.json entry and again from Invoke-WPFFeatureInstall.
+    # A job body that starts another job runs it inline: the outer job already owns the slot and
+    # the reporting, so claiming again would refuse the inner call and skip its work silently.
+    # Feature installs arrive twice, from feature.json and from Invoke-WPFFeatureInstall.
     if ($global:WinUtilIsJobWorker) {
         & $ScriptBlock @Parameters
         return $null
     }
 
-    # Claimed under the collection's own lock. Interface events are serialised by the dispatcher,
-    # but a headless run, a scheduled caller or a job body starting another job are not, and a
-    # plain test-then-assign there lets two jobs both believe they own the slot.
-    #
-    # The token identifies this run rather than its name, because a worker that was cut off can
-    # still be unwinding when the next job starts, and releasing the slot by name would hand away
-    # a claim that now belongs to that next job.
+    # Locked because a headless or scheduled caller is not serialised by the dispatcher, and a
+    # test-then-assign there lets two jobs both believe they own the slot. The token identifies
+    # the run, so a worker still unwinding cannot release a slot the next job now holds.
     $jobToken = [guid]::NewGuid().ToString()
     $blockedBy = $null
     [System.Threading.Monitor]::Enter($sync.SyncRoot)
@@ -141,8 +136,7 @@ function Start-WinUtilJob {
 
             $jobClock.Stop()
 
-            # A step can fail without throwing, for example a registry write refused by policy.
-            # The job still finished, but saying so without qualification would be a lie.
+            # A step can fail without throwing, for example a registry write refused by policy
             $newErrors = if ($sync.LoggedErrors) { $sync.LoggedErrors.Count - $errorsBefore } else { 0 }
             if ($newErrors -gt 0) {
                 Write-WinUtilLog -Level "WARN" -Component $JobName -Message "$JobName job finished in $($jobClock.ElapsedMilliseconds) ms with $newErrors error(s)."
@@ -176,7 +170,6 @@ function Start-WinUtilJob {
             }
 
             if ($stillOwns) {
-                # Nothing left to pause once the run is over
                 if ($JobRestoresAppList -and (Test-WinUtilUIAlive)) {
                     Invoke-WPFUIThread -ScriptBlock {
                         if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }
