@@ -12,10 +12,8 @@ function Close-WinUtilRunspacePool {
     param(
         [int]$StopTimeoutSeconds = 15,
 
-        # Replacing a pool that is no longer usable, rather than shutting WinUtil down. The
-        # difference matters: ShuttingDown is what makes the job layer refuse work, and nothing
-        # resets it, so recycling through the shutdown path would reject every later action for
-        # the rest of the session.
+        # Leaves ShuttingDown clear: nothing resets it, so setting it here would refuse every
+        # later action for the rest of the session
         [switch]$Recycle
     )
 

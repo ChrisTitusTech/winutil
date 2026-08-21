@@ -1,3 +1,17 @@
+function Test-WinUtilShellRunning {
+    <#
+        .SYNOPSIS
+            Whether one instance is still running, treating a disposed one as finished
+    #>
+    param($PowerShell)
+
+    try {
+        return $PowerShell.InvocationStateInfo.State -eq [System.Management.Automation.PSInvocationState]::Running
+    } catch {
+        return $false
+    }
+}
+
 function Register-WinUtilActiveShell {
     <#
         .SYNOPSIS
@@ -25,17 +39,11 @@ function Register-WinUtilActiveShell {
         [System.Threading.Monitor]::Exit($sync.SyncRoot)
     }
 
-    # Instances are disposed by a callback that cannot reach here, so finished ones are dropped
-    # on the way past rather than accumulating for the life of the session
+    # Nothing disposes these on the way out, so finished ones are dropped here instead of
+    # accumulating for the life of the session
     foreach ($finished in (Get-WinUtilActiveShell)) {
-        $done = $true
-        try {
-            $done = $finished.InvocationStateInfo.State -ne [System.Management.Automation.PSInvocationState]::Running
-        } catch {
-            # disposed, which is as finished as it gets
-        }
-        if ($done) {
-            Unregister-WinUtilActiveShell -PowerShell $finished
+        if (-not (Test-WinUtilShellRunning $finished)) {
+            try { $sync.ActiveShells.Remove($finished) } catch { }
         }
     }
 
@@ -61,27 +69,6 @@ function Get-WinUtilActiveShell {
         return @($sync.ActiveShells.ToArray())
     } finally {
         [System.Threading.Monitor]::Exit($sync.ActiveShells.SyncRoot)
-    }
-}
-
-function Unregister-WinUtilActiveShell {
-    <#
-        .SYNOPSIS
-            Forgets an instance that has finished
-    #>
-    param(
-        [Parameter(Mandatory)]
-        $PowerShell
-    )
-
-    if ($null -eq $sync.ActiveShells) {
-        return
-    }
-
-    try {
-        $sync.ActiveShells.Remove($PowerShell)
-    } catch {
-        # A collection changed underneath is not worth failing a completed job over
     }
 }
 
@@ -114,12 +101,8 @@ function Stop-WinUtilActiveWork {
     Write-WinUtilLog -Component "UI" -Message "Stopping $($shells.Count) running item(s) before closing."
 
     foreach ($shell in $shells) {
-        try {
-            if ($shell.InvocationStateInfo.State -eq [System.Management.Automation.PSInvocationState]::Running) {
-                $null = $shell.BeginStop($null, $null)
-            }
-        } catch {
-            # Already finished or disposed; either way there is nothing left to stop
+        if (Test-WinUtilShellRunning $shell) {
+            try { $null = $shell.BeginStop($null, $null) } catch { }
         }
     }
 
@@ -129,16 +112,7 @@ function Stop-WinUtilActiveWork {
 
     $clock = [System.Diagnostics.Stopwatch]::StartNew()
     while ($clock.Elapsed.TotalSeconds -lt $TimeoutSeconds) {
-        $stillRunning = 0
-        foreach ($shell in (Get-WinUtilActiveShell)) {
-            try {
-                if ($shell.InvocationStateInfo.State -eq [System.Management.Automation.PSInvocationState]::Running) {
-                    $stillRunning++
-                }
-            } catch {
-                # disposed while we looked at it, which means it is done
-            }
-        }
+        $stillRunning = @(Get-WinUtilActiveShell | Where-Object { Test-WinUtilShellRunning $_ }).Count
 
         if ($stillRunning -eq 0) {
             Write-WinUtilLog -Component "UI" -Message "Everything stopped after $($clock.ElapsedMilliseconds) ms."
@@ -159,13 +133,7 @@ function Test-WinUtilActiveWorkRunning {
     #>
 
     foreach ($shell in (Get-WinUtilActiveShell)) {
-        try {
-            if ($shell.InvocationStateInfo.State -eq [System.Management.Automation.PSInvocationState]::Running) {
-                return $true
-            }
-        } catch {
-            # disposed while we looked at it, which means it is done
-        }
+        if (Test-WinUtilShellRunning $shell) { return $true }
     }
 
     return $false

@@ -11,9 +11,6 @@ function Complete-WinUtilPackageRun {
         .PARAMETER Action
             Install or Uninstall, used in the summary text.
 
-        .PARAMETER Results
-            The result objects produced by Install-WinUtilProgramWinget and
-            Install-WinUtilProgramChoco.
     #>
     param(
         [Parameter(Mandatory)]
