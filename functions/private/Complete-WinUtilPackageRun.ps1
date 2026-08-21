@@ -38,7 +38,6 @@ function Complete-WinUtilPackageRun {
         $names = ($failed | ForEach-Object { $_.Package }) -join ', '
         $reasons = @($failed | ForEach-Object { $_.Detail } | Sort-Object -Unique)
 
-        # One shared reason is worth repeating; several would bury it, and they are listed above
         if ($reasons.Count -eq 1) {
             throw "$($failed.Count) of $($Results.Count) package(s) failed: $names. $($reasons[0])"
         }

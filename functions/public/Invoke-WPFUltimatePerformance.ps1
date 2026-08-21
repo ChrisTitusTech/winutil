@@ -10,8 +10,6 @@ function Invoke-WPFUltimatePerformance ([switch]$Enable) {
         Step-WinUtilJob -Status "Adding the Ultimate Performance power plan" -State "Indeterminate"
         Write-WinUtilLog -Component "Power" -Message "Duplicating and activating the Ultimate Performance power plan."
 
-        # powercfg reports failure through its exit code, so both calls are checked before the
-        # log claims the plan is in place
         $duplicated = powercfg /duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61
         if ($LASTEXITCODE -ne 0) {
             throw "powercfg could not duplicate the Ultimate Performance scheme (exit code $LASTEXITCODE)."

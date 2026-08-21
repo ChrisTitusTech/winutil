@@ -4,9 +4,8 @@ function Test-WinUtilUIAlive {
             Whether there is a window that can still be posted to
 
         .DESCRIPTION
-            False for a headless run, and equally for a window that has been closed over running
-            work: a shut down dispatcher accepts posts and discards them, so it is no more use
-            than no window at all. Every caller that reaches the interface asks this first.
+            False for a headless run, and for a window closed over running work: a shut down
+            dispatcher accepts posts and discards them.
     #>
 
     return $null -ne $sync.Form -and $null -ne $sync.Form.Dispatcher -and -not $sync.Form.Dispatcher.HasShutdownStarted
@@ -18,18 +17,14 @@ function Invoke-WPFUIThread {
             Runs a scriptblock on the interface thread
 
         .DESCRIPTION
-            Controls may only be touched from the thread that owns the window, so this is how
-            background work reaches them.
+            Controls may only be touched from the thread that owns the window.
 
-            The body is handed to the interface runspace as text and rebuilt there, rather than
-            marshalled as a scriptblock from the calling runspace. A scriptblock keeps the
-            session state it was written in, and running one across runspaces costs roughly
-            twenty times as much per command - enough to turn a checkbox refresh into a visible
-            freeze. Values the body needs therefore come in through Parameters instead of being
-            captured from the caller's scope.
+            The body is handed over as text and rebuilt in the interface runspace rather than
+            marshalled as a scriptblock: a scriptblock keeps the session state it was written in,
+            and running one across runspaces costs roughly twenty times as much per command. So
+            values come in through Parameters rather than captured from the caller's scope.
 
-            The call is a no-op once the window is gone, so a job that outlives the interface
-            finishes quietly instead of failing on a dead dispatcher.
+            A no-op once the window is gone, so a job outliving the interface finishes quietly.
 
         .PARAMETER ScriptBlock
             The work to run on the interface thread. Declare a param block for anything it needs.
@@ -38,12 +33,12 @@ function Invoke-WPFUIThread {
             Values passed to the body by name.
 
         .PARAMETER Async
-            Post the work and return immediately instead of waiting for it. Use for progress and
-            log updates, which must never stall the caller.
+            Post and return instead of waiting. For progress and log updates, which must never
+            stall the caller.
 
         .PARAMETER PassThru
-            Return what the body produced. Off by default so that a caller who only wanted a
-            control updated does not get stray output mixed into its own return value.
+            Return what the body produced. Off by default so a caller that only wanted a control
+            updated gets no stray output.
     #>
     param(
         [Parameter(Mandatory, Position = 0)]

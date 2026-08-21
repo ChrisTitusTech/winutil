@@ -340,7 +340,6 @@ function Invoke-WinUtilISOModify {
 
             Show-WinUtilMessage -Message "An error occurred during install.wim modification:`n`n$_" -Title "Modification Error" -Button "OK" -Icon "Error" | Out-Null
 
-            # Let the job layer mark the run as failed
             throw
         } finally {
             Invoke-WPFUIThread -ScriptBlock {

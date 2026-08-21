@@ -190,7 +190,6 @@ function Start-WinUtilUserInterface {
     function Invoke-WinUtilFontScaleStep([double]$Step) { $sync.FontScalingSlider.Value = [math]::Max(0.75, [math]::Min(2.0, $sync.FontScalingSlider.Value + $Step)); Invoke-WinUtilFontScaling -ScaleFactor $sync.FontScalingSlider.Value }
 
     $commonKeyEvents = {
-        # Prevent shortcuts from executing if a job is already running
         if ($sync.ActiveJob) {
             return
         }

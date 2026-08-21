@@ -22,8 +22,6 @@ function Invoke-WPFUnInstall {
 
     $confirm = Show-WinUtilMessage -Message $Messageboxbody -Title $MessageboxTitle -Button $ButtonType -Icon $MessageIcon
 
-    # Explicit consent, not the absence of a refusal: a dismissed or unanswerable prompt must
-    # not remove the user's software
     if ($confirm -ne "Yes") { return }
 
     $ManagerPreference = $sync.preferences.packagemanager
