@@ -7,7 +7,6 @@ BeforeAll {
 
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilSelectedPackages.ps1")
     . (Join-Path $script:repoRoot "functions\private\Test-WinUtilPackageManager.ps1")
-    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilWinGetErrorMessage.ps1")
     . (Join-Path $script:repoRoot "functions\private\Install-WinUtilProgramWinget.ps1")
     . (Join-Path $script:repoRoot "functions\private\Install-WinUtilProgramChoco.ps1")
 

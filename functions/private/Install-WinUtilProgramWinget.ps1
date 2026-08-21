@@ -94,7 +94,9 @@ Function Install-WinUtilProgramWinget {
             $detail = $nothingToDo[$exitCode]
         } else {
             $outcome = "Failed"
-            $detail = Get-WinUtilWinGetErrorMessage -Code $exitCode
+            # The client module reports the same failure as a bare HRESULT, so the hex form and
+            # Microsoft's own list serve both paths
+            $detail = "WinGet reported 0x{0:X8}. See https://learn.microsoft.com/windows/package-manager/winget/returnCodes" -f $exitCode
         }
 
         $level = if ($outcome -eq "Failed") { "ERROR" } else { "INFO" }
