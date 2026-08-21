@@ -25,7 +25,6 @@ Function Install-WinUtilProgramWinget {
     # APPINSTALLER_CLI_ERROR_ADMIN_CONTEXT_ACTION_PROHIBITED. WinGet refuses to act on a package
     # that was installed in user scope while it is running elevated, and WinUtil is always
     # elevated, so every per-user app answers this and nothing happens.
-    $adminContextProhibited = -1978335107
 
     # WinGet reports "there was nothing to do" through the exit code rather than as success
     $nothingToDo = @{
@@ -70,18 +69,6 @@ Function Install-WinUtilProgramWinget {
 
         $process = Start-Process -FilePath winget -ArgumentList $arguments -NoNewWindow -Wait -PassThru
         $exitCode = $process.ExitCode
-
-        # A process cannot drop its own elevation, so the same command is handed to the signed in
-        # user, which is the context WinGet requires for their own packages
-        if ($exitCode -eq $adminContextProhibited) {
-            Write-WinUtilLog -Component "Package" -Message "$program is installed for the current user, which WinGet will not touch from an elevated process. Retrying as the signed in user."
-            $unelevated = Invoke-WinUtilUnelevated -FilePath "winget" -ArgumentList $arguments
-            $exitCode = $unelevated.ExitCode
-
-            if ($unelevated.TimedOut) {
-                Write-WinUtilLog -Level "WARN" -Component "Package" -Message "$Action $program did not finish as the signed in user."
-            }
-        }
 
         if ($exitCode -eq 0) {
             $outcome = "Succeeded"
