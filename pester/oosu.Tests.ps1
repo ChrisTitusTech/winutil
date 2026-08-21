@@ -11,8 +11,11 @@ BeforeAll {
     function Invoke-WPFRunspace {
         param($ArgumentList, $ParameterList, [scriptblock]$ScriptBlock)
     }
-    function Set-WinUtilTweaksProgressIndicator {
-        param($Visible, $Label, $Percent)
+    function Start-WinUtilJob {
+        param([string]$Name, [scriptblock]$ScriptBlock, [hashtable]$Parameters, [string]$Description, [switch]$DisableAppList)
+    }
+    function Step-WinUtilJob {
+        param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay)
     }
     function Show-WinUtilMessage {
         param($Message, $Title, $Button, $Icon)
@@ -55,85 +58,61 @@ Describe "Save-WinUtilFile" {
 Describe "Invoke-WPFOOSU" {
     BeforeEach {
         New-WinUtilOOSUTestContext
-        $script:capturedScriptBlock = $null
-        $script:capturedParameterList = $null
+        $script:capturedJob = $null
 
-        Mock Invoke-WPFRunspace {
-            $script:capturedScriptBlock = $ScriptBlock
-            $script:capturedParameterList = $ParameterList
-            [pscustomobject]@{ MockHandle = $true }
+        Mock Start-WinUtilJob {
+            $script:capturedJob = [pscustomobject]@{
+                Name = $Name
+                ScriptBlock = $ScriptBlock
+                Parameters = $Parameters
+            }
         }
-        Mock Set-WinUtilTweaksProgressIndicator { }
+        Mock Step-WinUtilJob { }
         Mock Show-WinUtilMessage { }
         Mock Write-WinUtilLog { }
         Mock Start-Process { }
-        Mock Write-Error { }
     }
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name capturedScriptBlock -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name capturedParameterList -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name capturedJob -Scope Script -ErrorAction SilentlyContinue
     }
 
-    It "queues the download in a background runspace" {
+    It "queues the download as a job with the download path" {
         Invoke-WPFOOSU
 
-        $script:sync.ProcessRunning | Should -BeTrue
-        Should -Invoke Invoke-WPFRunspace -Times 1 -Exactly
-        $script:capturedParameterList[0][0] | Should -Be "downloadPath"
-        $script:capturedParameterList[0][1] | Should -Be (Join-Path $TestDrive "ooshutup10.exe")
+        Should -Invoke Start-WinUtilJob -Times 1 -Exactly -ParameterFilter { $Name -eq "OOSU" }
+        $script:capturedJob.Parameters.DownloadPath | Should -Be (Join-Path $TestDrive "ooshutup10.exe")
     }
 
-    It "does not start while another process is running" {
-        New-WinUtilOOSUTestContext -ProcessRunning $true
-
-        Invoke-WPFOOSU
-
-        Should -Invoke Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
-            $Message -eq "Another process is currently running." -and
-                $Title -eq "WinUtil" -and
-                $Button -eq "OK" -and
-                $Icon -eq "Warning"
-        }
-        Should -Not -Invoke Invoke-WPFRunspace
-    }
-
-    It "maps download progress to the window indicator and launches O&O ShutUp10++" {
+    It "maps download progress to the job indicator and launches O&O ShutUp10++" {
         Mock Save-WinUtilFile {
             & $ProgressCallback 35
             & $ProgressCallback 100
         }
 
         Invoke-WPFOOSU
-        & $script:capturedScriptBlock -downloadPath $script:capturedParameterList[0][1]
+        $jobParameters = $script:capturedJob.Parameters
+        & $script:capturedJob.ScriptBlock @jobParameters
 
-        Should -Invoke Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "Downloading O&O ShutUp10++ (0%)" -and $Percent -eq 0
+        Should -Invoke Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Downloading O&O ShutUp10++ (35%)" -and $Percent -eq 35
         }
-        Should -Invoke Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "Downloading O&O ShutUp10++ (35%)" -and $Percent -eq 35
-        }
-        Should -Invoke Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "O&O ShutUp10++ launched" -and $Percent -eq 100
+        Should -Invoke Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Launching O&O ShutUp10++" -and $Percent -eq 100
         }
         Should -Invoke Start-Process -Times 1 -Exactly -ParameterFilter {
             $FilePath -eq (Join-Path $TestDrive "ooshutup10.exe")
         }
-        $script:sync.ProcessRunning | Should -BeFalse
     }
 
-    It "shows failure progress and clears the running state when the download fails" {
+    It "lets a download failure surface so the job layer can handle it" {
         Mock Save-WinUtilFile { throw "download failed" }
 
         Invoke-WPFOOSU
-        & $script:capturedScriptBlock -downloadPath $script:capturedParameterList[0][1]
+        $jobParameters = $script:capturedJob.Parameters
 
-        Should -Invoke Set-WinUtilTweaksProgressIndicator -Times 1 -Exactly -ParameterFilter {
-            $Visible -eq $true -and $Label -eq "O&O ShutUp10++ download failed" -and $Percent -eq 100
-        }
+        { & $script:capturedJob.ScriptBlock @jobParameters } | Should -Throw "download failed"
         Should -Not -Invoke Start-Process
-        Should -Invoke Write-Error -Times 1 -Exactly
-        $script:sync.ProcessRunning | Should -BeFalse
     }
 }

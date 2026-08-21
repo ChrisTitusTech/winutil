@@ -16,6 +16,8 @@ BeforeAll {
     function choco {
         param([Parameter(ValueFromRemainingArguments = $true)]$Arguments)
     }
+    # The CLI path is what these tests cover; the module path is verified against real winget
+    function Step-WinUtilJob { param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay, [switch]$Hide) }
     function Write-WinUtilLog { }
 }
 

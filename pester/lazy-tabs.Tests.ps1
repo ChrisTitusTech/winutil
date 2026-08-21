@@ -1,14 +1,20 @@
 #===========================================================================
 # Tests - Lazy tab initialization
-#===========================================================================
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+    . (Join-Path $script:repoRoot "functions\private\Measure-WinUtilStep.ps1")
 
+    function Test-WinUtilUIAlive { $null -ne $sync.Form -and $null -ne $sync.Form.Dispatcher }
+
+    function Write-WinUtilLog {
+        param($Message, $Level, $Component)
+    }
     function Invoke-WPFUIElements {
         param($configVariable, [string]$targetGridName, [int]$columncount)
     }
     function Invoke-WinUtilISOCheckExistingWork { }
+    function Initialize-WinUtilInstallTabControls { }
     function Reset-WPFCheckBoxes { param([bool]$doToggles) }
 
     . (Join-Path $script:repoRoot "functions\public\Initialize-WPFUI.ps1")
@@ -49,19 +55,16 @@ Describe "Initialize-WinUtilTabContent" {
         $script:sync.InitializedTabs["Install"] | Should -BeTrue
     }
 
-    It "re-applies checkbox selections after building a tab's controls" {
-        Initialize-WinUtilTabContent -TabName "Tweaks"
+    It "leaves the app navigation to Initialize-WPFUI so its buttons keep their handlers" {
+        # Rendering it here as well built the navigation twice. The second pass cleared the
+        # first one's controls, and because the "already wired" guard goes by name the
+        # replacements counted as wired and never got a click handler, so Install and
+        # Uninstall did nothing at all.
+        Initialize-WinUtilTabContent -TabName "Install"
 
-        Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly -ParameterFilter {
-            $doToggles -eq $true
+        Should -Invoke -CommandName Invoke-WPFUIElements -Times 0 -Exactly -ParameterFilter {
+            $targetGridName -eq "appscategory"
         }
-    }
-
-    It "does not re-apply checkbox selections on a tab that's already built" {
-        Initialize-WinUtilTabContent -TabName "Tweaks"
-        Initialize-WinUtilTabContent -TabName "Tweaks"
-
-        Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly
     }
 
     It "initializes deferred config-backed tabs once" {
@@ -81,6 +84,22 @@ Describe "Initialize-WinUtilTabContent" {
         Should -Invoke -CommandName Invoke-WPFUIElements -Times 1 -Exactly -ParameterFilter {
             $targetGridName -eq "appxpanel" -and $columncount -eq 2
         }
+    }
+
+    It "re-applies checkbox selections after building a tab's controls" {
+        # controls built just now start unchecked, so an import or a preset has to reach them
+        Initialize-WinUtilTabContent -TabName "Tweaks"
+
+        Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly -ParameterFilter {
+            $doToggles -eq $true
+        }
+    }
+
+    It "does not re-apply checkbox selections on a tab that is already built" {
+        Initialize-WinUtilTabContent -TabName "Tweaks"
+        Initialize-WinUtilTabContent -TabName "Tweaks"
+
+        Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly
     }
 
     It "checks for existing Win11ISO work when the tab is initialized" {
@@ -128,14 +147,15 @@ Describe "Initialize-WPFUI" {
 }
 
 Describe "Startup lazy tab wiring" {
-    It "builds only install tab content before first paint" {
-        $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
-        $startupRegion = $mainScript.Substring(0, $mainScript.IndexOf("# Store Form Objects In PowerShell"))
+    It "builds no tab content before first paint" {
+        # Startup moved out of main.ps1 and onto the interface thread. Nothing is built up front
+        # at all now: Invoke-WPFTab builds whichever tab it selects, and the warmup does the rest.
+        $uiScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilUserInterface.ps1") -Raw
 
-        $startupRegion | Should -Match 'Initialize-WinUtilTabContent -TabName "Install"'
-        $startupRegion | Should -Not -Match 'targetGridName "tweakspanel"'
-        $startupRegion | Should -Not -Match 'targetGridName "featurespanel"'
-        $startupRegion | Should -Not -Match 'targetGridName "appxpanel"'
+        $uiScript | Should -Match 'Invoke-WPFTab "WPFTab1BT"'
+        $uiScript | Should -Not -Match 'targetGridName "tweakspanel"'
+        $uiScript | Should -Not -Match 'targetGridName "featurespanel"'
+        $uiScript | Should -Not -Match 'targetGridName "appxpanel"'
     }
 
     It "initializes tab content when a tab is selected" {
@@ -150,7 +170,9 @@ Describe "Startup lazy tab wiring" {
 
         $rendererScript | Should -Match '(?s)"Button"\s*\{.*\$button\.Add_Click\(\{.*Invoke-WPFButton \$Sender\.name'
         $rendererScript | Should -Match '\$sync\.Buttons\.Add\(\$button\.Name\)'
-        $mainScript | Should -Match '\$sync\.Buttons -notcontains \$psitem'
+        # The "already wired" gate moved to the interface thread with the rest of startup
+        $uiScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilUserInterface.ps1") -Raw
+        $uiScript | Should -Match '\$alreadyWired'
     }
 
     It "binds generated documentation links when lazy panels are rendered" {

@@ -1086,8 +1086,10 @@
     "panel": "1",
     "InvokeScript": [
       "
-      Remove-Item -Path \"$Env:Temp\\*\" -Recurse -Force
-      Remove-Item -Path \"$Env:SystemRoot\\Temp\\*\" -Recurse -Force
+      # A temp folder always holds files something has open, including this run's own, and
+      # the job layer counts a logged error as a failed step
+      Remove-Item -Path \"$Env:Temp\\*\" -Recurse -Force -ErrorAction SilentlyContinue
+      Remove-Item -Path \"$Env:SystemRoot\\Temp\\*\" -Recurse -Force -ErrorAction SilentlyContinue
       "
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/deletetempfiles"

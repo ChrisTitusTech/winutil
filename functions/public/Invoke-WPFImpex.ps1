@@ -16,7 +16,11 @@ function Invoke-WPFImpex {
     #>
     param(
         $type,
-        $Config = $null
+        $Config = $null,
+
+        # Add to the current selection instead of replacing it. Used when a preset has already
+        # set a baseline that the imported file is meant to extend.
+        [switch]$Merge
     )
 
     function ConfigDialog {
@@ -46,9 +50,9 @@ function Invoke-WPFImpex {
                 if ($Config) {
                     $allConfs = ($sync.selectedApps + $sync.selectedTweaks + $sync.selectedToggles + $sync.selectedFeatures + $sync.selectedAppx) | ForEach-Object { [string]$_ }
                     if (-not $allConfs) {
-                        [System.Windows.MessageBox]::Show(
-                            "No settings are selected to export. Please select at least one app, tweak, toggle, feature, or AppX package before exporting.",
-                            "Nothing to Export", "OK", "Warning")
+                        Show-WinUtilMessage -Message (
+                            "No settings are selected to export. Please select at least one app, tweak, toggle, feature, or AppX package before exporting."
+                        ) -Title "Nothing to Export" -Button "OK" -Icon "Warning" | Out-Null
                         return
                     }
                     $jsonFile = $allConfs | ConvertTo-Json
@@ -100,16 +104,19 @@ function Invoke-WPFImpex {
                     }
 
                     if (-not $flattenedJson) {
-                        [System.Windows.MessageBox]::Show(
-                            "The selected file contains no settings to import. No changes have been made.",
-                            "Empty Configuration", "OK", "Warning")
+                        Show-WinUtilMessage -Message "The selected file contains no settings to import. No changes have been made." -Title "Empty Configuration" -Button "OK" -Icon "Warning" | Out-Null
                         return
                     }
+
+                    # Replace unless this import is merging onto something already selected,
+                    # which the headless path does when it is given a preset and a config
+                    $replaceMode = @{}
+                    if (-not $Merge) { $replaceMode["Replace"] = $true }
 
                     # Modern configs stay strict. Legacy configs can reference entries that no
                     # longer exist, so restore supported selections and report the retired keys.
                     if ($isLegacyConfig) {
-                        $skippedSelections = @(Update-WinUtilSelections -flatJson $flattenedJson -Replace -SkipUnknown)
+                        $skippedSelections = @(Update-WinUtilSelections -flatJson $flattenedJson @replaceMode -SkipUnknown)
 
                         if ($skippedSelections.Count -gt 0) {
                             $skippedSummary = $skippedSelections -join ", "
@@ -135,7 +142,7 @@ function Invoke-WPFImpex {
                     } else {
                         # Build and validate every imported selection before replacing the current
                         # state. This keeps a malformed config from leaving partial selections behind.
-                        Update-WinUtilSelections -flatJson $flattenedJson -Replace
+                        Update-WinUtilSelections -flatJson $flattenedJson @replaceMode
                     }
 
                     if ($sync.Form) {

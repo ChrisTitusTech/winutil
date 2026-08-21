@@ -136,15 +136,13 @@
         <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Grid>
-                            <Border Name="BackgroundBorder"
-                                    Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{DynamicResource ButtonBorderThickness}"
-                                    CornerRadius="{DynamicResource ButtonCornerRadius}">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                        </Grid>
+                        <Border Name="BackgroundBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{DynamicResource ButtonBorderThickness}"
+                                CornerRadius="{DynamicResource ButtonCornerRadius}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource ButtonBackgroundPressedColor}"/>
@@ -361,26 +359,22 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
-                        <Grid>
-                            <Border Name="ButtonGlow"
-                                        Background="{TemplateBinding Background}"
-                                        BorderBrush="{DynamicResource ButtonForegroundColor}"
-                                        BorderThickness="{DynamicResource ButtonBorderThickness}"
-                                        CornerRadius="{DynamicResource ButtonCornerRadius}">
-                                <Grid>
-                                    <Border Name="BackgroundBorder"
-                                        Background="{TemplateBinding Background}"
-                                        BorderBrush="{DynamicResource ButtonBackgroundColor}"
-                                        BorderThickness="{DynamicResource ButtonBorderThickness}"
-                                        CornerRadius="{DynamicResource ButtonCornerRadius}">
-                                        <ContentPresenter
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"
-                                            Margin="10,2,10,2"/>
-                                    </Border>
-                                </Grid>
+                        <Border Name="ButtonGlow"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{DynamicResource ButtonForegroundColor}"
+                                BorderThickness="{DynamicResource ButtonBorderThickness}"
+                                CornerRadius="{DynamicResource ButtonCornerRadius}">
+                            <Border Name="BackgroundBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{DynamicResource ButtonBackgroundColor}"
+                                BorderThickness="{DynamicResource ButtonBorderThickness}"
+                                CornerRadius="{DynamicResource ButtonCornerRadius}">
+                                <ContentPresenter
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Margin="10,2,10,2"/>
                             </Border>
-                        </Grid>
+                        </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource ButtonBackgroundMouseoverColor}"/>
@@ -422,15 +416,13 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Grid>
-                            <Border Name="BackgroundBorder"
-                                    Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{DynamicResource ButtonBorderThickness}"
-                                    CornerRadius="{DynamicResource ButtonCornerRadius}">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,2,10,2"/>
-                            </Border>
-                        </Grid>
+                        <Border Name="BackgroundBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{DynamicResource ButtonBorderThickness}"
+                                CornerRadius="{DynamicResource ButtonCornerRadius}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,2,10,2"/>
+                        </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource ButtonBackgroundPressedColor}"/>
@@ -459,40 +451,38 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
-                        <Grid>
-                            <Border Name="BackgroundBorder"
-                                    Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{DynamicResource ButtonBorderThickness}"
-                                    CornerRadius="{DynamicResource ButtonCornerRadius}">
-                                <Grid>
-                                    <!-- Toggle Dot Background -->
-                                    <Ellipse Width="8" Height="16"
-                                            Fill="{DynamicResource ToggleButtonOnColor}"
-                                            HorizontalAlignment="Right"
-                                            VerticalAlignment="Top"
-                                            Margin="0,3,5,0" />
+                        <Border Name="BackgroundBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{DynamicResource ButtonBorderThickness}"
+                                CornerRadius="{DynamicResource ButtonCornerRadius}">
+                            <Grid>
+                                <!-- Toggle Dot Background -->
+                                <Ellipse Width="8" Height="16"
+                                        Fill="{DynamicResource ToggleButtonOnColor}"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Top"
+                                        Margin="0,3,5,0" />
 
-                                    <!-- Toggle Dot with hover grow effect -->
-                                    <Ellipse Name="ToggleDot"
-                                            Width="8" Height="8"
-                                            Fill="{DynamicResource ButtonForegroundColor}"
-                                            HorizontalAlignment="Right"
-                                            VerticalAlignment="Top"
-                                            Margin="0,3,5,0"
-                                            RenderTransformOrigin="0.5,0.5">
-                                        <Ellipse.RenderTransform>
-                                            <ScaleTransform ScaleX="1" ScaleY="1"/>
-                                        </Ellipse.RenderTransform>
-                                    </Ellipse>
+                                <!-- Toggle Dot with hover grow effect -->
+                                <Ellipse Name="ToggleDot"
+                                        Width="8" Height="8"
+                                        Fill="{DynamicResource ButtonForegroundColor}"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Top"
+                                        Margin="0,3,5,0"
+                                        RenderTransformOrigin="0.5,0.5">
+                                    <Ellipse.RenderTransform>
+                                        <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                    </Ellipse.RenderTransform>
+                                </Ellipse>
 
-                                    <!-- Content Presenter -->
-                                    <ContentPresenter HorizontalAlignment="Center"
-                                                    VerticalAlignment="Center"
-                                                    Margin="10,2,10,2"/>
-                                </Grid>
-                            </Border>
-                        </Grid>
+                                <!-- Content Presenter -->
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Margin="10,2,10,2"/>
+                            </Grid>
+                        </Border>
 
                         <!-- Triggers for ToggleButton states -->
                         <ControlTemplate.Triggers>
@@ -666,28 +656,26 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="CheckBox">
-                        <StackPanel>
-                            <Grid>
-                                <Border Width="45"
-                                        Height="20"
-                                        Background="#555555"
-                                        CornerRadius="10"
-                                        Margin="5,0"
-                                />
-                                <Border Name="WPFToggleSwitchButton"
-                                        Width="25"
-                                        Height="25"
-                                        Background="Black"
-                                        CornerRadius="12.5"
-                                        HorizontalAlignment="Left"
-                                />
-                                <ContentPresenter Name="WPFToggleSwitchContent"
-                                                  Margin="10,0,0,0"
-                                                  Content="{TemplateBinding Content}"
-                                                  VerticalAlignment="Center"
-                                />
-                            </Grid>
-                        </StackPanel>
+                        <Grid>
+                            <Border Width="45"
+                                    Height="20"
+                                    Background="#555555"
+                                    CornerRadius="10"
+                                    Margin="5,0"
+                            />
+                            <Border Name="WPFToggleSwitchButton"
+                                    Width="25"
+                                    Height="25"
+                                    Background="Black"
+                                    CornerRadius="12.5"
+                                    HorizontalAlignment="Left"
+                            />
+                            <ContentPresenter Name="WPFToggleSwitchContent"
+                                              Margin="10,0,0,0"
+                                              Content="{TemplateBinding Content}"
+                                              VerticalAlignment="Center"
+                            />
+                        </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="false">
                                 <Trigger.ExitActions>
@@ -826,16 +814,6 @@
             <Setter Property="VerticalContentAlignment" Value="Center" />
         </Style>
 
-        <Style x:Key="labelfortweaks" TargetType="{x:Type Label}">
-            <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}" />
-            <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}" />
-            <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Foreground" Value="White" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
 
         <Style x:Key="BorderStyle" TargetType="Border">
             <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}"/>
@@ -893,9 +871,7 @@
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="5">
-                            <Grid>
                                 <ScrollViewer Name="PART_ContentHost" />
-                            </Grid>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
@@ -925,9 +901,7 @@
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="5">
-                            <Grid>
                                 <ScrollViewer Name="PART_ContentHost" />
-                            </Grid>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
@@ -938,28 +912,45 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <Style x:Key="ScrollVisibilityRectangle" TargetType="Rectangle">
-            <Setter Property="Visibility" Value="Collapsed"/>
-            <Style.Triggers>
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding Path=ComputedHorizontalScrollBarVisibility, ElementName=scrollViewer}" Value="Visible"/>
-                        <Condition Binding="{Binding Path=ComputedVerticalScrollBarVisibility, ElementName=scrollViewer}" Value="Visible"/>
-                    </MultiDataTrigger.Conditions>
-                    <Setter Property="Visibility" Value="Visible"/>
-                </MultiDataTrigger>
-            </Style.Triggers>
-        </Style>
         <Style x:Key="RoundedProgressBarStyle" TargetType="ProgressBar">
+            <!-- The fill follows Foreground so a run that ended badly can say so; the job layer
+                 points it at the error or warning colour and back again -->
+            <Setter Property="Foreground" Value="{DynamicResource ProgressBarForegroundColor}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ProgressBar">
                         <Border CornerRadius="4" Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource MainForegroundColor}" BorderThickness="1">
                             <Grid ClipToBounds="True">
                                 <Border Name="PART_Track" CornerRadius="4" Background="Transparent"/>
-                                <Border Name="PART_Indicator" CornerRadius="4" Background="{DynamicResource ProgressBarForegroundColor}" HorizontalAlignment="Left"/>
+                                <Border Name="PART_Indicator" CornerRadius="4" Background="{TemplateBinding Foreground}" HorizontalAlignment="Left"/>
                             </Grid>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <!-- Work whose length cannot be measured, such as an installer that
+                                 reports nothing until it exits. Pulsing says "still running"
+                                 where a static bar would read as finished.
+
+                                 Driven by Tag rather than IsIndeterminate: that property makes
+                                 WPF ignore Value and stretch the indicator across the whole
+                                 track, which would throw away the progress reached so far. -->
+                            <Trigger Property="Tag" Value="Pulse">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard Name="IndeterminatePulse">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="PART_Indicator"
+                                                             Storyboard.TargetProperty="Opacity"
+                                                             From="1.0" To="0.35" Duration="0:0:0.9"
+                                                             AutoReverse="True" RepeatBehavior="Forever"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <!-- Remove, not Stop: stopping leaves the indicator at
+                                         whatever opacity the pulse was on -->
+                                    <RemoveStoryboard BeginStoryboardName="IndeterminatePulse"/>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -1221,6 +1212,9 @@
                                         TickFrequency="0.25"
                                         TickPlacement="BottomRight"
                                         IsSnapToTickEnabled="True"
+                                        IsMoveToPointEnabled="True"
+                                        SmallChange="0.25"
+                                        LargeChange="0.25"
                                         Width="120"
                                         VerticalAlignment="Center"
                                         AutomationProperties.Name="Font Scaling"/>
@@ -1961,10 +1955,15 @@
 
         <!-- Window-level progress indicator - visible regardless of active tab -->
         <Border Name="WPFTweaksProgressBar" Grid.Row="3" Background="{DynamicResource MainBackgroundColor}" Visibility="Collapsed" Padding="10,6">
-            <StackPanel Orientation="Vertical">
-                <TextBlock Name="WPFTweaksProgressLabel" Text="" Foreground="{DynamicResource MainForegroundColor}" FontSize="13" Background="Transparent" Margin="0,0,0,4"/>
-                <ProgressBar Name="WPFTweaksProgressValue" Height="6" Minimum="0" Maximum="100" Value="0" Style="{StaticResource RoundedProgressBarStyle}"/>
-            </StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Vertical">
+                    <TextBlock Name="WPFTweaksProgressLabel" Text="" Foreground="{DynamicResource MainForegroundColor}" FontSize="13" Background="Transparent" Margin="0,0,0,4"/>
+                    <ProgressBar Name="WPFTweaksProgressValue" Height="6" Minimum="0" Maximum="100" Value="0" Style="{StaticResource RoundedProgressBarStyle}"/>
+                </StackPanel>
+            </Grid>
         </Border>
     </Grid>
 </Window>

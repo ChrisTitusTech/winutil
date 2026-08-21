@@ -132,10 +132,12 @@ Describe "Compiled WinUtil sanity" {
             ('$sync.configs.applications = @' + "'"),
             ('$inputXML = @' + "'"),
             ('$WinUtilAutounattendXml = @' + "'"),
-            "SessionStateVariableEntry -ArgumentList 'sync'",
+            "SessionStateVariableEntry",
             "SessionStateFunctionEntry",
             "[runspacefactory]::CreateRunspacePool",
-            "function Invoke-WPFRunspace"
+            "[runspacefactory]::CreateRunspace(`$Host, (New-WinUtilSessionState))",
+            "function Invoke-WPFRunspace",
+            "function Start-WinUtilJob"
         )
 
         foreach ($snippet in $requiredSnippets) {
@@ -178,7 +180,7 @@ Describe "Compiled WinUtil sanity" {
             ('$sync.configs.applications = @' + "'"),
             ('$inputXML = @' + "'"),
             ('$WinUtilAutounattendXml = @' + "'"),
-            '$sync.SearchBarClearButton.Add_Click({'
+            '$uiShell.AddScript({ Start-WinUtilUserInterface })'
         )
 
         $lastIndex = -1
@@ -206,8 +208,11 @@ Describe "Compiled WinUtil sanity" {
 
 Describe "Runspace sanity" {
     BeforeAll {
+        . (Join-Path $script:repoRoot "functions\private\Register-WinUtilRunspaceCleanup.ps1")
         . (Join-Path $script:repoRoot "functions\public\Invoke-WPFRunspace.ps1")
         . (Join-Path $script:repoRoot "functions\private\Close-WinUtilRunspacePool.ps1")
+        . (Join-Path $script:repoRoot "functions\private\Stop-WinUtilActiveWork.ps1")
+        . (Join-Path $script:repoRoot "functions\private\New-WinUtilSessionState.ps1")
         . (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilRunspacePool.ps1")
     }
 

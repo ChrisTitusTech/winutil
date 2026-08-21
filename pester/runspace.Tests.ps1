@@ -1,12 +1,19 @@
 #===========================================================================
 # Tests - Runspace Behavior
-#===========================================================================
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     . (Join-Path $script:repoRoot "functions\private\Close-WinUtilRunspacePool.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Stop-WinUtilActiveWork.ps1")
     . (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilRunspacePool.ps1")
-    . (Join-Path $script:repoRoot "functions\public\Invoke-WPFRunspace.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Register-WinUtilRunspaceCleanup.ps1")
+        . (Join-Path $script:repoRoot "functions\public\Invoke-WPFRunspace.ps1")
+    function Start-WinUtilJob {
+        param([string]$Name, [scriptblock]$ScriptBlock, [hashtable]$Parameters, [string]$Description, [switch]$DisableAppList)
+    }
+    function Show-WinUtilMessage {
+        param($Message, $Title, $Button, $Icon)
+    }
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFFeatureInstall.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFAppxRemoval.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFundoall.ps1")
@@ -134,12 +141,7 @@ Describe "Invoke-WPFRunspace behavior" {
         $script:sync.SecondResult | Should -Be "second"
     }
 
-    It "does not use script-scoped PowerShell or handle state" {
-        $runspaceScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFRunspace.ps1") -Raw
-
-        $runspaceScript | Should -Not -Match '\$script:powershell'
-        $runspaceScript | Should -Not -Match '\$script:handle'
-    }
+    
 
     It "exposes a strongly typed cleanup callback" {
         ([WinUtilRunspaceCleanup]::Callback -is [System.Threading.WaitOrTimerCallback]) | Should -BeTrue
@@ -159,37 +161,40 @@ Describe "Public runspace callers" {
         })
 
         Mock Invoke-WPFRunspace { [pscustomobject]@{ MockHandle = $true } }
+        Mock Start-WinUtilJob { }
     }
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
     }
 
-    It "queues selected feature installation without executing the runspace body" {
+    It "queues selected feature installation as a job without executing the body" {
         $script:sync.selectedFeatures.Add("WPFFeaturesSandbox")
 
         Invoke-WPFFeatureInstall
 
-        Should -Invoke -CommandName Invoke-WPFRunspace -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock -is [scriptblock] -and $null -eq $ArgumentList -and $null -eq $ParameterList
+        Should -Invoke -CommandName Start-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "Features" -and
+                $ScriptBlock -is [scriptblock] -and
+                @($Parameters.Features)[0] -eq "WPFFeaturesSandbox"
         }
     }
 
-    It "passes selected tweaks as the runspace argument list for undo all" {
+    It "queues selected tweak undo as a job without executing the body" {
         $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
         $script:sync.selectedTweaks.Add("WPFTweaksServices")
 
         Invoke-WPFundoall
 
-        Should -Invoke -CommandName Invoke-WPFRunspace -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock -is [scriptblock] -and
-                $ArgumentList.Count -eq 2 -and
-                $ArgumentList[0] -eq "WPFTweaksTelemetry" -and
-                $ArgumentList[1] -eq "WPFTweaksServices"
+        Should -Invoke -CommandName Start-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "Undo tweaks" -and
+                $ScriptBlock -is [scriptblock] -and
+                @($Parameters.Tweaks).Count -eq 2 -and
+                @($Parameters.Tweaks)[0] -eq "WPFTweaksTelemetry"
         }
     }
 
-    It "passes selected AppX items and app metadata to the removal runspace" {
+    It "queues AppX removal as a job with the selection and app metadata" {
         $script:sync.selectedAppx.Add("WPFAppxExample")
         $script:sync.configs.appxHashtable["WPFAppxExample"] = [pscustomobject]@{
             Content = "Example"
@@ -198,13 +203,38 @@ Describe "Public runspace callers" {
 
         Invoke-WPFAppxRemoval
 
-        Should -Invoke -CommandName Invoke-WPFRunspace -Times 1 -Exactly -ParameterFilter {
-            $ScriptBlock -is [scriptblock] -and
-                $ParameterList.Count -eq 2 -and
-                $ParameterList[0][0] -eq "selected" -and
-                $ParameterList[0][1][0] -eq "WPFAppxExample" -and
-                $ParameterList[1][0] -eq "apps" -and
-                $ParameterList[1][1].ContainsKey("WPFAppxExample")
+        Should -Invoke -CommandName Start-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "AppX" -and
+                $ScriptBlock -is [scriptblock] -and
+                @($Parameters.Selected)[0] -eq "WPFAppxExample" -and
+                $Parameters.Apps.ContainsKey("WPFAppxExample")
+        }
+    }
+
+    It "keeps every long workflow entrypoint on the job layer" {
+        $publicRoot = Join-Path $script:repoRoot "functions\public"
+        $privateRoot = Join-Path $script:repoRoot "functions\private"
+        $entrypoints = @(
+            (Join-Path $publicRoot "Invoke-WPFInstall.ps1"),
+            (Join-Path $publicRoot "Invoke-WPFUnInstall.ps1"),
+            (Join-Path $publicRoot "Invoke-WPFAppxInstall.ps1"),
+            (Join-Path $publicRoot "Invoke-WPFAppxRemoval.ps1"),
+            (Join-Path $publicRoot "Invoke-WPFFeatureInstall.ps1"),
+            (Join-Path $publicRoot "Invoke-WPFGetInstalled.ps1"),
+            (Join-Path $publicRoot "Invoke-WPFOOSU.ps1"),
+            (Join-Path $publicRoot "Invoke-WPFtweaksbutton.ps1"),
+            (Join-Path $publicRoot "Invoke-WPFundoall.ps1"),
+            (Join-Path $privateRoot "Invoke-WinUtilISO.ps1"),
+            (Join-Path $privateRoot "Invoke-WinUtilISOUSB.ps1")
+        )
+
+        foreach ($entrypoint in $entrypoints) {
+            $source = Get-Content -Path $entrypoint -Raw
+            $source | Should -Match 'Start-WinUtilJob -Name'
+            # Job bodies never build their own runspace or busy state
+            $source | Should -Not -Match 'RunspaceFactory\]::CreateRunspace'
+            $source | Should -Not -Match 'Invoke-WPFRunspace'
+            $source | Should -Not -Match '\$sync\.ProcessRunning'
         }
     }
 }

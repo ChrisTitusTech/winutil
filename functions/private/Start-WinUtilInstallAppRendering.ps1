@@ -4,8 +4,35 @@ function Invoke-WinUtilInstallAppRenderBatch {
         $CategoryBatch
     )
 
-    foreach ($appKey in $CategoryBatch.AppKeys) {
-        $sync.$appKey = Initialize-InstallAppEntry -TargetElement $CategoryBatch.TargetElement -AppKey $appKey
+    # A count is not a unit of time. How long a fixed number of entries takes depends on the
+    # machine and on the category, so the pass runs to a deadline instead and hands back
+    # whatever it did not reach. That caps how long a click can be left waiting.
+    $budgetMs = 25
+    $keys = @($CategoryBatch.AppKeys)
+
+    # The count is the step's return value rather than a variable the loop updates: a scriptblock
+    # runs in a child scope, so assigning to an outer variable from inside it silently writes to
+    # a copy, and the pass would re-queue everything it had just drawn.
+    $rendered = Measure-WinUtilStep -Scope "AppRender" -Name $CategoryBatch.Category -ScriptBlock {
+        $clock = [System.Diagnostics.Stopwatch]::StartNew()
+        $done = 0
+        foreach ($appKey in $keys) {
+            $sync.$appKey = Initialize-InstallAppEntry -TargetElement $CategoryBatch.TargetElement -AppKey $appKey
+            $done++
+            # at least one per pass, or a slow machine would never finish the list
+            if ($clock.ElapsedMilliseconds -ge $budgetMs) {
+                break
+            }
+        }
+        $done
+    }
+
+    if ($rendered -lt $keys.Count) {
+        $sync.InstallAppRenderQueue.Enqueue([pscustomobject]@{
+            Category = $CategoryBatch.Category
+            TargetElement = $CategoryBatch.TargetElement
+            AppKeys = @($keys[$rendered..($keys.Count - 1)])
+        })
     }
 
     # Entries render in batches, so a filter that is already active has to be applied to each new
@@ -21,23 +48,7 @@ function Invoke-WinUtilInstallAppRenderBatch {
 
 function Complete-WinUtilInstallAppRendering {
     $sync.InstallAppEntriesRendered = $true
-}
 
-function Invoke-WinUtilInstallAppRenderNextBatch {
-    if ($sync.InstallAppRenderQueue.Count -gt 0) {
-        $categoryBatch = $sync.InstallAppRenderQueue.Dequeue()
-        Invoke-WinUtilInstallAppRenderBatch -CategoryBatch $categoryBatch
-    }
-
-    if ($sync.InstallAppRenderQueue.Count -gt 0) {
-        $sync.Form.Dispatcher.BeginInvoke(
-            [System.Windows.Threading.DispatcherPriority]::Background,
-            [action]{ Invoke-WinUtilInstallAppRenderNextBatch }
-        ) | Out-Null
-        return
-    }
-
-    Complete-WinUtilInstallAppRendering
 }
 
 function Start-WinUtilInstallAppRendering {
@@ -47,18 +58,15 @@ function Start-WinUtilInstallAppRendering {
 
     $sync.InstallAppEntriesRendered = $false
 
-    if ($sync.Form -and $sync.Form.Dispatcher) {
-        $sync.Form.Dispatcher.BeginInvoke(
-            [System.Windows.Threading.DispatcherPriority]::Background,
-            [action]{ Invoke-WinUtilInstallAppRenderNextBatch }
-        ) | Out-Null
-        return
-    }
-
-    while ($sync.InstallAppRenderQueue.Count -gt 0) {
-        $categoryBatch = $sync.InstallAppRenderQueue.Dequeue()
-        Invoke-WinUtilInstallAppRenderBatch -CategoryBatch $categoryBatch
-    }
-
-    Complete-WinUtilInstallAppRendering
+    Start-WinUtilBackgroundQueue -Name "InstallAppRender" -Queue $sync.InstallAppRenderQueue `
+        -RequiresTab "Install" `
+        -Step { param($CategoryBatch) Invoke-WinUtilInstallAppRenderBatch -CategoryBatch $CategoryBatch } `
+        -OnComplete { Complete-WinUtilInstallAppRendering } `
+        -DeferWhile {
+            # Tabs that have never been built come first. This list is already on screen and
+            # filling in, while another tab is empty until it is built, so a click on one costs
+            # the whole build. The list finishing a little later is not felt; a tab that takes
+            # half a second to open is.
+            $sync.TabWarmupQueue -and $sync.TabWarmupQueue.Count -gt 0
+        }
 }

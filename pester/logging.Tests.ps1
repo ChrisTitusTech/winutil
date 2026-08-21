@@ -1,6 +1,5 @@
 #===========================================================================
 # Tests - WinUtil Logging
-#===========================================================================
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
@@ -35,22 +34,43 @@ Describe "Write-WinUtilLog" {
         Get-Content -Path $logPath -Raw | Should -Match "\[INFO\] \[Test\] same session log"
     }
 
-    It "uses the transcript stream when logPath is not set" {
-        $transcriptPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
+    It "writes entries produced concurrently by several threads" {
+        $logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
         $script:sync = [hashtable]::Synchronized(@{
             winutildir = $script:testRoot
-            transcriptPath = $transcriptPath
+            logPath = $logPath
         })
-        Mock Add-Content { }
-        Mock Write-Host { }
 
-        Write-WinUtilLog -Component "Test" -Message "transcript fallback"
+        $logFunction = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Write-WinUtilLog.ps1") -Raw
+        $initialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
+        $initialSessionState.Variables.Add(
+            (New-Object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList "sync", $script:sync, $null)
+        )
+        $pool = [runspacefactory]::CreateRunspacePool(1, 4, $initialSessionState, $Host)
+        $pool.Open()
 
-        Should -Invoke -CommandName Add-Content -Times 0 -Exactly
-        Should -Invoke -CommandName Write-Host -Times 1 -Exactly -ParameterFilter {
-            $Object -match "\[INFO\] \[Test\] transcript fallback"
+        try {
+            $handles = foreach ($index in 1..12) {
+                $shell = [powershell]::Create()
+                $shell.RunspacePool = $pool
+                [void]$shell.AddScript($logFunction)
+                [void]$shell.AddScript("Write-WinUtilLog -Component 'Test' -Message 'entry $index'")
+                [pscustomobject]@{ Shell = $shell; Handle = $shell.BeginInvoke() }
+            }
+
+            foreach ($item in $handles) {
+                $item.Shell.EndInvoke($item.Handle)
+                $item.Shell.Dispose()
+            }
+        } finally {
+            $pool.Close()
+            $pool.Dispose()
         }
-        Test-Path -Path (Join-Path $script:testRoot "winutil.log") | Should -BeFalse
+
+        $content = Get-Content -Path $logPath
+        foreach ($index in 1..12) {
+            @($content | Where-Object { $_ -match "\[Test\] entry $index$" }).Count | Should -Be 1
+        }
     }
 
     It "creates one fallback log under logs when only winutildir is available" {
@@ -70,38 +90,26 @@ Describe "Write-WinUtilLog" {
         $content | Should -Match "second fallback entry"
     }
 
-    It "does not append directly when the active log file is the transcript" {
+    It "falls back to host output when the log file cannot be opened" {
         $logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
         $script:sync = [hashtable]::Synchronized(@{
             winutildir = $script:testRoot
             logPath = $logPath
-            transcriptPath = $logPath
         })
 
-        Mock Add-Content { throw [System.IO.IOException]::new("locked by transcript") } -ParameterFilter {
+        Mock Add-Content { throw [System.IO.IOException]::new("file is locked") } -ParameterFilter {
             $Path -eq $logPath -and $ErrorAction -eq "Stop"
         }
         Mock Write-Host { }
         Mock Write-Warning { }
 
-        Write-WinUtilLog -Component "Test" -Message "transcript stream fallback"
+        Write-WinUtilLog -Component "Test" -Message "locked file fallback"
 
-        Should -Invoke -CommandName Add-Content -Times 0 -Exactly
         Should -Invoke -CommandName Write-Host -Times 1 -Exactly -ParameterFilter {
-            $Object -match "\[INFO\] \[Test\] transcript stream fallback"
+            $Object -match "\[INFO\] \[Test\] locked file fallback"
         }
         Should -Invoke -CommandName Write-Warning -Times 0 -Exactly
     }
 
 }
 
-Describe "WinUtil startup logging path" {
-    It "uses one timestamped log file under the logs directory" {
-        $startScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\start.ps1") -Raw
-
-        $startScript | Should -Match '\$sync\.logPath = "\$logdir\\winutil_\$dateTime\.log"'
-        $startScript | Should -Match '\$sync\.transcriptPath = \$sync\.logPath'
-        $startScript | Should -Match 'Start-Transcript -Path \$sync\.logPath'
-        $startScript | Should -Not -Match '\$sync\.logPath = "\$winutildir\\winutil\.log"'
-    }
-}

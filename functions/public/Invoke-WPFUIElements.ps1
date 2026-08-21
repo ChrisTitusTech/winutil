@@ -22,7 +22,11 @@ function Invoke-WPFUIElements {
         [string]$targetGridName,
 
         [Parameter(Mandatory, Position = 2)]
-        [int]$columncount
+        [int]$columncount,
+
+        # Let the interface answer between batches of entries. Only for content nobody is
+        # waiting on: a user who just clicked the tab is better served by finishing at once.
+        [switch]$Yield
     )
 
     $window = $sync.form
@@ -100,7 +104,7 @@ function Invoke-WPFUIElements {
     $panelcount = 0
 
     # Iterate through 'organizedData' by panel, category, and application
-    $count = 0
+    $yieldClock = [System.Diagnostics.Stopwatch]::StartNew()
     foreach ($panelKey in ($organizedData.Keys | Sort-Object)) {
         # Create a Border for each column
         $border = New-Object Windows.Controls.Border
@@ -150,7 +154,6 @@ function Invoke-WPFUIElements {
 
         # Now proceed with adding category labels and entries to $stackPanelContainer
         foreach ($category in ($organizedData[$panelKey].Keys | Sort-Object)) {
-            $count++
 
             $label = New-Object Windows.Controls.Label
             $categoryCleanName = $category -replace ".*__", ""
@@ -174,7 +177,19 @@ function Invoke-WPFUIElements {
                 }
             }}, Content
             foreach ($entryInfo in $entries) {
-                $count++
+
+                # Constructing a panel's worth of controls in one go holds the interface for
+                # hundreds of milliseconds. Draining the queue on a deadline rather than every
+                # nth entry keeps the wait bounded whatever the entries cost to build.
+                if ($Yield -and $yieldClock.ElapsedMilliseconds -ge 25 -and (Test-WinUtilUIAlive)) {
+                    $yieldClock.Restart()
+                    $frame = New-Object Windows.Threading.DispatcherFrame
+                    $null = $sync.Form.Dispatcher.BeginInvoke(
+                        [Windows.Threading.DispatcherPriority]::Background,
+                        [action]{ $frame.Continue = $false })
+                    [Windows.Threading.Dispatcher]::PushFrame($frame)
+                }
+
                 # Create the UI elements based on the entry type
                 switch ($entryInfo.Type) {
                     "Toggle" {

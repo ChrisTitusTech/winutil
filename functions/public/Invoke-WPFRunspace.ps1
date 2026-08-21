@@ -31,43 +31,11 @@ function Invoke-WPFRunspace {
         $ParameterList
     )
 
-    if (-not ("WinUtilRunspaceCleanup" -as [type])) {
-        Add-Type @"
-using System;
-using System.Management.Automation;
-
-public sealed class WinUtilRunspaceCleanupState
-{
-    public PowerShell PowerShell { get; set; }
-    public IAsyncResult Handle { get; set; }
-}
-
-public static class WinUtilRunspaceCleanup
-{
-    public static readonly System.Threading.WaitOrTimerCallback Callback = Cleanup;
-
-    public static void Cleanup(object state, bool timedOut)
-    {
-        var cleanupState = state as WinUtilRunspaceCleanupState;
-        if (cleanupState == null || cleanupState.PowerShell == null || cleanupState.Handle == null)
-        {
-            return;
-        }
-
-        try
-        {
-            cleanupState.PowerShell.EndInvoke(cleanupState.Handle);
-        }
-        catch
-        {
-        }
-        finally
-        {
-            cleanupState.PowerShell.Dispose();
-        }
-    }
-}
-"@
+    # Starting work into a pool that is closing gives that instance a runspace it can never run
+    # on, and it throws on a thread pool thread where nothing is catching
+    if ($sync.ShuttingDown) {
+        Write-WinUtilLog -Level "WARN" -Component "UI" -Message "Refused to start background work, WinUtil is closing."
+        return $null
     }
 
     Initialize-WinUtilRunspacePool | Out-Null
@@ -80,6 +48,11 @@ public static class WinUtilRunspaceCleanup
     [void]$powershell.AddArgument($ArgumentList)
 
     foreach ($parameter in $ParameterList) {
+        # A single pair written as @(("Name", $value)) collapses to a two element array, and
+        # indexing it then yields the first two characters of the name
+        if ($parameter -is [string] -or $parameter.Count -ne 2) {
+            throw "ParameterList takes name and value pairs. Received '$parameter'. A single pair needs a leading comma: -ParameterList (,('Name', `$value))"
+        }
         [void]$powershell.AddParameter($parameter[0], $parameter[1])
     }
 
@@ -88,10 +61,11 @@ public static class WinUtilRunspaceCleanup
     # Execute the RunspacePool
     $handle = $powershell.BeginInvoke()
 
-    $cleanupState = [WinUtilRunspaceCleanupState]::new()
-    $cleanupState.PowerShell = $powershell
-    $cleanupState.Handle = $handle
-    [System.Threading.ThreadPool]::RegisterWaitForSingleObject($handle.AsyncWaitHandle, [WinUtilRunspaceCleanup]::Callback, $cleanupState, -1, $true) | Out-Null
+    # Registered after the invocation starts: a NotStarted instance is indistinguishable from a
+    # finished one to the pruning pass, which would drop it and hide its work from shutdown
+    Register-WinUtilActiveShell -PowerShell $powershell
+
+    Register-WinUtilRunspaceCleanup -PowerShell $powershell -Handle $handle
 
     # Return the handle
     return $handle

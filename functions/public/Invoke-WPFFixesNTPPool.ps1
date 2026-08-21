@@ -14,7 +14,4 @@ function Invoke-WPFFixesNTPPool {
     Restart-Service w32time
     w32tm /resync
 
-    Write-Host "================================="
-    Write-Host "-- NTP Configuration Complete ---"
-    Write-Host "================================="
 }

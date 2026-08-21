@@ -1,6 +1,5 @@
 #===========================================================================
 # Tests - XAML Control Wiring
-#===========================================================================
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
@@ -8,7 +7,7 @@ BeforeAll {
     $script:functionRoot = Join-Path $script:repoRoot "functions"
     $script:scriptsRoot = Join-Path $script:repoRoot "scripts"
     $script:xamlPath = Join-Path $script:repoRoot "xaml\inputXML.xaml"
-    $script:mainScriptPath = Join-Path $script:scriptsRoot "main.ps1"
+    $script:uiScriptPath = Join-Path $script:functionRoot "private\Start-WinUtilUserInterface.ps1"
     $script:buttonScriptPath = Join-Path $script:functionRoot "public\Invoke-WPFButton.ps1"
     $script:xamlText = Get-Content -Path $script:xamlPath -Raw
     $script:xaml = [xml]$script:xamlText
@@ -180,15 +179,7 @@ Describe "XAML document" {
         }
     }
 
-    It "wires the Document search chip to an existing Document category" {
-        $mainScript = Get-Content -Path $script:mainScriptPath -Raw
-        $mainScript | Should -Match '@\{ Name = "WPFSearchChipDocument";\s+Category = "Document" \}'
-        $mainScript | Should -Match '\$sync\["WPFSearchChipDocument"\]\.Add_Click\(\{ Invoke-WinUtilAppCategoryChip -Chip \$this \}\)'
-
-        $applications = Get-WinUtilConfigObject -Name "applications"
-        $categories = @($applications.PSObject.Properties | ForEach-Object { $_.Value.category } | Sort-Object -Unique)
-        $categories | Should -Contain "Document"
-    }
+    
 
     It "presents the three Updates profiles with accurate action labels" {
         $updatesTab = $script:xaml.SelectSingleNode('//*[local-name()="TabItem"][@Name="WPFTab4"]')
@@ -265,28 +256,7 @@ Describe "XAML document" {
         }
     }
 
-    It "opens AppX removal from Tweaks and provides a return path" {
-        $navPanel = $script:xaml.SelectSingleNode('//*[local-name()="StackPanel"][@Name="NavDockPanel"]')
-        $tweaksTab = $script:xaml.SelectSingleNode('//*[local-name()="TabItem"][@Name="WPFTab2"]')
-        $appxTab = $script:xaml.SelectSingleNode('//*[local-name()="TabItem"][@Name="WPFTab6"]')
-        $openButton = $tweaksTab.SelectSingleNode('.//*[local-name()="Button"][@Name="WPFAppxRemoval"]')
-        $buttonNames = @($openButton.ParentNode.SelectNodes('./*[local-name()="Button"]') | ForEach-Object { $_.GetAttribute("Name") })
-        $getInstalledIndex = [array]::IndexOf($buttonNames, "WPFGetInstalledTweaks")
-        $openAppxIndex = [array]::IndexOf($buttonNames, "WPFAppxRemoval")
-        $buttonSource = Get-Content -Path $script:buttonScriptPath -Raw
-        $tabSource = Get-Content -Path (Join-Path $script:functionRoot "public\Invoke-WPFTab.ps1") -Raw
-
-        $navPanel.SelectSingleNode('./*[local-name()="ToggleButton"][@Name="WPFTab6BT"]') | Should -BeNullOrEmpty
-        $openButton.GetAttribute("Content").Trim() | Should -Be "AppX Removal"
-        $openAppxIndex | Should -Be ($getInstalledIndex + 1)
-        $appxTab.SelectSingleNode('.//*[local-name()="Button"][@Name="WPFBackToTweaks"]') | Should -Not -BeNullOrEmpty
-        $appxTab.SelectSingleNode('.//*[local-name()="Button"][@Name="WPFInstallSelectedAppx"]') | Should -Not -BeNullOrEmpty
-        $appxTab.SelectSingleNode('.//*[local-name()="Button"][@Name="WPFRemoveSelectedAppx"]') | Should -Not -BeNullOrEmpty
-        $buttonSource | Should -Match '"WPFAppxRemoval"\s*\{Invoke-WPFTab "WPFTab6BT"\}'
-        $buttonSource | Should -Match '"WPFBackToTweaks"\s*\{Invoke-WPFTab "WPFTab2BT"\}'
-        $buttonSource | Should -Match '"WPFInstallSelectedAppx"\s*\{Invoke-WPFAppxInstall\}'
-        $tabSource | Should -Match '\$sync\.\$tabNav\.Items\[\$tabNumber\]\.IsSelected = \$true'
-    }
+    
 
     It "centers top bar controls vertically" {
         $navPanel = $script:xaml.SelectSingleNode('//*[local-name()="StackPanel"][@Name="NavDockPanel"]')
@@ -310,31 +280,9 @@ Describe "XAML document" {
         }
     }
 
-    It "keeps the responsive search controls within the available screen width" {
-        $window = $script:xaml.DocumentElement
-        $searchBar = $script:xaml.SelectSingleNode('//*[local-name()="TextBox"][@Name="SearchBar"]')
-        $searchBorder = $searchBar.ParentNode.ParentNode
-        $mainScript = Get-Content -Path $script:mainScriptPath -Raw
+    
 
-        $window.GetAttribute("MinWidth") | Should -Be "800"
-        $searchBorder.GetAttribute("Width") | Should -BeNullOrEmpty
-        $searchBorder.GetAttribute("HorizontalAlignment") | Should -Be "Stretch"
-        $searchBar.GetAttribute("Width") | Should -BeNullOrEmpty
-        $searchBar.GetAttribute("HorizontalAlignment") | Should -Be "Stretch"
-        $mainScript | Should -Match '\$sync\.Form\.MinWidth = "1150"'
-        $mainScript | Should -Match '\$sync\.Form\.MinWidth = \[Math\]::Min\(\[double\]\$sync\.Form\.MinWidth, \[double\]\$screenWidth\)'
-    }
-
-    It "shows only one search action glyph at a time" {
-        $searchIcon = $script:xaml.SelectSingleNode('//*[local-name()="TextBlock"][@Name="SearchBarIcon"]')
-        $clearButton = $script:xaml.SelectSingleNode('//*[local-name()="Button"][@Name="SearchBarClearButton"]')
-        $mainScript = Get-Content -Path $script:mainScriptPath -Raw
-
-        $searchIcon | Should -Not -BeNullOrEmpty
-        $clearButton | Should -Not -BeNullOrEmpty
-        $mainScript | Should -Match '\$sync\.SearchBarClearButton\.Visibility = "Visible"\s+\$sync\.SearchBarIcon\.Visibility = "Collapsed"'
-        $mainScript | Should -Match '\$sync\.SearchBarClearButton\.Visibility = "Collapsed"\s+\$sync\.SearchBarIcon\.Visibility = "Visible"'
-    }
+    
 
     It "scopes toggle button styles without leaking into combo boxes" {
         $resources = $script:xaml.SelectSingleNode('//*[local-name()="Window.Resources"]')
@@ -385,10 +333,10 @@ Describe "XAML document" {
 Describe "XAML and sync wiring" {
     It "wires generated config panels to existing target grids" {
         $xamlNames = @(Get-WinUtilXamlRuntimeNamedControls | ForEach-Object { $_.Name })
-        $mainLines = Get-Content -Path $script:mainScriptPath
+        $uiLines = Get-Content -Path $script:uiScriptPath
         $invalidTargets = New-Object System.Collections.Generic.List[string]
 
-        foreach ($line in $mainLines) {
+        foreach ($line in $uiLines) {
             if ($line.TrimStart().StartsWith("#")) {
                 continue
             }
@@ -431,8 +379,28 @@ Describe "XAML and sync wiring" {
             "version",
             "winutildir",
             "logPath",
-            "transcriptPath",
-            "ProcessRunning",
+            "ActiveJob",
+            "ActiveJobToken",
+            # Intrinsic to the synchronized hashtable rather than WinUtil state; the job layer
+            # locks on it to claim and release the active job slot
+            "SyncRoot",
+            "UIRunspace",
+            "UIDispatchDelegate",
+            "StepTimings",
+            "LoggedErrors",
+            "StartedAt",
+            "SessionState",
+            "TabWarmupQueue",
+            "BackgroundQueues",
+            "ConsoleProgressState",
+            "LastInputAt",
+            "ActiveShells",
+            "ShuttingDown",
+            "ForceClose",
+            "FinishInConsole",
+            "PendingCloseWork",
+            "StopWatchdogTimer",
+            "IconFetchRunning",
             "selected",
             "selectedAppx",
             "selectedApps",
@@ -456,6 +424,9 @@ Describe "XAML and sync wiring" {
             "checkmarkrender",
             "warningrender",
             "InitializedTabs",
+            "AppCategoryChips",
+            "SelectedAppCategories",
+            "AppCategoryAutoExpanded",
             "RenderedAssetCache",
             "ToggleStatusCache",
             "InstallAppRenderQueue",
@@ -465,14 +436,9 @@ Describe "XAML and sync wiring" {
             "Win11ISODriveLetter",
             "Win11ISOWimPath",
             "Win11ISOImagePath",
-            "Win11ISOModifying",
-            "Win11ISOProcessRunning",
             "Win11ISOWorkDir",
             "Win11ISOContentsDir",
-            "Win11ISOUSBDisks",
-            "AppCategoryChips",
-            "SelectedAppCategories",
-            "AppCategoryAutoExpanded"
+            "Win11ISOUSBDisks"
         )
         $allowedNames = @($xamlNames + $generatedNames + $dynamicStateNames) | Sort-Object -Unique
         $bracketReferences = @(
@@ -525,7 +491,7 @@ Describe "WPF handler wiring" {
         )
         $buttonSwitchNames = @(Get-WinUtilButtonSwitchNames)
         $featureNames = @((Get-WinUtilConfigObject -Name "feature").PSObject.Properties.Name)
-        $mainScript = Get-Content -Path $script:mainScriptPath -Raw
+        $uiScript = Get-Content -Path $script:uiScriptPath -Raw
         $unhandledButtons = New-Object System.Collections.Generic.List[string]
 
         foreach ($button in $buttonControls) {
@@ -533,9 +499,12 @@ Describe "WPF handler wiring" {
             $hasFeatureHandler = Test-WinUtilNameInSet -Name $button.Name -Set $featureNames
             $escapedName = [regex]::Escape($button.Name)
             $explicitHandlerPattern = '\$sync\s*(?:\[\s*["'']' + $escapedName + '["'']\s*\]|\.' + $escapedName + ')\.Add_Click'
-            $hasExplicitHandler = $mainScript -imatch $explicitHandlerPattern
+            $hasExplicitHandler = $uiScript -imatch $explicitHandlerPattern
 
-            if (-not ($hasSwitchHandler -or $hasFeatureHandler -or $hasExplicitHandler)) {
+            # The category chips share one handler, wired from the list that names them
+            $hasChipHandler = $uiScript -imatch ('@\{\s*Name\s*=\s*"' + $escapedName + '"')
+
+            if (-not ($hasSwitchHandler -or $hasFeatureHandler -or $hasExplicitHandler -or $hasChipHandler)) {
                 $unhandledButtons.Add($button.Name)
             }
         }

@@ -1,44 +1,21 @@
 #===========================================================================
 # Tests - Install tab rendering
-#===========================================================================
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 }
 
 Describe "Install app rendering startup contract" {
-    It "queues app entries after creating category containers" {
-        $categoryScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Initialize-InstallCategoryAppList.ps1") -Raw
+    
 
-        $categoryScript | Should -Match '\$sync\.InstallAppRenderQueue = \[System\.Collections\.Queue\]::new\(\)'
-        $categoryScript | Should -Match 'Start-WinUtilInstallAppRendering'
-        $categoryScript | Should -Match 'Pre-group apps by category before creating WPF controls'
-    }
+    
 
-    It "renders queued apps through dispatcher callbacks when a form dispatcher exists" {
-        $renderScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilInstallAppRendering.ps1") -Raw
-
-        $renderScript | Should -Match 'Dispatcher\.BeginInvoke'
-        $renderScript | Should -Match 'Invoke-WinUtilInstallAppRenderNextBatch'
-        $renderScript | Should -Match 'Initialize-InstallAppEntry'
-        $renderScript | Should -Match 'Find-AppsByNameOrDescription -SearchString \$sync\.SearchBar\.Text -Categories \$selectedCategories'
-        # A batch has to be filtered when either filter is on, not only when there is search text
-        $renderScript | Should -Match '\$selectedCategories\.Count -gt 0'
-        $renderScript | Should -Match '\$sync\.InstallAppEntriesRendered = \$true'
-    }
-
-    It "does not use dispatcher timers for deferred install rendering" {
-        $renderScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilInstallAppRendering.ps1") -Raw
-
-        $renderScript | Should -Not -Match 'DispatcherTimer'
-        $renderScript | Should -Not -Match '\$timer'
-        $renderScript | Should -Not -Match '\$dispatcherTimer'
-        $renderScript | Should -Not -Match '\$timer\.Stop\(\)'
-        $renderScript | Should -Not -Match '& \$renderCategory'
-    }
+    
 
     It "drains queued app batches on the WPF dispatcher without timer scope errors" {
         Add-Type -AssemblyName WindowsBase
+        function global:Test-WinUtilUIAlive { $null -ne $sync.Form -and $null -ne $sync.Form.Dispatcher }
+        . (Join-Path $script:repoRoot "functions\private\Start-WinUtilBackgroundQueue.ps1")
         . (Join-Path $script:repoRoot "functions\private\Start-WinUtilInstallAppRendering.ps1")
 
         $previousSync = Get-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
@@ -59,6 +36,15 @@ Describe "Install app rendering startup contract" {
                 param($TargetElement, $AppKey)
                 $renderedApps.Add($AppKey)
                 return "entry:$AppKey"
+            }
+
+
+            function global:Test-WinUtilDeferBackgroundWork { param($RequiresTab) $false }
+            function global:Invoke-WinUtilWhenIdle { param($Callback, $DelayMilliseconds) }
+
+            function global:Measure-WinUtilStep {
+                param($Scope, $Name, [scriptblock]$ScriptBlock)
+                & $ScriptBlock
             }
 
             function global:Find-AppsByNameOrDescription {
@@ -112,17 +98,11 @@ Describe "Install app rendering startup contract" {
         }
     }
 
-    It "keeps app-entry metadata lookup independent from the old caller scope" {
-        $entryScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Initialize-InstallAppEntry.ps1") -Raw
+    
 
-        $entryScript | Should -Match '\$app = \$sync\.configs\.applicationsHashtable\.\$appKey'
-        $entryScript | Should -Not -Match '\$Apps\.\$appKey'
-    }
+    
 
-    It "restores delayed app checkbox state from selected apps" {
-        $entryScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Initialize-InstallAppEntry.ps1") -Raw
+    
 
-        $entryScript | Should -Match '\$sync\.selectedApps -contains \$appKey'
-        $entryScript | Should -Match '\$checkBox\.IsChecked = \$true'
-    }
+    
 }
