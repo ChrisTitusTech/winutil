@@ -1,7 +1,0 @@
-node_modules
-.astro
-dist
-.git
-.env
-.env.*
-*.log

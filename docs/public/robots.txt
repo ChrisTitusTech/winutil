@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://winutil.christitus.com/sitemap-index.xml
