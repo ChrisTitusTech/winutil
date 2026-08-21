@@ -14,7 +14,6 @@ function Initialize-WinUtilTabContent {
 
     switch ($TabName) {
         "Install" {
-            Invoke-WPFUIElements -configVariable $sync.configs.appnavigation -targetGridName "appscategory" -columncount 1
             Initialize-WPFUI -targetGridName "appscategory"
 
             Initialize-WPFUI -targetGridName "appspanel"
@@ -36,4 +35,7 @@ function Initialize-WinUtilTabContent {
     }
 
     $sync.InitializedTabs[$TabName] = $true
+
+    # Sync freshly built controls to any selections already in $sync.selected* (import/preset).
+    Reset-WPFCheckBoxes -doToggles $true
 }

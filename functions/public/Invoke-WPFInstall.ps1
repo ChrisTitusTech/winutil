@@ -110,5 +110,5 @@ function Invoke-WPFInstall {
             }
             $sync.ProcessRunning = $False
         }
-    }
+    } | Out-Null
 }

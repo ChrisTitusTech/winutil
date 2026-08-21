@@ -98,6 +98,15 @@
         "winget": "AutoHotkey.AutoHotkey",
         "foss": true
     },
+    "battlenet": {
+        "category": "Games",
+        "choco": "na",
+        "winget": "Blizzard.BattleNet",
+        "content": "Battle.net",
+        "description": "Battle.net is a launcher for games created and developed by Activision Blizzard",
+        "link": "https://battle.net",
+        "foss": false
+    },
     "bitwarden": {
         "category": "Utilities",
         "choco": "bitwarden",
@@ -123,6 +132,15 @@
         "description": "Brave is a privacy-focused web browser that blocks ads and trackers, offering a faster and safer browsing experience.",
         "link": "https://www.brave.com",
         "winget": "Brave.Brave",
+        "foss": true
+    },
+    "bruno": {
+        "category": "Development",
+        "choco": "bruno",
+        "content": "Bruno",
+        "description": "Bruno is a local-first API client that stores collections as plain text files for version control and collaboration.",
+        "link": "https://www.usebruno.com/",
+        "winget": "Bruno.Bruno",
         "foss": true
     },
     "bulkcrapuninstaller": {
@@ -166,7 +184,7 @@
         "choco": "na",
         "content": "ChatGPT Desktop",
         "description": "The official ChatGPT desktop app for Windows, distributed through the Microsoft Store.",
-        "link": "https://apps.microsoft.com/detail/9nt1r1c2hh7j",
+        "link": "https://openai.com/chatgpt/download/",
         "winget": "msstore:9NT1R1C2HH7J",
         "foss": false
     },
@@ -193,7 +211,7 @@
         "choco": "chromium",
         "content": "Chromium",
         "description": "Chromium is the open-source project that serves as the foundation for various web browsers, including Chrome.",
-        "link": "https://github.com/Hibbiki/chromium-win64",
+        "link": "https://www.chromium.org/",
         "winget": "Hibbiki.Chromium",
         "foss": true
     },
@@ -319,9 +337,18 @@
         "choco": "dorion",
         "content": "Dorion",
         "description": "Tiny alternative Discord client with a smaller footprint, snappier startup, themes, plugins and more!",
-        "link": "https://github.com/SpikeHD/Dorion",
+        "link": "https://spikehd.dev/projects/dorion/",
         "winget": "SpikeHD.Dorion",
         "foss": true
+    },
+    "dockerdesktop": {
+        "category": "Development",
+        "choco": "docker-desktop",
+        "content": "Docker Desktop",
+        "description": "Docker Desktop provides a local environment for building, running, and testing containerized applications on Windows.",
+        "link": "https://www.docker.com/products/docker-desktop/",
+        "winget": "Docker.DockerDesktop",
+        "foss": false
     },
     "dotnet6": {
         "category": "Microsoft Tools",
@@ -395,6 +422,16 @@
         "winget": "Microsoft.Edge",
         "foss": false
     },
+    "es-de": {
+        "category": "Games",
+        "choco": "",
+        "content": "EmulationStation Desktop Edition",
+        "_comment": "This and emulationstation are two completely different things. ES-DE is your frontend for everything and has its own set of emulators. Emulationstation is a graphical frontend for RetroArch.",
+        "description": "EmulationStation Desktop Edition is a frontend for browsing and launching games from your multi-platform game collection.",
+        "link": "https://es-de.org/",
+        "winget": "ES-DE.EmulationStation-DE",
+        "foss": true
+    },
     "enteauth": {
         "category": "Utilities",
         "choco": "ente-auth",
@@ -418,7 +455,7 @@
         "choco": "files",
         "content": "Files",
         "description": "Alternative file explorer.",
-        "link": "https://github.com/files-community/Files",
+        "link": "https://files.community",
         "winget": "FilesCommunity.Files",
         "foss": true
     },
@@ -458,6 +495,24 @@
         "winget": "flux.flux",
         "foss": false
     },
+    "foobar": {
+        "category": "Multimedia Tools",
+        "choco": "foobar2000",
+        "content": "foobar2000 (Music Player)",
+        "description": "foobar2000 is a highly customizable and extensible music player for Windows, known for its modular design and advanced features.",
+        "link": "https://www.foobar2000.org/",
+        "winget": "PeterPawlowski.foobar2000",
+        "foss": false
+    },
+    "fnm": {
+        "category": "Development",
+        "choco": "fnm",
+        "content": "Fast Node Manager",
+        "description": "Fast Node Manager (fnm) is a fast, cross-platform tool for installing and switching between Node.js versions.",
+        "link": "https://github.com/Schniz/fnm",
+        "winget": "Schniz.fnm",
+        "foss": true
+    },
     "foxpdfreader": {
         "category": "Document",
         "choco": "foxitreader",
@@ -492,6 +547,24 @@
         "description": "Git is a distributed version control system widely used for tracking changes in source code during software development.",
         "link": "https://git-scm.com/",
         "winget": "Git.Git",
+        "foss": true
+    },
+    "gitextensions": {
+        "category": "Development",
+        "choco": "gitextensions",
+        "content": "Git Extensions",
+        "description": "Git Extensions is a graphical Git client for Windows with repository, history, and commit management tools.",
+        "link": "https://gitextensions.github.io/",
+        "winget": "GitExtensionsTeam.GitExtensions",
+        "foss": true
+    },
+    "githubcli": {
+        "category": "Development",
+        "choco": "gh",
+        "content": "GitHub CLI",
+        "description": "GitHub CLI brings pull requests, issues, releases, and other GitHub workflows to the terminal.",
+        "link": "https://cli.github.com/",
+        "winget": "GitHub.cli",
         "foss": true
     },
     "githubdesktop": {
@@ -553,7 +626,7 @@
         "choco": "helium",
         "content": "Helium",
         "description": "Private, fast, and honest web browser.",
-        "link": "https://github.com/imputnet/helium/",
+        "link": "https://helium.computer",
         "winget": "ImputNet.Helium",
         "foss": true
     },
@@ -562,7 +635,7 @@
         "choco": "hugo-extended",
         "content": "Hugo",
         "description": "The world's fastest framework for building websites.",
-        "link": "https://github.com/gohugoio/hugo/",
+        "link": "https://gohugo.io",
         "winget": "Hugo.Hugo.Extended",
         "foss": true
     },
@@ -679,7 +752,7 @@
         "choco": "jellyfin-media-player",
         "content": "Jellyfin Media Player",
         "description": "Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library.",
-        "link": "https://github.com/jellyfin/jellyfin-media-player",
+        "link": "https://jellyfin.org/",
         "winget": "Jellyfin.JellyfinMediaPlayer",
         "foss": true
     },
@@ -769,7 +842,7 @@
         "choco": "librewolf",
         "content": "LibreWolf",
         "description": "LibreWolf is a privacy-focused web browser based on Firefox, with additional privacy and security enhancements.",
-        "link": "https://librewolf-community.gitlab.io/",
+        "link": "https://librewolf.net/",
         "winget": "LibreWolf.LibreWolf",
         "foss": true
     },
@@ -787,8 +860,16 @@
         "choco": "mediainfo",
         "content": "mpc-qt",
         "description": "Media Player Classic Qute Theater",
-        "link": "https://github.com/mpc-qt/mpc-qt",
+        "link": "https://mpc-qt.github.io",
         "winget": "mpc-qt.mpc-qt",
+        "foss": true
+    },
+    "mpv": {
+        "category": "Multimedia Tools",
+        "content": "mpv",
+        "description": "mpv is a free, open source, and cross-platform media player supporting a wide variety of media formats, codecs, and subtitle types.",
+        "link": "https://mpv.io/",
+        "winget": "shinchiro.mpv",
         "foss": true
     },
     "matrix": {
@@ -832,7 +913,7 @@
         "choco": "mpc-hc-clsid2",
         "content": "Media Player Classic - Home Cinema",
         "description": "Media Player Classic - Home Cinema (MPC-HC) is a free and open-source video and audio player for Windows. MPC-HC is based on the original Guliverkli project and contains many additional features and bug fixes.",
-        "link": "https://github.com/clsid2/mpc-hc/",
+        "link": "https://mpc-hc.org/",
         "winget": "clsid2.mpc-hc",
         "foss": true
     },
@@ -859,7 +940,7 @@
         "choco": "mullvad-app",
         "content": "Mullvad VPN",
         "description": "This is the VPN client software for the Mullvad VPN service.",
-        "link": "https://github.com/mullvad/mullvadvpn-app",
+        "link": "https://mullvad.net/",
         "winget": "MullvadVPN.MullvadVPN",
         "foss": true
     },
@@ -886,7 +967,7 @@
         "choco": "nanazip",
         "content": "NanaZip",
         "description": "NanaZip is a fast and efficient file compression and decompression tool.",
-        "link": "https://github.com/M2Team/NanaZip",
+        "link": "https://nanazip.org",
         "winget": "M2Team.NanaZip",
         "foss": true
     },
@@ -898,6 +979,15 @@
         "link": "https://netbird.io/",
         "winget": "Netbird.Netbird",
         "foss": true
+    },
+    "tailscale": {
+        "category": "Utilities",
+        "choco": "tailscale",
+        "content": "Tailscale",
+        "description": "The Tailscale client allows you to connect all your devices using WireGuard®, without the hassle. Tailscale makes it as easy as installing an app and signing in.",
+        "link": "https://tailscale.com/",
+        "winget": "Tailscale.Tailscale",
+        "foss": false
     },
     "naps2": {
         "category": "Document",
@@ -1186,6 +1276,15 @@
         "winget": "JanDeDobbeleer.OhMyPosh",
         "foss": true
     },
+    "postman": {
+        "category": "Development",
+        "choco": "postman",
+        "content": "Postman",
+        "description": "Postman is an API platform and desktop client for designing, testing, documenting, and collaborating on APIs.",
+        "link": "https://www.postman.com/downloads/",
+        "winget": "Postman.Postman",
+        "foss": false
+    },
     "powershell": {
         "category": "Microsoft Tools",
         "choco": "powershell-core",
@@ -1302,6 +1401,15 @@
         "link": "https://www.qbittorrent.org/",
         "winget": "qBittorrent.qBittorrent",
         "foss": true
+    },
+    "qownnotes": {
+      "category": "Document",
+      "choco": "qownnotes",
+      "content": "QOwnNotes",
+      "description": "QOwnNotes is a free open-source note taking app with Nextcloud/ownCloud integration.",
+      "link": "https://www.qownnotes.org/",
+      "winget": "pbek.QOwnNotes",
+      "foss": true  
     },
     "qtox": {
         "category": "Communications",
@@ -1438,6 +1546,15 @@
         "winget": "StartIsBack.StartAllBack",
         "foss": false
     },
+    "starship": {
+        "category": "Development",
+        "choco": "starship",
+        "content": "Starship (Shell Prompt)",
+        "description": "Starship is a fast, customizable, cross-platform prompt for PowerShell and other shells.",
+        "link": "https://starship.rs/",
+        "winget": "Starship.Starship",
+        "foss": true
+    },
     "steam": {
         "category": "Games",
         "choco": "steam-client",
@@ -1445,6 +1562,15 @@
         "description": "Steam is a digital distribution platform for purchasing and playing video games, offering multiplayer gaming, video streaming, and more.",
         "link": "https://store.steampowered.com/about/",
         "winget": "Valve.Steam",
+        "foss": false
+    },
+    "roblox": {
+        "category": "Games",
+        "choco": "na",
+        "content": "Roblox",
+        "description": "Roblox is a platform and game creation system that allows users to create and play games developed by the community.",
+        "link": "https://www.roblox.com/",
+        "winget": "Roblox.Roblox",
         "foss": false
     },
     "sublimetext": {
@@ -1470,7 +1596,7 @@
         "choco": "sunshine",
         "content": "Sunshine/GameStream Server",
         "description": "Sunshine is a GameStream server that allows you to remotely play PC games on Android devices, offering low-latency streaming.",
-        "link": "https://github.com/LizardByte/Sunshine",
+        "link": "https://app.lizardbyte.dev/Sunshine/",
         "winget": "LizardByte.Sunshine",
         "foss": true
     },
@@ -1587,7 +1713,7 @@
         "choco": "translucenttb",
         "content": "TranslucentTB",
         "description": "TranslucentTB is a tool that allows you to customize the transparency of the Windows Taskbar.",
-        "link": "https://github.com/TranslucentTB/TranslucentTB",
+        "link": "https://translucenttb.github.io",
         "winget": "CharlesMilette.TranslucentTB",
         "foss": true
     },
@@ -1616,6 +1742,15 @@
         "description": "Unity is a powerful game development platform for creating 2D, 3D, augmented reality, and virtual reality games.",
         "link": "https://unity.com/",
         "winget": "Unity.UnityHub",
+        "foss": false
+    },
+    "vagrant": {
+        "category": "Development",
+        "choco": "vagrant",
+        "content": "Vagrant",
+        "description": "Vagrant builds and manages reproducible virtual machine development environments from declarative configuration.",
+        "link": "https://developer.hashicorp.com/vagrant",
+        "winget": "Hashicorp.Vagrant",
         "foss": false
     },
     "everything": {
@@ -1659,7 +1794,7 @@
         "choco": "na",
         "content": "Vesktop",
         "description": "A cross platform electron-based desktop app aiming to give you a snappier Discord experience with Vencord pre-installed.",
-        "link": "https://github.com/Vencord/Vesktop",
+        "link": "https://vesktop.dev",
         "winget": "Vencord.Vesktop",
         "foss": true
     },
@@ -1749,7 +1884,7 @@
         "choco": "na",
         "content": "WhatsApp Desktop",
         "description": "WhatsApp Desktop is the official Windows desktop messaging app from Meta, distributed through the Microsoft Store.",
-        "link": "https://apps.microsoft.com/detail/9nksqgp7f2nh",
+        "link": "https://www.whatsapp.com/download",
         "winget": "msstore:9NKSQGP7F2NH",
         "foss": false
     },
@@ -1941,5 +2076,14 @@
         "content": "Lua",
         "link": "https://github.com/rjpcomputing/luaforwindows",
         "foss": true
+    },
+    "CloudflareWARP": {
+        "category": "Utilities",
+        "choco": "warp",
+        "winget": "Cloudflare.Warp",
+        "description": "WARP is a freemium VPN service provided by Cloudflare. Includes usage of Cloudflare's DNS",
+        "content": "Cloudflare WARP",
+        "link": "https://one.one.one.one",
+        "foss": false
     }
 }
