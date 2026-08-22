@@ -17,6 +17,7 @@ function Get-WinUtilTweaksStateReport {
         $grouped[$fieldName] = [ordered]@{}
     }
     $notEvaluable = [System.Collections.Generic.List[string]]::new()
+    $collectionStatus = "collected"
 
     try {
         $appliedTweaks = [System.Collections.Generic.HashSet[string]]::new(
@@ -45,9 +46,12 @@ function Get-WinUtilTweaksStateReport {
         }
     } catch {
         Write-WinUtilLog -Component "EnvironmentReport" -Level "WARN" -Message "Failed to collect tweaks/toggle state: $($_.Exception.Message)"
+        $collectionStatus = "unavailable"
     }
 
-    $result = [ordered]@{}
+    # Empty groups from a failed collection would otherwise be indistinguishable in the JSON from a
+    # successful scan that found nothing notable, so record whether collection actually ran.
+    $result = [ordered]@{ collectionStatus = $collectionStatus }
     foreach ($fieldName in $categoryFieldNames.Values) {
         $result[$fieldName] = [pscustomobject]$grouped[$fieldName]
     }

@@ -19,6 +19,7 @@ Describe "Get-WinUtilEnvironmentReport" {
         # its own dedicated Describe below with its own registry fixture.
         Mock Get-WinUtilTweaksStateReport {
             [pscustomobject]@{
+                collectionStatus = "collected"
                 essentialTweaks = [pscustomobject]@{}
                 customizePreferences = [pscustomobject]@{}
                 advancedTweaks = [pscustomobject]@{}
@@ -71,9 +72,21 @@ Describe "Get-WinUtilEnvironmentReport" {
     }
 
     It "contains no fields outside the approved report schema" {
-        $report = Get-WinUtilEnvironmentReport | ConvertTo-Json -Depth 6
+        # Exact property-name assertions, not a blocklist of specific bad names - a blocklist only
+        # catches fields someone thought to list, and would miss e.g. a future "biosUuid" or "userSid".
+        # Dynamic tweak keys inside tweaksState's groups are intentionally not asserted here.
+        $report = Get-WinUtilEnvironmentReport
 
-        $report | Should -Not -Match 'ComputerName|UserName|UserProfile|IPAddress|MacAddress|SerialNumber|ProductKey|Environment'
+        $report.PSObject.Properties.Name | Should -Be @(
+            "schemaVersion", "generatedAtUtc", "windows", "hardware", "powershell",
+            "packageManagers", "system", "tweaksState"
+        )
+        $report.windows.PSObject.Properties.Name | Should -Be @("edition", "version", "buildNumber", "architecture")
+        $report.hardware.PSObject.Properties.Name | Should -Be @("cpuModel", "logicalProcessorCount", "totalMemoryGB")
+        $report.tweaksState.PSObject.Properties.Name | Should -Be @(
+            "collectionStatus", "essentialTweaks", "customizePreferences", "advancedTweaks",
+            "performancePlans", "notEvaluable"
+        )
     }
 
     It "does not report a package manager as installed unless Test-WinUtilPackageManager confirms it" {
@@ -103,6 +116,16 @@ Describe "Get-WinUtilEnvironmentReport" {
         $report = Get-WinUtilEnvironmentReport
 
         $report.system.pendingRebootRequired | Should -BeTrue
+    }
+
+    It "does not flag a pending reboot for a present but empty PendingFileRenameOperations value" {
+        Mock Get-ItemProperty {
+            [pscustomobject]@{ PendingFileRenameOperations = @() }
+        } -ParameterFilter { $Name -eq "PendingFileRenameOperations" }
+
+        $report = Get-WinUtilEnvironmentReport
+
+        $report.system.pendingRebootRequired | Should -BeFalse
     }
 
 }
@@ -170,6 +193,7 @@ Describe "Get-WinUtilTweaksStateReport" {
     It "groups applied/not-applied tweaks and toggles by category" {
         $result = Get-WinUtilTweaksStateReport
 
+        $result.collectionStatus | Should -Be "collected"
         $result.essentialTweaks.WPFTweaksApplied | Should -BeTrue
         $result.essentialTweaks.WPFTweaksNotApplied | Should -BeFalse
         $result.customizePreferences.WPFToggleCustomize | Should -BeTrue
@@ -204,6 +228,9 @@ Describe "Get-WinUtilTweaksStateReport" {
         # reliably propagate to this scope - an uncaught exception here still fails the test anyway.
         $result = Get-WinUtilTweaksStateReport
 
+        # Empty groups alone would be indistinguishable from a successful scan that found nothing
+        # notable, so collectionStatus is what actually records that this run failed.
+        $result.collectionStatus | Should -Be "unavailable"
         $result.essentialTweaks.PSObject.Properties.Name | Should -Not -Contain "WPFTweaksApplied"
         @($result.essentialTweaks.PSObject.Properties).Count | Should -Be 0
         @($result.customizePreferences.PSObject.Properties).Count | Should -Be 0

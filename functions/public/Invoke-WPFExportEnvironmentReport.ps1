@@ -25,6 +25,15 @@ function Invoke-WPFExportEnvironmentReport {
         $jsonPath = $dialog.FileName
         $logsPath = Get-WinUtilEnvironmentReportLogsPath -JsonPath $jsonPath
 
+        # SaveFileDialog's own overwrite prompt only covers $jsonPath. $logsPath is derived and never
+        # shown to the user, so a same-day re-export would otherwise silently replace it.
+        if ($includeLogs -and (Test-Path $logsPath)) {
+            $includeLogs = [System.Windows.MessageBox]::Show(
+                $sync.Form,
+                "A logs file already exists at:`n$logsPath`n`nReplace it?",
+                "Environment Report", "YesNo", "Warning") -eq "Yes"
+        }
+
         Write-WinUtilLog -Component "EnvironmentReport" -Message "Environment report export started."
         Set-WinUtilTweaksProgressIndicator -Visible $true -Label "Exporting environment report..." -Percent 0
 

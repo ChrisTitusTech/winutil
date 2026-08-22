@@ -45,7 +45,7 @@ function Get-WinUtilEnvironmentReport {
         version         = $PSVersionTable.PSVersion.ToString()
         executionPolicy = $null
     }
-    
+
     try {
         $powershell.executionPolicy = (Get-ExecutionPolicy).ToString()
     } catch {
@@ -90,10 +90,15 @@ function Get-WinUtilEnvironmentReport {
             "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired"
         )
 
-        $pendingFileRename = Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" `
-            -Name "PendingFileRenameOperations" -ErrorAction SilentlyContinue
+        # A present-but-empty PendingFileRenameOperations value still returns a non-null object, so
+        # check the actual entries rather than just whether the property exists.
+        $pendingFileRenameOperations = @(
+            (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" `
+                -Name "PendingFileRenameOperations" -ErrorAction SilentlyContinue).PendingFileRenameOperations |
+                Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) }
+        )
         $system.pendingRebootRequired = ($rebootPaths | Where-Object { Test-Path $_ }).Count -gt 0 -or
-            $null -ne $pendingFileRename
+            $pendingFileRenameOperations.Count -gt 0
     } catch {
         Write-WinUtilLog -Component "EnvironmentReport" -Level "WARN" -Message "Failed to check pending-reboot registry state: $($_.Exception.Message)"
     }
