@@ -1,7 +1,7 @@
 {
   "WPFTweaksActivity": {
     "Content": "Activity History - Disable",
-    "Description": "Erases recent docs, clipboard, and run history.",
+    "Description": "Disables the Activity Feed system (docs, clipboard history, run history, and activity sync).",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
