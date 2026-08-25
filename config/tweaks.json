@@ -1010,7 +1010,8 @@
       "
       Stop-Process -Name \"logi_download_assistant\" -Force -ErrorAction SilentlyContinue
 
-      $LogiPath = \"$Env:ProgramFiles\\LogiDownloadAssistant\"
+      $ProgramFiles64 = if ($Env:ProgramW6432) { $Env:ProgramW6432 } else { $Env:ProgramFiles }
+      $LogiPath = \"$ProgramFiles64\\LogiDownloadAssistant\"
 
       if (Test-Path $LogiPath) {
         Remove-Item $LogiPath\\* -Recurse -Force
@@ -1018,12 +1019,19 @@
         New-Item -Path $LogiPath -ItemType Directory
       }
 
-      icacls $LogiPath /deny \"Everyone:(W)\"
+      icacls $LogiPath /deny \"*S-1-1-0:(W)\"
+      if ($LASTEXITCODE -ne 0) { throw \"icacls failed to deny write access on $LogiPath (exit code $LASTEXITCODE)\" }
       "
     ],
     "UndoScript": [
       "
-      icacls \"$Env:ProgramFiles\\LogiDownloadAssistant\" /remove:d Everyone
+      $ProgramFiles64 = if ($Env:ProgramW6432) { $Env:ProgramW6432 } else { $Env:ProgramFiles }
+      $LogiPath = \"$ProgramFiles64\\LogiDownloadAssistant\"
+
+      if (Test-Path $LogiPath) {
+        icacls $LogiPath /remove:d \"*S-1-1-0\"
+        if ($LASTEXITCODE -ne 0) { throw \"icacls failed to remove the write-deny rule on $LogiPath (exit code $LASTEXITCODE)\" }
+      }
       "
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/logiblock"
