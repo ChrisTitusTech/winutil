@@ -1001,6 +1001,33 @@
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/razerblock"
   },
+  "WPFTweaksLogiBlock": {
+    "Content": "Logitech Download Assistant Auto-Install - Disable",
+    "Description": "Blocks the Logi Download Assistant that Windows Update keeps reinstalling with Logitech device drivers. Logitech hardware keeps working without it.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "InvokeScript": [
+      "
+      Stop-Process -Name \"logi_download_assistant\" -Force -ErrorAction SilentlyContinue
+
+      $LogiPath = \"$Env:ProgramFiles\\LogiDownloadAssistant\"
+
+      if (Test-Path $LogiPath) {
+        Remove-Item $LogiPath\\* -Recurse -Force
+      } else {
+        New-Item -Path $LogiPath -ItemType Directory
+      }
+
+      icacls $LogiPath /deny \"Everyone:(W)\"
+      "
+    ],
+    "UndoScript": [
+      "
+      icacls \"$Env:ProgramFiles\\LogiDownloadAssistant\" /remove:d Everyone
+      "
+    ],
+    "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/logiblock"
+  },
   "WPFTweaksDisableNotifications": {
     "Content": "System Tray Notifications & Calendar - Disable",
     "Description": "Disables all Notifications INCLUDING Calendar.",
