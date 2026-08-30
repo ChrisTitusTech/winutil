@@ -1385,7 +1385,7 @@
   },
   "WPFToggleNewOutlook": {
     "Content": "Microsoft Outlook New Version",
-    "Description": "This will ensure the classic Outlook application is used.",
+    "Description": "This will ensure the new Outlook application is used.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",

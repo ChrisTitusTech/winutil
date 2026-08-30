@@ -2,7 +2,7 @@ function Reset-WPFCheckBoxes {
     <#
 
     .SYNOPSIS
-        Set winutil checkboxes to match $sync.selected values.
+        Set WinUtil checkboxes to match $sync.selected values.
         Should only need to be run if $sync.selected updated outside of UI (i.e. presets or import)
 
     .PARAMETER doToggles

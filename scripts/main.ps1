@@ -68,7 +68,7 @@ if ($Config) {
 [xml]$XAML = $inputXML
 
 # Read the XAML file
-$readerOperationSuccessful = $false # There's more cases of failure than success.
+$readerOperationSuccessful = $false # There are more cases of failure than success.
 $reader = (New-Object System.Xml.XmlNodeReader $xaml)
 try {
     $sync["Form"] = [Windows.Markup.XamlReader]::Load( $reader )
