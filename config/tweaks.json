@@ -99,10 +99,10 @@
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
-      "icacls \"$Env:LocalAppData\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db\" /deny Everyone:F"
+      "icacls \"$Env:LocalAppData\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db\" /deny *S-1-1-0:F"
     ],
     "UndoScript": [
-      "icacls \"$Env:LocalAppData\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db\" /grant Everyone:F"
+      "icacls \"$Env:LocalAppData\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db\" /grant *S-1-1-0:F"
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/disablestoresearch"
   },
@@ -647,7 +647,7 @@
     "InvokeScript": [
       "
       # Deny permission to remove OneDrive folder
-      icacls $Env:OneDrive /deny \"Administrators:(D,DC)\"
+      icacls $Env:OneDrive /deny \"*S-1-5-32-544:(D,DC)\"
 
       Write-Host \"Uninstalling OneDrive...\"
       Start-Process -FilePath (Join-Path $Env:SystemRoot \"System32\\OneDriveSetup.exe\") -ArgumentList '/uninstall' -Wait
@@ -661,7 +661,7 @@
       Remove-Item \"$Env:ProgramData\\Microsoft OneDrive\" -Recurse -Force
 
       # Grant back permission to access OneDrive folder
-      icacls $Env:OneDrive /grant \"Administrators:(D,DC)\"
+      icacls $Env:OneDrive /grant \"*S-1-5-32-544:(D,DC)\"
 
       if (-not (Get-ChildItem -Path $Env:OneDrive)) {
           Remove-Item -Path $Env:OneDrive -Recurse
@@ -991,12 +991,12 @@
         New-Item -Path $RazerPath -ItemType Directory
       }
 
-      icacls $RazerPath /deny \"Everyone:(W)\"
+      icacls $RazerPath /deny \"*S-1-1-0:(W)\"
       "
     ],
     "UndoScript": [
       "
-      icacls \"$Env:SystemRoot\\Installer\\Razer\" /remove:d Everyone
+      icacls \"$Env:SystemRoot\\Installer\\Razer\" /remove:d *S-1-1-0
       "
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/razerblock"
