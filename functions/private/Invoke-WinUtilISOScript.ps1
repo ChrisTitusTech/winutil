@@ -151,17 +151,18 @@ function Invoke-WinUtilISOScript {
         $driverExportRoot = Join-Path $env:TEMP "WinUtil_DriverExport_$(Get-Date -Format 'yyyyMMdd_HHmmss')_$(([guid]::NewGuid()).ToString('N').Substring(0, 8))"
         $mountDir = Join-Path (Split-Path -Path $ContentRoot -Parent) 'wim_mount'
         New-Item -Path $driverExportRoot -ItemType Directory -Force | Out-Null
+
+        # %TEMP% can be an 8.3 alias, but Get-ChildItem below reports long paths, so the
+        # exported folders would not share this prefix unless it is expanded first.
+        $driverExportRoot = (Get-Item -LiteralPath $driverExportRoot).FullName
         $imageMounted = $false
 
         try {
             & $Logger "Exporting current system drivers before modifying install.wim..."
             $dismLog = Join-Path $env:TEMP "WinUtil_DismDriverExport_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
-            $dismProcess = Start-Process -FilePath "dism.exe" -ArgumentList "/online /export-driver /destination:`"$driverExportRoot`" /LogPath:`"$dismLog`"" -Wait -NoNewWindow -PassThru
-            if ($dismProcess.ExitCode -ne 0) {
-                throw "dism.exe driver export failed with exit code $($dismProcess.ExitCode)."
-            }
+            Invoke-WinUtilISODism -Arguments @('/English', '/Online', '/Export-Driver', "/Destination:$driverExportRoot", "/LogPath:$dismLog") -Operation 'export-driver' | Out-Null
 
-            $driverInfs = @(Get-ChildItem -Path $driverExportRoot -Filter '*.inf' -Recurse -File)
+            $driverInfs = @(Get-ChildItem -LiteralPath $driverExportRoot -Filter '*.inf' -Recurse -File)
             if ($driverInfs.Count -eq 0) {
                 throw 'DISM exported no driver INF files.'
             }
@@ -202,16 +203,50 @@ function Invoke-WinUtilISOScript {
             Invoke-WinUtilISODism -Arguments @('/English', '/Mount-Image', "/ImageFile:$InstallImagePath", "/Index:$InstallImageIndex", "/MountDir:$mountDir") -Operation 'mount' | Out-Null
             $imageMounted = $true
 
-            & $Logger "Adding all exported drivers to the selected Windows image in one DISM operation..."
-            Invoke-WinUtilISODism -Arguments @('/English', "/Image:$mountDir", '/Add-Driver', "/Driver:$driverExportRoot", '/Recurse') -Operation 'add-driver' | Out-Null
+            # Each package is added separately so one bad driver cannot fail the rest. A single
+            # batch /Add-Driver is roughly four times faster, but it exits non-zero when any one
+            # package fails, which aborted the entire injection.
+            # A hybrid approach is possible, but adds more complexity when reliability is really important here.
+            $packageFolders = @($driverFolders | ForEach-Object { [string]$_.Name })
 
-            & $Logger 'Committing the driver-only install.wim change...'
-            Invoke-WinUtilISODism -Arguments @('/English', '/Unmount-Image', "/MountDir:$mountDir", '/Commit') -Operation 'commit' | Out-Null
-            $imageMounted = $false
+            # /Recurse already covers subfolders, so a package holding INFs at its root and in a
+            # subfolder would otherwise be added twice and counted twice.
+            $rootPackageFolders = @($packageFolders | Where-Object {
+                $candidate = $_
+                -not ($packageFolders | Where-Object { $candidate.StartsWith("$_\", [System.StringComparison]::OrdinalIgnoreCase) })
+            })
 
-            $metadataAfter = Get-WinUtilISOWimMetadata -ImagePath $InstallImagePath -Index $InstallImageIndex
-            Assert-WinUtilISOWimMetadata -Before $metadataBefore -After $metadataAfter
-            & $Logger 'Driver injection complete; install.wim metadata validation passed.'
+            & $Logger "Adding $($rootPackageFolders.Count) root driver packages to install.wim"
+            $addedCount = 0
+            foreach ($driverFolder in $rootPackageFolders) {
+                $driverName = $driverFolder
+                if ($driverFolder.StartsWith($driverExportRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
+                    $driverName = $driverFolder.Substring($driverExportRoot.Length).TrimStart('\')
+                }
+
+                try {
+                    Invoke-WinUtilISODism -Arguments @('/English', "/Image:$mountDir", '/Add-Driver', "/Driver:$driverFolder", '/Recurse') -Operation "add-driver:$driverName" | Out-Null
+                    $addedCount++
+                } catch {
+                    & $Logger "Warning: failed to add driver package '$driverName': $_"
+                }
+            }
+
+            if ($addedCount -eq 0) {
+                # Leaving $imageMounted set lets the cleanup block discard the mount. Nothing
+                # was added, so there is nothing to write back, and skipping the commit avoids
+                # a slow no-op unmount. Boot-storage drivers staged for WinPE are unaffected.
+                & $Logger "Warning: none of the $($rootPackageFolders.Count) exported driver packages could be added; continuing with an unmodified install.wim."
+            } else {
+                & $Logger "Added $addedCount of $($rootPackageFolders.Count) driver packages to install.wim."
+                & $Logger 'Committing the driver-only install.wim change...'
+                Invoke-WinUtilISODism -Arguments @('/English', '/Unmount-Image', "/MountDir:$mountDir", '/Commit') -Operation 'commit' | Out-Null
+                $imageMounted = $false
+
+                $metadataAfter = Get-WinUtilISOWimMetadata -ImagePath $InstallImagePath -Index $InstallImageIndex
+                Assert-WinUtilISOWimMetadata -Before $metadataBefore -After $metadataAfter
+                & $Logger 'Driver injection complete; install.wim metadata validation passed.'
+            }
         } finally {
             if ($imageMounted -or (Test-WinUtilISOMountedImage -Path $mountDir)) {
                 try {
@@ -220,8 +255,8 @@ function Invoke-WinUtilISOScript {
                     & $Logger "Warning: could not discard the failed install.wim mount: $_"
                 }
             }
-            Remove-Item -Path $mountDir -Recurse -Force -ErrorAction SilentlyContinue
-            Remove-Item -Path $driverExportRoot -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-Item -LiteralPath $mountDir -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-Item -LiteralPath $driverExportRoot -Recurse -Force -ErrorAction SilentlyContinue
         }
     }
 

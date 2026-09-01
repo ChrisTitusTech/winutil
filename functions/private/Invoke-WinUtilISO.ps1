@@ -279,10 +279,12 @@ function Invoke-WinUtilISOModify {
             Log "Writing autounattend.xml and edition selection..."
             Invoke-WinUtilISOScript -ISOContentsDir $isoContents -AutoUnattendXml $autounattendContent -InjectCurrentSystemDrivers $injectDrivers -InstallImagePath $localWim -InstallImageIndex $selectedWimIndex -InstallEditionId $selectedEditionId -Log { param($m) Log $m }
 
-            SetProgress "Preserving install image..." 70
+            # Injection reports its own per-package outcome, which can be a partial or total
+            # failure without throwing, so this step must not claim the drivers landed.
             if ($injectDrivers) {
-                Log "Added current-system drivers to $sourceImageFileName index $selectedWimIndex with one mount and commit."
+                SetProgress "Finalizing install image..." 70
             } else {
+                SetProgress "Preserving install image..." 70
                 Log "Preserved the original $sourceImageFileName without mounting, exporting, or modifying it."
             }
 
