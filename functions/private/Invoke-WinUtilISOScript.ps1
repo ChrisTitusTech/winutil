@@ -354,6 +354,14 @@ function Invoke-WinUtilISOScript {
             } else {
                 $excludedFolders = @($driverFolders.Name | Where-Object { $_ -notin $stagedDriverFolders })
                 foreach ($excludedFolder in $excludedFolders) {
+                    $hasRetainedDescendant = [bool]@($stagedDriverFolders | Where-Object {
+                        $_.StartsWith("$excludedFolder\", [System.StringComparison]::OrdinalIgnoreCase)
+                    }).Count
+                    if ($hasRetainedDescendant) {
+                        & $Logger "Keeping excluded driver package directory '$excludedFolder' because it contains a retained nested package."
+                        continue
+                    }
+
                     try {
                         Remove-Item -LiteralPath $excludedFolder -Recurse -Force -ErrorAction Stop
                     } catch {

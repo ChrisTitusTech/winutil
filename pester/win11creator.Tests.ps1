@@ -526,6 +526,40 @@ Describe "Win11 Creator setup media" {
         }
     }
 
+    It "preserves a retained nested package when its parent package is excluded" {
+        $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoNestedRetained_$([guid]::NewGuid())"
+        $installWim = Join-Path $contentRoot 'sources\install.wim'
+        $template = Get-Content -Path $script:autoUnattendPath -Raw
+        $logs = [System.Collections.Generic.List[string]]::new()
+
+        New-WinUtilDriverExportHarness -Fixtures @(
+            @{ Path = 'parent_pkg'; Name = 'extension.inf'; Class = 'Extension' },
+            @{ Path = 'parent_pkg\retained_child'; Name = 'network.inf'; Class = 'Net' }
+        )
+
+        try {
+            New-Item -Path (Split-Path $installWim -Parent) -ItemType Directory -Force | Out-Null
+            Set-Content -Path $installWim -Value 'mock-wim'
+            . $script:isoScriptPath
+            $driversInjected = [ref]$false
+            Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template -InjectCurrentSystemDrivers $true -InstallImagePath $installWim -InstallImageIndex 6 -InstallEditionId 'Professional' -DriversInjected $driversInjected -Log {
+                param($message)
+                $logs.Add([string]$message)
+            }
+
+            $addDriverCalls = @($script:dismCalls | Where-Object { $_ -match '/Add-Driver' })
+            $addDriverCalls.Count | Should -Be 1
+            $addDriverCalls[0] | Should -Match ([regex]::Escape('parent_pkg\retained_child'))
+            $script:exportRootAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'parent_pkg')
+            $script:exportRootAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'parent_pkg\retained_child')
+            ($logs -join '|') | Should -Match "Keeping excluded driver package directory '.*parent_pkg' because it contains a retained nested package"
+            $driversInjected.Value | Should -BeTrue
+        } finally {
+            Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
+            Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+
     It "validates WIM metadata and reports no injection when every package is excluded" {
         $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoAllExcluded_$([guid]::NewGuid())"
         $installWim = Join-Path $contentRoot 'sources\install.wim'
