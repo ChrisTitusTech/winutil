@@ -87,11 +87,13 @@ Function Install-WinUtilProgramWinget {
         } elseif ($nothingToDo.ContainsKey($exitCode)) {
             $outcome = "Skipped"
             $detail = $nothingToDo[$exitCode]
-        } elseif ($Action -eq "Install" -and $exitCode -eq $adminContextProhibited) {
-            # Install doubles as "install or update" in WinGet. The package is already present;
-            # only its opportunistic update was refused because WinUtil is elevated.
+        } elseif ($exitCode -eq $adminContextProhibited) {
             $outcome = "Skipped"
-            $detail = "already installed for the current user; elevated WinUtil cannot update it"
+            $detail = switch ($Action) {
+                "Install" { "already installed for the current user; elevated WinUtil cannot update it" }
+                "Upgrade" { "not upgraded; installed for the current user and elevated WinUtil cannot modify it" }
+                "Uninstall" { "remains installed for the current user; elevated WinUtil cannot uninstall it" }
+            }
         } else {
             $outcome = "Failed"
             # The client module reports the same failure as a bare HRESULT, so the hex form and

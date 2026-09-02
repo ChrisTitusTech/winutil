@@ -5,6 +5,7 @@ BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     . (Join-Path $script:repoRoot "functions\private\Measure-WinUtilStep.ps1")
     . (Join-Path $script:repoRoot "functions\private\Write-WinUtilErrorRecord.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Complete-WinUtilPackageRun.ps1")
     . (Join-Path $script:repoRoot "functions\private\Start-WinUtilJob.ps1")
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilCloseRequest.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIThread.ps1")
@@ -286,6 +287,25 @@ Describe "Start-WinUtilJob" {
 
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
             $Level -eq "WARN" -and $Message -eq "a warning"
+        }
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Example finished with 1 warning(s)" -and $State -eq "Paused" -and $Overlay -eq "warning"
+        }
+    }
+
+    It "finishes with a warning when elevated install skips a user-scoped package" {
+        Start-WinUtilJob -Name "Install" -ScriptBlock { } | Out-Null
+
+        & $script:capturedRunspaceBody `
+            -JobName "Install" `
+            -JobLabel "Installing apps" `
+            -JobBody 'Complete-WinUtilPackageRun -Action "Install" -Results @([pscustomobject]@{ Package = "Microsoft.Sysinternals.ProcessExplorer"; Action = "Install"; ExitCode = -1978335107; Outcome = "Skipped"; Detail = "already installed for the current user; elevated WinUtil cannot update it" })' `
+            -JobParameters @{} `
+            -JobRestoresAppList $false `
+            -JobToken $script:capturedRunspaceArgs["JobToken"]
+
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Install finished with 1 warning(s)" -and $State -eq "Paused" -and $Overlay -eq "warning"
         }
     }
 

@@ -113,6 +113,7 @@ function Start-WinUtilJob {
         # whoever asked for it
         $global:WinUtilIsJobWorker = $true
         $global:WinUtilJobErrorCount = 0
+        $global:WinUtilJobWarningCount = 0
 
         $jobClock = [System.Diagnostics.Stopwatch]::StartNew()
         try {
@@ -122,6 +123,7 @@ function Start-WinUtilJob {
             # Merging them into the output stream is what gets them to the log.
             & $body @JobParameters 2>&1 3>&1 | ForEach-Object {
                 if ($_ -is [System.Management.Automation.WarningRecord]) {
+                    $global:WinUtilJobWarningCount++
                     Write-WinUtilLog -Level "WARN" -Component $JobName -Message $_.Message
                 } elseif ($_ -is [System.Management.Automation.ErrorRecord]) {
                     Write-WinUtilErrorRecord -ErrorRecord $_ -Component $JobName -Context "Non-terminating error"
@@ -134,10 +136,15 @@ function Start-WinUtilJob {
             # The counter belongs to this worker runspace, so unrelated UI errors cannot change
             # this job's result while it is running.
             $newErrors = $global:WinUtilJobErrorCount
+            $newWarnings = $global:WinUtilJobWarningCount
             if ($newErrors -gt 0) {
                 Write-WinUtilLog -Level "WARN" -Component $JobName -Message "$JobName job finished in $($jobClock.ElapsedMilliseconds) ms with $newErrors error(s)."
                 Write-WinUtilJobBanner -Message "$JobLabel finished with $newErrors error(s), see the log" -Level "ERROR"
                 Step-WinUtilJob -Status "$JobName finished with $newErrors error(s)" -Percent 100 -State "Paused" -Overlay "warning"
+            } elseif ($newWarnings -gt 0) {
+                Write-WinUtilLog -Level "WARN" -Component $JobName -Message "$JobName job finished in $($jobClock.ElapsedMilliseconds) ms with $newWarnings warning(s)."
+                Write-WinUtilJobBanner -Message "$JobLabel finished with $newWarnings warning(s), see the log"
+                Step-WinUtilJob -Status "$JobName finished with $newWarnings warning(s)" -Percent 100 -State "Paused" -Overlay "warning"
             } else {
                 Write-WinUtilLog -Component $JobName -Message "$JobName job finished in $($jobClock.ElapsedMilliseconds) ms."
                 Write-WinUtilJobBanner -Message "$JobLabel finished"
@@ -153,6 +160,7 @@ function Start-WinUtilJob {
             # background work on this runspace believe it is a job worker
             $global:WinUtilIsJobWorker = $false
             $global:WinUtilJobErrorCount = 0
+            $global:WinUtilJobWarningCount = 0
 
             Write-WinUtilTimingSummary -Scope $JobName -TotalMilliseconds $jobClock.ElapsedMilliseconds -StartIndex $TimingStartIndex
 

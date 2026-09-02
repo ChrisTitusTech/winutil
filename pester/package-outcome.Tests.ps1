@@ -52,17 +52,26 @@ Describe "Install-WinUtilProgramWinget outcomes" {
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
             $Level -eq "INFO" -and $Message -like "*skipped: Microsoft.Sysinternals.ProcessExplorer*"
         }
+        Should -Invoke -CommandName Start-Process -Times 1 -Exactly
     }
 
-    It "does not hide an administrator-context refusal for explicit upgrade or uninstall" {
-        foreach ($action in @("Upgrade", "Uninstall")) {
+    It "skips actions that elevated WinGet cannot perform on a per-user package" {
+        $expectedDetails = @{
+            Upgrade = "not upgraded; installed for the current user and elevated WinUtil cannot modify it"
+            Uninstall = "remains installed for the current user; elevated WinUtil cannot uninstall it"
+        }
+
+        foreach ($action in $expectedDetails.Keys) {
             Mock Start-Process { [pscustomobject]@{ ExitCode = -1978335107 } }
 
             $result = Install-WinUtilProgramWinget -Action $action -Programs @("Microsoft.Sysinternals.ProcessExplorer")
 
-            $result.Outcome | Should -Be "Failed" -Because "$action did not complete"
+            $result.Outcome | Should -Be "Skipped"
+            $result.Detail | Should -Be $expectedDetails[$action]
             $result.ExitCode | Should -Be -1978335107
         }
+
+        Should -Invoke -CommandName Start-Process -Times 2 -Exactly
     }
 
     It "reports any other exit code as a failure" {
@@ -144,6 +153,7 @@ Describe "Complete-WinUtilPackageRun" {
     BeforeEach {
         Mock Write-WinUtilLog { }
         Mock Write-Host { }
+        Mock Write-Warning { }
     }
 
     It "reports the counts of each outcome" {
@@ -162,12 +172,32 @@ Describe "Complete-WinUtilPackageRun" {
     It "does not fail an install when every selected package is already present" {
         $results = @(
             [pscustomobject]@{ Package = "Microsoft.Sysinternals.ProcessMonitor"; Outcome = "Skipped"; Detail = "no applicable update" },
-            [pscustomobject]@{ Package = "Microsoft.Sysinternals.ProcessExplorer"; Outcome = "Skipped"; Detail = "already installed for the current user; elevated WinUtil cannot update it" }
+            [pscustomobject]@{ Package = "Microsoft.Sysinternals.ProcessExplorer"; Action = "Install"; ExitCode = -1978335107; Outcome = "Skipped"; Detail = "already installed for the current user; elevated WinUtil cannot update it" }
         )
 
         { Complete-WinUtilPackageRun -Action "Install" -Results $results } | Should -Not -Throw
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
             $Message -eq "Install summary: 0 succeeded, 2 skipped, 0 failed"
+        }
+        Should -Invoke -CommandName Write-Warning -Times 1 -Exactly -ParameterFilter {
+            $Message -eq "1 package action(s) were skipped because elevated WinUtil cannot modify user-scoped installations."
+        }
+    }
+
+    It "does not fail the reported two-package uninstall when elevated WinGet cannot act on user scope" {
+        Mock Start-Process { [pscustomobject]@{ ExitCode = -1978335107 } }
+        $results = @(Install-WinUtilProgramWinget -Action Uninstall -Programs @(
+            "Microsoft.Sysinternals.ProcessMonitor",
+            "Microsoft.Sysinternals.ProcessExplorer"
+        ))
+
+        { Complete-WinUtilPackageRun -Action "Uninstall" -Results $results } | Should -Not -Throw
+        @($results | Where-Object Outcome -eq "Skipped").Count | Should -Be 2
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Message -eq "Uninstall summary: 0 succeeded, 2 skipped, 0 failed"
+        }
+        Should -Invoke -CommandName Write-Warning -Times 1 -Exactly -ParameterFilter {
+            $Message -eq "2 package action(s) were skipped because elevated WinUtil cannot modify user-scoped installations."
         }
     }
 

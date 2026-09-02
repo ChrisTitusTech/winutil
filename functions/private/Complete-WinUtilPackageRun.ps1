@@ -1,12 +1,13 @@
 function Complete-WinUtilPackageRun {
     <#
         .SYNOPSIS
-            Reports what a package run actually did and fails the job if anything did not work
+            Reports what a package run actually did and fails the job on unexpected errors
 
         .DESCRIPTION
             Package managers report failure through an exit code, which is easy to walk past.
             Without this the job layer would show a green checkmark for a run in which nothing
-            installed. Throwing here is what turns a failed package into a failed job.
+            changed. Unexpected failures terminate the job; expected elevated-context skips
+            raise a warning so the job cannot claim that every requested action completed.
 
         .PARAMETER Action
             Install or Uninstall, used in the summary text.
@@ -32,6 +33,11 @@ function Complete-WinUtilPackageRun {
     }
     foreach ($result in $failed) {
         Write-Host "  failed   $($result.Package) - $($result.Detail)" -ForegroundColor Red
+    }
+
+    $adminContextSkipped = @($skipped | Where-Object { $_.ExitCode -eq -1978335107 })
+    if ($adminContextSkipped.Count -gt 0) {
+        Write-Warning "$($adminContextSkipped.Count) package action(s) were skipped because elevated WinUtil cannot modify user-scoped installations."
     }
 
     if ($failed.Count -gt 0) {
