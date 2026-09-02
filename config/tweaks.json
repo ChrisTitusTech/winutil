@@ -854,7 +854,7 @@
   },
   "WPFTweaksEndTaskOnTaskbar": {
     "Content": "End Task With Right Click - Enable",
-    "Description": "Enables option to end task when right clicking a program in the taskbar.",
+    "Description": "Enables option to end task when right-clicking a program in the taskbar.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
@@ -1385,7 +1385,7 @@
   },
   "WPFToggleNewOutlook": {
     "Content": "Microsoft Outlook New Version",
-    "Description": "This will ensures the classic Outlook application is used.",
+    "Description": "This will ensure the new Outlook application is used.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",

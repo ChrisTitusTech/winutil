@@ -3,7 +3,7 @@
             .SYNOPSIS
                 Creates a [Windows.Controls.ScrollViewer] containing a [Windows.Controls.ItemsControl] which is setup to use Virtualization to only load the visible elements for performance reasons.
                 This is used as the parent object for all category and app entries on the install tab
-                Used to as part of the Install Tab UI generation
+                Used as part of the Install Tab UI generation
 
             .PARAMETER TargetElement
                 The element to which the AppArea should be added
@@ -13,7 +13,7 @@
         $targetGrid = $sync.Form.FindName($TargetElement)
         $null = $targetGrid.Children.Clear()
 
-        # Create the outer Border for the aren where the apps will be placed
+        # Create the outer Border for the area where the apps will be placed
         $Border = New-Object Windows.Controls.Border
         $Border.VerticalAlignment = "Stretch"
         $Border.SetResourceReference([Windows.Controls.Control]::StyleProperty, "BorderStyle")
