@@ -83,6 +83,8 @@ Describe "Get-WinUtilEnvironmentReport" {
         )
         $report.windows.PSObject.Properties.Name | Should -Be @("edition", "version", "buildNumber", "architecture")
         $report.hardware.PSObject.Properties.Name | Should -Be @("cpuModel", "logicalProcessorCount", "totalMemoryGB")
+        $report.packageManagers.winget.PSObject.Properties.Name | Should -Be @("installed", "version")
+        $report.packageManagers.chocolatey.PSObject.Properties.Name | Should -Be @("installed", "version")
         $report.tweaksState.PSObject.Properties.Name | Should -Be @(
             "collectionStatus", "essentialTweaks", "customizePreferences", "advancedTweaks",
             "performancePlans", "notEvaluable"
@@ -215,6 +217,18 @@ Describe "Get-WinUtilTweaksStateReport" {
         Should -Invoke -CommandName Get-ItemProperty -Times 1 -Exactly -ParameterFilter {
             $Path -eq "HKCU:\Fake3"
         }
+    }
+
+    It "reports collection as unavailable when a live registry read fails" {
+        Mock Test-Path { $Path -eq "HKCU:\Fake3" }
+        Mock Get-ItemProperty { Write-Error "Registry access denied" } -ParameterFilter {
+            $Path -eq "HKCU:\Fake3"
+        }
+
+        $result = Get-WinUtilTweaksStateReport
+
+        $result.collectionStatus | Should -Be "unavailable"
+        @($result.customizePreferences.PSObject.Properties).Count | Should -Be 0
     }
 
     It "lists combobox and script-only tweaks as not evaluable instead of silently dropping them" {
