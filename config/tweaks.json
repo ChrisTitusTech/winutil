@@ -1,14 +1,14 @@
 {
   "WPFTweaksActivity": {
     "Content": "Activity History - Disable",
-    "Description": "Disables the Activity Feed system (docs, clipboard history, run history, and activity sync).",
+    "Description": "Stops Windows from publishing or uploading user activities while preserving clipboard history.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
         "Name": "EnableActivityFeed",
-        "Value": "0",
+        "Value": "1",
         "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },
