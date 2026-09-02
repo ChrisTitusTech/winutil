@@ -304,6 +304,34 @@ Describe "Start-WinUtilJob" {
         $script:sync.ItemsControl.IsEnabled | Should -BeTrue
         $script:sync.ActiveJob | Should -BeNullOrEmpty
     }
+
+    It "releases the job when dispatcher shutdown aborts the app-list restore" {
+        $script:dispatchCount = 0
+        Mock Invoke-WPFUIThread {
+            $script:dispatchCount++
+            if ($script:dispatchCount -gt 1) {
+                throw [System.Threading.Tasks.TaskCanceledException]::new("dispatcher stopped")
+            }
+            & $ScriptBlock
+        }
+
+        Start-WinUtilJob -Name "Install" -DisableAppList -ScriptBlock { } | Out-Null
+
+        {
+            & $script:capturedRunspaceBody `
+                -JobName "Install" `
+                -JobBody '$null = $true' `
+                -JobParameters @{} `
+                -JobRestoresAppList $true `
+                -JobToken $script:capturedRunspaceArgs["JobToken"]
+        } | Should -Not -Throw
+
+        $script:sync.ActiveJob | Should -BeNullOrEmpty
+        $script:sync.ActiveJobToken | Should -BeNullOrEmpty
+        Should -Invoke Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "WARN" -and $Message -like "Could not restore the app list*"
+        }
+    }
 }
 
 Describe "Job timing summaries" {

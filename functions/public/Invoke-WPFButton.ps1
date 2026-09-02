@@ -38,15 +38,27 @@ function Invoke-WPFButton {
     )
 
     $featureEntry = $sync.configs.feature.$Button
-    $isConfigWork = $featureEntry -and ($Button -notlike "WPFPanel*" -or $featureEntry.function)
+    # Feature installation owns its selection validation and snapshots the selection before it
+    # starts a job. Wrapping it here would turn its "nothing selected" return into job success.
+    $isConfigWork = $featureEntry -and $Button -ne "WPFFeatureInstall" -and
+        ($Button -notlike "WPFPanel*" -or $featureEntry.function)
 
     if ($isConfigWork -or $workButtons -contains $Button) {
+        $updatesDisableConfirmed = $false
+        if ($Button -eq "WPFUpdatesdisable") {
+            $updatesDisableConfirmed = Confirm-WPFUpdatesdisable
+            if (-not $updatesDisableConfirmed) {
+                return
+            }
+        }
+
         Start-WinUtilJob -Name (Get-WinUtilButtonLabel -Button $Button) -Parameters @{
             Button = $Button
+            UpdatesDisableConfirmed = $updatesDisableConfirmed
         } -ScriptBlock {
-            param($Button)
+            param($Button, $UpdatesDisableConfirmed)
 
-            Invoke-WPFButtonAction -Button $Button
+            Invoke-WPFButtonAction -Button $Button -UpdatesDisableConfirmed:$UpdatesDisableConfirmed
         }
         return
     }
@@ -108,7 +120,10 @@ function Invoke-WPFButtonAction {
 
     #>
 
-    Param ([string]$Button)
+    Param (
+        [string]$Button,
+        [switch]$UpdatesDisableConfirmed
+    )
 
     # Check if button is defined in feature config with function or InvokeScript
     if ($sync.configs.feature.$Button) {
@@ -153,7 +168,7 @@ function Invoke-WPFButtonAction {
         "WPFRemoveUltPerf" {Invoke-WPFUltimatePerformance}
         "WPFundoall" {Invoke-WPFundoall}
         "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}
-        "WPFUpdatesdisable" {Invoke-WPFUpdatesdisable}
+        "WPFUpdatesdisable" {Invoke-WPFUpdatesdisable -Confirmed:$UpdatesDisableConfirmed}
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}

@@ -167,14 +167,19 @@ function Start-WinUtilJob {
             }
 
             if ($stillOwns) {
-                if ($JobRestoresAppList -and (Test-WinUtilUIAlive)) {
-                    Invoke-WPFUIThread -ScriptBlock {
-                        if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }
+                try {
+                    if ($JobRestoresAppList -and (Test-WinUtilUIAlive)) {
+                        Invoke-WPFUIThread -ScriptBlock {
+                            if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }
+                        }
                     }
+                } catch {
+                    Write-WinUtilLog -Level "WARN" -Component $JobName -Message "Could not restore the app list after $JobName finished: $($_.Exception.Message)"
+                } finally {
+                    # Dispatcher shutdown can race the alive check and abort the restore call.
+                    # The worker is still finished, so its slot must always be released.
+                    $null = Clear-WinUtilActiveJob -Token $JobToken
                 }
-
-                # Last, because the main thread may be waiting on it to know the run is over
-                $null = Clear-WinUtilActiveJob -Token $JobToken
             } else {
                 Write-WinUtilLog -Level "WARN" -Component $JobName -Message "$JobName unwound after another job had started; leaving its state alone."
             }
@@ -184,12 +189,17 @@ function Start-WinUtilJob {
         Write-WinUtilErrorRecord -ErrorRecord $_ -Component $Name -Context "Could not schedule $Name"
         Write-WinUtilJobBanner -Message "$label could not start" -Level "ERROR"
         Step-WinUtilJob -Status "$Name could not start" -Percent 100 -State "Error" -Overlay "warning"
-        if ($DisableAppList -and (Test-WinUtilUIAlive)) {
-            Invoke-WPFUIThread -ScriptBlock {
-                if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }
+        try {
+            if ($DisableAppList -and (Test-WinUtilUIAlive)) {
+                Invoke-WPFUIThread -ScriptBlock {
+                    if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }
+                }
             }
+        } catch {
+            Write-WinUtilLog -Level "WARN" -Component $Name -Message "Could not restore the app list after $Name failed to start: $($_.Exception.Message)"
+        } finally {
+            $null = Clear-WinUtilActiveJob -Token $jobToken
         }
-        $null = Clear-WinUtilActiveJob -Token $jobToken
     }
 }
 
