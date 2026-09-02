@@ -10,6 +10,7 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilRegistry.ps1")
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilService.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFPanelAutologin.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilInstallPSProfile.ps1")
 
     function winget {
         param([Parameter(ValueFromRemainingArguments = $true)]$Arguments)
@@ -35,6 +36,16 @@ Describe "Invoke-WPFPanelAutologin" {
         $expectedPath = Join-Path $TestDrive "autologin.exe"
         Should -Invoke -CommandName Invoke-WebRequest -Times 1 -Exactly -ParameterFilter { $OutFile -eq $expectedPath }
         Should -Invoke -CommandName Start-Process -Times 1 -Exactly -ParameterFilter { $FilePath -eq $expectedPath }
+    }
+}
+
+Describe "Get-WinUtilPowerShell7Path" {
+    It "finds a new standard install even before the current process PATH refreshes" {
+        $expectedPath = "$env:ProgramFiles\PowerShell\7\pwsh.exe"
+        Mock Get-Command { $null } -ParameterFilter { $Name -eq "pwsh" }
+        Mock Test-Path { $LiteralPath -eq $expectedPath }
+
+        Get-WinUtilPowerShell7Path | Should -Be $expectedPath
     }
 }
 

@@ -901,12 +901,16 @@ Describe "Win11 Creator setup media" {
             'oscdimg.exe not found. Attempting to install via winget...',
             'Install-WinUtilWinget',
             'Get-Command winget',
+            '$env:ProgramFiles\WinGet\Packages',
+            '$env:ProgramFiles\WinGet\Links\oscdimg.exe',
             'install -e --id Microsoft.OSCDIMG --accept-package-agreements --accept-source-agreements',
             'oscdimg.exe still not found after install attempt.',
             'oscdimg Not Found'
         )) {
             $content | Should -Match ([regex]::Escape($expectedText))
         }
+
+        ([regex]::Matches($content, 'function Get-WinUtilOscdimgPath', 'IgnoreCase')).Count | Should -Be 1
 
         # The export job stops at the dialog instead of running oscdimg without a binary
         $exportOscdimgIndex = $script:exportFunction.IndexOf('$oscdimg = Get-WinUtilOscdimgPath')

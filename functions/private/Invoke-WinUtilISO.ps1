@@ -495,34 +495,6 @@ function Invoke-WinUtilISOCleanAndReset {
     }
 }
 
-function Get-WinUtilOSCDImgPath {
-    # Windows ADK installation
-    $oscdimg = Get-ChildItem "C:\Program Files (x86)\Windows Kits" -Recurse -Filter "oscdimg.exe" -ErrorAction SilentlyContinue |
-               Select-Object -First 1 -ExpandProperty FullName
-    if (-not $oscdimg) {
-        # Per-user winget installation
-        $oscdimg = Get-ChildItem "$env:LOCALAPPDATA\Microsoft\WinGet\Packages" -Recurse -Filter "oscdimg.exe" -ErrorAction SilentlyContinue |
-                   Where-Object { $_.FullName -match 'Microsoft\.OSCDIMG' } |
-                   Select-Object -First 1 -ExpandProperty FullName
-    }
-
-    if (-not $oscdimg) {
-        # Installation available through the current process PATH
-        $oscdimg = Get-Command oscdimg.exe -CommandType Application -ErrorAction SilentlyContinue |
-                   Select-Object -First 1 -ExpandProperty Source
-    }
-
-    if (-not $oscdimg) {
-        # WinGet links that may not yet be available through the current process PATH
-        $oscdimg = @(
-            "$env:LOCALAPPDATA\Microsoft\WinGet\Links\oscdimg.exe"
-            "$env:ProgramFiles\WinGet\Links\oscdimg.exe"
-        ) | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
-    }
-
-    return $oscdimg
-}
-
 function Invoke-WinUtilISOExport {
     $contentsDir = $sync["Win11ISOContentsDir"]
 
@@ -628,8 +600,8 @@ function Find-WinUtilOscdimg {
 
     .DESCRIPTION
         PATH first, since that covers an ADK installed anywhere and a manual copy, then the
-        default ADK location, then the per-user WinGet package root. Used both before and after
-        the install attempt, so a package that lands outside the per-user root is still found.
+        default ADK location, then the per-user and machine-scope WinGet locations. Used both
+        before and after the install attempt so the current process does not need a PATH refresh.
     #>
 
     $onPath = Get-Command oscdimg.exe -ErrorAction SilentlyContinue
@@ -638,13 +610,20 @@ function Find-WinUtilOscdimg {
     foreach ($root in @(
             "${env:ProgramFiles(x86)}\Windows Kits",
             "$env:ProgramFiles\Windows Kits",
-            "$env:LOCALAPPDATA\Microsoft\WinGet\Packages")) {
+            "$env:LOCALAPPDATA\Microsoft\WinGet\Packages",
+            "$env:ProgramFiles\WinGet\Packages")) {
 
         if (-not $root -or -not (Test-Path $root)) { continue }
 
         $found = Get-ChildItem $root -Recurse -Filter "oscdimg.exe" -ErrorAction SilentlyContinue |
                  Select-Object -First 1 -ExpandProperty FullName
         if ($found) { return $found }
+    }
+
+    foreach ($link in @(
+            "$env:LOCALAPPDATA\Microsoft\WinGet\Links\oscdimg.exe",
+            "$env:ProgramFiles\WinGet\Links\oscdimg.exe")) {
+        if ($link -and (Test-Path -LiteralPath $link)) { return $link }
     }
 
     return $null

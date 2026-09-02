@@ -185,6 +185,16 @@ Describe "Start-WinUtilJob" {
         $script:capturedRunspaceArgs["JobRestoresAppList"] | Should -BeTrue
     }
 
+    It "releases the job and restores the app list when scheduling fails" {
+        Mock Invoke-WPFRunspace { throw "pool failed" }
+        Mock Write-Host { }
+
+        { Start-WinUtilJob -Name "Install" -DisableAppList -ScriptBlock { } } | Should -Not -Throw
+
+        $script:sync.ActiveJob | Should -BeNullOrEmpty
+        $script:sync.ItemsControl.IsEnabled | Should -BeTrue
+    }
+
     It "reports completion and releases the busy state when the body succeeds" {
         Start-WinUtilJob -Name "Example" -ScriptBlock { } | Out-Null
 
@@ -276,5 +286,24 @@ Describe "Start-WinUtilJob" {
 
         $script:sync.ItemsControl.IsEnabled | Should -BeTrue
         $script:sync.ActiveJob | Should -BeNullOrEmpty
+    }
+}
+
+Describe "Job timing summaries" {
+    BeforeEach {
+        $script:sync = [Hashtable]::Synchronized(@{
+            StepTimings = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new())
+        })
+        $null = $sync.StepTimings.Add([pscustomobject]@{ Scope = "Install"; Step = "old"; Milliseconds = 100 })
+        $null = $sync.StepTimings.Add([pscustomobject]@{ Scope = "Install"; Step = "current"; Milliseconds = 25 })
+        Mock Write-WinUtilLog { }
+    }
+
+    It "excludes entries recorded before the current run" {
+        Write-WinUtilTimingSummary -Scope "Install" -TotalMilliseconds 30 -StartIndex 1
+
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Message -eq "timing summary: 1 step(s), 25 ms measured of 30 ms total"
+        }
     }
 }

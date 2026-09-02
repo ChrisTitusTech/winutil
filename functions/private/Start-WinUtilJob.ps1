@@ -81,6 +81,8 @@ function Start-WinUtilJob {
         return $null
     }
 
+    $timingStartIndex = if ($sync.StepTimings) { $sync.StepTimings.Count } else { 0 }
+
     $label = if ($Description) { $Description } else { $Name }
     Write-WinUtilLog -Component $Name -Message "$Name job started."
     Write-WinUtilJobBanner -Message $label
@@ -95,15 +97,17 @@ function Start-WinUtilJob {
     # Rebuilt from its text inside the runspace: a scriptblock carries the session state it was
     # defined in, and recreating it there binds it to the worker. The handle is discarded,
     # printing it puts an IAsyncResult table on the console on every button press.
-    $null = Invoke-WPFRunspace -ParameterList @(
-        ("JobName", $Name),
-        ("JobLabel", $label),
-        ("JobBody", $ScriptBlock.ToString()),
-        ("JobParameters", $Parameters),
-        ("JobRestoresAppList", [bool]$DisableAppList),
-        ("JobToken", $jobToken)
-    ) -ScriptBlock {
-        param($JobName, $JobLabel, $JobBody, $JobParameters, $JobRestoresAppList, $JobToken)
+    try {
+        $null = Invoke-WPFRunspace -ParameterList @(
+            ("JobName", $Name),
+            ("JobLabel", $label),
+            ("JobBody", $ScriptBlock.ToString()),
+            ("JobParameters", $Parameters),
+            ("JobRestoresAppList", [bool]$DisableAppList),
+            ("JobToken", $jobToken),
+            ("TimingStartIndex", $timingStartIndex)
+        ) -ScriptBlock {
+        param($JobName, $JobLabel, $JobBody, $JobParameters, $JobRestoresAppList, $JobToken, $TimingStartIndex)
 
         # Marks this runspace as the one doing the work, so a pause holds here and not in
         # whoever asked for it
@@ -147,7 +151,7 @@ function Start-WinUtilJob {
             # background work on this runspace believe it is a job worker
             $global:WinUtilIsJobWorker = $false
 
-            Write-WinUtilTimingSummary -Scope $JobName -TotalMilliseconds $jobClock.ElapsedMilliseconds
+            Write-WinUtilTimingSummary -Scope $JobName -TotalMilliseconds $jobClock.ElapsedMilliseconds -StartIndex $TimingStartIndex
 
             # A worker the watchdog cut off can reach here after the next job claimed the slot,
             # and everything below releases shared state.
@@ -172,6 +176,17 @@ function Start-WinUtilJob {
                 Write-WinUtilLog -Level "WARN" -Component $JobName -Message "$JobName unwound after another job had started; leaving its state alone."
             }
         }
+        }
+    } catch {
+        Write-WinUtilErrorRecord -ErrorRecord $_ -Component $Name -Context "Could not schedule $Name"
+        Write-WinUtilJobBanner -Message "$label could not start" -Level "ERROR"
+        Step-WinUtilJob -Status "$Name could not start" -Percent 100 -State "Error" -Overlay "warning"
+        if ($DisableAppList -and (Test-WinUtilUIAlive)) {
+            Invoke-WPFUIThread -ScriptBlock {
+                if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }
+            }
+        }
+        $null = Clear-WinUtilActiveJob -Token $jobToken
     }
 }
 

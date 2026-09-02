@@ -66,7 +66,9 @@ function Write-WinUtilTimingSummary {
 
         [int]$Top = 5,
 
-        [long]$TotalMilliseconds = -1
+        [long]$TotalMilliseconds = -1,
+
+        [int]$StartIndex = 0
     )
 
     if ($null -eq $sync.StepTimings) {
@@ -80,7 +82,7 @@ function Write-WinUtilTimingSummary {
         [System.Threading.Monitor]::Exit($sync.StepTimings.SyncRoot)
     }
 
-    $steps = @($timingSnapshot | Where-Object { $_.Scope -eq $Scope })
+    $steps = @($timingSnapshot | Select-Object -Skip $StartIndex | Where-Object { $_.Scope -eq $Scope })
     if ($steps.Count -eq 0) {
         return
     }
