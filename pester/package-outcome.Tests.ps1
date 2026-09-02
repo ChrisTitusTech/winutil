@@ -42,6 +42,29 @@ Describe "Install-WinUtilProgramWinget outcomes" {
         $result.Detail | Should -Be "already installed"
     }
 
+    It "skips a per-user package that elevated WinGet cannot update during install" {
+        Mock Start-Process { [pscustomobject]@{ ExitCode = -1978335107 } }
+
+        $result = Install-WinUtilProgramWinget -Action Install -Programs @("Microsoft.Sysinternals.ProcessExplorer")
+
+        $result.Outcome | Should -Be "Skipped"
+        $result.Detail | Should -Be "already installed for the current user; elevated WinUtil cannot update it"
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "INFO" -and $Message -like "*skipped: Microsoft.Sysinternals.ProcessExplorer*"
+        }
+    }
+
+    It "does not hide an administrator-context refusal for explicit upgrade or uninstall" {
+        foreach ($action in @("Upgrade", "Uninstall")) {
+            Mock Start-Process { [pscustomobject]@{ ExitCode = -1978335107 } }
+
+            $result = Install-WinUtilProgramWinget -Action $action -Programs @("Microsoft.Sysinternals.ProcessExplorer")
+
+            $result.Outcome | Should -Be "Failed" -Because "$action did not complete"
+            $result.ExitCode | Should -Be -1978335107
+        }
+    }
+
     It "reports any other exit code as a failure" {
         Mock Start-Process { [pscustomobject]@{ ExitCode = -1978335212 } }
 
@@ -133,6 +156,18 @@ Describe "Complete-WinUtilPackageRun" {
 
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
             $Message -eq "Install summary: 1 succeeded, 1 skipped, 0 failed"
+        }
+    }
+
+    It "does not fail an install when every selected package is already present" {
+        $results = @(
+            [pscustomobject]@{ Package = "Microsoft.Sysinternals.ProcessMonitor"; Outcome = "Skipped"; Detail = "no applicable update" },
+            [pscustomobject]@{ Package = "Microsoft.Sysinternals.ProcessExplorer"; Outcome = "Skipped"; Detail = "already installed for the current user; elevated WinUtil cannot update it" }
+        )
+
+        { Complete-WinUtilPackageRun -Action "Install" -Results $results } | Should -Not -Throw
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Message -eq "Install summary: 0 succeeded, 2 skipped, 0 failed"
         }
     }
 
