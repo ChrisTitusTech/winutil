@@ -106,6 +106,7 @@ Describe "Win11 Creator setup media" {
             $script:failedDriverPath = $FailedDriverPath
             $script:failAllAddDrivers = $FailAllAddDrivers
             $script:failDiscard = $FailDiscard
+            $script:exportedInfsAtAddDriver = $null
 
             Set-Item -Path function:global:dism.exe -Value {
                 param([Parameter(ValueFromRemainingArguments)][string[]]$Arguments)
@@ -127,6 +128,7 @@ Describe "Win11 Creator setup media" {
                     # only point excluded folders are provably gone, since the SUT wipes the whole
                     # export root in its own cleanup once Invoke-WinUtilISOScript returns.
                     $script:exportRootAtAddDriver = @(Get-ChildItem -LiteralPath $script:driverExportRoot -Directory -Recurse -ErrorAction SilentlyContinue | ForEach-Object FullName)
+                    $script:exportedInfsAtAddDriver = @(Get-ChildItem -LiteralPath $script:driverExportRoot -Filter '*.inf' -File -Recurse -ErrorAction SilentlyContinue | ForEach-Object FullName)
                     if ($script:failAllAddDrivers -or ($script:failedDriverPath -and @($Arguments | Where-Object { $_ -like "*$($script:failedDriverPath)" }).Count -gt 0)) {
                         $global:LASTEXITCODE = 13
                         'Error: 13'
@@ -552,8 +554,41 @@ Describe "Win11 Creator setup media" {
             $addDriverCalls[0] | Should -Match ([regex]::Escape('parent_pkg\retained_child'))
             $script:exportRootAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'parent_pkg')
             $script:exportRootAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'parent_pkg\retained_child')
+            $script:exportedInfsAtAddDriver | Should -Not -Contain (Join-Path $script:driverExportRoot 'parent_pkg\extension.inf')
+            $script:exportedInfsAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'parent_pkg\retained_child\network.inf')
             ($logs -join '|') | Should -Match "Keeping excluded driver package directory '.*parent_pkg' because it contains a retained nested package"
             $driversInjected.Value | Should -BeTrue
+        } finally {
+            Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
+            Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    It "removes an excluded nested INF before recursively adding its retained ancestor" {
+        $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoNestedExcluded_$([guid]::NewGuid())"
+        $installWim = Join-Path $contentRoot 'sources\install.wim'
+        $template = Get-Content -Path $script:autoUnattendPath -Raw
+
+        New-WinUtilDriverExportHarness -Fixtures @(
+            @{ Path = 'root_pkg'; Name = 'root.inf'; Class = 'Net' },
+            @{ Path = 'root_pkg\excluded_child'; Name = 'extension.inf'; Class = 'Extension' },
+            @{ Path = 'root_pkg\excluded_child\retained_grandchild'; Name = 'storage.inf'; Class = 'SCSIAdapter' }
+        )
+
+        try {
+            New-Item -Path (Split-Path $installWim -Parent) -ItemType Directory -Force | Out-Null
+            Set-Content -Path $installWim -Value 'mock-wim'
+            . $script:isoScriptPath
+            Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template -InjectCurrentSystemDrivers $true -InstallImagePath $installWim -InstallImageIndex 6 -InstallEditionId 'Professional'
+
+            $addDriverCalls = @($script:dismCalls | Where-Object { $_ -match '/Add-Driver' })
+            $addDriverCalls.Count | Should -Be 1
+            $addDriverCalls[0] | Should -Match ([regex]::Escape('/Driver:' + (Join-Path $script:driverExportRoot 'root_pkg')))
+            $script:exportRootAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'root_pkg\excluded_child')
+            $script:exportRootAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'root_pkg\excluded_child\retained_grandchild')
+            $script:exportedInfsAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'root_pkg\root.inf')
+            $script:exportedInfsAtAddDriver | Should -Not -Contain (Join-Path $script:driverExportRoot 'root_pkg\excluded_child\extension.inf')
+            $script:exportedInfsAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'root_pkg\excluded_child\retained_grandchild\storage.inf')
         } finally {
             Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
             Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue

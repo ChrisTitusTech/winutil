@@ -351,13 +351,22 @@ function Invoke-WinUtilISOScript {
                 # isn't a failure: leave install.wim untouched and continue building the ISO.
                 & $Logger 'No drivers found to inject: every exported package was excluded (Extension class or stale duplicate). Skipping driver injection; install.wim is unchanged.'
             } else {
-                $excludedFolders = @($driverFolders.Name | Where-Object { $_ -notin $stagedDriverFolders })
-                foreach ($excludedFolder in $excludedFolders) {
+                $excludedDriverFolderGroups = @($driverFolders | Where-Object { $_.Name -notin $stagedDriverFolders })
+                foreach ($excludedDriverFolderGroup in $excludedDriverFolderGroups) {
+                    $excludedFolder = [string]$excludedDriverFolderGroup.Name
                     $hasRetainedDescendant = [bool]@($stagedDriverFolders | Where-Object {
                         $_.StartsWith("$excludedFolder\", [System.StringComparison]::OrdinalIgnoreCase)
                     }).Count
                     if ($hasRetainedDescendant) {
-                        & $Logger "Keeping excluded driver package directory '$excludedFolder' because it contains a retained nested package."
+                        try {
+                            foreach ($excludedInf in $excludedDriverFolderGroup.Group) {
+                                Remove-Item -LiteralPath $excludedInf.FullName -Force -ErrorAction Stop
+                            }
+                        } catch {
+                            throw "Failed to remove excluded driver INF files from package '$excludedFolder' before injection: $_"
+                        }
+
+                        & $Logger "Keeping excluded driver package directory '$excludedFolder' because it contains a retained nested package, after removing its excluded INF files."
                         continue
                     }
 
@@ -368,7 +377,7 @@ function Invoke-WinUtilISOScript {
                     }
                 }
 
-                & $Logger "Exported $($stagedDriverFolders.Count) of $($driverFolders.Count) driver packages ($storageCount staged for WinPE, $($excludedFolders.Count) excluded)."
+                & $Logger "Exported $($stagedDriverFolders.Count) of $($driverFolders.Count) driver packages ($storageCount staged for WinPE, $($excludedDriverFolderGroups.Count) excluded)."
 
                 Set-ItemProperty -LiteralPath $InstallImagePath -Name IsReadOnly -Value $false
                 New-Item -Path $mountDir -ItemType Directory -Force | Out-Null
