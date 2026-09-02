@@ -11,7 +11,8 @@ Function Invoke-WinUtilCurrentSystem {
     #>
 
     param(
-        $CheckBox
+        $CheckBox,
+        [switch]$BypassToggleStatusCache
     )
     if ($CheckBox -eq "choco") {
         $apps = (choco list | Select-String -Pattern "^\S+").Matches.Value
@@ -65,7 +66,7 @@ Function Invoke-WinUtilCurrentSystem {
                 $Values = @()
 
                 if ($entryType -eq "Toggle") {
-                    if (-not (Get-WinUtilToggleStatus $Config)) {
+                    if (-not (Get-WinUtilToggleStatus $Config -BypassCache:$BypassToggleStatusCache)) {
                         $values += $False
                     }
                 } else {

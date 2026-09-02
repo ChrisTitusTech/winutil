@@ -201,6 +201,22 @@ Describe "Get-WinUtilTweaksStateReport" {
         @($result.performancePlans.PSObject.Properties).Count | Should -Be 0
     }
 
+    It "reads live toggle state instead of the cached UI state" {
+        $script:sync.ToggleStatusCache = @{ WPFToggleCustomize = $true }
+        Mock Test-Path { $Path -eq "HKCU:\Fake3" }
+        Mock Get-ItemProperty { [pscustomobject]@{ Enabled = "0" } } -ParameterFilter {
+            $Path -eq "HKCU:\Fake3"
+        }
+
+        $result = Get-WinUtilTweaksStateReport
+
+        $result.customizePreferences.WPFToggleCustomize | Should -BeFalse
+        $script:sync.ToggleStatusCache.WPFToggleCustomize | Should -BeTrue
+        Should -Invoke -CommandName Get-ItemProperty -Times 1 -Exactly -ParameterFilter {
+            $Path -eq "HKCU:\Fake3"
+        }
+    }
+
     It "lists combobox and script-only tweaks as not evaluable instead of silently dropping them" {
         $result = Get-WinUtilTweaksStateReport
 

@@ -21,7 +21,7 @@ function Get-WinUtilTweaksStateReport {
 
     try {
         $appliedTweaks = [System.Collections.Generic.HashSet[string]]::new(
-            [string[]]@(Invoke-WinUtilCurrentSystem -CheckBox "tweaks")
+            [string[]]@(Invoke-WinUtilCurrentSystem -CheckBox "tweaks" -BypassToggleStatusCache)
         )
 
         foreach ($property in $sync.configs.tweaks.PSObject.Properties) {

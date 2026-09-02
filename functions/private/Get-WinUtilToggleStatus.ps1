@@ -1,13 +1,19 @@
-Function Get-WinUtilToggleStatus ($ToggleSwitch) {
+Function Get-WinUtilToggleStatus {
+    param(
+        $ToggleSwitch,
+        [switch]$BypassCache
+    )
 
     $ToggleSwitchReg = $sync.configs.tweaks.$ToggleSwitch.registry
 
-    if ($null -eq $sync.ToggleStatusCache) {
-        $sync.ToggleStatusCache = @{}
-    }
+    if (-not $BypassCache) {
+        if ($null -eq $sync.ToggleStatusCache) {
+            $sync.ToggleStatusCache = @{}
+        }
 
-    if ($sync.ToggleStatusCache.ContainsKey($ToggleSwitch)) {
-        return [bool]$sync.ToggleStatusCache[$ToggleSwitch]
+        if ($sync.ToggleStatusCache.ContainsKey($ToggleSwitch)) {
+            return [bool]$sync.ToggleStatusCache[$ToggleSwitch]
+        }
     }
 
     if (-not (Get-PSDrive -Name HKU -ErrorAction SilentlyContinue)) {
@@ -30,11 +36,15 @@ Function Get-WinUtilToggleStatus ($ToggleSwitch) {
         }
 
         if ($regstate -ne $regentry.Value) {
-            $sync.ToggleStatusCache[$ToggleSwitch] = $false
+            if (-not $BypassCache) {
+                $sync.ToggleStatusCache[$ToggleSwitch] = $false
+            }
             return $false
         }
     }
 
-    $sync.ToggleStatusCache[$ToggleSwitch] = $true
+    if (-not $BypassCache) {
+        $sync.ToggleStatusCache[$ToggleSwitch] = $true
+    }
     return $true
 }
