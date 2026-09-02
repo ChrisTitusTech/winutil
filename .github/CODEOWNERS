@@ -4,3 +4,6 @@
 # Seanh1917 (ANGRYxScotsmans) is the docs guy
 docs/      @ChrisTitusTech @seanh1995
 tools/devdocs-generator.*  @ChrisTitusTech @seanh1995
+
+# Title screen generation
+tools/title-screen/  @ChrisTitusTech @mewclouds

@@ -63,7 +63,7 @@ Given the current wave of npm/pnpm/yarn supply-chain worms (malicious postinstal
 - Treat any `postinstall`/`preinstall` lifecycle script in a new dependency as worth flagging to the user before installing — summarize what it does.
 - Don't put real secrets anywhere under `docs/`. `docs/.dockerignore` only trims what `docker build` copies into the image — it does not affect the `docker compose` bind mount, which exposes the entire `docs/` directory (including any `.env` file) inside the container for every dev/build/preview command (see the next bullet). There is no "keep it out unless mounted" middle ground here.
 - The container mounts `docs/` as a volume, so file edits on the host are reflected inside the container immediately — no rebuild needed for normal code changes, only when `docs/package.json`/`docs/package-lock.json` change (see the rebuild-and-drop-volume steps above).
-- This Docker requirement is specific to `docs/`. The rest of the repo is PowerShell (`Compile.ps1`, Pester, Script Analyzer) and runs directly on the host per Section 1.
+- This Docker requirement is specific to `docs/`. PowerShell tooling runs directly on the host per Section 1. The Python project under `tools/title-screen/` runs with uv as documented in its README.
 
 ## 3. Source Of Truth
 
@@ -127,6 +127,7 @@ If a check cannot be run, say exactly why and what residual risk remains. See SP
 
 - Treat local `winutil.ps1` changes as disposable compile output.
 - Never stage or commit `winutil.ps1`, `binary/`, or anything else ignored by the root `.gitignore` or `docs/.gitignore` — read those files rather than assuming. `docs/public/` is tracked source for static assets, not generated output.
+- `docs/src/assets/branding/title-screen.png` is a tracked generated asset. Do not edit it manually. Update `tools/title-screen/` or run the title-screen workflow.
 - Do not remove `.gitignore` rules that keep generated artifacts out of Git.
 - Before finishing, check `git status --short` and separate your changes from pre-existing user changes.
 - Do not revert user changes unless explicitly asked.
