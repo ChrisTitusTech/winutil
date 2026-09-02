@@ -459,6 +459,15 @@
         "winget": "FilesCommunity.Files",
         "foss": true
     },
+    "fileconverter": {
+        "category": "Multimedia Tools",
+        "choco": "file-converter",
+        "content": "File Converter",
+        "description": "File Converter converts and compresses files from the Windows Explorer context menu.",
+        "link": "https://file-converter.io/",
+        "winget": "AdrienAllard.FileConverter",
+        "foss": true
+    },
     "firefox": {
         "category": "Browsers",
         "choco": "firefox",
