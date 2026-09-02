@@ -61,4 +61,4 @@ body:
     attributes:
       label: Paste the full error output (if available) or Screenshot or Video.
       description: "If you're willing to share the whole log, please provide an external link to text-sharing service, i.e. Pastebin"
-      placeholder: "Include any relevant logs or error messages."
+      placeholder: "Include any relevant logs or error messages. Keep any sensitive info out of the presented log"
