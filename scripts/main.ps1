@@ -82,7 +82,7 @@ if ($Preset -or $Config) {
         # Both may be given: the preset sets a baseline and the config adds to it
         if ($Config) {
             Write-WinUtilLog -Component "AutoRun" -Message "Importing selections from '$Config'."
-            Invoke-WPFImpex -type "import" -Config $Config -Merge:([bool]$Preset)
+            Invoke-WPFImpex -type "import" -Config $Config -Merge:([bool]$Preset) -ThrowOnError
         }
 
         $summary = Invoke-WinUtilAutoRun

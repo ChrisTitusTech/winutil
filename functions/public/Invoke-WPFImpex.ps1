@@ -20,7 +20,10 @@ function Invoke-WPFImpex {
 
         # Add to the current selection instead of replacing it. Used when a preset has already
         # set a baseline that the imported file is meant to extend.
-        [switch]$Merge
+        [switch]$Merge,
+
+        # Headless runs cannot show a dialog and must fail rather than applying a partial request.
+        [switch]$ThrowOnError
     )
 
     function ConfigDialog {
@@ -69,12 +72,14 @@ function Invoke-WPFImpex {
                 if ($Config) {
                     try {
                         if ($Config -match '^https?://') {
-                            $jsonFile = (Invoke-WebRequest "$Config").Content | ConvertFrom-Json
+                            $jsonFile = (Invoke-WebRequest "$Config" -ErrorAction Stop).Content | ConvertFrom-Json
                         } else {
-                            $jsonFile = Get-Content $Config | ConvertFrom-Json
+                            $jsonFile = Get-Content $Config -ErrorAction Stop | ConvertFrom-Json
                         }
                     } catch {
-                        Write-Error "Failed to load the JSON file from the specified path or URL: $_"
+                        $message = "Failed to load the JSON file from the specified path or URL: $_"
+                        if ($ThrowOnError) { throw $message }
+                        Write-Error $message
                         return
                     }
                     $isLegacyConfig = $jsonFile -is [System.Management.Automation.PSCustomObject] -and
@@ -150,6 +155,7 @@ function Invoke-WPFImpex {
                     }
                 }
             } catch {
+                if ($ThrowOnError) { throw }
                 Write-Error "An error occurred while importing: $_"
             }
         }

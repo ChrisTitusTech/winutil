@@ -9,6 +9,7 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilCurrentSystem.ps1")
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilRegistry.ps1")
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilService.ps1")
+    . (Join-Path $script:repoRoot "functions\public\Invoke-WPFPanelAutologin.ps1")
 
     function winget {
         param([Parameter(ValueFromRemainingArguments = $true)]$Arguments)
@@ -19,6 +20,22 @@ BeforeAll {
     # The CLI path is what these tests cover; the module path is verified against real winget
     function Step-WinUtilJob { param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay, [switch]$Hide) }
     function Write-WinUtilLog { }
+}
+
+Describe "Invoke-WPFPanelAutologin" {
+    BeforeEach {
+        $script:sync = [Hashtable]::Synchronized(@{ winutildir = $TestDrive })
+        Mock Invoke-WebRequest { }
+        Mock Start-Process { }
+    }
+
+    It "uses the shared WinUtil data directory from a worker runspace" {
+        Invoke-WPFPanelAutologin
+
+        $expectedPath = Join-Path $TestDrive "autologin.exe"
+        Should -Invoke -CommandName Invoke-WebRequest -Times 1 -Exactly -ParameterFilter { $OutFile -eq $expectedPath }
+        Should -Invoke -CommandName Start-Process -Times 1 -Exactly -ParameterFilter { $FilePath -eq $expectedPath }
+    }
 }
 
 Describe "Invoke-WinUtilCurrentSystem installed apps" {

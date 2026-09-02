@@ -150,6 +150,15 @@ Describe "Install-WinUtilProgramWinget" {
         }
     }
 
+    It "upgrades every package through its configured source without parsing the output table" {
+        Install-WinUtilProgramWinget -Action Upgrade -Programs @("all")
+
+        Should -Invoke -CommandName Start-Process -Times 1 -Exactly -ParameterFilter {
+            $FilePath -eq "winget" -and
+                (@($ArgumentList) -join "|") -eq "upgrade|--all|--accept-package-agreements|--accept-source-agreements|--include-unknown|--silent"
+        }
+    }
+
     It "skips whitespace and na package IDs" {
         Install-WinUtilProgramWinget -Action Install -Programs @(" ", "na")
 

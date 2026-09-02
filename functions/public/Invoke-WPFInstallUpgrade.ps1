@@ -6,8 +6,7 @@ function Invoke-WPFInstallUpgrade {
 
     .DESCRIPTION
         Runs on the worker like any other package work, so the progress bar, the taskbar item
-        and the log report it the same way an install does. Each package is a step of the run
-        rather than the whole thing being one opaque wait.
+        and the log report it the same way an install does.
 
     #>
 
@@ -31,65 +30,13 @@ function Invoke-WPFInstallUpgrade {
     Step-WinUtilJob -Status "Preparing WinGet" -State "Indeterminate"
     Install-WinUtilWinget
 
-    Step-WinUtilJob -Status "Looking for available updates" -State "Indeterminate"
-    $upgradable = Get-WinUtilUpgradablePackage
+    Write-WinUtilLog -Component "Install" -Message "Upgrading all WinGet packages."
+    Step-WinUtilJob -Status "Upgrading all WinGet packages" -State "Indeterminate"
 
-    if (@($upgradable).Count -eq 0) {
-        Write-WinUtilLog -Component "Install" -Message "No packages have an update available."
-        Step-WinUtilJob -Status "Everything is up to date" -Percent 100
-        return
+    # Let WinGet resolve every package against its recorded source. Parsing its localized,
+    # width-truncated table loses identifiers and source information.
+    $result = Measure-WinUtilStep -Scope "Install" -Name "winget upgrade --all" -ScriptBlock {
+        Install-WinUtilProgramWinget -Action Upgrade -Programs @("all")
     }
-
-    Write-WinUtilLog -Component "Install" -Message "Upgrading $(@($upgradable).Count) package(s): $($upgradable -join ', ')"
-
-    $total = @($upgradable).Count
-    $completed = 0
-    $results = @()
-
-    foreach ($package in $upgradable) {
-        $position = $completed + 1
-        Step-WinUtilJob -Status "Upgrading $package ($position/$total)" -Percent ([int](($completed / $total) * 100))
-
-        $results += Measure-WinUtilStep -Scope "Install" -Name "winget upgrade $package" -ScriptBlock {
-            Install-WinUtilProgramWinget -Action Upgrade -Programs @($package)
-        }
-
-        $completed++
-        Step-WinUtilJob -Status "Upgraded $package ($completed/$total)" -Percent ([int](($completed / $total) * 100))
-    }
-
-    Complete-WinUtilPackageRun -Action "Upgrade" -Results $results
-}
-
-function Get-WinUtilUpgradablePackage {
-    <#
-    .SYNOPSIS
-        Returns the package identifiers WinGet reports as having an update available
-    #>
-
-    # The table is localised and its columns are truncated to the console width, so a shape
-    # matched out of it is not an identifier: a wrapped version, a translated header or a
-    # diagnostic line all match the same pattern. Every candidate is therefore confirmed against
-    # winget itself before it is upgraded, and stderr is kept out of the parse.
-    $output = & winget upgrade --include-unknown --accept-source-agreements 2>$null | Out-String
-
-    $candidates = New-Object System.Collections.Generic.List[string]
-    foreach ($line in ($output -split "`r?`n")) {
-        if ($line -match '^\s*\S.*?\s{2,}(?<id>[\w\.\-\+]+)\s{2,}\S+\s{2,}\S+') {
-            $null = $candidates.Add($Matches['id'])
-        }
-    }
-
-    $ids = New-Object System.Collections.Generic.List[string]
-    foreach ($candidate in ($candidates | Sort-Object -Unique)) {
-        # An exact-id query returns nothing for a header, a separator or a stray column value
-        $confirmed = & winget list --id $candidate --exact --accept-source-agreements 2>$null | Out-String
-        if ($confirmed -match [regex]::Escape($candidate)) {
-            $null = $ids.Add($candidate)
-        } else {
-            Write-WinUtilLog -Component "Install" -Message "Ignoring '$candidate' from the upgrade table: winget does not report it as an installed package."
-        }
-    }
-
-    return @($ids)
+    Complete-WinUtilPackageRun -Action "Upgrade" -Results @($result)
 }

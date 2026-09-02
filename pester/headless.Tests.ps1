@@ -8,6 +8,7 @@ BeforeAll {
     $script:startScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\start.ps1") -Raw
 
     . (Join-Path $script:functionRoot "private\Update-WinUtilSelections.ps1")
+    . (Join-Path $script:functionRoot "public\Invoke-WPFImpex.ps1")
 
     # Stubs so the mocks below have something to replace; the real ones live in other files
     function Write-WinUtilLog { param($Level, $Component, $Message, [switch]$Detail) }
@@ -48,6 +49,18 @@ Describe "Headless entry point" {
         # regardless of what the run did
         $script:startScript | Should -Match '\$elevated = Start-Process[^\r\n]*-Wait -PassThru'
         $script:startScript | Should -Match 'exit \$elevated\.ExitCode'
+    }
+}
+
+Describe "Headless config import" {
+    BeforeEach {
+        $global:sync = [hashtable]::Synchronized(@{})
+    }
+
+    It "throws when a requested config cannot be loaded" {
+        $missingConfig = Join-Path $TestDrive "missing.json"
+
+        { Invoke-WPFImpex -type "import" -Config $missingConfig -ThrowOnError } | Should -Throw
     }
 }
 

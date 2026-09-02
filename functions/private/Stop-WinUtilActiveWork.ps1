@@ -6,7 +6,10 @@ function Test-WinUtilShellRunning {
     param($PowerShell)
 
     try {
-        return $PowerShell.InvocationStateInfo.State -eq [System.Management.Automation.PSInvocationState]::Running
+        return $PowerShell.InvocationStateInfo.State -in @(
+            [System.Management.Automation.PSInvocationState]::Running,
+            [System.Management.Automation.PSInvocationState]::Stopping
+        )
     } catch {
         return $false
     }
@@ -42,7 +45,11 @@ function Register-WinUtilActiveShell {
     # accumulating for the life of the session
     foreach ($finished in (Get-WinUtilActiveShell)) {
         if (-not (Test-WinUtilShellRunning $finished)) {
-            try { $sync.ActiveShells.Remove($finished) } catch { }
+            try {
+                $sync.ActiveShells.Remove($finished)
+            } catch {
+                Write-WinUtilLog -Level "WARN" -Component "UI" -Message "Could not remove a completed worker from the active set: $_"
+            }
         }
     }
 
@@ -101,7 +108,11 @@ function Stop-WinUtilActiveWork {
 
     foreach ($shell in $shells) {
         if (Test-WinUtilShellRunning $shell) {
-            try { $null = $shell.BeginStop($null, $null) } catch { }
+            try {
+                $null = $shell.BeginStop($null, $null)
+            } catch {
+                Write-WinUtilLog -Level "WARN" -Component "UI" -Message "Could not request that a worker stop: $_"
+            }
         }
     }
 

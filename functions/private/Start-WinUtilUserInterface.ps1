@@ -155,6 +155,7 @@ function Start-WinUtilUserInterface {
     # Set the commands that will run when the form is closed
     $sync["Form"].Add_Closing({
         param($eventSender, $closingArgs)
+        $null = $eventSender
 
         # The pool cannot be torn down under work that is still running: the runspace error that
         # follows is unhandled and ends the process

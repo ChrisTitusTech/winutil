@@ -44,7 +44,11 @@ function Close-WinUtilRunspacePool {
         # A pool that will not close cleanly must not stop the window from closing
         Write-WinUtilLog -Level "WARN" -Component "UI" -Message "Worker pool did not close cleanly: $($_.Exception.Message)"
     } finally {
-        try { $sync.runspace.Dispose() } catch { }
+        try {
+            $sync.runspace.Dispose()
+        } catch {
+            Write-WinUtilLog -Level "WARN" -Component "UI" -Message "Worker pool did not dispose cleanly: $($_.Exception.Message)"
+        }
         $sync.Remove("runspace")
         if ($sync.ActiveShells) { $sync.ActiveShells.Clear() }
     }

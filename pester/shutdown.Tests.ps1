@@ -61,6 +61,16 @@ Describe "Tracking what is running" {
         { Stop-WinUtilActiveWork -TimeoutSeconds 1 } | Should -Not -Throw
     }
 
+    It "treats a stopping invocation as active until it reaches a terminal state" {
+        $shell = [pscustomobject]@{
+            InvocationStateInfo = [pscustomobject]@{
+                State = [System.Management.Automation.PSInvocationState]::Stopping
+            }
+        }
+
+        Test-WinUtilShellRunning $shell | Should -BeTrue
+    }
+
     It "stops work that is genuinely running" {
         $pool = [runspacefactory]::CreateRunspacePool(1, 2)
         $pool.Open()

@@ -69,7 +69,18 @@ function Write-WinUtilTimingSummary {
         [long]$TotalMilliseconds = -1
     )
 
-    $steps = @($sync.StepTimings | Where-Object { $_.Scope -eq $Scope })
+    if ($null -eq $sync.StepTimings) {
+        return
+    }
+
+    [System.Threading.Monitor]::Enter($sync.StepTimings.SyncRoot)
+    try {
+        $timingSnapshot = @($sync.StepTimings.ToArray())
+    } finally {
+        [System.Threading.Monitor]::Exit($sync.StepTimings.SyncRoot)
+    }
+
+    $steps = @($timingSnapshot | Where-Object { $_.Scope -eq $Scope })
     if ($steps.Count -eq 0) {
         return
     }

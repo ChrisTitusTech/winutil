@@ -47,8 +47,9 @@ Function Install-WinUtilProgramWinget {
             continue
         }
 
-        $source = "winget"
-        if ($program.StartsWith("msstore:", [System.StringComparison]::OrdinalIgnoreCase)) {
+        $upgradeAll = $Action -eq "Upgrade" -and $program -eq "all"
+        $source = if ($upgradeAll) { "all configured sources" } else { "winget" }
+        if (-not $upgradeAll -and $program.StartsWith("msstore:", [System.StringComparison]::OrdinalIgnoreCase)) {
             $source = "msstore"
             $program = $program.Substring("msstore:".Length)
         }
@@ -63,7 +64,13 @@ Function Install-WinUtilProgramWinget {
             "Uninstall" { @("uninstall", "--id", $program, "--source", $source, "--silent") }
             # --include-unknown because the scan that found these ran with it: without it winget
             # refuses every package whose installed version it could not read
-            "Upgrade"   { @("upgrade", "--id", $program, "--accept-package-agreements", "--accept-source-agreements", "--source", $source, "--include-unknown", "--silent") }
+            "Upgrade" {
+                if ($upgradeAll) {
+                    @("upgrade", "--all", "--accept-package-agreements", "--accept-source-agreements", "--include-unknown", "--silent")
+                } else {
+                    @("upgrade", "--id", $program, "--accept-package-agreements", "--accept-source-agreements", "--source", $source, "--include-unknown", "--silent")
+                }
+            }
             default     { @("install", "--id", $program, "--accept-package-agreements", "--accept-source-agreements", "--source", $source, "--silent") }
         }
 
