@@ -25,6 +25,10 @@ function Invoke-WinUtilISOScript {
 
     .PARAMETER Log
         Optional ScriptBlock for progress/status logging. Receives a single [string] argument.
+
+    .PARAMETER DriversInjected
+        Optional [ref] set to $true only if driver injection actually mounted and committed
+        install.wim; stays $false if injection was skipped or no package was added successfully.
     #>
     param (
         [Parameter(Mandatory)][string]$ISOContentsDir,
@@ -33,7 +37,8 @@ function Invoke-WinUtilISOScript {
         [string]$InstallEditionId = "",
         [string]$InstallImagePath = "",
         [int]$InstallImageIndex = 1,
-        [scriptblock]$Log = { param($m) Write-Output $m }
+        [scriptblock]$Log = { param($m) Write-Output $m },
+        [ref]$DriversInjected = [ref]$false
     )
 
     function Add-WinUtilISOStagedDrivers {
@@ -41,8 +46,10 @@ function Invoke-WinUtilISOScript {
             [Parameter(Mandatory)][string]$ContentRoot,
             [Parameter(Mandatory)][string]$InstallImagePath,
             [Parameter(Mandatory)][int]$InstallImageIndex,
-            [scriptblock]$Logger
+            [scriptblock]$Logger,
+            [ref]$DriversInjected = [ref]$false
         )
+        $DriversInjected.Value = $false
 
         function Copy-WinUtilISODriverFolder {
             param (
@@ -75,6 +82,148 @@ function Invoke-WinUtilISOScript {
                 & $Logger "Warning: could not classify storage driver '$($InfFile.FullName)': $_"
                 return $false
             }
+        }
+
+        function Test-WinUtilISODriverExtensionClass {
+            param ([Parameter(Mandatory)][System.IO.FileInfo]$InfFile)
+
+            try {
+                return (Get-Content -LiteralPath $InfFile.FullName -Raw -ErrorAction Stop) -match '(?im)^\s*Class\s*=\s*"?Extension"?\s*(?:;.*)?$'
+            } catch {
+                $null = & $Logger "Warning: could not classify driver '$($InfFile.FullName)': $_"
+                return $false
+            }
+        }
+
+        function Get-WinUtilISODriverPackageVersion {
+            param ([Parameter(Mandatory)][System.IO.FileInfo]$InfFile)
+
+            try {
+                $infText = Get-Content -LiteralPath $InfFile.FullName -Raw -ErrorAction Stop
+            } catch {
+                $null = & $Logger "Warning: could not read '$($InfFile.FullName)' to determine its driver version: $_"
+                return $null
+            }
+
+            # The version component of DriverVer is optional per the INF spec (date-only entries
+            # are valid); treat a missing version as 0.0 so date-only entries still rank correctly
+            # instead of being discarded as unparseable.
+            $match = [regex]::Match($infText, '(?im)^\s*DriverVer\s*=\s*(?<date>\d{1,2}/\d{1,2}/\d{4})\s*(?:,\s*(?<version>\d+(?:\.\d+){0,3}))?\s*(?:;.*)?$')
+            if (-not $match.Success) {
+                return $null
+            }
+
+            try {
+                $date = [datetime]::ParseExact($match.Groups['date'].Value, 'M/d/yyyy', [System.Globalization.CultureInfo]::InvariantCulture)
+                $versionText = if ($match.Groups['version'].Success) { $match.Groups['version'].Value } else { '0' }
+                if (($versionText.Split('.')).Count -lt 2) {
+                    $versionText = "$versionText.0"
+                }
+                $version = [version]$versionText
+            } catch {
+                $null = & $Logger "Warning: could not parse DriverVer '$($match.Value.Trim())' in '$($InfFile.FullName)': $_"
+                return $null
+            }
+
+            return [pscustomobject]@{
+                Date    = $date
+                Version = $version
+                Raw     = if ($match.Groups['version'].Success) { "$($match.Groups['date'].Value),$($match.Groups['version'].Value)" } else { $match.Groups['date'].Value }
+            }
+        }
+
+        function Get-WinUtilISODriverProvider {
+            param ([Parameter(Mandatory)][System.IO.FileInfo]$InfFile)
+
+            try {
+                $infText = Get-Content -LiteralPath $InfFile.FullName -Raw -ErrorAction Stop
+            } catch {
+                $null = & $Logger "Warning: could not read '$($InfFile.FullName)' to determine its provider: $_"
+                return ''
+            }
+
+            $match = [regex]::Match($infText, '(?im)^\s*Provider\s*=\s*(?<provider>.+?)\s*(?:;.*)?$')
+            if (-not $match.Success) {
+                return ''
+            }
+            return $match.Groups['provider'].Value.ToLowerInvariant()
+        }
+
+        function Select-WinUtilISOStagedDriverPackages {
+            param (
+                [Parameter(Mandatory)][AllowEmptyCollection()][object[]]$DriverFolderGroups,
+                [scriptblock]$Logger
+            )
+
+            $survivingFolders = [System.Collections.Generic.List[string]]::new()
+            $dedupGroups = @{}
+
+            foreach ($driverFolderGroup in $DriverFolderGroups) {
+                $driverFolder = [string]$driverFolderGroup.Name
+                $isExtension = [bool]@($driverFolderGroup.Group | Where-Object { Test-WinUtilISODriverExtensionClass -InfFile $_ }).Count
+
+                if ($isExtension) {
+                    # $null = discards $Logger's own output; this function's return value is captured
+                    # by the caller, and an emitting logger (e.g. this function's own default) would
+                    # otherwise leak into the surviving-folder list.
+                    $null = & $Logger "Excluding extension-class driver package '$driverFolder' from Add-Driver (Class=Extension is not a serviceable hardware driver)."
+                    continue
+                }
+
+                # DISM names exported package folders <infname>_<arch>_<hash>; grouping on infname+arch
+                # (dropping the hash) is what lets us recognize two exports of the same driver. When a
+                # folder doesn't match that pattern, fall back to the full path rather than the leaf name:
+                # two unrelated folders at different depths (e.g. group_a\duplicate and group_b\duplicate)
+                # can share a leaf name, and the full path is guaranteed unique per group.
+                $leafName = Split-Path -Path $driverFolder -Leaf
+                $dedupKey = $driverFolder
+                $nameMatch = [regex]::Match($leafName, '(?i)^(?<infname>.+)_(?<arch>x86|amd64|arm64|arm|wow)_[0-9a-f]{16}$')
+                if ($nameMatch.Success) {
+                    $provider = Get-WinUtilISODriverProvider -InfFile $driverFolderGroup.Group[0]
+                    $dedupKey = "$($nameMatch.Groups['infname'].Value.ToLowerInvariant())_$($nameMatch.Groups['arch'].Value.ToLowerInvariant())_$provider"
+                }
+
+                if (-not $dedupGroups.ContainsKey($dedupKey)) {
+                    $dedupGroups[$dedupKey] = [System.Collections.Generic.List[object]]::new()
+                }
+                $dedupGroups[$dedupKey].Add($driverFolderGroup)
+            }
+
+            foreach ($dedupKey in $dedupGroups.Keys) {
+                $candidates = $dedupGroups[$dedupKey]
+                if ($candidates.Count -eq 1) {
+                    $survivingFolders.Add([string]$candidates[0].Name)
+                    continue
+                }
+
+                $ranked = @($candidates | ForEach-Object {
+                    $primaryVersion = ($_.Group | ForEach-Object { Get-WinUtilISODriverPackageVersion -InfFile $_ } | Where-Object { $_ }) |
+                        Sort-Object -Property Date, Version -Descending | Select-Object -First 1
+                    [pscustomobject]@{ Folder = [string]$_.Name; Version = $primaryVersion }
+                })
+
+                $withVersion = @($ranked | Where-Object { $_.Version })
+                if ($withVersion.Count -eq 0) {
+                    $null = & $Logger "Warning: could not determine DriverVer for any duplicate of '$dedupKey'; keeping all $($ranked.Count) package(s) rather than guessing."
+                    foreach ($candidate in $ranked) {
+                        $survivingFolders.Add($candidate.Folder)
+                    }
+                    continue
+                }
+
+                $kept = $withVersion | Sort-Object -Property @{ Expression = { $_.Version.Date } }, @{ Expression = { $_.Version.Version } } -Descending | Select-Object -First 1
+                $survivingFolders.Add($kept.Folder)
+
+                foreach ($candidate in $ranked) {
+                    if ($candidate.Folder -eq $kept.Folder) {
+                        continue
+                    }
+                    $droppedVersion = if ($candidate.Version) { $candidate.Version.Raw } else { 'unknown' }
+                    $null = & $Logger "Excluding stale duplicate driver package '$($candidate.Folder)' (DriverVer $droppedVersion) superseded by '$($kept.Folder)' (DriverVer $($kept.Version.Raw))."
+                }
+            }
+
+            return @($survivingFolders)
         }
 
         function Invoke-WinUtilISODism {
@@ -156,6 +305,7 @@ function Invoke-WinUtilISOScript {
         # exported folders would not share this prefix unless it is expanded first.
         $driverExportRoot = (Get-Item -LiteralPath $driverExportRoot).FullName
         $imageMounted = $false
+        $discardRequiredForSuccess = $false
 
         try {
             & $Logger "Exporting current system drivers before modifying install.wim..."
@@ -193,65 +343,81 @@ function Invoke-WinUtilISOScript {
                 throw "Failed to stage $copyFailures boot-storage driver package folders."
             }
 
-            & $Logger "Exported $($driverInfs.Count) driver INF files across $($driverFolders.Count) package folders; staged $storageCount boot-storage packages for WinPE."
+            $stagedDriverFolders = @(Select-WinUtilISOStagedDriverPackages -DriverFolderGroups $driverFolders -Logger $Logger)
             $metadataBefore = Get-WinUtilISOWimMetadata -ImagePath $InstallImagePath -Index $InstallImageIndex
             Assert-WinUtilISOWimMetadata -Before $metadataBefore
 
-            Set-ItemProperty -LiteralPath $InstallImagePath -Name IsReadOnly -Value $false
-            New-Item -Path $mountDir -ItemType Directory -Force | Out-Null
-            & $Logger "Mounting install.wim index $InstallImageIndex once for driver injection..."
-            Invoke-WinUtilISODism -Arguments @('/English', '/Mount-Image', "/ImageFile:$InstallImagePath", "/Index:$InstallImageIndex", "/MountDir:$mountDir") -Operation 'mount' | Out-Null
-            $imageMounted = $true
-
-            # Each package is added separately so one bad driver cannot fail the rest. A single
-            # batch /Add-Driver is roughly four times faster, but it exits non-zero when any one
-            # package fails, which aborted the entire injection.
-            # A hybrid approach is possible, but adds more complexity when reliability is really important here.
-            $packageFolders = @($driverFolders | ForEach-Object { [string]$_.Name })
-
-            # /Recurse already covers subfolders, so a package holding INFs at its root and in a
-            # subfolder would otherwise be added twice and counted twice.
-            $rootPackageFolders = @($packageFolders | Where-Object {
-                $candidate = $_
-                -not ($packageFolders | Where-Object { $candidate.StartsWith("$_\", [System.StringComparison]::OrdinalIgnoreCase) })
-            })
-
-            & $Logger "Adding $($rootPackageFolders.Count) root driver packages to install.wim"
-            $addedCount = 0
-            foreach ($driverFolder in $rootPackageFolders) {
-                $driverName = $driverFolder
-                if ($driverFolder.StartsWith($driverExportRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
-                    $driverName = $driverFolder.Substring($driverExportRoot.Length).TrimStart('\')
-                }
-
-                try {
-                    Invoke-WinUtilISODism -Arguments @('/English', "/Image:$mountDir", '/Add-Driver', "/Driver:$driverFolder", '/Recurse') -Operation "add-driver:$driverName" | Out-Null
-                    $addedCount++
-                } catch {
-                    & $Logger "Warning: failed to add driver package '$driverName': $_"
-                }
-            }
-
-            if ($addedCount -eq 0) {
-                # Leaving $imageMounted set lets the cleanup block discard the mount. Nothing
-                # was added, so there is nothing to write back, and skipping the commit avoids
-                # a slow no-op unmount. Boot-storage drivers staged for WinPE are unaffected.
-                & $Logger "Warning: none of the $($rootPackageFolders.Count) exported driver packages could be added; continuing with an unmodified install.wim."
+            if ($stagedDriverFolders.Count -eq 0) {
+                # Nothing safe to inject (e.g. every exported package was an Extension-class add-on)
+                # isn't a failure: leave install.wim untouched and continue building the ISO.
+                & $Logger 'No drivers found to inject: every exported package was excluded (Extension class or stale duplicate). Skipping driver injection; install.wim is unchanged.'
             } else {
-                & $Logger "Added $addedCount of $($rootPackageFolders.Count) driver packages to install.wim."
-                & $Logger 'Committing the driver-only install.wim change...'
-                Invoke-WinUtilISODism -Arguments @('/English', '/Unmount-Image', "/MountDir:$mountDir", '/Commit') -Operation 'commit' | Out-Null
-                $imageMounted = $false
+                $excludedFolders = @($driverFolders.Name | Where-Object { $_ -notin $stagedDriverFolders })
+                foreach ($excludedFolder in $excludedFolders) {
+                    try {
+                        Remove-Item -LiteralPath $excludedFolder -Recurse -Force -ErrorAction Stop
+                    } catch {
+                        throw "Failed to remove excluded driver package '$excludedFolder' before injection: $_"
+                    }
+                }
 
-                $metadataAfter = Get-WinUtilISOWimMetadata -ImagePath $InstallImagePath -Index $InstallImageIndex
-                Assert-WinUtilISOWimMetadata -Before $metadataBefore -After $metadataAfter
-                & $Logger 'Driver injection complete; install.wim metadata validation passed.'
+                & $Logger "Exported $($stagedDriverFolders.Count) of $($driverFolders.Count) driver packages ($storageCount staged for WinPE, $($excludedFolders.Count) excluded)."
+
+                Set-ItemProperty -LiteralPath $InstallImagePath -Name IsReadOnly -Value $false
+                New-Item -Path $mountDir -ItemType Directory -Force | Out-Null
+                & $Logger "Mounting install.wim index $InstallImageIndex once for driver injection..."
+                Invoke-WinUtilISODism -Arguments @('/English', '/Mount-Image', "/ImageFile:$InstallImagePath", "/Index:$InstallImageIndex", "/MountDir:$mountDir") -Operation 'mount' | Out-Null
+                $imageMounted = $true
+
+                # Add each package separately so one bad driver cannot fail the rest. Because
+                # /Recurse covers descendants, only the highest surviving folder in each tree
+                # needs its own DISM call.
+                $rootPackageFolders = @($stagedDriverFolders | Where-Object {
+                    $candidate = $_
+                    -not ($stagedDriverFolders | Where-Object { $candidate.StartsWith("$_\", [System.StringComparison]::OrdinalIgnoreCase) })
+                })
+
+                & $Logger "Adding $($rootPackageFolders.Count) root driver packages to install.wim."
+                $addedCount = 0
+                foreach ($driverFolder in $rootPackageFolders) {
+                    $driverName = $driverFolder
+                    if ($driverFolder.StartsWith($driverExportRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
+                        $driverName = $driverFolder.Substring($driverExportRoot.Length).TrimStart('\')
+                    }
+
+                    try {
+                        Invoke-WinUtilISODism -Arguments @('/English', "/Image:$mountDir", '/Add-Driver', "/Driver:$driverFolder", '/Recurse') -Operation "add-driver:$driverName" | Out-Null
+                        $addedCount++
+                    } catch {
+                        & $Logger "Warning: failed to add driver package '$driverName': $_"
+                    }
+                }
+
+                if ($addedCount -eq 0) {
+                    # Leave $imageMounted set so the cleanup block discards the unchanged mount.
+                    # Boot-storage drivers staged for WinPE remain available to Windows Setup.
+                    $discardRequiredForSuccess = $true
+                    & $Logger "Warning: none of the $($rootPackageFolders.Count) exported driver packages could be added; continuing with an unmodified install.wim."
+                } else {
+                    & $Logger "Added $addedCount of $($rootPackageFolders.Count) driver packages to install.wim."
+                    & $Logger 'Committing the driver-only install.wim change...'
+                    Invoke-WinUtilISODism -Arguments @('/English', '/Unmount-Image', "/MountDir:$mountDir", '/Commit') -Operation 'commit' | Out-Null
+                    $imageMounted = $false
+
+                    $metadataAfter = Get-WinUtilISOWimMetadata -ImagePath $InstallImagePath -Index $InstallImageIndex
+                    Assert-WinUtilISOWimMetadata -Before $metadataBefore -After $metadataAfter
+                    & $Logger 'Driver injection complete; install.wim metadata validation passed.'
+                    $DriversInjected.Value = $true
+                }
             }
         } finally {
             if ($imageMounted -or (Test-WinUtilISOMountedImage -Path $mountDir)) {
                 try {
                     Invoke-WinUtilISODism -Arguments @('/English', '/Unmount-Image', "/MountDir:$mountDir", '/Discard') -Operation 'discard' | Out-Null
                 } catch {
+                    if ($discardRequiredForSuccess) {
+                        throw "Failed to discard the unchanged install.wim mount after all driver packages failed: $_"
+                    }
                     & $Logger "Warning: could not discard the failed install.wim mount: $_"
                 }
             }
@@ -570,6 +736,6 @@ $appxList
     Write-WinUtilISOEditionConfig -ContentRoot $ISOContentsDir -EditionId $InstallEditionId -Logger $Log
 
     if ($InjectCurrentSystemDrivers) {
-        Add-WinUtilISOStagedDrivers -ContentRoot $ISOContentsDir -Logger $Log -InstallImagePath $InstallImagePath -InstallImageIndex $InstallImageIndex
+        Add-WinUtilISOStagedDrivers -ContentRoot $ISOContentsDir -Logger $Log -InstallImagePath $InstallImagePath -InstallImageIndex $InstallImageIndex -DriversInjected $DriversInjected
     }
 }

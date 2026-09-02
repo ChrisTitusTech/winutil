@@ -43,14 +43,16 @@ body:
   - type: textarea
     id: issue_description
     attributes:
-      label: Provide a clear and concise description of the issue.
+      label: "Description of the issue"
+      description: Provide a clear and concise description of the issue.
     validations:
       required: true
 
   - type: textarea
     id: tweaks_applied
     attributes:
-      label: List the tweaks you applied before the issue occurred.
+      label: "List of Applied Tweaks"
+      description: List the tweaks you applied before the issue occurred.
     validations:
       required: false
 
@@ -58,4 +60,5 @@ body:
     id: error_output
     attributes:
       label: Paste the full error output (if available) or Screenshot or Video.
-      placeholder: "Include any relevant logs or error messages."
+      description: "If you're willing to share the whole log, please provide an external link to text-sharing service, i.e. Pastebin"
+      placeholder: "Include any relevant logs or error messages. Keep any sensitive info out of the presented log"
