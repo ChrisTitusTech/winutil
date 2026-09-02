@@ -198,4 +198,10 @@ Describe "Startup lazy tab wiring" {
         $tabScript | Should -Match 'Find-TweaksByNameOrDescription -SearchString \$searchText'
         $tabScript | Should -Match 'Find-AppsByNameOrDescription -SearchString \$searchText'
     }
+
+    It "passes the yield frame into the dispatcher callback" {
+        $rendererScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIElements.ps1") -Raw
+
+        $rendererScript | Should -Match '(?s)DispatcherOperationCallback\]\s*\{\s*param\(\$dispatcherFrame\).*\$dispatcherFrame\.Continue = \$false.*\},\s*\$frame\)'
+    }
 }

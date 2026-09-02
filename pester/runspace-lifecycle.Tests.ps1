@@ -3,6 +3,7 @@
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilRunspacePoolLock.ps1")
     . (Join-Path $script:repoRoot "functions\private\Close-WinUtilRunspacePool.ps1")
     . (Join-Path $script:repoRoot "functions\private\Stop-WinUtilActiveWork.ps1")
     . (Join-Path $script:repoRoot "functions\private\New-WinUtilSessionState.ps1")
@@ -27,6 +28,13 @@ Describe "Initialize-WinUtilRunspacePool" {
 
         $firstPool.RunspacePoolStateInfo.State | Should -Be ([System.Management.Automation.Runspaces.RunspacePoolState]::Opened)
         [object]::ReferenceEquals($firstPool, $secondPool) | Should -BeTrue
+    }
+
+    It "uses one lifecycle lock for the session" {
+        $firstLock = Get-WinUtilRunspacePoolLock
+        $secondLock = Get-WinUtilRunspacePoolLock
+
+        [object]::ReferenceEquals($firstLock, $secondLock) | Should -BeTrue
     }
 
     It "closes and removes the active runspace pool" {

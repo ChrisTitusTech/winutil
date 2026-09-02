@@ -95,7 +95,7 @@ Describe "Get-WinUtilSelectedPackages" {
 
 Describe "Test-WinUtilPackageManager" {
     BeforeEach {
-        Mock Write-Host { }
+        Mock Write-WinUtilJobBanner { }
     }
 
     It "reports winget installed when the command exists" {
@@ -108,6 +108,7 @@ Describe "Test-WinUtilPackageManager" {
         Should -Invoke -CommandName Get-Command -Times 1 -Exactly -ParameterFilter {
             $Name -eq "winget" -and $ErrorAction -eq "SilentlyContinue"
         }
+        Should -Invoke -CommandName Write-WinUtilJobBanner -Times 0 -Exactly
     }
 
     It "reports choco not installed when the command is missing" {
@@ -120,6 +121,7 @@ Describe "Test-WinUtilPackageManager" {
         Should -Invoke -CommandName Get-Command -Times 1 -Exactly -ParameterFilter {
             $Name -eq "choco" -and $ErrorAction -eq "SilentlyContinue"
         }
+        Should -Invoke -CommandName Write-WinUtilJobBanner -Times 0 -Exactly
     }
 }
 

@@ -82,6 +82,8 @@ $sync.Buttons = [System.Collections.Generic.List[PSObject]]::new()
 $sync.preferences = @{}
 # Name of the job currently running, or $null when idle. Owned by Start-WinUtilJob.
 $sync.ActiveJob = $null
+# Serializes worker-pool startup with recycling and shutdown.
+$sync.RunspacePoolLock = [object]::new()
 # Every step recorded by Measure-WinUtilStep, from any thread
 $sync.StepTimings = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new())
 # Every error logged, so a job can report that something went wrong even when it did not throw

@@ -431,6 +431,7 @@ Describe "XAML and sync wiring" {
             "ConsoleProgressState",
             "LastInputAt",
             "ActiveShells",
+            "RunspacePoolLock",
             "ShuttingDown",
             "ForceClose",
             "FinishInConsole",

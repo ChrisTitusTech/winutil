@@ -19,20 +19,16 @@ function Test-WinUtilPackageManager {
 
     if ($winget) {
         if (Get-Command winget -ErrorAction SilentlyContinue) {
-            Write-WinUtilJobBanner -Message "WinGet is installed"
             $status = "installed"
         } else {
-            Write-WinUtilJobBanner -Message "WinGet is not installed" -Level "ERROR"
             $status = "not-installed"
         }
     }
 
     if ($choco) {
         if (Get-Command choco -ErrorAction SilentlyContinue) {
-            Write-WinUtilJobBanner -Message "Chocolatey is installed"
             $status = "installed"
         } else {
-            Write-WinUtilJobBanner -Message "Chocolatey is not installed" -Level "ERROR"
             $status = "not-installed"
         }
     }

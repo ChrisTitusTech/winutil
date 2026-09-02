@@ -3,11 +3,13 @@
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilRunspacePoolLock.ps1")
     . (Join-Path $script:repoRoot "functions\private\Close-WinUtilRunspacePool.ps1")
     . (Join-Path $script:repoRoot "functions\private\Stop-WinUtilActiveWork.ps1")
     . (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilRunspacePool.ps1")
     . (Join-Path $script:repoRoot "functions\private\Register-WinUtilRunspaceCleanup.ps1")
         . (Join-Path $script:repoRoot "functions\public\Invoke-WPFRunspace.ps1")
+    function Write-WinUtilLog { }
     function Start-WinUtilJob {
         param([string]$Name, [scriptblock]$ScriptBlock, [hashtable]$Parameters, [string]$Description, [switch]$DisableAppList)
     }
@@ -66,6 +68,70 @@ Describe "Invoke-WPFRunspace behavior" {
 
         Assert-WinUtilAsyncHandle -Handle $handle
         $script:sync.Result | Should -Be "no-args|shared"
+    }
+
+    It "refuses work when shutdown wins the lifecycle lock before a pool exists" {
+        $script:sync.runspace.Close()
+        $script:sync.runspace.Dispose()
+        $script:sync.Remove("runspace")
+
+        $poolLock = Get-WinUtilRunspacePoolLock
+        $lockRequested = [System.Threading.ManualResetEventSlim]::new($false)
+        $poolInitializationEntered = [System.Threading.ManualResetEventSlim]::new($false)
+        $caller = [powershell]::Create()
+        [void]$caller.AddScript({
+            param($SharedSync, $RepoRoot, $PoolLock, $LockRequested, $PoolInitializationEntered)
+
+            $script:sync = $SharedSync
+            function Write-WinUtilLog { }
+            function Get-WinUtilRunspacePoolLock {
+                $LockRequested.Set()
+                return $PoolLock
+            }
+            function Initialize-WinUtilRunspacePool {
+                $PoolInitializationEntered.Set()
+            }
+            . (Join-Path $RepoRoot "functions\public\Invoke-WPFRunspace.ps1")
+            $workHandle = Invoke-WPFRunspace -ScriptBlock { }
+            [pscustomobject]@{ Scheduled = $null -ne $workHandle }
+        }).AddArgument($script:sync).AddArgument($script:repoRoot).AddArgument($poolLock).AddArgument($lockRequested).AddArgument($poolInitializationEntered)
+
+        [System.Threading.Monitor]::Enter($poolLock)
+        try {
+            $callerHandle = $caller.BeginInvoke()
+            $lockRequested.Wait(5000) | Should -BeTrue
+            $poolInitializationEntered.Wait(100) | Should -BeFalse
+            $callerHandle.IsCompleted | Should -BeFalse
+            Close-WinUtilRunspacePool
+        } finally {
+            [System.Threading.Monitor]::Exit($poolLock)
+        }
+
+        try {
+            $callerHandle.AsyncWaitHandle.WaitOne(5000) | Should -BeTrue
+            $callerResult = @($caller.EndInvoke($callerHandle))
+            $callerResult.Count | Should -Be 1
+            $callerResult[0].Scheduled | Should -BeFalse
+            $poolInitializationEntered.IsSet | Should -BeFalse
+        } finally {
+            $caller.Dispose()
+            $lockRequested.Dispose()
+            $poolInitializationEntered.Dispose()
+        }
+    }
+
+    It "registers started work before shutdown can close the pool" {
+        $handle = Invoke-WPFRunspace -ScriptBlock {
+            Start-Sleep -Seconds 5
+        }
+
+        $handle | Should -Not -BeNullOrEmpty
+        @(Get-WinUtilActiveShell).Count | Should -Be 1
+
+        Close-WinUtilRunspacePool -StopTimeoutSeconds 5
+
+        $script:sync.ShuttingDown | Should -BeTrue
+        $script:sync.ContainsKey("runspace") | Should -BeFalse
     }
 
     It "passes one named parameter" {

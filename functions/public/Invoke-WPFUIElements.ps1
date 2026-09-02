@@ -186,7 +186,12 @@ function Invoke-WPFUIElements {
                     $frame = New-Object Windows.Threading.DispatcherFrame
                     $null = $sync.Form.Dispatcher.BeginInvoke(
                         [Windows.Threading.DispatcherPriority]::Background,
-                        [action]{ $frame.Continue = $false })
+                        [Windows.Threading.DispatcherOperationCallback]{
+                            param($dispatcherFrame)
+                            $dispatcherFrame.Continue = $false
+                            return $null
+                        },
+                        $frame)
                     [Windows.Threading.Dispatcher]::PushFrame($frame)
                 }
 

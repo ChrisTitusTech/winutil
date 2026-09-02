@@ -17,55 +17,65 @@ function Close-WinUtilRunspacePool {
         [switch]$Recycle
     )
 
-    if ($null -eq $sync -or -not $sync.ContainsKey("runspace") -or $null -eq $sync.runspace) {
+    if ($null -eq $sync) {
         return
     }
 
-    # Set before stopping, so nothing that is winding down queues fresh work behind us
-    if (-not $Recycle) {
-        $sync.ShuttingDown = $true
-    }
-
-    $stopped = $true
+    $poolLock = Get-WinUtilRunspacePoolLock
+    [System.Threading.Monitor]::Enter($poolLock)
     try {
-        $stopped = Stop-WinUtilActiveWork -TimeoutSeconds $StopTimeoutSeconds
-    } catch {
-        $stopped = $false
-        Write-WinUtilLog -Level "WARN" -Component "UI" -Message "Could not stop running work cleanly: $($_.Exception.Message)"
-    }
-
-    $pool = $sync.runspace
-    $cleanupDeferred = $false
-    try {
-        $poolState = $pool.RunspacePoolStateInfo.State
-        $terminalStates = @(
-            [System.Management.Automation.Runspaces.RunspacePoolState]::Closed,
-            [System.Management.Automation.Runspaces.RunspacePoolState]::Broken
-        )
-
-        if (-not $stopped -and $poolState -notin $terminalStates) {
-            # Close and Dispose both wait for an invocation that ignored BeginStop. Hand
-            # cleanup to the thread pool so the timeout above remains a real upper bound.
-            $cleanupDeferred = $true
-            if ($poolState -ne [System.Management.Automation.Runspaces.RunspacePoolState]::Closing) {
-                Register-WinUtilRunspacePoolCleanup -RunspacePool $pool
-            }
-        } elseif ($poolState -notin ($terminalStates + [System.Management.Automation.Runspaces.RunspacePoolState]::Closing)) {
-            $pool.Close()
+        # Set before stopping, so nothing that is winding down queues fresh work behind us
+        if (-not $Recycle) {
+            $sync.ShuttingDown = $true
         }
-    } catch {
-        # A pool that will not close cleanly must not stop the window from closing
-        Write-WinUtilLog -Level "WARN" -Component "UI" -Message "Worker pool did not close cleanly: $($_.Exception.Message)"
+
+        if (-not $sync.ContainsKey("runspace") -or $null -eq $sync.runspace) {
+            return
+        }
+
+        $stopped = $true
+        try {
+            $stopped = Stop-WinUtilActiveWork -TimeoutSeconds $StopTimeoutSeconds
+        } catch {
+            $stopped = $false
+            Write-WinUtilLog -Level "WARN" -Component "UI" -Message "Could not stop running work cleanly: $($_.Exception.Message)"
+        }
+
+        $pool = $sync.runspace
+        $cleanupDeferred = $false
+        try {
+            $poolState = $pool.RunspacePoolStateInfo.State
+            $terminalStates = @(
+                [System.Management.Automation.Runspaces.RunspacePoolState]::Closed,
+                [System.Management.Automation.Runspaces.RunspacePoolState]::Broken
+            )
+
+            if (-not $stopped -and $poolState -notin $terminalStates) {
+                # Close and Dispose both wait for an invocation that ignored BeginStop. Hand
+                # cleanup to the thread pool so the timeout above remains a real upper bound.
+                $cleanupDeferred = $true
+                if ($poolState -ne [System.Management.Automation.Runspaces.RunspacePoolState]::Closing) {
+                    Register-WinUtilRunspacePoolCleanup -RunspacePool $pool
+                }
+            } elseif ($poolState -notin ($terminalStates + [System.Management.Automation.Runspaces.RunspacePoolState]::Closing)) {
+                $pool.Close()
+            }
+        } catch {
+            # A pool that will not close cleanly must not stop the window from closing
+            Write-WinUtilLog -Level "WARN" -Component "UI" -Message "Worker pool did not close cleanly: $($_.Exception.Message)"
+        } finally {
+            if (-not $cleanupDeferred) {
+                try {
+                    $pool.Dispose()
+                } catch {
+                    Write-WinUtilLog -Level "WARN" -Component "UI" -Message "Worker pool did not dispose cleanly: $($_.Exception.Message)"
+                }
+            }
+            $sync.Remove("runspace")
+            if ($sync.ActiveShells) { $sync.ActiveShells.Clear() }
+        }
     } finally {
-        if (-not $cleanupDeferred) {
-            try {
-                $pool.Dispose()
-            } catch {
-                Write-WinUtilLog -Level "WARN" -Component "UI" -Message "Worker pool did not dispose cleanly: $($_.Exception.Message)"
-            }
-        }
-        $sync.Remove("runspace")
-        if ($sync.ActiveShells) { $sync.ActiveShells.Clear() }
+        [System.Threading.Monitor]::Exit($poolLock)
     }
 }
 
