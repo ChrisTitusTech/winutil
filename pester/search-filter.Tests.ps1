@@ -14,6 +14,29 @@ namespace Windows
         Visible,
         Collapsed
     }
+
+    public enum HorizontalAlignment
+    {
+        Left,
+        Center,
+        Right,
+        Stretch
+    }
+
+    public class Thickness
+    {
+        public double Left { get; set; }
+        public double Top { get; set; }
+        public double Right { get; set; }
+        public double Bottom { get; set; }
+        public Thickness(double left, double top, double right, double bottom)
+        {
+            Left = left;
+            Top = top;
+            Right = right;
+            Bottom = bottom;
+        }
+    }
 }
 "@
     }
@@ -27,24 +50,47 @@ namespace System.Windows.Controls
         public bool? IsChecked { get; set; }
     }
 
-    public class Label
-    {
-        public object Content { get; set; }
-    }
-
-    public class WrapPanel
-    {
-        public object Visibility { get; set; }
-    }
-
     public class StackPanel
     {
         public System.Collections.ArrayList Children { get; private set; }
+        public object Orientation { get; set; }
+        public object HorizontalAlignment { get; set; }
+        public object Tag { get; set; }
+        public object Margin { get; set; }
+        public object Visibility { get; set; }
 
         public StackPanel()
         {
             Children = new System.Collections.ArrayList();
         }
+    }
+
+    public class WrapPanel
+    {
+        public System.Collections.ArrayList Children { get; private set; }
+        public object Orientation { get; set; }
+        public object HorizontalAlignment { get; set; }
+        public object VerticalAlignment { get; set; }
+        public object Margin { get; set; }
+        public object Visibility { get; set; }
+        public object Tag { get; set; }
+
+        public WrapPanel()
+        {
+            Children = new System.Collections.ArrayList();
+        }
+    }
+
+    public class Label
+    {
+        public object Content { get; set; }
+        public object Tag { get; set; }
+        public object Cursor { get; set; }
+        public object HorizontalAlignment { get; set; }
+        public object Visibility { get; set; }
+
+        public void SetResourceReference(object prop, object resource) {}
+        public void Add_MouseLeftButtonUp(System.Management.Automation.ScriptBlock handler) {}
     }
 }
 "@
@@ -110,8 +156,21 @@ namespace Windows.Controls
 "@
     }
 
+    . (Join-Path $script:repoRoot "functions\private\Test-WinUtilPackageManager.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Find-WinUtilPackageManagerApps.ps1")
     . (Join-Path $script:repoRoot "functions\private\Find-AppsByNameOrDescription.ps1")
     . (Join-Path $script:repoRoot "functions\private\Find-TweaksByNameOrDescription.ps1")
+
+    function global:Invoke-WPFRunspace {
+        param($ScriptBlock, $ParameterList)
+        $params = @{}
+        if ($null -ne $ParameterList) {
+            foreach ($p in $ParameterList) {
+                $params[$p[0]] = $p[1]
+            }
+        }
+        & $ScriptBlock @params
+    }
 
     function script:New-WinUtilSearchCollection {
         return ,[System.Collections.ArrayList]::new()
@@ -164,6 +223,7 @@ namespace Windows.Controls
         }
 
         $script:sync = [Hashtable]::Synchronized(@{
+            MockedTest = $true
             ItemsControl = [pscustomobject]@{
                 Items = $items
             }
@@ -173,6 +233,8 @@ namespace Windows.Controls
                         Content = "Firefox"
                         Description = "Fast private browser"
                         Category = "Browsers"
+                        winget = "Browser.App"
+                        choco = "browserapp"
                     }
                     WPFInstallMedia = [pscustomobject]@{
                         Content = "VLC"
@@ -310,11 +372,96 @@ namespace Windows.Controls
     }
 
     function script:Remove-WinUtilSearchGlobals {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
     }
 }
 
+AfterAll {
+    Remove-Item Function:\global:Invoke-WPFRunspace -ErrorAction SilentlyContinue
+}
+
+Describe "Find-WinUtilPackageManagerApps" {
+    BeforeAll {
+        function global:winget { param([Parameter(ValueFromRemainingArguments=$true)]$Arguments) }
+        function global:choco { param([Parameter(ValueFromRemainingArguments=$true)]$Arguments) }
+    }
+    AfterAll {
+        Remove-Item Function:\global:winget -ErrorAction SilentlyContinue
+        Remove-Item Function:\global:choco -ErrorAction SilentlyContinue
+    }
+
+    It "returns empty array when SearchString is empty" {
+        $result = Find-WinUtilPackageManagerApps -SearchString ""
+        @($result).Count | Should -Be 0
+    }
+
+    It "parses winget search output into objects" {
+        Mock winget {
+            $global:LASTEXITCODE = 0
+            return "Name  Id  Version  Source`n-------------------------`nNmap  Insecure.Nmap  7.95  winget"
+        }
+
+        $result = Find-WinUtilPackageManagerApps -SearchString "nmap" -ManagerPreference "Winget"
+        @($result).Count | Should -Be 1
+        $result[0].Name | Should -Be "Nmap"
+        $result[0].Id | Should -Be "Insecure.Nmap"
+    }
+
+    It "parses choco search output into objects" {
+        Mock choco {
+            $global:LASTEXITCODE = 0
+            return "nmap|7.95.0"
+        }
+
+        $result = Find-WinUtilPackageManagerApps -SearchString "nmap" -ManagerPreference "Choco"
+        @($result).Count | Should -Be 1
+        $result[0].Name | Should -Be "nmap"
+        $result[0].Id | Should -Be "nmap"
+    }
+
+    It "handles search failure gracefully" {
+        Mock winget { throw "Winget error" }
+
+        $result = Find-WinUtilPackageManagerApps -SearchString "error" -ManagerPreference "Winget"
+        @($result).Count | Should -Be 0
+    }
+
+    It "handles non-zero exit code with error output for winget" {
+        Mock winget {
+            $global:LASTEXITCODE = 1
+            return "An unexpected error occurred.`nCheck the logs."
+        }
+        $result = Find-WinUtilPackageManagerApps -SearchString "error" -ManagerPreference "Winget"
+        @($result).Count | Should -Be 0
+    }
+
+    It "handles malformed tabular output for winget" {
+        Mock winget {
+            $global:LASTEXITCODE = 0
+            return "Name  Id  Version  Source`n-------------------------`nMalformed Line Without Enough Columns"
+        }
+        $result = Find-WinUtilPackageManagerApps -SearchString "malformed" -ManagerPreference "Winget"
+        @($result).Count | Should -Be 0
+    }
+
+    It "handles non-zero exit code with error output for choco" {
+        Mock choco {
+            $global:LASTEXITCODE = 1
+            return "Error: Chocolatey encountered an issue"
+        }
+        $result = Find-WinUtilPackageManagerApps -SearchString "error" -ManagerPreference "Choco"
+        @($result).Count | Should -Be 0
+    }
+}
+
 Describe "Find-AppsByNameOrDescription" {
+    BeforeAll {
+        Add-Type -AssemblyName PresentationFramework -ErrorAction SilentlyContinue
+        Add-Type -AssemblyName PresentationCore -ErrorAction SilentlyContinue
+        Add-Type -AssemblyName WindowsBase -ErrorAction SilentlyContinue
+        function global:Initialize-InstallAppEntry { param($TargetElement, $appKey) }
+    }
     AfterEach {
         Remove-WinUtilSearchGlobals
     }
@@ -399,6 +546,123 @@ Describe "Find-AppsByNameOrDescription" {
         $category.Visibility | Should -Be ([Windows.Visibility]::Visible)
     }
 
+    It "deduplicates package manager search results against curated applications" {
+        $browserItem = New-WinUtilAppSearchItem -Tag "WPFInstallBrowser"
+        $category = New-WinUtilAppCategory -Label "- Browsers" -Items @($browserItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+
+        Mock Find-WinUtilPackageManagerApps {
+            if ($ManagerPreference -eq "Choco") {
+                return ,@([pscustomobject]@{ Name = "Browser App"; Id = "browserapp" })
+            } else {
+                return ,@([pscustomobject]@{ Name = "Browser App"; Id = "Browser.App" })
+            }
+        }
+
+        Find-AppsByNameOrDescription -SearchString "Browser"
+        $sync.preferences = [pscustomobject]@{ packagemanager = "Choco" }
+        Find-AppsByNameOrDescription -SearchString "Browser2"
+
+        # Should not create dynamic entry for Browser.App since it's already in applicationsHashtable
+        Should -Invoke Find-WinUtilPackageManagerApps -Times 4
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_Browser_App") | Should -Be $false
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_choco_browserapp") | Should -Be $false
+    }
+
+    It "splits compound package IDs when deduplicating" {
+        $compoundItem = New-WinUtilAppSearchItem -Tag "WPFInstallCompound"
+        $category = New-WinUtilAppCategory -Label "- Tools" -Items @($compoundItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+
+        $sync.configs.applicationsHashtable["WPFInstallCompound"] = [pscustomobject]@{
+            winget = "msstore:FirstApp; SecondApp; ThirdApp "
+            choco = " FirstChoco ; SecondChoco"
+            isDynamic = $false
+        }
+
+        Mock Find-WinUtilPackageManagerApps {
+            if ($ManagerPreference -eq "Winget") {
+                return ,@([pscustomobject]@{ Name = "App 2"; Id = "SecondApp" }, [pscustomobject]@{ Name = "App 4"; Id = "FourthApp" })
+            } else {
+                return ,@([pscustomobject]@{ Name = "Choco 1"; Id = "FirstChoco" }, [pscustomobject]@{ Name = "Choco 3"; Id = "ThirdChoco" })
+            }
+        }
+        Mock Get-WinUtilPackageLink { return "https://example.com" }
+        Mock Initialize-InstallAppEntry {}
+        $sync.preferences = [pscustomobject]@{ packagemanager = "Winget" }
+        Find-AppsByNameOrDescription -SearchString "App"
+        
+        # Should skip SecondApp because it is in the compound ID
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_SecondApp") | Should -Be $false
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_FourthApp") | Should -Be $true
+
+        $sync.preferences = [pscustomobject]@{ packagemanager = "Choco" }
+        Find-AppsByNameOrDescription -SearchString "Choco"
+
+        # Should skip FirstChoco because it is in the compound ID. Winget dynamic results are cleared.
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_FourthApp") | Should -Be $false
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_choco_FirstChoco") | Should -Be $false
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_choco_ThirdChoco") | Should -Be $true
+    }
+
+    It "filters curated applications by active package manager availability" {
+        $wingetOnlyItem = New-WinUtilAppSearchItem -Tag "WPFInstallWingetOnly"
+        $chocoOnlyItem = New-WinUtilAppSearchItem -Tag "WPFInstallChocoOnly"
+        $bothItem = New-WinUtilAppSearchItem -Tag "WPFInstallBoth"
+        $category = New-WinUtilAppCategory -Label "- Tools" -Items @($wingetOnlyItem, $chocoOnlyItem, $bothItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+
+        $sync.configs.applicationsHashtable["WPFInstallWingetOnly"] = [pscustomobject]@{
+            Content = "Winget Only App"
+            winget = "App.WingetOnly"
+            choco = "na"
+        }
+        $sync.configs.applicationsHashtable["WPFInstallChocoOnly"] = [pscustomobject]@{
+            Content = "Choco Only App"
+            winget = ""
+            choco = "app-choco-only"
+        }
+        $sync.configs.applicationsHashtable["WPFInstallBoth"] = [pscustomobject]@{
+            Content = "Both App"
+            winget = "App.Both"
+            choco = "app-both"
+        }
+
+        # Winget is default
+        Find-AppsByNameOrDescription -SearchString ""
+        $wingetOnlyItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $chocoOnlyItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $bothItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+
+        # Switch to Choco
+        $sync.preferences = [pscustomobject]@{ packagemanager = "Choco" }
+        Find-AppsByNameOrDescription -SearchString ""
+        $wingetOnlyItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $chocoOnlyItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $bothItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+    }
+
+    It "creates dynamic entry for non-curated package manager search results" {
+        $browserItem = New-WinUtilAppSearchItem -Tag "WPFInstallBrowser"
+        $category = New-WinUtilAppCategory -Label "- Browsers" -Items @($browserItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+
+        Mock Find-WinUtilPackageManagerApps {
+            return ,@([pscustomobject]@{ Name = "Some New App"; Id = "Some.New.App" })
+        }
+        Mock Get-WinUtilPackageLink {
+            return "https://example.com"
+        }
+        Mock Initialize-InstallAppEntry {}
+
+        Find-AppsByNameOrDescription -SearchString "Some"
+
+        Should -Invoke Find-WinUtilPackageManagerApps -Times 2
+        Should -Invoke Get-WinUtilPackageLink -Times 2 -Exactly
+        Should -Invoke Initialize-InstallAppEntry -Times 1 -Exactly
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_Some_New_App") | Should -Be $true
+        $sync.configs.applicationsHashtable["WPFInstall_dynamic_winget_Some_New_App"].isDynamic | Should -Be $true
+    }
     It "shows apps from every selected category when several chips are active" {
         $utilityItem = New-WinUtilAppSearchItem -Tag "WPFInstallLiteral"
         $powerToysItem = New-WinUtilAppSearchItem -Tag "WPFInstallPowerToys"
@@ -479,23 +743,28 @@ Describe "Find-TweaksByNameOrDescription" {
         Remove-WinUtilSearchGlobals
     }
 
-    It "restores category labels and tweak item visibility for empty search" {
-        $labelItem = New-WinUtilTweakLabelItem -Content "Disable Telemetry" -ToolTip "Stop tracking"
-        $stackItem = New-WinUtilTweakCheckboxItem -Content "Show Extensions" -ToolTip "File extension display"
-        $category = New-WinUtilTweakCategory -Label "+ Privacy" -Items @($labelItem, $stackItem)
-        $labelItem.Visibility = [Windows.Visibility]::Collapsed
-        $stackItem.Visibility = [Windows.Visibility]::Collapsed
-        $category.Label.Visibility = [Windows.Visibility]::Collapsed
-        $category.Border.Visibility = [Windows.Visibility]::Collapsed
-        $panel = New-WinUtilTweakPanel -Categories @($category)
+    It "restores category labels and respects collapsed category state for empty search" {
+        $collapsedItem = New-WinUtilTweakLabelItem -Content "Disable Telemetry" -ToolTip "Stop tracking"
+        $expandedItem = New-WinUtilTweakCheckboxItem -Content "Show Extensions" -ToolTip "File extension display"
+        $collapsedCategory = New-WinUtilTweakCategory -Label "+ Privacy" -Items @($collapsedItem)
+        $expandedCategory = New-WinUtilTweakCategory -Label "- Explorer" -Items @($expandedItem)
+        $expandedItem.Visibility = [Windows.Visibility]::Collapsed
+        $collapsedCategory.Label.Visibility = [Windows.Visibility]::Collapsed
+        $collapsedCategory.Border.Visibility = [Windows.Visibility]::Collapsed
+        $expandedCategory.Border.Visibility = [Windows.Visibility]::Collapsed
+        $panel = New-WinUtilTweakPanel -Categories @($collapsedCategory, $expandedCategory)
         New-WinUtilTweakSearchContext -TweaksPanel $panel
 
         Find-TweaksByNameOrDescription -SearchString ""
 
-        $category.Border.Visibility | Should -Be ([Windows.Visibility]::Visible)
-        $category.Label.Visibility | Should -Be ([Windows.Visibility]::Visible)
-        $labelItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
-        $stackItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $collapsedCategory.Border.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $collapsedCategory.Label.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $collapsedCategory.Label.Content | Should -Be "+ Privacy"
+        $collapsedItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $expandedCategory.Border.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $expandedCategory.Label.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $expandedCategory.Label.Content | Should -Be "- Explorer"
+        $expandedItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
     }
 
     It "shows tweak matches by label tooltip and checkbox content" {

@@ -461,6 +461,10 @@ Describe "XAML and sync wiring" {
             "InstallAppRenderQueue",
             "InstallAppEntriesRendered",
             "FontScaleFactor",
+            "PackageLinkCache",
+            "LatestPackageManagerRequestToken",
+            "UpdatePackageManagerUI",
+            "MockedTest",
             "Win11ISOImageInfo",
             "Win11ISODriveLetter",
             "Win11ISOWimPath",
@@ -472,7 +476,11 @@ Describe "XAML and sync wiring" {
             "Win11ISOUSBDisks",
             "AppCategoryChips",
             "SelectedAppCategories",
-            "AppCategoryAutoExpanded"
+            "AppCategoryAutoExpanded",
+            "AnyCuratedMatch",
+            "LastAutoExpandSearch",
+            "PackageManagerSearchCache",
+            "PackageManagerSearchInFlight"
         )
         $allowedNames = @($xamlNames + $generatedNames + $dynamicStateNames) | Sort-Object -Unique
         $bracketReferences = @(
