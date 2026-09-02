@@ -91,7 +91,7 @@ graph TD
 * Run the following command to compile and run WinUtil:
 * `.\Compile.ps1 -run`
 
-![Compile](/docs/src/assets/contributing/Complie.png)
+![Compile](/docs/src/assets/contributing/Compile.png)
 
 
 Open PowerShell as Administrator.

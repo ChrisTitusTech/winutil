@@ -37,7 +37,7 @@ $sync.preferences.packagemanager = "Winget"
 if ($Preset) {
     Initialize-WinUtilRunspacePool | Out-Null
 
-    # Selects the tweaks from $Preset varible
+    # Selects the tweaks from $Preset variable
     Update-WinUtilSelections -flatJson $sync.configs.preset.$Preset
 
     # Run tweaks that were selected by Update-WinUtilSelections
@@ -68,7 +68,7 @@ if ($Config) {
 [xml]$XAML = $inputXML
 
 # Read the XAML file
-$readerOperationSuccessful = $false # There's more cases of failure then success.
+$readerOperationSuccessful = $false # There are more cases of failure than success.
 $reader = (New-Object System.Xml.XmlNodeReader $xaml)
 try {
     $sync["Form"] = [Windows.Markup.XamlReader]::Load( $reader )
@@ -92,7 +92,7 @@ if (-NOT ($readerOperationSuccessful)) {
     exit 1
 }
 
-# Setup the Window to follow listen for windows Theme Change events and update the winutil theme
+# Setup the Window to listen for Windows Theme Change events and update the WinUtil theme
 # throttle logic needed, because windows seems to send more than one theme change event per change
 $lastThemeChangeTime = [datetime]::MinValue
 $debounceInterval = [timespan]::FromSeconds(2)
@@ -319,7 +319,7 @@ $sync["Form"].Add_ContentRendered({
 })
 
 # The SearchBarTimer is used to delay the search operation until the user has stopped typing for a short period
-# This prevents the ui from stuttering when the user types quickly as it dosnt need to update the ui for every keystroke
+# This prevents the ui from stuttering when the user types quickly as it doesn't need to update the ui for every keystroke
 
 $searchBarTimer = New-Object System.Windows.Threading.DispatcherTimer
 $searchBarTimer.Interval = [TimeSpan]::FromMilliseconds(300)

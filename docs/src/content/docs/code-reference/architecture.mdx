@@ -129,14 +129,14 @@ winutil/
 
 ## Win11 Creator Architecture
 
-The **Win11 Creator** is a specialized subsystem within Winutil that creates customized Windows 11 ISOs. It operates independently from the main package installation and tweak system.
+The **Win11 Creator** is a specialized subsystem within Winutil that creates customized Windows 11 ISOs. It operates independently of the main package installation and tweak system.
 
 ### Win11 Creator Components
 
 **Core Functions** (`functions/private/`):
 - `Invoke-WinUtilISO.ps1`: Main orchestrator containing all Win11 Creator functions
   - `Invoke-WinUtilISOBrowse`: ISO file selection dialog
-  - `Invoke-WinUtilISOMountAndVerify`: Validates and mounts ISO, verifies it's official Windows 11
+  - `Invoke-WinUtilISOMountAndVerify`: Validates and mounts ISO, verifies it is an official Windows 11 ISO
   - `Invoke-WinUtilISOModify`: Launches modification in background runspace
   - `Invoke-WinUtilISOExport`: Handles ISO and USB export
   - `Invoke-WinUtilISOCheckExistingWork`: Recovers incomplete work sessions
