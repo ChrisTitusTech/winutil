@@ -220,8 +220,11 @@ function Invoke-WinUtilISOMountAndVerify {
 
             $verified = $true
             Write-WinUtilISOLog "ISO verified OK.  Editions found: $($imageInfo.Count)"
-        } catch {
-            if ($mountedByThisRun) {
+        } finally {
+            # A stopped PowerShell pipeline skips catch blocks but still runs finally. Keep the
+            # source ISO cleanup here so closing WinUtil during verification cannot leave it
+            # mounted.
+            if (-not $verified -and $mountedByThisRun) {
                 try {
                     Write-WinUtilISOLog "Verification failed; dismounting source ISO."
                     Dismount-DiskImage -ImagePath $isoPath -ErrorAction Stop
@@ -229,8 +232,7 @@ function Invoke-WinUtilISOMountAndVerify {
                     Write-WinUtilISOLog -Level "WARN" -Message "Could not dismount ISO after verification failed: $_"
                 }
             }
-            throw
-        } finally {
+
             Invoke-WPFUIThread -Parameters @{ Verified = $verified } -ScriptBlock {
                 param($Verified)
 
@@ -293,6 +295,7 @@ function Invoke-WinUtilISOModify {
             $sync["WPFWin11ISOModifySection"].Visibility = "Collapsed"
         }
 
+        $modified = $false
         try {
             Write-WinUtilISOLog "Selected edition: $SelectedEditionName (Index $SelectedWimIndex)"
             Write-WinUtilISOLog "Creating working directory: $workDir"
@@ -347,34 +350,46 @@ function Invoke-WinUtilISOModify {
             Invoke-WPFUIThread -ScriptBlock {
                 $sync["WPFWin11ISOOutputSection"].Visibility = "Visible"
             }
+            $modified = $true
         } catch {
             Write-WinUtilISOLog -Level "ERROR" -Message "Modification failed: $_"
-
-            try {
-                $mountedISO = Get-DiskImage -ImagePath $isoPath
-                if ($mountedISO -and $mountedISO.Attached) {
-                    Write-WinUtilISOLog "Cleaning up: dismounting source ISO..."
-                    Dismount-DiskImage -ImagePath $isoPath
-                }
-            } catch { Write-WinUtilISOLog -Level "WARN" -Message "Could not dismount ISO during cleanup: $_" }
-
-            try {
-                if (Test-Path $workDir) {
-                    Write-WinUtilISOLog "Cleaning up: removing temp directory $workDir..."
-                    Remove-Item -Path $workDir -Recurse -Force
-                }
-            } catch { Write-WinUtilISOLog -Level "WARN" -Message "Could not remove temp directory during cleanup: $_" }
 
             Show-WinUtilMessage -Message "An error occurred during install.wim modification:`n`n$_" -Title "Modification Error" -Button "OK" -Icon "Error" | Out-Null
 
             throw
         } finally {
-            Invoke-WPFUIThread -ScriptBlock {
-                $sync["WPFWin11ISOModifyButton"].IsEnabled = $true
+            # BeginStop bypasses catch, so cleanup for both failures and user cancellation has
+            # to live in finally.
+            if (-not $modified) {
+                try {
+                    $mountedISO = Get-DiskImage -ImagePath $isoPath
+                    if ($mountedISO -and $mountedISO.Attached) {
+                        Write-WinUtilISOLog "Cleaning up: dismounting source ISO..."
+                        Dismount-DiskImage -ImagePath $isoPath
+                    }
+                } catch { Write-WinUtilISOLog -Level "WARN" -Message "Could not dismount ISO during cleanup: $_" }
+
+                try {
+                    if (Test-Path $workDir) {
+                        Write-WinUtilISOLog "Cleaning up: removing temp directory $workDir..."
+                        Remove-Item -Path $workDir -Recurse -Force
+                    }
+                } catch { Write-WinUtilISOLog -Level "WARN" -Message "Could not remove temp directory during cleanup: $_" }
+
+                $sync["Win11ISOImageInfo"] = $null
+                $sync["Win11ISODriveLetter"] = $null
+                $sync["Win11ISOWimPath"] = $null
+                $sync["Win11ISOImagePath"] = $null
+            }
+
+            Invoke-WPFUIThread -Parameters @{ Modified = $modified } -ScriptBlock {
+                param($Modified)
+
+                $sync["WPFWin11ISOModifyButton"].IsEnabled = [bool]$Modified
                 if ($sync["WPFWin11ISOOutputSection"].Visibility -ne "Visible") {
                     $sync["WPFWin11ISOSelectSection"].Visibility = "Visible"
                     $sync["WPFWin11ISOMountSection"].Visibility  = "Visible"
-                    $sync["WPFWin11ISOModifySection"].Visibility = "Visible"
+                    $sync["WPFWin11ISOModifySection"].Visibility = if ($Modified) { "Visible" } else { "Collapsed" }
                 }
             }
         }

@@ -238,13 +238,12 @@ Describe "Start-WinUtilJob" {
     }
 
     It "reports a job that logged errors without throwing" {
-        $script:sync.LoggedErrors = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new())
         Start-WinUtilJob -Name "Example" -ScriptBlock { } | Out-Null
 
         & $script:capturedRunspaceBody `
             -JobName "Example" `
             -JobLabel "Example" `
-            -JobBody '$null = $sync.LoggedErrors.Add("[Registry] refused by policy")' `
+            -JobBody '$global:WinUtilJobErrorCount = 1' `
             -JobParameters @{} `
             -JobRestoresAppList $false `
             -JobToken $script:capturedRunspaceArgs["JobToken"]
@@ -253,6 +252,24 @@ Describe "Start-WinUtilJob" {
             $Status -eq "Example finished with 1 error(s)" -and $State -eq "Paused" -and $Overlay -eq "warning"
         }
         $script:sync.ActiveJob | Should -BeNullOrEmpty
+    }
+
+    It "ignores errors logged outside the active job worker" {
+        $script:sync.LoggedErrors = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new())
+        $null = $script:sync.LoggedErrors.Add("[UI] unrelated rendering failure")
+        Start-WinUtilJob -Name "Example" -ScriptBlock { } | Out-Null
+
+        & $script:capturedRunspaceBody `
+            -JobName "Example" `
+            -JobLabel "Example" `
+            -JobBody '$null = $sync.LoggedErrors.Add("[UI] another unrelated failure")' `
+            -JobParameters @{} `
+            -JobRestoresAppList $false `
+            -JobToken $script:capturedRunspaceArgs["JobToken"]
+
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Example finished" -and $State -eq "None" -and $Overlay -eq "checkmark"
+        }
     }
 
     It "surfaces warnings and non-terminating errors raised by the body" {

@@ -37,6 +37,10 @@ function Write-WinUtilLog {
         $null = $sync.LoggedErrors.Add("[$Component] $Message")
     }
 
+    if ($Level -eq "ERROR" -and -not $Detail -and $global:WinUtilIsJobWorker) {
+        $global:WinUtilJobErrorCount++
+    }
+
     try {
         $logPath = $null
         if ($null -ne $sync -and $sync.ContainsKey("logPath")) {

@@ -112,9 +112,9 @@ function Start-WinUtilJob {
         # Marks this runspace as the one doing the work, so a pause holds here and not in
         # whoever asked for it
         $global:WinUtilIsJobWorker = $true
+        $global:WinUtilJobErrorCount = 0
 
         $jobClock = [System.Diagnostics.Stopwatch]::StartNew()
-        $errorsBefore = if ($sync.LoggedErrors) { $sync.LoggedErrors.Count } else { 0 }
         try {
             $body = [scriptblock]::Create($JobBody)
 
@@ -130,8 +130,10 @@ function Start-WinUtilJob {
 
             $jobClock.Stop()
 
-            # A step can fail without throwing, for example a registry write refused by policy
-            $newErrors = if ($sync.LoggedErrors) { $sync.LoggedErrors.Count - $errorsBefore } else { 0 }
+            # A step can fail without throwing, for example a registry write refused by policy.
+            # The counter belongs to this worker runspace, so unrelated UI errors cannot change
+            # this job's result while it is running.
+            $newErrors = $global:WinUtilJobErrorCount
             if ($newErrors -gt 0) {
                 Write-WinUtilLog -Level "WARN" -Component $JobName -Message "$JobName job finished in $($jobClock.ElapsedMilliseconds) ms with $newErrors error(s)."
                 Write-WinUtilJobBanner -Message "$JobLabel finished with $newErrors error(s), see the log" -Level "ERROR"
@@ -150,6 +152,7 @@ function Start-WinUtilJob {
             # Pool runspaces are reused, so leaving this set would make the next piece of
             # background work on this runspace believe it is a job worker
             $global:WinUtilIsJobWorker = $false
+            $global:WinUtilJobErrorCount = 0
 
             Write-WinUtilTimingSummary -Scope $JobName -TotalMilliseconds $jobClock.ElapsedMilliseconds -StartIndex $TimingStartIndex
 

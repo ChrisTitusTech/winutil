@@ -302,6 +302,16 @@ Describe "Win11 Creator setup media" {
         $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$verified = $true'))
         $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('Dismount-DiskImage -ImagePath $isoPath -ErrorAction Stop'))
         $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$sync["Win11ISOImagePath"] = $null'))
+        $script:mountAndVerifyFunction.IndexOf('Dismount-DiskImage') | Should -BeGreaterThan $script:mountAndVerifyFunction.IndexOf('finally')
+    }
+
+    It "keeps ISO cleanup in finally so stopping modification cannot bypass it" {
+        $finallyIndex = $script:modifyFunction.IndexOf('finally')
+
+        $finallyIndex | Should -BeGreaterThan -1
+        $script:modifyFunction.IndexOf('Dismount-DiskImage', $finallyIndex) | Should -BeGreaterThan $finallyIndex
+        $script:modifyFunction.IndexOf('Remove-Item -Path $workDir -Recurse -Force', $finallyIndex) | Should -BeGreaterThan $finallyIndex
+        $script:modifyFunction.IndexOf('$sync["Win11ISOImagePath"] = $null', $finallyIndex) | Should -BeGreaterThan $finallyIndex
     }
 
     It "retries existing-work discovery after the active job finishes" {

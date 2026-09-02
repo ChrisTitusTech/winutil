@@ -17,6 +17,8 @@ Describe "Write-WinUtilLog" {
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name WinUtilLogPath -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name WinUtilIsJobWorker -Scope Global -ErrorAction SilentlyContinue
+        Remove-Variable -Name WinUtilJobErrorCount -Scope Global -ErrorAction SilentlyContinue
         Remove-Item -Path $script:testRoot -Recurse -Force -ErrorAction SilentlyContinue
     }
 
@@ -109,6 +111,23 @@ Describe "Write-WinUtilLog" {
             $Object -match "\[INFO\] \[Test\] locked file fallback"
         }
         Should -Invoke -CommandName Write-Warning -Times 0 -Exactly
+    }
+
+    It "counts only headline errors written by the active job worker" {
+        $script:sync = [hashtable]::Synchronized(@{
+            winutildir = $script:testRoot
+            LoggedErrors = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new())
+        })
+        $global:WinUtilIsJobWorker = $true
+        $global:WinUtilJobErrorCount = 0
+
+        Write-WinUtilLog -Level "ERROR" -Component "Test" -Message "job error"
+        Write-WinUtilLog -Level "ERROR" -Detail -Component "Test" -Message "error detail"
+        $global:WinUtilIsJobWorker = $false
+        Write-WinUtilLog -Level "ERROR" -Component "UI" -Message "unrelated error"
+
+        $global:WinUtilJobErrorCount | Should -Be 1
+        $script:sync.LoggedErrors.Count | Should -Be 2
     }
 
 }
