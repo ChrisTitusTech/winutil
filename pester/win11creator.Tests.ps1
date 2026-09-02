@@ -141,6 +141,7 @@ Describe "Win11 Creator setup media" {
 
         $script:modifyFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Invoke-WinUtilISOModify"
         $script:mountAndVerifyFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Invoke-WinUtilISOMountAndVerify"
+        $script:checkExistingWorkFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Invoke-WinUtilISOCheckExistingWork"
         $script:cleanAndResetFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Invoke-WinUtilISOCleanAndReset"
         $script:exportFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Invoke-WinUtilISOExport"
         $script:writeUsbFunction = Get-WinUtilFunctionText -Path $script:isoUsbWorkflowPath -FunctionName "Invoke-WinUtilISOWriteUSB"
@@ -293,7 +294,20 @@ Describe "Win11 Creator setup media" {
         $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$sync["WPFWin11ISOMountButton"].IsEnabled = $false'))
         $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$sync["WPFWin11ISOMountButton"].IsEnabled = $true'))
         $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$sync["WPFWin11ISOModifyButton"].IsEnabled = $false'))
-        $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$sync["WPFWin11ISOModifyButton"].IsEnabled = $true'))
+        $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$sync["WPFWin11ISOModifyButton"].IsEnabled = [bool]$Verified'))
+    }
+
+    It "dismounts an ISO and keeps modification disabled when verification fails" {
+        $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$verified = $false'))
+        $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$verified = $true'))
+        $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('Dismount-DiskImage -ImagePath $isoPath -ErrorAction Stop'))
+        $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$sync["Win11ISOImagePath"] = $null'))
+    }
+
+    It "retries existing-work discovery after the active job finishes" {
+        $script:checkExistingWorkFunction | Should -Match ([regex]::Escape('Invoke-WinUtilWhenIdle -DelayMilliseconds 500'))
+        $script:checkExistingWorkFunction | Should -Match ([regex]::Escape('Invoke-WinUtilISOCheckExistingWork'))
+        $script:checkExistingWorkFunction | Should -Match ([regex]::Escape('$sync["Win11ISOExistingWorkRetryPending"] = $false'))
     }
 
     It "reports ISO progress and logging through the shared helpers" {

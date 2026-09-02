@@ -153,6 +153,11 @@ Describe "The close question" {
             Should -Not -Match 'Request-WinUtilWindowClose\s+-Before'
     }
 
+    It "never shuts down the worker pool from the window closing handler" {
+        (Get-Content (Join-Path $script:repoRoot "functions\private\Start-WinUtilUserInterface.ps1") -Raw) |
+            Should -Not -Match 'Close-WinUtilRunspacePool'
+    }
+
 
 
     It "offers all three choices" {

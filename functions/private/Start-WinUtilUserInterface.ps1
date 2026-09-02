@@ -172,9 +172,9 @@ function Start-WinUtilUserInterface {
             return
         }
 
-        Write-WinUtilLog -Component "UI" -Message "Window closing, shutting down the worker pool."
-        Close-WinUtilRunspacePool
-        [System.GC]::Collect()
+        # main.ps1 owns pool shutdown after the window has finished closing. Doing it from this
+        # dispatcher callback can deadlock with a worker that is in its UI-thread cleanup block.
+        Write-WinUtilLog -Component "UI" -Message "Window closing; the main thread will shut down the worker pool."
     })
 
     # Attach the event handler to the Click event

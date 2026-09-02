@@ -130,13 +130,23 @@ function Invoke-WinUtilISOMountAndVerify {
             $sync["WPFWin11ISOBrowseButton"].IsEnabled = $false
             $sync["WPFWin11ISOMountButton"].IsEnabled = $false
             $sync["WPFWin11ISOModifyButton"].IsEnabled = $false
+            $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Collapsed"
+            $sync["WPFWin11ISOModifySection"].Visibility = "Collapsed"
         }
+
+        $verified = $false
+        $mountedByThisRun = $false
+        $sync["Win11ISOImageInfo"] = $null
+        $sync["Win11ISODriveLetter"] = $null
+        $sync["Win11ISOWimPath"] = $null
+        $sync["Win11ISOImagePath"] = $null
 
         try {
             Write-WinUtilISOLog "Mounting ISO: $isoPath"
             Step-WinUtilJob -Status "Mounting ISO..." -Percent 10
 
             Mount-DiskImage -ImagePath $isoPath -ErrorAction Stop
+            $mountedByThisRun = $true
 
             # Bounded, because a damaged or already-mounted image may never present a drive
             # letter. The job layer runs one job at a time, so waiting here forever would block
@@ -161,7 +171,6 @@ function Invoke-WinUtilISOMountAndVerify {
             $esdPath = Join-Path $driveLetter "sources\install.esd"
 
             if (-not (Test-Path $wimPath) -and -not (Test-Path $esdPath)) {
-                Dismount-DiskImage -ImagePath $isoPath
                 Write-WinUtilISOLog -Level "ERROR" -Message "install.wim/install.esd not found - not a valid Windows ISO."
                 Show-WinUtilMessage -Message "This does not appear to be a valid Windows ISO.`n`ninstall.wim / install.esd was not found." -Title "Invalid ISO" -Button "OK" -Icon "Error" | Out-Null
                 # Returning here would let the job layer report the run as finished
@@ -174,7 +183,6 @@ function Invoke-WinUtilISOMountAndVerify {
             $imageInfo = Get-WindowsImage -ImagePath $activeWim | Select-Object ImageIndex, ImageName
 
             if (-not ($imageInfo | Where-Object { $_.ImageName -match "Windows 11" })) {
-                Dismount-DiskImage -ImagePath $isoPath
                 Write-WinUtilISOLog -Level "ERROR" -Message "No 'Windows 11' edition found in the image."
                 Show-WinUtilMessage -Message "No Windows 11 edition was found in this ISO.`n`nOnly official Windows 11 ISOs are supported." -Title "Not a Windows 11 ISO" -Button "OK" -Icon "Error" | Out-Null
                 throw "No Windows 11 edition was found in $isoPath."
@@ -210,12 +218,25 @@ function Invoke-WinUtilISOMountAndVerify {
                 $sync["WPFWin11ISOModifySection"].Visibility = "Visible"
             }
 
+            $verified = $true
             Write-WinUtilISOLog "ISO verified OK.  Editions found: $($imageInfo.Count)"
+        } catch {
+            if ($mountedByThisRun) {
+                try {
+                    Write-WinUtilISOLog "Verification failed; dismounting source ISO."
+                    Dismount-DiskImage -ImagePath $isoPath -ErrorAction Stop
+                } catch {
+                    Write-WinUtilISOLog -Level "WARN" -Message "Could not dismount ISO after verification failed: $_"
+                }
+            }
+            throw
         } finally {
-            Invoke-WPFUIThread -ScriptBlock {
+            Invoke-WPFUIThread -Parameters @{ Verified = $verified } -ScriptBlock {
+                param($Verified)
+
                 $sync["WPFWin11ISOBrowseButton"].IsEnabled = $true
                 $sync["WPFWin11ISOMountButton"].IsEnabled = $true
-                $sync["WPFWin11ISOModifyButton"].IsEnabled = $true
+                $sync["WPFWin11ISOModifyButton"].IsEnabled = [bool]$Verified
             }
         }
     }
@@ -363,8 +384,20 @@ function Invoke-WinUtilISOModify {
 function Invoke-WinUtilISOCheckExistingWork {
     if ($sync["Win11ISOContentsDir"] -and (Test-Path $sync["Win11ISOContentsDir"])) { return }
 
-    # Nothing to resume while a modification is still producing the working directory
-    if ($sync.ActiveJob) { return }
+    # Nothing to resume while a modification is still producing the working directory. The tab
+    # is initialized only once, so arrange another check rather than permanently missing work that
+    # appears after this first call.
+    if ($sync.ActiveJob) {
+        if (-not $sync["Win11ISOExistingWorkRetryPending"]) {
+            $sync["Win11ISOExistingWorkRetryPending"] = $true
+            Invoke-WinUtilWhenIdle -DelayMilliseconds 500 -Callback {
+                $sync["Win11ISOExistingWorkRetryPending"] = $false
+                Invoke-WinUtilISOCheckExistingWork
+            }
+        }
+        return
+    }
+    $sync["Win11ISOExistingWorkRetryPending"] = $false
 
     $existingWorkDir = Get-Item -Path (Join-Path $env:TEMP "WinUtil_Win11ISO*") |
         Where-Object { $_.PSIsContainer } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
