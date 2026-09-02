@@ -221,7 +221,7 @@ Describe "Get-WinUtilTweaksStateReport" {
 
     It "reports collection as unavailable when a live registry read fails" {
         Mock Test-Path { $Path -eq "HKCU:\Fake3" }
-        Mock Get-ItemProperty { Write-Error "Registry access denied" } -ParameterFilter {
+        Mock Get-ItemProperty { Write-Error -Message "Registry access denied" -ErrorAction Stop } -ParameterFilter {
             $Path -eq "HKCU:\Fake3"
         }
 
