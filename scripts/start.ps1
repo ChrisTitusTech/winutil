@@ -52,12 +52,15 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
         # A declined UAC prompt throws, which would leave $elevated null and exit 0: the caller
         # waiting on this process would read that as a successful run
         try {
-            $elevated = Start-Process $powershellCmd -ArgumentList "-ExecutionPolicy Bypass -NoProfile -Command `"$script`"" -Verb RunAs -Wait -PassThru -ErrorAction Stop
+            $headlessScript = "`$env:WINUTIL_HEADLESS_CHILD = '1'; $script"
+            $elevated = Start-Process $powershellCmd -ArgumentList "-ExecutionPolicy Bypass -NoProfile -Command `"$headlessScript`"" -Verb RunAs -Wait -PassThru -ErrorAction Stop
         } catch {
             Write-Host "Elevation was declined or failed: $($_.Exception.Message)" -ForegroundColor Red
-            exit 1
+            $global:LASTEXITCODE = 1
+            return 1
         }
-        exit $elevated.ExitCode
+        $global:LASTEXITCODE = $elevated.ExitCode
+        return $elevated.ExitCode
     }
 
     $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { "$powershellCmd" }

@@ -98,8 +98,13 @@ if ($Preset -or $Config) {
         Stop-Transcript | Out-Null
     }
 
-    # An automated caller has nothing else to go on, so the code has to carry the outcome
-    exit $headlessCode
+    # Only the isolated elevated child exits. The documented invocation runs inside the caller's
+    # existing terminal; exiting there would terminate it and skip every command after WinUtil.
+    if ($env:WINUTIL_HEADLESS_CHILD -eq "1") {
+        exit $headlessCode
+    }
+    $global:LASTEXITCODE = $headlessCode
+    return $headlessCode
 }
 
 #===========================================================================

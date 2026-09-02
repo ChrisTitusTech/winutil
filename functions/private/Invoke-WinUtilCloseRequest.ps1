@@ -45,11 +45,10 @@ stopped and everything closes now. Cancel keeps WinUtil open.
             Step-WinUtilJob -Status "Stopping $RunningJob" -State "Indeterminate"
             $sync.ForceClose = $true
 
-            # Stopping can take a moment that would otherwise look like the window had frozen
-            Request-WinUtilWindowClose -Before {
-                Close-WinUtilRunspacePool
-                $null = Clear-WinUtilActiveJob
-            }
+            # Close the window first. The main thread owns pool shutdown after ShowDialog
+            # returns, so the worker can finish its UI-dispatching finally block before the UI
+            # runspace is disposed. Waiting for it here would deadlock the dispatcher.
+            Request-WinUtilWindowClose
         }
         default {
             Write-WinUtilLog -Component "UI" -Message "Close cancelled, $RunningJob is still running."
@@ -62,23 +61,12 @@ function Request-WinUtilWindowClose {
         .SYNOPSIS
             Closes the window from outside the handler that is currently cancelling the close
 
-        .PARAMETER Before
-            Work to do on the interface thread first, before the window goes.
     #>
-    param(
-        [scriptblock]$Before
-    )
-
     if (-not (Test-WinUtilUIAlive)) {
         return
     }
 
-    $sync.PendingCloseWork = $Before
     $sync.Form.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{
-        if ($sync.PendingCloseWork) {
-            & $sync.PendingCloseWork
-            $sync.PendingCloseWork = $null
-        }
         $sync.Form.Close()
     }) | Out-Null
 }

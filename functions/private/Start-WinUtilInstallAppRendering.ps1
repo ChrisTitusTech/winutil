@@ -10,21 +10,16 @@ function Invoke-WinUtilInstallAppRenderBatch {
     $budgetMs = 25
     $keys = @($CategoryBatch.AppKeys)
 
-    # The count is the step's return value rather than a variable the loop updates: a scriptblock
-    # runs in a child scope, so assigning to an outer variable from inside it silently writes to
-    # a copy, and the pass would re-queue everything it had just drawn.
-    $rendered = Measure-WinUtilStep -Scope "AppRender" -Name $CategoryBatch.Category -ScriptBlock {
-        $clock = [System.Diagnostics.Stopwatch]::StartNew()
-        $done = 0
-        foreach ($appKey in $keys) {
-            $sync.$appKey = Initialize-InstallAppEntry -TargetElement $CategoryBatch.TargetElement -AppKey $appKey
-            $done++
-            # at least one per pass, or a slow machine would never finish the list
-            if ($clock.ElapsedMilliseconds -ge $budgetMs) {
-                break
-            }
+    # This runs on the dispatcher, so keep the slice free of logging and other disk I/O.
+    $clock = [System.Diagnostics.Stopwatch]::StartNew()
+    $rendered = 0
+    foreach ($appKey in $keys) {
+        $sync.$appKey = Initialize-InstallAppEntry -TargetElement $CategoryBatch.TargetElement -AppKey $appKey
+        $rendered++
+        # at least one per pass, or a slow machine would never finish the list
+        if ($clock.ElapsedMilliseconds -ge $budgetMs) {
+            break
         }
-        $done
     }
 
     if ($rendered -lt $keys.Count) {

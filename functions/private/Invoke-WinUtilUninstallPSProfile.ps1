@@ -8,11 +8,12 @@ function Invoke-WinUtilUninstallPSProfile {
         own Windows PowerShell profile, which is not the file the install wrote.
     #>
 
-    if (-not (Get-Command pwsh -ErrorAction SilentlyContinue)) {
+    $pwshPath = Get-WinUtilPowerShell7Path
+    if (-not $pwshPath) {
         throw "PowerShell 7 is not installed, so there is no CTT profile to remove."
     }
 
-    $profilePath = (& pwsh -NoProfile -NonInteractive -Command '$PROFILE' | Select-Object -First 1)
+    $profilePath = (& $pwshPath -NoProfile -NonInteractive -Command '$PROFILE' | Select-Object -First 1)
     if ([string]::IsNullOrWhiteSpace($profilePath)) {
         throw "Could not determine the PowerShell 7 profile path."
     }

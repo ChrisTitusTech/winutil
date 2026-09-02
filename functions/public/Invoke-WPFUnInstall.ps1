@@ -26,15 +26,14 @@ function Invoke-WPFUnInstall {
 
     $ManagerPreference = $sync.preferences.packagemanager
     Write-WinUtilLog -Component "Uninstall" -Message "Uninstall requested for $(@($PackagesToUninstall).Count) selected package(s) using preference: $ManagerPreference"
+    $packageSummary = Get-WinUtilPackageLogSummary -Packages $PackagesToUninstall -Preference $ManagerPreference
+    Write-WinUtilLog -Component "Uninstall" -Message "Uninstall selected package(s): $($packageSummary -join '; ')"
 
     Start-WinUtilJob -Name "Uninstall" -Description "Uninstalling apps" -DisableAppList -Parameters @{
         PackagesToUninstall = $PackagesToUninstall
         ManagerPreference = $ManagerPreference
     } -ScriptBlock {
         param($PackagesToUninstall, $ManagerPreference)
-
-        $packageSummary = Get-WinUtilPackageLogSummary -Packages $PackagesToUninstall -Preference $ManagerPreference
-        Write-WinUtilLog -Component "Uninstall" -Message "Uninstall selected package(s): $($packageSummary -join '; ')"
 
         $packagesSorted = Get-WinUtilSelectedPackages -PackageList $PackagesToUninstall -Preference $ManagerPreference
         $packagesWinget = $packagesSorted['Winget']

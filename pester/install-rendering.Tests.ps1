@@ -42,11 +42,6 @@ Describe "Install app rendering startup contract" {
             function global:Test-WinUtilDeferBackgroundWork { param($RequiresTab) $false }
             function global:Invoke-WinUtilWhenIdle { param($Callback, $DelayMilliseconds) }
 
-            function global:Measure-WinUtilStep {
-                param($Scope, $Name, [scriptblock]$ScriptBlock)
-                & $ScriptBlock
-            }
-
             function global:Find-AppsByNameOrDescription {
                 param($SearchString, $Category)
                 throw "Search should not run for an empty search box in this test."
@@ -78,6 +73,8 @@ Describe "Install app rendering startup contract" {
             $global:sync.InstallAppRenderQueue.Count | Should -Be 0
             @($renderedApps) | Should -Be @("AppA", "AppB", "AppC")
             $global:Error.Count | Should -Be $errorCountBefore
+            (Get-Content (Join-Path $script:repoRoot "functions\private\Start-WinUtilInstallAppRendering.ps1") -Raw) |
+                Should -Not -Match 'Measure-WinUtilStep'
         } finally {
             if ($previousSync) {
                 Set-Variable -Name sync -Value $previousSync.Value -Scope Global

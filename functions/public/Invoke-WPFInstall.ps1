@@ -16,16 +16,14 @@ function Invoke-WPFInstall {
 
     $ManagerPreference = $sync.preferences.packagemanager
     Write-WinUtilLog -Component "Install" -Message "Install requested for $(@($PackagesToInstall).Count) selected package(s) using preference: $ManagerPreference"
+    $packageSummary = Get-WinUtilPackageLogSummary -Packages $PackagesToInstall -Preference $ManagerPreference
+    Write-WinUtilLog -Component "Install" -Message "Install selected package(s): $($packageSummary -join '; ')"
 
     Start-WinUtilJob -Name "Install" -Description "Installing apps" -DisableAppList -Parameters @{
         PackagesToInstall = $PackagesToInstall
         ManagerPreference = $ManagerPreference
     } -ScriptBlock {
         param($PackagesToInstall, $ManagerPreference)
-
-        # Summarising the selection reads every package, so it runs here rather than on the UI thread
-        $packageSummary = Get-WinUtilPackageLogSummary -Packages $PackagesToInstall -Preference $ManagerPreference
-        Write-WinUtilLog -Component "Install" -Message "Install selected package(s): $($packageSummary -join '; ')"
 
         $packagesSorted = Get-WinUtilSelectedPackages -PackageList $PackagesToInstall -Preference $ManagerPreference
         $packagesWinget = $packagesSorted['Winget']

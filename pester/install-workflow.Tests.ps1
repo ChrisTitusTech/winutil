@@ -154,6 +154,15 @@ Describe "Invoke-WPFInstall entrypoint" {
         Should -Invoke -CommandName Show-WinUtilMessage -Times 0 -Exactly
     }
 
+    It "logs package identities before the job is queued" {
+        Invoke-WPFInstall
+
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Component -eq "Install" -and
+                $Message -eq "Install selected package(s): Git (winget: Git.Git)"
+        }
+    }
+
     It "queues the explicit app popup package over the selected apps" {
         $explicitPackage = New-WinUtilPackage -Name "VLC" -Winget "VideoLAN.VLC" -Choco "vlc"
 
@@ -236,18 +245,6 @@ Describe "Invoke-WPFInstall job body" {
         }
     }
 
-    It "logs the package summary from inside the job rather than on the UI thread" {
-        Invoke-WPFInstall
-
-        $jobParameters = $script:capturedInstallJob.Parameters
-        & $script:capturedInstallJob.ScriptBlock @jobParameters
-
-        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
-            $Component -eq "Install" -and
-                $Message -eq "Install selected package(s): Git (winget: Git.Git)"
-        }
-    }
-
     It "lets a failure surface so the job layer can handle it" {
         Mock Install-WinUtilProgramWinget { throw "winget failed" }
 
@@ -295,6 +292,15 @@ Describe "Invoke-WPFUnInstall entrypoint" {
                 @($Parameters.PackagesToUninstall).Count -eq 1 -and
                 @($Parameters.PackagesToUninstall)[0].winget -eq "Git.Git" -and
                 $Parameters.ManagerPreference -eq "Winget"
+        }
+    }
+
+    It "logs package identities before the uninstall job is queued" {
+        Invoke-WPFUnInstall
+
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Component -eq "Uninstall" -and
+                $Message -eq "Uninstall selected package(s): Git (winget: Git.Git)"
         }
     }
 

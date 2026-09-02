@@ -47,6 +47,14 @@ Describe "Get-WinUtilPowerShell7Path" {
 
         Get-WinUtilPowerShell7Path | Should -Be $expectedPath
     }
+
+    It "is also used by profile removal so a stale process PATH is supported" {
+        $source = Get-Content (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilUninstallPSProfile.ps1") -Raw
+
+        $source | Should -Match '\$pwshPath = Get-WinUtilPowerShell7Path'
+        $source | Should -Match '& \$pwshPath -NoProfile'
+        $source | Should -Not -Match 'Get-Command pwsh'
+    }
 }
 
 Describe "Invoke-WinUtilCurrentSystem installed apps" {

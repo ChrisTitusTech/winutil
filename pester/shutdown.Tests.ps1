@@ -141,6 +141,18 @@ Describe "The close question" {
         $sync.ForceClose | Should -Not -BeTrue
     }
 
+    It "closes before the main thread stops the worker pool" {
+        Mock Show-WinUtilMessage { "No" }
+        Mock Request-WinUtilWindowClose { }
+
+        Invoke-WinUtilCloseRequest -RunningJob "Install"
+
+        $sync.ForceClose | Should -BeTrue
+        Should -Invoke -CommandName Request-WinUtilWindowClose -Times 1 -Exactly
+        (Get-Content (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilCloseRequest.ps1") -Raw) |
+            Should -Not -Match 'Request-WinUtilWindowClose\s+-Before'
+    }
+
 
 
     It "offers all three choices" {

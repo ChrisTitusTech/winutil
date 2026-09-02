@@ -30,8 +30,8 @@ Describe "Headless entry point" {
         $script:mainScript | Should -Match 'if \(\$Preset -or \$Config\) \{'
     }
 
-    It "ends with an exit code an automated caller can read" {
-        $script:mainScript | Should -Match 'exit \$headlessCode'
+    It "returns an outcome without exiting an in-memory caller" {
+        $script:mainScript | Should -Match 'if \(\$env:WINUTIL_HEADLESS_CHILD -eq "1"\) \{[\s\S]*exit \$headlessCode[\s\S]*\$global:LASTEXITCODE = \$headlessCode[\s\S]*return \$headlessCode'
         $script:mainScript | Should -Match 'Write-WinUtilAutoRunSummary'
     }
 
@@ -48,7 +48,9 @@ Describe "Headless entry point" {
         # Start-Process without -Wait returns immediately, so the caller would see success
         # regardless of what the run did
         $script:startScript | Should -Match '\$elevated = Start-Process[^\r\n]*-Wait -PassThru'
-        $script:startScript | Should -Match 'exit \$elevated\.ExitCode'
+        $script:startScript | Should -Match '\$env:WINUTIL_HEADLESS_CHILD = ''1'''
+        $script:startScript | Should -Match '\$global:LASTEXITCODE = \$elevated\.ExitCode[\s\S]*return \$elevated\.ExitCode'
+        $script:startScript | Should -Not -Match 'exit \$elevated\.ExitCode'
     }
 }
 
