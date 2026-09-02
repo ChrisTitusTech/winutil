@@ -570,4 +570,14 @@ function Invoke-WPFUIElements {
             }
         }
     }
+
+    # A search event can run inside one of the yielded dispatcher frames above. Controls added
+    # after that event start visible, so reapply the live filter once this tab is complete.
+    $filterPanel = switch ($sync.currentTab) {
+        "Tweaks" { "tweakspanel" }
+        "AppX" { "appxpanel" }
+    }
+    if ($filterPanel -eq $targetGridName -and $null -ne $sync.SearchBar) {
+        Find-TweaksByNameOrDescription -SearchString $sync.SearchBar.Text
+    }
 }

@@ -42,12 +42,12 @@ function Invoke-WPFTab {
     }
 
     Measure-WinUtilStep -Scope "Tab" -Name "$ClickedTab filter reset" -ScriptBlock {
+        $searchText = if ($null -ne $sync.SearchBar) { $sync.SearchBar.Text } else { "" }
         if ($sync.currentTab -eq "Install") {
-            # Clears the search text but keeps whatever the category chips are still showing
             $selectedCategories = if ($sync.SelectedAppCategories) { $sync.SelectedAppCategories.ToArray() } else { @() }
-            Find-AppsByNameOrDescription -SearchString "" -Categories $selectedCategories
+            Find-AppsByNameOrDescription -SearchString $searchText -Categories $selectedCategories
         } elseif ($sync.currentTab -eq "Tweaks" -or $sync.currentTab -eq "AppX") {
-            Find-TweaksByNameOrDescription -SearchString ""
+            Find-TweaksByNameOrDescription -SearchString $searchText
         }
     }
 

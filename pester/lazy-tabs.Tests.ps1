@@ -189,4 +189,13 @@ Describe "Startup lazy tab wiring" {
         $rendererScript | Should -Match '\$hasOuterScrollViewer'
         $rendererScript | Should -Match 'if\s*\(\$hasOuterScrollViewer\)'
     }
+
+    It "reapplies the live search after yielded tab controls finish rendering" {
+        $rendererScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIElements.ps1") -Raw
+        $tabScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFTab.ps1") -Raw
+
+        $rendererScript | Should -Match 'Find-TweaksByNameOrDescription -SearchString \$sync\.SearchBar\.Text'
+        $tabScript | Should -Match 'Find-TweaksByNameOrDescription -SearchString \$searchText'
+        $tabScript | Should -Match 'Find-AppsByNameOrDescription -SearchString \$searchText'
+    }
 }

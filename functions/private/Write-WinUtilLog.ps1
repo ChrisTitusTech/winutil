@@ -5,10 +5,9 @@ function Write-WinUtilLog {
         Writes a timestamped WinUtil log entry to the active session log.
 
     .DESCRIPTION
-        Called from the interface thread and from every job body, so the append is serialized
-        with a named mutex. The session log is deliberately not the file Start-Transcript owns:
-        a transcript only records the runspace it was started on, so anything a job logged would
-        otherwise never reach disk.
+        Called from the interface thread and from every job body. When Start-Transcript owns the
+        active session log, entries go through the host so the transcript records them without a
+        competing file write. Standalone callers use a named mutex to serialize direct appends.
 
     .PARAMETER Message
         The message to write.
@@ -43,8 +42,17 @@ function Write-WinUtilLog {
 
     try {
         $logPath = $null
+        $transcriptPath = $null
         if ($null -ne $sync -and $sync.ContainsKey("logPath")) {
             $logPath = $sync.logPath
+        }
+
+        if ($null -ne $sync -and $sync.ContainsKey("transcriptPath")) {
+            $transcriptPath = $sync.transcriptPath
+        }
+
+        if ([string]::IsNullOrWhiteSpace($logPath) -and -not [string]::IsNullOrWhiteSpace($transcriptPath)) {
+            $logPath = $transcriptPath
         }
 
         if ([string]::IsNullOrWhiteSpace($logPath) -and $null -ne $sync -and $sync.ContainsKey("winutildir")) {
@@ -72,6 +80,11 @@ function Write-WinUtilLog {
 
         $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss.fff"
         $line = "[$timestamp] [$Level] [$Component] $Message"
+
+        if (-not [string]::IsNullOrWhiteSpace($transcriptPath) -and $logPath -eq $transcriptPath) {
+            Write-Host $line
+            return
+        }
 
         $mutex = [System.Threading.Mutex]::new($false, "WinUtilSessionLog")
         $held = $false

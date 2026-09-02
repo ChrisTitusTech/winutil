@@ -21,6 +21,12 @@ function Start-WinUtilAssetRendering {
     $shell = [powershell]::Create()
     $shell.Runspace = $runspace
     [void]$shell.AddScript({
+        # A new runspace does not inherit assemblies loaded by the interface runspace. On a cold
+        # process these types otherwise fail before the off-thread render can do any work.
+        Add-Type -AssemblyName WindowsBase
+        Add-Type -AssemblyName PresentationCore
+        Add-Type -AssemblyName PresentationFramework
+
         Measure-WinUtilStep -Scope "UI" -Name "render taskbar overlays (off thread)" -ScriptBlock {
             Initialize-WinUtilTaskbarOverlayAssets -IncludeLogo $true -IncludeStatusAssets $true
         }

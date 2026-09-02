@@ -509,10 +509,10 @@ such as cleaning up a mounted image, and then rethrow.
 Write-WinUtilLog -Level "ERROR" -Component "Install" -Message "winget install failed: $($_.Exception.Message)"
 ```
 
-Entries go to `%LocalAppData%\winutil\logs\winutil_<timestamp>.log` from every thread, guarded
-by a named mutex. The console transcript is a separate file in the same directory, because
-`Start-Transcript` keeps its file open and only records the runspace it was started on - so
-anything a worker logged would otherwise never reach disk.
+Entries and console diagnostics go to the same
+`%LocalAppData%\winutil\logs\winutil_<timestamp>.log` session file. While `Start-Transcript`
+owns that file, `Write-WinUtilLog` writes through the host so the transcript captures the entry
+without a competing direct file write.
 
 ## Configuration Loading
 

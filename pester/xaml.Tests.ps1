@@ -379,6 +379,7 @@ Describe "XAML and sync wiring" {
             "version",
             "winutildir",
             "logPath",
+            "transcriptPath",
             "ActiveJob",
             "ActiveJobToken",
             # Intrinsic to the synchronized hashtable rather than WinUtil state; the job layer

@@ -73,5 +73,13 @@ Describe "Runspace startup wiring" {
         }
     }
 
+    It "loads WPF assemblies inside the cold-start asset runspace" {
+        $source = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilAssetRendering.ps1") -Raw
+
+        $source | Should -Match 'Add-Type -AssemblyName WindowsBase'
+        $source | Should -Match 'Add-Type -AssemblyName PresentationCore'
+        $source | Should -Match 'Add-Type -AssemblyName PresentationFramework'
+    }
+
 
 }

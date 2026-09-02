@@ -36,6 +36,23 @@ Describe "Write-WinUtilLog" {
         Get-Content -Path $logPath -Raw | Should -Match "\[INFO\] \[Test\] same session log"
     }
 
+    It "writes through the host when the transcript owns the active session log" {
+        $logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
+        $script:sync = [hashtable]::Synchronized(@{
+            logPath = $logPath
+            transcriptPath = $logPath
+        })
+        Mock Write-Host { }
+        Mock Add-Content { }
+
+        Write-WinUtilLog -Component "Test" -Message "transcript entry"
+
+        Should -Invoke Write-Host -Times 1 -Exactly -ParameterFilter {
+            $Object -match "\[INFO\] \[Test\] transcript entry"
+        }
+        Should -Invoke Add-Content -Times 0 -Exactly
+    }
+
     It "writes entries produced concurrently by several threads" {
         $logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
         $script:sync = [hashtable]::Synchronized(@{

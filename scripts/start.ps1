@@ -103,11 +103,11 @@ $logdir = "$winutildir\logs"
 if (-not (Test-Path $logdir)) {
     New-Item -ItemType Directory -Path $logdir -Force | Out-Null
 }
-# Structured session log, written by Write-WinUtilLog from every thread. The console
-# transcript goes to its own file because Start-Transcript keeps that one open and only
-# ever records the runspace it was started on.
+# Keep console output and structured entries in the path reported to the user. Write-WinUtilLog
+# writes through the host while this transcript owns the file, avoiding competing file handles.
 $sync.logPath = "$logdir\winutil_$dateTime.log"
-Start-Transcript -Path "$logdir\winutil_$dateTime.console.log" -Append -NoClobber | Out-Null
+$sync.transcriptPath = $sync.logPath
+Start-Transcript -Path $sync.transcriptPath -Append -NoClobber | Out-Null
 
 $Host.UI.RawUI.WindowTitle = "WinUtil"
 Clear-Host
