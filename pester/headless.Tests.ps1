@@ -6,6 +6,12 @@ BeforeAll {
     $script:functionRoot = Join-Path $script:repoRoot "functions"
     $script:mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
     $script:startScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\start.ps1") -Raw
+    $startAst = [System.Management.Automation.Language.Parser]::ParseInput($script:startScript, [ref]$null, [ref]$null)
+    $script:fileProcessFunction = $startAst.Find({
+        param($node)
+        $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
+            $node.Name -eq "Test-WinUtilOwnsFileProcess"
+    }, $true).Extent.Text
 
     . (Join-Path $script:functionRoot "private\Update-WinUtilSelections.ps1")
     . (Join-Path $script:functionRoot "public\Invoke-WPFImpex.ps1")
@@ -31,8 +37,85 @@ Describe "Headless entry point" {
     }
 
     It "returns an outcome without exiting an in-memory caller" {
-        $script:mainScript | Should -Match 'if \(\$env:WINUTIL_HEADLESS_CHILD -eq "1"\) \{[\s\S]*exit \$headlessCode[\s\S]*\$global:LASTEXITCODE = \$headlessCode[\s\S]*return \$headlessCode'
+        $script:mainScript | Should -Match 'if \(\$env:WINUTIL_HEADLESS_CHILD -eq "1" -or \$script:WinUtilIsFileProcess\) \{[\s\S]*exit \$headlessCode[\s\S]*\$global:LASTEXITCODE = \$headlessCode[\s\S]*return \$headlessCode'
         $script:mainScript | Should -Match 'Write-WinUtilAutoRunSummary'
+    }
+
+    It "exits with the outcome when headless mode owns a file-backed process" {
+        $script:startScript | Should -Match '\$script:WinUtilIsFileProcess = Test-WinUtilOwnsFileProcess'
+        $script:mainScript | Should -Match '-or \$script:WinUtilIsFileProcess\) \{[\s\S]*exit \$headlessCode'
+    }
+
+    It "recognizes only a direct -File target as process-owning" {
+        . ([scriptblock]::Create($script:fileProcessFunction))
+        $winUtilPath = Join-Path $script:repoRoot "winutil.ps1"
+        $wrapperPath = Join-Path $TestDrive "wrapper.ps1"
+
+        Test-WinUtilOwnsFileProcess -ScriptPath $winUtilPath -CommandLineArgs @("pwsh.dll", "-File", $winUtilPath) | Should -BeTrue
+        Test-WinUtilOwnsFileProcess -ScriptPath $winUtilPath -CommandLineArgs @("pwsh.dll", "-File", $wrapperPath) | Should -BeFalse
+        Test-WinUtilOwnsFileProcess -ScriptPath $winUtilPath -CommandLineArgs @("pwsh.dll", "-Command", "& '$winUtilPath'") | Should -BeFalse
+    }
+
+    It "propagates direct -File codes without terminating a file-backed wrapper" {
+        $harnessPath = Join-Path $TestDrive "headless-exit-harness.ps1"
+        $wrapperPath = Join-Path $TestDrive "headless-exit-wrapper.ps1"
+        @"
+param([int]`$Code)
+$($script:fileProcessFunction)
+`$ownsProcess = Test-WinUtilOwnsFileProcess -ScriptPath `$PSCommandPath -CommandLineArgs ([Environment]::GetCommandLineArgs())
+if (`$ownsProcess) { exit `$Code }
+return `$Code
+"@ | Set-Content -LiteralPath $harnessPath
+        @'
+param([string]$HarnessPath)
+& $HarnessPath -Code 7 | Out-Null
+exit 23
+'@ | Set-Content -LiteralPath $wrapperPath
+
+        $powerShellHosts = @(Get-Command pwsh.exe, powershell.exe -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -Unique)
+        $powerShellHosts.Count | Should -BeGreaterThan 0
+        foreach ($powerShellHost in $powerShellHosts) {
+            & $powerShellHost -ExecutionPolicy Bypass -NoProfile -File $harnessPath -Code 0 | Out-Null
+            $LASTEXITCODE | Should -Be 0 -Because "$powerShellHost should propagate success"
+
+            & $powerShellHost -ExecutionPolicy Bypass -NoProfile -File $harnessPath -Code 7 | Out-Null
+            $LASTEXITCODE | Should -Be 7 -Because "$powerShellHost should propagate failure"
+
+            & $powerShellHost -ExecutionPolicy Bypass -NoProfile -File $wrapperPath -HarnessPath $harnessPath | Out-Null
+            $LASTEXITCODE | Should -Be 23 -Because "$powerShellHost should let the wrapper continue"
+        }
+    }
+
+    It "propagates a compiled WinUtil headless failure without terminating its wrapper" {
+        $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(
+            [Security.Principal.WindowsBuiltInRole]::Administrator
+        )
+        if (-not $isAdmin) {
+            Set-ItResult -Skipped -Because "the compiled WinUtil process would open a UAC prompt"
+            return
+        }
+
+        & (Join-Path $script:repoRoot "Compile.ps1")
+        $compiledPath = Join-Path $script:repoRoot "winutil.ps1"
+        $missingConfig = Join-Path $TestDrive "missing-config.json"
+        $wrapperPath = Join-Path $TestDrive "compiled-winutil-wrapper.ps1"
+        @'
+param([string]$WinUtilPath, [string]$MissingConfig)
+$source = Get-Content -LiteralPath $WinUtilPath -Raw
+& ([scriptblock]::Create($source)) -Config $MissingConfig | Out-Null
+Write-Output "wrapper-continued"
+exit 23
+'@ | Set-Content -LiteralPath $wrapperPath
+
+        $powerShellHosts = @(Get-Command pwsh.exe, powershell.exe -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -Unique)
+        foreach ($powerShellHost in $powerShellHosts) {
+            & $powerShellHost -ExecutionPolicy Bypass -NoProfile -File $compiledPath -Config $missingConfig | Out-Null
+            $LASTEXITCODE | Should -Be 1 -Because "$powerShellHost should propagate WinUtil's failed config import"
+
+            $wrapperOutput = @(& $powerShellHost -ExecutionPolicy Bypass -NoProfile -File $wrapperPath -WinUtilPath $compiledPath -MissingConfig $missingConfig)
+            $LASTEXITCODE | Should -Be 23 -Because "$powerShellHost should let the file-backed wrapper continue"
+            $wrapperOutput | Should -Contain "wrapper-continued"
+        }
     }
 
     It "cleans up even when the run throws" {
@@ -50,7 +133,7 @@ Describe "Headless entry point" {
         $script:startScript | Should -Match '\$elevated = Start-Process[^\r\n]*-Wait -PassThru'
         $script:startScript | Should -Match '\$env:WINUTIL_HEADLESS_CHILD = ''1'''
         $script:startScript | Should -Match '\$global:LASTEXITCODE = \$elevated\.ExitCode[\s\S]*return \$elevated\.ExitCode'
-        $script:startScript | Should -Not -Match 'exit \$elevated\.ExitCode'
+        $script:startScript | Should -Match 'if \(\$script:WinUtilIsFileProcess\) \{ exit \$elevated\.ExitCode \}'
     }
 }
 

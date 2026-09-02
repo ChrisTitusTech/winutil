@@ -98,9 +98,9 @@ if ($Preset -or $Config) {
         Stop-Transcript | Out-Null
     }
 
-    # Only the isolated elevated child exits. The documented invocation runs inside the caller's
-    # existing terminal; exiting there would terminate it and skip every command after WinUtil.
-    if ($env:WINUTIL_HEADLESS_CHILD -eq "1") {
+    # An isolated elevated child and an explicit -File launch own their process. The documented
+    # in-memory invocation runs inside the caller's terminal and must return without closing it.
+    if ($env:WINUTIL_HEADLESS_CHILD -eq "1" -or $script:WinUtilIsFileProcess) {
         exit $headlessCode
     }
     $global:LASTEXITCODE = $headlessCode

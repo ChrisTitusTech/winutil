@@ -13,6 +13,40 @@ param (
     [switch]$Offline
 )
 
+function Test-WinUtilOwnsFileProcess {
+    <#
+        .SYNOPSIS
+            Whether the current process was launched with -File targeting this script
+    #>
+    param(
+        [string]$ScriptPath = $PSCommandPath,
+        [string[]]$CommandLineArgs = [Environment]::GetCommandLineArgs()
+    )
+
+    if ([string]::IsNullOrWhiteSpace($ScriptPath)) { return $false }
+
+    for ($index = 0; $index -lt ($CommandLineArgs.Count - 1); $index++) {
+        if ($CommandLineArgs[$index] -ieq "-File") {
+            $fileTarget = $CommandLineArgs[$index + 1]
+            if ([string]::IsNullOrWhiteSpace($fileTarget) -or $fileTarget -eq "-") {
+                return $false
+            }
+
+            return [string]::Equals(
+                [IO.Path]::GetFullPath($fileTarget),
+                [IO.Path]::GetFullPath($ScriptPath),
+                [StringComparison]::OrdinalIgnoreCase
+            )
+        }
+    }
+
+    return $false
+}
+
+# A headless script launched with powershell.exe/pwsh.exe -File owns its process and must set
+# that process's exit code. An invoked or in-memory script must return without closing its caller.
+$script:WinUtilIsFileProcess = Test-WinUtilOwnsFileProcess
+
 $PARAM_OFFLINE = $false
 if ($Offline) {
     $PARAM_OFFLINE = $true
@@ -57,9 +91,11 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
         } catch {
             Write-Host "Elevation was declined or failed: $($_.Exception.Message)" -ForegroundColor Red
             $global:LASTEXITCODE = 1
+            if ($script:WinUtilIsFileProcess) { exit 1 }
             return 1
         }
         $global:LASTEXITCODE = $elevated.ExitCode
+        if ($script:WinUtilIsFileProcess) { exit $elevated.ExitCode }
         return $elevated.ExitCode
     }
 
