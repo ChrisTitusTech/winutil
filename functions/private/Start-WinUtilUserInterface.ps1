@@ -22,6 +22,7 @@ function Start-WinUtilUserInterface {
 
     # Read the XAML file
     $readerOperationSuccessful = $false # There's more cases of failure then success.
+    $readerFailure = $null
     $reader = (New-Object System.Xml.XmlNodeReader $xaml)
     try {
         Measure-WinUtilStep -Scope "UI" -Name "parse XAML" -ScriptBlock {
@@ -29,6 +30,7 @@ function Start-WinUtilUserInterface {
         }
         $readerOperationSuccessful = $true
     } catch [System.Management.Automation.MethodInvocationException] {
+        $readerFailure = $_
         Write-Host "We ran into a problem with the XAML code.  Check the syntax for this control..." -ForegroundColor Red
         Write-Host $error[0].Exception.Message -ForegroundColor Red
 
@@ -36,6 +38,7 @@ function Start-WinUtilUserInterface {
             write-Host "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n" -ForegroundColor Red
         }
     } catch {
+        $readerFailure = $_
         Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed." -ForegroundColor Red
     }
 
@@ -43,7 +46,7 @@ function Start-WinUtilUserInterface {
         Write-Host "Failed to parse xaml content using Windows.Markup.XamlReader's Load Method." -ForegroundColor Red
         Write-Host "Quitting WinUtil..." -ForegroundColor Red
         Write-WinUtilLog -Level "ERROR" -Component "UI" -Message "Failed to parse the XAML content. WinUtil cannot start."
-        return
+        throw [System.InvalidOperationException]::new("Failed to parse the XAML content. WinUtil cannot start.", $readerFailure.Exception)
     }
 
     # Setup the Window to follow listen for windows Theme Change events and update the winutil theme

@@ -134,9 +134,11 @@ Start-WinUtilAssetRendering | Out-Null
 
 $uiHandle.AsyncWaitHandle.WaitOne() | Out-Null
 
+$uiFailed = $false
 try {
     $uiShell.EndInvoke($uiHandle) | Out-Null
 } catch {
+    $uiFailed = $true
     Write-WinUtilErrorRecord -ErrorRecord $_ -Component "UI" -Context "Interface thread stopped"
 }
 
@@ -162,3 +164,8 @@ Close-WinUtilRunspacePool
 Remove-WinUtilTempScript
 Write-Host "Bye bye!" -ForegroundColor Cyan
 Stop-Transcript
+
+if ($uiFailed) {
+    $global:LASTEXITCODE = 1
+    return 1
+}

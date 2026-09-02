@@ -37,6 +37,28 @@ Describe "Initialize-WinUtilRunspacePool" {
         $pool.RunspacePoolStateInfo.State | Should -Be ([System.Management.Automation.Runspaces.RunspacePoolState]::Closed)
         $script:sync.ContainsKey("runspace") | Should -BeFalse
     }
+
+    It "defers pool cleanup when a worker ignores the stop timeout" {
+        $pool = [runspacefactory]::CreateRunspacePool(1, 1)
+        $pool.Open()
+        $script:sync.runspace = $pool
+
+        Mock Stop-WinUtilActiveWork { $false }
+        Mock Register-WinUtilRunspacePoolCleanup { }
+
+        try {
+            Close-WinUtilRunspacePool
+
+            $pool.RunspacePoolStateInfo.State | Should -Be ([System.Management.Automation.Runspaces.RunspacePoolState]::Opened)
+            $script:sync.ContainsKey("runspace") | Should -BeFalse
+            Should -Invoke Register-WinUtilRunspacePoolCleanup -Times 1 -Exactly -ParameterFilter {
+                [object]::ReferenceEquals($RunspacePool, $pool)
+            }
+        } finally {
+            $pool.Close()
+            $pool.Dispose()
+        }
+    }
 }
 
 Describe "Runspace startup wiring" {

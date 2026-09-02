@@ -110,6 +110,41 @@ BeforeAll {
     }
 }
 
+Describe "Interface startup failures" {
+    BeforeAll {
+        function Measure-WinUtilStep { param($Scope, $Name, $ScriptBlock) $null = $Scope, $Name; & $ScriptBlock }
+        function Write-WinUtilLog { param($Level, $Component, $Message) $null = $Level, $Component, $Message }
+    }
+
+    BeforeEach {
+        . $script:uiScriptPath
+        $script:sync = [Hashtable]::Synchronized(@{
+            StepTimings = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new())
+            preferences = @{ theme = "Auto" }
+        })
+        $script:inputXML = '<NotAWindow xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />'
+
+        Mock Measure-WinUtilStep { & $ScriptBlock }
+        Mock Write-WinUtilLog { }
+        Mock Write-Host { }
+    }
+
+    It "throws when the XAML cannot create the window" {
+        { Start-WinUtilUserInterface } | Should -Throw "Failed to parse the XAML content*"
+
+        Should -Invoke Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "ERROR" -and $Component -eq "UI"
+        }
+    }
+
+    It "returns an unsuccessful result without terminating the caller after an interface failure" {
+        $mainScript = Get-Content -Path (Join-Path $script:scriptsRoot "main.ps1") -Raw
+
+        $mainScript | Should -Match '\$uiFailed = \$true[\s\S]*if \(\$uiFailed\) \{\s*\$global:LASTEXITCODE = 1\s*return 1'
+        $mainScript | Should -Not -Match 'if \(\$uiFailed\) \{\s*exit 1'
+    }
+}
+
 Describe "XAML document" {
     It "loads inputXML.xaml as a WPF window XML document" {
         $script:xaml.DocumentElement.LocalName | Should -Be "Window"
