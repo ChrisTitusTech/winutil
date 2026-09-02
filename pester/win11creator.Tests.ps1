@@ -673,7 +673,7 @@ Describe "Win11 Creator setup media" {
         }
     }
 
-    It "commits the remaining drivers when one package fails to add" {
+    It "discards partial changes and commits the remaining drivers when one package fails to add" {
         $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoDriverPartial_$([guid]::NewGuid())"
         $installWim = Join-Path $contentRoot 'sources\install.wim'
         $template = Get-Content -Path $script:autoUnattendPath -Raw
@@ -690,10 +690,15 @@ Describe "Win11 Creator setup media" {
                 $logs.Add([string]$message)
             }
 
-            @($script:dismCalls | Where-Object { $_ -match '/Mount-Image' }).Count | Should -Be 1
-            @($script:dismCalls | Where-Object { $_ -match '/Add-Driver' }).Count | Should -Be $script:expectedRootPackages
+            @($script:dismCalls | Where-Object { $_ -match '/Mount-Image' }).Count | Should -Be 2
             @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Commit' }).Count | Should -Be 1
-            ($script:dismCalls -join "`n") | Should -Not -Match '/Discard'
+            @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Discard' }).Count | Should -Be 1
+
+            $lastMountCall = $script:dismCalls | Where-Object { $_ -match '/Mount-Image' } | Select-Object -Last 1
+            $lastMountIndex = [Array]::LastIndexOf($script:dismCalls.ToArray(), $lastMountCall)
+            $finalMountCalls = @($script:dismCalls[($lastMountIndex + 1)..($script:dismCalls.Count - 1)])
+            @($finalMountCalls | Where-Object { $_ -match '/Add-Driver' }).Count | Should -Be ($script:expectedRootPackages - 1)
+            ($finalMountCalls -join "`n") | Should -Not -Match ([regex]::Escape('group_a\duplicate'))
 
             ($logs -join '|') | Should -Match "Added $($script:expectedRootPackages - 1) of $script:expectedRootPackages driver packages"
             ($logs -join '|') | Should -Match 'install.wim metadata validation passed'
@@ -727,7 +732,8 @@ Describe "Win11 Creator setup media" {
 
             @($script:dismCalls | Where-Object { $_ -match '/Add-Driver' }).Count | Should -Be $script:expectedRootPackages
             @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Commit' }).Count | Should -Be 0
-            @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Discard' }).Count | Should -Be 1
+            @($script:dismCalls | Where-Object { $_ -match '/Mount-Image' }).Count | Should -Be $script:expectedRootPackages
+            @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Discard' }).Count | Should -Be $script:expectedRootPackages
             @($script:dismCalls | Where-Object { $_ -match '/Get-WimInfo' }).Count | Should -Be 1
 
             ($logs -join '|') | Should -Match "none of the $script:expectedRootPackages exported driver packages could be added"
@@ -775,7 +781,7 @@ Describe "Win11 Creator setup media" {
         }
     }
 
-    It "stops when the unchanged mount cannot be discarded after all packages fail" {
+    It "stops when a potentially partial mount cannot be discarded after a package fails" {
         $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoDriverDiscardFailure_$([guid]::NewGuid())"
         $installWim = Join-Path $contentRoot 'sources\install.wim'
         $template = Get-Content -Path $script:autoUnattendPath -Raw
@@ -787,9 +793,9 @@ Describe "Win11 Creator setup media" {
             . $script:isoScriptPath
 
             { Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template -InjectCurrentSystemDrivers $true -InstallImagePath $installWim -InstallImageIndex 6 -InstallEditionId 'Professional' } |
-                Should -Throw '*Failed to discard the unchanged install.wim mount after all driver packages failed*'
+                Should -Throw '*Failed to discard the potentially partial install.wim mount after driver package*'
 
-            @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Discard' }).Count | Should -Be 1
+            @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Discard' }).Count | Should -Be 2
             @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Commit' }).Count | Should -Be 0
         } finally {
             Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
