@@ -141,7 +141,7 @@ Describe "Invoke-WPFRunspace behavior" {
         $script:sync.SecondResult | Should -Be "second"
     }
 
-    
+
 
     It "exposes a strongly typed cleanup callback" {
         ([WinUtilRunspaceCleanup]::Callback -is [System.Threading.WaitOrTimerCallback]) | Should -BeTrue

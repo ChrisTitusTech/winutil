@@ -131,7 +131,7 @@ Describe "The close question" {
         $sync.ForceClose | Should -Not -BeTrue
     }
 
-    
+
 
     It "offers all three choices" {
         Mock Show-WinUtilMessage { "Cancel" }
@@ -203,4 +203,3 @@ Describe "Waiting for work that outlived the window" {
         $sync.ActiveJob | Should -Be "Install"
     }
 }
-

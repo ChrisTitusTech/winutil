@@ -112,4 +112,3 @@ Describe "Invoke-WinUtilWhenIdle" {
         { Invoke-WinUtilWhenIdle -Callback { throw "should not run" } } | Should -Not -Throw
     }
 }
-

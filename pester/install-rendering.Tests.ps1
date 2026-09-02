@@ -6,11 +6,11 @@ BeforeAll {
 }
 
 Describe "Install app rendering startup contract" {
-    
 
-    
 
-    
+
+
+
 
     It "drains queued app batches on the WPF dispatcher without timer scope errors" {
         Add-Type -AssemblyName WindowsBase
@@ -98,11 +98,11 @@ Describe "Install app rendering startup contract" {
         }
     }
 
-    
 
-    
 
-    
 
-    
+
+
+
+
 }

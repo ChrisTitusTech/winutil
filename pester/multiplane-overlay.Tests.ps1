@@ -26,7 +26,7 @@ Describe "Multiplane Overlay configuration" {
         $script:states[1].Values.PSObject.Properties.Value | Should -Be @("<RemoveEntry>", "<RemoveEntry>", "1")
     }
 
-    
+
 }
 
 Describe "Get-WinUtilRegistryComboState" {

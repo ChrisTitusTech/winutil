@@ -179,7 +179,7 @@ Describe "XAML document" {
         }
     }
 
-    
+
 
     It "presents the three Updates profiles with accurate action labels" {
         $updatesTab = $script:xaml.SelectSingleNode('//*[local-name()="TabItem"][@Name="WPFTab4"]')
@@ -256,7 +256,7 @@ Describe "XAML document" {
         }
     }
 
-    
+
 
     It "centers top bar controls vertically" {
         $navPanel = $script:xaml.SelectSingleNode('//*[local-name()="StackPanel"][@Name="NavDockPanel"]')
@@ -280,9 +280,9 @@ Describe "XAML document" {
         }
     }
 
-    
 
-    
+
+
 
     It "scopes toggle button styles without leaking into combo boxes" {
         $resources = $script:xaml.SelectSingleNode('//*[local-name()="Window.Resources"]')

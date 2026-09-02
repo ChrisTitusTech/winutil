@@ -112,4 +112,3 @@ Describe "Write-WinUtilLog" {
     }
 
 }
-

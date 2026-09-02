@@ -26,9 +26,9 @@ Describe "Work routing" {
         if ($offenders.Count -gt 0) { throw ($offenders -join "`n") }
     }
 
-    
 
-    
+
+
 
     It "probes for optional commands without throwing when they are absent" {
         $offenders = @()
@@ -44,9 +44,9 @@ Describe "Work routing" {
         if ($offenders.Count -gt 0) { throw ($offenders -join "`n") }
     }
 
-    
 
-    
+
+
 
     It "never leaves the runspace handle in the pipeline" {
         # Invoke-WPFRunspace returns an IAsyncResult. An unassigned call prints it to the
@@ -62,9 +62,9 @@ Describe "Work routing" {
         if ($offenders.Count -gt 0) { throw ($offenders -join "`n") }
     }
 
-    
 
-    
 
-    
+
+
+
 }

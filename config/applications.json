@@ -1406,7 +1406,7 @@
       "category": "Document",
       "choco": "qownnotes",
       "content": "QOwnNotes",
-      "description": "QOwnNotes is a free open-source note taking app with Nextcloud/ownCloud integration.",
+      "description": "QOwnNotes is a free open-source note-taking app with Nextcloud/ownCloud integration.",
       "link": "https://www.qownnotes.org/",
       "winget": "pbek.QOwnNotes",
       "foss": true  
@@ -1793,7 +1793,7 @@
         "category": "Communications",
         "choco": "na",
         "content": "Vesktop",
-        "description": "A cross platform electron-based desktop app aiming to give you a snappier Discord experience with Vencord pre-installed.",
+        "description": "A cross-platform electron-based desktop app aiming to give you a snappier Discord experience with Vencord pre-installed.",
         "link": "https://vesktop.dev",
         "winget": "Vencord.Vesktop",
         "foss": true

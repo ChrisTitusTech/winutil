@@ -70,7 +70,7 @@ Click **Run Windows ISO Modification and Creator** to start the customization pr
 - **Disable Copilot and search box suggestions**
 
 **Optional: Driver Injection**
-- If enabled, it injects all drivers from your current system into the install.wim and boot.wim — useful for offline installations on machines with missing drivers. This is an optional checkbox in Step 3.
+- If enabled, WinUtil exports the drivers from your current system, stages boot-storage drivers for Windows Setup, and injects eligible packages into the selected `install.wim` image. Extension-class packages and stale duplicates are excluded. Each remaining package is added separately, so one incompatible package does not stop the others. If a package fails, WinUtil discards the partial mount and retries the remaining packages against the original image. Check the live log for warnings: if every package fails, WinUtil keeps the original `install.wim` and still produces the ISO.
 
 A live log shows progress as each step completes. This stage usually takes **10–30 minutes** depending on disk speed. The WIM dismount near the end is the slowest part, so do not close WinUtil while it is running.
 
@@ -138,6 +138,7 @@ When you install Windows 11 from your modified ISO:
 | USB drive not showing up | Plug it in, wait a few seconds, then click **Refresh** |
 | Modification seems stuck | The WIM dismount step is slow — wait at least 10 minutes before assuming it's frozen |
 | "Access Denied" error | Make sure WinUtil is running as Administrator |
+| Driver injection warning | Review the live log for the named package. Other compatible packages continue; if none succeed, the ISO is created with the original `install.wim` |
 | "Setup has failed to validate the product key" | Recreate the ISO with the latest WinUtil. The creator now removes stale `PID.txt`, writes `sources\ei.cfg`, and pins the selected image in `autounattend.xml` so setup does not use an embedded OEM key for a different edition |
 
 ---

@@ -40,13 +40,13 @@ Describe "Initialize-WinUtilRunspacePool" {
 }
 
 Describe "Runspace startup wiring" {
-    
 
-    
 
-    
 
-    
+
+
+
+
 
     It "carries every WinUtil function into a new runspace" {
         $sync = [Hashtable]::Synchronized(@{})
@@ -73,5 +73,5 @@ Describe "Runspace startup wiring" {
         }
     }
 
-    
+
 }
