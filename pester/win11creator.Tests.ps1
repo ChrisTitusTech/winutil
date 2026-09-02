@@ -36,12 +36,77 @@ Describe "Win11 Creator setup media" {
             return $functionAst.Extent.Text
         }
 
+        # Root package folders the fixture below yields, once nested_pkg\x64 is folded into
+        # its parent. Written out rather than derived, so a broken dedup fails the assertions
+        # instead of quietly moving the expectation with it.
+        $script:expectedRootPackages = 8
+        $script:resilienceDriverFixtures = @(
+            @{ Path = 'system_pkg'; Name = 'chipset.inf'; Class = 'System' },
+            @{ Path = 'storage_pkg'; Name = 'iaStorAC.inf'; Class = 'System' },
+            @{ Path = 'scsi_pkg'; Name = 'controller.inf'; Class = 'SCSIAdapter' },
+            @{ Path = 'net_pkg'; Name = 'network.inf'; Class = 'Net' },
+            @{ Path = 'group_a\duplicate'; Name = 'audio.inf'; Class = 'Media' },
+            @{ Path = 'group_b\duplicate'; Name = 'extension.inf'; Class = 'Media' },
+            @{ Path = 'nested_pkg'; Name = 'main.inf'; Class = 'Net' },
+            @{ Path = 'nested_pkg\x64'; Name = 'extra.inf'; Class = 'Net' },
+            @{ Path = 'net_pkg_v2'; Name = 'network2.inf'; Class = 'Net' }
+        )
+
+        # Stands in for `dism /Online /Export-Driver`, which the ISO script now invokes
+        # through Invoke-WinUtilISODism rather than Start-Process. The two `duplicate` leaf
+        # names cover per-package failure logging, which must stay unambiguous; `nested_pkg`
+        # covers a package holding INFs at its root and in a subfolder; and `net_pkg_v2` is a
+        # sibling whose name starts with `net_pkg`, which the dedup must not swallow.
+        function Export-WinUtilTestDriverPackage {
+            param (
+                [Parameter(Mandatory)][string[]]$Arguments,
+                [Parameter(Mandatory)][AllowEmptyCollection()][object[]]$Fixtures
+            )
+
+            $destination = @($Arguments | Where-Object { $_ -like '/Destination:*' })
+            if ($destination.Count -ne 1) {
+                throw "Expected exactly one /Destination argument in the mocked DISM export: $($Arguments -join ' ')"
+            }
+
+            $exportRoot = $destination[0].Substring('/Destination:'.Length)
+            $script:driverExportRoot = $exportRoot
+
+            # .NET file APIs rather than the cmdlets: Set-Content's -Encoding comes from the
+            # FileSystem provider, and a wildcard character in $exportRoot stops the provider
+            # resolving, so the parameter disappears.
+            foreach ($fixture in $fixtures) {
+                $fixturePath = Join-Path $exportRoot $fixture.Path
+                [void][System.IO.Directory]::CreateDirectory($fixturePath)
+                [System.IO.File]::WriteAllText(
+                    (Join-Path $fixturePath $fixture.Name),
+                    (@(
+                        '[Version]'
+                        "Class=$($fixture.Class)"
+                        if ($fixture.Provider) { "Provider=$($fixture.Provider)" }
+                        if ($fixture.DriverVer) {
+                            $versionKeyword = if ($fixture.VersionKeyword) { $fixture.VersionKeyword } else { 'DriverVer' }
+                            "$versionKeyword=$($fixture.DriverVer)"
+                        }
+                    ) -join "`r`n"),
+                    [System.Text.Encoding]::ASCII)
+            }
+        }
+
         function New-WinUtilDriverExportHarness {
-            param ([Parameter(Mandatory)][AllowEmptyCollection()][object[]]$Fixtures)
+            param (
+                [Parameter(Mandatory)][AllowEmptyCollection()][object[]]$Fixtures,
+                [string]$FailedDriverPath,
+                [switch]$FailAllAddDrivers,
+                [switch]$FailDiscard
+            )
 
             $script:dismCalls = [System.Collections.Generic.List[string]]::new()
             $script:driverExportRoot = $null
             $script:driverExportFixtures = $Fixtures
+            $script:failedDriverPath = $FailedDriverPath
+            $script:failAllAddDrivers = $FailAllAddDrivers
+            $script:failDiscard = $FailDiscard
+            $script:exportedInfsAtAddDriver = $null
 
             Set-Item -Path function:global:dism.exe -Value {
                 param([Parameter(ValueFromRemainingArguments)][string[]]$Arguments)
@@ -56,44 +121,23 @@ Describe "Win11 Creator setup media" {
                     'ProductType : WinNT'
                 } elseif ($Arguments -contains '/Mount-Image') {
                     '[==========================100.0%==========================]'
+                } elseif ($Arguments -contains '/Export-Driver') {
+                    Export-WinUtilTestDriverPackage -Arguments $Arguments -Fixtures $script:driverExportFixtures
                 } elseif ($Arguments -contains '/Add-Driver') {
                     # Snapshot what's still on disk right as DISM would /Recurse over it: this is the
                     # only point excluded folders are provably gone, since the SUT wipes the whole
                     # export root in its own cleanup once Invoke-WinUtilISOScript returns.
-                    $script:exportRootAtAddDriver = @(Get-ChildItem -Path $script:driverExportRoot -Directory -Recurse -ErrorAction SilentlyContinue | ForEach-Object FullName)
+                    $script:exportRootAtAddDriver = @(Get-ChildItem -LiteralPath $script:driverExportRoot -Directory -Recurse -ErrorAction SilentlyContinue | ForEach-Object FullName)
+                    $script:exportedInfsAtAddDriver = @(Get-ChildItem -LiteralPath $script:driverExportRoot -Filter '*.inf' -File -Recurse -ErrorAction SilentlyContinue | ForEach-Object FullName)
+                    if ($script:failAllAddDrivers -or ($script:failedDriverPath -and @($Arguments | Where-Object { $_ -like "*$($script:failedDriverPath)" }).Count -gt 0)) {
+                        $global:LASTEXITCODE = 13
+                        'Error: 13'
+                    }
+                } elseif ($Arguments -contains '/Discard' -and $script:failDiscard) {
+                    $global:LASTEXITCODE = 50
+                    'Discard failed'
                 }
             }
-
-            Mock Start-Process {
-                param($FilePath, $ArgumentList)
-
-                if ($FilePath -ne 'dism.exe') {
-                    throw "Unexpected process in driver export mock: $FilePath"
-                }
-
-                $destinationMatch = [regex]::Match([string]$ArgumentList, '/destination:"([^"]+)"')
-                if (-not $destinationMatch.Success) {
-                    throw "Unable to find the mocked DISM export destination in: $ArgumentList"
-                }
-
-                $exportRoot = $destinationMatch.Groups[1].Value
-                $script:driverExportRoot = $exportRoot
-                foreach ($fixture in $script:driverExportFixtures) {
-                    $fixturePath = Join-Path $exportRoot $fixture.Path
-                    New-Item -Path $fixturePath -ItemType Directory -Force | Out-Null
-                    $infContent = "[Version]`r`nClass=$($fixture.Class)"
-                    if ($fixture.Provider) {
-                        $infContent += "`r`nProvider=$($fixture.Provider)"
-                    }
-                    if ($fixture.DriverVer) {
-                        $versionKeyword = if ($fixture.VersionKeyword) { $fixture.VersionKeyword } else { 'DriverVer' }
-                        $infContent += "`r`n$versionKeyword=$($fixture.DriverVer)"
-                    }
-                    Set-Content -Path (Join-Path $fixturePath $fixture.Name) -Value $infContent -Encoding ASCII
-                }
-
-                return [pscustomobject]@{ ExitCode = 0 }
-            } -ParameterFilter { $FilePath -eq 'dism.exe' }
         }
 
         $script:modifyFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Invoke-WinUtilISOModify"
@@ -389,14 +433,18 @@ Describe "Win11 Creator setup media" {
             @{ Path = 'group_a\duplicate'; Name = 'audio.inf'; Class = 'Media' },
             @{ Path = 'hdx_asusext_apot_g5-tse.inf_amd64_aabbccddeeff0011'; Name = 'hdx_asusext_apot_g5-tse.inf'; Class = 'Extension' },
             @{ Path = 'ntprint.inf_x86_7426e1b60aa62272'; Name = 'ntprint.inf'; Class = 'Printer'; DriverVer = '1/1/2023,10.0.26100.8875' },
-            @{ Path = 'ntprint.inf_x86_58e7118cdecb935e'; Name = 'ntprint.inf'; Class = 'Printer'; DriverVer = '6/1/2024,10.0.26100.9168' }
+            @{ Path = 'ntprint.inf_x86_58e7118cdecb935e'; Name = 'ntprint.inf'; Class = 'Printer'; DriverVer = '6/1/2024,10.0.26100.9168' },
+            @{ Path = 'nested_pkg'; Name = 'main.inf'; Class = 'Net' },
+            @{ Path = 'nested_pkg\x64'; Name = 'extra.inf'; Class = 'Net' },
+            @{ Path = 'net_pkg_v2'; Name = 'network2.inf'; Class = 'Net' }
         )
 
         try {
             New-Item -Path (Split-Path $installWim -Parent) -ItemType Directory -Force | Out-Null
             Set-Content -Path $installWim -Value 'mock-wim'
             . $script:isoScriptPath
-            Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template -InjectCurrentSystemDrivers $true -InstallImagePath $installWim -InstallImageIndex 6 -InstallEditionId 'Professional' -Log {
+            $driversInjected = [ref]$false
+            Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template -InjectCurrentSystemDrivers $true -InstallImagePath $installWim -InstallImageIndex 6 -InstallEditionId 'Professional' -DriversInjected $driversInjected -Log {
                 param($message)
                 $logs.Add([string]$message)
             }
@@ -409,16 +457,22 @@ Describe "Win11 Creator setup media" {
             Test-Path (Join-Path $winpeDriverRoot 'net_pkg\network.inf') | Should -BeFalse
 
             @($script:dismCalls | Where-Object { $_ -match '/Mount-Image' }).Count | Should -Be 1
-            @($script:dismCalls | Where-Object { $_ -match '/Add-Driver' }).Count | Should -Be 1
+            @($script:dismCalls | Where-Object { $_ -match '/Add-Driver' }).Count | Should -Be $script:expectedRootPackages
             @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Commit' }).Count | Should -Be 1
             @($script:dismCalls | Where-Object { $_ -match '/Get-WimInfo' }).Count | Should -Be 2
             ($script:dismCalls -join "`n") | Should -Not -Match '/Cleanup-Image|/Export-Image'
+            ($logs -join '|') | Should -Match "Added $script:expectedRootPackages of $script:expectedRootPackages driver packages"
+
+            # nested_pkg holds INFs at its root and under x64. The root add already recurses
+            # into x64, so the subfolder must not get an /Add-Driver call of its own.
+            @($script:dismCalls | Where-Object { $_ -match '/Add-Driver' -and $_ -match ([regex]::Escape('nested_pkg')) }).Count | Should -Be 1
+            ($script:dismCalls -join "`n") | Should -Not -Match ([regex]::Escape('nested_pkg\x64'))
 
             [xml]$answerFile = Get-Content -Path (Join-Path $contentRoot 'autounattend.xml') -Raw
             $nsMgr = New-Object System.Xml.XmlNamespaceManager($answerFile.NameTable)
             $nsMgr.AddNamespace('sg', 'https://schneegans.de/windows/unattend-generator/')
             $answerFile.SelectSingleNode('//sg:File[@path="C:\Windows\Setup\Scripts\WinUtil-InstallDrivers.ps1"]', $nsMgr) | Should -BeNullOrEmpty
-            ($logs -join '|') | Should -Match 'Exported 6 of 8 driver packages \(2 staged for WinPE, 2 excluded\)'
+            ($logs -join '|') | Should -Match 'Exported 9 of 11 driver packages \(2 staged for WinPE, 2 excluded\)'
             ($logs -join '|') | Should -Match "Excluding extension-class driver package '.*hdx_asusext_apot_g5-tse.*'"
             ($logs -join '|') | Should -Match "Excluding stale duplicate driver package '.*ntprint\.inf_x86_7426e1b60aa62272' \(DriverVer 1/1/2023,10\.0\.26100\.8875\) superseded by '.*ntprint\.inf_x86_58e7118cdecb935e' \(DriverVer 6/1/2024,10\.0\.26100\.9168\)"
             ($logs -join '|') | Should -Match 'install.wim metadata validation passed'
@@ -468,6 +522,73 @@ Describe "Win11 Creator setup media" {
             $script:exportRootAtAddDriver | Should -Not -Contain (Join-Path $script:driverExportRoot 'ext_pkg_lower')
             $script:exportRootAtAddDriver | Should -Not -Contain (Join-Path $script:driverExportRoot 'ext_pkg_quoted')
             $script:exportRootAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'net_pkg')
+        } finally {
+            Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
+            Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    It "preserves a retained nested package when its parent package is excluded" {
+        $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoNestedRetained_$([guid]::NewGuid())"
+        $installWim = Join-Path $contentRoot 'sources\install.wim'
+        $template = Get-Content -Path $script:autoUnattendPath -Raw
+        $logs = [System.Collections.Generic.List[string]]::new()
+
+        New-WinUtilDriverExportHarness -Fixtures @(
+            @{ Path = 'parent_pkg'; Name = 'extension.inf'; Class = 'Extension' },
+            @{ Path = 'parent_pkg\retained_child'; Name = 'network.inf'; Class = 'Net' }
+        )
+
+        try {
+            New-Item -Path (Split-Path $installWim -Parent) -ItemType Directory -Force | Out-Null
+            Set-Content -Path $installWim -Value 'mock-wim'
+            . $script:isoScriptPath
+            $driversInjected = [ref]$false
+            Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template -InjectCurrentSystemDrivers $true -InstallImagePath $installWim -InstallImageIndex 6 -InstallEditionId 'Professional' -DriversInjected $driversInjected -Log {
+                param($message)
+                $logs.Add([string]$message)
+            }
+
+            $addDriverCalls = @($script:dismCalls | Where-Object { $_ -match '/Add-Driver' })
+            $addDriverCalls.Count | Should -Be 1
+            $addDriverCalls[0] | Should -Match ([regex]::Escape('parent_pkg\retained_child'))
+            $script:exportRootAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'parent_pkg')
+            $script:exportRootAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'parent_pkg\retained_child')
+            $script:exportedInfsAtAddDriver | Should -Not -Contain (Join-Path $script:driverExportRoot 'parent_pkg\extension.inf')
+            $script:exportedInfsAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'parent_pkg\retained_child\network.inf')
+            ($logs -join '|') | Should -Match "Keeping excluded driver package directory '.*parent_pkg' because it contains a retained nested package"
+            $driversInjected.Value | Should -BeTrue
+        } finally {
+            Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
+            Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    It "removes an excluded nested INF before recursively adding its retained ancestor" {
+        $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoNestedExcluded_$([guid]::NewGuid())"
+        $installWim = Join-Path $contentRoot 'sources\install.wim'
+        $template = Get-Content -Path $script:autoUnattendPath -Raw
+
+        New-WinUtilDriverExportHarness -Fixtures @(
+            @{ Path = 'root_pkg'; Name = 'root.inf'; Class = 'Net' },
+            @{ Path = 'root_pkg\excluded_child'; Name = 'extension.inf'; Class = 'Extension' },
+            @{ Path = 'root_pkg\excluded_child\retained_grandchild'; Name = 'storage.inf'; Class = 'SCSIAdapter' }
+        )
+
+        try {
+            New-Item -Path (Split-Path $installWim -Parent) -ItemType Directory -Force | Out-Null
+            Set-Content -Path $installWim -Value 'mock-wim'
+            . $script:isoScriptPath
+            Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template -InjectCurrentSystemDrivers $true -InstallImagePath $installWim -InstallImageIndex 6 -InstallEditionId 'Professional'
+
+            $addDriverCalls = @($script:dismCalls | Where-Object { $_ -match '/Add-Driver' })
+            $addDriverCalls.Count | Should -Be 1
+            $addDriverCalls[0] | Should -Match ([regex]::Escape('/Driver:' + (Join-Path $script:driverExportRoot 'root_pkg')))
+            $script:exportRootAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'root_pkg\excluded_child')
+            $script:exportRootAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'root_pkg\excluded_child\retained_grandchild')
+            $script:exportedInfsAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'root_pkg\root.inf')
+            $script:exportedInfsAtAddDriver | Should -Not -Contain (Join-Path $script:driverExportRoot 'root_pkg\excluded_child\extension.inf')
+            $script:exportedInfsAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'root_pkg\excluded_child\retained_grandchild\storage.inf')
         } finally {
             Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
             Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
@@ -526,7 +647,7 @@ Describe "Win11 Creator setup media" {
                 $logs.Add([string]$message)
             }
 
-            @($script:dismCalls | Where-Object { $_ -match '/Add-Driver' }).Count | Should -Be 1
+            @($script:dismCalls | Where-Object { $_ -match '/Add-Driver' }).Count | Should -Be 2
             ($logs -join '|') | Should -Match 'Exported 2 of 2 driver packages \(0 staged for WinPE, 0 excluded\)'
             ($logs -join '|') | Should -Not -Match 'Excluding stale duplicate driver package'
 
@@ -567,7 +688,7 @@ Describe "Win11 Creator setup media" {
                 $logs.Add([string]$message)
             }
 
-            @($script:dismCalls | Where-Object { $_ -match '/Add-Driver' }).Count | Should -Be 1
+            @($script:dismCalls | Where-Object { $_ -match '/Add-Driver' }).Count | Should -Be 3
             ($logs -join '|') | Should -Match 'Exported 3 of 7 driver packages \(0 staged for WinPE, 4 excluded\)'
             ($logs -join '|') | Should -Match "Excluding stale duplicate driver package '.*ntprint\.inf_x86_7426e1b60aa62272' \(DriverVer 1/1/2023,10\.0\.26100\.8875\) superseded by '.*ntprint\.inf_x86_58e7118cdecb935e'"
             ($logs -join '|') | Should -Match "Excluding stale duplicate driver package '.*ntprint\.inf_x86_6688e7b66f8d9fb5' \(DriverVer 1/1/2024,10\.0\.26100\.8972\) superseded by '.*ntprint\.inf_x86_58e7118cdecb935e'"
@@ -581,6 +702,136 @@ Describe "Win11 Creator setup media" {
             $script:exportRootAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'ntprint.inf_x86_58e7118cdecb935e')
             $script:exportRootAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'sample.inf_amd64_22222222bbbbbbbb')
             $script:exportRootAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'caps.inf_amd64_44444444dddddddd')
+        } finally {
+            Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
+            Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    It "discards partial changes and commits the remaining drivers when one package fails to add" {
+        $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoDriverPartial_$([guid]::NewGuid())"
+        $installWim = Join-Path $contentRoot 'sources\install.wim'
+        $template = Get-Content -Path $script:autoUnattendPath -Raw
+        $logs = [System.Collections.Generic.List[string]]::new()
+        New-WinUtilDriverExportHarness -Fixtures $script:resilienceDriverFixtures -FailedDriverPath 'group_a\duplicate'
+
+        try {
+            New-Item -Path (Split-Path $installWim -Parent) -ItemType Directory -Force | Out-Null
+            Set-Content -Path $installWim -Value 'mock-wim'
+            . $script:isoScriptPath
+            $driversInjected = [ref]$false
+            Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template -InjectCurrentSystemDrivers $true -InstallImagePath $installWim -InstallImageIndex 6 -InstallEditionId 'Professional' -DriversInjected $driversInjected -Log {
+                param($message)
+                $logs.Add([string]$message)
+            }
+
+            @($script:dismCalls | Where-Object { $_ -match '/Mount-Image' }).Count | Should -Be 2
+            @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Commit' }).Count | Should -Be 1
+            @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Discard' }).Count | Should -Be 1
+
+            $lastMountCall = $script:dismCalls | Where-Object { $_ -match '/Mount-Image' } | Select-Object -Last 1
+            $lastMountIndex = [Array]::LastIndexOf($script:dismCalls.ToArray(), $lastMountCall)
+            $finalMountCalls = @($script:dismCalls[($lastMountIndex + 1)..($script:dismCalls.Count - 1)])
+            @($finalMountCalls | Where-Object { $_ -match '/Add-Driver' }).Count | Should -Be ($script:expectedRootPackages - 1)
+            ($finalMountCalls -join "`n") | Should -Not -Match ([regex]::Escape('group_a\duplicate'))
+
+            ($logs -join '|') | Should -Match "Added $($script:expectedRootPackages - 1) of $script:expectedRootPackages driver packages"
+            ($logs -join '|') | Should -Match 'install.wim metadata validation passed'
+            # group_a and group_b share a leaf name, so the warning must name the failing
+            # package by its subpath; a leaf-only name would read 'duplicate' and be ambiguous.
+            ($logs -join '|') | Should -Match ([regex]::Escape("failed to add driver package 'group_a\duplicate'"))
+            ($logs -join '|') | Should -Match ([regex]::Escape('add-driver:group_b\duplicate completed'))
+            $driversInjected.Value | Should -BeTrue
+        } finally {
+            Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
+            Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    It "discards the mount and keeps going when every driver package fails to add" {
+        $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoDriverAllFail_$([guid]::NewGuid())"
+        $installWim = Join-Path $contentRoot 'sources\install.wim'
+        $template = Get-Content -Path $script:autoUnattendPath -Raw
+        $logs = [System.Collections.Generic.List[string]]::new()
+        New-WinUtilDriverExportHarness -Fixtures $script:resilienceDriverFixtures -FailAllAddDrivers
+
+        try {
+            New-Item -Path (Split-Path $installWim -Parent) -ItemType Directory -Force | Out-Null
+            Set-Content -Path $installWim -Value 'mock-wim'
+            . $script:isoScriptPath
+            $driversInjected = [ref]$true
+            Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template -InjectCurrentSystemDrivers $true -InstallImagePath $installWim -InstallImageIndex 6 -InstallEditionId 'Professional' -DriversInjected $driversInjected -Log {
+                param($message)
+                $logs.Add([string]$message)
+            }
+
+            @($script:dismCalls | Where-Object { $_ -match '/Add-Driver' }).Count | Should -Be $script:expectedRootPackages
+            @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Commit' }).Count | Should -Be 0
+            @($script:dismCalls | Where-Object { $_ -match '/Mount-Image' }).Count | Should -Be $script:expectedRootPackages
+            @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Discard' }).Count | Should -Be $script:expectedRootPackages
+            @($script:dismCalls | Where-Object { $_ -match '/Get-WimInfo' }).Count | Should -Be 1
+
+            ($logs -join '|') | Should -Match "none of the $script:expectedRootPackages exported driver packages could be added"
+            ($logs -join '|') | Should -Not -Match "Added 0 of $script:expectedRootPackages"
+            # WinPE staging is independent of WIM servicing, so it must survive the failure.
+            @(Get-ChildItem -Path (Join-Path $contentRoot '$WinpeDriver$') -Directory).Count | Should -Be 2
+            $driversInjected.Value | Should -BeFalse
+        } finally {
+            Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
+            Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    It "finds exported drivers when the temp path contains wildcard characters" {
+        $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoDriverGlob_$([guid]::NewGuid())"
+        $installWim = Join-Path $contentRoot 'sources\install.wim'
+        $template = Get-Content -Path $script:autoUnattendPath -Raw
+        $logs = [System.Collections.Generic.List[string]]::new()
+        New-WinUtilDriverExportHarness -Fixtures $script:resilienceDriverFixtures
+
+        # A Windows account named like "John [Work]" puts wildcard characters in %TEMP%.
+        # Get-ChildItem -Path would glob them, find nothing, and abort the whole ISO run.
+        $originalTemp = $env:TEMP
+        $bracketTemp = Join-Path ([IO.Path]::GetTempPath()) "WinUtil [Glob] $([guid]::NewGuid())"
+
+        try {
+            New-Item -Path (Split-Path $installWim -Parent) -ItemType Directory -Force | Out-Null
+            Set-Content -Path $installWim -Value 'mock-wim'
+            New-Item -Path $bracketTemp -ItemType Directory -Force | Out-Null
+            $env:TEMP = $bracketTemp
+            . $script:isoScriptPath
+            Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template -InjectCurrentSystemDrivers $true -InstallImagePath $installWim -InstallImageIndex 6 -InstallEditionId 'Professional' -Log {
+                param($message)
+                $logs.Add([string]$message)
+            }
+
+            ($logs -join '|') | Should -Match "Added $script:expectedRootPackages of $script:expectedRootPackages driver packages"
+            @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Commit' }).Count | Should -Be 1
+            ($logs -join '|') | Should -Match ([regex]::Escape('add-driver:nested_pkg completed'))
+        } finally {
+            $env:TEMP = $originalTemp
+            Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
+            Remove-Item -LiteralPath $bracketTemp -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    It "stops when a potentially partial mount cannot be discarded after a package fails" {
+        $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoDriverDiscardFailure_$([guid]::NewGuid())"
+        $installWim = Join-Path $contentRoot 'sources\install.wim'
+        $template = Get-Content -Path $script:autoUnattendPath -Raw
+        New-WinUtilDriverExportHarness -Fixtures $script:resilienceDriverFixtures -FailAllAddDrivers -FailDiscard
+
+        try {
+            New-Item -Path (Split-Path $installWim -Parent) -ItemType Directory -Force | Out-Null
+            Set-Content -Path $installWim -Value 'mock-wim'
+            . $script:isoScriptPath
+
+            { Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template -InjectCurrentSystemDrivers $true -InstallImagePath $installWim -InstallImageIndex 6 -InstallEditionId 'Professional' } |
+                Should -Throw '*Failed to discard the potentially partial install.wim mount after driver package*'
+
+            @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Discard' }).Count | Should -Be 2
+            @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Commit' }).Count | Should -Be 0
         } finally {
             Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
             Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
@@ -610,21 +861,15 @@ Describe "Win11 Creator setup media" {
             } elseif ($Arguments -contains '/Get-MountedImageInfo') {
                 $global:LASTEXITCODE = 0
                 "Mount Dir : $(Join-Path (Split-Path -Path $contentRoot -Parent) 'wim_mount')"
+            } elseif ($Arguments -contains '/Export-Driver') {
+                $global:LASTEXITCODE = 0
+                Export-WinUtilTestDriverPackage -Arguments $Arguments -Fixtures @(
+                    @{ Path = 'storage_pkg'; Name = 'iaStorAC.inf'; Class = 'System' }
+                )
             } else {
                 $global:LASTEXITCODE = 0
             }
         }
-
-        Mock Start-Process {
-            param($FilePath, $ArgumentList)
-
-            $destinationMatch = [regex]::Match([string]$ArgumentList, '/destination:"([^"]+)"')
-            $exportRoot = $destinationMatch.Groups[1].Value
-            $fixturePath = Join-Path $exportRoot 'storage_pkg'
-            New-Item -Path $fixturePath -ItemType Directory -Force | Out-Null
-            Set-Content -Path (Join-Path $fixturePath 'iaStorAC.inf') -Value "[Version]`r`nClass=System" -Encoding ASCII
-            return [pscustomobject]@{ ExitCode = 0 }
-        } -ParameterFilter { $FilePath -eq 'dism.exe' }
 
         try {
             New-Item -Path (Split-Path $installWim -Parent) -ItemType Directory -Force | Out-Null

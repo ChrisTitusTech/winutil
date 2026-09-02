@@ -280,12 +280,14 @@ function Invoke-WinUtilISOModify {
             $driversInjected = [ref]$false
             Invoke-WinUtilISOScript -ISOContentsDir $isoContents -AutoUnattendXml $autounattendContent -InjectCurrentSystemDrivers $injectDrivers -InstallImagePath $localWim -InstallImageIndex $selectedWimIndex -InstallEditionId $selectedEditionId -Log { param($m) Log $m } -DriversInjected $driversInjected
 
-            SetProgress "Preserving install image..." 70
             if ($driversInjected.Value) {
+                SetProgress "Finalizing install image..." 70
                 Log "Added current-system drivers to $sourceImageFileName index $selectedWimIndex with one mount and commit."
             } elseif ($injectDrivers) {
-                Log "No current-system drivers needed injection into $sourceImageFileName index $selectedWimIndex; install.wim was left unchanged."
+                SetProgress "Preserving install image..." 70
+                Log "No current-system drivers were injected into $sourceImageFileName index $selectedWimIndex; install.wim was left unchanged. Review the warning log entries for details."
             } else {
+                SetProgress "Preserving install image..." 70
                 Log "Preserved the original $sourceImageFileName without mounting, exporting, or modifying it."
             }
 
