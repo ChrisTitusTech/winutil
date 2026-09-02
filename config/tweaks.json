@@ -1001,6 +1001,41 @@
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/razerblock"
   },
+  "WPFTweaksLogiBlock": {
+    "Content": "Logitech Download Assistant Auto-Install - Disable",
+    "Description": "Blocks the Logi Download Assistant that Windows Update keeps reinstalling with Logitech device drivers. Logitech hardware keeps working without it.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "InvokeScript": [
+      "
+      Stop-Process -Name \"logi_download_assistant\" -Force -ErrorAction SilentlyContinue
+
+      $ProgramFiles64 = if ($Env:ProgramW6432) { $Env:ProgramW6432 } else { $Env:ProgramFiles }
+      $LogiPath = \"$ProgramFiles64\\LogiDownloadAssistant\"
+
+      if (Test-Path $LogiPath) {
+        Remove-Item $LogiPath\\* -Recurse -Force
+      } else {
+        New-Item -Path $LogiPath -ItemType Directory
+      }
+
+      icacls $LogiPath /deny \"*S-1-1-0:(W)\"
+      if ($LASTEXITCODE -ne 0) { throw \"icacls failed to deny write access on $LogiPath (exit code $LASTEXITCODE)\" }
+      "
+    ],
+    "UndoScript": [
+      "
+      $ProgramFiles64 = if ($Env:ProgramW6432) { $Env:ProgramW6432 } else { $Env:ProgramFiles }
+      $LogiPath = \"$ProgramFiles64\\LogiDownloadAssistant\"
+
+      if (Test-Path $LogiPath) {
+        icacls $LogiPath /remove:d \"*S-1-1-0\"
+        if ($LASTEXITCODE -ne 0) { throw \"icacls failed to remove the write-deny rule on $LogiPath (exit code $LASTEXITCODE)\" }
+      }
+      "
+    ],
+    "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/logiblock"
+  },
   "WPFTweaksDisableNotifications": {
     "Content": "System Tray Notifications & Calendar - Disable",
     "Description": "Disables all Notifications INCLUDING Calendar.",
