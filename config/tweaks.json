@@ -8,7 +8,7 @@
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
         "Name": "EnableActivityFeed",
-        "Value": "0",
+        "Value": "1",
         "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },

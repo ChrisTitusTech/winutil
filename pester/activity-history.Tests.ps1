@@ -6,7 +6,7 @@ Describe "Activity history config" {
 
         $activityFeed = @($activityRegistry | Where-Object Name -eq "EnableActivityFeed")
         $activityFeed | Should -HaveCount 1
-        $activityFeed[0].Value | Should -Be "0"
+        $activityFeed[0].Value | Should -Be "1"
 
         foreach ($policyName in @("PublishUserActivities", "UploadUserActivities")) {
             $policy = @($activityRegistry | Where-Object Name -eq $policyName)
