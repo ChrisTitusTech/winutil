@@ -157,7 +157,7 @@ function Start-WinUtilJob {
             Write-WinUtilJobBanner -Message "$JobLabel failed: $($_.Exception.Message)" -Level "ERROR"
             Step-WinUtilJob -Status "$JobName failed" -Percent 100 -State "Error" -Overlay "warning"
         } finally {
-            $sync.LastJobResult = [pscustomobject]@{
+            $jobResult = [pscustomobject]@{
                 Token = $JobToken
                 Errors = $global:WinUtilJobErrorCount
                 Warnings = $global:WinUtilJobWarningCount
@@ -177,6 +177,9 @@ function Start-WinUtilJob {
             [System.Threading.Monitor]::Enter($sync.SyncRoot)
             try {
                 $stillOwns = $sync.ActiveJobToken -eq $JobToken
+                if ($stillOwns) {
+                    $sync.LastJobResult = $jobResult
+                }
             } finally {
                 [System.Threading.Monitor]::Exit($sync.SyncRoot)
             }

@@ -45,6 +45,7 @@ function Install-WinUtilProgramChoco {
         2 = "nothing to do"
     }
     $verb = $Action.ToLowerInvariant()
+    $chocoAvailable = $null -ne (Get-Command choco -ErrorAction SilentlyContinue)
 
     $packages = @($Programs | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
     $total = $packages.Count
@@ -62,8 +63,16 @@ function Install-WinUtilProgramChoco {
         # --no-progress stops choco redrawing a percentage line that only makes sense on a
         # console nobody is watching
         $arguments = @($verb, $program, "-y", "--no-progress")
-        $output = & choco @arguments 2>&1
-        $exitCode = $LASTEXITCODE
+        # Each worker runspace has its own global scope. Reset the native-command result there so
+        # command-not-found cannot inherit a successful code from earlier work in the same pool.
+        $global:LASTEXITCODE = $null
+        if (-not $chocoAvailable) {
+            $output = "Chocolatey is not installed or is not available on PATH."
+            $exitCode = -1
+        } else {
+            $output = & choco @arguments 2>&1
+            $exitCode = if ($null -eq $global:LASTEXITCODE) { -1 } else { [int]$global:LASTEXITCODE }
+        }
 
         if ($exitCode -eq 0) {
             $outcome = "Succeeded"
@@ -76,7 +85,7 @@ function Install-WinUtilProgramChoco {
             $detail = $nothingToDo[$exitCode]
         } else {
             $outcome = "Failed"
-            $detail = "exit code $exitCode"
+            $detail = if ($exitCode -eq -1) { "Chocolatey command did not start" } else { "exit code $exitCode" }
         }
 
         $level = if ($outcome -eq "Failed") { "ERROR" } else { "INFO" }

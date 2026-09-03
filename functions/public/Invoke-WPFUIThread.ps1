@@ -121,6 +121,9 @@ function Invoke-WPFUIThread {
     $work = @{
         Body = $ScriptBlock.ToString()
         Parameters = $Parameters
+        # A synchronous caller is waiting for a required UI handoff and must see its failure.
+        # Fire-and-forget posts have nobody to receive an exception, so the delegate only logs it.
+        PropagateErrors = -not $Async
     }
 
     if ($Async) {

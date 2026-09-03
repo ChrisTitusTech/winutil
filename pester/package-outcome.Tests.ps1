@@ -116,6 +116,7 @@ Describe "Install-WinUtilProgramChoco outcomes" {
     BeforeEach {
         Mock Write-WinUtilLog { }
         Mock Step-WinUtilJob { }
+        Mock Get-Command { "choco" } -ParameterFilter { $Name -eq "choco" }
     }
 
     It "treats a reboot-required exit code as success" {
@@ -146,6 +147,17 @@ Describe "Install-WinUtilProgramChoco outcomes" {
 
         $result.Outcome | Should -Be "Failed"
         $result.Detail | Should -Be "exit code 1"
+    }
+
+    It "fails instead of reusing a stale exit code when Chocolatey is unavailable" {
+        $global:LASTEXITCODE = 0
+        Mock Get-Command { $null } -ParameterFilter { $Name -eq "choco" }
+
+        $result = Install-WinUtilProgramChoco -Action Uninstall -Programs @("git")
+
+        $result.Outcome | Should -Be "Failed"
+        $result.ExitCode | Should -Be -1
+        $result.Detail | Should -Be "Chocolatey command did not start"
     }
 }
 

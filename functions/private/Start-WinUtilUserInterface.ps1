@@ -110,8 +110,10 @@ function Start-WinUtilUserInterface {
                 & $body
             }
         } catch {
-            # An unhandled failure here would surface as a dispatcher exception with no trace
-            # back to the work that caused it
+            if ($Work.PropagateErrors) {
+                throw
+            }
+            # Fire-and-forget work has no waiting caller to report its failure.
             Write-WinUtilErrorRecord -ErrorRecord $_ -Component "UI" -Context "Interface work"
         }
     }

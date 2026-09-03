@@ -22,9 +22,15 @@ function Reset-WPFCheckBoxes {
     )
     $selectedSet = [System.Collections.Generic.HashSet[string]]::new([string[]]@($sync.selectedApps + $sync.selectedTweaks + $sync.selectedFeatures + $sync.selectedAppx), [StringComparer]::OrdinalIgnoreCase)
 
-    # Snapshotted: setting IsChecked runs handlers that add to $sync, and the tab warmup is
-    # building controls into it at the same time, either of which invalidates a live enumerator
-    foreach ($syncEntry in @($sync.GetEnumerator())) {
+    # A synchronized Hashtable protects individual operations, not enumeration. Materialize the
+    # snapshot under its lock, then release it before handlers run and mutate $sync.
+    [System.Threading.Monitor]::Enter($sync.SyncRoot)
+    try {
+        $syncEntries = @($sync.GetEnumerator())
+    } finally {
+        [System.Threading.Monitor]::Exit($sync.SyncRoot)
+    }
+    foreach ($syncEntry in $syncEntries) {
         if ($syncEntry.Value -is [System.Windows.Controls.CheckBox] -and $syncEntry.Name -notlike "WPFToggle*" -and $syncEntry.Name -like $checkboxfilterpattern) {
             $checkboxName = $syncEntry.Key
             $sync.$checkboxName.IsChecked = $selectedSet.Contains($checkboxName)
@@ -47,7 +53,13 @@ function Reset-WPFCheckBoxes {
         # from the export file were not part of the saved config and should keep whatever
         # state the live system already has (set during UI initialisation via Get-WinUtilToggleStatus).
         $importedToggles = [System.Collections.Generic.HashSet[string]]::new([string[]]@($sync.selectedToggles), [StringComparer]::OrdinalIgnoreCase)
-        foreach ($toggle in @($sync.GetEnumerator())) {
+        [System.Threading.Monitor]::Enter($sync.SyncRoot)
+        try {
+            $toggleEntries = @($sync.GetEnumerator())
+        } finally {
+            [System.Threading.Monitor]::Exit($sync.SyncRoot)
+        }
+        foreach ($toggle in $toggleEntries) {
             if ($toggle.Key -like "WPFToggle*" -and $toggle.Value -is [System.Windows.Controls.CheckBox] -and $importedToggles.Contains($toggle.Key)) {
                 $sync[$toggle.Key].IsChecked = $true
             }

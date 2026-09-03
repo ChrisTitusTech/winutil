@@ -116,6 +116,50 @@ Describe "Invoke-WPFUIThread output" {
 
         { Invoke-WPFUIThread -ScriptBlock { } } | Should -Throw "*not a shutdown*"
     }
+
+    It "rethrows synchronous callback failures for the waiting caller to log" {
+        $tokens = $null
+        $errors = $null
+        $uiAst = [System.Management.Automation.Language.Parser]::ParseFile(
+            (Join-Path $script:repoRoot "functions\private\Start-WinUtilUserInterface.ps1"),
+            [ref]$tokens,
+            [ref]$errors
+        )
+        $delegateAssignment = $uiAst.Find({
+            param($node)
+            $node -is [System.Management.Automation.Language.AssignmentStatementAst] -and
+                $node.Left.Extent.Text -eq '$sync.UIDispatchDelegate'
+        }, $true)
+        $delegateBody = $delegateAssignment.Right.Expression.Child.ScriptBlock.GetScriptBlock()
+        $delegate = [System.Func[object, object]]$delegateBody
+        Mock Write-WinUtilErrorRecord { }
+
+        { $delegate.Invoke(@{ Body = 'throw "callback failed"'; Parameters = @{}; PropagateErrors = $true }) } |
+            Should -Throw "*callback failed*"
+        Should -Invoke Write-WinUtilErrorRecord -Times 0 -Exactly
+    }
+
+    It "logs asynchronous callback failures without throwing on the dispatcher" {
+        $tokens = $null
+        $errors = $null
+        $uiAst = [System.Management.Automation.Language.Parser]::ParseFile(
+            (Join-Path $script:repoRoot "functions\private\Start-WinUtilUserInterface.ps1"),
+            [ref]$tokens,
+            [ref]$errors
+        )
+        $delegateAssignment = $uiAst.Find({
+            param($node)
+            $node -is [System.Management.Automation.Language.AssignmentStatementAst] -and
+                $node.Left.Extent.Text -eq '$sync.UIDispatchDelegate'
+        }, $true)
+        $delegateBody = $delegateAssignment.Right.Expression.Child.ScriptBlock.GetScriptBlock()
+        $delegate = [System.Func[object, object]]$delegateBody
+        Mock Write-WinUtilErrorRecord { }
+
+        { $delegate.Invoke(@{ Body = 'throw "callback failed"'; Parameters = @{}; PropagateErrors = $false }) } |
+            Should -Not -Throw
+        Should -Invoke Write-WinUtilErrorRecord -Times 1 -Exactly
+    }
 }
 
 Describe "Start-WinUtilJob" {
@@ -256,6 +300,26 @@ Describe "Start-WinUtilJob" {
             $Status -eq "Example finished" -and $Percent -eq 100 -and $State -eq "None" -and $Overlay -eq "checkmark"
         }
         $script:sync.ActiveJob | Should -BeNullOrEmpty
+    }
+
+    It "does not let a stale worker replace the current job result" {
+        Start-WinUtilJob -Name "Old" -ScriptBlock { } | Out-Null
+        $oldToken = $script:capturedRunspaceArgs["JobToken"]
+        $script:sync.ActiveJob = "Current"
+        $script:sync.ActiveJobToken = "current-token"
+        $script:sync.LastJobResult = [pscustomobject]@{ Token = "current-token"; Errors = 0; Warnings = 0 }
+
+        & $script:capturedRunspaceBody `
+            -JobName "Old" `
+            -JobLabel "Old" `
+            -JobBody '$global:WinUtilJobErrorCount = 1' `
+            -JobParameters @{} `
+            -JobRestoresAppList $false `
+            -JobToken $oldToken
+
+        $script:sync.LastJobResult.Token | Should -Be "current-token"
+        $script:sync.ActiveJob | Should -Be "Current"
+        $script:sync.ActiveJobToken | Should -Be "current-token"
     }
 
     It "logs the failure and releases the busy state when the body throws" {

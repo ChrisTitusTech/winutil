@@ -210,6 +210,10 @@ Describe "Win11 Creator setup media" {
         $script:modifyFunction | Should -Not -Match ([regex]::Escape("Reusing existing temp directory"))
     }
 
+    It "turns ISO-script warning messages into job warnings" {
+        $script:modifyFunction | Should -Match 'if \(\$m -like "Warning:\*"\)[\s\S]*Write-WinUtilISOLog -Level "WARN" -Message \$m -SkipSessionLog[\s\S]*Write-Warning \$m'
+    }
+
     It "keeps WIM servicing limited to one driver-only mount and commit" {
         $isoScriptContent = Get-Content -Path $script:isoScriptPath -Raw
 

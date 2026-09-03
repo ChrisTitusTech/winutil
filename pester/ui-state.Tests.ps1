@@ -38,7 +38,21 @@ namespace System.Windows.Controls
 {
     public class CheckBox
     {
-        public bool? IsChecked { get; set; }
+        private bool? isChecked;
+        public event System.EventHandler Checked;
+        public event System.EventHandler Unchecked;
+
+        public bool? IsChecked
+        {
+            get { return isChecked; }
+            set
+            {
+                if (isChecked == value) return;
+                isChecked = value;
+                if (value == true && Checked != null) Checked(this, System.EventArgs.Empty);
+                if (value == false && Unchecked != null) Unchecked(this, System.EventArgs.Empty);
+            }
+        }
     }
 
     public class Label

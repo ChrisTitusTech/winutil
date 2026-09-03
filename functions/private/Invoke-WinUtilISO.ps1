@@ -38,10 +38,13 @@ function Write-WinUtilISOLog {
     param(
         [Parameter(Mandatory)][string]$Message,
         [ValidateSet("INFO", "WARN", "ERROR")]
-        [string]$Level = "INFO"
+        [string]$Level = "INFO",
+        [switch]$SkipSessionLog
     )
 
-    Write-WinUtilLog -Level $Level -Component "Win11Creator" -Message $Message
+    if (-not $SkipSessionLog) {
+        Write-WinUtilLog -Level $Level -Component "Win11Creator" -Message $Message
+    }
 
     Invoke-WPFUIThread -Async -Parameters @{
         LogLine = "[$((Get-Date).ToString('HH:mm:ss'))] $Message"
@@ -323,7 +326,17 @@ function Invoke-WinUtilISOModify {
                 -InstallImagePath $localWim `
                 -InstallImageIndex $SelectedWimIndex `
                 -InstallEditionId (Get-WinUtilEditionIdFromName -EditionName $SelectedEditionName) `
-                -Log { param($m) Write-WinUtilISOLog $m } `
+                -Log {
+                    param($m)
+                    if ($m -like "Warning:*") {
+                        # The job wrapper records WarningRecord output in the session log. Only
+                        # append here to the ISO status control so the same warning is not doubled.
+                        Write-WinUtilISOLog -Level "WARN" -Message $m -SkipSessionLog
+                        Write-Warning $m
+                    } else {
+                        Write-WinUtilISOLog $m
+                    }
+                } `
                 -DriversInjected $driversInjected
 
             if ($driversInjected.Value) {

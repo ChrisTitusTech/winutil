@@ -140,24 +140,52 @@ if ($ExecutionContext.SessionState.LanguageMode -ne 'FullLanguage') {
     return 1
 }
 
+function New-WinUtilElevationCommand {
+    <#
+        .SYNOPSIS
+            Encodes the relaunch target and bound parameters as data for an elevated child
+    #>
+    param(
+        [string]$ScriptPath,
+        [hashtable]$Parameters = @{},
+        [switch]$Headless
+    )
+
+    $launchData = @{
+        ScriptPath = $ScriptPath
+        Parameters = $Parameters
+        Headless = [bool]$Headless
+    }
+    $serializedLaunch = [System.Management.Automation.PSSerializer]::Serialize($launchData)
+    $launchPayload = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($serializedLaunch))
+
+    # Only base64 is embedded in executable text. User-controlled values are deserialized and
+    # splatted as parameter data in the child, so quotes in Config cannot become PowerShell code.
+    $bootstrap = @"
+`$launchXml = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('$launchPayload'))
+`$launch = [System.Management.Automation.PSSerializer]::Deserialize(`$launchXml)
+`$invokeParameters = `$launch.Parameters
+if (`$launch.Headless) { `$env:WINUTIL_HEADLESS_CHILD = '1' }
+if (`$launch.ScriptPath) {
+    & `$launch.ScriptPath @invokeParameters
+} else {
+    `$remoteScript = [ScriptBlock]::Create((Invoke-RestMethod 'https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1'))
+    & `$remoteScript @invokeParameters
+}
+"@
+
+    return [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($bootstrap))
+}
+
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Output "WinUtil needs to be run as Administrator. Attempting to relaunch."
-    $argList = @()
-
-    $PSBoundParameters.GetEnumerator() | ForEach-Object {
-        $argList += if ($_.Value -is [switch] -and $_.Value) {
-            "-$($_.Key)"
-        } elseif ($_.Value -is [array]) {
-            "-$($_.Key) $($_.Value -join ',')"
-        } elseif ($_.Value) {
-            "-$($_.Key) '$($_.Value)'"
+    $elevationParameters = @{}
+    foreach ($parameter in $PSBoundParameters.GetEnumerator()) {
+        $elevationParameters[$parameter.Key] = if ($parameter.Value -is [switch]) {
+            [bool]$parameter.Value
+        } else {
+            $parameter.Value
         }
-    }
-
-    $script = if ($PSCommandPath) {
-        "& { & `'$($PSCommandPath)`' $($argList -join ' ') }"
-    } else {
-        "&([ScriptBlock]::Create((irm https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1))) $($argList -join ' ')"
     }
 
     $powershellCmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
@@ -169,8 +197,8 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
         # A declined UAC prompt throws, which would leave $elevated null and exit 0: the caller
         # waiting on this process would read that as a successful run
         try {
-            $headlessScript = "`$env:WINUTIL_HEADLESS_CHILD = '1'; $script"
-            $elevated = Start-Process $powershellCmd -ArgumentList "-ExecutionPolicy Bypass -NoProfile -Command `"$headlessScript`"" -Verb RunAs -Wait -PassThru -ErrorAction Stop
+            $elevationCommand = New-WinUtilElevationCommand -ScriptPath $PSCommandPath -Parameters $elevationParameters -Headless
+            $elevated = Start-Process $powershellCmd -ArgumentList @("-ExecutionPolicy", "Bypass", "-NoProfile", "-EncodedCommand", $elevationCommand) -Verb RunAs -Wait -PassThru -ErrorAction Stop
         } catch {
             Write-Host "Elevation was declined or failed: $($_.Exception.Message)" -ForegroundColor Red
             $global:LASTEXITCODE = 1
@@ -183,11 +211,12 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
     }
 
     $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { "$powershellCmd" }
+    $elevationCommand = New-WinUtilElevationCommand -ScriptPath $PSCommandPath -Parameters $elevationParameters
 
     if ($processCmd -eq "wt.exe") {
-        Start-Process $processCmd -ArgumentList "$powershellCmd -ExecutionPolicy Bypass -NoProfile -Command `"$script`"" -Verb RunAs
+        Start-Process $processCmd -ArgumentList "$powershellCmd -ExecutionPolicy Bypass -NoProfile -EncodedCommand $elevationCommand" -Verb RunAs
     } else {
-        Start-Process $processCmd -ArgumentList "-ExecutionPolicy Bypass -NoProfile -Command `"$script`"" -Verb RunAs
+        Start-Process $processCmd -ArgumentList @("-ExecutionPolicy", "Bypass", "-NoProfile", "-EncodedCommand", $elevationCommand) -Verb RunAs
     }
 
     break

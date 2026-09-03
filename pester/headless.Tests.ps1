@@ -12,6 +12,11 @@ BeforeAll {
         $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
             $node.Name -eq "Test-WinUtilOwnsFileProcess"
     }, $true).Extent.Text
+    $script:elevationCommandFunction = $startAst.Find({
+        param($node)
+        $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
+            $node.Name -eq "New-WinUtilElevationCommand"
+    }, $true).Extent.Text
 
     . (Join-Path $script:functionRoot "private\Update-WinUtilSelections.ps1")
     . (Join-Path $script:functionRoot "public\Invoke-WPFImpex.ps1")
@@ -72,6 +77,29 @@ Describe "Headless entry point" {
 
     It "fails process-owning restricted-language launches without terminating in-memory callers" {
         $script:startScript | Should -Match 'LanguageMode -ne ''FullLanguage''[\s\S]*\$global:LASTEXITCODE = 1[\s\S]*if \(\$env:WINUTIL_HEADLESS_CHILD -eq "1" -or \$script:WinUtilIsFileProcess\) \{ exit 1 \}[\s\S]*return 1'
+    }
+
+    It "passes hostile elevation parameter values as data instead of executable code" {
+        . ([scriptblock]::Create($script:elevationCommandFunction))
+        $targetDirectory = Join-Path $TestDrive "O'Brien"
+        $targetScript = Join-Path $targetDirectory "target.ps1"
+        $markerPath = Join-Path $TestDrive "injected.txt"
+        New-Item -ItemType Directory -Path $targetDirectory | Out-Null
+        'param([string]$Config) Write-Output $Config' | Set-Content -LiteralPath $targetScript
+        $hostileConfig = "'; Set-Content -LiteralPath '$markerPath' -Value injected; #"
+
+        $encodedCommand = New-WinUtilElevationCommand -ScriptPath $targetScript -Parameters @{ Config = $hostileConfig } -Headless
+        $bootstrap = [Text.Encoding]::Unicode.GetString([Convert]::FromBase64String($encodedCommand))
+        $previousChildFlag = $env:WINUTIL_HEADLESS_CHILD
+        try {
+            $output = & ([scriptblock]::Create($bootstrap))
+        } finally {
+            $env:WINUTIL_HEADLESS_CHILD = $previousChildFlag
+        }
+
+        $bootstrap | Should -Not -Match ([regex]::Escape($hostileConfig))
+        $output | Should -Be $hostileConfig
+        Test-Path -LiteralPath $markerPath | Should -BeFalse
     }
 
     It "propagates direct -File codes without terminating a file-backed wrapper" {

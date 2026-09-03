@@ -6,6 +6,7 @@ BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilInstalledAPPX.ps1")
     . (Join-Path $script:repoRoot "functions\private\Install-WinUtilAPPX.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Complete-WinUtilPackageRun.ps1")
     . (Join-Path $script:repoRoot "functions\private\Remove-WinUtilAPPX.ps1")
     . (Join-Path $script:repoRoot "functions\private\Remove-WinUtilProvisionedAPPX.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFAppxInstall.ps1")
@@ -150,8 +151,10 @@ Describe "Install-WinUtilAPPX" {
     }
 
     It "uses a local manifest without contacting the Microsoft Store" {
-        Install-WinUtilAPPX -Name "Example.Package" -StoreId "9EXAMPLE1234"
+        $result = Install-WinUtilAPPX -Name "Example.Package" -StoreId "9EXAMPLE1234"
 
+        $result.Outcome | Should -Be "Succeeded"
+        $result.Manager | Should -Be "appx"
         Should -Invoke -CommandName Install-WinUtilWinget -Times 0 -Exactly
         Should -Invoke -CommandName Install-WinUtilProgramWinget -Times 0 -Exactly
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
@@ -169,6 +172,20 @@ Describe "Install-WinUtilAPPX" {
         Should -Invoke -CommandName Install-WinUtilProgramWinget -Times 1 -Exactly -ParameterFilter {
             $Action -eq "Install" -and $Programs.Count -eq 1 -and $Programs[0] -eq "msstore:9EXAMPLE1234"
         }
+    }
+
+    It "does not return WinGet bootstrap output as a package result" {
+        Mock powershell.exe { $global:LASTEXITCODE = 0 }
+        Mock Install-WinUtilWinget { [pscustomobject]@{ Provider = "NuGet" } }
+        Mock Install-WinUtilProgramWinget {
+            [pscustomobject]@{ Package = "msstore:9EXAMPLE1234"; Outcome = "Skipped" }
+        }
+
+        $result = @(Install-WinUtilAPPX -Name "Example.Package" -StoreId "9EXAMPLE1234")
+
+        $result.Count | Should -Be 1
+        $result[0].Package | Should -Be "msstore:9EXAMPLE1234"
+        $result[0].Outcome | Should -Be "Skipped"
     }
 
     It "logs local registration failures before using the Microsoft Store" {
@@ -382,6 +399,7 @@ Describe "Invoke-WPFAppxInstall" {
         Mock Write-WinUtilLog { }
         Mock Invoke-WPFUIThread { }
         Mock Install-WinUtilAPPX { }
+        Mock Complete-WinUtilPackageRun { }
         Mock Step-WinUtilJob { }
         Mock Start-WinUtilJob {
             $script:capturedAppxInstallScriptBlock = $ScriptBlock
@@ -445,6 +463,32 @@ Describe "Invoke-WPFAppxInstall" {
 
         { & $script:capturedAppxInstallScriptBlock @jobParameters } | Should -Throw "Install failed"
     }
+
+    It "passes a skipped Store result to package completion and reports it as skipped" {
+        $script:sync.selectedAppx.Add("WPFAppxExample")
+        Mock Install-WinUtilAPPX {
+            [pscustomobject]@{
+                Package = "9EXAMPLE1234"
+                Manager = "winget"
+                Action = "Install"
+                ExitCode = -1978335107
+                Outcome = "Skipped"
+                Detail = "elevated context"
+            }
+        }
+
+        Invoke-WPFAppxInstall
+        $jobParameters = $script:capturedAppxInstallParameters
+        & $script:capturedAppxInstallScriptBlock @jobParameters
+
+        Should -Invoke Complete-WinUtilPackageRun -Times 1 -Exactly -ParameterFilter {
+            $Action -eq "Install" -and $Results.Count -eq 1 -and $Results[0].Outcome -eq "Skipped"
+        }
+        Should -Invoke Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Skipped Example App (1/1)" -and $Percent -eq 100
+        }
+    }
+
 }
 Describe "Invoke-WPFAppxRemoval" {
     BeforeEach {

@@ -58,7 +58,14 @@ function Install-WinUtilAPPX {
         $manifestPath = ($manifestOutput | Select-Object -Last 1).ToString().Trim()
         if (-not [string]::IsNullOrWhiteSpace($manifestPath)) {
             Write-WinUtilLog -Component "AppX" -Message "Registered local AppX manifest for $Name`: $manifestPath"
-            return
+            return [pscustomobject]@{
+                Package = $Name
+                Manager = "appx"
+                Action = "Install"
+                ExitCode = 0
+                Outcome = "Succeeded"
+                Detail = "registered local manifest"
+            }
         }
     }
 
@@ -74,6 +81,6 @@ function Install-WinUtilAPPX {
     }
 
     Write-WinUtilLog -Component "AppX" -Message "No usable local manifest found for $Name. Installing Microsoft Store product $StoreId."
-    Install-WinUtilWinget
+    $null = Install-WinUtilWinget
     Install-WinUtilProgramWinget -Action Install -Programs @("msstore:$StoreId")
 }
