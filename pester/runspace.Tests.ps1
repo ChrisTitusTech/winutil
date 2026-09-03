@@ -134,6 +134,39 @@ Describe "Invoke-WPFRunspace behavior" {
         $script:sync.ContainsKey("runspace") | Should -BeFalse
     }
 
+    It "preserves ownership and lets started work finish when cleanup registration fails" {
+        $workStarted = [System.Threading.ManualResetEventSlim]::new($false)
+        $script:sync.WorkStarted = $workStarted
+        $script:sync.WorkFinished = $false
+        Mock Register-WinUtilRunspaceCleanup {
+            $script:sync.WorkStarted.Wait(5000) | Out-Null
+            throw "cleanup registration failed"
+        }
+
+        $handle = $null
+        try {
+            $handle = Invoke-WPFRunspace -ScriptBlock {
+                $sync.WorkStarted.Set()
+                Start-Sleep -Milliseconds 100
+                $sync.WorkFinished = $true
+            }
+
+            $workStarted.IsSet | Should -BeTrue
+            $handle.AsyncWaitHandle.WaitOne(5000) | Should -BeTrue
+            $script:sync.WorkFinished | Should -BeTrue
+            @(Get-WinUtilActiveShell).Count | Should -Be 1
+            Should -Invoke Register-WinUtilRunspaceCleanup -Times 1 -Exactly
+        } finally {
+            if ($null -ne $handle) {
+                $shell = @(Get-WinUtilActiveShell)[0]
+                try { $null = $shell.EndInvoke($handle) } catch { }
+                $shell.Dispose()
+                $script:sync.ActiveShells.Remove($shell)
+            }
+            $workStarted.Dispose()
+        }
+    }
+
     It "passes one named parameter" {
         $script:sync.Result = $null
 
@@ -210,7 +243,7 @@ Describe "Invoke-WPFRunspace behavior" {
 
 
     It "exposes a strongly typed cleanup callback" {
-        ([WinUtilRunspaceCleanup]::Callback -is [System.Threading.WaitOrTimerCallback]) | Should -BeTrue
+        ([WinUtilRunspaceCleanupV3]::Callback -is [System.Threading.WaitOrTimerCallback]) | Should -BeTrue
     }
 }
 

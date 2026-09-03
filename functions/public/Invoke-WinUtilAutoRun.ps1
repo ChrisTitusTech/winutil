@@ -37,7 +37,7 @@ function Invoke-WinUtilAutoRun {
     $planned = @($steps | Where-Object { $_.Count -gt 0 })
     if ($planned.Count -eq 0) {
         Write-WinUtilLog -Level "WARN" -Component "AutoRun" -Message "Nothing was selected, so there is nothing to do."
-        return [pscustomobject]@{ Steps = @(); Failed = 0; TimedOut = 0; Errors = 0 }
+        return [pscustomobject]@{ Steps = @(); Failed = 0; TimedOut = 0; Errors = 0; Warnings = 0 }
     }
 
     Write-WinUtilLog -Component "AutoRun" -Message "Headless run starting: $(($planned | ForEach-Object { "$($_.Name) ($($_.Count))" }) -join ', ')"
@@ -47,6 +47,7 @@ function Invoke-WinUtilAutoRun {
 
     foreach ($step in $planned) {
         $errorsBefore = if ($sync.LoggedErrors) { $sync.LoggedErrors.Count } else { 0 }
+        $sync.LastJobResult = $null
         $stepClock = [System.Diagnostics.Stopwatch]::StartNew()
         $timedOut = $false
 
@@ -70,16 +71,18 @@ function Invoke-WinUtilAutoRun {
 
         $stepClock.Stop()
         $newErrors = if ($sync.LoggedErrors) { $sync.LoggedErrors.Count - $errorsBefore } else { 0 }
+        $newWarnings = if ($null -ne $sync.LastJobResult) { [int]$sync.LastJobResult.Warnings } else { 0 }
 
         $null = $results.Add([pscustomobject]@{
             Name = $step.Name
             Items = $step.Count
             Seconds = [int]$stepClock.Elapsed.TotalSeconds
             Errors = $newErrors
+            Warnings = $newWarnings
             TimedOut = $timedOut
         })
 
-        $outcome = if ($timedOut) { "timed out" } elseif ($newErrors -gt 0) { "finished with $newErrors error(s)" } else { "finished" }
+        $outcome = if ($timedOut) { "timed out" } elseif ($newErrors -gt 0) { "finished with $newErrors error(s)" } elseif ($newWarnings -gt 0) { "finished with $newWarnings warning(s)" } else { "finished" }
         Write-WinUtilLog -Component "AutoRun" -Message "$($step.Name): $outcome after $([int]$stepClock.Elapsed.TotalSeconds)s."
 
         if ($timedOut) {
@@ -110,6 +113,7 @@ function Invoke-WinUtilAutoRun {
         Failed = @($results | Where-Object { $_.Errors -gt 0 }).Count
         TimedOut = @($results | Where-Object { $_.TimedOut }).Count
         Errors = (@($results | Measure-Object -Property Errors -Sum).Sum)
+        Warnings = (@($results | Measure-Object -Property Warnings -Sum).Sum)
     }
 }
 
@@ -127,8 +131,8 @@ function Write-WinUtilAutoRunSummary {
     Write-Host "=== WinUtil headless run ===" -ForegroundColor Cyan
 
     foreach ($step in @($Summary.Steps)) {
-        $state = if ($step.TimedOut) { "TIMED OUT" } elseif ($step.Errors -gt 0) { "$($step.Errors) error(s)" } else { "ok" }
-        $colour = if ($step.TimedOut -or $step.Errors -gt 0) { "Yellow" } else { "Green" }
+        $state = if ($step.TimedOut) { "TIMED OUT" } elseif ($step.Errors -gt 0) { "$($step.Errors) error(s)" } elseif ($step.Warnings -gt 0) { "$($step.Warnings) warning(s)" } else { "ok" }
+        $colour = if ($step.TimedOut -or $step.Errors -gt 0 -or $step.Warnings -gt 0) { "Yellow" } else { "Green" }
         Write-Host ("  {0,-14} {1,3} item(s)  {2,5}s  {3}" -f $step.Name, $step.Items, $step.Seconds, $state) -ForegroundColor $colour
     }
 
@@ -143,6 +147,13 @@ function Write-WinUtilAutoRunSummary {
         Write-Host "Finished with problems. See $($sync.logPath)" -ForegroundColor Yellow
         Write-Host ""
         return 1
+    }
+
+    if ($Summary.Warnings -gt 0) {
+        Write-Host ""
+        Write-Host "Completed with warnings. See $($sync.logPath)" -ForegroundColor Yellow
+        Write-Host ""
+        return 0
     }
 
     Write-Host ""

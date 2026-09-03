@@ -235,6 +235,21 @@ Now that you're set up, explore these guides:
 - [Tweaks Guide](/guides/tweaks/) — Understand system optimizations
 - [FAQ](/faq/) — Common questions and answers
 
+## Exporting a diagnostics report
+
+If you're reporting a problem, click the gear icon in the top-right corner and choose **Export Environment Report**. It saves a read-only JSON file with:
+
+- Windows edition, version, build, and architecture
+- CPU model, logical processor count, and total memory
+- PowerShell edition, version, and execution policy
+- Whether WinGet and Chocolatey are installed, and their versions
+- Whether a reboot is pending
+- The current applied/not-applied state of every tweak and toggle
+
+It does not include computer or user names, paths, IP or MAC addresses, serial numbers, installed-app inventories, services, raw registry paths or values, secrets, or logs. The tweak/toggle state is derived from a registry comparison, but only the resulting true/false per tweak is included, not any registry content itself. WinUtil never uploads the report — you choose where to save it and who to send it to.
+
+You'll be asked whether to also bundle the last 7 days of WinUtil logs into a companion `.txt` file, which maintainers often need alongside the report to diagnose an issue. This companion is raw log output and does not use the JSON report's privacy allowlist: it may contain local paths, commands, and error details. Review it before sharing.
+
 ## Getting help
 
 If you need assistance:

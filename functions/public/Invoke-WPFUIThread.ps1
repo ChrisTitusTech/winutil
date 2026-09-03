@@ -11,6 +11,20 @@ function Test-WinUtilUIAlive {
     return $null -ne $sync.Form -and $null -ne $sync.Form.Dispatcher -and -not $sync.Form.Dispatcher.HasShutdownStarted
 }
 
+function Test-WinUtilDispatcherShutdownException {
+    param([System.Exception]$Exception)
+
+    while ($null -ne $Exception) {
+        if ($Exception -is [System.OperationCanceledException] -or
+            $Exception -is [System.InvalidOperationException]) {
+            return $true
+        }
+        $Exception = $Exception.InnerException
+    }
+
+    return $false
+}
+
 function Invoke-WPFUIThread {
     <#
         .SYNOPSIS
@@ -69,25 +83,37 @@ function Invoke-WPFUIThread {
         if ($Async) {
             # The values travel as the dispatcher's argument, since this call returns before the
             # block runs and anything captured from here would be gone by then
-            $null = $dispatcher.BeginInvoke(
-                [Windows.Threading.DispatcherPriority]::Background,
-                [System.Windows.Threading.DispatcherOperationCallback]{
-                    param($Work)
-                    $body = $Work.Body
-                    $arguments = $Work.Parameters
-                    if ($arguments -and $arguments.Count -gt 0) {
-                        $null = & $body @arguments
-                    } else {
-                        $null = & $body
-                    }
-                    return $null
-                },
-                @{ Body = $ScriptBlock; Parameters = $Parameters })
+            try {
+                $null = $dispatcher.BeginInvoke(
+                    [Windows.Threading.DispatcherPriority]::Background,
+                    [System.Windows.Threading.DispatcherOperationCallback]{
+                        param($Work)
+                        $body = $Work.Body
+                        $arguments = $Work.Parameters
+                        if ($arguments -and $arguments.Count -gt 0) {
+                            $null = & $body @arguments
+                        } else {
+                            $null = & $body
+                        }
+                        return $null
+                    },
+                    @{ Body = $ScriptBlock; Parameters = $Parameters })
+            } catch {
+                $shutdownFailure = Test-WinUtilDispatcherShutdownException -Exception $_.Exception
+                if ($shutdownFailure -and -not (Test-WinUtilUIAlive)) { return }
+                throw
+            }
             return
         }
 
         # Synchronous, so this frame is still alive while the block runs and can be captured from
-        $fallbackResult = $dispatcher.Invoke([System.Func[object]]{ & $ScriptBlock @Parameters })
+        try {
+            $fallbackResult = $dispatcher.Invoke([System.Func[object]]{ & $ScriptBlock @Parameters })
+        } catch {
+            $shutdownFailure = Test-WinUtilDispatcherShutdownException -Exception $_.Exception
+            if ($shutdownFailure -and -not (Test-WinUtilUIAlive)) { return }
+            throw
+        }
         if ($PassThru) { return $fallbackResult }
         return
     }
@@ -98,10 +124,22 @@ function Invoke-WPFUIThread {
     }
 
     if ($Async) {
-        $null = $dispatcher.BeginInvoke([Windows.Threading.DispatcherPriority]::Background, $executor, $work)
+        try {
+            $null = $dispatcher.BeginInvoke([Windows.Threading.DispatcherPriority]::Background, $executor, $work)
+        } catch {
+            $shutdownFailure = Test-WinUtilDispatcherShutdownException -Exception $_.Exception
+            if ($shutdownFailure -and -not (Test-WinUtilUIAlive)) { return }
+            throw
+        }
         return
     }
 
-    $result = $dispatcher.Invoke($executor, @($work))
+    try {
+        $result = $dispatcher.Invoke($executor, @($work))
+    } catch {
+        $shutdownFailure = Test-WinUtilDispatcherShutdownException -Exception $_.Exception
+        if ($shutdownFailure -and -not (Test-WinUtilUIAlive)) { return }
+        throw
+    }
     if ($PassThru) { return $result }
 }

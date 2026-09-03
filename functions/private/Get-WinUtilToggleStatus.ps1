@@ -1,23 +1,32 @@
-Function Get-WinUtilToggleStatus ($ToggleSwitch) {
+Function Get-WinUtilToggleStatus {
+    param(
+        $ToggleSwitch,
+        [switch]$BypassCache,
+        [switch]$StopOnReadError
+    )
 
     $ToggleSwitchReg = $sync.configs.tweaks.$ToggleSwitch.registry
 
-    if ($null -eq $sync.ToggleStatusCache) {
-        $sync.ToggleStatusCache = @{}
+    if (-not $BypassCache) {
+        if ($null -eq $sync.ToggleStatusCache) {
+            $sync.ToggleStatusCache = @{}
+        }
+
+        if ($sync.ToggleStatusCache.ContainsKey($ToggleSwitch)) {
+            return [bool]$sync.ToggleStatusCache[$ToggleSwitch]
+        }
     }
 
-    if ($sync.ToggleStatusCache.ContainsKey($ToggleSwitch)) {
-        return [bool]$sync.ToggleStatusCache[$ToggleSwitch]
-    }
+    $readErrorAction = if ($StopOnReadError) { "Stop" } else { "Continue" }
 
     if (-not (Get-PSDrive -Name HKU -ErrorAction SilentlyContinue)) {
-        New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
+        New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS -ErrorAction $readErrorAction | Out-Null
     }
 
     foreach ($regentry in $ToggleSwitchReg) {
 
-        if (Test-Path $regentry.Path) {
-            $regstate = (Get-ItemProperty -Path $regentry.Path).$($regentry.Name)
+        if (Test-Path $regentry.Path -ErrorAction $readErrorAction) {
+            $regstate = (Get-ItemProperty -Path $regentry.Path -ErrorAction $readErrorAction).$($regentry.Name)
         } else {
             $regstate = $null
         }
@@ -30,11 +39,15 @@ Function Get-WinUtilToggleStatus ($ToggleSwitch) {
         }
 
         if ($regstate -ne $regentry.Value) {
-            $sync.ToggleStatusCache[$ToggleSwitch] = $false
+            if (-not $BypassCache) {
+                $sync.ToggleStatusCache[$ToggleSwitch] = $false
+            }
             return $false
         }
     }
 
-    $sync.ToggleStatusCache[$ToggleSwitch] = $true
+    if (-not $BypassCache) {
+        $sync.ToggleStatusCache[$ToggleSwitch] = $true
+    }
     return $true
 }

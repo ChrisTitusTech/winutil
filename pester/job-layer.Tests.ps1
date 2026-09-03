@@ -85,6 +85,37 @@ Describe "Invoke-WPFUIThread output" {
             $Value * 2
         } | Should -Be 14
     }
+
+    It "ignores a synchronous dispatch canceled by window shutdown" {
+        $dispatcher = [pscustomobject]@{ HasShutdownStarted = $false }
+        $dispatcher | Add-Member -MemberType ScriptMethod -Name CheckAccess -Value { $false }
+        $dispatcher | Add-Member -MemberType ScriptMethod -Name Invoke -Value {
+            param($Executor, $Work)
+            $null = $Executor, $Work
+            $this.HasShutdownStarted = $true
+            throw [System.OperationCanceledException]::new("dispatcher stopped")
+        }
+        $script:sync = [Hashtable]::Synchronized(@{
+            Form = [pscustomobject]@{ Dispatcher = $dispatcher }
+            UIDispatchDelegate = [System.Func[object, object]]{ param($Work) $Work }
+        })
+
+        { Invoke-WPFUIThread -ScriptBlock { } } | Should -Not -Throw
+    }
+
+    It "does not hide a dispatch failure while the window is still alive" {
+        $dispatcher = [pscustomobject]@{ HasShutdownStarted = $false }
+        $dispatcher | Add-Member -MemberType ScriptMethod -Name CheckAccess -Value { $false }
+        $dispatcher | Add-Member -MemberType ScriptMethod -Name Invoke -Value {
+            throw [System.InvalidOperationException]::new("not a shutdown")
+        }
+        $script:sync = [Hashtable]::Synchronized(@{
+            Form = [pscustomobject]@{ Dispatcher = $dispatcher }
+            UIDispatchDelegate = [System.Func[object, object]]{ param($Work) $Work }
+        })
+
+        { Invoke-WPFUIThread -ScriptBlock { } } | Should -Throw "*not a shutdown*"
+    }
 }
 
 Describe "Start-WinUtilJob" {
@@ -196,6 +227,18 @@ Describe "Start-WinUtilJob" {
         $script:sync.ItemsControl.IsEnabled | Should -BeTrue
     }
 
+    It "releases the job when progress setup and failure reporting both throw" {
+        Mock Step-WinUtilJob { throw "progress unavailable" }
+        Mock Write-Host { }
+
+        { Start-WinUtilJob -Name "Install" -DisableAppList -ScriptBlock { } } | Should -Not -Throw
+
+        $script:sync.ActiveJob | Should -BeNullOrEmpty
+        $script:sync.ActiveJobToken | Should -BeNullOrEmpty
+        $script:sync.ItemsControl.IsEnabled | Should -BeTrue
+        Should -Invoke -CommandName Invoke-WPFRunspace -Times 0 -Exactly
+    }
+
     It "reports completion and releases the busy state when the body succeeds" {
         Start-WinUtilJob -Name "Example" -ScriptBlock { } | Out-Null
 
@@ -291,6 +334,8 @@ Describe "Start-WinUtilJob" {
         Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Example finished with 1 warning(s)" -and $State -eq "Paused" -and $Overlay -eq "warning"
         }
+        $script:sync.LastJobResult.Warnings | Should -Be 1
+        $script:sync.LastJobResult.Errors | Should -Be 0
     }
 
     It "finishes with a warning when elevated install skips a user-scoped package" {

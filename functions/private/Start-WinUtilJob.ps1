@@ -71,6 +71,7 @@ function Start-WinUtilJob {
         } else {
             $sync.ActiveJob = $Name
             $sync.ActiveJobToken = $jobToken
+            $sync.LastJobResult = $null
         }
     } finally {
         [System.Threading.Monitor]::Exit($sync.SyncRoot)
@@ -81,23 +82,23 @@ function Start-WinUtilJob {
         return $null
     }
 
-    $timingStartIndex = if ($sync.StepTimings) { $sync.StepTimings.Count } else { 0 }
-
     $label = if ($Description) { $Description } else { $Name }
-    Write-WinUtilLog -Component $Name -Message "$Name job started."
-    Write-WinUtilJobBanner -Message $label
-    Step-WinUtilJob -Status "$label..." -Percent 0 -State "Normal" -Overlay "logo"
-
-    if ($DisableAppList -and (Test-WinUtilUIAlive)) {
-        Invoke-WPFUIThread -ScriptBlock {
-            if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $false }
-        }
-    }
-
-    # Rebuilt from its text inside the runspace: a scriptblock carries the session state it was
-    # defined in, and recreating it there binds it to the worker. The handle is discarded,
-    # printing it puts an IAsyncResult table on the console on every button press.
     try {
+        $timingStartIndex = if ($sync.StepTimings) { $sync.StepTimings.Count } else { 0 }
+
+        Write-WinUtilLog -Component $Name -Message "$Name job started."
+        Write-WinUtilJobBanner -Message $label
+        Step-WinUtilJob -Status "$label..." -Percent 0 -State "Normal" -Overlay "logo"
+
+        if ($DisableAppList -and (Test-WinUtilUIAlive)) {
+            Invoke-WPFUIThread -ScriptBlock {
+                if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $false }
+            }
+        }
+
+        # Rebuilt from its text inside the runspace: a scriptblock carries the session state it was
+        # defined in, and recreating it there binds it to the worker. The handle is discarded,
+        # printing it puts an IAsyncResult table on the console on every button press.
         $null = Invoke-WPFRunspace -ParameterList @(
             ("JobName", $Name),
             ("JobLabel", $label),
@@ -156,6 +157,12 @@ function Start-WinUtilJob {
             Write-WinUtilJobBanner -Message "$JobLabel failed: $($_.Exception.Message)" -Level "ERROR"
             Step-WinUtilJob -Status "$JobName failed" -Percent 100 -State "Error" -Overlay "warning"
         } finally {
+            $sync.LastJobResult = [pscustomobject]@{
+                Token = $JobToken
+                Errors = $global:WinUtilJobErrorCount
+                Warnings = $global:WinUtilJobWarningCount
+            }
+
             # Pool runspaces are reused, so leaving this set would make the next piece of
             # background work on this runspace believe it is a job worker
             $global:WinUtilIsJobWorker = $false
@@ -194,19 +201,26 @@ function Start-WinUtilJob {
         }
         }
     } catch {
-        Write-WinUtilErrorRecord -ErrorRecord $_ -Component $Name -Context "Could not schedule $Name"
-        Write-WinUtilJobBanner -Message "$label could not start" -Level "ERROR"
-        Step-WinUtilJob -Status "$Name could not start" -Percent 100 -State "Error" -Overlay "warning"
+        $scheduleError = $_
         try {
-            if ($DisableAppList -and (Test-WinUtilUIAlive)) {
-                Invoke-WPFUIThread -ScriptBlock {
-                    if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }
-                }
-            }
+            Write-WinUtilErrorRecord -ErrorRecord $scheduleError -Component $Name -Context "Could not schedule $Name"
+            $sync.LastJobResult = [pscustomobject]@{ Token = $jobToken; Errors = 1; Warnings = 0 }
+            Write-WinUtilJobBanner -Message "$label could not start" -Level "ERROR"
+            Step-WinUtilJob -Status "$Name could not start" -Percent 100 -State "Error" -Overlay "warning"
         } catch {
-            Write-WinUtilLog -Level "WARN" -Component $Name -Message "Could not restore the app list after $Name failed to start: $($_.Exception.Message)"
+            Write-WinUtilLog -Level "WARN" -Component $Name -Message "Could not report that $Name failed to start: $($_.Exception.Message)"
         } finally {
-            $null = Clear-WinUtilActiveJob -Token $jobToken
+            try {
+                if ($DisableAppList -and (Test-WinUtilUIAlive)) {
+                    Invoke-WPFUIThread -ScriptBlock {
+                        if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }
+                    }
+                }
+            } catch {
+                Write-WinUtilLog -Level "WARN" -Component $Name -Message "Could not restore the app list after $Name failed to start: $($_.Exception.Message)"
+            } finally {
+                $null = Clear-WinUtilActiveJob -Token $jobToken
+            }
         }
     }
 }

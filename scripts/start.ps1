@@ -16,7 +16,7 @@ param (
 function Test-WinUtilOwnsFileProcess {
     <#
         .SYNOPSIS
-            Whether the current process was launched with -File targeting this script
+            Whether the current process was launched with this script as its file target
     #>
     param(
         [string]$ScriptPath = $PSCommandPath,
@@ -25,19 +25,100 @@ function Test-WinUtilOwnsFileProcess {
 
     if ([string]::IsNullOrWhiteSpace($ScriptPath)) { return $false }
 
-    for ($index = 0; $index -lt ($CommandLineArgs.Count - 1); $index++) {
-        if ($CommandLineArgs[$index] -ieq "-File") {
-            $fileTarget = $CommandLineArgs[$index + 1]
-            if ([string]::IsNullOrWhiteSpace($fileTarget) -or $fileTarget -eq "-") {
-                return $false
-            }
+    $hostOptionKinds = [ordered]@{
+        Command           = "Command"
+        EncodedCommand    = "Command"
+        CommandWithArgs   = "Command"
+        File              = "File"
+        ConfigurationFile = "Value"
+        ConfigurationName = "Value"
+        CustomPipeName    = "Value"
+        ExecutionPolicy   = "Value"
+        InputFormat       = "Value"
+        Interactive       = "Switch"
+        Login             = "Switch"
+        MTA               = "Switch"
+        NoLogo            = "Switch"
+        NonInteractive    = "Switch"
+        NoProfile         = "Switch"
+        NoProfileLoadTime = "Switch"
+        OutputFormat      = "Value"
+        PSConsoleFile     = "Value"
+        SettingsFile      = "Value"
+        SSHServerMode     = "Switch"
+        STA               = "Switch"
+        Version           = "Value"
+        WindowStyle       = "Value"
+        WorkingDirectory  = "Value"
+        NoExit            = "NoExit"
+    }
+    $hostOptionAliases = @{
+        c = "Command"; cwa = "Command"; e = "Command"; ec = "Command"; f = "File"
+        noe = "NoExit"
+        config = "Value"; ConfigName = "Value"; CustomPipe = "Value"; ep = "Value"; ex = "Value"
+        i = "Switch"; Input = "Value"; In = "Value"; if = "Value"
+        Output = "Value"; Out = "Value"; of = "Value"
+        Settings = "Value"; Window = "Value"; w = "Value"; Working = "Value"; wd = "Value"
+    }
 
-            return [string]::Equals(
-                [IO.Path]::GetFullPath($fileTarget),
-                [IO.Path]::GetFullPath($ScriptPath),
-                [StringComparison]::OrdinalIgnoreCase
-            )
+    function Get-WinUtilHostOptionKind {
+        param([string]$Argument)
+
+        if ([string]::IsNullOrWhiteSpace($Argument) -or -not $Argument.StartsWith("-")) {
+            return $null
         }
+
+        $optionName = $Argument.TrimStart("-")
+        if ($hostOptionAliases.ContainsKey($optionName)) {
+            return $hostOptionAliases[$optionName]
+        }
+
+        # pwsh accepts any unambiguous prefix of a host option, such as -WorkingD.
+        $matchingOptions = @($hostOptionKinds.Keys | Where-Object {
+            $_.StartsWith($optionName, [StringComparison]::OrdinalIgnoreCase)
+        })
+        $matchingKinds = @($matchingOptions | ForEach-Object { $hostOptionKinds[$_] } | Select-Object -Unique)
+        if ($matchingKinds.Count -eq 1) {
+            return $matchingKinds[0]
+        }
+
+        return $null
+    }
+
+    :hostArguments for ($index = 1; $index -lt $CommandLineArgs.Count; $index++) {
+        $optionKind = Get-WinUtilHostOptionKind -Argument $CommandLineArgs[$index]
+        switch ($optionKind) {
+            "Command" { return $false }
+            "NoExit" { return $false }
+            "Switch" { continue hostArguments }
+            "File" {
+                if ($index + 1 -ge $CommandLineArgs.Count) { return $false }
+                $fileTarget = $CommandLineArgs[$index + 1]
+                if ([string]::IsNullOrWhiteSpace($fileTarget) -or $fileTarget -eq "-") {
+                    return $false
+                }
+
+                return [string]::Equals(
+                    [IO.Path]::GetFullPath($fileTarget),
+                    [IO.Path]::GetFullPath($ScriptPath),
+                    [StringComparison]::OrdinalIgnoreCase
+                )
+            }
+            "Value" {
+                $index++
+                continue hostArguments
+            }
+        }
+
+        if ($CommandLineArgs[$index].StartsWith("-")) {
+            continue
+        }
+
+        return [string]::Equals(
+            [IO.Path]::GetFullPath($CommandLineArgs[$index]),
+            [IO.Path]::GetFullPath($ScriptPath),
+            [StringComparison]::OrdinalIgnoreCase
+        )
     }
 
     return $false
@@ -54,7 +135,9 @@ if ($Offline) {
 
 if ($ExecutionContext.SessionState.LanguageMode -ne 'FullLanguage') {
     Write-Host "WinUtil is unable to run on your system. PowerShell execution is restricted by security policies." -ForegroundColor Red
-    return
+    $global:LASTEXITCODE = 1
+    if ($env:WINUTIL_HEADLESS_CHILD -eq "1" -or $script:WinUtilIsFileProcess) { exit 1 }
+    return 1
 }
 
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
@@ -120,6 +203,9 @@ $sync.preferences = @{}
 $sync.ActiveJob = $null
 # Serializes worker-pool startup with recycling and shutdown.
 $sync.RunspacePoolLock = [object]::new()
+# Serializes the speculative and UI-thread taskbar overlay renderers.
+$sync.AssetRenderLock = [object]::new()
+$sync.RenderedAssetCache = [Hashtable]::Synchronized(@{})
 # Every step recorded by Measure-WinUtilStep, from any thread
 $sync.StepTimings = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new())
 # Every error logged, so a job can report that something went wrong even when it did not throw

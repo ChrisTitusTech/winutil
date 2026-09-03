@@ -34,9 +34,7 @@ function Start-WinUtilAssetRendering {
 
     $handle = $shell.BeginInvoke()
 
-    # One STA runspace for the app's lifetime: disposing it from the cleanup callback would mean
-    # reshaping the compiled helper type, which is built once per session.
-    Register-WinUtilRunspaceCleanup -PowerShell $shell -Handle $handle
+    Register-WinUtilRunspaceCleanup -PowerShell $shell -Handle $handle -Runspace $runspace
 
     return $handle
 }

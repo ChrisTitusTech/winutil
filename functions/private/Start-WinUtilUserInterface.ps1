@@ -411,6 +411,10 @@ function Start-WinUtilUserInterface {
         Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
         Invoke-WPFImpex -type "export"
     })
+    $sync["ExportEnvironmentReportMenuItem"].Add_Click({
+        Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
+        Invoke-WPFExportEnvironmentReport
+    })
     $sync["AboutMenuItem"].Add_Click({
         Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
 

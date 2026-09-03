@@ -61,10 +61,33 @@ function Invoke-WPFRunspace {
 
         $powershell.RunspacePool = $sync.runspace
 
-        # Execute and register before allowing pool shutdown to take the lifecycle lock
-        $handle = $powershell.BeginInvoke()
-        Register-WinUtilActiveShell -PowerShell $powershell
-        Register-WinUtilRunspaceCleanup -PowerShell $powershell -Handle $handle
+        # Track before starting so no exception after BeginInvoke can make the caller release its
+        # job token while work is actually running. Cleanup registration is best-effort and has a
+        # background-thread fallback; it must never synchronously wait on a worker from the WPF
+        # dispatcher because the worker's finalizer may be waiting to restore UI state.
+        try {
+            Register-WinUtilActiveShell -PowerShell $powershell
+        } catch {
+            $powershell.Dispose()
+            throw
+        }
+        $handle = $null
+        try {
+            $handle = $powershell.BeginInvoke()
+        } catch {
+            $startError = $_
+            $sync.ActiveShells.Remove($powershell)
+            $powershell.Dispose()
+            throw $startError
+        }
+
+        try {
+            Register-WinUtilRunspaceCleanup -PowerShell $powershell -Handle $handle
+        } catch {
+            # The worker remains tracked and owns its job token. Treat it as scheduled so another
+            # system-changing job cannot start beside it; later work/shutdown can reclaim the shell.
+            Write-WinUtilLog -Level "WARN" -Component "UI" -Message "Could not register background cleanup: $($_.Exception.Message)"
+        }
 
         return $handle
     } finally {

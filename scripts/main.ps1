@@ -98,7 +98,7 @@ if ($Preset -or $Config) {
         Stop-Transcript | Out-Null
     }
 
-    # An isolated elevated child and an explicit -File launch own their process. The documented
+    # An isolated elevated child and an explicit file launch own their process. The documented
     # in-memory invocation runs inside the caller's terminal and must return without closing it.
     if ($env:WINUTIL_HEADLESS_CHILD -eq "1" -or $script:WinUtilIsFileProcess) {
         exit $headlessCode
@@ -167,5 +167,6 @@ Stop-Transcript
 
 if ($uiFailed) {
     $global:LASTEXITCODE = 1
+    if ($script:WinUtilIsFileProcess) { exit 1 }
     return 1
 }

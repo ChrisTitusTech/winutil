@@ -137,11 +137,10 @@ Describe "Interface startup failures" {
         }
     }
 
-    It "returns an unsuccessful result without terminating the caller after an interface failure" {
+    It "exits a direct file process but returns to an in-memory caller after an interface failure" {
         $mainScript = Get-Content -Path (Join-Path $script:scriptsRoot "main.ps1") -Raw
 
-        $mainScript | Should -Match '\$uiFailed = \$true[\s\S]*if \(\$uiFailed\) \{\s*\$global:LASTEXITCODE = 1\s*return 1'
-        $mainScript | Should -Not -Match 'if \(\$uiFailed\) \{\s*exit 1'
+        $mainScript | Should -Match '\$uiFailed = \$true[\s\S]*if \(\$uiFailed\) \{\s*\$global:LASTEXITCODE = 1\s*if \(\$script:WinUtilIsFileProcess\) \{ exit 1 \}\s*return 1'
     }
 }
 
@@ -417,6 +416,7 @@ Describe "XAML and sync wiring" {
             "transcriptPath",
             "ActiveJob",
             "ActiveJobToken",
+            "LastJobResult",
             # Intrinsic to the synchronized hashtable rather than WinUtil state; the job layer
             # locks on it to claim and release the active job slot
             "SyncRoot",
@@ -432,6 +432,7 @@ Describe "XAML and sync wiring" {
             "LastInputAt",
             "ActiveShells",
             "RunspacePoolLock",
+            "AssetRenderLock",
             "ShuttingDown",
             "ForceClose",
             "FinishInConsole",

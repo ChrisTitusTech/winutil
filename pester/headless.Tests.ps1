@@ -46,14 +46,32 @@ Describe "Headless entry point" {
         $script:mainScript | Should -Match '-or \$script:WinUtilIsFileProcess\) \{[\s\S]*exit \$headlessCode'
     }
 
-    It "recognizes only a direct -File target as process-owning" {
+    It "recognizes explicit and positional direct file targets as process-owning" {
         . ([scriptblock]::Create($script:fileProcessFunction))
         $winUtilPath = Join-Path $script:repoRoot "winutil.ps1"
         $wrapperPath = Join-Path $TestDrive "wrapper.ps1"
 
         Test-WinUtilOwnsFileProcess -ScriptPath $winUtilPath -CommandLineArgs @("pwsh.dll", "-File", $winUtilPath) | Should -BeTrue
+        Test-WinUtilOwnsFileProcess -ScriptPath $winUtilPath -CommandLineArgs @("pwsh.dll", "-f", $winUtilPath) | Should -BeTrue
+        Test-WinUtilOwnsFileProcess -ScriptPath $winUtilPath -CommandLineArgs @("pwsh.dll", "-EP", "Bypass", "-File", $winUtilPath) | Should -BeTrue
+        Test-WinUtilOwnsFileProcess -ScriptPath $winUtilPath -CommandLineArgs @("powershell.exe", "-Version", "5.1", "-File", $winUtilPath) | Should -BeTrue
+        Test-WinUtilOwnsFileProcess -ScriptPath $winUtilPath -CommandLineArgs @("powershell.exe", "-PSConsoleFile", "profile.psc1", "-File", $winUtilPath) | Should -BeTrue
+        Test-WinUtilOwnsFileProcess -ScriptPath $winUtilPath -CommandLineArgs @("pwsh.dll", "-config", "profile.pssc", "-File", $winUtilPath) | Should -BeTrue
+        Test-WinUtilOwnsFileProcess -ScriptPath $winUtilPath -CommandLineArgs @("pwsh.dll", "-W", "Hidden", $winUtilPath) | Should -BeTrue
+        Test-WinUtilOwnsFileProcess -ScriptPath $winUtilPath -CommandLineArgs @("pwsh.dll", "-WorkingD", "C:\", $winUtilPath) | Should -BeTrue
+        Test-WinUtilOwnsFileProcess -ScriptPath $winUtilPath -CommandLineArgs @("pwsh.dll", "-Execu", "Bypass", $winUtilPath) | Should -BeTrue
+        Test-WinUtilOwnsFileProcess -ScriptPath $winUtilPath -CommandLineArgs @("pwsh.dll", "-i", $winUtilPath) | Should -BeTrue
+        Test-WinUtilOwnsFileProcess -ScriptPath $winUtilPath -CommandLineArgs @("pwsh.dll", $winUtilPath) | Should -BeTrue
+        Test-WinUtilOwnsFileProcess -ScriptPath $winUtilPath -CommandLineArgs @("pwsh.dll", "-NoProfile", $winUtilPath) | Should -BeTrue
+        Test-WinUtilOwnsFileProcess -ScriptPath $winUtilPath -CommandLineArgs @("pwsh.dll", "-NoExit", $winUtilPath) | Should -BeFalse
+        Test-WinUtilOwnsFileProcess -ScriptPath $winUtilPath -CommandLineArgs @("pwsh.dll", "-noe", $winUtilPath) | Should -BeFalse
         Test-WinUtilOwnsFileProcess -ScriptPath $winUtilPath -CommandLineArgs @("pwsh.dll", "-File", $wrapperPath) | Should -BeFalse
+        Test-WinUtilOwnsFileProcess -ScriptPath $winUtilPath -CommandLineArgs @("pwsh.dll", $wrapperPath, "-HarnessPath", $winUtilPath) | Should -BeFalse
         Test-WinUtilOwnsFileProcess -ScriptPath $winUtilPath -CommandLineArgs @("pwsh.dll", "-Command", "& '$winUtilPath'") | Should -BeFalse
+    }
+
+    It "fails process-owning restricted-language launches without terminating in-memory callers" {
+        $script:startScript | Should -Match 'LanguageMode -ne ''FullLanguage''[\s\S]*\$global:LASTEXITCODE = 1[\s\S]*if \(\$env:WINUTIL_HEADLESS_CHILD -eq "1" -or \$script:WinUtilIsFileProcess\) \{ exit 1 \}[\s\S]*return 1'
     }
 
     It "propagates direct -File codes without terminating a file-backed wrapper" {
@@ -80,6 +98,14 @@ exit 23
 
             & $powerShellHost -ExecutionPolicy Bypass -NoProfile -File $harnessPath -Code 7 | Out-Null
             $LASTEXITCODE | Should -Be 7 -Because "$powerShellHost should propagate failure"
+
+            & $powerShellHost -ExecutionPolicy Bypass -NoProfile -f $harnessPath -Code 7 | Out-Null
+            $LASTEXITCODE | Should -Be 7 -Because "$powerShellHost should support the -f alias"
+
+            if ((Split-Path -Leaf $powerShellHost) -like "pwsh*") {
+                & $powerShellHost -NoProfile $harnessPath -Code 7 | Out-Null
+                $LASTEXITCODE | Should -Be 7 -Because "$powerShellHost should support a positional file target"
+            }
 
             & $powerShellHost -ExecutionPolicy Bypass -NoProfile -File $wrapperPath -HarnessPath $harnessPath | Out-Null
             $LASTEXITCODE | Should -Be 23 -Because "$powerShellHost should let the wrapper continue"
@@ -237,6 +263,19 @@ Describe "Invoke-WinUtilAutoRun" {
         $summary.Errors | Should -Be 1
     }
 
+    It "reports warnings produced by a completed job" {
+        $sync.selectedApps.Add("WPFInstall7zip")
+        Mock Invoke-WPFInstall {
+            $sync.LastJobResult = [pscustomobject]@{ Errors = 0; Warnings = 1 }
+        }
+
+        $summary = Invoke-WinUtilAutoRun
+
+        $summary.Failed | Should -Be 0
+        $summary.Warnings | Should -Be 1
+        $summary.Steps[0].Warnings | Should -Be 1
+    }
+
     It "keeps going after a step throws rather than abandoning the run" {
         $sync.selectedTweaks.Add("WPFTweaksDiskCleanup")
         $sync.selectedApps.Add("WPFInstall7zip")
@@ -287,6 +326,16 @@ Describe "Write-WinUtilAutoRunSummary" {
         $summary = [pscustomobject]@{ Steps = @(); Failed = 0; TimedOut = 0; Errors = 0 }
 
         Write-WinUtilAutoRunSummary -Summary $summary | Should -Be 2
+    }
+
+    It "reports warnings without turning an expected package skip into failure" {
+        $summary = [pscustomobject]@{
+            Steps = @([pscustomobject]@{ Name = "Applications"; Items = 1; Seconds = 1; Errors = 0; Warnings = 1; TimedOut = $false })
+            Failed = 0; TimedOut = 0; Errors = 0; Warnings = 1
+        }
+
+        Write-WinUtilAutoRunSummary -Summary $summary | Should -Be 0
+        Should -Invoke Write-Host -ParameterFilter { $Object -like "Completed with warnings*" }
     }
 }
 
