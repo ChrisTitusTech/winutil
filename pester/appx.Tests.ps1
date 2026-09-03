@@ -371,7 +371,7 @@ Describe "Remove-WinUtilProvisionedAPPX" {
 
         $source | Should -Match '\$removalOutput = powershell\.exe .* 2>&1'
         $source | Should -Match 'Write-WinUtilLog -Level "ERROR" -Component "AppX" -Message \$errorMessage'
-        $source | Should -Match '(?s)AppX provisioned package removal failed:.*throw \$errorMessage.*AppX provisioned package removal completed\.'
+        $source | Should -Match '(?s)AppX provisioned package removal failed:.*WinUtilErrorReported.*throw \$exception.*AppX provisioned package removal completed\.'
     }
 }
 

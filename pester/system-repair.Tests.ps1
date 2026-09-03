@@ -14,6 +14,7 @@ BeforeAll {
 Describe "Invoke-WPFSystemRepair chkdsk exit codes" {
     BeforeEach {
         Mock Write-WinUtilLog { }
+        Mock Write-Warning { }
         Mock Step-WinUtilJob { }
     }
 
@@ -30,7 +31,7 @@ Describe "Invoke-WPFSystemRepair chkdsk exit codes" {
         }
 
         { Invoke-WPFSystemRepair } | Should -Not -Throw
-        Should -Invoke -CommandName Write-WinUtilLog -ParameterFilter {
+        Should -Invoke -CommandName Write-Warning -ParameterFilter {
             $Message -like "*errors were found and fixed*"
         }
     }
@@ -41,7 +42,7 @@ Describe "Invoke-WPFSystemRepair chkdsk exit codes" {
         }
 
         { Invoke-WPFSystemRepair } | Should -Not -Throw
-        Should -Invoke -CommandName Write-WinUtilLog -ParameterFilter {
+        Should -Invoke -CommandName Write-Warning -ParameterFilter {
             $Message -like "*cleanup was performed*"
         }
     }
@@ -67,6 +68,7 @@ Describe "Invoke-WPFSystemRepair chkdsk exit codes" {
 Describe "Invoke-WPFSystemRepair per step codes" {
     BeforeEach {
         Mock Write-WinUtilLog { }
+        Mock Write-Warning { }
         Mock Step-WinUtilJob { }
     }
 
@@ -76,7 +78,7 @@ Describe "Invoke-WPFSystemRepair per step codes" {
         }
 
         { Invoke-WPFSystemRepair } | Should -Not -Throw
-        Should -Invoke -CommandName Write-WinUtilLog -ParameterFilter {
+        Should -Invoke -CommandName Write-Warning -ParameterFilter {
             $Message -like "*a restart is needed*"
         }
     }

@@ -153,7 +153,10 @@ function Start-WinUtilJob {
             }
         } catch {
             $jobClock.Stop()
-            Write-WinUtilErrorRecord -ErrorRecord $_ -Component $JobName -Context "$JobName failed after $($jobClock.ElapsedMilliseconds) ms"
+            # A leaf that logs before rethrowing marks that exact exception. Preserve the outer
+            # context and stack without counting it twice; unrelated earlier errors do not qualify.
+            $errorAlreadyReported = $_.Exception.Data["WinUtilErrorReported"] -eq $true
+            Write-WinUtilErrorRecord -ErrorRecord $_ -Component $JobName -Context "$JobName failed after $($jobClock.ElapsedMilliseconds) ms" -DetailOnly:$errorAlreadyReported
             Write-WinUtilJobBanner -Message "$JobLabel failed: $($_.Exception.Message)" -Level "ERROR"
             Step-WinUtilJob -Status "$JobName failed" -Percent 100 -State "Error" -Overlay "warning"
         } finally {

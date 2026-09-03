@@ -44,9 +44,15 @@ function Complete-WinUtilPackageRun {
         $names = ($failed | ForEach-Object { $_.Package }) -join ', '
         $reasons = @($failed | ForEach-Object { $_.Detail } | Sort-Object -Unique)
 
-        if ($reasons.Count -eq 1) {
-            throw "$($failed.Count) of $($Results.Count) package(s) failed: $names. $($reasons[0])"
+        $message = if ($reasons.Count -eq 1) {
+            "$($failed.Count) of $($Results.Count) package(s) failed: $names. $($reasons[0])"
+        } else {
+            "$($failed.Count) of $($Results.Count) package(s) failed: $names. See the lines above for each reason."
         }
-        throw "$($failed.Count) of $($Results.Count) package(s) failed: $names. See the lines above for each reason."
+        # Each failed package was already logged by its package-manager adapter. Carry that fact
+        # with the summary exception so the job wrapper adds context without another error count.
+        $exception = [System.InvalidOperationException]::new($message)
+        $exception.Data["WinUtilErrorReported"] = $true
+        throw $exception
     }
 }

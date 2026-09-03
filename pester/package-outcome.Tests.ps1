@@ -219,8 +219,15 @@ Describe "Complete-WinUtilPackageRun" {
             [pscustomobject]@{ Package = "b"; Outcome = "Failed"; Detail = "exit code 5" }
         )
 
-        { Complete-WinUtilPackageRun -Action "Install" -Results $results } |
-            Should -Throw "1 of 2 package(s) failed: b. *"
+        $caught = $null
+        try {
+            Complete-WinUtilPackageRun -Action "Install" -Results $results
+        } catch {
+            $caught = $_
+        }
+
+        $caught.Exception.Message | Should -BeLike "1 of 2 package(s) failed: b. *"
+        $caught.Exception.Data["WinUtilErrorReported"] | Should -BeTrue
     }
 
     It "accepts an empty run" {

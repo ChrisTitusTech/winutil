@@ -49,7 +49,9 @@ function Invoke-WPFSystemRepair {
 
         if ($exitCode -ne 0) {
             if ($step.SuccessCodes.ContainsKey($exitCode)) {
-                Write-WinUtilLog -Level "WARN" -Component "SystemRepair" -Message "$($step.Label) finished: $($step.SuccessCodes[$exitCode])."
+                # Start-WinUtilJob records WarningRecord output in both the session log and the
+                # job result, so accepted nonzero outcomes cannot finish with a green checkmark.
+                Write-Warning "$($step.Label) finished: $($step.SuccessCodes[$exitCode])."
             } else {
                 throw "$($step.Label) failed with exit code $exitCode."
             }

@@ -23,11 +23,15 @@ function Write-WinUtilErrorRecord {
 
         [string]$Component = "WinUtil",
 
-        [string]$Context
+        [string]$Context,
+
+        # The underlying failure was already logged and counted; retain this call's context and
+        # stack as diagnostic detail without adding a second headline error.
+        [switch]$DetailOnly
     )
 
     $headline = if ($Context) { "$Context : $($ErrorRecord.Exception.Message)" } else { $ErrorRecord.Exception.Message }
-    Write-WinUtilLog -Level "ERROR" -Component $Component -Message $headline
+    Write-WinUtilLog -Level "ERROR" -Component $Component -Message $headline -Detail:$DetailOnly
 
     $invocation = $ErrorRecord.InvocationInfo
     if ($invocation) {
@@ -48,5 +52,7 @@ function Write-WinUtilErrorRecord {
         }
     }
 
-    Write-Host "$Component : $headline" -ForegroundColor Red
+    if (-not $DetailOnly) {
+        Write-Host "$Component : $headline" -ForegroundColor Red
+    }
 }

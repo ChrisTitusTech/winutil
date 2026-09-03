@@ -236,6 +236,7 @@ function Invoke-WinUtilISOWriteUSB {
             Show-WinUtilMessage -Message "USB drive created successfully!`n`nYou can now boot from this drive to install Windows 11." -Title "USB Ready" -Button "OK" -Icon "Info" | Out-Null
         } catch {
             Write-WinUtilISOLog -Level "ERROR" -Message "USB write failed: $_"
+            $_.Exception.Data["WinUtilErrorReported"] = $true
             Show-WinUtilMessage -Message "USB write failed:`n`n$_" -Title "USB Write Error" -Button "OK" -Icon "Error" | Out-Null
             throw
         } finally {

@@ -177,7 +177,9 @@ function Invoke-WinUtilISOMountAndVerify {
                 Write-WinUtilISOLog -Level "ERROR" -Message "install.wim/install.esd not found - not a valid Windows ISO."
                 Show-WinUtilMessage -Message "This does not appear to be a valid Windows ISO.`n`ninstall.wim / install.esd was not found." -Title "Invalid ISO" -Button "OK" -Icon "Error" | Out-Null
                 # Returning here would let the job layer report the run as finished
-                throw "install.wim / install.esd was not found in $isoPath."
+                $exception = [System.InvalidOperationException]::new("install.wim / install.esd was not found in $isoPath.")
+                $exception.Data["WinUtilErrorReported"] = $true
+                throw $exception
             }
 
             $activeWim = if (Test-Path $wimPath) { $wimPath } else { $esdPath }
@@ -188,7 +190,9 @@ function Invoke-WinUtilISOMountAndVerify {
             if (-not ($imageInfo | Where-Object { $_.ImageName -match "Windows 11" })) {
                 Write-WinUtilISOLog -Level "ERROR" -Message "No 'Windows 11' edition found in the image."
                 Show-WinUtilMessage -Message "No Windows 11 edition was found in this ISO.`n`nOnly official Windows 11 ISOs are supported." -Title "Not a Windows 11 ISO" -Button "OK" -Icon "Error" | Out-Null
-                throw "No Windows 11 edition was found in $isoPath."
+                $exception = [System.InvalidOperationException]::new("No Windows 11 edition was found in $isoPath.")
+                $exception.Data["WinUtilErrorReported"] = $true
+                throw $exception
             }
 
             $sync["Win11ISOImageInfo"] = $imageInfo
@@ -366,6 +370,7 @@ function Invoke-WinUtilISOModify {
             $modified = $true
         } catch {
             Write-WinUtilISOLog -Level "ERROR" -Message "Modification failed: $_"
+            $_.Exception.Data["WinUtilErrorReported"] = $true
 
             Show-WinUtilMessage -Message "An error occurred during install.wim modification:`n`n$_" -Title "Modification Error" -Button "OK" -Icon "Error" | Out-Null
 
@@ -646,6 +651,7 @@ function Invoke-WinUtilISOExport {
             Show-WinUtilMessage -Message "ISO exported successfully!`n`n$outputISO" -Title "Export Complete" -Button "OK" -Icon "Info" | Out-Null
         } catch {
             Write-WinUtilISOLog -Level "ERROR" -Message "ISO export failed: $_"
+            $_.Exception.Data["WinUtilErrorReported"] = $true
             Show-WinUtilMessage -Message "ISO export failed:`n`n$_" -Title "Error" -Button "OK" -Icon "Error" | Out-Null
             throw
         } finally {
@@ -718,7 +724,9 @@ function Get-WinUtilOscdimgPath {
     if ($oscdimg) {
         Write-WinUtilISOLog "oscdimg.exe installed successfully."
     } else {
-        Write-WinUtilISOLog -Level "ERROR" -Message "oscdimg.exe still not found after install attempt."
+        # The export caller turns this into the terminating, counted error. Keep this helper
+        # context visible without recording the same missing executable as a second error.
+        Write-WinUtilISOLog -Level "WARN" -Message "oscdimg.exe still not found after install attempt."
     }
     return $oscdimg
 }

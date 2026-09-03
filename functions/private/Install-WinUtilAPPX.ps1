@@ -77,7 +77,9 @@ function Install-WinUtilAPPX {
     if ([string]::IsNullOrWhiteSpace($StoreId)) {
         $errorMessage = "Unable to install $Name because no local manifest or Microsoft Store ID is available."
         Write-WinUtilLog -Level "ERROR" -Component "AppX" -Message $errorMessage
-        throw $errorMessage
+        $exception = [System.InvalidOperationException]::new($errorMessage)
+        $exception.Data["WinUtilErrorReported"] = $true
+        throw $exception
     }
 
     Write-WinUtilLog -Component "AppX" -Message "No usable local manifest found for $Name. Installing Microsoft Store product $StoreId."

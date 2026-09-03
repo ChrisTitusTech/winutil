@@ -17,7 +17,7 @@ BeforeAll {
         param([string]$Message, [string]$Level)
     }
     function Write-WinUtilLog {
-        param($Message, $Level, $Component)
+        param($Message, $Level, $Component, [switch]$Detail)
     }
     function Step-WinUtilJob {
         param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay, [switch]$Hide)
@@ -343,6 +343,38 @@ Describe "Start-WinUtilJob" {
             $Status -eq "Example failed" -and $State -eq "Error" -and $Overlay -eq "warning"
         }
         $script:sync.ActiveJob | Should -BeNullOrEmpty
+    }
+
+    It "does not count an error again when the body logs it before throwing" {
+        Start-WinUtilJob -Name "Example" -ScriptBlock { } | Out-Null
+
+        & $script:capturedRunspaceBody `
+            -JobName "Example" `
+            -JobLabel "Example" `
+            -JobBody 'Write-WinUtilLog -Level "ERROR" -Component "Example" -Message "operation failed"; $exception = [System.InvalidOperationException]::new("operation failed"); $exception.Data["WinUtilErrorReported"] = $true; throw $exception' `
+            -JobParameters @{} `
+            -JobRestoresAppList $false `
+            -JobToken $script:capturedRunspaceArgs["JobToken"]
+
+        Should -Invoke Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "ERROR" -and -not $Detail
+        }
+    }
+
+    It "counts a distinct terminating error after an earlier reported error" {
+        Start-WinUtilJob -Name "Example" -ScriptBlock { } | Out-Null
+
+        & $script:capturedRunspaceBody `
+            -JobName "Example" `
+            -JobLabel "Example" `
+            -JobBody 'Write-WinUtilLog -Level "ERROR" -Component "Example" -Message "first failure"; throw "second failure"' `
+            -JobParameters @{} `
+            -JobRestoresAppList $false `
+            -JobToken $script:capturedRunspaceArgs["JobToken"]
+
+        Should -Invoke Write-WinUtilLog -Times 2 -Exactly -ParameterFilter {
+            $Level -eq "ERROR" -and -not $Detail
+        }
     }
 
     It "reports a job that logged errors without throwing" {
