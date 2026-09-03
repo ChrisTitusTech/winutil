@@ -259,5 +259,13 @@
     "Description": "Bundles built-in card game modes including Klondike, Spider, FreeCell, Pyramid, and TriPeaks alongside daily challenges.",
     "Panel": "1",
     "PackageId": "Microsoft.MicrosoftSolitaireCollection"
+  },
+  "WPFAppxMicrosoft_ZuneVideo": {
+    "Category": "Utilities & Productivity",
+    "Content": "Movies & TV",
+    "Description": "The default video player and storefront for purchasing or renting media.",
+    "Panel": "0",
+    "PackageId": "Microsoft.ZuneVideo",
+    "StoreId": "9WZDNCRFJ3P2"
   }
 }
