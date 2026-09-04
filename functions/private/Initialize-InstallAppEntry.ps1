@@ -53,7 +53,7 @@ function Initialize-InstallAppEntry {
         if ($app.link) {
             $logo = New-Object Windows.Controls.Image
             $logo.Stretch = [Windows.Media.Stretch]::Uniform
-            $logo.Visibility = [Windows.Visibility]::Collapsed
+            $logo.Visibility = [System.Windows.Visibility]::Collapsed
             $faviconUrl = Get-WinUtilFaviconUrl -Link $app.link
             [void]$icon.Children.Add($logo)
         }

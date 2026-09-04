@@ -128,8 +128,8 @@ function Receive-WinUtilFaviconResult {
                 }
                 $bitmap.Freeze()
                 $target.TargetImage.Source = $bitmap
-                $target.TargetImage.Visibility = [Windows.Visibility]::Visible
-                $target.Fallback.Visibility = [Windows.Visibility]::Collapsed
+                $target.TargetImage.Visibility = [System.Windows.Visibility]::Visible
+                $target.Fallback.Visibility = [System.Windows.Visibility]::Collapsed
                 $sync.FaviconConsecutiveFailures = 0
                 $loaded = $true
             } catch {
@@ -138,8 +138,8 @@ function Receive-WinUtilFaviconResult {
         }
 
         if (-not $loaded) {
-            $target.TargetImage.Visibility = [Windows.Visibility]::Collapsed
-            $target.Fallback.Visibility = [Windows.Visibility]::Visible
+            $target.TargetImage.Visibility = [System.Windows.Visibility]::Collapsed
+            $target.Fallback.Visibility = [System.Windows.Visibility]::Visible
             $sync.FaviconConsecutiveFailures++
             if ($sync.FaviconConsecutiveFailures -ge 8) {
                 $sync.FaviconLoadingStopped = $true
