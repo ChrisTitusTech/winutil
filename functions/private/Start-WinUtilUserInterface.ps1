@@ -513,14 +513,14 @@ Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sy
     })
 
     $buildClock.Stop()
-    Write-WinUtilLog -Component "UI" -Message "Interface built in $($buildClock.ElapsedMilliseconds) ms, showing the window."
+    Write-WinUtilLog -Level "DEBUG" -Component "UI" -Message "Interface built in $($buildClock.ElapsedMilliseconds) ms, showing the window."
     Write-WinUtilTimingSummary -Scope "UI" -TotalMilliseconds $buildClock.ElapsedMilliseconds
 
     # Input priority runs behind everything already queued, so this fires at the first moment
     # the window could actually service a click
     $sync["Form"].Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Input, [action]{
         $sinceStart = [int]((Get-Date) - $sync.StartedAt).TotalMilliseconds
-        Write-WinUtilLog -Component "UI" -Message "timing: interface ready for input $sinceStart ms after start."
+        Write-WinUtilLog -Level "DEBUG" -Component "UI" -Message "timing: interface ready for input $sinceStart ms after start."
     }) | Out-Null
 
     $sync["Form"].ShowDialog() | Out-Null

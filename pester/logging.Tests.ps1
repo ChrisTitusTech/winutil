@@ -5,6 +5,7 @@ BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 
     . (Join-Path $script:repoRoot "functions\private\Write-WinUtilLog.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Measure-WinUtilStep.ps1")
 }
 
 Describe "Write-WinUtilLog" {
@@ -145,6 +146,59 @@ Describe "Write-WinUtilLog" {
 
         $global:WinUtilJobErrorCount | Should -Be 1
         $script:sync.LoggedErrors.Count | Should -Be 2
+    }
+
+    It "suppresses debug entries outside a local compile" {
+        $logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
+        $script:sync = [hashtable]::Synchronized(@{
+            IsLocalCompile = $false
+            logPath = $logPath
+        })
+
+        Write-WinUtilLog -Level "DEBUG" -Component "UI" -Message "timing detail"
+
+        Test-Path -Path $logPath | Should -BeFalse
+    }
+
+    It "writes debug entries from a local compile" {
+        $logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
+        $script:sync = [hashtable]::Synchronized(@{
+            IsLocalCompile = $true
+            logPath = $logPath
+        })
+
+        Write-WinUtilLog -Level "DEBUG" -Component "UI" -Message "timing detail"
+
+        Get-Content -Path $logPath -Raw | Should -Match "\[DEBUG\] \[UI\] timing detail"
+    }
+
+    It "does not record UI timing steps outside a local compile" {
+        $script:sync = [hashtable]::Synchronized(@{
+            IsLocalCompile = $false
+            StepTimings = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new())
+        })
+        Mock Write-WinUtilLog { }
+
+        $result = Measure-WinUtilStep -Scope "UI" -Name "parse XAML" -ScriptBlock { 42 }
+
+        $result | Should -Be 42
+        $script:sync.StepTimings.Count | Should -Be 0
+        Should -Invoke Write-WinUtilLog -Times 0 -Exactly
+    }
+
+    It "records local UI timing steps as debug entries" {
+        $script:sync = [hashtable]::Synchronized(@{
+            IsLocalCompile = $true
+            StepTimings = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new())
+        })
+        Mock Write-WinUtilLog { }
+
+        Measure-WinUtilStep -Scope "UI" -Name "parse XAML" -ScriptBlock { } | Out-Null
+
+        $script:sync.StepTimings.Count | Should -Be 1
+        Should -Invoke Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "DEBUG" -and $Component -eq "UI" -and $Message -like "timing: parse XAML took*"
+        }
     }
 
 }
