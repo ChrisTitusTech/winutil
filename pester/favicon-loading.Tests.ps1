@@ -16,6 +16,56 @@ namespace System.Windows
 }
 "@
     }
+    if (-not ("WinUtilSlowReadStreamTestV1" -as [type])) {
+        Add-Type @"
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
+public sealed class WinUtilSlowReadStreamTestV1 : Stream
+{
+    private readonly int delayMilliseconds;
+    public int ReadCount { get; private set; }
+
+    public WinUtilSlowReadStreamTestV1(int delayMilliseconds)
+    {
+        this.delayMilliseconds = delayMilliseconds;
+    }
+
+    public override bool CanRead { get { return true; } }
+    public override bool CanSeek { get { return false; } }
+    public override bool CanWrite { get { return false; } }
+    public override long Length { get { throw new NotSupportedException(); } }
+    public override long Position
+    {
+        get { throw new NotSupportedException(); }
+        set { throw new NotSupportedException(); }
+    }
+
+    public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+    {
+        return Task.Factory.StartNew(() =>
+        {
+            Thread.Sleep(delayMilliseconds);
+            buffer[offset] = 1;
+            ReadCount++;
+            return 1;
+        }, cancellationToken);
+    }
+
+    public override int Read(byte[] buffer, int offset, int count)
+    {
+        throw new NotSupportedException();
+    }
+
+    public override void Flush() { }
+    public override long Seek(long offset, SeekOrigin origin) { throw new NotSupportedException(); }
+    public override void SetLength(long value) { throw new NotSupportedException(); }
+    public override void Write(byte[] buffer, int offset, int count) { throw new NotSupportedException(); }
+}
+"@
+    }
 
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilFaviconUrl.ps1")
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilFaviconDownload.ps1")
@@ -144,7 +194,21 @@ Describe "WinUtil favicon loading" {
 
         $downloadFunction | Should -Match 'Timeout = \$requestTimeoutMilliseconds'
         $downloadFunction | Should -Match 'ReadWriteTimeout = \$requestTimeoutMilliseconds'
+        $downloadFunction | Should -Match 'GetResponseAsync'
+        $downloadFunction | Should -Match 'Read-WinUtilStreamWithDeadline'
+        $downloadFunction | Should -Match '\.Abort\(\)'
         $downloadFunction | Should -Match '\$sync\.FaviconResults\.Enqueue'
         $downloadFunction | Should -Not -Match 'Windows\.Controls|Windows\.Media'
+    }
+
+    It "stops a slow response at the total download deadline" {
+        $slowStream = [WinUtilSlowReadStreamTestV1]::new(20)
+        $clock = [System.Diagnostics.Stopwatch]::StartNew()
+
+        {
+            Read-WinUtilStreamWithDeadline -Stream $slowStream -Clock $clock -TimeoutMilliseconds 500
+        } | Should -Throw "*total deadline*"
+
+        $slowStream.ReadCount | Should -BeGreaterThan 1
     }
 }

@@ -1,3 +1,56 @@
+function Read-WinUtilStreamWithDeadline {
+    <#
+        .SYNOPSIS
+            Reads a response stream without allowing successful partial reads to extend its deadline
+    #>
+    param(
+        [Parameter(Mandatory)]
+        $Stream,
+
+        [Parameter(Mandatory)]
+        [System.Diagnostics.Stopwatch]$Clock,
+
+        [Parameter(Mandatory)]
+        [int]$TimeoutMilliseconds,
+
+        $Request
+    )
+
+    $buffer = [byte[]]::new(81920)
+    $memory = [System.IO.MemoryStream]::new()
+    try {
+        while ($true) {
+            $remainingMilliseconds = $TimeoutMilliseconds - [int]$Clock.ElapsedMilliseconds
+            if ($remainingMilliseconds -le 0) {
+                throw [System.TimeoutException]::new("The favicon download exceeded its total deadline.")
+            }
+
+            $readTask = $Stream.ReadAsync(
+                $buffer,
+                0,
+                $buffer.Length,
+                [System.Threading.CancellationToken]::None
+            )
+            if (-not $readTask.Wait([int]$remainingMilliseconds)) {
+                if ($Request) { $Request.Abort() }
+                throw [System.TimeoutException]::new("The favicon download exceeded its total deadline.")
+            }
+            $readCount = $readTask.Result
+
+            if ($Clock.ElapsedMilliseconds -ge $TimeoutMilliseconds) {
+                throw [System.TimeoutException]::new("The favicon download exceeded its total deadline.")
+            }
+            if ($readCount -le 0) { break }
+
+            $memory.Write($buffer, 0, $readCount)
+        }
+
+        return $memory.ToArray()
+    } finally {
+        $memory.Dispose()
+    }
+}
+
 function Invoke-WinUtilFaviconDownload {
     <#
         .SYNOPSIS
@@ -19,34 +72,52 @@ function Invoke-WinUtilFaviconDownload {
     $bytes = $null
     $response = $null
     $stream = $null
-    $memory = $null
+    $webRequest = $null
+    $requestClock = [System.Diagnostics.Stopwatch]::StartNew()
     try {
         $requestTimeoutMilliseconds = 5000
         $webRequest = [System.Net.WebRequest]::Create($Request.Url)
         $webRequest.Timeout = $requestTimeoutMilliseconds
         $webRequest.ReadWriteTimeout = $requestTimeoutMilliseconds
         $webRequest.UserAgent = "WinUtil"
-        $response = $webRequest.GetResponse()
+        $responseTask = $webRequest.GetResponseAsync()
+        $remainingMilliseconds = $requestTimeoutMilliseconds - [int]$requestClock.ElapsedMilliseconds
+        if ($remainingMilliseconds -le 0 -or
+            -not $responseTask.Wait([Math]::Max(1, [int]$remainingMilliseconds))) {
+            $webRequest.Abort()
+            throw [System.TimeoutException]::new("The favicon download exceeded its total deadline.")
+        }
+        $response = $responseTask.Result
         $stream = $response.GetResponseStream()
-        $memory = [System.IO.MemoryStream]::new()
-        $stream.CopyTo($memory)
-        $bytes = $memory.ToArray()
+        [byte[]]$bytes = @(Read-WinUtilStreamWithDeadline `
+            -Stream $stream `
+            -Clock $requestClock `
+            -TimeoutMilliseconds $requestTimeoutMilliseconds `
+            -Request $webRequest)
         if ($bytes.Count -gt 0) {
             $status = "Success"
         }
     } catch {
+        if ($webRequest) {
+            try { $webRequest.Abort() } catch { $null = $_ }
+        }
         $status = "NetworkFailure"
     } finally {
-        if ($stream) { $stream.Dispose() }
-        if ($response) { $response.Dispose() }
-        if ($memory) { $memory.Dispose() }
+        $requestClock.Stop()
+        try {
+            try {
+                if ($stream) { $stream.Dispose() }
+            } finally {
+                if ($response) { $response.Dispose() }
+            }
+        } finally {
+            $sync.FaviconResults.Enqueue([pscustomobject]@{
+                AppKey = $Request.AppKey
+                Status = $status
+                Bytes = $bytes
+            })
+        }
     }
-
-    $sync.FaviconResults.Enqueue([pscustomobject]@{
-        AppKey = $Request.AppKey
-        Status = $status
-        Bytes = $bytes
-    })
 }
 
 function Request-WinUtilFaviconDownload {
