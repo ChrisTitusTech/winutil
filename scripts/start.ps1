@@ -225,6 +225,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.version = "#{replaceme}"
+$sync.IsLocalCompile = "#{islocalcompile}" -eq "true"
 $sync.configs = @{}
 $sync.Buttons = [System.Collections.Generic.List[PSObject]]::new()
 $sync.preferences = @{}
