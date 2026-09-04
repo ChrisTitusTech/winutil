@@ -53,22 +53,22 @@ Describe "Set-WinUtilDNS" {
                         Secondary6 = "2606:4700:4700::1001"
                         DohTemplate = "https://cloudflare-dns.com/dns-query"
                     }
-                    Mullvad = [pscustomobject]@{
-                        Primary = "194.242.2.2"
-                        Secondary = "194.242.2.3"
-                        Primary6 = "2a07:e340::2"
-                        Secondary6 = "2a07:e340::3"
+                    DohOnlyProvider = [pscustomobject]@{
+                        Primary = "192.0.2.1"
+                        Secondary = "192.0.2.2"
+                        Primary6 = "2001:db8::1"
+                        Secondary6 = "2001:db8::2"
                         DohOnly = $true
-                        DohTemplate = "https://dns.mullvad.net/dns-query"
-                        SecondaryDohTemplate = "https://adblock.dns.mullvad.net/dns-query"
+                        DohTemplate = "https://doh.example.com/dns-query"
+                        SecondaryDohTemplate = "https://secondary.doh.example.com/dns-query"
                     }
-                    MullvadNoSecondary = [pscustomobject]@{
-                        Primary = "194.242.2.2"
+                    DohOnlyNoSecondary = [pscustomobject]@{
+                        Primary = "192.0.2.1"
                         Secondary = ""
-                        Primary6 = "2a07:e340::2"
+                        Primary6 = "2001:db8::1"
                         Secondary6 = ""
                         DohOnly = $true
-                        DohTemplate = "https://dns.mullvad.net/dns-query"
+                        DohTemplate = "https://doh.example.com/dns-query"
                     }
                 }
             }
@@ -151,58 +151,58 @@ Describe "Set-WinUtilDNS" {
     }
 
     It "filters empty DNS server addresses" {
-        Set-WinUtilDNS -DNSProvider "MullvadNoSecondary"
+        Set-WinUtilDNS -DNSProvider "DohOnlyNoSecondary"
 
         Should -Invoke -CommandName Set-DnsClientServerAddress -Times 1 -Exactly -ParameterFilter {
             $InterfaceIndex -eq 7 -and
                 $ServerAddresses.Count -eq 1 -and
-                $ServerAddresses[0] -eq "194.242.2.2"
+                $ServerAddresses[0] -eq "192.0.2.1"
         }
         Should -Invoke -CommandName Set-DnsClientServerAddress -Times 1 -Exactly -ParameterFilter {
             $InterfaceIndex -eq 7 -and
                 $ServerAddresses.Count -eq 1 -and
-                $ServerAddresses[0] -eq "2a07:e340::2"
+                $ServerAddresses[0] -eq "2001:db8::1"
         }
         Should -Invoke -CommandName Add-DnsClientDohServerAddress -Times 2 -Exactly
     }
 
     It "applies the matching DoH template to secondary resolvers" {
-        Set-WinUtilDNS -DNSProvider "Mullvad"
+        Set-WinUtilDNS -DNSProvider "DohOnlyProvider"
 
         Should -Invoke -CommandName Add-DnsClientDohServerAddress -Times 2 -Exactly -ParameterFilter {
-            $ServerAddress -in @("194.242.2.2", "2a07:e340::2") -and
-                $DohTemplate -eq "https://dns.mullvad.net/dns-query"
+            $ServerAddress -in @("192.0.2.1", "2001:db8::1") -and
+                $DohTemplate -eq "https://doh.example.com/dns-query"
         }
         Should -Invoke -CommandName Add-DnsClientDohServerAddress -Times 2 -Exactly -ParameterFilter {
-            $ServerAddress -in @("194.242.2.3", "2a07:e340::3") -and
-                $DohTemplate -eq "https://adblock.dns.mullvad.net/dns-query"
+            $ServerAddress -in @("192.0.2.2", "2001:db8::2") -and
+                $DohTemplate -eq "https://secondary.doh.example.com/dns-query"
         }
     }
 
     It "does not apply a DoH-only provider when DoH is unsupported" {
         Mock Get-Command { return $null } -ParameterFilter { $Name -eq "Add-DnsClientDohServerAddress" }
 
-        $result = Set-WinUtilDNS -DNSProvider "Mullvad"
+        $result = Set-WinUtilDNS -DNSProvider "DohOnlyProvider"
 
         $result | Should -BeFalse
         Should -Invoke -CommandName Set-DnsClientServerAddress -Times 0 -Exactly
         Should -Invoke -CommandName Add-DnsClientDohServerAddress -Times 0 -Exactly
         Should -Invoke -CommandName Write-Warning -Times 1 -Exactly -ParameterFilter {
-            $Message -eq "DNS provider Mullvad requires DNS over HTTPS, which is not supported on this system."
+            $Message -eq "DNS provider DohOnlyProvider requires DNS over HTTPS, which is not supported on this system."
         }
     }
 
     It "does not change adapter DNS when DoH registration fails" {
         Mock Add-DnsClientDohServerAddress { throw "DoH registration failed" }
 
-        $result = Set-WinUtilDNS -DNSProvider "Mullvad"
+        $result = Set-WinUtilDNS -DNSProvider "DohOnlyProvider"
 
         $result | Should -BeFalse
         Should -Invoke -CommandName Set-DnsClientServerAddress -Times 0 -Exactly
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
             $Level -eq "ERROR" -and
                 $Component -eq "DNS" -and
-                $Message -like "DNS provider Mullvad was not completed: *"
+                $Message -like "DNS provider DohOnlyProvider was not completed: *"
         }
     }
 
