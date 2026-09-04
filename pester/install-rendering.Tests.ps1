@@ -21,7 +21,6 @@ Describe "Install app rendering startup contract" {
         $previousSync = Get-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
         $previousInitializeAppEntry = Get-Item -Path Function:\Initialize-InstallAppEntry -ErrorAction SilentlyContinue
         $previousSearch = Get-Item -Path Function:\Find-AppsByNameOrDescription -ErrorAction SilentlyContinue
-        $previousStartFaviconLoading = Get-Item -Path Function:\Start-WinUtilFaviconLoading -ErrorAction SilentlyContinue
         $errorCountBefore = $global:Error.Count
 
         try {
@@ -30,8 +29,6 @@ Describe "Install app rendering startup contract" {
             $global:sync.SearchBar = [pscustomobject]@{ Text = "" }
             $global:sync.Form = [pscustomobject]@{ Dispatcher = [System.Windows.Threading.Dispatcher]::CurrentDispatcher }
             $global:sync.InstallAppRenderQueue = [System.Collections.Queue]::new()
-            $global:sync.FaviconQueue = [System.Collections.Queue]::new()
-            $global:sync.FaviconQueue.Enqueue([pscustomobject]@{ AppKey = "QueuedFavicon" })
 
             $renderedApps = [System.Collections.Generic.List[string]]::new()
 
@@ -50,10 +47,6 @@ Describe "Install app rendering startup contract" {
                 throw "Search should not run for an empty search box in this test."
             }
 
-            function global:Start-WinUtilFaviconLoading {
-                $renderedApps.Add("Favicons")
-            }
-
             $global:sync.InstallAppRenderQueue.Enqueue([pscustomobject]@{ TargetElement = [pscustomobject]@{}; AppKeys = @("AppA", "AppB") })
             $global:sync.InstallAppRenderQueue.Enqueue([pscustomobject]@{ TargetElement = [pscustomobject]@{}; AppKeys = @("AppC") })
 
@@ -67,7 +60,7 @@ Describe "Install app rendering startup contract" {
                 param($eventSender)
                 $timer = [System.Windows.Threading.DispatcherTimer]$eventSender
 
-                if ($renderedApps -contains "Favicons" -or $timeout.Elapsed.TotalSeconds -gt 5) {
+                if ($global:sync.InstallAppEntriesRendered -or $timeout.Elapsed.TotalSeconds -gt 5) {
                     $timer.Stop()
                     $frame.Continue = $false
                 }
@@ -78,7 +71,7 @@ Describe "Install app rendering startup contract" {
 
             $global:sync.InstallAppEntriesRendered | Should -BeTrue
             $global:sync.InstallAppRenderQueue.Count | Should -Be 0
-            @($renderedApps) | Should -Be @("AppA", "AppB", "AppC", "Favicons")
+            @($renderedApps) | Should -Be @("AppA", "AppB", "AppC")
             $global:Error.Count | Should -Be $errorCountBefore
             (Get-Content (Join-Path $script:repoRoot "functions\private\Start-WinUtilInstallAppRendering.ps1") -Raw) |
                 Should -Not -Match 'Measure-WinUtilStep'
@@ -91,8 +84,7 @@ Describe "Install app rendering startup contract" {
 
             foreach ($functionBackup in @(
                     @{ Name = "Initialize-InstallAppEntry"; Backup = $previousInitializeAppEntry },
-                    @{ Name = "Find-AppsByNameOrDescription"; Backup = $previousSearch },
-                    @{ Name = "Start-WinUtilFaviconLoading"; Backup = $previousStartFaviconLoading }
+                    @{ Name = "Find-AppsByNameOrDescription"; Backup = $previousSearch }
                 )) {
                 if ($functionBackup.Backup) {
                     Set-Item -Path "Function:\$($functionBackup.Name)" -Value $functionBackup.Backup.ScriptBlock

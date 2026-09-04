@@ -170,8 +170,6 @@ function Start-WinUtilUserInterface {
             return
         }
 
-        Stop-WinUtilFaviconLoading
-
         # Work that is meant to outlive the window needs the pool it is running on. main.ps1
         # waits for it and shuts the pool down once it is done.
         if ($sync.FinishInConsole) {

@@ -50,6 +50,10 @@ function Get-WinUtilAppEntryHandlers {
             $borderElement = $this.Parent.Parent
             $borderElement.SetResourceReference([Windows.Controls.Control]::BackgroundProperty, "AppInstallUnselectedColor")
         }
+        ImageFailed = {
+            $this.Visibility = "Collapsed"
+            $this.Parent.Children[0].Visibility = "Visible"
+        }
     }
 
     return $script:WinUtilAppEntryHandlers

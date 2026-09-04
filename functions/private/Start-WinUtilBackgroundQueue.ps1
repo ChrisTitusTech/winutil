@@ -30,9 +30,6 @@ function Start-WinUtilBackgroundQueue {
 
         .PARAMETER DeferWhile
             Extra reason to hold off, tested each round. Lets a more urgent queue go first.
-
-        .PARAMETER DeferDelayMilliseconds
-            How long to wait before checking deferred work again.
     #>
     param(
         [Parameter(Mandatory)]
@@ -48,10 +45,7 @@ function Start-WinUtilBackgroundQueue {
 
         [string]$RequiresTab,
 
-        [scriptblock]$DeferWhile,
-
-        [ValidateRange(1, 60000)]
-        [int]$DeferDelayMilliseconds = 150
+        [scriptblock]$DeferWhile
     )
 
     if ($null -eq $sync.BackgroundQueues) {
@@ -64,7 +58,6 @@ function Start-WinUtilBackgroundQueue {
         OnComplete = $OnComplete
         RequiresTab = $RequiresTab
         DeferWhile = $DeferWhile
-        DeferDelayMilliseconds = $DeferDelayMilliseconds
     }
 
     # No window means no dispatcher to spread over and nothing competing for the thread
@@ -142,7 +135,7 @@ function Invoke-WinUtilBackgroundQueueStep {
             Invoke-WinUtilWhenIdle -Argument $Name -Callback {
                 param($QueueName)
                 Invoke-WinUtilBackgroundQueueStep -Name $QueueName
-            } -DelayMilliseconds $state.DeferDelayMilliseconds
+            }
             return
         }
 

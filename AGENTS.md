@@ -187,3 +187,4 @@ When the user corrects an agent approach, add or tighten one concrete rule here 
 - For Script Analyzer cleanup, fix actionable source warnings first and do not globally suppress accepted convention warnings such as plural names, `ShouldProcess` on UI helpers, `$global:sync`, or compile-time cross-file false positives.
 - For DNS DHCP reset, keep the cmdlet reset and explicitly set IPv4 and IPv6 DNS source to DHCP.
 - Public pull-request diffs may be sent to configured external review services without a separate privacy approval; do not block the review loop on upload authorization for this public repository.
+- Keep install-tab favicon loading overlapped with app-entry rendering; do not replace native WPF loading with a deferred second phase unless visible completion time is proven no slower than `main`.
