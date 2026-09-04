@@ -104,8 +104,8 @@ Describe "WinUtil favicon loading" {
         1..8 | ForEach-Object {
             $key = "Failed$_"
             $global:sync.FaviconTargets[$key] = [pscustomobject]@{
-                TargetImage = [pscustomobject]@{ Visibility = [Windows.Visibility]::Visible }
-                Fallback = [pscustomobject]@{ Visibility = [Windows.Visibility]::Collapsed }
+                TargetImage = [pscustomobject]@{ Visibility = "Visible" }
+                Fallback = [pscustomobject]@{ Visibility = "Collapsed" }
             }
             $global:sync.FaviconResults.Enqueue([pscustomobject]@{
                 AppKey = $key
@@ -127,7 +127,7 @@ Describe "WinUtil favicon loading" {
         $fetchSource = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilFaviconDownload.ps1") -Raw
         $downloadFunction = [regex]::Match(
             $fetchSource,
-            '(?s)function Invoke-WinUtilFaviconDownload \{.*?\n\}\n\nfunction Request-WinUtilFaviconDownload'
+            '(?s)function Invoke-WinUtilFaviconDownload \{.*?(?=function Request-WinUtilFaviconDownload)'
         ).Value
 
         $downloadFunction | Should -Match 'Timeout = \$requestTimeoutMilliseconds'
