@@ -22,17 +22,17 @@ function Get-WinUtilRecentLogs {
         $LogDirectory = Join-Path $sync.winutildir "logs"
     }
 
-    if (-not (Test-Path $LogDirectory)) {
+    if (-not (Test-Path -LiteralPath $LogDirectory -ErrorAction Stop)) {
         return ""
     }
 
     $cutoff = (Get-Date).AddDays(-$Days)
-    $logFiles = Get-ChildItem -Path $LogDirectory -Filter "winutil_*.log" -File -ErrorAction SilentlyContinue |
+    $logFiles = Get-ChildItem -LiteralPath $LogDirectory -Filter "winutil_*.log" -File -ErrorAction Stop |
         Where-Object { $_.LastWriteTime -ge $cutoff } |
         Sort-Object LastWriteTime
 
     $sections = foreach ($logFile in $logFiles) {
-        "=== $($logFile.Name) ===`n$(Get-Content -Path $logFile.FullName -Raw)"
+        "=== $($logFile.Name) ===`n$(Get-Content -LiteralPath $logFile.FullName -Raw -ErrorAction Stop)"
     }
 
     return ($sections -join "`n`n")

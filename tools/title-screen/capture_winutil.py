@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import ctypes
 import os
+import re
 from ctypes import wintypes
 from pathlib import Path
 
@@ -178,7 +179,10 @@ def _window_class(hwnd) -> str:
 
 def _is_winutil_window(title: str, class_name: str) -> bool:
     """Return whether a title and class identify the WinUtil WPF window."""
-    return "winutil" in title.lower() and "hwndwrapper" in class_name.lower()
+    return bool(
+        re.fullmatch(r"WinUtil \d{2}\.\d{2}\.\d{2}", title, re.IGNORECASE)
+        and "hwndwrapper" in class_name.lower()
+    )
 
 
 def _describe_window(hwnd, title: str, class_name: str, width: int, height: int):
@@ -286,6 +290,13 @@ def get_window_capture_size(hwnd) -> tuple[int, int]:
     when available. Because DPI awareness is enabled during import, neither the
     DWM nor User32 result should be scaled again.
     """
+    _, _, crop_box = get_window_capture_geometry(hwnd)
+    left, top, right, bottom = crop_box
+    return right - left, bottom - top
+
+
+def get_window_capture_geometry(hwnd) -> tuple[int, int, tuple[int, int, int, int]]:
+    """Return PrintWindow dimensions and the visible-frame crop rectangle."""
     window_rect = RECT()
     if not user32.GetWindowRect(hwnd, ctypes.byref(window_rect)):
         raise RuntimeError(f"GetWindowRect failed for HWND {hex(hwnd)}")
@@ -300,13 +311,26 @@ def get_window_capture_size(hwnd) -> tuple[int, int]:
         ctypes.byref(frame_rect),
         ctypes.sizeof(frame_rect),
     )
-    frame_width = frame_rect.right - frame_rect.left
-    frame_height = frame_rect.bottom - frame_rect.top
-    if frame_result == 0 and frame_width > 0 and frame_height > 0:
-        return frame_width, frame_height
-    if window_width > 0 and window_height > 0:
-        return window_width, window_height
-    raise RuntimeError(f"Window {hex(hwnd)} has invalid bounds")
+    if window_width <= 0 or window_height <= 0:
+        raise RuntimeError(f"Window {hex(hwnd)} has invalid bounds")
+
+    frame_left = frame_rect.left - window_rect.left
+    frame_top = frame_rect.top - window_rect.top
+    frame_right = frame_rect.right - window_rect.left
+    frame_bottom = frame_rect.bottom - window_rect.top
+    if (
+        frame_result == 0
+        and 0 <= frame_left < frame_right <= window_width
+        and 0 <= frame_top < frame_bottom <= window_height
+    ):
+        return window_width, window_height, (
+            frame_left,
+            frame_top,
+            frame_right,
+            frame_bottom,
+        )
+
+    return window_width, window_height, (0, 0, window_width, window_height)
 
 
 def capture_window(
@@ -323,6 +347,14 @@ def capture_window(
     compatibility fallback.
     """
     output_path = Path(output_path)
+    capture_width, capture_height, crop_box = get_window_capture_geometry(hwnd)
+    crop_width = crop_box[2] - crop_box[0]
+    crop_height = crop_box[3] - crop_box[1]
+    if (width, height) != (crop_width, crop_height):
+        raise RuntimeError(
+            "Window bounds changed before capture: "
+            f"expected {width}x{height}, found {crop_width}x{crop_height}."
+        )
     window_dc = user32.GetWindowDC(hwnd)
     if not window_dc:
         raise RuntimeError("GetWindowDC failed. Run at the same elevation as WinUtil.")
@@ -332,7 +364,7 @@ def capture_window(
         user32.ReleaseDC(hwnd, window_dc)
         raise RuntimeError("CreateCompatibleDC failed")
 
-    bitmap = gdi32.CreateCompatibleBitmap(window_dc, width, height)
+    bitmap = gdi32.CreateCompatibleBitmap(window_dc, capture_width, capture_height)
     if not bitmap:
         gdi32.DeleteDC(memory_dc)
         user32.ReleaseDC(hwnd, window_dc)
@@ -342,7 +374,7 @@ def capture_window(
     # previously selected GDI object must be restored before deleting the bitmap.
     previous_bitmap = gdi32.SelectObject(memory_dc, bitmap)
     bitmap_selected = True
-    buffer_size = width * height * 4
+    buffer_size = capture_width * capture_height * 4
     pixel_buffer = ctypes.create_string_buffer(buffer_size)
 
     try:
@@ -364,10 +396,10 @@ def capture_window(
 
         bitmap_info = BITMAPINFO()
         bitmap_info.bmiHeader.biSize = ctypes.sizeof(BITMAPINFOHEADER)
-        bitmap_info.bmiHeader.biWidth = width
+        bitmap_info.bmiHeader.biWidth = capture_width
         # Negative height requests a top-down DIB. Positive-height DIBs are stored
         # bottom-up and would produce a vertically flipped PNG.
-        bitmap_info.bmiHeader.biHeight = -height
+        bitmap_info.bmiHeader.biHeight = -capture_height
         bitmap_info.bmiHeader.biPlanes = 1
         bitmap_info.bmiHeader.biBitCount = 32
         bitmap_info.bmiHeader.biCompression = BI_RGB
@@ -380,14 +412,14 @@ def capture_window(
             memory_dc,
             bitmap,
             0,
-            height,
+            capture_height,
             pixel_buffer,
             ctypes.byref(bitmap_info),
             DIB_RGB_COLORS,
         )
-        if scan_lines != height:
+        if scan_lines != capture_height:
             raise RuntimeError(
-                f"GetDIBits returned {scan_lines} of {height} expected scan lines."
+                f"GetDIBits returned {scan_lines} of {capture_height} expected scan lines."
             )
     finally:
         # GDI handles are process-global and are not reclaimed promptly by Python.
@@ -402,12 +434,14 @@ def capture_window(
     # alpha. Decode the channel order, then make the window capture fully opaque.
     image = Image.frombytes(
         "RGBA",
-        (width, height),
+        (capture_width, capture_height),
         pixel_buffer.raw,
         "raw",
         "BGRA",
     )
     image.putalpha(255)
+    if crop_box != (0, 0, capture_width, capture_height):
+        image = image.crop(crop_box)
     # PrintWindow can report success while returning a blank surface across an
     # integrity-level boundary, so reject all-black and all-white captures.
     extrema = image.getextrema()

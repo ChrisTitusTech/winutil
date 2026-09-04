@@ -9,6 +9,8 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilCurrentSystem.ps1")
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilRegistry.ps1")
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilService.ps1")
+    . (Join-Path $script:repoRoot "functions\public\Invoke-WPFPanelAutologin.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilInstallPSProfile.ps1")
 
     function winget {
         param([Parameter(ValueFromRemainingArguments = $true)]$Arguments)
@@ -16,7 +18,43 @@ BeforeAll {
     function choco {
         param([Parameter(ValueFromRemainingArguments = $true)]$Arguments)
     }
+    # The CLI path is what these tests cover; the module path is verified against real winget
+    function Step-WinUtilJob { param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay, [switch]$Hide) }
     function Write-WinUtilLog { }
+}
+
+Describe "Invoke-WPFPanelAutologin" {
+    BeforeEach {
+        $script:sync = [Hashtable]::Synchronized(@{ winutildir = $TestDrive })
+        Mock Invoke-WebRequest { }
+        Mock Start-Process { }
+    }
+
+    It "uses the shared WinUtil data directory from a worker runspace" {
+        Invoke-WPFPanelAutologin
+
+        $expectedPath = Join-Path $TestDrive "autologin.exe"
+        Should -Invoke -CommandName Invoke-WebRequest -Times 1 -Exactly -ParameterFilter { $OutFile -eq $expectedPath }
+        Should -Invoke -CommandName Start-Process -Times 1 -Exactly -ParameterFilter { $FilePath -eq $expectedPath }
+    }
+}
+
+Describe "Get-WinUtilPowerShell7Path" {
+    It "finds a new standard install even before the current process PATH refreshes" {
+        $expectedPath = "$env:ProgramFiles\PowerShell\7\pwsh.exe"
+        Mock Get-Command { $null } -ParameterFilter { $Name -eq "pwsh" }
+        Mock Test-Path { $LiteralPath -eq $expectedPath }
+
+        Get-WinUtilPowerShell7Path | Should -Be $expectedPath
+    }
+
+    It "is also used by profile removal so a stale process PATH is supported" {
+        $source = Get-Content (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilUninstallPSProfile.ps1") -Raw
+
+        $source | Should -Match '\$pwshPath = Get-WinUtilPowerShell7Path'
+        $source | Should -Match '& \$pwshPath -NoProfile'
+        $source | Should -Not -Match 'Get-Command pwsh'
+    }
 }
 
 Describe "Invoke-WinUtilCurrentSystem installed apps" {

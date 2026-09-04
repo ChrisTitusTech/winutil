@@ -1,21 +1,42 @@
 function Invoke-WPFInstallUpgrade {
-    if ($sync.ChocoRadioButton.IsChecked) {
-        Install-WinUtilChoco # Ensure Chocolatey is installed before upgrading
+    <#
 
-        Write-Host "==========================================="
-        Write-Host "--           Updates started            ---"
-        Write-Host "-- You can close this window if desired ---"
-        Write-Host "==========================================="
+    .SYNOPSIS
+        Upgrades every package that has an update available
 
-        Start-Process -FilePath powershell.exe -ArgumentList 'choco upgrade all -y'
-    } else {
-        Install-WinUtilWinget # Ensure WinGet is installed before upgrading
+    .DESCRIPTION
+        Runs on the worker like any other package work, so the progress bar, the taskbar item
+        and the log report it the same way an install does.
 
-        Write-Host "==========================================="
-        Write-Host "--           Updates started            ---"
-        Write-Host "-- You can close this window if desired ---"
-        Write-Host "==========================================="
+    #>
 
-        Start-Process -FilePath powershell.exe -ArgumentList '-NoExit winget upgrade --all --include-unknown --silent --accept-source-agreements --accept-package-agreements'
+    # The radio button belongs to the interface thread; this body runs on a worker. The
+    # preference it maintains carries the same answer and is what every other workflow reads.
+    if ($sync.preferences.packagemanager -eq "Choco") {
+        Step-WinUtilJob -Status "Preparing Chocolatey" -State "Indeterminate"
+        Install-WinUtilChoco
+
+        Write-WinUtilLog -Component "Install" -Message "Upgrading all Chocolatey packages."
+        Step-WinUtilJob -Status "Upgrading all Chocolatey packages" -State "Indeterminate"
+
+        # "all" is choco's own name for every installed package, so this stays one call
+        $result = Measure-WinUtilStep -Scope "Install" -Name "choco upgrade all" -ScriptBlock {
+            Install-WinUtilProgramChoco -Action Upgrade -Programs @("all")
+        }
+        Complete-WinUtilPackageRun -Action "Upgrade" -Results @($result)
+        return
     }
+
+    Step-WinUtilJob -Status "Preparing WinGet" -State "Indeterminate"
+    Install-WinUtilWinget
+
+    Write-WinUtilLog -Component "Install" -Message "Upgrading all WinGet packages."
+    Step-WinUtilJob -Status "Upgrading all WinGet packages" -State "Indeterminate"
+
+    # Let WinGet resolve every package against its recorded source. Parsing its localized,
+    # width-truncated table loses identifiers and source information.
+    $result = Measure-WinUtilStep -Scope "Install" -Name "winget upgrade --all" -ScriptBlock {
+        Install-WinUtilProgramWinget -Action Upgrade -Programs @("all")
+    }
+    Complete-WinUtilPackageRun -Action "Upgrade" -Results @($result)
 }
