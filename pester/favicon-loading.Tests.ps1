@@ -4,6 +4,18 @@
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     Add-Type -AssemblyName PresentationFramework
+    if (-not ("System.Windows.Visibility" -as [type])) {
+        Add-Type @"
+namespace System.Windows
+{
+    public enum Visibility
+    {
+        Visible,
+        Collapsed
+    }
+}
+"@
+    }
 
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilFaviconUrl.ps1")
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilFaviconDownload.ps1")
