@@ -476,7 +476,7 @@ Describe "XAML and sync wiring" {
             "FaviconInFlight",
             "FaviconConsecutiveFailures",
             "FaviconLoadingStopped",
-            "FaviconTimer",
+            "FaviconApplyQueue",
             "FontScaleFactor",
             "Win11ISOImageInfo",
             "Win11ISODriveLetter",

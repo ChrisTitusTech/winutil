@@ -69,6 +69,7 @@ public sealed class WinUtilSlowReadStreamTestV1 : Stream
 
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilFaviconUrl.ps1")
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilFaviconDownload.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Start-WinUtilInstallAppRendering.ps1")
 
     function Initialize-WinUtilRunspacePool { }
     function Invoke-WPFRunspace {
@@ -76,6 +77,10 @@ public sealed class WinUtilSlowReadStreamTestV1 : Stream
         $null = $ScriptBlock, $ArgumentList, $ParameterList
     }
     function Test-WinUtilUIAlive { return $true }
+    function Start-WinUtilBackgroundQueue {
+        param($Name, $Queue, $RequiresTab, $Step, $OnComplete, $DeferWhile)
+        $null = $Name, $Queue, $RequiresTab, $Step, $OnComplete, $DeferWhile
+    }
 }
 
 Describe "WinUtil favicon loading" {
@@ -155,6 +160,51 @@ Describe "WinUtil favicon loading" {
         Should -Invoke Invoke-WPFRunspace -Times 0 -Exactly
     }
 
+    It "skips favicon work when the shared pool has no spare runspace" {
+        $pool = [pscustomobject]@{}
+        $pool | Add-Member -MemberType ScriptMethod -Name GetMaxRunspaces -Value { 1 }
+        $global:sync.runspace = $pool
+        $global:sync.FaviconQueue = [System.Collections.Queue]::new()
+        $global:sync.FaviconTargets = [hashtable]::Synchronized(@{})
+        $global:sync.FaviconInFlight = 0
+        $global:sync.FaviconLoadingStopped = $false
+        $global:sync.FaviconQueue.Enqueue([pscustomobject]@{ AppKey = "App" })
+        Mock Initialize-WinUtilRunspacePool { return $global:sync.runspace }
+        Mock Invoke-WPFRunspace { }
+
+        Request-WinUtilFaviconDownload
+
+        $global:sync.FaviconLoadingStopped | Should -BeTrue
+        $global:sync.FaviconQueue.Count | Should -Be 0
+        Should -Invoke Invoke-WPFRunspace -Times 0 -Exactly
+    }
+
+    It "applies favicon results through the shared background queue" {
+        $global:sync.FaviconQueue = [System.Collections.Queue]::new()
+        $global:sync.FaviconQueue.Enqueue([pscustomobject]@{ AppKey = "App" })
+        Mock Request-WinUtilFaviconDownload { }
+        Mock Start-WinUtilBackgroundQueue { }
+
+        Start-WinUtilFaviconLoading
+
+        $global:sync.FaviconApplyQueue.Count | Should -Be 1
+        Should -Invoke Start-WinUtilBackgroundQueue -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "FaviconResults" -and $RequiresTab -eq "Install"
+        }
+    }
+
+    It "does not start favicon loading when install rendering completes without a window" {
+        $global:sync.FaviconQueue = [System.Collections.Queue]::new()
+        $global:sync.FaviconQueue.Enqueue([pscustomobject]@{ AppKey = "App" })
+        Mock Test-WinUtilUIAlive { return $false }
+        Mock Start-WinUtilFaviconLoading { }
+
+        { Complete-WinUtilInstallAppRendering } | Should -Not -Throw
+
+        $global:sync.InstallAppEntriesRendered | Should -BeTrue
+        Should -Invoke Start-WinUtilFaviconLoading -Times 0 -Exactly
+    }
+
     It "opens the circuit after eight completed failures" {
         $global:sync.FaviconQueue = [System.Collections.Queue]::new()
         $global:sync.FaviconQueue.Enqueue([pscustomobject]@{ AppKey = "Pending" })
@@ -199,6 +249,12 @@ Describe "WinUtil favicon loading" {
         $downloadFunction | Should -Match '\.Abort\(\)'
         $downloadFunction | Should -Match '\$sync\.FaviconResults\.Enqueue'
         $downloadFunction | Should -Not -Match 'Windows\.Controls|Windows\.Media'
+    }
+
+    It "does not create a separate favicon polling timer" {
+        $fetchSource = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilFaviconDownload.ps1") -Raw
+
+        $fetchSource | Should -Not -Match 'FaviconTimer|DispatcherTimer'
     }
 
     It "stops a slow response at the total download deadline" {

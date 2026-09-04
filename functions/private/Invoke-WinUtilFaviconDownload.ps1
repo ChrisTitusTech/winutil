@@ -133,9 +133,16 @@ function Request-WinUtilFaviconDownload {
 
     Initialize-WinUtilRunspacePool | Out-Null
     $poolSize = [Math]::Max(1, $sync.runspace.GetMaxRunspaces())
+    if ($poolSize -le 1) {
+        # A single worker cannot serve optional favicon work without blocking user jobs.
+        $sync.FaviconLoadingStopped = $true
+        $sync.FaviconQueue.Clear()
+        return
+    }
+
     # Leave at least half of a multi-thread pool available for user-requested work. Favicon
     # requests are optional background work and must not become the next source of job latency.
-    $maximumActive = [Math]::Min(4, [Math]::Max(1, [Math]::Floor($poolSize / 2)))
+    $maximumActive = [Math]::Min(4, [Math]::Floor($poolSize / 2))
 
     while ($sync.FaviconQueue.Count -gt 0 -and $sync.FaviconInFlight -lt $maximumActive) {
         $pending = $sync.FaviconQueue.Dequeue()
@@ -223,9 +230,10 @@ function Receive-WinUtilFaviconResult {
 
     Request-WinUtilFaviconDownload
 
-    if ($sync.FaviconInFlight -eq 0 -and
-        ($sync.FaviconLoadingStopped -or $null -eq $sync.FaviconQueue -or $sync.FaviconQueue.Count -eq 0)) {
-        Stop-WinUtilFaviconLoading -PreserveResults
+    $complete = $sync.FaviconInFlight -eq 0 -and
+        ($sync.FaviconLoadingStopped -or $null -eq $sync.FaviconQueue -or $sync.FaviconQueue.Count -eq 0)
+    if (-not $complete -and $sync.FaviconApplyQueue) {
+        $sync.FaviconApplyQueue.Enqueue($true)
     }
 }
 
@@ -246,12 +254,22 @@ function Start-WinUtilFaviconLoading {
     $sync.FaviconConsecutiveFailures = 0
     $sync.FaviconLoadingStopped = $false
 
-    $sync.FaviconTimer = [System.Windows.Threading.DispatcherTimer]::new()
-    $sync.FaviconTimer.Interval = [TimeSpan]::FromMilliseconds(100)
-    $sync.FaviconTimer.Add_Tick({ Receive-WinUtilFaviconResult })
-    $sync.FaviconTimer.Start()
-
     Request-WinUtilFaviconDownload
+    if ($sync.FaviconLoadingStopped) {
+        Stop-WinUtilFaviconLoading -PreserveResults
+        return
+    }
+
+    $sync.FaviconApplyQueue = [System.Collections.Queue]::new()
+    $sync.FaviconApplyQueue.Enqueue($true)
+    Start-WinUtilBackgroundQueue -Name "FaviconResults" -Queue $sync.FaviconApplyQueue `
+        -RequiresTab "Install" `
+        -Step { Receive-WinUtilFaviconResult } `
+        -OnComplete { Stop-WinUtilFaviconLoading -PreserveResults } `
+        -DeferWhile {
+            $sync.ActiveJob -or
+                ($sync.FaviconResults.IsEmpty -and $sync.FaviconInFlight -gt 0)
+        }
 }
 
 function Stop-WinUtilFaviconLoading {
@@ -267,10 +285,7 @@ function Stop-WinUtilFaviconLoading {
     )
 
     $sync.FaviconLoadingStopped = $true
-    if ($sync.FaviconTimer) {
-        $sync.FaviconTimer.Stop()
-        $sync.Remove("FaviconTimer")
-    }
+    if ($sync.FaviconApplyQueue) { $sync.FaviconApplyQueue.Clear() }
     if ($sync.FaviconQueue) { $sync.FaviconQueue.Clear() }
     if ($sync.FaviconTargets) { $sync.FaviconTargets.Clear() }
     if (-not $PreserveResults -and $sync.FaviconResults) {
