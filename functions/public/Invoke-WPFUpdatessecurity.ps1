@@ -76,8 +76,5 @@ function Invoke-WPFUpdatessecurity {
     Set-ItemProperty -Path $automaticUpdatePolicyPath -Name "NoAutoRebootWithLoggedOnUsers" -Type DWord -Value 1
     Set-ItemProperty -Path $automaticUpdatePolicyPath -Name "AUPowerManagement" -Type DWord -Value 0
 
-    Write-Host "================================="
-    Write-Host "-- Updates Set to Recommended ---"
-    Write-Host "================================="
     Write-WinUtilLog -Component "Updates" -Message "Recommended Windows Update settings workflow completed."
 }

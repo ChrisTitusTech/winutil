@@ -43,4 +43,30 @@ Describe "Get-WinUtilRecentLogs" {
 
         $result | Should -BeNullOrEmpty
     }
+
+    It "reads an exact log directory whose name contains wildcard characters" {
+        $literalDirectory = Join-Path $TestDrive "logs[1]"
+        [System.IO.Directory]::CreateDirectory($literalDirectory) | Out-Null
+        $literalLog = Join-Path $literalDirectory "winutil_2026-08-20_11-00-00.log"
+        "literal path session log" | Set-Content -LiteralPath $literalLog
+        (Get-Item -LiteralPath $literalLog).LastWriteTime = (Get-Date).AddDays(-1)
+
+        $result = Get-WinUtilRecentLogs -Days 7 -LogDirectory $literalDirectory
+
+        $result | Should -Match "literal path session log"
+    }
+
+    It "fails the bundle when the log directory cannot be enumerated" {
+        Mock Get-ChildItem { throw "log directory access denied" }
+
+        { Get-WinUtilRecentLogs -Days 7 -LogDirectory $script:logDir } |
+            Should -Throw "*log directory access denied*"
+    }
+
+    It "fails the bundle when a selected log disappears before it is read" {
+        Mock Get-Content { throw "log disappeared" }
+
+        { Get-WinUtilRecentLogs -Days 7 -LogDirectory $script:logDir } |
+            Should -Throw "*log disappeared*"
+    }
 }

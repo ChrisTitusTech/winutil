@@ -31,68 +31,66 @@ function Invoke-WPFRunspace {
         $ParameterList
     )
 
-    if (-not ("WinUtilRunspaceCleanup" -as [type])) {
-        Add-Type @"
-using System;
-using System.Management.Automation;
-
-public sealed class WinUtilRunspaceCleanupState
-{
-    public PowerShell PowerShell { get; set; }
-    public IAsyncResult Handle { get; set; }
-}
-
-public static class WinUtilRunspaceCleanup
-{
-    public static readonly System.Threading.WaitOrTimerCallback Callback = Cleanup;
-
-    public static void Cleanup(object state, bool timedOut)
-    {
-        var cleanupState = state as WinUtilRunspaceCleanupState;
-        if (cleanupState == null || cleanupState.PowerShell == null || cleanupState.Handle == null)
-        {
-            return;
+    $poolLock = Get-WinUtilRunspacePoolLock
+    [System.Threading.Monitor]::Enter($poolLock)
+    try {
+        # The lifecycle lock keeps the final shutdown check, invocation start, and registration
+        # atomic with pool closure. Otherwise shutdown can miss a newly started invocation.
+        if ($sync.ShuttingDown) {
+            Write-WinUtilLog -Level "WARN" -Component "UI" -Message "Refused to start background work, WinUtil is closing."
+            return $null
         }
 
-        try
-        {
-            cleanupState.PowerShell.EndInvoke(cleanupState.Handle);
+        Initialize-WinUtilRunspacePool | Out-Null
+
+        # Create a PowerShell instance
+        $powershell = [powershell]::Create()
+
+        # Add Scriptblock and Arguments to runspace
+        [void]$powershell.AddScript($ScriptBlock)
+        [void]$powershell.AddArgument($ArgumentList)
+
+        foreach ($parameter in $ParameterList) {
+            # A single pair written as @(("Name", $value)) collapses to a two element array, and
+            # indexing it then yields the first two characters of the name
+            if ($parameter -is [string] -or $parameter.Count -ne 2) {
+                throw "ParameterList takes name and value pairs. Received '$parameter'. A single pair needs a leading comma: -ParameterList (,('Name', `$value))"
+            }
+            [void]$powershell.AddParameter($parameter[0], $parameter[1])
         }
-        catch
-        {
+
+        $powershell.RunspacePool = $sync.runspace
+
+        # Track before starting so no exception after BeginInvoke can make the caller release its
+        # job token while work is actually running. Cleanup registration is best-effort and has a
+        # background-thread fallback; it must never synchronously wait on a worker from the WPF
+        # dispatcher because the worker's finalizer may be waiting to restore UI state.
+        try {
+            Register-WinUtilActiveShell -PowerShell $powershell
+        } catch {
+            $powershell.Dispose()
+            throw
         }
-        finally
-        {
-            cleanupState.PowerShell.Dispose();
+        $handle = $null
+        try {
+            $handle = $powershell.BeginInvoke()
+        } catch {
+            $startError = $_
+            $sync.ActiveShells.Remove($powershell)
+            $powershell.Dispose()
+            throw $startError
         }
+
+        try {
+            Register-WinUtilRunspaceCleanup -PowerShell $powershell -Handle $handle
+        } catch {
+            # The worker remains tracked and owns its job token. Treat it as scheduled so another
+            # system-changing job cannot start beside it; later work/shutdown can reclaim the shell.
+            Write-WinUtilLog -Level "WARN" -Component "UI" -Message "Could not register background cleanup: $($_.Exception.Message)"
+        }
+
+        return $handle
+    } finally {
+        [System.Threading.Monitor]::Exit($poolLock)
     }
-}
-"@
-    }
-
-    Initialize-WinUtilRunspacePool | Out-Null
-
-    # Create a PowerShell instance
-    $powershell = [powershell]::Create()
-
-    # Add Scriptblock and Arguments to runspace
-    [void]$powershell.AddScript($ScriptBlock)
-    [void]$powershell.AddArgument($ArgumentList)
-
-    foreach ($parameter in $ParameterList) {
-        [void]$powershell.AddParameter($parameter[0], $parameter[1])
-    }
-
-    $powershell.RunspacePool = $sync.runspace
-
-    # Execute the RunspacePool
-    $handle = $powershell.BeginInvoke()
-
-    $cleanupState = [WinUtilRunspaceCleanupState]::new()
-    $cleanupState.PowerShell = $powershell
-    $cleanupState.Handle = $handle
-    [System.Threading.ThreadPool]::RegisterWaitForSingleObject($handle.AsyncWaitHandle, [WinUtilRunspaceCleanup]::Callback, $cleanupState, -1, $true) | Out-Null
-
-    # Return the handle
-    return $handle
 }
