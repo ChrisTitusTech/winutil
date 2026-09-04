@@ -80,6 +80,7 @@ function Invoke-WinUtilFaviconDownload {
         $webRequest.Timeout = $requestTimeoutMilliseconds
         $webRequest.ReadWriteTimeout = $requestTimeoutMilliseconds
         $webRequest.UserAgent = "WinUtil"
+        $webRequest.ServicePoint.ConnectionLimit = [Math]::Max(1, [int]$Request.ConnectionLimit)
         $responseTask = $webRequest.GetResponseAsync()
         $remainingMilliseconds = $requestTimeoutMilliseconds - [int]$requestClock.ElapsedMilliseconds
         if ($remainingMilliseconds -le 0 -or
@@ -140,15 +141,17 @@ function Request-WinUtilFaviconDownload {
         return
     }
 
-    # Leave at least half of a multi-thread pool available for user-requested work. Favicon
-    # requests are optional background work and must not become the next source of job latency.
-    $maximumActive = [Math]::Min(4, [Math]::Floor($poolSize / 2))
+    # Leave one worker available for user-requested work. Sixteen concurrent requests restore
+    # the throughput of the original non-blocking favicon implementation without letting optional
+    # downloads consume the entire shared pool on high-core-count systems.
+    $maximumActive = [Math]::Min(16, $poolSize - 1)
 
     while ($sync.FaviconQueue.Count -gt 0 -and $sync.FaviconInFlight -lt $maximumActive) {
         $pending = $sync.FaviconQueue.Dequeue()
         $workerRequest = [pscustomobject]@{
             AppKey = $pending.AppKey
             Url = $pending.Url
+            ConnectionLimit = $maximumActive
         }
 
         $sync.FaviconTargets[$pending.AppKey] = [pscustomobject]@{
@@ -264,6 +267,7 @@ function Start-WinUtilFaviconLoading {
     $sync.FaviconApplyQueue.Enqueue($true)
     Start-WinUtilBackgroundQueue -Name "FaviconResults" -Queue $sync.FaviconApplyQueue `
         -RequiresTab "Install" `
+        -DeferDelayMilliseconds 50 `
         -Step { Receive-WinUtilFaviconResult } `
         -OnComplete { Stop-WinUtilFaviconLoading -PreserveResults } `
         -DeferWhile {

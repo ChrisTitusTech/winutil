@@ -78,8 +78,8 @@ public sealed class WinUtilSlowReadStreamTestV1 : Stream
     }
     function Test-WinUtilUIAlive { return $true }
     function Start-WinUtilBackgroundQueue {
-        param($Name, $Queue, $RequiresTab, $Step, $OnComplete, $DeferWhile)
-        $null = $Name, $Queue, $RequiresTab, $Step, $OnComplete, $DeferWhile
+        param($Name, $Queue, $RequiresTab, $DeferDelayMilliseconds, $Step, $OnComplete, $DeferWhile)
+        $null = $Name, $Queue, $RequiresTab, $DeferDelayMilliseconds, $Step, $OnComplete, $DeferWhile
     }
 }
 
@@ -112,7 +112,7 @@ Describe "WinUtil favicon loading" {
         $renderSource | Should -Match '(?s)InstallAppEntriesRendered = \$true.*ApplicationIdle.*Start-WinUtilFaviconLoading'
     }
 
-    It "submits plain request data through a bounded share of the shared pool" {
+    It "reserves one shared worker while submitting plain request data" {
         $pool = [pscustomobject]@{}
         $pool | Add-Member -MemberType ScriptMethod -Name GetMaxRunspaces -Value { 8 }
         $global:sync.runspace = $pool
@@ -120,7 +120,7 @@ Describe "WinUtil favicon loading" {
         $global:sync.FaviconTargets = [hashtable]::Synchronized(@{})
         $global:sync.FaviconInFlight = 0
         $global:sync.FaviconLoadingStopped = $false
-        1..6 | ForEach-Object {
+        1..10 | ForEach-Object {
             $global:sync.FaviconQueue.Enqueue([pscustomobject]@{
                 AppKey = "App$_"
                 Url = "https://example.com/$_"
@@ -137,11 +137,38 @@ Describe "WinUtil favicon loading" {
 
         Request-WinUtilFaviconDownload
 
-        $global:sync.FaviconInFlight | Should -Be 4
-        $global:sync.FaviconQueue.Count | Should -Be 2
-        $script:submittedRequests.Count | Should -Be 4
-        @($script:submittedRequests[0].PSObject.Properties.Name) | Should -Be @("AppKey", "Url")
-        Should -Invoke Invoke-WPFRunspace -Times 4 -Exactly
+        $global:sync.FaviconInFlight | Should -Be 7
+        $global:sync.FaviconQueue.Count | Should -Be 3
+        $script:submittedRequests.Count | Should -Be 7
+        @($script:submittedRequests[0].PSObject.Properties.Name) | Should -Be @("AppKey", "Url", "ConnectionLimit")
+        $script:submittedRequests[0].ConnectionLimit | Should -Be 7
+        Should -Invoke Invoke-WPFRunspace -Times 7 -Exactly
+    }
+
+    It "caps favicon concurrency at sixteen on larger shared pools" {
+        $pool = [pscustomobject]@{}
+        $pool | Add-Member -MemberType ScriptMethod -Name GetMaxRunspaces -Value { 32 }
+        $global:sync.runspace = $pool
+        $global:sync.FaviconQueue = [System.Collections.Queue]::new()
+        $global:sync.FaviconTargets = [hashtable]::Synchronized(@{})
+        $global:sync.FaviconInFlight = 0
+        $global:sync.FaviconLoadingStopped = $false
+        1..20 | ForEach-Object {
+            $global:sync.FaviconQueue.Enqueue([pscustomobject]@{
+                AppKey = "App$_"
+                Url = "https://example.com/$_"
+                TargetImage = [pscustomobject]@{ Visibility = "Collapsed"; Source = $null }
+                Fallback = [pscustomobject]@{ Visibility = "Visible" }
+            })
+        }
+        Mock Initialize-WinUtilRunspacePool { return $global:sync.runspace }
+        Mock Invoke-WPFRunspace { return [pscustomobject]@{ Scheduled = $true } }
+
+        Request-WinUtilFaviconDownload
+
+        $global:sync.FaviconInFlight | Should -Be 16
+        $global:sync.FaviconQueue.Count | Should -Be 4
+        Should -Invoke Invoke-WPFRunspace -Times 16 -Exactly
     }
 
     It "does not submit favicon work while a user job owns the pool" {
@@ -189,7 +216,8 @@ Describe "WinUtil favicon loading" {
 
         $global:sync.FaviconApplyQueue.Count | Should -Be 1
         Should -Invoke Start-WinUtilBackgroundQueue -Times 1 -Exactly -ParameterFilter {
-            $Name -eq "FaviconResults" -and $RequiresTab -eq "Install"
+            $Name -eq "FaviconResults" -and $RequiresTab -eq "Install" -and
+                $DeferDelayMilliseconds -eq 50
         }
     }
 
@@ -244,6 +272,7 @@ Describe "WinUtil favicon loading" {
 
         $downloadFunction | Should -Match 'Timeout = \$requestTimeoutMilliseconds'
         $downloadFunction | Should -Match 'ReadWriteTimeout = \$requestTimeoutMilliseconds'
+        $downloadFunction | Should -Match 'ServicePoint\.ConnectionLimit'
         $downloadFunction | Should -Match 'GetResponseAsync'
         $downloadFunction | Should -Match 'Read-WinUtilStreamWithDeadline'
         $downloadFunction | Should -Match '\.Abort\(\)'
