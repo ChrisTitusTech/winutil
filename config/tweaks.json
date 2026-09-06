@@ -1875,6 +1875,7 @@
   },
   "WPFOOSUbutton": {
     "Content": "O&O ShutUp10++ - Run",
+    "Description": "Downloads O&O ShutUp10++ (about 76 MB) from oo-software.com on every click and launches it. Nothing is installed; the file is saved under %LocalAppData%\\winutil.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Type": "Button",
