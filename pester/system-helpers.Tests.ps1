@@ -114,7 +114,7 @@ Describe "Invoke-WinUtilCurrentSystem installed apps" {
     It "matches the primary Chocolatey package ID in one list call" {
         $result = @(Invoke-WinUtilCurrentSystem -CheckBox "choco")
 
-        $result | Should -Be @("WPFInstallGit")
+        $result | Should -Be @("WPFInstallGit", "WPFInstallChatGPT")
         Should -Invoke -CommandName choco -Times 1 -Exactly
         $script:chocoArguments | Should -Be @("list")
     }

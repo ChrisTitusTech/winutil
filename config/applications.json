@@ -1,4 +1,4 @@
-{
+﻿{
     "1password": {
         "category": "Utilities",
         "choco": "1password",
@@ -44,7 +44,7 @@
         "winget": "AIMP.AIMP",
         "foss": false
     },
-   "angryipscanner": {
+    "angryipscanner": {
         "category": "Pro Tools",
         "choco": "angryip",
         "content": "Angry IP Scanner",
@@ -228,7 +228,7 @@
         "category": "Development",
         "choco": "claude",
         "content": "Claude Desktop",
-        "description": "Anthropic's Claude desktop application for focused AI-assisted work and chat.",
+        "description": "Anthropic\u0027s Claude desktop application for focused AI-assisted work and chat.",
         "link": "https://claude.ai/download",
         "winget": "Anthropic.Claude",
         "foss": false
@@ -237,7 +237,7 @@
         "category": "Development",
         "choco": "claude-code",
         "content": "Claude Code",
-        "description": "Anthropic's agentic coding tool for terminal and IDE development workflows.",
+        "description": "Anthropic\u0027s agentic coding tool for terminal and IDE development workflows.",
         "link": "https://code.claude.com/",
         "winget": "Anthropic.ClaudeCode",
         "foss": false
@@ -264,7 +264,7 @@
         "category": "Pro Tools",
         "choco": "cpu-z",
         "content": "CPU-Z",
-        "description": "CPU-Z is a system monitoring and diagnostic tool for Windows. It provides detailed information about the computer's hardware components, including the CPU, memory, and motherboard.",
+        "description": "CPU-Z is a system monitoring and diagnostic tool for Windows. It provides detailed information about the computer\u0027s hardware components, including the CPU, memory, and motherboard.",
         "link": "https://www.cpuid.com/softwares/cpu-z.html",
         "winget": "CPUID.CPU-Z",
         "foss": false
@@ -643,7 +643,7 @@
         "category": "Utilities",
         "choco": "hugo-extended",
         "content": "Hugo",
-        "description": "The world's fastest framework for building websites.",
+        "description": "The world\u0027s fastest framework for building websites.",
         "link": "https://gohugo.io",
         "winget": "Hugo.Hugo.Extended",
         "foss": true
@@ -993,7 +993,7 @@
         "category": "Utilities",
         "choco": "tailscale",
         "content": "Tailscale",
-        "description": "The Tailscale client allows you to connect all your devices using WireGuard®, without the hassle. Tailscale makes it as easy as installing an app and signing in.",
+        "description": "The Tailscale client allows you to connect all your devices using WireGuardÂ®, without the hassle. Tailscale makes it as easy as installing an app and signing in.",
         "link": "https://tailscale.com/",
         "winget": "Tailscale.Tailscale",
         "foss": false
@@ -1038,7 +1038,7 @@
         "category": "Development",
         "choco": "nodejs",
         "content": "NodeJS",
-        "description": "NodeJS is a JavaScript runtime built on Chrome's V8 JavaScript engine for building server-side and networking applications.",
+        "description": "NodeJS is a JavaScript runtime built on Chrome\u0027s V8 JavaScript engine for building server-side and networking applications.",
         "link": "https://nodejs.org/",
         "winget": "OpenJS.NodeJS",
         "foss": true
@@ -1053,12 +1053,12 @@
         "foss": true
     },
     "pnpm": {
-    "category": "Development",
-    "content": "pnpm",
-    "description": "pnpm is a fast and disk space efficient package manager for JavaScript and Node.js applications.",
-    "link": "https://pnpm.io/",
-    "winget": "pnpm.pnpm",
-    "foss": true
+        "category": "Development",
+        "content": "pnpm",
+        "description": "pnpm is a fast and disk space efficient package manager for JavaScript and Node.js applications.",
+        "link": "https://pnpm.io/",
+        "winget": "pnpm.pnpm",
+        "foss": true
     },
     "notepadplus": {
         "category": "Multimedia Tools",
@@ -1235,7 +1235,7 @@
         "category": "Document",
         "choco": "pdfgear",
         "content": "PDFgear",
-        "description": "PDFgear is a piece of full-featured PDF management software for Windows, macOS, and mobile, and it's completely free to use.",
+        "description": "PDFgear is a piece of full-featured PDF management software for Windows, macOS, and mobile, and it\u0027s completely free to use.",
         "link": "https://www.pdfgear.com/",
         "winget": "PDFgear.PDFgear",
         "foss": false
@@ -1412,13 +1412,13 @@
         "foss": true
     },
     "qownnotes": {
-      "category": "Document",
-      "choco": "qownnotes",
-      "content": "QOwnNotes",
-      "description": "QOwnNotes is a free open-source note-taking app with Nextcloud/ownCloud integration.",
-      "link": "https://www.qownnotes.org/",
-      "winget": "pbek.QOwnNotes",
-      "foss": true  
+        "category": "Document",
+        "choco": "qownnotes",
+        "content": "QOwnNotes",
+        "description": "QOwnNotes is a free open-source note-taking app with Nextcloud/ownCloud integration.",
+        "link": "https://www.qownnotes.org/",
+        "winget": "pbek.QOwnNotes",
+        "foss": true
     },
     "qtox": {
         "category": "Communications",
@@ -1640,7 +1640,7 @@
         "category": "Communications",
         "choco": "teamspeak",
         "content": "TeamSpeak 3",
-        "description": "TEAMSPEAK. YOUR TEAM. YOUR RULES. Use crystal clear sound to communicate with your teammates cross-platform with military-grade security, lag-free performance & unparalleled reliability and uptime.",
+        "description": "TEAMSPEAK. YOUR TEAM. YOUR RULES. Use crystal clear sound to communicate with your teammates cross-platform with military-grade security, lag-free performance \u0026 unparalleled reliability and uptime.",
         "link": "https://www.teamspeak.com/",
         "winget": "TeamSpeakSystems.TeamSpeakClient",
         "foss": false
@@ -1649,7 +1649,7 @@
         "category": "Communications",
         "choco": "na",
         "content": "TeamSpeak 6",
-        "description": "TEAMSPEAK. YOUR TEAM. YOUR RULES. Use crystal clear sound to communicate with your teammates cross-platform with military-grade security, lag-free performance & unparalleled reliability and uptime.",
+        "description": "TEAMSPEAK. YOUR TEAM. YOUR RULES. Use crystal clear sound to communicate with your teammates cross-platform with military-grade security, lag-free performance \u0026 unparalleled reliability and uptime.",
         "link": "https://www.teamspeak.com/",
         "winget": "TeamSpeakSystems.TeamSpeakClient.Beta.6",
         "foss": false
@@ -1730,7 +1730,7 @@
         "category": "Games",
         "choco": "ubisoft-connect",
         "content": "Ubisoft Connect",
-        "description": "Ubisoft Connect is Ubisoft's digital distribution and online gaming service, providing access to Ubisoft's games and services.",
+        "description": "Ubisoft Connect is Ubisoft\u0027s digital distribution and online gaming service, providing access to Ubisoft\u0027s games and services.",
         "link": "https://ubisoftconnect.com/",
         "winget": "Ubisoft.Connect",
         "foss": false
@@ -1739,7 +1739,7 @@
         "category": "Browsers",
         "choco": "ungoogled-chromium",
         "content": "Ungoogled Chromium",
-        "description": "Ungoogled Chromium is a version of Chromium without Google's integration for enhanced privacy and control.",
+        "description": "Ungoogled Chromium is a version of Chromium without Google\u0027s integration for enhanced privacy and control.",
         "link": "https://github.com/Eloston/ungoogled-chromium",
         "winget": "eloston.ungoogled-chromium",
         "foss": true
@@ -1874,7 +1874,7 @@
         "category": "Development",
         "choco": "vscodium",
         "content": "VS Codium",
-        "description": "VSCodium is a community-driven, freely-licensed binary distribution of Microsoft's VS Code.",
+        "description": "VSCodium is a community-driven, freely-licensed binary distribution of Microsoft\u0027s VS Code.",
         "link": "https://vscodium.com/",
         "winget": "VSCodium.VSCodium",
         "foss": true
@@ -2081,7 +2081,7 @@
         "category": "Development",
         "choco": "lua",
         "winget": "rjpcomputing.luaforwindows",
-        "description": "A 'batteries included environment' for the Lua scripting language on Windows.",
+        "description": "A \u0027batteries included environment\u0027 for the Lua scripting language on Windows.",
         "content": "Lua",
         "link": "https://github.com/rjpcomputing/luaforwindows",
         "foss": true
@@ -2090,9 +2090,306 @@
         "category": "Utilities",
         "choco": "warp",
         "winget": "Cloudflare.Warp",
-        "description": "WARP is a freemium VPN service provided by Cloudflare. Includes usage of Cloudflare's DNS",
+        "description": "WARP is a freemium VPN service provided by Cloudflare. Includes usage of Cloudflare\u0027s DNS",
         "content": "Cloudflare WARP",
         "link": "https://one.one.one.one",
+        "foss": false
+    },
+    "opencode": {
+        "category": "Development",
+        "choco": "opencode-desktop",
+        "winget": "SST.OpenCodeDesktop",
+        "description": "OpenCode is an AI coding agent with a native, themeable terminal UI and desktop app.",
+        "content": "OpenCode",
+        "link": "https://opencode.ai/",
+        "foss": true
+    },
+    "opendesign": {
+        "category": "Development",
+        "choco": "na",
+        "winget": "Powerformer.OpenDesign",
+        "description": "The open-source alternative to Claude Design. A local-first, web-deployable design engine.",
+        "content": "Open Design",
+        "link": "https://open-design.ai/",
+        "foss": true
+    },
+    "dbeaver": {
+        "category": "Development",
+        "choco": "dbeaver",
+        "winget": "DBeaver.DBeaver.Community",
+        "description": "DBeaver is a free, open-source universal database tool for developers and database administrators.",
+        "content": "DBeaver",
+        "link": "https://dbeaver.io/",
+        "foss": true
+    },
+    "inkscape": {
+        "category": "Multimedia Tools",
+        "choco": "inkscape",
+        "winget": "Inkscape.Inkscape",
+        "description": "Inkscape is a professional quality vector graphics software which runs on Windows, Mac OS X and GNU/Linux.",
+        "content": "Inkscape",
+        "link": "https://inkscape.org/",
+        "foss": true
+    },
+    "krita": {
+        "category": "Multimedia Tools",
+        "choco": "krita",
+        "winget": "KDE.Krita",
+        "description": "Krita is a professional free and open-source painting program made by artists.",
+        "content": "Krita",
+        "link": "https://krita.org/",
+        "foss": true
+    },
+    "kdenlive": {
+        "category": "Multimedia Tools",
+        "choco": "kdenlive",
+        "winget": "KDE.Kdenlive",
+        "description": "Kdenlive is an open-source video editing software offering multi-track editing, various effects, and transitions.",
+        "content": "Kdenlive",
+        "link": "https://kdenlive.org/",
+        "foss": true
+    },
+    "podmandesktop": {
+        "category": "Development",
+        "choco": "podman-desktop",
+        "winget": "RedHat.Podman-Desktop",
+        "description": "Podman Desktop provides a graphical interface to seamlessly manage containers and Kubernetes from your local environment.",
+        "content": "Podman Desktop",
+        "link": "https://podman-desktop.io/",
+        "foss": true
+    },
+    "heidisql": {
+        "category": "Development",
+        "choco": "heidisql",
+        "winget": "HeidiSQL.HeidiSQL",
+        "description": "HeidiSQL is a lightweight and powerful database client for MySQL, MariaDB, PostgreSQL, SQL Server, and SQLite.",
+        "content": "HeidiSQL",
+        "link": "https://www.heidisql.com/",
+        "foss": true
+    },
+    "freecad": {
+        "category": "Pro Tools",
+        "choco": "freecad",
+        "winget": "FreeCAD.FreeCAD",
+        "description": "FreeCAD is an open-source parametric 3D computer-aided design (CAD) modeler.",
+        "content": "FreeCAD",
+        "link": "https://www.freecad.org/",
+        "foss": true
+    },
+    "shotcut": {
+        "category": "Multimedia Tools",
+        "choco": "shotcut",
+        "winget": "Meltytech.Shotcut",
+        "description": "Shotcut is a free, open source, cross-platform video editor.",
+        "content": "Shotcut",
+        "link": "https://shotcut.org/",
+        "foss": true
+    },
+    "transmission": {
+        "category": "Utilities",
+        "choco": "transmission",
+        "winget": "Transmission.Transmission",
+        "description": "Transmission is a fast, easy, and free BitTorrent client.",
+        "content": "Transmission",
+        "link": "https://transmissionbt.com/",
+        "foss": true
+    },
+    "veracrypt": {
+        "category": "Utilities",
+        "choco": "veracrypt",
+        "winget": "IDRIX.VeraCrypt",
+        "description": "VeraCrypt is a free, open-source disk encryption software for Windows, macOS, and Linux.",
+        "content": "VeraCrypt",
+        "link": "https://veracrypt.fr/",
+        "foss": true
+    },
+    "windirstat": {
+        "category": "Utilities",
+        "choco": "windirstat",
+        "winget": "WinDirStat.WinDirStat",
+        "description": "WinDirStat is a disk usage statistics viewer and cleanup tool for Microsoft Windows.",
+        "content": "WinDirStat",
+        "link": "https://windirstat.net/",
+        "foss": true
+    },
+    "logseq": {
+        "category": "Document",
+        "choco": "logseq",
+        "winget": "Logseq.Logseq",
+        "description": "Logseq is a privacy-first, open-source knowledge base that works on top of local plain-text Markdown and Org-mode files.",
+        "content": "Logseq",
+        "link": "https://logseq.com/",
+        "foss": true
+    },
+    "appflowy": {
+        "category": "Document",
+        "choco": "appflowy",
+        "winget": "AppFlowy.AppFlowy",
+        "description": "AppFlowy is an open-source alternative to Notion, enabling you to take control of your data and customizations.",
+        "content": "AppFlowy",
+        "link": "https://appflowy.io/",
+        "foss": true
+    },
+    "dbbrowserforsqlite": {
+        "category": "Development",
+        "choco": "sqlitebrowser",
+        "winget": "DBBrowserForSQLite.DBBrowserForSQLite",
+        "description": "DB Browser for SQLite is a high quality, visual, open-source tool to create, design, and edit database files compatible with SQLite.",
+        "content": "DB Browser for SQLite",
+        "link": "https://sqlitebrowser.org/",
+        "foss": true
+    },
+    "devtoys": {
+        "category": "Development",
+        "choco": "devtoys",
+        "winget": "DevToys-app.DevToys",
+        "description": "DevToys is a Swiss Army knife for developers offering many offline tools like formatters, converters, and encoders.",
+        "content": "DevToys",
+        "link": "https://devtoys.app/",
+        "foss": true
+    },
+    "drawio": {
+        "category": "Document",
+        "choco": "drawio",
+        "winget": "JGraph.Draw",
+        "description": "draw.io is an open-source diagramming application for creating flowcharts, process diagrams, and network diagrams.",
+        "content": "draw.io Desktop",
+        "link": "https://www.diagrams.net/",
+        "foss": true
+    },
+    "flowlauncher": {
+        "category": "Utilities",
+        "choco": "flow-launcher",
+        "winget": "Flow-Launcher.Flow-Launcher",
+        "description": "Flow Launcher is a quick file and application search utility, with support for customizable plugins.",
+        "content": "Flow Launcher",
+        "link": "https://www.flowlauncher.com/",
+        "foss": true
+    },
+    "espanso": {
+        "category": "Utilities",
+        "choco": "espanso",
+        "winget": "Espanso.Espanso",
+        "description": "Espanso is a privacy-first, open-source text expander that works across multiple operating systems.",
+        "content": "Espanso",
+        "link": "https://espanso.org/",
+        "foss": true
+    },
+    "ditto": {
+        "category": "Utilities",
+        "choco": "ditto",
+        "winget": "Ditto.Ditto",
+        "description": "Ditto is an extension to the standard windows clipboard. It saves each item placed on the clipboard.",
+        "content": "Ditto",
+        "link": "https://ditto-cp.sourceforge.io/",
+        "foss": true
+    },
+    "syncthing": {
+        "category": "Utilities",
+        "choco": "syncthing",
+        "winget": "Syncthing.Syncthing",
+        "description": "Syncthing is a continuous file synchronization program that synchronizes files between two or more computers securely.",
+        "content": "Syncthing",
+        "link": "https://syncthing.net/",
+        "foss": true
+    },
+    "duplicati": {
+        "category": "Utilities",
+        "choco": "duplicati",
+        "winget": "Duplicati.Duplicati",
+        "description": "Duplicati is a free backup client that securely stores encrypted, incremental, compressed backups on cloud storage services.",
+        "content": "Duplicati",
+        "link": "https://www.duplicati.com/",
+        "foss": true
+    },
+    "zettlr": {
+        "category": "Document",
+        "choco": "zettlr",
+        "winget": "Zettlr.Zettlr",
+        "description": "Zettlr is a powerful Markdown editor tailored to the needs of researchers, academics, and journalists.",
+        "content": "Zettlr",
+        "link": "https://www.zettlr.com/",
+        "foss": true
+    },
+    "kicad": {
+        "category": "Pro Tools",
+        "choco": "kicad",
+        "winget": "KiCad.KiCad",
+        "description": "KiCad is a cross-platform and open-source electronics design automation suite for schematic capture and printed circuit board (PCB) layout.",
+        "content": "KiCad",
+        "link": "https://www.kicad.org/",
+        "foss": true
+    },
+    "msys2": {
+        "category": "Development",
+        "choco": "msys2",
+        "winget": "MSYS2.MSYS2",
+        "description": "MSYS2 is a collection of tools and libraries providing an easy-to-use environment for building, installing and running native Windows software.",
+        "content": "MSYS2",
+        "link": "https://www.msys2.org/",
+        "foss": true
+    },
+    "codeblocks": {
+        "category": "Development",
+        "choco": "codeblocks",
+        "winget": "CodeBlocks.CodeBlocks",
+        "description": "Code::Blocks is a free C, C++ and Fortran IDE built to meet the most demanding needs of its users.",
+        "content": "Code::Blocks",
+        "link": "https://www.codeblocks.org/",
+        "foss": true
+    },
+    "pgadmin": {
+        "category": "Development",
+        "choco": "pgadmin4",
+        "winget": "PostgreSQL.pgAdmin",
+        "description": "pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL.",
+        "content": "pgAdmin",
+        "link": "https://www.pgadmin.org/",
+        "foss": true
+    },
+    "sioyek": {
+        "category": "Document",
+        "choco": "sioyek",
+        "winget": "ahrm.sioyek",
+        "description": "Sioyek is a PDF viewer designed for reading research papers and technical books.",
+        "content": "Sioyek",
+        "link": "https://sioyek.info/",
+        "foss": true
+    },
+    "marktext": {
+        "category": "Document",
+        "choco": "marktext",
+        "winget": "MarkText.MarkText",
+        "description": "MarkText is a simple and elegant markdown editor focused on speed and usability.",
+        "content": "MarkText",
+        "link": "https://marktext.app/",
+        "foss": true
+    },
+    "triliumnext": {
+        "category": "Document",
+        "choco": "na",
+        "winget": "TriliumNext.Notes",
+        "description": "TriliumNext is a hierarchical note taking application with focus on building large personal knowledge bases.",
+        "content": "TriliumNext Notes",
+        "link": "https://github.com/TriliumNext/Notes",
+        "foss": true
+    },
+    "pixelorama": {
+        "category": "Multimedia Tools",
+        "choco": "pixelorama",
+        "winget": "OramaInteractive.Pixelorama",
+        "description": "Pixelorama is a free and open-source 2D sprite editor, made with the Godot Engine.",
+        "content": "Pixelorama",
+        "link": "https://orama-interactive.itch.io/pixelorama",
+        "foss": true
+    },
+    "antigravityide": {
+        "category": "Development",
+        "choco": "antigravity-ide",
+        "winget": "Google.AntigravityIDE",
+        "description": "Antigravity IDE is the agentic development environment of Google Antigravity, built for the agent-first era and powered by Google\u0027s Gemini 3 models.",
+        "content": "Google Antigravity IDE",
+        "link": "https://antigravity.google/",
         "foss": false
     }
 }

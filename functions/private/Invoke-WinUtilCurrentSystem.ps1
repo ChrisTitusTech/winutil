@@ -17,10 +17,36 @@ Function Invoke-WinUtilCurrentSystem {
     )
     if ($CheckBox -eq "choco") {
         $apps = (choco list | Select-String -Pattern "^\S+").Matches.Value
+        $wingetPackages = [System.Collections.ArrayList]::new()
+
         $sync.configs.applicationsHashtable.GetEnumerator() | ForEach-Object {
             $packageId = ($_.Value.choco -split ";")[-1].Trim()
             if ($packageId -ne "na" -and $packageId -in $apps) {
                 Write-Output $_.Key
+            } elseif ($packageId -eq "na") {
+                $null = $wingetPackages.Add($_)
+            }
+        }
+
+        if ($wingetPackages.Count -gt 0) {
+            $originalEncoding = [Console]::OutputEncoding
+            try {
+                [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
+                $installedProgramOutput = @(winget list --accept-source-agreements --disable-interactivity 2>&1)
+                if ($LASTEXITCODE -eq 0) {
+                    $installedProgramText = $installedProgramOutput -join "`n"
+                    foreach ($entry in $wingetPackages) {
+                        $wingetId = (($entry.Value.winget -split ";")[-1] -replace "^msstore:", "").Trim()
+                        if (-not [string]::IsNullOrWhiteSpace($wingetId) -and $wingetId -ne "na") {
+                            $packagePattern = "(?im)[^\S\r\n]{2,}$([regex]::Escape($wingetId))(?=[^\S\r\n]{2,}|$)"
+                            if ($installedProgramText -match $packagePattern) {
+                                Write-Output $entry.Key
+                            }
+                        }
+                    }
+                }
+            } finally {
+                [Console]::OutputEncoding = $originalEncoding
             }
         }
     }

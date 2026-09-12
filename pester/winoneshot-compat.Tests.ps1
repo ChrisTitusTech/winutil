@@ -265,7 +265,14 @@ BeforeAll {
         )
 
         try {
-            $catalog = $Json | ConvertFrom-Json -NoEnumerate -ErrorAction Stop
+            if ($PSVersionTable.PSVersion.Major -ge 6) {
+                $catalog = $Json | ConvertFrom-Json -NoEnumerate -ErrorAction Stop
+            } else {
+                $catalog = $Json | ConvertFrom-Json -ErrorAction Stop
+                if ($Json -match '^\s*\[') {
+                    $catalog = @($catalog)
+                }
+            }
         } catch {
             return "WinOneShot cannot parse ${Name}: $_"
         }

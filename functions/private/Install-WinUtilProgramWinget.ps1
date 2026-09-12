@@ -78,6 +78,16 @@ Function Install-WinUtilProgramWinget {
         $process = Start-Process -FilePath winget -ArgumentList $arguments -NoNewWindow -Wait -PassThru
         $exitCode = $process.ExitCode
 
+        # 0x8A150014 (-1978335212): APPINSTALLER_CLI_ERROR_NO_PACKAGE_MATCH_FOUND
+        # Some packages installed by WinGet lose their source metadata in the registry. When this happens,
+        # specifying --source winget during uninstall fails. Fall back to an unscoped uninstall attempt.
+        if ($Action -eq "Uninstall" -and $exitCode -eq -1978335212) {
+            Write-WinUtilLog -Level "WARN" -Component "Package" -Message "Uninstall with source '$source' failed. Retrying without source..."
+            $arguments = @("uninstall", "--id", $program, "--silent")
+            $process = Start-Process -FilePath winget -ArgumentList $arguments -NoNewWindow -Wait -PassThru
+            $exitCode = $process.ExitCode
+        }
+
         if ($exitCode -eq 0) {
             $outcome = "Succeeded"
             $detail = "exit code 0"
