@@ -933,6 +933,60 @@ Describe "Win11 Creator setup media" {
         }
     }
 
+        It "falls back to the plain exit code for an unmapped DISM failure" {
+        $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoMountFailureUnknownCode_$([guid]::NewGuid())"
+        $installWim = Join-Path $contentRoot 'sources\install.wim'
+        $template = Get-Content -Path $script:autoUnattendPath -Raw
+        $script:dismCalls = [System.Collections.Generic.List[string]]::new()
+
+        function dism.exe {
+            param([Parameter(ValueFromRemainingArguments)][string[]]$Arguments)
+
+            $script:dismCalls.Add(($Arguments -join '|'))
+            if ($Arguments -contains '/Get-WimInfo') {
+                $global:LASTEXITCODE = 0
+                'Languages : en-US'
+                'Installation : Client'
+                'Edition : Professional'
+                'ProductSuite : Terminal Server'
+                'ProductType : WinNT'
+            } elseif ($Arguments -contains '/Mount-Image') {
+                $global:LASTEXITCODE = 999
+                'Mount failed'
+            } elseif ($Arguments -contains '/Get-MountedImageInfo') {
+                $global:LASTEXITCODE = 0
+                "Mount Dir : $(Join-Path (Split-Path -Path $contentRoot -Parent) 'wim_mount')"
+            } elseif ($Arguments -contains '/Export-Driver') {
+                $global:LASTEXITCODE = 0
+                Export-WinUtilTestDriverPackage -Arguments $Arguments -Fixtures @(
+                    @{ Path = 'storage_pkg'; Name = 'iaStorAC.inf'; Class = 'System' }
+                )
+            } else {
+                $global:LASTEXITCODE = 0
+            }
+        }
+
+        try {
+            New-Item -Path (Split-Path $installWim -Parent) -ItemType Directory -Force | Out-Null
+            Set-Content -Path $installWim -Value 'mock-wim'
+            . $script:isoScriptPath
+            
+            $thrown = $null
+            try {
+                Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template -InjectCurrentSystemDrivers $true -InstallImagePath $installWim -InstallImageIndex 6 -InstallEditionId 'Professional'
+            } catch {
+                $thrown = $_.Exception.Message
+            }
+            $thrown | Should -Not -Match '\('
+
+            @($script:dismCalls | Where-Object { $_ -match '/Get-MountedImageInfo' }).Count | Should -Be 1
+            @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Discard' }).Count | Should -Be 1
+        } finally {
+            Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
+            Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+
     It "does not add driver setup artifacts when injection is disabled" {
         $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoNoDrivers_$([guid]::NewGuid())"
 
