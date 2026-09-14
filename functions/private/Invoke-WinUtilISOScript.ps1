@@ -258,7 +258,7 @@ function Invoke-WinUtilISOScript {
                 if ($knownExitCode.ContainsKey($exitCode)) {
                     throw "DISM $Operation failed with exit code $exitCode ($($knownExitCode[$exitCode]))."
                 } else {
-                    throw "DISM $Operation failed with exit code $exitCode"
+                    throw "DISM $Operation failed with exit code $exitCode."
                 }
             }
             if ($Operation -ne 'metadata') {
