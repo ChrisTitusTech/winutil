@@ -179,6 +179,61 @@ Describe "Invoke-WinUtilTweaks" {
     }
 }
 
+Describe "Invoke-WinUtilTweaks completion status" {
+    BeforeAll {
+        . (Join-Path $script:repoRoot "functions\private\Write-WinUtilLog.ps1")
+        . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilScript.ps1")
+    }
+
+    BeforeEach {
+        $script:testRoot = Join-Path ([System.IO.Path]::GetTempPath()) "winutil-tweaks-$([guid]::NewGuid())"
+        $script:logPath = Join-Path $script:testRoot "logs\winutil_2026-09-15_12-00-00.log"
+        $script:sync = [Hashtable]::Synchronized(@{
+            logPath = $script:logPath
+            configs = @{
+                tweaks = [pscustomobject]@{
+                    WPFTweaksFailing = [pscustomobject]@{
+                        InvokeScript = @("throw 'simulated icacls failure'")
+                    }
+                    WPFTweaksClean = [pscustomobject]@{
+                        InvokeScript = @("Write-Output 'apply tweak'")
+                    }
+                }
+            }
+        })
+        $global:WinUtilIsJobWorker = $true
+        $global:WinUtilJobErrorCount = 0
+
+        Mock Write-Host { }
+        Mock Write-Warning { }
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name WinUtilIsJobWorker -Scope Global -ErrorAction SilentlyContinue
+        Remove-Variable -Name WinUtilJobErrorCount -Scope Global -ErrorAction SilentlyContinue
+        Remove-Item -Path $script:testRoot -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    It "warns instead of reporting completion when a tweak step logged an error" {
+        Invoke-WinUtilTweaks -CheckBox "WPFTweaksFailing"
+
+        $log = Get-Content -Path $script:logPath -Raw
+        $log | Should -Match "\[ERROR\] \[Script\] Runtime exception while running script for WPFTweaksFailing"
+        $log | Should -Match "\[WARN\] \[Tweaks\] Apply tweak finished with 1 error\(s\): WPFTweaksFailing"
+        $log | Should -Not -Match "tweak completed: WPFTweaksFailing"
+    }
+
+    It "reports completion when every tweak step succeeded" {
+        Invoke-WinUtilTweaks -CheckBox "WPFTweaksClean"
+
+        $log = Get-Content -Path $script:logPath -Raw
+        $log | Should -Match "\[INFO\] \[Tweaks\] Apply tweak completed: WPFTweaksClean"
+        $log | Should -Not -Match "\[WARN\]"
+        $log | Should -Not -Match "\[ERROR\]"
+    }
+}
+
 Describe "Invoke-WPFtweaksbutton" {
     BeforeEach {
         $script:sync = [Hashtable]::Synchronized(@{
