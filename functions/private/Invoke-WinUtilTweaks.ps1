@@ -23,7 +23,9 @@ function Invoke-WinUtilTweaks {
 
     $action = if ($undo) { "Undo" } else { "Apply" }
     Write-WinUtilLog -Component "Tweaks" -Message "$action tweak: $CheckBox"
-    $errorsBefore = [int]$global:WinUtilJobErrorCount
+    # Every ERROR line lands in the shared list from any runspace, so a toggle flipped on the
+    # UI thread reports the same way as a tweak running inside a job worker
+    $errorsBefore = if ($null -ne $sync.LoggedErrors) { $sync.LoggedErrors.Count } else { 0 }
 
     if ($undo) {
         $Values = @{
@@ -82,7 +84,7 @@ function Invoke-WinUtilTweaks {
             Remove-WinUtilProvisionedAPPX -PackageList $sync.configs.tweaks.$CheckBox.appx
         }
     }
-    $errorCount = [int]$global:WinUtilJobErrorCount - $errorsBefore
+    $errorCount = if ($null -ne $sync.LoggedErrors) { $sync.LoggedErrors.Count - $errorsBefore } else { 0 }
     if ($errorCount -gt 0) {
         Write-WinUtilLog -Level "WARN" -Component "Tweaks" -Message "$action tweak finished with $errorCount error(s): $CheckBox"
     } else {

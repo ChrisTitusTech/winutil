@@ -194,15 +194,19 @@ Describe "Invoke-WinUtilTweaks completion status" {
                 tweaks = [pscustomobject]@{
                     WPFTweaksFailing = [pscustomobject]@{
                         InvokeScript = @("throw 'simulated icacls failure'")
+                        UndoScript = @("throw 'simulated icacls undo failure'")
                     }
                     WPFTweaksClean = [pscustomobject]@{
                         InvokeScript = @("Write-Output 'apply tweak'")
                     }
                 }
             }
+            # Seeded with an earlier error: only errors logged during this tweak may count
+            LoggedErrors = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new(@("[UI] earlier unrelated failure")))
         })
-        $global:WinUtilIsJobWorker = $true
-        $global:WinUtilJobErrorCount = 0
+        # Toggle switches run the tweak on the UI thread, outside any job worker
+        Remove-Variable -Name WinUtilIsJobWorker -Scope Global -ErrorAction SilentlyContinue
+        Remove-Variable -Name WinUtilJobErrorCount -Scope Global -ErrorAction SilentlyContinue
 
         Mock Write-Host { }
         Mock Write-Warning { }
@@ -210,8 +214,6 @@ Describe "Invoke-WinUtilTweaks completion status" {
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name WinUtilIsJobWorker -Scope Global -ErrorAction SilentlyContinue
-        Remove-Variable -Name WinUtilJobErrorCount -Scope Global -ErrorAction SilentlyContinue
         Remove-Item -Path $script:testRoot -Recurse -Force -ErrorAction SilentlyContinue
     }
 
@@ -221,6 +223,15 @@ Describe "Invoke-WinUtilTweaks completion status" {
         $log = Get-Content -Path $script:logPath -Raw
         $log | Should -Match "\[ERROR\] \[Script\] Runtime exception while running script for WPFTweaksFailing"
         $log | Should -Match "\[WARN\] \[Tweaks\] Apply tweak finished with 1 error\(s\): WPFTweaksFailing"
+        $log | Should -Not -Match "tweak completed: WPFTweaksFailing"
+    }
+
+    It "warns when an undo step logged an error" {
+        Invoke-WinUtilTweaks -CheckBox "WPFTweaksFailing" -undo $true
+
+        $log = Get-Content -Path $script:logPath -Raw
+        $log | Should -Match "\[ERROR\] \[Script\] Runtime exception while running script for WPFTweaksFailing"
+        $log | Should -Match "\[WARN\] \[Tweaks\] Undo tweak finished with 1 error\(s\): WPFTweaksFailing"
         $log | Should -Not -Match "tweak completed: WPFTweaksFailing"
     }
 
