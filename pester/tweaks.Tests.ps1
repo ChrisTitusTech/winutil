@@ -199,14 +199,20 @@ Describe "Invoke-WinUtilTweaks completion status" {
                     WPFTweaksClean = [pscustomobject]@{
                         InvokeScript = @("Write-Output 'apply tweak'")
                     }
+                    # A job worker logging an error from its own runspace lands in the shared
+                    # list without passing through this runspace's logger
+                    WPFTweaksDuringJob = [pscustomobject]@{
+                        InvokeScript = @("`$null = `$sync.LoggedErrors.Add('[Job] error from a concurrent job'); Write-Output 'apply tweak'")
+                    }
                 }
             }
             # Seeded with an earlier error: only errors logged during this tweak may count
             LoggedErrors = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new(@("[UI] earlier unrelated failure")))
         })
-        # Toggle switches run the tweak on the UI thread, outside any job worker
+        # Toggle switches run the tweak on the UI thread, outside any job worker. The runspace
+        # counter starts non-zero: only errors logged during this tweak may count
         Remove-Variable -Name WinUtilIsJobWorker -Scope Global -ErrorAction SilentlyContinue
-        Remove-Variable -Name WinUtilJobErrorCount -Scope Global -ErrorAction SilentlyContinue
+        $global:WinUtilJobErrorCount = 3
 
         Mock Write-Host { }
         Mock Write-Warning { }
@@ -214,6 +220,7 @@ Describe "Invoke-WinUtilTweaks completion status" {
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name WinUtilJobErrorCount -Scope Global -ErrorAction SilentlyContinue
         Remove-Item -Path $script:testRoot -Recurse -Force -ErrorAction SilentlyContinue
     }
 
@@ -242,6 +249,14 @@ Describe "Invoke-WinUtilTweaks completion status" {
         $log | Should -Match "\[INFO\] \[Tweaks\] Apply tweak completed: WPFTweaksClean"
         $log | Should -Not -Match "\[WARN\]"
         $log | Should -Not -Match "\[ERROR\]"
+    }
+
+    It "ignores an error another runspace logged while the tweak ran" {
+        Invoke-WinUtilTweaks -CheckBox "WPFTweaksDuringJob"
+
+        $log = Get-Content -Path $script:logPath -Raw
+        $log | Should -Match "\[INFO\] \[Tweaks\] Apply tweak completed: WPFTweaksDuringJob"
+        $log | Should -Not -Match "tweak finished with"
     }
 }
 

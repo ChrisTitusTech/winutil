@@ -23,9 +23,9 @@ function Invoke-WinUtilTweaks {
 
     $action = if ($undo) { "Undo" } else { "Apply" }
     Write-WinUtilLog -Component "Tweaks" -Message "$action tweak: $CheckBox"
-    # Every ERROR line lands in the shared list from any runspace, so a toggle flipped on the
-    # UI thread reports the same way as a tweak running inside a job worker
-    $errorsBefore = if ($null -ne $sync.LoggedErrors) { $sync.LoggedErrors.Count } else { 0 }
+    # The counter lives in this runspace, so an error a concurrent job logs from its own
+    # runspace cannot be charged to a toggle flipped on the UI thread
+    $errorsBefore = [int]$global:WinUtilJobErrorCount
 
     if ($undo) {
         $Values = @{
@@ -84,7 +84,7 @@ function Invoke-WinUtilTweaks {
             Remove-WinUtilProvisionedAPPX -PackageList $sync.configs.tweaks.$CheckBox.appx
         }
     }
-    $errorCount = if ($null -ne $sync.LoggedErrors) { $sync.LoggedErrors.Count - $errorsBefore } else { 0 }
+    $errorCount = [int]$global:WinUtilJobErrorCount - $errorsBefore
     if ($errorCount -gt 0) {
         Write-WinUtilLog -Level "WARN" -Component "Tweaks" -Message "$action tweak finished with $errorCount error(s): $CheckBox"
     } else {
