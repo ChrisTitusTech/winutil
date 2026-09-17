@@ -360,17 +360,15 @@ Describe "Invoke-WPFUpdatessecurity" {
                 $Type -eq "DWord" -and
                 $Value -eq 4
         }
+        Should -Invoke -CommandName Remove-ItemProperty -Times 1 -Exactly -ParameterFilter {
+            $Path -eq "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -and
+                $Name -eq "NoAutoRebootWithLoggedOnUsers"
+        }
         Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
             $Path -eq "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -and
                 $Name -eq "AUOptions" -and
                 $Type -eq "DWord" -and
-                $Value -eq 4
-        }
-        Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
-            $Path -eq "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -and
-                $Name -eq "NoAutoRebootWithLoggedOnUsers" -and
-                $Type -eq "DWord" -and
-                $Value -eq 1
+                $Value -eq 3
         }
         Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
             $Path -eq "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -and
