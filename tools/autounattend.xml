@@ -455,9 +455,9 @@ $scripts = @(
         reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\GameDVR" /v AppCaptureEnabled /t REG_DWORD /d 0 /f;
         $services = @{ BITS = 'Manual'; wuauserv = 'Manual'; UsoSvc = 'Automatic' };
         foreach ($name in $services.Keys) {
-            Set-Service -Name $name -StartupType $services[$name] -ErrorAction SilentlyContinue;
+            Set-Service -Name $name -StartupType $services[$name] -ErrorAction Continue;
         }
-        Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc' -Name 'Start' -Value 3 -Type DWord -ErrorAction SilentlyContinue;
+        Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc' -Name 'Start' -Value 3 -Type DWord -ErrorAction Continue;
     };
     {
         reg.exe add "HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Education" /f;
