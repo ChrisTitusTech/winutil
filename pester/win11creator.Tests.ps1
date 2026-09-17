@@ -951,4 +951,11 @@ Describe "Win11 Creator setup media" {
         $exportRunIndex | Should -BeGreaterThan $exportDialogIndex
         $script:exportFunction | Should -Match ([regex]::Escape('return'))
     }
+
+    It "restores WaaSMedicSvc via direct registry write instead of Set-Service" {
+        $content = Get-Content -Path $script:autoUnattendPath -Raw
+
+        $content | Should -Match "Set-ItemProperty.*WaaSMedicSvc"
+        $content | Should -Not -Match "WaaSMedicSvc = 'Manual'"
+    }
 }

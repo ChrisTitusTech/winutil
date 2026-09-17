@@ -453,10 +453,11 @@ $scripts = @(
         reg.exe delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" /v DODownloadMode /f;
         reg.exe add "HKLM\Software\Policies\Microsoft\Windows\OneDrive" /v DisableFileSyncNGSC /t REG_DWORD /d 0 /f;
         reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\GameDVR" /v AppCaptureEnabled /t REG_DWORD /d 0 /f;
-        $services = @{ BITS = 'Manual'; wuauserv = 'Manual'; UsoSvc = 'Automatic'; WaaSMedicSvc = 'Manual' };
+        $services = @{ BITS = 'Manual'; wuauserv = 'Manual'; UsoSvc = 'Automatic' };
         foreach ($name in $services.Keys) {
             Set-Service -Name $name -StartupType $services[$name] -ErrorAction SilentlyContinue;
         }
+        Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc' -Name 'Start' -Value 3 -Type DWord -ErrorAction SilentlyContinue;
     };
     {
         reg.exe add "HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Education" /f;
