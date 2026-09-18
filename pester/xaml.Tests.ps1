@@ -411,6 +411,7 @@ Describe "XAML and sync wiring" {
             "Buttons",
             "PSScriptRoot",
             "version",
+            "IsLocalCompile",
             "winutildir",
             "logPath",
             "transcriptPath",
