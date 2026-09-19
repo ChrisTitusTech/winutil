@@ -1,0 +1,26 @@
+---
+title: Issue Triage Commands
+description: Commands trusted maintainers can use to label and close GitHub issues.
+---
+
+Trusted repository members whose numeric GitHub user IDs are listed in the issue triage workflow can run the commands below. These commands work only on issues. Comments on pull requests are ignored, and the workflow token has no pull-request write permission.
+
+## Commands
+
+- `/triage` adds the `needs-triage` label.
+- `/triageoff` removes the `needs-triage` label when it is present.
+- `/np` closes the issue as not planned.
+- `/np wontfix` adds the `wontfix` label without replacing existing labels, then closes the issue as not planned.
+- `/np notrelated` adds the `not-related` label without replacing existing labels, then closes the issue as not planned.
+- `/np <reason>` closes the issue as not planned without adding a label for unrecognized reasons.
+- `/duplicate <issue number>` closes the issue as a duplicate of another issue. The positive issue number may optionally start with `#`; pull request numbers are rejected.
+
+## Command handling
+
+Put exactly one command in the comment. Leading and trailing whitespace is allowed, but text before or after the command is not. Command matching is case-insensitive, and malformed issue numbers are rejected.
+
+After a command is handled, the workflow deletes the command comment and leaves an audit comment describing the result. A missing duplicate target or a request to duplicate an issue into itself is reported without closing the issue. Unexpected GitHub API failures stop the workflow and leave the command comment available for retry.
+
+## Access
+
+Access is granted by adding the trusted member's immutable numeric GitHub user ID to `.github/workflows/triage-tools.yaml` through a pull request. Abuse can result in removal from the allowlist or other repository moderation action.

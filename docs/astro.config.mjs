@@ -56,6 +56,7 @@ export default defineConfig({
 					label: 'Code Reference',
 					items: [
 						{ label: 'Architecture & Design', slug: 'code-reference/architecture' },
+						{ label: 'Issue Triage Commands', slug: 'code-reference/issue-triage' },
 						{ label: 'Tweaks Reference', items: [{ autogenerate: { directory: 'code-reference/tweaks' } }] },
 						{ label: 'Features Reference', items: [{ autogenerate: { directory: 'code-reference/features' } }] },
 					],

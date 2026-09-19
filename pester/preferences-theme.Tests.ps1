@@ -5,6 +5,13 @@
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 
+    # Theme application sets Thickness, CornerRadius and GridLength resources, so the real WPF
+    # types have to be loaded here rather than left to whichever other test file happened to
+    # load them first
+    Add-Type -AssemblyName PresentationFramework
+    Add-Type -AssemblyName PresentationCore
+    Add-Type -AssemblyName WindowsBase
+
     if (-not ("Windows.Media.SolidColorBrush" -as [type])) {
         Add-Type @"
 namespace Windows.Media
@@ -130,6 +137,9 @@ namespace System.Windows
     }
 
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinutilThemeChange.ps1")
+
+    function Test-WinUtilUIAlive { $null -ne $sync.Form -and $null -ne $sync.Form.Dispatcher }
+
 
     function Get-WinUtilToggleStatus {
         param($ToggleName)

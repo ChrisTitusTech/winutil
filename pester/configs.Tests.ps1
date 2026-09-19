@@ -217,6 +217,47 @@ Describe "Tweaks config" {
             throw ($invalidTweaks -join "`n")
         }
     }
+
+    It "keeps the location service disabled" -TestCases $testCase {
+        param([string]$Path)
+
+        $tweaks = Get-Content -Path $Path -Raw | ConvertFrom-Json
+        $locationServices = @($tweaks.WPFTweaksLocation.service | Where-Object Name -eq "lfsvc")
+
+        $locationServices | Should -HaveCount 1
+        $locationServices[0].StartupType | Should -Be "Disabled"
+    }
+
+    $icaclsPrincipalCases = @(
+        @{
+            Path          = (Join-Path $configRoot "tweaks.json")
+            Tweak         = "WPFTweaksDisableStoreSearch"
+            Sid           = '*S-1-1-0'
+            ExpectedCount = 2
+        }
+        @{
+            Path          = (Join-Path $configRoot "tweaks.json")
+            Tweak         = "WPFTweaksRazerBlock"
+            Sid           = '*S-1-1-0'
+            ExpectedCount = 2
+        }
+        @{
+            Path          = (Join-Path $configRoot "tweaks.json")
+            Tweak         = "WPFTweaksRemoveOneDrive"
+            Sid           = '*S-1-5-32-544'
+            ExpectedCount = 2
+        }
+    )
+
+    It "identifies the <Tweak> icacls principal by SID" -TestCases $icaclsPrincipalCases {
+        param([string]$Path, [string]$Tweak, [string]$Sid, [int]$ExpectedCount)
+
+        $tweaks = Get-Content -Path $Path -Raw | ConvertFrom-Json
+        $scripts = (@($tweaks.$Tweak.InvokeScript) + @($tweaks.$Tweak.UndoScript)) -join "`n"
+        $sidCount = ([regex]::Matches($scripts, [regex]::Escape($Sid))).Count
+
+        $sidCount | Should -Be $ExpectedCount -Because "$Tweak must pass $Sid to icacls at every call site instead of a localized account name"
+    }
 }
 
 Describe "Preset config" {
@@ -254,8 +295,9 @@ Describe "App navigation config" {
     It "is wired to an existing XAML target grid" {
         $mainScript = Get-Content -Path $script:mainScriptPath -Raw
         $tabInitializerScript = Get-Content -Path (Join-Path $script:repoRoot "functions/private/Initialize-WinUtilTabContent.ps1") -Raw
+        $uiInitializerScript = Get-Content -Path (Join-Path $script:repoRoot "functions/public/Initialize-WPFUI.ps1") -Raw
         $targetGridMatch = [regex]::Match(
-            "$mainScript`n$tabInitializerScript",
+            "$mainScript`n$tabInitializerScript`n$uiInitializerScript",
             'Invoke-WPFUIElements\s+-configVariable\s+\$sync\.configs\.appnavigation\s+-targetGridName\s+"([^"]+)"'
         )
 
@@ -428,6 +470,7 @@ Describe "UI-rendered config entries" {
         $tweaks = Get-WinUtilConfigObject -Name "tweaks"
         $requiredFields = @("Content", "category", "panel", "link")
         $allowedTypes = @("Button", "Combobox", "Toggle", "ToggleButton")
+        $allowedServiceStartupTypes = @("Automatic", "AutomaticDelayedStart", "Disabled", "Manual")
         $supportedButtons = Get-WinUtilButtonSwitchNames
         $invalidEntries = New-Object System.Collections.Generic.List[string]
 
@@ -497,6 +540,13 @@ Describe "UI-rendered config entries" {
 
                 foreach ($missingField in (Get-WinUtilMissingRequiredFields -EntryName "$($entry.Name),service" -Entry $serviceEntry -RequiredFields @("Name", "StartupType", "OriginalType"))) {
                     $invalidEntries.Add($missingField)
+                }
+
+                foreach ($startupTypeField in @("StartupType", "OriginalType")) {
+                    if ((Test-WinUtilHasNonEmptyProperty -Object $serviceEntry -Name $startupTypeField) -and
+                        $allowedServiceStartupTypes -notcontains $serviceEntry.$startupTypeField) {
+                        $invalidEntries.Add("$($entry.Name),service has unsupported $startupTypeField '$($serviceEntry.$startupTypeField)'")
+                    }
                 }
             }
         }

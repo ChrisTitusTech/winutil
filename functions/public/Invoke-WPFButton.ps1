@@ -3,7 +3,14 @@ function Invoke-WPFButton {
     <#
 
     .SYNOPSIS
-        Invokes the function associated with the clicked button
+        Routes a button press, deciding whether it is interface work or a job
+
+    .DESCRIPTION
+        This is the one place that classifies a button. Anything that changes the system runs
+        through Start-WinUtilJob, which means it gets the busy flag, the progress bar, the
+        taskbar item, the console banner and the log lines without each workflow arranging that
+        for itself. Anything that only changes what the interface is showing runs here and now,
+        because pushing it onto a worker would just make it slower.
 
     .PARAMETER Button
         The name of the button that was clicked
@@ -12,11 +19,111 @@ function Invoke-WPFButton {
 
     Param ([string]$Button)
 
-    # Use this to get the name of the button
-    #[System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")
-    if (-not $sync.ProcessRunning -and -not $sync.Win11ISOProcessRunning) {
-        Set-WinUtilTweaksProgressIndicator -Visible $false
+    # Clear the progress left behind by the previous job, but never while one is running
+    if (-not $sync.ActiveJob) {
+        Step-WinUtilJob -Hide
     }
+
+    # Switch-driven buttons that change the system. Anything in feature.json counts too. The
+    # WPFPanel* entries are the exception only when they hand off to a Windows applet, which is
+    # what a missing function means; the two that carry one change the system themselves and
+    # would otherwise run their waits on the interface thread with nothing reporting them.
+    #
+    # This is a whitelist on purpose: window chrome and popup toggles also reach here, because
+    # every Button in $sync gets wired to this function, and they must not become jobs.
+    $workButtons = @(
+        "WPFInstallUpgrade", "WPFAddUltPerf", "WPFRemoveUltPerf",
+        "WPFUpdatesdefault", "WPFUpdatesdisable", "WPFUpdatessecurity",
+        "WPFGetInstalledAppx"
+    )
+
+    $featureEntry = $sync.configs.feature.$Button
+    # Feature installation owns its selection validation and snapshots the selection before it
+    # starts a job. Wrapping it here would turn its "nothing selected" return into job success.
+    $isConfigWork = $featureEntry -and $Button -ne "WPFFeatureInstall" -and
+        ($Button -notlike "WPFPanel*" -or $featureEntry.function)
+
+    if ($isConfigWork -or $workButtons -contains $Button) {
+        $updatesDisableConfirmed = $false
+        if ($Button -eq "WPFUpdatesdisable") {
+            $updatesDisableConfirmed = Confirm-WPFUpdatesdisable
+            if (-not $updatesDisableConfirmed) {
+                return
+            }
+        }
+
+        Start-WinUtilJob -Name (Get-WinUtilButtonLabel -Button $Button) -Parameters @{
+            Button = $Button
+            UpdatesDisableConfirmed = $updatesDisableConfirmed
+        } -ScriptBlock {
+            param($Button, $UpdatesDisableConfirmed)
+
+            Invoke-WPFButtonAction -Button $Button -UpdatesDisableConfirmed:$UpdatesDisableConfirmed
+        }
+        return
+    }
+
+    # A handler that throws on the interface thread would otherwise reach the user as a bare
+    # message with no indication of which control produced it
+    try {
+        Invoke-WPFButtonAction -Button $Button
+    } catch {
+        Write-WinUtilErrorRecord -ErrorRecord $_ -Component "UI" -Context "Button '$Button'"
+    }
+}
+
+function Get-WinUtilButtonLabel {
+    <#
+    .SYNOPSIS
+        Returns the name a button's job should be reported under.
+
+    .DESCRIPTION
+        Whatever the button says is what the progress bar, the banner and the log say, so the
+        wording never drifts from the interface and there is no second list to maintain. Falls
+        back to the button name when there is nothing to read.
+    #>
+    param([string]$Button)
+
+    $content = $sync.configs.feature.$Button.Content
+    if (-not [string]::IsNullOrWhiteSpace($content)) {
+        return $content
+    }
+
+    $control = $sync.$Button
+    if ($control -and $control.Content) {
+        $text = if ($control.Content -is [string]) { $control.Content } else { $control.Content.Text }
+        if (-not [string]::IsNullOrWhiteSpace($text)) {
+            return ([string]$text).Trim()
+        }
+    }
+
+    $fallback = ($Button -replace '^WPF', '')
+    if ([string]::IsNullOrWhiteSpace($fallback)) {
+        return "WinUtil"
+    }
+    return $fallback
+}
+
+function Invoke-WPFButtonAction {
+
+    <#
+
+    .SYNOPSIS
+        Invokes the function associated with the clicked button
+
+    .DESCRIPTION
+        The work itself. Called by Invoke-WPFButton, either directly or from inside a job, so it
+        must not concern itself with progress, busy state or banners.
+
+    .PARAMETER Button
+        The name of the button that was clicked
+
+    #>
+
+    Param (
+        [string]$Button,
+        [switch]$UpdatesDisableConfirmed
+    )
 
     # Check if button is defined in feature config with function or InvokeScript
     if ($sync.configs.feature.$Button) {
@@ -61,7 +168,7 @@ function Invoke-WPFButton {
         "WPFRemoveUltPerf" {Invoke-WPFUltimatePerformance}
         "WPFundoall" {Invoke-WPFundoall}
         "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}
-        "WPFUpdatesdisable" {Invoke-WPFUpdatesdisable}
+        "WPFUpdatesdisable" {Invoke-WPFUpdatesdisable -Confirmed:$UpdatesDisableConfirmed}
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
@@ -78,13 +185,18 @@ function Invoke-WPFButton {
         }
         "WPFGetInstalledAppx" {
             $installedAppxPackages = Get-WinUtilInstalledAPPX
-            foreach ($appx in $sync.configs.appxHashtable.GetEnumerator()) {
-                if ($appx.Value.PackageId -in $installedAppxPackages) {
-                    $sync.$($appx.Key).IsChecked = $true
+            Invoke-WPFUIThread -Parameters @{ Installed = $installedAppxPackages } -ScriptBlock {
+                param($Installed)
+                foreach ($appx in $sync.configs.appxHashtable.GetEnumerator()) {
+                    if ($appx.Value.PackageId -in $Installed) {
+                        $sync.$($appx.Key).IsChecked = $true
+                    }
                 }
             }
         }
-        "WPFCloseButton" {$sync.Form.Close(); Write-Host "Bye bye!"}
+        # Closing may be declined, or leave a job running that outlives the window, so the
+        # goodbye belongs at the point the process actually ends rather than here
+        "WPFCloseButton" {$sync.Form.Close()}
         "WPFMinimizeButton" {[Windows.SystemCommands]::MinimizeWindow($sync.Form)}
         "WPFMaximizeButton" {
             if ($sync.Form.WindowState -eq [Windows.WindowState]::Normal) {

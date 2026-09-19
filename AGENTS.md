@@ -63,7 +63,7 @@ Given the current wave of npm/pnpm/yarn supply-chain worms (malicious postinstal
 - Treat any `postinstall`/`preinstall` lifecycle script in a new dependency as worth flagging to the user before installing — summarize what it does.
 - Don't put real secrets anywhere under `docs/`. `docs/.dockerignore` only trims what `docker build` copies into the image — it does not affect the `docker compose` bind mount, which exposes the entire `docs/` directory (including any `.env` file) inside the container for every dev/build/preview command (see the next bullet). There is no "keep it out unless mounted" middle ground here.
 - The container mounts `docs/` as a volume, so file edits on the host are reflected inside the container immediately — no rebuild needed for normal code changes, only when `docs/package.json`/`docs/package-lock.json` change (see the rebuild-and-drop-volume steps above).
-- This Docker requirement is specific to `docs/`. The rest of the repo is PowerShell (`Compile.ps1`, Pester, Script Analyzer) and runs directly on the host per Section 1.
+- This Docker requirement is specific to `docs/`. PowerShell tooling runs directly on the host per Section 1. The Python project under `tools/title-screen/` runs with uv as documented in its README.
 
 ## 3. Source Of Truth
 
@@ -127,6 +127,7 @@ If a check cannot be run, say exactly why and what residual risk remains. See SP
 
 - Treat local `winutil.ps1` changes as disposable compile output.
 - Never stage or commit `winutil.ps1`, `binary/`, or anything else ignored by the root `.gitignore` or `docs/.gitignore` — read those files rather than assuming. `docs/public/` is tracked source for static assets, not generated output.
+- `docs/src/assets/branding/title-screen.png` is a tracked generated asset. Do not edit it manually. Update `tools/title-screen/` or run the title-screen workflow.
 - Do not remove `.gitignore` rules that keep generated artifacts out of Git.
 - Before finishing, check `git status --short` and separate your changes from pre-existing user changes.
 - Do not revert user changes unless explicitly asked.
@@ -174,9 +175,16 @@ When the user corrects an agent approach, add or tighten one concrete rule here 
 - Import Pester 5.8.0 before running tests so `Invoke-Pester -Output Detailed -CI` does not resolve to Windows' inbox Pester 3.4.0.
 - Keep package install/uninstall process launches simple unless explicitly requested; do not add a separate stdout/stderr process logging helper for winget or Chocolatey.
 - When the active log file is owned by `Start-Transcript`, do not call `Add-Content` against that file; write to host output so the transcript captures the line in the same log file without recording a terminating-error diagnostic.
-- Keep UI helpers such as `Invoke-WPFUIThread` and `Set-WinUtilTweaksProgressIndicator` safe to call without a window; the `-Preset` and `-Config` paths run the workflows before the form is created and before PresentationCore is loaded.
+- Keep UI helpers such as `Invoke-WPFUIThread` and `Step-WinUtilJob` safe to call without a window; the `-Preset` and `-Config` paths run the workflows before the form is created and before PresentationCore is loaded. Ask `Test-WinUtilUIAlive` rather than writing the `$sync.Form` / dispatcher / `HasShutdownStarted` check out by hand.
+- Put long operations on the job layer with `Start-WinUtilJob` and report from them with `Step-WinUtilJob`; a job body must not set the busy flag, print its own banner, or carry its own try/catch/finally around the interface. `Invoke-WPFRunspace` directly is for fire-and-forget work that is not a job.
+- Drain interface work that nobody is waiting for through `Start-WinUtilBackgroundQueue`; do not hand-roll another dequeue-and-re-post pump.
+- Values a posted scriptblock needs travel as the dispatcher's argument or through `-Parameters`, never captured from the caller: a plain block resolves them when the dispatcher gets to it, and `GetNewClosure` binds command lookup to a copied scope. For the same reason, prefer a compiled `[action]` over `Invoke-WPFUIThread -Async` on hot re-posting paths, which marshals its body as text and recompiles it per post.
+- Diagnostic scaffolding does not ship. Measure with it, then delete it.
+- Have each Pester file load the assemblies and dot-source the functions it needs; several passed only because an earlier file in alphabetical order happened to load them.
 - Log install/uninstall package names and package-manager IDs before queuing background runspace work; do not rely on runspace host output for the package identity.
 - For Win11 Creator, start each new ISO modification in a fresh `WinUtil_Win11ISO_*` temp directory; existing-work detection is only for resuming/exporting already modified media.
-- For Win11 Creator driver injection, keep offline WIM servicing to one mount, one `/Add-Driver`, and one commit; do not export editions or run unrelated WIM cleanup, and reject damaged metadata before ISO export.
+- For Win11 Creator driver injection, keep offline WIM servicing to one mount and one commit: add each root package folder with its own `/Add-Driver /Recurse` so a single bad driver cannot fail the rest, and skip any folder whose ancestor is already in the set, since that ancestor's `/Recurse` covers it. Warn per failure and commit only when at least one package was added; when none were, warn and discard rather than throwing, so the run still produces an ISO. The discard in the cleanup block carries both orphaned mounts and that intentional zero-added case; keep it. Do not export editions or run unrelated WIM cleanup, and reject damaged metadata before ISO export. Use `-LiteralPath` for driver export paths, since `%TEMP%` can contain wildcard characters.
 - For Script Analyzer cleanup, fix actionable source warnings first and do not globally suppress accepted convention warnings such as plural names, `ShouldProcess` on UI helpers, `$global:sync`, or compile-time cross-file false positives.
 - For DNS DHCP reset, keep the cmdlet reset and explicitly set IPv4 and IPv6 DNS source to DHCP.
+- Public pull-request diffs may be sent to configured external review services without a separate privacy approval; do not block the review loop on upload authorization for this public repository.
+- Keep install-tab favicon loading overlapped with app-entry rendering; do not replace native WPF loading with a deferred second phase unless visible completion time is proven no slower than `main`.

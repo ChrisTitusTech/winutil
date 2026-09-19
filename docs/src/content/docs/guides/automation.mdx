@@ -22,6 +22,8 @@ Example:
 To view exactly what each preset does, see:
 https://github.com/ChrisTitusTech/winutil/blob/main/config/preset.json
 
+To find a key for a custom configuration, hover over a supported application, tweak, feature, or AppX entry in WinUtil. Its tooltip shows `Preset key: <key>`. Application keys are searchable on the Install tab, while tweak and AppX keys are searchable on their respective tabs. Feature keys are available from their tooltips because the Config/Features tab does not have search. Controls that cannot be applied from a preset, such as toggle switches, drop-downs, and package-manager choices, intentionally do not advertise a preset key.
+
 To create your own config file:
 
 1. Open WinUtil.
@@ -39,6 +41,14 @@ This is useful for:
 - Applying the same WinUtil configuration across multiple Windows 11 PCs
 - Reusing a known-good baseline after reinstalling Windows
 - Standardizing deployments for labs, workstations, or personal setups
+
+:::caution[Keep exported configurations current]
+Exported configurations contain the WinUtil catalog keys that existed when the file was created. Current exports use a flat JSON format: one string when a single setting is selected, or an array of strings when several settings are selected. If a later WinUtil version removes or renames any imported key, the entire import is rejected before current selections are changed. PowerShell reports the stale entry as `Unknown selection key '<key>'`.
+
+Older WinUtil versions exported a JSON object with `Install` package metadata and grouped `WPFInstall`, `WPFTweaks`, `WPFToggle`, and `WPFFeature` selections. When importing one of these legacy files, WinUtil restores the keys that still exist and skips retired keys, recording them as a warning in the WinUtil log. If the file contains no supported selections, the import makes no changes.
+
+To recover, compare the reported key with the current files in the [WinUtil configuration catalog](https://github.com/ChrisTitusTech/winutil/tree/main/config). Remove or replace the stale key in your JSON file, or create and export a new configuration with the current WinUtil version, then run the import again. Re-export long-lived baselines after catalog changes so they remain compatible.
+:::
 
 :::note
 Run the command in an elevated PowerShell session so WinUtil can apply system-level changes.

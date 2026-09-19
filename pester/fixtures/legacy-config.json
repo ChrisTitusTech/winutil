@@ -1,0 +1,22 @@
+{
+  "Install": [
+    {
+      "winget": "Git.Git",
+      "choco": "git"
+    },
+    {
+      "winget": "Retired.App",
+      "choco": "retired-app"
+    }
+  ],
+  "WPFTweaks": [
+    "WPFTweaksTelemetry"
+  ],
+  "WPFFeature": [
+    "WPFFeatureSandbox"
+  ],
+  "WPFInstall": [
+    "WPFInstallGit",
+    "WPFInstallRetired"
+  ]
+}
