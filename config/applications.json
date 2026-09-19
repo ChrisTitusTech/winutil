@@ -17,6 +17,15 @@
         "winget": "7zip.7zip",
         "foss": true
     },
+    "abdownloadmanager": {
+        "category": "Utilities",
+        "choco": "ab-download-manager",
+        "content": "AB Download Manager",
+        "description": "AB Download Manager is an open-source download accelerator and manager with multi-threaded downloads, queue scheduling, speed limiting, and browser integration.",
+        "link": "https://abdownloadmanager.com/",
+        "winget": "amir1376.ABDownloadManager",
+        "foss": true
+    },
     "adobe": {
         "category": "Document",
         "choco": "adobereader",
