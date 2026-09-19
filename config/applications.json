@@ -1618,6 +1618,14 @@
         "winget": "LizardByte.Sunshine",
         "foss": true
     },
+    "synctrayzor": {
+        "category": "Selfhosted Tools",
+        "choco": "synctrayzor",
+        "content": "SyncTrayzor",
+        "description": "SyncTrayzor is a Windows tray utility that bundles and wraps Syncthing, making it behave like a native application to easily manage and monitor file synchronization.",
+        "link": "https://github.com/GermanCoding/SyncTrayzor",
+        "winget": "GermanCoding.SyncTrayzor"
+    },
     "syncthing": {
         "category": "Selfhosted Tools",
         "choco": "syncthing",
