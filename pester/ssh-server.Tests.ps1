@@ -13,11 +13,19 @@ BeforeAll {
         param($Name, [switch]$Online)
     }
     function Get-NetFirewallRule {
+        [CmdletBinding()]
         param($Name)
+        if ($script:firewallRuleMissing) {
+            Write-Error -Message "No matching firewall rule was found." -Category ObjectNotFound
+            return
+        }
         [pscustomobject]@{ Enabled = $true }
     }
     function New-NetFirewallRule {
         param($Name, $DisplayName, $Enabled, $Direction, $Protocol, $Action, $LocalPort)
+    }
+    function Set-NetFirewallRule {
+        param($Name, $Enabled)
     }
     function Set-Service {
         param($Name, $StartupType)
@@ -68,6 +76,7 @@ BeforeAll {
 
 Describe "Invoke-WinUtilSSHServer" {
     BeforeEach {
+        $script:firewallRuleMissing = $false
         $script:testRoot = Join-Path ([System.IO.Path]::GetTempPath()) "winutil-ssh-$([guid]::NewGuid())"
         $script:programData = Join-Path $script:testRoot "ProgramData"
         $script:userProfile = Join-Path $script:testRoot "Users\tester"
@@ -100,6 +109,43 @@ Describe "Invoke-WinUtilSSHServer" {
 
         Get-Content -Path $script:sshdConfigPath -Raw | Should -BeExactly $original
         Should -Invoke -CommandName Restart-Service -Times 0 -Exactly
+    }
+
+    It "silently creates the firewall rule when it does not exist" {
+        New-SshdConfig -AdministratorsBlock $script:defaultAdministratorsBlock | Out-Null
+        $script:firewallRuleMissing = $true
+        Mock New-NetFirewallRule { }
+
+        $output = @(Invoke-WinUtilSSHServer 2>&1)
+
+        @($output | Where-Object { $_ -is [System.Management.Automation.ErrorRecord] }) | Should -BeNullOrEmpty
+        Should -Invoke New-NetFirewallRule -Times 1 -Exactly
+    }
+
+    It "enables an existing disabled firewall rule instead of recreating it" {
+        New-SshdConfig -AdministratorsBlock $script:defaultAdministratorsBlock | Out-Null
+        Mock Get-NetFirewallRule { [pscustomobject]@{ Enabled = 2 } }
+        Mock Set-NetFirewallRule { }
+        Mock New-NetFirewallRule { }
+
+        Invoke-WinUtilSSHServer
+
+        Should -Invoke Set-NetFirewallRule -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "sshd" -and $Enabled -eq $true
+        }
+        Should -Invoke New-NetFirewallRule -Times 0 -Exactly
+    }
+
+    It "leaves an existing enabled firewall rule unchanged" {
+        New-SshdConfig -AdministratorsBlock $script:defaultAdministratorsBlock | Out-Null
+        Mock Get-NetFirewallRule { [pscustomobject]@{ Enabled = 1 } }
+        Mock Set-NetFirewallRule { }
+        Mock New-NetFirewallRule { }
+
+        Invoke-WinUtilSSHServer
+
+        Should -Invoke Set-NetFirewallRule -Times 0 -Exactly
+        Should -Invoke New-NetFirewallRule -Times 0 -Exactly
     }
 
     It "leaves an sshd_config without an administrators block alone" {

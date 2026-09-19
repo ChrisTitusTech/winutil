@@ -11,7 +11,9 @@ Function Invoke-WinUtilCurrentSystem {
     #>
 
     param(
-        $CheckBox
+        $CheckBox,
+        [switch]$BypassToggleStatusCache,
+        [switch]$StopOnReadError
     )
     if ($CheckBox -eq "choco") {
         $apps = (choco list | Select-String -Pattern "^\S+").Matches.Value
@@ -52,6 +54,7 @@ Function Invoke-WinUtilCurrentSystem {
     if ($CheckBox -eq "tweaks") {
 
         if (!(Test-Path 'HKU:\')) {$null = (New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS)}
+        $readErrorAction = if ($StopOnReadError) { "Stop" } else { "SilentlyContinue" }
 
         foreach ($prop in $sync.configs.tweaks.PSObject.Properties) {
             $Config = $prop.Name
@@ -64,7 +67,9 @@ Function Invoke-WinUtilCurrentSystem {
                 $allMatch = $true
 
                 if ($entryType -eq "Toggle") {
-                    if (-not (Get-WinUtilToggleStatus $Config)) {
+                    if (-not (Get-WinUtilToggleStatus $Config `
+                        -BypassCache:$BypassToggleStatusCache `
+                        -StopOnReadError:$StopOnReadError)) {
                         $allMatch = $false
                     }
                 } else {
@@ -76,8 +81,12 @@ Function Invoke-WinUtilCurrentSystem {
                             $registryTotal++
                             $regstate = $null
 
-                            if (Test-Path $tweak.Path) {
-                                $regstate = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
+                            if (Test-Path $tweak.Path -ErrorAction $readErrorAction) {
+                                if ($StopOnReadError) {
+                                    $regstate = (Get-ItemProperty -Path $tweak.Path -ErrorAction Stop).$($tweak.Name)
+                                } else {
+                                    $regstate = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
+                                }
                             }
 
                             if ($null -eq $regstate) {
@@ -99,13 +108,28 @@ Function Invoke-WinUtilCurrentSystem {
                     }
                 }
 
-                foreach ($tweaks in $serviceKeys) {
-                    foreach ($tweak in $tweaks) {
-                        $Service = Get-Service -Name $tweak.Name -ErrorAction SilentlyContinue
-                        $expectedType = if ($tweak.StartupType -eq "Disable") { "Disabled" } else { $tweak.StartupType }
-                        if (-not $Service -or $expectedType -ne $Service.StartType) {
+                Foreach ($tweaks in $serviceKeys) {
+                    Foreach ($tweak in $tweaks) {
+                        try {
+                            $Service = Get-Service -Name $tweak.Name -ErrorAction $readErrorAction
+                        } catch {
+                            if ($StopOnReadError -and $_.FullyQualifiedErrorId -like "NoServiceFoundForGivenName*") {
+                                # A removed optional service means this tweak is not applied; it does
+                                # not make the registry and service state for every other tweak unknown.
+                                $allMatch = $false
+                                continue
+                            }
+                            throw
+                        }
+
+                        if ($Service) {
+                            $actualValue = $Service.StartType
+                            $expectedValue = $tweak.StartupType
+                            if ($expectedValue -ne $actualValue) {
+                                $allMatch = $false
+                            }
+                        } elseif ($StopOnReadError) {
                             $allMatch = $false
-                            break
                         }
                     }
                     if (-not $allMatch) { break }

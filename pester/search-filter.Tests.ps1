@@ -237,21 +237,29 @@ namespace Windows.Controls
                         choco = "browserapp"
                     }
                     WPFInstallMedia = [pscustomobject]@{
+                        winget = "Test.Media"
+                        choco = "media"
                         Content = "VLC"
                         Description = "Media player"
                         Category = "Multimedia Tools"
                     }
                     WPFInstallLiteral = [pscustomobject]@{
+                        winget = "Test.Literal"
+                        choco = "literal"
                         Content = "Tool [abc]"
                         Description = "Literal wildcard sample"
                         Category = "Utilities"
                     }
                     WPFInstallEditor = [pscustomobject]@{
+                        winget = "Test.Editor"
+                        choco = "editor"
                         Content = "Code Editor"
                         Description = "Text editing"
                         Category = "Development"
                     }
                     WPFInstallPowerToys = [pscustomobject]@{
+                        winget = "Test.PowerToys"
+                        choco = "powertoys"
                         Content = "PowerToys"
                         Description = "A collection of system utilities"
                         Category = "Microsoft Tools"
@@ -420,6 +428,17 @@ Describe "Find-WinUtilPackageManagerApps" {
         $result[0].Id | Should -Be "nmap"
     }
 
+    It "emits separate package objects into an array expression" {
+        Mock choco {
+            $global:LASTEXITCODE = 0
+            'first|1.0', 'second|2.0'
+        }
+        $result = @(Find-WinUtilPackageManagerApps -SearchString 'test' -ManagerPreference 'Choco')
+        $result.Count | Should -Be 2
+        $result[0].Id | Should -Be 'first'
+        $result[1].Id | Should -Be 'second'
+    }
+
     It "handles search failure gracefully" {
         Mock winget { throw "Winget error" }
 
@@ -464,6 +483,42 @@ Describe "Find-AppsByNameOrDescription" {
     }
     AfterEach {
         Remove-WinUtilSearchGlobals
+    }
+
+    It "reuses in-flight requests when the same filter is reapplied" {
+        New-WinUtilAppSearchContext -Categories @()
+        Mock Invoke-WPFRunspace {}
+        Find-AppsByNameOrDescription -SearchString 'example'
+        $token = $sync.LatestPackageManagerRequestToken
+        Find-AppsByNameOrDescription -SearchString 'example'
+        $sync.LatestPackageManagerRequestToken | Should -Be $token
+        Should -Invoke Invoke-WPFRunspace -Times 2 -Exactly
+    }
+
+    It "invalidates requests when clearing the search or starting a job" {
+        New-WinUtilAppSearchContext -Categories @()
+        Mock Invoke-WPFRunspace {}
+        Find-AppsByNameOrDescription -SearchString 'example'
+        Find-AppsByNameOrDescription -SearchString ''
+        $sync.LatestPackageManagerRequestToken | Should -BeNullOrEmpty
+        $sync.ActiveJob = @{ Name = 'Install' }
+        Find-AppsByNameOrDescription -SearchString 'another'
+        $sync.LatestPackageManagerRequestToken | Should -BeNullOrEmpty
+        Should -Invoke Invoke-WPFRunspace -Times 2 -Exactly
+    }
+
+    It "starts a replacement request after switching away and back" {
+        New-WinUtilAppSearchContext -Categories @()
+        $sync.preferences = @{ packagemanager = 'Winget' }
+        Mock Invoke-WPFRunspace {}
+        Find-AppsByNameOrDescription -SearchString 'example'
+        $token = $sync.LatestPackageManagerRequestToken
+        $sync.preferences.packagemanager = 'Choco'
+        Find-AppsByNameOrDescription -SearchString 'example'
+        $sync.preferences.packagemanager = 'Winget'
+        Find-AppsByNameOrDescription -SearchString 'example'
+        $sync.LatestPackageManagerRequestToken | Should -Not -Be $token
+        Should -Invoke Invoke-WPFRunspace -Times 6 -Exactly
     }
 
     It "restores app visibility and respects collapsed category state for empty search" {
@@ -553,9 +608,9 @@ Describe "Find-AppsByNameOrDescription" {
 
         Mock Find-WinUtilPackageManagerApps {
             if ($ManagerPreference -eq "Choco") {
-                return ,@([pscustomobject]@{ Name = "Browser App"; Id = "browserapp" })
+                return @([pscustomobject]@{ Name = "Browser App"; Id = "browserapp" })
             } else {
-                return ,@([pscustomobject]@{ Name = "Browser App"; Id = "Browser.App" })
+                return @([pscustomobject]@{ Name = "Browser App"; Id = "Browser.App" })
             }
         }
 
@@ -565,8 +620,8 @@ Describe "Find-AppsByNameOrDescription" {
 
         # Should not create dynamic entry for Browser.App since it's already in applicationsHashtable
         Should -Invoke Find-WinUtilPackageManagerApps -Times 4
-        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_Browser_App") | Should -Be $false
-        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_choco_browserapp") | Should -Be $false
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_42726F777365722E417070") | Should -Be $false
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_choco_62726F77736572617070") | Should -Be $false
     }
 
     It "splits compound package IDs when deduplicating" {
@@ -582,9 +637,9 @@ Describe "Find-AppsByNameOrDescription" {
 
         Mock Find-WinUtilPackageManagerApps {
             if ($ManagerPreference -eq "Winget") {
-                return ,@([pscustomobject]@{ Name = "App 2"; Id = "SecondApp" }, [pscustomobject]@{ Name = "App 4"; Id = "FourthApp" })
+                return @([pscustomobject]@{ Name = "App 2"; Id = "SecondApp" }, [pscustomobject]@{ Name = "App 4"; Id = "FourthApp" })
             } else {
-                return ,@([pscustomobject]@{ Name = "Choco 1"; Id = "FirstChoco" }, [pscustomobject]@{ Name = "Choco 3"; Id = "ThirdChoco" })
+                return @([pscustomobject]@{ Name = "Choco 1"; Id = "FirstChoco" }, [pscustomobject]@{ Name = "Choco 3"; Id = "ThirdChoco" })
             }
         }
         Mock Get-WinUtilPackageLink { return "https://example.com" }
@@ -593,16 +648,16 @@ Describe "Find-AppsByNameOrDescription" {
         Find-AppsByNameOrDescription -SearchString "App"
         
         # Should skip SecondApp because it is in the compound ID
-        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_SecondApp") | Should -Be $false
-        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_FourthApp") | Should -Be $true
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_5365636F6E64417070") | Should -Be $false
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_466F75727468417070") | Should -Be $true
 
         $sync.preferences = [pscustomobject]@{ packagemanager = "Choco" }
         Find-AppsByNameOrDescription -SearchString "Choco"
 
         # Should skip FirstChoco because it is in the compound ID. Winget dynamic results are cleared.
-        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_FourthApp") | Should -Be $false
-        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_choco_FirstChoco") | Should -Be $false
-        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_choco_ThirdChoco") | Should -Be $true
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_466F75727468417070") | Should -Be $false
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_choco_466972737443686F636F") | Should -Be $false
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_choco_546869726443686F636F") | Should -Be $true
     }
 
     It "filters curated applications by active package manager availability" {
@@ -648,7 +703,7 @@ Describe "Find-AppsByNameOrDescription" {
         New-WinUtilAppSearchContext -Categories @($category)
 
         Mock Find-WinUtilPackageManagerApps {
-            return ,@([pscustomobject]@{ Name = "Some New App"; Id = "Some.New.App" })
+            return @([pscustomobject]@{ Name = "Some New App"; Id = "Some.New.App" })
         }
         Mock Get-WinUtilPackageLink {
             return "https://example.com"
@@ -660,8 +715,8 @@ Describe "Find-AppsByNameOrDescription" {
         Should -Invoke Find-WinUtilPackageManagerApps -Times 2
         Should -Invoke Get-WinUtilPackageLink -Times 2 -Exactly
         Should -Invoke Initialize-InstallAppEntry -Times 1 -Exactly
-        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_Some_New_App") | Should -Be $true
-        $sync.configs.applicationsHashtable["WPFInstall_dynamic_winget_Some_New_App"].isDynamic | Should -Be $true
+        $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_536F6D652E4E65772E417070") | Should -Be $true
+        $sync.configs.applicationsHashtable["WPFInstall_dynamic_winget_536F6D652E4E65772E417070"].isDynamic | Should -Be $true
     }
     It "shows apps from every selected category when several chips are active" {
         $utilityItem = New-WinUtilAppSearchItem -Tag "WPFInstallLiteral"

@@ -227,6 +227,37 @@ Describe "Tweaks config" {
         $locationServices | Should -HaveCount 1
         $locationServices[0].StartupType | Should -Be "Disabled"
     }
+
+    $icaclsPrincipalCases = @(
+        @{
+            Path          = (Join-Path $configRoot "tweaks.json")
+            Tweak         = "WPFTweaksDisableStoreSearch"
+            Sid           = '*S-1-1-0'
+            ExpectedCount = 2
+        }
+        @{
+            Path          = (Join-Path $configRoot "tweaks.json")
+            Tweak         = "WPFTweaksRazerBlock"
+            Sid           = '*S-1-1-0'
+            ExpectedCount = 2
+        }
+        @{
+            Path          = (Join-Path $configRoot "tweaks.json")
+            Tweak         = "WPFTweaksRemoveOneDrive"
+            Sid           = '*S-1-5-32-544'
+            ExpectedCount = 2
+        }
+    )
+
+    It "identifies the <Tweak> icacls principal by SID" -TestCases $icaclsPrincipalCases {
+        param([string]$Path, [string]$Tweak, [string]$Sid, [int]$ExpectedCount)
+
+        $tweaks = Get-Content -Path $Path -Raw | ConvertFrom-Json
+        $scripts = (@($tweaks.$Tweak.InvokeScript) + @($tweaks.$Tweak.UndoScript)) -join "`n"
+        $sidCount = ([regex]::Matches($scripts, [regex]::Escape($Sid))).Count
+
+        $sidCount | Should -Be $ExpectedCount -Because "$Tweak must pass $Sid to icacls at every call site instead of a localized account name"
+    }
 }
 
 Describe "Preset config" {

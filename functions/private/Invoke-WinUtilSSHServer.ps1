@@ -20,9 +20,13 @@ function Invoke-WinUtilSSHServer {
 
     #Adding Firewall rule for port 22
     Write-Host "Setting up firewall rules"
-    if (-not ((Get-NetFirewallRule -Name 'sshd').Enabled)) {
+    $firewallRule = Get-NetFirewallRule -Name 'sshd' -ErrorAction SilentlyContinue
+    if ($null -eq $firewallRule) {
         New-NetFirewallRule -Name sshd -DisplayName 'OpenSSH Server (sshd)' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22
         Write-Host "Firewall rule for OpenSSH Server created and enabled."
+    } elseif ([int]$firewallRule.Enabled -eq 2) {
+        Set-NetFirewallRule -Name 'sshd' -Enabled True
+        Write-Host "Firewall rule for OpenSSH Server enabled."
     }
 
     # An SSH logon for a member of the administrators group gets a full token

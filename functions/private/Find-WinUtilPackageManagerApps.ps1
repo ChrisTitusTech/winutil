@@ -25,7 +25,7 @@ function Find-WinUtilPackageManagerApps {
     )
 
     if ([string]::IsNullOrWhiteSpace($SearchString)) {
-        return ,@()
+        return
     }
 
     $results = [System.Collections.Generic.List[PSObject]]::new()
@@ -33,12 +33,12 @@ function Find-WinUtilPackageManagerApps {
     try {
         if ($ManagerPreference -eq "Choco") {
             if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-                return ,@()
+                return
             }
 
             # choco --limit-output provides id|version format
             $out = @(choco search $SearchString --limit-output 2>&1)
-            if ($LASTEXITCODE -ne 0) { return ,@() }
+            if ($LASTEXITCODE -ne 0) { return }
             foreach ($line in $out) {
                 if ([string]::IsNullOrWhiteSpace($line)) { continue }
                 $parts = [string]$line -split '\|'
@@ -55,7 +55,7 @@ function Find-WinUtilPackageManagerApps {
         }
         else {
             if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-                return ,@()
+                return
             }
 
             $originalEncoding = [Console]::OutputEncoding
@@ -65,8 +65,8 @@ function Find-WinUtilPackageManagerApps {
                 } catch {
                     # Ignore encoding failure, proceed with search
                 }
-                $out = @(winget search $SearchString --accept-source-agreements --disable-interactivity 2>&1)
-                if ($LASTEXITCODE -ne 0) { return ,@() }
+                $out = @(winget search --query $SearchString --source winget --accept-source-agreements --disable-interactivity 2>&1)
+                if ($LASTEXITCODE -ne 0) { return }
             }
             finally {
                 try { [Console]::OutputEncoding = $originalEncoding } catch {}
@@ -103,8 +103,8 @@ function Find-WinUtilPackageManagerApps {
     }
     catch {
         Write-Warning "Find-WinUtilPackageManagerApps: Search failed for manager '$ManagerPreference': $_"
-        return ,@()
+        return
     }
 
-    return ,($results.ToArray())
+    return $results.ToArray()
 }

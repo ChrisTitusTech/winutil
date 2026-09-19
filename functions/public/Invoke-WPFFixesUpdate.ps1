@@ -30,7 +30,7 @@ function Invoke-WPFFixesUpdate {
     param($Aggressive = $false)
 
     Write-Progress -Id 0 -Activity "Repairing Windows Update" -PercentComplete 0
-    Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
+    Step-WinUtilJob -State "Indeterminate"
     Write-Host "Starting Windows Update Repair..."
     # Wait for the first progress bar to show, otherwise the second one won't show
     Start-Sleep -Milliseconds 200
@@ -43,15 +43,20 @@ function Invoke-WPFFixesUpdate {
     Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Stopping Windows Update Services..." -PercentComplete 10
     # Stop the Windows Update Services
     $services = @("BITS", "wuauserv", "appidsvc", "cryptsvc")
+    $stoppedServices = [System.Collections.Generic.List[string]]::new()
     for ($i = 0; $i -lt $services.Count; $i++) {
         $svc = $services[$i]
         $pct = [int](($i / $services.Count) * 100)
         Write-Progress -Id 2 -ParentId 0 -Activity "Stopping Services" -Status "Stopping $svc..." -PercentComplete $pct
         try {
+            $wasRunning = (Get-Service -Name $svc -ErrorAction Stop).Status -eq 'Running'
             Stop-Service -Name $svc -Force -ErrorAction Stop
+            if ($wasRunning) { $stoppedServices.Add($svc) }
         } catch {
+            foreach ($stoppedSvc in $stoppedServices) {
+                Start-Service -Name $stoppedSvc -ErrorAction Continue
+            }
             Write-Progress -Id 2 -ParentId 0 -Activity "Stopping Services" -Status "Failed to stop $svc" -PercentComplete $pct
-            Set-WinUtilTaskbaritem -state "Error" -overlay "warning"
             throw "Failed to stop service $svc - cannot continue with Windows Update repair: $_"
         }
     }
@@ -199,24 +204,14 @@ function Invoke-WPFFixesUpdate {
     try {
         (New-Object -ComObject Microsoft.Update.AutoUpdate).DetectNow()
     } catch {
-        Set-WinUtilTaskbaritem -state "Error" -overlay "warning"
+        Write-WinUtilLog -Level "ERROR" -Component "Updates" -Message "Failed to create Windows Update COM object: $_"
         Write-Warning "Failed to create Windows Update COM object: $_"
     }
     Start-Process -NoNewWindow -FilePath "wuauclt" -ArgumentList "/resetauthorization", "/detectnow"
     Write-Progress -Id 10 -ParentId 0 -Activity "Forcing discovery" -Status "Completed" -PercentComplete 100
     Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Completed" -PercentComplete 100
 
-    Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
-
-    $ButtonType = [System.Windows.MessageBoxButton]::OK
-    $MessageboxTitle = "Reset Windows Update "
-    $Messageboxbody = ("Stock settings loaded.`n Please reboot your computer")
-    $MessageIcon = [System.Windows.MessageBoxImage]::Information
-
-    [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
-    Write-Host "==============================================="
-    Write-Host "-- Reset All Windows Update Settings to Stock -"
-    Write-Host "==============================================="
+    Show-WinUtilMessage -Message "Stock settings loaded.`n Please reboot your computer" -Title "Reset Windows Update" -Button "OK" -Icon "Information" | Out-Null
 
     # Remove the progress bars
     foreach ($id in 0..10) {

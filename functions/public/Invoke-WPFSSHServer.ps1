@@ -2,16 +2,9 @@ function Invoke-WPFSSHServer {
     <#
 
     .SYNOPSIS
-        Invokes the OpenSSH Server install in a runspace
+        Installs and starts the OpenSSH Server
 
   #>
 
-    Invoke-WPFRunspace -ScriptBlock {
-
-        Invoke-WinUtilSSHServer
-
-        Write-Host "======================================="
-        Write-Host "--     OpenSSH Server installed!    ---"
-        Write-Host "======================================="
-    }
+    Invoke-WinUtilSSHServer
 }
