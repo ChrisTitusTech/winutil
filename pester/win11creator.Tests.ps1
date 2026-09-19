@@ -306,7 +306,26 @@ Describe "Win11 Creator setup media" {
         $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$verified = $true'))
         $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('Dismount-DiskImage -ImagePath $isoPath -ErrorAction Stop'))
         $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$sync["Win11ISOImagePath"] = $null'))
-        $script:mountAndVerifyFunction.IndexOf('Dismount-DiskImage') | Should -BeGreaterThan $script:mountAndVerifyFunction.IndexOf('finally')
+        $script:mountAndVerifyFunction.IndexOf('Dismount-DiskImage -ImagePath $isoPath') | Should -BeGreaterThan $script:mountAndVerifyFunction.IndexOf('finally')
+    }
+
+    It "dismounts a previously verified ISO before mounting a replacement" {
+        $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('$previous = $sync["Win11ISOImagePath"]'))
+        $script:mountAndVerifyFunction | Should -Match ([regex]::Escape('Dismount-DiskImage -ImagePath $previous -ErrorAction Stop'))
+
+        $script:mountAndVerifyFunction.IndexOf('Dismount-DiskImage -ImagePath $previous') |
+            Should -BeLessThan $script:mountAndVerifyFunction.IndexOf('$sync["Win11ISOImagePath"] = $null')
+    }
+
+    It "keeps the stored path and restores the interface when the previous ISO will not dismount" {
+        $dismountIndex = $script:mountAndVerifyFunction.IndexOf('Dismount-DiskImage -ImagePath $previous')
+        $resetIndex    = $script:mountAndVerifyFunction.IndexOf('$sync["Win11ISOImagePath"] = $null')
+
+        $throwIndex = $script:mountAndVerifyFunction.IndexOf('throw $stillMounted')
+        $throwIndex | Should -BeGreaterThan $dismountIndex
+        $throwIndex | Should -BeLessThan $resetIndex
+
+        $script:mountAndVerifyFunction.IndexOf('try {') | Should -BeLessThan $dismountIndex
     }
 
     It "keeps ISO cleanup in finally so stopping modification cannot bypass it" {
