@@ -993,7 +993,7 @@
         "category": "Utilities",
         "choco": "tailscale",
         "content": "Tailscale",
-        "description": "The Tailscale client allows you to connect all your devices using WireGuardÂ®, without the hassle. Tailscale makes it as easy as installing an app and signing in.",
+        "description": "The Tailscale client allows you to connect all your devices using WireGuard\u00AE, without the hassle. Tailscale makes it as easy as installing an app and signing in.",
         "link": "https://tailscale.com/",
         "winget": "Tailscale.Tailscale",
         "foss": false
