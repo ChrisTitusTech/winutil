@@ -114,6 +114,8 @@ function Find-AppsByNameOrDescription {
                             } else {
                                 $appControl.Visibility = [Windows.Visibility]::Collapsed
                             }
+                        } else {
+                            $appControl.Visibility = [Windows.Visibility]::Collapsed
                         }
                     }
                 }

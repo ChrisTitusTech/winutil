@@ -139,6 +139,11 @@ namespace Windows.Controls
         }
     }
 
+    public class ScrollViewer
+    {
+        public object Content { get; set; }
+    }
+
     public class Label
     {
         public object Content { get; set; }
@@ -160,6 +165,11 @@ namespace Windows.Controls
     . (Join-Path $script:repoRoot "functions\private\Find-WinUtilPackageManagerApps.ps1")
     . (Join-Path $script:repoRoot "functions\private\Find-AppsByNameOrDescription.ps1")
     . (Join-Path $script:repoRoot "functions\private\Find-TweaksByNameOrDescription.ps1")
+
+    function Write-WinUtilLog {
+        param($Level, $Component, $Message)
+        throw $Message
+    }
 
     function global:Invoke-WPFRunspace {
         param($ScriptBlock, $ParameterList)
@@ -324,7 +334,9 @@ namespace Windows.Controls
     function script:New-WinUtilTweakCategory {
         param(
             [string]$Label,
-            [object[]]$Items
+            [object[]]$Items,
+            [ValidateSet("ItemsControl", "StackPanel", "ScrollViewer")]
+            [string]$ContainerType = "ItemsControl"
         )
 
         $categoryLabel = [Windows.Controls.Label]::new()
@@ -338,7 +350,23 @@ namespace Windows.Controls
         }
 
         $dockPanel = [Windows.Controls.DockPanel]::new()
-        $null = $dockPanel.Children.Add($itemsControl)
+        if ($ContainerType -eq "ItemsControl") {
+            $null = $dockPanel.Children.Add($itemsControl)
+        } else {
+            $stack = [Windows.Controls.StackPanel]::new()
+            $categoryItems = @($itemsControl.Items)
+            $itemsControl.Items.Clear()
+            foreach ($item in $categoryItems) {
+                $null = $stack.Children.Add($item)
+            }
+            if ($ContainerType -eq "ScrollViewer") {
+                $scroll = [Windows.Controls.ScrollViewer]::new()
+                $scroll.Content = $stack
+                $null = $dockPanel.Children.Add($scroll)
+            } else {
+                $null = $dockPanel.Children.Add($stack)
+            }
+        }
 
         $border = [Windows.Controls.Border]::new()
         $border.Child = $dockPanel
@@ -646,7 +674,7 @@ Describe "Find-AppsByNameOrDescription" {
         Mock Initialize-InstallAppEntry {}
         $sync.preferences = [pscustomobject]@{ packagemanager = "Winget" }
         Find-AppsByNameOrDescription -SearchString "App"
-        
+
         # Should skip SecondApp because it is in the compound ID
         $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_5365636F6E64417070") | Should -Be $false
         $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_winget_466F75727468417070") | Should -Be $true
@@ -794,6 +822,27 @@ Describe "Find-AppsByNameOrDescription" {
 }
 
 Describe "Find-TweaksByNameOrDescription" {
+    It "restores collapsed categories after literal search in <ContainerType>" -TestCases @(
+        @{ ContainerType = "StackPanel" }
+        @{ ContainerType = "ScrollViewer" }
+    ) {
+        param($ContainerType)
+        $match = New-WinUtilTweakLabelItem -Content "Tool [abc]"
+        $other = New-WinUtilTweakCheckboxItem -Content "Other tool"
+        $category = New-WinUtilTweakCategory -Label "+ Privacy" -Items @($match, $other) -ContainerType $ContainerType
+        New-WinUtilTweakSearchContext -TweaksPanel (New-WinUtilTweakPanel -Categories @($category))
+
+        Find-TweaksByNameOrDescription -SearchString "[abc]"
+        $match.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $other.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $category.Label.Content | Should -Be "- Privacy"
+
+        Find-TweaksByNameOrDescription -SearchString ""
+        $category.Label.Content | Should -Be "+ Privacy"
+        $match.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $other.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+    }
+
     AfterEach {
         Remove-WinUtilSearchGlobals
     }

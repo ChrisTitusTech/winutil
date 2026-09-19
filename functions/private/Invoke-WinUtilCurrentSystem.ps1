@@ -108,8 +108,8 @@ Function Invoke-WinUtilCurrentSystem {
                     }
                 }
 
-                Foreach ($tweaks in $serviceKeys) {
-                    Foreach ($tweak in $tweaks) {
+                foreach ($tweaks in $serviceKeys) {
+                    foreach ($tweak in $tweaks) {
                         try {
                             $Service = Get-Service -Name $tweak.Name -ErrorAction $readErrorAction
                         } catch {
@@ -122,13 +122,8 @@ Function Invoke-WinUtilCurrentSystem {
                             throw
                         }
 
-                        if ($Service) {
-                            $actualValue = $Service.StartType
-                            $expectedValue = $tweak.StartupType
-                            if ($expectedValue -ne $actualValue) {
-                                $allMatch = $false
-                            }
-                        } elseif ($StopOnReadError) {
+                        if (($Service -and $tweak.StartupType -ne $Service.StartType) -or
+                            (-not $Service -and $StopOnReadError)) {
                             $allMatch = $false
                         }
                     }

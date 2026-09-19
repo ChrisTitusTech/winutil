@@ -21,10 +21,8 @@ function Test-WinUtilPackageManager {
 
     foreach ($cmd in $cmds) {
         if (-not (Get-Command $cmd -ErrorAction SilentlyContinue)) {
-            Write-Host "$cmd is not installed" -ForegroundColor Red
             return "not-installed"
         }
-        Write-Host "$cmd is installed" -ForegroundColor Green
     }
     return "installed"
 }
