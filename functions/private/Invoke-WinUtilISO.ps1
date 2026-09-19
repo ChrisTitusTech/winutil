@@ -345,7 +345,7 @@ function Invoke-WinUtilISOModify {
 
             if ($driversInjected.Value) {
                 Step-WinUtilJob -Status "Finalizing install image..." -Percent 70
-                Write-WinUtilISOLog "Added current-system drivers to $sourceImageFileName index $SelectedWimIndex with one mount and commit."
+                Write-WinUtilISOLog "Added current-system drivers to $sourceImageFileName index $SelectedWimIndex."
             } elseif ($InjectDrivers) {
                 Step-WinUtilJob -Status "Preserving install image..." -Percent 70
                 Write-WinUtilISOLog "No current-system drivers were injected into $sourceImageFileName index $SelectedWimIndex; install.wim was left unchanged. Review the warning log entries for details."
