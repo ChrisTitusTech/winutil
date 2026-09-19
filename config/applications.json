@@ -1609,6 +1609,15 @@
         "winget": "LizardByte.Sunshine",
         "foss": true
     },
+    "syncthing": {
+        "category": "Selfhosted Tools",
+        "choco": "syncthing",
+        "content": "Syncthing (CLI / Web UI)",
+        "description": "Syncthing is a decentralized, peer-to-peer file synchronization tool that securely syncs files directly across devices without cloud servers, managed via a local web interface.",
+        "link": "https://syncthing.net/",
+        "winget": "Syncthing.Syncthing",
+        "foss": true
+    },
     "tcpview": {
         "category": "Microsoft Tools",
         "choco": "tcpview",
