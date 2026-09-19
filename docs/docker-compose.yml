@@ -1,0 +1,16 @@
+services:
+  winutil-astro:
+    build: .
+    ports:
+      - "127.0.0.1:4321:4321"
+    volumes:
+      - .:/app
+      - astro_node_modules:/app/node_modules
+    tmpfs:
+      - /app/.astro
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - ASTRO_TELEMETRY_DISABLED=1
+
+volumes:
+  astro_node_modules:

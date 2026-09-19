@@ -27,6 +27,38 @@ hero:
       link: https://github.com/ChrisTitusTech/winutil
       icon: external
       variant: secondary
+head:
+  - tag: meta
+    attrs:
+      property: og:title
+      content: Documentation | WinUtil
+  - tag: meta
+    attrs:
+      name: twitter:title
+      content: Documentation | WinUtil
+  - tag: script
+    attrs:
+      type: application/ld+json
+    content: |
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "WinUtil",
+        "description": "Chris Titus Tech's Windows Utility — install apps, apply tweaks, run fixes, and manage Windows from one place.",
+        "url": "https://winutil.christitus.com/",
+        "downloadUrl": "https://github.com/ChrisTitusTech/winutil",
+        "operatingSystem": "Windows",
+        "applicationCategory": "UtilitiesApplication",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Chris Titus Tech"
+        }
+      }
 ---
 
 import { Icon, Code } from '@astrojs/starlight/components';

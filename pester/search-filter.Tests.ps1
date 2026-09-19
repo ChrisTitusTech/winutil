@@ -360,6 +360,19 @@ Describe "Find-AppsByNameOrDescription" {
         $editorItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
     }
 
+    It "matches apps by preset key" {
+        $browserItem = New-WinUtilAppSearchItem -Tag "WPFInstallBrowser"
+        $mediaItem = New-WinUtilAppSearchItem -Tag "WPFInstallMedia"
+        $category = New-WinUtilAppCategory -Label "- Browsers" -Items @($browserItem, $mediaItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+
+        Find-AppsByNameOrDescription -SearchString "WPFInstallBrowser"
+
+        $browserItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $mediaItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $category.Visibility | Should -Be ([Windows.Visibility]::Visible)
+    }
+
     It "treats wildcard characters as literal app search text" {
         $literalItem = New-WinUtilAppSearchItem -Tag "WPFInstallLiteral"
         $mediaItem = New-WinUtilAppSearchItem -Tag "WPFInstallMedia"
@@ -379,11 +392,85 @@ Describe "Find-AppsByNameOrDescription" {
         $category = New-WinUtilAppCategory -Label "- Tools" -Items @($utilityItem, $powerToysItem)
         New-WinUtilAppSearchContext -Categories @($category)
 
-        Find-AppsByNameOrDescription -SearchString "Utilities" -Category "Utilities"
+        Find-AppsByNameOrDescription -Categories @("Utilities")
 
         $utilityItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
         $powerToysItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
         $category.Visibility | Should -Be ([Windows.Visibility]::Visible)
+    }
+
+    It "shows apps from every selected category when several chips are active" {
+        $utilityItem = New-WinUtilAppSearchItem -Tag "WPFInstallLiteral"
+        $powerToysItem = New-WinUtilAppSearchItem -Tag "WPFInstallPowerToys"
+        $browserItem = New-WinUtilAppSearchItem -Tag "WPFInstallBrowser"
+        $category = New-WinUtilAppCategory -Label "- Tools" -Items @($utilityItem, $powerToysItem, $browserItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+
+        Find-AppsByNameOrDescription -Categories @("Utilities", "Microsoft Tools")
+
+        $utilityItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $powerToysItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $browserItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+    }
+
+    It "applies the search text and the category filter together" {
+        $powerToysItem = New-WinUtilAppSearchItem -Tag "WPFInstallPowerToys"
+        $literalItem = New-WinUtilAppSearchItem -Tag "WPFInstallLiteral"
+        $category = New-WinUtilAppCategory -Label "- Tools" -Items @($powerToysItem, $literalItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+
+        Find-AppsByNameOrDescription -SearchString "PowerToys" -Categories @("Microsoft Tools")
+
+        $powerToysItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $literalItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+    }
+
+    It "hides a category when the search text matches nothing inside the selected categories" {
+        $powerToysItem = New-WinUtilAppSearchItem -Tag "WPFInstallPowerToys"
+        $category = New-WinUtilAppCategory -Label "- Tools" -Items @($powerToysItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+
+        Find-AppsByNameOrDescription -SearchString "Firefox" -Categories @("Microsoft Tools")
+
+        $powerToysItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $category.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+    }
+
+    It "expands a collapsed category that has matches for the selected filter" {
+        $powerToysItem = New-WinUtilAppSearchItem -Tag "WPFInstallPowerToys"
+        $category = New-WinUtilAppCategory -Label "+ Tools" -Items @($powerToysItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+
+        Find-AppsByNameOrDescription -Categories @("Microsoft Tools")
+
+        $category.Children[0].Content | Should -Be "- Tools"
+        $category.Children[1].Visibility | Should -Be ([Windows.Visibility]::Visible)
+    }
+
+    It "re-collapses a category it expanded once the filter is cleared" {
+        $powerToysItem = New-WinUtilAppSearchItem -Tag "WPFInstallPowerToys"
+        $category = New-WinUtilAppCategory -Label "+ Tools" -Items @($powerToysItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+
+        Find-AppsByNameOrDescription -Categories @("Microsoft Tools")
+        $category.Children[0].Content | Should -Be "- Tools"
+
+        Find-AppsByNameOrDescription -SearchString ""
+
+        $category.Children[0].Content | Should -Be "+ Tools"
+        $category.Children[1].Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+    }
+
+    It "leaves a category the user had expanded alone when the filter is cleared" {
+        $powerToysItem = New-WinUtilAppSearchItem -Tag "WPFInstallPowerToys"
+        $category = New-WinUtilAppCategory -Label "- Tools" -Items @($powerToysItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+
+        Find-AppsByNameOrDescription -Categories @("Microsoft Tools")
+        Find-AppsByNameOrDescription -SearchString ""
+
+        $category.Children[0].Content | Should -Be "- Tools"
+        $category.Children[1].Visibility | Should -Be ([Windows.Visibility]::Visible)
     }
 }
 

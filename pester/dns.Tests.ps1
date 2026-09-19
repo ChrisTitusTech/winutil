@@ -10,7 +10,8 @@ BeforeAll {
         param(
             $InterfaceIndex,
             $ServerAddresses,
-            [switch]$ResetServerAddresses
+            [switch]$ResetServerAddresses,
+            $ErrorAction
         )
     }
     function netsh {
@@ -52,6 +53,23 @@ Describe "Set-WinUtilDNS" {
                         Secondary6 = "2606:4700:4700::1001"
                         DohTemplate = "https://cloudflare-dns.com/dns-query"
                     }
+                    DohOnlyProvider = [pscustomobject]@{
+                        Primary = "192.0.2.1"
+                        Secondary = "192.0.2.2"
+                        Primary6 = "2001:db8::1"
+                        Secondary6 = "2001:db8::2"
+                        DohOnly = $true
+                        DohTemplate = "https://doh.example.com/dns-query"
+                        SecondaryDohTemplate = "https://secondary.doh.example.com/dns-query"
+                    }
+                    DohOnlyNoSecondary = [pscustomobject]@{
+                        Primary = "192.0.2.1"
+                        Secondary = ""
+                        Primary6 = "2001:db8::1"
+                        Secondary6 = ""
+                        DohOnly = $true
+                        DohTemplate = "https://doh.example.com/dns-query"
+                    }
                 }
             }
         })
@@ -88,8 +106,9 @@ Describe "Set-WinUtilDNS" {
     }
 
     It "sets IPv4 and IPv6 DNS server addresses separately and applies DoH templates" {
-        Set-WinUtilDNS -DNSProvider "Cloudflare"
+        $result = Set-WinUtilDNS -DNSProvider "Cloudflare"
 
+        $result | Should -BeTrue
         Should -Invoke -CommandName Set-DnsClientServerAddress -Times 1 -Exactly -ParameterFilter {
             $InterfaceIndex -eq 7 -and
                 $ServerAddresses.Count -eq 2 -and
@@ -129,6 +148,79 @@ Describe "Set-WinUtilDNS" {
                 $AutoUpgrade -eq $true
         }
         Should -Invoke -CommandName Add-DnsClientDohServerAddress -Times 3 -Exactly
+    }
+
+    It "filters empty DNS server addresses" {
+        Set-WinUtilDNS -DNSProvider "DohOnlyNoSecondary"
+
+        Should -Invoke -CommandName Set-DnsClientServerAddress -Times 1 -Exactly -ParameterFilter {
+            $InterfaceIndex -eq 7 -and
+                $ServerAddresses.Count -eq 1 -and
+                $ServerAddresses[0] -eq "192.0.2.1"
+        }
+        Should -Invoke -CommandName Set-DnsClientServerAddress -Times 1 -Exactly -ParameterFilter {
+            $InterfaceIndex -eq 7 -and
+                $ServerAddresses.Count -eq 1 -and
+                $ServerAddresses[0] -eq "2001:db8::1"
+        }
+        Should -Invoke -CommandName Add-DnsClientDohServerAddress -Times 2 -Exactly
+    }
+
+    It "applies the matching DoH template to secondary resolvers" {
+        Set-WinUtilDNS -DNSProvider "DohOnlyProvider"
+
+        Should -Invoke -CommandName Add-DnsClientDohServerAddress -Times 2 -Exactly -ParameterFilter {
+            $ServerAddress -in @("192.0.2.1", "2001:db8::1") -and
+                $DohTemplate -eq "https://doh.example.com/dns-query"
+        }
+        Should -Invoke -CommandName Add-DnsClientDohServerAddress -Times 2 -Exactly -ParameterFilter {
+            $ServerAddress -in @("192.0.2.2", "2001:db8::2") -and
+                $DohTemplate -eq "https://secondary.doh.example.com/dns-query"
+        }
+    }
+
+    It "does not apply a DoH-only provider when DoH is unsupported" {
+        Mock Get-Command { return $null } -ParameterFilter { $Name -eq "Add-DnsClientDohServerAddress" }
+
+        $result = Set-WinUtilDNS -DNSProvider "DohOnlyProvider"
+
+        $result | Should -BeFalse
+        Should -Invoke -CommandName Set-DnsClientServerAddress -Times 0 -Exactly
+        Should -Invoke -CommandName Add-DnsClientDohServerAddress -Times 0 -Exactly
+        Should -Invoke -CommandName Write-Warning -Times 1 -Exactly -ParameterFilter {
+            $Message -eq "DNS provider DohOnlyProvider requires DNS over HTTPS, which is not supported on this system."
+        }
+    }
+
+    It "does not change adapter DNS when DoH registration fails" {
+        Mock Add-DnsClientDohServerAddress { throw "DoH registration failed" }
+
+        $result = Set-WinUtilDNS -DNSProvider "DohOnlyProvider"
+
+        $result | Should -BeFalse
+        Should -Invoke -CommandName Set-DnsClientServerAddress -Times 0 -Exactly
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "ERROR" -and
+                $Component -eq "DNS" -and
+                $Message -like "DNS provider DohOnlyProvider was not completed: *"
+        }
+    }
+
+    It "falls back to plain DNS when optional DoH registration fails" {
+        Mock Add-DnsClientDohServerAddress { throw "DoH registration failed" }
+
+        $result = Set-WinUtilDNS -DNSProvider "Cloudflare"
+
+        $result | Should -BeTrue
+        Should -Invoke -CommandName Set-DnsClientServerAddress -Times 2 -Exactly
+        Should -Invoke -CommandName Write-Warning -Times 1 -Exactly -ParameterFilter {
+            $Message -eq "DNS over HTTPS setup for provider Cloudflare failed; continuing with plain DNS."
+        }
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "WARN" -and
+                $Component -eq "DNS" -and
+                $Message -like "DNS over HTTPS setup for provider Cloudflare failed; continuing with plain DNS: *"
+        }
     }
 
     It "resets DNS to DHCP and removes the applied DoH configuration" {
@@ -178,15 +270,23 @@ Describe "Set-WinUtilDNS" {
         Should -Invoke -CommandName Remove-DnsClientDohServerAddress -Times 4 -Exactly
     }
 
-    It "catches DNS setter failures so the tweak runspace can continue" {
-        Mock Set-DnsClientServerAddress { throw "DNS failed" }
+    It "catches non-terminating DNS setter failures so the tweak runspace can continue" {
+        Mock Set-DnsClientServerAddress { Write-Error "DNS failed" -ErrorAction $ErrorAction }
 
-        { Set-WinUtilDNS -DNSProvider "Cloudflare" } | Should -Not -Throw
+        $result = Set-WinUtilDNS -DNSProvider "Cloudflare"
 
+        $result | Should -BeFalse
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
             $Level -eq "ERROR" -and
                 $Component -eq "DNS" -and
                 $Message -like "DNS provider Cloudflare was not completed: *"
         }
+    }
+
+    It "returns failure for an unknown DNS provider" {
+        $result = Set-WinUtilDNS -DNSProvider "Unknown"
+
+        $result | Should -BeFalse
+        Should -Invoke -CommandName Set-DnsClientServerAddress -Times 0 -Exactly
     }
 }

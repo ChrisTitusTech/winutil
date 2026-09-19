@@ -1,21 +1,26 @@
 function Find-AppsByNameOrDescription {
     <#
         .SYNOPSIS
-            Searches through the Apps on the Install Tab and hides all entries that do not match the string
+            Filters the Install tab entries by search text and by category
 
         .DESCRIPTION
-            Filters application entries by name or description using literal string matching.
-            Respects collapsed category state and handles null $sync gracefully.
+            Search text and categories are independent filters that both have to pass. An entry is
+            shown when its name, description, or application preset key matches the search text, and
+            when its category is in the selected set. An empty search matches everything, and an empty
+            category set matches every category.
+
+            While either filter is active the matching categories are expanded, since a collapsed
+            category would otherwise hide the very results that were asked for. With no filter at
+            all the collapsed state the user set is restored.
 
         .PARAMETER SearchString
-            The string to be searched for. Wildcards are treated as literal characters.
+            The string to search for. Wildcards are treated as literal characters.
 
-        .PARAMETER Category
-            When provided, only applications in this exact category are shown.
+        .PARAMETER Categories
+            The categories to show. An empty or missing array shows all of them.
 
         .NOTES
             - Uses module-scope $sync (no parameter needed; inherits from caller's scope)
-            - Performs literal matching (no wildcard expansion)
             - Safely handles missing hashtable keys and null UI elements
             - Protected by try/catch to prevent UI thread crashes
     #>
@@ -24,7 +29,7 @@ function Find-AppsByNameOrDescription {
         [string]$SearchString = "",
 
         [Parameter(Mandatory = $false)]
-        [string]$Category = ""
+        [string[]]$Categories = @()
     )
 
     # Validate that $sync exists and has required structure
@@ -43,21 +48,34 @@ function Find-AppsByNameOrDescription {
         return
     }
 
+    # Categories that filtering expanded on the user's behalf, so clearing the filter can undo it
+    if ($null -eq $sync.AppCategoryAutoExpanded) {
+        $sync.AppCategoryAutoExpanded = @{}
+    }
+
     try {
-        # Reset the visibility if the search string is empty or the search is cleared
-        if ([string]::IsNullOrWhiteSpace($SearchString) -and [string]::IsNullOrWhiteSpace($Category)) {
+        $activeCategories = @($Categories | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+        $hasSearch = -not [string]::IsNullOrWhiteSpace($SearchString)
+        $hasCategories = $activeCategories.Count -gt 0
+
+        # Nothing is filtered, so put every entry back and leave the collapsed categories collapsed
+        if (-not $hasSearch -and -not $hasCategories) {
             $sync.ItemsControl.Items | ForEach-Object {
-                # Each item is a StackPanel container
                 $_.Visibility = [Windows.Visibility]::Visible
 
                 if ($_.Children.Count -ge 2) {
                     $categoryLabel = $_.Children[0]
                     $wrapPanel = $_.Children[1]
 
-                    # Keep category label visible
                     $categoryLabel.Visibility = [Windows.Visibility]::Visible
 
-                    # Respect the collapsed state of categories (indicated by + prefix)
+                    # A category that filtering expanded goes back to how the user left it
+                    $categoryName = $categoryLabel.Content -replace '^[+-] ', ''
+                    if ($sync.AppCategoryAutoExpanded.ContainsKey($categoryName)) {
+                        $categoryLabel.Content = $categoryLabel.Content -replace "^- ", "+ "
+                        $sync.AppCategoryAutoExpanded.Remove($categoryName)
+                    }
+
                     if ($categoryLabel.Content -like "+*") {
                         $wrapPanel.Visibility = [Windows.Visibility]::Collapsed
                     }
@@ -65,7 +83,6 @@ function Find-AppsByNameOrDescription {
                         $wrapPanel.Visibility = [Windows.Visibility]::Visible
                     }
 
-                    # Show all apps within the category
                     $wrapPanel.Children | ForEach-Object {
                         $_.Visibility = [Windows.Visibility]::Visible
                     }
@@ -77,7 +94,6 @@ function Find-AppsByNameOrDescription {
         # Escape wildcard characters for literal matching
         $escapedSearchString = [System.Management.Automation.WildcardPattern]::Escape($SearchString)
 
-        # Perform search
         $sync.ItemsControl.Items | ForEach-Object {
             # Each item is a StackPanel container with Children[0] = label, Children[1] = WrapPanel
             if ($_.Children.Count -ge 2) {
@@ -85,12 +101,9 @@ function Find-AppsByNameOrDescription {
                 $wrapPanel = $_.Children[1]
                 $categoryHasMatch = $false
 
-                # Keep category label visible
                 $categoryLabel.Visibility = [Windows.Visibility]::Visible
 
-                # Search through apps in this category
                 foreach ($appControl in $wrapPanel.Children) {
-                    # Safely retrieve app entry from hashtable
                     $appTag = $appControl.Tag
                     $appEntry = $null
 
@@ -98,14 +111,14 @@ function Find-AppsByNameOrDescription {
                         $appEntry = $sync.configs.applicationsHashtable[$appTag]
                     }
 
-                    # Check if app matches search criteria
                     if ($null -ne $appEntry) {
-                        $categoryMatch = -not [string]::IsNullOrWhiteSpace($Category) -and $appEntry.Category -eq $Category
-                        $contentMatch = [string]::IsNullOrWhiteSpace($Category) -and $appEntry.Content -like "*$escapedSearchString*"
-                        $descriptionMatch = [string]::IsNullOrWhiteSpace($Category) -and $appEntry.Description -like "*$escapedSearchString*"
+                        $categoryMatch = -not $hasCategories -or $activeCategories -contains $appEntry.Category
+                        $textMatch = -not $hasSearch -or
+                            $appEntry.Content -like "*$escapedSearchString*" -or
+                            $appEntry.Description -like "*$escapedSearchString*" -or
+                            $appTag -like "*$escapedSearchString*"
 
-                        if ($categoryMatch -or $contentMatch -or $descriptionMatch) {
-                            # Show the App and mark that this category has a match
+                        if ($categoryMatch -and $textMatch) {
                             $appControl.Visibility = [Windows.Visibility]::Visible
                             $categoryHasMatch = $true
                         }
@@ -119,17 +132,17 @@ function Find-AppsByNameOrDescription {
                     }
                 }
 
-                # If category has matches, show the WrapPanel and update the category label to expanded state
                 if ($categoryHasMatch) {
                     $wrapPanel.Visibility = [Windows.Visibility]::Visible
                     $_.Visibility = [Windows.Visibility]::Visible
-                    # Update category label to show expanded state (-)
+                    # Expand it, otherwise the matches stay hidden behind a collapsed header.
+                    # Remember that it was collapsed so clearing the filter can put it back.
                     if ($categoryLabel.Content -like "+*") {
                         $categoryLabel.Content = $categoryLabel.Content -replace "^\+ ", "- "
+                        $sync.AppCategoryAutoExpanded[($categoryLabel.Content -replace '^- ', '')] = $true
                     }
                 }
                 else {
-                    # Hide the entire category container if no matches
                     $_.Visibility = [Windows.Visibility]::Collapsed
                 }
             }

@@ -1,6 +1,6 @@
 ---
 title: "Multiplane Overlay"
-description: "Multiplane Overlay compose multiple image layers, which can sometimes cause issues with graphics cards."
+description: "Multiplane Overlay composes multiple image layers, which can sometimes cause issues with graphics cards. Changes to this preference are applied immediately."
 editUrl: false
 ---
 
@@ -9,28 +9,40 @@ This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitus
 :::
 
 ```json title="config/tweaks.json"
-  "WPFToggleMultiplaneOverlay": {
+  "WPFMultiplaneOverlay": {
     "Content": "Multiplane Overlay",
-    "Description": "Multiplane Overlay compose multiple image layers, which can sometimes cause issues with graphics cards.",
+    "Description": "Multiplane Overlay composes multiple image layers, which can sometimes cause issues with graphics cards. Changes to this preference are applied immediately.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Type": "Toggle",
+    "Type": "Combobox",
+    "ComboItems": "Enabled|Disabled (Compatibility)|Fully Disabled",
+    "ComboDescriptions": {
+      "Enabled": "Uses Windows' default overlay behavior.",
+      "Disabled (Compatibility)": "Disables MPO using OverlayTestMode=5, the less aggressive compatibility method.",
+      "Fully Disabled": "Disables MPO using OverlayTestMode=5 and DisableOverlays=1, the more aggressive method."
+    },
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Dwm",
         "Name": "OverlayTestMode",
-        "Value": "0",
         "Type": "DWord",
-        "OriginalValue": "5",
-        "DefaultState": "true"
+        "DefaultValue": "0",
+        "Values": {
+          "Enabled": "<RemoveEntry>",
+          "Disabled (Compatibility)": "5",
+          "Fully Disabled": "5"
+        }
       },
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers",
         "Name": "DisableOverlays",
-        "Value": "0",
         "Type": "DWord",
-        "OriginalValue": "1",
-        "DefaultState": "true"
+        "DefaultValue": "0",
+        "Values": {
+          "Enabled": "<RemoveEntry>",
+          "Disabled (Compatibility)": "<RemoveEntry>",
+          "Fully Disabled": "1"
+        }
       }
     ],
   }

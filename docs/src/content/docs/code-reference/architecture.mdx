@@ -79,14 +79,15 @@ winutil/
 **Why**: Makes distribution easier (single file) and improves load time.
 
 #### 2. scripts/main.ps1
-**Purpose**: Entry point that initializes the GUI and event system.
+**Purpose**: Entry point that manages the run.
 
 **Responsibilities**:
-- Load XAML and create WPF window
-- Initialize form elements
-- Set up event handlers
 - Load configurations
-- Display the GUI
+- Run the headless `-Preset` and `-Config` paths
+- Start the interface on a dedicated STA runspace and wait for it
+- Report anything the interface thread failed with, then clean up
+
+The interface itself lives in `Start-WinUtilUserInterface`, not here. See [Threading Model](#threading-model).
 
 #### 3. functions/public/
 **Purpose**: User-facing functions that implement main features.
@@ -129,14 +130,14 @@ winutil/
 
 ## Win11 Creator Architecture
 
-The **Win11 Creator** is a specialized subsystem within Winutil that creates customized Windows 11 ISOs. It operates independently from the main package installation and tweak system.
+The **Win11 Creator** is a specialized subsystem within Winutil that creates customized Windows 11 ISOs. It operates independently of the main package installation and tweak system.
 
 ### Win11 Creator Components
 
 **Core Functions** (`functions/private/`):
 - `Invoke-WinUtilISO.ps1`: Main orchestrator containing all Win11 Creator functions
   - `Invoke-WinUtilISOBrowse`: ISO file selection dialog
-  - `Invoke-WinUtilISOMountAndVerify`: Validates and mounts ISO, verifies it's official Windows 11
+  - `Invoke-WinUtilISOMountAndVerify`: Validates and mounts ISO, verifies it is an official Windows 11 ISO
   - `Invoke-WinUtilISOModify`: Launches modification in background runspace
   - `Invoke-WinUtilISOExport`: Handles ISO and USB export
   - `Invoke-WinUtilISOCheckExistingWork`: Recovers incomplete work sessions
@@ -149,8 +150,6 @@ The **Win11 Creator** is a specialized subsystem within Winutil that creates cus
   - Applies offline registry tweaks (hardware bypass, privacy, telemetry, OOBE)
   - Deletes telemetry scheduled task definitions
   - Pre-stages setup scripts from autounattend.xml
-  - Removes unused Windows editions
-  - Cleans component store via DISM
 
 ### Win11 Creator Data Flow
 
@@ -181,16 +180,14 @@ Invoke-WinUtilISOModify (runs in background runspace)
     │   ├─ Delete telemetry scheduled task files
     │   ├─ Pre-stage setup scripts from autounattend.xml to C:\Windows\Setup\Scripts\
     │   └─ Unload registry hives
-    ├─ DISM /Cleanup-Image /StartComponentCleanup /ResetBase (saves 300-800 MB)
     ├─ Dismount and save the modified install.wim (~10+ minutes, slowest step)
-    ├─ Export selected edition only (removes all other editions, saves 1-2 GB each)
     ├─ Dismount source ISO
     └─ Report completion, enable export options
     ↓
 Invoke-WinUtilISOExport (user chooses output)
     ├─ Option 1: Save as ISO
     │   ├─ Build bootable ISO via oscdimg.exe (BIOS/UEFI dual-boot)
-    │   └─ Output: Win11_Modified_[date].iso (2.5-3.5 GB)
+    │   └─ Output: Win11_Modified_[date].iso (close to the source ISO size)
     │
     └─ Option 2: Write to USB
         ├─ Format USB as GPT
@@ -213,7 +210,7 @@ Invoke-WinUtilISOCleanAndReset (optional)
 
 **Work Session Recovery**:
 - Auto-detects incomplete work from previous sessions
-- Allows resuming Step 4 (export) without re-running Steps 1-3
+- Allows resuming the export step without re-running selection and modification
 - Prevents redundant modifications
 
 **Modification Safety**:
@@ -272,7 +269,7 @@ The `Invoke-WinUtilISOScript` function applies **50+ offline registry tweaks**:
 
 - **Temporary working directory**: ~10-15 GB
 - **Original ISO**: 4-6 GB
-- **Modified ISO**: 2.5-3.5 GB
+- **Modified ISO**: close to the source ISO size
 - **Total needed**: ~25 GB for safe operation
 
 ## Data Flow
@@ -389,26 +386,73 @@ Update UI
 - `Description`: What it does
 - `category`: Essential/Advanced/Customize
 - `registry`: Registry changes to make
+- `registry[].Values`: Per-state values for a registry-backed combobox
+- `registry[].DefaultValue`: Effective value when the registry entry is absent
 - `service`: Services to change
 - `OriginalValue/State`: For undo functionality
 
-## PowerShell Runspace
+## Threading Model
 
-Winutil uses PowerShell runspaces for the GUI to remain responsive:
+WinUtil runs on three kinds of thread, and each has one job:
+
+| Thread | Runspace | Responsibility |
+| --- | --- | --- |
+| Main | The one the script started in | Start the interface, wait for it, surface its errors, clean up |
+| Interface | `$sync.UIRunspace`, a dedicated STA runspace | Own the window. Paint and dispatch, nothing else |
+| Workers | `$sync.runspace`, a shared pool | Run everything long: installs, tweaks, features, AppX, Win11 Creator |
+
+All three are created from the same starting point, `New-WinUtilSessionState`, which carries
+`$sync`, the compiled script's globals, and every WinUtil function. That is what lets any
+thread call any helper without the caller injecting function definitions.
 
 ```powershell
-# Create runspace
-$sync.runspace = [runspacefactory]::CreateRunspace()
-$sync.runspace.Open()
-$sync.runspace.SessionStateProxy.SetVariable("sync", $sync)
+# main.ps1 - the interface gets its own thread
+$sync.UIRunspace = [runspacefactory]::CreateRunspace($Host, (New-WinUtilSessionState))
+$sync.UIRunspace.ApartmentState = "STA"
+$sync.UIRunspace.Open()
 
-# Run code in background
-$powershell = [powershell]::Create().AddScript($scriptblock)
-$powershell.Runspace = $sync.runspace
-$handle = $powershell.BeginInvoke()
+$uiShell = [powershell]::Create()
+$uiShell.Runspace = $sync.UIRunspace
+[void]$uiShell.AddScript({ Start-WinUtilUserInterface })
+$uiHandle = $uiShell.BeginInvoke()
+$uiHandle.AsyncWaitHandle.WaitOne()
 ```
 
-**Why**: Prevents UI freezing during long-running operations.
+**Why**: the window never blocks on work, and a failure on the interface thread is reported
+instead of disappearing.
+
+## Long-Running Work
+
+Every long action goes through `Start-WinUtilJob`, which owns everything a running operation
+needs: refusing to start while another job runs, the busy flag (`$sync.ActiveJob`), the progress
+bar and taskbar item, the boxed console banner, a start/finish/failure line in the log, and
+restoring the interface in a `finally` whatever happens.
+
+`Invoke-WPFButton` decides what counts as a long action. Anything that changes the system gets a
+job; anything that only changes what the interface is showing runs on the interface thread.
+That single classification is why no workflow arranges its own progress, banner or busy state.
+
+```powershell
+Start-WinUtilJob -Name "Features" -Description "Installing Windows Features" -Parameters @{
+    Features = @($sync.selectedFeatures)
+} -ScriptBlock {
+    param($Features)
+
+    $total = @($Features).Count
+    $completed = 0
+    foreach ($feature in $Features) {
+        $completed++
+        Step-WinUtilJob -Status "Installing $feature ($completed/$total)" -Percent ([int](($completed / $total) * 100))
+        Invoke-WinUtilFeatureInstall $feature
+    }
+}
+```
+
+The body only has to do the work and call `Step-WinUtilJob`. Anything it throws is
+caught, logged, and shown on the taskbar as a failure.
+
+**Values, not closures**: the body is rebuilt inside the worker from its text, so it receives
+what it needs through `-Parameters` rather than capturing the caller's variables.
 
 ## WPF Event Handling
 
@@ -454,23 +498,21 @@ if (!(Get-Command choco -ErrorAction SilentlyContinue)) {
 choco install $app.choco -y
 ```
 
-## Error Handling
+## Error Handling And Logging
 
-Winutil uses PowerShell error handling:
+A job body does not need its own error handling. `Start-WinUtilJob` catches whatever the body
+throws, logs it, and marks the run as failed on the taskbar, so a failure can never leave the
+interface stuck busy. Only catch inside a body when you have something specific to do first,
+such as cleaning up a mounted image, and then rethrow.
 
 ```powershell
-try {
-    # Attempt operation
-    Invoke-SomeOperation
-}
-catch {
-    Write-Host "Error: $_" -ForegroundColor Red
-    # Log error
-    Add-Content -Path $logfile -Value "ERROR: $_"
-}
+Write-WinUtilLog -Level "ERROR" -Component "Install" -Message "winget install failed: $($_.Exception.Message)"
 ```
 
-**Logging**: Errors and operations are logged for debugging.
+Entries and console diagnostics go to the same
+`%LocalAppData%\winutil\logs\winutil_<timestamp>.log` session file. While `Start-Transcript`
+owns that file, `Write-WinUtilLog` writes through the host so the transcript captures the entry
+without a competing direct file write.
 
 ## Configuration Loading
 
@@ -488,15 +530,23 @@ $sync.configs.features = Get-Content "config/feature.json" | ConvertFrom-Json
 
 ## UI Update Pattern
 
-UI updates must happen on the UI thread:
+Controls may only be touched from the thread that owns the window, so background work reaches
+them through `Invoke-WPFUIThread`:
 
 ```powershell
-$sync.form.Dispatcher.Invoke([action]{
-    $sync.WPFStatusLabel.Content = "Installing..."
-}, "Normal")
+Invoke-WPFUIThread -Parameters @{ Count = $installed.Count } -ScriptBlock {
+    param($Count)
+    $sync.WPFselectedAppsButton.Content = "Selected Apps: $Count"
+}
 ```
 
-**Why**: WPF requires UI updates on the main thread.
+Add `-Async` to post the update instead of waiting for it. `Step-WinUtilJob` and the
+Win11 Creator status log use that so a per-item update never stalls the worker.
+
+**Values, not closures**: the body is rebuilt inside the interface runspace, so it takes what it
+needs through `-Parameters`. Handing over a scriptblock from a worker instead would keep that
+worker's session state, which loses the caller's variables on an async post and costs roughly
+twenty times as much per command - enough to turn a checkbox refresh into a visible freeze.
 
 ## Adding New Features
 

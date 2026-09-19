@@ -4,6 +4,11 @@ function Write-WinUtilLog {
     .SYNOPSIS
         Writes a timestamped WinUtil log entry to the active session log.
 
+    .DESCRIPTION
+        Called from the interface thread and from every job body. When Start-Transcript owns the
+        active session log, entries go through the host so the transcript records them without a
+        competing file write. Standalone callers use a named mutex to serialize direct appends.
+
     .PARAMETER Message
         The message to write.
 
@@ -21,8 +26,25 @@ function Write-WinUtilLog {
         [ValidateSet("INFO", "WARN", "ERROR", "DEBUG")]
         [string]$Level = "INFO",
 
-        [string]$Component = "WinUtil"
+        [string]$Component = "WinUtil",
+
+        # Continuation of an error already counted, such as a stack frame
+        [switch]$Detail
     )
+
+    # UI performance diagnostics are useful to developers but are too noisy for the release
+    # transcript. Compile.ps1 stamps local builds so DEBUG output cannot leak into CI artifacts.
+    if ($Level -eq "DEBUG" -and ($null -eq $sync -or -not $sync.IsLocalCompile)) {
+        return
+    }
+
+    if ($Level -eq "ERROR" -and -not $Detail -and $null -ne $sync.LoggedErrors) {
+        $null = $sync.LoggedErrors.Add("[$Component] $Message")
+    }
+
+    if ($Level -eq "ERROR" -and -not $Detail -and $global:WinUtilIsJobWorker) {
+        $global:WinUtilJobErrorCount++
+    }
 
     try {
         $logPath = $null
@@ -70,10 +92,29 @@ function Write-WinUtilLog {
             return
         }
 
+        $mutex = [System.Threading.Mutex]::new($false, "WinUtilSessionLog")
+        $held = $false
         try {
+            try {
+                $held = $mutex.WaitOne(2000)
+            } catch [System.Threading.AbandonedMutexException] {
+                # A thread died holding the mutex; ownership transfers to us either way
+                $held = $true
+            }
+
+            if (-not $held) {
+                # Writing anyway is what interleaves lines, and the wait only times out when
+                # contention is at its worst
+                Write-Host $line
+                return
+            }
+
             Add-Content -Path $logPath -Value $line -Encoding UTF8 -ErrorAction Stop
         } catch [System.IO.IOException] {
             Write-Host $line
+        } finally {
+            if ($held) { $mutex.ReleaseMutex() }
+            $mutex.Dispose()
         }
     } catch {
         Write-Warning "Unable to write WinUtil log entry: $($_.Exception.Message)"
