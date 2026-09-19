@@ -17,6 +17,7 @@ function Get-WinUtilDNSBenchmark {
     #>
     [CmdletBinding()]
     param(
+        [ValidateRange(1, 9998)]
         [int]$TimeoutMs = 1500
     )
 
@@ -36,23 +37,22 @@ function Get-WinUtilDNSBenchmark {
         $primaryIp = $prop.Value.Primary
         if (-not $primaryIp) { continue }
 
-        # Skip specialized policy/filtering variants (e.g. Malware, Adult, Family) for neutral auto-selection
-        if ($providerName -like "*Malware*" -or $providerName -like "*Adult*" -or $providerName -like "*Family*") {
+        # Providers must explicitly opt in so new filtering services are never auto-selected.
+        if ($prop.Value.BenchmarkEligible -ne $true) {
             continue
         }
 
         $latency = 9999
-        $client = [System.Net.Sockets.TcpClient]::new()
+        $client = $null
         try {
+            $client = New-Object System.Net.Sockets.TcpClient
             $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
             $asyncResult = $client.BeginConnect($primaryIp, 53, $null, $null)
             $success = $asyncResult.AsyncWaitHandle.WaitOne($TimeoutMs, $false)
             $stopwatch.Stop()
 
-            if ($success -and $client.Connected) {
-                try {
-                    $client.EndConnect($asyncResult)
-                } catch { }
+            if ($success) {
+                $client.EndConnect($asyncResult)
                 $latency = [int]$stopwatch.ElapsedMilliseconds
             } else {
                 $latency = 9999
@@ -61,8 +61,7 @@ function Get-WinUtilDNSBenchmark {
             $latency = 9999
         } finally {
             if ($null -ne $client) {
-                try { $client.Close() } catch { }
-                try { $client.Dispose() } catch { }
+                $client.Dispose()
             }
         }
 

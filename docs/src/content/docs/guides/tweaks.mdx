@@ -65,6 +65,7 @@ Use the DNS section to switch both IPv4 and IPv6 DNS providers without editing a
 
 * **Default**: Uses the default DNS settings configured by your ISP or network.
 * **DHCP**: Automatically acquires DNS settings from the DHCP server.
+* **Fastest**: Compares TCP port 53 connection times to Google and Cloudflare, then applies the quicker provider. Filtering providers are excluded. If both probes fail, existing DNS settings are preserved. The scan takes up to about three seconds; connection time is only a rough latency estimate, not a DNS lookup or DNS-over-HTTPS performance test.
 * [**Google**](https://developers.google.com/speed/public-dns?hl=en): A reliable and fast DNS service provided by Google.
 * [**Cloudflare**](https://developers.cloudflare.com/1.1.1.1/): Known for speed and privacy, Cloudflare DNS is a popular choice for enhancing internet performance.
 * [**Cloudflare_Malware**](https://developers.cloudflare.com/1.1.1.1/setup/#:~:text=Use%20the%20following%20DNS%20resolvers%20to%20block%20malicious%20content%3A): Provides additional protection by blocking malware sites.

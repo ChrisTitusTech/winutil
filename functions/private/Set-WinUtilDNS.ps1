@@ -29,7 +29,7 @@ function Set-WinUtilDNS {
         } else {
             Write-Warning "Could not measure DNS latency to any provider; keeping current network adapter DNS settings."
             Write-WinUtilLog -Component "DNS" -Message "Benchmark timeout or all probes failed; aborting DNS change to preserve existing settings."
-            return
+            return $false
         }
     }
 
