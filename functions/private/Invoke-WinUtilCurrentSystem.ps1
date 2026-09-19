@@ -122,7 +122,8 @@ Function Invoke-WinUtilCurrentSystem {
                             throw
                         }
 
-                        if (-not $Service -or $tweak.StartupType -ne $Service.StartType) {
+                        if (($Service -and $tweak.StartupType -ne $Service.StartType) -or
+                            (-not $Service -and $StopOnReadError)) {
                             $allMatch = $false
                         }
                     }

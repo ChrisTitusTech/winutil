@@ -139,8 +139,12 @@ Describe "Invoke-WinUtilCurrentSystem service tweaks" {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
     }
 
-    It "does not mark a missing optional service as an applied tweak" {
-        @(Invoke-WinUtilCurrentSystem -CheckBox "tweaks").Count | Should -Be 0
+    It "tolerates a missing optional service during UI detection" {
+        @(Invoke-WinUtilCurrentSystem -CheckBox "tweaks") | Should -Be @("WPFServiceTweak")
+    }
+
+    It "marks a missing service as a mismatch during strict report collection" {
+        @(Invoke-WinUtilCurrentSystem -CheckBox "tweaks" -StopOnReadError).Count | Should -Be 0
     }
 
     It "marks a tweak applied when its service startup type matches" {

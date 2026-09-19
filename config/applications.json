@@ -2042,9 +2042,8 @@
     },
     "Overwolf": {
         "category": "Games",
-        "choco": "overwolf",
-        "content": "Overwolf",
-        "description": "Popular platform for game overlays and companion apps (mod managers, trackers, etc.), widely used by gamers.",
+        "content": "CurseForge",
+        "description": "CurseForge is a desktop application for managing mods and modpacks across multiple games, powered by Overwolf.",
         "link": "https://www.overwolf.com/app/overwolf-curseforge",
         "winget": "Overwolf.CurseForge",
         "foss": false
@@ -2122,3 +2121,4 @@
         "foss": false
     }
 }
+
