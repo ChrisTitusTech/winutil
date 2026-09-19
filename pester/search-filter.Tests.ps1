@@ -895,6 +895,39 @@ Describe "Find-TweaksByNameOrDescription" {
         $nonMatchItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
     }
 
+    It "updates each matching label when one border contains multiple categories" {
+        $first = New-WinUtilTweakCheckboxItem -Content 'First match'
+        $second = New-WinUtilTweakCheckboxItem -Content 'Second match'
+        $category = New-WinUtilTweakCategory -Label '+ First category' -Items @($first)
+        $secondLabel = [Windows.Controls.Label]::new()
+        $secondLabel.Content = '+ Second category'
+        $null = $category.ItemsControl.Items.Add($secondLabel)
+        $null = $category.ItemsControl.Items.Add($second)
+        $panel = New-WinUtilTweakPanel -Categories @($category)
+        New-WinUtilTweakSearchContext -TweaksPanel $panel
+
+        Find-TweaksByNameOrDescription -SearchString 'First'
+        $category.Label.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $category.Label.Content | Should -Be '- First category'
+        $secondLabel.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $secondLabel.Content | Should -Be '+ Second category'
+
+        Find-TweaksByNameOrDescription -SearchString 'Second'
+        $category.Label.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $secondLabel.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $secondLabel.Content | Should -Be '- Second category'
+
+        Find-TweaksByNameOrDescription -SearchString 'match'
+        $category.Label.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $secondLabel.Visibility | Should -Be ([Windows.Visibility]::Visible)
+
+        Find-TweaksByNameOrDescription -SearchString ''
+        $category.Label.Content | Should -Be '+ First category'
+        $secondLabel.Content | Should -Be '+ Second category'
+        $first.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $second.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+    }
+
     It "hides tweak category panels when no items match" {
         $item = New-WinUtilTweakLabelItem -Content "Disable Telemetry" -ToolTip "Stop tracking"
         $category = New-WinUtilTweakCategory -Label "- Privacy" -Items @($item)

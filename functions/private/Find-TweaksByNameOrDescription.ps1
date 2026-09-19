@@ -105,21 +105,21 @@ function Find-TweaksByNameOrDescription {
                     if ($isMatch) {
                         $item.Visibility = [Windows.Visibility]::Visible
                         $categoryHasMatch = $true
+                        if ($null -ne $categoryLabel) {
+                            $categoryLabel.Visibility = [Windows.Visibility]::Visible
+                            $labelStr = [string]$categoryLabel.Content
+                            if ($labelStr.StartsWith("+ ")) {
+                                $categoryLabel.Content = "- " + $labelStr.Substring(2)
+                                $sync.TweakCategoryAutoExpanded[($labelStr.Substring(2))] = $true
+                            }
+                        }
                     } else {
                         $item.Visibility = [Windows.Visibility]::Collapsed
                     }
                 }
             }
 
-            # Update category label and border visibility
-            if ($categoryHasMatch -and $null -ne $categoryLabel) {
-                $categoryLabel.Visibility = [Windows.Visibility]::Visible
-                $labelStr = [string]$categoryLabel.Content
-                if ($labelStr.StartsWith("+ ")) {
-                    $categoryLabel.Content = "- " + $labelStr.Substring(2)
-                    $sync.TweakCategoryAutoExpanded[($labelStr.Substring(2))] = $true
-                }
-            }
+            # A border can contain several labeled categories; keep it if any item matched.
             $categoryBorder.Visibility = if ($categoryHasMatch) { [Windows.Visibility]::Visible } else { [Windows.Visibility]::Collapsed }
         }
     } catch {
