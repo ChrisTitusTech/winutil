@@ -1686,7 +1686,7 @@
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/customize-preferences/loginblur"
   },
-  "WPFTweaksDisableLockscreen": {
+  "WPFToggleDisableLockscreen": {
     "Content": "Lock Screen - Disable",
     "Description": "Skips the lock screen entirely and goes directly to the sign-in screen on boot and wake.",
     "category": "Customize Preferences",
