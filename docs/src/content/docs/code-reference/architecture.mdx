@@ -210,7 +210,7 @@ Invoke-WinUtilISOCleanAndReset (optional)
 
 **Work Session Recovery**:
 - Auto-detects incomplete work from previous sessions
-- Allows resuming Step 4 (export) without re-running Steps 1-3
+- Allows resuming the export step without re-running selection and modification
 - Prevents redundant modifications
 
 **Modification Safety**:
@@ -260,7 +260,7 @@ The `Invoke-WinUtilISOScript` function applies **50+ offline registry tweaks**:
 ### Driver Injection Feature
 
 **Optional Enhancement**: When enabled, exports all drivers from the running system and injects them into:
-- `install.wim` (main OS image), excluding Extension-class packages and stale duplicates
+- `install.wim` (main OS image), excluding stale duplicates
 - `boot.wim` index 2 (Windows Setup PE environment), storage controllers only (`SCSIAdapter` / `HDC`)
 
 **Use Case**: Enables offline installation on systems with missing drivers.
