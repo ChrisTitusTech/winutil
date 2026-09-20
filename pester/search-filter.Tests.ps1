@@ -100,6 +100,13 @@ namespace System.Windows.Controls
         Add-Type @"
 namespace Windows.Controls
 {
+    public class RadioButton
+    {
+        public object Content { get; set; }
+        public object ToolTip { get; set; }
+        public object Visibility { get; set; }
+    }
+
     public class Border
     {
         public object Child { get; set; }
@@ -652,6 +659,23 @@ Describe "Find-AppsByNameOrDescription" {
         $sync.configs.applicationsHashtable.ContainsKey("WPFInstall_dynamic_choco_62726F77736572617070") | Should -Be $false
     }
 
+    It "keeps IDs curated only by the other package manager" {
+        New-WinUtilAppSearchContext -Categories @()
+        Mock Find-WinUtilPackageManagerApps {
+            @(
+                [pscustomobject]@{ Name = "Winget catalog ID"; Id = "Browser.App" }
+                [pscustomobject]@{ Name = "Choco catalog ID"; Id = "browserapp" }
+            )
+        }
+        Mock Get-WinUtilPackageLink { "https://example.com" }
+        Mock Initialize-InstallAppEntry {}
+
+        Find-AppsByNameOrDescription -SearchString "Browser"
+
+        @($sync.PackageManagerSearchCache['Browser_Winget']).Id | Should -Be @('browserapp')
+        @($sync.PackageManagerSearchCache['Browser_Choco']).Id | Should -Be @('Browser.App')
+    }
+
     It "splits compound package IDs when deduplicating" {
         $compoundItem = New-WinUtilAppSearchItem -Tag "WPFInstallCompound"
         $category = New-WinUtilAppCategory -Label "- Tools" -Items @($compoundItem)
@@ -822,6 +846,34 @@ Describe "Find-AppsByNameOrDescription" {
 }
 
 Describe "Find-TweaksByNameOrDescription" {
+    It "searches all StackPanel <ControlType> children by <Property>" -TestCases @(
+        @{ ControlType = 'Label'; Property = 'Content' }
+        @{ ControlType = 'Label'; Property = 'ToolTip' }
+        @{ ControlType = 'RadioButton'; Property = 'Content' }
+        @{ ControlType = 'RadioButton'; Property = 'ToolTip' }
+        @{ ControlType = 'CheckBox'; Property = 'Content' }
+        @{ ControlType = 'CheckBox'; Property = 'ToolTip' }
+    ) {
+        param($ControlType, $Property)
+        $item = [Windows.Controls.StackPanel]::new()
+        $first = New-Object "Windows.Controls.$ControlType"
+        $first.Content = 'Unrelated option'
+        $second = New-Object "Windows.Controls.$ControlType"
+        $second.$Property = 'Needle setting'
+        $null = $item.Children.Add($first)
+        $null = $item.Children.Add($second)
+        $category = New-WinUtilTweakCategory -Label '+ Settings' -Items @($item)
+        New-WinUtilTweakSearchContext -TweaksPanel (New-WinUtilTweakPanel -Categories @($category))
+
+        Find-TweaksByNameOrDescription -SearchString 'needle'
+        $item.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $category.Label.Content | Should -Be '- Settings'
+
+        Find-TweaksByNameOrDescription -SearchString 'absent'
+        $item.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $category.Border.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+    }
+
     It "restores collapsed categories after literal search in <ContainerType>" -TestCases @(
         @{ ContainerType = "StackPanel" }
         @{ ContainerType = "ScrollViewer" }

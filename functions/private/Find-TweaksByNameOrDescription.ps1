@@ -27,8 +27,11 @@ function Find-TweaksByNameOrDescription {
             $label = $item.Children | Where-Object { $_ -is [Windows.Controls.Label] } | Select-Object -First 1
             if ($label) { $text = [string]$label.Content; $tip = [string]$label.ToolTip }
         } elseif ($item -is [Windows.Controls.StackPanel]) {
-            $cb = $item.Children | Where-Object { $_ -is [Windows.Controls.CheckBox] } | Select-Object -First 1
-            if ($cb) { $text = [string]$cb.Content; $tip = [string]$cb.ToolTip }
+            $controls = @($item.Children | Where-Object {
+                $_ -is [Windows.Controls.Label] -or $_ -is [Windows.Controls.CheckBox] -or $_ -is [Windows.Controls.RadioButton]
+            })
+            $text = ($controls | ForEach-Object { [string]$_.Content }) -join "`n"
+            $tip = ($controls | ForEach-Object { [string]$_.ToolTip }) -join "`n"
         }
         return @{ Text = $text; Tip = $tip }
     }

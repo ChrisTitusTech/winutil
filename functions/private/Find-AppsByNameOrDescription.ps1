@@ -354,24 +354,26 @@ function Find-AppsByNameOrDescription {
             }
 
             if (Get-Command Invoke-WPFRunspace -ErrorAction SilentlyContinue) {
-                # deduplicate against curated catalog package IDs and app keys
-                $curatedIds = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+                # Package IDs are unique only within their manager's catalog.
+                $curatedIds = @{
+                    Winget = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+                    Choco = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+                }
                 foreach ($key in @($sync.configs.applicationsHashtable.Keys)) {
                     $entry = $sync.configs.applicationsHashtable[$key]
                     if ($entry.isDynamic -ne $true) {
                         if ($entry.winget) {
                             $entry.winget -split ';' | ForEach-Object {
                                 $w = ($_ -replace '^msstore:', '').Trim()
-                                if ($w -and $w -ne "na") { [void]$curatedIds.Add($w) }
+                                if ($w -and $w -ne "na") { [void]$curatedIds.Winget.Add($w) }
                             }
                         }
                         if ($entry.choco) {
                             $entry.choco -split ';' | ForEach-Object {
                                 $c = $_.Trim()
-                                if ($c -and $c -ne "na") { [void]$curatedIds.Add($c) }
+                                if ($c -and $c -ne "na") { [void]$curatedIds.Choco.Add($c) }
                             }
                         }
-                        if ($key) { [void]$curatedIds.Add($key) }
                     }
                 }
 
@@ -385,7 +387,7 @@ function Find-AppsByNameOrDescription {
                             @("SearchString", $SearchString),
                             @("Manager", $mgr),
                             @("RequestToken", $requestToken),
-                            @("CuratedIds", $curatedIds)
+                            @("CuratedIds", $curatedIds[$mgr])
                         ) -ScriptBlock {
                             param($SearchString, $Manager, $RequestToken, $CuratedIds)
 
