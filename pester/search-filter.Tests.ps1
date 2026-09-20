@@ -507,6 +507,25 @@ Describe "Find-WinUtilPackageManagerApps" {
         $result = Find-WinUtilPackageManagerApps -SearchString "error" -ManagerPreference "Choco"
         @($result).Count | Should -Be 0
     }
+
+    It "reports failed <Manager> commands to callers that must avoid caching failures" -TestCases @(
+        @{ Manager = 'Winget' }
+        @{ Manager = 'Choco' }
+    ) {
+        param($Manager)
+        Mock winget { $global:LASTEXITCODE = 1 }
+        Mock choco { $global:LASTEXITCODE = 1 }
+        { Find-WinUtilPackageManagerApps -SearchString 'retry' -ManagerPreference $Manager -ThrowOnFailure } | Should -Throw '*exited with code 1*'
+    }
+
+    It "reports missing <Manager> commands as failures" -TestCases @(
+        @{ Manager = 'Winget' }
+        @{ Manager = 'Choco' }
+    ) {
+        param($Manager)
+        Mock Get-Command { $null } -ParameterFilter { $Name -in @('winget', 'choco') }
+        { Find-WinUtilPackageManagerApps -SearchString 'retry' -ManagerPreference $Manager -ThrowOnFailure } | Should -Throw '*not available*'
+    }
 }
 
 Describe "Find-AppsByNameOrDescription" {
@@ -527,7 +546,7 @@ Describe "Find-AppsByNameOrDescription" {
         $token = $sync.LatestPackageManagerRequestToken
         Find-AppsByNameOrDescription -SearchString 'example'
         $sync.LatestPackageManagerRequestToken | Should -Be $token
-        Should -Invoke Invoke-WPFRunspace -Times 2 -Exactly
+        Should -Invoke Invoke-WPFRunspace -Times 1 -Exactly
     }
 
     It "invalidates requests when clearing the search or starting a job" {
@@ -539,7 +558,7 @@ Describe "Find-AppsByNameOrDescription" {
         $sync.ActiveJob = @{ Name = 'Install' }
         Find-AppsByNameOrDescription -SearchString 'another'
         $sync.LatestPackageManagerRequestToken | Should -BeNullOrEmpty
-        Should -Invoke Invoke-WPFRunspace -Times 2 -Exactly
+        Should -Invoke Invoke-WPFRunspace -Times 1 -Exactly
     }
 
     It "starts a replacement request after switching away and back" {
@@ -553,7 +572,99 @@ Describe "Find-AppsByNameOrDescription" {
         $sync.preferences.packagemanager = 'Winget'
         Find-AppsByNameOrDescription -SearchString 'example'
         $sync.LatestPackageManagerRequestToken | Should -Not -Be $token
-        Should -Invoke Invoke-WPFRunspace -Times 6 -Exactly
+        Should -Invoke Invoke-WPFRunspace -Times 1 -Exactly
+    }
+
+    It "coalesces intermediate queries before the worker starts" {
+        New-WinUtilAppSearchContext -Categories @()
+        Mock Invoke-WPFRunspace { $script:searchWorker = $ScriptBlock }
+        Mock Find-WinUtilPackageManagerApps { @() }
+        Find-AppsByNameOrDescription -SearchString 'first'
+        Find-AppsByNameOrDescription -SearchString 'middle'
+        Find-AppsByNameOrDescription -SearchString 'latest'
+
+        & $script:searchWorker
+
+        Should -Invoke Invoke-WPFRunspace -Times 1 -Exactly
+        Should -Invoke Find-WinUtilPackageManagerApps -Times 2 -Exactly -ParameterFilter { $SearchString -eq 'latest' -and $ThrowOnFailure }
+        Should -Invoke Find-WinUtilPackageManagerApps -Times 0 -Exactly -ParameterFilter { $SearchString -ne 'latest' }
+        $sync.PackageManagerSearchWorker.Running | Should -BeFalse
+    }
+
+    It "finishes the active search then runs only the latest pending query" {
+        New-WinUtilAppSearchContext -Categories @()
+        Mock Invoke-WPFRunspace { $script:searchWorker = $ScriptBlock }
+        Mock Find-WinUtilPackageManagerApps {
+            if ($SearchString -eq 'first') {
+                Find-AppsByNameOrDescription -SearchString 'middle'
+                Find-AppsByNameOrDescription -SearchString 'latest'
+            }
+            @()
+        }
+        Find-AppsByNameOrDescription -SearchString 'first'
+        & $script:searchWorker
+
+        Should -Invoke Invoke-WPFRunspace -Times 1 -Exactly
+        Should -Invoke Find-WinUtilPackageManagerApps -Times 1 -Exactly -ParameterFilter { $SearchString -eq 'first' }
+        Should -Invoke Find-WinUtilPackageManagerApps -Times 0 -Exactly -ParameterFilter { $SearchString -eq 'middle' }
+        Should -Invoke Find-WinUtilPackageManagerApps -Times 2 -Exactly -ParameterFilter { $SearchString -eq 'latest' }
+        $sync.PackageManagerSearchCache.ContainsKey('first_Winget') | Should -BeFalse
+        $sync.PackageManagerSearchWorker.Running | Should -BeFalse
+    }
+
+    It "retries failed searches while caching successful empty results" {
+        New-WinUtilAppSearchContext -Categories @()
+        $script:failSearch = $true
+        Mock Find-WinUtilPackageManagerApps {
+            if ($ManagerPreference -eq 'Winget' -and $script:failSearch) { throw 'Transient catalog error' }
+            @()
+        }
+        Find-AppsByNameOrDescription -SearchString 'retry'
+        $sync.PackageManagerSearchCache.ContainsKey('retry_Winget') | Should -BeFalse
+        $sync.PackageManagerSearchCache.ContainsKey('retry_Choco') | Should -BeTrue
+        $script:failSearch = $false
+        Find-AppsByNameOrDescription -SearchString 'retry'
+        Find-AppsByNameOrDescription -SearchString 'retry'
+
+        $sync.PackageManagerSearchCache.ContainsKey('retry_Winget') | Should -BeTrue
+        Should -Invoke Find-WinUtilPackageManagerApps -Times 2 -Exactly -ParameterFilter { $ManagerPreference -eq 'Winget' }
+        Should -Invoke Find-WinUtilPackageManagerApps -Times 1 -Exactly -ParameterFilter { $ManagerPreference -eq 'Choco' }
+    }
+
+    It "releases worker ownership when scheduling fails" {
+        New-WinUtilAppSearchContext -Categories @()
+        Mock Invoke-WPFRunspace { throw 'Pool unavailable' }
+        Find-AppsByNameOrDescription -SearchString 'retry'
+        $sync.PackageManagerSearchWorker.Running | Should -BeFalse
+        Find-AppsByNameOrDescription -SearchString 'retry'
+        Should -Invoke Invoke-WPFRunspace -Times 2 -Exactly
+    }
+
+    It "releases ownership when a worker aborts with a newer request pending" {
+        New-WinUtilAppSearchContext -Categories @()
+        Mock Invoke-WPFRunspace { $script:searchWorker = $ScriptBlock }
+        Mock Find-WinUtilPackageManagerApps {
+            Find-AppsByNameOrDescription -SearchString 'newer'
+            throw 'Native failure'
+        }
+        Mock Write-Warning { throw 'Warning output failed' }
+        Find-AppsByNameOrDescription -SearchString 'first'
+
+        { & $script:searchWorker } | Should -Throw '*Warning output failed*'
+        $sync.PackageManagerSearchWorker.Running | Should -BeFalse
+        Find-AppsByNameOrDescription -SearchString 'newer'
+        Should -Invoke Invoke-WPFRunspace -Times 2 -Exactly
+    }
+
+    It "discards queued searches after the filter is cleared" {
+        New-WinUtilAppSearchContext -Categories @()
+        Mock Invoke-WPFRunspace { $script:searchWorker = $ScriptBlock }
+        Mock Find-WinUtilPackageManagerApps { @() }
+        Find-AppsByNameOrDescription -SearchString 'first'
+        Find-AppsByNameOrDescription -SearchString ''
+        & $script:searchWorker
+        Should -Invoke Find-WinUtilPackageManagerApps -Times 0 -Exactly
+        $sync.PackageManagerSearchWorker.Running | Should -BeFalse
     }
 
     It "restores app visibility and respects collapsed category state for empty search" {

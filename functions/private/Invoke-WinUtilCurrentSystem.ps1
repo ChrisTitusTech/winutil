@@ -26,15 +26,18 @@ Function Invoke-WinUtilCurrentSystem {
     }
 
     if ($checkbox -eq "winget") {
-        $originalEncoding = [Console]::OutputEncoding
+        # Catalog searches also hold this process-wide console encoding lock.
+        [System.Threading.Monitor]::Enter([Console])
         try {
+            $originalEncoding = [Console]::OutputEncoding
             [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
             $installedProgramOutput = @(winget list --accept-source-agreements --disable-interactivity 2>&1)
             if ($LASTEXITCODE -ne 0) {
                 throw "winget list failed with exit code $LASTEXITCODE."
             }
         } finally {
-            [Console]::OutputEncoding = $originalEncoding
+            try { [Console]::OutputEncoding = $originalEncoding }
+            finally { [System.Threading.Monitor]::Exit([Console]) }
         }
         $installedProgramText = $installedProgramOutput -join "`n"
 

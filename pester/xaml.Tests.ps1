@@ -495,7 +495,7 @@ Describe "XAML and sync wiring" {
             "AppCategoryAutoExpanded",
             "LastAutoExpandSearch",
             "PackageManagerSearchCache",
-            "PackageManagerSearchInFlight",
+            "PackageManagerSearchWorker",
 
             "Win11ISOExistingWorkRetryPending",
             "Win11ISOUSBDisks"

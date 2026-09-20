@@ -150,14 +150,14 @@ function Find-AppsByNameOrDescription {
         if ($requestKey) {
             if ($null -eq $sync.PackageManagerSearchCache) {
                 $sync.PackageManagerSearchCache = [Hashtable]::Synchronized(@{})
-                $sync.PackageManagerSearchInFlight = [Hashtable]::Synchronized(@{})
+                $sync.PackageManagerSearchWorker = [Hashtable]::Synchronized(@{ Running = $false; Pending = $null })
                 $sync.LastAutoExpandSearch = ""
             }
 
             $sync.UpdatePackageManagerUI = {
                 param($finalResults, $Manager, $SearchString, $RequestToken)
 
-                if ($sync.LatestPackageManagerRequestToken -ne $RequestToken -or $sync.ActiveJob) { return }
+                if ($sync.LatestPackageManagerRequestToken -ne $RequestToken -or $sync.ActiveJob -or $sync.ShuttingDown) { return }
 
                 try {
                 # Cache the results
@@ -378,77 +378,107 @@ function Find-AppsByNameOrDescription {
                 }
 
 
-                # Multi-thread: Spawn searches for both Winget and Choco
-                foreach ($mgr in @("Winget", "Choco")) {
-                    $searchKey = "${SearchString}_${mgr}"
-                    if (-not $sync.PackageManagerSearchCache.ContainsKey($searchKey) -and $sync.PackageManagerSearchInFlight[$searchKey] -ne $requestToken) {
-                        $sync.PackageManagerSearchInFlight[$searchKey] = $requestToken
-                        $null = Invoke-WPFRunspace -ParameterList @(
-                            @("SearchString", $SearchString),
-                            @("Manager", $mgr),
-                            @("RequestToken", $requestToken),
-                            @("CuratedIds", $curatedIds[$mgr])
-                        ) -ScriptBlock {
-                            param($SearchString, $Manager, $RequestToken, $CuratedIds)
-
+                # Keep one worker and replace queued intermediate queries with the latest request.
+                $worker = $sync.PackageManagerSearchWorker
+                $startWorker = $false
+                [System.Threading.Monitor]::Enter($worker.SyncRoot)
+                try {
+                    $worker.Pending = @{
+                        SearchString = $SearchString
+                        RequestToken = $requestToken
+                        CuratedIds = $curatedIds
+                        Manager = $manager
+                    }
+                    if (-not $worker.Running) {
+                        $worker.Running = $true
+                        $startWorker = $true
+                    }
+                } finally {
+                    [System.Threading.Monitor]::Exit($worker.SyncRoot)
+                }
+                if ($startWorker) {
+                    try {
+                        $handle = Invoke-WPFRunspace -ScriptBlock {
+                            $worker = $sync.PackageManagerSearchWorker
+                            $retired = $false
                             try {
-                                if ($sync.LatestPackageManagerRequestToken -ne $RequestToken -or $sync.ActiveJob) { return }
-
-                                $pmResults = @()
-                                if (Get-Command Find-WinUtilPackageManagerApps -ErrorAction SilentlyContinue) {
-                                    $pmResults = @(Find-WinUtilPackageManagerApps -SearchString $SearchString -ManagerPreference $Manager)
-                                }
-
-                                if ($sync.LatestPackageManagerRequestToken -ne $RequestToken -or $sync.ActiveJob) { return }
-
-                                $newResults = @(foreach ($res in $pmResults) { if (-not $curatedIds.Contains($res.Id)) { $res } })
-
-                                if ($sync.LatestPackageManagerRequestToken -ne $RequestToken -or $sync.ActiveJob) { return }
-
-                                $finalResults = @()
-                                $limit = [Math]::Min($newResults.Count, 15)
-                                for ($i = 0; $i -lt $limit; $i++) {
-                                    if ($sync.LatestPackageManagerRequestToken -ne $RequestToken -or $sync.ActiveJob) { return }
-                                    $res = $newResults[$i]
-                                    $linkUrl = ""
-                                    if (Get-Command Get-WinUtilPackageLink -ErrorAction SilentlyContinue) {
-                                        $linkUrl = Get-WinUtilPackageLink -PackageId $res.Id -Manager $Manager
+                                do {
+                                    [System.Threading.Monitor]::Enter($worker.SyncRoot)
+                                    try {
+                                        $request = $worker.Pending
+                                        $worker.Pending = $null
+                                    } finally {
+                                        [System.Threading.Monitor]::Exit($worker.SyncRoot)
                                     }
-                                    $finalResults += [pscustomobject]@{
-                                        Id = $res.Id
-                                        Name = $res.Name
-                                        LinkUrl = $linkUrl
+                                    try {
+                                        $SearchString = $request.SearchString
+                                        $RequestToken = $request.RequestToken
+                                        $managers = if ($request.Manager -eq 'Choco') { @('Choco', 'Winget') } else { @('Winget', 'Choco') }
+                                        foreach ($Manager in $managers) {
+                                            if ($sync.LatestPackageManagerRequestToken -ne $RequestToken -or $sync.ActiveJob -or $sync.ShuttingDown) { break }
+                                            if ($sync.PackageManagerSearchCache.ContainsKey("${SearchString}_${Manager}")) { continue }
+                                            try {
+                                                $pmResults = @(Find-WinUtilPackageManagerApps -SearchString $SearchString -ManagerPreference $Manager -ThrowOnFailure)
+                                                if ($sync.LatestPackageManagerRequestToken -ne $RequestToken -or $sync.ActiveJob -or $sync.ShuttingDown) { break }
+
+                                                $ids = $request.CuratedIds[$Manager]
+                                                $newResults = @(foreach ($res in $pmResults) { if (-not $ids.Contains($res.Id)) { $res } })
+                                                $finalResults = @(foreach ($res in ($newResults | Select-Object -First 15)) {
+                                                    [pscustomobject]@{
+                                                        Id = $res.Id
+                                                        Name = $res.Name
+                                                        LinkUrl = Get-WinUtilPackageLink -PackageId $res.Id -Manager $Manager
+                                                    }
+                                                })
+
+                                                $dispatcher = $sync.ItemsControl.Dispatcher
+                                                if ($null -eq $dispatcher -and $null -ne $sync.Form) { $dispatcher = $sync.Form.Dispatcher }
+                                                if ($null -ne $dispatcher) {
+                                                    $action = [System.Action[System.Object, System.Object, System.Object, System.Object]] {
+                                                        param($fResults, $mgr, $sString, $rToken)
+                                                        & $sync.UpdatePackageManagerUI -finalResults $fResults -Manager $mgr -SearchString $sString -RequestToken $rToken
+                                                    }
+                                                    $dispatcher.Invoke($action, [object[]]@($finalResults, $Manager, $SearchString, $RequestToken))
+                                                }
+                                                elseif ($sync.MockedTest) {
+                                                    & $sync.UpdatePackageManagerUI -finalResults $finalResults -Manager $Manager -SearchString $SearchString -RequestToken $RequestToken
+                                                }
+                                            } catch {
+                                                Write-Warning "Package manager search failed for ${Manager}: $_"
+                                            }
+                                        }
+                                    } finally {
+                                        # Enqueue and retirement share a lock so the latest request cannot be stranded.
+                                        [System.Threading.Monitor]::Enter($worker.SyncRoot)
+                                        try {
+                                            $keepRunning = $null -ne $worker.Pending
+                                            if (-not $keepRunning) {
+                                                $worker.Running = $false
+                                                $retired = $true
+                                            }
+                                        } finally {
+                                            [System.Threading.Monitor]::Exit($worker.SyncRoot)
+                                        }
                                     }
-                                }
-
-                                if ($sync.LatestPackageManagerRequestToken -ne $RequestToken -or $sync.ActiveJob) { return }
-
-                                $dispatcher = $null
-                                if ($null -ne $sync.ItemsControl -and $null -ne $sync.ItemsControl.Dispatcher) {
-                                    $dispatcher = $sync.ItemsControl.Dispatcher
-                                }
-                                elseif ($null -ne $sync.Form -and $null -ne $sync.Form.Dispatcher) {
-                                    $dispatcher = $sync.Form.Dispatcher
-                                }
-
-                                if ($null -ne $dispatcher) {
-                                    $action = [System.Action[System.Object, System.Object, System.Object, System.Object]] {
-                                        param($fResults, $mgr, $sString, $rToken)
-                                        if ($sync.LatestPackageManagerRequestToken -ne $rToken) { return }
-                                        & $sync.UpdatePackageManagerUI -finalResults $fResults -Manager $mgr -SearchString $sString -RequestToken $rToken
-                                    }
-                                    $dispatcher.Invoke($action, [object[]]@($finalResults, $Manager, $SearchString, $RequestToken))
-                                }
-                                elseif ($null -ne $sync.MockedTest -and $sync.MockedTest) {
-                                    & $sync.UpdatePackageManagerUI -finalResults $finalResults -Manager $Manager -SearchString $SearchString -RequestToken $RequestToken
+                                } while ($keepRunning)
+                            } finally {
+                                if (-not $retired) {
+                                    [System.Threading.Monitor]::Enter($worker.SyncRoot)
+                                    try { $worker.Running = $false }
+                                    finally { [System.Threading.Monitor]::Exit($worker.SyncRoot) }
                                 }
                             }
-                            finally {
-                                if ($sync.PackageManagerSearchInFlight["${SearchString}_${Manager}"] -eq $RequestToken) {
-                                    $sync.PackageManagerSearchInFlight.Remove("${SearchString}_${Manager}")
-                                }
-                            }
-                        } | Out-Null
+                        }
+                        if ($null -eq $handle -and $sync.ShuttingDown) {
+                            [System.Threading.Monitor]::Enter($worker.SyncRoot)
+                            try { $worker.Running = $false; $worker.Pending = $null }
+                            finally { [System.Threading.Monitor]::Exit($worker.SyncRoot) }
+                        }
+                    } catch {
+                        [System.Threading.Monitor]::Enter($worker.SyncRoot)
+                        try { $worker.Running = $false }
+                        finally { [System.Threading.Monitor]::Exit($worker.SyncRoot) }
+                        throw
                     }
                 }
             }
