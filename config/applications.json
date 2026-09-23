@@ -17,6 +17,15 @@
         "winget": "7zip.7zip",
         "foss": true
     },
+    "abdownloadmanager": {
+        "category": "Utilities",
+        "choco": "ab-download-manager",
+        "content": "AB Download Manager",
+        "description": "AB Download Manager is an open-source download accelerator and manager with multi-threaded downloads, queue scheduling, speed limiting, and browser integration.",
+        "link": "https://abdownloadmanager.com/",
+        "winget": "amir1376.ABDownloadManager",
+        "foss": true
+    },
     "adobe": {
         "category": "Document",
         "choco": "adobereader",
@@ -1609,6 +1618,23 @@
         "winget": "LizardByte.Sunshine",
         "foss": true
     },
+    "synctrayzor": {
+        "category": "Selfhosted Tools",
+        "choco": "synctrayzor",
+        "content": "SyncTrayzor",
+        "description": "SyncTrayzor is a Windows tray utility that bundles and wraps Syncthing, making it behave like a native application to easily manage and monitor file synchronization.",
+        "link": "https://github.com/GermanCoding/SyncTrayzor",
+        "winget": "GermanCoding.SyncTrayzor"
+    },
+    "syncthing": {
+        "category": "Selfhosted Tools",
+        "choco": "syncthing",
+        "content": "Syncthing (CLI / Web UI)",
+        "description": "Syncthing is a decentralized, peer-to-peer file synchronization tool that securely syncs files directly across devices without cloud servers, managed via a local web interface.",
+        "link": "https://syncthing.net/",
+        "winget": "Syncthing.Syncthing",
+        "foss": true
+    },
     "tcpview": {
         "category": "Microsoft Tools",
         "choco": "tcpview",
@@ -2016,9 +2042,8 @@
     },
     "Overwolf": {
         "category": "Games",
-        "choco": "overwolf",
-        "content": "Overwolf",
-        "description": "Popular platform for game overlays and companion apps (mod managers, trackers, etc.), widely used by gamers.",
+        "content": "CurseForge",
+        "description": "CurseForge is a desktop application for managing mods and modpacks across multiple games, powered by Overwolf.",
         "link": "https://www.overwolf.com/app/overwolf-curseforge",
         "winget": "Overwolf.CurseForge",
         "foss": false
@@ -2096,3 +2121,4 @@
         "foss": false
     }
 }
+
