@@ -131,7 +131,7 @@ Describe "Write-WinUtilLog" {
         Should -Invoke -CommandName Write-Warning -Times 0 -Exactly
     }
 
-    It "counts only headline errors written by the active job worker" {
+    It "counts headline errors in the logging runspace whether or not it is a job worker" {
         $script:sync = [hashtable]::Synchronized(@{
             winutildir = $script:testRoot
             LoggedErrors = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new())
@@ -142,9 +142,9 @@ Describe "Write-WinUtilLog" {
         Write-WinUtilLog -Level "ERROR" -Component "Test" -Message "job error"
         Write-WinUtilLog -Level "ERROR" -Detail -Component "Test" -Message "error detail"
         $global:WinUtilIsJobWorker = $false
-        Write-WinUtilLog -Level "ERROR" -Component "UI" -Message "unrelated error"
+        Write-WinUtilLog -Level "ERROR" -Component "UI" -Message "toggle error"
 
-        $global:WinUtilJobErrorCount | Should -Be 1
+        $global:WinUtilJobErrorCount | Should -Be 2
         $script:sync.LoggedErrors.Count | Should -Be 2
     }
 
