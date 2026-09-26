@@ -214,7 +214,7 @@ Describe "Win11 Creator setup media" {
         $script:modifyFunction | Should -Match 'if \(\$m -like "Warning:\*"\)[\s\S]*Write-WinUtilISOLog -Level "WARN" -Message \$m -SkipSessionLog[\s\S]*Write-Warning \$m'
     }
 
-    It "keeps WIM servicing limited to one driver-only mount and commit" {
+    It "keeps WIM servicing limited to DISM Add-Driver without image export or cleanup" {
         $isoScriptContent = Get-Content -Path $script:isoScriptPath -Raw
 
         foreach ($expectedText in @(
@@ -222,7 +222,8 @@ Describe "Win11 Creator setup media" {
             "'/Add-Driver'",
             "'/Commit'",
             "`$mountDir = Join-Path (Split-Path -Path `$ContentRoot -Parent) 'wim_mount'",
-            'install.wim metadata validation passed'
+            'install.wim metadata validation passed',
+            "Join-Path `$ContentRoot 'sources\boot.wim'"
         )) {
             $isoScriptContent | Should -Match ([regex]::Escape($expectedText))
         }
@@ -233,17 +234,19 @@ Describe "Win11 Creator setup media" {
             'Export-WindowsImage',
             'Set-WindowsImage',
             '/ResetBase',
-            '/Cleanup-Image'
+            '/Cleanup-Image',
+            '$WinpeDriver$'
         )) {
             $isoScriptContent | Should -Not -Match ([regex]::Escape($forbiddenText))
         }
     }
 
-    It "stages only boot-storage drivers in WinPE" {
+    It "injects only SCSIAdapter or HDC storage drivers into boot.wim" {
         $isoScriptContent = Get-Content -Path $script:isoScriptPath -Raw
 
-        $isoScriptContent | Should -Match ([regex]::Escape("Join-Path `$ContentRoot '`$WinpeDriver$'"))
         $isoScriptContent | Should -Match 'SCSIAdapter\|HDC'
+        $isoScriptContent | Should -Match ([regex]::Escape("Join-Path `$ContentRoot 'sources\boot.wim'"))
+        $isoScriptContent | Should -Not -Match ([regex]::Escape("Join-Path `$ContentRoot '`$WinpeDriver$'"))
         $isoScriptContent | Should -Not -Match ([regex]::Escape('sources\$OEM$\$$\Drivers'))
         $isoScriptContent | Should -Not -Match ([regex]::Escape('WinUtil-InstallDrivers.ps1'))
         $isoScriptContent | Should -Not -Match ([regex]::Escape('SetupComplete.cmd'))
@@ -435,7 +438,7 @@ Describe "Win11 Creator setup media" {
 
 
 
-    It "stages storage drivers for WinPE and adds all drivers to one install.wim index" {
+    It "adds eligible drivers to one install.wim index and does not create `$WinpeDriver$" {
         $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoDrivers_$([guid]::NewGuid())"
         $installWim = Join-Path $contentRoot 'sources\install.wim'
         $template = Get-Content -Path $script:autoUnattendPath -Raw
@@ -443,7 +446,7 @@ Describe "Win11 Creator setup media" {
 
         New-WinUtilDriverExportHarness -Fixtures @(
             @{ Path = 'system_pkg'; Name = 'chipset.inf'; Class = 'System' },
-            @{ Path = 'storage_pkg'; Name = 'iaStorAC.inf'; Class = 'System' },
+            @{ Path = 'storage_pkg'; Name = 'iaStorAC.inf'; Class = 'SCSIAdapter' },
             @{ Path = 'scsi_pkg'; Name = 'controller.inf'; Class = 'SCSIAdapter' },
             @{ Path = 'net_pkg'; Name = 'network.inf'; Class = 'Net' },
             @{ Path = 'group_a\duplicate'; Name = 'audio.inf'; Class = 'Media' },
@@ -465,12 +468,8 @@ Describe "Win11 Creator setup media" {
                 $logs.Add([string]$message)
             }
 
-            $winpeDriverRoot = Join-Path $contentRoot '$WinpeDriver$'
-            @(Get-ChildItem -Path $winpeDriverRoot -Directory).Count | Should -Be 2
-            Test-Path (Join-Path $winpeDriverRoot 'system_pkg\chipset.inf') | Should -BeFalse
-            Test-Path (Join-Path $winpeDriverRoot 'storage_pkg\iaStorAC.inf') | Should -BeTrue
-            Test-Path (Join-Path $winpeDriverRoot 'scsi_pkg\controller.inf') | Should -BeTrue
-            Test-Path (Join-Path $winpeDriverRoot 'net_pkg\network.inf') | Should -BeFalse
+            Test-Path (Join-Path $contentRoot '$WinpeDriver$') | Should -BeFalse
+            ($logs -join '|') | Should -Match 'Warning: boot.wim was not found'
 
             @($script:dismCalls | Where-Object { $_ -match '/Mount-Image' }).Count | Should -Be 1
             @($script:dismCalls | Where-Object { $_ -match '/Add-Driver' }).Count | Should -Be 9
@@ -488,7 +487,7 @@ Describe "Win11 Creator setup media" {
             $nsMgr = New-Object System.Xml.XmlNamespaceManager($answerFile.NameTable)
             $nsMgr.AddNamespace('sg', 'https://schneegans.de/windows/unattend-generator/')
             $answerFile.SelectSingleNode('//sg:File[@path="C:\Windows\Setup\Scripts\WinUtil-InstallDrivers.ps1"]', $nsMgr) | Should -BeNullOrEmpty
-            ($logs -join '|') | Should -Match 'Exported 10 of 11 driver packages \(2 staged for WinPE, 1 excluded\)'
+            ($logs -join '|') | Should -Match 'Exported 10 of 11 driver packages \(1 excluded\)'
             ($logs -join '|') | Should -Match "Excluding stale duplicate driver package '.*ntprint\.inf_x86_7426e1b60aa62272' \(DriverVer 1/1/2023,10\.0\.26100\.8875\) superseded by '.*ntprint\.inf_x86_58e7118cdecb935e' \(DriverVer 6/1/2024,10\.0\.26100\.9168\)"
             ($logs -join '|') | Should -Match 'install.wim metadata validation passed'
             ($logs -join '|') | Should -Match 'DISM mount completed.'
@@ -499,6 +498,91 @@ Describe "Win11 Creator setup media" {
             $script:exportRootAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'ntprint.inf_x86_58e7118cdecb935e')
             $script:exportRootAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'system_pkg')
             $script:exportRootAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'group_a\duplicate')
+        } finally {
+            Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
+            Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    It "injects SCSIAdapter storage drivers into boot.wim index 2 and not `$WinpeDriver`$" {
+        $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoBootWim_$([guid]::NewGuid())"
+        $installWim = Join-Path $contentRoot 'sources\install.wim'
+        $bootWim = Join-Path $contentRoot 'sources\boot.wim'
+        $template = Get-Content -Path $script:autoUnattendPath -Raw
+        $logs = [System.Collections.Generic.List[string]]::new()
+
+        New-WinUtilDriverExportHarness -Fixtures @(
+            @{ Path = 'net_pkg'; Name = 'network.inf'; Class = 'Net' },
+            @{ Path = 'scsi_pkg'; Name = 'controller.inf'; Class = 'SCSIAdapter' },
+            @{ Path = 'hdc_pkg'; Name = 'ide.inf'; Class = 'HDC' },
+            @{ Path = 'name_only_pkg'; Name = 'iaStorAC.inf'; Class = 'System' },
+            @{ Path = 'iastorhsacomponent.inf_amd64_1b2a068a8496b6a2'; Name = 'iaStorHsaComponent.inf'; Class = 'SoftwareComponent' },
+            @{ Path = 'iastorhsa_ext.inf_amd64_ba71359697f80d4e'; Name = 'iaStorHsa_Ext.inf'; Class = 'Extension' }
+        )
+
+        try {
+            New-Item -Path (Split-Path $installWim -Parent) -ItemType Directory -Force | Out-Null
+            Set-Content -Path $installWim -Value 'mock-wim'
+            Set-Content -Path $bootWim -Value 'mock-boot'
+            . $script:isoScriptPath
+            Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template -InjectCurrentSystemDrivers $true -InstallImagePath $installWim -InstallImageIndex 6 -InstallEditionId 'Professional' -Log {
+                param($message)
+                $logs.Add([string]$message)
+            }
+
+            Test-Path (Join-Path $contentRoot '$WinpeDriver$') | Should -BeFalse
+            @($script:dismCalls | Where-Object { $_ -match '/Mount-Image' -and $_ -match 'boot\.wim' -and $_ -match '/Index:2' }).Count | Should -Be 1
+            @($script:dismCalls | Where-Object { $_ -match '/Mount-Image' -and $_ -match 'install\.wim' }).Count | Should -Be 1
+            @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Commit' }).Count | Should -Be 2
+
+            $bootMountCall = $script:dismCalls | Where-Object { $_ -match '/Mount-Image' -and $_ -match 'boot\.wim' } | Select-Object -First 1
+            $installMountCall = $script:dismCalls | Where-Object { $_ -match '/Mount-Image' -and $_ -match 'install\.wim' } | Select-Object -First 1
+            $bootMountIndex = [Array]::IndexOf($script:dismCalls.ToArray(), $bootMountCall)
+            $installMountIndex = [Array]::IndexOf($script:dismCalls.ToArray(), $installMountCall)
+            $bootAdds = @($script:dismCalls[$bootMountIndex..($installMountIndex - 1)] | Where-Object { $_ -match '/Add-Driver' })
+            $bootAdds.Count | Should -Be 2
+            ($bootAdds -join "`n") | Should -Match ([regex]::Escape('scsi_pkg'))
+            ($bootAdds -join "`n") | Should -Match ([regex]::Escape('hdc_pkg'))
+            ($bootAdds -join "`n") | Should -Not -Match ([regex]::Escape('net_pkg'))
+            ($bootAdds -join "`n") | Should -Not -Match 'iastorhsa'
+            ($bootAdds -join "`n") | Should -Not -Match ([regex]::Escape('name_only_pkg'))
+
+            @($script:dismCalls | Where-Object { $_ -match '/Add-Driver' }).Count | Should -Be 8
+            ($logs -join '|') | Should -Match 'Added 2 of 2 driver packages to boot.wim'
+            ($logs -join '|') | Should -Match 'Added 6 of 6 driver packages to install.wim'
+        } finally {
+            Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
+            Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    It "injects only the newest duplicate storage package into boot.wim" {
+        $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoBootWimDedup_$([guid]::NewGuid())"
+        $installWim = Join-Path $contentRoot 'sources\install.wim'
+        $bootWim = Join-Path $contentRoot 'sources\boot.wim'
+        $template = Get-Content -Path $script:autoUnattendPath -Raw
+        $logs = [System.Collections.Generic.List[string]]::new()
+
+        New-WinUtilDriverExportHarness -Fixtures @(
+            @{ Path = 'iastorvd.inf_amd64_11111111aaaaaaaa'; Name = 'iaStorVD.inf'; Class = 'SCSIAdapter'; DriverVer = '1/1/2023,20.2.1.1016' },
+            @{ Path = 'iastorvd.inf_amd64_22222222bbbbbbbb'; Name = 'iaStorVD.inf'; Class = 'SCSIAdapter'; DriverVer = '6/1/2024,20.2.8.1028' }
+        )
+
+        try {
+            New-Item -Path (Split-Path $installWim -Parent) -ItemType Directory -Force | Out-Null
+            Set-Content -Path $installWim -Value 'mock-wim'
+            Set-Content -Path $bootWim -Value 'mock-boot'
+            . $script:isoScriptPath
+            Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template -InjectCurrentSystemDrivers $true -InstallImagePath $installWim -InstallImageIndex 6 -InstallEditionId 'Professional' -Log {
+                param($message)
+                $logs.Add([string]$message)
+            }
+
+            $bootAdds = @($script:dismCalls | Where-Object { $_ -match '/Add-Driver' })
+            @($bootAdds | Where-Object { $_ -match '22222222bbbbbbbb' }).Count | Should -Be 2
+            @($bootAdds | Where-Object { $_ -match '11111111aaaaaaaa' }).Count | Should -Be 0
+            ($logs -join '|') | Should -Match 'Added 1 of 1 driver packages to boot.wim'
+            ($logs -join '|') | Should -Match 'Added 1 of 1 driver packages to install.wim'
         } finally {
             Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
             Remove-Item -Path $contentRoot -Recurse -Force -ErrorAction SilentlyContinue
@@ -528,7 +612,7 @@ Describe "Win11 Creator setup media" {
             }
 
             @($script:dismCalls | Where-Object { $_ -match '/Add-Driver' }).Count | Should -Be 3
-            ($logs -join '|') | Should -Match 'Exported 3 of 3 driver packages \(0 staged for WinPE, 0 excluded\)'
+            ($logs -join '|') | Should -Match 'Exported 3 of 3 driver packages \(0 excluded\)'
             $driversInjected.Value | Should -BeTrue
 
             $script:exportRootAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'ext_pkg_lower')
@@ -628,7 +712,7 @@ Describe "Win11 Creator setup media" {
             }
 
             @($script:dismCalls | Where-Object { $_ -match '/Add-Driver' }).Count | Should -Be 2
-            ($logs -join '|') | Should -Match 'Exported 2 of 2 driver packages \(0 staged for WinPE, 0 excluded\)'
+            ($logs -join '|') | Should -Match 'Exported 2 of 2 driver packages \(0 excluded\)'
             ($logs -join '|') | Should -Not -Match 'Excluding stale duplicate driver package'
 
             $script:exportRootAtAddDriver | Should -Contain (Join-Path $script:driverExportRoot 'device.inf_amd64_11111111aaaaaaaa')
@@ -669,7 +753,7 @@ Describe "Win11 Creator setup media" {
             }
 
             @($script:dismCalls | Where-Object { $_ -match '/Add-Driver' }).Count | Should -Be 3
-            ($logs -join '|') | Should -Match 'Exported 3 of 7 driver packages \(0 staged for WinPE, 4 excluded\)'
+            ($logs -join '|') | Should -Match 'Exported 3 of 7 driver packages \(4 excluded\)'
             ($logs -join '|') | Should -Match "Excluding stale duplicate driver package '.*ntprint\.inf_x86_7426e1b60aa62272' \(DriverVer 1/1/2023,10\.0\.26100\.8875\) superseded by '.*ntprint\.inf_x86_58e7118cdecb935e'"
             ($logs -join '|') | Should -Match "Excluding stale duplicate driver package '.*ntprint\.inf_x86_6688e7b66f8d9fb5' \(DriverVer 1/1/2024,10\.0\.26100\.8972\) superseded by '.*ntprint\.inf_x86_58e7118cdecb935e'"
             ($logs -join '|') | Should -Match "Excluding stale duplicate driver package '.*sample\.inf_amd64_11111111aaaaaaaa' \(DriverVer unknown\) superseded by '.*sample\.inf_amd64_22222222bbbbbbbb' \(DriverVer 3/1/2024,1\.2\.3\.4\)"
@@ -753,8 +837,7 @@ Describe "Win11 Creator setup media" {
 
             ($logs -join '|') | Should -Match "none of the $script:expectedRootPackages exported driver packages could be added"
             ($logs -join '|') | Should -Not -Match "Added 0 of $script:expectedRootPackages"
-            # WinPE staging is independent of WIM servicing, so it must survive the failure.
-            @(Get-ChildItem -Path (Join-Path $contentRoot '$WinpeDriver$') -Directory).Count | Should -Be 2
+            Test-Path (Join-Path $contentRoot '$WinpeDriver$') | Should -BeFalse
             $driversInjected.Value | Should -BeFalse
         } finally {
             Remove-Item Function:\dism.exe -ErrorAction SilentlyContinue
