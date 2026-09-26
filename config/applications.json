@@ -1150,6 +1150,15 @@
         "winget": "OPAutoClicker.OPAutoClicker",
         "foss": false
     },
+    "opencode": {
+        "category": "Development",
+        "choco": "opencode",
+        "content": "OpenCode",
+        "description": "OpenCode is an open-source AI coding agent built for the terminal. It is provider-agnostic and supports local and hosted AI models.",
+        "link": "https://opencode.ai/",
+        "winget": "SST.opencode",
+        "foss": true
+    },
     "openrgb": {
         "category": "Utilities",
         "choco": "openrgb",
