@@ -42,14 +42,24 @@ function Invoke-WPFFixesUpdate {
 
     Write-Progress -Id 0 -Activity "Repairing Windows Update" -Status "Stopping Windows Update Services..." -PercentComplete 10
     # Stop the Windows Update Services
-    Write-Progress -Id 2 -ParentId 0 -Activity "Stopping Services" -Status "Stopping BITS..." -PercentComplete 0
-    Stop-Service -Name BITS -Force
-    Write-Progress -Id 2 -ParentId 0 -Activity "Stopping Services" -Status "Stopping wuauserv..." -PercentComplete 20
-    Stop-Service -Name wuauserv -Force
-    Write-Progress -Id 2 -ParentId 0 -Activity "Stopping Services" -Status "Stopping appidsvc..." -PercentComplete 40
-    Stop-Service -Name appidsvc -Force
-    Write-Progress -Id 2 -ParentId 0 -Activity "Stopping Services" -Status "Stopping cryptsvc..." -PercentComplete 60
-    Stop-Service -Name cryptsvc -Force
+    $services = @("BITS", "wuauserv", "appidsvc", "cryptsvc")
+    $stoppedServices = [System.Collections.Generic.List[string]]::new()
+    for ($i = 0; $i -lt $services.Count; $i++) {
+        $svc = $services[$i]
+        $pct = [int](($i / $services.Count) * 100)
+        Write-Progress -Id 2 -ParentId 0 -Activity "Stopping Services" -Status "Stopping $svc..." -PercentComplete $pct
+        try {
+            $wasRunning = (Get-Service -Name $svc -ErrorAction Stop).Status -eq 'Running'
+            Stop-Service -Name $svc -Force -ErrorAction Stop
+            if ($wasRunning) { $stoppedServices.Add($svc) }
+        } catch {
+            foreach ($stoppedSvc in $stoppedServices) {
+                Start-Service -Name $stoppedSvc -ErrorAction Continue
+            }
+            Write-Progress -Id 2 -ParentId 0 -Activity "Stopping Services" -Status "Failed to stop $svc" -PercentComplete $pct
+            throw "Failed to stop service $svc - cannot continue with Windows Update repair: $_"
+        }
+    }
     Write-Progress -Id 2 -ParentId 0 -Activity "Stopping Services" -Status "Completed" -PercentComplete 100
 
 
@@ -102,7 +112,9 @@ function Invoke-WPFFixesUpdate {
         "wuweb.dll", "qmgr.dll", "qmgrprxy.dll", "wucltux.dll", "muweb.dll", "wuwebv.dll"
     )
     foreach ($dll in $DLLs) {
-        Write-Progress -Id 5 -ParentId 0 -Activity "Reregistering DLLs" -Status "Registering $dll..." -PercentComplete ($i / $DLLs.Count * 100)
+        if ($i % 5 -eq 0 -or $i -eq ($DLLs.Count - 1)) {
+            Write-Progress -Id 5 -ParentId 0 -Activity "Reregistering DLLs" -Status "Registering $dll..." -PercentComplete (($i / $DLLs.Count) * 100)
+        }
         $i++
         Start-Process -NoNewWindow -FilePath "regsvr32.exe" -ArgumentList "/s", $dll
     }
@@ -202,15 +214,7 @@ function Invoke-WPFFixesUpdate {
     Show-WinUtilMessage -Message "Stock settings loaded.`n Please reboot your computer" -Title "Reset Windows Update" -Button "OK" -Icon "Information" | Out-Null
 
     # Remove the progress bars
-    Write-Progress -Id 0 -Activity "Repairing Windows Update" -Completed
-    Write-Progress -Id 1 -Activity "Scanning for corruption" -Completed
-    Write-Progress -Id 2 -Activity "Stopping Services" -Completed
-    Write-Progress -Id 3 -Activity "Renaming/Removing Files" -Completed
-    Write-Progress -Id 4 -Activity "Resetting the WU Service Security Descriptors" -Completed
-    Write-Progress -Id 5 -Activity "Reregistering DLLs" -Completed
-    Write-Progress -Id 6 -Activity "Removing Group Policy Windows Update settings" -Completed
-    Write-Progress -Id 7 -Activity "Resetting WinSock" -Completed
-    Write-Progress -Id 8 -Activity "Deleting BITS jobs" -Completed
-    Write-Progress -Id 9 -Activity "Starting Windows Update Services" -Completed
-    Write-Progress -Id 10 -Activity "Forcing discovery" -Completed
+    foreach ($id in 0..10) {
+        Write-Progress -Id $id -Activity "Completed" -Completed -ErrorAction SilentlyContinue
+    }
 }

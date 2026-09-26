@@ -14,11 +14,13 @@ function Initialize-WinUtilInstallTabControls {
     if ($sync.ChocoRadioButton) {
         $sync.ChocoRadioButton.Add_Checked({
             $sync.preferences.packagemanager = "Choco"
+            Update-WinUtilInstallSearchResults
         })
     }
     if ($sync.WingetRadioButton) {
         $sync.WingetRadioButton.Add_Checked({
             $sync.preferences.packagemanager = "Winget"
+            Update-WinUtilInstallSearchResults
         })
     }
 

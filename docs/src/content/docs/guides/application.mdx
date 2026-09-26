@@ -9,6 +9,12 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 
 Use the Applications tab to install, upgrade, uninstall, and review supported apps from one place. WinUtil relies on package manager support for these actions, so the available results depend on what WinGet can detect and manage on your system.
 
+Searching also queries the package-manager catalogs in the background. Expand **Package Manager Results** to see up to 15 additional matches for the selected manager. WinGet searches use its community source; Microsoft Store results are not included. Category filters show curated apps only.
+
+While a catalog search is running, further typing replaces the pending search with your latest text. If a catalog request fails, searching for the same text again retries it.
+
+Switching package managers refreshes the results and deselects apps unavailable from the new manager. Selected search results remain available while you search for other apps, but these session-only entries are excluded from configuration exports. Catalog searches are disabled in offline mode and while a package operation is running.
+
 <Tabs>
 <TabItem label="Install & Upgrade">
 * Choose the applications you want to install or upgrade.

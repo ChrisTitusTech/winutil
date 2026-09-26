@@ -1,4 +1,4 @@
-#===========================================================================
+#=====
 # Tests - XAML Control Wiring
 
 BeforeAll {
@@ -473,19 +473,33 @@ Describe "XAML and sync wiring" {
             "AppCategoryChips",
             "SelectedAppCategories",
             "AppCategoryAutoExpanded",
+            "TweakCategoryAutoExpanded",
             "RenderedAssetCache",
             "ToggleStatusCache",
             "InstallAppRenderQueue",
             "InstallAppEntriesRendered",
             "FontScaleFactor",
+            "LatestPackageManagerRequestToken",
+            "LatestPackageManagerRequestKey",
+            "UpdatePackageManagerUI",
+            "MockedTest",
             "Win11ISOImageInfo",
             "Win11ISODriveLetter",
             "Win11ISOWimPath",
             "Win11ISOImagePath",
             "Win11ISOWorkDir",
             "Win11ISOContentsDir",
+
+            "AppCategoryChips",
+            "SelectedAppCategories",
+            "AppCategoryAutoExpanded",
+            "LastAutoExpandSearch",
+            "PackageManagerSearchCache",
+            "PackageManagerSearchWorker",
+
             "Win11ISOExistingWorkRetryPending",
             "Win11ISOUSBDisks"
+
         )
         $allowedNames = @($xamlNames + $generatedNames + $dynamicStateNames) | Sort-Object -Unique
         $bracketReferences = @(

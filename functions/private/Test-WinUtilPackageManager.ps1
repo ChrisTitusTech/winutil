@@ -1,37 +1,28 @@
 function Test-WinUtilPackageManager {
     <#
-
     .SYNOPSIS
-        Checks if WinGet and/or Choco are installed
-
+        Checks if WinGet and/or Choco are installed.
     .PARAMETER winget
-        Check if WinGet is installed
-
+        Check if WinGet is installed.
     .PARAMETER choco
-        Check if Chocolatey is installed
-
+        Check if Chocolatey is installed.
     #>
-
     Param(
         [System.Management.Automation.SwitchParameter]$winget,
         [System.Management.Automation.SwitchParameter]$choco
     )
 
-    if ($winget) {
-        if (Get-Command winget -ErrorAction SilentlyContinue) {
-            $status = "installed"
-        } else {
-            $status = "not-installed"
+    # Handle missing switch - callers rely on the return value
+    if (-not $winget -and -not $choco) { return "not-installed" }
+
+    $cmds = @()
+    if ($winget) { $cmds += "winget" }
+    if ($choco) { $cmds += "choco" }
+
+    foreach ($cmd in $cmds) {
+        if (-not (Get-Command $cmd -ErrorAction SilentlyContinue)) {
+            return "not-installed"
         }
     }
-
-    if ($choco) {
-        if (Get-Command choco -ErrorAction SilentlyContinue) {
-            $status = "installed"
-        } else {
-            $status = "not-installed"
-        }
-    }
-
-    return $status
+    return "installed"
 }

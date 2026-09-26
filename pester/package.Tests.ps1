@@ -96,6 +96,7 @@ Describe "Get-WinUtilSelectedPackages" {
 Describe "Test-WinUtilPackageManager" {
     BeforeEach {
         Mock Write-WinUtilJobBanner { }
+        Mock Write-Host { }
     }
 
     It "reports winget installed when the command exists" {
@@ -109,6 +110,7 @@ Describe "Test-WinUtilPackageManager" {
             $Name -eq "winget" -and $ErrorAction -eq "SilentlyContinue"
         }
         Should -Invoke -CommandName Write-WinUtilJobBanner -Times 0 -Exactly
+        Should -Invoke -CommandName Write-Host -Times 0 -Exactly
     }
 
     It "reports choco not installed when the command is missing" {
@@ -122,6 +124,23 @@ Describe "Test-WinUtilPackageManager" {
             $Name -eq "choco" -and $ErrorAction -eq "SilentlyContinue"
         }
         Should -Invoke -CommandName Write-WinUtilJobBanner -Times 0 -Exactly
+    }
+
+    It "requires both requested managers to be installed" -TestCases @(
+        @{ WingetPresent = $true; ChocoPresent = $true; Expected = "installed" }
+        @{ WingetPresent = $false; ChocoPresent = $true; Expected = "not-installed" }
+        @{ WingetPresent = $true; ChocoPresent = $false; Expected = "not-installed" }
+    ) {
+        param($WingetPresent, $ChocoPresent, $Expected)
+        Mock Get-Command { if ($WingetPresent) { [pscustomobject]@{ Name = "winget" } } } -ParameterFilter { $Name -eq "winget" }
+        Mock Get-Command { if ($ChocoPresent) { [pscustomobject]@{ Name = "choco" } } } -ParameterFilter { $Name -eq "choco" }
+
+        Test-WinUtilPackageManager -winget -choco | Should -Be $Expected
+        Should -Invoke -CommandName Write-Host -Times 0 -Exactly
+    }
+
+    It "reports not installed when no manager is requested" {
+        Test-WinUtilPackageManager | Should -Be "not-installed"
     }
 }
 

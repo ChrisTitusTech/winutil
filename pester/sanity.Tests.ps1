@@ -33,7 +33,7 @@ BeforeAll {
             $env:WINUTIL_TEST_PARSE_PATHS = @($Path) -join [Environment]::NewLine
             $parseScript = @'
 $ErrorActionPreference = 'Stop'
-$paths = $env:WINUTIL_TEST_PARSE_PATHS -split "`r?`n" | Where-Object { $_ }
+$paths = $env:WINUTIL_TEST_PARSE_PATHS -split '\r?\n' | Where-Object { $_ }
 $failed = @()
 
 foreach ($path in $paths) {
@@ -43,7 +43,7 @@ foreach ($path in $paths) {
 
     if ($syntaxErrors.Count -ne 0) {
         $messages = $syntaxErrors | ForEach-Object { $_.Message }
-        $failed += "[$path] $($messages -join '; ')"
+        $failed += ('[' + $path + '] ' + ($messages -join '; '))
     }
 }
 

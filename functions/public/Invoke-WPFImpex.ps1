@@ -51,7 +51,11 @@ function Invoke-WPFImpex {
             try {
                 $Config = ConfigDialog
                 if ($Config) {
-                    $allConfs = ($sync.selectedApps + $sync.selectedTweaks + $sync.selectedToggles + $sync.selectedFeatures + $sync.selectedAppx) | ForEach-Object { [string]$_ }
+                    $exportApps = @($sync.selectedApps | Where-Object { $_ -notlike 'WPFInstall_dynamic_*' })
+                    if ($exportApps.Count -ne $sync.selectedApps.Count) {
+                        Write-Warning "Package Manager Results are session-only and are not included in exported configurations."
+                    }
+                    $allConfs = ($exportApps + $sync.selectedTweaks + $sync.selectedToggles + $sync.selectedFeatures + $sync.selectedAppx) | ForEach-Object { [string]$_ }
                     if (-not $allConfs) {
                         Show-WinUtilMessage -Message (
                             "No settings are selected to export. Please select at least one app, tweak, toggle, feature, or AppX package before exporting."

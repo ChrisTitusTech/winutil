@@ -546,6 +546,7 @@ function Invoke-WinUtilISOCleanAndReset {
                 }
             }
 
+            # Preserve progress reporting while cleaning the working directory.
             if ($workDir -and (Test-Path $workDir)) {
                 Write-WinUtilISOLog "Scanning files to delete in: $workDir"
                 Step-WinUtilJob -Status "Scanning files..." -Percent 5
@@ -574,7 +575,7 @@ function Invoke-WinUtilISOCleanAndReset {
                 try { Remove-Item -Path $workDir -Recurse -Force } catch { Write-WinUtilISOLog -Level "WARN" -Message "Could not delete temp directory ${WorkDir}: $_" }
 
                 if (Test-Path $workDir) {
-                    Write-WinUtilISOLog -Level "WARN" -Message "Some items could not be deleted in $workDir"
+                    throw "Cleanup aborted because some items could not be deleted in $workDir."
                 } else {
                     Write-WinUtilISOLog "Temp directory deleted successfully."
                 }

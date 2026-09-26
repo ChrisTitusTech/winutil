@@ -17,36 +17,39 @@ Function Invoke-WinUtilCurrentSystem {
     )
     if ($CheckBox -eq "choco") {
         $apps = (choco list | Select-String -Pattern "^\S+").Matches.Value
-        $sync.configs.applicationsHashtable.GetEnumerator() | ForEach-Object {
-            $packageId = ($_.Value.choco -split ";")[-1].Trim()
+        foreach ($app in $sync.configs.applicationsHashtable.GetEnumerator()) {
+            $packageId = ($app.Value.choco -split ";")[-1].Trim()
             if ($packageId -ne "na" -and $packageId -in $apps) {
-                Write-Output $_.Key
+                Write-Output $app.Key
             }
         }
     }
 
     if ($checkbox -eq "winget") {
-        $originalEncoding = [Console]::OutputEncoding
+        # Catalog searches also hold this process-wide console encoding lock.
+        [System.Threading.Monitor]::Enter([Console])
         try {
+            $originalEncoding = [Console]::OutputEncoding
             [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
             $installedProgramOutput = @(winget list --accept-source-agreements --disable-interactivity 2>&1)
             if ($LASTEXITCODE -ne 0) {
                 throw "winget list failed with exit code $LASTEXITCODE."
             }
         } finally {
-            [Console]::OutputEncoding = $originalEncoding
+            try { [Console]::OutputEncoding = $originalEncoding }
+            finally { [System.Threading.Monitor]::Exit([Console]) }
         }
         $installedProgramText = $installedProgramOutput -join "`n"
 
-        $sync.configs.applicationsHashtable.GetEnumerator() | ForEach-Object {
-            $packageId = (($_.Value.winget -split ";")[-1] -replace "^msstore:", "").Trim()
+        foreach ($app in $sync.configs.applicationsHashtable.GetEnumerator()) {
+            $packageId = (($app.Value.winget -split ";")[-1] -replace "^msstore:", "").Trim()
             if ([string]::IsNullOrWhiteSpace($packageId) -or $packageId -eq "na") {
-                return
+                continue
             }
 
             $packagePattern = "(?im)[^\S\r\n]{2,}$([regex]::Escape($packageId))(?=[^\S\r\n]{2,}|$)"
             if ($installedProgramText -match $packagePattern) {
-                Write-Output $_.Key
+                Write-Output $app.Key
             }
         }
     }
@@ -56,29 +59,28 @@ Function Invoke-WinUtilCurrentSystem {
         if (!(Test-Path 'HKU:\')) {$null = (New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS)}
         $readErrorAction = if ($StopOnReadError) { "Stop" } else { "SilentlyContinue" }
 
-        $sync.configs.tweaks | Get-Member -MemberType NoteProperty | ForEach-Object {
-
-            $Config = $psitem.Name
-            $entry = $sync.configs.tweaks.$Config
+        foreach ($prop in $sync.configs.tweaks.PSObject.Properties) {
+            $Config = $prop.Name
+            $entry = $prop.Value
             $registryKeys = $entry.registry
             $serviceKeys = $entry.service
             $entryType = $entry.Type
 
             if (($registryKeys -or $serviceKeys) -and $entryType -ne "Combobox") {
-                $Values = @()
+                $allMatch = $true
 
                 if ($entryType -eq "Toggle") {
                     if (-not (Get-WinUtilToggleStatus $Config `
                         -BypassCache:$BypassToggleStatusCache `
                         -StopOnReadError:$StopOnReadError)) {
-                        $values += $False
+                        $allMatch = $false
                     }
                 } else {
                     $registryMatchCount = 0
                     $registryTotal = 0
 
-                    Foreach ($tweaks in $registryKeys) {
-                        Foreach ($tweak in $tweaks) {
+                    foreach ($tweaks in $registryKeys) {
+                        foreach ($tweak in $tweaks) {
                             $registryTotal++
                             $regstate = $null
 
@@ -92,15 +94,9 @@ Function Invoke-WinUtilCurrentSystem {
 
                             if ($null -eq $regstate) {
                                 switch ($tweak.DefaultState) {
-                                    "true" {
-                                        $regstate = $tweak.Value
-                                    }
-                                    "false" {
-                                        $regstate = $tweak.OriginalValue
-                                    }
-                                    default {
-                                        $regstate = $tweak.OriginalValue
-                                    }
+                                    "true" { $regstate = $tweak.Value }
+                                    "false" { $regstate = $tweak.OriginalValue }
+                                    default { $regstate = $tweak.OriginalValue }
                                 }
                             }
 
@@ -111,37 +107,33 @@ Function Invoke-WinUtilCurrentSystem {
                     }
 
                     if ($registryTotal -gt 0 -and $registryMatchCount -ne $registryTotal) {
-                        $values += $False
+                        $allMatch = $false
                     }
                 }
 
-                Foreach ($tweaks in $serviceKeys) {
-                    Foreach ($tweak in $tweaks) {
+                foreach ($tweaks in $serviceKeys) {
+                    foreach ($tweak in $tweaks) {
                         try {
                             $Service = Get-Service -Name $tweak.Name -ErrorAction $readErrorAction
                         } catch {
                             if ($StopOnReadError -and $_.FullyQualifiedErrorId -like "NoServiceFoundForGivenName*") {
                                 # A removed optional service means this tweak is not applied; it does
                                 # not make the registry and service state for every other tweak unknown.
-                                $values += $False
+                                $allMatch = $false
                                 continue
                             }
                             throw
                         }
 
-                        if ($Service) {
-                            $actualValue = $Service.StartType
-                            $expectedValue = $tweak.StartupType
-                            if ($expectedValue -ne $actualValue) {
-                                $values += $False
-                            }
-                        } elseif ($StopOnReadError) {
-                            $values += $False
+                        if (($Service -and $tweak.StartupType -ne $Service.StartType) -or
+                            (-not $Service -and $StopOnReadError)) {
+                            $allMatch = $false
                         }
                     }
+                    if (-not $allMatch) { break }
                 }
 
-                if ($values -notcontains $false) {
+                if ($allMatch) {
                     Write-Output $Config
                 }
             }
