@@ -136,6 +136,7 @@ When you install Windows 11 from your modified ISO:
 | Modification seems stuck | The WIM dismount step is slow — wait at least 10 minutes before assuming it's frozen |
 | "Access Denied" error | Make sure WinUtil is running as Administrator |
 | Driver injection warning | Review the live log for the named package. Other compatible packages continue; if none succeed, the ISO is created with the original `install.wim` |
+| DISM error with a code in parentheses, e.g. "exit code 112 (Disk is full)" | WinUtil now explains common DISM failures in plain language. Free up disk space for a "Disk is full" error, or run WinUtil as Administrator for an "Access denied" error. If the code has no explanation, search the number on Microsoft's [DISM error code reference](https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes) |
 | "Setup has failed to validate the product key" | Recreate the ISO with the latest WinUtil. The creator now removes stale `PID.txt`, writes `sources\ei.cfg`, and pins the selected image in `autounattend.xml` so setup does not use an embedded OEM key for a different edition |
 
 ---

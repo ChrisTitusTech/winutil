@@ -206,6 +206,21 @@ function Invoke-WinUtilISOScript {
             return @($survivingFolders)
         }
 
+        $knownExitCode = @{
+            112 = "Disk is full"
+            5 = "Access denied"
+            2 = "File not found"
+            3 = "Path not found"
+            87 = "Invalid parameter"
+            1168 = "Element not found"
+            1392 = "File or directory is corrupted"
+            32 = "File in use / sharing violation"
+            21 = "Device not ready"
+            1460 = "Operation timed out"
+            1223 = "Operation cancelled by user"
+            50 = "Request not supported"
+        }
+
         function Invoke-WinUtilISODism {
             param (
                 [Parameter(Mandatory)][string[]]$Arguments,
@@ -220,7 +235,11 @@ function Invoke-WinUtilISOScript {
                         & $Logger "  dism[$Operation]: $line"
                     }
                 }
-                throw "DISM $Operation failed with exit code $exitCode."
+                if ($knownExitCode.ContainsKey($exitCode)) {
+                    throw "DISM $Operation failed with exit code $exitCode ($($knownExitCode[$exitCode]))."
+                } else {
+                    throw "DISM $Operation failed with exit code $exitCode."
+                }
             }
             if ($Operation -ne 'metadata') {
                 & $Logger "DISM $Operation completed."
