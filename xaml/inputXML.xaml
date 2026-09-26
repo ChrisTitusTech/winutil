@@ -2225,13 +2225,13 @@
                             </Grid>
 
                             <Border Grid.Row="2" Style="{StaticResource BorderStyle}" Margin="5,15,5,5">
-                                <StackPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left">
+                                <WrapPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left">
                                     <TextBlock Padding="10" TextWrapping="Wrap" Foreground="{DynamicResource MainForegroundColor}">
                                         Note: Select the Windows AppX packages you wish to install or remove.
-                                        <LineBreak/>Install Selected registers a local manifest when available, then falls back to the Microsoft Store.
-                                        <LineBreak/>Remove Selected removes packages for the current user and all new user profiles.
+                                        <LineBreak/>'Install Selected' registers a local manifest when available, then falls back to the Microsoft Store, for the current user only.
+                                        <LineBreak/>'Remove Selected' removes packages for all users and stops new profiles from getting them by default.
                                     </TextBlock>
-                                </StackPanel>
+                                </WrapPanel>
                             </Border>
                         </Grid>
                     </ScrollViewer>
