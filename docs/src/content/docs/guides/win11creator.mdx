@@ -45,8 +45,8 @@ Once the ISO is verified, WinUtil moves to this step and shows the mounted drive
 Then click **Run Windows ISO Modification and Creator** to start the customization process. WinUtil will:
 
 **App & Component Removal:**
-- **Remove 40+ bloat apps** — Clipchamp, Teams, Copilot, Dev Home, new Outlook, Bing apps, Solitaire, and more
-- **Delete OneDrive setup** from the image
+- **Remove 19 bloat apps** — Clipchamp, Teams, Dev Home, new Outlook, Bing apps, Solitaire, and more
+- **Uninstall OneDrive** during first logon
 
 **System Customization:**
 - **Bypass hardware checks** — removes TPM, Secure Boot, CPU, RAM, and storage requirement enforcement so the ISO installs on unsupported hardware
@@ -95,7 +95,7 @@ Once the modification is complete, choose how to save your image:
 1. Click **Write Directly to a USB Drive**.
 2. Select your USB drive from the dropdown (click **Refresh** if it doesn't appear).
 3. Click **Erase & Write to USB** and confirm the warning — **all data on the drive will be permanently erased**.
-4. WinUtil formats the drive as GPT with a 512 MB EFI partition and copies the modified Windows files.
+4. WinUtil formats the drive as GPT with a single FAT32 partition (capped at 32 GB, splitting `install.wim` into `.swm` files if larger than 3.8 GB) and copies the modified Windows files.
 
 :::danger
 Double-check you have selected the correct drive before confirming. This operation cannot be undone.
