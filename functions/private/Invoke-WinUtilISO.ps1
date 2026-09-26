@@ -356,7 +356,8 @@ function Invoke-WinUtilISOModify {
         Invoke-WPFUIThread -ScriptBlock {
             $sync["WPFWin11ISOModifyButton"].IsEnabled = $false
         }
-        Set-WinUtilISOStep -Step "Working" -Label "Modifying install.wim"
+        $workingLabel = if ($InjectDrivers) { "Modifying install.wim" } else { "Preparing setup media" }
+        Set-WinUtilISOStep -Step "Working" -Label $workingLabel
 
         $modified = $false
         try {
