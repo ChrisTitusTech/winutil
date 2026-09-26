@@ -421,6 +421,7 @@ function Invoke-WPFUIElements {
                         $button.HorizontalAlignment = "Left"
                         $button.SetResourceReference([Windows.Controls.Control]::MarginProperty, "ButtonMargin")
                         $button.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "ButtonFontSize")
+                        $button.ToolTip = $entryInfo.Description
                         if ($entryInfo.ButtonWidth) {
                             $baseWidth = [int]$entryInfo.ButtonWidth
                             $button.Width = [math]::Max($baseWidth, 350)
