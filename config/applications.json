@@ -1393,6 +1393,15 @@
         "winget": "Microsoft.Sysinternals.ProcessMonitor",
         "foss": false
     },
+    "pstools": {
+        "category": "Microsoft Tools",
+        "choco": "pstools",
+        "content": "PsTools",
+        "description": "Microsoft Sysinternals PsTools allows administrators to execute command shells with SYSTEM privileges to access protected areas, monitor processes, and manage remote systems.",
+        "link": "https://learn.microsoft.com/en-us/sysinternals/downloads/pstools",
+        "winget": "Microsoft.Sysinternals.PsTools",
+        "foss": false
+    },
     "putty": {
         "category": "Pro Tools",
         "choco": "putty",
