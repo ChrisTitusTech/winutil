@@ -93,6 +93,11 @@ namespace Windows.Controls
         }
     }
 
+    public class ScrollViewer
+    {
+        public object Content { get; set; }
+    }
+
     public class Label
     {
         public object Content { get; set; }
@@ -112,6 +117,11 @@ namespace Windows.Controls
 
     . (Join-Path $script:repoRoot "functions\private\Find-AppsByNameOrDescription.ps1")
     . (Join-Path $script:repoRoot "functions\private\Find-TweaksByNameOrDescription.ps1")
+
+    function Write-WinUtilLog {
+        param($Level, $Component, $Message)
+        throw $Message
+    }
 
     function script:New-WinUtilSearchCollection {
         return ,[System.Collections.ArrayList]::new()
@@ -254,7 +264,9 @@ namespace Windows.Controls
     function script:New-WinUtilTweakCategory {
         param(
             [string]$Label,
-            [object[]]$Items
+            [object[]]$Items,
+            [ValidateSet("ItemsControl", "StackPanel", "ScrollViewer")]
+            [string]$ContainerType = "ItemsControl"
         )
 
         $categoryLabel = [Windows.Controls.Label]::new()
@@ -268,7 +280,23 @@ namespace Windows.Controls
         }
 
         $dockPanel = [Windows.Controls.DockPanel]::new()
-        $null = $dockPanel.Children.Add($itemsControl)
+        if ($ContainerType -eq "ItemsControl") {
+            $null = $dockPanel.Children.Add($itemsControl)
+        } else {
+            $stack = [Windows.Controls.StackPanel]::new()
+            $categoryItems = @($itemsControl.Items)
+            $itemsControl.Items.Clear()
+            foreach ($item in $categoryItems) {
+                $null = $stack.Children.Add($item)
+            }
+            if ($ContainerType -eq "ScrollViewer") {
+                $scroll = [Windows.Controls.ScrollViewer]::new()
+                $scroll.Content = $stack
+                $null = $dockPanel.Children.Add($scroll)
+            } else {
+                $null = $dockPanel.Children.Add($stack)
+            }
+        }
 
         $border = [Windows.Controls.Border]::new()
         $border.Child = $dockPanel
@@ -475,27 +503,53 @@ Describe "Find-AppsByNameOrDescription" {
 }
 
 Describe "Find-TweaksByNameOrDescription" {
+    It "restores collapsed categories after literal search in <ContainerType>" -TestCases @(
+        @{ ContainerType = "StackPanel" }
+        @{ ContainerType = "ScrollViewer" }
+    ) {
+        param($ContainerType)
+        $match = New-WinUtilTweakLabelItem -Content "Tool [abc]"
+        $other = New-WinUtilTweakCheckboxItem -Content "Other tool"
+        $category = New-WinUtilTweakCategory -Label "+ Privacy" -Items @($match, $other) -ContainerType $ContainerType
+        New-WinUtilTweakSearchContext -TweaksPanel (New-WinUtilTweakPanel -Categories @($category))
+
+        Find-TweaksByNameOrDescription -SearchString "[abc]"
+        $match.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $other.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $category.Label.Content | Should -Be "- Privacy"
+
+        Find-TweaksByNameOrDescription -SearchString ""
+        $category.Label.Content | Should -Be "+ Privacy"
+        $match.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $other.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+    }
+
     AfterEach {
         Remove-WinUtilSearchGlobals
     }
 
-    It "restores category labels and tweak item visibility for empty search" {
-        $labelItem = New-WinUtilTweakLabelItem -Content "Disable Telemetry" -ToolTip "Stop tracking"
-        $stackItem = New-WinUtilTweakCheckboxItem -Content "Show Extensions" -ToolTip "File extension display"
-        $category = New-WinUtilTweakCategory -Label "+ Privacy" -Items @($labelItem, $stackItem)
-        $labelItem.Visibility = [Windows.Visibility]::Collapsed
-        $stackItem.Visibility = [Windows.Visibility]::Collapsed
-        $category.Label.Visibility = [Windows.Visibility]::Collapsed
-        $category.Border.Visibility = [Windows.Visibility]::Collapsed
-        $panel = New-WinUtilTweakPanel -Categories @($category)
+    It "restores category labels and respects collapsed category state for empty search" {
+        $collapsedItem = New-WinUtilTweakLabelItem -Content "Disable Telemetry" -ToolTip "Stop tracking"
+        $expandedItem = New-WinUtilTweakCheckboxItem -Content "Show Extensions" -ToolTip "File extension display"
+        $collapsedCategory = New-WinUtilTweakCategory -Label "+ Privacy" -Items @($collapsedItem)
+        $expandedCategory = New-WinUtilTweakCategory -Label "- Explorer" -Items @($expandedItem)
+        $expandedItem.Visibility = [Windows.Visibility]::Collapsed
+        $collapsedCategory.Label.Visibility = [Windows.Visibility]::Collapsed
+        $collapsedCategory.Border.Visibility = [Windows.Visibility]::Collapsed
+        $expandedCategory.Border.Visibility = [Windows.Visibility]::Collapsed
+        $panel = New-WinUtilTweakPanel -Categories @($collapsedCategory, $expandedCategory)
         New-WinUtilTweakSearchContext -TweaksPanel $panel
 
         Find-TweaksByNameOrDescription -SearchString ""
 
-        $category.Border.Visibility | Should -Be ([Windows.Visibility]::Visible)
-        $category.Label.Visibility | Should -Be ([Windows.Visibility]::Visible)
-        $labelItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
-        $stackItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $collapsedCategory.Border.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $collapsedCategory.Label.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $collapsedCategory.Label.Content | Should -Be "+ Privacy"
+        $collapsedItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $expandedCategory.Border.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $expandedCategory.Label.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $expandedCategory.Label.Content | Should -Be "- Explorer"
+        $expandedItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
     }
 
     It "shows tweak matches by label tooltip and checkbox content" {
