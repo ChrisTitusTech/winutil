@@ -120,6 +120,39 @@ Describe "Invoke-WinUtilCurrentSystem installed apps" {
     }
 }
 
+Describe "Invoke-WinUtilCurrentSystem service tweaks" {
+    BeforeEach {
+        $script:sync = [Hashtable]::Synchronized(@{
+            configs = @{
+                tweaks = [pscustomobject]@{
+                    WPFServiceTweak = [pscustomobject]@{
+                        service = @([pscustomobject]@{ Name = "OptionalService"; StartupType = "Disabled" })
+                    }
+                }
+            }
+        })
+        Mock Test-Path { $true }
+        Mock Get-Service { $null }
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+    }
+
+    It "tolerates a missing optional service during UI detection" {
+        @(Invoke-WinUtilCurrentSystem -CheckBox "tweaks") | Should -Be @("WPFServiceTweak")
+    }
+
+    It "marks a missing service as a mismatch during strict report collection" {
+        @(Invoke-WinUtilCurrentSystem -CheckBox "tweaks" -StopOnReadError).Count | Should -Be 0
+    }
+
+    It "marks a tweak applied when its service startup type matches" {
+        Mock Get-Service { [pscustomobject]@{ StartType = "Disabled" } }
+        @(Invoke-WinUtilCurrentSystem -CheckBox "tweaks") | Should -Be @("WPFServiceTweak")
+    }
+}
+
 Describe "Set-WinUtilRegistry" {
     BeforeEach {
         $script:testPathResults = @{}

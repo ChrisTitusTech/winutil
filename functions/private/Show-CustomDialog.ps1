@@ -130,57 +130,36 @@ function Show-CustomDialog {
 
     $dialog.Content = $border
 
-    # Create a grid for layout inside the Border
     $grid = New-Object Windows.Controls.Grid
     $border.Child = $grid
-
-    # Uncomment the following line to show gridlines
-    #$grid.ShowGridLines = $true
-
-    # Add the following line to set the background color of the grid
     $grid.Background = [Windows.Media.Brushes]::Transparent
-    # Add the following line to make the Grid stretch
     $grid.HorizontalAlignment = [Windows.HorizontalAlignment]::Stretch
     $grid.VerticalAlignment = [Windows.VerticalAlignment]::Stretch
-
-    # Add the following line to make the Border stretch
     $border.HorizontalAlignment = [Windows.HorizontalAlignment]::Stretch
     $border.VerticalAlignment = [Windows.VerticalAlignment]::Stretch
 
-    # Set up Row Definitions
-    $row0 = New-Object Windows.Controls.RowDefinition
-    $row0.Height = [Windows.GridLength]::Auto
-
-    $row1 = New-Object Windows.Controls.RowDefinition
-    $row1.Height = [Windows.GridLength]::new(1, [Windows.GridUnitType]::Star)
-
-    $row2 = New-Object Windows.Controls.RowDefinition
-    $row2.Height = [Windows.GridLength]::Auto
-
-    # Add Row Definitions to Grid
+    $row0 = New-Object Windows.Controls.RowDefinition; $row0.Height = [Windows.GridLength]::Auto
+    $row1 = New-Object Windows.Controls.RowDefinition; $row1.Height = [Windows.GridLength]::new(1, [Windows.GridUnitType]::Star)
+    $row2 = New-Object Windows.Controls.RowDefinition; $row2.Height = [Windows.GridLength]::Auto
     $grid.RowDefinitions.Add($row0)
     $grid.RowDefinitions.Add($row1)
     $grid.RowDefinitions.Add($row2)
 
-    # Add StackPanel for horizontal layout with margins
     $stackPanel = New-Object Windows.Controls.StackPanel
-    $stackPanel.Margin = New-Object Windows.Thickness(10)  # Add margins around the stack panel
+    $stackPanel.Margin = New-Object Windows.Thickness(10)
     $stackPanel.Orientation = [Windows.Controls.Orientation]::Horizontal
-    $stackPanel.HorizontalAlignment = [Windows.HorizontalAlignment]::Left  # Align to the left
-    $stackPanel.VerticalAlignment = [Windows.VerticalAlignment]::Top  # Align to the top
-
+    $stackPanel.HorizontalAlignment = [Windows.HorizontalAlignment]::Left
+    $stackPanel.VerticalAlignment = [Windows.VerticalAlignment]::Top
     $grid.Children.Add($stackPanel)
-    [Windows.Controls.Grid]::SetRow($stackPanel, 0)  # Set the row to the second row (0-based index)
+    [Windows.Controls.Grid]::SetRow($stackPanel, 0)
 
-    # Add SVG path to the stack panel
     $stackPanel.Children.Add((Invoke-WinUtilAssets -Type "logo" -Size $LogoSize))
 
-    # Add "Winutil" text
     $winutilTextBlock = New-Object Windows.Controls.TextBlock
     $winutilTextBlock.Text = "WinUtil"
     $winutilTextBlock.FontSize = $HeaderFontSize
     $winutilTextBlock.Foreground = $LogoColor
-    $winutilTextBlock.Margin = New-Object Windows.Thickness(10, 10, 10, 5)  # Add margins around the text block
+    $winutilTextBlock.Margin = New-Object Windows.Thickness(10, 10, 10, 5)
     $stackPanel.Children.Add($winutilTextBlock)
     # Add TextBlock for information with text wrapping and margins
     $messageTextBlock = New-Object Windows.Controls.TextBlock
