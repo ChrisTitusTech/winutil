@@ -31,6 +31,7 @@ Describe "Install app rendering startup contract" {
             $global:sync.InstallAppRenderQueue = [System.Collections.Queue]::new()
 
             $renderedApps = [System.Collections.Generic.List[string]]::new()
+            $global:sync.RenderFilterPasses = [System.Collections.Generic.List[object]]::new()
 
             function global:Initialize-InstallAppEntry {
                 param($TargetElement, $AppKey)
@@ -43,8 +44,12 @@ Describe "Install app rendering startup contract" {
             function global:Invoke-WinUtilWhenIdle { param($Callback, $DelayMilliseconds) }
 
             function global:Find-AppsByNameOrDescription {
-                param($SearchString, $Category)
-                throw "Search should not run for an empty search box in this test."
+                param($SearchString, $Categories)
+                $global:sync.RenderFilterPasses.Add([pscustomobject]@{
+                    SearchString = $SearchString
+                    Categories = $Categories
+                    RenderedCount = $renderedApps.Count
+                })
             }
 
             $global:sync.InstallAppRenderQueue.Enqueue([pscustomobject]@{ TargetElement = [pscustomobject]@{}; AppKeys = @("AppA", "AppB") })
@@ -72,6 +77,12 @@ Describe "Install app rendering startup contract" {
             $global:sync.InstallAppEntriesRendered | Should -BeTrue
             $global:sync.InstallAppRenderQueue.Count | Should -Be 0
             @($renderedApps) | Should -Be @("AppA", "AppB", "AppC")
+            $global:sync.RenderFilterPasses.Count | Should -BeGreaterOrEqual 2
+            $global:sync.RenderFilterPasses[-1].RenderedCount | Should -Be 3
+            foreach ($filterPass in $global:sync.RenderFilterPasses) {
+                $filterPass.SearchString | Should -BeNullOrEmpty
+                $filterPass.Categories | Should -BeNullOrEmpty
+            }
             $global:Error.Count | Should -Be $errorCountBefore
             (Get-Content (Join-Path $script:repoRoot "functions\private\Start-WinUtilInstallAppRendering.ps1") -Raw) |
                 Should -Not -Match 'Measure-WinUtilStep'

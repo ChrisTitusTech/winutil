@@ -171,6 +171,7 @@ namespace Windows.Controls
     . (Join-Path $script:repoRoot "functions\private\Test-WinUtilPackageManager.ps1")
     . (Join-Path $script:repoRoot "functions\private\Find-WinUtilPackageManagerApps.ps1")
     . (Join-Path $script:repoRoot "functions\private\Find-AppsByNameOrDescription.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Start-WinUtilInstallAppRendering.ps1")
     . (Join-Path $script:repoRoot "functions\private\Find-TweaksByNameOrDescription.ps1")
 
     function Write-WinUtilLog {
@@ -547,6 +548,46 @@ Describe "Find-AppsByNameOrDescription" {
         Find-AppsByNameOrDescription -SearchString 'example'
         $sync.LatestPackageManagerRequestToken | Should -Be $token
         Should -Invoke Invoke-WPFRunspace -Times 1 -Exactly
+    }
+
+    It "restores initially empty <Manager> categories after rendering with <Prefix> headers" -TestCases @(
+        @{ Manager = 'Winget'; Prefix = '+' }
+        @{ Manager = 'Winget'; Prefix = '-' }
+        @{ Manager = 'Choco'; Prefix = '+' }
+        @{ Manager = 'Choco'; Prefix = '-' }
+    ) {
+        param($Manager, $Prefix)
+        $category = New-WinUtilAppCategory -Label "$Prefix Browsers" -Items @()
+        New-WinUtilAppSearchContext -Categories @($category)
+        $sync.currentTab = 'Install'
+        $sync.SearchBar = [pscustomobject]@{ Text = '' }
+        $sync.preferences = @{ packagemanager = $Manager }
+        $sync.InstallAppRenderQueue = [System.Collections.Queue]::new()
+        $otherManager = if ($Manager -eq 'Winget') { 'choco' } else { 'winget' }
+        $sync.configs.applicationsHashtable.WPFInstallBrowser.$otherManager = 'na'
+        $sync.configs.applicationsHashtable.WPFInstallMedia.$Manager = 'na'
+        Mock Initialize-InstallAppEntry {
+            $entry = New-WinUtilAppSearchItem -Tag $AppKey
+            $null = $TargetElement.Children.Add($entry)
+            $entry
+        }
+        Mock Invoke-WPFRunspace {}
+        Find-AppsByNameOrDescription -SearchString ''
+        $category.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+
+        foreach ($key in @('WPFInstallMedia', 'WPFInstallBrowser')) {
+            Invoke-WinUtilInstallAppRenderBatch -CategoryBatch ([pscustomobject]@{
+                TargetElement = $category.Children[1]; AppKeys = @($key)
+            })
+        }
+
+        $category.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $sync.WPFInstallBrowser.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $sync.WPFInstallMedia.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $category.Children[0].Content | Should -Be "$Prefix Browsers"
+        $expected = if ($Prefix -eq '+') { [Windows.Visibility]::Collapsed } else { [Windows.Visibility]::Visible }
+        $category.Children[1].Visibility | Should -Be $expected
+        Should -Invoke Invoke-WPFRunspace -Times 0 -Exactly
     }
 
     It "invalidates requests when clearing the search or starting a job" {
