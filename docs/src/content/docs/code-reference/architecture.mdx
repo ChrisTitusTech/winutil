@@ -155,7 +155,7 @@ The **Win11 Creator** is a specialized subsystem within Winutil that creates cus
 
 - `Invoke-WinUtilISOScript.ps1`: Prepares setup media and customizations
   - Stages AppX removal (19 bloatware packages) into `autounattend.xml` for first logon
-  - Applies 50+ registry tweaks and scheduled-task cleanups via first-logon setup script
+  - Applies 50+ registry tweaks during Windows Setup and first logon; removes scheduled tasks at first logon
   - Triggers OneDrive uninstall during first logon
   - Stages setup script fallbacks to `sources\$OEM$\$$\Setup\Scripts\`
   - Pins selected edition in `autounattend.xml` and writes `sources\ei.cfg`
@@ -181,11 +181,13 @@ Invoke-WinUtilISOModify (runs in background runspace)
     ├─ Create work directory: ~WinUtil_Win11ISO_[timestamp]
     ├─ Copy ISO contents to disk via robocopy (~5-6 GB)
     ├─ Invoke-WinUtilISOScript:
-    │   ├─ Generate autounattend.xml with post-install script (19 AppX removals, 50+ tweaks, OneDrive uninstall)
+    │   ├─ Generate autounattend.xml with Windows PE and specialize safeguards
+    │   ├─ Add first-logon script (19 AppX removals, registry tweaks, OneDrive uninstall)
     │   ├─ Pin selected edition index in autounattend.xml (/IMAGE/INDEX)
     │   ├─ Stage setup script fallbacks to sources\$OEM$\$$\Setup\Scripts\
     │   ├─ Write sources\ei.cfg and remove stale sources\PID.txt
     │   └─ If driver injection enabled:
+    │       ├─ Require install.wim; install.esd cannot accept driver injection
     │       ├─ Export current system drivers via DISM
     │       ├─ Exclude stale duplicate packages
     │       ├─ Inject storage drivers into boot.wim index 2 and eligible drivers into install.wim
@@ -202,6 +204,7 @@ Invoke-WinUtilISOExport (user chooses output)
         ├─ Format USB as GPT
         ├─ Create single FAT32 partition (capped at 32 GB)
         ├─ Split install.wim into .swm files if > 3.8 GB
+        ├─ Reject install.esd files of 4 GB or more
         ├─ Copy files via robocopy
         └─ Output: Bootable USB (minimum 8 GB)
     ↓
@@ -220,8 +223,9 @@ Invoke-WinUtilISOCleanAndReset (optional)
 - Rejects custom, modified, or non-Windows 11 ISOs
 
 **WIM Metadata Validation**:
-- `Assert-WinUtilISOWimMetadata` validates critical fields (`Languages`, `Installation`, `Edition`, `ProductSuite`, `ProductType`) before and after driver injection
-- Rejects damaged or incomplete WIM metadata before export
+- During driver injection, `Assert-WinUtilISOWimMetadata` validates critical fields (`Languages`, `Installation`, `Edition`, `ProductSuite`, `ProductType`) before and after WIM servicing
+- Driver injection stops before export if the required metadata is missing or changes
+- Without driver injection, WinUtil preserves the original installation image and skips WIM metadata validation
 
 **Edition Pinning & Setup Fallback**:
 - Writes `sources\ei.cfg` and removes `sources\PID.txt` so setup does not use mismatched OEM product keys
@@ -234,7 +238,7 @@ Invoke-WinUtilISOCleanAndReset (optional)
 - Prevents redundant modifications
 
 **Modification Safety**:
-- Registry changes run during first logon via `WinUtil-PostInstall.ps1`
+- Windows PE and specialize set hardware bypass and setup safeguards; `WinUtil-PostInstall.ps1` applies additional registry changes at first logon
 - Original ISO never modified; only working copy
 - Logged to the WinUtil session log and the live UI status panel
 - DISM handles image dismount with automatic cleanup and discard on error

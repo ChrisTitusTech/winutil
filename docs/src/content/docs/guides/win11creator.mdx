@@ -69,7 +69,11 @@ Then click **Run Windows ISO Modification and Creator** to start the customizati
 **Optional: Driver Injection**
 - If enabled, WinUtil exports the drivers from your current system, stages boot-storage drivers for Windows Setup, and injects eligible packages into the selected `install.wim` image. Stale duplicate packages are excluded before injection. Each remaining package is added separately, so one incompatible package does not stop the others. If a package fails, WinUtil discards the partial mount and retries the remaining packages against the original image. Check the live log for warnings: if every package fails, WinUtil keeps the original `install.wim` and still produces the ISO.
 
-A live log shows progress as each step completes. This stage usually takes **10–30 minutes** depending on disk speed. The WIM dismount near the end is the slowest part, so do not close WinUtil while it is running.
+:::note
+Driver injection requires `sources\install.wim`. If the ISO uses `sources\install.esd`, leave this option off.
+:::
+
+A live log shows progress as each step completes. Without driver injection, WinUtil writes the setup changes in a few seconds after the ISO copy. With driver injection, this stage usually takes **10–20 minutes**, depending on hardware. Keep WinUtil open until the log reports completion.
 
 :::note
 The resulting ISO is close to the size of the source ISO. WinUtil does not remove the unused editions from `install.wim`; it selects your edition through `sources\ei.cfg` and `autounattend.xml` so Windows Setup installs the right one.
@@ -96,6 +100,10 @@ Once the modification is complete, choose how to save your image:
 2. Select your USB drive from the dropdown (click **Refresh** if it doesn't appear).
 3. Click **Erase & Write to USB** and confirm the warning — **all data on the drive will be permanently erased**.
 4. WinUtil formats the drive as GPT with a single FAT32 partition (capped at 32 GB, splitting `install.wim` into `.swm` files if larger than 3.8 GB) and copies the modified Windows files.
+
+:::note
+WinUtil cannot split `install.esd`. If that file is 4 GB or larger, save an ISO instead of writing a FAT32 USB drive.
+:::
 
 :::danger
 Double-check you have selected the correct drive before confirming. This operation cannot be undone.
@@ -130,10 +138,10 @@ When you install Windows 11 from your modified ISO:
 
 | Problem | Fix |
 |---------|-----|
-| "install.wim not found" | Not a valid Windows 11 ISO — download a fresh one from Microsoft |
+| "install.wim / install.esd was not found" | The ISO has no Windows installation image — download a fresh official ISO from Microsoft |
 | "oscdimg.exe not found" | Run `winget install -e --id Microsoft.OSCDIMG` then retry |
 | USB drive not showing up | Plug it in, wait a few seconds, then click **Refresh** |
-| Modification seems stuck | The WIM dismount step is slow — wait at least 10 minutes before assuming it's frozen |
+| Driver injection seems stuck | WIM servicing can pause at a mount or commit. Allow 10–20 minutes depending on hardware, and check the live log before closing WinUtil |
 | "Access Denied" error | Make sure WinUtil is running as Administrator |
 | Driver injection warning | Review the live log for the named package. Other compatible packages continue; if none succeed, the ISO is created with the original `install.wim` |
 | "Setup has failed to validate the product key" | Recreate the ISO with the latest WinUtil. The creator now removes stale `PID.txt`, writes `sources\ei.cfg`, and pins the selected image in `autounattend.xml` so setup does not use an embedded OEM key for a different edition |
