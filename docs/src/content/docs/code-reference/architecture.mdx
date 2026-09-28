@@ -259,9 +259,9 @@ The `Invoke-WinUtilISOScript` function applies **50+ offline registry tweaks**:
 
 ### Driver Injection Feature
 
-**Optional Enhancement**: When enabled, exports all drivers from the running system and injects them into both:
-- `install.wim` (main OS image)
-- `boot.wim` index 2 (Windows Setup PE environment)
+**Optional Enhancement**: When enabled, exports all drivers from the running system and injects them into:
+- `install.wim` (main OS image), excluding stale duplicates
+- `boot.wim` index 2 (Windows Setup PE environment), storage controllers only (`SCSIAdapter` / `HDC`)
 
 **Use Case**: Enables offline installation on systems with missing drivers.
 
