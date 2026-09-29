@@ -1120,4 +1120,83 @@ Describe "Win11 Creator setup media" {
         $exportRunIndex | Should -BeGreaterThan $exportDialogIndex
         $script:exportFunction | Should -Match ([regex]::Escape('return'))
     }
+
+    Context "FirstLogon update service restoration" {
+        BeforeAll {
+            [xml]$unattend = Get-Content -LiteralPath $script:autoUnattendPath -Raw
+            $firstLogon = $unattend.SelectSingleNode("//*[local-name()='File' and @path='C:\Windows\Setup\Scripts\FirstLogon.ps1']").InnerText
+            $tokens = $null
+            $parseErrors = $null
+            $ast = [System.Management.Automation.Language.Parser]::ParseInput($firstLogon, [ref]$tokens, [ref]$parseErrors)
+            if ($parseErrors.Count) { throw 'FirstLogon script failed to parse.' }
+            $blocks = @($ast.FindAll({
+                param($node)
+                $node -is [System.Management.Automation.Language.ScriptBlockExpressionAst] -and
+                    $node.ScriptBlock.Find({
+                        param($command)
+                        $command -is [System.Management.Automation.Language.CommandAst] -and
+                            $command.GetCommandName() -eq 'Set-Service'
+                    }, $false)
+            }, $true))
+            if ($blocks.Count -ne 1) { throw 'Expected exactly one service restoration block.' }
+            # Never execute the surrounding FirstLogon cleanup, downloads, or installer.
+            $commands = $blocks[0].ScriptBlock.FindAll({
+                param($node)
+                $node -is [System.Management.Automation.Language.CommandAst]
+            }, $true)
+            foreach ($command in $commands) {
+                if ($command.GetCommandName() -notin @('reg.exe', 'Set-Service', 'Set-ItemProperty')) {
+                    throw "Unexpected command in restoration block: $($command.Extent.Text)"
+                }
+            }
+            $script:restoreServices = $blocks[0].ScriptBlock.GetScriptBlock()
+            function reg.exe { param([Parameter(ValueFromRemainingArguments)][string[]]$Arguments) }
+        }
+
+        BeforeEach {
+            Mock reg.exe { }
+            Mock Set-Service { }
+            Mock Set-ItemProperty { }
+        }
+
+        It "restores ordinary services and writes the protected Medic startup value directly" {
+            & $script:restoreServices
+
+            Should -Invoke Set-Service -Times 3 -Exactly
+            Should -Invoke Set-Service -Times 1 -Exactly -ParameterFilter { $Name -eq 'BITS' -and $StartupType -eq 'Manual' -and $ErrorAction -eq 'Continue' }
+            Should -Invoke Set-Service -Times 1 -Exactly -ParameterFilter { $Name -eq 'wuauserv' -and $StartupType -eq 'Manual' -and $ErrorAction -eq 'Continue' }
+            Should -Invoke Set-Service -Times 1 -Exactly -ParameterFilter { $Name -eq 'UsoSvc' -and $StartupType -eq 'Automatic' -and $ErrorAction -eq 'Continue' }
+            Should -Invoke Set-Service -Times 0 -Exactly -ParameterFilter { $Name -eq 'WaaSMedicSvc' }
+            Should -Invoke Set-ItemProperty -Times 1 -Exactly
+            Should -Invoke Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
+                $Path -eq 'HKLM:\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc' -and
+                $Name -eq 'Start' -and $Value -eq 3 -and $Type -eq 'DWord' -and $ErrorAction -eq 'Continue'
+            }
+        }
+
+        It "keeps failures observable while attempting the remaining restoration work" {
+            $script:restorationCalls = [System.Collections.Generic.List[string]]::new()
+            Mock Set-Service {
+                param($Name, $ErrorAction)
+                $script:restorationCalls.Add($Name)
+                if ($script:restorationCalls.Count -eq 1) {
+                    Write-Error 'simulated service restoration failure' -ErrorAction $ErrorAction
+                }
+            }
+            Mock Set-ItemProperty {
+                param($ErrorAction)
+                $script:restorationCalls.Add('Medic registry')
+                Write-Error 'simulated Medic registry failure' -ErrorAction $ErrorAction
+            }
+
+            $output = @(& $script:restoreServices 2>&1)
+            $failures = @($output | Where-Object { $_ -is [System.Management.Automation.ErrorRecord] })
+            $failures.Count | Should -Be 2
+            $failures[0].Exception.Message | Should -Be 'simulated service restoration failure'
+            $failures[1].Exception.Message | Should -Be 'simulated Medic registry failure'
+            $script:restorationCalls.Count | Should -Be 4
+            @($script:restorationCalls | Select-Object -First 3 | Sort-Object) | Should -Be @('BITS', 'UsoSvc', 'wuauserv')
+            $script:restorationCalls[3] | Should -Be 'Medic registry'
+        }
+    }
 }
