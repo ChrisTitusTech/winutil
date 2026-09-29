@@ -1966,7 +1966,7 @@
                                                       Foreground="{DynamicResource MainForegroundColor}"
                                                       IsChecked="False"
                                                       Cursor="Hand"
-                                                      ToolTip="Stages boot-storage drivers for Setup and adds all exported drivers to the selected install.wim edition in one DISM pass."/>
+                                                      ToolTip="Injects boot-storage drivers for Setup and adds exported drivers to the selected install.wim edition individually, skipping incompatible packages."/>
                                         </StackPanel>
                                     </Border>
 
