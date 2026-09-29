@@ -4,6 +4,8 @@ function Get-WinUtilEnvironmentReport {
         Collects the allowlisted data used by the WinUtil environment report.
     #>
 
+    $reportWarnings = [System.Collections.Generic.List[string]]::new()
+
     $windows = [ordered]@{
         edition      = $null
         version      = $null
@@ -27,7 +29,9 @@ function Get-WinUtilEnvironmentReport {
             $hardware.totalMemoryGB = [math]::Round(([double]$operatingSystem.TotalVisibleMemorySize / 1MB), 2)
         }
     } catch {
-        Write-WinUtilLog -Component "EnvironmentReport" -Level "WARN" -Message "Failed to collect Windows/memory info from Win32_OperatingSystem: $($_.Exception.Message)"
+        $message = "Failed to collect Windows/memory info from Win32_OperatingSystem: $($_.Exception.Message)"
+        Write-WinUtilLog -Component "EnvironmentReport" -Level "WARN" -Message $message
+        [void]$reportWarnings.Add($message)
     }
 
     try {
@@ -37,7 +41,9 @@ function Get-WinUtilEnvironmentReport {
             $hardware.logicalProcessorCount = [int](($processors | Measure-Object -Property NumberOfLogicalProcessors -Sum).Sum)
         }
     } catch {
-        Write-WinUtilLog -Component "EnvironmentReport" -Level "WARN" -Message "Failed to collect CPU info from Win32_Processor: $($_.Exception.Message)"
+        $message = "Failed to collect CPU info from Win32_Processor: $($_.Exception.Message)"
+        Write-WinUtilLog -Component "EnvironmentReport" -Level "WARN" -Message $message
+        [void]$reportWarnings.Add($message)
     }
 
     $powershell = [ordered]@{
@@ -49,7 +55,9 @@ function Get-WinUtilEnvironmentReport {
     try {
         $powershell.executionPolicy = (Get-ExecutionPolicy).ToString()
     } catch {
-        Write-WinUtilLog -Component "EnvironmentReport" -Level "WARN" -Message "Failed to read PowerShell execution policy: $($_.Exception.Message)"
+        $message = "Failed to read PowerShell execution policy: $($_.Exception.Message)"
+        Write-WinUtilLog -Component "EnvironmentReport" -Level "WARN" -Message $message
+        [void]$reportWarnings.Add($message)
     }
 
     # Re-use built-in functionality
@@ -57,14 +65,23 @@ function Get-WinUtilEnvironmentReport {
     try {
         $chocolatey.installed = (Test-WinUtilPackageManager -choco 6>$null) -eq "installed"
     } catch {
-        Write-WinUtilLog -Component "EnvironmentReport" -Level "WARN" -Message "Failed to check Chocolatey availability: $($_.Exception.Message)"
+        $message = "Failed to check Chocolatey availability: $($_.Exception.Message)"
+        Write-WinUtilLog -Component "EnvironmentReport" -Level "WARN" -Message $message
+        [void]$reportWarnings.Add($message)
     }
 
     if ($chocolatey.installed) {
         try {
-            $chocolatey.version = (choco -v 2>&1 | Select-Object -First 1).ToString().Trim()
+            $global:LASTEXITCODE = 0
+            $versionOutput = @(choco -v 2>&1)
+            if ($LASTEXITCODE -ne 0) {
+                throw "Chocolatey version probe exited with code $LASTEXITCODE."
+            }
+            $chocolatey.version = ($versionOutput | Select-Object -First 1).ToString().Trim()
         } catch {
-            Write-WinUtilLog -Component "EnvironmentReport" -Level "WARN" -Message "Failed to read Chocolatey version: $($_.Exception.Message)"
+            $message = "Failed to read Chocolatey version: $($_.Exception.Message)"
+            Write-WinUtilLog -Component "EnvironmentReport" -Level "WARN" -Message $message
+            [void]$reportWarnings.Add($message)
         }
     }
 
@@ -72,18 +89,29 @@ function Get-WinUtilEnvironmentReport {
     try {
         $winget.installed = (Test-WinUtilPackageManager -winget 6>$null) -eq "installed"
     } catch {
-        Write-WinUtilLog -Component "EnvironmentReport" -Level "WARN" -Message "Failed to check WinGet availability: $($_.Exception.Message)"
+        $message = "Failed to check WinGet availability: $($_.Exception.Message)"
+        Write-WinUtilLog -Component "EnvironmentReport" -Level "WARN" -Message $message
+        [void]$reportWarnings.Add($message)
     }
 
     if ($winget.installed) {
         try {
-            $winget.version = (winget -v 2>&1 | Select-Object -First 1).ToString().Trim()
+            $global:LASTEXITCODE = 0
+            $versionOutput = @(winget -v 2>&1)
+            if ($LASTEXITCODE -ne 0) {
+                throw "WinGet version probe exited with code $LASTEXITCODE."
+            }
+            $winget.version = ($versionOutput | Select-Object -First 1).ToString().Trim()
         } catch {
-            Write-WinUtilLog -Component "EnvironmentReport" -Level "WARN" -Message "Failed to read WinGet version: $($_.Exception.Message)"
+            $message = "Failed to read WinGet version: $($_.Exception.Message)"
+            Write-WinUtilLog -Component "EnvironmentReport" -Level "WARN" -Message $message
+            [void]$reportWarnings.Add($message)
         }
     }
 
-    $system = [ordered]@{ pendingRebootRequired = $false }
+    # Null means the registry state could not be read. Do not turn an access/provider failure into
+    # a misleading "no reboot required" result.
+    $system = [ordered]@{ pendingRebootRequired = $null }
     try {
         $rebootPaths = @(
             "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending",
@@ -93,17 +121,30 @@ function Get-WinUtilEnvironmentReport {
         # A present-but-empty PendingFileRenameOperations value still returns a non-null object, so
         # check the actual entries rather than just whether the property exists.
         $pendingFileRenameOperations = @(
-            (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" `
-                -Name "PendingFileRenameOperations" -ErrorAction SilentlyContinue).PendingFileRenameOperations |
+            (Get-ItemProperty -LiteralPath "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" `
+                -ErrorAction Stop).PendingFileRenameOperations |
                 Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) }
         )
-        $system.pendingRebootRequired = ($rebootPaths | Where-Object { Test-Path $_ }).Count -gt 0 -or
+        $system.pendingRebootRequired = ($rebootPaths | Where-Object {
+            Test-Path -LiteralPath $_ -ErrorAction Stop
+        }).Count -gt 0 -or
             $pendingFileRenameOperations.Count -gt 0
     } catch {
-        Write-WinUtilLog -Component "EnvironmentReport" -Level "WARN" -Message "Failed to check pending-reboot registry state: $($_.Exception.Message)"
+        $message = "Failed to check pending-reboot registry state: $($_.Exception.Message)"
+        Write-WinUtilLog -Component "EnvironmentReport" -Level "WARN" -Message $message
+        [void]$reportWarnings.Add($message)
     }
 
     $tweaksState = Get-WinUtilTweaksStateReport
+    if ($tweaksState.collectionStatus -ne "collected") {
+        $message = "Failed to collect the complete tweak state for the environment report."
+        Write-WinUtilLog -Component "EnvironmentReport" -Level "WARN" -Message $message
+        [void]$reportWarnings.Add($message)
+    }
+
+    foreach ($message in $reportWarnings) {
+        Write-Warning $message
+    }
 
     return [pscustomobject][ordered]@{
         schemaVersion    = "1.0"

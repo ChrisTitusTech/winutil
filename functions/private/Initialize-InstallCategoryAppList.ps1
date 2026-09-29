@@ -16,14 +16,17 @@ function Initialize-InstallCategoryAppList {
             $Apps
         )
 
-        # Pre-group apps by category before creating WPF controls.
+        # Pre-group apps by category before creating WPF controls. Lists, because appending to
+        # an array copies it and there are several hundred apps.
         $appsByCategory = @{}
+        # Indexed, not dynamic member, lookup: the latter goes through the PSObject adapter and
+        # costs about seventy times as much per app.
         foreach ($appKey in $Apps.Keys) {
-            $category = $Apps.$appKey.Category
+            $category = $Apps[$appKey].Category
             if (-not $appsByCategory.ContainsKey($category)) {
-                $appsByCategory[$category] = @()
+                $appsByCategory[$category] = [System.Collections.Generic.List[string]]::new()
             }
-            $appsByCategory[$category] += $appKey
+            $appsByCategory[$category].Add($appKey)
         }
         $sync.InstallAppRenderQueue = [System.Collections.Queue]::new()
 

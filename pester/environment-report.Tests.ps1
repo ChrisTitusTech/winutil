@@ -11,6 +11,7 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Test-WinUtilPackageManager.ps1")
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilEnvironmentReport.ps1")
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilEnvironmentReportLogsPath.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Write-WinUtilEnvironmentReportExport.ps1")
 }
 
 Describe "Get-WinUtilEnvironmentReport" {
@@ -52,6 +53,7 @@ Describe "Get-WinUtilEnvironmentReport" {
         Mock Test-Path { $false }
         Mock Get-ItemProperty { $null }
         Mock Write-WinUtilLog { }
+        Mock Write-Warning { }
     }
 
     It "returns the versioned allowlisted report schema" {
@@ -110,10 +112,41 @@ Describe "Get-WinUtilEnvironmentReport" {
         $report.packageManagers.winget.version | Should -Be "v1.29.290"
     }
 
+    It "does not treat a failed package-manager probe message as a version" {
+        Mock Test-WinUtilPackageManager { "installed" } -ParameterFilter { $winget }
+        Mock winget {
+            $global:LASTEXITCODE = 7
+            "WinGet failed to initialize"
+        }
+
+        $report = Get-WinUtilEnvironmentReport
+
+        $report.packageManagers.winget.installed | Should -BeTrue
+        $report.packageManagers.winget.version | Should -BeNullOrEmpty
+        Should -Invoke Write-WinUtilLog -ParameterFilter {
+            $Level -eq "WARN" -and $Message -like "Failed to read WinGet version:*code 7*"
+        }
+        Should -Invoke Write-Warning -ParameterFilter {
+            $Message -like "Failed to read WinGet version:*code 7*"
+        }
+    }
+
+    It "surfaces an incomplete tweak-state report as a warning" {
+        Mock Get-WinUtilTweaksStateReport {
+            [pscustomobject]@{ collectionStatus = "unavailable" }
+        }
+
+        Get-WinUtilEnvironmentReport | Out-Null
+
+        Should -Invoke Write-Warning -ParameterFilter {
+            $Message -eq "Failed to collect the complete tweak state for the environment report."
+        }
+    }
+
     It "flags a pending reboot from PendingFileRenameOperations" {
         Mock Get-ItemProperty {
             [pscustomobject]@{ PendingFileRenameOperations = @("a", "b") }
-        } -ParameterFilter { $Name -eq "PendingFileRenameOperations" }
+        }
 
         $report = Get-WinUtilEnvironmentReport
 
@@ -123,11 +156,22 @@ Describe "Get-WinUtilEnvironmentReport" {
     It "does not flag a pending reboot for a present but empty PendingFileRenameOperations value" {
         Mock Get-ItemProperty {
             [pscustomobject]@{ PendingFileRenameOperations = @() }
-        } -ParameterFilter { $Name -eq "PendingFileRenameOperations" }
+        }
 
         $report = Get-WinUtilEnvironmentReport
 
         $report.system.pendingRebootRequired | Should -BeFalse
+    }
+
+    It "reports pending reboot state as unknown when a registry read fails" {
+        Mock Get-ItemProperty { throw "registry access denied" }
+
+        $report = Get-WinUtilEnvironmentReport
+
+        $report.system.pendingRebootRequired | Should -BeNullOrEmpty
+        Should -Invoke Write-Warning -ParameterFilter {
+            $Message -like "Failed to check pending-reboot registry state:*registry access denied*"
+        }
     }
 
 }
@@ -141,6 +185,90 @@ Describe "Get-WinUtilEnvironmentReportLogsPath" {
     It "handles a path with no extension" {
         Get-WinUtilEnvironmentReportLogsPath -JsonPath "C:\Reports\Report" |
             Should -Be "C:\Reports\Report_logs.txt"
+    }
+}
+
+Describe "Invoke-WPFExportEnvironmentReport overwrite protection" {
+    It "checks the derived logs path literally" {
+        $source = Get-Content -LiteralPath (Join-Path $script:repoRoot "functions\public\Invoke-WPFExportEnvironmentReport.ps1") -Raw
+
+        $source | Should -Match 'Test-Path\s+-LiteralPath\s+\$logsPath'
+    }
+
+    It "aborts rather than retaining a stale companion when logs are excluded" {
+        $source = Get-Content -LiteralPath (Join-Path $script:repoRoot "functions\public\Invoke-WPFExportEnvironmentReport.ps1") -Raw
+
+        $source | Should -Match 'if \(-not \$includeLogs\) \{[\s\S]*Choose another report filename[\s\S]*return'
+        $source | Should -Match 'if \(-not \$replaceLogs\) \{\s*return\s*\}'
+    }
+}
+
+Describe "Write-WinUtilEnvironmentReportExport" {
+    BeforeEach {
+        $script:rollbackJsonPath = $null
+        $script:removeAttempts = [System.Collections.Generic.List[string]]::new()
+    }
+
+    It "restores the previous JSON when publishing the log companion fails" {
+        $jsonPath = Join-Path $TestDrive "report.json"
+        $logsPath = Join-Path $TestDrive "report_logs.txt"
+        [System.IO.File]::WriteAllText($jsonPath, "old report")
+        $null = New-Item -ItemType Directory -Path $logsPath
+
+        {
+            Write-WinUtilEnvironmentReportExport -JsonPath $jsonPath -Json "new report" `
+                -LogsPath $logsPath -Logs "new logs" -IncludeLogs
+        } | Should -Throw
+
+        [System.IO.File]::ReadAllText($jsonPath) | Should -Be "old report"
+        [System.IO.Directory]::Exists($logsPath) | Should -BeTrue
+        @(Get-ChildItem -LiteralPath $TestDrive -File).Name | Should -Be @("report.json")
+    }
+
+    It "retains the recovery copy and still attempts log rollback when JSON restore fails" {
+        $jsonPath = Join-Path $TestDrive "rollback-report.json"
+        $logsPath = Join-Path $TestDrive "rollback-report_logs.txt"
+        [System.IO.File]::WriteAllText($jsonPath, "old report")
+        $null = New-Item -ItemType Directory -Path $logsPath
+        $script:rollbackJsonPath = $jsonPath
+        Mock Copy-WinUtilEnvironmentReportExportFile {
+            if ($SourcePath -like "*.bak" -and $DestinationPath -eq $script:rollbackJsonPath) {
+                throw "JSON restore blocked"
+            }
+            [System.IO.File]::Copy($SourcePath, $DestinationPath, [bool]$Overwrite)
+        }
+
+        {
+            Write-WinUtilEnvironmentReportExport -JsonPath $jsonPath -Json "new report" `
+                -LogsPath $logsPath -Logs "new logs" -IncludeLogs
+        } | Should -Throw "*Recovery copy retained*"
+
+        [System.IO.File]::ReadAllText($jsonPath) | Should -Be "new report"
+        $backup = @(Get-ChildItem -LiteralPath $TestDrive -Filter "rollback-report.json.*.bak" -File)
+        $backup.Count | Should -Be 1
+        [System.IO.File]::ReadAllText($backup[0].FullName) | Should -Be "old report"
+        [System.IO.Directory]::Exists($logsPath) | Should -BeTrue
+    }
+
+    It "does not let one temporary-file cleanup failure mask a successful export" {
+        $jsonPath = Join-Path $TestDrive "cleanup-report.json"
+        $logsPath = Join-Path $TestDrive "cleanup-report_logs.txt"
+        Mock Remove-WinUtilEnvironmentReportExportFile {
+            $script:removeAttempts.Add($Path)
+            if ($Path -like "$jsonPath.*.tmp") {
+                throw "temporary file is locked"
+            }
+            [System.IO.File]::Delete($Path)
+        }
+
+        {
+            Write-WinUtilEnvironmentReportExport -JsonPath $jsonPath -Json "new report" `
+                -LogsPath $logsPath -Logs "new logs" -IncludeLogs
+        } | Should -Not -Throw
+
+        [System.IO.File]::ReadAllText($jsonPath) | Should -Be "new report"
+        [System.IO.File]::ReadAllText($logsPath) | Should -Be "new logs"
+        @($script:removeAttempts | Where-Object { $_ -like "*.tmp" }).Count | Should -Be 2
     }
 }
 
@@ -229,6 +357,36 @@ Describe "Get-WinUtilTweaksStateReport" {
 
         $result.collectionStatus | Should -Be "unavailable"
         @($result.customizePreferences.PSObject.Properties).Count | Should -Be 0
+    }
+
+    It "reports collection as unavailable when a configured service cannot be read" {
+        $script:sync.configs.tweaks | Add-Member -MemberType NoteProperty -Name WPFTweaksMissingService -Value ([pscustomobject]@{
+            category = "Essential Tweaks"
+            service = @([pscustomobject]@{ Name = "MissingService"; StartupType = "Disabled" })
+        })
+        Mock Get-Service { throw "Service access failed" } -ParameterFilter { $Name -eq "MissingService" }
+
+        $result = Get-WinUtilTweaksStateReport
+
+        $result.collectionStatus | Should -Be "unavailable"
+        @($result.essentialTweaks.PSObject.Properties).Count | Should -Be 0
+    }
+
+    It "marks only the affected tweak false when a configured service is absent" {
+        $script:sync.configs.tweaks | Add-Member -MemberType NoteProperty -Name WPFTweaksMissingService -Value ([pscustomobject]@{
+            category = "Essential Tweaks"
+            service = @([pscustomobject]@{ Name = "MissingService"; StartupType = "Disabled" })
+        })
+        Mock Get-Service {
+            Write-Error -Message "Cannot find any service with service name 'MissingService'." `
+                -Category ObjectNotFound -ErrorId NoServiceFoundForGivenName -ErrorAction Stop
+        } -ParameterFilter { $Name -eq "MissingService" }
+
+        $result = Get-WinUtilTweaksStateReport
+
+        $result.collectionStatus | Should -Be "collected"
+        $result.essentialTweaks.WPFTweaksApplied | Should -BeTrue
+        $result.essentialTweaks.WPFTweaksMissingService | Should -BeFalse
     }
 
     It "lists combobox and script-only tweaks as not evaluable instead of silently dropping them" {

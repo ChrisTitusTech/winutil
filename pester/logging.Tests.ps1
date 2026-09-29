@@ -1,11 +1,11 @@
 #===========================================================================
 # Tests - WinUtil Logging
-#===========================================================================
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 
     . (Join-Path $script:repoRoot "functions\private\Write-WinUtilLog.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Measure-WinUtilStep.ps1")
 }
 
 Describe "Write-WinUtilLog" {
@@ -18,6 +18,8 @@ Describe "Write-WinUtilLog" {
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name WinUtilLogPath -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name WinUtilIsJobWorker -Scope Global -ErrorAction SilentlyContinue
+        Remove-Variable -Name WinUtilJobErrorCount -Scope Global -ErrorAction SilentlyContinue
         Remove-Item -Path $script:testRoot -Recurse -Force -ErrorAction SilentlyContinue
     }
 
@@ -35,22 +37,60 @@ Describe "Write-WinUtilLog" {
         Get-Content -Path $logPath -Raw | Should -Match "\[INFO\] \[Test\] same session log"
     }
 
-    It "uses the transcript stream when logPath is not set" {
-        $transcriptPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
+    It "writes through the host when the transcript owns the active session log" {
+        $logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
+        $script:sync = [hashtable]::Synchronized(@{
+            logPath = $logPath
+            transcriptPath = $logPath
+        })
+        Mock Write-Host { }
+        Mock Add-Content { }
+
+        Write-WinUtilLog -Component "Test" -Message "transcript entry"
+
+        Should -Invoke Write-Host -Times 1 -Exactly -ParameterFilter {
+            $Object -match "\[INFO\] \[Test\] transcript entry"
+        }
+        Should -Invoke Add-Content -Times 0 -Exactly
+    }
+
+    It "writes entries produced concurrently by several threads" {
+        $logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
         $script:sync = [hashtable]::Synchronized(@{
             winutildir = $script:testRoot
-            transcriptPath = $transcriptPath
+            logPath = $logPath
         })
-        Mock Add-Content { }
-        Mock Write-Host { }
 
-        Write-WinUtilLog -Component "Test" -Message "transcript fallback"
+        $logFunction = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Write-WinUtilLog.ps1") -Raw
+        $initialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
+        $initialSessionState.Variables.Add(
+            (New-Object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList "sync", $script:sync, $null)
+        )
+        $pool = [runspacefactory]::CreateRunspacePool(1, 4, $initialSessionState, $Host)
+        $pool.Open()
 
-        Should -Invoke -CommandName Add-Content -Times 0 -Exactly
-        Should -Invoke -CommandName Write-Host -Times 1 -Exactly -ParameterFilter {
-            $Object -match "\[INFO\] \[Test\] transcript fallback"
+        try {
+            $handles = foreach ($index in 1..12) {
+                $shell = [powershell]::Create()
+                $shell.RunspacePool = $pool
+                [void]$shell.AddScript($logFunction)
+                [void]$shell.AddScript("Write-WinUtilLog -Component 'Test' -Message 'entry $index'")
+                [pscustomobject]@{ Shell = $shell; Handle = $shell.BeginInvoke() }
+            }
+
+            foreach ($item in $handles) {
+                $item.Shell.EndInvoke($item.Handle)
+                $item.Shell.Dispose()
+            }
+        } finally {
+            $pool.Close()
+            $pool.Dispose()
         }
-        Test-Path -Path (Join-Path $script:testRoot "winutil.log") | Should -BeFalse
+
+        $content = Get-Content -Path $logPath
+        foreach ($index in 1..12) {
+            @($content | Where-Object { $_ -match "\[Test\] entry $index$" }).Count | Should -Be 1
+        }
     }
 
     It "creates one fallback log under logs when only winutildir is available" {
@@ -70,38 +110,95 @@ Describe "Write-WinUtilLog" {
         $content | Should -Match "second fallback entry"
     }
 
-    It "does not append directly when the active log file is the transcript" {
+    It "falls back to host output when the log file cannot be opened" {
         $logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
         $script:sync = [hashtable]::Synchronized(@{
             winutildir = $script:testRoot
             logPath = $logPath
-            transcriptPath = $logPath
         })
 
-        Mock Add-Content { throw [System.IO.IOException]::new("locked by transcript") } -ParameterFilter {
+        Mock Add-Content { throw [System.IO.IOException]::new("file is locked") } -ParameterFilter {
             $Path -eq $logPath -and $ErrorAction -eq "Stop"
         }
         Mock Write-Host { }
         Mock Write-Warning { }
 
-        Write-WinUtilLog -Component "Test" -Message "transcript stream fallback"
+        Write-WinUtilLog -Component "Test" -Message "locked file fallback"
 
-        Should -Invoke -CommandName Add-Content -Times 0 -Exactly
         Should -Invoke -CommandName Write-Host -Times 1 -Exactly -ParameterFilter {
-            $Object -match "\[INFO\] \[Test\] transcript stream fallback"
+            $Object -match "\[INFO\] \[Test\] locked file fallback"
         }
         Should -Invoke -CommandName Write-Warning -Times 0 -Exactly
     }
 
-}
+    It "counts only headline errors written by the active job worker" {
+        $script:sync = [hashtable]::Synchronized(@{
+            winutildir = $script:testRoot
+            LoggedErrors = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new())
+        })
+        $global:WinUtilIsJobWorker = $true
+        $global:WinUtilJobErrorCount = 0
 
-Describe "WinUtil startup logging path" {
-    It "uses one timestamped log file under the logs directory" {
-        $startScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\start.ps1") -Raw
+        Write-WinUtilLog -Level "ERROR" -Component "Test" -Message "job error"
+        Write-WinUtilLog -Level "ERROR" -Detail -Component "Test" -Message "error detail"
+        $global:WinUtilIsJobWorker = $false
+        Write-WinUtilLog -Level "ERROR" -Component "UI" -Message "unrelated error"
 
-        $startScript | Should -Match '\$sync\.logPath = "\$logdir\\winutil_\$dateTime\.log"'
-        $startScript | Should -Match '\$sync\.transcriptPath = \$sync\.logPath'
-        $startScript | Should -Match 'Start-Transcript -Path \$sync\.logPath'
-        $startScript | Should -Not -Match '\$sync\.logPath = "\$winutildir\\winutil\.log"'
+        $global:WinUtilJobErrorCount | Should -Be 1
+        $script:sync.LoggedErrors.Count | Should -Be 2
     }
+
+    It "suppresses debug entries outside a local compile" {
+        $logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
+        $script:sync = [hashtable]::Synchronized(@{
+            IsLocalCompile = $false
+            logPath = $logPath
+        })
+
+        Write-WinUtilLog -Level "DEBUG" -Component "UI" -Message "timing detail"
+
+        Test-Path -Path $logPath | Should -BeFalse
+    }
+
+    It "writes debug entries from a local compile" {
+        $logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
+        $script:sync = [hashtable]::Synchronized(@{
+            IsLocalCompile = $true
+            logPath = $logPath
+        })
+
+        Write-WinUtilLog -Level "DEBUG" -Component "UI" -Message "timing detail"
+
+        Get-Content -Path $logPath -Raw | Should -Match "\[DEBUG\] \[UI\] timing detail"
+    }
+
+    It "does not record UI timing steps outside a local compile" {
+        $script:sync = [hashtable]::Synchronized(@{
+            IsLocalCompile = $false
+            StepTimings = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new())
+        })
+        Mock Write-WinUtilLog { }
+
+        $result = Measure-WinUtilStep -Scope "UI" -Name "parse XAML" -ScriptBlock { 42 }
+
+        $result | Should -Be 42
+        $script:sync.StepTimings.Count | Should -Be 0
+        Should -Invoke Write-WinUtilLog -Times 0 -Exactly
+    }
+
+    It "records local UI timing steps as debug entries" {
+        $script:sync = [hashtable]::Synchronized(@{
+            IsLocalCompile = $true
+            StepTimings = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new())
+        })
+        Mock Write-WinUtilLog { }
+
+        Measure-WinUtilStep -Scope "UI" -Name "parse XAML" -ScriptBlock { } | Out-Null
+
+        $script:sync.StepTimings.Count | Should -Be 1
+        Should -Invoke Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "DEBUG" -and $Component -eq "UI" -and $Message -like "timing: parse XAML took*"
+        }
+    }
+
 }

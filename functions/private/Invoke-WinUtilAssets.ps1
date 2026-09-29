@@ -7,7 +7,7 @@ function Invoke-WinUtilAssets {
 
   if ($render -and $null -ne $sync) {
       if ($null -eq $sync.RenderedAssetCache) {
-          $sync.RenderedAssetCache = @{}
+          $sync.RenderedAssetCache = [Hashtable]::Synchronized(@{})
       }
 
       $cacheKey = "$(([string]$type).ToLowerInvariant())|$Size"

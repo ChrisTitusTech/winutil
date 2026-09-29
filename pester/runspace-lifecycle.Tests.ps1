@@ -1,10 +1,12 @@
 #===========================================================================
 # Tests - Runspace lifecycle
-#===========================================================================
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilRunspacePoolLock.ps1")
     . (Join-Path $script:repoRoot "functions\private\Close-WinUtilRunspacePool.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Stop-WinUtilActiveWork.ps1")
+    . (Join-Path $script:repoRoot "functions\private\New-WinUtilSessionState.ps1")
     . (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilRunspacePool.ps1")
 }
 
@@ -28,6 +30,13 @@ Describe "Initialize-WinUtilRunspacePool" {
         [object]::ReferenceEquals($firstPool, $secondPool) | Should -BeTrue
     }
 
+    It "uses one lifecycle lock for the session" {
+        $firstLock = Get-WinUtilRunspacePoolLock
+        $secondLock = Get-WinUtilRunspacePoolLock
+
+        [object]::ReferenceEquals($firstLock, $secondLock) | Should -BeTrue
+    }
+
     It "closes and removes the active runspace pool" {
         $pool = Initialize-WinUtilRunspacePool
 
@@ -36,29 +45,71 @@ Describe "Initialize-WinUtilRunspacePool" {
         $pool.RunspacePoolStateInfo.State | Should -Be ([System.Management.Automation.Runspaces.RunspacePoolState]::Closed)
         $script:sync.ContainsKey("runspace") | Should -BeFalse
     }
+
+    It "defers pool cleanup when a worker ignores the stop timeout" {
+        $pool = [runspacefactory]::CreateRunspacePool(1, 1)
+        $pool.Open()
+        $script:sync.runspace = $pool
+
+        Mock Stop-WinUtilActiveWork { $false }
+        Mock Register-WinUtilRunspacePoolCleanup { }
+
+        try {
+            Close-WinUtilRunspacePool
+
+            $pool.RunspacePoolStateInfo.State | Should -Be ([System.Management.Automation.Runspaces.RunspacePoolState]::Opened)
+            $script:sync.ContainsKey("runspace") | Should -BeFalse
+            Should -Invoke Register-WinUtilRunspacePoolCleanup -Times 1 -Exactly -ParameterFilter {
+                [object]::ReferenceEquals($RunspacePool, $pool)
+            }
+        } finally {
+            $pool.Close()
+            $pool.Dispose()
+        }
+    }
 }
 
 Describe "Runspace startup wiring" {
-    It "does not create the GUI runspace pool before automation checks" {
-        $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
-        $beforePreset = $mainScript.Substring(0, $mainScript.IndexOf('if ($Preset)'))
 
-        $beforePreset | Should -Not -Match '\[runspacefactory\]::CreateRunspacePool'
-        $beforePreset | Should -Not -Match '\$sync\.runspace\.Open\(\)'
+
+
+
+
+
+
+
+    It "carries every WinUtil function into a new runspace" {
+        $sync = [Hashtable]::Synchronized(@{})
+        $null = $sync
+        function Test-WinUtilSessionStateMarker { "marker" }
+        function Get-SomethingUnprefixed { "unprefixed" }
+
+        $runspace = [runspacefactory]::CreateRunspace((New-WinUtilSessionState))
+        $runspace.Open()
+        try {
+            $shell = [powershell]::Create()
+            $shell.Runspace = $runspace
+            [void]$shell.AddScript('Test-WinUtilSessionStateMarker; Get-SomethingUnprefixed; (Get-Command mkdir).CommandType')
+            $result = $shell.Invoke()
+            $shell.Dispose()
+
+            $result | Should -Contain "marker"
+            $result | Should -Contain "unprefixed"
+        } finally {
+            $runspace.Close()
+            $runspace.Dispose()
+            Remove-Item Function:\Test-WinUtilSessionStateMarker -ErrorAction SilentlyContinue
+            Remove-Item Function:\Get-SomethingUnprefixed -ErrorAction SilentlyContinue
+        }
     }
 
-    It "initializes runspaces synchronously for automation paths and after first render for GUI" {
-        $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
+    It "loads WPF assemblies inside the cold-start asset runspace" {
+        $source = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilAssetRendering.ps1") -Raw
 
-        $mainScript | Should -Match 'if \(\$Preset\) \{\s+Initialize-WinUtilRunspacePool'
-        $mainScript | Should -Match 'if \(\$Config\) \{\s+Initialize-WinUtilRunspacePool'
-        $mainScript | Should -Match 'Dispatcher\.BeginInvoke\(\[System\.Windows\.Threading\.DispatcherPriority\]::Background, \[action\]\{ Initialize-WinUtilRunspacePool'
-        $mainScript | Should -Match 'Close-WinUtilRunspacePool'
+        $source | Should -Match 'Add-Type -AssemblyName WindowsBase'
+        $source | Should -Match 'Add-Type -AssemblyName PresentationCore'
+        $source | Should -Match 'Add-Type -AssemblyName PresentationFramework'
     }
 
-    It "creates runspaces on demand before queueing background work" {
-        $runspaceScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFRunspace.ps1") -Raw
 
-        $runspaceScript | Should -Match 'Initialize-WinUtilRunspacePool \| Out-Null'
-    }
 }

@@ -82,9 +82,6 @@ function Invoke-WPFUpdatesdefault {
         Get-ScheduledTask -TaskPath $Task -ErrorAction SilentlyContinue | Enable-ScheduledTask -ErrorAction SilentlyContinue
     }
 
-    Write-Host "===================================================" -ForegroundColor Green
-    Write-Host "---  Windows Update Settings Reset to Default   ---" -ForegroundColor Green
-    Write-Host "===================================================" -ForegroundColor Green
 
     Write-Host "Note: You must restart your system in order for all changes to take effect." -ForegroundColor Yellow
     Write-WinUtilLog -Component "Updates" -Message "Windows Update default workflow completed. Restart required."

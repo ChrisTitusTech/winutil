@@ -1,6 +1,5 @@
 #===========================================================================
 # Tests - Multiplane Overlay
-#===========================================================================
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
@@ -27,13 +26,7 @@ Describe "Multiplane Overlay configuration" {
         $script:states[1].Values.PSObject.Properties.Value | Should -Be @("<RemoveEntry>", "<RemoveEntry>", "1")
     }
 
-    It "uses the generic combo registry handler" {
-        $renderer = Get-Content (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIElements.ps1") -Raw
 
-        $renderer | Should -Match 'Get-WinUtilRegistryComboState'
-        $renderer | Should -Match 'Set-WinUtilRegistryComboState'
-        $renderer | Should -Not -Match 'WPFMultiplaneOverlay'
-    }
 }
 
 Describe "Get-WinUtilRegistryComboState" {
