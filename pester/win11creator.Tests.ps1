@@ -999,7 +999,7 @@ Describe "Win11 Creator setup media" {
         }
     }
 
-        It "falls back to the plain exit code for an unmapped DISM failure" {
+    It "falls back to the plain exit code for an unmapped DISM failure" {
         $contentRoot = Join-Path ([IO.Path]::GetTempPath()) "WinUtilIsoMountFailureUnknownCode_$([guid]::NewGuid())"
         $installWim = Join-Path $contentRoot 'sources\install.wim'
         $template = Get-Content -Path $script:autoUnattendPath -Raw
@@ -1036,14 +1036,14 @@ Describe "Win11 Creator setup media" {
             New-Item -Path (Split-Path $installWim -Parent) -ItemType Directory -Force | Out-Null
             Set-Content -Path $installWim -Value 'mock-wim'
             . $script:isoScriptPath
-            
+
             $thrown = $null
             try {
                 Invoke-WinUtilISOScript -ISOContentsDir $contentRoot -AutoUnattendXml $template -InjectCurrentSystemDrivers $true -InstallImagePath $installWim -InstallImageIndex 6 -InstallEditionId 'Professional'
             } catch {
                 $thrown = $_.Exception.Message
             }
-            $thrown | Should -Not -Match '\('
+            $thrown | Should -Be 'DISM mount failed with exit code 999.'
 
             @($script:dismCalls | Where-Object { $_ -match '/Get-MountedImageInfo' }).Count | Should -Be 1
             @($script:dismCalls | Where-Object { $_ -match '/Unmount-Image\|.*\|/Discard' }).Count | Should -Be 1
