@@ -179,6 +179,87 @@ Describe "Invoke-WinUtilTweaks" {
     }
 }
 
+Describe "Invoke-WinUtilTweaks completion status" {
+    BeforeAll {
+        . (Join-Path $script:repoRoot "functions\private\Write-WinUtilLog.ps1")
+        . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilScript.ps1")
+    }
+
+    BeforeEach {
+        $script:testRoot = Join-Path ([System.IO.Path]::GetTempPath()) "winutil-tweaks-$([guid]::NewGuid())"
+        $script:logPath = Join-Path $script:testRoot "logs\winutil_2026-09-15_12-00-00.log"
+        $script:sync = [Hashtable]::Synchronized(@{
+            logPath = $script:logPath
+            configs = @{
+                tweaks = [pscustomobject]@{
+                    WPFTweaksFailing = [pscustomobject]@{
+                        InvokeScript = @("throw 'simulated icacls failure'")
+                        UndoScript = @("throw 'simulated icacls undo failure'")
+                    }
+                    WPFTweaksClean = [pscustomobject]@{
+                        InvokeScript = @("Write-Output 'apply tweak'")
+                    }
+                    # A job worker logging an error from its own runspace lands in the shared
+                    # list without passing through this runspace's logger
+                    WPFTweaksDuringJob = [pscustomobject]@{
+                        InvokeScript = @("`$null = `$sync.LoggedErrors.Add('[Job] error from a concurrent job'); Write-Output 'apply tweak'")
+                    }
+                }
+            }
+            # Seeded with an earlier error: only errors logged during this tweak may count
+            LoggedErrors = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new(@("[UI] earlier unrelated failure")))
+        })
+        # Toggle switches run the tweak on the UI thread, outside any job worker. The runspace
+        # counter starts non-zero: only errors logged during this tweak may count
+        Remove-Variable -Name WinUtilIsJobWorker -Scope Global -ErrorAction SilentlyContinue
+        $global:WinUtilJobErrorCount = 3
+
+        Mock Write-Host { }
+        Mock Write-Warning { }
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name WinUtilJobErrorCount -Scope Global -ErrorAction SilentlyContinue
+        Remove-Item -Path $script:testRoot -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    It "warns instead of reporting completion when a tweak step logged an error" {
+        Invoke-WinUtilTweaks -CheckBox "WPFTweaksFailing"
+
+        $log = Get-Content -Path $script:logPath -Raw
+        $log | Should -Match "\[ERROR\] \[Script\] Runtime exception while running script for WPFTweaksFailing"
+        $log | Should -Match "\[WARN\] \[Tweaks\] Apply tweak finished with 1 error\(s\): WPFTweaksFailing"
+        $log | Should -Not -Match "tweak completed: WPFTweaksFailing"
+    }
+
+    It "warns when an undo step logged an error" {
+        Invoke-WinUtilTweaks -CheckBox "WPFTweaksFailing" -undo $true
+
+        $log = Get-Content -Path $script:logPath -Raw
+        $log | Should -Match "\[ERROR\] \[Script\] Runtime exception while running script for WPFTweaksFailing"
+        $log | Should -Match "\[WARN\] \[Tweaks\] Undo tweak finished with 1 error\(s\): WPFTweaksFailing"
+        $log | Should -Not -Match "tweak completed: WPFTweaksFailing"
+    }
+
+    It "reports completion when every tweak step succeeded" {
+        Invoke-WinUtilTweaks -CheckBox "WPFTweaksClean"
+
+        $log = Get-Content -Path $script:logPath -Raw
+        $log | Should -Match "\[INFO\] \[Tweaks\] Apply tweak completed: WPFTweaksClean"
+        $log | Should -Not -Match "\[WARN\]"
+        $log | Should -Not -Match "\[ERROR\]"
+    }
+
+    It "ignores an error another runspace logged while the tweak ran" {
+        Invoke-WinUtilTweaks -CheckBox "WPFTweaksDuringJob"
+
+        $log = Get-Content -Path $script:logPath -Raw
+        $log | Should -Match "\[INFO\] \[Tweaks\] Apply tweak completed: WPFTweaksDuringJob"
+        $log | Should -Not -Match "tweak finished with"
+    }
+}
+
 Describe "Invoke-WPFtweaksbutton" {
     BeforeEach {
         $script:sync = [Hashtable]::Synchronized(@{
