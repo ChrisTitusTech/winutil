@@ -27,13 +27,15 @@ function Measure-WinUtilStep {
         [string]$Scope = "WinUtil"
     )
 
+    $isUIDiagnostic = $Scope -in @("UI", "Tab")
+    $captureTiming = -not $isUIDiagnostic -or $sync.IsLocalCompile
     $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
     try {
         & $ScriptBlock
     } finally {
         $stopwatch.Stop()
 
-        if ($null -ne $sync.StepTimings) {
+        if ($captureTiming -and $null -ne $sync.StepTimings) {
             $null = $sync.StepTimings.Add([pscustomobject]@{
                 Scope = $Scope
                 Step = $Name
@@ -41,7 +43,10 @@ function Measure-WinUtilStep {
             })
         }
 
-        Write-WinUtilLog -Component $Scope -Message "timing: $Name took $($stopwatch.ElapsedMilliseconds) ms"
+        if ($captureTiming) {
+            $level = if ($isUIDiagnostic) { "DEBUG" } else { "INFO" }
+            Write-WinUtilLog -Level $level -Component $Scope -Message "timing: $Name took $($stopwatch.ElapsedMilliseconds) ms"
+        }
     }
 }
 
@@ -71,7 +76,8 @@ function Write-WinUtilTimingSummary {
         [int]$StartIndex = 0
     )
 
-    if ($null -eq $sync.StepTimings) {
+    $isUIDiagnostic = $Scope -in @("UI", "Tab")
+    if (($isUIDiagnostic -and -not $sync.IsLocalCompile) -or $null -eq $sync.StepTimings) {
         return
     }
 
@@ -90,9 +96,10 @@ function Write-WinUtilTimingSummary {
     $measured = ($steps | Measure-Object -Property Milliseconds -Sum).Sum
     $total = if ($TotalMilliseconds -ge 0) { $TotalMilliseconds } else { $measured }
 
-    Write-WinUtilLog -Component $Scope -Message "timing summary: $($steps.Count) step(s), $measured ms measured of $total ms total"
+    $level = if ($isUIDiagnostic) { "DEBUG" } else { "INFO" }
+    Write-WinUtilLog -Level $level -Component $Scope -Message "timing summary: $($steps.Count) step(s), $measured ms measured of $total ms total"
     foreach ($step in ($steps | Sort-Object Milliseconds -Descending | Select-Object -First $Top)) {
         $share = if ($total -gt 0) { [int](($step.Milliseconds / $total) * 100) } else { 0 }
-        Write-WinUtilLog -Component $Scope -Message "timing summary:   $($step.Milliseconds) ms ($share%)  $($step.Step)"
+        Write-WinUtilLog -Level $level -Component $Scope -Message "timing summary:   $($step.Milliseconds) ms ($share%)  $($step.Step)"
     }
 }
