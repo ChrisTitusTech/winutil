@@ -333,7 +333,7 @@ Describe "Invoke-WPFUpdatessecurity" {
         }
     }
 
-    It "sets recommended update deferral and auto-reboot policy values" {
+    It "sets recommended update deferral and installation notification policy values" {
         Invoke-WPFUpdatessecurity
 
         Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {

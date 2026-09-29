@@ -72,10 +72,10 @@ function Invoke-WPFUpdatessecurity {
 
     New-Item -Path $automaticUpdatePolicyPath -Force
 
-    # Clear obsolete state from the legacy reboot policy that does not work in modern versions.
+    # Remove the previous scheduled-install reboot policy when switching to download-and-notify.
     Remove-ItemProperty -Path $automaticUpdatePolicyPath -Name "NoAutoRebootWithLoggedOnUsers" -ErrorAction SilentlyContinue
 
-    # Set AUOptions to 3 (automatically download and notify for installation) to avoid forced restarts on Windows 11 24H2+.
+    # AUOptions 3 downloads updates and notifies before installation; it does not control restarts.
     Set-ItemProperty -Path $automaticUpdatePolicyPath -Name "AUOptions" -Type DWord -Value 3
     Set-ItemProperty -Path $automaticUpdatePolicyPath -Name "AUPowerManagement" -Type DWord -Value 0
 
