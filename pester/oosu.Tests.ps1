@@ -53,6 +53,21 @@ Describe "Save-WinUtilFile" {
         [System.IO.File]::ReadAllBytes($destinationPath) | Should -Be $sourceBytes
         $reportedProgress[-1] | Should -Be 100
     }
+
+    It "passes the total size in bytes alongside the percentage" {
+        $sourcePath = Join-Path $TestDrive "sized.bin"
+        $destinationPath = Join-Path $TestDrive "sized-copy.bin"
+        [System.IO.File]::WriteAllBytes($sourcePath, [byte[]](0..255))
+        $reported = [System.Collections.Generic.List[hashtable]]::new()
+
+        Save-WinUtilFile -Uri ([uri]$sourcePath) -DestinationPath $destinationPath -ProgressCallback {
+            param($percent, $totalBytes)
+            $reported.Add(@{ Percent = $percent; Total = $totalBytes })
+        }
+
+        $reported[-1].Percent | Should -Be 100
+        $reported[-1].Total | Should -Be 256
+    }
 }
 
 Describe "Invoke-WPFOOSU" {
@@ -106,6 +121,34 @@ Describe "Invoke-WPFOOSU" {
         }
     }
 
+    It "shows the download size next to the percentage" {
+        Mock Save-WinUtilFile {
+            & $ProgressCallback 35 79930408
+        }
+
+        Invoke-WPFOOSU
+        $jobParameters = $script:capturedJob.Parameters
+        & $script:capturedJob.ScriptBlock @jobParameters
+
+        Should -Invoke Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Downloading O&O ShutUp10++ (35% of 76 MB)" -and $Percent -eq 35
+        }
+    }
+
+    It "falls back to the plain percentage when the server sends no size" {
+        Mock Save-WinUtilFile {
+            & $ProgressCallback 100 -1
+        }
+
+        Invoke-WPFOOSU
+        $jobParameters = $script:capturedJob.Parameters
+        & $script:capturedJob.ScriptBlock @jobParameters
+
+        Should -Invoke Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Downloading O&O ShutUp10++ (100%)" -and $Percent -eq 100
+        }
+    }
+
     It "lets a download failure surface so the job layer can handle it" {
         Mock Save-WinUtilFile { throw "download failed" }
 
@@ -114,5 +157,20 @@ Describe "Invoke-WPFOOSU" {
 
         { & $script:capturedJob.ScriptBlock @jobParameters } | Should -Throw "download failed"
         Should -Not -Invoke Start-Process
+    }
+}
+
+Describe "O&O ShutUp10++ button" {
+    It "tells the user it downloads the tool before anything starts" {
+        $tweaks = Get-Content (Join-Path $script:repoRoot "config\tweaks.json") -Raw | ConvertFrom-Json
+
+        $tweaks.WPFOOSUbutton.Description | Should -Match "(?i)download"
+        $tweaks.WPFOOSUbutton.Description | Should -Match "MB"
+    }
+
+    It "is rendered with its description as the tooltip" {
+        $renderer = Get-Content (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIElements.ps1") -Raw
+
+        $renderer | Should -Match '\$button\.ToolTip\s*=\s*\$entryInfo\.Description'
     }
 }
