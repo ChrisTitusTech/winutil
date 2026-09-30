@@ -1502,7 +1502,7 @@
         "foss": false
     },
     "systeminformer": {
-        "category": "Development",
+        "category": "Pro Tools",
         "choco": "systeminformer",
         "content": "System Informer",
         "description": "A free, powerful, multi-purpose tool that helps you monitor system resources, debug software and detect malware.",
