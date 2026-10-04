@@ -177,6 +177,67 @@ Describe "Invoke-WinUtilTweaks" {
             $Name -eq "DiagTrack" -and $StartupType -eq "Disabled"
         }
     }
+
+    It "skips a missing service and applies the remaining services and tweaks" {
+        $script:sync.configs.tweaks.WPFTweaksExample.service = @(
+            [pscustomobject]@{
+                Name = "CscService"
+                StartupType = "Disabled"
+                OriginalType = "Manual"
+            }
+        ) + $script:sync.configs.tweaks.WPFTweaksExample.service
+
+        Mock Get-Service {
+            $exception = [Microsoft.PowerShell.Commands.ServiceCommandException]::new("Cannot find any service with service name '$Name'.")
+            $errorRecord = [System.Management.Automation.ErrorRecord]::new(
+                $exception,
+                "NoServiceFoundForGivenName,Microsoft.PowerShell.Commands.GetServiceCommand",
+                [System.Management.Automation.ErrorCategory]::ObjectNotFound,
+                $Name
+            )
+            throw $errorRecord
+        } -ParameterFilter { $Name -eq "CscService" -and $ErrorAction -eq "Stop" }
+
+        foreach ($tweak in @("WPFTweaksExample", "WPFTweaksServiceOnly")) {
+            Invoke-WinUtilTweaks -CheckBox $tweak
+        }
+
+        Should -Invoke -CommandName Write-Warning -Times 1 -Exactly -ParameterFilter {
+            $Message -eq "Service CscService was not found."
+        }
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "WARN" -and $Component -eq "Service" -and $Message -eq "Service CscService was not found."
+        }
+        Should -Invoke -CommandName Set-WinUtilService -Times 0 -Exactly -ParameterFilter {
+            $Name -eq "CscService"
+        }
+        Should -Invoke -CommandName Set-WinUtilService -Times 2 -Exactly -ParameterFilter {
+            $Name -eq "DiagTrack" -and $StartupType -eq "Disabled"
+        }
+        Should -Invoke -CommandName Invoke-WinUtilScript -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "WPFTweaksExample"
+        }
+    }
+
+    It "rethrows service lookup errors that do not identify a missing service" {
+        Mock Get-Service {
+            $exception = [Microsoft.PowerShell.Commands.ServiceCommandException]::new("Service lookup failed.")
+            $errorRecord = [System.Management.Automation.ErrorRecord]::new(
+                $exception,
+                "ServiceLookupFailed",
+                [System.Management.Automation.ErrorCategory]::OpenError,
+                $Name
+            )
+            throw $errorRecord
+        }
+
+        { Invoke-WinUtilTweaks -CheckBox "WPFTweaksExample" } | Should -Throw -ExpectedMessage "*Service lookup failed.*"
+
+        Should -Invoke -CommandName Set-WinUtilService -Times 0 -Exactly
+        Should -Invoke -CommandName Set-WinUtilRegistry -Times 0 -Exactly
+        Should -Invoke -CommandName Invoke-WinUtilScript -Times 0 -Exactly
+        Should -Invoke -CommandName Write-Warning -Times 0 -Exactly
+    }
 }
 
 Describe "Invoke-WinUtilTweaks completion status" {
