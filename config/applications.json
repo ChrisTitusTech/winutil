@@ -999,7 +999,7 @@
         "foss": true
     },
     "tailscale": {
-        "category": "Utilities",
+        "category": "Pro Tools",
         "choco": "tailscale",
         "content": "Tailscale",
         "description": "The Tailscale client allows you to connect all your devices using WireGuard®, without the hassle. Tailscale makes it as easy as installing an app and signing in.",
