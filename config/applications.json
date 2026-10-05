@@ -945,7 +945,7 @@
         "foss": true
     },
     "msiafterburner": {
-        "category": "Utilities",
+        "category": "Pro Tools",
         "choco": "msiafterburner",
         "content": "MSI Afterburner",
         "description": "MSI Afterburner is a graphics card overclocking utility with advanced features.",
