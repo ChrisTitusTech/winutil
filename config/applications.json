@@ -1457,7 +1457,7 @@
         "foss": false
     },
     "rufus": {
-        "category": "Utilities",
+        "category": "Pro Tools",
         "choco": "rufus",
         "content": "Rufus Imager",
         "description": "Rufus is a utility that helps format and create bootable USB drives, such as USB keys or pen drives.",
