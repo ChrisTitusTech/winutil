@@ -649,7 +649,7 @@
         "foss": true
     },
     "hugo": {
-        "category": "Utilities",
+        "category": "Development",
         "choco": "hugo-extended",
         "content": "Hugo",
         "description": "The world's fastest framework for building websites.",
@@ -945,7 +945,7 @@
         "foss": true
     },
     "msiafterburner": {
-        "category": "Utilities",
+        "category": "Pro Tools",
         "choco": "msiafterburner",
         "content": "MSI Afterburner",
         "description": "MSI Afterburner is a graphics card overclocking utility with advanced features.",
@@ -999,7 +999,7 @@
         "foss": true
     },
     "tailscale": {
-        "category": "Utilities",
+        "category": "Pro Tools",
         "choco": "tailscale",
         "content": "Tailscale",
         "description": "The Tailscale client allows you to connect all your devices using WireGuard®, without the hassle. Tailscale makes it as easy as installing an app and signing in.",
@@ -1070,7 +1070,7 @@
     "foss": true
     },
     "notepadplus": {
-        "category": "Multimedia Tools",
+        "category": "Development",
         "choco": "notepadplusplus",
         "content": "Notepad++",
         "description": "Notepad++ is a free, open-source code editor and Notepad replacement with support for multiple languages.",
@@ -1457,7 +1457,7 @@
         "foss": false
     },
     "rufus": {
-        "category": "Utilities",
+        "category": "Pro Tools",
         "choco": "rufus",
         "content": "Rufus Imager",
         "description": "Rufus is a utility that helps format and create bootable USB drives, such as USB keys or pen drives.",
@@ -1502,7 +1502,7 @@
         "foss": false
     },
     "systeminformer": {
-        "category": "Development",
+        "category": "Pro Tools",
         "choco": "systeminformer",
         "content": "System Informer",
         "description": "A free, powerful, multi-purpose tool that helps you monitor system resources, debug software and detect malware.",
