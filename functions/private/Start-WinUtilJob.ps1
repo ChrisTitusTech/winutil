@@ -90,6 +90,20 @@ function Start-WinUtilJob {
         Write-WinUtilJobBanner -Message $label
         Step-WinUtilJob -Status "$label..." -Percent 0 -State "Normal" -Overlay "logo"
 
+        # Tabs with a working view (spinner + live status) swap to it while their
+        # jobs run. Adding a new one is a new XAML panel plus one entry here.
+        $jobWorkingArea = switch ($Name) {
+            "Install"     { "Install" }
+            "Uninstall"   { "Install" }
+            "Tweaks"      { "Tweaks" }
+            "Undo tweaks" { "Tweaks" }
+            default       { $null }
+        }
+
+        if ($jobWorkingArea) {
+            Set-WinUtilWorkingView -Area $jobWorkingArea -Working $true -Label "$label..."
+        }
+
         if ($DisableAppList -and (Test-WinUtilUIAlive)) {
             Invoke-WPFUIThread -ScriptBlock {
                 if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $false }
@@ -105,10 +119,11 @@ function Start-WinUtilJob {
             ("JobBody", $ScriptBlock.ToString()),
             ("JobParameters", $Parameters),
             ("JobRestoresAppList", [bool]$DisableAppList),
+            ("JobWorkingArea", $jobWorkingArea),
             ("JobToken", $jobToken),
             ("TimingStartIndex", $timingStartIndex)
         ) -ScriptBlock {
-        param($JobName, $JobLabel, $JobBody, $JobParameters, $JobRestoresAppList, $JobToken, $TimingStartIndex)
+        param($JobName, $JobLabel, $JobBody, $JobParameters, $JobRestoresAppList, $JobWorkingArea, $JobToken, $TimingStartIndex)
 
         # Marks this runspace as the one doing the work, so a pause holds here and not in
         # whoever asked for it
@@ -194,6 +209,9 @@ function Start-WinUtilJob {
                             if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }
                         }
                     }
+                    if ($JobWorkingArea) {
+                        Set-WinUtilWorkingView -Area $JobWorkingArea -Working $false
+                    }
                 } catch {
                     Write-WinUtilLog -Level "WARN" -Component $JobName -Message "Could not restore the app list after $JobName finished: $($_.Exception.Message)"
                 } finally {
@@ -221,6 +239,9 @@ function Start-WinUtilJob {
                     Invoke-WPFUIThread -ScriptBlock {
                         if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }
                     }
+                }
+                if ($jobWorkingArea) {
+                    Set-WinUtilWorkingView -Area $jobWorkingArea -Working $false
                 }
             } catch {
                 Write-WinUtilLog -Level "WARN" -Component $Name -Message "Could not restore the app list after $Name failed to start: $($_.Exception.Message)"

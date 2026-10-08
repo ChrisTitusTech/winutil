@@ -7,6 +7,7 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Write-WinUtilErrorRecord.ps1")
     . (Join-Path $script:repoRoot "functions\private\Complete-WinUtilPackageRun.ps1")
     . (Join-Path $script:repoRoot "functions\private\Start-WinUtilJob.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Set-WinUtilWorkingView.ps1")
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilCloseRequest.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIThread.ps1")
 
@@ -254,6 +255,74 @@ Describe "Start-WinUtilJob" {
         $script:capturedRunspaceArgs["JobRestoresAppList"] | Should -BeFalse
     }
 
+    It "shows the Install working view while an Install job runs" {
+        Mock Set-WinUtilWorkingView { }
+
+        Start-WinUtilJob -Name "Install" -Description "Installing apps" -ScriptBlock { } | Out-Null
+
+        Should -Invoke -CommandName Set-WinUtilWorkingView -Times 1 -Exactly -ParameterFilter {
+            $Area -eq "Install" -and $Working -eq $true -and $Label -eq "Installing apps..."
+        }
+    }
+
+    It "shows the Install working view while an Uninstall job runs" {
+        Mock Set-WinUtilWorkingView { }
+
+        Start-WinUtilJob -Name "Uninstall" -ScriptBlock { } | Out-Null
+
+        Should -Invoke -CommandName Set-WinUtilWorkingView -Times 1 -Exactly -ParameterFilter {
+            $Area -eq "Install" -and $Working -eq $true
+        }
+    }
+
+    It "shows the Tweaks working view while a Tweaks job runs" {
+        Mock Set-WinUtilWorkingView { }
+
+        Start-WinUtilJob -Name "Tweaks" -Description "Applying tweaks" -ScriptBlock { } | Out-Null
+
+        Should -Invoke -CommandName Set-WinUtilWorkingView -Times 1 -Exactly -ParameterFilter {
+            $Area -eq "Tweaks" -and $Working -eq $true -and $Label -eq "Applying tweaks..."
+        }
+    }
+
+    It "shows the Tweaks working view while an Undo job runs" {
+        Mock Set-WinUtilWorkingView { }
+
+        Start-WinUtilJob -Name "Undo tweaks" -ScriptBlock { } | Out-Null
+
+        Should -Invoke -CommandName Set-WinUtilWorkingView -Times 1 -Exactly -ParameterFilter {
+            $Area -eq "Tweaks" -and $Working -eq $true
+        }
+    }
+
+    It "does not show a working view for other jobs" {
+        Mock Set-WinUtilWorkingView { }
+
+        Start-WinUtilJob -Name "OOSU" -ScriptBlock { } | Out-Null
+
+        Should -Invoke -CommandName Set-WinUtilWorkingView -Times 0 -Exactly
+    }
+
+    It "hides the working view when the worker finishes" {
+        Mock Set-WinUtilWorkingView { }
+
+        Start-WinUtilJob -Name "Tweaks" -ScriptBlock { } | Out-Null
+
+        & $script:capturedRunspaceBody `
+            -JobName "Tweaks" `
+            -JobLabel "Applying tweaks" `
+            -JobBody '$null = $true' `
+            -JobParameters @{} `
+            -JobRestoresAppList $false `
+            -JobWorkingArea "Tweaks" `
+            -JobToken $script:capturedRunspaceArgs["JobToken"]
+
+        Should -Invoke -CommandName Set-WinUtilWorkingView -Times 1 -Exactly -ParameterFilter {
+            $Area -eq "Tweaks" -and $Working -eq $false
+        }
+        $script:sync.ActiveJob | Should -BeNullOrEmpty
+    }
+
     It "greys out the app list only when asked to" {
         Start-WinUtilJob -Name "Install" -DisableAppList -ScriptBlock { } | Out-Null
 
@@ -470,7 +539,9 @@ Describe "Start-WinUtilJob" {
         $script:dispatchCount = 0
         Mock Invoke-WPFUIThread {
             $script:dispatchCount++
-            if ($script:dispatchCount -gt 1) {
+            # The Install working view takes the first dispatch (show), the app-list
+            # disable the second, so the worker's restore is the third to fail.
+            if ($script:dispatchCount -gt 2) {
                 throw [System.Threading.Tasks.TaskCanceledException]::new("dispatcher stopped")
             }
             & $ScriptBlock
