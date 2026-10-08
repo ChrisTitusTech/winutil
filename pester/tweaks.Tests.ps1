@@ -8,6 +8,7 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilTweaks.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFtweaksbutton.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFundoall.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilTweakDisplayName.ps1")
 
     function Set-WinUtilService {
         param($Name, $StartupType)
@@ -321,6 +322,36 @@ Describe "Invoke-WinUtilTweaks completion status" {
     }
 }
 
+Describe "Get-WinUtilTweakDisplayName" {
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+    }
+
+    It "returns the configured Content label" {
+        $script:sync = [Hashtable]::Synchronized(@{
+            configs = @{
+                tweaks = [pscustomobject]@{
+                    WPFTweaksTelemetry = [pscustomobject]@{ Content = "Telemetry - Disable" }
+                }
+            }
+        })
+
+        Get-WinUtilTweakDisplayName -Key "WPFTweaksTelemetry" | Should -Be "Telemetry - Disable"
+    }
+
+    It "falls back to the key when the entry or configs are missing" {
+        $script:sync = [Hashtable]::Synchronized(@{
+            configs = @{ tweaks = [pscustomobject]@{} }
+        })
+
+        Get-WinUtilTweakDisplayName -Key "WPFTweaksUnknown" | Should -Be "WPFTweaksUnknown"
+
+        $script:sync = [Hashtable]::Synchronized(@{})
+
+        Get-WinUtilTweakDisplayName -Key "WPFTweaksUnknown" | Should -Be "WPFTweaksUnknown"
+    }
+}
+
 Describe "Invoke-WPFtweaksbutton" {
     BeforeEach {
         $script:sync = [Hashtable]::Synchronized(@{
@@ -328,6 +359,12 @@ Describe "Invoke-WPFtweaksbutton" {
             selectedTweaks = [System.Collections.Generic.List[string]]::new()
             WPFchangedns = [pscustomobject]@{
                 text = "Cloudflare"
+            }
+            configs = @{
+                tweaks = [pscustomobject]@{
+                    WPFTweaksTelemetry = [pscustomobject]@{ Content = "Telemetry - Disable" }
+                    WPFTweaksServices = [pscustomobject]@{ Content = "Services - Set to Manual" }
+                }
             }
         })
         $script:capturedTweaksJob = $null
@@ -391,10 +428,10 @@ Describe "Invoke-WPFtweaksbutton" {
         }
         Should -Invoke -CommandName Invoke-WinUtilTweaks -Times 2 -Exactly
         Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
-            $Status -eq "Applying WPFTweaksTelemetry (1/2)" -and $Percent -eq 0
+            $Status -eq "Applying Telemetry - Disable (1/2)" -and $Percent -eq 0
         }
         Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
-            $Status -eq "Applying WPFTweaksServices (2/2)" -and $Percent -eq 50
+            $Status -eq "Applying Services - Set to Manual (2/2)" -and $Percent -eq 50
         }
     }
 
@@ -436,7 +473,20 @@ Describe "Invoke-WPFtweaksbutton" {
             $Status -eq "Creating restore point" -and $Percent -eq 0
         }
         Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
-            $Status -eq "Applying WPFTweaksTelemetry (2/2)" -and $Percent -eq 50
+            $Status -eq "Applying Telemetry - Disable (2/2)" -and $Percent -eq 50
+        }
+    }
+
+    It "falls back to the tweak key when no label is configured" {
+        $script:sync.configs.tweaks = [pscustomobject]@{}
+        $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
+
+        Invoke-WPFtweaksbutton
+        $jobParameters = $script:capturedTweaksJob.Parameters
+        & $script:capturedTweaksJob.ScriptBlock @jobParameters
+
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Applying WPFTweaksTelemetry (1/1)" -and $Percent -eq 0
         }
     }
 }
@@ -446,6 +496,12 @@ Describe "Invoke-WPFundoall" {
         $script:sync = [Hashtable]::Synchronized(@{
             ActiveJob = $null
             selectedTweaks = [System.Collections.Generic.List[string]]::new()
+            configs = @{
+                tweaks = [pscustomobject]@{
+                    WPFTweaksTelemetry = [pscustomobject]@{ Content = "Telemetry - Disable" }
+                    WPFTweaksServices = [pscustomobject]@{ Content = "Services - Set to Manual" }
+                }
+            }
         })
         $script:capturedUndoJob = $null
 
@@ -490,10 +546,10 @@ Describe "Invoke-WPFundoall" {
 
         Should -Invoke -CommandName Invoke-WinUtilTweaks -Times 2 -Exactly -ParameterFilter { $undo -eq $true }
         Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
-            $Status -eq "Undoing WPFTweaksTelemetry (1/2)" -and $Percent -eq 0
+            $Status -eq "Undoing Telemetry - Disable (1/2)" -and $Percent -eq 0
         }
         Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
-            $Status -eq "Undoing WPFTweaksServices (2/2)" -and $Percent -eq 50
+            $Status -eq "Undoing Services - Set to Manual (2/2)" -and $Percent -eq 50
         }
     }
 }
