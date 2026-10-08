@@ -323,6 +323,29 @@ Describe "Start-WinUtilJob" {
         $script:sync.ActiveJob | Should -BeNullOrEmpty
     }
 
+    It "still releases the job when hiding the working view fails" {
+        Mock Set-WinUtilWorkingView { if ($Working -eq $false) { throw "dispatcher stopped" } }
+
+        Start-WinUtilJob -Name "Install" -ScriptBlock { } | Out-Null
+
+        {
+            & $script:capturedRunspaceBody `
+                -JobName "Install" `
+                -JobLabel "Installing apps" `
+                -JobBody '$null = $true' `
+                -JobParameters @{} `
+                -JobRestoresAppList $false `
+                -JobWorkingArea "Install" `
+                -JobToken $script:capturedRunspaceArgs["JobToken"]
+        } | Should -Not -Throw
+
+        $script:sync.ActiveJob | Should -BeNullOrEmpty
+        $script:sync.ActiveJobToken | Should -BeNullOrEmpty
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "WARN" -and $Message -like "Could not hide the working view*"
+        }
+    }
+
     It "greys out the app list only when asked to" {
         Start-WinUtilJob -Name "Install" -DisableAppList -ScriptBlock { } | Out-Null
 
