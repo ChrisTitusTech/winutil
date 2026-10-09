@@ -506,7 +506,7 @@
     },
     "flux": {
         "category": "Utilities",
-        "choco": "flux",
+        "choco": "f.lux",
         "content": "F.lux",
         "description": "f.lux adjusts the color temperature of your screen to reduce eye strain during nighttime use.",
         "link": "https://justgetflux.com/",
@@ -875,7 +875,7 @@
     },
     "mpc-qt": {
         "category": "Multimedia Tools",
-        "choco": "mediainfo",
+        "choco": "mpc-qt",
         "content": "mpc-qt",
         "description": "Media Player Classic Qute Theater",
         "link": "https://mpc-qt.github.io",
@@ -901,7 +901,7 @@
     },
     "minitoolpartitionwizard": {
         "category": "Utilities",
-        "choco": "minitoolpartitionwizard",
+        "choco": "partitionwizard",
         "content": "MiniTool Partition Wizard",
         "description": "Comprehensive free partition manager that performs advanced operations Windows natively cannot, such as merging partitions, converting file systems, and organizing disk capacity.",
         "link": "https://www.partitionwizard.com/",
@@ -1386,7 +1386,7 @@
     },
     "processmonitor": {
         "category": "Microsoft Tools",
-        "choco": "procexp",
+        "choco": "procmon",
         "content": "Process Monitor",
         "description": "SysInternals Process Monitor is an advanced monitoring tool that shows real-time file system, registry, and process/thread activity.",
         "link": "https://docs.microsoft.com/en-us/sysinternals/downloads/procmon",
@@ -1655,7 +1655,7 @@
     },
     "teamviewer": {
         "category": "Utilities",
-        "choco": "teamviewer9",
+        "choco": "teamviewer",
         "content": "TeamViewer",
         "description": "TeamViewer is a popular remote access and support software that allows you to connect to and control remote devices.",
         "link": "https://www.teamviewer.com/",
@@ -1772,7 +1772,7 @@
     },
     "unity": {
         "category": "Development",
-        "choco": "unityhub",
+        "choco": "unity-hub",
         "content": "Unity Game Engine",
         "description": "Unity is a powerful game development platform for creating 2D, 3D, augmented reality, and virtual reality games.",
         "link": "https://unity.com/",
@@ -2059,7 +2059,7 @@
     },
     "ZenBrowser": {
         "category": "Browsers",
-        "choco": "zen-browser",
+        "choco": "na",
         "content": "Zen Browser",
         "description": "The modern, privacy-focused, performance-driven browser built on Firefox.",
         "link": "https://zen-browser.app/",
