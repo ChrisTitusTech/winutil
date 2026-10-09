@@ -166,6 +166,7 @@ Describe "Invoke-WinUtilCurrentSystem installed apps" {
 
     It "does not run WinGet in Chocolatey mode when no app needs it" {
         $script:sync.configs.applicationsHashtable.Remove("WPFInstallChatGPT")
+        $script:sync.configs.applicationsHashtable["WPFInstallNoSource"] = [pscustomobject]@{ winget = "na"; choco = "na" }
 
         $result = @(Invoke-WinUtilCurrentSystem -CheckBox "choco")
 

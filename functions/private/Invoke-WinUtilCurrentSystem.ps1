@@ -27,7 +27,8 @@ Function Invoke-WinUtilCurrentSystem {
         # Apps without a Chocolatey package are installed through WinGet (see Get-WinUtilSelectedPackages),
         # so check those against one winget list
         $wingetFallbackKeys = @($sync.configs.applicationsHashtable.GetEnumerator() | Where-Object {
-            [string]::IsNullOrWhiteSpace([string]$_.Value.choco) -or $_.Value.choco -eq "na"
+            ([string]::IsNullOrWhiteSpace([string]$_.Value.choco) -or $_.Value.choco -eq "na") -and
+            -not ([string]::IsNullOrWhiteSpace([string]$_.Value.winget) -or $_.Value.winget -eq "na")
         } | ForEach-Object { $_.Key })
         if ($wingetFallbackKeys.Count -gt 0 -and (Test-WinUtilPackageManager -winget) -eq "installed") {
             try {
