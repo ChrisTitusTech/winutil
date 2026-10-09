@@ -112,6 +112,7 @@ namespace Windows.Controls
 
     . (Join-Path $script:repoRoot "functions\private\Find-AppsByNameOrDescription.ps1")
     . (Join-Path $script:repoRoot "functions\private\Find-TweaksByNameOrDescription.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilEntryToolTip.ps1")
 
     function script:New-WinUtilSearchCollection {
         return ,[System.Collections.ArrayList]::new()
@@ -551,5 +552,34 @@ Describe "Find-TweaksByNameOrDescription" {
         $appxItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
         $tweakCategory.Border.Visibility | Should -Be ([Windows.Visibility]::Visible)
         $tweakItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+    }
+
+    It "matches checkbox descriptions and preset keys but not the preset key label" {
+        $servicesItem = New-WinUtilTweakCheckboxItem -Content "Services - Set to Manual" -ToolTip (Get-WinUtilEntryToolTip -Description "Reduces the number of svchost.exe processes." -Key "WPFTweaksServices")
+        $telemetryItem = New-WinUtilTweakCheckboxItem -Content "Telemetry - Disable" -ToolTip (Get-WinUtilEntryToolTip -Description "Disables Microsoft Telemetry." -Key "WPFTweaksTelemetry")
+        $category = New-WinUtilTweakCategory -Label "- Essential Tweaks" -Items @($servicesItem, $telemetryItem)
+        $panel = New-WinUtilTweakPanel -Categories @($category)
+        New-WinUtilTweakSearchContext -TweaksPanel $panel
+
+        Find-TweaksByNameOrDescription -SearchString "key"
+
+        $servicesItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $telemetryItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $category.Border.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+
+        Find-TweaksByNameOrDescription -SearchString "set"
+
+        $servicesItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $telemetryItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+
+        Find-TweaksByNameOrDescription -SearchString "WPFTweaksTelemetry"
+
+        $servicesItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+        $telemetryItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+
+        Find-TweaksByNameOrDescription -SearchString "svchost"
+
+        $servicesItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $telemetryItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
     }
 }
