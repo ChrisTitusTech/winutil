@@ -44,7 +44,8 @@ Function Invoke-WinUtilCurrentSystem {
                 return
             }
 
-            $packagePattern = "(?im)[^\S\r\n]{2,}$([regex]::Escape($packageId))(?=[^\S\r\n]{2,}|$)"
+            # winget pads each column to its widest value plus one space, so the widest Name has only one space before its Id
+            $packagePattern = "(?im)[^\S\r\n]$([regex]::Escape($packageId))(?=[^\S\r\n]|$)"
             if ($installedProgramText -match $packagePattern) {
                 Write-Output $_.Key
             }
