@@ -7,6 +7,7 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilCurrentSystem.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Test-WinUtilPackageManager.ps1")
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilRegistry.ps1")
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilService.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFPanelAutologin.ps1")
@@ -114,9 +115,71 @@ Describe "Invoke-WinUtilCurrentSystem installed apps" {
     It "matches the primary Chocolatey package ID in one list call" {
         $result = @(Invoke-WinUtilCurrentSystem -CheckBox "choco")
 
-        $result | Should -Be @("WPFInstallGit")
+        $result | Should -Be @("WPFInstallGit", "WPFInstallChatGPT")
         Should -Invoke -CommandName choco -Times 1 -Exactly
         $script:chocoArguments | Should -Be @("list")
+    }
+
+    It "checks WinGet only for apps that Chocolatey mode installs through WinGet" {
+        $apps = $script:sync.configs.applicationsHashtable
+        $apps["WPFInstallVLC"] = [pscustomobject]@{ winget = "VideoLAN.VLC"; choco = "vlc" }
+        $apps["WPFInstallNoChoco"] = [pscustomobject]@{ winget = "No.Choco"; choco = "" }
+        $apps["WPFInstallAbsent"] = [pscustomobject]@{ winget = "Absent.App"; choco = "na" }
+        $apps["WPFInstallNoSource"] = [pscustomobject]@{ winget = "na"; choco = "na" }
+        $apps["WPFInstallNoChocoField"] = [pscustomobject]@{ winget = "No.Field" }
+        Mock winget {
+            $global:LASTEXITCODE = 0
+            @(
+                "Name  Id  Version  Source",
+                "--------------------------------",
+                "Git  Git.Git  2.0  winget",
+                "ChatGPT  9NT1R1C2HH7J  1.0  msstore",
+                "VLC  VideoLAN.VLC  3.0  winget",
+                "No Choco  No.Choco  1.0  winget",
+                "No Field  No.Field  1.0  winget"
+            )
+        }
+
+        $result = @(Invoke-WinUtilCurrentSystem -CheckBox "choco")
+
+        $result | Should -HaveCount 4
+        $result | Should -Contain "WPFInstallGit"
+        $result | Should -Contain "WPFInstallChatGPT"
+        $result | Should -Contain "WPFInstallNoChoco"
+        $result | Should -Contain "WPFInstallNoChocoField"
+        Should -Invoke -CommandName choco -Times 1 -Exactly
+        Should -Invoke -CommandName winget -Times 1 -Exactly
+    }
+
+    It "keeps Chocolatey results when WinGet cannot list applications" {
+        Mock winget {
+            $global:LASTEXITCODE = 1
+            "winget failed"
+        }
+        Mock Write-Warning { }
+
+        $result = @(Invoke-WinUtilCurrentSystem -CheckBox "choco")
+
+        $result | Should -Be @("WPFInstallGit")
+        Should -Invoke -CommandName Write-Warning -Times 1 -Exactly -ParameterFilter { $Message -like "*WinGet*exit code 1*" }
+    }
+
+    It "does not run WinGet in Chocolatey mode when no app needs it" {
+        $script:sync.configs.applicationsHashtable.Remove("WPFInstallChatGPT")
+
+        $result = @(Invoke-WinUtilCurrentSystem -CheckBox "choco")
+
+        $result | Should -Be @("WPFInstallGit")
+        Should -Invoke -CommandName winget -Times 0 -Exactly
+    }
+
+    It "skips the WinGet check in Chocolatey mode when WinGet is not installed" {
+        Mock Test-WinUtilPackageManager { "not-installed" } -ParameterFilter { $winget }
+
+        $result = @(Invoke-WinUtilCurrentSystem -CheckBox "choco")
+
+        $result | Should -Be @("WPFInstallGit")
+        Should -Invoke -CommandName winget -Times 0 -Exactly
     }
 }
 
