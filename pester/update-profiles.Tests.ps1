@@ -55,6 +55,7 @@ Describe "Invoke-WPFUpdatesdisable" {
         Mock Write-Host { }
         Mock Write-WinUtilLog { }
         Mock Show-WinUtilMessage { "Yes" }
+        Mock Test-Path { $false }
         Mock New-Item { }
         Mock Set-ItemProperty { }
         Mock Set-Service { }
@@ -91,6 +92,19 @@ Describe "Invoke-WPFUpdatesdisable" {
                 $Name -eq "DODownloadMode" -and
                 $Type -eq "DWord" -and
                 $Value -eq 0
+        }
+    }
+
+    It "keeps existing policy keys instead of recreating them" {
+        Mock Test-Path { $true }
+
+        Invoke-WPFUpdatesdisable
+
+        Should -Not -Invoke New-Item
+        Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
+            $Path -eq "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -and
+                $Name -eq "NoAutoUpdate" -and
+                $Value -eq 1
         }
     }
 
@@ -250,9 +264,11 @@ Describe "Invoke-WPFUpdatessecurity" {
     BeforeEach {
         Mock Write-Host { }
         Mock Write-WinUtilLog { }
+        Mock Test-Path { $false }
         Mock New-Item { }
         Mock Set-ItemProperty { }
         Mock Remove-ItemProperty { }
+        Mock Get-ItemProperty { }
         Mock Set-Service { }
         Mock Start-Service { }
         Mock Get-ScheduledTask {
@@ -375,6 +391,56 @@ Describe "Invoke-WPFUpdatessecurity" {
                 $Name -eq "AUPowerManagement" -and
                 $Type -eq "DWord" -and
                 $Value -eq 0
+        }
+    }
+
+    It "keeps existing policy keys instead of recreating them" {
+        Mock Test-Path { $true }
+
+        Invoke-WPFUpdatessecurity
+
+        Should -Not -Invoke New-Item
+        Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
+            $Path -eq "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -and
+                $Name -eq "DeferFeatureUpdates" -and
+                $Value -eq 1
+        }
+        Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
+            $Path -eq "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -and
+                $Name -eq "AUOptions" -and
+                $Value -eq 3
+        }
+    }
+
+    It "clears a leftover Win11 Creator update block" {
+        Mock Get-ItemProperty {
+            [pscustomobject]@{ WUServer = "http://localhost:8080" }
+        } -ParameterFilter { $Name -eq "WUServer" }
+
+        Invoke-WPFUpdatessecurity
+
+        foreach ($expectedValue in @(
+            @("HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate", "DisableWindowsUpdateAccess"),
+            @("HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate", "WUServer"),
+            @("HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate", "WUStatusServer"),
+            @("HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU", "UseWUServer")
+        )) {
+            $expected = $expectedValue
+            Should -Invoke -CommandName Remove-ItemProperty -Times 1 -Exactly -ParameterFilter {
+                $Path -eq $expected[0] -and $Name -eq $expected[1]
+            }
+        }
+    }
+
+    It "keeps a real WSUS server" {
+        Mock Get-ItemProperty {
+            [pscustomobject]@{ WUServer = "http://wsus.example.local:8530" }
+        } -ParameterFilter { $Name -eq "WUServer" }
+
+        Invoke-WPFUpdatessecurity
+
+        Should -Not -Invoke Remove-ItemProperty -ParameterFilter {
+            $Name -in @("WUServer", "WUStatusServer", "UseWUServer")
         }
     }
 
