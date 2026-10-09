@@ -122,6 +122,25 @@ Describe "Invoke-WinUtilCurrentSystem installed apps" {
         $result | Should -Not -Contain "WPFInstallMissing"
     }
 
+    It "matches IDs only in the Id column, not inside a package name" {
+        Mock winget {
+            $global:LASTEXITCODE = 0
+            # "a" plus 16 combining accents is 17 characters but one column, which puts Git.Git at the Id column offset
+            $accentedName = "a" + ([string][char]0x0301 * 16) + " Git.Git"
+            @(
+                "Name              Id         Version Source",
+                "-------------------------------------------",
+                "Some Git.Git Tool Other.Tool 1.0     winget",
+                "$accentedName         Third.Tool 1.0     winget"
+            )
+        }
+        $script:sync.configs.applicationsHashtable["WPFInstallOther"] = [pscustomobject]@{ winget = "Other.Tool"; choco = "na" }
+
+        $result = @(Invoke-WinUtilCurrentSystem -CheckBox "winget")
+
+        $result | Should -Be @("WPFInstallOther")
+    }
+
     It "fails promptly when Winget cannot list applications" {
         Mock winget {
             $global:LASTEXITCODE = 1
