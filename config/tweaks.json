@@ -1903,5 +1903,92 @@
     "Type": "Button",
     "ButtonWidth": "300",
     "link": "https://winutil.christitus.com/code-reference/tweaks/performance-plans---not-for-laptops/removeultperf"
+  },
+  "WPFTweaksMcAfeeBlock": {
+    "Content": "McAfee Bloat - Block & Remove",
+    "Description": "Uninstalls McAfee bloat (Security Scan Plus, WebAdvisor, Total Protection trial) and blocks bundled reinstalls from Adobe/OEM installers. Windows Defender stays active.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "InvokeScript": [
+      "
+      Write-Host \"Removing McAfee bloat and blocking reinstalls...\"
+
+      # 1. Stop running McAfee processes (bundled scan, WebAdvisor, framework)
+      Get-Process -Name \"*mcafee*\", \"*McShield*\", \"*mfe*\", \"*WebAdvisor*\", \"*SecurityScan*\", \"*SSScheduler*\" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+
+      # 2. Disable + remove McAfee scheduled tasks that reinstall/update it
+      Get-ScheduledTask -TaskName \"*McAfee*\", \"*Security Scan*\", \"*WebAdvisor*\" -ErrorAction SilentlyContinue | ForEach-Object {
+        Disable-ScheduledTask -TaskName $_.TaskName -TaskPath $_.TaskPath -ErrorAction SilentlyContinue | Out-Null
+        Unregister-ScheduledTask -TaskName $_.TaskName -TaskPath $_.TaskPath -Confirm:$false -ErrorAction SilentlyContinue
+      }
+
+      # 3. Stop + disable McAfee services
+      Get-Service -Name \"*mcafee*\", \"*McShield*\", \"*mfe*\", \"*WebAdvisor*\" -ErrorAction SilentlyContinue | ForEach-Object {
+        Stop-Service -Name $_.Name -Force -ErrorAction SilentlyContinue
+        Set-Service -Name $_.Name -StartupType Disabled -ErrorAction SilentlyContinue
+      }
+
+      # 4. Best-effort winget removal (covers winget-visible installs)
+      $wingetNames = @('McAfee Security Scan Plus', 'McAfee WebAdvisor', 'McAfee Total Protection', 'McAfee LiveSafe', 'McAfee')
+      foreach ($app in $wingetNames) {
+        winget uninstall -e --name $app --silent --accept-source-agreements --accept-package-agreements 2>$null | Out-Null
+      }
+
+      # 5. Registry uninstallers (covers OEM/Adobe-bundled installs winget misses)
+      $uninstallKeys = @('HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*', 'HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*')
+      foreach ($key in $uninstallKeys) {
+        Get-ItemProperty -Path $key -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -like '*McAfee*' -or $_.DisplayName -like '*Security Scan*' -or $_.DisplayName -like '*WebAdvisor*' } | ForEach-Object {
+          try {
+            $cmd = $_.QuietUninstallString
+            if ([string]::IsNullOrWhiteSpace($cmd)) { $cmd = $_.UninstallString }
+            if (-not [string]::IsNullOrWhiteSpace($cmd)) {
+              $proc = Start-Process -FilePath 'cmd.exe' -ArgumentList '/c', \"$cmd /quiet /noreboot\" -WindowStyle Hidden -PassThru -ErrorAction SilentlyContinue
+              if ($proc) { try { $proc.WaitForExit(120000) | Out-Null } catch { } }
+            }
+          } catch { }
+        }
+      }
+
+      # 6. IFEO block: known McAfee/WebAdvisor bundle installers silently do nothing
+      $blockExes = @('McAfeeSetup.exe', 'McAfeeInstaller.exe', 'McAfeeSecurityScanInstaller.exe', 'SecurityScanInstaller.exe', 'McSSInstaller.exe', 'SSScheduler.exe', 'WebAdvisorInstaller.exe', 'McAfeeWebAdvisorInstaller.exe')
+      foreach ($exe in $blockExes) {
+        $ifeo = \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\$exe\"
+        New-Item -Path $ifeo -Force -ErrorAction SilentlyContinue | Out-Null
+        New-ItemProperty -Path $ifeo -Name 'Debugger' -Value 'C:\\Windows\\System32\\systray.exe' -PropertyType String -Force -ErrorAction SilentlyContinue | Out-Null
+      }
+
+      # 7. Stub McAfee folders + deny write so bundlers cannot drop files back (same pattern as Razer/Logi block)
+      $stubPaths = @(\"$Env:ProgramFiles\\McAfee\", \"$Env:ProgramFiles\\McAfee Security Scan\", \"$Env:ProgramData\\McAfee\")
+      $pf86 = ${Env:ProgramFiles(x86)}
+      if ($pf86) { $stubPaths += \"$pf86\\McAfee\"; $stubPaths += \"$pf86\\McAfee Security Scan\" }
+      foreach ($p in $stubPaths) {
+        if (Test-Path $p) { Remove-Item \"$p\\*\" -Recurse -Force -ErrorAction SilentlyContinue }
+        else { New-Item -Path $p -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
+        icacls \"$p\" /deny \"*S-1-1-0:(W)\" | Out-Null
+      }
+
+      Write-Host \"McAfee block applied. Windows Defender remains active.\"
+      "
+    ],
+    "UndoScript": [
+      "
+      Write-Host \"Removing McAfee install block...\"
+
+      $blockExes = @('McAfeeSetup.exe', 'McAfeeInstaller.exe', 'McAfeeSecurityScanInstaller.exe', 'SecurityScanInstaller.exe', 'McSSInstaller.exe', 'SSScheduler.exe', 'WebAdvisorInstaller.exe', 'McAfeeWebAdvisorInstaller.exe')
+      foreach ($exe in $blockExes) {
+        Remove-Item -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\$exe\" -Recurse -Force -ErrorAction SilentlyContinue
+      }
+
+      $stubPaths = @(\"$Env:ProgramFiles\\McAfee\", \"$Env:ProgramFiles\\McAfee Security Scan\", \"$Env:ProgramData\\McAfee\")
+      $pf86 = ${Env:ProgramFiles(x86)}
+      if ($pf86) { $stubPaths += \"$pf86\\McAfee\"; $stubPaths += \"$pf86\\McAfee Security Scan\" }
+      foreach ($p in $stubPaths) {
+        if (Test-Path $p) { icacls \"$p\" /remove:d \"*S-1-1-0\" | Out-Null }
+      }
+
+      Write-Host \"McAfee block removed. Reinstall McAfee manually if you actually want it.\"
+      "
+    ],
+    "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/mcafeeblock"
   }
 }
