@@ -38,14 +38,24 @@ Function Invoke-WinUtilCurrentSystem {
         }
         $installedProgramText = $installedProgramOutput -join "`n"
 
+        # winget pads each column to its widest value plus one space, so the row with the widest Name or Id
+        # has only one space next to its Id. Take the Id column position from the header above the dashes.
+        $idColumnStart = 0
+        if ($installedProgramText -match '(?m)^(\S+[^\S\r\n]+)\S[^\r\n]*\r?\n-{3,}') {
+            $idColumnStart = $Matches[1].Length
+        }
+
         $sync.configs.applicationsHashtable.GetEnumerator() | ForEach-Object {
             $packageId = (($_.Value.winget -split ";")[-1] -replace "^msstore:", "").Trim()
             if ([string]::IsNullOrWhiteSpace($packageId) -or $packageId -eq "na") {
                 return
             }
 
-            $packagePattern = "(?im)[^\S\r\n]{2,}$([regex]::Escape($packageId))(?=[^\S\r\n]{2,}|$)"
-            if ($installedProgramText -match $packagePattern) {
+            $escapedPackageId = [regex]::Escape($packageId)
+            $packagePattern = "(?im)[^\S\r\n]{2,}$escapedPackageId(?=[^\S\r\n]{2,}|$)"
+            # Skip rows whose Name has combining marks or emoji: they are more characters than columns and shift the offset
+            $idColumnPattern = "(?im)(?<=^[^\r\n\p{M}\p{Cs}\p{Cf}]{$($idColumnStart - 1)}[^\S\r\n])$escapedPackageId(?=[^\S\r\n]|$)"
+            if ($installedProgramText -match $packagePattern -or ($idColumnStart -and $installedProgramText -match $idColumnPattern)) {
                 Write-Output $_.Key
             }
         }

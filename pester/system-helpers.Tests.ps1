@@ -102,6 +102,45 @@ Describe "Invoke-WinUtilCurrentSystem installed apps" {
         $script:wingetArguments | Should -Be @("list", "--accept-source-agreements", "--disable-interactivity")
     }
 
+    It "matches a package whose name is the widest in the winget list" {
+        Mock winget {
+            $global:LASTEXITCODE = 0
+            @(
+                "Name                                                         Id                           Version       Source",
+                "--------------------------------------------------------------------------------------------------------------",
+                "Microsoft Visual C++ v14 Redistributable (x64) - 14.51.36247 Microsoft.VCRedist.2015+.x64 14.51.36247.0 winget",
+                "Git                                                          Git.Git                      2.0           winget"
+            )
+        }
+        $script:sync.configs.applicationsHashtable["WPFInstallvc2015_64"] = [pscustomobject]@{ winget = "Microsoft.VCRedist.2015+.x64"; choco = "vcredist2015" }
+
+        $result = @(Invoke-WinUtilCurrentSystem -CheckBox "winget")
+
+        $result | Should -HaveCount 2
+        $result | Should -Contain "WPFInstallvc2015_64"
+        $result | Should -Contain "WPFInstallGit"
+        $result | Should -Not -Contain "WPFInstallMissing"
+    }
+
+    It "matches IDs only in the Id column, not inside a package name" {
+        Mock winget {
+            $global:LASTEXITCODE = 0
+            # "a" plus 16 combining accents is 17 characters but one column, which puts Git.Git at the Id column offset
+            $accentedName = "a" + ([string][char]0x0301 * 16) + " Git.Git"
+            @(
+                "Name              Id         Version Source",
+                "-------------------------------------------",
+                "Some Git.Git Tool Other.Tool 1.0     winget",
+                "$accentedName         Third.Tool 1.0     winget"
+            )
+        }
+        $script:sync.configs.applicationsHashtable["WPFInstallOther"] = [pscustomobject]@{ winget = "Other.Tool"; choco = "na" }
+
+        $result = @(Invoke-WinUtilCurrentSystem -CheckBox "winget")
+
+        $result | Should -Be @("WPFInstallOther")
+    }
+
     It "fails promptly when Winget cannot list applications" {
         Mock winget {
             $global:LASTEXITCODE = 1
