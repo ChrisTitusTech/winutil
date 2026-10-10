@@ -131,6 +131,36 @@ function Get-WinUtilEditionIdFromName {
     }
 }
 
+function Get-WinUtilImageEditionId {
+    <#
+    .SYNOPSIS
+        Resolves the locale-independent setup edition id for a Windows image.
+
+    .DESCRIPTION
+        Reads EditionId from the image metadata first, which reports the same
+        canonical value (Professional, Core, ...) in every ISO language, and
+        falls back to the English display-name map when the metadata cannot be
+        read. Never throws: an unresolvable edition yields an empty string so
+        the caller skips sources\ei.cfg instead of writing a wrong value.
+    #>
+    param(
+        [Parameter(Mandatory)][string]$ImagePath,
+        [Parameter(Mandatory)][int]$ImageIndex,
+        [string]$EditionName
+    )
+
+    try {
+        $detail = Get-WindowsImage -ImagePath $ImagePath -Index $ImageIndex -ErrorAction Stop
+        if ($detail -and $detail.EditionId) {
+            return [string]$detail.EditionId
+        }
+    } catch {
+        Write-Verbose "Could not read image metadata for index ${ImageIndex}: $_"
+    }
+
+    return Get-WinUtilEditionIdFromName -EditionName $EditionName
+}
+
 function Invoke-WinUtilISOBrowse {
     Add-Type -AssemblyName System.Windows.Forms
 
@@ -253,12 +283,30 @@ function Invoke-WinUtilISOMountAndVerify {
             $sync["Win11ISOWimPath"]     = $activeWim
             $sync["Win11ISOImagePath"]   = $isoPath
 
+            # Resolve the default edition here, off the UI thread: image metadata
+            # carries the locale-independent EditionId, so a French
+            # "Professionnel" image still preselects Pro instead of falling back
+            # to index 0 (Famille). The English display-name match remains as a
+            # fallback for images whose metadata cannot be read.
+            $defaultEditionListIndex = 0
+            $listIndex = 0
+            foreach ($img in @($imageInfo)) {
+                $candidateId = Get-WinUtilImageEditionId -ImagePath $activeWim -ImageIndex $img.ImageIndex -EditionName $img.ImageName
+                $candidateItem = "$($img.ImageIndex): $($img.ImageName)"
+                if (($candidateId -eq 'Professional') -or ([string]::IsNullOrEmpty($candidateId) -and $candidateItem -match "Windows 11 Pro(?![\w ])")) {
+                    $defaultEditionListIndex = $listIndex
+                    break
+                }
+                $listIndex++
+            }
+
             Invoke-WPFUIThread -Parameters @{
                 DriveLetter = $driveLetter
                 ImageFileName = Split-Path $activeWim -Leaf
                 ImageInfo = $imageInfo
+                DefaultEditionListIndex = $defaultEditionListIndex
             } -ScriptBlock {
-                param($DriveLetter, $ImageFileName, $imageInfo)
+                param($DriveLetter, $ImageFileName, $imageInfo, $DefaultEditionListIndex)
 
                 $sync["WPFWin11ISOMountDriveLetter"].Text = $DriveLetter
                 $sync["WPFWin11ISOImageFile"].Text        = $ImageFileName
@@ -267,13 +315,7 @@ function Invoke-WinUtilISOMountAndVerify {
                     [void]$sync["WPFWin11ISOEditionComboBox"].Items.Add("$($img.ImageIndex): $($img.ImageName)")
                 }
                 if ($sync["WPFWin11ISOEditionComboBox"].Items.Count -gt 0) {
-                    $proIndex = -1
-                    for ($i = 0; $i -lt $sync["WPFWin11ISOEditionComboBox"].Items.Count; $i++) {
-                        if ($sync["WPFWin11ISOEditionComboBox"].Items[$i] -match "Windows 11 Pro(?![\w ])") {
-                            $proIndex = $i; break
-                        }
-                    }
-                    $sync["WPFWin11ISOEditionComboBox"].SelectedIndex = if ($proIndex -ge 0) { $proIndex } else { 0 }
+                    $sync["WPFWin11ISOEditionComboBox"].SelectedIndex = [Math]::Min($DefaultEditionListIndex, $sync["WPFWin11ISOEditionComboBox"].Items.Count - 1)
                 }
                 $sync["WPFWin11ISOVerifyResultPanel"].Visibility = "Visible"
                 Set-WinUtilISOStep -Step "Modify"
@@ -385,7 +427,7 @@ function Invoke-WinUtilISOModify {
                 -InjectCurrentSystemDrivers $InjectDrivers `
                 -InstallImagePath $localWim `
                 -InstallImageIndex $SelectedWimIndex `
-                -InstallEditionId (Get-WinUtilEditionIdFromName -EditionName $SelectedEditionName) `
+                -InstallEditionId (Get-WinUtilImageEditionId -ImagePath $localWim -ImageIndex $SelectedWimIndex -EditionName $SelectedEditionName) `
                 -Log {
                     param($m)
                     if ($m -like "Warning:*") {

@@ -146,6 +146,7 @@ Describe "Win11 Creator setup media" {
         $script:exportFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Invoke-WinUtilISOExport"
         $script:writeUsbFunction = Get-WinUtilFunctionText -Path $script:isoUsbWorkflowPath -FunctionName "Invoke-WinUtilISOWriteUSB"
         $script:editionIdFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Get-WinUtilEditionIdFromName"
+        $script:imageEditionIdFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Get-WinUtilImageEditionId"
         $script:wimMetadataAssertionFunction = Get-WinUtilFunctionText -Path $script:isoScriptPath -FunctionName "Assert-WinUtilISOWimMetadata"
     }
 
@@ -406,6 +407,50 @@ Describe "Win11 Creator setup media" {
         }
 
         Get-WinUtilEditionIdFromName -EditionName "Windows 11 Unknown Edition" | Should -Be ""
+    }
+
+    It "resolves setup edition IDs from image metadata regardless of display language" {
+        . ([scriptblock]::Create($script:editionIdFunction))
+        . ([scriptblock]::Create($script:imageEditionIdFunction))
+
+        # French display names carry no English token, so only the metadata
+        # EditionId can resolve them. Index 9 has no metadata entry and falls
+        # through to the English display-name map.
+        Set-Item -Path function:global:Get-WindowsImage -Value {
+            [CmdletBinding()]
+            param($ImagePath, $Index)
+            if ($ImagePath -ne 'C:\mock\install.wim') { throw "unexpected image path: $ImagePath" }
+            $metadata = @{ 1 = 'Core'; 6 = 'Professional' }
+            if (-not $metadata.ContainsKey($Index)) { return $null }
+            return [pscustomobject]@{ EditionId = $metadata[$Index] }
+        }
+
+        try {
+            Get-WinUtilImageEditionId -ImagePath 'C:\mock\install.wim' -ImageIndex 6 -EditionName 'Windows 11 Professionnel' | Should -Be 'Professional'
+            Get-WinUtilImageEditionId -ImagePath 'C:\mock\install.wim' -ImageIndex 1 -EditionName 'Windows 11 Famille' | Should -Be 'Core'
+            Get-WinUtilImageEditionId -ImagePath 'C:\mock\install.wim' -ImageIndex 6 -EditionName 'Windows 11 Pro' | Should -Be 'Professional'
+            Get-WinUtilImageEditionId -ImagePath 'C:\mock\install.wim' -ImageIndex 9 -EditionName 'Windows 11 Pro' | Should -Be 'Professional'
+        } finally {
+            Remove-Item -Path function:global:Get-WindowsImage -ErrorAction SilentlyContinue
+        }
+    }
+
+    It "falls back to English display names when image metadata is unavailable" {
+        . ([scriptblock]::Create($script:editionIdFunction))
+        . ([scriptblock]::Create($script:imageEditionIdFunction))
+
+        Set-Item -Path function:global:Get-WindowsImage -Value {
+            [CmdletBinding()]
+            param($ImagePath, $Index)
+            throw "mock image metadata unavailable for ${ImagePath} index ${Index}"
+        }
+
+        try {
+            Get-WinUtilImageEditionId -ImagePath 'C:\mock\install.esd' -ImageIndex 3 -EditionName 'Windows 11 Pro' | Should -Be 'Professional'
+            Get-WinUtilImageEditionId -ImagePath 'C:\mock\install.esd' -ImageIndex 3 -EditionName 'Windows 11 Professionnel' | Should -Be ''
+        } finally {
+            Remove-Item -Path function:global:Get-WindowsImage -ErrorAction SilentlyContinue
+        }
     }
 
     It "writes ei.cfg and removes stale PID.txt for the selected edition" {
