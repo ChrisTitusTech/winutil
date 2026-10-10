@@ -646,25 +646,47 @@
     "panel": "1",
     "InvokeScript": [
       "
-      # Deny permission to remove OneDrive folder
-      icacls $Env:OneDrive /deny \"*S-1-5-32-544:(D,DC)\"
+      $OneDrivePath = $Env:OneDrive
+      $OneDriveFolderExists = -not [string]::IsNullOrWhiteSpace($OneDrivePath) -and (Test-Path -LiteralPath $OneDrivePath -PathType Container -ErrorAction Stop)
 
-      Write-Host \"Uninstalling OneDrive...\"
-      Start-Process -FilePath (Join-Path $Env:SystemRoot \"System32\\OneDriveSetup.exe\") -ArgumentList '/uninstall' -Wait
+      if ($OneDriveFolderExists) {
+          $OneDriveAcl = Get-Acl -LiteralPath $OneDrivePath -ErrorAction Stop
+      } else {
+          Write-Host \"OneDrive folder is already absent; skipping folder permissions and cleanup.\"
+      }
 
-      # Some of OneDrive files use explorer, and OneDrive uses FileCoAuth
-      Write-Host \"Removing leftover OneDrive Files...\"
+      try {
+          if ($OneDriveFolderExists) {
+              # Protect user files while the uninstaller runs.
+              icacls $OneDrivePath /deny \"*S-1-5-32-544:(D,DC)\"
+              if ($LASTEXITCODE -ne 0) { throw \"Unable to protect the OneDrive folder (icacls exit code $LASTEXITCODE).\" }
+          }
 
-      Stop-Process -Name FileCoAuth,Explorer
+          Write-Host \"Uninstalling OneDrive...\"
+          Start-Process -FilePath (Join-Path $Env:SystemRoot \"System32\\OneDriveSetup.exe\") -ArgumentList '/uninstall' -Wait -ErrorAction Stop
 
-      Remove-Item \"$Env:LocalAppData\\Microsoft\\OneDrive\" -Recurse -Force
-      Remove-Item \"$Env:ProgramData\\Microsoft OneDrive\" -Recurse -Force
+          # Some of OneDrive files use explorer, and OneDrive uses FileCoAuth
+          Write-Host \"Removing leftover OneDrive Files...\"
 
-      # Grant back permission to access OneDrive folder
-      icacls $Env:OneDrive /grant \"*S-1-5-32-544:(D,DC)\"
+          Get-Process -ErrorAction Stop | Where-Object ProcessName -eq 'FileCoAuth' | Stop-Process -ErrorAction Stop
+          Stop-Process -Name Explorer -ErrorAction Stop
 
-      if (-not (Get-ChildItem -Path $Env:OneDrive)) {
-          Remove-Item -Path $Env:OneDrive -Recurse
+          $OneDriveLeftovers = @(\"$Env:LocalAppData\\Microsoft\\OneDrive\", \"$Env:ProgramData\\Microsoft OneDrive\")
+          foreach ($LeftoverPath in $OneDriveLeftovers) {
+              if (Test-Path -LiteralPath $LeftoverPath -ErrorAction Stop) {
+                  Remove-Item -LiteralPath $LeftoverPath -Recurse -Force -ErrorAction Stop
+              }
+          }
+      } finally {
+          if ($OneDriveFolderExists) {
+              # Restore access even when uninstall or leftover cleanup fails.
+              Set-Acl -LiteralPath $OneDrivePath -AclObject $OneDriveAcl -ErrorAction Stop
+          }
+      }
+
+      if ($OneDriveFolderExists -and -not (Get-ChildItem -LiteralPath $OneDrivePath -Force -ErrorAction Stop)) {
+          # Refuse to delete if files appeared after the emptiness check.
+          [System.IO.Directory]::Delete($OneDrivePath, $false)
           [Environment]::SetEnvironmentVariable('OneDrive', $null, 'User')
       }
 
