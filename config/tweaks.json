@@ -921,7 +921,15 @@
       }
 
       Set-Service -Name WSAIFabricSvc -StartupType Disabled
-      Disable-WindowsOptionalFeature -FeatureName Recall -Online -NoRestart
+      # Store/MSIX PowerShell 7 can hang or fail COM activation in DISM.
+      $RecallCommand = {
+          Disable-WindowsOptionalFeature -FeatureName Recall -Online -NoRestart -ErrorAction Stop | Out-Null
+      }
+      $RecallOutput = powershell.exe -NoProfile -NonInteractive -Command $RecallCommand 2>&1
+      if ($LASTEXITCODE -ne 0) {
+          throw \"Failed to disable Recall (exit code $LASTEXITCODE): $(($RecallOutput | Out-String).Trim())\"
+      }
+      $RecallOutput | ForEach-Object { Write-Host $_ }
 
       Write-Host \"Windows AI Disabled\"
       "
