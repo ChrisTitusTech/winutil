@@ -448,6 +448,13 @@
     "Description": "Disables Microsoft Telemetry.",
     "category": "Essential Tweaks",
     "panel": "1",
+    "service": [
+      {
+        "Name": "WerSvc",
+        "StartupType": "Disabled",
+        "OriginalType": "Manual"
+      }
+    ],
     "registry": [
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo",
@@ -532,6 +539,13 @@
         "Value": "0",
         "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Siuf\\Rules",
+        "Name": "PeriodInNanoSeconds",
+        "Value": "<RemoveEntry>",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "InvokeScript": [
@@ -542,13 +556,8 @@
       # Disable (Connected User Experiences and Telemetry) Service
       Set-Service -Name diagtrack -StartupType Disabled
 
-      # Disable (Windows Error Reporting Manager) Service
-      Set-Service -Name wermgr -StartupType Disabled
-
       # Disable PowerShell 7 telemetry
       [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
-
-      Remove-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Siuf\\Rules\" -Name PeriodInNanoSeconds
       "
     ],
     "UndoScript": [
@@ -558,9 +567,6 @@
 
       # Enable (Connected User Experiences and Telemetry) Service
       Set-Service -Name diagtrack -StartupType Automatic
-
-      # Enable (Windows Error Reporting Manager) Service
-      Set-Service -Name wermgr -StartupType Automatic
 
       # Enable PowerShell 7 telemetry
       [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '', 'Machine')

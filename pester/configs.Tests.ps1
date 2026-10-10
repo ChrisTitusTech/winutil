@@ -228,6 +228,38 @@ Describe "Tweaks config" {
         $locationServices[0].StartupType | Should -Be "Disabled"
     }
 
+    It "disables Windows Error Reporting through the service schema" -TestCases $testCase {
+        param([string]$Path)
+
+        $tweaks = Get-Content -Path $Path -Raw | ConvertFrom-Json
+        $telemetry = $tweaks.WPFTweaksTelemetry
+        $errorReporting = @($telemetry.service | Where-Object Name -eq "WerSvc")
+
+        $errorReporting | Should -HaveCount 1
+        $errorReporting[0].StartupType | Should -Be "Disabled"
+        $errorReporting[0].OriginalType | Should -Be "Manual"
+
+        # wermgr is an executable, not a service, so Set-Service on it failed on every run (#5145)
+        $scripts = (@($telemetry.InvokeScript) + @($telemetry.UndoScript)) -join "`n"
+        $scripts | Should -Not -Match "wermgr"
+    }
+
+    It "removes the feedback period value through the registry schema" -TestCases $testCase {
+        param([string]$Path)
+
+        $tweaks = Get-Content -Path $Path -Raw | ConvertFrom-Json
+        $telemetry = $tweaks.WPFTweaksTelemetry
+        $period = @($telemetry.registry | Where-Object Name -eq "PeriodInNanoSeconds")
+
+        $period | Should -HaveCount 1
+        $period[0].Path | Should -Be "HKCU:\Software\Microsoft\Siuf\Rules"
+        $period[0].Value | Should -Be "<RemoveEntry>"
+
+        # A bare Remove-ItemProperty in the script errored on a fresh install, where the value
+        # does not exist yet (#5145); Set-WinUtilRegistry treats an absent value as removed.
+        (@($telemetry.InvokeScript) -join "`n") | Should -Not -Match "Remove-ItemProperty"
+    }
+
     $icaclsPrincipalCases = @(
         @{
             Path          = (Join-Path $configRoot "tweaks.json")

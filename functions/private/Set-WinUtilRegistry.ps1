@@ -30,6 +30,28 @@ function Set-WinUtilRegistry {
     try {
         if(!(Test-Path 'HKU:\')) {New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null}
 
+        if ($Value -eq "<RemoveEntry>") {
+            # A value that is not there is already in the requested state. Reporting it as an
+            # error made undoing a tweak that was never applied fail, and the key would otherwise
+            # be created below only to have nothing removed from it. Only a missing key or value
+            # counts as absent; an access or provider failure still reaches the handlers below.
+            $valueExists = $true
+            try {
+                Get-ItemProperty -Path $Path -Name $Name -ErrorAction Stop | Out-Null
+            } catch [System.Management.Automation.PSArgumentException] {
+                # The registry provider uses PSArgumentException when a named value is absent
+                $valueExists = $false
+            } catch [System.Management.Automation.ItemNotFoundException] {
+                $valueExists = $false
+            }
+
+            if (-not $valueExists) {
+                Write-Host "$Path\$Name is already absent"
+                Write-WinUtilLog -Component "Registry" -Message "Registry value $Path\$Name is already absent; nothing to remove"
+                return
+            }
+        }
+
         If (!(Test-Path $Path)) {
             Write-Host "$Path was not found. Creating..."
             Write-WinUtilLog -Component "Registry" -Message "Creating registry path: $Path"
