@@ -245,7 +245,7 @@ Describe "Tweaks config" {
             Path          = (Join-Path $configRoot "tweaks.json")
             Tweak         = "WPFTweaksRemoveOneDrive"
             Sid           = '*S-1-5-32-544'
-            ExpectedCount = 2
+            ExpectedCount = 1
         }
     )
 
