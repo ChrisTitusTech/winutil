@@ -140,8 +140,12 @@ Describe "Set-WinUtilRegistry" {
         Mock New-Item { }
         Mock Set-ItemProperty { }
         Mock Remove-ItemProperty { }
-        # Nothing exists unless a test says so, matching Get-ItemProperty on an absent value
+        # A value exists unless a test throws the provider's error for a missing key or value
         Mock Get-ItemProperty { }
+    }
+
+    AfterEach {
+        Remove-Variable -Name absentLookupError -Scope Script -ErrorAction SilentlyContinue
     }
 
     It "creates a missing registry path before setting a value" {
@@ -203,23 +207,45 @@ Describe "Set-WinUtilRegistry" {
         }
     }
 
-    It "treats a registry value that is already absent as removed" {
+    It "treats a missing <Reason> as a value that is already removed" -ForEach @(
+        @{ Reason = "value"; LookupError = [System.Management.Automation.PSArgumentException]::new("Property MissingValue does not exist at path HKEY_CURRENT_USER\Software\WinUtilTest.") }
+        @{ Reason = "key"; LookupError = [System.Management.Automation.ItemNotFoundException]::new("Cannot find path 'HKCU:\Software\WinUtilTest' because it does not exist.") }
+    ) {
         # Remove-ItemProperty on a missing value raises PSArgumentException, which the generic
         # catch logged as an error, so undoing a tweak that was never applied failed (#5145).
         # Only the HKU check is expected: the path must not be created just to remove nothing.
         $registryPath = "HKCU:\Software\WinUtilTest"
         $script:testPathResults["HKU:\"] = $true
+        $script:absentLookupError = $LookupError
+        Mock Get-ItemProperty { throw $script:absentLookupError }
 
         Set-WinUtilRegistry -Path $registryPath -Name "MissingValue" -Type "DWord" -Value "<RemoveEntry>"
 
         Should -Invoke -CommandName Get-ItemProperty -Times 1 -Exactly -ParameterFilter {
-            $Path -eq $registryPath -and $Name -eq "MissingValue" -and $ErrorAction -eq "SilentlyContinue"
+            $Path -eq $registryPath -and $Name -eq "MissingValue" -and $ErrorAction -eq "Stop"
         }
         Should -Invoke -CommandName New-Item -Times 0 -Exactly
         Should -Invoke -CommandName Remove-ItemProperty -Times 0 -Exactly
         Should -Invoke -CommandName Write-Warning -Times 0 -Exactly
         Should -Invoke -CommandName Write-WinUtilLog -Times 0 -Exactly -ParameterFilter { $Level -eq "ERROR" }
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter { $Message -like "*already absent*" }
+    }
+
+    It "reports a lookup failure instead of treating the value as absent" {
+        # Access denied is not "nothing to remove": the existing handlers must see it
+        $registryPath = "HKLM:\SECURITY\WinUtilTest"
+        $script:testPathResults["HKU:\"] = $true
+        Mock Get-ItemProperty { throw [System.UnauthorizedAccessException]::new("Requested registry access is not allowed.") }
+
+        Set-WinUtilRegistry -Path $registryPath -Name "Protected" -Type "DWord" -Value "<RemoveEntry>"
+
+        Should -Invoke -CommandName New-Item -Times 0 -Exactly
+        Should -Invoke -CommandName Remove-ItemProperty -Times 0 -Exactly
+        Should -Invoke -CommandName Write-WinUtilLog -Times 0 -Exactly -ParameterFilter { $Message -like "*already absent*" }
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "ERROR" -and $Message -like "Unauthorized while changing $registryPath\Protected*"
+        }
+        Should -Invoke -CommandName Write-Warning -Times 1 -Exactly
     }
 
 }
