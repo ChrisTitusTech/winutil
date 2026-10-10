@@ -352,9 +352,6 @@ $scripts = @(
         reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Start" /v ShowRecentList /t REG_DWORD /d 0 /f;
         reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v Start_TrackDocs /t REG_DWORD /d 0 /f;
     };
-    {
-        Restart-Computer -Force;
-    };
 );
 
 &amp; {
@@ -378,6 +375,11 @@ $scripts = @(
     $complete += $increment;
   }
 } *&gt;&amp;1 | Out-String -Width 1KB -Stream &gt;&gt; "$env:TEMP\UserOnce.log";
+
+# RunOnce and FirstLogonCommands can overlap. Publish completion after the log is flushed.
+$completionDir = Join-Path $env:LOCALAPPDATA 'WinUtil';
+[System.IO.Directory]::CreateDirectory($completionDir) | Out-Null;
+[System.IO.File]::WriteAllText((Join-Path $completionDir 'UserOnce.complete'), '');
         </File>
         <File path="C:\Windows\Setup\Scripts\DefaultUser.ps1">
 $scripts = @(
@@ -470,7 +472,7 @@ $scripts = @(
     {
         $recallFeature = Get-WindowsOptionalFeature -Online -ErrorAction SilentlyContinue | Where-Object { $_.State -eq 'Enabled' -and $_.FeatureName -like 'Recall' };
         if( $recallFeature ) {
-            Disable-WindowsOptionalFeature -Online -FeatureName 'Recall' -Remove -ErrorAction SilentlyContinue;
+            Disable-WindowsOptionalFeature -Online -FeatureName 'Recall' -Remove -NoRestart -ErrorAction SilentlyContinue;
         }
     };
     {
@@ -483,7 +485,7 @@ $scripts = @(
         Remove-Item -Path $viveDir -Recurse -Force;
     };
     {
-        Start-Process C:\Windows\System32\OneDriveSetup.exe -ArgumentList /uninstall
+        Start-Process C:\Windows\System32\OneDriveSetup.exe -ArgumentList /uninstall -Wait
     };
     {
         if( (Get-BitLockerVolume -MountPoint $Env:SystemDrive).ProtectionStatus -eq 'On' ) {
@@ -518,6 +520,23 @@ $scripts = @(
     $complete += $increment;
   }
 } *&gt;&amp;1 | Out-String -Width 1KB -Stream &gt;&gt; "C:\Windows\Setup\Scripts\FirstLogon.log";
+
+# UserOnce may finish first, so keep any completion flag it has already written.
+$completionPath = Join-Path $env:LOCALAPPDATA 'WinUtil\UserOnce.complete';
+$deadline = (Get-Date).AddMinutes(5);
+'WinUtil: Waiting for user configuration to finish before restarting (up to 5 minutes).' | Out-File -LiteralPath 'C:\Windows\Setup\Scripts\FirstLogon.log' -Append -ErrorAction Stop;
+while( -not (Test-Path -LiteralPath $completionPath -PathType Leaf) ) {
+    if( (Get-Date) -ge $deadline ) {
+        $message = 'WinUtil: Timed out waiting for user configuration. Automatic restart skipped. Check %TEMP%\UserOnce.log.';
+        $message | Out-File -LiteralPath 'C:\Windows\Setup\Scripts\FirstLogon.log' -Append -ErrorAction Stop;
+        return;
+    }
+    Start-Sleep -Seconds 1;
+}
+
+$message = 'WinUtil: First-logon customization complete. Restarting the computer.';
+$message | Out-File -LiteralPath 'C:\Windows\Setup\Scripts\FirstLogon.log' -Append -ErrorAction Stop;
+Restart-Computer -Force;
         </File>
     </Extensions>
 </unattend>
