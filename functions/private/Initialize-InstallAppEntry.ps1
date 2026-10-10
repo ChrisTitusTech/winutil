@@ -50,10 +50,9 @@ function Initialize-InstallAppEntry {
         $fallback.SetResourceReference([Windows.Controls.TextBlock]::ForegroundProperty, "ToggleButtonOnColor")
         [void]$icon.Children.Add($fallback)
         if ($app.link) {
-            $fallback.Visibility = "Collapsed"
             $logo = New-Object Windows.Controls.Image
             $logo.Stretch = [Windows.Media.Stretch]::Uniform
-            $logo.Source = "https://www.google.com/s2/favicons?sz=64&domain_url=$([uri]::EscapeDataString($app.link))"
+            $logo.Visibility = "Collapsed"
             $logo.Add_ImageFailed($handlers.ImageFailed)
 
             [void]$icon.Children.Add($logo)
@@ -93,5 +92,9 @@ function Initialize-InstallAppEntry {
         }
         # Add the border to the corresponding Category
         $TargetElement.Children.Add($border) | Out-Null
+        if ($app.link) {
+            Start-WinUtilFaviconLoading -Image $logo -Fallback $fallback `
+                -Url "https://www.google.com/s2/favicons?sz=64&domain_url=$([uri]::EscapeDataString($app.link))"
+        }
         return $checkbox
     }
