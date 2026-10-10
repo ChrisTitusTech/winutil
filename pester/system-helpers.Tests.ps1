@@ -20,7 +20,7 @@ BeforeAll {
     }
     # The CLI path is what these tests cover; the module path is verified against real winget
     function Step-WinUtilJob { param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay, [switch]$Hide) }
-    function Write-WinUtilLog { }
+    function Write-WinUtilLog { param($Message, $Level, $Component, [switch]$Detail) }
 }
 
 Describe "Invoke-WPFPanelAutologin" {
@@ -140,6 +140,8 @@ Describe "Set-WinUtilRegistry" {
         Mock New-Item { }
         Mock Set-ItemProperty { }
         Mock Remove-ItemProperty { }
+        # Nothing exists unless a test says so, matching Get-ItemProperty on an absent value
+        Mock Get-ItemProperty { }
     }
 
     It "creates a missing registry path before setting a value" {
@@ -186,6 +188,10 @@ Describe "Set-WinUtilRegistry" {
         $registryPath = "HKLM:\Software\WinUtilTest"
         $script:testPathResults["HKU:\"] = $true
         $script:testPathResults[$registryPath] = $true
+        Mock Get-ItemProperty { [pscustomobject]@{ ObsoleteValue = "old" } } -ParameterFilter {
+            $Path -eq $registryPath -and $Name -eq "ObsoleteValue"
+        }
+
         Set-WinUtilRegistry -Path $registryPath -Name "ObsoleteValue" -Type "String" -Value "<RemoveEntry>"
 
         Should -Invoke -CommandName Set-ItemProperty -Times 0 -Exactly
@@ -195,6 +201,25 @@ Describe "Set-WinUtilRegistry" {
                 $Force -eq $true -and
                 $ErrorAction -eq "Stop"
         }
+    }
+
+    It "treats a registry value that is already absent as removed" {
+        # Remove-ItemProperty on a missing value raises PSArgumentException, which the generic
+        # catch logged as an error, so undoing a tweak that was never applied failed (#5145).
+        # Only the HKU check is expected: the path must not be created just to remove nothing.
+        $registryPath = "HKCU:\Software\WinUtilTest"
+        $script:testPathResults["HKU:\"] = $true
+
+        Set-WinUtilRegistry -Path $registryPath -Name "MissingValue" -Type "DWord" -Value "<RemoveEntry>"
+
+        Should -Invoke -CommandName Get-ItemProperty -Times 1 -Exactly -ParameterFilter {
+            $Path -eq $registryPath -and $Name -eq "MissingValue" -and $ErrorAction -eq "SilentlyContinue"
+        }
+        Should -Invoke -CommandName New-Item -Times 0 -Exactly
+        Should -Invoke -CommandName Remove-ItemProperty -Times 0 -Exactly
+        Should -Invoke -CommandName Write-Warning -Times 0 -Exactly
+        Should -Invoke -CommandName Write-WinUtilLog -Times 0 -Exactly -ParameterFilter { $Level -eq "ERROR" }
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter { $Message -like "*already absent*" }
     }
 
 }
