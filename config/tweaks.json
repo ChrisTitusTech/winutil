@@ -616,7 +616,15 @@
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
-      "Disable-BitLocker -MountPoint $Env:SystemDrive"
+      "
+      $bitLockerVolume = Get-BitLockerVolume -MountPoint $Env:SystemDrive -ErrorAction Stop
+
+      if ($bitLockerVolume.VolumeStatus -eq 'FullyDecrypted') {
+          Write-Host \"BitLocker is already disabled on $($Env:SystemDrive).\"
+      } else {
+          Disable-BitLocker -MountPoint $Env:SystemDrive
+      }
+      "
     ],
     "UndoScript": [
       "Enable-BitLocker -MountPoint $Env:SystemDrive"
