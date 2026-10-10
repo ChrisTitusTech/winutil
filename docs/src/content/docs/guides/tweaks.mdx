@@ -18,7 +18,7 @@ Use the quick-selection buttons at the top of the Tweaks tab to speed up setup:
 * **Minimal**: Selects a smaller, lower-impact set of common tweaks.
 * **Advanced**: Selects a focused set of safer advanced tweaks. This preset intentionally skips restore point creation and cleanup tasks to avoid a long runtime.
 * **Clear**: Clears all currently selected tweaks.
-* **Get Installed Tweaks**: Best-effort detection for tweaks already applied to your system.
+* **Select Installed Tweaks**: Best-effort detection for tweaks already applied to your system.
 
 ### Run Tweaks
 * **Open the Tweaks tab**: Navigate to the **Tweaks** tab in the application.
@@ -28,6 +28,8 @@ Use the quick-selection buttons at the top of the Tweaks tab to speed up setup:
 :::note
 To see what each preset includes, view [preset.json](https://github.com/ChrisTitusTech/winutil/blob/main/config/preset.json).
 :::
+
+When a listed service does not exist, WinUtil logs a warning and skips it. The remaining services and tweaks still run.
 
 :::caution
 Some tweaks take effect immediately, while others may require Explorer to restart, a sign-out, or a full reboot.

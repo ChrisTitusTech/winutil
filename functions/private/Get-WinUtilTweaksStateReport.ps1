@@ -2,7 +2,7 @@ function Get-WinUtilTweaksStateReport {
     <#
     .SYNOPSIS
         Groups every config/tweaks.json entry's live applied state by category, reusing the same
-        detection Invoke-WPFGetInstalled uses to check the "Get Installed Tweaks" checkboxes.
+        detection Invoke-WPFGetInstalled uses to check the "Select Installed Tweaks" checkboxes.
     #>
 
     $categoryFieldNames = [ordered]@{

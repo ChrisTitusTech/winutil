@@ -40,12 +40,12 @@ This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitus
         New-Item -Path $RazerPath -ItemType Directory
       }
 
-      icacls $RazerPath /deny \"Everyone:(W)\"
+      icacls $RazerPath /deny \"*S-1-1-0:(W)\"
       "
     ],
     "UndoScript": [
       "
-      icacls \"$Env:SystemRoot\\Installer\\Razer\" /remove:d Everyone
+      icacls \"$Env:SystemRoot\\Installer\\Razer\" /remove:d *S-1-1-0
       "
     ],
   }

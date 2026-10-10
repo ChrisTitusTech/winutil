@@ -398,7 +398,8 @@ function Invoke-WinUtilISOModify {
         Invoke-WPFUIThread -ScriptBlock {
             $sync["WPFWin11ISOModifyButton"].IsEnabled = $false
         }
-        Set-WinUtilISOStep -Step "Working" -Label "Modifying install.wim"
+        $workingLabel = if ($InjectDrivers) { "Modifying install.wim" } else { "Preparing setup media" }
+        Set-WinUtilISOStep -Step "Working" -Label $workingLabel
 
         $modified = $false
         try {
@@ -443,7 +444,7 @@ function Invoke-WinUtilISOModify {
 
             if ($driversInjected.Value) {
                 Step-WinUtilJob -Status "Finalizing install image..." -Percent 70
-                Write-WinUtilISOLog "Added current-system drivers to $sourceImageFileName index $SelectedWimIndex with one mount and commit."
+                Write-WinUtilISOLog "Added current-system drivers to $sourceImageFileName index $SelectedWimIndex."
             } elseif ($InjectDrivers) {
                 Step-WinUtilJob -Status "Preserving install image..." -Percent 70
                 Write-WinUtilISOLog "No current-system drivers were injected into $sourceImageFileName index $SelectedWimIndex; install.wim was left unchanged. Review the warning log entries for details."

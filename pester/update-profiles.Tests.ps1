@@ -333,7 +333,7 @@ Describe "Invoke-WPFUpdatessecurity" {
         }
     }
 
-    It "sets recommended update deferral and auto-reboot policy values" {
+    It "sets recommended update deferral and installation notification policy values" {
         Invoke-WPFUpdatessecurity
 
         Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
@@ -360,17 +360,15 @@ Describe "Invoke-WPFUpdatessecurity" {
                 $Type -eq "DWord" -and
                 $Value -eq 4
         }
+        Should -Invoke -CommandName Remove-ItemProperty -Times 1 -Exactly -ParameterFilter {
+            $Path -eq "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -and
+                $Name -eq "NoAutoRebootWithLoggedOnUsers"
+        }
         Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
             $Path -eq "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -and
                 $Name -eq "AUOptions" -and
                 $Type -eq "DWord" -and
-                $Value -eq 4
-        }
-        Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
-            $Path -eq "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -and
-                $Name -eq "NoAutoRebootWithLoggedOnUsers" -and
-                $Type -eq "DWord" -and
-                $Value -eq 1
+                $Value -eq 3
         }
         Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
             $Path -eq "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -and
