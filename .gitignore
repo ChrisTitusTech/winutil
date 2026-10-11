@@ -15,4 +15,5 @@ __pycache__/
 .venv/
 
 .vscode/
+.vs/
 .idea/
