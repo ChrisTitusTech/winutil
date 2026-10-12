@@ -211,6 +211,26 @@ Describe "Update-WinUtilSelections" {
         @($script:sync.selectedAppx) | Should -Be @("WPFAppxExample")
     }
 
+    It "keeps repeated <Key> entries selected only once when replacing selections" -ForEach @(
+        @{ Key = 'WPFInstallGit'; List = 'selectedApps' }
+        @{ Key = 'WPFTweaksTelemetry'; List = 'selectedTweaks' }
+        @{ Key = 'WPFToggleDarkMode'; List = 'selectedToggles' }
+        @{ Key = 'WPFFeatureSandbox'; List = 'selectedFeatures' }
+        @{ Key = 'WPFAppxExample'; List = 'selectedAppx' }
+    ) {
+        Update-WinUtilSelections -flatJson @($Key, $Key) -Replace
+
+        @($script:sync[$List]) | Should -Be @($Key)
+    }
+
+    It "fully deselects a repeated imported tweak when unchecked once" {
+        Update-WinUtilSelections -flatJson @('WPFTweaksTelemetry', 'WPFTweaksTelemetry') -Replace
+
+        Invoke-WPFSelectedCheckboxesUpdate -type 'Remove' -checkboxName 'WPFTweaksTelemetry'
+
+        @($script:sync.selectedTweaks) | Should -Be @()
+    }
+
     It "replaces selections only after every imported key is validated" {
         $script:sync.selectedApps.Add("WPFInstallExisting")
         $script:sync.selectedTweaks.Add("WPFTweaksExisting")
