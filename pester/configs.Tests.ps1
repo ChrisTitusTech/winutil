@@ -218,6 +218,18 @@ Describe "Tweaks config" {
         }
     }
 
+    It "keeps the svchost split threshold out of the services tweak" -TestCases $testCase {
+        param([string]$Path)
+
+        $tweaks = Get-Content -Path $Path -Raw | ConvertFrom-Json
+
+        $tweaks.WPFTweaksServices.InvokeScript | Should -BeNullOrEmpty
+
+        $splittingScripts = @($tweaks.WPFTweaksSvcHostSplitting.InvokeScript; $tweaks.WPFTweaksSvcHostSplitting.UndoScript) -join "`n"
+        $splittingScripts | Should -Match 'SvcHostSplitThresholdInKB'
+        $splittingScripts | Should -Match '3670016'
+    }
+
     It "keeps the location service disabled" -TestCases $testCase {
         param([string]$Path)
 
