@@ -31,7 +31,9 @@ To create your own config file:
 3. Choose **Export**.
 4. Save the exported JSON file.
 
-Once you have exported a config, launch WinUtil with it using this command:
+Export also copies a command to the clipboard that launches WinUtil with the saved configuration. The copied command preserves special characters in the path, including apostrophes, dollar signs, and backticks.
+
+You can also launch WinUtil with an exported config using this command:
 ```powershell
 & ([ScriptBlock]::Create((irm "https://christitus.com/win"))) -Config "C:\Path\To\Config.json"
 ```
