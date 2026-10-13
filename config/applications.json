@@ -693,6 +693,15 @@
         "winget": "CPUID.HWMonitor",
         "foss": false
     },
+    "imhex": {
+        "category": "Pro Tools",
+        "choco": "imhex",
+        "content": "ImHex",
+        "description": "ImHex is a free and open-source hex editor for reverse engineers and programmers, featuring a custom pattern language for decoding binary formats, a disassembler, and data analysis tools.",
+        "link": "https://imhex.werwolv.net/",
+        "winget": "WerWolv.ImHex",
+        "foss": true
+    },
     "imageglass": {
         "category": "Multimedia Tools",
         "choco": "imageglass",
