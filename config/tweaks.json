@@ -1913,17 +1913,17 @@
       "
       Write-Host \"Removing McAfee bloat and blocking reinstalls...\"
 
-      # 1. Stop running McAfee processes (bundled scan, WebAdvisor, framework)
-      Get-Process -Name \"*mcafee*\", \"*McShield*\", \"*mfe*\", \"*WebAdvisor*\", \"*SecurityScan*\", \"*SSScheduler*\" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+      # 1. Stop running McAfee processes (bundled scan, WebAdvisor, shield)
+      Get-Process -Name \"*mcafee*\", \"*McShield*\", \"*WebAdvisor*\", \"*SecurityScan*\", \"*SSScheduler*\" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
 
-      # 2. Disable + remove McAfee scheduled tasks that reinstall/update it
-      Get-ScheduledTask -TaskName \"*McAfee*\", \"*Security Scan*\", \"*WebAdvisor*\" -ErrorAction SilentlyContinue | ForEach-Object {
+      # 2. Disable + remove McAfee scheduled tasks (matched by McAfee task name or path only)
+      Get-ScheduledTask -ErrorAction SilentlyContinue | Where-Object { $_.TaskName -like \"*McAfee*\" -or $_.TaskPath -like \"*McAfee*\" } | ForEach-Object {
         Disable-ScheduledTask -TaskName $_.TaskName -TaskPath $_.TaskPath -ErrorAction SilentlyContinue | Out-Null
         Unregister-ScheduledTask -TaskName $_.TaskName -TaskPath $_.TaskPath -Confirm:$false -ErrorAction SilentlyContinue
       }
 
-      # 3. Stop + disable McAfee services
-      Get-Service -Name \"*mcafee*\", \"*McShield*\", \"*mfe*\", \"*WebAdvisor*\" -ErrorAction SilentlyContinue | ForEach-Object {
+      # 3. Stop + disable McAfee services (named McAfee services plus known framework service names)
+      Get-Service -Name \"*mcafee*\", \"*McShield*\", \"*WebAdvisor*\", \"mfevtp\", \"mfefire\", \"mfeavfk\" -ErrorAction SilentlyContinue | ForEach-Object {
         Stop-Service -Name $_.Name -Force -ErrorAction SilentlyContinue
         Set-Service -Name $_.Name -StartupType Disabled -ErrorAction SilentlyContinue
       }
@@ -1934,25 +1934,44 @@
         winget uninstall -e --name $app --silent --accept-source-agreements --accept-package-agreements 2>$null | Out-Null
       }
 
-      # 5. Registry uninstallers (covers OEM/Adobe-bundled installs winget misses)
+      # 5. Registry uninstallers (covers OEM/Adobe-bundled installs winget misses; McAfee-owned entries only)
       $uninstallKeys = @('HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*', 'HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*')
       foreach ($key in $uninstallKeys) {
-        Get-ItemProperty -Path $key -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -like '*McAfee*' -or $_.DisplayName -like '*Security Scan*' -or $_.DisplayName -like '*WebAdvisor*' } | ForEach-Object {
+        Get-ItemProperty -Path $key -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -like '*McAfee*' -or $_.Publisher -like '*McAfee*' } | ForEach-Object {
           try {
-            $cmd = $_.QuietUninstallString
-            if ([string]::IsNullOrWhiteSpace($cmd)) { $cmd = $_.UninstallString }
-            if (-not [string]::IsNullOrWhiteSpace($cmd)) {
-              $proc = Start-Process -FilePath 'cmd.exe' -ArgumentList '/c', \"$cmd /quiet /noreboot\" -WindowStyle Hidden -PassThru -ErrorAction SilentlyContinue
-              if ($proc) { try { $proc.WaitForExit(120000) | Out-Null } catch { } }
+            $quiet = $_.QuietUninstallString
+            if (-not [string]::IsNullOrWhiteSpace($quiet)) {
+              $cmd = $quiet
+            } else {
+              $cmd = $_.UninstallString
+              if ([string]::IsNullOrWhiteSpace($cmd)) { return }
+              if ($cmd -match '(?i)\\bmsiexec(\\.exe)?\\b.*?\\s/I\\b') {
+                $cmd = $cmd -replace '(?i)\\s/I\\b', ' /X'
+                $cmd += ' /qn /norestart'
+              } else {
+                $cmd += ' /quiet /noreboot'
+              }
             }
+            $proc = Start-Process -FilePath 'cmd.exe' -ArgumentList '/c', $cmd -WindowStyle Hidden -PassThru -ErrorAction SilentlyContinue
+            if ($proc) { try { $proc.WaitForExit(120000) | Out-Null } catch { } }
           } catch { }
         }
       }
 
-      # 6. IFEO block: known McAfee/WebAdvisor bundle installers silently do nothing
+      # 6. IFEO block: known McAfee/WebAdvisor bundle installers silently do nothing.
+      # Prior key state is backed up under HKLM:\\SOFTWARE\\Essentials so undo restores it.
       $blockExes = @('McAfeeSetup.exe', 'McAfeeInstaller.exe', 'McAfeeSecurityScanInstaller.exe', 'SecurityScanInstaller.exe', 'McSSInstaller.exe', 'SSScheduler.exe', 'WebAdvisorInstaller.exe', 'McAfeeWebAdvisorInstaller.exe')
+      $backupRoot = 'HKLM:\\SOFTWARE\\Essentials\\McAfeeBlock\\IFEO'
       foreach ($exe in $blockExes) {
         $ifeo = \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\$exe\"
+        $backup = \"$backupRoot\\$exe\"
+        $existed = Test-Path $ifeo
+        $prior = $null
+        if ($existed) { $prior = (Get-ItemProperty -Path $ifeo -Name 'Debugger' -ErrorAction SilentlyContinue).Debugger }
+        New-Item -Path $backup -Force -ErrorAction SilentlyContinue | Out-Null
+        New-ItemProperty -Path $backup -Name 'KeyExisted' -Value ([int]$existed) -PropertyType DWord -Force -ErrorAction SilentlyContinue | Out-Null
+        if ($null -ne $prior) { New-ItemProperty -Path $backup -Name 'PriorDebugger' -Value $prior -PropertyType String -Force -ErrorAction SilentlyContinue | Out-Null }
+        else { Remove-ItemProperty -Path $backup -Name 'PriorDebugger' -ErrorAction SilentlyContinue }
         New-Item -Path $ifeo -Force -ErrorAction SilentlyContinue | Out-Null
         New-ItemProperty -Path $ifeo -Name 'Debugger' -Value 'C:\\Windows\\System32\\systray.exe' -PropertyType String -Force -ErrorAction SilentlyContinue | Out-Null
       }
@@ -1975,8 +1994,33 @@
       Write-Host \"Removing McAfee install block...\"
 
       $blockExes = @('McAfeeSetup.exe', 'McAfeeInstaller.exe', 'McAfeeSecurityScanInstaller.exe', 'SecurityScanInstaller.exe', 'McSSInstaller.exe', 'SSScheduler.exe', 'WebAdvisorInstaller.exe', 'McAfeeWebAdvisorInstaller.exe')
+      $backupRoot = 'HKLM:\\SOFTWARE\\Essentials\\McAfeeBlock\\IFEO'
       foreach ($exe in $blockExes) {
-        Remove-Item -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\$exe\" -Recurse -Force -ErrorAction SilentlyContinue
+        $ifeo = \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\$exe\"
+        $backup = \"$backupRoot\\$exe\"
+        $bk = Get-ItemProperty -Path $backup -ErrorAction SilentlyContinue
+        $restored = $false
+        if ($bk -and $bk.KeyExisted -eq 1 -and -not [string]::IsNullOrEmpty($bk.PriorDebugger)) {
+          New-Item -Path $ifeo -Force -ErrorAction SilentlyContinue | Out-Null
+          New-ItemProperty -Path $ifeo -Name 'Debugger' -Value $bk.PriorDebugger -PropertyType String -Force -ErrorAction SilentlyContinue | Out-Null
+          $restored = $true
+        }
+        if (-not $restored) {
+          Remove-ItemProperty -Path $ifeo -Name 'Debugger' -ErrorAction SilentlyContinue
+          $created = (-not $bk) -or ($bk.KeyExisted -eq 0)
+          if ($created) {
+            $item = Get-Item -Path $ifeo -ErrorAction SilentlyContinue
+            if ($item -and @($item.Property).Count -eq 0 -and @(Get-ChildItem -Path $ifeo -ErrorAction SilentlyContinue).Count -eq 0) {
+              Remove-Item -Path $ifeo -Force -ErrorAction SilentlyContinue
+            }
+          }
+        }
+        Remove-Item -Path $backup -Recurse -Force -ErrorAction SilentlyContinue
+      }
+      if (Test-Path $backupRoot) {
+        if (@(Get-ChildItem -Path $backupRoot -ErrorAction SilentlyContinue).Count -eq 0) {
+          Remove-Item -Path $backupRoot -Force -ErrorAction SilentlyContinue
+        }
       }
 
       $stubPaths = @(\"$Env:ProgramFiles\\McAfee\", \"$Env:ProgramFiles\\McAfee Security Scan\", \"$Env:ProgramData\\McAfee\")
