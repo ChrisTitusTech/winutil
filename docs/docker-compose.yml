@@ -1,5 +1,6 @@
 services:
   winutil-astro:
+    container_name: winutil-astro
     build:
       context: .
       args:
