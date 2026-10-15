@@ -122,12 +122,14 @@ export default function SearchDialog() {
 		listRef.current?.querySelector('[data-active="true"]')?.scrollIntoView({ block: 'nearest' });
 	}, [activeIndex]);
 
+	// The results are hidden while search is unavailable, even if some are left over from an earlier query.
+	const listed = items.length > 0 && status !== 'unavailable';
 	// The previous query's results stay up while the next one loads, but can't be opened until they're replaced.
 	const stale = itemsQuery !== query.trim();
 
 	const onInputKey = (event) => {
 		// Enter while an input method is composing commits the text rather than opening a result.
-		if (!items.length || stale || event.nativeEvent.isComposing) return;
+		if (!listed || stale || event.nativeEvent.isComposing) return;
 		if (event.key === 'ArrowDown') {
 			event.preventDefault();
 			setActiveIndex((index) => (index + 1) % items.length);
@@ -165,7 +167,7 @@ export default function SearchDialog() {
 							aria-label="Search the docs"
 							aria-controls="docs-search-results"
 							aria-activedescendant={
-								items.length && status !== 'unavailable' && !stale ? `docs-search-item-${activeIndex}` : undefined
+								listed && !stale ? `docs-search-item-${activeIndex}` : undefined
 							}
 							autoComplete="off"
 							spellCheck="false"
@@ -187,7 +189,7 @@ export default function SearchDialog() {
 						)}
 						{status === 'idle' && <p className="docs-search-note">Search guides, tweaks, features, and FAQs.</p>}
 						{status === 'empty' && <p className="docs-search-note">No results for "{query.trim()}".</p>}
-						{items.length > 0 && status !== 'unavailable' && (
+						{listed && (
 							<ul
 								id="docs-search-results"
 								className="docs-search-results"
