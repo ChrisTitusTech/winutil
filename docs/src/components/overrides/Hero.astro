@@ -272,6 +272,11 @@ if (image && 'file' in image) heroImage = image.file;
 			border-radius: var(--wu-radius-lg);
 			border: 1px solid var(--sl-color-hairline-light);
 			background: var(--sl-color-gray-6);
+		}
+
+		/* The shadow sits on GlareHover's root, since it clips everything inside it to its rounded box. */
+		.wu-hero-media :global(.glare-hover) {
+			max-width: 56rem;
 			box-shadow: 0 25px 50px -12px hsl(0 0% 0% / 0.5);
 		}
 
