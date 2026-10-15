@@ -266,10 +266,12 @@ function backToTop(lenis) {
 		{ drawSVG: '0%' },
 		{ drawSVG: '100%', ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: 0.3 } }
 	);
+	// Not toggleClass: that would hide the button again on reaching the end, the bottom of the page.
 	ScrollTrigger.create({
 		start: () => window.innerHeight * 0.8,
 		end: 'max',
-		toggleClass: { targets: button, className: 'is-visible' },
+		onEnter: () => button.classList.add('is-visible'),
+		onLeaveBack: () => button.classList.remove('is-visible'),
 	});
 	button.addEventListener('click', () => lenis.scrollTo(0, { duration: 1.4 }));
 }
