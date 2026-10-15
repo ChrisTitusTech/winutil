@@ -34,6 +34,8 @@ export default defineConfig({
 				Header: './src/components/overrides/Header.astro',
 				Hero: './src/components/overrides/Hero.astro',
 				Footer: './src/components/overrides/Footer.astro',
+				Sidebar: './src/components/overrides/Sidebar.astro',
+				MobileMenuToggle: './src/components/overrides/MobileMenuToggle.astro',
 				ThemeSelect: './src/components/overrides/ThemeSelect.astro',
 			},
 			editLink: {

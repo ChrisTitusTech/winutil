@@ -300,6 +300,126 @@
 	display: none;
 }
 
+/* Sidebar menu button (narrow screens). */
+.docs-menu-toggle {
+	position: fixed;
+	top: calc((var(--sl-nav-height) - 2.25rem) / 2);
+	inset-inline-end: var(--sl-nav-pad-x);
+	z-index: var(--sl-z-index-navbar);
+	display: grid;
+	place-items: center;
+	width: 2.25rem;
+	height: 2.25rem;
+	padding: 0;
+	border: 1px solid var(--sl-color-hairline-light);
+	border-radius: var(--wu-radius-sm);
+	background: var(--sl-color-bg-nav);
+	color: var(--sl-color-white);
+	cursor: pointer;
+}
+@media (min-width: 50em) {
+	.docs-menu-toggle {
+		display: none;
+	}
+}
+/* Starlight shows the sidebar via the toggle's sibling selector, which the island wrapper breaks. */
+body[data-mobile-menu-expanded] .sidebar-pane {
+	--sl-sidebar-visibility: visible;
+}
+
+/* ---------- Sidebar ---------- */
+.docs-sidebar {
+	padding-bottom: 1rem;
+}
+.docs-sidebar-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.docs-sidebar-top > li + li {
+	margin-top: 1.25rem;
+}
+.docs-sidebar-group > summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	border-radius: var(--wu-radius-sm);
+	list-style: none;
+	cursor: pointer;
+	user-select: none;
+}
+.docs-sidebar-group > summary::-webkit-details-marker {
+	display: none;
+}
+.docs-sidebar-group--top > summary {
+	margin-bottom: 0.35rem;
+	padding: 0.25rem 0.75rem;
+	font-size: var(--sl-text-xs);
+	font-weight: 600;
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+	color: var(--sl-color-gray-3);
+}
+.docs-sidebar-group--top > summary:hover {
+	color: var(--sl-color-white);
+}
+.docs-sidebar-group--nested > summary {
+	padding: 0.4rem 0.75rem;
+	font-size: var(--sl-text-sm);
+	font-weight: 500;
+	color: var(--sl-color-gray-2);
+}
+.docs-sidebar-group--nested > summary:hover {
+	color: var(--sl-color-white);
+	background: var(--sl-color-gray-6);
+}
+.docs-sidebar-caret {
+	width: 1rem;
+	height: 1rem;
+	color: var(--sl-color-gray-3);
+	transition: transform 0.2s ease;
+}
+.docs-sidebar-group[open] > summary > .docs-sidebar-caret {
+	transform: rotate(90deg);
+}
+.docs-sidebar-group--nested > .docs-sidebar-list {
+	margin: 0.125rem 0 0.25rem 0.75rem;
+	padding-inline-start: 0.5rem;
+	border-inline-start: 1px solid var(--sl-color-hairline-light);
+}
+.docs-sidebar-link {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	padding: 0.4rem 0.75rem;
+	border-radius: var(--wu-radius-sm);
+	font-size: var(--sl-text-sm);
+	line-height: 1.4;
+	color: var(--sl-color-gray-2);
+	text-decoration: none;
+	overflow-wrap: anywhere;
+	transition:
+		color 0.15s ease,
+		background-color 0.15s ease;
+}
+.docs-sidebar-link:hover {
+	color: var(--sl-color-white);
+	background: var(--sl-color-gray-6);
+}
+.docs-sidebar-link[aria-current='page'] {
+	font-weight: 600;
+	color: var(--sl-color-accent-high);
+	background: hsl(var(--wu-accent-h) 100% 51% / 0.12);
+	box-shadow: inset 2px 0 0 var(--sl-color-accent);
+}
+.docs-sidebar-external {
+	width: 0.85rem;
+	height: 0.85rem;
+	opacity: 0.6;
+}
+
 /* ---------- Search dialog ---------- */
 html[data-search-open] {
 	overflow: hidden;
