@@ -1,6 +1,9 @@
 services:
   winutil-astro:
-    build: .
+    build:
+      context: .
+      args:
+        NODE_VERSION: 24
     ports:
       - "127.0.0.1:4321:4321"
     volumes:
