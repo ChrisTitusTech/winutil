@@ -16,7 +16,10 @@ export default function MobileToc({ items }) {
 			if (!rootRef.current?.contains(event.target)) setOpen(false);
 		};
 		const onKey = (event) => {
-			if (event.key === 'Escape') setOpen(false);
+			if (event.key !== 'Escape') return;
+			// Closing hides a focused link in the list, so focus goes back to the toggle.
+			if (rootRef.current?.contains(document.activeElement)) rootRef.current.querySelector('button').focus();
+			setOpen(false);
 		};
 		window.addEventListener('click', onClick);
 		window.addEventListener('keydown', onKey);
