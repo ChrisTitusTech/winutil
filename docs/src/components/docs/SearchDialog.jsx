@@ -123,9 +123,10 @@ export default function SearchDialog() {
 		};
 	}, [query, open]);
 
+	// New results can arrive with the first one still active, so those scroll it into view too.
 	useEffect(() => {
 		listRef.current?.querySelector('[data-active="true"]')?.scrollIntoView({ block: 'nearest' });
-	}, [activeIndex]);
+	}, [activeIndex, items]);
 
 	// The results are hidden while search is unavailable, even if some are left over from an earlier query.
 	const listed = items.length > 0 && status !== 'unavailable';
@@ -215,8 +216,10 @@ export default function SearchDialog() {
 										id={`docs-search-item-${index}`}
 										aria-selected={index === activeIndex}
 									>
+										{/* Results are picked from the search box with the arrow keys, so the links stay out of the tab order. */}
 										<a
 											href={item.url}
+											tabIndex={-1}
 											className={`docs-search-result docs-search-result--${item.kind}`}
 											data-active={index === activeIndex}
 											onMouseMove={() => setActiveIndex(index)}
