@@ -128,6 +128,13 @@ export default function SearchDialog() {
 	const listed = items.length > 0 && status !== 'unavailable';
 	// The previous query's results stay up while the next one loads, but can't be opened until they're replaced.
 	const stale = itemsQuery !== query.trim();
+	const note = {
+		unavailable: import.meta.env.DEV
+			? 'Search is only available in production builds.'
+			: "Search couldn't load. Check your connection and try again.",
+		idle: 'Search guides, tweaks, features, and FAQs.',
+		empty: `No results for "${query.trim()}".`,
+	}[status];
 
 	const onInputKey = (event) => {
 		// Enter while an input method is composing commits the text rather than opening a result.
@@ -182,15 +189,10 @@ export default function SearchDialog() {
 						</button>
 					</div>
 					<div className="docs-search-body">
-						{status === 'unavailable' && (
-							<p className="docs-search-note">
-								{import.meta.env.DEV
-									? 'Search is only available in production builds.'
-									: "Search couldn't load. Check your connection and try again."}
-							</p>
-						)}
-						{status === 'idle' && <p className="docs-search-note">Search guides, tweaks, features, and FAQs.</p>}
-						{status === 'empty' && <p className="docs-search-note">No results for "{query.trim()}".</p>}
+						{/* Always rendered, so screen readers hear when a search finishes and what it found. */}
+						<p role="status" className={note ? 'docs-search-note' : 'sr-only'}>
+							{note ?? (status === 'ready' ? `${items.length} results` : '')}
+						</p>
 						{listed && (
 							<ul
 								id="docs-search-results"
