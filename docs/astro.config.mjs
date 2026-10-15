@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import react from '@astrojs/react';
 import { siteLinks } from './src/lib/site-links.ts';
 
 // https://astro.build/config
@@ -73,5 +74,7 @@ export default defineConfig({
 				{ label: siteLinks.store.label, link: siteLinks.store.href, attrs: { target: '_blank', rel: 'noreferrer' } },
 			],
 		}),
+		// React components for the docs UI and landing page.
+		react(),
 	],
 });
