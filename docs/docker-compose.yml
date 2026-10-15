@@ -15,6 +15,7 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
       - ASTRO_TELEMETRY_DISABLED=1
+      - UV_THREADPOOL_SIZE=32
 
 volumes:
   astro_node_modules:
