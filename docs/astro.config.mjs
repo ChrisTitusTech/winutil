@@ -38,6 +38,8 @@ export default defineConfig({
 				MobileMenuToggle: './src/components/overrides/MobileMenuToggle.astro',
 				TableOfContents: './src/components/overrides/TableOfContents.astro',
 				MobileTableOfContents: './src/components/overrides/MobileTableOfContents.astro',
+				PageTitle: './src/components/overrides/PageTitle.astro',
+				Pagination: './src/components/overrides/Pagination.astro',
 				ThemeSelect: './src/components/overrides/ThemeSelect.astro',
 			},
 			editLink: {
