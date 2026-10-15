@@ -32,10 +32,12 @@ export default function SiteNav({ groups, store, showMenuButton }) {
 			if (!rootRef.current?.contains(event.target)) setOpenGroup(null);
 		};
 		const onKey = (event) => {
-			if (event.key === 'Escape') {
-				setOpenGroup(null);
-				setMenuOpen(false);
-			}
+			if (event.key !== 'Escape') return;
+			// Closing hides a focused menu link, so focus goes back to the button that opened that menu.
+			const owner = document.activeElement?.closest('.docs-nav-dropdown, .docs-nav-mobile');
+			if (owner && rootRef.current?.contains(owner)) owner.querySelector('button')?.focus();
+			setOpenGroup(null);
+			setMenuOpen(false);
 		};
 		const wide = matchMedia('(min-width: 50em)');
 		const onResize = () => setMenuOpen(false);
