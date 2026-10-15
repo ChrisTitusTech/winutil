@@ -10,6 +10,7 @@ export default function TableOfContents({ items }) {
 	const [marker, setMarker] = useState(null);
 
 	useLayoutEffect(() => {
+		if (!active) return;
 		const link = listRef.current?.querySelector(`a[href="#${CSS.escape(active)}"]`);
 		if (link) setMarker({ top: link.offsetTop, height: link.offsetHeight });
 	}, [active]);
