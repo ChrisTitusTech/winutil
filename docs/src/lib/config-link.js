@@ -4,7 +4,8 @@ export function configLink(keys) {
 }
 
 // Starlight puts heading ids in the hash too, so anything that isn't a list of WPF keys is left alone.
+// Some apps encode the commas when passing a link along, so %2C counts as a comma.
 export function readConfigLink(hash) {
-	const keys = hash.replace(/^#/, '').split(',');
+	const keys = hash.replace(/^#/, '').replace(/%2C/gi, ',').split(',');
 	return keys.every((key) => /^WPF[\w-]+$/.test(key)) ? keys : null;
 }
