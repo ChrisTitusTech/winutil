@@ -215,6 +215,7 @@ export default function ConfigBuilder() {
 			setCopied(what);
 		} catch {
 			setCopied(null);
+			setNotice({ kind: 'error', text: "Couldn't copy to the clipboard. Select the text and copy it instead." });
 		}
 	};
 
