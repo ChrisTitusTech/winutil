@@ -126,7 +126,8 @@ export default function SearchDialog() {
 	const stale = itemsQuery !== query.trim();
 
 	const onInputKey = (event) => {
-		if (!items.length || stale) return;
+		// Enter while an input method is composing commits the text rather than opening a result.
+		if (!items.length || stale || event.nativeEvent.isComposing) return;
 		if (event.key === 'ArrowDown') {
 			event.preventDefault();
 			setActiveIndex((index) => (index + 1) % items.length);
