@@ -484,6 +484,12 @@ body[data-mobile-menu-expanded] .sidebar-pane {
 		inset-inline-start: var(--sl-content-inline-start, 0);
 	}
 }
+/* Starlight's wrapper already hides it here; this keeps the bar hidden without relying on that. */
+@media (min-width: 72rem) {
+	.docs-mobile-toc {
+		display: none;
+	}
+}
 .docs-mobile-toc-toggle {
 	display: flex;
 	align-items: center;
