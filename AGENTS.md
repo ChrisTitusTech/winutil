@@ -140,6 +140,7 @@ If a check cannot be run, say exactly why and what residual risk remains. See SP
 - Update `docs/src/content/docs/guides/` when user-facing behavior changes.
 - Update `docs/src/content/docs/code-reference/architecture.mdx` and other hand-written developer docs when architecture, build flow, config schema, or contribution workflow changes — but never hand-edit the auto-generated `code-reference/tweaks/` or `code-reference/features/` subfolders (see Non-Negotiables).
 - Keep sidebar entries in `docs/astro.config.mjs` in sync with page slugs (see SPEC.md's Docs Site).
+- When a change adds or renames a preset, adds a selection key prefix, or gives tweaks a new kind of change field, update the Config Builder and Tweak Explorer in the same change (SPEC.md's Docs Site lists the exact files). When you add a new docs tool page, or anything else that has to be kept in sync by hand, record it in SPEC.md's Docs Site and in `docs/README.md`.
 - Keep README changes brief and high-level.
 - Put detailed user and developer documentation under `docs/`.
 - Keep SPEC.md aligned with project/architecture changes, and this file aligned with process changes.
