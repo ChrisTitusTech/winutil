@@ -148,7 +148,9 @@ export default function SearchDialog() {
 							placeholder="Search the docs"
 							aria-label="Search the docs"
 							aria-controls="docs-search-results"
-							aria-activedescendant={items.length ? `docs-search-item-${activeIndex}` : undefined}
+							aria-activedescendant={
+								items.length && status !== 'unavailable' && !stale ? `docs-search-item-${activeIndex}` : undefined
+							}
 							autoComplete="off"
 							spellCheck="false"
 							value={query}
