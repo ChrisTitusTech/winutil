@@ -531,6 +531,14 @@ body {
 :root[data-theme='light'] .wu-solution-grid .border-glow-card > .edge-light {
 	mix-blend-mode: normal;
 }
+/* BorderGlow has no reduced-motion handling of its own, so the glow that follows the pointer is left off. */
+@media (prefers-reduced-motion: reduce) {
+	.wu-solution-grid .border-glow-card::before,
+	.wu-solution-grid .border-glow-card::after,
+	.wu-solution-grid .border-glow-card > .edge-light {
+		display: none;
+	}
+}
 .wu-solution-grid .border-glow-inner {
 	gap: 0.75rem;
 	padding: 1.5rem;
