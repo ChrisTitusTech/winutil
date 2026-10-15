@@ -8,7 +8,7 @@ const REPO = 'ChrisTitusTech/winutil';
 // Each download gets its own name. A browser renames a clash to "name (1).json", and the command would then run the
 // older file.
 function configFileName() {
-	const stamp = new Date().toISOString().slice(0, 19).replace(/[-:]/g, '').replace('T', '-');
+	const stamp = new Date().toISOString().slice(0, 23).replace(/[-:.]/g, '').replace('T', '-');
 	return `winutil-config-${stamp}.json`;
 }
 
