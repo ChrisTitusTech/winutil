@@ -78,6 +78,7 @@ export default defineConfig({
 						{ label: siteLinks.forums.label, link: siteLinks.forums.href, attrs: { target: '_blank', rel: 'noreferrer' } },
 					],
 				},
+				{ label: 'Config Builder', slug: 'config-builder' },
 				{ label: siteLinks.store.label, link: siteLinks.store.href, attrs: { target: '_blank', rel: 'noreferrer' } },
 			],
 		}),
