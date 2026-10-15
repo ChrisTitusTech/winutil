@@ -43,6 +43,7 @@ export default function SearchDialog() {
 	const [open, setOpen] = useState(false);
 	const [query, setQuery] = useState('');
 	const [items, setItems] = useState([]);
+	const [itemsQuery, setItemsQuery] = useState('');
 	const [status, setStatus] = useState('idle');
 	const [activeIndex, setActiveIndex] = useState(0);
 	const [shortcut, setShortcut] = useState('Ctrl K');
@@ -92,6 +93,7 @@ export default function SearchDialog() {
 			.then((found) => {
 				if (cancelled || found === null) return;
 				setItems(found);
+				setItemsQuery(text);
 				setActiveIndex(0);
 				setStatus(found.length ? 'ready' : 'empty');
 			})
@@ -106,7 +108,8 @@ export default function SearchDialog() {
 	}, [activeIndex]);
 
 	const onInputKey = (event) => {
-		if (!items.length) return;
+		// The previous query's results stay up while the next one loads, so Enter can't open one of those.
+		if (!items.length || itemsQuery !== query.trim()) return;
 		if (event.key === 'ArrowDown') {
 			event.preventDefault();
 			setActiveIndex((index) => (index + 1) % items.length);
