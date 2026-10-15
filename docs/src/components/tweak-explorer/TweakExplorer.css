@@ -26,8 +26,8 @@
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
-	height: 2.25rem;
-	padding: 0 0.75rem;
+	height: 2rem;
+	padding: 0 0.6rem;
 	border: 1px solid var(--sl-color-hairline-light);
 	border-radius: var(--wu-radius-sm);
 	background: var(--sl-color-bg);
@@ -62,13 +62,13 @@
 
 .wu-explorer-chip {
 	height: 1.75rem;
-	padding: 0 0.65rem;
+	padding: 0 0.6rem;
 	border: 1px solid var(--sl-color-hairline-light);
 	border-radius: 999px;
 	background: var(--sl-color-gray-6);
 	font: inherit;
 	font-size: var(--sl-text-xs);
-	color: var(--sl-color-gray-2);
+	color: var(--sl-color-gray-1);
 	white-space: nowrap;
 	cursor: pointer;
 	transition:
