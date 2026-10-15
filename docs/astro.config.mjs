@@ -1,7 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
-import { siteLinks } from './src/site-links.ts';
+import { siteLinks } from './src/lib/site-links.ts';
 
 // https://astro.build/config
 export default defineConfig({
@@ -27,12 +27,12 @@ export default defineConfig({
 			],
 			// Global theme overrides (colors, fonts, landing-page section styles).
 			customCss: ['./src/styles/theme.css'],
-			// Custom component overrides, all under src/components/.
+			// Component overrides, all under src/components/overrides/.
 			components: {
-				ThemeProvider: './src/components/ThemeProvider.astro',
-				Header: './src/components/Header.astro',
-				Hero: './src/components/Hero.astro',
-				Footer: './src/components/Footer.astro',
+				ThemeProvider: './src/components/overrides/ThemeProvider.astro',
+				Header: './src/components/overrides/Header.astro',
+				Hero: './src/components/overrides/Hero.astro',
+				Footer: './src/components/overrides/Footer.astro',
 			},
 			editLink: {
 				baseUrl: 'https://github.com/ChrisTitusTech/winutil/edit/main/docs/',
