@@ -107,9 +107,11 @@ export default function SearchDialog() {
 		listRef.current?.querySelector('[data-active="true"]')?.scrollIntoView({ block: 'nearest' });
 	}, [activeIndex]);
 
+	// The previous query's results stay up while the next one loads, but can't be opened until they're replaced.
+	const stale = itemsQuery !== query.trim();
+
 	const onInputKey = (event) => {
-		// The previous query's results stay up while the next one loads, so Enter can't open one of those.
-		if (!items.length || itemsQuery !== query.trim()) return;
+		if (!items.length || stale) return;
 		if (event.key === 'ArrowDown') {
 			event.preventDefault();
 			setActiveIndex((index) => (index + 1) % items.length);
@@ -164,7 +166,14 @@ export default function SearchDialog() {
 						{status === 'idle' && <p className="docs-search-note">Search guides, tweaks, features, and FAQs.</p>}
 						{status === 'empty' && <p className="docs-search-note">No results for "{query.trim()}".</p>}
 						{items.length > 0 && status !== 'unavailable' && (
-							<ul id="docs-search-results" className="docs-search-results" role="listbox" ref={listRef}>
+							<ul
+								id="docs-search-results"
+								className="docs-search-results"
+								role="listbox"
+								ref={listRef}
+								inert={stale}
+								aria-busy={stale}
+							>
 								{items.map((item, index) => (
 									<li
 										key={`${item.url}-${index}`}

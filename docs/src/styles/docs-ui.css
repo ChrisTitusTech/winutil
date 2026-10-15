@@ -640,6 +640,9 @@ html[data-search-open] {
 	padding: 0;
 	list-style: none;
 }
+.docs-search-results[inert] {
+	opacity: 0.5;
+}
 .docs-search-result {
 	display: flex;
 	gap: 0.75rem;
