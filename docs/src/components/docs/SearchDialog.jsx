@@ -178,7 +178,11 @@ export default function SearchDialog() {
 					</div>
 					<div className="docs-search-body">
 						{status === 'unavailable' && (
-							<p className="docs-search-note">Search is only available in production builds.</p>
+							<p className="docs-search-note">
+								{import.meta.env.DEV
+									? 'Search is only available in production builds.'
+									: "Search couldn't load. Check your connection and try again."}
+							</p>
 						)}
 						{status === 'idle' && <p className="docs-search-note">Search guides, tweaks, features, and FAQs.</p>}
 						{status === 'empty' && <p className="docs-search-note">No results for "{query.trim()}".</p>}
