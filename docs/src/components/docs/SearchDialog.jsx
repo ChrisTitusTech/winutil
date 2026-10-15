@@ -8,12 +8,17 @@ const MAX_SECTIONS = 3;
 
 let pagefindPromise;
 function loadPagefind() {
-	pagefindPromise ??= import(/* @vite-ignore */ BUNDLE).then(async (pagefind) => {
-		await pagefind.options({ baseUrl: '/' });
-		pagefind.init();
-		return pagefind;
-	});
-	pagefindPromise.catch(() => (pagefindPromise = undefined));
+	if (!pagefindPromise) {
+		pagefindPromise = import(/* @vite-ignore */ BUNDLE).then(async (pagefind) => {
+			await pagefind.options({ baseUrl: '/' });
+			pagefind.init();
+			return pagefind;
+		});
+		// Forget a failed load so the next search tries again.
+		pagefindPromise.catch(() => {
+			pagefindPromise = undefined;
+		});
+	}
 	return pagefindPromise;
 }
 
