@@ -4,9 +4,13 @@ import Icon from '../docs/Icon.jsx';
 import './ConfigBuilder.css';
 
 const REPO = 'ChrisTitusTech/winutil';
-const FILE_NAME = 'winutil-config.json';
-const COMMAND =
-	`& ([ScriptBlock]::Create((irm "https://christitus.com/win"))) -Config "$env:USERPROFILE\\Downloads\\${FILE_NAME}"`;
+
+// Each download gets its own name. A browser renames a clash to "name (1).json", and the command would then run the
+// older file.
+function configFileName() {
+	const stamp = new Date().toISOString().slice(0, 19).replace(/[-:]/g, '').replace('T', '-');
+	return `winutil-config-${stamp}.json`;
+}
 
 async function fetchText(url) {
 	const response = await fetch(url);
@@ -109,6 +113,8 @@ export default function ConfigBuilder() {
 	const [selected, setSelected] = useState(() => new Set());
 	const [notice, setNotice] = useState(null);
 	const [copied, setCopied] = useState(null);
+	const [fileName, setFileName] = useState(configFileName);
+	const [downloaded, setDownloaded] = useState(false);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -153,6 +159,7 @@ export default function ConfigBuilder() {
 
 	const keys = order.filter((key) => selected.has(key));
 	const json = JSON.stringify(keys, null, 2);
+	const command = `& ([ScriptBlock]::Create((irm "https://christitus.com/win"))) -Config "$env:USERPROFILE\\Downloads\\${fileName}"`;
 	const tab = catalog.tabs.find((candidate) => candidate.id === tabId);
 	const text = query.trim().toLowerCase();
 	const groups = groupByCategory(
@@ -219,9 +226,13 @@ export default function ConfigBuilder() {
 		}
 	};
 
+	// The first download uses the name the command already shows; later ones get a new name and update the command.
 	const download = () => {
+		const name = downloaded ? configFileName() : fileName;
+		setFileName(name);
+		setDownloaded(true);
 		const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
-		const link = Object.assign(document.createElement('a'), { href: url, download: FILE_NAME });
+		const link = Object.assign(document.createElement('a'), { href: url, download: name });
 		link.click();
 		// Revoking in the same task can cancel the download before the browser has read the blob.
 		setTimeout(() => URL.revokeObjectURL(url));
@@ -333,7 +344,7 @@ export default function ConfigBuilder() {
 						disabled={!keys.length}
 						onClick={download}
 					>
-						Download {FILE_NAME}
+						Download config
 					</button>
 				</div>
 				{keys.length > 0 ? (
@@ -343,8 +354,8 @@ export default function ConfigBuilder() {
 				)}
 				<p className="wu-builder-hint">Then run this in an elevated PowerShell window:</p>
 				<div className="wu-builder-command">
-					<code>{COMMAND}</code>
-					<button type="button" className="wu-builder-button" onClick={() => copy('command', COMMAND)}>
+					<code>{command}</code>
+					<button type="button" className="wu-builder-button" onClick={() => copy('command', command)}>
 						{copied === 'command' ? 'Copied' : 'Copy'}
 					</button>
 				</div>
