@@ -738,7 +738,7 @@ html[data-search-open] {
 	font-weight: 600;
 	letter-spacing: 0.06em;
 	text-transform: uppercase;
-	color: var(--sl-color-accent);
+	color: var(--sl-color-accent-high);
 }
 .docs-breadcrumb span + span::before {
 	content: '/';
