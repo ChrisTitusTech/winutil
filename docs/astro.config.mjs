@@ -34,6 +34,7 @@ export default defineConfig({
 				Header: './src/components/overrides/Header.astro',
 				Hero: './src/components/overrides/Hero.astro',
 				Footer: './src/components/overrides/Footer.astro',
+				ThemeSelect: './src/components/overrides/ThemeSelect.astro',
 			},
 			editLink: {
 				baseUrl: 'https://github.com/ChrisTitusTech/winutil/edit/main/docs/',
