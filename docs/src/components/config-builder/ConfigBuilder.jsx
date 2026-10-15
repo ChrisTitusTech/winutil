@@ -123,7 +123,7 @@ export default function ConfigBuilder() {
 	const [notice, setNotice] = useState(null);
 	const [copied, setCopied] = useState(null);
 	const [fileName, setFileName] = useState(configFileName);
-	const [downloaded, setDownloaded] = useState(false);
+	const [savedJson, setSavedJson] = useState(null);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -239,9 +239,9 @@ export default function ConfigBuilder() {
 
 	// The first download uses the name the command already shows; later ones get a new name and update the command.
 	const download = () => {
-		const name = downloaded ? configFileName() : fileName;
+		const name = savedJson === null ? fileName : configFileName();
 		setFileName(name);
-		setDownloaded(true);
+		setSavedJson(json);
 		const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
 		const link = Object.assign(document.createElement('a'), { href: url, download: name });
 		link.click();
@@ -363,10 +363,20 @@ export default function ConfigBuilder() {
 				) : (
 					<p className="wu-builder-status">Select at least one item to build a config.</p>
 				)}
-				<p className="wu-builder-hint">Then run this in an elevated PowerShell window:</p>
+				{/* The command runs the last downloaded file, so it can't be copied until that file has this selection. */}
+				<p className="wu-builder-hint">
+					{savedJson === json
+						? 'Then run this in an elevated PowerShell window:'
+						: 'Download the config, then run this in an elevated PowerShell window:'}
+				</p>
 				<div className="wu-builder-command">
 					<code>{command}</code>
-					<button type="button" className="wu-builder-button" onClick={() => copy('command', command)}>
+					<button
+						type="button"
+						className="wu-builder-button"
+						disabled={savedJson !== json}
+						onClick={() => copy('command', command)}
+					>
 						{copied === 'command' ? 'Copied' : 'Copy'}
 					</button>
 				</div>
