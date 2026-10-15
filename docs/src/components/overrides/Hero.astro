@@ -18,7 +18,7 @@ let heroImage: ImageMetadata | undefined;
 if (image && 'file' in image) heroImage = image.file;
 ---
 
-<section class="wu-hero">
+<section class:list={['wu-hero', !heroImage && 'wu-hero--solo']}>
 	{/* Full-bleed background: dot grid (motion on) or grid lines (motion off), plus the glow. */}
 	<div class="wu-hero-dots" aria-hidden="true"><HeroDotGrid client:idle /></div>
 	<div class="wu-hero-grid" aria-hidden="true"></div>
@@ -367,6 +367,27 @@ if (image && 'file' in image) heroImage = image.file;
 			.wu-hero-bottom {
 				padding-bottom: 3rem;
 			}
+		}
+
+		/* No image (the 404 page): one centered column that fills the screen. */
+		.wu-hero--solo .wu-hero-inner {
+			grid-template-columns: minmax(0, 1fr);
+			align-content: center;
+			min-height: calc(100svh - var(--sl-nav-height) - 7rem);
+		}
+		.wu-hero--solo .wu-hero-copy {
+			max-width: 44rem;
+			margin-inline: auto;
+			text-align: center;
+		}
+		.wu-hero--solo h1 {
+			text-wrap: balance;
+		}
+		.wu-hero--solo .wu-hero-tagline {
+			margin-inline: auto;
+		}
+		.wu-hero--solo .wu-hero-actions {
+			justify-content: center;
 		}
 	}
 </style>
