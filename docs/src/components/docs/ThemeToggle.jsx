@@ -9,7 +9,9 @@ export default function ThemeToggle() {
 		document.documentElement.dataset.theme = next;
 		try {
 			localStorage.setItem(STORAGE_KEY, next);
-		} catch {}
+		} catch {
+			// Storage can be blocked; the theme still changes for this page.
+		}
 	};
 	return (
 		<button
