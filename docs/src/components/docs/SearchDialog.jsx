@@ -7,6 +7,8 @@ const MAX_PAGES = 8;
 const MAX_SECTIONS = 3;
 
 let pagefindPromise;
+let latestSearch = 0;
+
 function loadPagefind() {
 	if (!pagefindPromise) {
 		pagefindPromise = import(/* @vite-ignore */ BUNDLE).then(async (pagefind) => {
@@ -99,6 +101,7 @@ export default function SearchDialog() {
 		// Reopening searches again, so a query that failed while Pagefind couldn't load gets another try.
 		if (!open) return;
 		let cancelled = false;
+		const search = ++latestSearch;
 		setStatus('loading');
 		loadPagefind()
 			.then((pagefind) => runSearch(pagefind, text))
@@ -110,10 +113,10 @@ export default function SearchDialog() {
 				setStatus(found.length ? 'ready' : 'empty');
 			})
 			.catch(() => {
-				// A newer search may already be using the same Pagefind instance, so only the current one resets it.
-				if (cancelled) return;
-				setStatus('unavailable');
-				resetPagefind();
+				if (!cancelled) setStatus('unavailable');
+				// Only the newest search resets Pagefind, since a newer one may already be using the same instance.
+				// Closing the dialog doesn't start a search, so a failure that lands after closing still resets it.
+				if (search === latestSearch) resetPagefind();
 			});
 		return () => {
 			cancelled = true;
@@ -174,7 +177,10 @@ export default function SearchDialog() {
 							type="search"
 							placeholder="Search the docs"
 							aria-label="Search the docs"
-							aria-controls="docs-search-results"
+							role="combobox"
+							aria-autocomplete="list"
+							aria-expanded={listed}
+							aria-controls={listed ? 'docs-search-results' : undefined}
 							aria-activedescendant={
 								listed && !stale ? `docs-search-item-${activeIndex}` : undefined
 							}

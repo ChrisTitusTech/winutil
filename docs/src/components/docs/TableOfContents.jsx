@@ -11,8 +11,14 @@ export default function TableOfContents({ items }) {
 
 	useLayoutEffect(() => {
 		if (!active) return;
-		const link = listRef.current?.querySelector(`a[href="#${CSS.escape(active)}"]`);
-		if (link) setMarker({ top: link.offsetTop, height: link.offsetHeight });
+		const place = () => {
+			const link = listRef.current?.querySelector(`a[href="#${CSS.escape(active)}"]`);
+			if (link) setMarker({ top: link.offsetTop, height: link.offsetHeight });
+		};
+		place();
+		// Entries can rewrap when the window resizes, which moves the active one out from under the marker.
+		window.addEventListener('resize', place);
+		return () => window.removeEventListener('resize', place);
 	}, [active]);
 
 	return (

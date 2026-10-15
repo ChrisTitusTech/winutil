@@ -3,9 +3,14 @@ import Icon from './Icon.jsx';
 
 const externalProps = (link) => (link.external ? { target: '_blank', rel: 'noreferrer' } : {});
 
-function Dropdown({ label, links, open, onToggle }) {
+// Closes once focus moves out of it, so a keyboard user tabbing on doesn't leave the menu over the page.
+const closeOnBlur = (close) => (event) => {
+	if (!event.currentTarget.contains(event.relatedTarget)) close();
+};
+
+function Dropdown({ label, links, open, onToggle, onClose }) {
 	return (
-		<div className={`docs-nav-dropdown${open ? ' is-open' : ''}`}>
+		<div className={`docs-nav-dropdown${open ? ' is-open' : ''}`} onBlur={closeOnBlur(onClose)}>
 			<button type="button" className="docs-nav-link" aria-expanded={open} onClick={onToggle}>
 				{label}
 				<Icon name="down-caret" className="docs-nav-caret" />
@@ -28,8 +33,11 @@ export default function SiteNav({ groups, store, showMenuButton }) {
 	const rootRef = useRef(null);
 
 	useEffect(() => {
+		// The path as it was when clicked: the menu button swaps its icon, so event.target may already be detached.
 		const onClick = (event) => {
-			if (!rootRef.current?.contains(event.target)) setOpenGroup(null);
+			if (event.composedPath().includes(rootRef.current)) return;
+			setOpenGroup(null);
+			setMenuOpen(false);
 		};
 		const onKey = (event) => {
 			if (event.key !== 'Escape') return;
@@ -61,6 +69,7 @@ export default function SiteNav({ groups, store, showMenuButton }) {
 						links={group.links}
 						open={openGroup === group.label}
 						onToggle={() => setOpenGroup(openGroup === group.label ? null : group.label)}
+						onClose={() => setOpenGroup((current) => (current === group.label ? null : current))}
 					/>
 				))}
 				<a className="docs-nav-link" href={store.href} target="_blank" rel="noreferrer">
@@ -68,7 +77,7 @@ export default function SiteNav({ groups, store, showMenuButton }) {
 				</a>
 			</nav>
 			{showMenuButton && (
-				<div className="docs-nav-mobile">
+				<div className="docs-nav-mobile" onBlur={closeOnBlur(() => setMenuOpen(false))}>
 					<button
 						type="button"
 						className="docs-icon-button"

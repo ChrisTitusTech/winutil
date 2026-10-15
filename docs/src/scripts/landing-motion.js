@@ -96,8 +96,14 @@ function trustStrip() {
 		track.append(copy);
 	};
 	// Fill the width, then double it so sliding by half loops without a jump.
-	while (track.scrollWidth < viewport.clientWidth * 1.1) cloneInto(bar);
-	[...track.children].forEach(cloneInto);
+	const fill = () => {
+		track.replaceChildren(bar);
+		while (bar.offsetWidth && track.scrollWidth < viewport.clientWidth * 1.1) cloneInto(bar);
+		[...track.children].forEach(cloneInto);
+	};
+	fill();
+	// Rotating a phone or widening the window can leave half the track narrower than the strip, so refill it.
+	window.addEventListener('resize', () => track.scrollWidth / 2 < viewport.clientWidth && fill());
 
 	const loop = gsap.to(track, { xPercent: -50, ease: 'none', duration: 40, repeat: -1 });
 	viewport.addEventListener('pointerenter', () => gsap.to(loop, { timeScale: 0, duration: 0.6, ease: 'power2.out' }));

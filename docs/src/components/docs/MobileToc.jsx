@@ -29,8 +29,13 @@ export default function MobileToc({ items }) {
 		};
 	}, [open]);
 
+	// Closes once focus moves out of it, so tabbing on doesn't leave the list over the page.
+	const closeOnBlur = (event) => {
+		if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
+	};
+
 	return (
-		<nav className="docs-mobile-toc" aria-label="On this page" ref={rootRef}>
+		<nav className="docs-mobile-toc" aria-label="On this page" ref={rootRef} onBlur={closeOnBlur}>
 			<button type="button" className="docs-mobile-toc-toggle" aria-expanded={open} onClick={() => setOpen(!open)}>
 				<span className="docs-mobile-toc-label">
 					On this page
