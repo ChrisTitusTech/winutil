@@ -82,6 +82,15 @@ async function loadCatalog() {
 	};
 }
 
+// WinUtil exports with Out-File, which writes UTF-16 with a byte order mark in Windows PowerShell 5.1.
+async function readText(file) {
+	const bytes = new Uint8Array(await file.arrayBuffer());
+	let encoding = 'utf-8';
+	if (bytes[0] === 0xff && bytes[1] === 0xfe) encoding = 'utf-16le';
+	else if (bytes[0] === 0xfe && bytes[1] === 0xff) encoding = 'utf-16be';
+	return new TextDecoder(encoding).decode(bytes);
+}
+
 // Current exports are a key or an array of keys; older ones grouped them under WPFInstall, WPFTweaks and so on.
 function readConfig(json) {
 	if (typeof json === 'string') return [json];
@@ -195,7 +204,7 @@ export default function ConfigBuilder() {
 		if (!file) return;
 		let loaded;
 		try {
-			loaded = readConfig(JSON.parse(await file.text()));
+			loaded = readConfig(JSON.parse(await readText(file)));
 		} catch {
 			setNotice({ kind: 'error', text: `${file.name} isn't a WinUtil config file.` });
 			return;
