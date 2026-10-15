@@ -12,12 +12,12 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 COPY package*.json ./
 RUN npm ci
 
-COPY . .
-
 # Browsers and their system libraries for Playwright tests; needs root for apt-get.
 # --no-install fails the build rather than fetching an unpinned Playwright if it's missing from package.json.
 RUN npx --no-install playwright install --with-deps chromium firefox webkit \
     && rm -rf /var/lib/apt/lists/*
+
+COPY . .
 
 # Run as a non-root user for defense-in-depth.
 RUN chown -R node:node /app "$PLAYWRIGHT_BROWSERS_PATH"
