@@ -234,7 +234,11 @@ export default function ConfigBuilder() {
 			setCopied(what);
 		} catch {
 			setCopied(null);
-			setNotice({ kind: 'error', text: "Couldn't copy to the clipboard. Select the text and copy it instead." });
+			const text =
+				what === 'link'
+					? "Couldn't copy the link, but it's in the address bar."
+					: "Couldn't copy to the clipboard. Select the text and copy it instead.";
+			setNotice({ kind: 'error', text });
 		}
 	};
 
