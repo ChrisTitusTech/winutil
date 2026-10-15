@@ -263,7 +263,10 @@ export default function ConfigBuilder() {
 					<input type="file" accept=".json,application/json" onChange={openConfig} />
 				</label>
 			</div>
-			{notice && <p className={`wu-builder-notice wu-builder-notice--${notice.kind}`}>{notice.text}</p>}
+			{/* Always rendered, so screen readers announce a notice when it appears. */}
+			<p role="status" className={notice ? `wu-builder-notice wu-builder-notice--${notice.kind}` : 'sr-only'}>
+				{notice?.text}
+			</p>
 
 			<div className="wu-builder-picker">
 				<div className="wu-builder-tabs">
