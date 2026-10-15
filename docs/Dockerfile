@@ -10,12 +10,13 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
 # Deps first for layer caching; lifecycle scripts stay on since Astro/Vite need some.
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 COPY . .
 
 # Browsers and their system libraries for Playwright tests; needs root for apt-get.
-RUN npx playwright install --with-deps chromium firefox webkit \
+# --no-install fails the build rather than fetching an unpinned Playwright if it's missing from package.json.
+RUN npx --no-install playwright install --with-deps chromium firefox webkit \
     && rm -rf /var/lib/apt/lists/*
 
 # Run as a non-root user for defense-in-depth.
