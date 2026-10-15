@@ -22,6 +22,13 @@ function loadPagefind() {
 	return pagefindPromise;
 }
 
+// Pagefind keeps a failed index load, so a search that fails starts it over for the next try.
+async function resetPagefind() {
+	const pagefind = await pagefindPromise?.catch(() => undefined);
+	pagefindPromise = undefined;
+	await pagefind?.destroy();
+}
+
 async function runSearch(pagefind, query) {
 	const search = await pagefind.debouncedSearch(query, {}, 150);
 	if (!search) return null;
@@ -72,7 +79,10 @@ export default function SearchDialog() {
 			dialog.showModal();
 			inputRef.current?.focus();
 			inputRef.current?.select();
-			loadPagefind().catch(() => setStatus('unavailable'));
+			loadPagefind().then(
+				() => setStatus((current) => (current === 'unavailable' ? 'idle' : current)),
+				() => setStatus('unavailable')
+			);
 		} else if (!open && dialog.open) {
 			dialog.close();
 		}
@@ -86,6 +96,8 @@ export default function SearchDialog() {
 			setStatus((current) => (current === 'unavailable' ? current : 'idle'));
 			return;
 		}
+		// Reopening searches again, so a query that failed while Pagefind couldn't load gets another try.
+		if (!open) return;
 		let cancelled = false;
 		setStatus('loading');
 		loadPagefind()
@@ -97,11 +109,14 @@ export default function SearchDialog() {
 				setActiveIndex(0);
 				setStatus(found.length ? 'ready' : 'empty');
 			})
-			.catch(() => !cancelled && setStatus('unavailable'));
+			.catch(() => {
+				if (!cancelled) setStatus('unavailable');
+				resetPagefind();
+			});
 		return () => {
 			cancelled = true;
 		};
-	}, [query]);
+	}, [query, open]);
 
 	useEffect(() => {
 		listRef.current?.querySelector('[data-active="true"]')?.scrollIntoView({ block: 'nearest' });
