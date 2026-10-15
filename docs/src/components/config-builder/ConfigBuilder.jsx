@@ -1,5 +1,5 @@
 // Builds a -Config file from the latest release's catalog, so every key it offers is one that release will import.
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Icon from '../docs/Icon.jsx';
 import { RATE_LIMITED, loadReleaseConfig } from '../../lib/winutil-release.js';
 import { configLink, readConfigLink } from '../../lib/config-link.js';
@@ -127,24 +127,27 @@ export default function ConfigBuilder() {
 	const order = useMemo(() => catalog?.tabs.flatMap((tab) => tab.items.map((item) => item.key)) ?? [], [catalog]);
 	const known = useMemo(() => new Set(order), [order]);
 
-	const loadKeys = (loaded, source) => {
-		const skipped = loaded.filter((key) => !known.has(key));
-		// Like WinUtil's import, a file or link with nothing usable in it leaves the current selection alone.
-		if (skipped.length === loaded.length) {
-			const text = loaded.length
-				? `None of the keys in ${source} are in WinUtil ${catalog.release.tag}: ${skipped.join(', ')}`
-				: `${source} doesn't have any WinUtil selections in it.`;
-			setNotice({ kind: 'error', text });
-			return;
-		}
-		setSelected(new Set(loaded.filter((key) => known.has(key))));
-		if (skipped.length) {
-			const message = `Left out ${skipped.length} key(s) that WinUtil ${catalog.release.tag} doesn't have: ${skipped.join(', ')}`;
-			setNotice({ kind: 'warning', text: message });
-		} else {
-			setNotice({ kind: 'info', text: `Loaded ${loaded.length} selection(s) from ${source}.` });
-		}
-	};
+	const loadKeys = useCallback(
+		(loaded, source) => {
+			const skipped = loaded.filter((key) => !known.has(key));
+			// Like WinUtil's import, a file or link with nothing usable in it leaves the current selection alone.
+			if (skipped.length === loaded.length) {
+				const text = loaded.length
+					? `None of the keys in ${source} are in WinUtil ${catalog.release.tag}: ${skipped.join(', ')}`
+					: `${source} doesn't have any WinUtil selections in it.`;
+				setNotice({ kind: 'error', text });
+				return;
+			}
+			setSelected(new Set(loaded.filter((key) => known.has(key))));
+			if (skipped.length) {
+				const message = `Left out ${skipped.length} key(s) that WinUtil ${catalog.release.tag} doesn't have: ${skipped.join(', ')}`;
+				setNotice({ kind: 'warning', text: message });
+			} else {
+				setNotice({ kind: 'info', text: `Loaded ${loaded.length} selection(s) from ${source}.` });
+			}
+		},
+		[catalog, known]
+	);
 
 	// A shared link opened in a tab that's already on this page only changes the hash, so listen for that too.
 	useEffect(() => {
@@ -156,7 +159,7 @@ export default function ConfigBuilder() {
 		loadLink();
 		window.addEventListener('hashchange', loadLink);
 		return () => window.removeEventListener('hashchange', loadLink);
-	}, [catalog]);
+	}, [catalog, loadKeys]);
 
 	if (error) {
 		return (
