@@ -24,7 +24,7 @@ Starlight handles routing, Markdown rendering, and the search index. The site's 
 │   ├── content/
 │   │   └── docs/            # Pages (.md/.mdx); code-reference/tweaks and /features are generated
 │   ├── hooks/               # React hooks
-│   ├── lib/                 # Shared code (site links, release config loader)
+│   ├── lib/                 # Shared code (site links, release config loader, config links)
 │   ├── scripts/             # Client-side scripts (landing-page GSAP + Lenis motion)
 │   ├── styles/              # Global CSS: theme, fonts, docs UI
 │   └── content.config.ts
@@ -50,6 +50,8 @@ New apps, tweaks, toggles, features, AppX packages, and categories appear on the
 - Preset names (`Standard`, `Minimal`, `Advanced`, `AppxDefault`), in `ConfigBuilder.jsx` and `TweakExplorer.jsx`.
 - The key prefixes WinUtil can import (`WPFInstall`, `WPFTweaks`, `WPFToggle`, `WPFFeature`, `WPFAppx`), in `ConfigBuilder.jsx`. These mirror `Update-WinUtilSelections`.
 - The tweak fields the explorer shows (`registry`, `service`, `InvokeScript`, `UndoScript`, `appx`), in `TweakExplorer.jsx`. These mirror `Invoke-WinUtilTweaks`.
+
+Config Builder links carry the selected keys in the URL hash, e.g. `/config-builder/#WPFInstall7zip,WPFTweaksTelemetry`. `src/lib/config-link.js` builds and reads them for both pages. People post these links on Discord and the forums, so keep reading the existing format if you ever change it.
 
 If you add another tool page, or anything else that has to be kept in sync by hand, list it here and in SPEC.md's Docs Site section.
 
