@@ -110,6 +110,10 @@
 	color: inherit;
 	cursor: pointer;
 }
+/* The card's overflow: hidden would clip an outline drawn outside the button. */
+.wu-explorer-summary:focus-visible {
+	outline-offset: -2px;
+}
 .wu-explorer-summary:hover {
 	background: var(--sl-color-gray-6);
 }
