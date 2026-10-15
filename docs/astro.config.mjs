@@ -36,6 +36,8 @@ export default defineConfig({
 				Footer: './src/components/overrides/Footer.astro',
 				Sidebar: './src/components/overrides/Sidebar.astro',
 				MobileMenuToggle: './src/components/overrides/MobileMenuToggle.astro',
+				TableOfContents: './src/components/overrides/TableOfContents.astro',
+				MobileTableOfContents: './src/components/overrides/MobileTableOfContents.astro',
 				ThemeSelect: './src/components/overrides/ThemeSelect.astro',
 			},
 			editLink: {
