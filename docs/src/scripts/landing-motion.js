@@ -273,7 +273,17 @@ function backToTop(lenis) {
 		onEnter: () => button.classList.add('is-visible'),
 		onLeaveBack: () => button.classList.remove('is-visible'),
 	});
-	button.addEventListener('click', () => lenis.scrollTo(0, { duration: 1.4 }));
+	// Focus follows the scroll, like a skip link, so the next Tab carries on from the top instead of the footer.
+	button.addEventListener('click', () =>
+		lenis.scrollTo(0, {
+			duration: 1.4,
+			onComplete: () => {
+				const title = document.getElementById('_top');
+				title?.setAttribute('tabindex', '-1');
+				title?.focus({ preventScroll: true });
+			},
+		})
+	);
 }
 
 if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
