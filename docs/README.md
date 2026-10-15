@@ -54,6 +54,7 @@ All commands are run from the `docs/` directory, from a terminal:
 | `docker compose run --rm winutil-astro npm run build`   | Build the production site to `./dist/`           |
 | `docker compose run --rm --service-ports winutil-astro npm run preview -- --host 0.0.0.0` | Preview the build locally, before deploying      |
 | `docker compose run --rm winutil-astro npm run astro ...` | Run CLI commands like `astro add`, `astro check` |
+| `docker compose run --rm winutil-astro npx playwright ...` | Run Playwright against Chromium, Firefox, or WebKit |
 | `docker compose down`                              | Stop and remove the dev container                |
 
 Source files are bind-mounted into the container, so edits on the host are picked up immediately by the dev server — no rebuild needed for normal content or code changes. After changing `package.json`, `package-lock.json`, or the `Dockerfile`, rebuild the image *and* drop the `node_modules` volume, since Docker only seeds a named volume from the image the first time it's created — a plain rebuild leaves the old `node_modules` in place:
@@ -64,7 +65,9 @@ docker compose down -v
 docker compose up winutil-astro
 ```
 
-The first `docker compose up` (or any command before an image exists) builds the image and runs `npm install` from scratch, which can take a few minutes. Subsequent runs reuse the cached image and start almost immediately.
+The image also installs Playwright's browsers for the `@playwright/test` version pinned in `package.json`, so bumping that version needs the same rebuild to fetch matching browsers.
+
+The first `docker compose up` (or any command before an image exists) builds the image and runs `npm ci` from scratch, which can take a few minutes. Subsequent runs reuse the cached image and start almost immediately.
 
 ## 👀 Want to learn more?
 
