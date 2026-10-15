@@ -80,7 +80,8 @@ function hero() {
 // Turns the trust bar into an endless strip that pauses on hover.
 function trustStrip() {
 	const bar = $('.wu-section--trust .wu-trust-bar');
-	if (!bar) return;
+	// A hidden bar has no width, and the fill loop below would never end.
+	if (!bar?.offsetWidth) return;
 	const viewport = document.createElement('div');
 	viewport.className = 'wu-marquee';
 	const track = document.createElement('div');
