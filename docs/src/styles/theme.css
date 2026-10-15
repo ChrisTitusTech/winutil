@@ -769,16 +769,21 @@ html:not(.wu-motion) .wu-hero-dots,
 	cursor: pointer;
 	opacity: 0;
 	translate: 0 0.5rem;
+	visibility: hidden;
 	pointer-events: none;
+	/* visibility waits for the fade-out, so the hidden button also leaves the tab order. */
 	transition:
 		opacity 0.3s ease,
 		translate 0.3s ease,
-		border-color 0.2s ease;
+		border-color 0.2s ease,
+		visibility 0s 0.3s;
 }
 .wu-to-top.is-visible {
 	opacity: 1;
 	translate: 0 0;
+	visibility: visible;
 	pointer-events: auto;
+	transition-delay: 0s;
 }
 .wu-to-top:hover {
 	border-color: var(--sl-color-accent);
