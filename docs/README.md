@@ -2,19 +2,29 @@
 
 [![Built with Starlight](https://astro.badg.es/v2/built-with-starlight/tiny.svg)](https://starlight.astro.build)
 
-Documentation site for [WinUtil](https://github.com/ChrisTitusTech/winutil), built with [Astro](https://astro.build) and [Starlight](https://starlight.astro.build). Served at [winutil.christitus.com](https://winutil.christitus.com/).
+Documentation site for [WinUtil](https://github.com/ChrisTitusTech/winutil), built with [Astro](https://astro.build), [Starlight](https://starlight.astro.build), and [React](https://react.dev). Served at [winutil.christitus.com](https://winutil.christitus.com/).
+
+Starlight handles routing, Markdown rendering, and the search index. The site's own UI is plugged in through Starlight's component overrides: static parts (sidebar, page titles, pagination) are Astro components, and interactive parts (search, menus, table of contents, theme toggle) are React islands.
 
 ## 🚀 Project Structure
 
 ```
 .
-├── public/
+├── public/                  # Static files served as-is (favicon, robots.txt, social preview)
 ├── src/
-│   ├── assets/
+│   ├── assets/              # Images used by pages (optimized at build time); icons/ holds the docs UI icons
 │   ├── components/
+│   │   ├── docs/            # Docs UI: React islands (search, menus, table of contents, theme toggle) and the sidebar list
+│   │   ├── landing/         # Landing-page-only components (stats, cards, motion wrapper)
+│   │   ├── overrides/       # Starlight component overrides (thin .astro wrappers, registered in astro.config.mjs)
+│   │   ├── react-bits/      # Vendored React Bits components (see react-bits/LICENSE.md)
+│   │   └── YouTubeEmbed.astro
 │   ├── content/
-│   │   └── docs/
-│   ├── styles/
+│   │   └── docs/            # Pages (.md/.mdx); code-reference/tweaks and /features are generated
+│   ├── hooks/               # React hooks
+│   ├── lib/                 # Shared data (site links)
+│   ├── scripts/             # Client-side scripts (landing-page GSAP + Lenis motion)
+│   ├── styles/              # Global CSS: theme, fonts, docs UI
 │   └── content.config.ts
 ├── astro.config.mjs
 ├── docker-compose.yml
@@ -23,7 +33,7 @@ Documentation site for [WinUtil](https://github.com/ChrisTitusTech/winutil), bui
 └── tsconfig.json
 ```
 
-Starlight looks for `.md` or `.mdx` files in the `src/content/docs/` directory. Each file is exposed as a route based on its file name.
+Each `.md` or `.mdx` file in `src/content/docs/` becomes a route based on its file path. Don't hand-edit `src/content/docs/code-reference/tweaks/` or `.../features/`; they're generated from `config/tweaks.json` and `config/feature.json` by `tools/devdocs-generator.ps1`.
 
 Images can be added to `src/assets/` and embedded in Markdown with a relative link.
 
@@ -58,4 +68,4 @@ The first `docker compose up` (or any command before an image exists) builds the
 
 ## 👀 Want to learn more?
 
-Check out [Starlight's docs](https://starlight.astro.build/), read [the Astro documentation](https://docs.astro.build), or jump into the [Astro Discord server](https://astro.build/chat).
+Check out [Starlight's docs](https://starlight.astro.build/) (including its [component overrides guide](https://starlight.astro.build/guides/overriding-components/)), read [the Astro documentation](https://docs.astro.build), or jump into the [Astro Discord server](https://astro.build/chat).
