@@ -1,4 +1,6 @@
 // Hero eyebrow text with a periodic shine. ShinyText can't resolve CSS variables, so colors are picked per theme.
+// The server-rendered color comes from CSS instead, so it already matches the theme before hydration.
+const FIRST_PAINT = { backgroundImage: 'linear-gradient(var(--wu-eyebrow-text), var(--wu-eyebrow-text))' };
 import ShinyText from '../react-bits/ShinyText.jsx';
 import useStarlightTheme from '../../hooks/useStarlightTheme.js';
 import useAccentColor from '../../hooks/useAccentColor.js';
@@ -14,6 +16,7 @@ export default function HeroEyebrow({ text }) {
 			shineColor={light ? accent : '#ffffff'}
 			speed={3}
 			delay={1.5}
+			style={FIRST_PAINT}
 		/>
 	);
 }

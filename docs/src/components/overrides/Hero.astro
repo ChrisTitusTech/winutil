@@ -186,6 +186,10 @@ if (image && 'file' in image) heroImage = image.file;
 			text-transform: uppercase;
 			letter-spacing: 0.08em;
 			color: var(--sl-color-gray-2);
+			--wu-eyebrow-text: #a3a3a3;
+		}
+		:global([data-theme='light']) .wu-eyebrow {
+			--wu-eyebrow-text: #525252;
 		}
 
 		.wu-eyebrow-dot {
