@@ -9,7 +9,7 @@ export default function LandingGlowCard({ children, className = '' }) {
 	return (
 		<BorderGlow
 			className={className}
-			backgroundColor={theme === 'light' ? '#ffffff' : '#0d0d0d'}
+			backgroundColor="var(--wu-glow-card-bg)"
 			glowColor="216 100 62"
 			colors={BLUES}
 			borderRadius={16}

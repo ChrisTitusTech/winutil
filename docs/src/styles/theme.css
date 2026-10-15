@@ -513,6 +513,24 @@ body {
 .wu-solution-grid .border-glow-card {
 	height: 100%;
 }
+/* The card surface follows the theme in CSS so the server-rendered cards are right before they hydrate.
+   BorderGlow only adds its light styles for a hex colour, so they're repeated here for the light theme. */
+.wu-solution-grid {
+	--wu-glow-card-bg: #0d0d0d;
+}
+:root[data-theme='light'] .wu-solution-grid {
+	--wu-glow-card-bg: #ffffff;
+}
+:root[data-theme='light'] .wu-solution-grid .border-glow-card {
+	border-color: rgb(24 24 27 / 12%);
+	box-shadow:
+		rgb(24 24 27 / 4%) 0 1px 2px,
+		rgb(24 24 27 / 5%) 0 8px 24px;
+}
+:root[data-theme='light'] .wu-solution-grid .border-glow-card::after,
+:root[data-theme='light'] .wu-solution-grid .border-glow-card > .edge-light {
+	mix-blend-mode: normal;
+}
 .wu-solution-grid .border-glow-inner {
 	gap: 0.75rem;
 	padding: 1.5rem;
