@@ -110,7 +110,9 @@ export default function SearchDialog() {
 				setStatus(found.length ? 'ready' : 'empty');
 			})
 			.catch(() => {
-				if (!cancelled) setStatus('unavailable');
+				// A newer search may already be using the same Pagefind instance, so only the current one resets it.
+				if (cancelled) return;
+				setStatus('unavailable');
 				resetPagefind();
 			});
 		return () => {
