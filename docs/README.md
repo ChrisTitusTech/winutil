@@ -19,11 +19,12 @@ Starlight handles routing, Markdown rendering, and the search index. The site's 
 │   │   ├── landing/         # Landing-page-only components (stats, cards, motion wrapper)
 │   │   ├── overrides/       # Starlight component overrides (thin .astro wrappers, registered in astro.config.mjs)
 │   │   ├── react-bits/      # Vendored React Bits components (see react-bits/LICENSE.md)
+│   │   ├── tweak-explorer/  # Tweak Explorer page component and styles
 │   │   └── YouTubeEmbed.astro
 │   ├── content/
 │   │   └── docs/            # Pages (.md/.mdx); code-reference/tweaks and /features are generated
 │   ├── hooks/               # React hooks
-│   ├── lib/                 # Shared data (site links)
+│   ├── lib/                 # Shared code (site links, release config loader)
 │   ├── scripts/             # Client-side scripts (landing-page GSAP + Lenis motion)
 │   ├── styles/              # Global CSS: theme, fonts, docs UI
 │   └── content.config.ts
@@ -39,6 +40,18 @@ Each `.md` or `.mdx` file in `src/content/docs/` becomes a route based on its fi
 Images can be added to `src/assets/` and embedded in Markdown with a relative link.
 
 Static assets, like favicons, can be placed in the `public/` directory.
+
+## 🧰 Tools Pages
+
+The Config Builder (`/config-builder/`) and Tweak Explorer (`/tweak-explorer/`) load `config/*.json` in the browser from the latest stable WinUtil release, through `src/lib/winutil-release.js`. They don't use the copy in this repo, because `-Config` runs the stable release and rejects any key it doesn't know.
+
+New apps, tweaks, toggles, features, AppX packages, and categories appear on their own once a release is marked Latest. No docs rebuild is needed, and pre-releases are ignored. A few things are hard-coded and need updating here when WinUtil changes them:
+
+- Preset names (`Standard`, `Minimal`, `Advanced`, `AppxDefault`), in `ConfigBuilder.jsx` and `TweakExplorer.jsx`.
+- The key prefixes WinUtil can import (`WPFInstall`, `WPFTweaks`, `WPFToggle`, `WPFFeature`, `WPFAppx`), in `ConfigBuilder.jsx`. These mirror `Update-WinUtilSelections`.
+- The tweak fields the explorer shows (`registry`, `service`, `InvokeScript`, `UndoScript`, `appx`), in `TweakExplorer.jsx`. These mirror `Invoke-WinUtilTweaks`.
+
+If you add another tool page, or anything else that has to be kept in sync by hand, list it here and in SPEC.md's Docs Site section.
 
 ## 🧞 Commands
 
