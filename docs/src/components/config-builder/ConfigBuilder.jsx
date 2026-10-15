@@ -192,6 +192,14 @@ export default function ConfigBuilder() {
 			return;
 		}
 		const skipped = loaded.filter((key) => !known.has(key));
+		// Like WinUtil's import, a file with nothing usable in it leaves the current selection alone.
+		if (skipped.length === loaded.length) {
+			const text = loaded.length
+				? `None of the keys in ${file.name} are in WinUtil ${catalog.release.tag}: ${skipped.join(', ')}`
+				: `${file.name} doesn't have any WinUtil selections in it.`;
+			setNotice({ kind: 'error', text });
+			return;
+		}
 		setSelected(new Set(loaded.filter((key) => known.has(key))));
 		if (skipped.length) {
 			const message = `Left out ${skipped.length} key(s) that WinUtil ${catalog.release.tag} doesn't have: ${skipped.join(', ')}`;
