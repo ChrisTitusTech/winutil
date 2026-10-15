@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Icon from '../docs/Icon.jsx';
 import { RATE_LIMITED, loadReleaseConfig } from '../../lib/winutil-release.js';
+import { configLink } from '../../lib/config-link.js';
 import './TweakExplorer.css';
 
 const PRESETS = ['Standard', 'Minimal', 'Advanced'];
@@ -62,7 +63,7 @@ function registryValue(value) {
 	return value === '<RemoveEntry>' ? <em>removed</em> : value;
 }
 
-function TweakDetails({ tweak }) {
+function TweakDetails({ tweak, picked, onPick }) {
 	const [applied, undone] = tweak.toggle ? ['When on', 'When off'] : ['Applied', 'Undo restores'];
 	return (
 		<div className="wu-explorer-details">
@@ -144,7 +145,12 @@ function TweakDetails({ tweak }) {
 			)}
 			<div className="wu-explorer-details-footer">
 				<code>{tweak.key}</code>
-				{tweak.link && <a href={tweak.link}>Reference page</a>}
+				<span className="wu-explorer-details-actions">
+					{tweak.link && <a href={tweak.link}>Reference page</a>}
+					<button type="button" className="wu-explorer-chip" aria-pressed={picked} onClick={onPick}>
+						{picked ? 'Added to config' : 'Add to config'}
+					</button>
+				</span>
 			</div>
 		</div>
 	);
@@ -160,6 +166,7 @@ export default function TweakExplorer() {
 	const [changes, setChanges] = useState(() => new Set());
 	const [reversibleOnly, setReversibleOnly] = useState(false);
 	const [expanded, setExpanded] = useState(() => new Set());
+	const [picked, setPicked] = useState(() => new Set());
 
 	useEffect(() => {
 		let cancelled = false;
@@ -270,6 +277,14 @@ export default function TweakExplorer() {
 				<a href={data.release.url} target="_blank" rel="noreferrer">
 					WinUtil {data.release.tag}
 				</a>
+				{picked.size > 0 && (
+					<>
+						{' · '}
+						<a href={configLink([...picked])}>
+							Open {picked.size} {picked.size === 1 ? 'tweak' : 'tweaks'} in the Config Builder
+						</a>
+					</>
+				)}
 			</p>
 
 			<ul className="wu-explorer-list">
@@ -311,7 +326,13 @@ export default function TweakExplorer() {
 								</span>
 								<Icon name="down-caret" className="wu-explorer-caret" />
 							</button>
-							{open && <TweakDetails tweak={tweak} />}
+							{open && (
+								<TweakDetails
+									tweak={tweak}
+									picked={picked.has(tweak.key)}
+									onPick={() => toggleIn(setPicked, tweak.key)}
+								/>
+							)}
 						</li>
 					);
 				})}

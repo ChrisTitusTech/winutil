@@ -291,3 +291,8 @@
 .wu-explorer-details-footer a {
 	color: var(--sl-color-accent-high);
 }
+.wu-explorer-details-actions {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
