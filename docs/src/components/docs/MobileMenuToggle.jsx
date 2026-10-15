@@ -1,9 +1,10 @@
 // Opens the sidebar on narrow screens, with the same body attribute and inert handling as Starlight's toggle.
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Icon from './Icon.jsx';
 
 export default function MobileMenuToggle() {
 	const [open, setOpen] = useState(false);
+	const buttonRef = useRef(null);
 
 	useEffect(() => {
 		document.body.toggleAttribute('data-mobile-menu-expanded', open);
@@ -11,7 +12,15 @@ export default function MobileMenuToggle() {
 	}, [open]);
 
 	useEffect(() => {
-		const onKey = (event) => event.key === 'Escape' && setOpen(false);
+		const onKey = (event) => {
+			if (event.key !== 'Escape') return;
+			// Closing hides a focused sidebar link, so focus goes back to this button.
+			const expanded = document.body.hasAttribute('data-mobile-menu-expanded');
+			if (expanded && document.getElementById('starlight__sidebar')?.contains(document.activeElement)) {
+				buttonRef.current?.focus();
+			}
+			setOpen(false);
+		};
 		const wide = matchMedia('(min-width: 50em)');
 		const onResize = () => setOpen(false);
 		window.addEventListener('keydown', onKey);
@@ -24,6 +33,7 @@ export default function MobileMenuToggle() {
 
 	return (
 		<button
+			ref={buttonRef}
 			type="button"
 			className="docs-menu-toggle print:hidden"
 			aria-expanded={open}
