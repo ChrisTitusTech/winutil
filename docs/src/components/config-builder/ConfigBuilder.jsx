@@ -214,7 +214,8 @@ export default function ConfigBuilder() {
 		const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
 		const link = Object.assign(document.createElement('a'), { href: url, download: FILE_NAME });
 		link.click();
-		URL.revokeObjectURL(url);
+		// Revoking in the same task can cancel the download before the browser has read the blob.
+		setTimeout(() => URL.revokeObjectURL(url));
 	};
 
 	return (
