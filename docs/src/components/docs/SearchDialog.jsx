@@ -7,15 +7,19 @@ const MAX_PAGES = 8;
 const MAX_SECTIONS = 3;
 
 let pagefindPromise;
+let resetting;
 let latestSearch = 0;
 
 function loadPagefind() {
 	if (!pagefindPromise) {
-		pagefindPromise = import(/* @vite-ignore */ BUNDLE).then(async (pagefind) => {
-			await pagefind.options({ baseUrl: '/' });
-			pagefind.init();
-			return pagefind;
-		});
+		// A reset still tearing down the old instance would wipe a new one set up alongside it, so wait for it first.
+		pagefindPromise = Promise.resolve(resetting)
+			.then(() => import(/* @vite-ignore */ BUNDLE))
+			.then(async (pagefind) => {
+				await pagefind.options({ baseUrl: '/' });
+				pagefind.init();
+				return pagefind;
+			});
 		// Forget a failed load so the next search tries again.
 		pagefindPromise.catch(() => {
 			pagefindPromise = undefined;
@@ -25,10 +29,10 @@ function loadPagefind() {
 }
 
 // Pagefind keeps a failed index load, so a search that fails starts it over for the next try.
-async function resetPagefind() {
-	const pagefind = await pagefindPromise?.catch(() => undefined);
+function resetPagefind() {
+	const failed = pagefindPromise;
 	pagefindPromise = undefined;
-	await pagefind?.destroy();
+	resetting = failed?.then((pagefind) => pagefind.destroy()).catch(() => {});
 }
 
 async function runSearch(pagefind, query) {
