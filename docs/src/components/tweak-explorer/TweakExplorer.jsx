@@ -1,7 +1,7 @@
 // Shows what each tweak in the latest release changes, and what Undo puts back, without reading the raw JSON.
 import { useEffect, useMemo, useState } from 'react';
 import Icon from '../docs/Icon.jsx';
-import { loadReleaseConfig } from '../../lib/winutil-release.js';
+import { RATE_LIMITED, loadReleaseConfig } from '../../lib/winutil-release.js';
 import './TweakExplorer.css';
 
 const PRESETS = ['Standard', 'Minimal', 'Advanced'];
@@ -187,7 +187,9 @@ export default function TweakExplorer() {
 	if (error) {
 		return (
 			<div className="wu-explorer not-content">
-				<p className="wu-explorer-status">Couldn't load the tweaks from GitHub ({error}).</p>
+				<p className="wu-explorer-status">
+					{error === RATE_LIMITED ? RATE_LIMITED : `Couldn't load the tweaks from GitHub (${error}).`}
+				</p>
 				<button type="button" className="wu-explorer-chip" onClick={() => setAttempt((count) => count + 1)}>
 					Try again
 				</button>
