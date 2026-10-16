@@ -568,6 +568,60 @@
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/telemetry"
   },
+  "WPFTweaksConnectedDevicesPlatform": {
+    "Content": "Connected Devices Platform - Disable",
+    "Description": "Disables Connected Devices Platform services used by some cross-device and connected-device features. This may break related Windows functionality and does not disable Microsoft telemetry generally.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "InvokeScript": [
+      "
+      # Stop and disable the system-wide Connected Devices Platform service.
+      $service = Get-Service -Name 'CDPSvc' -ErrorAction SilentlyContinue
+      if ($service) {
+          if ($service.Status -ne 'Stopped') {
+              Stop-Service -Name 'CDPSvc' -Force -ErrorAction SilentlyContinue
+          }
+          Set-Service -Name 'CDPSvc' -StartupType Disabled -ErrorAction Stop
+      }
+
+      # CDPUserSvc is a per-user service. Handle the template key and any
+      # currently registered suffixed instances instead of assuming the
+      # unsuffixed service name represents every instance.
+      $templatePath = 'HKLM:\SYSTEM\CurrentControlSet\Services\CDPUserSvc'
+      if (Test-Path -LiteralPath $templatePath) {
+          Set-ItemProperty -LiteralPath $templatePath -Name Start -Value 4 -Type DWord -ErrorAction Stop
+      }
+
+      Get-CimInstance -ClassName Win32_Service -Filter "Name LIKE 'CDPUserSvc%'" -ErrorAction SilentlyContinue |
+          ForEach-Object {
+              if ($_.State -ne 'Stopped') {
+                  Stop-Service -Name $_.Name -Force -ErrorAction SilentlyContinue
+              }
+              Set-Service -Name $_.Name -StartupType Disabled -ErrorAction SilentlyContinue
+          }
+      "
+    ],
+    "UndoScript": [
+      "
+      # Restore the Windows default Manual startup configuration.
+      # This is a default-based undo, not a snapshot of prior custom settings.
+      $service = Get-Service -Name 'CDPSvc' -ErrorAction SilentlyContinue
+      if ($service) {
+          Set-Service -Name 'CDPSvc' -StartupType Manual -ErrorAction SilentlyContinue
+      }
+
+      $templatePath = 'HKLM:\SYSTEM\CurrentControlSet\Services\CDPUserSvc'
+      if (Test-Path -LiteralPath $templatePath) {
+          Set-ItemProperty -LiteralPath $templatePath -Name Start -Value 3 -Type DWord -ErrorAction SilentlyContinue
+      }
+
+      Get-CimInstance -ClassName Win32_Service -Filter "Name LIKE 'CDPUserSvc%'" -ErrorAction SilentlyContinue |
+          ForEach-Object {
+              Set-Service -Name $_.Name -StartupType Manual -ErrorAction SilentlyContinue
+          }
+      "
+    ]
+  },
   "WPFTweaksDeliveryOptimization": {
     "Content": "Delivery Optimization - Disable",
     "Description": "Stops Windows from using your bandwidth to upload updates to other PCs on the internet or local network.",
