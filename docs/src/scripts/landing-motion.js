@@ -77,7 +77,7 @@ function hero() {
 	});
 }
 
-// Turns the trust bar into an endless strip that pauses on hover.
+// Turns the trust bar into an endless strip that pauses on hover, and on a click or tap until the next one.
 function trustStrip() {
 	const bar = $('.wu-section--trust .wu-trust-bar');
 	// A hidden bar has no width, and the fill loop below would never end.
@@ -106,8 +106,24 @@ function trustStrip() {
 	window.addEventListener('resize', () => track.scrollWidth / 2 < viewport.clientWidth && fill());
 
 	const loop = gsap.to(track, { xPercent: -50, ease: 'none', duration: 40, repeat: -1 });
-	viewport.addEventListener('pointerenter', () => gsap.to(loop, { timeScale: 0, duration: 0.6, ease: 'power2.out' }));
-	viewport.addEventListener('pointerleave', () => gsap.to(loop, { timeScale: 1, duration: 0.6, ease: 'power2.in' }));
+	const pause = () => gsap.to(loop, { timeScale: 0, duration: 0.6, ease: 'power2.out' });
+	const play = () => gsap.to(loop, { timeScale: 1, duration: 0.6, ease: 'power2.in' });
+	let held = false;
+	viewport.addEventListener('pointerenter', pause);
+	viewport.addEventListener('pointerleave', () => held || play());
+	viewport.addEventListener('click', () => {
+		held = !held;
+		(held ? pause : play)();
+	});
+	// Keyboard users can't hover or click it, so it stops for them the first time the keyboard is used.
+	window.addEventListener(
+		'keydown',
+		() => {
+			held = true;
+			pause();
+		},
+		{ once: true }
+	);
 }
 
 // Rolls each stat digit like an odometer.
