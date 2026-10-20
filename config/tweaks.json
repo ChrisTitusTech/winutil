@@ -663,8 +663,11 @@
           [Environment]::SetEnvironmentVariable('OneDrive', $null, 'User')
       }
 
-      # Disable OneSyncSvc
-      Set-Service -Name OneSyncSvc -StartupType Disabled
+      # Disable OneSyncSvc, when the service exists; without the guard a missing
+      # service aborts the rest of this script block
+      if (Get-Service -Name OneSyncSvc -ErrorAction SilentlyContinue) {
+          Set-Service -Name OneSyncSvc -StartupType Disabled
+      }
       "
     ],
     "UndoScript": [
@@ -672,8 +675,10 @@
       Write-Host \"Installing OneDrive\"
       winget install Microsoft.Onedrive --source winget
 
-      # Enabled OneSyncSvc
-      Set-Service -Name OneSyncSvc -StartupType Automatic
+      # Enable OneSyncSvc, when the service exists
+      if (Get-Service -Name OneSyncSvc -ErrorAction SilentlyContinue) {
+          Set-Service -Name OneSyncSvc -StartupType Automatic
+      }
       "
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/removeonedrive"
@@ -901,7 +906,11 @@
           Remove-AppxPackage $Appx
       }
 
-      Set-Service -Name WSAIFabricSvc -StartupType Disabled
+      # WSAIFabricSvc only exists on some Windows 11 builds; without the guard a
+      # missing service aborts the rest of this script block and Recall stays enabled
+      if (Get-Service -Name WSAIFabricSvc -ErrorAction SilentlyContinue) {
+          Set-Service -Name WSAIFabricSvc -StartupType Disabled
+      }
       Disable-WindowsOptionalFeature -FeatureName Recall -Online -NoRestart
 
       Write-Host \"Windows AI Disabled\"

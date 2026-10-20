@@ -295,6 +295,32 @@ Describe "Tweaks config" {
     }
 }
 
+Describe "Config scripts changing services" {
+    It "guards every Set-Service call in a config script with a Get-Service existence check" {
+        $unguarded = New-Object System.Collections.Generic.List[string]
+
+        foreach ($configFile in (Get-ChildItem -Path $script:configRoot -Filter *.json)) {
+            $config = Get-Content -Path $configFile.FullName -Raw | ConvertFrom-Json
+            foreach ($entry in $config.PSObject.Properties) {
+                foreach ($field in @("InvokeScript", "UndoScript")) {
+                    if (-not (Test-WinUtilHasProperty -Object $entry.Value -Name $field)) { continue }
+
+                    foreach ($scriptText in @($entry.Value.$field)) {
+                        if ([string]$scriptText -notmatch 'Set-Service') { continue }
+                        if ([string]$scriptText -notmatch 'Get-Service') {
+                            $unguarded.Add("$($configFile.Name):$($entry.Name).$field")
+                        }
+                    }
+                }
+            }
+        }
+
+        if ($unguarded.Count -gt 0) {
+            throw ("Unguarded Set-Service calls abort the rest of their script block when the service is missing:`n" + ($unguarded -join "`n"))
+        }
+    }
+}
+
 Describe "Preset config" {
     It "references existing config entries or supported actions" {
         $preset = Get-WinUtilConfigObject -Name "preset"
