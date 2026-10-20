@@ -542,9 +542,6 @@
       # Disable (Connected User Experiences and Telemetry) Service
       Set-Service -Name diagtrack -StartupType Disabled
 
-      # Disable (Windows Error Reporting Manager) Service
-      Set-Service -Name wermgr -StartupType Disabled
-
       # Disable PowerShell 7 telemetry
       [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
 
@@ -558,9 +555,6 @@
 
       # Enable (Connected User Experiences and Telemetry) Service
       Set-Service -Name diagtrack -StartupType Automatic
-
-      # Enable (Windows Error Reporting Manager) Service
-      Set-Service -Name wermgr -StartupType Automatic
 
       # Enable PowerShell 7 telemetry
       [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '', 'Machine')
@@ -744,7 +738,7 @@
         "Path": "HKCU:\\Control Panel\\Keyboard",
         "Name": "KeyboardDelay",
         "Value": "0",
-        "Type": "DWord",
+        "Type": "String",
         "OriginalValue": "1"
       },
       {
@@ -1529,7 +1523,7 @@
         "Path": "HKCU:\\Control Panel\\Mouse",
         "Name": "MouseSpeed",
         "Value": "1",
-        "Type": "DWord",
+        "Type": "String",
         "OriginalValue": "0",
         "DefaultState": "true"
       },
@@ -1537,7 +1531,7 @@
         "Path": "HKCU:\\Control Panel\\Mouse",
         "Name": "MouseThreshold1",
         "Value": "6",
-        "Type": "DWord",
+        "Type": "String",
         "OriginalValue": "0",
         "DefaultState": "true"
       },
@@ -1545,7 +1539,7 @@
         "Path": "HKCU:\\Control Panel\\Mouse",
         "Name": "MouseThreshold2",
         "Value": "10",
-        "Type": "DWord",
+        "Type": "String",
         "OriginalValue": "0",
         "DefaultState": "true"
       }
