@@ -49,6 +49,16 @@ Describe "Get-WinUtilSelectedPackages" {
         (@($result["Winget"]) -join "|") | Should -Be "VideoLAN.VLC|Mozilla.Firefox"
     }
 
+    It "splits multi-ID values on ';' so every ID is installed" {
+        $packages = @(
+            [pscustomobject]@{ winget = "GitHub.GitHubDesktop"; choco = "git;github-desktop" }
+        )
+
+        $result = Get-WinUtilSelectedPackages -PackageList $packages -Preference "Choco"
+
+        (@($result["Choco"]) -join "|") | Should -Be "git|github-desktop"
+    }
+
     It "skips blank, na, and missing package IDs" {
         $packages = @(
             [pscustomobject]@{ winget = ""; choco = "" }

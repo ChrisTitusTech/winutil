@@ -26,12 +26,17 @@ function Get-WinUtilSelectedPackages {
             $PackageId
         )
 
-        if ([string]::IsNullOrWhiteSpace([string]$PackageId) -or $PackageId -eq "na") {
-            return
-        }
+        # A config field may hold several IDs separated by ";" (e.g. a dependency;the package).
+        # Detection splits the same way, so install and detection agree on what gets installed.
+        foreach ($id in ([string]$PackageId -split ";")) {
+            $id = $id.Trim()
+            if ([string]::IsNullOrWhiteSpace($id) -or $id -eq "na") {
+                continue
+            }
 
-        if (-not $Target.Contains($PackageId)) {
-            $null = $Target.Add($PackageId)
+            if (-not $Target.Contains($id)) {
+                $null = $Target.Add($id)
+            }
         }
     }
 
