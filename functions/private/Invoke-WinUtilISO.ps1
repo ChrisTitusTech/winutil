@@ -413,7 +413,7 @@ function Invoke-WinUtilISOModify {
 
             Step-WinUtilJob -Status "Dismounting source ISO..." -Percent 80
             Write-WinUtilISOLog "Dismounting original ISO..."
-            Dismount-DiskImage -ImagePath $isoPath
+            Dismount-DiskImage -ImagePath $isoPath -ErrorAction Stop
 
             $sync["Win11ISOWorkDir"]     = $workDir
             $sync["Win11ISOContentsDir"] = $isoContents
@@ -438,7 +438,7 @@ function Invoke-WinUtilISOModify {
                     $mountedISO = Get-DiskImage -ImagePath $isoPath
                     if ($mountedISO -and $mountedISO.Attached) {
                         Write-WinUtilISOLog "Cleaning up: dismounting source ISO..."
-                        Dismount-DiskImage -ImagePath $isoPath
+                        Dismount-DiskImage -ImagePath $isoPath -ErrorAction Stop
                     }
                 } catch { Write-WinUtilISOLog -Level "WARN" -Message "Could not dismount ISO during cleanup: $_" }
 
