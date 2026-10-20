@@ -1965,15 +1965,18 @@
       foreach ($exe in $blockExes) {
         $ifeo = \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\$exe\"
         $backup = \"$backupRoot\\$exe\"
-        $existed = Test-Path $ifeo
-        $prior = $null
-        if ($existed) { $prior = (Get-ItemProperty -Path $ifeo -Name 'Debugger' -ErrorAction SilentlyContinue).Debugger }
-        New-Item -Path $backup -Force -ErrorAction SilentlyContinue | Out-Null
-        New-ItemProperty -Path $backup -Name 'KeyExisted' -Value ([int]$existed) -PropertyType DWord -Force -ErrorAction SilentlyContinue | Out-Null
-        if ($null -ne $prior) { New-ItemProperty -Path $backup -Name 'PriorDebugger' -Value $prior -PropertyType String -Force -ErrorAction SilentlyContinue | Out-Null }
-        else { Remove-ItemProperty -Path $backup -Name 'PriorDebugger' -ErrorAction SilentlyContinue }
+        $blockDebugger = 'C:\\Windows\\System32\\systray.exe'
+        if (-not (Test-Path $backup)) {
+          $existed = Test-Path $ifeo
+          $prior = $null
+          if ($existed) { $prior = (Get-ItemProperty -Path $ifeo -Name 'Debugger' -ErrorAction SilentlyContinue).Debugger }
+          if ($prior -eq $blockDebugger) { $prior = $null }
+          New-Item -Path $backup -Force -ErrorAction SilentlyContinue | Out-Null
+          New-ItemProperty -Path $backup -Name 'KeyExisted' -Value ([int]$existed) -PropertyType DWord -Force -ErrorAction SilentlyContinue | Out-Null
+          if ($null -ne $prior) { New-ItemProperty -Path $backup -Name 'PriorDebugger' -Value $prior -PropertyType String -Force -ErrorAction SilentlyContinue | Out-Null }
+        }
         New-Item -Path $ifeo -Force -ErrorAction SilentlyContinue | Out-Null
-        New-ItemProperty -Path $ifeo -Name 'Debugger' -Value 'C:\\Windows\\System32\\systray.exe' -PropertyType String -Force -ErrorAction SilentlyContinue | Out-Null
+        New-ItemProperty -Path $ifeo -Name 'Debugger' -Value $blockDebugger -PropertyType String -Force -ErrorAction SilentlyContinue | Out-Null
       }
 
       # 7. Stub McAfee folders + deny write so bundlers cannot drop files back (same pattern as Razer/Logi block)
