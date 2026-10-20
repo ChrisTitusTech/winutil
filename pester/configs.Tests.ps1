@@ -218,6 +218,41 @@ Describe "Tweaks config" {
         }
     }
 
+    It "does not claim the same registry value with conflicting originals or types" -TestCases $testCase {
+        param([string]$Path)
+
+        $tweaks = Get-Content -Path $Path -Raw | ConvertFrom-Json
+        $claims = @{}
+
+        foreach ($tweak in $tweaks.PSObject.Properties) {
+            foreach ($registryEntry in @($tweak.Value.registry)) {
+                if ($null -eq $registryEntry -or $registryEntry.Values) { continue }
+
+                $key = "$($registryEntry.Path)|$($registryEntry.Name)"
+                if (-not $claims.ContainsKey($key)) {
+                    $claims[$key] = @{}
+                }
+                $claims[$key][$tweak.Name] = [pscustomobject]@{
+                    OriginalValue = [string]$registryEntry.OriginalValue
+                    Type          = [string]$registryEntry.Type
+                }
+            }
+        }
+
+        $conflicts = New-Object System.Collections.Generic.List[string]
+        foreach ($key in $claims.Keys) {
+            $variants = @($claims[$key].Values | Select-Object -Unique -Property OriginalValue, Type)
+            if ($variants.Count -gt 1) {
+                $owners = ($claims[$key].Keys | Sort-Object) -join ", "
+                $conflicts.Add("$key claimed with conflicting originals/types by: $owners")
+            }
+        }
+
+        if ($conflicts.Count -gt 0) {
+            throw ($conflicts -join "`n")
+        }
+    }
+
     It "keeps the location service disabled" -TestCases $testCase {
         param([string]$Path)
 
