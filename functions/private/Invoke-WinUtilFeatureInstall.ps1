@@ -5,8 +5,15 @@ function Invoke-WinUtilFeatureInstall ($CheckBox) {
         foreach ($feature in $sync.configs.feature.$CheckBox.feature) {
             Write-Host "Installing $feature"
             Write-WinUtilLog -Component "Feature" -Message "Enabling Windows optional feature: $feature"
-            Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart -ErrorAction Stop
-            Write-WinUtilLog -Component "Feature" -Message "Enabled Windows optional feature: $feature"
+            try {
+                Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart -ErrorAction Stop
+                Write-WinUtilLog -Component "Feature" -Message "Enabled Windows optional feature: $feature"
+            } catch {
+                # A feature missing on this edition (e.g. Windows Sandbox on Home) must not
+                # abort the remaining selected features
+                Write-Warning "Unable to enable feature $feature`: $($_.Exception.Message)"
+                Write-WinUtilLog -Level "ERROR" -Component "Feature" -Message "Unable to enable feature $feature`: $($_.Exception.Message)"
+            }
         }
     }
 
