@@ -231,6 +231,16 @@ Describe "Update-WinUtilSelections" {
         @($script:sync.selectedTweaks) | Should -Be @()
     }
 
+    It "fully deselects case-variant imports after checkbox synchronization" {
+        Update-WinUtilSelections -flatJson @('wpftweakstelemetry', 'WPFTweaksTelemetry') -Replace
+
+        Invoke-WPFSelectedCheckboxesUpdate -type 'Add' -checkboxName 'WPFTweaksTelemetry'
+        @($script:sync.selectedTweaks) | Should -Be @('wpftweakstelemetry')
+
+        Invoke-WPFSelectedCheckboxesUpdate -type 'Remove' -checkboxName 'WPFTweaksTelemetry'
+        @($script:sync.selectedTweaks) | Should -Be @()
+    }
+
     It "replaces selections only after every imported key is validated" {
         $script:sync.selectedApps.Add("WPFInstallExisting")
         $script:sync.selectedTweaks.Add("WPFTweaksExisting")
