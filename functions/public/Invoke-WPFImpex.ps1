@@ -59,8 +59,10 @@ function Invoke-WPFImpex {
                         return
                     }
                     $jsonFile = $allConfs | ConvertTo-Json
-                    $jsonFile | Out-File $Config -Force
-                    "iex ""& { `$(irm https://christitus.com/win) } -Config '$Config'""" | Set-Clipboard
+                    $jsonFile | Out-File -LiteralPath $Config -Force
+                    # Keep the path literal when the copied command is pasted into PowerShell.
+                    $escapedConfig = [System.Management.Automation.Language.CodeGeneration]::EscapeSingleQuotedStringContent($Config)
+                    "& ([ScriptBlock]::Create((Invoke-RestMethod 'https://christitus.com/win'))) -Config '$escapedConfig'" | Set-Clipboard
                 }
             } catch {
                 Write-Error "An error occurred while exporting: $_"
@@ -74,7 +76,7 @@ function Invoke-WPFImpex {
                         if ($Config -match '^https?://') {
                             $jsonFile = (Invoke-WebRequest "$Config" -ErrorAction Stop).Content | ConvertFrom-Json
                         } else {
-                            $jsonFile = Get-Content $Config -ErrorAction Stop | ConvertFrom-Json
+                            $jsonFile = Get-Content -LiteralPath $Config -ErrorAction Stop | ConvertFrom-Json
                         }
                     } catch {
                         $message = "Failed to load the JSON file from the specified path or URL: $_"
