@@ -33,7 +33,9 @@ Describe 'OneDrive removal' {
             $global:LASTEXITCODE = 0
         }
         Mock Start-Process { }
-        Mock Get-Process { }
+        $script:explorer = [System.Diagnostics.Process]::new()
+        $script:explorer | Add-Member -MemberType NoteProperty -Name ProcessName -Value 'Explorer' -Force
+        Mock Get-Process { $script:explorer }
         Mock Stop-Process { }
         Mock Set-Service { }
         Mock Remove-Item { }
@@ -61,7 +63,7 @@ Describe 'OneDrive removal' {
         Should -Invoke Remove-Item -Times 0 -Exactly
         Should -Invoke Start-Process -Times 1 -Exactly -ParameterFilter { $ArgumentList -eq '/uninstall' -and $Wait }
         Should -Invoke Set-Service -Times 1 -Exactly -ParameterFilter { $Name -eq 'OneSyncSvc' -and $StartupType -eq 'Disabled' }
-        Should -Invoke Stop-Process -Times 1 -Exactly -ParameterFilter { $Name -eq 'Explorer' }
+        Should -Invoke Stop-Process -Times 1 -Exactly -ParameterFilter { $InputObject -eq $script:explorer }
     }
 
     It 'protects an existing folder during uninstall and deletes it only when empty' {
@@ -96,10 +98,29 @@ Describe 'OneDrive removal' {
     It 'stops only a running FileCoAuth process and still stops Explorer' {
         $script:fileCoAuth = [System.Diagnostics.Process]::new()
         $script:fileCoAuth | Add-Member -MemberType NoteProperty -Name ProcessName -Value 'FileCoAuth' -Force
-        Mock Get-Process { $script:fileCoAuth }
+        Mock Get-Process { $script:fileCoAuth; $script:explorer }
         & $script:removeOneDrive
         Should -Invoke Stop-Process -Times 1 -Exactly -ParameterFilter { $InputObject -eq $script:fileCoAuth }
-        Should -Invoke Stop-Process -Times 1 -Exactly -ParameterFilter { $Name -eq 'Explorer' }
+        Should -Invoke Stop-Process -Times 1 -Exactly -ParameterFilter { $InputObject -eq $script:explorer }
+    }
+
+    It 'continues cleanup when Explorer is not running' {
+        Mock Get-Process { }
+        New-Item -ItemType Directory -Path $script:oneDrivePath -Force | Out-Null
+        & $script:removeOneDrive
+        Should -Invoke Stop-Process -Times 0 -Exactly
+        Test-Path -LiteralPath $script:oneDrivePath | Should -BeFalse
+        Should -Invoke Clear-TestOneDriveEnvironment -Times 1 -Exactly
+        Should -Invoke Set-Service -Times 1 -Exactly -ParameterFilter { $Name -eq 'OneSyncSvc' }
+    }
+
+    It 'restores permissions and reports a process stop failure' {
+        New-Item -ItemType Directory -Path $script:oneDrivePath -Force | Out-Null
+        Mock Stop-Process { throw 'Process stop denied' }
+        { & $script:removeOneDrive } | Should -Throw '*Process stop denied*'
+        $script:aclOperations.ToArray() | Should -Be @('/deny', 'restore')
+        Test-Path -LiteralPath $script:oneDrivePath | Should -BeTrue
+        Should -Invoke Clear-TestOneDriveEnvironment -Times 0 -Exactly
     }
 
     It 'cleans up only optional directories that exist' {

@@ -669,7 +669,7 @@
           Write-Host \"Removing leftover OneDrive Files...\"
 
           Get-Process -ErrorAction Stop | Where-Object ProcessName -eq 'FileCoAuth' | Stop-Process -ErrorAction Stop
-          Stop-Process -Name Explorer -ErrorAction Stop
+          Get-Process -ErrorAction Stop | Where-Object ProcessName -eq 'Explorer' | Stop-Process -ErrorAction Stop
 
           $OneDriveLeftovers = @(\"$Env:LocalAppData\\Microsoft\\OneDrive\", \"$Env:ProgramData\\Microsoft OneDrive\")
           foreach ($LeftoverPath in $OneDriveLeftovers) {
