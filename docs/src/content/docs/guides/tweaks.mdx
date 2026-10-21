@@ -52,6 +52,9 @@ During AppX installation or removal, the window-level progress bar shows the cur
 Essential Tweaks are the safest starting point for most systems. They focus on lower-risk changes that improve usability, reduce noise, and avoid the more invasive changes found in advanced options.
 
 ### Advanced Tweaks (CAUTION)
+
+**Services - Set to Manual** changes service startup settings only. Disabling service-host splitting is a separate **svchost.exe Splitting - Disable** advanced tweak. It can interfere with Xbox services; use it only when you understand that tradeoff. Undo restores the Windows client threshold of 0x380000, rather than a custom threshold you previously configured. Restart Windows after changing this setting.
+
 Advanced Tweaks are for users who understand the side effects of deeper Windows changes. Create a restore point first, review each item, and avoid treating the full advanced list as a one-click baseline.
 
 **Microsoft OneDrive - Remove** skips folder cleanup when the OneDrive path is empty or absent, and stops FileCoAuth and Explorer only when they are running. Nonempty OneDrive folders, including folders containing only hidden files, are kept.
