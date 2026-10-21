@@ -450,6 +450,11 @@
     "panel": "1",
     "service": [
       {
+        "Name": "diagtrack",
+        "StartupType": "Disabled",
+        "OriginalType": "Automatic"
+      },
+      {
         "Name": "WerSvc",
         "StartupType": "Disabled",
         "OriginalType": "Manual"
@@ -553,9 +558,6 @@
       # Disable Defender Auto Sample Submission
       Set-MpPreference -SubmitSamplesConsent 2
 
-      # Disable (Connected User Experiences and Telemetry) Service
-      Set-Service -Name diagtrack -StartupType Disabled
-
       # Disable PowerShell 7 telemetry
       [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
       "
@@ -564,9 +566,6 @@
       "
       # Enable Defender Auto Sample Submission
       Set-MpPreference -SubmitSamplesConsent 1
-
-      # Enable (Connected User Experiences and Telemetry) Service
-      Set-Service -Name diagtrack -StartupType Automatic
 
       # Enable PowerShell 7 telemetry
       [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '', 'Machine')
@@ -696,8 +695,11 @@
           [Environment]::SetEnvironmentVariable('OneDrive', $null, 'User')
       }
 
-      # Disable OneSyncSvc
-      Set-Service -Name OneSyncSvc -StartupType Disabled
+      # OneSyncSvc is a per-user template; Get-Service only exposes user instances.
+      # Skip the operation if this Windows installation has no template.
+      if (Test-Path -LiteralPath 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\OneSyncSvc') {
+          Set-Service -Name OneSyncSvc -StartupType Disabled
+      }
       "
     ],
     "UndoScript": [
@@ -705,8 +707,10 @@
       Write-Host \"Installing OneDrive\"
       winget install Microsoft.Onedrive --source winget
 
-      # Enabled OneSyncSvc
-      Set-Service -Name OneSyncSvc -StartupType Automatic
+      # Enable OneSyncSvc when the per-user service template exists
+      if (Test-Path -LiteralPath 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\OneSyncSvc') {
+          Set-Service -Name OneSyncSvc -StartupType Automatic
+      }
       "
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/removeonedrive"
@@ -772,7 +776,7 @@
         "Path": "HKCU:\\Control Panel\\Keyboard",
         "Name": "KeyboardDelay",
         "Value": "0",
-        "Type": "DWord",
+        "Type": "String",
         "OriginalValue": "1"
       },
       {
@@ -813,20 +817,6 @@
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "Name": "TaskbarMn",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "Name": "ShowTaskViewButton",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
-        "Name": "SearchboxTaskbarMode",
         "Value": "0",
         "Type": "DWord",
         "OriginalValue": "1"
@@ -948,7 +938,11 @@
           Remove-AppxPackage $Appx
       }
 
-      Set-Service -Name WSAIFabricSvc -StartupType Disabled
+      # WSAIFabricSvc only exists on some Windows 11 builds; without the guard a
+      # missing service aborts the rest of this script block and Recall stays enabled
+      if (Get-Service -Name WSAIFabricSvc -ErrorAction SilentlyContinue) {
+          Set-Service -Name WSAIFabricSvc -StartupType Disabled
+      }
       # Store/MSIX PowerShell 7 can hang or fail COM activation in DISM.
       $RecallCommand = {
           Disable-WindowsOptionalFeature -FeatureName Recall -Online -NoRestart -ErrorAction Stop | Out-Null
@@ -1565,7 +1559,7 @@
         "Path": "HKCU:\\Control Panel\\Mouse",
         "Name": "MouseSpeed",
         "Value": "1",
-        "Type": "DWord",
+        "Type": "String",
         "OriginalValue": "0",
         "DefaultState": "true"
       },
@@ -1573,7 +1567,7 @@
         "Path": "HKCU:\\Control Panel\\Mouse",
         "Name": "MouseThreshold1",
         "Value": "6",
-        "Type": "DWord",
+        "Type": "String",
         "OriginalValue": "0",
         "DefaultState": "true"
       },
@@ -1581,7 +1575,7 @@
         "Path": "HKCU:\\Control Panel\\Mouse",
         "Name": "MouseThreshold2",
         "Value": "10",
-        "Type": "DWord",
+        "Type": "String",
         "OriginalValue": "0",
         "DefaultState": "true"
       }

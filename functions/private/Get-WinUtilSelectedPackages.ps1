@@ -5,7 +5,10 @@ function Get-WinUtilSelectedPackages {
          [object] $PackageList,
 
          [Parameter(Mandatory = $true)]
-         [string] $Preference
+         [string] $Preference,
+
+         [ValidateSet("Install", "Uninstall")]
+         [string] $Action = "Install"
      )
 
     # A single package has no meaningful percentage to show
@@ -26,12 +29,22 @@ function Get-WinUtilSelectedPackages {
             $PackageId
         )
 
-        if ([string]::IsNullOrWhiteSpace([string]$PackageId) -or $PackageId -eq "na") {
-            return
+        # A config field may hold several IDs separated by ";" (e.g. a dependency;the package).
+        # Detection splits the same way, so install and detection agree on what gets installed.
+        $ids = [string]$PackageId -split ";"
+        if ($Action -eq "Uninstall") {
+            # Detection identifies the last ID as the app; preceding IDs are dependencies.
+            $ids = @($ids[-1])
         }
+        foreach ($id in $ids) {
+            $id = $id.Trim()
+            if ([string]::IsNullOrWhiteSpace($id) -or $id -eq "na") {
+                continue
+            }
 
-        if (-not $Target.Contains($PackageId)) {
-            $null = $Target.Add($PackageId)
+            if (-not $Target.Contains($id)) {
+                $null = $Target.Add($id)
+            }
         }
     }
 
