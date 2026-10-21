@@ -62,8 +62,8 @@ Describe "App favicon loading" {
         $logo = $icon.Children[1]
         $constructor = [Windows.ExceptionRoutedEventArgs].GetConstructors(
             [Reflection.BindingFlags]'Instance, NonPublic')[0]
-        $event = $constructor.Invoke(@([Windows.Controls.Image]::ImageFailedEvent, $logo, [Exception]::new("Download failed")))
-        $logo.RaiseEvent($event)
+        $failureEvent = $constructor.Invoke(@([Windows.Controls.Image]::ImageFailedEvent, $logo, [Exception]::new("Download failed")))
+        $logo.RaiseEvent($failureEvent)
 
         $logo.Visibility | Should -Be "Collapsed"
         $icon.Children[0].Visibility | Should -Be "Visible"
