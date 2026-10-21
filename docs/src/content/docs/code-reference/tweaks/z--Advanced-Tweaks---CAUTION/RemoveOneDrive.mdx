@@ -17,7 +17,7 @@ This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitus
     "InvokeScript": [
       "
       # Deny permission to remove OneDrive folder
-      icacls $Env:OneDrive /deny \"Administrators:(D,DC)\"
+      icacls $Env:OneDrive /deny \"*S-1-5-32-544:(D,DC)\"
 
       Write-Host \"Uninstalling OneDrive...\"
       Start-Process -FilePath (Join-Path $Env:SystemRoot \"System32\\OneDriveSetup.exe\") -ArgumentList '/uninstall' -Wait
@@ -31,7 +31,7 @@ This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitus
       Remove-Item \"$Env:ProgramData\\Microsoft OneDrive\" -Recurse -Force
 
       # Grant back permission to access OneDrive folder
-      icacls $Env:OneDrive /grant \"Administrators:(D,DC)\"
+      icacls $Env:OneDrive /grant \"*S-1-5-32-544:(D,DC)\"
 
       if (-not (Get-ChildItem -Path $Env:OneDrive)) {
           Remove-Item -Path $Env:OneDrive -Recurse

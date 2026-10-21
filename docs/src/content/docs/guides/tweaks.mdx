@@ -18,7 +18,7 @@ Use the quick-selection buttons at the top of the Tweaks tab to speed up setup:
 * **Minimal**: Selects a smaller, lower-impact set of common tweaks.
 * **Advanced**: Selects a focused set of safer advanced tweaks. This preset intentionally skips restore point creation and cleanup tasks to avoid a long runtime.
 * **Clear**: Clears all currently selected tweaks.
-* **Get Installed Tweaks**: Best-effort detection for tweaks already applied to your system.
+* **Select Installed Tweaks**: Best-effort detection for tweaks already applied to your system.
 
 ### Run Tweaks
 * **Open the Tweaks tab**: Navigate to the **Tweaks** tab in the application.
@@ -29,6 +29,8 @@ Use the quick-selection buttons at the top of the Tweaks tab to speed up setup:
 To see what each preset includes, view [preset.json](https://github.com/ChrisTitusTech/winutil/blob/main/config/preset.json).
 :::
 
+When a listed service does not exist, WinUtil logs a warning and skips it. The remaining services and tweaks still run.
+
 :::caution
 Some tweaks take effect immediately, while others may require Explorer to restart, a sign-out, or a full reboot.
 :::
@@ -38,19 +40,29 @@ Some tweaks take effect immediately, while others may require Explorer to restar
 * **Select Tweaks to Remove**: Choose the tweaks you want to disable or remove.
 * **Undo Tweaks**: Click **Undo Selected Tweaks** at the bottom of the screen to apply the changes.
 
+Undo restores a service default only when its current startup type matches the type applied by the tweak. Other current startup types are preserved. WinUtil does not track whether a matching startup type was set before the tweak, so undo can also reset a service that already had that type.
+
 ### AppX Packages
 
 Open **AppX Removal** from the Tweaks tab to manage the listed Windows apps. Select one or more packages, then choose **Install Selected** or **Remove Selected**.
 
 When installing a selected package, WinUtil first registers an existing local `AppxManifest.xml`. If no usable local manifest remains, WinUtil installs the package from the Microsoft Store through WinGet when a Store product ID is available.
 
+A package without a usable local manifest or Store product ID is reported as failed. The remaining selected packages are still attempted, and the final summary lists failures.
+
 During AppX installation or removal, the window-level progress bar shows the current package, completed package count, and overall progress. The Windows taskbar also reflects progress and the final success or failure state.
 
 ### Essential Tweaks
 Essential Tweaks are the safest starting point for most systems. They focus on lower-risk changes that improve usability, reduce noise, and avoid the more invasive changes found in advanced options.
 
+**Telemetry - Disable** disables the Windows Error Reporting service (`WerSvc`) when its startup type is still the default Manual, and undo restores Manual. Removing an already absent feedback-frequency registry value is treated as complete rather than as an error.
+
 ### Advanced Tweaks (CAUTION)
 Advanced Tweaks are for users who understand the side effects of deeper Windows changes. Create a restore point first, review each item, and avoid treating the full advanced list as a one-click baseline.
+
+**Windows AI - Disable And Remove** runs the Recall feature change through Windows PowerShell 5.1 to avoid DISM hangs and COM errors in Microsoft Store PowerShell 7. It suppresses automatic restarts and reports failures in the tweak log.
+
+**Microsoft OneDrive - Remove** skips folder cleanup when the OneDrive path is empty or absent, and stops FileCoAuth and Explorer only when they are running. Nonempty OneDrive folders, including folders containing only hidden files, are kept.
 
 ### O&O ShutUp10++
 [O&O ShutUp10++](https://www.oo-software.com/en/shutup10) can be launched from WinUtil with one click. It is a free privacy tool for Windows that helps users manage telemetry, update behavior, and app permission settings.
@@ -65,6 +77,7 @@ Use the DNS section to switch both IPv4 and IPv6 DNS providers without editing a
 
 * **Default**: Uses the default DNS settings configured by your ISP or network.
 * **DHCP**: Automatically acquires DNS settings from the DHCP server.
+* **Fastest**: Compares TCP port 53 connection times to Google and Cloudflare, then applies the quicker provider. Filtering providers are excluded. If both probes fail, existing DNS settings are preserved. The scan takes up to about three seconds; connection time is only a rough latency estimate, not a DNS lookup or DNS-over-HTTPS performance test.
 * [**Google**](https://developers.google.com/speed/public-dns?hl=en): A reliable and fast DNS service provided by Google.
 * [**Cloudflare**](https://developers.cloudflare.com/1.1.1.1/): Known for speed and privacy, Cloudflare DNS is a popular choice for enhancing internet performance.
 * [**Cloudflare_Malware**](https://developers.cloudflare.com/1.1.1.1/setup/#:~:text=Use%20the%20following%20DNS%20resolvers%20to%20block%20malicious%20content%3A): Provides additional protection by blocking malware sites.
@@ -73,14 +86,6 @@ Use the DNS section to switch both IPv4 and IPv6 DNS providers without editing a
 * [**Quad9**](https://quad9.net/): Focuses on security by blocking known malicious domains.
 * [**AdGuard_Ads_Trackers**](https://adguard-dns.io/en/welcome.html): AdGuard DNS blocks ads, trackers, and other unwanted DNS requests. Visit the website and sign in for a dashboard, statistics, and additional server-side customization.
 * [**AdGuard_Ads_Trackers_Malware_Adult**](https://adguard-dns.io/en/welcome.html): AdGuard DNS blocks ads, trackers, malware, and adult content, and enables Safe Search and Safe Mode where possible.
-* [**Mullvad**](https://mullvad.net/en/help/dns-over-https-and-dns-over-tls): Mullvad DNS without content blocking.
-* [**Mullvad_Ads_Trackers**](https://mullvad.net/en/help/dns-over-https-and-dns-over-tls): Blocks ads and trackers.
-* [**Mullvad_Ads_Trackers_Malware**](https://mullvad.net/en/help/dns-over-https-and-dns-over-tls): Blocks ads, trackers, and malware.
-* [**Mullvad_Ads_Trackers_Malware_Social**](https://mullvad.net/en/help/dns-over-https-and-dns-over-tls): Blocks ads, trackers, malware, and social media.
-* [**Mullvad_Ads_Trackers_Malware_Adult_Gambling**](https://mullvad.net/en/help/dns-over-https-and-dns-over-tls): Blocks ads, trackers, malware, adult content, and gambling.
-* [**Mullvad_Ads_Trackers_Malware_Adult_Gambling_Social**](https://mullvad.net/en/help/dns-over-https-and-dns-over-tls): Applies all available Mullvad filters.
-
-Mullvad profiles require DNS over HTTPS support in Windows. If the selected primary resolver is unavailable, WinUtil uses the closest Mullvad secondary resolver to preserve connectivity; that fallback may use a different filtering level and can be less restrictive.
 
 ### Customize Preferences
 
