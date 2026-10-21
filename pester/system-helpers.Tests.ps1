@@ -7,6 +7,7 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilCurrentSystem.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Test-WinUtilPackageManager.ps1")
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilRegistry.ps1")
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilService.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFPanelAutologin.ps1")
@@ -20,7 +21,7 @@ BeforeAll {
     }
     # The CLI path is what these tests cover; the module path is verified against real winget
     function Step-WinUtilJob { param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay, [switch]$Hide) }
-    function Write-WinUtilLog { }
+    function Write-WinUtilLog { param($Message, $Level, $Component, [switch]$Detail) }
 }
 
 Describe "Invoke-WPFPanelAutologin" {
@@ -153,9 +154,72 @@ Describe "Invoke-WinUtilCurrentSystem installed apps" {
     It "matches the primary Chocolatey package ID in one list call" {
         $result = @(Invoke-WinUtilCurrentSystem -CheckBox "choco")
 
-        $result | Should -Be @("WPFInstallGit")
+        $result | Should -Be @("WPFInstallGit", "WPFInstallChatGPT")
         Should -Invoke -CommandName choco -Times 1 -Exactly
         $script:chocoArguments | Should -Be @("list")
+    }
+
+    It "checks WinGet only for apps that Chocolatey mode installs through WinGet" {
+        $apps = $script:sync.configs.applicationsHashtable
+        $apps["WPFInstallVLC"] = [pscustomobject]@{ winget = "VideoLAN.VLC"; choco = "vlc" }
+        $apps["WPFInstallNoChoco"] = [pscustomobject]@{ winget = "No.Choco"; choco = "" }
+        $apps["WPFInstallAbsent"] = [pscustomobject]@{ winget = "Absent.App"; choco = "na" }
+        $apps["WPFInstallNoSource"] = [pscustomobject]@{ winget = "na"; choco = "na" }
+        $apps["WPFInstallNoChocoField"] = [pscustomobject]@{ winget = "No.Field" }
+        Mock winget {
+            $global:LASTEXITCODE = 0
+            @(
+                "Name  Id  Version  Source",
+                "--------------------------------",
+                "Git  Git.Git  2.0  winget",
+                "ChatGPT  9NT1R1C2HH7J  1.0  msstore",
+                "VLC  VideoLAN.VLC  3.0  winget",
+                "No Choco  No.Choco  1.0  winget",
+                "No Field  No.Field  1.0  winget"
+            )
+        }
+
+        $result = @(Invoke-WinUtilCurrentSystem -CheckBox "choco")
+
+        $result | Should -HaveCount 4
+        $result | Should -Contain "WPFInstallGit"
+        $result | Should -Contain "WPFInstallChatGPT"
+        $result | Should -Contain "WPFInstallNoChoco"
+        $result | Should -Contain "WPFInstallNoChocoField"
+        Should -Invoke -CommandName choco -Times 1 -Exactly
+        Should -Invoke -CommandName winget -Times 1 -Exactly
+    }
+
+    It "keeps Chocolatey results when WinGet cannot list applications" {
+        Mock winget {
+            $global:LASTEXITCODE = 1
+            "winget failed"
+        }
+        Mock Write-Warning { }
+
+        $result = @(Invoke-WinUtilCurrentSystem -CheckBox "choco")
+
+        $result | Should -Be @("WPFInstallGit")
+        Should -Invoke -CommandName Write-Warning -Times 1 -Exactly -ParameterFilter { $Message -like "*WinGet*exit code 1*" }
+    }
+
+    It "does not run WinGet in Chocolatey mode when no app needs it" {
+        $script:sync.configs.applicationsHashtable.Remove("WPFInstallChatGPT")
+        $script:sync.configs.applicationsHashtable["WPFInstallNoSource"] = [pscustomobject]@{ winget = "na"; choco = "na" }
+
+        $result = @(Invoke-WinUtilCurrentSystem -CheckBox "choco")
+
+        $result | Should -Be @("WPFInstallGit")
+        Should -Invoke -CommandName winget -Times 0 -Exactly
+    }
+
+    It "skips the WinGet check in Chocolatey mode when WinGet is not installed" {
+        Mock Test-WinUtilPackageManager { "not-installed" } -ParameterFilter { $winget }
+
+        $result = @(Invoke-WinUtilCurrentSystem -CheckBox "choco")
+
+        $result | Should -Be @("WPFInstallGit")
+        Should -Invoke -CommandName winget -Times 0 -Exactly
     }
 }
 
@@ -179,6 +243,12 @@ Describe "Set-WinUtilRegistry" {
         Mock New-Item { }
         Mock Set-ItemProperty { }
         Mock Remove-ItemProperty { }
+        # A value exists unless a test throws the provider's error for a missing key or value
+        Mock Get-ItemProperty { }
+    }
+
+    AfterEach {
+        Remove-Variable -Name absentLookupError -Scope Script -ErrorAction SilentlyContinue
     }
 
     It "creates a missing registry path before setting a value" {
@@ -225,6 +295,10 @@ Describe "Set-WinUtilRegistry" {
         $registryPath = "HKLM:\Software\WinUtilTest"
         $script:testPathResults["HKU:\"] = $true
         $script:testPathResults[$registryPath] = $true
+        Mock Get-ItemProperty { [pscustomobject]@{ ObsoleteValue = "old" } } -ParameterFilter {
+            $Path -eq $registryPath -and $Name -eq "ObsoleteValue"
+        }
+
         Set-WinUtilRegistry -Path $registryPath -Name "ObsoleteValue" -Type "String" -Value "<RemoveEntry>"
 
         Should -Invoke -CommandName Set-ItemProperty -Times 0 -Exactly
@@ -234,6 +308,47 @@ Describe "Set-WinUtilRegistry" {
                 $Force -eq $true -and
                 $ErrorAction -eq "Stop"
         }
+    }
+
+    It "treats a missing <Reason> as a value that is already removed" -ForEach @(
+        @{ Reason = "value"; LookupError = [System.Management.Automation.PSArgumentException]::new("Property MissingValue does not exist at path HKEY_CURRENT_USER\Software\WinUtilTest.") }
+        @{ Reason = "key"; LookupError = [System.Management.Automation.ItemNotFoundException]::new("Cannot find path 'HKCU:\Software\WinUtilTest' because it does not exist.") }
+    ) {
+        # Remove-ItemProperty on a missing value raises PSArgumentException, which the generic
+        # catch logged as an error, so undoing a tweak that was never applied failed (#5145).
+        # Only the HKU check is expected: the path must not be created just to remove nothing.
+        $registryPath = "HKCU:\Software\WinUtilTest"
+        $script:testPathResults["HKU:\"] = $true
+        $script:absentLookupError = $LookupError
+        Mock Get-ItemProperty { throw $script:absentLookupError }
+
+        Set-WinUtilRegistry -Path $registryPath -Name "MissingValue" -Type "DWord" -Value "<RemoveEntry>"
+
+        Should -Invoke -CommandName Get-ItemProperty -Times 1 -Exactly -ParameterFilter {
+            $Path -eq $registryPath -and $Name -eq "MissingValue" -and $ErrorAction -eq "Stop"
+        }
+        Should -Invoke -CommandName New-Item -Times 0 -Exactly
+        Should -Invoke -CommandName Remove-ItemProperty -Times 0 -Exactly
+        Should -Invoke -CommandName Write-Warning -Times 0 -Exactly
+        Should -Invoke -CommandName Write-WinUtilLog -Times 0 -Exactly -ParameterFilter { $Level -eq "ERROR" }
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter { $Message -like "*already absent*" }
+    }
+
+    It "reports a lookup failure instead of treating the value as absent" {
+        # Access denied is not "nothing to remove": the existing handlers must see it
+        $registryPath = "HKLM:\SECURITY\WinUtilTest"
+        $script:testPathResults["HKU:\"] = $true
+        Mock Get-ItemProperty { throw [System.UnauthorizedAccessException]::new("Requested registry access is not allowed.") }
+
+        Set-WinUtilRegistry -Path $registryPath -Name "Protected" -Type "DWord" -Value "<RemoveEntry>"
+
+        Should -Invoke -CommandName New-Item -Times 0 -Exactly
+        Should -Invoke -CommandName Remove-ItemProperty -Times 0 -Exactly
+        Should -Invoke -CommandName Write-WinUtilLog -Times 0 -Exactly -ParameterFilter { $Message -like "*already absent*" }
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "ERROR" -and $Message -like "Unauthorized while changing $registryPath\Protected*"
+        }
+        Should -Invoke -CommandName Write-Warning -Times 1 -Exactly
     }
 
 }
