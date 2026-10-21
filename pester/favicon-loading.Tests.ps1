@@ -1,5 +1,5 @@
 BeforeAll {
-    Add-Type -AssemblyName PresentationFramework
+    Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
     $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     foreach ($file in @(
         "functions/private/Initialize-InstallAppEntry.ps1",
