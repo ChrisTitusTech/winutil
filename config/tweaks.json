@@ -695,9 +695,9 @@
           [Environment]::SetEnvironmentVariable('OneDrive', $null, 'User')
       }
 
-      # Disable OneSyncSvc, when the service exists; without the guard a missing
-      # service aborts the rest of this script block
-      if (Get-Service -Name OneSyncSvc -ErrorAction SilentlyContinue) {
+      # OneSyncSvc is a per-user template; Get-Service only exposes user instances.
+      # Skip the operation if this Windows installation has no template.
+      if (Test-Path -LiteralPath 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\OneSyncSvc') {
           Set-Service -Name OneSyncSvc -StartupType Disabled
       }
       "
@@ -707,8 +707,8 @@
       Write-Host \"Installing OneDrive\"
       winget install Microsoft.Onedrive --source winget
 
-      # Enable OneSyncSvc, when the service exists
-      if (Get-Service -Name OneSyncSvc -ErrorAction SilentlyContinue) {
+      # Enable OneSyncSvc when the per-user service template exists
+      if (Test-Path -LiteralPath 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\OneSyncSvc') {
           Set-Service -Name OneSyncSvc -StartupType Automatic
       }
       "

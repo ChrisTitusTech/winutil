@@ -336,7 +336,7 @@ Describe "Tweaks config" {
 }
 
 Describe "Config scripts changing services" {
-    It "guards every Set-Service call in a config script with a Get-Service existence check" {
+    It "guards every Set-Service call in a config script with a service or template existence check" {
         $unguarded = New-Object System.Collections.Generic.List[string]
 
         foreach ($configFile in (Get-ChildItem -Path $script:configRoot -Filter *.json)) {
@@ -347,7 +347,7 @@ Describe "Config scripts changing services" {
 
                     foreach ($scriptText in @($entry.Value.$field)) {
                         if ([string]$scriptText -notmatch 'Set-Service') { continue }
-                        if ([string]$scriptText -notmatch 'Get-Service') {
+                        if ([string]$scriptText -notmatch 'Get-Service|Test-Path -LiteralPath.*CurrentControlSet') {
                             $unguarded.Add("$($configFile.Name):$($entry.Name).$field")
                         }
                     }
