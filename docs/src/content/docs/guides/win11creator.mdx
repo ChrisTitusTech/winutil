@@ -134,6 +134,10 @@ When you install Windows 11 from your modified ISO:
 
 ---
 
+### First-login restart
+
+After installation, WinUtil restarts Windows only after both the system and user customization scripts finish. If user customization has not signaled completion within five minutes after system customization finishes, the automatic restart is skipped. Check `C:\Windows\Setup\Scripts\FirstLogon.log` and `%TEMP%\UserOnce.log` before restarting manually.
+
 ### Troubleshooting
 
 | Problem | Fix |
