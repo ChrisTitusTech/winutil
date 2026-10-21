@@ -20,6 +20,8 @@ Use the quick-selection buttons at the top of the Tweaks tab to speed up setup:
 * **Clear**: Clears all currently selected tweaks.
 * **Select Installed Tweaks**: Best-effort detection for tweaks already applied to your system.
 
+For checkbox tweaks and AppX entries, search matches entry descriptions and preset keys. The tooltip label "Preset key:" itself does not count as a match. Toggle search matches the displayed label and description.
+
 ### Run Tweaks
 * **Open the Tweaks tab**: Navigate to the **Tweaks** tab in the application.
 * **Select Tweaks**: Choose the tweaks you want to apply. You can use the presets available at the top for convenience.
@@ -31,9 +33,13 @@ To see what each preset includes, view [preset.json](https://github.com/ChrisTit
 
 When a listed service does not exist, WinUtil logs a warning and skips it. The remaining services and tweaks still run.
 
+When Microsoft Edge is already absent, the Edge removal tweak reports it as not installed and skips the uninstaller instead of logging errors.
+
 :::caution
 Some tweaks take effect immediately, while others may require Explorer to restart, a sign-out, or a full reboot.
 :::
+
+Apply and undo progress use each tweak's displayed label, such as "Telemetry - Disable". Session logs retain the preset key for troubleshooting.
 
 ### Undo Tweaks
 * **Open the Tweaks tab**: Go to the **Tweaks** tab located next to **Install**.
@@ -68,7 +74,7 @@ Advanced Tweaks are for users who understand the side effects of deeper Windows 
 **Microsoft OneDrive - Remove** skips folder cleanup when the OneDrive path is empty or absent, and stops FileCoAuth and Explorer only when they are running. Nonempty OneDrive folders, including folders containing only hidden files, are kept.
 
 ### O&O ShutUp10++
-[O&O ShutUp10++](https://www.oo-software.com/en/shutup10) can be launched from WinUtil with one click. It is a free privacy tool for Windows that helps users manage telemetry, update behavior, and app permission settings.
+[O&O ShutUp10++](https://www.oo-software.com/en/shutup10) can be launched from WinUtil with one click. It is a free privacy tool for Windows that helps users manage telemetry, update behavior, and app permission settings. The button downloads the tool (about 82 MB) each time it is clicked; hover over it to see this before starting, and, when the download size is available, the progress label shows it alongside the percentage.
 
 Watch a walkthrough:
 

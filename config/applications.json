@@ -649,7 +649,7 @@
         "foss": true
     },
     "hugo": {
-        "category": "Utilities",
+        "category": "Development",
         "choco": "hugo-extended",
         "content": "Hugo",
         "description": "The world's fastest framework for building websites.",
@@ -692,6 +692,15 @@
         "link": "https://www.cpuid.com/softwares/hwmonitor.html",
         "winget": "CPUID.HWMonitor",
         "foss": false
+    },
+    "imhex": {
+        "category": "Pro Tools",
+        "choco": "imhex",
+        "content": "ImHex",
+        "description": "ImHex is a free and open-source hex editor for reverse engineers and programmers, featuring a custom pattern language for decoding binary formats, a disassembler, and data analysis tools.",
+        "link": "https://imhex.werwolv.net/",
+        "winget": "WerWolv.ImHex",
+        "foss": true
     },
     "imageglass": {
         "category": "Multimedia Tools",
@@ -945,7 +954,7 @@
         "foss": true
     },
     "msiafterburner": {
-        "category": "Utilities",
+        "category": "Pro Tools",
         "choco": "msiafterburner",
         "content": "MSI Afterburner",
         "description": "MSI Afterburner is a graphics card overclocking utility with advanced features.",
@@ -999,7 +1008,7 @@
         "foss": true
     },
     "tailscale": {
-        "category": "Utilities",
+        "category": "Pro Tools",
         "choco": "tailscale",
         "content": "Tailscale",
         "description": "The Tailscale client allows you to connect all your devices using WireGuard®, without the hassle. Tailscale makes it as easy as installing an app and signing in.",
@@ -1070,7 +1079,7 @@
     "foss": true
     },
     "notepadplus": {
-        "category": "Multimedia Tools",
+        "category": "Development",
         "choco": "notepadplusplus",
         "content": "Notepad++",
         "description": "Notepad++ is a free, open-source code editor and Notepad replacement with support for multiple languages.",
@@ -1149,6 +1158,15 @@
         "link": "https://www.opautoclicker.com",
         "winget": "OPAutoClicker.OPAutoClicker",
         "foss": false
+    },
+    "opencode": {
+        "category": "Development",
+        "choco": "opencode",
+        "content": "OpenCode",
+        "description": "OpenCode is an open-source AI coding agent built for the terminal. It is provider-agnostic and supports local and hosted AI models.",
+        "link": "https://opencode.ai/",
+        "winget": "SST.opencode",
+        "foss": true
     },
     "openrgb": {
         "category": "Utilities",
@@ -1393,6 +1411,15 @@
         "winget": "Microsoft.Sysinternals.ProcessMonitor",
         "foss": false
     },
+    "pstools": {
+        "category": "Microsoft Tools",
+        "choco": "pstools",
+        "content": "PsTools",
+        "description": "Microsoft Sysinternals PsTools provides utilities for managing local and remote Windows systems and monitoring processes. PsExec can run processes under the SYSTEM account when the user has local administrative rights on the target system.",
+        "link": "https://learn.microsoft.com/en-us/sysinternals/downloads/pstools",
+        "winget": "Microsoft.Sysinternals.PsTools",
+        "foss": false
+    },
     "putty": {
         "category": "Pro Tools",
         "choco": "putty",
@@ -1457,7 +1484,7 @@
         "foss": false
     },
     "rufus": {
-        "category": "Utilities",
+        "category": "Pro Tools",
         "choco": "rufus",
         "content": "Rufus Imager",
         "description": "Rufus is a utility that helps format and create bootable USB drives, such as USB keys or pen drives.",
@@ -1502,7 +1529,7 @@
         "foss": false
     },
     "systeminformer": {
-        "category": "Development",
+        "category": "Pro Tools",
         "choco": "systeminformer",
         "content": "System Informer",
         "description": "A free, powerful, multi-purpose tool that helps you monitor system resources, debug software and detect malware.",
