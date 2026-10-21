@@ -127,6 +127,7 @@ Describe "Test-WinUtilPackageManager" {
 
 Describe "Install-WinUtilProgramWinget" {
     BeforeEach {
+        Mock Update-WinUtilPowerShellMSI { [pscustomobject]@{ Outcome = "NotInstalled" } }
         Mock Write-WinUtilLog { }
         Mock Start-Process { [pscustomobject]@{ ExitCode = 0 } }
     }
