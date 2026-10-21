@@ -45,7 +45,7 @@ Describe "Save-WinUtilFile" {
         [System.IO.File]::WriteAllBytes($sourcePath, $sourceBytes)
         $reportedProgress = [System.Collections.Generic.List[int]]::new()
 
-        Save-WinUtilFile -Uri ([uri]$sourcePath) -DestinationPath $destinationPath -ProgressCallback {
+        Save-WinUtilFile -Uri ([uri]::new($sourcePath, [System.UriKind]::Absolute)) -DestinationPath $destinationPath -ProgressCallback {
             param($percent)
             $reportedProgress.Add($percent)
         }
@@ -60,7 +60,7 @@ Describe "Save-WinUtilFile" {
         [System.IO.File]::WriteAllBytes($sourcePath, [byte[]](0..255))
         $reported = [System.Collections.Generic.List[hashtable]]::new()
 
-        Save-WinUtilFile -Uri ([uri]$sourcePath) -DestinationPath $destinationPath -ProgressCallback {
+        Save-WinUtilFile -Uri ([uri]::new($sourcePath, [System.UriKind]::Absolute)) -DestinationPath $destinationPath -ProgressCallback {
             param($percent, $totalBytes)
             $reported.Add(@{ Percent = $percent; Total = $totalBytes })
         }
@@ -123,7 +123,7 @@ Describe "Invoke-WPFOOSU" {
 
     It "shows the download size next to the percentage" {
         Mock Save-WinUtilFile {
-            & $ProgressCallback 35 79930408
+            & $ProgressCallback 35 85689344
         }
 
         Invoke-WPFOOSU
@@ -131,7 +131,7 @@ Describe "Invoke-WPFOOSU" {
         & $script:capturedJob.ScriptBlock @jobParameters
 
         Should -Invoke Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
-            $Status -eq "Downloading O&O ShutUp10++ (35% of 76 MB)" -and $Percent -eq 35
+            $Status -eq "Downloading O&O ShutUp10++ (35% of 82 MB)" -and $Percent -eq 35
         }
     }
 
