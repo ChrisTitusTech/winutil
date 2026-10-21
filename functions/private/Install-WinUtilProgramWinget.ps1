@@ -8,6 +8,20 @@ Function Get-WinUtilPowerShellArchitecture {
     & $Path -NoLogo -NoProfile -Command '[System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString()'
 }
 
+Function Test-WinUtilPowerShellMSIUpgradeAllowed {
+    # WinGet has no structured pin-list output, and list filters are not honored by all versions.
+    # Conservatively leave upgrades to WinGet whenever any pins exist or the check fails.
+    try {
+        $pinOutput = @(& winget pin list --accept-source-agreements --disable-interactivity 2>&1)
+        if ($LASTEXITCODE -ne 0 -or $pinOutput.Count -eq 0) { return $false }
+        $text = $pinOutput -join "`n"
+        $text = $text -replace '\x1B\[[0-9;]*[A-Za-z]', ''
+        return $text -notmatch '(?m)^\s*-{3,}\s*$'
+    } catch {
+        return $false
+    }
+}
+
 Function Update-WinUtilPowerShellMSI {
     $candidates = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*","HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*" -ErrorAction SilentlyContinue |
         Where-Object {
@@ -35,6 +49,14 @@ Function Update-WinUtilPowerShellMSI {
         return [pscustomobject]@{
             Outcome = "NotInstalled"
             Detail = "PowerShell is not installed through MSI"
+        }
+    }
+
+    if (-not (Test-WinUtilPowerShellMSIUpgradeAllowed)) {
+        Write-WinUtilLog -Component "Package" -Message "Skipping direct PowerShell MSI upgrade: WinGet pins exist or their state could not be verified."
+        return [pscustomobject]@{
+            Outcome = "Skipped"
+            Detail = "WinGet pins exist or their state could not be verified; MSI upgrade skipped"
         }
     }
 

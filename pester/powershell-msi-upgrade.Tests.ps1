@@ -5,6 +5,7 @@ Describe "PowerShell MSI upgrade" {
     }
 
     BeforeEach {
+        Mock Test-WinUtilPowerShellMSIUpgradeAllowed { $true }
         Mock Write-WinUtilLog {}
         Mock Test-Path { $true }
         Mock Remove-Item {}
@@ -236,6 +237,13 @@ Describe "PowerShell MSI upgrade" {
         Should -Invoke Get-WinUtilPowerShellVersion -Times 1 -Exactly -ParameterFilter { $Path -eq 'C:\Custom\PowerShell\7\pwsh.exe' }
     }
 
+    It "does not download an MSI when pins exist or cannot be checked" {
+        Mock Test-WinUtilPowerShellMSIUpgradeAllowed { $false }
+        (Update-WinUtilPowerShellMSI).Outcome | Should -Be 'Skipped'
+        Should -Invoke Invoke-RestMethod -Times 0 -Exactly
+        Should -Invoke Start-Process -Times 0 -Exactly
+    }
+
     It "matches official versioned MSI names" {
         Mock Get-ItemProperty { [pscustomobject]@{ WindowsInstaller = 1; DisplayName = 'PowerShell 7.5.2.0-x64'; InstallLocation = 'C:\PowerShell\7' } }
         (Update-WinUtilPowerShellMSI).Outcome | Should -Be 'Succeeded'
@@ -272,5 +280,28 @@ Describe "PowerShell MSI upgrade" {
         $result = Update-WinUtilPowerShellMSI
 
         $result.Outcome | Should -Not -Be "NotInstalled"
+    }
+}
+
+Describe "MSI pin protection" {
+    BeforeAll {
+        . "$PSScriptRoot/../functions/private/Install-WinUtilProgramWinget.ps1"
+        function winget { }
+    }
+    It "allows MSI only when pin listing succeeds without a table" {
+        Mock winget { $global:LASTEXITCODE = 0; 'No pins exist.' }
+        Test-WinUtilPowerShellMSIUpgradeAllowed | Should -BeTrue
+    }
+    It "blocks MSI for a localized pin table" {
+        Mock winget { $global:LASTEXITCODE = 0; "Nom ID Version`n-------------------`nPowerShell Microsoft.PowerShell 7.5" }
+        Test-WinUtilPowerShellMSIUpgradeAllowed | Should -BeFalse
+    }
+    It "blocks MSI when the pin command fails" {
+        Mock winget { $global:LASTEXITCODE = 1; 'error' }
+        Test-WinUtilPowerShellMSIUpgradeAllowed | Should -BeFalse
+    }
+    It "blocks MSI when the pin command produces no output" {
+        Mock winget { $global:LASTEXITCODE = 0 }
+        Test-WinUtilPowerShellMSIUpgradeAllowed | Should -BeFalse
     }
 }

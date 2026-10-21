@@ -75,3 +75,5 @@ Before uninstalling or upgrading apps, close any running programs first. Some pa
 :::
 
 For an existing stable PowerShell 7 MSI installation, selecting PowerShell or using **Upgrade All** first checks the official PowerShell release and uses a signed MSI matching the installed executable architecture. MSI failures are reported separately; Upgrade All continues with the other WinGet packages. Installations without an MSI registration retain the normal WinGet behavior.
+
+The direct MSI workaround conservatively skips PowerShell if WinGet reports any configured pins, or pin state cannot be checked. This avoids bypassing blocking or version-gating policies; Upgrade All still runs its normal WinGet operation, which honors those policies.
