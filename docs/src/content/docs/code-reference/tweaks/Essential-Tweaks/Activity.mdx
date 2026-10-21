@@ -1,6 +1,6 @@
 ---
 title: "Activity History - Disable"
-description: "Erases recent docs, clipboard, and run history."
+description: "Stops Windows from publishing or uploading user activities while preserving clipboard history."
 editUrl: false
 ---
 
@@ -11,14 +11,14 @@ This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitus
 ```json title="config/tweaks.json"
   "WPFTweaksActivity": {
     "Content": "Activity History - Disable",
-    "Description": "Erases recent docs, clipboard, and run history.",
+    "Description": "Stops Windows from publishing or uploading user activities while preserving clipboard history.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
         "Name": "EnableActivityFeed",
-        "Value": "0",
+        "Value": "1",
         "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
       },

@@ -177,6 +177,148 @@ Describe "Invoke-WinUtilTweaks" {
             $Name -eq "DiagTrack" -and $StartupType -eq "Disabled"
         }
     }
+
+    It "skips a missing service and applies the remaining services and tweaks" {
+        $script:sync.configs.tweaks.WPFTweaksExample.service = @(
+            [pscustomobject]@{
+                Name = "CscService"
+                StartupType = "Disabled"
+                OriginalType = "Manual"
+            }
+        ) + $script:sync.configs.tweaks.WPFTweaksExample.service
+
+        Mock Get-Service {
+            $exception = [Microsoft.PowerShell.Commands.ServiceCommandException]::new("Cannot find any service with service name '$Name'.")
+            $errorRecord = [System.Management.Automation.ErrorRecord]::new(
+                $exception,
+                "NoServiceFoundForGivenName,Microsoft.PowerShell.Commands.GetServiceCommand",
+                [System.Management.Automation.ErrorCategory]::ObjectNotFound,
+                $Name
+            )
+            throw $errorRecord
+        } -ParameterFilter { $Name -eq "CscService" -and $ErrorAction -eq "Stop" }
+
+        foreach ($tweak in @("WPFTweaksExample", "WPFTweaksServiceOnly")) {
+            Invoke-WinUtilTweaks -CheckBox $tweak
+        }
+
+        Should -Invoke -CommandName Write-Warning -Times 1 -Exactly -ParameterFilter {
+            $Message -eq "Service CscService was not found."
+        }
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "WARN" -and $Component -eq "Service" -and $Message -eq "Service CscService was not found."
+        }
+        Should -Invoke -CommandName Set-WinUtilService -Times 0 -Exactly -ParameterFilter {
+            $Name -eq "CscService"
+        }
+        Should -Invoke -CommandName Set-WinUtilService -Times 2 -Exactly -ParameterFilter {
+            $Name -eq "DiagTrack" -and $StartupType -eq "Disabled"
+        }
+        Should -Invoke -CommandName Invoke-WinUtilScript -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "WPFTweaksExample"
+        }
+    }
+
+    It "rethrows service lookup errors that do not identify a missing service" {
+        Mock Get-Service {
+            $exception = [Microsoft.PowerShell.Commands.ServiceCommandException]::new("Service lookup failed.")
+            $errorRecord = [System.Management.Automation.ErrorRecord]::new(
+                $exception,
+                "ServiceLookupFailed",
+                [System.Management.Automation.ErrorCategory]::OpenError,
+                $Name
+            )
+            throw $errorRecord
+        }
+
+        { Invoke-WinUtilTweaks -CheckBox "WPFTweaksExample" } | Should -Throw -ExpectedMessage "*Service lookup failed.*"
+
+        Should -Invoke -CommandName Set-WinUtilService -Times 0 -Exactly
+        Should -Invoke -CommandName Set-WinUtilRegistry -Times 0 -Exactly
+        Should -Invoke -CommandName Invoke-WinUtilScript -Times 0 -Exactly
+        Should -Invoke -CommandName Write-Warning -Times 0 -Exactly
+    }
+}
+
+Describe "Invoke-WinUtilTweaks completion status" {
+    BeforeAll {
+        . (Join-Path $script:repoRoot "functions\private\Write-WinUtilLog.ps1")
+        . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilScript.ps1")
+    }
+
+    BeforeEach {
+        $script:testRoot = Join-Path ([System.IO.Path]::GetTempPath()) "winutil-tweaks-$([guid]::NewGuid())"
+        $script:logPath = Join-Path $script:testRoot "logs\winutil_2026-09-15_12-00-00.log"
+        $script:sync = [Hashtable]::Synchronized(@{
+            logPath = $script:logPath
+            configs = @{
+                tweaks = [pscustomobject]@{
+                    WPFTweaksFailing = [pscustomobject]@{
+                        InvokeScript = @("throw 'simulated icacls failure'")
+                        UndoScript = @("throw 'simulated icacls undo failure'")
+                    }
+                    WPFTweaksClean = [pscustomobject]@{
+                        InvokeScript = @("Write-Output 'apply tweak'")
+                    }
+                    # A job worker logging an error from its own runspace lands in the shared
+                    # list without passing through this runspace's logger
+                    WPFTweaksDuringJob = [pscustomobject]@{
+                        InvokeScript = @("`$null = `$sync.LoggedErrors.Add('[Job] error from a concurrent job'); Write-Output 'apply tweak'")
+                    }
+                }
+            }
+            # Seeded with an earlier error: only errors logged during this tweak may count
+            LoggedErrors = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new(@("[UI] earlier unrelated failure")))
+        })
+        # Toggle switches run the tweak on the UI thread, outside any job worker. The runspace
+        # counter starts non-zero: only errors logged during this tweak may count
+        Remove-Variable -Name WinUtilIsJobWorker -Scope Global -ErrorAction SilentlyContinue
+        $global:WinUtilJobErrorCount = 3
+
+        Mock Write-Host { }
+        Mock Write-Warning { }
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name WinUtilJobErrorCount -Scope Global -ErrorAction SilentlyContinue
+        Remove-Item -Path $script:testRoot -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    It "warns instead of reporting completion when a tweak step logged an error" {
+        Invoke-WinUtilTweaks -CheckBox "WPFTweaksFailing"
+
+        $log = Get-Content -Path $script:logPath -Raw
+        $log | Should -Match "\[ERROR\] \[Script\] Runtime exception while running script for WPFTweaksFailing"
+        $log | Should -Match "\[WARN\] \[Tweaks\] Apply tweak finished with 1 error\(s\): WPFTweaksFailing"
+        $log | Should -Not -Match "tweak completed: WPFTweaksFailing"
+    }
+
+    It "warns when an undo step logged an error" {
+        Invoke-WinUtilTweaks -CheckBox "WPFTweaksFailing" -undo $true
+
+        $log = Get-Content -Path $script:logPath -Raw
+        $log | Should -Match "\[ERROR\] \[Script\] Runtime exception while running script for WPFTweaksFailing"
+        $log | Should -Match "\[WARN\] \[Tweaks\] Undo tweak finished with 1 error\(s\): WPFTweaksFailing"
+        $log | Should -Not -Match "tweak completed: WPFTweaksFailing"
+    }
+
+    It "reports completion when every tweak step succeeded" {
+        Invoke-WinUtilTweaks -CheckBox "WPFTweaksClean"
+
+        $log = Get-Content -Path $script:logPath -Raw
+        $log | Should -Match "\[INFO\] \[Tweaks\] Apply tweak completed: WPFTweaksClean"
+        $log | Should -Not -Match "\[WARN\]"
+        $log | Should -Not -Match "\[ERROR\]"
+    }
+
+    It "ignores an error another runspace logged while the tweak ran" {
+        Invoke-WinUtilTweaks -CheckBox "WPFTweaksDuringJob"
+
+        $log = Get-Content -Path $script:logPath -Raw
+        $log | Should -Match "\[INFO\] \[Tweaks\] Apply tweak completed: WPFTweaksDuringJob"
+        $log | Should -Not -Match "tweak finished with"
+    }
 }
 
 Describe "Invoke-WPFtweaksbutton" {
