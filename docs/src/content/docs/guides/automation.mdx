@@ -40,6 +40,8 @@ You can also launch WinUtil with an exported config using this command:
 & ([ScriptBlock]::Create((irm "https://christitus.com/win"))) -Config "C:\Path\To\Config.json"
 ```
 
+Repeated keys in an imported configuration select each entry only once. Unchecking an imported entry removes it from the selection, even if its key appeared more than once in the file.
+
 This is useful for:
 
 - Applying the same WinUtil configuration across multiple Windows 11 PCs
