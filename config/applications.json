@@ -1411,6 +1411,15 @@
         "winget": "Microsoft.Sysinternals.ProcessMonitor",
         "foss": false
     },
+    "pstools": {
+        "category": "Microsoft Tools",
+        "choco": "pstools",
+        "content": "PsTools",
+        "description": "Microsoft Sysinternals PsTools provides utilities for managing local and remote Windows systems and monitoring processes. PsExec can run processes under the SYSTEM account when the user has local administrative rights on the target system.",
+        "link": "https://learn.microsoft.com/en-us/sysinternals/downloads/pstools",
+        "winget": "Microsoft.Sysinternals.PsTools",
+        "foss": false
+    },
     "putty": {
         "category": "Pro Tools",
         "choco": "putty",
