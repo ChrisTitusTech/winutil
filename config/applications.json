@@ -17,6 +17,15 @@
         "winget": "7zip.7zip",
         "foss": true
     },
+    "abdownloadmanager": {
+        "category": "Utilities",
+        "choco": "ab-download-manager",
+        "content": "AB Download Manager",
+        "description": "AB Download Manager is an open-source download accelerator and manager with multi-threaded downloads, queue scheduling, speed limiting, and browser integration.",
+        "link": "https://abdownloadmanager.com/",
+        "winget": "amir1376.ABDownloadManager",
+        "foss": true
+    },
     "adobe": {
         "category": "Document",
         "choco": "adobereader",
@@ -497,7 +506,7 @@
     },
     "flux": {
         "category": "Utilities",
-        "choco": "flux",
+        "choco": "f.lux",
         "content": "F.lux",
         "description": "f.lux adjusts the color temperature of your screen to reduce eye strain during nighttime use.",
         "link": "https://justgetflux.com/",
@@ -866,7 +875,7 @@
     },
     "mpc-qt": {
         "category": "Multimedia Tools",
-        "choco": "mediainfo",
+        "choco": "mpc-qt",
         "content": "mpc-qt",
         "description": "Media Player Classic Qute Theater",
         "link": "https://mpc-qt.github.io",
@@ -892,7 +901,7 @@
     },
     "minitoolpartitionwizard": {
         "category": "Utilities",
-        "choco": "minitoolpartitionwizard",
+        "choco": "partitionwizard",
         "content": "MiniTool Partition Wizard",
         "description": "Comprehensive free partition manager that performs advanced operations Windows natively cannot, such as merging partitions, converting file systems, and organizing disk capacity.",
         "link": "https://www.partitionwizard.com/",
@@ -1377,7 +1386,7 @@
     },
     "processmonitor": {
         "category": "Microsoft Tools",
-        "choco": "procexp",
+        "choco": "procmon",
         "content": "Process Monitor",
         "description": "SysInternals Process Monitor is an advanced monitoring tool that shows real-time file system, registry, and process/thread activity.",
         "link": "https://docs.microsoft.com/en-us/sysinternals/downloads/procmon",
@@ -1609,6 +1618,23 @@
         "winget": "LizardByte.Sunshine",
         "foss": true
     },
+    "synctrayzor": {
+        "category": "Selfhosted Tools",
+        "choco": "synctrayzor",
+        "content": "SyncTrayzor",
+        "description": "SyncTrayzor is a Windows tray utility that bundles and wraps Syncthing, making it behave like a native application to easily manage and monitor file synchronization.",
+        "link": "https://github.com/GermanCoding/SyncTrayzor",
+        "winget": "GermanCoding.SyncTrayzor"
+    },
+    "syncthing": {
+        "category": "Selfhosted Tools",
+        "choco": "syncthing",
+        "content": "Syncthing (CLI / Web UI)",
+        "description": "Syncthing is a decentralized, peer-to-peer file synchronization tool that securely syncs files directly across devices without cloud servers, managed via a local web interface.",
+        "link": "https://syncthing.net/",
+        "winget": "Syncthing.Syncthing",
+        "foss": true
+    },
     "tcpview": {
         "category": "Microsoft Tools",
         "choco": "tcpview",
@@ -1629,7 +1655,7 @@
     },
     "teamviewer": {
         "category": "Utilities",
-        "choco": "teamviewer9",
+        "choco": "teamviewer",
         "content": "TeamViewer",
         "description": "TeamViewer is a popular remote access and support software that allows you to connect to and control remote devices.",
         "link": "https://www.teamviewer.com/",
@@ -1746,7 +1772,7 @@
     },
     "unity": {
         "category": "Development",
-        "choco": "unityhub",
+        "choco": "unity-hub",
         "content": "Unity Game Engine",
         "description": "Unity is a powerful game development platform for creating 2D, 3D, augmented reality, and virtual reality games.",
         "link": "https://unity.com/",
@@ -2016,9 +2042,8 @@
     },
     "Overwolf": {
         "category": "Games",
-        "choco": "overwolf",
-        "content": "Overwolf",
-        "description": "Popular platform for game overlays and companion apps (mod managers, trackers, etc.), widely used by gamers.",
+        "content": "CurseForge",
+        "description": "CurseForge is a desktop application for managing mods and modpacks across multiple games, powered by Overwolf.",
         "link": "https://www.overwolf.com/app/overwolf-curseforge",
         "winget": "Overwolf.CurseForge",
         "foss": false
@@ -2034,7 +2059,7 @@
     },
     "ZenBrowser": {
         "category": "Browsers",
-        "choco": "zen-browser",
+        "choco": "na",
         "content": "Zen Browser",
         "description": "The modern, privacy-focused, performance-driven browser built on Firefox.",
         "link": "https://zen-browser.app/",
@@ -2096,3 +2121,4 @@
         "foss": false
     }
 }
+

@@ -32,11 +32,20 @@ function Write-WinUtilLog {
         [switch]$Detail
     )
 
+    # UI performance diagnostics are useful to developers but are too noisy for the release
+    # transcript. Compile.ps1 stamps local builds so DEBUG output cannot leak into CI artifacts.
+    if ($Level -eq "DEBUG" -and ($null -eq $sync -or -not $sync.IsLocalCompile)) {
+        return
+    }
+
     if ($Level -eq "ERROR" -and -not $Detail -and $null -ne $sync.LoggedErrors) {
         $null = $sync.LoggedErrors.Add("[$Component] $Message")
     }
 
-    if ($Level -eq "ERROR" -and -not $Detail -and $global:WinUtilIsJobWorker) {
+    # Global scope is per runspace, so this counter only ever sees errors logged by the
+    # runspace that owns it: a job worker reads its own, and a tweak on the UI thread reads the
+    # UI thread's
+    if ($Level -eq "ERROR" -and -not $Detail) {
         $global:WinUtilJobErrorCount++
     }
 

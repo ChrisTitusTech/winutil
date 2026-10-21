@@ -50,13 +50,25 @@ function Initialize-InstallAppEntry {
         $fallback.SetResourceReference([Windows.Controls.TextBlock]::ForegroundProperty, "ToggleButtonOnColor")
         [void]$icon.Children.Add($fallback)
         if ($app.link) {
-            $fallback.Visibility = "Collapsed"
             $logo = New-Object Windows.Controls.Image
             $logo.Stretch = [Windows.Media.Stretch]::Uniform
-            $logo.Source = "https://www.google.com/s2/favicons?sz=64&domain_url=$([uri]::EscapeDataString($app.link))"
+            $fallback.Visibility = "Collapsed"
             $logo.Add_ImageFailed($handlers.ImageFailed)
 
             [void]$icon.Children.Add($logo)
+            try {
+                # Avoid reusing a cached WIC image from an earlier window in this process.
+                # Keep downloading in WPF so icons do not occupy the shared job pool.
+                $bitmap = [Windows.Media.Imaging.BitmapImage]::new()
+                $bitmap.BeginInit()
+                $bitmap.CreateOptions = [Windows.Media.Imaging.BitmapCreateOptions]::IgnoreImageCache
+                $bitmap.UriSource = [uri]"https://www.google.com/s2/favicons?sz=64&domain_url=$([uri]::EscapeDataString($app.link))"
+                $bitmap.EndInit()
+                $logo.Source = $bitmap
+            } catch {
+                $logo.Visibility = "Collapsed"
+                $fallback.Visibility = "Visible"
+            }
         }
         [void]$contentPanel.Children.Add($icon)
 

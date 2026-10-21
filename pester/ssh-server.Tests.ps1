@@ -124,7 +124,7 @@ Describe "Invoke-WinUtilSSHServer" {
 
     It "enables an existing disabled firewall rule instead of recreating it" {
         New-SshdConfig -AdministratorsBlock $script:defaultAdministratorsBlock | Out-Null
-        Mock Get-NetFirewallRule { [pscustomobject]@{ Enabled = $false } }
+        Mock Get-NetFirewallRule { [pscustomobject]@{ Enabled = 2 } }
         Mock Set-NetFirewallRule { }
         Mock New-NetFirewallRule { }
 
@@ -133,6 +133,18 @@ Describe "Invoke-WinUtilSSHServer" {
         Should -Invoke Set-NetFirewallRule -Times 1 -Exactly -ParameterFilter {
             $Name -eq "sshd" -and $Enabled -eq $true
         }
+        Should -Invoke New-NetFirewallRule -Times 0 -Exactly
+    }
+
+    It "leaves an existing enabled firewall rule unchanged" {
+        New-SshdConfig -AdministratorsBlock $script:defaultAdministratorsBlock | Out-Null
+        Mock Get-NetFirewallRule { [pscustomobject]@{ Enabled = 1 } }
+        Mock Set-NetFirewallRule { }
+        Mock New-NetFirewallRule { }
+
+        Invoke-WinUtilSSHServer
+
+        Should -Invoke Set-NetFirewallRule -Times 0 -Exactly
         Should -Invoke New-NetFirewallRule -Times 0 -Exactly
     }
 
