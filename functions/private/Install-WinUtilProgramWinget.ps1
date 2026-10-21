@@ -3,11 +3,16 @@ Function Get-WinUtilPowerShellVersion {
     & $Path -NoLogo -NoProfile -Command '$PSVersionTable.PSVersion.ToString()'
 }
 
+Function Get-WinUtilPowerShellArchitecture {
+    param ([string]$Path)
+    & $Path -NoLogo -NoProfile -Command '[System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString()'
+}
+
 Function Update-WinUtilPowerShellMSI {
     $msi = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*","HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*" -ErrorAction SilentlyContinue |
         Where-Object {
             $_.WindowsInstaller -eq 1 -and
-            $_.DisplayName -match "^PowerShell\s+7(?:\s|$)" -and
+            $_.DisplayName -match '^PowerShell\s+7(?:\.\d+){0,3}(?:-(?:x64|x86|arm64))?(?:\s|$)' -and
             $_.DisplayName -notmatch "preview|daily" -and
             $_.InstallLocation -and
             (Test-Path -LiteralPath (Join-Path $_.InstallLocation "pwsh.exe"))
@@ -34,7 +39,10 @@ Function Update-WinUtilPowerShellMSI {
             }
         }
 
-        $arch = ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture).ToString().ToLowerInvariant()
+        $arch = ([string](Get-WinUtilPowerShellArchitecture (Join-Path $msi.InstallLocation "pwsh.exe"))).Trim().ToLowerInvariant()
+        if ($arch -notin @("x64", "x86", "arm64")) {
+            throw "Unsupported installed PowerShell architecture: $arch"
+        }
         $asset = $release.assets |
             Where-Object { $_.name -match "^PowerShell-.*-win-$arch\.msi$" } |
             Select-Object -First 1
@@ -144,7 +152,7 @@ Function Install-WinUtilProgramWinget {
 
         $upgradeAll = $Action -eq "Upgrade" -and $program -eq "all"
 
-        if ($Action -in @("Install", "Upgrade") -and $program -eq "Microsoft.PowerShell") {
+        if (($Action -in @("Install", "Upgrade") -and $program -eq "Microsoft.PowerShell") -or $upgradeAll) {
             $result = Update-WinUtilPowerShellMSI
 
             if ($result.Outcome -ne "NotInstalled") {
@@ -157,7 +165,8 @@ Function Install-WinUtilProgramWinget {
                     Detail   = $result.Detail
                 }
 
-                continue
+                # Upgrade All must still update the other packages after reporting the MSI outcome.
+                if (-not $upgradeAll) { continue }
             }
         }
 

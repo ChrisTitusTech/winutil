@@ -1,7 +1,10 @@
 Describe "PowerShell MSI upgrade" {
     BeforeAll {
         . "$PSScriptRoot/../functions/private/Install-WinUtilProgramWinget.ps1"
+        . "$PSScriptRoot/../functions/private/Write-WinUtilLog.ps1"
+    }
 
+    BeforeEach {
         Mock Write-WinUtilLog {}
         Mock Test-Path { $true }
         Mock Remove-Item {}
@@ -9,13 +12,15 @@ Describe "PowerShell MSI upgrade" {
         Mock Get-ItemProperty {
             [pscustomobject]@{
                 WindowsInstaller = 1
-                DisplayName = "PowerShell 7"
+                DisplayName = "PowerShell 7-x64"
                 InstallLocation = "C:\Program Files\PowerShell\7"
                 DisplayVersion = "7.5.2"
             }
         }
 
         Mock Get-WinUtilPowerShellVersion { "7.5.2" }
+        Mock Get-WinUtilPowerShellArchitecture { "X64" }
+        Mock Start-Process { [pscustomobject]@{ ExitCode = 0 } }
 
         Mock Invoke-RestMethod {
             [pscustomobject]@{
@@ -52,17 +57,13 @@ Describe "PowerShell MSI upgrade" {
         Should -Invoke Start-Process -Times 1
     }
 
-    It "treats 3010 and 1641 as successful MSI upgrades" {
-        foreach ($exitCode in @(3010, 1641)) {
-            Mock Start-Process { [pscustomobject]@{ ExitCode = $exitCode } }
-
-            $result = Update-WinUtilPowerShellMSI
-
-            $result.Outcome | Should -Be "Succeeded"
-            $result.ExitCode | Should -Be $exitCode
-
-            Should -Invoke Start-Process -Times 1
-        }
+    It "treats reboot exit code <Code> as successful" -TestCases @(@{ Code = 3010 }, @{ Code = 1641 }) {
+        param($Code)
+        Mock Start-Process { [pscustomobject]@{ ExitCode = $Code } }
+        $result = Update-WinUtilPowerShellMSI
+        $result.Outcome | Should -Be "Succeeded"
+        $result.ExitCode | Should -Be $Code
+        Should -Invoke Start-Process -Times 1 -Exactly
     }
 
     It "reports MSI installation failure" {
@@ -203,17 +204,37 @@ Describe "PowerShell MSI upgrade" {
         }
     }
 
-    It "does not use WinGet all when MSI PowerShell is detected" {
-        Mock Start-Process { [pscustomobject]@{ ExitCode = 0 } }
-
-        Install-WinUtilProgramWinget `
-            -Action Upgrade `
-            -Programs @("all")
-
-        Should -Invoke Start-Process -Times 0 -ParameterFilter {
-            $FilePath -eq "winget" -and
-            $ArgumentList -contains "--all"
+    It "reports MSI handling and still upgrades other packages with WinGet all" {
+        $result = @(Install-WinUtilProgramWinget -Action Upgrade -Programs @("all"))
+        $result.Count | Should -Be 2
+        $result[0].Manager | Should -Be "msi"
+        $result[0].Outcome | Should -Be "Succeeded"
+        $result[1].Manager | Should -Be "winget"
+        Should -Invoke Start-Process -Times 1 -Exactly -ParameterFilter {
+            $FilePath -eq "winget" -and $ArgumentList -contains "--all"
         }
+    }
+
+    It "reports MSI failures even when the remaining upgrades succeed" {
+        Mock Update-WinUtilPowerShellMSI { [pscustomobject]@{ Outcome = 'Failed'; ExitCode = -1; Detail = 'failed' } }
+        $result = @(Install-WinUtilProgramWinget -Action Upgrade -Programs @('all'))
+        $result[0].Outcome | Should -Be 'Failed'
+        $result[1].Outcome | Should -Be 'Succeeded'
+    }
+
+    It "matches official versioned MSI names" {
+        Mock Get-ItemProperty { [pscustomobject]@{ WindowsInstaller = 1; DisplayName = 'PowerShell 7.5.2.0-x64'; InstallLocation = 'C:\PowerShell\7' } }
+        (Update-WinUtilPowerShellMSI).Outcome | Should -Be 'Succeeded'
+    }
+
+    It "uses the installed x86 architecture on a different host architecture" {
+        Mock Get-WinUtilPowerShellArchitecture { 'X86' }
+        Mock Invoke-RestMethod { [pscustomobject]@{ tag_name = 'v7.5.3'; assets = @(
+            [pscustomobject]@{ name = 'PowerShell-7.5.3-win-x86.msi'; browser_download_url = 'https://example.com/x86.msi' },
+            [pscustomobject]@{ name = 'PowerShell-7.5.3-win-x64.msi'; browser_download_url = 'https://example.com/x64.msi' }
+        ) } }
+        (Update-WinUtilPowerShellMSI).Outcome | Should -Be 'Succeeded'
+        Should -Invoke Invoke-WebRequest -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://example.com/x86.msi' }
     }
 
     It "ignores PowerShell preview installations" {
@@ -227,7 +248,7 @@ Describe "PowerShell MSI upgrade" {
                 },
                 [pscustomobject]@{
                     WindowsInstaller = 1
-                    DisplayName = "PowerShell 7"
+                    DisplayName = "PowerShell 7-x64"
                     InstallLocation = "C:\PowerShell\7"
                     DisplayVersion = "7.5.2"
                 }

@@ -73,3 +73,5 @@ If you have trouble finding an application, press `Ctrl + F` and search for its 
 :::caution
 Before uninstalling or upgrading apps, close any running programs first. Some packages may still prompt for input or fail if their source is unavailable.
 :::
+
+For an existing stable PowerShell 7 MSI installation, selecting PowerShell or using **Upgrade All** first checks the official PowerShell release and uses a signed MSI matching the installed executable architecture. MSI failures are reported separately; Upgrade All continues with the other WinGet packages. Installations without an MSI registration retain the normal WinGet behavior.
