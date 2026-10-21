@@ -29,7 +29,7 @@ Function Update-WinUtilPowerShellMSI {
             $_.DisplayName -match '^PowerShell\s+7(?:\.\d+){0,3}(?:-(?:x64|x86|arm64))?(?:\s|$)' -and
             $_.DisplayName -notmatch "preview|daily"
         }
-    $msi = $null
+    $locations = @()
     foreach ($candidate in $candidates) {
         $location = $candidate.InstallLocation
         if (-not $location) {
@@ -40,17 +40,24 @@ Function Update-WinUtilPowerShellMSI {
             $location = $registration.InstallLocation
         }
         if ($location -and (Test-Path -LiteralPath (Join-Path $location "pwsh.exe"))) {
-            $msi = [pscustomobject]@{ InstallLocation = $location }
-            break
+            $location = ([string]$location).TrimEnd([char[]]'\/')
+            if ($locations -notcontains $location) { $locations += $location }
         }
     }
 
-    if (-not $msi) {
+    if ($locations.Count -eq 0) {
         return [pscustomobject]@{
             Outcome = "NotInstalled"
             Detail = "PowerShell is not installed through MSI"
         }
     }
+
+    if ($locations.Count -gt 1) {
+        $detail = "Multiple stable PowerShell MSI installations detected; upgrade each installation manually. No direct MSI upgrade was attempted."
+        Write-WinUtilLog -Level "ERROR" -Component "Package" -Message $detail
+        return [pscustomobject]@{ Outcome = "Failed"; ExitCode = -1; Detail = $detail }
+    }
+    $msi = [pscustomobject]@{ InstallLocation = $locations[0] }
 
     if (-not (Test-WinUtilPowerShellMSIUpgradeAllowed)) {
         Write-WinUtilLog -Component "Package" -Message "Skipping direct PowerShell MSI upgrade: WinGet pins exist or their state could not be verified."
@@ -112,12 +119,18 @@ Function Update-WinUtilPowerShellMSI {
                 throw "PowerShell MSI installation failed with exit code $($install.ExitCode)"
             }
 
-            Write-WinUtilLog -Component "Package" -Message "PowerShell MSI upgrade succeeded (exit code $($install.ExitCode))"
+            $detail = switch ($install.ExitCode) {
+                3010 { "PowerShell MSI upgrade succeeded; a restart is required to finish" }
+                1641 { "PowerShell MSI upgrade succeeded; the installer started a restart" }
+                default { "PowerShell MSI upgrade succeeded" }
+            }
+            Write-WinUtilLog -Component "Package" -Message "$detail (exit code $($install.ExitCode))"
+            if ($install.ExitCode -in @(3010, 1641)) { Write-Host $detail }
 
             return [pscustomobject]@{
                 Outcome = "Succeeded"
                 ExitCode = $install.ExitCode
-                Detail = "PowerShell MSI upgrade succeeded"
+                Detail = $detail
             }
         }
         finally {

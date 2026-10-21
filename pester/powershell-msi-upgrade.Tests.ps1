@@ -7,6 +7,7 @@ Describe "PowerShell MSI upgrade" {
     BeforeEach {
         Mock Test-WinUtilPowerShellMSIUpgradeAllowed { $true }
         Mock Write-WinUtilLog {}
+        Mock Write-Host {}
         Mock Test-Path { $true }
         Mock Remove-Item {}
 
@@ -64,6 +65,10 @@ Describe "PowerShell MSI upgrade" {
         $result = Update-WinUtilPowerShellMSI
         $result.Outcome | Should -Be "Succeeded"
         $result.ExitCode | Should -Be $Code
+        $expected = if ($Code -eq 3010) { 'restart is required' } else { 'started a restart' }
+        $result.Detail | Should -Match $expected
+        Should -Invoke Write-Host -Times 1 -Exactly -ParameterFilter { $Object -match $expected }
+        Should -Invoke Write-WinUtilLog -Times 1 -Exactly -ParameterFilter { $Message -match $expected }
         Should -Invoke Start-Process -Times 1 -Exactly
     }
 
@@ -242,6 +247,31 @@ Describe "PowerShell MSI upgrade" {
         (Update-WinUtilPowerShellMSI).Outcome | Should -Be 'Skipped'
         Should -Invoke Invoke-RestMethod -Times 0 -Exactly
         Should -Invoke Start-Process -Times 0 -Exactly
+    }
+
+    It "reports unsupported side-by-side MSI installations without upgrading either" {
+        Mock Get-ItemProperty {
+            @(
+                [pscustomobject]@{ WindowsInstaller = 1; DisplayName = 'PowerShell 7-x64'; InstallLocation = 'C:\PowerShell-x64\7' },
+                [pscustomobject]@{ WindowsInstaller = 1; DisplayName = 'PowerShell 7-x86'; InstallLocation = 'C:\PowerShell-x86\7' }
+            )
+        }
+        $result = Install-WinUtilProgramWinget -Action Install -Programs @('Microsoft.PowerShell')
+        $result.Outcome | Should -Be 'Failed'
+        $result.Detail | Should -Match 'Multiple stable PowerShell MSI installations'
+        Should -Invoke Invoke-RestMethod -Times 0 -Exactly
+        Should -Invoke Start-Process -Times 0 -Exactly
+    }
+
+    It "does not treat duplicate registration of one path as multiple installations" {
+        Mock Get-ItemProperty {
+            @(
+                [pscustomobject]@{ WindowsInstaller = 1; DisplayName = 'PowerShell 7-x64'; InstallLocation = 'C:\PowerShell\7' },
+                [pscustomobject]@{ WindowsInstaller = 1; DisplayName = 'PowerShell 7-x64'; InstallLocation = 'C:\powershell\7\' }
+            )
+        }
+        (Update-WinUtilPowerShellMSI).Outcome | Should -Be 'Succeeded'
+        Should -Invoke Start-Process -Times 1 -Exactly
     }
 
     It "matches official versioned MSI names" {
