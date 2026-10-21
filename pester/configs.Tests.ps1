@@ -1,6 +1,8 @@
-#===========================================================================
+#====================================================================    }
+
 # Tests - Config Files
-#===========================================================================
+#====================================================================    }
+
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $configRoot = Join-Path $PSScriptRoot "..\config"
@@ -230,6 +232,41 @@ Describe "Tweaks config" {
         $splittingScripts | Should -Match '3670016'
     }
 
+    It "does not claim the same registry value with conflicting originals or types" -TestCases $testCase {
+        param([string]$Path)
+
+        $tweaks = Get-Content -Path $Path -Raw | ConvertFrom-Json
+        $claims = @{}
+
+        foreach ($tweak in $tweaks.PSObject.Properties) {
+            foreach ($registryEntry in @($tweak.Value.registry)) {
+                if ($null -eq $registryEntry -or $registryEntry.Values) { continue }
+
+                $key = "$($registryEntry.Path)|$($registryEntry.Name)"
+                if (-not $claims.ContainsKey($key)) {
+                    $claims[$key] = @{}
+                }
+                $claims[$key][$tweak.Name] = [pscustomobject]@{
+                    OriginalValue = [string]$registryEntry.OriginalValue
+                    Type          = [string]$registryEntry.Type
+                }
+            }
+        }
+
+        $conflicts = New-Object System.Collections.Generic.List[string]
+        foreach ($key in $claims.Keys) {
+            $variants = @($claims[$key].Values | Select-Object -Unique -Property OriginalValue, Type)
+            if ($variants.Count -gt 1) {
+                $owners = ($claims[$key].Keys | Sort-Object) -join ", "
+                $conflicts.Add("$key claimed with conflicting originals/types by: $owners")
+            }
+        }
+
+        if ($conflicts.Count -gt 0) {
+            throw ($conflicts -join "`n")
+        }
+    }
+
     It "keeps the location service disabled" -TestCases $testCase {
         param([string]$Path)
 
@@ -238,6 +275,46 @@ Describe "Tweaks config" {
 
         $locationServices | Should -HaveCount 1
         $locationServices[0].StartupType | Should -Be "Disabled"
+    }
+
+    It "disables Windows Error Reporting through the service schema" -TestCases $testCase {
+        param([string]$Path)
+
+        $tweaks = Get-Content -Path $Path -Raw | ConvertFrom-Json
+        $telemetry = $tweaks.WPFTweaksTelemetry
+        $errorReporting = @($telemetry.service | Where-Object Name -eq "WerSvc")
+
+        $errorReporting | Should -HaveCount 1
+        $errorReporting[0].StartupType | Should -Be "Disabled"
+        $errorReporting[0].OriginalType | Should -Be "Manual"
+
+        # Telemetry and error reporting must coexist after merging their independent fixes.
+        $diagnostics = @($telemetry.service | Where-Object Name -eq "diagtrack")
+        $diagnostics | Should -HaveCount 1
+        $diagnostics[0].StartupType | Should -Be "Disabled"
+        $diagnostics[0].OriginalType | Should -Be "Automatic"
+        ((@($telemetry.InvokeScript) + @($telemetry.UndoScript)) -join "`n") |
+            Should -Not -Match 'Set-Service\s+-Name\s+diagtrack'
+
+        # wermgr is an executable, not a service, so Set-Service on it failed on every run (#5145)
+        $scripts = (@($telemetry.InvokeScript) + @($telemetry.UndoScript)) -join "`n"
+        $scripts | Should -Not -Match "wermgr"
+    }
+
+    It "removes the feedback period value through the registry schema" -TestCases $testCase {
+        param([string]$Path)
+
+        $tweaks = Get-Content -Path $Path -Raw | ConvertFrom-Json
+        $telemetry = $tweaks.WPFTweaksTelemetry
+        $period = @($telemetry.registry | Where-Object Name -eq "PeriodInNanoSeconds")
+
+        $period | Should -HaveCount 1
+        $period[0].Path | Should -Be "HKCU:\Software\Microsoft\Siuf\Rules"
+        $period[0].Value | Should -Be "<RemoveEntry>"
+
+        # A bare Remove-ItemProperty in the script errored on a fresh install, where the value
+        # does not exist yet (#5145); Set-WinUtilRegistry treats an absent value as removed.
+        (@($telemetry.InvokeScript) -join "`n") | Should -Not -Match "Remove-ItemProperty"
     }
 
     $icaclsPrincipalCases = @(
@@ -269,6 +346,32 @@ Describe "Tweaks config" {
         $sidCount = ([regex]::Matches($scripts, [regex]::Escape($Sid))).Count
 
         $sidCount | Should -Be $ExpectedCount -Because "$Tweak must pass $Sid to icacls at every call site instead of a localized account name"
+    }
+}
+
+Describe "Config scripts changing services" {
+    It "guards every Set-Service call in a config script with a service or template existence check" {
+        $unguarded = New-Object System.Collections.Generic.List[string]
+
+        foreach ($configFile in (Get-ChildItem -Path $script:configRoot -Filter *.json)) {
+            $config = Get-Content -Path $configFile.FullName -Raw | ConvertFrom-Json
+            foreach ($entry in $config.PSObject.Properties) {
+                foreach ($field in @("InvokeScript", "UndoScript")) {
+                    if (-not (Test-WinUtilHasProperty -Object $entry.Value -Name $field)) { continue }
+
+                    foreach ($scriptText in @($entry.Value.$field)) {
+                        if ([string]$scriptText -notmatch 'Set-Service') { continue }
+                        if ([string]$scriptText -notmatch 'Get-Service|Test-Path -LiteralPath.*CurrentControlSet') {
+                            $unguarded.Add("$($configFile.Name):$($entry.Name).$field")
+                        }
+                    }
+                }
+            }
+        }
+
+        if ($unguarded.Count -gt 0) {
+            throw ("Unguarded Set-Service calls abort the rest of their script block when the service is missing:`n" + ($unguarded -join "`n"))
+        }
     }
 }
 
