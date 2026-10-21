@@ -33,7 +33,9 @@ To create your own config file:
 
 Local configuration paths are used exactly as provided when importing or exporting. Square brackets in folder or file names, such as `C:\Configs\setup[1].json`, are treated as part of the name rather than wildcard patterns.
 
-Once you have exported a config, launch WinUtil with it using this command:
+Export also copies a command to the clipboard that launches WinUtil with the saved configuration. The copied command preserves special characters in the path, including apostrophes, dollar signs, and backticks.
+
+You can also launch WinUtil with an exported config using this command:
 ```powershell
 & ([ScriptBlock]::Create((irm "https://christitus.com/win"))) -Config "C:\Path\To\Config.json"
 ```
