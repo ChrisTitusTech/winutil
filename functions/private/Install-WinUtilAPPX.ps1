@@ -75,11 +75,19 @@ function Install-WinUtilAPPX {
     }
 
     if ([string]::IsNullOrWhiteSpace($StoreId)) {
+        # A package with no local manifest and no Store ID cannot be installed. Report it as a
+        # result rather than throwing so the remaining selected packages still run and the job
+        # summary names this one; Complete-WinUtilPackageRun fails the job on the Failed outcome.
         $errorMessage = "Unable to install $Name because no local manifest or Microsoft Store ID is available."
         Write-WinUtilLog -Level "ERROR" -Component "AppX" -Message $errorMessage
-        $exception = [System.InvalidOperationException]::new($errorMessage)
-        $exception.Data["WinUtilErrorReported"] = $true
-        throw $exception
+        return [pscustomobject]@{
+            Package  = $Name
+            Manager  = "appx"
+            Action   = "Install"
+            ExitCode = 1
+            Outcome  = "Failed"
+            Detail   = $errorMessage
+        }
     }
 
     Write-WinUtilLog -Component "AppX" -Message "No usable local manifest found for $Name. Installing Microsoft Store product $StoreId."
