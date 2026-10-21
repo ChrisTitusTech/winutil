@@ -123,6 +123,30 @@ Describe "Invoke-WinUtilCurrentSystem installed apps" {
         $result | Should -Not -Contain "WPFInstallMissing"
     }
 
+    It "matches the widest ID when its version has only one preceding space (<Mode>)" -TestCases @(
+        @{ Mode = "winget" }
+        @{ Mode = "choco" }
+    ) {
+        param($Mode)
+        Mock winget {
+            $global:LASTEXITCODE = 0
+            @(
+                "Name     Id           Version Source",
+                "------------------------------------",
+                "Git      Git.Git      2.0     winget",
+                "ChatGPT  9NT1R1C2HH7J 1.0     msstore"
+            )
+        }
+
+        $result = @(Invoke-WinUtilCurrentSystem -CheckBox $Mode)
+
+        $result | Should -HaveCount 2
+        $result | Should -Contain "WPFInstallGit"
+        $result | Should -Contain "WPFInstallChatGPT"
+        $result | Should -Not -Contain "WPFInstallMissing"
+        Should -Invoke -CommandName winget -Times 1 -Exactly
+    }
+
     It "matches IDs only in the Id column, not inside a package name" {
         Mock winget {
             $global:LASTEXITCODE = 0
