@@ -218,6 +218,20 @@ Describe "Tweaks config" {
         }
     }
 
+    It "keeps the svchost split threshold out of the services tweak" -TestCases $testCase {
+        param([string]$Path)
+
+        $tweaks = Get-Content -Path $Path -Raw | ConvertFrom-Json
+
+        $tweaks.WPFTweaksServices.InvokeScript | Should -BeNullOrEmpty
+
+        $invokeScript = @($tweaks.WPFTweaksSvcHostSplitting.InvokeScript) -join "`n"
+        $undoScript = @($tweaks.WPFTweaksSvcHostSplitting.UndoScript) -join "`n"
+        $invokeScript | Should -Match 'SvcHostSplitThresholdInKB'
+        $undoScript | Should -Match 'SvcHostSplitThresholdInKB'
+        $undoScript | Should -Match '3670016'
+    }
+
     It "does not claim the same registry value with conflicting originals or types" -TestCases $testCase {
         param([string]$Path)
 

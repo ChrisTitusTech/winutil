@@ -145,7 +145,7 @@
   },
   "WPFTweaksServices": {
     "Content": "Services - Set to Manual",
-    "Description": "Sets some services to Manual startup and adjusts the SvcHostSplitThresholdInKB registry value to better match system memory, which can significantly reduce the number of svchost.exe processes.",
+    "Description": "Sets some services to Manual startup.",
     "category": "Essential Tweaks",
     "panel": "1",
     "service": [
@@ -175,13 +175,27 @@
         "OriginalType": "Automatic"
       }
     ],
+    "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/services"
+  },
+  "WPFTweaksSvcHostSplitting": {
+    "Content": "svchost.exe Splitting - Disable",
+    "Description": "Disables service-host splitting to reduce the number of svchost.exe processes and modestly lower memory overhead. Recommended for low-performance systems with 12 GB of RAM or less. Can interfere with Xbox services. Restart Windows after changing this setting.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
     "InvokeScript": [
       "
+      # A threshold above the physical memory disables svchost service splitting
       $Memory = (Get-CimInstance Win32_PhysicalMemory | Measure-Object Capacity -Sum).Sum / 1KB
-      Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value $Memory
+      Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value $Memory -Type DWord
       "
     ],
-    "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/services"
+    "UndoScript": [
+      "
+      # Windows client default (0x380000): splitting back on
+      Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value 3670016 -Type DWord -Force
+      "
+    ],
+    "link": "https://winutil.christitus.com/guides/tweaks/#advanced-tweaks-caution"
   },
   "WPFTweaksBraveDebloat": {
     "Content": "Brave Browser - Debloat",
