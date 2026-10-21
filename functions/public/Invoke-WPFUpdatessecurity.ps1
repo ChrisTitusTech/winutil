@@ -25,6 +25,15 @@ function Invoke-WPFUpdatessecurity {
     Remove-ItemProperty -Path $automaticUpdatePolicyPath -Name "NoAutoUpdate" -ErrorAction SilentlyContinue
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -ErrorAction SilentlyContinue
 
+    # Win11 Creator blocks Windows Update until its first-logon cleanup runs. Clear anything left of that block,
+    # but keep a real WSUS server.
+    Remove-ItemProperty -Path $windowsUpdatePolicyPath -Name "DisableWindowsUpdateAccess" -ErrorAction SilentlyContinue
+    if ((Get-ItemProperty -Path $windowsUpdatePolicyPath -Name "WUServer" -ErrorAction SilentlyContinue).WUServer -eq "http://localhost:8080") {
+        Remove-ItemProperty -Path $windowsUpdatePolicyPath -Name "WUServer" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path $windowsUpdatePolicyPath -Name "WUStatusServer" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path $automaticUpdatePolicyPath -Name "UseWUServer" -ErrorAction SilentlyContinue
+    }
+
     Set-Service -Name BITS -StartupType Manual
     Set-Service -Name wuauserv -StartupType Manual
     Set-Service -Name UsoSvc -StartupType Automatic
@@ -42,16 +51,24 @@ function Invoke-WPFUpdatessecurity {
         Get-ScheduledTask -TaskPath $Task -ErrorAction SilentlyContinue | Enable-ScheduledTask -ErrorAction SilentlyContinue
     }
 
-    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Force
+    # New-Item -Force on an existing registry key deletes the key and its subkeys first, so only
+    # create missing keys and keep any other policies already stored under them.
+    if (-not (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata")) {
+        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Force | Out-Null
+    }
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Name "PreventDeviceMetadataFromNetwork" -Type DWord -Value 1
 
-    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Force
+    if (-not (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching")) {
+        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Force | Out-Null
+    }
 
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontPromptForWindowsUpdate" -Type DWord -Value 1
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontSearchWindowsUpdate" -Type DWord -Value 1
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DriverUpdateWizardWuSearchEnabled" -Type DWord -Value 0
 
-    New-Item -Path $windowsUpdatePolicyPath -Force
+    if (-not (Test-Path $windowsUpdatePolicyPath)) {
+        New-Item -Path $windowsUpdatePolicyPath -Force | Out-Null
+    }
     Set-ItemProperty -Path $windowsUpdatePolicyPath -Name "ExcludeWUDriversInQualityUpdate" -Type DWord -Value 1
 
     Write-Host "Deferring feature updates by 365 days and quality updates by 4 days..."
@@ -70,7 +87,9 @@ function Invoke-WPFUpdatessecurity {
     Write-Host "Configuring automatic updates to download and notify before installation..."
     Write-WinUtilLog -Component "Updates" -Message "Configuring automatic updates to download and notify before installation."
 
-    New-Item -Path $automaticUpdatePolicyPath -Force
+    if (-not (Test-Path $automaticUpdatePolicyPath)) {
+        New-Item -Path $automaticUpdatePolicyPath -Force | Out-Null
+    }
 
     # Remove the previous scheduled-install reboot policy when switching to download-and-notify.
     Remove-ItemProperty -Path $automaticUpdatePolicyPath -Name "NoAutoRebootWithLoggedOnUsers" -ErrorAction SilentlyContinue
