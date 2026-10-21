@@ -145,7 +145,7 @@
   },
   "WPFTweaksServices": {
     "Content": "Services - Set to Manual",
-    "Description": "Sets some services to Manual startup and adjusts the SvcHostSplitThresholdInKB registry value to better match system memory, which can significantly reduce the number of svchost.exe processes.",
+    "Description": "Sets some services to Manual startup.",
     "category": "Essential Tweaks",
     "panel": "1",
     "service": [
@@ -175,13 +175,27 @@
         "OriginalType": "Automatic"
       }
     ],
+    "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/services"
+  },
+  "WPFTweaksSvcHostSplitting": {
+    "Content": "svchost.exe Splitting - Disable",
+    "Description": "Disables service-host splitting to reduce the number of svchost.exe processes and modestly lower memory overhead. Recommended for low-performance systems with 12 GB of RAM or less. Can interfere with Xbox services. Restart Windows after changing this setting.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
     "InvokeScript": [
       "
+      # A threshold above the physical memory disables svchost service splitting
       $Memory = (Get-CimInstance Win32_PhysicalMemory | Measure-Object Capacity -Sum).Sum / 1KB
-      Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value $Memory
+      Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value $Memory -Type DWord
       "
     ],
-    "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/services"
+    "UndoScript": [
+      "
+      # Windows client default (0x380000): splitting back on
+      Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value 3670016 -Type DWord -Force
+      "
+    ],
+    "link": "https://winutil.christitus.com/guides/tweaks/#advanced-tweaks-caution"
   },
   "WPFTweaksBraveDebloat": {
     "Content": "Brave Browser - Debloat",
@@ -448,6 +462,18 @@
     "Description": "Disables Microsoft Telemetry.",
     "category": "Essential Tweaks",
     "panel": "1",
+    "service": [
+      {
+        "Name": "diagtrack",
+        "StartupType": "Disabled",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "WerSvc",
+        "StartupType": "Disabled",
+        "OriginalType": "Manual"
+      }
+    ],
     "registry": [
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo",
@@ -532,6 +558,13 @@
         "Value": "0",
         "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Siuf\\Rules",
+        "Name": "PeriodInNanoSeconds",
+        "Value": "<RemoveEntry>",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "InvokeScript": [
@@ -539,28 +572,14 @@
       # Disable Defender Auto Sample Submission
       Set-MpPreference -SubmitSamplesConsent 2
 
-      # Disable (Connected User Experiences and Telemetry) Service
-      Set-Service -Name diagtrack -StartupType Disabled
-
-      # Disable (Windows Error Reporting Manager) Service
-      Set-Service -Name wermgr -StartupType Disabled
-
       # Disable PowerShell 7 telemetry
       [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
-
-      Remove-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Siuf\\Rules\" -Name PeriodInNanoSeconds
       "
     ],
     "UndoScript": [
       "
       # Enable Defender Auto Sample Submission
       Set-MpPreference -SubmitSamplesConsent 1
-
-      # Enable (Connected User Experiences and Telemetry) Service
-      Set-Service -Name diagtrack -StartupType Automatic
-
-      # Enable (Windows Error Reporting Manager) Service
-      Set-Service -Name wermgr -StartupType Automatic
 
       # Enable PowerShell 7 telemetry
       [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '', 'Machine')
@@ -591,9 +610,16 @@
     "panel": "1",
     "InvokeScript": [
       "
-      $Path = Resolve-Path -Path \"$Env:ProgramFiles (x86)\\Microsoft\\Edge\\Application\\*\\Installer\\setup.exe\" | Select-Object -Last 1
+      $EdgeAppDir = \"$Env:ProgramFiles (x86)\\Microsoft\\Edge\\Application\"
+      $Path = $null
+      if (Test-Path -LiteralPath $EdgeAppDir -ErrorAction Stop) {
+          $InstallerPattern = Join-Path $EdgeAppDir \"*\\Installer\\setup.exe\"
+          if (Test-Path -Path $InstallerPattern -ErrorAction Stop) {
+              $Path = Resolve-Path -Path $InstallerPattern -ErrorAction Stop | Select-Object -Last 1
+          }
+      }
 
-      if (Test-Path $Path) {
+      if ($Path) {
           New-Item -Path \"$Env:SystemRoot\\SystemApps\\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\\MicrosoftEdge.exe\" -Force
           Start-Process -FilePath $Path -ArgumentList \"--uninstall --system-level --force-uninstall --delete-profile\" -Wait
           Write-Host \"Microsoft Edge was removed\"
@@ -646,30 +672,55 @@
     "panel": "1",
     "InvokeScript": [
       "
-      # Deny permission to remove OneDrive folder
-      icacls $Env:OneDrive /deny \"*S-1-5-32-544:(D,DC)\"
+      $OneDrivePath = $Env:OneDrive
+      $OneDriveFolderExists = -not [string]::IsNullOrWhiteSpace($OneDrivePath) -and (Test-Path -LiteralPath $OneDrivePath -PathType Container -ErrorAction Stop)
 
-      Write-Host \"Uninstalling OneDrive...\"
-      Start-Process -FilePath (Join-Path $Env:SystemRoot \"System32\\OneDriveSetup.exe\") -ArgumentList '/uninstall' -Wait
+      if ($OneDriveFolderExists) {
+          $OneDriveAcl = Get-Acl -LiteralPath $OneDrivePath -ErrorAction Stop
+      } else {
+          Write-Host \"OneDrive folder is already absent; skipping folder permissions and cleanup.\"
+      }
 
-      # Some of OneDrive files use explorer, and OneDrive uses FileCoAuth
-      Write-Host \"Removing leftover OneDrive Files...\"
+      try {
+          if ($OneDriveFolderExists) {
+              # Protect user files while the uninstaller runs.
+              icacls $OneDrivePath /deny \"*S-1-5-32-544:(D,DC)\"
+              if ($LASTEXITCODE -ne 0) { throw \"Unable to protect the OneDrive folder (icacls exit code $LASTEXITCODE).\" }
+          }
 
-      Stop-Process -Name FileCoAuth,Explorer
+          Write-Host \"Uninstalling OneDrive...\"
+          Start-Process -FilePath (Join-Path $Env:SystemRoot \"System32\\OneDriveSetup.exe\") -ArgumentList '/uninstall' -Wait -ErrorAction Stop
 
-      Remove-Item \"$Env:LocalAppData\\Microsoft\\OneDrive\" -Recurse -Force
-      Remove-Item \"$Env:ProgramData\\Microsoft OneDrive\" -Recurse -Force
+          # Some of OneDrive files use explorer, and OneDrive uses FileCoAuth
+          Write-Host \"Removing leftover OneDrive Files...\"
 
-      # Grant back permission to access OneDrive folder
-      icacls $Env:OneDrive /grant \"*S-1-5-32-544:(D,DC)\"
+          Get-Process -ErrorAction Stop | Where-Object ProcessName -eq 'FileCoAuth' | Stop-Process -ErrorAction Stop
+          Get-Process -ErrorAction Stop | Where-Object ProcessName -eq 'Explorer' | Stop-Process -ErrorAction Stop
 
-      if (-not (Get-ChildItem -Path $Env:OneDrive)) {
-          Remove-Item -Path $Env:OneDrive -Recurse
+          $OneDriveLeftovers = @(\"$Env:LocalAppData\\Microsoft\\OneDrive\", \"$Env:ProgramData\\Microsoft OneDrive\")
+          foreach ($LeftoverPath in $OneDriveLeftovers) {
+              if (Test-Path -LiteralPath $LeftoverPath -ErrorAction Stop) {
+                  Remove-Item -LiteralPath $LeftoverPath -Recurse -Force -ErrorAction Stop
+              }
+          }
+      } finally {
+          if ($OneDriveFolderExists) {
+              # Restore access even when uninstall or leftover cleanup fails.
+              Set-Acl -LiteralPath $OneDrivePath -AclObject $OneDriveAcl -ErrorAction Stop
+          }
+      }
+
+      if ($OneDriveFolderExists -and -not (Get-ChildItem -LiteralPath $OneDrivePath -Force -ErrorAction Stop)) {
+          # Refuse to delete if files appeared after the emptiness check.
+          [System.IO.Directory]::Delete($OneDrivePath, $false)
           [Environment]::SetEnvironmentVariable('OneDrive', $null, 'User')
       }
 
-      # Disable OneSyncSvc
-      Set-Service -Name OneSyncSvc -StartupType Disabled
+      # OneSyncSvc is a per-user template; Get-Service only exposes user instances.
+      # Skip the operation if this Windows installation has no template.
+      if (Test-Path -LiteralPath 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\OneSyncSvc') {
+          Set-Service -Name OneSyncSvc -StartupType Disabled
+      }
       "
     ],
     "UndoScript": [
@@ -677,8 +728,10 @@
       Write-Host \"Installing OneDrive\"
       winget install Microsoft.Onedrive --source winget
 
-      # Enabled OneSyncSvc
-      Set-Service -Name OneSyncSvc -StartupType Automatic
+      # Enable OneSyncSvc when the per-user service template exists
+      if (Test-Path -LiteralPath 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\OneSyncSvc') {
+          Set-Service -Name OneSyncSvc -StartupType Automatic
+      }
       "
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/removeonedrive"
@@ -744,7 +797,7 @@
         "Path": "HKCU:\\Control Panel\\Keyboard",
         "Name": "KeyboardDelay",
         "Value": "0",
-        "Type": "DWord",
+        "Type": "String",
         "OriginalValue": "1"
       },
       {
@@ -785,20 +838,6 @@
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "Name": "TaskbarMn",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "Name": "ShowTaskViewButton",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
-        "Name": "SearchboxTaskbarMode",
         "Value": "0",
         "Type": "DWord",
         "OriginalValue": "1"
@@ -920,8 +959,20 @@
           Remove-AppxPackage $Appx
       }
 
-      Set-Service -Name WSAIFabricSvc -StartupType Disabled
-      Disable-WindowsOptionalFeature -FeatureName Recall -Online -NoRestart
+      # WSAIFabricSvc only exists on some Windows 11 builds; without the guard a
+      # missing service aborts the rest of this script block and Recall stays enabled
+      if (Get-Service -Name WSAIFabricSvc -ErrorAction SilentlyContinue) {
+          Set-Service -Name WSAIFabricSvc -StartupType Disabled
+      }
+      # Store/MSIX PowerShell 7 can hang or fail COM activation in DISM.
+      $RecallCommand = {
+          Disable-WindowsOptionalFeature -FeatureName Recall -Online -NoRestart -ErrorAction Stop | Out-Null
+      }
+      $RecallOutput = powershell.exe -NoProfile -NonInteractive -Command $RecallCommand 2>&1
+      if ($LASTEXITCODE -ne 0) {
+          throw \"Failed to disable Recall (exit code $LASTEXITCODE): $(($RecallOutput | Out-String).Trim())\"
+      }
+      $RecallOutput | ForEach-Object { Write-Host $_ }
 
       Write-Host \"Windows AI Disabled\"
       "
@@ -1529,7 +1580,7 @@
         "Path": "HKCU:\\Control Panel\\Mouse",
         "Name": "MouseSpeed",
         "Value": "1",
-        "Type": "DWord",
+        "Type": "String",
         "OriginalValue": "0",
         "DefaultState": "true"
       },
@@ -1537,7 +1588,7 @@
         "Path": "HKCU:\\Control Panel\\Mouse",
         "Name": "MouseThreshold1",
         "Value": "6",
-        "Type": "DWord",
+        "Type": "String",
         "OriginalValue": "0",
         "DefaultState": "true"
       },
@@ -1545,7 +1596,7 @@
         "Path": "HKCU:\\Control Panel\\Mouse",
         "Name": "MouseThreshold2",
         "Value": "10",
-        "Type": "DWord",
+        "Type": "String",
         "OriginalValue": "0",
         "DefaultState": "true"
       }
@@ -1875,6 +1926,7 @@
   },
   "WPFOOSUbutton": {
     "Content": "O&O ShutUp10++ - Run",
+    "Description": "Downloads O&O ShutUp10++ (about 82 MB) from oo-software.com on every click and launches it. Nothing is installed; the file is saved under %LocalAppData%\\winutil.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Type": "Button",

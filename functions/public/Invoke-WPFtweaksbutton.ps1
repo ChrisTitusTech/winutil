@@ -53,7 +53,8 @@ function Invoke-WPFtweaksbutton {
     }
 
     foreach ($tweak in $tweaksToRun) {
-      Step-WinUtilJob -Status "Applying $tweak ($($completedSteps + 1)/$totalSteps)" -Percent ([int](($completedSteps / $totalSteps) * 100))
+      $tweakLabel = Get-WinUtilTweakDisplayName -Key $tweak
+      Step-WinUtilJob -Status "Applying $tweakLabel ($($completedSteps + 1)/$totalSteps)" -Percent ([int](($completedSteps / $totalSteps) * 100))
       Measure-WinUtilStep -Scope "Tweaks" -Name $tweak -ScriptBlock {
         Invoke-WinUtilTweaks $tweak
       }

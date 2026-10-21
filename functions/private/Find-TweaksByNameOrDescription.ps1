@@ -255,6 +255,9 @@ function Find-TweaksByNameOrDescription {
                                     $checkboxContentStr = [string]$checkboxContent
                                     $checkboxToolTipStr = [string]$checkboxToolTip
 
+                                    # Match the preset key but not the "Preset key: " label added by Get-WinUtilEntryToolTip
+                                    $checkboxToolTipStr = $checkboxToolTipStr.Replace("Preset key: ", "")
+
                                     # Use IndexOf for literal matching (no wildcard interpretation)
                                     $contentMatch = $checkboxContentStr.IndexOf($searchTerm, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
                                     $toolTipMatch = $checkboxToolTipStr.IndexOf($searchTerm, [System.StringComparison]::OrdinalIgnoreCase) -ge 0

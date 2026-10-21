@@ -8,9 +8,14 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilTweaks.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFtweaksbutton.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFundoall.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilTweakDisplayName.ps1")
 
     function Set-WinUtilService {
         param($Name, $StartupType)
+    }
+    function Get-Service {
+        [CmdletBinding()]
+        param($Name)
     }
     function Set-WinUtilRegistry {
         param($Name, $Path, $Type, $Value)
@@ -136,9 +141,16 @@ Describe "Invoke-WinUtilTweaks" {
     }
 
     It "uses original registry values and service startup types in undo mode" {
+        Mock Get-Service {
+            [pscustomobject]@{
+                Name = "DiagTrack"
+                StartType = "Disabled"
+            }
+        } -ParameterFilter { $Name -eq "DiagTrack" }
+
         Invoke-WinUtilTweaks -CheckBox "WPFTweaksExample" -undo $true
 
-        Should -Invoke -CommandName Get-Service -Times 0 -Exactly
+        Should -Invoke -CommandName Get-Service -Times 1 -Exactly
         Should -Invoke -CommandName Set-WinUtilService -Times 1 -Exactly -ParameterFilter {
             $Name -eq "DiagTrack" -and $StartupType -eq "Automatic"
         }
@@ -169,6 +181,43 @@ Describe "Invoke-WinUtilTweaks" {
         Should -Invoke -CommandName Set-WinUtilService -Times 0 -Exactly
     }
 
+    It "leaves a service alone on undo when its startup type is not the applied value" {
+        Mock Get-Service {
+            [pscustomobject]@{
+                Name = "DiagTrack"
+                StartType = "Manual"
+            }
+        } -ParameterFilter { $Name -eq "DiagTrack" }
+
+        Invoke-WinUtilTweaks -CheckBox "WPFTweaksServiceOnly" -undo $true
+
+        Should -Invoke -CommandName Get-Service -Times 1 -Exactly
+        Should -Invoke -CommandName Set-WinUtilService -Times 0 -Exactly
+    }
+
+    It "forces the service back to its original startup type on undo when it still matches the applied value" {
+        Mock Get-Service {
+            [pscustomobject]@{
+                Name = "DiagTrack"
+                StartType = "Disabled"
+            }
+        } -ParameterFilter { $Name -eq "DiagTrack" }
+
+        Invoke-WinUtilTweaks -CheckBox "WPFTweaksServiceOnly" -undo $true
+
+        Should -Invoke -CommandName Set-WinUtilService -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "DiagTrack" -and $StartupType -eq "Automatic"
+        }
+    }
+
+    It "drops the cached toggle status so the next status read hits the registry" {
+        $script:sync.ToggleStatusCache = @{ WPFTweaksServiceOnly = $true }
+
+        Invoke-WinUtilTweaks -CheckBox "WPFTweaksServiceOnly"
+
+        $script:sync.ToggleStatusCache.ContainsKey("WPFTweaksServiceOnly") | Should -BeFalse
+    }
+
     It "forces a service startup type when KeepServiceStartup is disabled" {
         Invoke-WinUtilTweaks -CheckBox "WPFTweaksServiceOnly" -KeepServiceStartup $false
 
@@ -188,7 +237,7 @@ Describe "Invoke-WinUtilTweaks" {
         ) + $script:sync.configs.tweaks.WPFTweaksExample.service
 
         Mock Get-Service {
-            $exception = [Microsoft.PowerShell.Commands.ServiceCommandException]::new("Cannot find any service with service name '$Name'.")
+            $exception = [System.Exception]::new("Cannot find any service with service name '$Name'.")
             $errorRecord = [System.Management.Automation.ErrorRecord]::new(
                 $exception,
                 "NoServiceFoundForGivenName,Microsoft.PowerShell.Commands.GetServiceCommand",
@@ -221,7 +270,7 @@ Describe "Invoke-WinUtilTweaks" {
 
     It "rethrows service lookup errors that do not identify a missing service" {
         Mock Get-Service {
-            $exception = [Microsoft.PowerShell.Commands.ServiceCommandException]::new("Service lookup failed.")
+            $exception = [System.Exception]::new("Service lookup failed.")
             $errorRecord = [System.Management.Automation.ErrorRecord]::new(
                 $exception,
                 "ServiceLookupFailed",
@@ -321,6 +370,36 @@ Describe "Invoke-WinUtilTweaks completion status" {
     }
 }
 
+Describe "Get-WinUtilTweakDisplayName" {
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+    }
+
+    It "returns the configured Content label" {
+        $script:sync = [Hashtable]::Synchronized(@{
+            configs = @{
+                tweaks = [pscustomobject]@{
+                    WPFTweaksTelemetry = [pscustomobject]@{ Content = "Telemetry - Disable" }
+                }
+            }
+        })
+
+        Get-WinUtilTweakDisplayName -Key "WPFTweaksTelemetry" | Should -Be "Telemetry - Disable"
+    }
+
+    It "falls back to the key when the entry or configs are missing" {
+        $script:sync = [Hashtable]::Synchronized(@{
+            configs = @{ tweaks = [pscustomobject]@{} }
+        })
+
+        Get-WinUtilTweakDisplayName -Key "WPFTweaksUnknown" | Should -Be "WPFTweaksUnknown"
+
+        $script:sync = [Hashtable]::Synchronized(@{})
+
+        Get-WinUtilTweakDisplayName -Key "WPFTweaksUnknown" | Should -Be "WPFTweaksUnknown"
+    }
+}
+
 Describe "Invoke-WPFtweaksbutton" {
     BeforeEach {
         $script:sync = [Hashtable]::Synchronized(@{
@@ -328,6 +407,12 @@ Describe "Invoke-WPFtweaksbutton" {
             selectedTweaks = [System.Collections.Generic.List[string]]::new()
             WPFchangedns = [pscustomobject]@{
                 text = "Cloudflare"
+            }
+            configs = @{
+                tweaks = [pscustomobject]@{
+                    WPFTweaksTelemetry = [pscustomobject]@{ Content = "Telemetry - Disable" }
+                    WPFTweaksServices = [pscustomobject]@{ Content = "Services - Set to Manual" }
+                }
             }
         })
         $script:capturedTweaksJob = $null
@@ -391,10 +476,10 @@ Describe "Invoke-WPFtweaksbutton" {
         }
         Should -Invoke -CommandName Invoke-WinUtilTweaks -Times 2 -Exactly
         Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
-            $Status -eq "Applying WPFTweaksTelemetry (1/2)" -and $Percent -eq 0
+            $Status -eq "Applying Telemetry - Disable (1/2)" -and $Percent -eq 0
         }
         Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
-            $Status -eq "Applying WPFTweaksServices (2/2)" -and $Percent -eq 50
+            $Status -eq "Applying Services - Set to Manual (2/2)" -and $Percent -eq 50
         }
     }
 
@@ -436,7 +521,20 @@ Describe "Invoke-WPFtweaksbutton" {
             $Status -eq "Creating restore point" -and $Percent -eq 0
         }
         Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
-            $Status -eq "Applying WPFTweaksTelemetry (2/2)" -and $Percent -eq 50
+            $Status -eq "Applying Telemetry - Disable (2/2)" -and $Percent -eq 50
+        }
+    }
+
+    It "falls back to the tweak key when no label is configured" {
+        $script:sync.configs.tweaks = [pscustomobject]@{}
+        $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
+
+        Invoke-WPFtweaksbutton
+        $jobParameters = $script:capturedTweaksJob.Parameters
+        & $script:capturedTweaksJob.ScriptBlock @jobParameters
+
+        Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
+            $Status -eq "Applying WPFTweaksTelemetry (1/1)" -and $Percent -eq 0
         }
     }
 }
@@ -446,6 +544,12 @@ Describe "Invoke-WPFundoall" {
         $script:sync = [Hashtable]::Synchronized(@{
             ActiveJob = $null
             selectedTweaks = [System.Collections.Generic.List[string]]::new()
+            configs = @{
+                tweaks = [pscustomobject]@{
+                    WPFTweaksTelemetry = [pscustomobject]@{ Content = "Telemetry - Disable" }
+                    WPFTweaksServices = [pscustomobject]@{ Content = "Services - Set to Manual" }
+                }
+            }
         })
         $script:capturedUndoJob = $null
 
@@ -490,10 +594,10 @@ Describe "Invoke-WPFundoall" {
 
         Should -Invoke -CommandName Invoke-WinUtilTweaks -Times 2 -Exactly -ParameterFilter { $undo -eq $true }
         Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
-            $Status -eq "Undoing WPFTweaksTelemetry (1/2)" -and $Percent -eq 0
+            $Status -eq "Undoing Telemetry - Disable (1/2)" -and $Percent -eq 0
         }
         Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
-            $Status -eq "Undoing WPFTweaksServices (2/2)" -and $Percent -eq 50
+            $Status -eq "Undoing Services - Set to Manual (2/2)" -and $Percent -eq 50
         }
     }
 }

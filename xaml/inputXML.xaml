@@ -1629,6 +1629,7 @@
                                 Background="Transparent"
                                 HorizontalAlignment="Right" VerticalAlignment="Center"
                                 Panel.ZIndex="1"
+                                AutomationProperties.Name="Previous Step"
                                 ToolTip="Back to the previous step">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource HoverButtonStyle}">
@@ -1651,6 +1652,7 @@
                                 Background="Transparent"
                                 HorizontalAlignment="Left" VerticalAlignment="Center"
                                 Panel.ZIndex="1"
+                                AutomationProperties.Name="Next Step"
                                 ToolTip="Forward to the next step">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource HoverButtonStyle}">
@@ -1872,6 +1874,7 @@
                                                 </Grid.ColumnDefinitions>
                                                 <TextBox Grid.Column="0"
                                                          Name="WPFWin11ISOPath"
+                                                         AutomationProperties.Name="ISO file"
                                                          IsReadOnly="True"
                                                          VerticalAlignment="Center"
                                                          VerticalContentAlignment="Center"
@@ -1954,6 +1957,7 @@
                                         <StackPanel>
                                             <TextBlock Style="{StaticResource Win11StepLabel}" Text="Windows edition"/>
                                             <ComboBox Name="WPFWin11ISOEditionComboBox"
+                                                      AutomationProperties.Name="Windows edition"
                                                       FontSize="{DynamicResource FontSize}"
                                                       Foreground="{DynamicResource MainForegroundColor}"
                                                       Background="{DynamicResource MainBackgroundColor}"
@@ -2051,6 +2055,7 @@
                                                 </Grid.ColumnDefinitions>
                                                 <ComboBox Grid.Column="0"
                                                           Name="WPFWin11ISOUSBDriveComboBox"
+                                                          AutomationProperties.Name="USB drive"
                                                           Foreground="{DynamicResource MainForegroundColor}"
                                                           Background="{DynamicResource MainBackgroundColor}"
                                                           VerticalAlignment="Center"
@@ -2178,6 +2183,7 @@
                                      text wraps, and its drop shadow lands on the glyphs with no background
                                      here to sit under. -->
                                 <TextBox Name="WPFWin11ISOStatusLog"
+                                         AutomationProperties.Name="Status Log"
                                          IsReadOnly="True"
                                          TextWrapping="Wrap"
                                          TextAlignment="Left"
