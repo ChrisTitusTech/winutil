@@ -52,8 +52,9 @@ function Invoke-WinUtilTweaks {
 
             # KeepServiceStartup protects a service the user (or another tool) changed away from
             # the value this tweak expects. Undo uses the same rule in reverse: only restore
-            # OriginalType when the service still sits at the StartupType this tweak applies, so
-            # a service apply skipped is left alone on undo too.
+            # OriginalType when the service still sits at the StartupType this tweak applies.
+            # This compares current state, not history: a service already at StartupType
+            # before apply is indistinguishable from one changed by this tweak.
             $expectedType = if ($undo) { $psitem.StartupType } else { $psitem.$($values.OriginalService) }
             if ($KeepServiceStartup) {
                 $serviceName = $psitem.Name

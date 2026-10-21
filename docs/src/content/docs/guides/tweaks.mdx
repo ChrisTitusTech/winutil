@@ -40,11 +40,15 @@ Some tweaks take effect immediately, while others may require Explorer to restar
 * **Select Tweaks to Remove**: Choose the tweaks you want to disable or remove.
 * **Undo Tweaks**: Click **Undo Selected Tweaks** at the bottom of the screen to apply the changes.
 
+Undo restores a service default only when its current startup type matches the type applied by the tweak. Other current startup types are preserved. WinUtil does not track whether a matching startup type was set before the tweak, so undo can also reset a service that already had that type.
+
 ### AppX Packages
 
 Open **AppX Removal** from the Tweaks tab to manage the listed Windows apps. Select one or more packages, then choose **Install Selected** or **Remove Selected**.
 
 When installing a selected package, WinUtil first registers an existing local `AppxManifest.xml`. If no usable local manifest remains, WinUtil installs the package from the Microsoft Store through WinGet when a Store product ID is available.
+
+A package without a usable local manifest or Store product ID is reported as failed. The remaining selected packages are still attempted, and the final summary lists failures.
 
 During AppX installation or removal, the window-level progress bar shows the current package, completed package count, and overall progress. The Windows taskbar also reflects progress and the final success or failure state.
 
