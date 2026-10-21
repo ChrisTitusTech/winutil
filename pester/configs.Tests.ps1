@@ -225,9 +225,11 @@ Describe "Tweaks config" {
 
         $tweaks.WPFTweaksServices.InvokeScript | Should -BeNullOrEmpty
 
-        $splittingScripts = @($tweaks.WPFTweaksSvcHostSplitting.InvokeScript; $tweaks.WPFTweaksSvcHostSplitting.UndoScript) -join "`n"
-        $splittingScripts | Should -Match 'SvcHostSplitThresholdInKB'
-        $splittingScripts | Should -Match '3670016'
+        $invokeScript = @($tweaks.WPFTweaksSvcHostSplitting.InvokeScript) -join "`n"
+        $undoScript = @($tweaks.WPFTweaksSvcHostSplitting.UndoScript) -join "`n"
+        $invokeScript | Should -Match 'SvcHostSplitThresholdInKB'
+        $undoScript | Should -Match 'SvcHostSplitThresholdInKB'
+        $undoScript | Should -Match '3670016'
     }
 
     It "does not claim the same registry value with conflicting originals or types" -TestCases $testCase {
