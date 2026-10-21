@@ -52,10 +52,23 @@ function Initialize-InstallAppEntry {
         if ($app.link) {
             $logo = New-Object Windows.Controls.Image
             $logo.Stretch = [Windows.Media.Stretch]::Uniform
-            $logo.Visibility = "Collapsed"
+            $fallback.Visibility = "Collapsed"
             $logo.Add_ImageFailed($handlers.ImageFailed)
 
             [void]$icon.Children.Add($logo)
+            try {
+                # Avoid reusing a cached WIC image from an earlier window in this process.
+                # Keep downloading in WPF so icons do not occupy the shared job pool.
+                $bitmap = [Windows.Media.Imaging.BitmapImage]::new()
+                $bitmap.BeginInit()
+                $bitmap.CreateOptions = [Windows.Media.Imaging.BitmapCreateOptions]::IgnoreImageCache
+                $bitmap.UriSource = [uri]"https://www.google.com/s2/favicons?sz=64&domain_url=$([uri]::EscapeDataString($app.link))"
+                $bitmap.EndInit()
+                $logo.Source = $bitmap
+            } catch {
+                $logo.Visibility = "Collapsed"
+                $fallback.Visibility = "Visible"
+            }
         }
         [void]$contentPanel.Children.Add($icon)
 
@@ -92,9 +105,5 @@ function Initialize-InstallAppEntry {
         }
         # Add the border to the corresponding Category
         $TargetElement.Children.Add($border) | Out-Null
-        if ($app.link) {
-            Start-WinUtilFaviconLoading -Image $logo -Fallback $fallback `
-                -Url "https://www.google.com/s2/favicons?sz=64&domain_url=$([uri]::EscapeDataString($app.link))"
-        }
         return $checkbox
     }

@@ -5,21 +5,10 @@ BeforeAll {
         "functions/private/Initialize-InstallAppEntry.ps1",
         "functions/private/Get-WinUtilAppEntryHandlers.ps1",
         "functions/private/Get-WinUtilEntryToolTip.ps1",
-        "functions/private/Start-WinUtilFaviconLoading.ps1",
-        "functions/public/Invoke-WPFRunspace.ps1",
-        "functions/public/Invoke-WPFUIThread.ps1"
+        "functions/public/Invoke-WPFRunspace.ps1"
     )) {
         . (Join-Path $repoRoot $file)
     }
-
-    $encoder = [Windows.Media.Imaging.PngBitmapEncoder]::new()
-    $pixel = [Windows.Media.Imaging.BitmapSource]::Create(
-        1, 1, 96, 96, [Windows.Media.PixelFormats]::Bgra32, $null, [byte[]]@(0, 0, 255, 255), 4)
-    $encoder.Frames.Add([Windows.Media.Imaging.BitmapFrame]::Create($pixel))
-    $stream = [IO.MemoryStream]::new()
-    $encoder.Save($stream)
-    $script:pngBytes = $stream.ToArray()
-    $stream.Dispose()
 }
 
 Describe "App favicon loading" {
@@ -32,68 +21,62 @@ Describe "App favicon loading" {
             selectedApps = @()
         })
         $script:panel = [Windows.Controls.WrapPanel]::new()
-        $script:pendingIcon = $null
-        Mock Invoke-WPFRunspace {
-            param($ArgumentList, $ScriptBlock)
-            $script:entryCountAtDownload = $script:panel.Children.Count
-            $script:pendingIcon = $ArgumentList
-            $script:downloadBody = $ScriptBlock
+        Mock Invoke-WPFRunspace { throw "Favicon loading must not occupy the shared job pool" }
+    }
+
+    AfterEach {
+        if ($script:sync.Form) { $script:sync.Form.Close() }
+    }
+
+    It "starts native image loading while creating a usable entry without queuing a job" {
+        $checkbox = Initialize-InstallAppEntry -TargetElement $script:panel -AppKey TestApp
+        $logo = $checkbox.Content.Children[0].Children[1]
+
+        $script:panel.Children.Count | Should -Be 1
+        $checkbox.Content.Children[1].Text | Should -Be "Test app"
+        $logo.Source | Should -BeOfType ([Windows.Media.Imaging.BitmapImage])
+        $logo.Source.CreateOptions | Should -Be ([Windows.Media.Imaging.BitmapCreateOptions]::IgnoreImageCache)
+        $logo.Source.UriSource.AbsoluteUri | Should -Be "https://www.google.com/s2/favicons?sz=64&domain_url=https%3A%2F%2Fexample.com%2F"
+        Should -Invoke Invoke-WPFRunspace -Times 0
+    }
+
+    It "creates fresh images when windows reopen in the same process" {
+        $previous = $null
+        foreach ($iteration in 1..13) {
+            $checkbox = Initialize-InstallAppEntry -TargetElement $script:panel -AppKey TestApp
+            $bitmap = $checkbox.Content.Children[0].Children[1].Source
+            $bitmap | Should -BeOfType ([Windows.Media.Imaging.BitmapImage])
+            [object]::ReferenceEquals($previous, $bitmap) | Should -BeFalse
+            $bitmap.CreateOptions | Should -Be ([Windows.Media.Imaging.BitmapCreateOptions]::IgnoreImageCache)
+            $previous = $bitmap
+            $script:sync.Form.Close()
+            $script:sync.Form = [Windows.Window]::new()
+            $script:panel = [Windows.Controls.WrapPanel]::new()
         }
+        Should -Invoke Invoke-WPFRunspace -Times 0
     }
 
-    It "adds a usable app entry before starting the download and keeps its fallback visible" {
+    It "shows the letter fallback when WPF reports a download failure" {
         $checkbox = Initialize-InstallAppEntry -TargetElement $script:panel -AppKey TestApp
+        $icon = $checkbox.Content.Children[0]
+        $logo = $icon.Children[1]
+        $constructor = [Windows.ExceptionRoutedEventArgs].GetConstructors(
+            [Reflection.BindingFlags]'Instance, NonPublic')[0]
+        $event = $constructor.Invoke(@([Windows.Controls.Image]::ImageFailedEvent, $logo, [Exception]::new("Download failed")))
+        $logo.RaiseEvent($event)
 
-        $script:entryCountAtDownload | Should -Be 1
-        $checkbox.Content.Children[1].Text | Should -Be "Test app"
-        $script:pendingIcon.Fallback.Text | Should -Be "T"
-        $script:pendingIcon.Fallback.Visibility | Should -Be "Visible"
-        $script:pendingIcon.Image.Visibility | Should -Be "Collapsed"
-        $script:pendingIcon.Image.Source | Should -BeNullOrEmpty
-    }
-
-    It "loads a frozen bitmap that remains readable after its stream closes" {
-        $null = Initialize-InstallAppEntry -TargetElement $script:panel -AppKey TestApp
-        Complete-WinUtilFaviconLoading -Image $script:pendingIcon.Image -Fallback $script:pendingIcon.Fallback -Bytes $script:pngBytes
-
-        $bitmap = $script:pendingIcon.Image.Source
-        $bitmap.IsFrozen | Should -BeTrue
-        $bitmap.PixelWidth | Should -Be 1
-        $pixels = [byte[]]::new(4)
-        $bitmap.CopyPixels($pixels, 4, 0)
-        $pixels | Should -Be @([byte]0, [byte]0, [byte]255, [byte]255)
-        $script:pendingIcon.Image.Visibility | Should -Be "Visible"
-        $script:pendingIcon.Fallback.Visibility | Should -Be "Collapsed"
-    }
-
-    It "keeps an app available when the downloaded bytes are not an image" {
-        $checkbox = Initialize-InstallAppEntry -TargetElement $script:panel -AppKey TestApp
-        { Complete-WinUtilFaviconLoading -Image $script:pendingIcon.Image -Fallback $script:pendingIcon.Fallback -Bytes ([byte[]]@(1, 2, 3)) } |
-            Should -Not -Throw
-
-        $script:panel.Children.Count | Should -Be 1
-        $checkbox.Content.Children[1].Text | Should -Be "Test app"
-        $script:pendingIcon.Image.Source | Should -BeNullOrEmpty
-        $script:pendingIcon.Fallback.Visibility | Should -Be "Visible"
-    }
-
-    It "keeps the fallback when the download fails without posting a UI update" {
-        Mock Invoke-WPFUIThread {}
-        $null = Initialize-InstallAppEntry -TargetElement $script:panel -AppKey TestApp
-        $script:pendingIcon.Url = "unsupported-favicon-scheme://example"
-        { & $script:downloadBody $script:pendingIcon } | Should -Not -Throw
-
-        Should -Invoke Invoke-WPFUIThread -Times 0
-        $script:pendingIcon.Fallback.Visibility | Should -Be "Visible"
+        $logo.Visibility | Should -Be "Collapsed"
+        $icon.Children[0].Visibility | Should -Be "Visible"
         $script:panel.Children.Count | Should -Be 1
     }
 
-    It "ignores an icon that finishes after the interface is gone" {
-        $null = Initialize-InstallAppEntry -TargetElement $script:panel -AppKey TestApp
-        $script:sync.Form = $null
-        Complete-WinUtilFaviconLoading -Image $script:pendingIcon.Image -Fallback $script:pendingIcon.Fallback -Bytes $script:pngBytes
-
-        $script:pendingIcon.Image.Source | Should -BeNullOrEmpty
-        $script:pendingIcon.Fallback.Visibility | Should -Be "Visible"
+    It "keeps the letter fallback for apps without a website" {
+        $script:sync.configs.applicationsHashtable.TestApp.link = $null
+        $checkbox = Initialize-InstallAppEntry -TargetElement $script:panel -AppKey TestApp
+        $icon = $checkbox.Content.Children[0]
+        $icon.Children.Count | Should -Be 1
+        $icon.Children[0].Text | Should -Be "T"
+        $icon.Children[0].Visibility | Should -Be "Visible"
+        Should -Invoke Invoke-WPFRunspace -Times 0
     }
 }
