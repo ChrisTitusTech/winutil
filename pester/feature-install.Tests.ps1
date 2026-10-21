@@ -74,6 +74,26 @@ Describe "Invoke-WinUtilFeatureInstall" {
         }
     }
 
+    It "skips dependent scripts after an enable failure and allows the next selection" {
+        $script:sync.configs.feature.WPFFeaturesMulti | Add-Member -NotePropertyName InvokeScript -NotePropertyValue @("throw 'dependent command unavailable'")
+        Mock Enable-WindowsOptionalFeature { throw "simulated missing feature" } -ParameterFilter {
+            $FeatureName -eq "FeatureA"
+        }
+
+        $output = @(
+            Invoke-WinUtilFeatureInstall -CheckBox "WPFFeaturesMulti"
+            Invoke-WinUtilFeatureInstall -CheckBox "WPFFeaturesScriptOnly"
+        )
+
+        $output | Should -Be @('feature script')
+        Should -Invoke Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq 'ERROR' -and $Message -like '*FeatureA*'
+        }
+        Should -Invoke Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq 'WARN' -and $Message -like '*Skipping dependent scripts*'
+        }
+    }
+
     It "runs the configured feature scripts" {
         Invoke-WinUtilFeatureInstall -CheckBox "WPFFeaturesScriptOnly"
 

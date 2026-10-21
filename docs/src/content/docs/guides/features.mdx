@@ -61,4 +61,4 @@ Because WinUtil runs elevated, the account it sets up is an administrator, and s
 
 Non-administrator accounts keep using `%USERPROFILE%\.ssh\authorized_keys` and need no extra setup.
 
-If an optional Windows feature is unavailable or fails to enable, WinUtil logs the failure and continues with the remaining optional features. The final job status still reports errors.
+If an optional Windows feature is unavailable or fails to enable, WinUtil logs the failure and continues with the remaining optional features. Dependent setup scripts for that selection are skipped when an optional feature fails. The final job status still reports errors.
