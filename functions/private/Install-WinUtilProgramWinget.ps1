@@ -9,15 +9,27 @@ Function Get-WinUtilPowerShellArchitecture {
 }
 
 Function Update-WinUtilPowerShellMSI {
-    $msi = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*","HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*" -ErrorAction SilentlyContinue |
+    $candidates = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*","HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*" -ErrorAction SilentlyContinue |
         Where-Object {
             $_.WindowsInstaller -eq 1 -and
             $_.DisplayName -match '^PowerShell\s+7(?:\.\d+){0,3}(?:-(?:x64|x86|arm64))?(?:\s|$)' -and
-            $_.DisplayName -notmatch "preview|daily" -and
-            $_.InstallLocation -and
-            (Test-Path -LiteralPath (Join-Path $_.InstallLocation "pwsh.exe"))
-        } |
-        Select-Object -First 1
+            $_.DisplayName -notmatch "preview|daily"
+        }
+    $msi = $null
+    foreach ($candidate in $candidates) {
+        $location = $candidate.InstallLocation
+        if (-not $location) {
+            # The official MSI registers its location here, not in the uninstall record.
+            $registration = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\PowerShellCore\InstalledVersions\*","HKLM:\SOFTWARE\WOW6432Node\Microsoft\PowerShellCore\InstalledVersions\*" -ErrorAction SilentlyContinue |
+                Where-Object { $_.ProductCode -and $_.ProductCode -eq $candidate.PSChildName } |
+                Select-Object -First 1
+            $location = $registration.InstallLocation
+        }
+        if ($location -and (Test-Path -LiteralPath (Join-Path $location "pwsh.exe"))) {
+            $msi = [pscustomobject]@{ InstallLocation = $location }
+            break
+        }
+    }
 
     if (-not $msi) {
         return [pscustomobject]@{

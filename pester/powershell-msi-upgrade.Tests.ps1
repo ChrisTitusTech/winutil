@@ -222,6 +222,20 @@ Describe "PowerShell MSI upgrade" {
         $result[1].Outcome | Should -Be 'Succeeded'
     }
 
+    It "resolves the official MSI registration by ProductCode without uninstall InstallLocation" {
+        Mock Get-ItemProperty {
+            [pscustomobject]@{ WindowsInstaller = 1; DisplayName = 'PowerShell 7-x64'; PSChildName = '{stable-product}' }
+        } -ParameterFilter { $Path[0] -like '*Uninstall*' }
+        Mock Get-ItemProperty {
+            @(
+                [pscustomobject]@{ ProductCode = '{other-product}'; InstallLocation = 'C:\Wrong' },
+                [pscustomobject]@{ ProductCode = '{stable-product}'; InstallLocation = 'C:\Custom\PowerShell\7' }
+            )
+        } -ParameterFilter { $Path[0] -like '*InstalledVersions*' }
+        (Update-WinUtilPowerShellMSI).Outcome | Should -Be 'Succeeded'
+        Should -Invoke Get-WinUtilPowerShellVersion -Times 1 -Exactly -ParameterFilter { $Path -eq 'C:\Custom\PowerShell\7\pwsh.exe' }
+    }
+
     It "matches official versioned MSI names" {
         Mock Get-ItemProperty { [pscustomobject]@{ WindowsInstaller = 1; DisplayName = 'PowerShell 7.5.2.0-x64'; InstallLocation = 'C:\PowerShell\7' } }
         (Update-WinUtilPowerShellMSI).Outcome | Should -Be 'Succeeded'
