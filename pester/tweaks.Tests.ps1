@@ -13,6 +13,10 @@ BeforeAll {
     function Set-WinUtilService {
         param($Name, $StartupType)
     }
+    function Get-Service {
+        [CmdletBinding()]
+        param($Name)
+    }
     function Set-WinUtilRegistry {
         param($Name, $Path, $Type, $Value)
     }
@@ -137,9 +141,16 @@ Describe "Invoke-WinUtilTweaks" {
     }
 
     It "uses original registry values and service startup types in undo mode" {
+        Mock Get-Service {
+            [pscustomobject]@{
+                Name = "DiagTrack"
+                StartType = "Disabled"
+            }
+        } -ParameterFilter { $Name -eq "DiagTrack" }
+
         Invoke-WinUtilTweaks -CheckBox "WPFTweaksExample" -undo $true
 
-        Should -Invoke -CommandName Get-Service -Times 0 -Exactly
+        Should -Invoke -CommandName Get-Service -Times 1 -Exactly
         Should -Invoke -CommandName Set-WinUtilService -Times 1 -Exactly -ParameterFilter {
             $Name -eq "DiagTrack" -and $StartupType -eq "Automatic"
         }
@@ -170,6 +181,43 @@ Describe "Invoke-WinUtilTweaks" {
         Should -Invoke -CommandName Set-WinUtilService -Times 0 -Exactly
     }
 
+    It "leaves a service alone on undo when its startup type is not the applied value" {
+        Mock Get-Service {
+            [pscustomobject]@{
+                Name = "DiagTrack"
+                StartType = "Manual"
+            }
+        } -ParameterFilter { $Name -eq "DiagTrack" }
+
+        Invoke-WinUtilTweaks -CheckBox "WPFTweaksServiceOnly" -undo $true
+
+        Should -Invoke -CommandName Get-Service -Times 1 -Exactly
+        Should -Invoke -CommandName Set-WinUtilService -Times 0 -Exactly
+    }
+
+    It "forces the service back to its original startup type on undo when it still matches the applied value" {
+        Mock Get-Service {
+            [pscustomobject]@{
+                Name = "DiagTrack"
+                StartType = "Disabled"
+            }
+        } -ParameterFilter { $Name -eq "DiagTrack" }
+
+        Invoke-WinUtilTweaks -CheckBox "WPFTweaksServiceOnly" -undo $true
+
+        Should -Invoke -CommandName Set-WinUtilService -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "DiagTrack" -and $StartupType -eq "Automatic"
+        }
+    }
+
+    It "drops the cached toggle status so the next status read hits the registry" {
+        $script:sync.ToggleStatusCache = @{ WPFTweaksServiceOnly = $true }
+
+        Invoke-WinUtilTweaks -CheckBox "WPFTweaksServiceOnly"
+
+        $script:sync.ToggleStatusCache.ContainsKey("WPFTweaksServiceOnly") | Should -BeFalse
+    }
+
     It "forces a service startup type when KeepServiceStartup is disabled" {
         Invoke-WinUtilTweaks -CheckBox "WPFTweaksServiceOnly" -KeepServiceStartup $false
 
@@ -189,7 +237,7 @@ Describe "Invoke-WinUtilTweaks" {
         ) + $script:sync.configs.tweaks.WPFTweaksExample.service
 
         Mock Get-Service {
-            $exception = [Microsoft.PowerShell.Commands.ServiceCommandException]::new("Cannot find any service with service name '$Name'.")
+            $exception = [System.Exception]::new("Cannot find any service with service name '$Name'.")
             $errorRecord = [System.Management.Automation.ErrorRecord]::new(
                 $exception,
                 "NoServiceFoundForGivenName,Microsoft.PowerShell.Commands.GetServiceCommand",
@@ -222,7 +270,7 @@ Describe "Invoke-WinUtilTweaks" {
 
     It "rethrows service lookup errors that do not identify a missing service" {
         Mock Get-Service {
-            $exception = [Microsoft.PowerShell.Commands.ServiceCommandException]::new("Service lookup failed.")
+            $exception = [System.Exception]::new("Service lookup failed.")
             $errorRecord = [System.Management.Automation.ErrorRecord]::new(
                 $exception,
                 "ServiceLookupFailed",
