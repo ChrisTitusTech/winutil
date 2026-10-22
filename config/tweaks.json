@@ -570,7 +570,12 @@
     "InvokeScript": [
       "
       # Disable Defender Auto Sample Submission
-      Set-MpPreference -SubmitSamplesConsent 2
+      try {
+          Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction Stop
+      } catch {
+          Write-Warning 'Defender sample submission preference could not be changed; Defender may be unavailable or disabled.'
+          Write-WinUtilLog -Level 'WARN' -Component 'Script' -Message 'Defender sample submission preference could not be changed; Defender may be unavailable or disabled.'
+      }
 
       # Disable PowerShell 7 telemetry
       [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
@@ -579,7 +584,12 @@
     "UndoScript": [
       "
       # Enable Defender Auto Sample Submission
-      Set-MpPreference -SubmitSamplesConsent 1
+      try {
+          Set-MpPreference -SubmitSamplesConsent 1 -ErrorAction Stop
+      } catch {
+          Write-Warning 'Defender sample submission preference could not be restored; Defender may be unavailable or disabled.'
+          Write-WinUtilLog -Level 'WARN' -Component 'Script' -Message 'Defender sample submission preference could not be restored; Defender may be unavailable or disabled.'
+      }
 
       # Enable PowerShell 7 telemetry
       [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '', 'Machine')

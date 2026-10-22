@@ -375,6 +375,32 @@ Describe "Config scripts changing services" {
     }
 }
 
+Describe "Config scripts changing Defender preferences" {
+    It "guards every Set-MpPreference call in a config script with a try/catch block" {
+        $unguarded = New-Object System.Collections.Generic.List[string]
+
+        foreach ($configFile in (Get-ChildItem -Path $script:configRoot -Filter *.json)) {
+            $config = Get-Content -Path $configFile.FullName -Raw | ConvertFrom-Json
+            foreach ($entry in $config.PSObject.Properties) {
+                foreach ($field in @("InvokeScript", "UndoScript")) {
+                    if (-not (Test-WinUtilHasProperty -Object $entry.Value -Name $field)) { continue }
+
+                    foreach ($scriptText in @($entry.Value.$field)) {
+                        if ([string]$scriptText -notmatch 'Set-MpPreference') { continue }
+                        if ([string]$scriptText -notmatch 'catch') {
+                            $unguarded.Add("$($configFile.Name):$($entry.Name).$field")
+                        }
+                    }
+                }
+            }
+        }
+
+        if ($unguarded.Count -gt 0) {
+            throw ("Unguarded Set-MpPreference calls abort the rest of their script block when Defender is unavailable:`n" + ($unguarded -join "`n"))
+        }
+    }
+}
+
 Describe "Preset config" {
     It "references existing config entries or supported actions" {
         $preset = Get-WinUtilConfigObject -Name "preset"
