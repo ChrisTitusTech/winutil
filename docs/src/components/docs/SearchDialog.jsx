@@ -8,13 +8,20 @@ const MAX_SECTIONS = 3;
 
 let pagefindPromise;
 let resetting;
+let failedImports = 0;
 let latestSearch = 0;
 
 function loadPagefind() {
 	if (!pagefindPromise) {
 		// A reset still tearing down the old instance would wipe a new one set up alongside it, so wait for it first.
 		pagefindPromise = Promise.resolve(resetting)
-			.then(() => import(/* @vite-ignore */ BUNDLE))
+			// Chromium keeps a failed module download for the rest of the page, so a retry asks for it under a new URL.
+			.then(() =>
+				import(/* @vite-ignore */ failedImports ? `${BUNDLE}?retry=${failedImports}` : BUNDLE).catch((error) => {
+					failedImports++;
+					throw error;
+				})
+			)
 			.then(async (pagefind) => {
 				await pagefind.options({ baseUrl: '/' });
 				pagefind.init();

@@ -48,7 +48,11 @@ export default function SiteNav({ groups, store, showMenuButton }) {
 			setMenuOpen(false);
 		};
 		const wide = matchMedia('(min-width: 50em)');
-		const onResize = () => setMenuOpen(false);
+		// The desktop and mobile menus swap at this width, so neither should still be open on the other side.
+		const onResize = () => {
+			setOpenGroup(null);
+			setMenuOpen(false);
+		};
 		window.addEventListener('click', onClick);
 		window.addEventListener('keydown', onKey);
 		wide.addEventListener('change', onResize);

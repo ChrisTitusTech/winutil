@@ -10,6 +10,14 @@ export default function MobileToc({ items }) {
 	const rootRef = useRef(null);
 	const current = flat.find((item) => item.slug === active);
 
+	// Hidden from 72rem up, so it closes there instead of coming back open when the window narrows again.
+	useEffect(() => {
+		const wide = matchMedia('(min-width: 72rem)');
+		const close = () => setOpen(false);
+		wide.addEventListener('change', close);
+		return () => wide.removeEventListener('change', close);
+	}, []);
+
 	useEffect(() => {
 		if (!open) return;
 		const onClick = (event) => {
