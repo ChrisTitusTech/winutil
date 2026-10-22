@@ -1,0 +1,58 @@
+---
+// Header override: site title, search, top navigation, social links, and theme toggle.
+import config from 'virtual:starlight/user-config';
+import SiteTitle from 'virtual:starlight/components/SiteTitle';
+import { Icon } from '@astrojs/starlight/components';
+import SearchDialog from '../docs/SearchDialog.jsx';
+import SiteNav from '../docs/SiteNav.jsx';
+import ThemeToggle from '../docs/ThemeToggle.jsx';
+import { siteLinks } from '../../lib/site-links';
+import '../../styles/docs-ui.css';
+
+// Pages with a sidebar already have the sidebar menu button, so only splash pages need SiteNav's.
+const { hasSidebar } = Astro.locals.starlightRoute;
+
+const navGroups = [
+	{
+		label: 'Documentation',
+		links: [
+			{ label: 'User Guides', href: '/guides/' },
+			{ label: 'Contribution Guides', href: '/contributing/' },
+			{ label: 'Code Reference', href: '/code-reference/architecture/' },
+		],
+	},
+	{
+		label: 'Help',
+		links: [
+			{ label: 'FAQ', href: '/faq/' },
+			{ label: 'Known Issues', href: '/knownissues/' },
+			{ label: siteLinks.forums.label, href: siteLinks.forums.href, external: true },
+		],
+	},
+];
+
+const navLinks = [
+	{ label: 'Config Builder', href: '/config-builder/' },
+	{ ...siteLinks.store, external: true },
+];
+---
+
+<div class="docs-header">
+	<div class="docs-header-title">
+		<SiteTitle />
+	</div>
+	<div class="docs-header-actions print:hidden">
+		<SearchDialog client:load />
+		<SiteNav client:idle groups={navGroups} links={navLinks} showMenuButton={!hasSidebar} />
+		<div class="docs-social">
+			{
+				config.social?.map(({ icon, label, href }) => (
+					<a href={href} class="docs-icon-button" rel="me">
+						<Icon name={icon} label={label} />
+					</a>
+				))
+			}
+		</div>
+		<ThemeToggle client:load />
+	</div>
+</div>
