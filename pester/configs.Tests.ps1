@@ -112,6 +112,19 @@ function script:Get-WinUtilButtonSwitchNames {
         ForEach-Object { $_.Groups[1].Value } |
         Sort-Object -Unique
 }
+
+# Stand-ins so the Telemetry tweak's extracted Defender handler can run in a test without
+# touching Defender or the real log file.
+function script:Set-MpPreference {
+    [CmdletBinding()]
+    param([int]$SubmitSamplesConsent)
+
+    throw "Set-MpPreference must be mocked: $SubmitSamplesConsent"
+}
+
+function script:Write-WinUtilLog {
+    param($Level, $Component, $Message)
+}
 }
 
 Describe "Config files" {
@@ -423,6 +436,46 @@ Describe "Config scripts changing Defender preferences" {
         if ($unguarded.Count -gt 0) {
             throw ("Set-MpPreference calls must be inside a try block and pass -ErrorAction Stop, so a Defender failure cannot escape the tweak:`n" + ($unguarded -join "`n"))
         }
+    }
+}
+
+Describe "Telemetry tweak Defender failures" {
+    BeforeAll {
+        function Get-DefenderGuardBlock {
+            param([string]$Action)
+
+            $source = [scriptblock]::Create((Get-WinUtilConfigObject -Name "tweaks").WPFTweaksTelemetry.$Action -join "`n")
+            $blocks = @($source.Ast.FindAll({
+                param($node)
+                $node -is [System.Management.Automation.Language.TryStatementAst] -and
+                    $node.Extent.Text -match 'Set-MpPreference'
+            }, $true))
+            $blocks.Count | Should -Be 1
+            [scriptblock]::Create($blocks[0].Extent.Text)
+        }
+    }
+
+    It "warns and continues when Defender is unavailable (<Action>)" -TestCases @(
+        @{ Action = "InvokeScript" }
+        @{ Action = "UndoScript" }
+    ) {
+        param($Action)
+        Mock Write-WinUtilLog {}
+        Mock Set-MpPreference { throw "Operation failed with the following error: 0x800106ba." }
+
+        { & (Get-DefenderGuardBlock -Action $Action) } | Should -Not -Throw
+
+        Should -Invoke Write-WinUtilLog -Times 1 -Exactly -ParameterFilter { $Level -eq 'WARN' }
+    }
+
+    It "rethrows Set-MpPreference failures that are not Defender being unavailable (<Action>)" -TestCases @(
+        @{ Action = "InvokeScript" }
+        @{ Action = "UndoScript" }
+    ) {
+        param($Action)
+        Mock Set-MpPreference { throw "Operation failed with the following error: 0x80041001." }
+
+        { & (Get-DefenderGuardBlock -Action $Action) } | Should -Throw -ExpectedMessage "*0x80041001*"
     }
 }
 
