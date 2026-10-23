@@ -376,7 +376,7 @@ Describe "Config scripts changing services" {
 }
 
 Describe "Config scripts changing Defender preferences" {
-    It "guards every Set-MpPreference call in a config script with a try/catch block" {
+    It "guards every Set-MpPreference call with a try block and -ErrorAction Stop" {
         $unguarded = New-Object System.Collections.Generic.List[string]
 
         foreach ($configFile in (Get-ChildItem -Path $script:configRoot -Filter *.json)) {
@@ -387,8 +387,33 @@ Describe "Config scripts changing Defender preferences" {
 
                     foreach ($scriptText in @($entry.Value.$field)) {
                         if ([string]$scriptText -notmatch 'Set-MpPreference') { continue }
-                        if ([string]$scriptText -notmatch 'catch') {
-                            $unguarded.Add("$($configFile.Name):$($entry.Name).$field")
+
+                        $source = [scriptblock]::Create([string]$scriptText)
+                        $calls = @($source.Ast.FindAll({
+                            param($node)
+                            $node -is [System.Management.Automation.Language.CommandAst] -and
+                                $node.GetCommandName() -eq 'Set-MpPreference'
+                        }, $true))
+
+                        foreach ($call in $calls) {
+                            $hasStop = $call.Extent.Text -match '-ErrorAction\s*:?\s*Stop'
+
+                            $insideTryBody = $false
+                            $child = $call
+                            $parent = $call.Parent
+                            while ($null -ne $parent) {
+                                if ($parent -is [System.Management.Automation.Language.TryStatementAst] -and
+                                    [object]::ReferenceEquals($parent.Body, $child)) {
+                                    $insideTryBody = $true
+                                    break
+                                }
+                                $child = $parent
+                                $parent = $parent.Parent
+                            }
+
+                            if (-not $hasStop -or -not $insideTryBody) {
+                                $unguarded.Add("$($configFile.Name):$($entry.Name).$field line $($call.Extent.StartLineNumber)")
+                            }
                         }
                     }
                 }
@@ -396,7 +421,7 @@ Describe "Config scripts changing Defender preferences" {
         }
 
         if ($unguarded.Count -gt 0) {
-            throw ("Unguarded Set-MpPreference calls abort the rest of their script block when Defender is unavailable:`n" + ($unguarded -join "`n"))
+            throw ("Set-MpPreference calls must be inside a try block and pass -ErrorAction Stop, so a Defender failure cannot escape the tweak:`n" + ($unguarded -join "`n"))
         }
     }
 }
