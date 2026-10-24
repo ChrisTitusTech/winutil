@@ -385,18 +385,18 @@
                                 <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource ButtonBackgroundMouseoverColor}"/>
                                 <Setter Property="Effect">
                                     <Setter.Value>
-                                        <DropShadowEffect Opacity="1" ShadowDepth="5" Color="{DynamicResource CButtonBackgroundMouseoverColor}" Direction="-100" BlurRadius="15"/>
+                                        <DropShadowEffect Opacity="0.4" ShadowDepth="2" Color="{DynamicResource CButtonBackgroundMouseoverColor}" Direction="-100" BlurRadius="8"/>
                                     </Setter.Value>
                                 </Setter>
                                 <Setter Property="Panel.ZIndex" Value="2000"/>
                             </Trigger>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter Property="BorderBrush" Value="Pink"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource ToggleButtonOnColor}"/>
                                 <Setter Property="BorderThickness" Value="2"/>
                                 <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource ButtonBackgroundSelectedColor}"/>
                                 <Setter Property="Effect">
                                     <Setter.Value>
-                                        <DropShadowEffect Opacity="1" ShadowDepth="2" Color="{DynamicResource CButtonBackgroundMouseoverColor}" Direction="-111" BlurRadius="10"/>
+                                        <DropShadowEffect Opacity="0.35" ShadowDepth="2" Color="{DynamicResource CButtonBackgroundMouseoverColor}" Direction="-111" BlurRadius="8"/>
                                     </Setter.Value>
                                 </Setter>
                             </Trigger>
@@ -562,7 +562,7 @@
         <!-- Checkbox template -->
         <Style TargetType="CheckBox">
             <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
-            <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}"/>
+            <Setter Property="Background" Value="Transparent"/>
             <Setter Property="FontSize" Value="{DynamicResource FontSize}" />
             <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
             <Setter Property="TextElement.FontFamily" Value="{DynamicResource FontFamily}"/>
@@ -616,7 +616,7 @@
         </Style>
         <Style TargetType="RadioButton">
             <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
-            <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}"/>
+            <Setter Property="Background" Value="Transparent"/>
             <Setter Property="FontSize" Value="{DynamicResource FontSize}" />
             <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
             <Setter Property="Template">
@@ -821,7 +821,7 @@
 
 
         <Style x:Key="BorderStyle" TargetType="Border">
-            <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}"/>
+            <Setter Property="Background" Value="{DynamicResource SurfaceBackgroundColor}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource BorderColor}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CornerRadius" Value="5"/>
@@ -829,7 +829,7 @@
             <Setter Property="Margin" Value="5"/>
             <Setter Property="Effect">
                 <Setter.Value>
-                    <DropShadowEffect ShadowDepth="5" BlurRadius="5" Opacity="{DynamicResource BorderOpacity}" Color="{DynamicResource CBorderColor}"/>
+                    <DropShadowEffect ShadowDepth="2" BlurRadius="10" Opacity="{DynamicResource BorderOpacity}" Color="{DynamicResource CBorderColor}"/>
                 </Setter.Value>
             </Setter>
         </Style>
@@ -883,7 +883,7 @@
             </Setter>
             <Setter Property="Effect">
                 <Setter.Value>
-                    <DropShadowEffect ShadowDepth="5" BlurRadius="5" Opacity="{DynamicResource BorderOpacity}" Color="{DynamicResource CBorderColor}"/>
+                    <DropShadowEffect ShadowDepth="2" BlurRadius="10" Opacity="{DynamicResource BorderOpacity}" Color="{DynamicResource CBorderColor}"/>
                 </Setter.Value>
             </Setter>
         </Style>
@@ -913,7 +913,7 @@
             </Setter>
             <Setter Property="Effect">
                 <Setter.Value>
-                    <DropShadowEffect ShadowDepth="5" BlurRadius="5" Opacity="{DynamicResource BorderOpacity}" Color="{DynamicResource CBorderColor}"/>
+                    <DropShadowEffect ShadowDepth="2" BlurRadius="10" Opacity="{DynamicResource BorderOpacity}" Color="{DynamicResource CBorderColor}"/>
                 </Setter.Value>
             </Setter>
         </Style>
@@ -1032,7 +1032,14 @@
             </Setter>
         </Style>
     </Window.Resources>
-    <Grid Background="{DynamicResource MainBackgroundColor}" ShowGridLines="False" Name="WPFMainGrid" Width="Auto" Height="Auto" HorizontalAlignment="Stretch">
+    <Grid ShowGridLines="False" Name="WPFMainGrid" Width="Auto" Height="Auto" HorizontalAlignment="Stretch">
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="{DynamicResource CMainGradientTopColor}" Offset="0"/>
+                <GradientStop Color="{DynamicResource CMainGradientTopColor}" Offset="0.3"/>
+                <GradientStop Color="{DynamicResource CMainGradientBottomColor}" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -1047,7 +1054,7 @@
             <TextBlock Text="&#x26A0; Offline Mode - No Internet Connection" Foreground="White" FontWeight="Bold"
                 HorizontalAlignment="Center" FontSize="13" Background="Transparent"/>
         </Border>
-        <Grid Grid.Row="1" Background="{DynamicResource MainBackgroundColor}">
+        <Grid Grid.Row="1" Background="Transparent">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/> <!-- Navigation buttons -->
                 <ColumnDefinition Width="*"/> <!-- Search bar and buttons -->
@@ -1055,7 +1062,7 @@
 
             <!-- Navigation Buttons Panel -->
             <StackPanel Name="NavDockPanel" Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center" Margin="5,5,10,5">
-                <StackPanel Name="NavLogoPanel" Orientation="Horizontal" HorizontalAlignment="Left" Background="{DynamicResource MainBackgroundColor}" SnapsToDevicePixels="True" Margin="10,0,20,0">
+                <StackPanel Name="NavLogoPanel" Orientation="Horizontal" HorizontalAlignment="Left" Background="Transparent" SnapsToDevicePixels="True" Margin="10,0,20,0">
                 </StackPanel>
                 <ToggleButton Style="{StaticResource TabToggleButton}" Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="{DynamicResource TabButtonWidth}"
                     Background="{DynamicResource ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
@@ -1100,7 +1107,7 @@
             </StackPanel>
 
             <!-- Search Bar and Action Buttons -->
-            <Grid Name="GridBesideNavDockPanel" Grid.Column="1" Background="{DynamicResource MainBackgroundColor}" ShowGridLines="False" Height="Auto">
+            <Grid Name="GridBesideNavDockPanel" Grid.Column="1" Background="Transparent" ShowGridLines="False" Height="Auto">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*"/> <!-- Search bar area - priority space -->
                     <ColumnDefinition Width="Auto"/><!-- Buttons area -->
@@ -1142,7 +1149,7 @@
                     <Button Name="ThemeButton"
                         Style="{StaticResource HoverButtonStyle}"
                         BorderBrush="Transparent"
-                    Background="{DynamicResource MainBackgroundColor}"
+                    Background="Transparent"
                     Foreground="{DynamicResource MainForegroundColor}"
                     FontSize="{DynamicResource SettingsIconFontSize}"
                     Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
@@ -1181,7 +1188,7 @@
                     <Button Name="FontScalingButton"
                         Style="{StaticResource HoverButtonStyle}"
                         BorderBrush="Transparent"
-                    Background="{DynamicResource MainBackgroundColor}"
+                    Background="Transparent"
                     Foreground="{DynamicResource MainForegroundColor}"
                     FontSize="{DynamicResource SettingsIconFontSize}"
                     Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
@@ -1254,7 +1261,7 @@
                     <Button Name="SettingsButton"
                         Style="{StaticResource HoverButtonStyle}"
                         BorderBrush="Transparent"
-                    Background="{DynamicResource MainBackgroundColor}"
+                    Background="Transparent"
                     Foreground="{DynamicResource MainForegroundColor}"
                     FontSize="{DynamicResource SettingsIconFontSize}"
                     Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
@@ -1299,7 +1306,7 @@
                         Style="{StaticResource HoverButtonStyle}"
                         BorderThickness="0"
                         BorderBrush="Transparent"
-                        Background="{DynamicResource MainBackgroundColor}"
+                        Background="Transparent"
                         Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
                         HorizontalAlignment="Right" VerticalAlignment="Center"
                         Margin="0"
@@ -1312,7 +1319,7 @@
                     <Button
                         BorderThickness="0"
                         BorderBrush="Transparent"
-                        Background="{DynamicResource MainBackgroundColor}"
+                        Background="Transparent"
                         Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
                         HorizontalAlignment="Right" VerticalAlignment="Center"
                         Margin="0,0,0,0"
@@ -1341,7 +1348,7 @@
                         Style="{StaticResource HoverButtonStyle}"
                         BorderThickness="0"
                         BorderBrush="Transparent"
-                        Background="{DynamicResource MainBackgroundColor}"
+                        Background="Transparent"
                         Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
                         HorizontalAlignment="Right" VerticalAlignment="Center"
                         Margin="0"
@@ -1416,7 +1423,7 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <StackPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Vertical" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="5">
+                            <StackPanel Background="Transparent" Orientation="Vertical" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="5">
                                 <Label Content="Recommended Selections:" FontSize="{DynamicResource FontSize}" VerticalAlignment="Center" Margin="2"/>
                                 <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,2,0,0">
                                     <Button Name="WPFstandard" Content=" Standard " Margin="2" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
@@ -1433,7 +1440,7 @@
                             </Grid>
 
                             <Border Grid.ColumnSpan="2" Grid.Row="2" Grid.Column="0" Style="{StaticResource BorderStyle}">
-                                <StackPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left">
+                                <StackPanel Background="Transparent" Orientation="Horizontal" HorizontalAlignment="Left">
                                     <TextBlock Padding="10">
                                         Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
                                         <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else!
@@ -1442,7 +1449,7 @@
                             </Border>
                         </Grid>
                     </ScrollViewer>
-                    <Border Grid.Row="1" Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="5" HorizontalAlignment="Stretch" Padding="10">
+                    <Border Grid.Row="1" Background="{DynamicResource SurfaceBackgroundColor}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="5" HorizontalAlignment="Stretch" Padding="10">
                         <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0">
                             <Button Name="WPFTweaksbutton" Content="Run Tweaks" Margin="5" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
                             <Button Name="WPFUndoall" Content="Undo Selected Tweaks" Margin="5" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
@@ -1834,7 +1841,7 @@
                                 </Style>
 
                                 <Style x:Key="Win11InfoPanel" TargetType="Border">
-                                    <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}"/>
+                                    <Setter Property="Background" Value="{DynamicResource SurfaceBackgroundColor}"/>
                                     <Setter Property="BorderBrush" Value="{DynamicResource BorderColor}"/>
                                     <Setter Property="BorderThickness" Value="1"/>
                                     <Setter Property="CornerRadius" Value="5"/>
@@ -2217,7 +2224,7 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <StackPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Vertical" Grid.Row="0" Grid.Column="0" Margin="5">
+                            <StackPanel Background="Transparent" Orientation="Vertical" Grid.Row="0" Grid.Column="0" Margin="5">
                                 <Label Content="Selections:" FontSize="{DynamicResource FontSize}" VerticalAlignment="Center" Margin="2"/>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,2,0,0">
                                     <Button Name="WPFDefaultAppxSelection" Content=" Default " Margin="2" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
@@ -2231,7 +2238,7 @@
                             </Grid>
 
                             <Border Grid.Row="2" Style="{StaticResource BorderStyle}" Margin="5,15,5,5">
-                                <WrapPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left">
+                                <WrapPanel Background="Transparent" Orientation="Horizontal" HorizontalAlignment="Left">
                                     <TextBlock Padding="10" TextWrapping="Wrap" Foreground="{DynamicResource MainForegroundColor}">
                                         Note: Select the Windows AppX packages you wish to install or remove.
                                         <LineBreak/>'Install Selected' registers a local manifest for the current user when available, then falls back to the Microsoft Store.
@@ -2242,7 +2249,7 @@
                         </Grid>
                     </ScrollViewer>
 
-                    <Border Grid.Row="1" Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="5" HorizontalAlignment="Stretch" Padding="10">
+                    <Border Grid.Row="1" Background="{DynamicResource SurfaceBackgroundColor}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="5" HorizontalAlignment="Stretch" Padding="10">
                         <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
                             <Button Name="WPFBackToTweaks" Content="Back to Tweaks" Margin="5" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
                             <Button Name="WPFInstallSelectedAppx" Content="Install Selected" Margin="5" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
@@ -2254,7 +2261,7 @@
         </TabControl>
 
         <!-- Window-level progress indicator - visible regardless of active tab -->
-        <Border Name="WPFTweaksProgressBar" Grid.Row="3" Background="{DynamicResource MainBackgroundColor}" Visibility="Collapsed" Padding="10,6">
+        <Border Name="WPFTweaksProgressBar" Grid.Row="3" Background="Transparent" Visibility="Collapsed" Padding="10,6">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
