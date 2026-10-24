@@ -385,6 +385,15 @@ Describe "XAML document" {
         $maximizeStyle.GetAttribute("BasedOn") | Should -Be "{StaticResource HoverButtonStyle}"
         [int]$themes.shared.CloseIconFontSize | Should -BeLessThan ([int]$themes.shared.SettingsIconFontSize)
     }
+
+    It "pulls the maximized chromeless window back on screen with two resize-border insets" {
+        $resizeBorder = "{x:Static SystemParameters.WindowResizeBorderThickness}"
+        $windowTrigger = $script:xaml.SelectSingleNode('/*[local-name()="Window"]/*[local-name()="Window.Style"]/*[local-name()="Style"]/*[local-name()="Style.Triggers"]/*[local-name()="Trigger"][@Property="WindowState"][@Value="Maximized"]')
+        $gridTrigger = $script:xaml.SelectSingleNode('//*[local-name()="Grid"][@Name="WPFMainGrid"]/*[local-name()="Grid.Style"]/*[local-name()="Style"]/*[local-name()="Style.Triggers"]/*[local-name()="DataTrigger"][@Value="Maximized"]')
+
+        $windowTrigger.SelectSingleNode('./*[local-name()="Setter"][@Property="BorderThickness"]').GetAttribute("Value") | Should -Be $resizeBorder
+        $gridTrigger.SelectSingleNode('./*[local-name()="Setter"][@Property="Margin"]').GetAttribute("Value") | Should -Be $resizeBorder
+    }
 }
 
 Describe "XAML and sync wiring" {
