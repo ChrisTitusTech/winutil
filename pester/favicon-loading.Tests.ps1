@@ -115,17 +115,7 @@ Describe "App entries" {
     }
 
     Context "without a bundled icon" {
-        It "keeps the letter tile, without asking the favicon service, when an app is listed with no icon" {
-            $script:sync.configs.icons = [pscustomobject]@{ TestApp = "" }
-            $checkbox = Initialize-InstallAppEntries -TargetElement $script:panel -AppKeys WPFInstallTestApp
-            $icon = $checkbox.Content.Children[0].Child
-
-            $icon.Children[1].Source | Should -BeNullOrEmpty
-            $icon.Children[0].Text | Should -Be "T"
-            $icon.Children[0].Visibility | Should -Be "Visible"
-        }
-
-        It "falls back to the favicon service for an app that is not listed" {
+        It "falls back to the favicon service for an app with no icon file" {
             $script:sync.configs.icons = [pscustomobject]@{}
             $checkbox = Initialize-InstallAppEntries -TargetElement $script:panel -AppKeys WPFInstallTestApp
             $logo = $checkbox.Content.Children[0].Child.Children[1]
@@ -170,30 +160,40 @@ Describe "App entries" {
     }
 
     Context "the shipped icon set" {
-        It "bundles a decodable 64px icon for every listed application" {
-            $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-            $applications = Get-Content (Join-Path $repoRoot "config/applications.json") -Raw | ConvertFrom-Json
-            $script:sync.configs.icons = Get-Content (Join-Path $repoRoot "config/icons.json") -Raw | ConvertFrom-Json
+        BeforeAll {
+            $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+            $script:applicationKeys = (Get-Content (Join-Path $script:repoRoot "config/applications.json") -Raw | ConvertFrom-Json).PSObject.Properties.Name
+            $script:iconFiles = Get-ChildItem (Join-Path $script:repoRoot "config/icons") -File
+            # What Compile.ps1 embeds: icon file name -> base64
+            $embedded = [ordered]@{}
+            foreach ($file in $script:iconFiles) { $embedded[$file.BaseName] = [Convert]::ToBase64String([IO.File]::ReadAllBytes($file.FullName)) }
+            $script:embeddedIcons = [pscustomobject]$embedded
+        }
 
-            $problems = foreach ($key in $applications.PSObject.Properties.Name) {
-                if (-not $script:sync.configs.icons.PSObject.Properties[$key]) { "$key has no entry in icons.json"; continue }
+        It "has an icon file named after every application it belongs to" {
+            $orphans = $script:iconFiles | Where-Object { $_.Extension -ne ".png" -or $script:applicationKeys -cnotcontains $_.BaseName } | ForEach-Object { $_.Name }
+            $orphans | Should -BeNullOrEmpty
+        }
+
+        It "has a 48px icon of at most 8 KB for every application, so the script stays small" {
+            $script:sync.configs.icons = $script:embeddedIcons
+            $problems = foreach ($key in $script:applicationKeys) {
+                $file = $script:iconFiles | Where-Object { $_.BaseName -ceq $key }
+                if (-not $file) { "$key has no config/icons/$key.png (add one with tools/New-WinUtilIcon.ps1)"; continue }
+                if ($file.Length -gt 8KB) { "$key.png is $([int]($file.Length / 1KB)) KB; keep icons under 8 KB (tools/New-WinUtilIcon.ps1 writes a 48px icon)" }
                 $icon = Get-WinUtilAppIcon -Key $key
-                if ($icon -is [Windows.Media.Imaging.BitmapSource]) {
-                    if ($icon.PixelWidth -ne 64 -or $icon.PixelHeight -ne 64) { "$key icon is $($icon.PixelWidth)x$($icon.PixelHeight), not 64x64" }
-                } elseif ($icon -ne $false) {
-                    "$key icon could not be decoded"
-                }
+                if ($icon -isnot [Windows.Media.Imaging.BitmapSource]) { "$key.png could not be decoded" }
+                elseif ($icon.PixelWidth -ne 48 -or $icon.PixelHeight -ne 48) { "$key.png is $($icon.PixelWidth)x$($icon.PixelHeight), not 48x48" }
             }
             $problems | Should -BeNullOrEmpty
         }
 
         It "builds every application's entry in one parse" {
-            $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-            $applications = Get-Content (Join-Path $repoRoot "config/applications.json") -Raw | ConvertFrom-Json
+            $applications = Get-Content (Join-Path $script:repoRoot "config/applications.json") -Raw | ConvertFrom-Json
             $hashtable = @{}
             foreach ($property in $applications.PSObject.Properties) { $hashtable["WPFInstall$($property.Name)"] = $property.Value }
             $script:sync.configs.applicationsHashtable = $hashtable
-            $script:sync.configs.icons = Get-Content (Join-Path $repoRoot "config/icons.json") -Raw | ConvertFrom-Json
+            $script:sync.configs.icons = $script:embeddedIcons
 
             $checkBoxes = @(Initialize-InstallAppEntries -TargetElement $script:panel -AppKeys @($hashtable.Keys))
 

@@ -69,7 +69,7 @@ function Initialize-InstallAppEntries {
 
         if ($icon) {
             $parsed.FindName("Icon_$id").Source = $icon
-        } elseif ($null -eq $icon -and $sync.configs.applicationsHashtable[$appKey].link) {
+        } elseif ($sync.configs.applicationsHashtable[$appKey].link) {
             # No bundled icon: ask the favicon service, as before
             $logo = $parsed.FindName("Icon_$id")
             $checkBox.Content.Children[0].Child.Children[0].Visibility = "Collapsed"

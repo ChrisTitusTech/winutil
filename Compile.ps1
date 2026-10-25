@@ -16,7 +16,7 @@ $script += Get-ChildItem -Path functions -Recurse -File | ForEach-Object {
     Get-Content -Path $_.FullName -Raw
 }
 
-Get-ChildItem config | ForEach-Object {
+Get-ChildItem config -File -Filter *.json | ForEach-Object {
     $obj = Get-Content -Path $_.FullName -Raw | ConvertFrom-Json
 
     if ($_.Name -eq "applications.json") {
@@ -32,6 +32,16 @@ Get-ChildItem config | ForEach-Object {
     $sync.configs[$_.BaseName] = $obj
     $script += "`$sync.configs.$($_.BaseName) = @'`r`n$json`r`n'@ | ConvertFrom-Json"
 }
+
+# Icons are one PNG per app in config\icons\<key>.png, named after the key in applications.json.
+# They ship as a single key -> base64 map, which the Install tab reads from $sync.configs.icons.
+$icons = [ordered]@{}
+Get-ChildItem config\icons -File -Filter *.png | ForEach-Object {
+    $icons[$_.BaseName] = [Convert]::ToBase64String([IO.File]::ReadAllBytes($_.FullName))
+}
+$iconsObject = [pscustomobject]$icons
+$sync.configs["icons"] = $iconsObject
+$script += "`$sync.configs.icons = @'`r`n$($iconsObject | ConvertTo-Json)`r`n'@ | ConvertFrom-Json"
 
 $xaml = Get-Content -Path xaml\inputXML.xaml -Raw
 $script += "`$inputXML = @'`r`n$xaml`r`n'@"

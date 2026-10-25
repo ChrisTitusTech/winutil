@@ -56,6 +56,7 @@ winutil/
 │   │   └── ...
 ├── config/                    # JSON configuration files
 │   ├── applications.json      # Application definitions
+│   ├── icons/                 # One <app key>.png per application
 │   ├── tweaks.json           # Tweak definitions
 │   ├── feature.json          # Windows feature definitions
 │   └── preset.json           # Preset configurations
@@ -589,8 +590,9 @@ twenty times as much per command - enough to turn a checkbox refresh into a visi
 }
 ```
 
-2. Recompile: `.\Compile.ps1`
-3. The app appears automatically in the Install tab
+2. Add its icon as `config/icons/<key>.png`, named after the key in `applications.json` (`newapp` above). Any square image works: `.\tools\New-WinUtilIcon.ps1 -Key newapp -Path logo.png` scales it to the 48x48 size the tests expect. Without an icon file the app falls back to its website's favicon.
+3. Recompile: `.\Compile.ps1`
+4. The app appears automatically in the Install tab
 
 ### Adding a New Tweak
 
