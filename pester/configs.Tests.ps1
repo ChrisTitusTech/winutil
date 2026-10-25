@@ -717,6 +717,8 @@ Describe "UI-rendered config entries" {
             "CBorderColor"
             "CButtonBackgroundMouseoverColor"
             "CAppIconShadowColor"
+            # Set from the width of the app list (Update-WinUtilAppEntryWidth), not by a theme
+            "AppEntryCardWidth"
         ) | Sort-Object -Unique
 
         foreach ($resourceName in $dynamicResourceNames) {
