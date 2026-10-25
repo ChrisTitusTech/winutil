@@ -83,6 +83,7 @@ Because the final script is concatenated, code cannot rely on runtime module imp
 - Config files must remain valid JSON and compile cleanly through `ConvertFrom-Json`.
 - `config/dns.json` opts unfiltered providers into Fastest selection with `BenchmarkEligible: true`; missing or false values exclude a provider from the TCP latency benchmark.
 - `config/applications.json` defines installable applications; each entry includes the fields expected by tests and UI code, such as package manager IDs, category, display content, description, and link.
+- `config/icons.json` maps each `config/applications.json` key (without the `WPFInstall` prefix) to a 64x64 base64 PNG that the Install tab draws without any network access (`Get-WinUtilAppIcon`). An empty string keeps the letter tile on purpose; a missing key falls back to the online favicon lookup. Add or replace one with `tools/New-WinUtilIcon.ps1`; a Pester test requires every application to be listed.
 - `config/tweaks.json` defines Windows tweaks; registry and service changes include original values or original states when applicable so undo workflows can restore user systems.
 - Preset and navigation files reference valid config keys. Renaming a config key requires updating all presets, UI references, docs, and code paths together.
 
