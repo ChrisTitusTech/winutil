@@ -83,8 +83,8 @@ function Start-WinUtilUserInterface {
         Invoke-WinutilThemeChange -theme $sync.preferences.theme
     }
 
-    # No tab content is built before first paint. Invoke-WPFTab builds whichever tab it
-    # activates, and ContentRendered activates the default one.
+    # Tab content is built when its tab is activated: the default tab just before the window is
+    # shown, the others when they are opened or warmed up.
     $sync.InitializedTabs = @{}
 
     #===========================================================================
@@ -530,6 +530,17 @@ Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sy
         $sinceStart = [int]((Get-Date) - $sync.StartedAt).TotalMilliseconds
         Write-WinUtilLog -Level "DEBUG" -Component "UI" -Message "timing: interface ready for input $sinceStart ms after start."
     }) | Out-Null
+
+    # The default tab is built before the window is shown, in one pass nothing is waiting on, so it
+    # opens with the app list in place instead of filling in. Offline starts on another tab.
+    if (-not $PARAM_OFFLINE) {
+        $sync.BuildingBeforeShow = $true
+        try {
+            Measure-WinUtilStep -Scope "UI" -Name "build default tab before show" -ScriptBlock { Invoke-WPFTab "WPFTab1BT" }
+        } finally {
+            $sync.BuildingBeforeShow = $false
+        }
+    }
 
     $sync["Form"].ShowDialog() | Out-Null
 

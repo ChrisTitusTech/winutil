@@ -25,13 +25,17 @@
         $scrollViewer.CanContentScroll = $true
         $Border.Child = $scrollViewer
 
+        # Cards are at least AppEntryWidth wide and grow to share each row, so no row ends in empty space
+        $sync.Form.Resources["AppEntryCardWidth"] = [double]$sync.Form.Resources["AppEntryWidth"]
+        $scrollViewer.Add_SizeChanged({ Update-WinUtilAppEntryWidth })
+
         ## Create the ItemsControl, which will be the parent of all the app entries
         $itemsControl = New-Object Windows.Controls.ItemsControl
         $itemsControl.HorizontalAlignment = 'Stretch'
         $itemsControl.VerticalAlignment = 'Stretch'
         $scrollViewer.Content = $itemsControl
 
-        # Use WrapPanel to create dynamic columns based on AppEntryWidth and window width
+        # Use WrapPanel to create dynamic columns based on the card width and window width
         $itemsPanelTemplate = New-Object Windows.Controls.ItemsPanelTemplate
         $factory = New-Object Windows.FrameworkElementFactory ([Windows.Controls.WrapPanel])
         $factory.SetValue([Windows.Controls.WrapPanel]::OrientationProperty, [Windows.Controls.Orientation]::Horizontal)

@@ -1,32 +1,28 @@
 function Invoke-WinUtilInstallAppRenderBatch {
     param(
         [Parameter(Mandatory = $true)]
-        $CategoryBatch
+        $CategoryBatch,
+
+        # How many entries to build in this pass. Entries are built in one parse each, so a pass
+        # costs a few milliseconds per ten entries; the rest goes back on the queue.
+        [int]$ChunkSize = 40
     )
 
-    # A count is not a unit of time. How long a fixed number of entries takes depends on the
-    # machine and on the category, so the pass runs to a deadline instead and hands back
-    # whatever it did not reach. That caps how long a click can be left waiting.
-    $budgetMs = 25
     $keys = @($CategoryBatch.AppKeys)
+    $count = [Math]::Min($keys.Count, $ChunkSize)
+    $chunk = @($keys[0..($count - 1)])
 
     # This runs on the dispatcher, so keep the slice free of logging and other disk I/O.
-    $clock = [System.Diagnostics.Stopwatch]::StartNew()
-    $rendered = 0
-    foreach ($appKey in $keys) {
-        $sync.$appKey = Initialize-InstallAppEntry -TargetElement $CategoryBatch.TargetElement -AppKey $appKey
-        $rendered++
-        # at least one per pass, or a slow machine would never finish the list
-        if ($clock.ElapsedMilliseconds -ge $budgetMs) {
-            break
-        }
+    $checkBoxes = @(Initialize-InstallAppEntries -TargetElement $CategoryBatch.TargetElement -AppKeys $chunk)
+    for ($i = 0; $i -lt $chunk.Count; $i++) {
+        $sync.($chunk[$i]) = $checkBoxes[$i]
     }
 
-    if ($rendered -lt $keys.Count) {
+    if ($count -lt $keys.Count) {
         $sync.InstallAppRenderQueue.Enqueue([pscustomobject]@{
             Category = $CategoryBatch.Category
             TargetElement = $CategoryBatch.TargetElement
-            AppKeys = @($keys[$rendered..($keys.Count - 1)])
+            AppKeys = @($keys[$count..($keys.Count - 1)])
         })
     }
 
@@ -52,6 +48,16 @@ function Start-WinUtilInstallAppRendering {
     }
 
     $sync.InstallAppEntriesRendered = $false
+
+    # Before the window is shown nothing is waiting on the interface thread, so the whole list is
+    # built in one pass and the window opens complete instead of filling in
+    if ($sync.BuildingBeforeShow) {
+        while ($sync.InstallAppRenderQueue.Count -gt 0) {
+            Invoke-WinUtilInstallAppRenderBatch -CategoryBatch $sync.InstallAppRenderQueue.Dequeue() -ChunkSize ([int]::MaxValue)
+        }
+        Complete-WinUtilInstallAppRendering
+        return
+    }
 
     Start-WinUtilBackgroundQueue -Name "InstallAppRender" -Queue $sync.InstallAppRenderQueue `
         -RequiresTab "Install" `

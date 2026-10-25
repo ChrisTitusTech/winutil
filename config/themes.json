@@ -1,8 +1,9 @@
 {
   "shared": {
-    "AppEntryWidth": "220",
-    "AppEntryFontSize": "13.2",
-    "AppEntryIconSize": "28",
+    "AppEntryWidth": "242",
+    "AppEntryCardWidth": "242",
+    "AppEntryFontSize": "14.5",
+    "AppEntryIconSize": "31",
     "AppEntryMargin": "3",
     "AppEntryBorderThickness": "1",
     "CustomDialogFontSize": "12",
@@ -49,6 +50,7 @@
     "AppInstallUnselectedColor": "#F7F7F7",
     "AppInstallHighlightedColor": "#CFCFCF",
     "AppInstallSelectedColor": "#C2C2C2",
+    "AppIconPlateColor": "#FFFFFF",
     "ComboBoxForegroundColor": "#232629",
     "ComboBoxBackgroundColor": "#F7F7F7",
     "LabelboxForegroundColor": "#232629",
@@ -91,6 +93,7 @@
     "AppInstallUnselectedColor": "#232629",
     "AppInstallHighlightedColor": "#3C3C3C",
     "AppInstallSelectedColor": "#4C4C4C",
+    "AppIconPlateColor": "#E8ECF3",
     "ComboBoxForegroundColor": "#F7F7F7",
     "ComboBoxBackgroundColor": "#1E3747",
     "LabelboxForegroundColor": "#5BDCFF",
