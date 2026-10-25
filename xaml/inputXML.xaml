@@ -391,7 +391,7 @@
                                 <Setter Property="Panel.ZIndex" Value="2000"/>
                             </Trigger>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter Property="BorderBrush" Value="{DynamicResource ToggleButtonOnColor}"/>
+                                <Setter TargetName="ButtonGlow" Property="BorderBrush" Value="{DynamicResource ToggleButtonOnColor}"/>
                                 <Setter Property="BorderThickness" Value="2"/>
                                 <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource ButtonBackgroundSelectedColor}"/>
                                 <Setter Property="Effect">
