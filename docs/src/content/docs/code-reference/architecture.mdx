@@ -580,7 +580,7 @@ twenty times as much per command - enough to turn a checkbox refresh into a visi
 1. Edit `config/applications.json`:
 ```json title="config/applications.json"
 {
-  "WPFInstallNewApp": {
+  "NewApp": {
     "category": "Utilities",
     "content": "New App",
     "description": "Description of new app",
@@ -590,7 +590,7 @@ twenty times as much per command - enough to turn a checkbox refresh into a visi
 }
 ```
 
-2. Add its icon as `config/icons/<key>.png`, named after the key in `applications.json` (`newapp` above). Any square image works: `.\tools\New-WinUtilIcon.ps1 -Key newapp -Path logo.png` scales it to the 48x48 size the tests expect. Without an icon file the app falls back to its website's favicon.
+2. Add its icon as `config/icons/<key>.png`, named after the key in `applications.json` (`NewApp` above, `Compile.ps1` adds the `WPFInstall` prefix). Any square image works: `.\tools\New-WinUtilIcon.ps1 -Key NewApp -Path logo.png` scales it to the 48x48 size the tests expect. Without an icon file the app falls back to its website's favicon.
 3. Recompile: `.\Compile.ps1`
 4. The app appears automatically in the Install tab
 

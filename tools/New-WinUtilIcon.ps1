@@ -24,7 +24,9 @@ $configRoot = Join-Path $PSScriptRoot "..\config"
 $applications = Get-Content (Join-Path $configRoot "applications.json") -Raw | ConvertFrom-Json
 if (-not $applications.PSObject.Properties[$Key]) { throw "'$Key' is not a key in config/applications.json." }
 
-$source = [Drawing.Image]::FromFile((Resolve-Path $Path))
+# Read the file into memory, so an existing icon can be given as its own input without being locked
+$sourceStream = [IO.MemoryStream]::new([IO.File]::ReadAllBytes((Resolve-Path $Path)))
+$source = [Drawing.Image]::FromStream($sourceStream)
 $canvas = [Drawing.Bitmap]::new($size, $size, [Drawing.Imaging.PixelFormat]::Format32bppArgb)
 try {
     $graphics = [Drawing.Graphics]::FromImage($canvas)
@@ -41,7 +43,7 @@ try {
     $target = Join-Path (Resolve-Path $iconsFolder) "$Key.png"
     $canvas.Save($target, [Drawing.Imaging.ImageFormat]::Png)
 } finally {
-    $source.Dispose(); $canvas.Dispose()
+    $source.Dispose(); $sourceStream.Dispose(); $canvas.Dispose()
 }
 
 Write-Host "Saved a $size x $size icon for '$Key' ($((Get-Item $target).Length) bytes) to config/icons/$Key.png."
