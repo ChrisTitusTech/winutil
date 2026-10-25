@@ -28,6 +28,7 @@ if (-not $applications.PSObject.Properties[$Key]) { throw "'$Key' is not a key i
 $sourceStream = [IO.MemoryStream]::new([IO.File]::ReadAllBytes((Resolve-Path $Path)))
 $source = [Drawing.Image]::FromStream($sourceStream)
 $canvas = [Drawing.Bitmap]::new($size, $size, [Drawing.Imaging.PixelFormat]::Format32bppArgb)
+$graphics = $null
 try {
     $graphics = [Drawing.Graphics]::FromImage($canvas)
     $graphics.InterpolationMode = [Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
@@ -43,6 +44,7 @@ try {
     $target = Join-Path (Resolve-Path $iconsFolder) "$Key.png"
     $canvas.Save($target, [Drawing.Imaging.ImageFormat]::Png)
 } finally {
+    if ($graphics) { $graphics.Dispose() }
     $source.Dispose(); $sourceStream.Dispose(); $canvas.Dispose()
 }
 
