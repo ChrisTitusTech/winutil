@@ -18,7 +18,8 @@ function Update-WinUtilAppEntryWidth {
     $minimum = [double]$sync.Form.Resources["AppEntryWidth"]
     $spacing = ([Windows.Thickness]$sync.Form.Resources["AppEntryMargin"]).Left * 2
     $columns = [Math]::Max(1, [Math]::Floor($viewer.ViewportWidth / ($minimum + $spacing)))
-    $width = [double]([Math]::Floor($viewer.ViewportWidth / $columns) - $spacing)
+    # A viewport narrower than one minimum card leaves the card at its minimum and the list scrolls
+    $width = [double][Math]::Max($minimum, [Math]::Floor($viewer.ViewportWidth / $columns) - $spacing)
 
     if ($sync.Form.Resources["AppEntryCardWidth"] -ne $width) {
         $sync.Form.Resources["AppEntryCardWidth"] = $width

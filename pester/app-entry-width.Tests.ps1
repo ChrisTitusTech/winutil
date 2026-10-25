@@ -32,7 +32,6 @@ Describe "Update-WinUtilAppEntryWidth" {
         @{ Viewport = 1130.0; Columns = 4 }
         @{ Viewport = 1500.0; Columns = 6 }
         @{ Viewport = 800.0; Columns = 3 }
-        @{ Viewport = 300.0; Columns = 1 }
     ) {
         $script:sync.ItemsControl.Parent.ViewportWidth = $Viewport
         Update-WinUtilAppEntryWidth
@@ -41,6 +40,13 @@ Describe "Update-WinUtilAppEntryWidth" {
         $width | Should -BeGreaterOrEqual 242
         [Math]::Floor($Viewport / ($width + 6)) | Should -Be $Columns
         $Viewport - $Columns * ($width + 6) | Should -BeLessThan $Columns
+    }
+
+    It "keeps a card at its minimum width in a viewport narrower than that" {
+        $script:sync.ItemsControl.Parent.ViewportWidth = 200.0
+        Update-WinUtilAppEntryWidth
+
+        $script:sync.Form.Resources["AppEntryCardWidth"] | Should -Be 242
     }
 
     It "leaves the width alone until the list has been laid out" {

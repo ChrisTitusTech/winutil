@@ -27,7 +27,11 @@
 
         # Cards are at least AppEntryWidth wide and grow to share each row, so no row ends in empty space
         $sync.Form.Resources["AppEntryCardWidth"] = [double]$sync.Form.Resources["AppEntryWidth"]
-        $scrollViewer.Add_SizeChanged({ Update-WinUtilAppEntryWidth })
+        # The list's own width changes with the window, and also when its scrollbar appears or goes
+        $scrollViewer.Add_ScrollChanged({
+            param($sender, $e)
+            if ($e.ViewportWidthChange -ne 0) { Update-WinUtilAppEntryWidth }
+        })
 
         ## Create the ItemsControl, which will be the parent of all the app entries
         $itemsControl = New-Object Windows.Controls.ItemsControl
