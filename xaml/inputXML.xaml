@@ -121,18 +121,22 @@
         <Setter Property="Margin" Value="{DynamicResource AppEntryMargin}"/>
         <Setter Property="Background" Value="Transparent"/>
     </Style>
-    <!-- Logos are drawn for light backgrounds, so each icon sits on a plate that follows the theme -->
+    <!-- A very soft shadow, in a colour that follows the theme, lifts each logo off the card -->
     <Style x:Key="AppEntryIconPlateStyle" TargetType="Border">
         <Setter Property="Width" Value="{DynamicResource AppEntryIconSize}"/>
         <Setter Property="Height" Value="{DynamicResource AppEntryIconSize}"/>
         <Setter Property="CornerRadius" Value="8"/>
         <Setter Property="Padding" Value="2"/>
         <Setter Property="Margin" Value="0,0,8,0"/>
-        <Setter Property="Background" Value="{DynamicResource AppIconPlateColor}"/>
     </Style>
     <Style x:Key="AppEntryIconStyle" TargetType="Image">
         <Setter Property="Stretch" Value="Uniform"/>
         <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect ShadowDepth="0" BlurRadius="7" Opacity="{DynamicResource AppIconShadowOpacity}" Color="{DynamicResource CAppIconShadowColor}"/>
+            </Setter.Value>
+        </Setter>
     </Style>
     <Style x:Key="AppEntryIconLetterStyle" TargetType="TextBlock">
         <Setter Property="FontWeight" Value="Bold"/>

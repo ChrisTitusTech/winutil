@@ -96,7 +96,7 @@ function Invoke-WinutilThemeChange {
             if ($themeProperty.Name -like "*color*") {
                 Set-ThemeResourceProperty -Name $themeProperty.Name -Value $themeProperty.Value -Type "ColorBrush"
                 # For certain color properties, also set complementary values (e.g., BorderColor -> CBorderColor) This is required because e.g DropShadowEffect requires a <Color> and not a <SolidColorBrush> object
-                if ($themeProperty.Name -in @("BorderColor", "ButtonBackgroundMouseoverColor")) {
+                if ($themeProperty.Name -in @("BorderColor", "ButtonBackgroundMouseoverColor", "AppIconShadowColor")) {
                     Set-ThemeResourceProperty -Name "C$($themeProperty.Name)" -Value $themeProperty.Value -Type "Color"
                 }
             }

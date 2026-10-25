@@ -44,13 +44,10 @@ function Initialize-InstallAppEntries {
         $tooltip = [Security.SecurityElement]::Escape((Get-WinUtilEntryToolTip -Description $app.description -Key $appKey)).Replace("`r", '').Replace("`n", '&#10;')
         $letter = [Security.SecurityElement]::Escape($app.content.TrimStart(".").Substring(0, 1).ToUpper())
 
-        # A bundled icon sits on a plate that follows the theme, because logos are drawn for light
-        # backgrounds. An app deliberately listed without one keeps a bare letter tile.
-        $plate = if ($icon -eq $false) { ' Background="{x:Null}"' } else { '' }
         $letterVisibility = if ($icon) { ' Visibility="Collapsed"' } else { '' }
 
         [void]$document.Append(@"
-<Border Style="{DynamicResource AppEntryBorderStyle}" Tag="$key" ToolTip="$tooltip" AutomationProperties.Name="$name"><Grid><CheckBox x:Name="$id" Tag="$key" Style="{DynamicResource AppEntryCheckboxStyle}" AutomationProperties.Name="$name"><StackPanel Orientation="Horizontal" VerticalAlignment="Center"><Border Style="{DynamicResource AppEntryIconPlateStyle}"$plate><Grid><TextBlock Style="{DynamicResource AppEntryIconLetterStyle}" Text="$letter"$letterVisibility/><Image x:Name="Icon_$id" Style="{DynamicResource AppEntryIconStyle}"/></Grid></Border><TextBlock Style="{DynamicResource AppEntryNameStyle}" Text="$name"/></StackPanel></CheckBox>
+<Border Style="{DynamicResource AppEntryBorderStyle}" Tag="$key" ToolTip="$tooltip" AutomationProperties.Name="$name"><Grid><CheckBox x:Name="$id" Tag="$key" Style="{DynamicResource AppEntryCheckboxStyle}" AutomationProperties.Name="$name"><StackPanel Orientation="Horizontal" VerticalAlignment="Center"><Border Style="{DynamicResource AppEntryIconPlateStyle}"><Grid><TextBlock Style="{DynamicResource AppEntryIconLetterStyle}" Text="$letter"$letterVisibility/><Image x:Name="Icon_$id" Style="{DynamicResource AppEntryIconStyle}"/></Grid></Border><TextBlock Style="{DynamicResource AppEntryNameStyle}" Text="$name"/></StackPanel></CheckBox>
 "@)
 
         # Marks FOSS apps with a corner badge, bled into the border padding so it sits on the edge.
