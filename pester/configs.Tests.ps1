@@ -461,7 +461,15 @@ Describe "Telemetry tweak Defender failures" {
     ) {
         param($Action)
         Mock Write-WinUtilLog {}
-        Mock Set-MpPreference { throw "Operation failed with the following error: 0x800106ba." }
+        # The message omits the code on purpose, so only the HResult check can match this failure.
+        Mock Set-MpPreference {
+            throw [System.Management.Automation.ErrorRecord]::new(
+                [System.Runtime.InteropServices.COMException]::new("Defender provider unavailable.", [int]0x800106ba),
+                "DefenderUnavailable",
+                [System.Management.Automation.ErrorCategory]::ResourceUnavailable,
+                $null
+            )
+        }
 
         { & (Get-DefenderGuardBlock -Action $Action) } | Should -Not -Throw
 
