@@ -24,7 +24,7 @@ Starlight handles routing, Markdown rendering, and the search index. The site's 
 │   ├── content/
 │   │   └── docs/            # Pages (.md/.mdx); code-reference/tweaks and /features are generated
 │   ├── hooks/               # React hooks
-│   ├── lib/                 # Shared code (site links, release config loader)
+│   ├── lib/                 # Shared code (site links, release config loader, config links)
 │   ├── scripts/             # Client-side scripts (landing-page GSAP + Lenis motion)
 │   ├── styles/              # Global CSS: theme, fonts, docs UI
 │   └── content.config.ts
@@ -45,11 +45,13 @@ Static assets, like favicons, can be placed in the `public/` directory.
 
 The Config Builder (`/config-builder/`) and Tweak Explorer (`/tweak-explorer/`) load `config/*.json` in the browser from the latest stable WinUtil release, through `src/lib/winutil-release.js`. They don't use the copy in this repo, because `-Config` runs the stable release and rejects any key it doesn't know.
 
-New apps, tweaks, toggles, features, AppX packages, and categories appear on their own once a release is marked Latest. No docs rebuild is needed, and pre-releases are ignored. A few things are hard-coded and need updating here when WinUtil changes them:
+New apps, tweaks, toggles, features, AppX packages, and categories appear in the next browser session after a release is marked Latest. No docs rebuild is needed, and pre-releases are ignored. A few things are hard-coded and need updating here when WinUtil changes them:
 
 - Preset names (`Standard`, `Minimal`, `Advanced`, `AppxDefault`), in `ConfigBuilder.jsx` and `TweakExplorer.jsx`.
 - The key prefixes WinUtil can import (`WPFInstall`, `WPFTweaks`, `WPFToggle`, `WPFFeature`, `WPFAppx`), in `ConfigBuilder.jsx`. These mirror `Update-WinUtilSelections`.
 - The tweak fields the explorer shows (`registry`, `service`, `InvokeScript`, `UndoScript`, `appx`, and registry `Values` mappings for `Combobox` entries), in `TweakExplorer.jsx`. These mirror `Invoke-WinUtilTweaks` and `Set-WinUtilRegistryComboState`.
+
+Config Builder links carry the selected keys in the URL hash, e.g. `/config-builder/#WPFInstall7zip,WPFTweaksTelemetry`. `src/lib/config-link.js` builds and reads them for both pages. People post these links on Discord and the forums, so keep reading the existing format if you ever change it.
 
 If you add another tool page, or anything else that has to be kept in sync by hand, list it here and in SPEC.md's Docs Site section.
 
@@ -68,7 +70,7 @@ All commands are run from the `docs/` directory, from a terminal:
 | `docker compose run --rm winutil-astro npm run build`   | Build the production site to `./dist/`           |
 | `docker compose run --rm --service-ports winutil-astro npm run preview -- --host 0.0.0.0` | Preview the build locally, before deploying      |
 | `docker compose run --rm winutil-astro npm run astro ...` | Run CLI commands like `astro add`, `astro check` |
-| `docker compose run --rm winutil-astro npx playwright ...` | Run Playwright against Chromium, Firefox, or WebKit |
+| `docker compose run --rm winutil-astro npx --no-install playwright ...` | Run Playwright against Chromium, Firefox, or WebKit |
 | `docker compose down`                              | Stop and remove the dev container                |
 
 Source files are bind-mounted into the container, so edits on the host are picked up immediately by the dev server — no rebuild needed for normal content or code changes. After changing `package.json`, `package-lock.json`, or the `Dockerfile`, rebuild the image *and* drop the `node_modules` volume, since Docker only seeds a named volume from the image the first time it's created — a plain rebuild leaves the old `node_modules` in place:

@@ -1,7 +1,8 @@
 // Builds a -Config file from the latest release's catalog, so every key it offers is one that release will import.
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Icon from '../docs/Icon.jsx';
 import { RATE_LIMITED, loadReleaseConfig } from '../../lib/winutil-release.js';
+import { configLink, readConfigLink } from '../../lib/config-link.js';
 import './ConfigBuilder.css';
 
 // Each download gets its own name. A browser renames a clash to "name (1).json", and the command would then run the
@@ -54,10 +55,10 @@ async function loadCatalog() {
 			{ id: 'features', label: 'Features', items: entries(features, /^WPFFeature/) },
 			{
 				id: 'appx',
-				label: 'AppX',
+				label: 'AppX removal',
 				items: entries(appx, /^WPFAppx/),
 				presetScope: 'WPFAppx',
-				presets: [{ label: 'Default', keys: presets.AppxDefault ?? [] }],
+				presets: [{ label: 'Default removals', keys: presets.AppxDefault ?? [] }],
 			},
 		],
 	};
@@ -126,6 +127,40 @@ export default function ConfigBuilder() {
 	const order = useMemo(() => catalog?.tabs.flatMap((tab) => tab.items.map((item) => item.key)) ?? [], [catalog]);
 	const known = useMemo(() => new Set(order), [order]);
 
+	const loadKeys = useCallback(
+		(loaded, source) => {
+			const skipped = loaded.filter((key) => !known.has(key));
+			// Like WinUtil's import, a file or link with nothing usable in it leaves the current selection alone.
+			if (skipped.length === loaded.length) {
+				const text = loaded.length
+					? `None of the keys in ${source} are in WinUtil ${catalog.release.tag}: ${skipped.join(', ')}`
+					: `${source} doesn't have any WinUtil selections in it.`;
+				setNotice({ kind: 'error', text });
+				return;
+			}
+			setSelected(new Set(loaded.filter((key) => known.has(key))));
+			if (skipped.length) {
+				const message = `Left out ${skipped.length} key(s) that WinUtil ${catalog.release.tag} doesn't have: ${skipped.join(', ')}`;
+				setNotice({ kind: 'warning', text: message });
+			} else {
+				setNotice({ kind: 'info', text: `Loaded ${loaded.length} selection(s) from ${source}.` });
+			}
+		},
+		[catalog, known]
+	);
+
+	// A shared link opened in a tab that's already on this page only changes the hash, so listen for that too.
+	useEffect(() => {
+		if (!catalog) return;
+		const loadLink = () => {
+			const linked = readConfigLink(window.location.hash);
+			if (linked) loadKeys(linked, 'the link');
+		};
+		loadLink();
+		window.addEventListener('hashchange', loadLink);
+		return () => window.removeEventListener('hashchange', loadLink);
+	}, [catalog, loadKeys]);
+
 	if (error) {
 		return (
 			<div className="wu-builder not-content">
@@ -192,22 +227,7 @@ export default function ConfigBuilder() {
 			setNotice({ kind: 'error', text: `${file.name} isn't a WinUtil config file.` });
 			return;
 		}
-		const skipped = loaded.filter((key) => !known.has(key));
-		// Like WinUtil's import, a file with nothing usable in it leaves the current selection alone.
-		if (skipped.length === loaded.length) {
-			const text = loaded.length
-				? `None of the keys in ${file.name} are in WinUtil ${catalog.release.tag}: ${skipped.join(', ')}`
-				: `${file.name} doesn't have any WinUtil selections in it.`;
-			setNotice({ kind: 'error', text });
-			return;
-		}
-		setSelected(new Set(loaded.filter((key) => known.has(key))));
-		if (skipped.length) {
-			const message = `Left out ${skipped.length} key(s) that WinUtil ${catalog.release.tag} doesn't have: ${skipped.join(', ')}`;
-			setNotice({ kind: 'warning', text: message });
-		} else {
-			setNotice({ kind: 'info', text: `Loaded ${loaded.length} selection(s) from ${file.name}.` });
-		}
+		loadKeys(loaded, file.name);
 	};
 
 	const copy = async (what, value) => {
@@ -216,8 +236,18 @@ export default function ConfigBuilder() {
 			setCopied(what);
 		} catch {
 			setCopied(null);
-			setNotice({ kind: 'error', text: "Couldn't copy to the clipboard. Select the text and copy it instead." });
+			const text =
+				what === 'link'
+					? "Couldn't copy the link, but it's in the address bar."
+					: "Couldn't copy to the clipboard. Select the text and copy it instead.";
+			setNotice({ kind: 'error', text });
 		}
+	};
+
+	// The address bar gets the link as well, so it can still be copied from there if the clipboard is blocked.
+	const share = () => {
+		window.history.replaceState(null, '', configLink(keys));
+		copy('link', window.location.href);
 	};
 
 	// The first download uses the name the command already shows; later ones get a new name and update the command.
@@ -330,10 +360,18 @@ export default function ConfigBuilder() {
 			</div>
 
 			<div className="wu-builder-output">
+				{keys.some((key) => key.startsWith('WPFAppx')) && (
+					<p className="wu-builder-notice wu-builder-notice--warning">
+						This config removes the selected AppX packages when run. It does not install or keep them.
+					</p>
+				)}
 				<div className="wu-builder-output-header">
 					<span>{keys.length} selected</span>
 					<button type="button" className="wu-builder-button" disabled={!keys.length} onClick={() => copy('json', json)}>
 						{copied === 'json' ? 'Copied' : 'Copy JSON'}
+					</button>
+					<button type="button" className="wu-builder-button" disabled={!keys.length} onClick={share}>
+						{copied === 'link' ? 'Copied' : 'Share link'}
 					</button>
 					<button
 						type="button"
