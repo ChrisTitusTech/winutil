@@ -21,7 +21,8 @@ export default function useActiveHeading(ids) {
 				else break;
 			}
 			// The last heading can't always scroll up to the line, so the bottom of the page counts as reaching it.
-			if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
+			const root = document.documentElement;
+			if (root.scrollHeight > window.innerHeight && window.innerHeight + window.scrollY >= root.scrollHeight - 2) {
 				current = headings[headings.length - 1];
 			}
 			setActive(current.id);
