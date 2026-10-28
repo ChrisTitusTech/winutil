@@ -164,7 +164,7 @@ export default function TweakExplorer() {
 	const [category, setCategory] = useState(null);
 	const [preset, setPreset] = useState(null);
 	const [changes, setChanges] = useState(() => new Set());
-	const [reversibleOnly, setReversibleOnly] = useState(false);
+	const [hasUndoOnly, setHasUndoOnly] = useState(false);
 	const [expanded, setExpanded] = useState(() => new Set());
 	const [picked, setPicked] = useState(() => new Set());
 
@@ -221,7 +221,7 @@ export default function TweakExplorer() {
 			(!changes.has('registry') || tweak.registry.length > 0) &&
 			(!changes.has('services') || tweak.services.length > 0) &&
 			(!changes.has('script') || tweak.script) &&
-			(!reversibleOnly || !tweak.oneWay)
+			(!hasUndoOnly || !tweak.oneWay)
 	);
 
 	const toggleIn = (setter, value) =>
@@ -268,10 +268,13 @@ export default function TweakExplorer() {
 				<div className="wu-explorer-filter-row">
 					<span>Changes</span>
 					{CHANGES.map(({ id, label }) => chip(label, changes.has(id), () => toggleIn(setChanges, id)))}
-					{chip('Fully reversible', reversibleOnly, () => setReversibleOnly(!reversibleOnly))}
+					{chip('Has undo', hasUndoOnly, () => setHasUndoOnly(!hasUndoOnly))}
 				</div>
 			</div>
 
+			<p className="wu-explorer-note">
+				An undo action may reset defaults or reinstall software without restoring deleted data or your previous settings.
+			</p>
 			<p className="wu-explorer-status">
 				Showing {visible.length} of {data.tweaks.length} tweaks from{' '}
 				<a href={data.release.url} target="_blank" rel="noreferrer">
@@ -320,7 +323,7 @@ export default function TweakExplorer() {
 										{tweak.oneWay ? (
 											<span className="wu-explorer-badge wu-explorer-badge--warn">{tweak.oneWay}</span>
 										) : (
-											<span className="wu-explorer-badge wu-explorer-badge--good">Fully reversible</span>
+											<span className="wu-explorer-badge wu-explorer-badge--good">Has undo</span>
 										)}
 									</span>
 								</span>
