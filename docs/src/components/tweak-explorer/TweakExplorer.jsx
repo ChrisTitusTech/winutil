@@ -172,7 +172,7 @@ function TweakDetails({ tweak, picked, onPick }) {
 					{tweak.link && <a href={tweak.link}>Reference page</a>}
 					{/^WPF(?:Tweaks|Toggle)/.test(tweak.key) && (
 						<button type="button" className="wu-explorer-chip" aria-pressed={picked} onClick={onPick}>
-							{picked ? 'Added to config' : 'Add to config'}
+							{picked ? 'Added to config' : 'Add to config'}{tweak.toggle ? ' (When on)' : ''}
 						</button>
 					)}
 				</span>
