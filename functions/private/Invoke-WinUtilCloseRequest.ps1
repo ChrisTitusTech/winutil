@@ -29,22 +29,10 @@ function Invoke-WinUtilCloseRequest {
             return
         }
 
-        # The prompt keeps the dispatcher running, so a queued job may have started meanwhile.
-        # Checking and shutting the queue in one lock step means a handoff either started its job
-        # first, and the running-job question is asked again, or finds WinUtil shutting down.
-        $startedMeanwhile = $null
-        [System.Threading.Monitor]::Enter($sync.SyncRoot)
-        try {
-            $startedMeanwhile = $sync.ActiveJob
-            if (-not $startedMeanwhile) {
-                $sync.ShuttingDown = $true
-                $null = Clear-WinUtilJobQueue
-                $sync.JobHandoff = $false
-            }
-        } finally {
-            [System.Threading.Monitor]::Exit($sync.SyncRoot)
-        }
-
+        # The prompt keeps the dispatcher running, so a queued job may have started meanwhile. A
+        # handoff either started its job first, and the running-job question is asked again, or
+        # finds WinUtil shutting down.
+        $startedMeanwhile = Stop-WinUtilQueuedWork -OnlyIfIdle
         if ($startedMeanwhile) {
             Invoke-WinUtilCloseRequest -RunningJob $startedMeanwhile -QueuedCount $sync.JobQueue.Count
             return
@@ -84,6 +72,8 @@ stopped and everything closes now. Cancel keeps WinUtil open.
         }
         "No" {
             Write-WinUtilLog -Component "UI" -Message "Close requested: stopping $RunningJob."
+            # The job ending must not hand its slot to a queued one while the window closes
+            $null = Stop-WinUtilQueuedWork
             Step-WinUtilJob -Status "Stopping $RunningJob" -State "Indeterminate"
             $sync.ForceClose = $true
 
@@ -95,6 +85,35 @@ stopped and everything closes now. Cancel keeps WinUtil open.
         default {
             Write-WinUtilLog -Component "UI" -Message "Close cancelled, $RunningJob is still running."
         }
+    }
+}
+
+function Stop-WinUtilQueuedWork {
+    <#
+        .SYNOPSIS
+            Stops the queue handing out the slot because WinUtil is about to close
+
+        .DESCRIPTION
+            Sets the shutdown flag the queue honours, drops what is queued and ends any handoff,
+            in one step under the lock so a job cannot start in between.
+
+        .PARAMETER OnlyIfIdle
+            Do nothing and return the running job's name if a job holds the slot. Otherwise
+            returns $null.
+    #>
+    param([switch]$OnlyIfIdle)
+
+    [System.Threading.Monitor]::Enter($sync.SyncRoot)
+    try {
+        if ($OnlyIfIdle -and $sync.ActiveJob) {
+            return $sync.ActiveJob
+        }
+        $sync.ShuttingDown = $true
+        $null = Clear-WinUtilJobQueue
+        $sync.JobHandoff = $false
+        return $null
+    } finally {
+        [System.Threading.Monitor]::Exit($sync.SyncRoot)
     }
 }
 

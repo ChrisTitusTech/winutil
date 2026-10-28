@@ -1080,6 +1080,47 @@ Describe "Closing with queued jobs" {
         Should -Invoke -CommandName Request-WinUtilWindowClose -Times 0 -Exactly
     }
 
+    It "shuts the queue before the stop-the-job close is posted, and nothing starts after it" {
+        $script:sync.JobHandoff = $true
+        $script:sync.JobQueue.Add([pscustomobject]@{ Id = "1"; Name = "Head"; Description = ""; ScriptBlock = ""; Parameters = @{}; DisableAppList = $false })
+        Mock Show-WinUtilMessage { "No" }
+        Mock Step-WinUtilJob { }
+        Mock Update-WinUtilJobQueueUI { }
+        Mock Start-WinUtilJob { }
+        $script:atClose = $null
+        Mock Request-WinUtilWindowClose {
+            $script:atClose = @{ Shutting = $script:sync.ShuttingDown; Queued = $script:sync.JobQueue.Count; Handoff = $script:sync.JobHandoff }
+        }
+
+        Invoke-WinUtilCloseRequest -RunningJob "Install" -QueuedCount 1
+
+        $script:atClose.Shutting | Should -BeTrue
+        $script:atClose.Queued | Should -Be 0
+        $script:atClose.Handoff | Should -BeFalse
+        $script:sync.ForceClose | Should -BeTrue
+
+        # the running job ends after the answer and its handoff finds nothing to start
+        $script:sync.ActiveJob = $null
+        Start-WinUtilNextQueuedJob
+        Should -Invoke -CommandName Start-WinUtilJob -Times 0 -Exactly
+    }
+
+    It "leaves the queue and flags alone when the close is cancelled or hands the job to the console" {
+        $script:sync.JobHandoff = $true
+        $script:sync.JobQueue.Add([pscustomobject]@{ Id = "1"; Name = "Head" })
+        Mock Request-WinUtilWindowClose { }
+        Mock Write-Host { }
+
+        Mock Show-WinUtilMessage { "Cancel" }
+        Invoke-WinUtilCloseRequest -RunningJob "Install" -QueuedCount 1
+        Mock Show-WinUtilMessage { "Yes" }
+        Invoke-WinUtilCloseRequest -RunningJob "Install" -QueuedCount 1
+
+        $script:sync.ShuttingDown | Should -Not -BeTrue
+        $script:sync.JobQueue.Count | Should -Be 1
+        $script:sync.JobHandoff | Should -BeTrue
+    }
+
     It "asks again about the running job when a queued job started during the prompt" {
         $script:sync.ActiveJob = $null
         $script:sync.JobQueue.Add([pscustomobject]@{ Id = "1"; Name = "Head" })
