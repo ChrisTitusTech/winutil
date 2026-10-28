@@ -14,6 +14,7 @@ Starlight handles routing, Markdown rendering, and the search index. The site's 
 ├── src/
 │   ├── assets/              # Images used by pages (optimized at build time); icons/ holds the docs UI icons
 │   ├── components/
+│   │   ├── config-builder/  # Config Builder page component and styles
 │   │   ├── docs/            # Docs UI: React islands (search, menus, table of contents, theme toggle) and the sidebar list
 │   │   ├── landing/         # Landing-page-only components (stats, cards, motion wrapper)
 │   │   ├── overrides/       # Starlight component overrides (thin .astro wrappers, registered in astro.config.mjs)

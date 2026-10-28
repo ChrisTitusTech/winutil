@@ -1,0 +1,20 @@
+---
+title: Config Builder
+description: Pick apps, tweaks, features, and AppX packages in the browser and download a config file to run with WinUtil's -Config option.
+template: splash
+prev: false
+next: false
+---
+
+import ConfigBuilder from '../../components/config-builder/ConfigBuilder.jsx';
+
+Build a WinUtil configuration file without opening WinUtil. Select what you want, download the file, then run WinUtil with `-Config` as described in [Automation](/guides/automation/).
+
+The list is loaded from the latest stable WinUtil release on GitHub. The generated command runs that exact release, so the selected keys remain compatible even if a newer release is published before you run it.
+
+<ConfigBuilder client:load />
+
+- **Standard**, **Minimal**, and **Advanced** replace the selected tweaks with that preset, the same as the preset buttons in WinUtil. Your toggles and other selections stay as they are.
+- Toggles under **Customize Preferences** are switched on when the config runs. A config cannot switch a toggle off.
+- **Open a config** loads an exported file so you can change it. Keys that the current release does not have are listed and left out, which is also a quick way to fix an `Unknown selection key` error.
+- If your browser saves downloads somewhere other than your `Downloads` folder, change the path in the command to match.

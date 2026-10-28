@@ -30,6 +30,11 @@ const navGroups = [
 		],
 	},
 ];
+
+const navLinks = [
+	{ label: 'Config Builder', href: '/config-builder/' },
+	{ ...siteLinks.store, external: true },
+];
 ---
 
 <div class="docs-header">
@@ -38,7 +43,7 @@ const navGroups = [
 	</div>
 	<div class="docs-header-actions print:hidden">
 		<SearchDialog client:load />
-		<SiteNav client:idle groups={navGroups} store={siteLinks.store} showMenuButton={!hasSidebar} />
+		<SiteNav client:idle groups={navGroups} links={navLinks} showMenuButton={!hasSidebar} />
 		<div class="docs-social">
 			{
 				config.social?.map(({ icon, label, href }) => (
