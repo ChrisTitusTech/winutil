@@ -12,12 +12,13 @@ Describe "Write-WinUtilLog" {
     BeforeEach {
         $script:testRoot = Join-Path ([System.IO.Path]::GetTempPath()) "winutil-logging-$([guid]::NewGuid())"
         New-Item -Path $script:testRoot -ItemType Directory -Force | Out-Null
-        Remove-Variable -Name WinUtilLogPath -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name WinUtilLogState -Scope Script -ErrorAction SilentlyContinue
     }
 
     AfterEach {
+        Close-WinUtilLog
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name WinUtilLogPath -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name WinUtilLogState -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name WinUtilIsJobWorker -Scope Global -ErrorAction SilentlyContinue
         Remove-Variable -Name WinUtilJobErrorCount -Scope Global -ErrorAction SilentlyContinue
         Remove-Item -Path $script:testRoot -Recurse -Force -ErrorAction SilentlyContinue
@@ -37,21 +38,97 @@ Describe "Write-WinUtilLog" {
         Get-Content -Path $logPath -Raw | Should -Match "\[INFO\] \[Test\] same session log"
     }
 
-    It "writes through the host when the transcript owns the active session log" {
+    It "records entries from a runspace that shares the console host" {
+        # Like the UI thread, which a transcript on the main thread never recorded
         $logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
         $script:sync = [hashtable]::Synchronized(@{
             logPath = $logPath
-            transcriptPath = $logPath
         })
-        Mock Write-Host { }
-        Mock Add-Content { }
 
-        Write-WinUtilLog -Component "Test" -Message "transcript entry"
+        $initialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
+        $initialSessionState.Variables.Add(
+            (New-Object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList "sync", $script:sync, $null)
+        )
+        $runspace = [runspacefactory]::CreateRunspace($Host, $initialSessionState)
+        $runspace.ApartmentState = "STA"
+        $runspace.Open()
+        $shell = [powershell]::Create()
+        $shell.Runspace = $runspace
 
-        Should -Invoke Write-Host -Times 1 -Exactly -ParameterFilter {
-            $Object -match "\[INFO\] \[Test\] transcript entry"
+        try {
+            [void]$shell.AddScript((Get-Content -Path (Join-Path $script:repoRoot "functions\private\Write-WinUtilLog.ps1") -Raw))
+            [void]$shell.AddScript("Write-WinUtilLog -Component 'UI' -Message 'from the interface thread'")
+            $shell.Invoke()
+        } finally {
+            $shell.Dispose()
+            $runspace.Dispose()
         }
-        Should -Invoke Add-Content -Times 0 -Exactly
+
+        Write-WinUtilLog -Component "Test" -Message "from the main thread"
+
+        $content = Get-Content -Path $logPath
+        @($content | Where-Object { $_ -match "\[UI\] from the interface thread$" }).Count | Should -Be 1
+        @($content | Where-Object { $_ -match "\[Test\] from the main thread$" }).Count | Should -Be 1
+    }
+
+    It "keeps the session log readable while it is open" {
+        $logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
+        $script:sync = [hashtable]::Synchronized(@{
+            logPath = $logPath
+        })
+
+        Write-WinUtilLog -Component "Test" -Message "first entry"
+        Get-Content -LiteralPath $logPath -Raw | Should -Match "first entry"
+
+        Write-WinUtilLog -Component "Test" -Message "second entry"
+        Get-Content -LiteralPath $logPath -Raw | Should -Match "second entry"
+    }
+
+    It "releases the file when closed and appends to it if a later entry arrives" {
+        $logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
+        $script:sync = [hashtable]::Synchronized(@{
+            logPath = $logPath
+        })
+
+        Write-WinUtilLog -Component "Test" -Message "before close"
+        Close-WinUtilLog
+
+        $exclusive = [System.IO.File]::Open($logPath, [System.IO.FileMode]::Open, [System.IO.FileAccess]::ReadWrite, [System.IO.FileShare]::None)
+        $exclusive.Dispose()
+
+        Write-WinUtilLog -Component "Test" -Message "after close"
+
+        $content = Get-Content -Path $logPath -Raw
+        $content | Should -Match "before close"
+        $content | Should -Match "after close"
+    }
+
+    It "shows the entry on the console without emitting a Write-Host record" {
+        $script:sync = [hashtable]::Synchronized(@{
+            logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
+        })
+        Mock Write-WinUtilHost { }
+
+        # A Write-Host record here would get logged twice inside a job
+        $records = @(& { Write-WinUtilLog -Component "Test" -Message "console entry" } 6>&1)
+
+        $records.Count | Should -Be 0
+        Should -Invoke Write-WinUtilHost -Times 1 -Exactly -ParameterFilter {
+            $Object -match "\[INFO\] \[Test\] console entry"
+        }
+    }
+
+    It "writes only the file when the entry is already on the console" {
+        $logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
+        $script:sync = [hashtable]::Synchronized(@{
+            logPath = $logPath
+        })
+        Mock Write-WinUtilHost { }
+
+        Write-WinUtilLog -Component "Test" -Message "collected output" -FileOnly
+
+        Should -Invoke Write-WinUtilHost -Times 0 -Exactly
+        Get-Content -Path $logPath -Raw | Should -Match "\[INFO\] \[Test\] collected output"
     }
 
     It "writes entries produced concurrently by several threads" {
@@ -110,22 +187,25 @@ Describe "Write-WinUtilLog" {
         $content | Should -Match "second fallback entry"
     }
 
-    It "falls back to host output when the log file cannot be opened" {
+    It "still shows the entry when the log file cannot be opened" {
         $logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
         $script:sync = [hashtable]::Synchronized(@{
             winutildir = $script:testRoot
             logPath = $logPath
         })
+        New-Item -Path (Split-Path -Path $logPath -Parent) -ItemType Directory -Force | Out-Null
+        $locked = [System.IO.File]::Open($logPath, [System.IO.FileMode]::OpenOrCreate, [System.IO.FileAccess]::ReadWrite, [System.IO.FileShare]::None)
 
-        Mock Add-Content { throw [System.IO.IOException]::new("file is locked") } -ParameterFilter {
-            $Path -eq $logPath -and $ErrorAction -eq "Stop"
-        }
-        Mock Write-Host { }
+        Mock Write-WinUtilHost { }
         Mock Write-Warning { }
 
-        Write-WinUtilLog -Component "Test" -Message "locked file fallback"
+        try {
+            Write-WinUtilLog -Component "Test" -Message "locked file fallback"
+        } finally {
+            $locked.Dispose()
+        }
 
-        Should -Invoke -CommandName Write-Host -Times 1 -Exactly -ParameterFilter {
+        Should -Invoke -CommandName Write-WinUtilHost -Times 1 -Exactly -ParameterFilter {
             $Object -match "\[INFO\] \[Test\] locked file fallback"
         }
         Should -Invoke -CommandName Write-Warning -Times 0 -Exactly
@@ -201,4 +281,23 @@ Describe "Write-WinUtilLog" {
         }
     }
 
+}
+
+Describe "Session log wiring" {
+    It "does not hand the session log to a transcript" {
+        # A transcript only records the runspace that starts it, so the UI thread and jobs never
+        # made it into the file. The ISO post-install script runs on its own and is fine.
+        $offenders = Get-ChildItem -Path (Join-Path $script:repoRoot "scripts"), (Join-Path $script:repoRoot "functions") -Filter "*.ps1" -Recurse |
+            Where-Object { $_.Name -ne "Invoke-WinUtilISOScript.ps1" } |
+            Where-Object { (Get-Content -LiteralPath $_.FullName -Raw) -match "Start-Transcript" } |
+            ForEach-Object { $_.Name }
+
+        $offenders | Should -BeNullOrEmpty
+    }
+
+    It "closes the session log on both exits" {
+        $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
+
+        ([regex]::Matches($mainScript, 'Close-WinUtilLog')).Count | Should -Be 2
+    }
 }

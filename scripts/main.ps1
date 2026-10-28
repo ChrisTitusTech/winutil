@@ -20,6 +20,8 @@ CCC::::::::::::C         T:::::::::T            T:::::::::T
 =====Windows Toolbox=====
 "@
 
+Write-WinUtilLog -Message "WinUtil $($sync.version) on PowerShell $($PSVersionTable.PSVersion) ($($PSVersionTable.PSEdition)), $([Environment]::OSVersion.VersionString), process $PID."
+
 # Load the configuration files
 
 $sync.configs.applicationsHashtable = @{}
@@ -95,7 +97,7 @@ if ($Preset -or $Config) {
         Close-WinUtilRunspacePool
         [System.GC]::Collect()
         Remove-WinUtilTempScript
-        Stop-Transcript | Out-Null
+        Close-WinUtilLog
     }
 
     # An isolated elevated child and an explicit file launch own their process. The documented
@@ -163,7 +165,7 @@ Close-WinUtilRunspacePool
 
 Remove-WinUtilTempScript
 Write-Host "Bye bye!" -ForegroundColor Cyan
-Stop-Transcript
+Close-WinUtilLog
 
 if ($uiFailed) {
     $global:LASTEXITCODE = 1
