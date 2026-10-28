@@ -716,6 +716,8 @@ Describe "UI-rendered config entries" {
             $themes.Dark.PSObject.Properties.Name
             "CBorderColor"
             "CButtonBackgroundMouseoverColor"
+            "CMainGradientTopColor"
+            "CMainGradientBottomColor"
         ) | Sort-Object -Unique
 
         foreach ($resourceName in $dynamicResourceNames) {
