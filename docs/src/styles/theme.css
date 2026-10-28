@@ -159,7 +159,7 @@ body {
 }
 .wu-btn-secondary:hover {
 	border-color: var(--sl-color-accent);
-	color: var(--sl-color-accent);
+	color: var(--sl-color-accent-high);
 }
 /* Neutralizes any stray <p> MDX wraps around icon+text content, so it never breaks the flex row. */
 .wu-btn > p,
@@ -388,7 +388,7 @@ body {
 	border: 1px solid var(--sl-color-hairline-light);
 	background: var(--sl-color-bg);
 	font-weight: 700;
-	color: var(--sl-color-accent);
+	color: var(--sl-color-accent-high);
 }
 .wu-timeline-step h3 {
 	margin: 0;

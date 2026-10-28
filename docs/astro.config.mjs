@@ -45,7 +45,7 @@ export default defineConfig({
 			editLink: {
 				baseUrl: 'https://github.com/ChrisTitusTech/winutil/edit/main/docs/',
 			},
-			// Sidebar groups, top to bottom: User Guide, Code Reference, Help.
+			// Sidebar groups, top to bottom: User Guide, Code Reference, Help, Tools.
 			sidebar: [
 				{
 					label: 'User Guide',
@@ -76,6 +76,13 @@ export default defineConfig({
 						{ label: 'Known Issues', slug: 'knownissues' },
 						{ label: 'Contributing', slug: 'contributing' },
 						{ label: siteLinks.forums.label, link: siteLinks.forums.href, attrs: { target: '_blank', rel: 'noreferrer' } },
+					],
+				},
+				{
+					label: 'Tools',
+					items: [
+						{ label: 'Config Builder', slug: 'config-builder' },
+						{ label: 'Tweak Explorer', slug: 'tweak-explorer' },
 					],
 				},
 				{ label: siteLinks.store.label, link: siteLinks.store.href, attrs: { target: '_blank', rel: 'noreferrer' } },

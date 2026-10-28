@@ -27,7 +27,7 @@ function Dropdown({ label, links, open, onToggle, onClose }) {
 	);
 }
 
-export default function SiteNav({ groups, store, showMenuButton }) {
+export default function SiteNav({ groups, links, showMenuButton }) {
 	const [openGroup, setOpenGroup] = useState(null);
 	const [menuOpen, setMenuOpen] = useState(false);
 	const rootRef = useRef(null);
@@ -76,9 +76,11 @@ export default function SiteNav({ groups, store, showMenuButton }) {
 						onClose={() => setOpenGroup((current) => (current === group.label ? null : current))}
 					/>
 				))}
-				<a className="docs-nav-link" href={store.href} target="_blank" rel="noreferrer">
-					{store.label}
-				</a>
+				{links.map((link) => (
+					<a key={link.href} className="docs-nav-link" href={link.href} {...externalProps(link)}>
+						{link.label}
+					</a>
+				))}
 			</nav>
 			{showMenuButton && (
 				<div className="docs-nav-mobile" onBlur={closeOnBlur(() => setMenuOpen(false))}>
@@ -103,9 +105,11 @@ export default function SiteNav({ groups, store, showMenuButton }) {
 								))}
 							</div>
 						))}
-						<a className="docs-nav-panel-store" href={store.href} target="_blank" rel="noreferrer">
-							{store.label}
-						</a>
+						{links.map((link) => (
+							<a key={link.href} href={link.href} {...externalProps(link)}>
+								{link.label}
+							</a>
+						))}
 					</div>
 				</div>
 			)}
