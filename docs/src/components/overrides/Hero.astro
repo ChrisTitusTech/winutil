@@ -2,6 +2,9 @@
 // Custom hero override: eyebrow, heading, tagline, actions, badges, screenshot.
 import { Image } from 'astro:assets';
 import { Icon } from '@astrojs/starlight/components';
+import HeroDotGrid from '../landing/HeroDotGrid.jsx';
+import HeroEyebrow from '../landing/HeroEyebrow.jsx';
+import GlareHover from '../react-bits/GlareHover.jsx';
 
 // Matches Starlight's internal PAGE_TITLE_ID (used by the skip-to-content link).
 const PAGE_TITLE_ID = '_top';
@@ -15,14 +18,22 @@ let heroImage: ImageMetadata | undefined;
 if (image && 'file' in image) heroImage = image.file;
 ---
 
-<section class="wu-hero">
-	{/* Full-bleed grid/glow background layer. */}
+<section class:list={['wu-hero', !heroImage && 'wu-hero--solo']}>
+	{/* Full-bleed background: dot grid (motion on) or grid lines (motion off), plus the glow. */}
+	<div class="wu-hero-dots" aria-hidden="true"><HeroDotGrid client:idle /></div>
 	<div class="wu-hero-grid" aria-hidden="true"></div>
 	<div class="wu-hero-glow" aria-hidden="true"></div>
 	<div class="wu-hero-inner">
 		{/* Copy column: eyebrow, heading, tagline, actions, caption. */}
 		<div class="wu-hero-copy">
-			{heroEyebrow && <p class="wu-eyebrow">{heroEyebrow}</p>}
+			{
+				heroEyebrow && (
+					<p class="wu-eyebrow">
+						<span class="wu-eyebrow-dot" aria-hidden="true" />
+						<HeroEyebrow client:load text={heroEyebrow} />
+					</p>
+				)
+			}
 			<h1 id={PAGE_TITLE_ID} data-page-title set:html={title} />
 			{tagline && <p class="wu-hero-tagline" set:html={tagline} />}
 			{
@@ -49,23 +60,33 @@ if (image && 'file' in image) heroImage = image.file;
 		{
 			heroImage && (
 				<div class="wu-hero-media">
-					<div class="wu-window">
-						<div class="wu-window-bar">
-							<span class="wu-window-title">winutil.ps1</span>
-							<div class="wu-caption-buttons">
-								<span class="wu-cap-btn wu-cap-min" aria-hidden="true">
-									<svg viewBox="0 0 10 10"><path d="M0 5h10" /></svg>
-								</span>
-								<span class="wu-cap-btn wu-cap-max" aria-hidden="true">
-									<svg viewBox="0 0 10 10"><rect x="0.5" y="0.5" width="9" height="9" /></svg>
-								</span>
-								<span class="wu-cap-btn wu-cap-close" aria-hidden="true">
-									<svg viewBox="0 0 10 10"><path d="M0 0l10 10M10 0L0 10" /></svg>
-								</span>
+					{/* Glare sweeps across the window on hover. */}
+					<GlareHover
+						client:visible
+						width="100%"
+						borderRadius="1rem"
+						glareColor="#ffffff"
+						glareOpacity={0.22}
+						glareSize={40}
+					>
+						<div class="wu-window">
+							<div class="wu-window-bar">
+								<span class="wu-window-title">winutil.ps1</span>
+								<div class="wu-caption-buttons">
+									<span class="wu-cap-btn wu-cap-min" aria-hidden="true">
+										<svg viewBox="0 0 10 10"><path d="M0 5h10" /></svg>
+									</span>
+									<span class="wu-cap-btn wu-cap-max" aria-hidden="true">
+										<svg viewBox="0 0 10 10"><rect x="0.5" y="0.5" width="9" height="9" /></svg>
+									</span>
+									<span class="wu-cap-btn wu-cap-close" aria-hidden="true">
+										<svg viewBox="0 0 10 10"><path d="M0 0l10 10M10 0L0 10" /></svg>
+									</span>
+								</div>
 							</div>
+							<Image src={heroImage} alt={image?.alt || ''} width={1200} loading="eager" decoding="async" />
 						</div>
-						<Image src={heroImage} alt={image?.alt || ''} width={1200} loading="eager" decoding="async" />
-					</div>
+					</GlareHover>
 				</div>
 			)
 		}
@@ -103,6 +124,7 @@ if (image && 'file' in image) heroImage = image.file;
 		}
 
 		/* Full-bleed grid/glow background, forced behind all hero content via negative z-index. */
+		.wu-hero-dots,
 		.wu-hero-grid,
 		.wu-hero-glow {
 			position: absolute;
@@ -148,13 +170,54 @@ if (image && 'file' in image) heroImage = image.file;
 			text-align: center;
 		}
 
+		/* Eyebrow as a pill badge with a pulsing status dot. */
 		.wu-eyebrow {
-			margin: 0 0 1rem;
-			font-size: var(--sl-text-sm);
+			display: inline-flex;
+			align-items: center;
+			gap: 0.6rem;
+			margin: 0 0 1.5rem;
+			padding: 0.35rem 0.9rem 0.35rem 0.75rem;
+			border: 1px solid var(--sl-color-hairline-light);
+			border-radius: 999px;
+			background: color-mix(in srgb, var(--sl-color-gray-6) 70%, transparent);
+			backdrop-filter: blur(8px);
+			font-size: var(--sl-text-xs);
 			font-weight: 600;
 			text-transform: uppercase;
-			letter-spacing: 0.06em;
-			color: var(--sl-color-accent);
+			letter-spacing: 0.08em;
+			color: var(--sl-color-gray-2);
+			--wu-eyebrow-text: #a3a3a3;
+		}
+		:global([data-theme='light']) .wu-eyebrow {
+			--wu-eyebrow-text: #525252;
+		}
+
+		.wu-eyebrow-dot {
+			position: relative;
+			width: 0.45rem;
+			height: 0.45rem;
+			border-radius: 999px;
+			background: var(--wu-accent);
+		}
+		.wu-eyebrow-dot::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			border-radius: inherit;
+			background: var(--wu-accent);
+			animation: wu-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+		}
+		@keyframes wu-ping {
+			75%,
+			100% {
+				transform: scale(2.6);
+				opacity: 0;
+			}
+		}
+		@media (prefers-reduced-motion: reduce) {
+			.wu-eyebrow-dot::after {
+				animation: none;
+			}
 		}
 
 		.wu-hero-copy h1 {
@@ -190,8 +253,20 @@ if (image && 'file' in image) heroImage = image.file;
 
 		/* Screenshot framed in a fake browser window (traffic-light dots + title bar). */
 		.wu-hero-media {
+			position: relative;
 			display: flex;
 			justify-content: center;
+		}
+
+		/* Soft accent glow pooled under the screenshot. */
+		.wu-hero-media::before {
+			content: '';
+			position: absolute;
+			inset: 10% 5% -10%;
+			z-index: -1;
+			background: radial-gradient(ellipse at center, hsl(var(--wu-accent-h) 100% 55% / 0.35), transparent 70%);
+			filter: blur(40px);
+			pointer-events: none;
 		}
 
 		.wu-window {
@@ -201,6 +276,11 @@ if (image && 'file' in image) heroImage = image.file;
 			border-radius: var(--wu-radius-lg);
 			border: 1px solid var(--sl-color-hairline-light);
 			background: var(--sl-color-gray-6);
+		}
+
+		/* The shadow sits on GlareHover's root, since it clips everything inside it to its rounded box. */
+		.wu-hero-media :global(.glare-hover) {
+			max-width: 56rem;
 			box-shadow: 0 25px 50px -12px hsl(0 0% 0% / 0.5);
 		}
 
@@ -296,6 +376,27 @@ if (image && 'file' in image) heroImage = image.file;
 			.wu-hero-bottom {
 				padding-bottom: 3rem;
 			}
+		}
+
+		/* No image (the 404 page): one centered column that fills the screen. */
+		.wu-hero--solo .wu-hero-inner {
+			grid-template-columns: minmax(0, 1fr);
+			align-content: center;
+			min-height: calc(100svh - var(--sl-nav-height) - 7rem);
+		}
+		.wu-hero--solo .wu-hero-copy {
+			max-width: 44rem;
+			margin-inline: auto;
+			text-align: center;
+		}
+		.wu-hero--solo h1 {
+			text-wrap: balance;
+		}
+		.wu-hero--solo .wu-hero-tagline {
+			margin-inline: auto;
+		}
+		.wu-hero--solo .wu-hero-actions {
+			justify-content: center;
 		}
 	}
 </style>
