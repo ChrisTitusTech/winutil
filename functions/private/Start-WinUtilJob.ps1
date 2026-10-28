@@ -28,7 +28,9 @@ function Start-WinUtilJob {
 
         .PARAMETER QueueIfBusy
             Waits in $sync.JobQueue for its turn instead of being refused, for actions the user
-            starts. The parameters are held as they were when it was queued.
+            starts. The parameters are held as they were when it was queued. A job with the same
+            name and parameters as one already queued is ignored, so repeated clicks do not repeat
+            the work.
 
         .PARAMETER FromQueue
             Internal to Start-WinUtilNextQueuedJob: this is the queued job taking its turn, so it
@@ -78,6 +80,22 @@ function Start-WinUtilJob {
     $jobToken = [guid]::NewGuid().ToString()
     $blockedBy = $null
     $queuePosition = 0
+    $duplicate = $false
+
+    # Built outside the lock. A value that cannot be serialised just leaves the job undeduplicated.
+    $signature = $null
+    if ($QueueIfBusy) {
+        try {
+            $sortedKeys = [string[]]$Parameters.Keys
+            [array]::Sort($sortedKeys)
+            $ordered = [ordered]@{}
+            foreach ($key in $sortedKeys) { $ordered[$key] = $Parameters[$key] }
+            $signature = "$Name|" + (ConvertTo-Json -InputObject $ordered -Compress -Depth 5 -WarningAction SilentlyContinue)
+        } catch {
+            Write-WinUtilLog -Level "WARN" -Component $Name -Message "Could not compare $Name with the queue, so it will not be checked for duplicates: $($_.Exception.Message)"
+        }
+    }
+
     [System.Threading.Monitor]::Enter($sync.SyncRoot)
     try {
         if ($FromQueue) {
@@ -89,8 +107,14 @@ function Start-WinUtilJob {
             # In the same lock as the busy test: a job finishing between the two would leave
             # this one queued behind nothing
             if ($QueueIfBusy) {
+                foreach ($queued in $sync.JobQueue) {
+                    if ($signature -and $queued.Signature -eq $signature) { $duplicate = $true; break }
+                }
+            }
+            if ($QueueIfBusy -and -not $duplicate) {
                 $sync.JobQueue.Add([pscustomobject]@{
                     Id = [guid]::NewGuid().ToString()
+                    Signature = $signature
                     Name = $Name
                     Description = $Description
                     ScriptBlock = $ScriptBlock.ToString()
@@ -106,6 +130,11 @@ function Start-WinUtilJob {
         }
     } finally {
         [System.Threading.Monitor]::Exit($sync.SyncRoot)
+    }
+
+    if ($duplicate) {
+        Write-WinUtilLog -Component $Name -Message "$Name is already queued, ignored."
+        return $null
     }
 
     if ($queuePosition -gt 0) {

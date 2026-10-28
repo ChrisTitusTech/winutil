@@ -897,6 +897,62 @@ Describe "Job queue" {
         $script:sync.JobHandoff | Should -BeFalse
     }
 
+    It "queues identical work once and ignores repeated clicks" {
+        $script:sync.ActiveJob = "Install"
+
+        foreach ($click in 1..4) {
+            Start-WinUtilJob -Name "Tweaks" -QueueIfBusy -Parameters @{ Tweaks = @("A", "B"); DnsProvider = "Default" } -ScriptBlock { } | Out-Null
+        }
+
+        $script:sync.JobQueue.Count | Should -Be 1
+        Should -Invoke -CommandName Write-WinUtilLog -Times 3 -Exactly -ParameterFilter {
+            $Component -eq "Tweaks" -and $Message -eq "Tweaks is already queued, ignored."
+        }
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 0 -Exactly
+    }
+
+    It "treats the same parameters given in a different key order as identical" {
+        $script:sync.ActiveJob = "Install"
+
+        Start-WinUtilJob -Name "Tweaks" -QueueIfBusy -Parameters ([ordered]@{ A = 1; B = 2 }) -ScriptBlock { } | Out-Null
+        Start-WinUtilJob -Name "Tweaks" -QueueIfBusy -Parameters ([ordered]@{ B = 2; A = 1 }) -ScriptBlock { } | Out-Null
+
+        $script:sync.JobQueue.Count | Should -Be 1
+    }
+
+    It "queues the same name again when the selection differs" {
+        $script:sync.ActiveJob = "Install"
+
+        Start-WinUtilJob -Name "Tweaks" -QueueIfBusy -Parameters @{ Tweaks = @("A") } -ScriptBlock { } | Out-Null
+        Start-WinUtilJob -Name "Tweaks" -QueueIfBusy -Parameters @{ Tweaks = @("A", "B") } -ScriptBlock { } | Out-Null
+        Start-WinUtilJob -Name "Undo tweaks" -QueueIfBusy -Parameters @{ Tweaks = @("A") } -ScriptBlock { } | Out-Null
+
+        $script:sync.JobQueue.Count | Should -Be 3
+    }
+
+    It "does not compare against the running job" {
+        Start-WinUtilJob -Name "Tweaks" -QueueIfBusy -Parameters @{ Tweaks = @("A") } -ScriptBlock { } | Out-Null
+        $script:sync.ActiveJob | Should -Be "Tweaks"
+
+        Start-WinUtilJob -Name "Tweaks" -QueueIfBusy -Parameters @{ Tweaks = @("A") } -ScriptBlock { } | Out-Null
+        Start-WinUtilJob -Name "Tweaks" -QueueIfBusy -Parameters @{ Tweaks = @("A") } -ScriptBlock { } | Out-Null
+
+        $script:sync.JobQueue.Count | Should -Be 1
+    }
+
+    It "queues without the duplicate check when the parameters cannot be serialised" {
+        Mock ConvertTo-Json { throw "cannot serialise" }
+        $script:sync.ActiveJob = "Install"
+
+        Start-WinUtilJob -Name "Tweaks" -QueueIfBusy -Parameters @{ Tweaks = @("A") } -ScriptBlock { } | Out-Null
+        Start-WinUtilJob -Name "Tweaks" -QueueIfBusy -Parameters @{ Tweaks = @("A") } -ScriptBlock { } | Out-Null
+
+        $script:sync.JobQueue.Count | Should -Be 2
+        Should -Invoke -CommandName Write-WinUtilLog -Times 2 -Exactly -ParameterFilter {
+            $Level -eq "WARN" -and $Message -like "Could not compare Tweaks*"
+        }
+    }
+
     It "opts the user actions in and keeps the ISO and USB jobs refusing" {
         foreach ($path in @(
             "functions\public\Invoke-WPFInstall.ps1", "functions\public\Invoke-WPFUnInstall.ps1",
