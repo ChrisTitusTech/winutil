@@ -302,6 +302,55 @@ Describe "Collected runspace output" {
         Remove-Item -Path $script:testRoot -Recurse -Force -ErrorAction SilentlyContinue
     }
 
+    It "logs redirected Write-Host output and puts it back on the console as it was" {
+        Mock Write-WinUtilHost { }
+
+        & { Write-Host "Set HKLM:\Software\Example\Value to 1" -ForegroundColor Green } 6>&1 | ForEach-Object {
+            Write-WinUtilStreamRecord -Record $_ -Component "Tweaks"
+        }
+
+        Get-Content -Path $script:logPath -Raw | Should -Match "\[INFO\] \[Tweaks\] Set HKLM:\\Software\\Example\\Value to 1"
+        Should -Invoke Write-WinUtilHost -Times 1 -Exactly -ParameterFilter {
+            $Object -eq "Set HKLM:\Software\Example\Value to 1" -and $ForegroundColor -eq "Green"
+        }
+    }
+
+    It "logs redirected warnings and non-terminating errors" {
+        Mock Write-WinUtilHost { }
+
+        & { Write-Warning "Service Example was not found."; Write-Error "Access denied" } 2>&1 3>&1 | ForEach-Object {
+            Write-WinUtilStreamRecord -Record $_ -Component "Tweaks"
+        }
+
+        $content = Get-Content -Path $script:logPath -Raw
+        $content | Should -Match "\[WARN\] \[Tweaks\] Service Example was not found\."
+        $content | Should -Match "\[ERROR\] \[Tweaks\] Non-terminating error : Access denied"
+    }
+
+    It "does not show again what the host already displayed" {
+        Mock Write-WinUtilHost { }
+
+        $collected = @(& { Write-Host "toggle applied"; Write-Warning "toggle warning" } 3>&1 6>&1)
+        foreach ($record in $collected) {
+            Write-WinUtilStreamRecord -Record $record -Component "UI" -Shown
+        }
+
+        Should -Invoke Write-WinUtilHost -Times 0 -Exactly
+        $content = Get-Content -Path $script:logPath -Raw
+        $content | Should -Match "\[INFO\] \[UI\] toggle applied"
+        $content | Should -Match "\[WARN\] \[UI\] toggle warning"
+    }
+
+    It "ignores ordinary output and blank lines" {
+        Mock Write-WinUtilHost { }
+
+        & { "pipeline output"; Write-Host "" } 6>&1 | ForEach-Object {
+            Write-WinUtilStreamRecord -Record $_ -Component "Tweaks"
+        }
+
+        Test-Path -Path $script:logPath | Should -BeFalse
+    }
+
     It "keeps console-only helpers out of the information stream" {
         # Anything these send through Write-Host would be logged twice inside a job
         $failure = try { throw "simulated failure" } catch { $_ }

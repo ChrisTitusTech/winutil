@@ -160,3 +160,33 @@ function Write-WinUtilHost {
         $Host.UI.WriteLine($foreground, $background, $Object)
     }
 }
+
+# Logs a warning, error or Write-Host record from another runspace, and shows it too unless -Shown says it already was
+function Write-WinUtilStreamRecord {
+    param(
+        [Parameter(Mandatory)]
+        $Record,
+
+        [string]$Component = "WinUtil",
+
+        [switch]$Shown
+    )
+
+    if ($Record -is [System.Management.Automation.WarningRecord]) {
+        Write-WinUtilLog -Level "WARN" -Component $Component -Message $Record.Message -FileOnly:$Shown
+    } elseif ($Record -is [System.Management.Automation.ErrorRecord]) {
+        Write-WinUtilErrorRecord -ErrorRecord $Record -Component $Component -Context "Non-terminating error"
+    } elseif ($Record -is [System.Management.Automation.InformationRecord]) {
+        $message = $Record.MessageData
+
+        if (-not $Shown -and $message -is [System.Management.Automation.HostInformationMessage]) {
+            Write-WinUtilHost -Object $message.Message -ForegroundColor $message.ForegroundColor `
+                -BackgroundColor $message.BackgroundColor -NoNewline:([bool]$message.NoNewLine)
+        }
+
+        $text = "$message".TrimEnd()
+        if ($text) {
+            Write-WinUtilLog -Component $Component -Message $text -FileOnly
+        }
+    }
+}

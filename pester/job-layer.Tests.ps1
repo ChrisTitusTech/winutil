@@ -18,7 +18,7 @@ BeforeAll {
         param([string]$Message, [string]$Level)
     }
     function Write-WinUtilLog {
-        param($Message, $Level, $Component, [switch]$Detail)
+        param($Message, $Level, $Component, [switch]$Detail, [switch]$FileOnly)
     }
     function Step-WinUtilJob {
         param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay, [switch]$Hide)
@@ -433,6 +433,30 @@ Describe "Start-WinUtilJob" {
         }
         $script:sync.LastJobResult.Warnings | Should -Be 1
         $script:sync.LastJobResult.Errors | Should -Be 0
+    }
+
+    It "logs Write-Host output from the body and the helpers it calls" {
+        Mock Write-WinUtilHost { }
+        Start-WinUtilJob -Name "Tweaks" -ScriptBlock { } | Out-Null
+
+        & $script:capturedRunspaceBody `
+            -JobName "Tweaks" `
+            -JobLabel "Running tweaks" `
+            -JobBody 'function Set-Example { Write-Host "Set HKLM:\Example to 1" -ForegroundColor Green }; Write-Host "Running Script for WPFTweaksExample"; Set-Example' `
+            -JobParameters @{} `
+            -JobRestoresAppList $false `
+            -JobToken $script:capturedRunspaceArgs["JobToken"]
+
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Component -eq "Tweaks" -and $Message -eq "Running Script for WPFTweaksExample" -and $FileOnly
+        }
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Component -eq "Tweaks" -and $Message -eq "Set HKLM:\Example to 1" -and $FileOnly
+        }
+        Should -Invoke -CommandName Write-WinUtilHost -Times 1 -Exactly -ParameterFilter {
+            $Object -eq "Set HKLM:\Example to 1" -and $ForegroundColor -eq "Green"
+        }
+        $script:sync.LastJobResult.Warnings | Should -Be 0
     }
 
     It "finishes with a warning when elevated install skips a user-scoped package" {
