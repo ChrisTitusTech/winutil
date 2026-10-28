@@ -45,7 +45,7 @@ Static assets, like favicons, can be placed in the `public/` directory.
 
 The Config Builder (`/config-builder/`) and Tweak Explorer (`/tweak-explorer/`) load `config/*.json` in the browser from the latest stable WinUtil release, through `src/lib/winutil-release.js`. They don't use the copy in this repo, because `-Config` runs the stable release and rejects any key it doesn't know.
 
-New apps, tweaks, toggles, features, AppX packages, and categories appear on their own once a release is marked Latest. No docs rebuild is needed, and pre-releases are ignored. A few things are hard-coded and need updating here when WinUtil changes them:
+New apps, tweaks, toggles, features, AppX packages, and categories appear in the next browser session after a release is marked Latest. No docs rebuild is needed, and pre-releases are ignored. A few things are hard-coded and need updating here when WinUtil changes them:
 
 - Preset names (`Standard`, `Minimal`, `Advanced`, `AppxDefault`), in `ConfigBuilder.jsx` and `TweakExplorer.jsx`.
 - The key prefixes WinUtil can import (`WPFInstall`, `WPFTweaks`, `WPFToggle`, `WPFFeature`, `WPFAppx`), in `ConfigBuilder.jsx`. These mirror `Update-WinUtilSelections`.
@@ -70,7 +70,7 @@ All commands are run from the `docs/` directory, from a terminal:
 | `docker compose run --rm winutil-astro npm run build`   | Build the production site to `./dist/`           |
 | `docker compose run --rm --service-ports winutil-astro npm run preview -- --host 0.0.0.0` | Preview the build locally, before deploying      |
 | `docker compose run --rm winutil-astro npm run astro ...` | Run CLI commands like `astro add`, `astro check` |
-| `docker compose run --rm winutil-astro npx playwright ...` | Run Playwright against Chromium, Firefox, or WebKit |
+| `docker compose run --rm winutil-astro npx --no-install playwright ...` | Run Playwright against Chromium, Firefox, or WebKit |
 | `docker compose down`                              | Stop and remove the dev container                |
 
 Source files are bind-mounted into the container, so edits on the host are picked up immediately by the dev server — no rebuild needed for normal content or code changes. After changing `package.json`, `package-lock.json`, or the `Dockerfile`, rebuild the image *and* drop the `node_modules` volume, since Docker only seeds a named volume from the image the first time it's created — a plain rebuild leaves the old `node_modules` in place:

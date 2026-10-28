@@ -55,10 +55,10 @@ async function loadCatalog() {
 			{ id: 'features', label: 'Features', items: entries(features, /^WPFFeature/) },
 			{
 				id: 'appx',
-				label: 'AppX',
+				label: 'AppX removal',
 				items: entries(appx, /^WPFAppx/),
 				presetScope: 'WPFAppx',
-				presets: [{ label: 'Default', keys: presets.AppxDefault ?? [] }],
+				presets: [{ label: 'Default removals', keys: presets.AppxDefault ?? [] }],
 			},
 		],
 	};
@@ -360,6 +360,11 @@ export default function ConfigBuilder() {
 			</div>
 
 			<div className="wu-builder-output">
+				{keys.some((key) => key.startsWith('WPFAppx')) && (
+					<p className="wu-builder-notice wu-builder-notice--warning">
+						This config removes the selected AppX packages when run. It does not install or keep them.
+					</p>
+				)}
 				<div className="wu-builder-output-header">
 					<span>{keys.length} selected</span>
 					<button type="button" className="wu-builder-button" disabled={!keys.length} onClick={() => copy('json', json)}>
