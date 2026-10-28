@@ -10,17 +10,24 @@ function Invoke-WinUtilCloseRequest {
 
         .PARAMETER RunningJob
             The name of the job in flight, so the question names what is at stake.
+
+        .PARAMETER QueuedCount
+            How many queued jobs closing will discard, so they are not a surprise.
     #>
     param(
         [Parameter(Mandatory)]
-        [string]$RunningJob
+        [string]$RunningJob,
+
+        [int]$QueuedCount = 0
     )
+
+    $queuedNote = if ($QueuedCount -gt 0) { "`n$QueuedCount queued operation(s) will be discarded.`n" } else { "" }
 
     # The question carries the meaning rather than naming buttons: Windows labels them in its own
     # language, so "Yes" in the text would not match a button reading "Ja".
     $answer = Show-WinUtilMessage -Button "YesNoCancel" -Icon "Warning" -Title "$RunningJob is still running" -Message @"
 $RunningJob has not finished yet.
-
+$queuedNote
 Close the window and let it finish in the console?
 
 WinUtil will exit on its own once it is done. If you do not, it will be

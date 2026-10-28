@@ -166,9 +166,12 @@ function Start-WinUtilUserInterface {
         # follows is unhandled and ends the process
         if ($sync.ActiveJob -and -not $sync.ForceClose) {
             $closingArgs.Cancel = $true
-            Invoke-WinUtilCloseRequest -RunningJob $sync.ActiveJob
+            Invoke-WinUtilCloseRequest -RunningJob $sync.ActiveJob -QueuedCount $sync.JobQueue.Count
             return
         }
+
+        # Past the prompt the window is closing for good, and nothing queued may start after it
+        $null = Clear-WinUtilJobQueue
 
         # Work that is meant to outlive the window needs the pool it is running on. main.ps1
         # waits for it and shuts the pool down once it is done.
@@ -400,6 +403,16 @@ function Start-WinUtilUserInterface {
     $sync["LightThemeMenuItem"].Add_Click({
         Invoke-WPFPopup -Action "Hide" -Popups @("Theme")
         Invoke-WinutilThemeChange -theme "Light"
+    })
+
+    # A popup that closes on outside clicks also closes on the click that would toggle it, which
+    # would then reopen it, so a click straight after a close is that same click
+    $sync.JobQueuePopupClosedAt = [DateTime]::MinValue
+    $sync["JobQueuePopup"].Add_Closed({ $sync.JobQueuePopupClosedAt = [DateTime]::UtcNow })
+    $sync["JobQueuePopup"].Add_Opened({ Update-WinUtilJobQueueUI })
+    $sync["JobQueueButton"].Add_Click({
+        if (([DateTime]::UtcNow - $sync.JobQueuePopupClosedAt).TotalMilliseconds -lt 300) { return }
+        Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "Theme" = "Hide"; "FontScaling" = "Hide"; "JobQueue" = "Show" }
     })
 
     $sync["SettingsButton"].Add_Click({

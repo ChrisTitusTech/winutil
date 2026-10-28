@@ -231,6 +231,8 @@ $sync.Buttons = [System.Collections.Generic.List[PSObject]]::new()
 $sync.preferences = @{}
 # Name of the job currently running, or $null when idle. Owned by Start-WinUtilJob.
 $sync.ActiveJob = $null
+# User actions waiting for the slot, oldest first. Changed only under $sync.SyncRoot.
+$sync.JobQueue = [System.Collections.Generic.List[object]]::new()
 # Serializes worker-pool startup with recycling and shutdown.
 $sync.RunspacePoolLock = [object]::new()
 # Serializes the speculative and UI-thread taskbar overlay renderers.

@@ -7,6 +7,7 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Write-WinUtilErrorRecord.ps1")
     . (Join-Path $script:repoRoot "functions\private\Complete-WinUtilPackageRun.ps1")
     . (Join-Path $script:repoRoot "functions\private\Start-WinUtilJob.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Start-WinUtilNextQueuedJob.ps1")
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilCloseRequest.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIThread.ps1")
 
@@ -470,7 +471,8 @@ Describe "Start-WinUtilJob" {
         $script:dispatchCount = 0
         Mock Invoke-WPFUIThread {
             $script:dispatchCount++
-            if ($script:dispatchCount -gt 1) {
+            # The first two posts are the queue button refresh and the app list being greyed out
+            if ($script:dispatchCount -gt 2) {
                 throw [System.Threading.Tasks.TaskCanceledException]::new("dispatcher stopped")
             }
             & $ScriptBlock
@@ -511,5 +513,347 @@ Describe "Job timing summaries" {
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
             $Message -eq "timing summary: 1 step(s), 25 ms measured of 30 ms total"
         }
+    }
+}
+
+Describe "Job queue" {
+    BeforeEach {
+        $script:sync = [Hashtable]::Synchronized(@{
+            ActiveJob = $null
+            JobQueue = [System.Collections.Generic.List[object]]::new()
+            Form = [pscustomobject]@{ Dispatcher = [pscustomobject]@{} }
+        })
+        $script:started = [System.Collections.Generic.List[object]]::new()
+
+        Mock Show-WinUtilMessage { "OK" }
+        Mock Write-WinUtilLog { }
+        Mock Step-WinUtilJob { }
+        Mock Update-WinUtilJobQueueUI { }
+        Mock Invoke-WPFUIThread { & $ScriptBlock }
+        Mock Invoke-WPFRunspace {
+            $runArgs = @{}
+            foreach ($parameter in $ParameterList) { $runArgs[$parameter[0]] = $parameter[1] }
+            $script:started.Add([pscustomobject]@{ Body = $ScriptBlock; Args = $runArgs })
+        }
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync, started -Scope Script -ErrorAction SilentlyContinue
+    }
+
+    # Runs the worker body the way the pool would, which releases the slot and posts the next job
+    function script:Complete-TestJob {
+        param($Run, [string]$Body = '$null = $true')
+
+        & $Run.Body -JobName $Run.Args["JobName"] -JobLabel $Run.Args["JobLabel"] -JobBody $Body `
+            -JobParameters @{} -JobRestoresAppList $false -JobToken $Run.Args["JobToken"]
+    }
+
+    It "queues instead of refusing when asked to and the slot is taken" {
+        $script:sync.ActiveJob = "Install"
+
+        $result = Start-WinUtilJob -Name "Tweaks" -Description "Applying tweaks" -DisableAppList -QueueIfBusy -Parameters @{ Tweaks = @("A", "B") } -ScriptBlock { param($Tweaks) $Tweaks }
+
+        $result | Should -BeNullOrEmpty
+        $script:sync.JobQueue.Count | Should -Be 1
+        $item = $script:sync.JobQueue[0]
+        $item.Name | Should -Be "Tweaks"
+        $item.Description | Should -Be "Applying tweaks"
+        $item.DisableAppList | Should -BeTrue
+        $item.Parameters.Tweaks | Should -Be @("A", "B")
+        $item.ScriptBlock | Should -Match 'param\(\$Tweaks\)'
+        [guid]::Parse($item.Id) | Should -Not -BeNullOrEmpty
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 0 -Exactly
+        $script:started.Count | Should -Be 0
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Component -eq "Tweaks" -and $Message -like "*queued behind Install*position 1*"
+        }
+    }
+
+    It "starts at once with the switch when the slot is free" {
+        Start-WinUtilJob -Name "Tweaks" -QueueIfBusy -ScriptBlock { } | Out-Null
+
+        $script:sync.JobQueue.Count | Should -Be 0
+        $script:sync.ActiveJob | Should -Be "Tweaks"
+        $script:started.Count | Should -Be 1
+    }
+
+    It "still refuses with a message and leaves the queue alone without the switch" {
+        $script:sync.ActiveJob = "Install"
+
+        Start-WinUtilJob -Name "ISO mount" -ScriptBlock { } | Out-Null
+
+        $script:sync.JobQueue.Count | Should -Be 0
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
+            $Message -like "Install is still running*"
+        }
+    }
+
+    It "does not queue a nested job, which runs inline" {
+        $script:sync.ActiveJob = "Install"
+        $global:WinUtilIsJobWorker = $true
+        try {
+            Start-WinUtilJob -Name "Inner" -QueueIfBusy -Parameters @{ Value = 7 } -ScriptBlock { param($Value) $script:innerRan = $Value } | Out-Null
+        } finally {
+            $global:WinUtilIsJobWorker = $false
+        }
+
+        $script:innerRan | Should -Be 7
+        $script:sync.JobQueue.Count | Should -Be 0
+    }
+
+    It "does not queue while WinUtil is closing" {
+        $script:sync.ActiveJob = "Install"
+        $script:sync.ShuttingDown = $true
+
+        Start-WinUtilJob -Name "Tweaks" -QueueIfBusy -ScriptBlock { } | Out-Null
+
+        $script:sync.JobQueue.Count | Should -Be 0
+    }
+
+    It "runs queued jobs first in, first out, and carries on after one fails" {
+        Start-WinUtilJob -Name "First" -QueueIfBusy -ScriptBlock { } | Out-Null
+        Start-WinUtilJob -Name "Second" -QueueIfBusy -Parameters @{ Value = 2 } -ScriptBlock { } | Out-Null
+        Start-WinUtilJob -Name "Third" -QueueIfBusy -DisableAppList -ScriptBlock { } | Out-Null
+        $script:sync.JobQueue.Count | Should -Be 2
+
+        Complete-TestJob -Run $script:started[0] -Body 'throw "boom"'
+
+        $script:started.Count | Should -Be 2
+        $script:started[1].Args["JobName"] | Should -Be "Second"
+        $script:started[1].Args["JobParameters"].Value | Should -Be 2
+        $script:sync.ActiveJob | Should -Be "Second"
+        $script:sync.JobQueue.Count | Should -Be 1
+
+        Complete-TestJob -Run $script:started[1]
+
+        $script:started.Count | Should -Be 3
+        $script:started[2].Args["JobName"] | Should -Be "Third"
+        $script:started[2].Args["JobRestoresAppList"] | Should -BeTrue
+        $script:sync.JobQueue.Count | Should -Be 0
+
+        Complete-TestJob -Run $script:started[2]
+
+        $script:started.Count | Should -Be 3
+        $script:sync.ActiveJob | Should -BeNullOrEmpty
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Component -eq "Second" -and $Message -eq "Starting queued Second job."
+        }
+    }
+
+    It "starts the next job when scheduling the current one fails" {
+        $script:sync.ActiveJob = "Install"
+        Start-WinUtilJob -Name "Queued" -QueueIfBusy -ScriptBlock { } | Out-Null
+        $script:sync.ActiveJob = $null
+        Mock Invoke-WPFRunspace {
+            $script:started.Add($null)
+            if ($script:started.Count -eq 1) { throw "pool is gone" }
+        }
+
+        Start-WinUtilJob -Name "Broken" -QueueIfBusy -ScriptBlock { } | Out-Null
+
+        # Broken failed to schedule, released the slot, and the queued job took it
+        $script:started.Count | Should -Be 2
+        $script:sync.JobQueue.Count | Should -Be 0
+    }
+
+    It "does not start anything while the slot is held" {
+        $script:sync.ActiveJob = "Install"
+        Start-WinUtilJob -Name "Queued" -QueueIfBusy -ScriptBlock { } | Out-Null
+
+        Start-WinUtilNextQueuedJob
+
+        $script:sync.JobQueue.Count | Should -Be 1
+        $script:started.Count | Should -Be 0
+    }
+
+    It "does not start the queue when WinUtil is closing" {
+        foreach ($flag in @("ShuttingDown", "FinishInConsole")) {
+            $script:sync.Remove("ShuttingDown")
+            $script:sync.Remove("FinishInConsole")
+            $script:sync.JobQueue.Clear()
+            $script:sync.ActiveJob = "Install"
+            Start-WinUtilJob -Name "Queued" -QueueIfBusy -ScriptBlock { } | Out-Null
+            $script:sync.ActiveJobToken = "t"
+            $script:sync[$flag] = $true
+
+            $null = Clear-WinUtilActiveJob -Token "t"
+
+            $script:sync.ActiveJob | Should -BeNullOrEmpty
+            $script:sync.JobQueue.Count | Should -Be 1
+            $script:started.Count | Should -Be 0
+        }
+    }
+
+    It "does not start the queue when the slot is reset without a token" {
+        $script:sync.ActiveJob = "Install"
+        Start-WinUtilJob -Name "Queued" -QueueIfBusy -ScriptBlock { } | Out-Null
+
+        $null = Clear-WinUtilActiveJob
+
+        $script:sync.JobQueue.Count | Should -Be 1
+        $script:started.Count | Should -Be 0
+    }
+
+    It "moves a job up and down and leaves the ends alone" {
+        $script:sync.ActiveJob = "Install"
+        foreach ($name in "A", "B", "C") {
+            Start-WinUtilJob -Name $name -QueueIfBusy -ScriptBlock { } | Out-Null
+        }
+        $ids = @($script:sync.JobQueue | ForEach-Object Id)
+        $order = { (@($script:sync.JobQueue | ForEach-Object Name)) -join "" }
+
+        Move-WinUtilQueuedJob -Id $ids[0] -Direction Up
+        & $order | Should -Be "ABC"
+        Move-WinUtilQueuedJob -Id $ids[2] -Direction Down
+        & $order | Should -Be "ABC"
+        Move-WinUtilQueuedJob -Id $ids[1] -Direction Up
+        & $order | Should -Be "BAC"
+        Move-WinUtilQueuedJob -Id $ids[1] -Direction Down
+        & $order | Should -Be "ABC"
+        Move-WinUtilQueuedJob -Id $ids[0] -Direction Down
+        & $order | Should -Be "BAC"
+        Move-WinUtilQueuedJob -Id "not-an-id" -Direction Up
+        & $order | Should -Be "BAC"
+
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Component -eq "B" -and $Message -eq "Moved queued B job up."
+        }
+    }
+
+    It "cancels a queued job and ignores one that already started" {
+        $script:sync.ActiveJob = "Install"
+        foreach ($name in "A", "B") {
+            Start-WinUtilJob -Name $name -QueueIfBusy -ScriptBlock { } | Out-Null
+        }
+        $ids = @($script:sync.JobQueue | ForEach-Object Id)
+
+        Remove-WinUtilQueuedJob -Id $ids[0]
+        Remove-WinUtilQueuedJob -Id $ids[0]
+
+        @($script:sync.JobQueue | ForEach-Object Name) | Should -Be @("B")
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Component -eq "A" -and $Message -eq "Cancelled queued A job."
+        }
+
+        # B starts, so cancelling it now finds nothing in the queue and leaves the running job be
+        $script:sync.ActiveJob = $null
+        Start-WinUtilNextQueuedJob
+        Remove-WinUtilQueuedJob -Id $ids[1]
+        $script:sync.ActiveJob | Should -Be "B"
+        $script:started.Count | Should -Be 1
+    }
+
+    It "keeps a queued job's parameters as they were when the user clicked" {
+        $script:sync.ActiveJob = "Install"
+        $selection = [System.Collections.Generic.List[string]]::new()
+        $selection.Add("WPFTweaksOne")
+
+        Start-WinUtilJob -Name "Tweaks" -QueueIfBusy -Parameters @{ Tweaks = @($selection) } -ScriptBlock { } | Out-Null
+        $selection.Add("WPFTweaksTwo")
+
+        $script:sync.JobQueue[0].Parameters.Tweaks | Should -Be @("WPFTweaksOne")
+    }
+
+    It "snapshots the selection in each caller that queues" {
+        . (Join-Path $script:repoRoot "functions\public\Invoke-WPFtweaksbutton.ps1")
+        . (Join-Path $script:repoRoot "functions\public\Invoke-WPFFeatureInstall.ps1")
+        . (Join-Path $script:repoRoot "functions\public\Invoke-WPFAppxInstall.ps1")
+        . (Join-Path $script:repoRoot "functions\public\Invoke-WPFAppxRemoval.ps1")
+        . (Join-Path $script:repoRoot "functions\public\Invoke-WPFundoall.ps1")
+        $script:captured = @{}
+        Mock Start-WinUtilJob { $script:captured[$Name] = @{ Queue = [bool]$QueueIfBusy; Parameters = $Parameters } }
+
+        $newSelection = { $l = [System.Collections.Generic.List[string]]::new(); $l.Add("One"); , $l }
+        $script:sync["WPFchangedns"] = [pscustomobject]@{ text = "Default" }
+        $script:sync.configs = @{ appxHashtable = @{} }
+        $script:sync.selectedTweaks = & $newSelection
+        $script:sync.selectedFeatures = & $newSelection
+        $script:sync.selectedAppx = & $newSelection
+
+        Invoke-WPFtweaksbutton
+        Invoke-WPFundoall
+        Invoke-WPFFeatureInstall
+        Invoke-WPFAppxInstall
+        Invoke-WPFAppxRemoval
+        $script:sync.selectedTweaks.Add("Two")
+        $script:sync.selectedFeatures.Add("Two")
+        $script:sync.selectedAppx.Add("Two")
+
+        foreach ($name in "Tweaks", "Undo tweaks", "Features", "AppX install", "AppX") {
+            $script:captured[$name].Queue | Should -BeTrue -Because $name
+        }
+        $script:captured["Tweaks"].Parameters.Tweaks | Should -Be @("One")
+        $script:captured["Undo tweaks"].Parameters.Tweaks | Should -Be @("One")
+        $script:captured["Features"].Parameters.Features | Should -Be @("One")
+        $script:captured["AppX install"].Parameters.Selected | Should -Be @("One")
+        $script:captured["AppX"].Parameters.Selected | Should -Be @("One")
+    }
+
+    It "opts the user actions in and keeps the ISO and USB jobs refusing" {
+        foreach ($path in @(
+            "functions\public\Invoke-WPFInstall.ps1", "functions\public\Invoke-WPFUnInstall.ps1",
+            "functions\public\Invoke-WPFAppxInstall.ps1", "functions\public\Invoke-WPFAppxRemoval.ps1",
+            "functions\public\Invoke-WPFtweaksbutton.ps1", "functions\public\Invoke-WPFundoall.ps1",
+            "functions\public\Invoke-WPFFeatureInstall.ps1", "functions\public\Invoke-WPFButton.ps1"
+        )) {
+            (Get-Content -Path (Join-Path $script:repoRoot $path) -Raw) | Should -Match 'Start-WinUtilJob [^\r\n]*-QueueIfBusy' -Because $path
+        }
+        foreach ($path in @("functions\private\Invoke-WinUtilISO.ps1", "functions\private\Invoke-WinUtilISOUSB.ps1")) {
+            (Get-Content -Path (Join-Path $script:repoRoot $path) -Raw) | Should -Not -Match 'QueueIfBusy' -Because $path
+        }
+    }
+}
+
+Describe "Closing with queued jobs" {
+    BeforeEach {
+        $script:sync = [Hashtable]::Synchronized(@{
+            ActiveJob = "Install"
+            JobQueue = [System.Collections.Generic.List[object]]::new()
+        })
+        Mock Write-WinUtilLog { }
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+    }
+
+    It "tells the user how many queued operations will be discarded" {
+        Mock Show-WinUtilMessage { "Cancel" }
+
+        Invoke-WinUtilCloseRequest -RunningJob "Install" -QueuedCount 2
+
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
+            $Message -like "*2 queued operation(s) will be discarded*"
+        }
+    }
+
+    It "says nothing about the queue when it is empty" {
+        Mock Show-WinUtilMessage { "Cancel" }
+
+        Invoke-WinUtilCloseRequest -RunningJob "Install"
+
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
+            $Message -notlike "*queued*"
+        }
+    }
+
+    It "empties the queue and reports how many it dropped" {
+        $script:sync.JobQueue.Add([pscustomobject]@{ Id = "1"; Name = "A" })
+        $script:sync.JobQueue.Add([pscustomobject]@{ Id = "2"; Name = "B" })
+
+        Clear-WinUtilJobQueue | Should -Be 2
+
+        $script:sync.JobQueue.Count | Should -Be 0
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Message -like "Discarded 2 queued job(s)*"
+        }
+    }
+
+    It "has the window's closing handler pass the count and clear the queue after the prompt" {
+        $source = Get-Content (Join-Path $script:repoRoot "functions\private\Start-WinUtilUserInterface.ps1") -Raw
+
+        $source | Should -Match 'Invoke-WinUtilCloseRequest -RunningJob \$sync\.ActiveJob -QueuedCount \$sync\.JobQueue\.Count'
+        $source.IndexOf('Clear-WinUtilJobQueue') | Should -BeGreaterThan $source.IndexOf('Invoke-WinUtilCloseRequest -RunningJob')
     }
 }

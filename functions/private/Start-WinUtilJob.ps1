@@ -26,6 +26,10 @@ function Start-WinUtilJob {
         .PARAMETER DisableAppList
             Greys out the app list for the duration, for jobs that change what is installed.
 
+        .PARAMETER QueueIfBusy
+            Waits in $sync.JobQueue for its turn instead of being refused, for actions the user
+            starts. The parameters are held as they were when it was queued.
+
         .EXAMPLE
             Start-WinUtilJob -Name "Install" -Parameters @{ Packages = $packages } -ScriptBlock {
                 param($Packages)
@@ -43,7 +47,9 @@ function Start-WinUtilJob {
 
         [string]$Description,
 
-        [switch]$DisableAppList
+        [switch]$DisableAppList,
+
+        [switch]$QueueIfBusy
     )
 
     if ($sync.ShuttingDown -or $sync.FinishInConsole) {
@@ -64,10 +70,24 @@ function Start-WinUtilJob {
     # still unwinding cannot release a slot the next job holds.
     $jobToken = [guid]::NewGuid().ToString()
     $blockedBy = $null
+    $queuePosition = 0
     [System.Threading.Monitor]::Enter($sync.SyncRoot)
     try {
         if ($sync.ActiveJob) {
             $blockedBy = $sync.ActiveJob
+            # In the same lock as the busy test: a job finishing between the two would leave
+            # this one queued behind nothing
+            if ($QueueIfBusy) {
+                $sync.JobQueue.Add([pscustomobject]@{
+                    Id = [guid]::NewGuid().ToString()
+                    Name = $Name
+                    Description = $Description
+                    ScriptBlock = $ScriptBlock.ToString()
+                    Parameters = $Parameters
+                    DisableAppList = [bool]$DisableAppList
+                })
+                $queuePosition = $sync.JobQueue.Count
+            }
         } else {
             $sync.ActiveJob = $Name
             $sync.ActiveJobToken = $jobToken
@@ -75,6 +95,12 @@ function Start-WinUtilJob {
         }
     } finally {
         [System.Threading.Monitor]::Exit($sync.SyncRoot)
+    }
+
+    if ($queuePosition -gt 0) {
+        Write-WinUtilLog -Component $Name -Message "$Name queued behind $blockedBy, position $queuePosition."
+        Invoke-WPFUIThread -Async -ScriptBlock { Update-WinUtilJobQueueUI }
+        return $null
     }
 
     if ($blockedBy) {
@@ -87,6 +113,7 @@ function Start-WinUtilJob {
         $timingStartIndex = if ($sync.StepTimings) { $sync.StepTimings.Count } else { 0 }
 
         Write-WinUtilLog -Component $Name -Message "$Name job started."
+        Invoke-WPFUIThread -Async -ScriptBlock { Update-WinUtilJobQueueUI }
         Write-WinUtilJobBanner -Message $label
         Step-WinUtilJob -Status "$label..." -Percent 0 -State "Normal" -Overlay "logo"
 
@@ -244,15 +271,26 @@ function Clear-WinUtilActiveJob {
     #>
     param([string]$Token)
 
+    $released = $false
     [System.Threading.Monitor]::Enter($sync.SyncRoot)
     try {
         if (-not $Token -or $sync.ActiveJobToken -eq $Token) {
             $sync.ActiveJobToken = $null
             $sync.ActiveJob = $null
-            return $true
+            $released = $true
         }
-        return $false
     } finally {
         [System.Threading.Monitor]::Exit($sync.SyncRoot)
     }
+
+    # A job that ended, however it ended, hands the slot to the next queued one. A release with no
+    # token is a forced reset, which must not start anything.
+    if ($released -and $Token) {
+        try {
+            Invoke-WPFUIThread -Async -ScriptBlock { Start-WinUtilNextQueuedJob }
+        } catch {
+            Write-WinUtilLog -Level "WARN" -Component "UI" -Message "Could not start the next queued job: $($_.Exception.Message)"
+        }
+    }
+    return $released
 }

@@ -1139,6 +1139,37 @@
 
                 <!-- Buttons Container -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5">
+                    <Button Name="JobQueueButton"
+                        Style="{StaticResource HoverButtonStyle}"
+                        BorderBrush="Transparent"
+                        Background="{DynamicResource MainBackgroundColor}"
+                        Foreground="{DynamicResource MainForegroundColor}"
+                        MinWidth="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Margin="0,0,2,0"
+                        Visibility="Collapsed"
+                        ToolTip="Running and queued operations"
+                        AutomationProperties.Name="Queue">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="{DynamicResource SettingsIconFontSize}" VerticalAlignment="Center">&#xE823;</TextBlock>
+                            <TextBlock Name="JobQueueCount" FontSize="{DynamicResource ButtonFontSize}" FontWeight="Bold" VerticalAlignment="Center" Margin="3,0,3,0"/>
+                        </StackPanel>
+                    </Button>
+                    <Popup Name="JobQueuePopup"
+                        IsOpen="False" StaysOpen="False"
+                        PlacementTarget="{Binding ElementName=JobQueueButton}" Placement="Bottom"
+                        HorizontalAlignment="Right" VerticalAlignment="Top">
+                        <Border Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
+                            <StackPanel Width="260" Background="{DynamicResource MainBackgroundColor}">
+                                <TextBlock Name="JobQueueRunning"
+                                    FontSize="{DynamicResource ButtonFontSize}" FontWeight="Bold"
+                                    Foreground="{DynamicResource MainForegroundColor}"
+                                    TextTrimming="CharacterEllipsis"
+                                    Margin="10,5,10,5"/>
+                                <StackPanel Name="JobQueueItems" Margin="5,0,5,5"/>
+                            </StackPanel>
+                        </Border>
+                    </Popup>
                     <Button Name="ThemeButton"
                         Style="{StaticResource HoverButtonStyle}"
                         BorderBrush="Transparent"

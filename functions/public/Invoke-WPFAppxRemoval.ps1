@@ -11,7 +11,7 @@ function Invoke-WPFAppxRemoval {
         return
     }
 
-    Start-WinUtilJob -Name "AppX" -Description "Removing AppX packages" -Parameters @{
+    Start-WinUtilJob -Name "AppX" -Description "Removing AppX packages" -QueueIfBusy -Parameters @{
         Selected = @($sync.selectedAppx)
         Apps = $sync.configs.appxHashtable
     } -ScriptBlock {

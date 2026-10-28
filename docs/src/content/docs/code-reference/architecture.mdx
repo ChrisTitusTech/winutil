@@ -456,6 +456,15 @@ restoring the interface in a `finally` whatever happens.
 job; anything that only changes what the interface is showing runs on the interface thread.
 That single classification is why no workflow arranges its own progress, banner or busy state.
 
+**Queueing**: an action the user starts passes `-QueueIfBusy`, so while another job runs it waits
+in `$sync.JobQueue` instead of being refused. The busy test and the enqueue happen under one
+`$sync.SyncRoot` lock. When a job ends, successfully or not, `Clear-WinUtilActiveJob` posts
+`Start-WinUtilNextQueuedJob` to the interface thread, which starts the oldest entry. The queue
+holds the job's parameters as they were at click time, so later selection changes do not alter
+it. The clock button in the header lists the running and queued jobs and lets the user reorder
+or cancel the queued ones. Closing the window discards whatever is still queued. The ISO and USB
+jobs do not pass the switch and still refuse.
+
 ```powershell
 Start-WinUtilJob -Name "Features" -Description "Installing Windows Features" -Parameters @{
     Features = @($sync.selectedFeatures)
