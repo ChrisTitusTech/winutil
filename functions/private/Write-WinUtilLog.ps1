@@ -190,3 +190,27 @@ function Write-WinUtilStreamRecord {
         }
     }
 }
+
+# Logs and clears a runspace's warnings, errors and Write-Host output. Never throws, as the main thread runs it.
+function Receive-WinUtilStreamOutput {
+    param(
+        [Parameter(Mandatory)]
+        $PowerShell,
+
+        [string]$Component = "WinUtil"
+    )
+
+    try {
+        foreach ($record in $PowerShell.Streams.Information.ReadAll()) {
+            Write-WinUtilStreamRecord -Record $record -Component $Component -Shown
+        }
+        foreach ($record in $PowerShell.Streams.Warning.ReadAll()) {
+            Write-WinUtilStreamRecord -Record $record -Component $Component -Shown
+        }
+        foreach ($record in $PowerShell.Streams.Error.ReadAll()) {
+            Write-WinUtilStreamRecord -Record $record -Component $Component
+        }
+    } catch {
+        Write-Warning "Unable to log $Component output: $($_.Exception.Message)"
+    }
+}

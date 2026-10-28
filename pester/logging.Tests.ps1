@@ -351,6 +351,37 @@ Describe "Collected runspace output" {
         Test-Path -Path $script:logPath | Should -BeFalse
     }
 
+    It "moves each record from a runspace that shares the console host into the log once" {
+        $runspace = [runspacefactory]::CreateRunspace($Host)
+        $runspace.Open()
+        $shell = [powershell]::Create()
+        $shell.Runspace = $runspace
+
+        try {
+            [void]$shell.AddScript({
+                Write-Host "interface message"
+                Write-Warning "interface warning"
+                Write-Error "interface error"
+            })
+            $shell.Invoke() | Out-Null
+
+            Receive-WinUtilStreamOutput -PowerShell $shell -Component "UI"
+            Receive-WinUtilStreamOutput -PowerShell $shell -Component "UI"
+
+            $shell.Streams.Information.Count | Should -Be 0
+            $shell.Streams.Warning.Count | Should -Be 0
+            $shell.Streams.Error.Count | Should -Be 0
+        } finally {
+            $shell.Dispose()
+            $runspace.Dispose()
+        }
+
+        $content = Get-Content -Path $script:logPath
+        @($content | Where-Object { $_ -match "\[INFO\] \[UI\] interface message$" }).Count | Should -Be 1
+        @($content | Where-Object { $_ -match "\[WARN\] \[UI\] interface warning$" }).Count | Should -Be 1
+        @($content | Where-Object { $_ -match "\[ERROR\] \[UI\] Non-terminating error : interface error$" }).Count | Should -Be 1
+    }
+
     It "keeps console-only helpers out of the information stream" {
         # Anything these send through Write-Host would be logged twice inside a job
         $failure = try { throw "simulated failure" } catch { $_ }
@@ -377,6 +408,13 @@ Describe "Session log wiring" {
             ForEach-Object { $_.Name }
 
         $offenders | Should -BeNullOrEmpty
+    }
+
+    It "logs the interface thread's output while the window is open" {
+        $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
+
+        $mainScript | Should -Match 'while \(-not \$uiHandle\.AsyncWaitHandle\.WaitOne\(\d+\)\) \{\s*Receive-WinUtilStreamOutput -PowerShell \$uiShell'
+        $mainScript | Should -Match 'EndInvoke\(\$uiHandle\)[\s\S]*Receive-WinUtilStreamOutput -PowerShell \$uiShell'
     }
 
     It "closes the session log on both exits" {
