@@ -49,7 +49,7 @@ New apps, tweaks, toggles, features, AppX packages, and categories appear on the
 
 - Preset names (`Standard`, `Minimal`, `Advanced`, `AppxDefault`), in `ConfigBuilder.jsx` and `TweakExplorer.jsx`.
 - The key prefixes WinUtil can import (`WPFInstall`, `WPFTweaks`, `WPFToggle`, `WPFFeature`, `WPFAppx`), in `ConfigBuilder.jsx`. These mirror `Update-WinUtilSelections`.
-- The tweak fields the explorer shows (`registry`, `service`, `InvokeScript`, `UndoScript`, `appx`), in `TweakExplorer.jsx`. These mirror `Invoke-WinUtilTweaks`.
+- The tweak fields the explorer shows (`registry`, `service`, `InvokeScript`, `UndoScript`, `appx`, and registry `Values` mappings for `Combobox` entries), in `TweakExplorer.jsx`. These mirror `Invoke-WinUtilTweaks` and `Set-WinUtilRegistryComboState`.
 
 If you add another tool page, or anything else that has to be kept in sync by hand, list it here and in SPEC.md's Docs Site section.
 
