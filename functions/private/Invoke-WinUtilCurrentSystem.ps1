@@ -23,6 +23,20 @@ Function Invoke-WinUtilCurrentSystem {
                 Write-Output $app.Key
             }
         }
+
+        # Apps without a Chocolatey package are installed through WinGet (see Get-WinUtilSelectedPackages),
+        # so check those against one winget list
+        $wingetFallbackKeys = @($sync.configs.applicationsHashtable.GetEnumerator() | Where-Object {
+            ([string]::IsNullOrWhiteSpace([string]$_.Value.choco) -or $_.Value.choco -eq "na") -and
+            -not ([string]::IsNullOrWhiteSpace([string]$_.Value.winget) -or $_.Value.winget -eq "na")
+        } | ForEach-Object { $_.Key })
+        if ($wingetFallbackKeys.Count -gt 0 -and (Test-WinUtilPackageManager -winget) -eq "installed") {
+            try {
+                Invoke-WinUtilCurrentSystem -CheckBox "winget" | Where-Object { $_ -in $wingetFallbackKeys }
+            } catch {
+                Write-Warning "Could not check apps installed through WinGet: $($_.Exception.Message)"
+            }
+        }
     }
 
     if ($checkbox -eq "winget") {
@@ -38,14 +52,24 @@ Function Invoke-WinUtilCurrentSystem {
         }
         $installedProgramText = $installedProgramOutput -join "`n"
 
+        # winget pads each column to its widest value plus one space, so the row with the widest Name or Id
+        # has only one space next to its Id. Take the Id column position from the header above the dashes.
+        $idColumnStart = 0
+        if ($installedProgramText -match '(?m)^(\S+[^\S\r\n]+)\S[^\r\n]*\r?\n-{3,}') {
+            $idColumnStart = $Matches[1].Length
+        }
+
         foreach ($app in $sync.configs.applicationsHashtable.GetEnumerator()) {
             $packageId = (($app.Value.winget -split ";")[-1] -replace "^msstore:", "").Trim()
             if ([string]::IsNullOrWhiteSpace($packageId) -or $packageId -eq "na") {
                 continue
             }
 
-            $packagePattern = "(?im)[^\S\r\n]{2,}$([regex]::Escape($packageId))(?=[^\S\r\n]{2,}|$)"
-            if ($installedProgramText -match $packagePattern) {
+            $escapedPackageId = [regex]::Escape($packageId)
+            $packagePattern = "(?im)[^\S\r\n]{2,}$escapedPackageId(?=[^\S\r\n]{2,}|$)"
+            # Skip rows whose Name has combining marks or emoji: they are more characters than columns and shift the offset
+            $idColumnPattern = "(?im)(?<=^[^\r\n\p{M}\p{Cs}\p{Cf}]{$($idColumnStart - 1)}[^\S\r\n])$escapedPackageId(?=[^\S\r\n]|$)"
+            if ($installedProgramText -match $packagePattern -or ($idColumnStart -and $installedProgramText -match $idColumnPattern)) {
                 Write-Output $app.Key
             }
         }

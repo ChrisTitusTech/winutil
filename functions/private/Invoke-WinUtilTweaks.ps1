@@ -23,6 +23,13 @@ function Invoke-WinUtilTweaks {
 
     $action = if ($undo) { "Undo" } else { "Apply" }
     Write-WinUtilLog -Component "Tweaks" -Message "$action tweak: $CheckBox"
+    # The next status read must hit the registry, not a value cached before this change
+    if ($sync.ToggleStatusCache) {
+        $sync.ToggleStatusCache.Remove($CheckBox)
+    }
+    # The counter lives in this runspace, so an error a concurrent job logs from its own
+    # runspace cannot be charged to a toggle flipped on the UI thread
+    $errorsBefore = [int]$global:WinUtilJobErrorCount
 
     if ($undo) {
         $Values = @{
@@ -43,16 +50,28 @@ function Invoke-WinUtilTweaks {
         foreach ($item in $sync.configs.tweaks.$CheckBox.service) {
             $changeservice = $true
 
-        # The check for !($undo) is required, without it the script will throw an error for accessing unavailable member, which's the 'OriginalService' Property
-            if ($KeepServiceStartup -AND !($undo)) {
+            # KeepServiceStartup protects a service the user (or another tool) changed away from
+            # the value this tweak expects. Undo uses the same rule in reverse: only restore
+            # OriginalType when the service still sits at the StartupType this tweak applies.
+            # This compares current state, not history: a service already at StartupType
+            # before apply is indistinguishable from one changed by this tweak.
+            $expectedType = if ($undo) { $item.StartupType } else { $item.$($values.OriginalService) }
+            if ($KeepServiceStartup) {
+                $serviceName = $item.Name
                 try {
                     # Check if the service exists
-                    $service = Get-Service -Name $item.Name -ErrorAction Stop
-                    if(!($service.StartType.ToString() -eq $item.$($values.OriginalService))) {
+                    $service = Get-Service -Name $serviceName -ErrorAction Stop
+                    if(!($service.StartType.ToString() -eq $expectedType)) {
                         $changeservice = $false
                     }
-                } catch [System.ServiceProcess.ServiceNotFoundException] {
-                    Write-Warning "Service $($item.Name) was not found."
+                } catch {
+                    if ($_.FullyQualifiedErrorId -like "NoServiceFoundForGivenName,*") {
+                        $changeservice = $false
+                        Write-Warning "Service $serviceName was not found."
+                        Write-WinUtilLog -Level "WARN" -Component "Service" -Message "Service $serviceName was not found."
+                    } else {
+                        throw
+                    }
                 }
             }
 
@@ -80,5 +99,10 @@ function Invoke-WinUtilTweaks {
         }
         Remove-WinUtilProvisionedAPPX -PackageList $sync.configs.tweaks.$CheckBox.appx
     }
-    Write-WinUtilLog -Component "Tweaks" -Message "$action tweak completed: $CheckBox"
+    $errorCount = [int]$global:WinUtilJobErrorCount - $errorsBefore
+    if ($errorCount -gt 0) {
+        Write-WinUtilLog -Level "WARN" -Component "Tweaks" -Message "$action tweak finished with $errorCount error(s): $CheckBox"
+    } else {
+        Write-WinUtilLog -Component "Tweaks" -Message "$action tweak completed: $CheckBox"
+    }
 }

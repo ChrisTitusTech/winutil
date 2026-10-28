@@ -1,5 +1,6 @@
 {
     "Google":{
+        "BenchmarkEligible": true,
         "Primary": "8.8.8.8",
         "Secondary": "8.8.4.4",
         "Primary6": "2001:4860:4860::8888",
@@ -7,6 +8,7 @@
         "DohTemplate": "https://dns.google/dns-query"
     },
     "Cloudflare":{
+        "BenchmarkEligible": true,
         "Primary": "1.1.1.1",
         "Secondary": "1.0.0.1",
         "Primary6": "2606:4700:4700::1111",

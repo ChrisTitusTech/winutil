@@ -30,7 +30,7 @@ function Find-TweaksByNameOrDescription {
             $cb = $item.Children | Where-Object { $_ -is [Windows.Controls.CheckBox] } | Select-Object -First 1
             if ($cb) { $text = [string]$cb.Content; $tip = [string]$cb.ToolTip }
         }
-        return @{ Text = $text; Tip = $tip }
+        return @{ Text = $text; Tip = $tip.Replace("Preset key: ", "") }
     }
 
     try {

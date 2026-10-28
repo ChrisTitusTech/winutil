@@ -39,6 +39,7 @@ BeforeAll {
     function Clear-DnsClientCache { }
 
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilDNS.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilDNSBenchmark.ps1")
 }
 
 Describe "Set-WinUtilDNS" {
@@ -129,6 +130,35 @@ Describe "Set-WinUtilDNS" {
             $Name -eq "DohFlags" -and $Value -eq 1
         }
         Should -Invoke -CommandName Clear-DnsClientCache -Times 1 -Exactly
+    }
+
+    It "preserves DNS when Fastest has no successful probes" {
+        Mock Get-WinUtilDNSBenchmark {
+            [pscustomobject]@{ Provider = 'Cloudflare'; LatencyMs = 9999 }
+        }
+        Set-WinUtilDNS -DNSProvider 'Fastest' | Should -BeFalse
+        Should -Invoke Get-NetAdapter -Times 0 -Exactly
+        Should -Invoke Set-DnsClientServerAddress -Times 0 -Exactly
+        Should -Invoke New-ItemProperty -Times 0 -Exactly
+    }
+
+    It "preserves DNS when Fastest returns no results" {
+        Mock Get-WinUtilDNSBenchmark { }
+        Set-WinUtilDNS -DNSProvider 'Fastest' | Should -BeFalse
+        Should -Invoke Get-NetAdapter -Times 0 -Exactly
+        Should -Invoke Set-DnsClientServerAddress -Times 0 -Exactly
+    }
+
+    It "applies the successful Fastest provider through the existing DNS and DoH path" {
+        Mock Get-WinUtilDNSBenchmark {
+            [pscustomobject]@{ Provider = 'Cloudflare'; LatencyMs = 12 }
+            [pscustomobject]@{ Provider = 'Google'; LatencyMs = 9999 }
+        }
+        Set-WinUtilDNS -DNSProvider 'Fastest' | Should -BeTrue
+        Should -Invoke Set-DnsClientServerAddress -Times 1 -Exactly -ParameterFilter {
+            $ServerAddresses[0] -eq '1.1.1.1' -and $ServerAddresses[1] -eq '1.0.0.1'
+        }
+        Should -Invoke Add-DnsClientDohServerAddress -Times 4 -Exactly
     }
 
     It "updates an existing DoH entry with the selected provider settings" {

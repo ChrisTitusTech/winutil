@@ -230,7 +230,7 @@ Yes, WinUtil works on Windows Server editions, though some features may not be a
 
 ### Does WinUtil work with Windows LTSC?
 
-Yes, WinUtil works with Windows 10/11 LTSC editions. Some applications may not be available depending on your configuration.
+WinUtil currently targets Windows 11. Windows 10 LTSC is not supported, consistent with the Windows 10 support policy above. Some features and applications may vary by Windows 11 edition.
 
 ### Can I use WinUtil in a corporate/enterprise environment?
 
@@ -309,6 +309,12 @@ WinUtil itself uses about 50-100 MB while running. Once closed, it is removed fr
 - Ensure PowerShell is running as Administrator
 - Check if the antivirus is blocking changes
 - Verify you have ownership of files/registry keys
+
+### "GitHub rate limit has been reached"
+
+Some pages on this site, such as the [Config Builder](/config-builder/) and the [Tweak Explorer](/tweak-explorer/), load their data from the latest WinUtil release on GitHub when you open them. GitHub only allows 60 requests an hour from each IP address without signing in, and everyone sharing your connection, such as a home, office, or school network, counts towards the same limit. These pages only use one of those requests per browser session, but once the limit is used up, they have to wait for GitHub to reset it.
+
+Wait a while and select **Try again**. The rest of the docs aren't affected.
 
 ## Still need help?
 
