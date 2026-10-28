@@ -25,6 +25,7 @@ function dedent(blocks) {
 
 function toTweak(key, entry, presets) {
 	const registry = entry.registry ?? [];
+	const states = entry.Type === 'Combobox' ? Object.keys(registry[0]?.Values ?? {}) : [];
 	const services = entry.service ?? [];
 	const script = dedent(entry.InvokeScript ?? []);
 	const undoScript = dedent(entry.UndoScript ?? []);
@@ -37,13 +38,20 @@ function toTweak(key, entry, presets) {
 		toggle: entry.Type === 'Toggle',
 		link: entry.link?.replace(/^https?:\/\/[^/]+/, ''),
 		registry,
+		states,
 		services,
 		script,
 		undoScript,
 		appx,
 		presets: PRESETS.filter((name) => presets[name]?.includes(key)),
-		// Registry and service changes always carry their original values; a script or an AppX removal may not.
-		oneWay: appx.length ? 'AppX removal has no undo' : script && !undoScript ? 'Script has no undo' : null,
+		hasUndo: !states.length && (
+			registry.some((item) => !item.Values && Object.hasOwn(item, 'OriginalValue')) ||
+			services.some((item) => Object.hasOwn(item, 'OriginalType')) || Boolean(undoScript)
+		),
+		// Dropdowns use manual state selection rather than the checkbox Undo action.
+		oneWay: states.length
+			? 'No Undo action'
+			: appx.length ? 'AppX removal has no undo' : script && !undoScript ? 'Script has no undo' : null,
 		haystack: [
 			entry.Content,
 			entry.Description,
@@ -76,8 +84,9 @@ function TweakDetails({ tweak, picked, onPick }) {
 								<tr>
 									<th>Value</th>
 									<th>Type</th>
-									<th>{applied}</th>
-									<th>{undone}</th>
+									{(tweak.states.length ? tweak.states : [applied, undone]).map((label) => (
+										<th key={label}>{label}</th>
+									))}
 								</tr>
 							</thead>
 							<tbody>
@@ -88,13 +97,27 @@ function TweakDetails({ tweak, picked, onPick }) {
 											{item.Name}
 										</td>
 										<td data-label="Type">{item.Type}</td>
-										<td data-label={applied}>{registryValue(item.Value)}</td>
-										<td data-label={undone}>{registryValue(item.OriginalValue)}</td>
+										{tweak.states.length ? (
+											tweak.states.map((state) => (
+												<td key={state} data-label={state}>{registryValue(item.Values[state])}</td>
+											))
+										) : (
+											<>
+												<td data-label={applied}>{registryValue(item.Value)}</td>
+												<td data-label={undone}>{registryValue(item.OriginalValue)}</td>
+											</>
+										)}
 									</tr>
 								))}
 							</tbody>
 						</table>
 					</div>
+					{tweak.states.length > 0 && (
+						<p className="wu-explorer-note">
+							Changes apply immediately when you choose a state in WinUtil. To revert, choose another state;
+							Undo Selected Tweaks does not manage this control.
+						</p>
+					)}
 				</section>
 			)}
 			{tweak.services.length > 0 && (
@@ -147,9 +170,11 @@ function TweakDetails({ tweak, picked, onPick }) {
 				<code>{tweak.key}</code>
 				<span className="wu-explorer-details-actions">
 					{tweak.link && <a href={tweak.link}>Reference page</a>}
-					<button type="button" className="wu-explorer-chip" aria-pressed={picked} onClick={onPick}>
-						{picked ? 'Added to config' : 'Add to config'}
-					</button>
+					{/^WPF(?:Tweaks|Toggle)/.test(tweak.key) && (
+						<button type="button" className="wu-explorer-chip" aria-pressed={picked} onClick={onPick}>
+							{picked ? 'Added to config' : 'Add to config'}{tweak.toggle ? ' (When on)' : ''}
+						</button>
+					)}
 				</span>
 			</div>
 		</div>
@@ -175,7 +200,9 @@ export default function TweakExplorer() {
 			.then(({ release, files: [tweaks, presets] }) => {
 				if (cancelled) return;
 				const list = Object.entries(tweaks)
-					.filter(([key]) => /^WPF(?:Tweaks|Toggle)/.test(key))
+					.filter(([key, entry]) =>
+						/^WPF(?:Tweaks|Toggle)/.test(key) || (entry.Type === 'Combobox' && entry.registry?.[0]?.Values)
+					)
 					.map(([key, entry]) => toTweak(key, entry, presets));
 				setData({ release, tweaks: list });
 			})
@@ -221,7 +248,7 @@ export default function TweakExplorer() {
 			(!changes.has('registry') || tweak.registry.length > 0) &&
 			(!changes.has('services') || tweak.services.length > 0) &&
 			(!changes.has('script') || tweak.script) &&
-			(!hasUndoOnly || !tweak.oneWay)
+			(!hasUndoOnly || tweak.hasUndo)
 	);
 
 	const toggleIn = (setter, value) =>
@@ -320,10 +347,11 @@ export default function TweakExplorer() {
 											</span>
 										)}
 										{tweak.script && <span className="wu-explorer-badge">Script</span>}
-										{tweak.oneWay ? (
-											<span className="wu-explorer-badge wu-explorer-badge--warn">{tweak.oneWay}</span>
-										) : (
+										{tweak.hasUndo && (
 											<span className="wu-explorer-badge wu-explorer-badge--good">Has undo</span>
+										)}
+										{tweak.oneWay && (
+											<span className="wu-explorer-badge wu-explorer-badge--warn">{tweak.oneWay}</span>
 										)}
 									</span>
 								</span>

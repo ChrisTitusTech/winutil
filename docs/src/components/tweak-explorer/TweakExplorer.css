@@ -170,6 +170,7 @@
 
 .wu-explorer-details {
 	display: grid;
+	grid-template-columns: minmax(0, 1fr);
 	gap: 1rem;
 	padding: 1rem;
 	border-top: 1px solid var(--sl-color-hairline-light);
@@ -224,7 +225,12 @@
 /* On phones each row becomes a small card, so the long registry path doesn't squeeze the value columns off screen. */
 @media (max-width: 40em) {
 	.wu-explorer-table thead {
-		display: none;
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
 	}
 	.wu-explorer-table tr {
 		display: flex;
@@ -297,6 +303,7 @@
 }
 .wu-explorer-details-actions {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	gap: 0.75rem;
 }
