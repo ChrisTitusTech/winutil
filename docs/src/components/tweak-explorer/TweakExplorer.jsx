@@ -43,6 +43,10 @@ function toTweak(key, entry, presets) {
 		undoScript,
 		appx,
 		presets: PRESETS.filter((name) => presets[name]?.includes(key)),
+		hasUndo: !states.length && (
+			registry.some((item) => !item.Values && Object.hasOwn(item, 'OriginalValue')) ||
+			services.some((item) => Object.hasOwn(item, 'OriginalType')) || Boolean(undoScript)
+		),
 		// Dropdowns use manual state selection rather than the checkbox Undo action.
 		oneWay: states.length
 			? 'No Undo action'
@@ -235,7 +239,7 @@ export default function TweakExplorer() {
 			(!changes.has('registry') || tweak.registry.length > 0) &&
 			(!changes.has('services') || tweak.services.length > 0) &&
 			(!changes.has('script') || tweak.script) &&
-			(!hasUndoOnly || !tweak.oneWay)
+			(!hasUndoOnly || tweak.hasUndo)
 	);
 
 	const toggleIn = (setter, value) =>
@@ -326,10 +330,11 @@ export default function TweakExplorer() {
 											</span>
 										)}
 										{tweak.script && <span className="wu-explorer-badge">Script</span>}
-										{tweak.oneWay ? (
-											<span className="wu-explorer-badge wu-explorer-badge--warn">{tweak.oneWay}</span>
-										) : (
+										{tweak.hasUndo && (
 											<span className="wu-explorer-badge wu-explorer-badge--good">Has undo</span>
+										)}
+										{tweak.oneWay && (
+											<span className="wu-explorer-badge wu-explorer-badge--warn">{tweak.oneWay}</span>
 										)}
 									</span>
 								</span>
