@@ -4,6 +4,7 @@
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     . (Join-Path $script:repoRoot "functions\private\Measure-WinUtilStep.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Write-WinUtilLog.ps1")
     . (Join-Path $script:repoRoot "functions\private\Write-WinUtilErrorRecord.ps1")
     . (Join-Path $script:repoRoot "functions\private\Complete-WinUtilPackageRun.ps1")
     . (Join-Path $script:repoRoot "functions\private\Start-WinUtilJob.ps1")

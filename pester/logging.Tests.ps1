@@ -5,6 +5,9 @@ BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 
     . (Join-Path $script:repoRoot "functions\private\Write-WinUtilLog.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Write-WinUtilErrorRecord.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Write-WinUtilJobBanner.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Write-WinUtilConsoleProgress.ps1")
     . (Join-Path $script:repoRoot "functions\private\Measure-WinUtilStep.ps1")
 }
 
@@ -281,6 +284,38 @@ Describe "Write-WinUtilLog" {
         }
     }
 
+}
+
+Describe "Collected runspace output" {
+    BeforeEach {
+        $script:testRoot = Join-Path ([System.IO.Path]::GetTempPath()) "winutil-logging-$([guid]::NewGuid())"
+        $script:logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
+        $script:sync = [hashtable]::Synchronized(@{
+            logPath = $script:logPath
+        })
+    }
+
+    AfterEach {
+        Close-WinUtilLog
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name WinUtilJobErrorCount -Scope Global -ErrorAction SilentlyContinue
+        Remove-Item -Path $script:testRoot -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    It "keeps console-only helpers out of the information stream" {
+        # Anything these send through Write-Host would be logged twice inside a job
+        $failure = try { throw "simulated failure" } catch { $_ }
+
+        $records = @(& {
+            Write-WinUtilLog -Component "Test" -Message "entry"
+            Write-WinUtilJobBanner -Message "Installing apps"
+            Write-WinUtilErrorRecord -ErrorRecord $failure -Component "Test"
+            Write-WinUtilConsoleProgress -Status "Installing" -Percent 10
+            Complete-WinUtilConsoleProgress
+        } 6>&1 | Where-Object { $_ -is [System.Management.Automation.InformationRecord] })
+
+        $records.Count | Should -Be 0
+    }
 }
 
 Describe "Session log wiring" {
