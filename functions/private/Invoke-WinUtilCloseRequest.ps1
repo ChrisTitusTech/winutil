@@ -29,9 +29,24 @@ function Invoke-WinUtilCloseRequest {
             return
         }
 
-        # The prompt keeps the dispatcher running, so a queued job may have started meanwhile
-        if ($sync.ActiveJob) {
-            Invoke-WinUtilCloseRequest -RunningJob $sync.ActiveJob -QueuedCount $sync.JobQueue.Count
+        # The prompt keeps the dispatcher running, so a queued job may have started meanwhile.
+        # Checking and shutting the queue in one lock step means a handoff either started its job
+        # first, and the running-job question is asked again, or finds WinUtil shutting down.
+        $startedMeanwhile = $null
+        [System.Threading.Monitor]::Enter($sync.SyncRoot)
+        try {
+            $startedMeanwhile = $sync.ActiveJob
+            if (-not $startedMeanwhile) {
+                $sync.ShuttingDown = $true
+                $null = Clear-WinUtilJobQueue
+                $sync.JobHandoff = $false
+            }
+        } finally {
+            [System.Threading.Monitor]::Exit($sync.SyncRoot)
+        }
+
+        if ($startedMeanwhile) {
+            Invoke-WinUtilCloseRequest -RunningJob $startedMeanwhile -QueuedCount $sync.JobQueue.Count
             return
         }
 

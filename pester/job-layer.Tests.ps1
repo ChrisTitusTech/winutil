@@ -1035,6 +1035,40 @@ Describe "Closing with queued jobs" {
         Should -Invoke -CommandName Request-WinUtilWindowClose -Times 1 -Exactly
     }
 
+    It "shuts the queue before the accepted queued-only close is posted" {
+        $script:sync.ActiveJob = $null
+        $script:sync.JobHandoff = $true
+        $script:sync.JobQueue.Add([pscustomobject]@{ Id = "1"; Name = "Head" })
+        $script:sync.JobQueue.Add([pscustomobject]@{ Id = "2"; Name = "Next" })
+        Mock Show-WinUtilMessage { "Yes" }
+        $script:atClose = $null
+        Mock Request-WinUtilWindowClose {
+            $script:atClose = @{ Shutting = $script:sync.ShuttingDown; Queued = $script:sync.JobQueue.Count; Handoff = $script:sync.JobHandoff }
+        }
+
+        Invoke-WinUtilCloseRequest -RunningJob "Queued operations" -QueuedCount 2
+
+        $script:atClose.Shutting | Should -BeTrue
+        $script:atClose.Queued | Should -Be 0
+        $script:atClose.Handoff | Should -BeFalse
+    }
+
+    It "refuses a job that tries to start once the queued-only close is accepted" {
+        Mock Show-WinUtilMessage { "Yes" }
+        Mock Request-WinUtilWindowClose { }
+        $script:sync.ActiveJob = $null
+        Invoke-WinUtilCloseRequest -RunningJob "Queued operations" -QueuedCount 1
+        Mock Invoke-WPFRunspace { }
+        Mock Step-WinUtilJob { }
+        Mock Invoke-WPFUIThread { }
+
+        Start-WinUtilJob -Name "Late" -QueueIfBusy -ScriptBlock { } | Out-Null
+
+        $script:sync.ActiveJob | Should -BeNullOrEmpty
+        $script:sync.JobQueue.Count | Should -Be 0
+        Should -Invoke -CommandName Invoke-WPFRunspace -Times 0 -Exactly
+    }
+
     It "keeps the window open and the queue when the queued-only close is declined" {
         $script:sync.ActiveJob = $null
         Mock Show-WinUtilMessage { "No" }
@@ -1062,6 +1096,8 @@ Describe "Closing with queued jobs" {
         Should -Invoke -CommandName Show-WinUtilMessage -Times 2 -Exactly
         Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter { $Title -eq "Head is still running" }
         $script:sync.ForceClose | Should -Not -BeTrue
+        $script:sync.ShuttingDown | Should -Not -BeTrue
+        $script:sync.JobQueue.Count | Should -Be 1
         Should -Invoke -CommandName Request-WinUtilWindowClose -Times 0 -Exactly
     }
 

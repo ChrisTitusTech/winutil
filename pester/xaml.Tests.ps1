@@ -363,7 +363,8 @@ Describe "XAML document" {
 
         $uiSource | Should -Match '\$sync\["JobQueueButton"\]\.Add_Click'
         $uiSource | Should -Match '\$sync\["JobQueuePopup"\]\.Add_Opened\(\{ Update-WinUtilJobQueueUI \}\)'
-        $uiSource | Should -Match '"JobQueue" = "Show"'
+        $clickHandler = [regex]::Match($uiSource, '(?s)\$sync\["JobQueueButton"\]\.Add_Click\(\{.*?\r?\n    \}\)').Value
+        $clickHandler | Should -Match '"JobQueue" = "Show"'
     }
 
     It "scopes toggle button styles without leaking into combo boxes" {
