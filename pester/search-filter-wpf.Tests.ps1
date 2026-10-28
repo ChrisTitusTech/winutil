@@ -3,7 +3,7 @@
 Describe "Search filtering with real WPF controls" {
     It "preserves search and category behavior in Windows PowerShell 5.1" -Skip:($env:OS -ne "Windows_NT") {
         $env:WINUTIL_WPF_TEST_ROOT = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-        $env:WINUTIL_WPF_PESTER_PATH = (Get-Module Pester).Path
+        $env:WINUTIL_WPF_PESTER_PATH = Join-Path (Get-Module Pester).ModuleBase "Pester.psd1"
         try {
             $scriptText = @'
 $ErrorActionPreference = 'Stop'
@@ -12,6 +12,9 @@ if ([Windows.Controls.Border].Assembly.GetName().Name -ne 'PresentationFramework
     throw 'The search integration test requires real WPF controls.'
 }
 Import-Module $env:WINUTIL_WPF_PESTER_PATH -Force
+if ((Get-Module Pester).Version -ne [version]"5.8.0") {
+    throw "The WPF search test requires Pester 5.8.0."
+}
 Invoke-Pester -Path (Join-Path $env:WINUTIL_WPF_TEST_ROOT 'pester/search-filter.Tests.ps1') -Output Detailed -CI
 '@
             $encodedCommand = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($scriptText))
