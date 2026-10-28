@@ -240,7 +240,7 @@ Invoke-WinUtilISOCleanAndReset (optional)
 **Modification Safety**:
 - Windows PE and specialize set hardware bypass and setup safeguards; `WinUtil-PostInstall.ps1` applies additional registry changes at first logon
 - Original ISO never modified; only working copy
-- Logged to the WinUtil session log and the live UI status panel
+- Logged to the shared `%LocalAppData%\winutil\logs\winutil_<timestamp>.log` session file and the live UI status panel, so the log survives cleanup
 - DISM handles image dismount with automatic cleanup and discard on error
 
 ### Win11 Creator Registry Tweaks
