@@ -33,6 +33,8 @@ To create your own config file:
 
 To build a config without opening WinUtil, pick your selections in the browser with the [Config Builder](/config-builder/) and download the file from there.
 
+Use the Config Builder's generated command with its downloaded file. It runs the release used to build the catalog, keeping the selections compatible if a newer release removes or renames keys.
+
 Local configuration paths are used exactly as provided when importing or exporting. Square brackets in folder or file names, such as `C:\Configs\setup[1].json`, are treated as part of the name rather than wildcard patterns.
 
 Export also copies a command to the clipboard that launches WinUtil with the saved configuration. The copied command preserves special characters in the path, including apostrophes, dollar signs, and backticks.
