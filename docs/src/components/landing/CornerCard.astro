@@ -1,5 +1,5 @@
 ---
-// Feature card with small corner brackets instead of a shadow/colored border.
+// Feature card: icon beside the title and description, with small corner brackets instead of a shadow/colored border.
 import { Icon } from '@astrojs/starlight/components';
 import type { ComponentProps } from 'astro/types';
 
@@ -30,12 +30,25 @@ const { icon, title } = Astro.props;
 	@layer starlight.core {
 		.wu-corner-card {
 			position: relative;
-			display: flex;
-			flex-direction: column;
-			gap: 0.75rem;
+			display: grid;
+			grid-template-columns: auto 1fr;
+			gap: 0.375rem 1.25rem;
+			align-items: start;
 			padding: 1.5rem;
 			border: 1px solid var(--sl-color-hairline-light);
 			background-color: var(--sl-color-bg);
+			transition:
+				border-color 0.4s ease,
+				box-shadow 0.4s ease;
+		}
+
+		/* Highlight for the card being read (set by the landing page script). */
+		.wu-corner-card.is-active {
+			border-color: hsl(var(--wu-accent-h) 100% 51% / 0.6);
+			box-shadow: 0 24px 48px -24px hsl(var(--wu-accent-h) 100% 51% / 0.45);
+		}
+		.wu-corner-card.is-active .mark {
+			background: var(--sl-color-accent);
 		}
 
 		/* Corner brackets decoration (four small L-shaped marks). */
@@ -98,6 +111,7 @@ const { icon, title } = Astro.props;
 
 		/* Icon badge + heading + description. */
 		.wu-corner-card-icon {
+			grid-row: span 2;
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -108,13 +122,6 @@ const { icon, title } = Astro.props;
 			color: var(--sl-color-accent);
 		}
 
-		.wu-corner-card h3 {
-			margin: 0;
-			font-size: var(--sl-text-lg);
-			font-weight: 600;
-			color: var(--sl-color-white);
-		}
-
 		.wu-corner-card-desc {
 			font-size: var(--sl-text-sm);
 			line-height: var(--sl-line-height);
@@ -123,5 +130,19 @@ const { icon, title } = Astro.props;
 		.wu-corner-card-desc :global(p) {
 			margin: 0;
 		}
+	}
+
+	/* Unlayered, so these beat Starlight's content heading sizes and block spacing. */
+	.wu-corner-card h3 {
+		display: flex;
+		align-items: center;
+		min-height: 2.5rem;
+		margin: 0;
+		font-size: var(--sl-text-lg);
+		font-weight: 600;
+		color: var(--sl-color-white);
+	}
+	.wu-corner-card-desc {
+		margin: 0;
 	}
 </style>

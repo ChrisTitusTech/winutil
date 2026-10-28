@@ -1,0 +1,49 @@
+/* React Bits GlareHover styles (https://reactbits.dev/animations/glare-hover). See LICENSE.md. Unmodified. */
+.glare-hover {
+  position: relative;
+  display: inline-grid;
+  vertical-align: top;
+  place-items: center;
+  width: var(--gh-width);
+  height: var(--gh-height);
+  background: var(--gh-bg);
+  border: 1px solid var(--gh-border);
+  border-radius: var(--gh-br);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.glare-hover__glare {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  opacity: 0;
+  mix-blend-mode: var(--gh-blend);
+  pointer-events: none;
+}
+
+.glare-hover__band {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: var(--gh-glare);
+  will-change: transform;
+}
+
+.glare-hover__rim {
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  -webkit-mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+  -webkit-mask-clip: content-box, border-box;
+  -webkit-mask-composite: xor;
+  mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+  mask-clip: content-box, border-box;
+  mask-composite: exclude;
+}
+
+.glare-hover__band--rim {
+  background: var(--gh-rim);
+}
