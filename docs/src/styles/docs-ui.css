@@ -322,6 +322,10 @@
 		display: none;
 	}
 }
+/* The replacement toggle must retain Starlight's background scroll lock. */
+body[data-mobile-menu-expanded] {
+	overflow: hidden;
+}
 /* Starlight shows the sidebar via the toggle's sibling selector, which the island wrapper breaks. */
 body[data-mobile-menu-expanded] .sidebar-pane {
 	--sl-sidebar-visibility: visible;
