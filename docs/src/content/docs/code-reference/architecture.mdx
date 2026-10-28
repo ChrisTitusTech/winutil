@@ -35,6 +35,10 @@ WinUtil is a PowerShell-based Windows utility with a WPF (Windows Presentation F
     └─────────────────────────┘
 ```
 
+## Documentation Build
+
+The docs deployment workflow runs `tools/devdocs-generator.ps1` before Astro builds the site. The generator reads the tweak and feature JSON configs and their PowerShell functions, then regenerates reference pages with safely escaped YAML metadata. Changes to these sources trigger a docs rebuild; deployment does not commit generated files.
+
 ## Project Structure
 
 ### Directory Layout
