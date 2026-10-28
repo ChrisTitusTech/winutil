@@ -26,8 +26,8 @@
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
-	height: 2.25rem;
-	padding: 0 0.75rem;
+	height: 2rem;
+	padding: 0 0.6rem;
 	border: 1px solid var(--sl-color-hairline-light);
 	border-radius: var(--wu-radius-sm);
 	background: var(--sl-color-bg);
@@ -62,13 +62,13 @@
 
 .wu-explorer-chip {
 	height: 1.75rem;
-	padding: 0 0.65rem;
+	padding: 0 0.6rem;
 	border: 1px solid var(--sl-color-hairline-light);
 	border-radius: 999px;
 	background: var(--sl-color-gray-6);
 	font: inherit;
 	font-size: var(--sl-text-xs);
-	color: var(--sl-color-gray-2);
+	color: var(--sl-color-gray-1);
 	white-space: nowrap;
 	cursor: pointer;
 	transition:
@@ -109,6 +109,10 @@
 	text-align: start;
 	color: inherit;
 	cursor: pointer;
+}
+/* The card's overflow: hidden would clip an outline drawn outside the button. */
+.wu-explorer-summary:focus-visible {
+	outline-offset: -2px;
 }
 .wu-explorer-summary:hover {
 	background: var(--sl-color-gray-6);
@@ -221,7 +225,12 @@
 /* On phones each row becomes a small card, so the long registry path doesn't squeeze the value columns off screen. */
 @media (max-width: 40em) {
 	.wu-explorer-table thead {
-		display: none;
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
 	}
 	.wu-explorer-table tr {
 		display: flex;
