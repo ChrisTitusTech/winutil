@@ -1,0 +1,294 @@
+.wu-explorer {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 1rem;
+	margin: 1.5rem 0;
+	font-size: var(--sl-text-sm);
+	color: var(--sl-color-gray-2);
+}
+
+.wu-explorer-status {
+	margin: 0;
+	color: var(--sl-color-gray-3);
+}
+.wu-explorer-status a {
+	color: var(--sl-color-accent-high);
+}
+
+.wu-explorer-filters {
+	display: grid;
+	gap: 0.75rem;
+	padding: 0.75rem;
+	border: 1px solid var(--sl-color-hairline-light);
+	border-radius: var(--wu-radius);
+}
+.wu-explorer-search {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	height: 2.25rem;
+	padding: 0 0.75rem;
+	border: 1px solid var(--sl-color-hairline-light);
+	border-radius: var(--wu-radius-sm);
+	background: var(--sl-color-bg);
+	color: var(--sl-color-gray-3);
+}
+.wu-explorer-search:focus-within {
+	border-color: var(--sl-color-accent);
+}
+.wu-explorer-search input {
+	flex: 1;
+	min-width: 0;
+	border: 0;
+	background: none;
+	font: inherit;
+	color: var(--sl-color-white);
+	outline: none;
+}
+.wu-explorer-filter-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.4rem;
+}
+.wu-explorer-filter-row > span {
+	width: 5rem;
+	font-size: var(--sl-text-xs);
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--sl-color-gray-3);
+}
+
+.wu-explorer-chip {
+	height: 1.75rem;
+	padding: 0 0.65rem;
+	border: 1px solid var(--sl-color-hairline-light);
+	border-radius: 999px;
+	background: var(--sl-color-gray-6);
+	font: inherit;
+	font-size: var(--sl-text-xs);
+	color: var(--sl-color-gray-2);
+	white-space: nowrap;
+	cursor: pointer;
+	transition:
+		border-color 0.15s ease,
+		background-color 0.15s ease,
+		color 0.15s ease;
+}
+.wu-explorer-chip:hover {
+	border-color: var(--sl-color-gray-4);
+}
+.wu-explorer-chip[aria-pressed='true'] {
+	border-color: var(--sl-color-accent);
+	background: var(--sl-color-accent);
+	color: #fff;
+}
+
+.wu-explorer-list {
+	display: grid;
+	gap: 0.5rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.wu-explorer-tweak {
+	border: 1px solid var(--sl-color-hairline-light);
+	border-radius: var(--wu-radius);
+	overflow: hidden;
+}
+.wu-explorer-summary {
+	display: flex;
+	align-items: flex-start;
+	gap: 1rem;
+	width: 100%;
+	padding: 0.85rem 1rem;
+	border: 0;
+	background: none;
+	font: inherit;
+	text-align: start;
+	color: inherit;
+	cursor: pointer;
+}
+.wu-explorer-summary:hover {
+	background: var(--sl-color-gray-6);
+}
+.wu-explorer-summary-text {
+	display: grid;
+	flex: 1;
+	gap: 0.3rem;
+	min-width: 0;
+}
+.wu-explorer-name {
+	font-size: var(--sl-text-base);
+	font-weight: 600;
+	color: var(--sl-color-white);
+}
+.wu-explorer-description {
+	color: var(--sl-color-gray-3);
+}
+.wu-explorer-badges {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.3rem;
+	margin-top: 0.2rem;
+}
+.wu-explorer-badge {
+	padding: 0.1rem 0.5rem;
+	border: 1px solid var(--sl-color-hairline-light);
+	border-radius: 999px;
+	font-size: var(--sl-text-xs);
+	color: var(--sl-color-gray-2);
+}
+.wu-explorer-badge--preset {
+	border-color: var(--sl-color-accent);
+	color: var(--sl-color-accent-high);
+}
+.wu-explorer-badge--good {
+	border-color: var(--sl-color-green);
+	color: var(--sl-color-green-high);
+}
+.wu-explorer-badge--warn {
+	border-color: var(--sl-color-orange);
+	color: var(--sl-color-orange-high);
+}
+.wu-explorer-caret {
+	flex: none;
+	width: 1.1rem;
+	height: 1.1rem;
+	margin-top: 0.2rem;
+	color: var(--sl-color-gray-3);
+	transition: transform 0.2s ease;
+}
+.wu-explorer-summary[aria-expanded='true'] .wu-explorer-caret {
+	transform: rotate(180deg);
+}
+
+.wu-explorer-details {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 1rem;
+	padding: 1rem;
+	border-top: 1px solid var(--sl-color-hairline-light);
+	background: color-mix(in srgb, var(--sl-color-gray-6) 50%, transparent);
+}
+.wu-explorer-details h4 {
+	margin: 0 0 0.5rem;
+	font-size: var(--sl-text-xs);
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--sl-color-gray-3);
+}
+.wu-explorer-table {
+	overflow-x: auto;
+	border: 1px solid var(--sl-color-hairline-light);
+	border-radius: var(--wu-radius-sm);
+	background: var(--sl-color-bg);
+}
+.wu-explorer-table table {
+	width: 100%;
+	border-collapse: collapse;
+	font-family: var(--sl-font-mono);
+	font-size: var(--sl-text-xs);
+}
+.wu-explorer-table th,
+.wu-explorer-table td {
+	padding: 0.45rem 0.65rem;
+	border-bottom: 1px solid var(--sl-color-hairline);
+	text-align: start;
+	vertical-align: top;
+}
+.wu-explorer-table th {
+	font-family: var(--sl-font);
+	font-weight: 600;
+	color: var(--sl-color-gray-3);
+	white-space: nowrap;
+}
+.wu-explorer-table td {
+	color: var(--sl-color-gray-1);
+}
+.wu-explorer-table td:first-child {
+	min-width: 16rem;
+	overflow-wrap: anywhere;
+}
+.wu-explorer-table tr:last-child td {
+	border-bottom: 0;
+}
+.wu-explorer-table em {
+	color: var(--sl-color-gray-3);
+}
+/* On phones each row becomes a small card, so the long registry path doesn't squeeze the value columns off screen. */
+@media (max-width: 40em) {
+	.wu-explorer-table thead {
+		display: none;
+	}
+	.wu-explorer-table tr {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25rem 1rem;
+		padding: 0.5rem 0.65rem;
+		border-bottom: 1px solid var(--sl-color-hairline);
+	}
+	.wu-explorer-table tr:last-child {
+		border-bottom: 0;
+	}
+	.wu-explorer-table td {
+		padding: 0;
+		border: 0;
+	}
+	.wu-explorer-table td:first-child {
+		flex-basis: 100%;
+		min-width: 0;
+	}
+	.wu-explorer-table td[data-label]::before {
+		content: attr(data-label) ': ';
+		font-family: var(--sl-font);
+		color: var(--sl-color-gray-3);
+	}
+}
+.wu-explorer-path {
+	color: var(--sl-color-gray-3);
+}
+.wu-explorer-note {
+	margin: 0.5rem 0 0;
+	font-size: var(--sl-text-xs);
+	color: var(--sl-color-gray-3);
+}
+
+.wu-explorer-details details {
+	border: 1px solid var(--sl-color-hairline-light);
+	border-radius: var(--wu-radius-sm);
+	background: var(--sl-color-bg);
+}
+.wu-explorer-details summary {
+	padding: 0.5rem 0.75rem;
+	color: var(--sl-color-gray-2);
+	cursor: pointer;
+}
+.wu-explorer-details pre {
+	max-height: 20rem;
+	margin: 0;
+	padding: 0.75rem;
+	border-top: 1px solid var(--sl-color-hairline-light);
+	overflow: auto;
+	font-family: var(--sl-font-mono);
+	font-size: var(--sl-text-xs);
+	color: var(--sl-color-gray-1);
+}
+
+.wu-explorer-details-footer {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+}
+.wu-explorer-details-footer code {
+	font-family: var(--sl-font-mono);
+	font-size: var(--sl-text-xs);
+	color: var(--sl-color-gray-3);
+}
+.wu-explorer-details-footer a {
+	color: var(--sl-color-accent-high);
+}

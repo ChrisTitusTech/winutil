@@ -1,54 +1,14 @@
 // Builds a -Config file from the latest release's catalog, so every key it offers is one that release will import.
 import { useEffect, useMemo, useState } from 'react';
 import Icon from '../docs/Icon.jsx';
+import { RATE_LIMITED, loadReleaseConfig } from '../../lib/winutil-release.js';
 import './ConfigBuilder.css';
-
-const REPO = 'ChrisTitusTech/winutil';
-const RELEASE_KEY = 'winutil-latest-release';
-const RATE_LIMITED = 'GitHub rate limit has been reached. Please try again later.';
 
 // Each download gets its own name. A browser renames a clash to "name (1).json", and the command would then run the
 // older file.
 function configFileName() {
 	const stamp = new Date().toISOString().slice(0, 23).replace(/[-:.]/g, '').replace('T', '-');
 	return `winutil-config-${stamp}.json`;
-}
-
-async function fetchText(url) {
-	const response = await fetch(url);
-	if (response.ok) return response.text();
-	// Anonymous API calls are limited per network, which a shared connection can use up.
-	if (response.headers.get('x-ratelimit-remaining') === '0') throw new Error(RATE_LIMITED);
-	throw new Error(`GitHub returned ${response.status}`);
-}
-
-// The release lookup is the only rate-limited request, so it's kept for the rest of the browser session.
-async function latestRelease() {
-	try {
-		const saved = sessionStorage.getItem(RELEASE_KEY);
-		if (saved) return JSON.parse(saved);
-	} catch {
-		// Storage can be blocked; look the release up instead.
-	}
-	const { tag_name: tag, html_url: url } = JSON.parse(
-		await fetchText(`https://api.github.com/repos/${REPO}/releases/latest`)
-	);
-	try {
-		sessionStorage.setItem(RELEASE_KEY, JSON.stringify({ tag, url }));
-	} catch {
-		// Without storage the next visit looks it up again.
-	}
-	return { tag, url };
-}
-
-// ConvertFrom-Json accepts raw line breaks inside strings, which the multi-line InvokeScript blocks rely on, and
-// JSON.parse doesn't, so they're escaped first.
-function parseCatalog(text) {
-	return JSON.parse(
-		text.replace(/"(?:[^"\\]|\\.)*"/g, (literal) =>
-			literal.replace(/[\u0000-\u001f]/g, (char) => `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`)
-		)
-	);
 }
 
 // Buttons share the WPFFeature prefix but can't be imported, so only checkbox and toggle entries are offered.
@@ -65,12 +25,10 @@ function entries(catalog, pattern) {
 }
 
 async function loadCatalog() {
-	const release = await latestRelease();
-	const [applications, tweaks, features, appx, presets] = await Promise.all(
-		['applications', 'tweaks', 'feature', 'appx', 'preset'].map(async (name) =>
-			parseCatalog(await fetchText(`https://raw.githubusercontent.com/${REPO}/${release.tag}/config/${name}.json`))
-		)
-	);
+	const {
+		release,
+		files: [applications, tweaks, features, appx, presets],
+	} = await loadReleaseConfig(['applications', 'tweaks', 'feature', 'appx', 'preset']);
 	// Tab order matches WinUtil's export order: apps, tweaks, toggles, features, AppX.
 	return {
 		release,

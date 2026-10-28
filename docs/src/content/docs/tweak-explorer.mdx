@@ -1,0 +1,21 @@
+---
+title: Tweak Explorer
+description: See exactly which registry values, services, and scripts each WinUtil tweak changes, and what Undo puts back.
+template: splash
+prev: false
+next: false
+---
+
+import TweakExplorer from '../../components/tweak-explorer/TweakExplorer.jsx';
+
+See what each tweak changes before you run it. Open a tweak to see the registry values and service startup types it sets next to what **Undo** restores, along with any script it runs. Search also matches registry paths, service names, and script contents, so you can find every tweak that touches a given setting.
+
+The list is loaded from the latest WinUtil release on GitHub, the same version `https://christitus.com/win` runs.
+
+<TweakExplorer client:load />
+
+Registry-backed dropdowns, such as Multiplane Overlay, show a column for each available state. Choose the state in WinUtil to apply it immediately. These controls do not use **Undo Selected Tweaks**; choose another state to revert them.
+
+**Has undo** means at least one registry, service, or script undo action is available, not that it restores your exact previous state. A tweak can also show **Script has no undo** or **AppX removal has no undo** when only part of its changes can be undone. For example, Undo can reinstall Microsoft Edge, but it cannot recover the browser profile deleted by the removal tweak.
+
+A tweak marked **Script has no undo** or **AppX removal has no undo** is one that Undo cannot fully reverse. Some are one-off actions with nothing to put back, such as creating a restore point or cleaning up temporary files. For the rest, create a restore point before applying them.
