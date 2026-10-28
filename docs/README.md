@@ -49,7 +49,7 @@ New apps, tweaks, toggles, features, AppX packages, and categories appear on the
 
 - Preset names (`Standard`, `Minimal`, `Advanced`, `AppxDefault`), in `ConfigBuilder.jsx` and `TweakExplorer.jsx`.
 - The key prefixes WinUtil can import (`WPFInstall`, `WPFTweaks`, `WPFToggle`, `WPFFeature`, `WPFAppx`), in `ConfigBuilder.jsx`. These mirror `Update-WinUtilSelections`.
-- The tweak fields the explorer shows (`registry`, `service`, `InvokeScript`, `UndoScript`, `appx`), in `TweakExplorer.jsx`. These mirror `Invoke-WinUtilTweaks`.
+- The tweak fields the explorer shows (`registry`, `service`, `InvokeScript`, `UndoScript`, `appx`, and registry `Values` mappings for `Combobox` entries), in `TweakExplorer.jsx`. These mirror `Invoke-WinUtilTweaks` and `Set-WinUtilRegistryComboState`.
 
 Config Builder links carry the selected keys in the URL hash, e.g. `/config-builder/#WPFInstall7zip,WPFTweaksTelemetry`. `src/lib/config-link.js` builds and reads them for both pages. People post these links on Discord and the forums, so keep reading the existing format if you ever change it.
 

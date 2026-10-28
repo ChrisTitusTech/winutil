@@ -166,6 +166,7 @@
 
 .wu-explorer-details {
 	display: grid;
+	grid-template-columns: minmax(0, 1fr);
 	gap: 1rem;
 	padding: 1rem;
 	border-top: 1px solid var(--sl-color-hairline-light);
