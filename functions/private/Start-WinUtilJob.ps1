@@ -30,6 +30,10 @@ function Start-WinUtilJob {
             Waits in $sync.JobQueue for its turn instead of being refused, for actions the user
             starts. The parameters are held as they were when it was queued.
 
+        .PARAMETER FromQueue
+            Internal to Start-WinUtilNextQueuedJob: this is the queued job taking its turn, so it
+            may claim the slot while $sync.JobHandoff holds it for the queue.
+
         .EXAMPLE
             Start-WinUtilJob -Name "Install" -Parameters @{ Packages = $packages } -ScriptBlock {
                 param($Packages)
@@ -49,10 +53,13 @@ function Start-WinUtilJob {
 
         [switch]$DisableAppList,
 
-        [switch]$QueueIfBusy
+        [switch]$QueueIfBusy,
+
+        [switch]$FromQueue
     )
 
     if ($sync.ShuttingDown -or $sync.FinishInConsole) {
+        if ($FromQueue) { Reset-WinUtilJobHandoff }
         Write-WinUtilLog -Level "WARN" -Component $Name -Message "Refused to start $Name, WinUtil is closing."
         return $null
     }
@@ -73,8 +80,12 @@ function Start-WinUtilJob {
     $queuePosition = 0
     [System.Threading.Monitor]::Enter($sync.SyncRoot)
     try {
-        if ($sync.ActiveJob) {
-            $blockedBy = $sync.ActiveJob
+        if ($FromQueue) {
+            $sync.JobHandoff = $false
+        }
+        # A finished job's slot is promised to the queue until its head has started
+        if ($sync.ActiveJob -or $sync.JobHandoff) {
+            $blockedBy = if ($sync.ActiveJob) { $sync.ActiveJob } else { "Queued operations" }
             # In the same lock as the busy test: a job finishing between the two would leave
             # this one queued behind nothing
             if ($QueueIfBusy) {
@@ -278,6 +289,11 @@ function Clear-WinUtilActiveJob {
             $sync.ActiveJobToken = $null
             $sync.ActiveJob = $null
             $released = $true
+            # Between here and the posted dispatch the slot is free, and a new action must not
+            # take it ahead of the queue
+            if ($Token -and $sync.JobQueue.Count -gt 0 -and -not $sync.ShuttingDown -and -not $sync.FinishInConsole) {
+                $sync.JobHandoff = $true
+            }
         }
     } finally {
         [System.Threading.Monitor]::Exit($sync.SyncRoot)
@@ -289,6 +305,7 @@ function Clear-WinUtilActiveJob {
         try {
             Invoke-WPFUIThread -Async -ScriptBlock { Start-WinUtilNextQueuedJob }
         } catch {
+            Reset-WinUtilJobHandoff
             Write-WinUtilLog -Level "WARN" -Component "UI" -Message "Could not start the next queued job: $($_.Exception.Message)"
         }
     }

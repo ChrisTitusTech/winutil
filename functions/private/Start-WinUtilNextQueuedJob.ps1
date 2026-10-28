@@ -5,10 +5,11 @@ function Start-WinUtilNextQueuedJob {
 
         .DESCRIPTION
             Runs on the interface thread, posted by Clear-WinUtilActiveJob when a job finishes
-            whether it succeeded or not. A job that started in the gap before this ran keeps the
-            slot, and its own finish posts this again.
+            whether it succeeded or not. Until the job it starts claims the slot, $sync.JobHandoff
+            keeps new actions queueing behind it, and every way out of here clears the flag.
     #>
     if ($sync.ShuttingDown -or $sync.FinishInConsole) {
+        Reset-WinUtilJobHandoff
         return
     }
 
@@ -18,6 +19,8 @@ function Start-WinUtilNextQueuedJob {
         if (-not $sync.ActiveJob -and $sync.JobQueue.Count -gt 0) {
             $next = $sync.JobQueue[0]
             $sync.JobQueue.RemoveAt(0)
+        } else {
+            $sync.JobHandoff = $false
         }
     } finally {
         [System.Threading.Monitor]::Exit($sync.SyncRoot)
@@ -29,8 +32,21 @@ function Start-WinUtilNextQueuedJob {
     }
 
     Write-WinUtilLog -Component $next.Name -Message "Starting queued $($next.Name) job."
-    # QueueIfBusy keeps the job if something else claimed the slot since the check above
-    Start-WinUtilJob -Name $next.Name -Description $next.Description -ScriptBlock ([scriptblock]::Create($next.ScriptBlock)) -Parameters $next.Parameters -DisableAppList:$next.DisableAppList -QueueIfBusy
+    # FromQueue clears the handoff in the same lock that claims the slot, or when it refuses
+    Start-WinUtilJob -Name $next.Name -Description $next.Description -ScriptBlock ([scriptblock]::Create($next.ScriptBlock)) -Parameters $next.Parameters -DisableAppList:$next.DisableAppList -FromQueue
+}
+
+function Reset-WinUtilJobHandoff {
+    <#
+        .SYNOPSIS
+            Lets new actions claim the slot again after a handoff that will not complete
+    #>
+    [System.Threading.Monitor]::Enter($sync.SyncRoot)
+    try {
+        $sync.JobHandoff = $false
+    } finally {
+        [System.Threading.Monitor]::Exit($sync.SyncRoot)
+    }
 }
 
 function Get-WinUtilQueuedJobIndex {

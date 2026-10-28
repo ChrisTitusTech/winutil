@@ -9,7 +9,8 @@ function Invoke-WinUtilCloseRequest {
             everything closes now.
 
         .PARAMETER RunningJob
-            The name of the job in flight, so the question names what is at stake.
+            The name of the job in flight, so the question names what is at stake. With nothing
+            running and only queued jobs left, the question is just whether to discard them.
 
         .PARAMETER QueuedCount
             How many queued jobs closing will discard, so they are not a surprise.
@@ -20,6 +21,25 @@ function Invoke-WinUtilCloseRequest {
 
         [int]$QueuedCount = 0
     )
+
+    if (-not $sync.ActiveJob) {
+        $discard = Show-WinUtilMessage -Button "YesNo" -Icon "Warning" -Title "Queued operations" -Message "Nothing is running. $QueuedCount queued operation(s) will be discarded.`n`nClose WinUtil anyway?"
+        if ("$discard" -ne "Yes") {
+            Write-WinUtilLog -Component "UI" -Message "Close cancelled, $QueuedCount operation(s) are still queued."
+            return
+        }
+
+        # The prompt keeps the dispatcher running, so a queued job may have started meanwhile
+        if ($sync.ActiveJob) {
+            Invoke-WinUtilCloseRequest -RunningJob $sync.ActiveJob -QueuedCount $sync.JobQueue.Count
+            return
+        }
+
+        Write-WinUtilLog -Component "UI" -Message "Close requested: closing with $QueuedCount queued operation(s) discarded."
+        $sync.ForceClose = $true
+        Request-WinUtilWindowClose
+        return
+    }
 
     $queuedNote = if ($QueuedCount -gt 0) { "`n$QueuedCount queued operation(s) will be discarded.`n" } else { "" }
 

@@ -233,6 +233,9 @@ $sync.preferences = @{}
 $sync.ActiveJob = $null
 # User actions waiting for the slot, oldest first. Changed only under $sync.SyncRoot.
 $sync.JobQueue = [System.Collections.Generic.List[object]]::new()
+# True from a job's release until the queued job that follows it claims the slot, so a new action
+# cannot take the slot ahead of the queue.
+$sync.JobHandoff = $false
 # Serializes worker-pool startup with recycling and shutdown.
 $sync.RunspacePoolLock = [object]::new()
 # Serializes the speculative and UI-thread taskbar overlay renderers.

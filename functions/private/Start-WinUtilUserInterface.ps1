@@ -164,9 +164,10 @@ function Start-WinUtilUserInterface {
 
         # The pool cannot be torn down under work that is still running: the runspace error that
         # follows is unhandled and ends the process
-        if ($sync.ActiveJob -and -not $sync.ForceClose) {
+        if (($sync.ActiveJob -or $sync.JobQueue.Count -gt 0) -and -not $sync.ForceClose) {
             $closingArgs.Cancel = $true
-            Invoke-WinUtilCloseRequest -RunningJob $sync.ActiveJob -QueuedCount $sync.JobQueue.Count
+            $runningJob = if ($sync.ActiveJob) { $sync.ActiveJob } else { "Queued operations" }
+            Invoke-WinUtilCloseRequest -RunningJob $runningJob -QueuedCount $sync.JobQueue.Count
             return
         }
 

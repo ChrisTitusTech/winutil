@@ -790,6 +790,113 @@ Describe "Job queue" {
         $script:captured["AppX"].Parameters.Selected | Should -Be @("One")
     }
 
+    It "queues a new action behind the head while the slot is held for the queue" {
+        $script:sync.JobQueue.Add([pscustomobject]@{ Id = "1"; Name = "Head"; Description = ""; ScriptBlock = ""; Parameters = @{}; DisableAppList = $false })
+        $script:sync.JobHandoff = $true
+
+        Start-WinUtilJob -Name "New" -QueueIfBusy -ScriptBlock { } | Out-Null
+
+        @($script:sync.JobQueue | ForEach-Object Name) | Should -Be @("Head", "New")
+        $script:sync.ActiveJob | Should -BeNullOrEmpty
+        $script:started.Count | Should -Be 0
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Message -like "*queued behind Queued operations, position 2*"
+        }
+    }
+
+    It "refuses an action without the switch while the slot is held for the queue" {
+        $script:sync.JobQueue.Add([pscustomobject]@{ Id = "1"; Name = "Head" })
+        $script:sync.JobHandoff = $true
+
+        Start-WinUtilJob -Name "ISO mount" -ScriptBlock { } | Out-Null
+
+        $script:sync.JobQueue.Count | Should -Be 1
+        $script:started.Count | Should -Be 0
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
+            $Message -like "Queued operations is still running*"
+        }
+    }
+
+    It "holds the slot for the queue after a job ends and hands it to the head" {
+        Mock Invoke-WPFUIThread { }
+        Start-WinUtilJob -Name "First" -QueueIfBusy -ScriptBlock { } | Out-Null
+        Start-WinUtilJob -Name "Head" -QueueIfBusy -Parameters @{ Value = 1 } -ScriptBlock { } | Out-Null
+
+        Complete-TestJob -Run $script:started[0]
+
+        $script:sync.ActiveJob | Should -BeNullOrEmpty
+        $script:sync.JobHandoff | Should -BeTrue
+        Start-WinUtilJob -Name "Late" -QueueIfBusy -ScriptBlock { } | Out-Null
+        @($script:sync.JobQueue | ForEach-Object Name) | Should -Be @("Head", "Late")
+        $script:started.Count | Should -Be 1
+
+        Start-WinUtilNextQueuedJob
+
+        $script:started.Count | Should -Be 2
+        $script:started[1].Args["JobName"] | Should -Be "Head"
+        $script:started[1].Args["JobParameters"].Value | Should -Be 1
+        $script:sync.ActiveJob | Should -Be "Head"
+        $script:sync.JobHandoff | Should -BeFalse
+        @($script:sync.JobQueue | ForEach-Object Name) | Should -Be @("Late")
+    }
+
+    It "does not hold the slot when nothing is queued or WinUtil is closing" {
+        $script:sync.ActiveJob = "A"
+        $script:sync.ActiveJobToken = "t"
+        $null = Clear-WinUtilActiveJob -Token "t"
+        $script:sync.JobHandoff | Should -BeFalse
+
+        $script:sync.JobQueue.Add([pscustomobject]@{ Id = "1"; Name = "Head" })
+        $script:sync.ShuttingDown = $true
+        $script:sync.ActiveJob = "A"
+        $script:sync.ActiveJobToken = "t"
+        $null = Clear-WinUtilActiveJob -Token "t"
+        $script:sync.JobHandoff | Should -BeFalse
+    }
+
+    It "clears the handoff on every way out of the dispatch" {
+        $queued = [pscustomobject]@{ Id = "1"; Name = "Head"; Description = ""; ScriptBlock = ""; Parameters = @{}; DisableAppList = $false }
+
+        # closing
+        $script:sync.JobHandoff = $true
+        $script:sync.ShuttingDown = $true
+        Start-WinUtilNextQueuedJob
+        $script:sync.JobHandoff | Should -BeFalse
+        $script:sync.Remove("ShuttingDown")
+
+        # empty queue
+        $script:sync.JobHandoff = $true
+        Start-WinUtilNextQueuedJob
+        $script:sync.JobHandoff | Should -BeFalse
+
+        # slot taken, the queue is kept
+        $script:sync.JobQueue.Add($queued)
+        $script:sync.ActiveJob = "Other"
+        $script:sync.JobHandoff = $true
+        Start-WinUtilNextQueuedJob
+        $script:sync.JobHandoff | Should -BeFalse
+        $script:sync.JobQueue.Count | Should -Be 1
+
+        # the job refuses to start because WinUtil began closing after the dequeue
+        $script:sync.ActiveJob = $null
+        $script:sync.JobHandoff = $true
+        $script:sync.ShuttingDown = $true
+        Start-WinUtilJob -Name "Head" -FromQueue -ScriptBlock { } | Out-Null
+        $script:sync.JobHandoff | Should -BeFalse
+        $script:sync.ActiveJob | Should -BeNullOrEmpty
+    }
+
+    It "clears the handoff when the dispatch cannot be posted" {
+        Mock Invoke-WPFUIThread { throw "dispatcher is gone" }
+        $script:sync.JobQueue.Add([pscustomobject]@{ Id = "1"; Name = "Head" })
+        $script:sync.ActiveJob = "A"
+        $script:sync.ActiveJobToken = "t"
+
+        $null = Clear-WinUtilActiveJob -Token "t"
+
+        $script:sync.JobHandoff | Should -BeFalse
+    }
+
     It "opts the user actions in and keeps the ISO and USB jobs refusing" {
         foreach ($path in @(
             "functions\public\Invoke-WPFInstall.ps1", "functions\public\Invoke-WPFUnInstall.ps1",
@@ -853,7 +960,58 @@ Describe "Closing with queued jobs" {
     It "has the window's closing handler pass the count and clear the queue after the prompt" {
         $source = Get-Content (Join-Path $script:repoRoot "functions\private\Start-WinUtilUserInterface.ps1") -Raw
 
-        $source | Should -Match 'Invoke-WinUtilCloseRequest -RunningJob \$sync\.ActiveJob -QueuedCount \$sync\.JobQueue\.Count'
+        $source | Should -Match 'Invoke-WinUtilCloseRequest -RunningJob \$runningJob -QueuedCount \$sync\.JobQueue\.Count'
         $source.IndexOf('Clear-WinUtilJobQueue') | Should -BeGreaterThan $source.IndexOf('Invoke-WinUtilCloseRequest -RunningJob')
+    }
+
+    It "asks only whether to discard when nothing is running, and closes on yes" {
+        $script:sync.ActiveJob = $null
+        Mock Show-WinUtilMessage { "Yes" }
+        Mock Request-WinUtilWindowClose { }
+
+        Invoke-WinUtilCloseRequest -RunningJob "Queued operations" -QueuedCount 2
+
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
+            $Button -eq "YesNo" -and $Message -like "Nothing is running. 2 queued operation(s) will be discarded*"
+        }
+        $script:sync.ForceClose | Should -BeTrue
+        $script:sync.FinishInConsole | Should -Not -BeTrue
+        Should -Invoke -CommandName Request-WinUtilWindowClose -Times 1 -Exactly
+    }
+
+    It "keeps the window open and the queue when the queued-only close is declined" {
+        $script:sync.ActiveJob = $null
+        Mock Show-WinUtilMessage { "No" }
+        Mock Request-WinUtilWindowClose { }
+
+        Invoke-WinUtilCloseRequest -RunningJob "Queued operations" -QueuedCount 2
+
+        $script:sync.ForceClose | Should -Not -BeTrue
+        Should -Invoke -CommandName Request-WinUtilWindowClose -Times 0 -Exactly
+    }
+
+    It "asks again about the running job when a queued job started during the prompt" {
+        $script:sync.ActiveJob = $null
+        $script:sync.JobQueue.Add([pscustomobject]@{ Id = "1"; Name = "Head" })
+        $script:asked = 0
+        Mock Show-WinUtilMessage {
+            $script:asked++
+            if ($script:asked -eq 1) { $script:sync.ActiveJob = "Head"; return "Yes" }
+            return "Cancel"
+        }
+        Mock Request-WinUtilWindowClose { }
+
+        Invoke-WinUtilCloseRequest -RunningJob "Queued operations" -QueuedCount 2
+
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 2 -Exactly
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter { $Title -eq "Head is still running" }
+        $script:sync.ForceClose | Should -Not -BeTrue
+        Should -Invoke -CommandName Request-WinUtilWindowClose -Times 0 -Exactly
+    }
+
+    It "has the closing handler prompt for queued work even with nothing running" {
+        $source = Get-Content (Join-Path $script:repoRoot "functions\private\Start-WinUtilUserInterface.ps1") -Raw
+
+        $source | Should -Match '\(\$sync\.ActiveJob -or \$sync\.JobQueue\.Count -gt 0\) -and -not \$sync\.ForceClose'
     }
 }
