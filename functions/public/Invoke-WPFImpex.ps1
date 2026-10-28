@@ -74,7 +74,7 @@ function Invoke-WPFImpex {
                 if ($Config) {
                     try {
                         if ($Config -match '^https?://') {
-                            $jsonFile = (Invoke-WebRequest "$Config" -ErrorAction Stop).Content | ConvertFrom-Json
+                            $jsonFile = (Invoke-WebRequest "$Config" -UseBasicParsing -ErrorAction Stop).Content | ConvertFrom-Json
                         } else {
                             $jsonFile = Get-Content -LiteralPath $Config -ErrorAction Stop | ConvertFrom-Json
                         }
