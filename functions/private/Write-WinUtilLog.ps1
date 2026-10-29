@@ -103,7 +103,7 @@ function Get-WinUtilLogWriter {
             [System.IO.FileMode]::Append,
             [System.IO.FileAccess]::Write,
             [System.IO.FileShare]::Read)
-        $newWriter = [System.IO.StreamWriter]::new($stream, [System.Text.UTF8Encoding]::new($false))
+        $newWriter = [System.IO.StreamWriter]::new($stream, [System.Text.UTF8Encoding]::new($true))
         $newWriter.AutoFlush = $true
 
         $state.LogWriterPath = $state.logPath

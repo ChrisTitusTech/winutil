@@ -106,6 +106,23 @@ Describe "Write-WinUtilLog" {
         $content | Should -Match "after close"
     }
 
+    It "marks the session log as UTF-8 once, even after reopening it" {
+        # Without a BOM, Windows PowerShell's Get-Content reads the log as ANSI and mangles non-ASCII text
+        $logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
+        $script:sync = [hashtable]::Synchronized(@{
+            logPath = $logPath
+        })
+
+        Write-WinUtilLog -Component "Test" -Message "first session" -FileOnly
+        Close-WinUtilLog
+        Write-WinUtilLog -Component "Test" -Message "after reopening" -FileOnly
+        Close-WinUtilLog
+
+        $hex = [System.BitConverter]::ToString([System.IO.File]::ReadAllBytes($logPath)) -replace "-"
+        $hex | Should -BeLike "EFBBBF*"
+        ([regex]::Matches($hex, "EFBBBF")).Count | Should -Be 1
+    }
+
     It "shows the entry on the console without emitting a Write-Host record" {
         $script:sync = [hashtable]::Synchronized(@{
             logPath = Join-Path $script:testRoot "logs\winutil_2026-07-01_12-00-00.log"
