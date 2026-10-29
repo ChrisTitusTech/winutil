@@ -70,6 +70,7 @@ Because the final script is concatenated, code cannot rely on runtime module imp
 - Shared mutable state is stored in `$sync`, including configs, UI element references, runspace state, selections, and progress.
 - Long-running operations use runspaces or existing async patterns so the UI remains responsive.
 - UI updates from background work are dispatched back to the WPF UI thread.
+- Every runspace logs to the timestamped `%LocalAppData%\winutil\logs` session file through `Write-WinUtilLog`, which shares one writer through `$sync`. Job output and the UI runspace's warnings, errors and `Write-Host` output are collected into it; console-only output such as banners and progress uses `Write-WinUtilHost`.
 - Declarative features such as apps, tweaks, presets, DNS providers, and navigation stay in `config/*.json` unless code is required.
 
 ## UI And Event Contract
