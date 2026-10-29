@@ -195,7 +195,7 @@
       Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value 3670016 -Type DWord -Force
       "
     ],
-    "link": "https://winutil.christitus.com/guides/tweaks/#advanced-tweaks-caution"
+    "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/svchostsplitting"
   },
   "WPFTweaksBraveDebloat": {
     "Content": "Brave Browser - Debloat",
