@@ -36,6 +36,10 @@ head:
     attrs:
       name: twitter:title
       content: Documentation | WinUtil
+  # Lets the hero start hidden for its entrance animation; see "Landing motion" in theme.css.
+  - tag: script
+    content: |
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('wu-motion');
   - tag: script
     attrs:
       type: application/ld+json
@@ -62,7 +66,11 @@ head:
 ---
 
 import { Icon, Code } from '@astrojs/starlight/components';
-import CornerCard from '../../components/CornerCard.astro';
+import CornerCard from '../../components/landing/CornerCard.astro';
+import CtaBeams from '../../components/landing/CtaBeams.jsx';
+import LandingGlowCard from '../../components/landing/LandingGlowCard.jsx';
+import LandingMotion from '../../components/landing/LandingMotion.astro';
+import LandingStats from '../../components/landing/LandingStats.astro';
 
 {/* Trust bar: icon + label chips under the hero. */}
 <section class="wu-section wu-section--trust">
@@ -70,9 +78,14 @@ import CornerCard from '../../components/CornerCard.astro';
 		<span class="wu-trust-item"><Icon name="github" /> Open source</span>
 		<span class="wu-trust-item"><Icon name="download" /> No installer</span>
 		<span class="wu-trust-item"><Icon name="padlock" /> No telemetry added</span>
-		<span class="wu-trust-item"><Icon name="approve-check-circle" /> Everything reversible</span>
+		<span class="wu-trust-item"><Icon name="approve-check-circle" /> Review tweaks before applying</span>
 		<span class="wu-trust-item"><Icon name="desktop" /> Windows 11 ready</span>
 	</div>
+</section>
+
+{/* Stats row: reference-page counts. */}
+<section class="wu-section wu-section--stats">
+	<LandingStats />
 </section>
 
 {/* Problem section: pain points WinUtil solves. */}
@@ -100,42 +113,42 @@ import CornerCard from '../../components/CornerCard.astro';
 			<p>Instead of stitching together installers, registry hacks, and forum wisdom, you manage the whole setup from one window.</p>
 		</div>
 		<div class="wu-solution-grid">
-			<div class="wu-solution">
+			<LandingGlowCard client:visible className="wu-solution">
 				<div class="wu-solution-icon"><Icon name="download" /></div>
 				<h3>Install without the bloat</h3>
 				<p>WinGet and Chocolatey install clean builds of your everyday apps, with no bundled toolbars or bundled offers.</p>
-			</div>
-			<div class="wu-solution">
+			</LandingGlowCard>
+			<LandingGlowCard client:visible className="wu-solution">
 				<div class="wu-solution-icon"><Icon name="setting" /></div>
 				<h3>Tweak with a checkbox</h3>
 				<p>Essential and advanced tweaks for privacy, performance, and UI behavior are one click away, grouped by what they actually do.</p>
-			</div>
-			<div class="wu-solution">
+			</LandingGlowCard>
+			<LandingGlowCard client:visible className="wu-solution">
 				<div class="wu-solution-icon"><Icon name="approve-check-circle" /></div>
 				<h3>Undo what you don't like</h3>
 				<p>Nearly every tweak can be reverted from the same panel, so trying something risky doesn't mean a full reinstall.</p>
-			</div>
-			<div class="wu-solution">
+			</LandingGlowCard>
+			<LandingGlowCard client:visible className="wu-solution">
 				<div class="wu-solution-icon"><Icon name="server" /></div>
 				<h3>Fix what's broken</h3>
 				<p>One-click repairs for networking, Windows Update, and WinGet handle the fixes people usually paste from a forum thread.</p>
-			</div>
-			<div class="wu-solution">
+			</LandingGlowCard>
+			<LandingGlowCard client:visible className="wu-solution">
 				<div class="wu-solution-icon"><Icon name="cloud-download" /></div>
 				<h3>Manage updates your way</h3>
 				<p>Switch between full updates, security-only updates, or fully paused — and back again — without digging through Group Policy.</p>
-			</div>
-			<div class="wu-solution">
+			</LandingGlowCard>
+			<LandingGlowCard client:visible className="wu-solution">
 				<div class="wu-solution-icon"><Icon name="desktop" /></div>
 				<h3>Build your own ISO</h3>
 				<p>Win11 Creator debloats and preconfigures an official Microsoft image, so new installs start from your baseline.</p>
-			</div>
+			</LandingGlowCard>
 		</div>
 	</div>
 </section>
 
 {/* Feature grid: CornerCard highlights. */}
-<section class="wu-section wu-section--tint">
+<section class="wu-section wu-section--tint wu-section--features">
 	<div class="wu-section-inner">
 		<div class="wu-section-head">
 			<h2>Everything you need to set up a machine, once</h2>
@@ -170,6 +183,7 @@ import CornerCard from '../../components/CornerCard.astro';
 			<h2>From a blank terminal to a configured PC</h2>
 		</div>
 		<div class="wu-timeline">
+			<div class="wu-timeline-progress" aria-hidden="true"></div>
 			<div class="wu-timeline-step">
 				<span class="wu-timeline-number">1</span>
 				<h3>Open PowerShell as Administrator</h3>
@@ -212,7 +226,8 @@ import CornerCard from '../../components/CornerCard.astro';
 </section>
 
 {/* Final CTA. */}
-<section class="wu-section">
+<section class="wu-section wu-section--cta">
+	<div class="wu-cta-beams" aria-hidden="true"><CtaBeams client:visible /></div>
 	<div class="wu-section-inner wu-text-narrow wu-cta">
 		<h2>Stop hunting for the same fixes every time</h2>
 		<p>Get a script that installs, tweaks, fixes, and updates Windows from one window.</p>
@@ -229,3 +244,11 @@ import CornerCard from '../../components/CornerCard.astro';
 		<p class="wu-cta-footnote">Free and open source. No installer, no telemetry, no account required.</p>
 	</div>
 </section>
+
+{/* Closing wordmark. */}
+<div class="wu-outro" aria-hidden="true">
+	<span class="wu-outro-stroke">WinUtil</span>
+	<span class="wu-outro-fill">WinUtil</span>
+</div>
+
+<LandingMotion />

@@ -47,7 +47,7 @@ function Invoke-WinUtilTweaks {
         }
     }
     if ($sync.configs.tweaks.$CheckBox.service) {
-        $sync.configs.tweaks.$CheckBox.service | ForEach-Object {
+        foreach ($item in $sync.configs.tweaks.$CheckBox.service) {
             $changeservice = $true
 
             # KeepServiceStartup protects a service the user (or another tool) changed away from
@@ -55,9 +55,9 @@ function Invoke-WinUtilTweaks {
             # OriginalType when the service still sits at the StartupType this tweak applies.
             # This compares current state, not history: a service already at StartupType
             # before apply is indistinguishable from one changed by this tweak.
-            $expectedType = if ($undo) { $psitem.StartupType } else { $psitem.$($values.OriginalService) }
+            $expectedType = if ($undo) { $item.StartupType } else { $item.$($values.OriginalService) }
             if ($KeepServiceStartup) {
-                $serviceName = $psitem.Name
+                $serviceName = $item.Name
                 try {
                     # Check if the service exists
                     $service = Get-Service -Name $serviceName -ErrorAction Stop
@@ -76,29 +76,28 @@ function Invoke-WinUtilTweaks {
             }
 
             if ($changeservice) {
-                Set-WinUtilService -Name $psitem.Name -StartupType $psitem.$($values.Service)
+                Set-WinUtilService -Name $item.Name -StartupType $item.$($values.Service)
             }
         }
     }
     if ($sync.configs.tweaks.$CheckBox.registry) {
-        $sync.configs.tweaks.$CheckBox.registry | Where-Object { -not $psitem.Values } | ForEach-Object {
-            Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
+        foreach ($reg in $sync.configs.tweaks.$CheckBox.registry) {
+            if ($reg.Values) { continue }
+            Set-WinUtilRegistry -Name $reg.Name -Path $reg.Path -Type $reg.Type -Value $reg.$($values.registry)
         }
     }
     if ($sync.configs.tweaks.$CheckBox.$($values.ScriptType)) {
-        $sync.configs.tweaks.$CheckBox.$($values.ScriptType) | ForEach-Object {
-            $Scriptblock = [scriptblock]::Create($psitem)
+        foreach ($scr in $sync.configs.tweaks.$CheckBox.$($values.ScriptType)) {
+            $Scriptblock = [scriptblock]::Create($scr)
             Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
         }
     }
 
-    if (!$undo) {
-        if($sync.configs.tweaks.$CheckBox.appx) {
-            $sync.configs.tweaks.$CheckBox.appx | ForEach-Object {
-                Remove-WinUtilAPPX -Name $psitem
-            }
-            Remove-WinUtilProvisionedAPPX -PackageList $sync.configs.tweaks.$CheckBox.appx
+    if (!$undo -and $sync.configs.tweaks.$CheckBox.appx) {
+        foreach ($pkg in $sync.configs.tweaks.$CheckBox.appx) {
+            Remove-WinUtilAPPX -Name $pkg
         }
+        Remove-WinUtilProvisionedAPPX -PackageList $sync.configs.tweaks.$CheckBox.appx
     }
     $errorCount = [int]$global:WinUtilJobErrorCount - $errorsBefore
     if ($errorCount -gt 0) {

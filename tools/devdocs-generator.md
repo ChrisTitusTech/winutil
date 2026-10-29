@@ -11,7 +11,7 @@ The `devdocs-generator.ps1` script automatically generates Astro/Starlight markd
 
 - Automatically runs as part of the `pre-release.yaml` GitHub Actions workflow (manually triggered via `workflow_dispatch`), which regenerates the `.mdx` files and updates the `"link"` properties in the JSON config files
 - `pre-release.yaml` then opens a `docs-update` pull request with those changes; `auto-merge-docs.yaml` auto-approves and merges it into `main`
-- That merge pushes changes under `docs/**`, which triggers `docs.yaml` — but `docs.yaml` only builds and deploys the Astro site, it does not run the generator itself
+- `docs.yaml` regenerates reference pages from the checked-out source before building and deploying Astro. It runs for docs, generator, tweak/feature config, function, and docs workflow changes, including the `docs-update` merge.
 - Can also be run manually/locally from `tools/` (`./devdocs-generator.ps1`)
 
 ## What Does It Do?
@@ -26,7 +26,7 @@ The `devdocs-generator.ps1` script automatically generates Astro/Starlight markd
 
 - Adds or updates a `"link"` property on every entry in both JSON config files
 - Each link points to that entry's documentation page on the Astro/Starlight site
-- The updated links are automatically committed back to the JSON config files as part of the pre-release workflow
+- The pre-release workflow commits updated links through its `docs-update` PR. Docs deployment regenerates them only in its working directory and does not commit them.
 
 ### 3. Cleans Up Old Docs
 
@@ -51,7 +51,7 @@ For each entry in `feature.json` that belongs to a documented category:
 
 ### 6. Output Format
 
-- Every `.mdx` file gets Starlight frontmatter with `title` and `description` (description comes from the entry's `Description` field when present)
+- Every `.mdx` file gets Starlight frontmatter with `title` and `description` (description comes from the entry's `Description` field when present). Values are serialized as JSON quoted strings, which are valid YAML scalars and preserve Windows paths, quotation marks, and line breaks.
 - A `:::note` aside points back at the source file (JSON config or PowerShell function) it was generated from
 - Code blocks use Starlight/Expressive Code syntax with a `title` attribute naming the source file
 - Files are organized into category subdirectories matching the JSON `category` field
@@ -105,4 +105,4 @@ The script strips common prefixes from the JSON key names using the pattern `WPF
 - Category directories are created automatically if they don't exist
 - The `"link"` property added to JSON entries is excluded from the displayed code blocks
 - The `pre-release` workflow generates both the `.mdx` files and the `"link"` properties, and commits them back to the repo via the `docs-update` PR
-- The `docs` workflow never runs the generator — it only builds and deploys the already-committed Astro site
+- The `docs` workflow regenerates reference pages and JSON links before the Astro build; deployment does not commit generated output.

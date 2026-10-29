@@ -35,6 +35,10 @@ WinUtil is a PowerShell-based Windows utility with a WPF (Windows Presentation F
     └─────────────────────────┘
 ```
 
+## Documentation Build
+
+The docs deployment workflow runs `tools/devdocs-generator.ps1` before Astro builds the site. The generator reads the tweak and feature JSON configs and their PowerShell functions, then regenerates reference pages with safely escaped YAML metadata. Changes to these sources trigger a docs rebuild; deployment does not commit generated files.
+
 ## Project Structure
 
 ### Directory Layout
@@ -240,7 +244,7 @@ Invoke-WinUtilISOCleanAndReset (optional)
 **Modification Safety**:
 - Windows PE and specialize set hardware bypass and setup safeguards; `WinUtil-PostInstall.ps1` applies additional registry changes at first logon
 - Original ISO never modified; only working copy
-- Logged to the WinUtil session log and the live UI status panel
+- Logged to the shared `%LocalAppData%\winutil\logs\winutil_<timestamp>.log` session file and the live UI status panel, so the log survives cleanup
 - DISM handles image dismount with automatic cleanup and discard on error
 
 ### Win11 Creator Registry Tweaks
