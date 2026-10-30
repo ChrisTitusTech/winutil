@@ -46,7 +46,7 @@ Apply and undo progress use each tweak's displayed label, such as "Telemetry - D
 * **Select Tweaks to Remove**: Choose the tweaks you want to disable or remove.
 * **Undo Tweaks**: Click **Undo Selected Tweaks** at the bottom of the screen to apply the changes.
 
-Undo restores a service default only when its current startup type matches the type applied by the tweak. Other current startup types are preserved. WinUtil does not track whether a matching startup type was set before the tweak, so undo can also reset a service that already had that type.
+Undo restores a service default only when its current startup type matches the type applied by the tweak. Other current startup types are preserved and logged as a warning. WinUtil does not track whether a matching startup type was set before the tweak, so undo can also reset a service that already had that type.
 
 Review the available undo actions in the [Tweak Explorer](/tweak-explorer/). Its **Has undo** filter identifies tweaks with an undo action, which may reset defaults or reinstall software without recovering deleted data or your previous settings.
 
@@ -68,6 +68,8 @@ Essential Tweaks are the safest starting point for most systems. They focus on l
 ### Advanced Tweaks (CAUTION)
 
 **Services - Set to Manual** changes service startup settings only. Disabling service-host splitting is a separate **svchost.exe Splitting - Disable** advanced tweak. It is recommended for low-performance systems with 12 GB of RAM or less to reduce service-host memory overhead. It can interfere with Xbox services; use it only when you understand that tradeoff. Undo restores the Windows client threshold of 0x380000, rather than a custom threshold you previously configured. If you applied the previous Services tweak, select **svchost.exe Splitting - Disable** and run **Undo Selected Tweaks** directly; do not apply the new tweak first. Restart Windows after changing this setting.
+
+**Windows Search Indexing - Disable** stops the Windows Search service and sets it to Disabled. That lowers background disk activity on mechanical drives, but file searches in Explorer and the Start menu become noticeably slower because Windows no longer maintains a search index. Apply changes the startup type only while it is still the default Automatic, and undo restores Automatic only while it is still Disabled; the service is stopped only while it is Disabled and started only while it is Automatic. A startup type changed elsewhere, such as Manual, is left alone and logged as a warning.
 
 Advanced Tweaks are for users who understand the side effects of deeper Windows changes. Create a restore point first, review each item, and avoid treating the full advanced list as a one-click baseline.
 
