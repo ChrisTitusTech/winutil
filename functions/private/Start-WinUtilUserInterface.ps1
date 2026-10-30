@@ -424,8 +424,8 @@ function Start-WinUtilUserInterface {
 Author   : <a href="https://github.com/ChrisTitusTech">@ChrisTitusTech</a>
 UI       : <a href="https://github.com/MyDrift-user">@MyDrift-user</a>, <a href="https://github.com/Marterich">@Marterich</a>
 Runspace : <a href="https://github.com/DeveloperDurp">@DeveloperDurp</a>, <a href="https://github.com/Marterich">@Marterich</a>
-GitHub   : <a href="https://github.com/ChrisTitusTech/winutil">ChrisTitusTech/winutil</a>
-Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sync.version)">$($sync.version)</a>
+GitHub   : <a href="https://github.com/6t9xstar/winutil-pro">6t9xstar/winutil-pro</a>, fork of <a href="https://github.com/ChrisTitusTech/winutil">ChrisTitusTech/winutil</a>
+Version  : <a href="https://github.com/6t9xstar/winutil-pro/releases/tag/$($sync.version)">$($sync.version)</a>
 "@
         Show-CustomDialog -Title "About" -Message $authorInfo
     })
