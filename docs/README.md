@@ -37,8 +37,6 @@ Starlight handles routing, Markdown rendering, and the search index. The site's 
 
 Each `.md` or `.mdx` file in `src/content/docs/` becomes a route based on its file path. Don't hand-edit `src/content/docs/code-reference/tweaks/` or `.../features/`; they're generated from `config/tweaks.json` and `config/feature.json` by `tools/devdocs-generator.ps1`.
 
-The deployment workflow regenerates reference pages before building Astro and runs when docs, generator, config, or function sources change. For a local build after changing those sources, run `pwsh -NoProfile -File ./tools/devdocs-generator.ps1` from the repository root before the Docker build command below. Deployment does not commit generated output.
-
 Images can be added to `src/assets/` and embedded in Markdown with a relative link.
 
 Static assets, like favicons, can be placed in the `public/` directory.
