@@ -7,6 +7,7 @@ BeforeAll {
 
     . (Join-Path $script:repoRoot "functions\private\Save-WinUtilFile.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFOOSU.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Assert-WinUtilFileSignature.ps1")
 
     function Invoke-WPFRunspace {
         param($ArgumentList, $ParameterList, [scriptblock]$ScriptBlock)
@@ -86,6 +87,7 @@ Describe "Invoke-WPFOOSU" {
         Mock Show-WinUtilMessage { }
         Mock Write-WinUtilLog { }
         Mock Start-Process { }
+        Mock Assert-WinUtilFileSignature { }
     }
 
     AfterEach {
@@ -156,6 +158,20 @@ Describe "Invoke-WPFOOSU" {
         $jobParameters = $script:capturedJob.Parameters
 
         { & $script:capturedJob.ScriptBlock @jobParameters } | Should -Throw "download failed"
+        Should -Not -Invoke Start-Process
+    }
+
+    It "does not launch a download whose signature is not from O&O Software" {
+        Mock Save-WinUtilFile { }
+        Mock Assert-WinUtilFileSignature { throw "Signature verification failed" }
+
+        Invoke-WPFOOSU
+        $jobParameters = $script:capturedJob.Parameters
+
+        { & $script:capturedJob.ScriptBlock @jobParameters } | Should -Throw "*Signature verification failed*"
+        Should -Invoke Assert-WinUtilFileSignature -Times 1 -Exactly -ParameterFilter {
+            $LiteralPath -eq (Join-Path $TestDrive "ooshutup10.exe") -and $Publisher -eq "O&O Software GmbH"
+        }
         Should -Not -Invoke Start-Process
     }
 }

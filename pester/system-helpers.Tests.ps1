@@ -11,6 +11,7 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilRegistry.ps1")
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilService.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFPanelAutologin.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Assert-WinUtilFileSignature.ps1")
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilInstallPSProfile.ps1")
 
     function winget {
@@ -28,6 +29,7 @@ Describe "Invoke-WPFPanelAutologin" {
     BeforeEach {
         $script:sync = [Hashtable]::Synchronized(@{ winutildir = $TestDrive })
         Mock Invoke-WebRequest { }
+        Mock Assert-WinUtilFileSignature { }
         Mock Start-Process { }
     }
 
@@ -36,7 +38,15 @@ Describe "Invoke-WPFPanelAutologin" {
 
         $expectedPath = Join-Path $TestDrive "autologin.exe"
         Should -Invoke -CommandName Invoke-WebRequest -Times 1 -Exactly -ParameterFilter { $OutFile -eq $expectedPath }
+        Should -Invoke -CommandName Assert-WinUtilFileSignature -Times 1 -Exactly -ParameterFilter { $LiteralPath -eq $expectedPath -and $Publisher -eq "Microsoft Corporation" }
         Should -Invoke -CommandName Start-Process -Times 1 -Exactly -ParameterFilter { $FilePath -eq $expectedPath }
+    }
+
+    It "does not start Autologon when the signature check fails" {
+        Mock Assert-WinUtilFileSignature { throw "Signature verification failed" }
+
+        { Invoke-WPFPanelAutologin } | Should -Throw "*Signature verification failed*"
+        Should -Invoke -CommandName Start-Process -Times 0 -Exactly
     }
 }
 
