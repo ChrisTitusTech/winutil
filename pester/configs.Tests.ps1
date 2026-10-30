@@ -287,14 +287,15 @@ Describe "Tweaks config" {
         # service does not log an error (#5123).
         $invoke = @($tweak.InvokeScript) -join "`n"
         $undo = @($tweak.UndoScript) -join "`n"
-        $invoke | Should -Match 'Get-Service[^
-]*WSearch'
-        $invoke | Should -Match 'Stop-Service[^
-]*WSearch'
-        $undo | Should -Match 'Get-Service[^
-]*WSearch'
-        $undo | Should -Match 'Start-Service[^
-]*WSearch'
+        $invoke | Should -Match 'Get-Service.*WSearch'
+        $invoke | Should -Match 'Stop-Service.*WSearch'
+        $undo | Should -Match 'Get-Service.*WSearch'
+        $undo | Should -Match 'Start-Service.*WSearch'
+
+        # The scripts only act once the service entry has actually changed the startup type, so a
+        # service the user moved to Manual (kept by KeepServiceStartup) is neither stopped nor started.
+        $invoke | Should -Match "StartType -eq 'Disabled'"
+        $undo | Should -Match "StartType -eq 'Automatic'"
     }
 
     It "keeps the location service disabled" -TestCases $testCase {
