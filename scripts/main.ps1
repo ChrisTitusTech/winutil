@@ -20,6 +20,8 @@ CCC::::::::::::C         T:::::::::T            T:::::::::T
 =====Windows Toolbox=====
 "@
 
+Write-WinUtilLog -Message "WinUtil $($sync.version) on PowerShell $($PSVersionTable.PSVersion) ($($PSVersionTable.PSEdition)), $([Environment]::OSVersion.VersionString), process $PID."
+
 # Load the configuration files
 
 $sync.configs.applicationsHashtable = @{}
@@ -95,7 +97,7 @@ if ($Preset -or $Config) {
         Close-WinUtilRunspacePool
         [System.GC]::Collect()
         Remove-WinUtilTempScript
-        Stop-Transcript | Out-Null
+        Close-WinUtilLog
     }
 
     # An isolated elevated child and an explicit file launch own their process. The documented
@@ -132,7 +134,10 @@ $uiHandle = $uiShell.BeginInvoke()
 # leaving it to the thread that is building the window
 Start-WinUtilAssetRendering | Out-Null
 
-$uiHandle.AsyncWaitHandle.WaitOne() | Out-Null
+# Log the UI thread's Write-Host output, warnings and errors while the window is open
+while (-not $uiHandle.AsyncWaitHandle.WaitOne(250)) {
+    Receive-WinUtilStreamOutput -PowerShell $uiShell -Component "UI"
+}
 
 $uiFailed = $false
 try {
@@ -142,13 +147,7 @@ try {
     Write-WinUtilErrorRecord -ErrorRecord $_ -Component "UI" -Context "Interface thread stopped"
 }
 
-foreach ($uiWarning in $uiShell.Streams.Warning) {
-    Write-WinUtilLog -Level "WARN" -Component "UI" -Message $uiWarning.Message
-}
-
-foreach ($uiError in $uiShell.Streams.Error) {
-    Write-WinUtilErrorRecord -ErrorRecord $uiError -Component "UI" -Context "Interface thread"
-}
+Receive-WinUtilStreamOutput -PowerShell $uiShell -Component "UI"
 
 $uiShell.Dispose()
 $sync.UIRunspace.Dispose()
@@ -163,7 +162,7 @@ Close-WinUtilRunspacePool
 
 Remove-WinUtilTempScript
 Write-Host "Bye bye!" -ForegroundColor Cyan
-Stop-Transcript
+Close-WinUtilLog
 
 if ($uiFailed) {
     $global:LASTEXITCODE = 1

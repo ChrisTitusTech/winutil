@@ -329,6 +329,7 @@ Describe "Invoke-WinUtilTweaks completion status" {
     }
 
     AfterEach {
+        Close-WinUtilLog
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name WinUtilJobErrorCount -Scope Global -ErrorAction SilentlyContinue
         Remove-Item -Path $script:testRoot -Recurse -Force -ErrorAction SilentlyContinue
