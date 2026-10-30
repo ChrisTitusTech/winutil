@@ -40,11 +40,21 @@ The fork keeps the upstream architecture and stays merge-compatible with it. Its
 | **OS** | Windows 11 (Windows 10 is not supported; it reached end of support on October 14, 2025) |
 | **Shell** | Windows PowerShell 5.1 (built in) or PowerShell 7 |
 | **Rights** | Administrator |
-| **To build** | [Git](https://git-scm.com/) |
 
-### Run WinUtil Pro from source
+### Run WinUtil Pro
 
-WinUtil Pro has no published release yet, so build it from source. `Compile.ps1` combines the source files into a single `winutil.ps1` and `-Run` launches it. The script asks for elevation on its own.
+Open PowerShell or Terminal **as Administrator** and run:
+
+```powershell
+irm 6t9xstar.github.io/win | iex
+```
+
+This downloads the [latest release](https://github.com/6t9xstar/winutil-pro/releases/latest) through a small [launcher](https://github.com/6t9xstar/win) and starts it. On an untrusted network, type the full `https://6t9xstar.github.io/win` so the first request is encrypted too.
+
+<details>
+<summary><b>Build from source instead</b></summary>
+
+Requires [Git](https://git-scm.com/). `Compile.ps1` combines the source files into one `winutil.ps1`, and `-Run` launches it.
 
 ```powershell
 git clone https://github.com/6t9xstar/winutil-pro.git
@@ -53,7 +63,9 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 .\Compile.ps1 -Run
 ```
 
-The execution-policy change applies only to that PowerShell window and ends when you close it.
+The execution-policy change applies only to that PowerShell window.
+
+</details>
 
 ### Run the original WinUtil instead
 
@@ -95,9 +107,11 @@ Also included:
 Run a preset or a saved configuration with no clicks:
 
 ```powershell
-.\winutil.ps1 -Preset Standard
-.\winutil.ps1 -Config "C:\Path\To\Config.json"
+& ([ScriptBlock]::Create((irm 6t9xstar.github.io/win))) -Preset Standard
+& ([ScriptBlock]::Create((irm 6t9xstar.github.io/win))) -Config "C:\Path\To\Config.json"
 ```
+
+*Export* in WinUtil Pro copies the matching `-Config` command for you.
 
 To see exactly what each preset selects, read [`config/preset.json`](config/preset.json).
 
@@ -109,6 +123,7 @@ Each item is in this repository's history and covered by Pester tests.
 
 | Area | Change |
 |---|---|
+| 🚀 **Own release channel** | `irm 6t9xstar.github.io/win \| iex` runs WinUtil Pro's own release. The admin relaunch, the export command, and the About dialog point at this fork instead of the original WinUtil. |
 | 🔐 **Verified downloads** | O&O ShutUp10++ and Sysinternals Autologon are now started only after their Authenticode signature is confirmed as **valid** and signed by the expected publisher (`O&O Software GmbH`, `Microsoft Corporation`). A file that fails the check is deleted and never started. |
 | 🛡️ **Hosts-file protection** | The *Adobe URL Block List* tweak downloads a third-party list. WinUtil Pro writes it only if every active line blocks a host (`0.0.0.0 <host>`), so the list can't redirect a domain to another address. |
 | 📦 **More apps** | Adds Opera, GitKraken, Podman Desktop, Bun, MongoDB Compass, DBeaver Community, pgAdmin 4, Redis Insight, Burp Suite Community Edition, and ZAP. Every package ID was confirmed against WinGet and Chocolatey. |
@@ -189,12 +204,12 @@ Before contributing, read [`SPEC.md`](SPEC.md) for the architecture contract and
 | Status | Item |
 |---|---|
 | ✅ Done | Signature checks for downloaded tools, hosts-list validation, verified catalog additions, license metadata |
+| ✅ Done | First release ([26.10.30](https://github.com/6t9xstar/winutil-pro/releases/tag/26.10.30)) and the `irm 6t9xstar.github.io/win \| iex` launcher |
 | 🔜 Next | Pin the PowerShell-profile setup script to a fixed version; make the Adobe block-list undo remove only what it added |
 | 🔜 Next | Pricing data (free, freemium, paid) per app, checked against each vendor's site |
 | 🧭 Planned | Installed-only filter, favorites, and an app details pane on the Install tab |
 | 🧭 Planned | System dashboard built on the existing environment report |
 | 🧭 Planned | A dedicated security-tools category with authorization notices |
-| 🧭 Planned | A published WinUtil Pro release, so it can run without building from source |
 
 ---
 
