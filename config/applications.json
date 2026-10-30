@@ -2146,6 +2146,96 @@
         "content": "Cloudflare WARP",
         "link": "https://one.one.one.one",
         "foss": false
+    },
+    "opera": {
+        "category": "Browsers",
+        "choco": "opera",
+        "content": "Opera",
+        "description": "Opera is a Chromium-based web browser with a built-in ad blocker, free browser VPN, and sidebar messengers.",
+        "link": "https://www.opera.com/browsers/opera",
+        "winget": "Opera.Opera",
+        "foss": false
+    },
+    "gitkraken": {
+        "category": "Development",
+        "choco": "gitkraken",
+        "content": "GitKraken",
+        "description": "GitKraken is a graphical Git client with a commit graph, merge conflict editor, and integrations for GitHub, GitLab, and Bitbucket. Private repositories require a paid plan.",
+        "link": "https://www.gitkraken.com/git-client",
+        "winget": "Axosoft.GitKraken",
+        "foss": false
+    },
+    "podmandesktop": {
+        "category": "Development",
+        "choco": "podman-desktop",
+        "content": "Podman Desktop",
+        "description": "Podman Desktop is a graphical tool for managing containers, images, pods, and local Kubernetes clusters with Podman and other container engines.",
+        "link": "https://github.com/containers/podman-desktop",
+        "winget": "RedHat.Podman-Desktop",
+        "foss": true
+    },
+    "bun": {
+        "category": "Development",
+        "choco": "bun",
+        "content": "Bun",
+        "description": "Bun is a JavaScript runtime, package manager, bundler, and test runner designed as a drop-in replacement for Node.js tooling.",
+        "link": "https://bun.sh/",
+        "winget": "Oven-sh.Bun",
+        "foss": true
+    },
+    "mongodbcompass": {
+        "category": "Development",
+        "choco": "mongodb-compass",
+        "content": "MongoDB Compass",
+        "description": "MongoDB Compass is the official graphical client for MongoDB for browsing data, running queries, and analyzing schemas and indexes.",
+        "link": "https://www.mongodb.com/products/compass",
+        "winget": "MongoDB.Compass.Full",
+        "foss": false
+    },
+    "dbeaver": {
+        "category": "Development",
+        "choco": "dbeaver",
+        "content": "DBeaver Community",
+        "description": "DBeaver Community is a universal database client and SQL editor that connects to PostgreSQL, MySQL, SQLite, SQL Server, Oracle, and other JDBC databases.",
+        "link": "https://dbeaver.io/download/",
+        "winget": "DBeaver.DBeaver.Community",
+        "foss": true
+    },
+    "pgadmin": {
+        "category": "Development",
+        "choco": "pgadmin4",
+        "content": "pgAdmin 4",
+        "description": "pgAdmin 4 is the official administration and development tool for PostgreSQL databases.",
+        "link": "https://www.pgadmin.org/download/pgadmin-4-windows/",
+        "winget": "PostgreSQL.pgAdmin",
+        "foss": true
+    },
+    "redisinsight": {
+        "category": "Development",
+        "choco": "na",
+        "content": "Redis Insight",
+        "description": "Redis Insight is Redis Ltd.'s graphical client for browsing keys, running commands, and profiling Redis databases.",
+        "link": "https://redis.io/insight/",
+        "winget": "RedisInsight.RedisInsight",
+        "foss": false
+    },
+    "burpsuitecommunity": {
+        "category": "Pro Tools",
+        "choco": "na",
+        "content": "Burp Suite Community Edition",
+        "description": "Burp Suite Community Edition is PortSwigger's free web application security testing proxy. Only test applications you own or are authorized to assess.",
+        "link": "https://portswigger.net/burp/communitydownload",
+        "winget": "PortSwigger.BurpSuite.Community",
+        "foss": false
+    },
+    "zap": {
+        "category": "Pro Tools",
+        "choco": "zap",
+        "content": "ZAP (Zed Attack Proxy)",
+        "description": "ZAP is an open-source web application security scanner and intercepting proxy. Requires Java. Only scan applications you own or are authorized to assess.",
+        "link": "https://github.com/zaproxy/zaproxy",
+        "winget": "ZAP.ZAP",
+        "foss": true
     }
 }
 
