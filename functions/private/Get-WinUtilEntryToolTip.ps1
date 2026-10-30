@@ -14,12 +14,20 @@ function Get-WinUtilEntryToolTip {
         [string]$Description,
 
         [Parameter(Mandatory = $true)]
-        [string]$Key
+        [string]$Key,
+
+        [Parameter(Mandatory = $false)]
+        [string]$License
     )
 
-    if ([string]::IsNullOrWhiteSpace($Description)) {
-        return "Preset key: $Key"
+    $footer = "Preset key: $Key"
+    if (-not [string]::IsNullOrWhiteSpace($License)) {
+        $footer = "License: $License`n$footer"
     }
 
-    return "$Description`n`nPreset key: $Key"
+    if ([string]::IsNullOrWhiteSpace($Description)) {
+        return $footer
+    }
+
+    return "$Description`n`n$footer"
 }

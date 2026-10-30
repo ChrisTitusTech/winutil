@@ -174,6 +174,83 @@ Describe "Applications config" {
             throw ($invalidEntries -join "`n")
         }
     }
+
+    It "uses well-formed package identifiers" -TestCases $testCase {
+        param([string]$Path)
+
+        $applications = Get-Content -Path $Path -Raw | ConvertFrom-Json
+        $invalidEntries = New-Object System.Collections.Generic.List[string]
+
+        foreach ($entry in $applications.PSObject.Properties) {
+            $winget = [string]$entry.Value.winget
+            if ($winget -and $winget -ne "na" -and
+                $winget -notmatch '^[A-Za-z0-9][A-Za-z0-9+_-]*(\.[A-Za-z0-9+_-]+)+$' -and
+                $winget -notmatch '^msstore:[A-Z0-9]{12}$') {
+                $invalidEntries.Add("$($entry.Name) winget '$winget'")
+            }
+
+            # Chocolatey entries may list several packages separated by semicolons
+            $choco = [string]$entry.Value.choco
+            if ($choco -and $choco -ne "na") {
+                foreach ($package in $choco -split ';') {
+                    if ($package -notmatch '^[A-Za-z0-9][A-Za-z0-9._-]*$') {
+                        $invalidEntries.Add("$($entry.Name) choco '$package'")
+                    }
+                }
+            }
+        }
+
+        if ($invalidEntries.Count -gt 0) {
+            throw ($invalidEntries -join "`n")
+        }
+    }
+
+    It "has no keys or WinGet IDs that differ only by case" -TestCases $testCase {
+        param([string]$Path)
+
+        $applications = Get-Content -Path $Path -Raw | ConvertFrom-Json
+        $entries = @($applications.PSObject.Properties)
+        $duplicateKeys = @($entries.Name | Group-Object | Where-Object Count -gt 1 | ForEach-Object Name)
+        $duplicateIds = @($entries | Where-Object { $_.Value.winget -and $_.Value.winget -ne "na" } |
+            Group-Object { $_.Value.winget } | Where-Object Count -gt 1 | ForEach-Object Name)
+
+        $duplicateKeys | Should -BeNullOrEmpty
+        $duplicateIds | Should -BeNullOrEmpty
+    }
+
+    It "records license metadata with the date it was verified" -TestCases $testCase {
+        param([string]$Path)
+
+        $applications = Get-Content -Path $Path -Raw | ConvertFrom-Json
+        $invalidEntries = New-Object System.Collections.Generic.List[string]
+        $today = (Get-Date).Date
+
+        foreach ($entry in $applications.PSObject.Properties) {
+            $fields = @($entry.Value.PSObject.Properties.Name)
+
+            if ($fields -contains "license") {
+                if ($entry.Value.license -isnot [string] -or [string]::IsNullOrWhiteSpace($entry.Value.license)) {
+                    $invalidEntries.Add("$($entry.Name) license must be a non-empty string")
+                }
+                if ($fields -notcontains "verified") {
+                    $invalidEntries.Add("$($entry.Name) has a license but no verified date")
+                }
+            }
+
+            if ($fields -contains "verified") {
+                $parsed = [datetime]::MinValue
+                if (-not [datetime]::TryParseExact([string]$entry.Value.verified, "yyyy-MM-dd", [Globalization.CultureInfo]::InvariantCulture, [Globalization.DateTimeStyles]::None, [ref]$parsed)) {
+                    $invalidEntries.Add("$($entry.Name) verified must be yyyy-MM-dd")
+                } elseif ($parsed -gt $today) {
+                    $invalidEntries.Add("$($entry.Name) verified date is in the future")
+                }
+            }
+        }
+
+        if ($invalidEntries.Count -gt 0) {
+            throw ($invalidEntries -join "`n")
+        }
+    }
 }
 
 Describe "Tweaks config" {

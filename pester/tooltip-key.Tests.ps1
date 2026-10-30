@@ -75,6 +75,16 @@ Describe "Get-WinUtilEntryToolTip" {
             Should -Be "Preset key: WPFTweaksTele"
     }
 
+    It "puts the license above the preset key when one is recorded" {
+        Get-WinUtilEntryToolTip -Description "Fast private browser" -Key "WPFInstallBrave" -License "MPL-2.0" |
+            Should -Be "Fast private browser`n`nLicense: MPL-2.0`nPreset key: WPFInstallBrave"
+    }
+
+    It "omits the license line when the license is empty" {
+        Get-WinUtilEntryToolTip -Description "x" -Key "WPFInstallBrave" -License "" |
+            Should -Be "x`n`nPreset key: WPFInstallBrave"
+    }
+
     It "returns a plain string, not a UI object" {
         (Get-WinUtilEntryToolTip -Description "x" -Key "WPFTweaksTele").GetType().Name |
             Should -Be "String"
@@ -91,7 +101,7 @@ Describe "Preset key tooltips" {
     }
 
     It "labels entries created by the application renderer" {
-        $script:appRenderer | Should -Match '\$border\.ToolTip\s*=\s*Get-WinUtilEntryToolTip\s+-Description\s+\$app\.description\s+-Key\s+\$appKey'
+        $script:appRenderer | Should -Match '\$border\.ToolTip\s*=\s*Get-WinUtilEntryToolTip\s+-Description\s+\$app\.description\s+-Key\s+\$appKey\s+-License\s+\$app\.license'
     }
 
     It "labels every entry with a key the preset importer accepts" {

@@ -382,6 +382,8 @@ Update UI
 - `winget`: WinGet package ID
 - `choco`: Chocolatey package name
 - `link`: Official website
+- `license` (optional): the License field of the package's WinGet manifest, copied as published (`winget show --id <id> -e`). Shown in the app's tooltip.
+- `verified` (optional, required with `license`): the `yyyy-MM-dd` date the license was checked
 
 ### tweaks.json Structure
 
