@@ -267,6 +267,36 @@ Describe "Tweaks config" {
         }
     }
 
+    It "disables Windows Search indexing through the service schema with a reversible stop and start" -TestCases $testCase {
+        param([string]$Path)
+
+        $tweaks = Get-Content -Path $Path -Raw | ConvertFrom-Json
+        $tweak = $tweaks.WPFTweaksDisableSearchIndexing
+
+        $tweak | Should -Not -BeNullOrEmpty
+        $tweak.category | Should -Be "z__Advanced Tweaks - CAUTION"
+        $tweak.Description | Should -Match "slower"
+
+        $search = @($tweak.service | Where-Object Name -eq "WSearch")
+        $search | Should -HaveCount 1
+        $search[0].StartupType | Should -Be "Disabled"
+        $search[0].OriginalType | Should -Be "Automatic"
+
+        # Set-WinUtilService only changes the startup type. The running indexer is stopped in
+        # InvokeScript and started again in UndoScript, both guarded by Get-Service so a missing
+        # service does not log an error (#5123).
+        $invoke = @($tweak.InvokeScript) -join "`n"
+        $undo = @($tweak.UndoScript) -join "`n"
+        $invoke | Should -Match 'Get-Service[^
+]*WSearch'
+        $invoke | Should -Match 'Stop-Service[^
+]*WSearch'
+        $undo | Should -Match 'Get-Service[^
+]*WSearch'
+        $undo | Should -Match 'Start-Service[^
+]*WSearch'
+    }
+
     It "keeps the location service disabled" -TestCases $testCase {
         param([string]$Path)
 
