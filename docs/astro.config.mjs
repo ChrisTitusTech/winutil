@@ -79,6 +79,12 @@ export default defineConfig({
 					],
 				},
 				{
+					label: 'Resources',
+					items: [
+						{ label: 'Free Dev Services', slug: 'resources/free-dev-services' },
+					],
+				},
+				{
 					label: 'Tools',
 					items: [
 						{ label: 'Config Builder', slug: 'config-builder' },

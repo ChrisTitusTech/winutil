@@ -53,6 +53,10 @@ New apps, tweaks, toggles, features, AppX packages, and categories appear in the
 
 Config Builder links carry the selected keys in the URL hash, e.g. `/config-builder/#WPFInstall7zip,WPFTweaksTelemetry`. `src/lib/config-link.js` builds and reads them for both pages. People post these links on Discord and the forums, so keep reading the existing format if you ever change it.
 
+## 📚 Resources Pages
+
+`resources/free-dev-services.mdx` is hand-written. It points at [free-for.dev](https://free-for.dev/) for developer services with free tiers, and deliberately links rather than reproducing that list, which carries no licence. Its deep links go to section anchors of the upstream README, so check them if you reorganise the page.
+
 If you add another tool page, or anything else that has to be kept in sync by hand, list it here and in SPEC.md's Docs Site section.
 
 ## 🧞 Commands

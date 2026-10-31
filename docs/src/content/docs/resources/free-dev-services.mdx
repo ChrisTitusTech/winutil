@@ -1,0 +1,67 @@
+---
+title: Free Dev Services
+description: Where to find hosting, databases, CI, monitoring, and other developer services with real free tiers, and how to tell a free tier from a trial.
+sidebar:
+  order: 1
+---
+
+A freshly set up workstation usually needs more than desktop software: somewhere to host a side project, a managed database, a CI runner, log storage, a status page. A great deal of that is available at no cost, but the offers move constantly and the word "free" covers everything from a permanent allowance to a two-week trial.
+
+The best-maintained public index of these offers is **free-for.dev**, curated by R.I. Pienaar with contributions from more than 1,600 people. It lists hundreds of as-a-service offerings that have a genuine free tier, with the limits noted per entry.
+
+- **Browse it:** [free-for.dev](https://free-for.dev/)
+- **Source and contributions:** [ripienaar/free-for-dev](https://github.com/ripienaar/free-for-dev)
+
+:::note[Why this page links out instead of reproducing the list]
+That repository carries no licence of its own, so nobody has been granted the right to republish its text. WinUtil Pro links to it and leaves the credit, and the hosting, with its maintainers. Please send corrections and new services to them rather than here.
+:::
+
+:::caution[These are not installable applications]
+Everything on free-for.dev is an online service. WinUtil Pro's Install tab covers software that runs on your PC, so none of this is installed by WinUtil Pro. Use this page as a pointer, and use the [Applications](/guides/application/) guide for the desktop clients that talk to these services, such as DBeaver, Postman, or the cloud CLIs.
+:::
+
+## Sections worth reading when you set up a machine
+
+Each link opens that section of the list.
+
+| Section | Useful when you need |
+|---|---|
+| [Source Code Repos](https://github.com/ripienaar/free-for-dev#source-code-repos) | Private Git hosting beyond the obvious choices |
+| [CI and CD](https://github.com/ripienaar/free-for-dev#ci-and-cd) | Build minutes for a project that is not on GitHub Actions |
+| [Web Hosting](https://github.com/ripienaar/free-for-dev#web-hosting) | Static sites, personal pages, documentation |
+| [PaaS](https://github.com/ripienaar/free-for-dev#paas) | Running a small app without managing a server |
+| [Managed Data Services](https://github.com/ripienaar/free-for-dev#managed-data-services) | A hosted Postgres, MySQL, Redis, or vector database |
+| [Storage and Media Processing](https://github.com/ripienaar/free-for-dev#storage-and-media-processing) | Object storage, image resizing, video transcoding |
+| [DNS](https://github.com/ripienaar/free-for-dev#dns) | Authoritative DNS, dynamic DNS for a home lab |
+| [Monitoring](https://github.com/ripienaar/free-for-dev#monitoring) | Uptime checks, alerting, status pages |
+| [Log Management](https://github.com/ripienaar/free-for-dev#log-management) | Somewhere to send application and audit logs |
+| [Security and PKI](https://github.com/ripienaar/free-for-dev#security-and-pki) | Certificates, secret scanning, dependency and vulnerability checks |
+| [Authentication and User Management](https://github.com/ripienaar/free-for-dev#authentication-authorization-and-user-management) | Sign-in, SSO, and user directories you do not want to build |
+| [Testing](https://github.com/ripienaar/free-for-dev#testing) | Cross-browser runs, device farms, load testing |
+| [Code Quality](https://github.com/ripienaar/free-for-dev#code-quality) | Static analysis and coverage reporting |
+| [APIs, Data and ML](https://github.com/ripienaar/free-for-dev#apis-data-and-ml) | Geocoding, exchange rates, weather, public datasets |
+| [Generative AI](https://github.com/ripienaar/free-for-dev#generative-ai) | Model APIs and tooling with a free allowance |
+| [Issue Tracking and Project Management](https://github.com/ripienaar/free-for-dev#issue-tracking-and-project-management) | Boards and trackers for a small team |
+
+## Telling a free tier from a trial
+
+"Free" is used loosely. Before a service becomes part of your setup, work out which of these it actually is:
+
+- **Genuinely free** — a permanent allowance with no card required. Safe to build on for personal projects.
+- **Free tier with limits** — permanent, but capped on requests, seats, build minutes, storage, or retention. Find out what happens when you hit the cap: throttling is an inconvenience, deletion is not.
+- **Trial** — free for a period, then paid. Fine for evaluating, risky as a dependency.
+- **Free for open source, students, or small teams** — conditional on eligibility you must keep meeting.
+- **Self-hosted** — free software you run yourself, where the cost is your server and your time.
+
+A few checks that save trouble later:
+
+1. Confirm the current limits on the vendor's own pricing page. A community list is a starting point, never the contract.
+2. Note whether a payment card is required to start, and whether overage is billed automatically or simply blocked.
+3. Check the data export path before you put anything important in. A service you cannot leave is not cheap at any price.
+4. Check retention, not just volume, for anything storing logs or metrics.
+5. Re-check the services you depend on about once a year. Free tiers get reduced, and projects get acquired or shut down.
+
+## Related pages
+
+- [Applications](/guides/application/) — installing the desktop and command-line clients for these services with WinUtil Pro.
+- [Getting Started](/guides/getting-started/) — running WinUtil Pro for the first time.
