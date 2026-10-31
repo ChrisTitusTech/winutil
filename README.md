@@ -4,7 +4,7 @@
 ![Downloads](https://img.shields.io/github/downloads/ChrisTitusTech/winutil/winutil.ps1?label=Total%20Downloads&style=for-the-badge)
 [![Discord](https://dcbadge.limes.pink/api/server/https://discord.gg/RUbZUZyByQ?theme=default-inverted&style=for-the-badge)](https://discord.gg/RUbZUZyByQ)
 
-A curated compilation of Windows system tasks streamline **installs**, debloat with **tweaks**, troubleshoot with **config**, and configure **Windows updates**. Run it fresh on every new Windows install.
+A curated compilation of Windows system tasks to streamline **installs**, debloat with **tweaks**, troubleshoot with **config**, and configure **Windows updates**. Run it fresh on every new Windows install.
 
 ![Title Screen](docs/src/assets/branding/title-screen.png)
 
@@ -71,7 +71,7 @@ See https://github.com/ChrisTitusTech/winutil/blob/main/.github/CONTRIBUTING.md
 
 ## Support
 
-- Leave a ⭐ to show support!
+- Leave a ⭐ to show support! 😊
 - Faster Dotnet Implementation for sale here: https://www.cttstore.com/windows-toolbox
 
 ## Sponsors
