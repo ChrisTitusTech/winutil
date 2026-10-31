@@ -351,6 +351,7 @@ function Start-WinUtilUserInterface {
     # Category filter chips. The chip carries its category in Tag, so one handler covers all of them.
     $sync.AppCategoryChips = @(
         @{ Name = "WPFSearchChipAll";             Category = "" }
+        @{ Name = "WPFSearchChipBlueTeam";        Category = "Blue Team" }
         @{ Name = "WPFSearchChipBrowsers";        Category = "Browsers" }
         @{ Name = "WPFSearchChipCommunications";  Category = "Communications" }
         @{ Name = "WPFSearchChipDevelopment";     Category = "Development" }
@@ -358,7 +359,10 @@ function Start-WinUtilUserInterface {
         @{ Name = "WPFSearchChipGames";           Category = "Games" }
         @{ Name = "WPFSearchChipMicrosoftTools";  Category = "Microsoft Tools" }
         @{ Name = "WPFSearchChipMultimediaTools"; Category = "Multimedia Tools" }
+        @{ Name = "WPFSearchChipNetworking";      Category = "Networking" }
         @{ Name = "WPFSearchChipProTools";        Category = "Pro Tools" }
+        @{ Name = "WPFSearchChipRedTeam";         Category = "Red Team" }
+        @{ Name = "WPFSearchChipSecurity";        Category = "Security" }
         @{ Name = "WPFSearchChipSelfhostedTools"; Category = "Selfhosted Tools" }
         @{ Name = "WPFSearchChipUtilities";       Category = "Utilities" }
     )

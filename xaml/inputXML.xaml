@@ -1381,6 +1381,7 @@
                                    Margin="10,0,10,0"
                                    ToolTip="Filter by category. Ctrl click to select more than one."/>
                         <ToggleButton Name="WPFSearchChipAll"             Content="All"               Style="{StaticResource FilterChipToggleStyle}" IsChecked="True"/>
+                        <ToggleButton Name="WPFSearchChipBlueTeam"        Content="Blue Team"         Style="{StaticResource FilterChipToggleStyle}"/>
                         <ToggleButton Name="WPFSearchChipBrowsers"        Content="Browsers"          Style="{StaticResource FilterChipToggleStyle}"/>
                         <ToggleButton Name="WPFSearchChipCommunications"  Content="Communications"    Style="{StaticResource FilterChipToggleStyle}"/>
                         <ToggleButton Name="WPFSearchChipDevelopment"     Content="Development"       Style="{StaticResource FilterChipToggleStyle}"/>
@@ -1388,7 +1389,10 @@
                         <ToggleButton Name="WPFSearchChipGames"           Content="Games"             Style="{StaticResource FilterChipToggleStyle}"/>
                         <ToggleButton Name="WPFSearchChipMicrosoftTools"  Content="Microsoft Tools"   Style="{StaticResource FilterChipToggleStyle}"/>
                         <ToggleButton Name="WPFSearchChipMultimediaTools" Content="Multimedia Tools"  Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipNetworking"      Content="Networking"        Style="{StaticResource FilterChipToggleStyle}"/>
                         <ToggleButton Name="WPFSearchChipProTools"        Content="Pro Tools"         Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipRedTeam"         Content="Red Team"          Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipSecurity"        Content="Security"          Style="{StaticResource FilterChipToggleStyle}"/>
                         <ToggleButton Name="WPFSearchChipSelfhostedTools" Content="Selfhosted Tools"  Style="{StaticResource FilterChipToggleStyle}"/>
                         <ToggleButton Name="WPFSearchChipUtilities"       Content="Utilities"         Style="{StaticResource FilterChipToggleStyle}"/>
                     </WrapPanel>

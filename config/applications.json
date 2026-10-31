@@ -2710,7 +2710,7 @@
         "verified": "2026-10-30"
     },
     "burpsuitecommunity": {
-        "category": "Pro Tools",
+        "category": "Red Team",
         "choco": "na",
         "content": "Burp Suite Community Edition",
         "description": "Burp Suite Community Edition is PortSwigger's free web application security testing proxy. Only test applications you own or are authorized to assess.",
@@ -2721,7 +2721,7 @@
         "verified": "2026-10-30"
     },
     "zap": {
-        "category": "Pro Tools",
+        "category": "Red Team",
         "choco": "zap",
         "content": "ZAP (Zed Attack Proxy)",
         "description": "ZAP is an open-source web application security scanner and intercepting proxy. Requires Java. Only scan applications you own or are authorized to assess.",
@@ -2729,6 +2729,215 @@
         "winget": "ZAP.ZAP",
         "foss": true,
         "license": "Apache-2.0",
+        "verified": "2026-10-30"
+    },
+    "gpg4win": {
+        "category": "Security",
+        "choco": "Gpg4win",
+        "content": "Gpg4win",
+        "description": "Gpg4win is the official Windows distribution of GnuPG, with the Kleopatra certificate manager for file and email encryption and digital signatures.",
+        "link": "https://www.gpg4win.org/",
+        "winget": "GnuPG.Gpg4win",
+        "foss": true,
+        "license": "GPL-2.0",
+        "verified": "2026-10-30"
+    },
+    "veracrypt": {
+        "category": "Security",
+        "choco": "veracrypt",
+        "content": "VeraCrypt",
+        "description": "VeraCrypt creates encrypted containers and encrypts whole disks or partitions. Keep a backup of the recovery key: a lost password or a damaged volume header leaves the data unrecoverable.",
+        "link": "https://veracrypt.io/",
+        "winget": "IDRIX.VeraCrypt",
+        "foss": true,
+        "license": "Apache 2.0",
+        "verified": "2026-10-30"
+    },
+    "malwarebytes": {
+        "category": "Security",
+        "choco": "malwarebytes",
+        "content": "Malwarebytes",
+        "description": "Malwarebytes scans for and removes malware, adware, and potentially unwanted programs. The free version is an on-demand scanner; real-time protection is paid once the trial ends.",
+        "link": "https://www.malwarebytes.com/",
+        "winget": "Malwarebytes.Malwarebytes",
+        "foss": false,
+        "license": "Proprietary",
+        "verified": "2026-10-30"
+    },
+    "mremoteng": {
+        "category": "Networking",
+        "choco": "mRemoteNG",
+        "content": "mRemoteNG",
+        "description": "mRemoteNG is a tabbed remote-connection manager that keeps RDP, SSH, VNC, telnet, and other sessions in one window.",
+        "link": "https://mremoteng.org/",
+        "winget": "mRemoteNG.mRemoteNG",
+        "foss": true,
+        "license": "GPL-2.0",
+        "verified": "2026-10-30"
+    },
+    "mobaxterm": {
+        "category": "Networking",
+        "choco": "MobaXTerm",
+        "content": "MobaXterm",
+        "description": "MobaXterm is a Windows terminal with SSH, telnet, RDP, VNC, SFTP, and a built-in X11 server. The free Home Edition caps saved sessions and tunnels; Professional is paid.",
+        "link": "https://mobaxterm.mobatek.net/",
+        "winget": "Mobatek.MobaXterm",
+        "foss": false,
+        "license": "Freeware",
+        "verified": "2026-10-30"
+    },
+    "zerotier": {
+        "category": "Networking",
+        "choco": "zerotier-one",
+        "content": "ZeroTier One",
+        "description": "ZeroTier One joins devices into one managed virtual network over the internet, as though they shared a LAN. Free for small networks; source-available under the BUSL rather than an OSI open-source licence.",
+        "link": "https://www.zerotier.com/",
+        "winget": "ZeroTier.ZeroTierOne",
+        "foss": false,
+        "license": "BUSL-1.1",
+        "verified": "2026-10-30"
+    },
+    "zabbixagent": {
+        "category": "Networking",
+        "choco": "zabbix-agent",
+        "content": "Zabbix Agent 2",
+        "description": "Zabbix Agent 2 collects metrics from this host and reports them to a Zabbix monitoring server. An existing Zabbix server is required.",
+        "link": "https://www.zabbix.com/download_agents",
+        "winget": "Zabbix.Agent.2",
+        "foss": true,
+        "license": "AGPL-3.0",
+        "verified": "2026-10-30"
+    },
+    "x64dbg": {
+        "category": "Red Team",
+        "choco": "na",
+        "content": "x64dbg",
+        "description": "x64dbg is an open-source debugger for Windows binaries, used for reverse engineering and malware analysis. Examine only software you own or are licensed to analyse.",
+        "link": "https://x64dbg.com/",
+        "winget": "x64dbg.x64dbg",
+        "foss": true,
+        "license": "GPL-3.0 (Modified)",
+        "verified": "2026-10-30"
+    },
+    "ffuf": {
+        "category": "Red Team",
+        "choco": "na",
+        "content": "ffuf",
+        "description": "ffuf is a fast command-line web fuzzer for discovering directories, files, and parameters. Run it only against systems you own or have written authorisation to test.",
+        "link": "https://github.com/ffuf/ffuf",
+        "winget": "ffuf.ffuf",
+        "foss": true,
+        "license": "MIT",
+        "verified": "2026-10-30"
+    },
+    "sysmon": {
+        "category": "Blue Team",
+        "choco": "sysmon",
+        "content": "Sysinternals Sysmon",
+        "description": "Sysmon records process creation, network connections, and file and registry changes to the Windows event log for security monitoring. It runs as a service and needs a configuration file to be useful.",
+        "link": "https://learn.microsoft.com/sysinternals/downloads/sysmon",
+        "winget": "Microsoft.Sysinternals.Sysmon",
+        "foss": false,
+        "license": "Proprietary",
+        "verified": "2026-10-30"
+    },
+    "velociraptor": {
+        "category": "Blue Team",
+        "choco": "na",
+        "content": "Velociraptor",
+        "description": "Velociraptor is an endpoint visibility and digital-forensics platform that collects artefacts from hosts using its VQL query language.",
+        "link": "https://docs.velociraptor.app/",
+        "winget": "Velocidex.Velociraptor",
+        "foss": true,
+        "license": "GNU Affero General Public License, Version 3",
+        "verified": "2026-10-30"
+    },
+    "wazuhagent": {
+        "category": "Blue Team",
+        "choco": "wazuh-agent",
+        "content": "Wazuh Agent",
+        "description": "The Wazuh agent forwards security events, file-integrity changes, and inventory data from this host to a Wazuh server. An existing Wazuh server is required.",
+        "link": "https://wazuh.com/",
+        "winget": "Wazuh.WazuhAgent",
+        "foss": true,
+        "license": "GNU General Public License (version 2)",
+        "verified": "2026-10-30"
+    },
+    "suricata": {
+        "category": "Blue Team",
+        "choco": "na",
+        "content": "Suricata",
+        "description": "Suricata is an open-source intrusion detection and network security monitoring engine that inspects traffic against signature rulesets.",
+        "link": "https://suricata.io/",
+        "winget": "OISF.Suricata",
+        "foss": true,
+        "license": "GPLv2",
+        "verified": "2026-10-30"
+    },
+    "autopsy": {
+        "category": "Blue Team",
+        "choco": "autopsy",
+        "content": "Autopsy",
+        "description": "Autopsy is a digital-forensics platform and graphical front end for The Sleuth Kit, used to examine disk images, file systems, and deleted files.",
+        "link": "https://www.autopsy.com/",
+        "winget": "SleuthKit.Autopsy",
+        "foss": true,
+        "license": "Apache License 2.0",
+        "verified": "2026-10-30"
+    },
+    "yara": {
+        "category": "Blue Team",
+        "choco": "yara",
+        "content": "YARA",
+        "description": "YARA matches files against pattern rules to identify and classify malware families. Command-line tool.",
+        "link": "https://virustotal.github.io/yara/",
+        "winget": "VirusTotal.YARA",
+        "foss": true,
+        "license": "BSD-3-Clause",
+        "verified": "2026-10-30"
+    },
+    "osquery": {
+        "category": "Blue Team",
+        "choco": "osquery",
+        "content": "osquery",
+        "description": "osquery exposes the operating system as a SQL database, so running processes, listening ports, and installed packages can be queried for security monitoring.",
+        "link": "https://www.osquery.io/",
+        "winget": "osquery.osquery",
+        "foss": true,
+        "license": "Apache-2.0 OR GPL-2.0-only",
+        "verified": "2026-10-30"
+    },
+    "winlogbeat": {
+        "category": "Blue Team",
+        "choco": "na",
+        "content": "Winlogbeat",
+        "description": "Winlogbeat ships Windows event logs to Elasticsearch or Logstash. An existing Elastic stack is required. Source-available under the Elastic Licence rather than an OSI open-source licence.",
+        "link": "https://www.elastic.co/beats/winlogbeat",
+        "winget": "Elastic.Winlogbeat",
+        "foss": false,
+        "license": "Elastic-2.0",
+        "verified": "2026-10-30"
+    },
+    "splunkforwarder": {
+        "category": "Blue Team",
+        "choco": "splunk-universalforwarder",
+        "content": "Splunk Universal Forwarder",
+        "description": "The Splunk Universal Forwarder sends logs from this host to a Splunk indexer. An existing Splunk deployment and licence are required.",
+        "link": "https://www.splunk.com/en_us/download/universal-forwarder.html",
+        "winget": "Splunk.UniversalForwarder",
+        "foss": false,
+        "license": "Proprietary",
+        "verified": "2026-10-30"
+    },
+    "sysinternalssuite": {
+        "category": "Microsoft Tools",
+        "choco": "sysinternals",
+        "content": "Sysinternals Suite",
+        "description": "The Sysinternals Suite is Microsoft's full set of Windows troubleshooting utilities, including Process Explorer, Process Monitor, Autoruns, TCPView, and Sysmon.",
+        "link": "https://learn.microsoft.com/sysinternals/",
+        "winget": "Microsoft.Sysinternals.Suite",
+        "foss": false,
+        "license": "Proprietary",
         "verified": "2026-10-30"
     }
 }
