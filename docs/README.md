@@ -59,6 +59,8 @@ Config Builder links carry the selected keys in the URL hash, e.g. `/config-buil
 
 `resources/microsoft-downloads.mdx` is hand-written. It links Microsoft's official download pages for Windows media, Office / Microsoft 365, and developer tools (microsoft.com only) — installation media, not activation tooling. If a Microsoft URL moves, update it here.
 
+`resources/certification-toolkits.mdx` is hand-written. It maps certifications to Install-tab tools by name, so it has to be re-checked whenever `config/applications.json` entries are renamed or removed.
+
 If you add another tool page, or anything else that has to be kept in sync by hand, list it here and in SPEC.md's Docs Site section.
 
 ## 🧞 Commands
