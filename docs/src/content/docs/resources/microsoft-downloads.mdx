@@ -1,0 +1,52 @@
+---
+title: Official Microsoft Downloads
+description: Direct links to Microsoft's own pages for Windows installation media, Office and Microsoft 365 installers, and developer tools — official sources only.
+sidebar:
+  order: 2
+---
+
+When you set up or reinstall a machine, get your Windows and Office media from Microsoft directly. This page collects the official download pages so you are not hunting for them or trusting a mirror. Every link below points at a Microsoft-owned domain (`microsoft.com`).
+
+:::caution[Media, not a licence]
+These pages give you **installation media** — ISOs, the Media Creation Tool, installers. They are not a licence. Installing Windows or Office still requires a valid product key or a Microsoft account entitlement. WinUtil Pro links only to Microsoft's official downloads and does **not** bundle, endorse, or automate any activation-bypass tooling.
+:::
+
+## Windows
+
+| Download | What it is |
+|---|---|
+| [Download Windows 11](https://www.microsoft.com/software-download/windows11) | Installation Assistant (in-place upgrade), Media Creation Tool (bootable USB/DVD or ISO), and the multi-edition x64 ISO with published hashes. |
+| [Download Windows 10](https://www.microsoft.com/software-download/windows10) | Media Creation Tool for Windows 10 and the in-place upgrade path. |
+| [Windows 10 Disk Image (ISO)](https://www.microsoft.com/software-download/windows10ISO) | Direct multi-edition Windows 10 ISO download. |
+| [Windows Insider Preview ISOs](https://www.microsoft.com/software-download/windowsinsiderpreviewiso) | Pre-release builds for Insiders (requires a registered Insider account). |
+| [Microsoft Evaluation Center](https://www.microsoft.com/en-us/evalcenter/) | Time-limited evaluation ISOs for Windows Enterprise, Windows Server, and other products — for testing, not production. |
+
+:::note[Verify your ISO]
+The Windows 11 page publishes SHA-256 hashes for its ISO. After downloading, check the hash (`Get-FileHash .\Win11.iso`) against the value Microsoft lists before you build media from it.
+:::
+
+## Office and Microsoft 365
+
+| Download | What it is |
+|---|---|
+| [Install from your account](https://account.microsoft.com/services) | The supported way to install Microsoft 365 / Office for most people — sign in and install the apps tied to your subscription or one-time purchase. |
+| [Microsoft 365](https://www.microsoft.com/microsoft-365) | Plans, the web apps, and the download entry point for subscribers. |
+| [Office Deployment Tool](https://www.microsoft.com/en-us/download/details.aspx?id=49117) | Command-line tool to download and install specific Click-to-Run versions of Office, driven by an XML configuration. |
+| [Office Customization Tool](https://config.office.com/) | Microsoft's web UI for generating the Office Deployment Tool's configuration XML (edition, channel, language, apps). |
+
+The Office Deployment Tool plus the Office Customization Tool are the right path when you need a specific channel or edition, a language pack, or a scripted/unattended Office install — for example alongside WinUtil Pro's own setup steps.
+
+## Developer tools
+
+| Download | What it is |
+|---|---|
+| [Visual Studio](https://visualstudio.microsoft.com/downloads/) | Community (free), Professional, and Enterprise editions of Microsoft's flagship IDE. |
+| [Office Deployment Tool docs](https://learn.microsoft.com/microsoft-365-apps/deploy/overview-office-deployment-tool) | Microsoft's reference for scripting Office installs with the deployment tool. |
+
+Many Microsoft developer tools are also in WinUtil Pro's own Install tab — Visual Studio, VS Code, PowerShell 7, Windows Terminal, the Azure CLI, SQL Server Management Studio, and more — installable with one click through winget. See the [Applications](/guides/application/) guide.
+
+## Related pages
+
+- [Free Dev Services](/resources/free-dev-services/) — hosting, databases, CI, and monitoring with real free tiers.
+- [Applications](/guides/application/) — the full WinUtil Pro install catalogue.
+- [Getting Started](/guides/getting-started/) — running WinUtil Pro for the first time.

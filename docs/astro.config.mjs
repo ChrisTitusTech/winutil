@@ -82,6 +82,7 @@ export default defineConfig({
 					label: 'Resources',
 					items: [
 						{ label: 'Free Dev Services', slug: 'resources/free-dev-services' },
+						{ label: 'Official Microsoft Downloads', slug: 'resources/microsoft-downloads' },
 					],
 				},
 				{
