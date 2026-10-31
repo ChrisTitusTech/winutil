@@ -52,7 +52,7 @@ function Invoke-WPFButton {
             }
         }
 
-        Start-WinUtilJob -Name (Get-WinUtilButtonLabel -Button $Button) -Parameters @{
+        Start-WinUtilJob -Name (Get-WinUtilButtonLabel -Button $Button) -QueueIfBusy -Parameters @{
             Button = $Button
             UpdatesDisableConfirmed = $updatesDisableConfirmed
         } -ScriptBlock {

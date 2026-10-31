@@ -26,6 +26,16 @@ function Start-WinUtilJob {
         .PARAMETER DisableAppList
             Greys out the app list for the duration, for jobs that change what is installed.
 
+        .PARAMETER QueueIfBusy
+            Waits in $sync.JobQueue for its turn instead of being refused, for actions the user
+            starts. The parameters are held as they were when it was queued. A job with the same
+            name and parameters as one already queued is ignored, so repeated clicks do not repeat
+            the work.
+
+        .PARAMETER FromQueue
+            Internal to Start-WinUtilNextQueuedJob: this is the queued job taking its turn, so it
+            may claim the slot while $sync.JobHandoff holds it for the queue.
+
         .EXAMPLE
             Start-WinUtilJob -Name "Install" -Parameters @{ Packages = $packages } -ScriptBlock {
                 param($Packages)
@@ -43,10 +53,15 @@ function Start-WinUtilJob {
 
         [string]$Description,
 
-        [switch]$DisableAppList
+        [switch]$DisableAppList,
+
+        [switch]$QueueIfBusy,
+
+        [switch]$FromQueue
     )
 
     if ($sync.ShuttingDown -or $sync.FinishInConsole) {
+        if ($FromQueue) { Reset-WinUtilJobHandoff }
         Write-WinUtilLog -Level "WARN" -Component $Name -Message "Refused to start $Name, WinUtil is closing."
         return $null
     }
@@ -64,10 +79,50 @@ function Start-WinUtilJob {
     # still unwinding cannot release a slot the next job holds.
     $jobToken = [guid]::NewGuid().ToString()
     $blockedBy = $null
+    $queuePosition = 0
+    $duplicate = $false
+
+    # Built outside the lock. A value that cannot be serialised just leaves the job undeduplicated.
+    $signature = $null
+    if ($QueueIfBusy) {
+        try {
+            $sortedKeys = [string[]]$Parameters.Keys
+            [array]::Sort($sortedKeys)
+            $ordered = [ordered]@{}
+            foreach ($key in $sortedKeys) { $ordered[$key] = $Parameters[$key] }
+            $signature = "$Name|" + (ConvertTo-Json -InputObject $ordered -Compress -Depth 5 -WarningAction SilentlyContinue)
+        } catch {
+            Write-WinUtilLog -Level "WARN" -Component $Name -Message "Could not compare $Name with the queue, so it will not be checked for duplicates: $($_.Exception.Message)"
+        }
+    }
+
     [System.Threading.Monitor]::Enter($sync.SyncRoot)
     try {
-        if ($sync.ActiveJob) {
-            $blockedBy = $sync.ActiveJob
+        if ($FromQueue) {
+            $sync.JobHandoff = $false
+        }
+        # A finished job's slot is promised to the queue until its head has started
+        if ($sync.ActiveJob -or $sync.JobHandoff) {
+            $blockedBy = if ($sync.ActiveJob) { $sync.ActiveJob } else { "Queued operations" }
+            # In the same lock as the busy test: a job finishing between the two would leave
+            # this one queued behind nothing
+            if ($QueueIfBusy) {
+                foreach ($queued in $sync.JobQueue) {
+                    if ($signature -and $queued.Signature -eq $signature) { $duplicate = $true; break }
+                }
+            }
+            if ($QueueIfBusy -and -not $duplicate) {
+                $sync.JobQueue.Add([pscustomobject]@{
+                    Id = [guid]::NewGuid().ToString()
+                    Signature = $signature
+                    Name = $Name
+                    Description = $Description
+                    ScriptBlock = $ScriptBlock.ToString()
+                    Parameters = $Parameters
+                    DisableAppList = [bool]$DisableAppList
+                })
+                $queuePosition = $sync.JobQueue.Count
+            }
         } else {
             $sync.ActiveJob = $Name
             $sync.ActiveJobToken = $jobToken
@@ -75,6 +130,17 @@ function Start-WinUtilJob {
         }
     } finally {
         [System.Threading.Monitor]::Exit($sync.SyncRoot)
+    }
+
+    if ($duplicate) {
+        Write-WinUtilLog -Component $Name -Message "$Name is already queued, ignored."
+        return $null
+    }
+
+    if ($queuePosition -gt 0) {
+        Write-WinUtilLog -Component $Name -Message "$Name queued behind $blockedBy, position $queuePosition."
+        Invoke-WPFUIThread -Async -ScriptBlock { Update-WinUtilJobQueueUI }
+        return $null
     }
 
     if ($blockedBy) {
@@ -87,6 +153,7 @@ function Start-WinUtilJob {
         $timingStartIndex = if ($sync.StepTimings) { $sync.StepTimings.Count } else { 0 }
 
         Write-WinUtilLog -Component $Name -Message "$Name job started."
+        Invoke-WPFUIThread -Async -ScriptBlock { Update-WinUtilJobQueueUI }
         Write-WinUtilJobBanner -Message $label
         Step-WinUtilJob -Status "$label..." -Percent 0 -State "Normal" -Overlay "logo"
 
@@ -242,15 +309,32 @@ function Clear-WinUtilActiveJob {
     #>
     param([string]$Token)
 
+    $released = $false
     [System.Threading.Monitor]::Enter($sync.SyncRoot)
     try {
         if (-not $Token -or $sync.ActiveJobToken -eq $Token) {
             $sync.ActiveJobToken = $null
             $sync.ActiveJob = $null
-            return $true
+            $released = $true
+            # Between here and the posted dispatch the slot is free, and a new action must not
+            # take it ahead of the queue
+            if ($Token -and $sync.JobQueue.Count -gt 0 -and -not $sync.ShuttingDown -and -not $sync.FinishInConsole) {
+                $sync.JobHandoff = $true
+            }
         }
-        return $false
     } finally {
         [System.Threading.Monitor]::Exit($sync.SyncRoot)
     }
+
+    # A job that ended, however it ended, hands the slot to the next queued one. A release with no
+    # token is a forced reset, which must not start anything.
+    if ($released -and $Token) {
+        try {
+            Invoke-WPFUIThread -Async -ScriptBlock { Start-WinUtilNextQueuedJob }
+        } catch {
+            Reset-WinUtilJobHandoff
+            Write-WinUtilLog -Level "WARN" -Component "UI" -Message "Could not start the next queued job: $($_.Exception.Message)"
+        }
+    }
+    return $released
 }

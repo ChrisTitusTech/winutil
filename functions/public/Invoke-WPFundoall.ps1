@@ -13,7 +13,7 @@ function Invoke-WPFundoall {
         return
     }
 
-    Start-WinUtilJob -Name "Undo tweaks" -Description "Undoing tweaks" -Parameters @{
+    Start-WinUtilJob -Name "Undo tweaks" -Description "Undoing tweaks" -QueueIfBusy -Parameters @{
         Tweaks = @($tweaks)
     } -ScriptBlock {
         param($Tweaks)

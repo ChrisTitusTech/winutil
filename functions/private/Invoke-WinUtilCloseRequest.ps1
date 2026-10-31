@@ -9,18 +9,48 @@ function Invoke-WinUtilCloseRequest {
             everything closes now.
 
         .PARAMETER RunningJob
-            The name of the job in flight, so the question names what is at stake.
+            The name of the job in flight, so the question names what is at stake. With nothing
+            running and only queued jobs left, the question is just whether to discard them.
+
+        .PARAMETER QueuedCount
+            How many queued jobs closing will discard, so they are not a surprise.
     #>
     param(
         [Parameter(Mandatory)]
-        [string]$RunningJob
+        [string]$RunningJob,
+
+        [int]$QueuedCount = 0
     )
+
+    if (-not $sync.ActiveJob) {
+        $discard = Show-WinUtilMessage -Button "YesNo" -Icon "Warning" -Title "Queued operations" -Message "Nothing is running. $QueuedCount queued operation(s) will be discarded.`n`nClose WinUtil anyway?"
+        if ("$discard" -ne "Yes") {
+            Write-WinUtilLog -Component "UI" -Message "Close cancelled, $QueuedCount operation(s) are still queued."
+            return
+        }
+
+        # The prompt keeps the dispatcher running, so a queued job may have started meanwhile. A
+        # handoff either started its job first, and the running-job question is asked again, or
+        # finds WinUtil shutting down.
+        $startedMeanwhile = Stop-WinUtilQueuedWork -OnlyIfIdle
+        if ($startedMeanwhile) {
+            Invoke-WinUtilCloseRequest -RunningJob $startedMeanwhile -QueuedCount $sync.JobQueue.Count
+            return
+        }
+
+        Write-WinUtilLog -Component "UI" -Message "Close requested: closing with $QueuedCount queued operation(s) discarded."
+        $sync.ForceClose = $true
+        Request-WinUtilWindowClose
+        return
+    }
+
+    $queuedNote = if ($QueuedCount -gt 0) { "`n$QueuedCount queued operation(s) will be discarded.`n" } else { "" }
 
     # The question carries the meaning rather than naming buttons: Windows labels them in its own
     # language, so "Yes" in the text would not match a button reading "Ja".
     $answer = Show-WinUtilMessage -Button "YesNoCancel" -Icon "Warning" -Title "$RunningJob is still running" -Message @"
 $RunningJob has not finished yet.
-
+$queuedNote
 Close the window and let it finish in the console?
 
 WinUtil will exit on its own once it is done. If you do not, it will be
@@ -42,6 +72,8 @@ stopped and everything closes now. Cancel keeps WinUtil open.
         }
         "No" {
             Write-WinUtilLog -Component "UI" -Message "Close requested: stopping $RunningJob."
+            # The job ending must not hand its slot to a queued one while the window closes
+            $null = Stop-WinUtilQueuedWork
             Step-WinUtilJob -Status "Stopping $RunningJob" -State "Indeterminate"
             $sync.ForceClose = $true
 
@@ -53,6 +85,35 @@ stopped and everything closes now. Cancel keeps WinUtil open.
         default {
             Write-WinUtilLog -Component "UI" -Message "Close cancelled, $RunningJob is still running."
         }
+    }
+}
+
+function Stop-WinUtilQueuedWork {
+    <#
+        .SYNOPSIS
+            Stops the queue handing out the slot because WinUtil is about to close
+
+        .DESCRIPTION
+            Sets the shutdown flag the queue honours, drops what is queued and ends any handoff,
+            in one step under the lock so a job cannot start in between.
+
+        .PARAMETER OnlyIfIdle
+            Do nothing and return the running job's name if a job holds the slot. Otherwise
+            returns $null.
+    #>
+    param([switch]$OnlyIfIdle)
+
+    [System.Threading.Monitor]::Enter($sync.SyncRoot)
+    try {
+        if ($OnlyIfIdle -and $sync.ActiveJob) {
+            return $sync.ActiveJob
+        }
+        $sync.ShuttingDown = $true
+        $null = Clear-WinUtilJobQueue
+        $sync.JobHandoff = $false
+        return $null
+    } finally {
+        [System.Threading.Monitor]::Exit($sync.SyncRoot)
     }
 }
 
