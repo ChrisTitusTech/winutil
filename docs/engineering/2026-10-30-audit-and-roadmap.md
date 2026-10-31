@@ -119,6 +119,29 @@ Ordered by value and risk. Each item should land as its own reviewable change.
 - **Open data question:** the WinGet license disagrees with the existing `foss` flag for `protonmail`, `protondrive` (foss=true, Proprietary), and for `tailscale`, `nilesoftShell`, `everything` (foss=false, open-source license). These were left unchanged for a maintainer to decide.
 - Not yet added: a `pricing` field (free/freemium/paid). WinGet has no reliable source for it, so each value needs a per-app check of the vendor's site.
 
+## 6b. Security tooling, rebrand, and free-for-dev (done)
+
+**Security tooling.** Four new Install-tab categories: Security (3), Networking (4), Red Team (4), Blue Team (9). 19 new catalog entries, each confirmed with `winget show --id <id> -e` on 2026-10-30; Chocolatey names confirmed with `choco search --exact`. Catalog is now 268 entries. Burp Suite Community and ZAP moved from Pro Tools to Red Team. Chips are wired in `xaml/inputXML.xaml`, `Start-WinUtilUserInterface.ps1`, and `pester/xaml.Tests.ps1`; `pester/app-categories.Tests.ps1` now fails if a category has no chip, or a chip no category.
+
+Deliberately **not** added, with reasons:
+
+- Ghidra, hashcat, Eric Zimmerman's tools: Chocolatey-only. `Get-WinUtilSelectedPackages` skips an ID of `na`, so under the default WinGet preference a WinGet-less entry installs nothing at all, silently. Listing them needs a Chocolatey fallback first (roadmap).
+- sqlmap, Metasploit, Nuclei, gobuster, BloodHound, Nikto, Npcap, FTK Imager, Chainsaw, Hayabusa: no package in either manager on 2026-10-30.
+- WinMTR (`leeter.WinMTR`), iPerf3, ExifTool: third-party builds rather than vendor releases, consistent with the earlier decision.
+- Autoruns, Process Explorer, Process Monitor, TCPView, PsTools, RDCMan, KeePassXC, HxD, Nmap, Wireshark: already in the catalog; left in their existing categories.
+
+Suricata and Winlogbeat carry `choco: na` because those Chocolatey packages are years behind (Suricata 2.0.2 from 2014, Winlogbeat 7.15.1); both install from WinGet.
+
+**CTT → 6T9.** The startup banner in `scripts/main.ps1` is now 6T9 / WinUtil Pro with a `fork of ChrisTitusTech/winutil` credit line. Repo hygiene: `FUNDING.yml` and `CODEOWNERS` point at the maintainer instead of upstream, and the issue templates, PR template, CONTRIBUTING, CODE_OF_CONDUCT contact, and SECURITY.md point at this fork with upstream named as upstream.
+
+Kept unchanged, deliberately:
+
+- `LICENSE` keeps `Copyright (c) 2022 CT Tech Group LLC`; MIT requires retaining it.
+- The About dialog keeps the upstream author credits, and `scripts/start.ps1` keeps its original author header.
+- The "CTT PowerShell Profile" feature keeps its name: it installs `ChrisTitusTech/powershell-profile`, so a 6T9 label would misattribute someone else's script.
+- `docs.yaml` and `sponsors.yaml` keep their `github.repository == 'ChrisTitusTech/winutil'` guards. Repointing `sponsors.yaml` would schedule a workflow that needs a `PAT` secret and a sponsors page this account does not have, and the rewritten README has no sponsor markers. Repointing `docs.yaml` would publish the docs with `site: https://winutil.christitus.com/`, producing wrong canonical URLs and sitemap entries; it needs `site`/`base` set for GitHub Pages first (roadmap).
+
+**free-for-dev.** `ripienaar/free-for-dev` has no LICENSE file and the GitHub API reports `license: null`, so there is no grant to redistribute its 1,777 lines. Instead `docs/src/content/docs/resources/free-dev-services.mdx` is a hand-written page that links the site and 16 of its section anchors, adds our own guidance on telling a permanent free tier from a trial, and credits its maintainers. The `free-for-dev.md` copy in the working folder is left uncommitted. Recorded in SPEC.md and `docs/README.md`.
 ## 7. Reproduce
 
 ```powershell

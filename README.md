@@ -89,18 +89,35 @@ irm https://christitus.com/win | iex
 
 | Tab | What it does |
 |---|---|
-| **Install** | Search, install, upgrade, and uninstall **249 applications** across 10 categories through **WinGet** or **Chocolatey**. Hover an app to see its description, license, and preset key. |
+| **Install** | Search, install, upgrade, and uninstall **268 applications** across 14 categories through **WinGet** or **Chocolatey**. Hover an app to see its description, license, and preset key. |
 | **Tweaks** | **68 tweaks**: essential, preference, advanced, and performance-plan changes, with *Undo Selected Tweaks* to restore original values. Presets: `Standard`, `Minimal`, `Advanced`. |
 | **Config** | **33 entries**: Windows features, one-click fixes (network, Windows Update, WinGet), legacy control panels, remote access, and the PowerShell profile. Also sets DNS (8 providers, including Cloudflare, Quad9, and AdGuard). |
 | **Updates** | Switch Windows Update between default, security-only, and disabled policies. |
 | **Win11ISO** | Build a customized Windows 11 ISO from an official Microsoft image, with driver injection and an unattended-setup file. The original ISO is never modified. |
 | **AppX** | Remove **34** built-in Store apps, or restore them. |
 
+### Security, networking, and defence tooling
+
+Four Install-tab categories group the tools a security engineer or network administrator sets up on a fresh machine. WinUtil Pro installs them from official sources through WinGet or Chocolatey; it never runs them for you.
+
+| Category | Contents |
+|---|---|
+| **Security** | Gpg4win, VeraCrypt, Malwarebytes |
+| **Networking** | mRemoteNG, MobaXterm, ZeroTier One, Zabbix Agent 2 |
+| **Blue Team** | Sysmon, Velociraptor, Wazuh Agent, Suricata, Autopsy, YARA, osquery, Winlogbeat, Splunk Universal Forwarder |
+| **Red Team** | Burp Suite Community, ZAP, x64dbg, ffuf |
+
+> [!IMPORTANT]
+> The Red Team category installs tools that probe and attack systems. Use them only against systems you own or have written authorisation to test. Several Blue Team agents (Wazuh, Winlogbeat, Splunk, Zabbix) only do something useful once they point at a server you already run, and each entry's tooltip says so.
+
+Nmap, Wireshark, PuTTY, WinSCP, and the Sysinternals utilities remain where upstream WinUtil put them, under **Pro Tools** and **Microsoft Tools**.
+
 Also included:
 - **Import / Export:** save your selections to a JSON file and apply them on another PC.
 - **Environment report:** export system and log details for troubleshooting.
 - **Light / Dark / Auto** themes.
 - **Session logs** in `%LocalAppData%\winutil\logs`.
+- **[Free Dev Services](docs/src/content/docs/resources/free-dev-services.mdx)**, a docs page pointing at hosting, database, CI, and monitoring services with genuine free tiers.
 
 ### Automation
 
@@ -127,7 +144,7 @@ Each item is in this repository's history and covered by Pester tests.
 | 🔐 **Verified downloads** | O&O ShutUp10++ and Sysinternals Autologon are now started only after their Authenticode signature is confirmed as **valid** and signed by the expected publisher (`O&O Software GmbH`, `Microsoft Corporation`). A file that fails the check is deleted and never started. |
 | 🛡️ **Hosts-file protection** | The *Adobe URL Block List* tweak downloads a third-party list. WinUtil Pro writes it only if every active line blocks a host (`0.0.0.0 <host>`), so the list can't redirect a domain to another address. |
 | 📦 **More apps** | Adds Opera, GitKraken, Podman Desktop, Bun, MongoDB Compass, DBeaver Community, pgAdmin 4, Redis Insight, Burp Suite Community Edition, and ZAP. Every package ID was confirmed against WinGet and Chocolatey. |
-| 📄 **License metadata** | 247 of 249 apps record their license from the package's WinGet manifest, with the date it was checked, and show it in the app tooltip. |
+| 📄 **License metadata** | 247 of 268 apps record their license from the package's WinGet manifest, with the date it was checked, and show it in the app tooltip. |
 | ✅ **Catalog validation** | Tests reject malformed WinGet or Chocolatey IDs, duplicate keys, and licenses without a verification date. |
 
 The full technical audit, including open findings, is in [`docs/engineering/2026-10-30-audit-and-roadmap.md`](docs/engineering/2026-10-30-audit-and-roadmap.md).
@@ -205,11 +222,13 @@ Before contributing, read [`SPEC.md`](SPEC.md) for the architecture contract and
 |---|---|
 | ✅ Done | Signature checks for downloaded tools, hosts-list validation, verified catalog additions, license metadata |
 | ✅ Done | First release ([26.10.30](https://github.com/6t9xstar/winutil-pro/releases/tag/26.10.30)) and the `irm 6t9xstar.github.io/win \| iex` launcher |
+| ✅ Done | Security, Networking, Red Team, and Blue Team categories with authorisation notices |
+| 🔜 Next | Deploy this fork's own documentation site (needs the Astro `site`/`base` set for GitHub Pages) |
+| 🔜 Next | Fall back to Chocolatey when an app has no WinGet package, so Chocolatey-only tools can be listed |
 | 🔜 Next | Pin the PowerShell-profile setup script to a fixed version; make the Adobe block-list undo remove only what it added |
 | 🔜 Next | Pricing data (free, freemium, paid) per app, checked against each vendor's site |
 | 🧭 Planned | Installed-only filter, favorites, and an app details pane on the Install tab |
 | 🧭 Planned | System dashboard built on the existing environment report |
-| 🧭 Planned | A dedicated security-tools category with authorization notices |
 
 ---
 
