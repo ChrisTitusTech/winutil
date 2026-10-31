@@ -351,6 +351,7 @@ function Start-WinUtilUserInterface {
     # Category filter chips. The chip carries its category in Tag, so one handler covers all of them.
     $sync.AppCategoryChips = @(
         @{ Name = "WPFSearchChipAll";             Category = "" }
+        @{ Name = "WPFSearchChipBlueTeam";        Category = "Blue Team" }
         @{ Name = "WPFSearchChipBrowsers";        Category = "Browsers" }
         @{ Name = "WPFSearchChipCommunications";  Category = "Communications" }
         @{ Name = "WPFSearchChipDevelopment";     Category = "Development" }
@@ -358,7 +359,10 @@ function Start-WinUtilUserInterface {
         @{ Name = "WPFSearchChipGames";           Category = "Games" }
         @{ Name = "WPFSearchChipMicrosoftTools";  Category = "Microsoft Tools" }
         @{ Name = "WPFSearchChipMultimediaTools"; Category = "Multimedia Tools" }
+        @{ Name = "WPFSearchChipNetworking";      Category = "Networking" }
         @{ Name = "WPFSearchChipProTools";        Category = "Pro Tools" }
+        @{ Name = "WPFSearchChipRedTeam";         Category = "Red Team" }
+        @{ Name = "WPFSearchChipSecurity";        Category = "Security" }
         @{ Name = "WPFSearchChipSelfhostedTools"; Category = "Selfhosted Tools" }
         @{ Name = "WPFSearchChipUtilities";       Category = "Utilities" }
     )
@@ -420,12 +424,20 @@ function Start-WinUtilUserInterface {
     $sync["AboutMenuItem"].Add_Click({
         Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
 
+        # A local build carries the build date, which is not a release tag, so its version
+        # link would 404. Only a published build links to the tag it was stamped with.
+        $versionLink = if ($sync.IsLocalCompile) {
+            "https://github.com/6t9xstar/winutil-pro/releases"
+        } else {
+            "https://github.com/6t9xstar/winutil-pro/releases/tag/$($sync.version)"
+        }
+
         $authorInfo = @"
 Author   : <a href="https://github.com/ChrisTitusTech">@ChrisTitusTech</a>
 UI       : <a href="https://github.com/MyDrift-user">@MyDrift-user</a>, <a href="https://github.com/Marterich">@Marterich</a>
 Runspace : <a href="https://github.com/DeveloperDurp">@DeveloperDurp</a>, <a href="https://github.com/Marterich">@Marterich</a>
-GitHub   : <a href="https://github.com/ChrisTitusTech/winutil">ChrisTitusTech/winutil</a>
-Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sync.version)">$($sync.version)</a>
+GitHub   : <a href="https://github.com/6t9xstar/winutil-pro">6t9xstar/winutil-pro</a>, fork of <a href="https://github.com/ChrisTitusTech/winutil">ChrisTitusTech/winutil</a>
+Version  : <a href="$versionLink">$($sync.version)</a>
 "@
         Show-CustomDialog -Title "About" -Message $authorInfo
     })

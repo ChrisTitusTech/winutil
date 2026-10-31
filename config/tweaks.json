@@ -1117,7 +1117,21 @@
     "panel": "1",
     "InvokeScript": [
       "
-      $hostsUrl = Invoke-RestMethod -Uri https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts
+      $hostsUrl = Invoke-RestMethod -Uri https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts -TimeoutSec 60
+
+      # The list comes from a third party, so only accept lines that block a host. Any other
+      # mapping in the hosts file would redirect that name to an address of the list's choosing.
+      $unexpected = @([string]$hostsUrl -split \"`r?`n\" | Where-Object {
+          $_ -notmatch '^\\s*(#.*)?$' -and $_ -notmatch '^\\s*0\\.0\\.0\\.0\\s+[A-Za-z0-9.*_-]+\\s*(#.*)?$'
+      })
+      if ($unexpected.Count -gt 0) {
+          throw \"The Adobe block list contains $($unexpected.Count) line(s) that are not 0.0.0.0 blocks; the hosts file was not changed.\"
+      }
+      # Undo removes everything from this marker on, so refuse a list it could not remove
+      if ([string]$hostsUrl -notmatch '#New Ver') {
+          throw 'The Adobe block list is missing its #New Ver marker, so it could not be undone; the hosts file was not changed.'
+      }
+
       Add-Content -Path \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\" -Value $hostsUrl
 
       ipconfig /flushdns

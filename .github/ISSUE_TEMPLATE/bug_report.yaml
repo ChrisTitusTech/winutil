@@ -8,13 +8,13 @@ body:
     attributes:
       value: |
         - Remember, we only support Windows 11. If you encounter problems on Windows 10, please consider upgrading to Windows 11.
-        - For general questions, join our Community-driven [Discord Server](https://discord.gg/RUbZUZyByQ).
+        - WinUtil Pro is a fork of [ChrisTitusTech/winutil](https://github.com/ChrisTitusTech/winutil). If the problem also happens in the original WinUtil, please report it upstream.
 
   - type: checkboxes
     id: read_issues
     attributes:
       label: "I have read the known issues"
-      description: "You [better do](https://winutil.christitus.com/knownissues/), cause your issue can be already there"
+      description: "You [better do](https://github.com/6t9xstar/winutil-pro#readme), cause your issue can be already there"
       options:
         - label: Yes, I did
           required: true

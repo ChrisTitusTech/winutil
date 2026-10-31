@@ -53,6 +53,14 @@ New apps, tweaks, toggles, features, AppX packages, and categories appear in the
 
 Config Builder links carry the selected keys in the URL hash, e.g. `/config-builder/#WPFInstall7zip,WPFTweaksTelemetry`. `src/lib/config-link.js` builds and reads them for both pages. People post these links on Discord and the forums, so keep reading the existing format if you ever change it.
 
+## 📚 Resources Pages
+
+`resources/free-dev-services.mdx` is hand-written. It points at [free-for.dev](https://free-for.dev/) for developer services with free tiers, and deliberately links rather than reproducing that list, which carries no licence. Its deep links go to section anchors of the upstream README, so check them if you reorganise the page.
+
+`resources/microsoft-downloads.mdx` is hand-written. It links Microsoft's official download pages for Windows media, Office / Microsoft 365, and developer tools (microsoft.com only) — installation media, not activation tooling. If a Microsoft URL moves, update it here.
+
+`resources/certification-toolkits.mdx` is hand-written. It maps certifications to Install-tab tools by name, so it has to be re-checked whenever `config/applications.json` entries are renamed or removed.
+
 If you add another tool page, or anything else that has to be kept in sync by hand, list it here and in SPEC.md's Docs Site section.
 
 ## 🧞 Commands

@@ -79,6 +79,14 @@ export default defineConfig({
 					],
 				},
 				{
+					label: 'Resources',
+					items: [
+						{ label: 'Free Dev Services', slug: 'resources/free-dev-services' },
+						{ label: 'Official Microsoft Downloads', slug: 'resources/microsoft-downloads' },
+						{ label: 'Certification Toolkits', slug: 'resources/certification-toolkits' },
+					],
+				},
+				{
 					label: 'Tools',
 					items: [
 						{ label: 'Config Builder', slug: 'config-builder' },

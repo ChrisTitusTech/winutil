@@ -1,0 +1,125 @@
+---
+title: Certification Toolkits
+description: Which WinUtil Pro Install-tab tools map to RHCSA, RHCE, CCNA, CompTIA, CKA, and cloud certifications — and which lab tools you have to get elsewhere.
+sidebar:
+  order: 3
+---
+
+If you are studying for a certification, this page tells you which tools you can install straight from WinUtil Pro's **Install** tab, and — just as importantly — which ones you cannot.
+
+:::caution[WinUtil Pro installs Windows software]
+Many certification tools are Linux-native or ship as a vendor appliance. WinUtil Pro installs Windows packages through WinGet and Chocolatey, so it cannot install RHEL, Cockpit, Ansible, or a Cisco IOS image. For those, the honest answer is a **virtual machine** or **WSL** — and this page says so each time rather than listing a package that would not work.
+:::
+
+## Red Hat: RHCSA and RHCE
+
+RHCSA and RHCE are examined **on Red Hat Enterprise Linux**. Nothing replaces running the real OS. What WinUtil Pro gives you is the Windows-side lab rig and the container tooling.
+
+**Install from WinUtil Pro:**
+
+| Tool | Why it matters |
+|---|---|
+| VirtualBox | Hypervisor for your RHEL / Rocky / AlmaLinux lab VMs. |
+| Vagrant | Script the lab: bring RHEL-like VMs up and tear them down repeatably. |
+| Podman | Red Hat's container engine. **Managing containers is an RHCSA exam objective**, and the CLI is the same one you use on RHEL. |
+| OpenShift Client (oc) | Red Hat's Kubernetes/OpenShift CLI — relevant once you move past RHCSA. |
+| PuTTY · Termius · MobaXterm | SSH into your lab VMs. |
+| WinSCP | Move files to and from the lab over SFTP/SCP. |
+| Neovim | Practise the editor you will actually have on the exam. |
+| Windows Terminal · PowerShell 7 | A decent local terminal to drive it all from. |
+
+**You must get elsewhere:**
+
+- **RHEL itself** — free for personal use via the [Red Hat Developer Subscription](https://developers.redhat.com/products/rhel/download). Rocky Linux and AlmaLinux are binary-compatible free alternatives.
+- **Cockpit, SELinux, LVM, systemd, firewalld, Ansible** — these are *part of* the Linux OS or Linux-only packages. You practise them inside the VM, not on Windows. (Ansible can also run from WSL.)
+
+:::tip[A realistic RHCSA setup on Windows]
+Install VirtualBox and Vagrant from the Install tab, run two or three Rocky Linux VMs, and SSH in with PuTTY or Termius. Add Podman on Windows if you want to rehearse container commands without booting a VM.
+:::
+
+## Cisco: CCNA and CCNP
+
+The headline CCNA tools are **not available through WinGet or Chocolatey**, so they are deliberately absent from the catalog rather than listed as entries that would silently install nothing.
+
+**You must get elsewhere:**
+
+- **Cisco Packet Tracer** — free, but only through a [Cisco Networking Academy](https://www.netacad.com/) account. There is no public package.
+- **GNS3** — [download from gns3.com](https://www.gns3.com/software/download); it ships its own installer.
+- **EVE-NG** — a virtual appliance you import into a hypervisor.
+- **Cisco IOS images** — licensed by Cisco; obtain them legitimately through your own entitlement or NetAcad.
+
+**Install from WinUtil Pro** — the parts that *are* packaged, and that you will use constantly:
+
+| Tool | Why it matters |
+|---|---|
+| tftpd64 | TFTP server for moving IOS images and configs to and from devices — a classic CCNA task. Also bundles DHCP, DNS, and syslog servers for lab services. |
+| Wireshark | Packet capture and protocol analysis; the single most useful skill on this track. |
+| Nmap | Host discovery and port scanning on your lab subnets. |
+| iPerf3 | Prove a link's real throughput. |
+| WinMTR | Combined ping/traceroute per-hop loss and latency — the troubleshooting workhorse. |
+| PuTTY · Termius | Console and SSH access to switches and routers (PuTTY also does serial). |
+| Angry IP Scanner · Advanced IP Scanner | Quick subnet sweeps. |
+| VirtualBox | Run EVE-NG or Linux hosts inside your topology. |
+| WireGuard · OpenVPN · ZeroTier · Tailscale | Hands-on with real VPN and overlay networking. |
+| simplewall | See and control what is talking on the wire from your own machine. |
+
+## CompTIA: A+, Network+, Security+, CySA+
+
+| Certification | Tools in the catalog |
+|---|---|
+| **A+** | Sysinternals Suite, HWiNFO, CPU-Z, GPU-Z, CrystalDiskInfo, CrystalDiskMark, Rufus, Ventoy, WizTree, BleachBit, Double Commander |
+| **Network+** | Wireshark, Nmap, iPerf3, WinMTR, tftpd64, Angry IP Scanner, PuTTY |
+| **Security+** | Gpg4win, VeraCrypt, KeePassXC, Bitwarden, Malwarebytes, Sandboxie-Plus, simplewall, Nessus (Essentials) |
+| **CySA+** | Sysmon, osquery, Velociraptor, Wazuh Agent, Suricata, YARA, Trivy, Gitleaks, Splunk Universal Forwarder, Winlogbeat, Autopsy, Volatility Workbench, HxD |
+
+## Kubernetes: CKA, CKAD, CKS
+
+Everything you need for the Kubernetes tracks is packaged, which makes this the best-covered certification in the catalog.
+
+| Tool | Why it matters |
+|---|---|
+| kubectl | The exam is `kubectl`. Install it first. |
+| minikube · kind | Local single-node clusters to practise against. |
+| Helm | Package management; required for CKAD-style work. |
+| k9s | Terminal UI that makes cluster navigation far faster. |
+| Lens | Visual cluster IDE (free for personal use). |
+| Rancher Desktop · Docker Desktop · Podman Desktop | Local container runtime plus a bundled Kubernetes option. |
+| Trivy | Image and manifest scanning — directly relevant to **CKS**. |
+
+## Cloud: AWS, Azure, Google Cloud
+
+| Certification | Tools in the catalog |
+|---|---|
+| **AWS Solutions Architect / Developer** | AWS CLI, AWS SAM CLI, Terraform, OpenTofu, Pulumi, Terragrunt, Infracost |
+| **Azure Administrator** | Azure CLI, PowerShell 7, Azure Data Studio, SQL Server Management Studio |
+| **Google Cloud Engineer** | Google Cloud SDK (gcloud) |
+| **Multi-cloud / IaC** | Terraform, OpenTofu, Pulumi, Terragrunt, MinIO Client, Rclone |
+
+## Linux Foundation: LFCS
+
+Same shape as RHCSA: the exam is on Linux, so use VirtualBox plus Vagrant for the lab and SSH in. Podman, kubectl, and Helm cover the container and orchestration objectives from the Windows side.
+
+## Offensive security: OSCP and web app testing
+
+:::important[Authorisation first]
+These tools probe and attack systems. Use them only against machines you own, lab targets you have built, or systems you hold **written** authorisation to test. Practise on intentionally vulnerable targets (HackTheBox, TryHackMe, OWASP Juice Shop) rather than live infrastructure.
+:::
+
+| Tool | Why it matters |
+|---|---|
+| Burp Suite Community | The standard web-application testing proxy. |
+| OWASP ZAP | Open-source web app scanner and proxy. |
+| mitmproxy | Scriptable intercepting proxy for HTTP/2 and WebSockets. |
+| ffuf | Fast content and parameter fuzzing. |
+| Nmap | Reconnaissance and service enumeration. |
+| x64dbg | Windows debugger for reversing and exploit work. |
+| Maltego | OSINT relationship mapping (Community edition needs a free account). |
+| VirtualBox | Run Kali Linux or Parrot OS as a VM — this is how you get the full Kali toolset. |
+
+**Not in the catalog, by design:** Metasploit, Ghidra, hashcat, John the Ripper, sqlmap, Nikto, Hydra and most of the Kali toolset have **no WinGet package**. Run them inside a Kali VM (or WSL), which is also how the OSCP exam environment works.
+
+## Related pages
+
+- [Applications](/guides/application/) — the full install catalogue.
+- [Official Microsoft Downloads](/resources/microsoft-downloads/) — Windows and Office installation media.
+- [Free Dev Services](/resources/free-dev-services/) — hosting, databases, CI, and monitoring with free tiers.
