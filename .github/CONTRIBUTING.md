@@ -7,7 +7,9 @@
 #### **Run the latest pre-release**
 
 ```ps1
-irm https://christitus.com/windev | iex
+git clone https://github.com/6t9xstar/winutil-pro.git
+cd winutil-pro
+.\Compile.ps1 -Run
 ```
 
 > [!CAUTION]
@@ -66,7 +68,7 @@ graph TD
 > This is a diagram to guide you through the process. It may vary depending on the type of change you're making.
 
 ### Fork the Repo
-* Fork the WinUtil Repository [here](https://github.com/ChrisTitusTech/winutil) to create a copy that will be available in your repository list.
+* Fork the WinUtil Pro Repository [here](https://github.com/6t9xstar/winutil-pro) to create a copy that will be available in your repository list.
 
 ![Fork Image](/docs/src/assets/contributing/Fork-Button-Dark.png)
 

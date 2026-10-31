@@ -1,4 +1,4 @@
-<!--Before you make this PR have you followed the docs here? - https://winutil.christitus.com/contributing/ -->
+<!--Before opening this PR, please read AGENTS.md and SPEC.md in the repository root. Do not commit the generated winutil.ps1. -->
 <!--Documentation is auto-generated from configs - no manual documentation updates needed -->
 
 ## Type of Change
