@@ -53,7 +53,7 @@ WinUtil is a Windows PowerShell utility with a WPF interface. The repository is 
 
 `Compile.ps1` combines the repository sources into `winutil.ps1` in this order:
 
-1. Read `scripts/start.ps1` and replace `#{replaceme}` with the current `yy.MM.dd` build date.
+1. Read `scripts/start.ps1` and replace `#{replaceme}` with `-Version`, which defaults to the current `yy.MM.dd` build date. A release cut from a tag that is not that date (a second release on one day, say) passes the tag, because the About dialog links `releases/tag/<version>`. `-Release` marks the output as published rather than local, as a CI build is, which that link and the debug-logging gate both read from `$sync.IsLocalCompile`.
 2. Append every file under `functions/` recursively.
 3. Convert each `config/*.json` file into embedded `$sync.configs` objects.
 4. Special-case `config/applications.json` so keys receive the `WPFInstall` prefix in compiled config.

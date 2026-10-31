@@ -199,6 +199,9 @@ winutil-pro/
 .\Compile.ps1
 .\Compile.ps1 -Run
 
+# Build a release artifact, stamped with the tag it is published under
+.\Compile.ps1 -Version 26.10.30.1 -Release
+
 # One-time: install the supported Pester version
 Install-Module -Name Pester -RequiredVersion 5.8.0 -Repository PSGallery -Scope CurrentUser -Force -SkipPublisherCheck
 

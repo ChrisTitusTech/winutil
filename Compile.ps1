@@ -1,5 +1,14 @@
 param (
-    [switch]$Run
+    [switch]$Run,
+
+    # The release tag to stamp as the version. Defaults to the build date, which is what CI
+    # tags with. Pass the real tag when a release does not match the date, as happens when a
+    # second release is cut on the same day, so the About dialog's version link resolves.
+    [ValidatePattern('^\d{2}\.\d{2}\.\d{2}(\.\d+)?$')]
+    [string]$Version = (Get-Date -Format 'yy.MM.dd'),
+
+    # Mark the output as a published build rather than a local one, as a CI build is marked.
+    [switch]$Release
 )
 
 $OFS = "`r`n"
@@ -8,8 +17,8 @@ $OFS = "`r`n"
 $sync = [Hashtable]::Synchronized(@{})
 $sync.configs = @{}
 
-$script = (Get-Content -Path scripts\start.ps1) -replace '#{replaceme}', (Get-Date -Format 'yy.MM.dd')
-$isLocalCompile = -not [string]::Equals($env:GITHUB_ACTIONS, "true", [StringComparison]::OrdinalIgnoreCase)
+$script = (Get-Content -Path scripts\start.ps1) -replace '#{replaceme}', $Version
+$isLocalCompile = -not ($Release -or [string]::Equals($env:GITHUB_ACTIONS, "true", [StringComparison]::OrdinalIgnoreCase))
 $script = $script -replace '#{islocalcompile}', $isLocalCompile.ToString().ToLowerInvariant()
 
 $script += Get-ChildItem -Path functions -Recurse -File | ForEach-Object {
