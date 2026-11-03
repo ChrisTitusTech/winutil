@@ -63,6 +63,10 @@ function Invoke-WinUtilTweaks {
                     $service = Get-Service -Name $serviceName -ErrorAction Stop
                     if(!($service.StartType.ToString() -eq $expectedType)) {
                         $changeservice = $false
+                        # Say so, or the log reads as if the tweak changed a service it left alone
+                        $skipMessage = "Service $serviceName startup type is $($service.StartType), not $expectedType as this tweak expects; leaving it unchanged."
+                        Write-Warning $skipMessage
+                        Write-WinUtilLog -Level "WARN" -Component "Service" -Message $skipMessage
                     }
                 } catch {
                     if ($_.FullyQualifiedErrorId -like "NoServiceFoundForGivenName,*") {

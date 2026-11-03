@@ -77,6 +77,7 @@ Because the final script is concatenated, code cannot rely on runtime module imp
 
 - UI layout lives in `xaml/inputXML.xaml`.
 - Named WPF controls are discovered and stored in `$sync`.
+- Maximized window content is inset to the current monitor work area by `Update-WinUtilWindowInsets`, using native bounds converted to WPF units. Interface events coalesce updates on the dispatcher after window or DPI changes.
 - Button/action wiring follows a naming convention: an element named like `WPFThingButton` maps to a function named like `Invoke-WPFThingButton`.
 
 ## Configuration Contract
