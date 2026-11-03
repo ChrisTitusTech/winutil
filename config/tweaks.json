@@ -573,8 +573,8 @@
       try {
           Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction Stop
       } catch {
-          # 0x800106ba is Defender's provider-unavailable error (RPC server unavailable); anything else is a real failure.
-          if ($_.Exception.Message -notmatch '0x800106ba' -and $_.Exception.HResult -ne 0x800106BA) {
+          # Skip Defender error 0x800106ba when its service is unavailable; other errors must fail.
+          if ($_.Exception.Message -notmatch '\\b0x800106ba\\b' -and $_.Exception.HResult -ne 0x800106BA) {
               throw
           }
           Write-Warning 'Defender sample submission preference could not be changed; Defender may be unavailable or disabled.'
@@ -591,8 +591,8 @@
       try {
           Set-MpPreference -SubmitSamplesConsent 1 -ErrorAction Stop
       } catch {
-          # 0x800106ba is Defender's provider-unavailable error (RPC server unavailable); anything else is a real failure.
-          if ($_.Exception.Message -notmatch '0x800106ba' -and $_.Exception.HResult -ne 0x800106BA) {
+          # Skip Defender error 0x800106ba when its service is unavailable; other errors must fail.
+          if ($_.Exception.Message -notmatch '\\b0x800106ba\\b' -and $_.Exception.HResult -ne 0x800106BA) {
               throw
           }
           Write-Warning 'Defender sample submission preference could not be restored; Defender may be unavailable or disabled.'

@@ -465,7 +465,7 @@ Describe "Config scripts changing Defender preferences" {
         }
 
         if ($unguarded.Count -gt 0) {
-            throw ("Set-MpPreference calls must be inside a try block and pass -ErrorAction Stop, so a Defender failure cannot escape the tweak:`n" + ($unguarded -join "`n"))
+            throw ("Set-MpPreference calls must be inside a try block and pass -ErrorAction Stop, so unavailable Defender can be handled without hiding other failures:`n" + ($unguarded -join "`n"))
         }
     }
 }
@@ -505,6 +505,79 @@ Describe "Telemetry tweak Defender failures" {
         { & (Get-DefenderGuardBlock -Action $Action) } | Should -Not -Throw
 
         Should -Invoke Write-WinUtilLog -Times 1 -Exactly -ParameterFilter { $Level -eq 'WARN' }
+    }
+
+    It "warns for a message-only provider error and continues under caller Continue (<Action>)" -TestCases @(
+        @{ Action = "InvokeScript" }
+        @{ Action = "UndoScript" }
+    ) {
+        param($Action)
+        $ErrorActionPreference = 'Continue'
+        Mock Write-WinUtilLog {}
+        Mock Write-Warning {}
+        Mock Set-MpPreference { Write-Error "Operation failed with the following error: 0x800106BA." }
+
+        { & (Get-DefenderGuardBlock -Action $Action) } | Should -Not -Throw
+
+        Should -Invoke Write-Warning -Times 1 -Exactly
+        Should -Invoke Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq 'WARN' -and $Component -eq 'Script' -and $Message -like '*Defender*'
+        }
+    }
+
+    It "sets the requested consent when Defender is available (<Action>)" -TestCases @(
+        @{ Action = "InvokeScript"; Consent = 2 }
+        @{ Action = "UndoScript"; Consent = 1 }
+    ) {
+        param($Action, $Consent)
+        Mock Write-WinUtilLog {}
+        Mock Write-Warning {}
+        Mock Set-MpPreference {}
+
+        { & (Get-DefenderGuardBlock -Action $Action) } | Should -Not -Throw
+
+        Should -Invoke Set-MpPreference -Times 1 -Exactly -ParameterFilter {
+            $SubmitSamplesConsent -eq $Consent -and $ErrorAction -eq 'Stop'
+        }
+        Should -Invoke Write-Warning -Times 0 -Exactly
+        Should -Invoke Write-WinUtilLog -Times 0 -Exactly
+    }
+
+    It "rethrows access denied with a structured unrelated HResult (<Action>)" -TestCases @(
+        @{ Action = "InvokeScript" }
+        @{ Action = "UndoScript" }
+    ) {
+        param($Action)
+        Mock Set-MpPreference {
+            throw [System.Management.Automation.ErrorRecord]::new(
+                [System.UnauthorizedAccessException]::new("Access denied."),
+                "DefenderAccessDenied",
+                [System.Management.Automation.ErrorCategory]::PermissionDenied,
+                $null
+            )
+        }
+
+        { & (Get-DefenderGuardBlock -Action $Action) } | Should -Throw -ExpectedMessage "*Access denied*"
+    }
+
+    It "rethrows a missing Defender command (<Action>)" -TestCases @(
+        @{ Action = "InvokeScript" }
+        @{ Action = "UndoScript" }
+    ) {
+        param($Action)
+        Mock Set-MpPreference { throw [System.Management.Automation.CommandNotFoundException]::new("Set-MpPreference is unavailable.") }
+
+        { & (Get-DefenderGuardBlock -Action $Action) } | Should -Throw -ExpectedMessage "*Set-MpPreference is unavailable*"
+    }
+
+    It "does not confuse a longer hexadecimal value with the unavailable code (<Action>)" -TestCases @(
+        @{ Action = "InvokeScript" }
+        @{ Action = "UndoScript" }
+    ) {
+        param($Action)
+        Mock Set-MpPreference { throw "Unrelated error value: 0x800106bad." }
+
+        { & (Get-DefenderGuardBlock -Action $Action) } | Should -Throw -ExpectedMessage "*0x800106bad*"
     }
 
     It "rethrows Set-MpPreference failures that are not Defender being unavailable (<Action>)" -TestCases @(
