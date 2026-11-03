@@ -63,6 +63,8 @@ During AppX installation or removal, the window-level progress bar shows the cur
 ### Essential Tweaks
 Essential Tweaks are the safest starting point for most systems. They focus on lower-risk changes that improve usability, reduce noise, and avoid the more invasive changes found in advanced options.
 
+**BitLocker - Disable** reports when the system drive is already fully decrypted and skips disabling it again. An encrypted drive with suspended protection still needs decryption.
+
 **Telemetry - Disable** disables the Windows Error Reporting service (`WerSvc`) when its startup type is still the default Manual, and undo restores Manual. Removing an already absent feedback-frequency registry value is treated as complete rather than as an error.
 
 ### Advanced Tweaks (CAUTION)
