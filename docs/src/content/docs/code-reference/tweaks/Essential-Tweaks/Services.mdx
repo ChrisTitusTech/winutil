@@ -1,6 +1,6 @@
 ---
 title: "Services - Set to Manual"
-description: "Sets some services to Manual startup and adjusts the SvcHostSplitThresholdInKB registry value to better match system memory, which can significantly reduce the number of svchost.exe processes."
+description: "Sets some services to Manual startup."
 editUrl: false
 ---
 
@@ -11,7 +11,7 @@ This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitus
 ```json title="config/tweaks.json"
   "WPFTweaksServices": {
     "Content": "Services - Set to Manual",
-    "Description": "Sets some services to Manual startup and adjusts the SvcHostSplitThresholdInKB registry value to better match system memory, which can significantly reduce the number of svchost.exe processes.",
+    "Description": "Sets some services to Manual startup.",
     "category": "Essential Tweaks",
     "panel": "1",
     "service": [
@@ -40,12 +40,6 @@ This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitus
         "StartupType": "Disabled",
         "OriginalType": "Automatic"
       }
-    ],
-    "InvokeScript": [
-      "
-      $Memory = (Get-CimInstance Win32_PhysicalMemory | Measure-Object Capacity -Sum).Sum / 1KB
-      Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value $Memory
-      "
     ],
   }
 ```

@@ -345,9 +345,10 @@ foreach ($itemName in $tweakNames) {
 
     if (-Not (Test-Path -Path $categoryDir)) { New-Item -ItemType Directory -Path $categoryDir | Out-Null }
 
-    $title       = $item.Content -replace '"', '\"'
-    $description = if ($item.Description) { $item.Description -replace '"', '\"' } else { '' }
-    $content     = "---`r`ntitle: `"$title`"`r`ndescription: `"$description`"`r`neditUrl: false`r`n---`r`n`r`n"
+    # JSON string scalars are valid YAML and escape Windows paths and control characters.
+    $title       = ConvertTo-Json -InputObject ([string]$item.Content) -Compress
+    $description = ConvertTo-Json -InputObject ([string]$item.Description) -Compress
+    $content     = "---`r`ntitle: $title`r`ndescription: $description`r`neditUrl: false`r`n---`r`n`r`n"
 
     if ($item.Type -eq "Button") {
         $funcName = $buttonFunctionMap[$itemName]
@@ -404,9 +405,10 @@ foreach ($itemName in $featureNames) {
 
     if (-Not (Test-Path -Path $categoryDir)) { New-Item -ItemType Directory -Path $categoryDir | Out-Null }
 
-    $title       = $item.Content -replace '"', '\"'
-    $description = if ($item.Description) { $item.Description -replace '"', '\"' } else { '' }
-    $content     = "---`r`ntitle: `"$title`"`r`ndescription: `"$description`"`r`neditUrl: false`r`n---`r`n`r`n"
+    # JSON string scalars are valid YAML and escape Windows paths and control characters.
+    $title       = ConvertTo-Json -InputObject ([string]$item.Content) -Compress
+    $description = ConvertTo-Json -InputObject ([string]$item.Description) -Compress
+    $content     = "---`r`ntitle: $title`r`ndescription: $description`r`neditUrl: false`r`n---`r`n`r`n"
 
     if ($item.category -in $functionEmbedCategories) {
         $funcName = if ($item.function) { $item.function } else { $buttonFunctionMap[$itemName] }
