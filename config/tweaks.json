@@ -648,7 +648,7 @@
       if ($bitLockerVolume.VolumeStatus -eq 'FullyDecrypted') {
           Write-Host \"BitLocker is already disabled on $($Env:SystemDrive).\"
       } else {
-          Disable-BitLocker -MountPoint $Env:SystemDrive
+          Disable-BitLocker -MountPoint $Env:SystemDrive -ErrorAction Stop
       }
       "
     ],

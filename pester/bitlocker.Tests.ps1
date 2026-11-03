@@ -21,6 +21,7 @@ BeforeAll {
         throw "Get-BitLockerVolume must be mocked for $MountPoint."
     }
     function Disable-BitLocker {
+        [CmdletBinding()]
         param($MountPoint)
         throw "Disable-BitLocker must be mocked for $MountPoint."
     }
@@ -110,6 +111,12 @@ Describe "WPFTweaksDisableBitLocker InvokeScript" {
         { & $script:invokeBlock } | Should -Throw -ExpectedMessage "*simulated BitLocker disable failure*"
     }
 
+    It "makes a non-terminating disable error stop the script" {
+        Mock Get-BitLockerVolume { [pscustomobject]@{ VolumeStatus = 'FullyEncrypted' } }
+        Mock Disable-BitLocker { Write-Error 'simulated non-terminating disable failure' }
+        { & $script:invokeBlock } | Should -Throw '*simulated non-terminating disable failure*'
+        Should -Invoke Disable-BitLocker -Times 1 -Exactly -ParameterFilter { $ErrorAction -eq 'Stop' }
+    }
     It "preserves the Enable-BitLocker undo script" {
         $script:undoText | Should -Match 'Enable-BitLocker -MountPoint \$Env:SystemDrive'
     }
