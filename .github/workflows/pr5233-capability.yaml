@@ -1,0 +1,33 @@
+name: Temporary PR5233 capability validation
+on:
+  push:
+    branches: [codex/pr5233-capability-validation]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  capability:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Fetch PR source into separate directory
+        shell: pwsh
+        run: |
+          git fetch origin refs/pull/5233/head
+          if ($LASTEXITCODE -ne 0) { throw 'PR fetch failed' }
+          git show FETCH_HEAD:functions/public/Invoke-WPFUpdatesdefault.ps1 | Set-Content "$env:RUNNER_TEMP\Invoke-WPFUpdatesdefault.ps1" -Encoding UTF8
+          if ($LASTEXITCODE -ne 0) { throw 'PR source read failed' }
+      - name: Test real service-key capability and reversible ACL repair
+        shell: pwsh
+        run: ./.github/validation/pr5233-capability.ps1 -SourcePath "$env:RUNNER_TEMP\Invoke-WPFUpdatesdefault.ps1"
+      - name: Upload capability evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: pr5233-capability-${{ github.run_id }}
+          path: ${{ runner.temp }}/winutil-pr5233-capability.json
+          if-no-files-found: warn
+          retention-days: 7
