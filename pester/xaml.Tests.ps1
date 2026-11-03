@@ -447,6 +447,8 @@ Describe "XAML and sync wiring" {
             "SyncRoot",
             "UIRunspace",
             "UIDispatchDelegate",
+            "WindowInsetsPending",
+            "WindowInsetsUpdate",
             "StepTimings",
             "LoggedErrors",
             "StartedAt",
