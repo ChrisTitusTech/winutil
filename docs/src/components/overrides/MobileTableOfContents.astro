@@ -1,0 +1,9 @@
+---
+// Table of contents override (narrow screens).
+import MobileToc from '../docs/MobileToc.jsx';
+import '../../styles/docs-ui.css';
+
+const { toc } = Astro.locals.starlightRoute;
+---
+
+{toc && <MobileToc client:media="(max-width: 71.99rem)" items={toc.items} />}

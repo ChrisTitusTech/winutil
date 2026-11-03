@@ -60,7 +60,10 @@ function Update-WinUtilSelections {
             throw "Unknown selection key '$cbkey'."
         }
 
-        $nextSelections[$listName].Add($cbkey)
+        # Replacement imports must also behave like checkbox selections, not repeated actions.
+        if ($nextSelections[$listName] -notcontains $cbkey) {
+            $nextSelections[$listName].Add($cbkey)
+        }
     }
 
     $validSelectionCount = ($nextSelections.Values | ForEach-Object { $_.Count } | Measure-Object -Sum).Sum

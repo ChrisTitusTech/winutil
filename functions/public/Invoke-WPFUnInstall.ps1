@@ -35,7 +35,7 @@ function Invoke-WPFUnInstall {
     } -ScriptBlock {
         param($PackagesToUninstall, $ManagerPreference)
 
-        $packagesSorted = Get-WinUtilSelectedPackages -PackageList $PackagesToUninstall -Preference $ManagerPreference
+        $packagesSorted = Get-WinUtilSelectedPackages -PackageList $PackagesToUninstall -Preference $ManagerPreference -Action Uninstall
         $packagesWinget = $packagesSorted['Winget']
         $packagesChoco = $packagesSorted['Choco']
         $totalPackages = @($packagesWinget).Count + @($packagesChoco).Count

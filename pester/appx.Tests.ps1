@@ -204,12 +204,15 @@ Describe "Install-WinUtilAPPX" {
         Should -Invoke -CommandName Install-WinUtilProgramWinget -Times 1 -Exactly
     }
 
-    It "throws after logging an error when neither install method is available" {
+    It "returns a failed result when neither install method is available" {
         Mock powershell.exe { $global:LASTEXITCODE = 0 }
 
-        { Install-WinUtilAPPX -Name "Example.Package" } |
-            Should -Throw "Unable to install Example.Package because no local manifest or Microsoft Store ID is available."
+        $result = @(Install-WinUtilAPPX -Name "Example.Package")
 
+        $result.Count | Should -Be 1
+        $result[0].Outcome | Should -Be "Failed"
+        $result[0].Manager | Should -Be "appx"
+        $result[0].Detail | Should -Be "Unable to install Example.Package because no local manifest or Microsoft Store ID is available."
         Should -Invoke -CommandName Install-WinUtilProgramWinget -Times 0 -Exactly
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
             $Level -eq "ERROR" -and
@@ -462,6 +465,47 @@ Describe "Invoke-WPFAppxInstall" {
         $jobParameters = $script:capturedAppxInstallParameters
 
         { & $script:capturedAppxInstallScriptBlock @jobParameters } | Should -Throw "Install failed"
+    }
+
+    It "keeps installing the remaining packages when one returns a failed result" {
+        $script:sync.selectedAppx.Add("WPFAppxExample")
+        $script:sync.configs.appxHashtable.WPFAppxNoSource = [pscustomobject]@{
+            Content = "No Source App"
+            PackageId = "No.Source.Package"
+        }
+        $script:sync.selectedAppx.Add("WPFAppxNoSource")
+        Mock Install-WinUtilAPPX {
+            if ($Name -eq "No.Source.Package") {
+                [pscustomobject]@{
+                    Package = $Name
+                    Manager = "appx"
+                    Action = "Install"
+                    ExitCode = 1
+                    Outcome = "Failed"
+                    Detail = "no install source"
+                }
+            } else {
+                [pscustomobject]@{
+                    Package = $Name
+                    Manager = "appx"
+                    Action = "Install"
+                    ExitCode = 0
+                    Outcome = "Succeeded"
+                    Detail = "exit code 0"
+                }
+            }
+        }
+
+        Invoke-WPFAppxInstall
+        $jobParameters = $script:capturedAppxInstallParameters
+        & $script:capturedAppxInstallScriptBlock @jobParameters
+
+        Should -Invoke -CommandName Install-WinUtilAPPX -Times 2 -Exactly
+        Should -Invoke Complete-WinUtilPackageRun -Times 1 -Exactly -ParameterFilter {
+            $Action -eq "Install" -and $Results.Count -eq 2 -and
+                @($Results | Where-Object Outcome -EQ "Failed").Count -eq 1 -and
+                @($Results | Where-Object Outcome -EQ "Succeeded").Count -eq 1
+        }
     }
 
     It "passes a skipped Store result to package completion and reports it as skipped" {

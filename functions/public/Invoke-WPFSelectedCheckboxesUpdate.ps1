@@ -9,12 +9,19 @@ function Invoke-WPFSelectedCheckboxesUpdate ($type, $checkboxName) {
 
     $selectionChanged = $false
     if ($type -eq "Add") {
-        if (-not $sync.$listName.Contains($checkboxName)) {
+        if ($sync.$listName -notcontains $checkboxName) {
             $sync.$listName.Add($checkboxName)
             $selectionChanged = $true
         }
     } else {
-        $selectionChanged = $sync.$listName.Remove($checkboxName)
+        # Imported keys are validated case-insensitively, so checkbox events must
+        # use the same comparison even when the imported spelling differs.
+        for ($index = $sync.$listName.Count - 1; $index -ge 0; $index--) {
+            if ($sync.$listName[$index] -eq $checkboxName) {
+                $sync.$listName.RemoveAt($index)
+                $selectionChanged = $true
+            }
+        }
     }
 
     if ($listName -eq "selectedApps" -and $selectionChanged) {

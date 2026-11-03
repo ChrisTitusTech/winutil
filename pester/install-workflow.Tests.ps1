@@ -29,7 +29,7 @@ BeforeAll {
         param($ArgumentList, $ParameterList, [scriptblock]$ScriptBlock)
     }
     function Get-WinUtilSelectedPackages {
-        param($PackageList, [string]$Preference)
+        param($PackageList, [string]$Preference, [string]$Action)
     }
     function Install-WinUtilWinget { }
     function Install-WinUtilChoco { }
@@ -357,6 +357,8 @@ Describe "Invoke-WPFUnInstall job body" {
 
         $jobParameters = $script:capturedUninstallJob.Parameters
         & $script:capturedUninstallJob.ScriptBlock @jobParameters
+
+        Should -Invoke Get-WinUtilSelectedPackages -Times 1 -Exactly -ParameterFilter { $Action -eq "Uninstall" }
 
         Should -Invoke -CommandName Install-WinUtilProgramWinget -Times 1 -Exactly -ParameterFilter {
             $Action -eq "Uninstall" -and @($Programs)[0] -eq "Git.Git"

@@ -49,6 +49,27 @@ Describe "Get-WinUtilSelectedPackages" {
         (@($result["Winget"]) -join "|") | Should -Be "VideoLAN.VLC|Mozilla.Firefox"
     }
 
+    It "splits multi-ID values on ';' so every ID is installed" {
+        $packages = @(
+            [pscustomobject]@{ winget = "GitHub.GitHubDesktop"; choco = "git;github-desktop" }
+        )
+
+        $result = Get-WinUtilSelectedPackages -PackageList $packages -Preference "Choco"
+
+        (@($result["Choco"]) -join "|") | Should -Be "git|github-desktop"
+    }
+
+    It "does not uninstall an app dependency unless it was separately selected" {
+        $desktop = [pscustomobject]@{ winget = "GitHub.GitHubDesktop"; choco = "git;github-desktop" }
+        $git = [pscustomobject]@{ winget = "Git.Git"; choco = "git" }
+
+        $desktopOnly = Get-WinUtilSelectedPackages -PackageList @($desktop) -Preference Choco -Action Uninstall
+        @($desktopOnly.Choco) | Should -Be @('github-desktop')
+
+        $both = Get-WinUtilSelectedPackages -PackageList @($desktop, $git) -Preference Choco -Action Uninstall
+        @($both.Choco) | Should -Be @('github-desktop', 'git')
+    }
+
     It "skips blank, na, and missing package IDs" {
         $packages = @(
             [pscustomobject]@{ winget = ""; choco = "" }
@@ -96,6 +117,7 @@ Describe "Get-WinUtilSelectedPackages" {
 Describe "Test-WinUtilPackageManager" {
     BeforeEach {
         Mock Write-WinUtilJobBanner { }
+        Mock Write-Host { }
     }
 
     It "reports winget installed when the command exists" {
@@ -109,6 +131,7 @@ Describe "Test-WinUtilPackageManager" {
             $Name -eq "winget" -and $ErrorAction -eq "SilentlyContinue"
         }
         Should -Invoke -CommandName Write-WinUtilJobBanner -Times 0 -Exactly
+        Should -Invoke -CommandName Write-Host -Times 0 -Exactly
     }
 
     It "reports choco not installed when the command is missing" {
@@ -123,10 +146,28 @@ Describe "Test-WinUtilPackageManager" {
         }
         Should -Invoke -CommandName Write-WinUtilJobBanner -Times 0 -Exactly
     }
+
+    It "requires both requested managers to be installed" -TestCases @(
+        @{ WingetPresent = $true; ChocoPresent = $true; Expected = "installed" }
+        @{ WingetPresent = $false; ChocoPresent = $true; Expected = "not-installed" }
+        @{ WingetPresent = $true; ChocoPresent = $false; Expected = "not-installed" }
+    ) {
+        param($WingetPresent, $ChocoPresent, $Expected)
+        Mock Get-Command { if ($WingetPresent) { [pscustomobject]@{ Name = "winget" } } } -ParameterFilter { $Name -eq "winget" }
+        Mock Get-Command { if ($ChocoPresent) { [pscustomobject]@{ Name = "choco" } } } -ParameterFilter { $Name -eq "choco" }
+
+        Test-WinUtilPackageManager -winget -choco | Should -Be $Expected
+        Should -Invoke -CommandName Write-Host -Times 0 -Exactly
+    }
+
+    It "reports not installed when no manager is requested" {
+        Test-WinUtilPackageManager | Should -Be "not-installed"
+    }
 }
 
 Describe "Install-WinUtilProgramWinget" {
     BeforeEach {
+        Mock Update-WinUtilPowerShellMSI { [pscustomobject]@{ Outcome = "NotInstalled" } }
         Mock Write-WinUtilLog { }
         Mock Start-Process { [pscustomobject]@{ ExitCode = 0 } }
     }
