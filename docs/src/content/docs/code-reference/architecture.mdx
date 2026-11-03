@@ -89,6 +89,8 @@ winutil/
 
 The interface itself lives in `Start-WinUtilUserInterface`, not here. See [Threading Model](#threading-model).
 
+`Update-WinUtilWindowInsets` keeps maximized content inside the current monitor work area. It measures native window bounds, converts the overhang to WPF units, and updates the main grid after size, position, DPI, or work-area changes. Restoring the window removes the inset.
+
 #### 3. functions/public/
 **Purpose**: User-facing functions that implement main features.
 

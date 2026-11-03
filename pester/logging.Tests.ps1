@@ -335,7 +335,7 @@ Describe "Collected runspace output" {
     It "logs redirected warnings and non-terminating errors" {
         Mock Write-WinUtilHost { }
 
-        & { Write-Warning "Service Example was not found."; Write-Error "Access denied" } 2>&1 3>&1 | ForEach-Object {
+        & { Write-Warning "Service Example was not found."; Write-Error "Access denied" -ErrorAction Continue } 2>&1 3>&1 | ForEach-Object {
             Write-WinUtilStreamRecord -Record $_ -Component "Tweaks"
         }
 
