@@ -1,0 +1,37 @@
+---
+// Page title override, with a breadcrumb of the sidebar groups that contain the page.
+import type { SidebarEntry } from '@astrojs/starlight/route-data';
+import '../../styles/docs-ui.css';
+
+// Starlight's page title id; the skip link and the table of contents link to it.
+const PAGE_TITLE_ID = '_top';
+
+const { entry, sidebar } = Astro.locals.starlightRoute;
+
+function trail(entries: SidebarEntry[]): string[] | undefined {
+	for (const item of entries) {
+		if (item.type === 'link') {
+			if (item.isCurrent) return [];
+		} else {
+			const inner = trail(item.entries);
+			if (inner) return [item.label, ...inner];
+		}
+	}
+	return undefined;
+}
+
+const crumbs = trail(sidebar) ?? [];
+---
+
+<div class="docs-page-title">
+	{
+		crumbs.length > 0 && (
+			<p class="docs-breadcrumb" data-pagefind-ignore>
+				{crumbs.map((crumb) => (
+					<span>{crumb}</span>
+				))}
+			</p>
+		)
+	}
+	<h1 id={PAGE_TITLE_ID}>{entry.data.title}</h1>
+</div>

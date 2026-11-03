@@ -1,0 +1,9 @@
+---
+// Table of contents override (wide screens).
+import TableOfContents from '../docs/TableOfContents.jsx';
+import '../../styles/docs-ui.css';
+
+const { toc } = Astro.locals.starlightRoute;
+---
+
+{toc && <TableOfContents client:media="(min-width: 72rem)" items={toc.items} />}

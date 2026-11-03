@@ -1,0 +1,30 @@
+---
+// Sidebar override: the docs navigation plus Starlight's mobile menu footer.
+import MobileMenuFooter from 'virtual:starlight/components/MobileMenuFooter';
+import SidebarList from '../docs/SidebarList.astro';
+import '../../styles/docs-ui.css';
+
+const { sidebar } = Astro.locals.starlightRoute;
+---
+
+<nav class="docs-sidebar" aria-label="Docs">
+	<SidebarList entries={sidebar} />
+</nav>
+
+<div class="md:sl-hidden">
+	<MobileMenuFooter />
+</div>
+
+{/* Scroll the current page's link into view on long sidebars. */}
+<script is:inline>
+	(() => {
+		const pane = document.getElementById('starlight__sidebar');
+		const current = pane && pane.querySelector('[aria-current="page"]');
+		if (!current || !matchMedia('(min-width: 50em)').matches) return;
+		const paneBox = pane.getBoundingClientRect();
+		const box = current.getBoundingClientRect();
+		if (box.top < paneBox.top || box.bottom > paneBox.bottom) {
+			pane.scrollTop += box.top - paneBox.top - paneBox.height / 3;
+		}
+	})();
+</script>

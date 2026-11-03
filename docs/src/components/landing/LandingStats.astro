@@ -1,0 +1,23 @@
+---
+// Counts the generated tweak and feature reference pages, so the numbers follow config/tweaks.json and feature.json.
+import { getCollection } from 'astro:content';
+
+const docs = await getCollection('docs');
+const countPages = (dir: string) => docs.filter((entry) => entry.id.startsWith(`code-reference/${dir}/`)).length;
+
+const stats = [
+	{ value: countPages('tweaks'), label: 'Documented tweaks' },
+	{ value: countPages('features'), label: 'Features & fixes' },
+];
+---
+
+<div class="wu-stats">
+	{
+		stats.map(({ value, label }) => (
+			<div class="wu-stat">
+				<span class="wu-stat-value">{value}</span>
+				<span class="wu-stat-label">{label}</span>
+			</div>
+		))
+	}
+</div>

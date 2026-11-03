@@ -1,0 +1,29 @@
+---
+title: Page not found
+description: The page you were looking for doesn't exist or has moved.
+template: splash
+editUrl: false
+pagefind: false
+heroEyebrow: Error 404
+heroCaption: Looking for something specific? Try the search bar at the top of the page.
+hero:
+  title: This page doesn't exist
+  tagline: The link may be broken, or the page may have moved when the docs were reorganized.
+  actions:
+    - text: Back to Home
+      link: /
+      icon: left-arrow
+    - text: Read the Guides
+      link: /guides/
+      icon: right-arrow
+      variant: secondary
+head:
+  # Same entrance animation as the landing page; see "Landing motion" in theme.css.
+  - tag: script
+    content: |
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('wu-motion');
+---
+
+import LandingMotion from '../../components/landing/LandingMotion.astro';
+
+<LandingMotion />

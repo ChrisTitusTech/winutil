@@ -1,0 +1,34 @@
+---
+// Pagination override: previous/next page cards.
+import { Icon } from '@astrojs/starlight/components';
+import '../../styles/docs-ui.css';
+
+const { prev, next } = Astro.locals.starlightRoute.pagination;
+---
+
+{
+	(prev || next) && (
+		<nav class="docs-pagination print:hidden" aria-label="Pagination">
+			{prev ? (
+				<a href={prev.href} rel="prev" class="docs-pagination-link docs-pagination-prev">
+					<span class="docs-pagination-hint">
+						<Icon name="left-arrow" />
+						Previous
+					</span>
+					<span class="docs-pagination-title">{prev.label}</span>
+				</a>
+			) : (
+				<span />
+			)}
+			{next && (
+				<a href={next.href} rel="next" class="docs-pagination-link docs-pagination-next">
+					<span class="docs-pagination-hint">
+						Next
+						<Icon name="right-arrow" />
+					</span>
+					<span class="docs-pagination-title">{next.label}</span>
+				</a>
+			)}
+		</nav>
+	)
+}

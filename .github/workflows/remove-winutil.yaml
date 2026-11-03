@@ -29,6 +29,6 @@ jobs:
         git config --global user.name "winutil-action"
         git rm winutil.ps1
         git commit -m "Delete winutil.ps1 as it is not allowed"
-        git push origin HEAD:${{ github.ref }}
+        git push origin "HEAD:$GITHUB_REF"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
