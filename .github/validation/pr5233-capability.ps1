@@ -6,9 +6,9 @@ if (-not ([Security.Principal.WindowsPrincipal]$identity).IsInRole([Security.Pri
 $report = [ordered]@{ OS = [Environment]::OSVersion.VersionString; PSVersion = "$($PSVersionTable.PSVersion)"; SourceHash = (Get-FileHash -LiteralPath $SourcePath).Hash; Keys = @(); Operations = @(); Cleanup = @(); ProductionLog = @(); Synthetic = @() }
 $script:productionLog = [Collections.Generic.List[object]]::new()
 function Write-WinUtilLog { param($Level = 'INFO', $Component, $Message) $script:productionLog.Add([pscustomobject]@{ Level=$Level; Message=$Message }) }
-function Invoke-Probe { param([string]$Name, [scriptblock]$Body)
-    try { & $Body | Out-Null; $script:report.Operations += [pscustomobject]@{ Name=$Name; Succeeded=$true; Error=$null }; return $true }
-    catch { $script:report.Operations += [pscustomobject]@{ Name=$Name; Succeeded=$false; Error=$_.Exception.Message }; return $false }
+function Invoke-Probe { param([string]$ProbeLabel, [scriptblock]$Body)
+    try { & $Body | Out-Null; $script:report.Operations += [pscustomobject]@{ Name=$ProbeLabel; Succeeded=$true; Error=$null }; return $true }
+    catch { $script:report.Operations += [pscustomobject]@{ Name=$ProbeLabel; Succeeded=$false; Error=$_.Exception.Message }; return $false }
 }
 $tokens = $null; $parseErrors = $null
 $ast = [Management.Automation.Language.Parser]::ParseFile((Resolve-Path -LiteralPath $SourcePath).Path,[ref]$tokens,[ref]$parseErrors)
@@ -37,7 +37,7 @@ try {
             $snapshots[$name] = $snapshot
             $report.Keys += [pscustomobject]@{ Name=$name; Owner=$acl.Owner; Sddl=$acl.Sddl; Start=$snapshot.Start; Status=$snapshot.Status; StartupType=$snapshot.StartupType; ExplicitSystemDeny=@($acl.GetAccessRules($true,$false,[Security.Principal.SecurityIdentifier]) | Where-Object { $_.AccessControlType -eq 'Deny' -and $_.IdentityReference.Value -eq 'S-1-5-18' }).Count; InheritedSystemDeny=@($acl.GetAccessRules($false,$true,[Security.Principal.SecurityIdentifier]) | Where-Object { $_.AccessControlType -eq 'Deny' -and $_.IdentityReference.Value -eq 'S-1-5-18' }).Count }
             $snapshot.ValuesTouched = Invoke-Probe "$name actual Start same-value write" { Set-ItemProperty -LiteralPath $keyPath -Name Start -Type DWord -Value $snapshot.Start -ErrorAction Stop }
-            $snapshot.AclTouched = Invoke-Probe "$name actual DACL same-value write" { Set-Acl -LiteralPath $keyPath -AclObject $acl -ErrorAction Stop }
+            $snapshot.AclTouched = Invoke-Probe "$name actual DACL same-value write" { Set-Acl -Path $keyPath -AclObject $acl -ErrorAction Stop }
             if ($name -ne 'WaaSMedicSvc') {
                 $snapshot.ServiceTouched = Invoke-Probe "$name actual SCM startup restore" { $mode=if($name -eq 'UsoSvc'){'Automatic'}else{'Manual'}; Set-Service -Name $name -StartupType $mode -ErrorAction Stop }
             }
@@ -68,7 +68,7 @@ try {
         $systemRule=[Security.AccessControl.RegistryAccessRule]::new($systemSid,[Security.AccessControl.RegistryRights]::SetValue,$inherit,[Security.AccessControl.PropagationFlags]::None,[Security.AccessControl.AccessControlType]::Deny)
         $otherRule=[Security.AccessControl.RegistryAccessRule]::new($otherSid,[Security.AccessControl.RegistryRights]::SetValue,[Security.AccessControl.InheritanceFlags]::None,[Security.AccessControl.PropagationFlags]::None,[Security.AccessControl.AccessControlType]::Deny)
         $parentAcl.AddAccessRule($systemRule); $parentAcl.AddAccessRule($otherRule)
-        Set-Acl -LiteralPath $parentPath -AclObject $parentAcl
+        Set-Acl -Path $parentPath -AclObject $parentAcl
         $serviceKeyPath=$parentPath
         if($scenario -eq 'Inherited'){ $serviceKeyPath=Join-Path $parentPath 'Child'; New-Item -Path $serviceKeyPath -Force | Out-Null }
         $serviceName="synthetic-$scenario"
@@ -97,7 +97,7 @@ finally {
                 if($snapshot.DelayedExists){Set-ItemProperty -LiteralPath $snapshot.Path -Name DelayedAutoStart -Type DWord -Value $snapshot.Delayed -ErrorAction Stop}else{Remove-ItemProperty -LiteralPath $snapshot.Path -Name DelayedAutoStart -ErrorAction SilentlyContinue}
             }
             if($name -eq 'UsoSvc' -and $snapshot.ServiceTouched -and $snapshot.Status -eq 'Stopped' -and (Get-Service $name).Status -ne 'Stopped'){Stop-Service -Name $name -Force -ErrorAction Stop}
-            if($snapshot.AclTouched){Set-Acl -LiteralPath $snapshot.Path -AclObject $snapshot.Acl -ErrorAction Stop}
+            if($snapshot.AclTouched){Set-Acl -Path $snapshot.Path -AclObject $snapshot.Acl -ErrorAction Stop}
             $finalAcl=Get-Acl -LiteralPath $snapshot.Path
             $finalStart=(Get-ItemProperty -LiteralPath $snapshot.Path -Name Start).Start
             if($finalAcl.Sddl -ne $snapshot.Sddl -or $finalStart -ne $snapshot.Start){throw 'Original service key state was not restored.'}
