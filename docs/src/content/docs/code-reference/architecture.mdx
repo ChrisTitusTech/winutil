@@ -35,10 +35,6 @@ WinUtil is a PowerShell-based Windows utility with a WPF (Windows Presentation F
     └─────────────────────────┘
 ```
 
-## Documentation Build
-
-The docs deployment workflow runs `tools/devdocs-generator.ps1` before Astro builds the site. The generator reads the tweak and feature JSON configs and their PowerShell functions, then regenerates reference pages with safely escaped YAML metadata. Changes to these sources trigger a docs rebuild; deployment does not commit generated files.
-
 ## Project Structure
 
 ### Directory Layout
@@ -443,7 +439,9 @@ $uiShell = [powershell]::Create()
 $uiShell.Runspace = $sync.UIRunspace
 [void]$uiShell.AddScript({ Start-WinUtilUserInterface })
 $uiHandle = $uiShell.BeginInvoke()
-$uiHandle.AsyncWaitHandle.WaitOne()
+while (-not $uiHandle.AsyncWaitHandle.WaitOne(250)) {
+    Receive-WinUtilStreamOutput -PowerShell $uiShell -Component "UI"
+}
 ```
 
 **Why**: the window never blocks on work, and a failure on the interface thread is reported
@@ -537,10 +535,10 @@ such as cleaning up a mounted image, and then rethrow.
 Write-WinUtilLog -Level "ERROR" -Component "Install" -Message "winget install failed: $($_.Exception.Message)"
 ```
 
-Entries and console diagnostics go to the same
-`%LocalAppData%\winutil\logs\winutil_<timestamp>.log` session file. While `Start-Transcript`
-owns that file, `Write-WinUtilLog` writes through the host so the transcript captures the entry
-without a competing direct file write.
+Every thread writes to the same `%LocalAppData%\winutil\logs\winutil_<timestamp>.log` session
+file through one shared writer. `Start-WinUtilJob` logs a job's warnings, errors and `Write-Host`
+output, and the main thread logs the interface thread's while the window is open. Banners and
+progress go through `Write-WinUtilHost` instead of `Write-Host` so they stay out of the log.
 
 ## Configuration Loading
 
