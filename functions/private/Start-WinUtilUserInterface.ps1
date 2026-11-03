@@ -65,6 +65,7 @@ function Start-WinUtilUserInterface {
                 [ref]$handled
             )
             $null = $hwnd, $wParam, $lParam
+            if ($msg -eq 0x001A) { Request-WinUtilWindowInsets }
             # Check for the Event WM_SETTINGCHANGE (0x1001A) and validate that Button shows the icon for "Auto" => [char]0xF08C
             if (($msg -eq 0x001A) -and $sync.ThemeButton.Content -eq [char]0xF08C) {
                 $currentTime = [datetime]::Now
@@ -94,6 +95,17 @@ function Start-WinUtilUserInterface {
     Measure-WinUtilStep -Scope "UI" -Name "map named controls" -ScriptBlock {
         $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
     }
+
+    $sync.WindowInsetsPending = $false
+    $sync.WindowInsetsUpdate = [action]{
+        $sync.WindowInsetsPending = $false
+        if (Test-WinUtilUIAlive) { Update-WinUtilWindowInsets }
+    }
+    $sync.Form.Add_Loaded({ Request-WinUtilWindowInsets })
+    $sync.Form.Add_StateChanged({ Request-WinUtilWindowInsets })
+    $sync.Form.Add_SizeChanged({ Request-WinUtilWindowInsets })
+    $sync.Form.Add_LocationChanged({ Request-WinUtilWindowInsets })
+    $sync.Form.Add_DpiChanged({ Request-WinUtilWindowInsets })
 
     # Built here so it carries this runspace's session state: posted work then runs as ordinary
     # interface code, not a much slower cross-runspace nested pipeline. Invoke-WPFUIThread is the
