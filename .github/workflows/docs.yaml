@@ -6,11 +6,6 @@ on:
       - main
     paths:
       - "docs/**"
-      - "tools/devdocs-generator.ps1"
-      - "config/tweaks.json"
-      - "config/feature.json"
-      - "functions/**"
-      - ".github/workflows/docs.yaml"
   workflow_dispatch:
 
 permissions:
@@ -34,10 +29,6 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-
-      - name: Generate reference documentation
-        shell: pwsh
-        run: ./tools/devdocs-generator.ps1
 
       - name: Install, build, and upload your site
         uses: withastro/action@v6
