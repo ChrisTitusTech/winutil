@@ -1,0 +1,22 @@
+/* React Bits ShinyText styles (https://reactbits.dev/text-animations/shiny-text). See LICENSE.md. Unmodified. */
+.shiny-text {
+  position: relative;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.shiny-text__glow {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: blur(0.14em);
+  pointer-events: none;
+  user-select: none;
+}

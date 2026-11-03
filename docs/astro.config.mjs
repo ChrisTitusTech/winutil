@@ -1,7 +1,8 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
-import { siteLinks } from './src/site-links.ts';
+import react from '@astrojs/react';
+import { siteLinks } from './src/lib/site-links.ts';
 
 // https://astro.build/config
 export default defineConfig({
@@ -27,17 +28,24 @@ export default defineConfig({
 			],
 			// Global theme overrides (colors, fonts, landing-page section styles).
 			customCss: ['./src/styles/theme.css'],
-			// Custom component overrides, all under src/components/.
+			// Component overrides, all under src/components/overrides/.
 			components: {
-				ThemeProvider: './src/components/ThemeProvider.astro',
-				Header: './src/components/Header.astro',
-				Hero: './src/components/Hero.astro',
-				Footer: './src/components/Footer.astro',
+				ThemeProvider: './src/components/overrides/ThemeProvider.astro',
+				Header: './src/components/overrides/Header.astro',
+				Hero: './src/components/overrides/Hero.astro',
+				Footer: './src/components/overrides/Footer.astro',
+				Sidebar: './src/components/overrides/Sidebar.astro',
+				MobileMenuToggle: './src/components/overrides/MobileMenuToggle.astro',
+				TableOfContents: './src/components/overrides/TableOfContents.astro',
+				MobileTableOfContents: './src/components/overrides/MobileTableOfContents.astro',
+				PageTitle: './src/components/overrides/PageTitle.astro',
+				Pagination: './src/components/overrides/Pagination.astro',
+				ThemeSelect: './src/components/overrides/ThemeSelect.astro',
 			},
 			editLink: {
 				baseUrl: 'https://github.com/ChrisTitusTech/winutil/edit/main/docs/',
 			},
-			// Sidebar groups, top to bottom: User Guide, Code Reference, Help.
+			// Sidebar groups, top to bottom: User Guide, Code Reference, Help, Tools.
 			sidebar: [
 				{
 					label: 'User Guide',
@@ -70,8 +78,17 @@ export default defineConfig({
 						{ label: siteLinks.forums.label, link: siteLinks.forums.href, attrs: { target: '_blank', rel: 'noreferrer' } },
 					],
 				},
+				{
+					label: 'Tools',
+					items: [
+						{ label: 'Config Builder', slug: 'config-builder' },
+						{ label: 'Tweak Explorer', slug: 'tweak-explorer' },
+					],
+				},
 				{ label: siteLinks.store.label, link: siteLinks.store.href, attrs: { target: '_blank', rel: 'noreferrer' } },
 			],
 		}),
+		// React components for the docs UI and landing page.
+		react(),
 	],
 });

@@ -120,15 +120,13 @@ function Start-WinUtilJob {
         try {
             $body = [scriptblock]::Create($JobBody)
 
-            # A worker's warning and error streams buffer on a PowerShell object nobody reads.
-            # Merging them into the output stream is what gets them to the log.
-            & $body @JobParameters 2>&1 3>&1 | ForEach-Object {
+            # A worker's warning, error and Write-Host output buffers on a PowerShell object
+            # nobody reads. Merging it into the output stream is what gets it to the log.
+            & $body @JobParameters 2>&1 3>&1 6>&1 | ForEach-Object {
                 if ($_ -is [System.Management.Automation.WarningRecord]) {
                     $global:WinUtilJobWarningCount++
-                    Write-WinUtilLog -Level "WARN" -Component $JobName -Message $_.Message
-                } elseif ($_ -is [System.Management.Automation.ErrorRecord]) {
-                    Write-WinUtilErrorRecord -ErrorRecord $_ -Component $JobName -Context "Non-terminating error"
                 }
+                Write-WinUtilStreamRecord -Record $_ -Component $JobName
             }
 
             $jobClock.Stop()
