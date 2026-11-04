@@ -1,7 +1,5 @@
-#===========================================================================
-# Tests - Config Files
-#===========================================================================
-
+#====================================================================# Tests - Config Files
+#====================================================================
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $configRoot = Join-Path $PSScriptRoot "..\config"
 $functionRoot = Join-Path $repoRoot "functions"
@@ -932,6 +930,9 @@ Describe "UI-rendered config entries" {
             $themes.Dark.PSObject.Properties.Name
             "CBorderColor"
             "CButtonBackgroundMouseoverColor"
+            "CAppIconShadowColor"
+            # Set from the width of the app list (Update-WinUtilAppEntryWidth), not by a theme
+            "AppEntryCardWidth"
             "CMainGradientTopColor"
             "CMainGradientBottomColor"
         ) | Sort-Object -Unique

@@ -85,12 +85,18 @@
         <Setter Property="BorderBrush" Value="Gray"/>
         <Setter Property="BorderThickness" Value="{DynamicResource AppEntryBorderThickness}"/>
         <Setter Property="CornerRadius" Value="5"/>
-        <Setter Property="Padding" Value="6,4"/>
-        <Setter Property="Width" Value="{DynamicResource AppEntryWidth}"/>
+        <Setter Property="Padding" Value="7,5"/>
+        <Setter Property="Width" Value="{DynamicResource AppEntryCardWidth}"/>
         <Setter Property="VerticalAlignment" Value="Top"/>
         <Setter Property="Margin" Value="{DynamicResource AppEntryMargin}"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Background" Value="{DynamicResource AppInstallUnselectedColor}"/>
+        <Style.Triggers>
+            <!-- A selected card carries its own colour, which wins over this -->
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource AppInstallHighlightedColor}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
     <Style x:Key="AppEntryCheckboxStyle" TargetType="CheckBox">
         <Setter Property="Background" Value="Transparent"/>
@@ -114,6 +120,30 @@
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Margin" Value="{DynamicResource AppEntryMargin}"/>
         <Setter Property="Background" Value="Transparent"/>
+    </Style>
+    <!-- A very soft shadow, in a colour that follows the theme, lifts each logo off the card -->
+    <Style x:Key="AppEntryIconPlateStyle" TargetType="Border">
+        <Setter Property="Width" Value="{DynamicResource AppEntryIconSize}"/>
+        <Setter Property="Height" Value="{DynamicResource AppEntryIconSize}"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="2"/>
+        <Setter Property="Margin" Value="0,0,8,0"/>
+    </Style>
+    <Style x:Key="AppEntryIconStyle" TargetType="Image">
+        <Setter Property="Stretch" Value="Uniform"/>
+        <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect ShadowDepth="0" BlurRadius="7" Opacity="{DynamicResource AppIconShadowOpacity}" Color="{DynamicResource CAppIconShadowColor}"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="AppEntryIconLetterStyle" TargetType="TextBlock">
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="FontSize" Value="{DynamicResource AppEntryFontSize}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ToggleButtonOnColor}"/>
     </Style>
     <Style x:Key="AppEntryButtonStyle" TargetType="Button">
         <Setter Property="Width" Value="{DynamicResource IconButtonSize}"/>

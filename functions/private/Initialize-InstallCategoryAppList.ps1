@@ -94,6 +94,13 @@ function Initialize-InstallCategoryAppList {
             $wrapPanel.Visibility = [Windows.Visibility]::Visible
             $wrapPanel.Tag = "CategoryWrapPanel_$category"
 
+            # One set of handlers for every card in the category; events bubble up to here
+            $entryHandlers = Get-WinUtilAppEntryHandlers
+            $wrapPanel.AddHandler([Windows.UIElement]::MouseLeftButtonUpEvent, $entryHandlers.BorderClick)
+            $wrapPanel.AddHandler([Windows.UIElement]::MouseRightButtonUpEvent, $entryHandlers.RightClick)
+            $wrapPanel.AddHandler([Windows.Controls.Primitives.ToggleButton]::CheckedEvent, $entryHandlers.Checked)
+            $wrapPanel.AddHandler([Windows.Controls.Primitives.ToggleButton]::UncheckedEvent, $entryHandlers.Unchecked)
+
             $null = $categoryContainer.Children.Add($wrapPanel)
 
             # Add the entire category container to the target element
