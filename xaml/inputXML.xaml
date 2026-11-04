@@ -1173,7 +1173,9 @@
                                     Foreground="{DynamicResource MainForegroundColor}"
                                     TextTrimming="CharacterEllipsis"
                                     Margin="10,5,10,5"/>
-                                <StackPanel Name="JobQueueItems" Margin="5,0,5,5"/>
+                                <ScrollViewer MaxHeight="240" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                    <StackPanel Name="JobQueueItems" Margin="5,0,5,5"/>
+                                </ScrollViewer>
                             </StackPanel>
                         </Border>
                     </Popup>
