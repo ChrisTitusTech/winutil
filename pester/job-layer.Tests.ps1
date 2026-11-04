@@ -1106,6 +1106,31 @@ Describe "Job queue" {
         $script:sync.JobHandoff | Should -BeFalse
     }
 
+    It "preserves update choices separated by another action (<Sequence>)" -TestCases @(
+        @{ Sequence = @('WPFUpdatesdefault', 'WPFUpdatesdisable', 'WPFUpdatesdefault', 'WPFUpdatesdefault'); Expected = @('Default', 'Disable', 'Default') }
+        @{ Sequence = @('WPFUpdatesdefault', 'WPFUpdatesdefault'); Expected = @('Default') }
+    ) {
+        param($Sequence, $Expected)
+        . (Join-Path $script:repoRoot 'functions/public/Invoke-WPFButton.ps1')
+        . (Join-Path $script:repoRoot 'functions/public/Invoke-WPFUpdatesdefault.ps1')
+        . (Join-Path $script:repoRoot 'functions/public/Invoke-WPFUpdatesdisable.ps1')
+        $script:sync.ActiveJob = 'Held'
+        $script:sync.configs = @{ feature = @{} }
+        $script:updateChoices = [System.Collections.Generic.List[string]]::new()
+        Mock Confirm-WPFUpdatesdisable { $true }
+        Mock Invoke-WPFUpdatesdefault { $script:updateChoices.Add('Default') }
+        Mock Invoke-WPFUpdatesdisable { $script:updateChoices.Add('Disable') } -ParameterFilter { $Confirmed }
+
+        foreach ($button in $Sequence) { Invoke-WPFButton -Button $button }
+
+        $script:sync.JobQueue.Count | Should -Be $Expected.Count
+        foreach ($queued in $script:sync.JobQueue) {
+            $parameters = $queued.Parameters
+            & ([scriptblock]::Create($queued.ScriptBlock)) @parameters
+        }
+        @($script:updateChoices) | Should -Be $Expected
+        $script:updateChoices[$script:updateChoices.Count - 1] | Should -Be 'Default'
+    }
     It "queues identical work once and ignores repeated clicks" {
         $script:sync.ActiveJob = "Install"
 

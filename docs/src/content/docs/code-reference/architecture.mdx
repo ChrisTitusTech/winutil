@@ -465,7 +465,7 @@ That single classification is why no workflow arranges its own progress, banner 
 in `$sync.JobQueue` instead of being refused. The busy test and the enqueue happen under one
 `$sync.SyncRoot` lock. When a job ends, successfully or not, `Clear-WinUtilActiveJob` posts
 `Start-WinUtilNextQueuedJob` to the interface thread, which starts the oldest entry. The queue
-holds the job's parameters as they were at click time, so later selection changes do not alter
+compares only its last entry when suppressing identical requests, preserving repeated actions after intervening work. It holds the job's parameters as they were at click time, so later selection changes do not alter
 it. The clock button in the header lists the running and queued jobs and lets the user reorder
 or cancel the queued ones. Handoffs pause while the close question is open, so its answer cannot affect a different queued job. Closing the window discards whatever is still queued. The ISO and USB
 jobs do not pass the switch and still refuse.

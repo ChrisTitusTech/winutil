@@ -29,7 +29,7 @@ function Start-WinUtilJob {
         .PARAMETER QueueIfBusy
             Waits in $sync.JobQueue for its turn instead of being refused, for actions the user
             starts. The parameters are held as they were when it was queued. A job with the same
-            name and parameters as one already queued is ignored, so repeated clicks do not repeat
+            name and parameters as the last queued job is ignored, so consecutive clicks do not repeat
             the work.
 
         .PARAMETER FromQueue
@@ -112,10 +112,9 @@ function Start-WinUtilJob {
             $blockedBy = if ($sync.ActiveJob) { $sync.ActiveJob } else { "Queued operations" }
             # In the same lock as the busy test: a job finishing between the two would leave
             # this one queued behind nothing
-            if ($QueueIfBusy) {
-                foreach ($queued in $sync.JobQueue) {
-                    if ($signature -and $queued.Signature -eq $signature) { $duplicate = $true; break }
-                }
+            if ($QueueIfBusy -and $signature -and $sync.JobQueue.Count -gt 0) {
+                # An intervening action can change the state again; only collapse adjacent clicks.
+                $duplicate = $sync.JobQueue[$sync.JobQueue.Count - 1].Signature -eq $signature
             }
             if ($QueueIfBusy -and -not $duplicate) {
                 $sync.JobQueue.Add([pscustomobject]@{
