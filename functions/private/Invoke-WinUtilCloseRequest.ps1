@@ -23,15 +23,14 @@ function Invoke-WinUtilCloseRequest {
     )
 
     if (-not $sync.ActiveJob) {
-        $discard = Show-WinUtilMessage -Button "YesNo" -Icon "Warning" -Title "Queued operations" -Message "Nothing is running. $QueuedCount queued operation(s) will be discarded.`n`nClose WinUtil anyway?"
+        $discard = Show-WinUtilJobCloseMessage -Button "YesNo" -Icon "Warning" -Title "Queued operations" -Message "Nothing is running. $QueuedCount queued operation(s) will be discarded.`n`nClose WinUtil anyway?"
         if ("$discard" -ne "Yes") {
             Write-WinUtilLog -Component "UI" -Message "Close cancelled, $QueuedCount operation(s) are still queued."
             return
         }
 
-        # The prompt keeps the dispatcher running, so a queued job may have started meanwhile. A
-        # handoff either started its job first, and the running-job question is asked again, or
-        # finds WinUtil shutting down.
+        # Recheck under the queue lock in case a concurrent caller claimed the slot before the
+        # prompt paused handoffs. Closing must ask about that job rather than silently stop it.
         $startedMeanwhile = Stop-WinUtilQueuedWork -OnlyIfIdle
         if ($startedMeanwhile) {
             Invoke-WinUtilCloseRequest -RunningJob $startedMeanwhile -QueuedCount $sync.JobQueue.Count
@@ -48,7 +47,7 @@ function Invoke-WinUtilCloseRequest {
 
     # The question carries the meaning rather than naming buttons: Windows labels them in its own
     # language, so "Yes" in the text would not match a button reading "Ja".
-    $answer = Show-WinUtilMessage -Button "YesNoCancel" -Icon "Warning" -Title "$RunningJob is still running" -Message @"
+    $answer = Show-WinUtilJobCloseMessage -Button "YesNoCancel" -Icon "Warning" -Title "$RunningJob is still running" -Message @"
 $RunningJob has not finished yet.
 $queuedNote
 Close the window and let it finish in the console?
@@ -84,6 +83,39 @@ stopped and everything closes now. Cancel keeps WinUtil open.
         }
         default {
             Write-WinUtilLog -Component "UI" -Message "Close cancelled, $RunningJob is still running."
+        }
+    }
+}
+
+function Show-WinUtilJobCloseMessage {
+    <#
+        .SYNOPSIS
+            Holds queued work until the user answers which work may outlive the window
+    #>
+    param($Button, $Icon, $Title, $Message)
+
+    [System.Threading.Monitor]::Enter($sync.SyncRoot)
+    try {
+        $alreadyOpen = [bool]$sync.JobClosePromptOpen
+        $sync.JobClosePromptOpen = $true
+    } finally {
+        [System.Threading.Monitor]::Exit($sync.SyncRoot)
+    }
+    try {
+        Show-WinUtilMessage @PSBoundParameters
+    } finally {
+        if (-not $alreadyOpen) {
+            [System.Threading.Monitor]::Enter($sync.SyncRoot)
+            try {
+                $sync.JobClosePromptOpen = $false
+                $resume = -not $sync.ActiveJob -and $sync.JobQueue.Count -gt 0
+            } finally {
+                [System.Threading.Monitor]::Exit($sync.SyncRoot)
+            }
+            if ($resume) {
+                # Posted work runs after the caller applies the answer's shutdown/console flags.
+                Invoke-WPFUIThread -Async -ScriptBlock { Start-WinUtilNextQueuedJob }
+            }
         }
     }
 }

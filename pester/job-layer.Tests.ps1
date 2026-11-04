@@ -636,6 +636,23 @@ Describe "Job queue" {
         $script:sync.JobQueue.Count | Should -Be 0
     }
 
+    It "refuses work when closing wins before the queue lock (<Flag>, <Running>)" -TestCases @(
+        @{ Flag = "ShuttingDown"; Running = "Install" }
+        @{ Flag = "ShuttingDown"; Running = $null }
+        @{ Flag = "FinishInConsole"; Running = "Install" }
+        @{ Flag = "FinishInConsole"; Running = $null }
+    ) {
+        param($Flag, $Running)
+        $script:sync.ActiveJob = $Running
+        Mock ConvertTo-Json { $script:sync[$Flag] = $true; '{}' }
+
+        Start-WinUtilJob -Name "Late" -QueueIfBusy -Parameters @{ Value = 1 } -ScriptBlock { } | Out-Null
+
+        $script:sync.ActiveJob | Should -Be $Running
+        $script:sync.JobQueue.Count | Should -Be 0
+        $script:started.Count | Should -Be 0
+    }
+
     It "runs queued jobs first in, first out, and carries on after one fails" {
         Start-WinUtilJob -Name "First" -QueueIfBusy -ScriptBlock { } | Out-Null
         Start-WinUtilJob -Name "Second" -QueueIfBusy -Parameters @{ Value = 2 } -ScriptBlock { } | Out-Null
@@ -1050,6 +1067,40 @@ Describe "Closing with queued jobs" {
 
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+    }
+
+    It "holds queued work during a running-job close prompt and applies <Answer> before resuming" -TestCases @(
+        @{ Answer = 'Cancel'; ExpectedStarts = 1 }
+        @{ Answer = 'No'; ExpectedStarts = 0 }
+        @{ Answer = 'Yes'; ExpectedStarts = 0 }
+    ) {
+        param($Answer, $ExpectedStarts)
+        $script:postedHandoffs = [Collections.Generic.List[scriptblock]]::new()
+        $script:sync.ActiveJobToken = 'running'
+        $script:sync.JobQueue.Add([pscustomobject]@{ Id = 'next'; Name = 'Next'; ScriptBlock = ''; Parameters = @{}; DisableAppList = $false })
+        Mock Start-WinUtilJob {}
+        Mock Request-WinUtilWindowClose {}
+        Mock Write-Host {}
+        Mock Invoke-WPFUIThread { $script:postedHandoffs.Add($ScriptBlock) }
+        Mock Show-WinUtilMessage {
+            $script:sync.JobClosePromptOpen | Should -BeTrue
+            # A real modal question pumps the dispatcher while the worker finishes.
+            $script:sync.ActiveJob = $null
+            $script:sync.ActiveJobToken = $null
+            $script:sync.JobHandoff = $true
+            Start-WinUtilNextQueuedJob
+            $script:sync.JobQueue.Count | Should -Be 1
+            $script:sync.JobHandoff | Should -BeTrue
+            return $Answer
+        }
+
+        Invoke-WinUtilCloseRequest -RunningJob 'Install' -QueuedCount 1
+
+        $script:sync.JobClosePromptOpen | Should -BeFalse
+        Should -Invoke Start-WinUtilJob -Times 0 -Exactly
+        $script:postedHandoffs.Count | Should -Be 1
+        foreach ($post in $script:postedHandoffs) { & $post }
+        Should -Invoke Start-WinUtilJob -Times $ExpectedStarts -Exactly
     }
 
     It "tells the user how many queued operations will be discarded" {

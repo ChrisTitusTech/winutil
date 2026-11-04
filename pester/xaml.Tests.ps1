@@ -470,6 +470,7 @@ Describe "XAML and sync wiring" {
             "LastJobResult",
             "JobQueue",
             "JobHandoff",
+            "JobClosePromptOpen",
             "JobQueuePopupClosedAt",
             # Intrinsic to the synchronized hashtable rather than WinUtil state; the job layer
             # locks on it to claim and release the active job slot

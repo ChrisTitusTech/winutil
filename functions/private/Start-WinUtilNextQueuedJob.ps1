@@ -16,6 +16,7 @@ function Start-WinUtilNextQueuedJob {
     $next = $null
     [System.Threading.Monitor]::Enter($sync.SyncRoot)
     try {
+        if ($sync.JobClosePromptOpen) { return }
         if (-not $sync.ActiveJob -and $sync.JobQueue.Count -gt 0) {
             $next = $sync.JobQueue[0]
             $sync.JobQueue.RemoveAt(0)

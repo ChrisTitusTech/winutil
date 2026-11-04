@@ -98,6 +98,12 @@ function Start-WinUtilJob {
 
     [System.Threading.Monitor]::Enter($sync.SyncRoot)
     try {
+        # Closing can win while the signature is built or this caller waits for the lock.
+        if ($sync.ShuttingDown -or $sync.FinishInConsole) {
+            if ($FromQueue) { $sync.JobHandoff = $false }
+            Write-WinUtilLog -Level "WARN" -Component $Name -Message "Refused to start $Name, WinUtil is closing."
+            return $null
+        }
         if ($FromQueue) {
             $sync.JobHandoff = $false
         }
