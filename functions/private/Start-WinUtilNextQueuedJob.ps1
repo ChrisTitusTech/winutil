@@ -222,6 +222,7 @@ function Update-WinUtilJobQueueUI {
             $button.FontFamily = "Segoe MDL2 Assets"
             $button.Content = [string][char]$action.Glyph
             $button.ToolTip = $action.Tip
+            [Windows.Automation.AutomationProperties]::SetName($button, "$($action.Tip): $($queued[$index].Name)")
             $button.Tag = $queued[$index].Id
             $button.IsEnabled = $action.Enabled
             $button.Opacity = if ($action.Enabled) { 1 } else { 0.3 }

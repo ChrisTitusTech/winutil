@@ -62,6 +62,27 @@ Describe 'Native job queue controls' {
         $script:sync.JobQueueItems.Children[34].Children[0].Text | Should -Be 'Harmless queued job 35'
     }
 
+    It 'announces each queue action and its job through native automation peers after reordering' {
+        Invoke-WinutilThemeChange -theme Dark
+        foreach ($name in @('Package updates', 'Selected tweaks')) {
+            $script:sync.JobQueue.Add([pscustomobject]@{ Id = $name; Name = $name })
+        }
+        Update-WinUtilJobQueueUI
+        foreach ($rowIndex in 0..1) {
+            $actionIndex = 1
+            foreach ($action in @('Run sooner', 'Run later', 'Cancel')) {
+                $button = $script:sync.JobQueueItems.Children[$rowIndex].Children[$actionIndex++]
+                $peer = [Windows.Automation.Peers.ButtonAutomationPeer]::new($button)
+                $peer.GetName() | Should -Be "$action`: $($script:sync.JobQueue[$rowIndex].Name)"
+                $peer.GetAutomationControlType() | Should -Be ([Windows.Automation.Peers.AutomationControlType]::Button)
+            }
+        }
+
+        Move-WinUtilQueuedJob -Id 'Selected tweaks' -Direction Up
+        $peer = [Windows.Automation.Peers.ButtonAutomationPeer]::new($script:sync.JobQueueItems.Children[0].Children[3])
+        $peer.GetName() | Should -Be 'Cancel: Selected tweaks'
+    }
+
     It 'routes row buttons by stable job identity through reorder and cancellation' {
         Invoke-WinutilThemeChange -theme Dark
         foreach ($index in 1..3) {
