@@ -276,6 +276,35 @@ Describe "Start-WinUtilJob" {
         }
     }
 
+    It "shows the Install working view for the Upgrade All button job" {
+        Mock Set-WinUtilWorkingView { }
+
+        Start-WinUtilJob -Name "Upgrade all Applications" -ScriptBlock { } | Out-Null
+
+        $script:capturedRunspaceArgs["JobWorkingArea"] | Should -Be "Install"
+        Should -Invoke Set-WinUtilWorkingView -Times 1 -Exactly -ParameterFilter {
+            $Area -eq "Install" -and $Working -eq $true
+        }
+    }
+
+    It "does not let a stale Upgrade worker hide a newer Install working view" {
+        Mock Set-WinUtilWorkingView { }
+        Start-WinUtilJob -Name "Upgrade all Applications" -ScriptBlock { } | Out-Null
+        $oldToken = $script:capturedRunspaceArgs["JobToken"]
+        $script:sync.ActiveJob = "Install"
+        $script:sync.ActiveJobToken = "current-token"
+
+        & $script:capturedRunspaceBody `
+            -JobName "Upgrade all Applications" `
+            -JobLabel "Upgrade all Applications" `
+            -JobBody '$null = $true' `
+            -JobParameters @{} `
+            -JobWorkingArea "Install" `
+            -JobToken $oldToken
+
+        Should -Not -Invoke Set-WinUtilWorkingView -ParameterFilter { $Working -eq $false }
+        $script:sync.ActiveJobToken | Should -Be "current-token"
+    }
     It "shows the Tweaks working view while a Tweaks job runs" {
         Mock Set-WinUtilWorkingView { }
 

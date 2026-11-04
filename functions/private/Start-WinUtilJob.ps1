@@ -95,6 +95,7 @@ function Start-WinUtilJob {
         $jobWorkingArea = switch ($Name) {
             "Install"     { "Install" }
             "Uninstall"   { "Install" }
+            "Upgrade all Applications" { "Install" }
             "Tweaks"      { "Tweaks" }
             "Undo tweaks" { "Tweaks" }
             default       { $null }
