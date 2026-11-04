@@ -202,3 +202,42 @@ Describe "App entries" {
         }
     }
 }
+
+Describe "Icon generation helper" {
+    BeforeAll {
+        Add-Type -AssemblyName System.Drawing
+        $script:iconHelperSource = Join-Path (Resolve-Path (Join-Path $PSScriptRoot "..")).Path "tools/New-WinUtilIcon.ps1"
+    }
+
+    BeforeEach {
+        $script:iconFixtureRoot = Join-Path $TestDrive ([guid]::NewGuid().ToString())
+        $toolsFolder = Join-Path $script:iconFixtureRoot "tools"
+        $configFolder = Join-Path $script:iconFixtureRoot "config"
+        New-Item -ItemType Directory -Path $toolsFolder, $configFolder -Force | Out-Null
+        $script:iconHelper = Join-Path $toolsFolder "New-WinUtilIcon.ps1"
+        Copy-Item -LiteralPath $script:iconHelperSource -Destination $script:iconHelper
+        Set-Content -LiteralPath (Join-Path $configFolder "applications.json") -Value '{"brave": {}}'
+        $script:iconInput = Join-Path $script:iconFixtureRoot "input.png"
+        $bitmap = [Drawing.Bitmap]::new(2, 2)
+        try {
+            $bitmap.Save($script:iconInput, [Drawing.Imaging.ImageFormat]::Png)
+        } finally {
+            $bitmap.Dispose()
+        }
+    }
+
+    It "uses the catalog key casing for a newly generated icon" {
+        & $script:iconHelper -Key "Brave" -Path $script:iconInput
+
+        $icons = @(Get-ChildItem -LiteralPath (Join-Path $script:iconFixtureRoot "config/icons") -File)
+        $icons.Count | Should -Be 1
+        $icons[0].Name | Should -BeExactly "brave.png"
+    }
+
+    It "rejects an unknown key before creating an icon" {
+        { & $script:iconHelper -Key "not-in-catalog" -Path $script:iconInput } |
+            Should -Throw "'not-in-catalog' is not a key in config/applications.json."
+
+        Test-Path -LiteralPath (Join-Path $script:iconFixtureRoot "config/icons") | Should -BeFalse
+    }
+}

@@ -22,7 +22,9 @@ $size = 48
 $margin = 0.04
 $configRoot = Join-Path $PSScriptRoot "..\config"
 $applications = Get-Content (Join-Path $configRoot "applications.json") -Raw | ConvertFrom-Json
-if (-not $applications.PSObject.Properties[$Key]) { throw "'$Key' is not a key in config/applications.json." }
+$application = $applications.PSObject.Properties[$Key]
+if (-not $application) { throw "'$Key' is not a key in config/applications.json." }
+$Key = $application.Name
 
 # Read the file into memory, so an existing icon can be given as its own input without being locked
 $sourceStream = [IO.MemoryStream]::new([IO.File]::ReadAllBytes((Resolve-Path $Path)))
