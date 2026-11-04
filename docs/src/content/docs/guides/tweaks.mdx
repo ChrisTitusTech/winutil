@@ -41,6 +41,8 @@ Some tweaks take effect immediately, while others may require Explorer to restar
 
 Apply and undo progress use each tweak's displayed label, such as "Telemetry - Disable". Session logs retain the preset key for troubleshooting.
 
+While applying or undoing tweaks, the tab shows a spinner and live status. The tweak list and action buttons return when the job finishes; the progress bar keeps its final result.
+
 ### Undo Tweaks
 * **Open the Tweaks tab**: Go to the **Tweaks** tab located next to **Install**.
 * **Select Tweaks to Remove**: Choose the tweaks you want to disable or remove.
@@ -65,7 +67,7 @@ Essential Tweaks are the safest starting point for most systems. They focus on l
 
 **BitLocker - Disable** reports when the system drive is already fully decrypted and skips disabling it again. An encrypted drive with suspended protection still needs decryption.
 
-**Telemetry - Disable** disables the Windows Error Reporting service (`WerSvc`) when its startup type is still the default Manual, and undo restores Manual. Removing an already absent feedback-frequency registry value is treated as complete rather than as an error.
+**Telemetry - Disable** disables the Windows Error Reporting service (`WerSvc`) when its startup type is still the default Manual, and undo restores Manual. Removing an already absent feedback-frequency registry value is treated as complete rather than as an error. If Defender reports error `0x800106ba` while changing automatic sample submission, apply and undo log a warning and continue with the remaining telemetry changes. That Defender preference is left unchanged; other Defender errors are reported as failures.
 
 ### Advanced Tweaks (CAUTION)
 
