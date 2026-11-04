@@ -19,7 +19,7 @@ Changing modes adjusts system-wide Windows Update behavior. After switching mode
 
 - **What it does**: Removes Windows Update policies managed by WinUtil, restores update service startup settings, and re-enables update scheduled tasks.
 - **Best for**: Systems where you want Windows to manage updates normally.
-- **Notes**: Only values managed by WinUtil are removed; other Windows Update policies are left in place. If update errors continue, use the reset option in the **Config** tab to repair Microsoft Update components.
+- **Notes**: Only values managed by WinUtil are removed; other Windows Update policies are left in place. WinUtil attempts to remove explicit deny rules for the SYSTEM account from update service registry keys and restore `WaaSMedicSvc` to Manual. Protected keys can prevent these repairs; failures are logged as warnings. If update errors continue, use the reset option in the **Config** tab to repair Microsoft Update components.
 
 ### Recommended
 

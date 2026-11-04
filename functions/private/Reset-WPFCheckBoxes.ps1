@@ -31,9 +31,14 @@ function Reset-WPFCheckBoxes {
         [System.Threading.Monitor]::Exit($sync.SyncRoot)
     }
     foreach ($syncEntry in $syncEntries) {
-        if ($syncEntry.Value -is [System.Windows.Controls.CheckBox] -and $syncEntry.Name -notlike "WPFToggle*" -and $syncEntry.Name -like $checkboxfilterpattern) {
-            $checkboxName = $syncEntry.Key
-            $sync.$checkboxName.IsChecked = $selectedSet.Contains($checkboxName)
+        $checkBox = $syncEntry.Value
+        if ($checkBox -is [System.Windows.Controls.CheckBox] -and -not $syncEntry.Key.StartsWith("WPFToggle") -and ($checkboxfilterpattern -eq "**" -or $syncEntry.Key -like $checkboxfilterpattern)) {
+            # Assigning the state a box already has is not free for the hundreds of boxes the
+            # Install tab adds, so only the ones that differ are touched
+            $selected = $selectedSet.Contains($syncEntry.Key)
+            if ($checkBox.IsChecked -ne $selected) {
+                $checkBox.IsChecked = $selected
+            }
         }
     }
 

@@ -1,7 +1,5 @@
-#===========================================================================
-# Tests - Config Files
-#===========================================================================
-
+#====================================================================# Tests - Config Files
+#====================================================================
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $configRoot = Join-Path $PSScriptRoot "..\config"
 $functionRoot = Join-Path $repoRoot "functions"
@@ -111,6 +109,19 @@ function script:Get-WinUtilButtonSwitchNames {
     [regex]::Matches($buttonSource, '"(WPF[A-Za-z0-9_]+)"\s*\{') |
         ForEach-Object { $_.Groups[1].Value } |
         Sort-Object -Unique
+}
+
+# Stand-ins so the Telemetry tweak's extracted Defender handler can run in a test without
+# touching Defender or the real log file.
+function script:Set-MpPreference {
+    [CmdletBinding()]
+    param([int]$SubmitSamplesConsent)
+
+    throw "Set-MpPreference must be mocked: $SubmitSamplesConsent"
+}
+
+function script:Write-WinUtilLog {
+    param($Level, $Component, $Message)
 }
 }
 
@@ -403,6 +414,178 @@ Describe "Config scripts changing services" {
         if ($unguarded.Count -gt 0) {
             throw ("Unguarded Set-Service calls abort the rest of their script block when the service is missing:`n" + ($unguarded -join "`n"))
         }
+    }
+}
+
+Describe "Config scripts changing Defender preferences" {
+    It "guards every Set-MpPreference call with a try block and -ErrorAction Stop" {
+        $unguarded = New-Object System.Collections.Generic.List[string]
+
+        foreach ($configFile in (Get-ChildItem -Path $script:configRoot -Filter *.json)) {
+            $config = Get-Content -Path $configFile.FullName -Raw | ConvertFrom-Json
+            foreach ($entry in $config.PSObject.Properties) {
+                foreach ($field in @("InvokeScript", "UndoScript")) {
+                    if (-not (Test-WinUtilHasProperty -Object $entry.Value -Name $field)) { continue }
+
+                    foreach ($scriptText in @($entry.Value.$field)) {
+                        if ([string]$scriptText -notmatch 'Set-MpPreference') { continue }
+
+                        $source = [scriptblock]::Create([string]$scriptText)
+                        $calls = @($source.Ast.FindAll({
+                            param($node)
+                            $node -is [System.Management.Automation.Language.CommandAst] -and
+                                $node.GetCommandName() -eq 'Set-MpPreference'
+                        }, $true))
+
+                        foreach ($call in $calls) {
+                            $hasStop = $call.Extent.Text -match '-ErrorAction\s*:?\s*Stop'
+
+                            $insideTryBody = $false
+                            $child = $call
+                            $parent = $call.Parent
+                            while ($null -ne $parent) {
+                                if ($parent -is [System.Management.Automation.Language.TryStatementAst] -and
+                                    [object]::ReferenceEquals($parent.Body, $child)) {
+                                    $insideTryBody = $true
+                                    break
+                                }
+                                $child = $parent
+                                $parent = $parent.Parent
+                            }
+
+                            if (-not $hasStop -or -not $insideTryBody) {
+                                $unguarded.Add("$($configFile.Name):$($entry.Name).$field line $($call.Extent.StartLineNumber)")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if ($unguarded.Count -gt 0) {
+            throw ("Set-MpPreference calls must be inside a try block and pass -ErrorAction Stop, so unavailable Defender can be handled without hiding other failures:`n" + ($unguarded -join "`n"))
+        }
+    }
+}
+
+Describe "Telemetry tweak Defender failures" {
+    BeforeAll {
+        function Get-DefenderGuardBlock {
+            param([string]$Action)
+
+            $source = [scriptblock]::Create((Get-WinUtilConfigObject -Name "tweaks").WPFTweaksTelemetry.$Action -join "`n")
+            $blocks = @($source.Ast.FindAll({
+                param($node)
+                $node -is [System.Management.Automation.Language.TryStatementAst] -and
+                    $node.Extent.Text -match 'Set-MpPreference'
+            }, $true))
+            $blocks.Count | Should -Be 1
+            [scriptblock]::Create($blocks[0].Extent.Text)
+        }
+    }
+
+    It "warns and continues when Defender is unavailable (<Action>)" -TestCases @(
+        @{ Action = "InvokeScript" }
+        @{ Action = "UndoScript" }
+    ) {
+        param($Action)
+        Mock Write-WinUtilLog {}
+        # The message omits the code on purpose, so only the HResult check can match this failure.
+        Mock Set-MpPreference {
+            throw [System.Management.Automation.ErrorRecord]::new(
+                [System.Runtime.InteropServices.COMException]::new("Defender provider unavailable.", [int]0x800106ba),
+                "DefenderUnavailable",
+                [System.Management.Automation.ErrorCategory]::ResourceUnavailable,
+                $null
+            )
+        }
+
+        { & (Get-DefenderGuardBlock -Action $Action) } | Should -Not -Throw
+
+        Should -Invoke Write-WinUtilLog -Times 1 -Exactly -ParameterFilter { $Level -eq 'WARN' }
+    }
+
+    It "warns for a message-only provider error and continues under caller Continue (<Action>)" -TestCases @(
+        @{ Action = "InvokeScript" }
+        @{ Action = "UndoScript" }
+    ) {
+        param($Action)
+        $ErrorActionPreference = 'Continue'
+        Mock Write-WinUtilLog {}
+        Mock Write-Warning {}
+        Mock Set-MpPreference { Write-Error "Operation failed with the following error: 0x800106BA." }
+
+        { & (Get-DefenderGuardBlock -Action $Action) } | Should -Not -Throw
+
+        Should -Invoke Write-Warning -Times 1 -Exactly
+        Should -Invoke Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq 'WARN' -and $Component -eq 'Script' -and $Message -like '*Defender*'
+        }
+    }
+
+    It "sets the requested consent when Defender is available (<Action>)" -TestCases @(
+        @{ Action = "InvokeScript"; Consent = 2 }
+        @{ Action = "UndoScript"; Consent = 1 }
+    ) {
+        param($Action, $Consent)
+        Mock Write-WinUtilLog {}
+        Mock Write-Warning {}
+        Mock Set-MpPreference {}
+
+        { & (Get-DefenderGuardBlock -Action $Action) } | Should -Not -Throw
+
+        Should -Invoke Set-MpPreference -Times 1 -Exactly -ParameterFilter {
+            $SubmitSamplesConsent -eq $Consent -and $ErrorAction -eq 'Stop'
+        }
+        Should -Invoke Write-Warning -Times 0 -Exactly
+        Should -Invoke Write-WinUtilLog -Times 0 -Exactly
+    }
+
+    It "rethrows access denied with a structured unrelated HResult (<Action>)" -TestCases @(
+        @{ Action = "InvokeScript" }
+        @{ Action = "UndoScript" }
+    ) {
+        param($Action)
+        Mock Set-MpPreference {
+            throw [System.Management.Automation.ErrorRecord]::new(
+                [System.UnauthorizedAccessException]::new("Access denied."),
+                "DefenderAccessDenied",
+                [System.Management.Automation.ErrorCategory]::PermissionDenied,
+                $null
+            )
+        }
+
+        { & (Get-DefenderGuardBlock -Action $Action) } | Should -Throw -ExpectedMessage "*Access denied*"
+    }
+
+    It "rethrows a missing Defender command (<Action>)" -TestCases @(
+        @{ Action = "InvokeScript" }
+        @{ Action = "UndoScript" }
+    ) {
+        param($Action)
+        Mock Set-MpPreference { throw [System.Management.Automation.CommandNotFoundException]::new("Set-MpPreference is unavailable.") }
+
+        { & (Get-DefenderGuardBlock -Action $Action) } | Should -Throw -ExpectedMessage "*Set-MpPreference is unavailable*"
+    }
+
+    It "does not confuse a longer hexadecimal value with the unavailable code (<Action>)" -TestCases @(
+        @{ Action = "InvokeScript" }
+        @{ Action = "UndoScript" }
+    ) {
+        param($Action)
+        Mock Set-MpPreference { throw "Unrelated error value: 0x800106bad." }
+
+        { & (Get-DefenderGuardBlock -Action $Action) } | Should -Throw -ExpectedMessage "*0x800106bad*"
+    }
+
+    It "rethrows Set-MpPreference failures that are not Defender being unavailable (<Action>)" -TestCases @(
+        @{ Action = "InvokeScript" }
+        @{ Action = "UndoScript" }
+    ) {
+        param($Action)
+        Mock Set-MpPreference { throw "Operation failed with the following error: 0x80041001." }
+
+        { & (Get-DefenderGuardBlock -Action $Action) } | Should -Throw -ExpectedMessage "*0x80041001*"
     }
 }
 
@@ -747,6 +930,9 @@ Describe "UI-rendered config entries" {
             $themes.Dark.PSObject.Properties.Name
             "CBorderColor"
             "CButtonBackgroundMouseoverColor"
+            "CAppIconShadowColor"
+            # Set from the width of the app list (Update-WinUtilAppEntryWidth), not by a theme
+            "AppEntryCardWidth"
             "CMainGradientTopColor"
             "CMainGradientBottomColor"
         ) | Sort-Object -Unique
