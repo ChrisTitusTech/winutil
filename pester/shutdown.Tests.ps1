@@ -10,6 +10,7 @@ BeforeAll {
     function Test-WinUtilUIAlive { $null -ne $sync.Form -and $null -ne $sync.Form.Dispatcher }
 
     . (Join-Path $script:functionRoot "private\Invoke-WinUtilCloseRequest.ps1")
+    . (Join-Path $script:functionRoot "private\Start-WinUtilNextQueuedJob.ps1")
 
     function Write-WinUtilLog { param($Level, $Component, $Message, [switch]$Detail) }
     function Step-WinUtilJob { param($Status, $Percent, $State, $Overlay, [switch]$Hide) }
@@ -117,6 +118,7 @@ Describe "The close question" {
     BeforeEach {
         $global:sync = [hashtable]::Synchronized(@{})
         $sync.ActiveJob = "Install"
+        $sync.JobQueue = [System.Collections.Generic.List[object]]::new()
         Mock Write-WinUtilLog { }
         Mock Step-WinUtilJob { }
     }
