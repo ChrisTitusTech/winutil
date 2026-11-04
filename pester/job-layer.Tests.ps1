@@ -815,6 +815,52 @@ Describe "Job queue" {
         $script:captured["AppX"].Parameters.Selected | Should -Be @("One")
     }
 
+    It "keeps queued upgrades for different package managers distinct and uses the requested one" {
+        . (Join-Path $script:repoRoot 'functions/public/Invoke-WPFButton.ps1')
+        . (Join-Path $script:repoRoot 'functions/public/Invoke-WPFInstallUpgrade.ps1')
+        $script:sync.ActiveJob = 'Held'
+        $script:sync.configs = @{ feature = @{} }
+        $script:sync.preferences = @{ packagemanager = 'Choco' }
+        Mock Invoke-WPFInstallUpgrade {}
+
+        Invoke-WPFButton -Button WPFInstallUpgrade
+        $script:sync.preferences.packagemanager = 'Winget'
+        Invoke-WPFButton -Button WPFInstallUpgrade
+
+        $script:sync.JobQueue.Count | Should -Be 2
+        $script:sync.JobQueue[0].Parameters.ManagerPreference | Should -Be 'Choco'
+        $script:sync.JobQueue[1].Parameters.ManagerPreference | Should -Be 'Winget'
+        $queued = $script:sync.JobQueue[0]
+        $parameters = $queued.Parameters
+        & ([scriptblock]::Create($queued.ScriptBlock)) @parameters
+        Should -Invoke Invoke-WPFInstallUpgrade -Times 1 -Exactly -ParameterFilter { $ManagerPreference -eq 'Choco' }
+    }
+
+    It "upgrades the explicit manager instead of a later preference (<Manager>)" -TestCases @(
+        @{ Manager = 'Choco'; Later = 'Winget' }
+        @{ Manager = 'Winget'; Later = 'Choco' }
+    ) {
+        param($Manager, $Later)
+        . (Join-Path $script:repoRoot 'functions/public/Invoke-WPFInstallUpgrade.ps1')
+        function Install-WinUtilWinget {}
+        function Install-WinUtilChoco {}
+        function Install-WinUtilProgramWinget { param($Action, $Programs) }
+        function Install-WinUtilProgramChoco { param($Action, $Programs) }
+        Mock Install-WinUtilWinget {}
+        Mock Install-WinUtilChoco {}
+        Mock Install-WinUtilProgramWinget {}
+        Mock Install-WinUtilProgramChoco {}
+        Mock Measure-WinUtilStep { & $ScriptBlock }
+        Mock Complete-WinUtilPackageRun {}
+        $script:sync.preferences = @{ packagemanager = $Later }
+
+        Invoke-WPFInstallUpgrade -ManagerPreference $Manager
+
+        $expectedChoco = [int]($Manager -eq 'Choco')
+        Should -Invoke Install-WinUtilProgramChoco -Times $expectedChoco -Exactly -ParameterFilter { $Action -eq 'Upgrade' -and $Programs[0] -eq 'all' }
+        Should -Invoke Install-WinUtilProgramWinget -Times (1 - $expectedChoco) -Exactly -ParameterFilter { $Action -eq 'Upgrade' -and $Programs[0] -eq 'all' }
+    }
+
     It "queues a new action behind the head while the slot is held for the queue" {
         $script:sync.JobQueue.Add([pscustomobject]@{ Id = "1"; Name = "Head"; Description = ""; ScriptBlock = ""; Parameters = @{}; DisableAppList = $false })
         $script:sync.JobHandoff = $true
