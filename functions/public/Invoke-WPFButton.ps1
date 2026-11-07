@@ -52,13 +52,17 @@ function Invoke-WPFButton {
             }
         }
 
-        Start-WinUtilJob -Name (Get-WinUtilButtonLabel -Button $Button) -Parameters @{
+        $jobParameters = @{
             Button = $Button
             UpdatesDisableConfirmed = $updatesDisableConfirmed
-        } -ScriptBlock {
-            param($Button, $UpdatesDisableConfirmed)
+        }
+        if ($Button -eq "WPFInstallUpgrade") {
+            $jobParameters.ManagerPreference = $sync.preferences.packagemanager
+        }
+        Start-WinUtilJob -Name (Get-WinUtilButtonLabel -Button $Button) -QueueIfBusy -Parameters $jobParameters -ScriptBlock {
+            param($Button, $UpdatesDisableConfirmed, $ManagerPreference)
 
-            Invoke-WPFButtonAction -Button $Button -UpdatesDisableConfirmed:$UpdatesDisableConfirmed
+            Invoke-WPFButtonAction -Button $Button -UpdatesDisableConfirmed:$UpdatesDisableConfirmed -ManagerPreference $ManagerPreference
         }
         return
     }
@@ -122,7 +126,8 @@ function Invoke-WPFButtonAction {
 
     Param (
         [string]$Button,
-        [switch]$UpdatesDisableConfirmed
+        [switch]$UpdatesDisableConfirmed,
+        [string]$ManagerPreference = $sync.preferences.packagemanager
     )
 
     # Check if button is defined in feature config with function or InvokeScript
@@ -154,7 +159,7 @@ function Invoke-WPFButtonAction {
         "WPFTab?BT" {Invoke-WPFTab $Button}
         "WPFInstall" {Invoke-WPFInstall}
         "WPFUninstall" {Invoke-WPFUnInstall}
-        "WPFInstallUpgrade" {Invoke-WPFInstallUpgrade}
+        "WPFInstallUpgrade" {Invoke-WPFInstallUpgrade -ManagerPreference $ManagerPreference}
         "WPFCollapseAllCategories" {Invoke-WPFToggleAllCategories -Action "Collapse"}
         "WPFExpandAllCategories" {Invoke-WPFToggleAllCategories -Action "Expand"}
         "WPFStandard" {Invoke-WPFPresets "Standard" -checkboxfilterpattern "WPFTweak*"}

@@ -65,6 +65,7 @@ function Start-WinUtilUserInterface {
                 [ref]$handled
             )
             $null = $hwnd, $wParam, $lParam
+            if ($msg -eq 0x001A) { Request-WinUtilWindowInsets }
             # Check for the Event WM_SETTINGCHANGE (0x1001A) and validate that Button shows the icon for "Auto" => [char]0xF08C
             if (($msg -eq 0x001A) -and $sync.ThemeButton.Content -eq [char]0xF08C) {
                 $currentTime = [datetime]::Now
@@ -83,8 +84,8 @@ function Start-WinUtilUserInterface {
         Invoke-WinutilThemeChange -theme $sync.preferences.theme
     }
 
-    # No tab content is built before first paint. Invoke-WPFTab builds whichever tab it
-    # activates, and ContentRendered activates the default one.
+    # Tab content is built when its tab is activated: the default tab just before the window is
+    # shown, the others when they are opened or warmed up.
     $sync.InitializedTabs = @{}
 
     #===========================================================================
@@ -94,6 +95,17 @@ function Start-WinUtilUserInterface {
     Measure-WinUtilStep -Scope "UI" -Name "map named controls" -ScriptBlock {
         $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
     }
+
+    $sync.WindowInsetsPending = $false
+    $sync.WindowInsetsUpdate = [action]{
+        $sync.WindowInsetsPending = $false
+        if (Test-WinUtilUIAlive) { Update-WinUtilWindowInsets }
+    }
+    $sync.Form.Add_Loaded({ Request-WinUtilWindowInsets })
+    $sync.Form.Add_StateChanged({ Request-WinUtilWindowInsets })
+    $sync.Form.Add_SizeChanged({ Request-WinUtilWindowInsets })
+    $sync.Form.Add_LocationChanged({ Request-WinUtilWindowInsets })
+    $sync.Form.Add_DpiChanged({ Request-WinUtilWindowInsets })
 
     # Built here so it carries this runspace's session state: posted work then runs as ordinary
     # interface code, not a much slower cross-runspace nested pipeline. Invoke-WPFUIThread is the
@@ -164,11 +176,15 @@ function Start-WinUtilUserInterface {
 
         # The pool cannot be torn down under work that is still running: the runspace error that
         # follows is unhandled and ends the process
-        if ($sync.ActiveJob -and -not $sync.ForceClose) {
+        if (($sync.ActiveJob -or $sync.JobQueue.Count -gt 0) -and -not $sync.ForceClose) {
             $closingArgs.Cancel = $true
-            Invoke-WinUtilCloseRequest -RunningJob $sync.ActiveJob
+            $runningJob = if ($sync.ActiveJob) { $sync.ActiveJob } else { "Queued operations" }
+            Invoke-WinUtilCloseRequest -RunningJob $runningJob -QueuedCount $sync.JobQueue.Count
             return
         }
+
+        # Past the prompt the window is closing for good, and nothing queued may start after it
+        $null = Clear-WinUtilJobQueue
 
         # Work that is meant to outlive the window needs the pool it is running on. main.ps1
         # waits for it and shuts the pool down once it is done.
@@ -402,6 +418,16 @@ function Start-WinUtilUserInterface {
         Invoke-WinutilThemeChange -theme "Light"
     })
 
+    # A popup that closes on outside clicks also closes on the click that would toggle it, which
+    # would then reopen it, so a click straight after a close is that same click
+    $sync.JobQueuePopupClosedAt = [DateTime]::MinValue
+    $sync["JobQueuePopup"].Add_Closed({ $sync.JobQueuePopupClosedAt = [DateTime]::UtcNow })
+    $sync["JobQueuePopup"].Add_Opened({ Update-WinUtilJobQueueUI })
+    $sync["JobQueueButton"].Add_Click({
+        if (([DateTime]::UtcNow - $sync.JobQueuePopupClosedAt).TotalMilliseconds -lt 300) { return }
+        Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "Theme" = "Hide"; "FontScaling" = "Hide"; "JobQueue" = "Show" }
+    })
+
     $sync["SettingsButton"].Add_Click({
         Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Toggle"; "Theme" = "Hide"; "FontScaling" = "Hide" }
     })
@@ -530,6 +556,17 @@ Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sy
         $sinceStart = [int]((Get-Date) - $sync.StartedAt).TotalMilliseconds
         Write-WinUtilLog -Level "DEBUG" -Component "UI" -Message "timing: interface ready for input $sinceStart ms after start."
     }) | Out-Null
+
+    # The default tab is built before the window is shown, in one pass nothing is waiting on, so it
+    # opens with the app list in place instead of filling in. Offline starts on another tab.
+    if (-not $PARAM_OFFLINE) {
+        $sync.BuildingBeforeShow = $true
+        try {
+            Measure-WinUtilStep -Scope "UI" -Name "build default tab before show" -ScriptBlock { Invoke-WPFTab "WPFTab1BT" }
+        } finally {
+            $sync.BuildingBeforeShow = $false
+        }
+    }
 
     $sync["Form"].ShowDialog() | Out-Null
 

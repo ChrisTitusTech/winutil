@@ -231,6 +231,13 @@ $sync.Buttons = [System.Collections.Generic.List[PSObject]]::new()
 $sync.preferences = @{}
 # Name of the job currently running, or $null when idle. Owned by Start-WinUtilJob.
 $sync.ActiveJob = $null
+# User actions waiting for the slot, oldest first. Changed only under $sync.SyncRoot.
+$sync.JobQueue = [System.Collections.Generic.List[object]]::new()
+# True from a job's release until the queued job that follows it claims the slot, so a new action
+# cannot take the slot ahead of the queue.
+$sync.JobHandoff = $false
+# A modal close question must not start a different queued job behind its prompt.
+$sync.JobClosePromptOpen = $false
 # Serializes worker-pool startup with recycling and shutdown.
 $sync.RunspacePoolLock = [object]::new()
 # Serializes the speculative and UI-thread taskbar overlay renderers.
@@ -252,16 +259,9 @@ $dateTime = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
 $winutildir = "$env:LocalAppData\winutil"
 $sync.winutildir = $winutildir
 
-$logdir = "$winutildir\logs"
-# Start-Transcript fails outright when the directory is missing, which is every first run
-if (-not (Test-Path $logdir)) {
-    New-Item -ItemType Directory -Path $logdir -Force | Out-Null
-}
-# Keep console output and structured entries in the path reported to the user. Write-WinUtilLog
-# writes through the host while this transcript owns the file, avoiding competing file handles.
-$sync.logPath = "$logdir\winutil_$dateTime.log"
-$sync.transcriptPath = $sync.logPath
-Start-Transcript -Path $sync.transcriptPath -Append -NoClobber | Out-Null
+# Written by Write-WinUtilLog. Not a transcript, as that only records this runspace and misses
+# everything from the UI thread and the jobs.
+$sync.logPath = "$winutildir\logs\winutil_$dateTime.log"
 
 $Host.UI.RawUI.WindowTitle = "WinUtil"
 Clear-Host

@@ -145,7 +145,7 @@
   },
   "WPFTweaksServices": {
     "Content": "Services - Set to Manual",
-    "Description": "Sets some services to Manual startup and adjusts the SvcHostSplitThresholdInKB registry value to better match system memory, which can significantly reduce the number of svchost.exe processes.",
+    "Description": "Sets some services to Manual startup.",
     "category": "Essential Tweaks",
     "panel": "1",
     "service": [
@@ -175,13 +175,27 @@
         "OriginalType": "Automatic"
       }
     ],
+    "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/services"
+  },
+  "WPFTweaksSvcHostSplitting": {
+    "Content": "svchost.exe Splitting - Disable",
+    "Description": "Disables service-host splitting to reduce the number of svchost.exe processes and modestly lower memory overhead. Recommended for low-performance systems with 12 GB of RAM or less. Can interfere with Xbox services. Restart Windows after changing this setting.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
     "InvokeScript": [
       "
+      # A threshold above the physical memory disables svchost service splitting
       $Memory = (Get-CimInstance Win32_PhysicalMemory | Measure-Object Capacity -Sum).Sum / 1KB
-      Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value $Memory
+      Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value $Memory -Type DWord
       "
     ],
-    "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/services"
+    "UndoScript": [
+      "
+      # Windows client default (0x380000): splitting back on
+      Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value 3670016 -Type DWord -Force
+      "
+    ],
+    "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/svchostsplitting"
   },
   "WPFTweaksBraveDebloat": {
     "Content": "Brave Browser - Debloat",
@@ -556,7 +570,16 @@
     "InvokeScript": [
       "
       # Disable Defender Auto Sample Submission
-      Set-MpPreference -SubmitSamplesConsent 2
+      try {
+          Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction Stop
+      } catch {
+          # Skip Defender error 0x800106ba when its service is unavailable; other errors must fail.
+          if ($_.Exception.Message -notmatch '\\b0x800106ba\\b' -and $_.Exception.HResult -ne 0x800106BA) {
+              throw
+          }
+          Write-Warning 'Defender sample submission preference could not be changed; Defender may be unavailable or disabled.'
+          Write-WinUtilLog -Level 'WARN' -Component 'Script' -Message 'Defender sample submission preference could not be changed; Defender may be unavailable or disabled.'
+      }
 
       # Disable PowerShell 7 telemetry
       [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
@@ -565,7 +588,16 @@
     "UndoScript": [
       "
       # Enable Defender Auto Sample Submission
-      Set-MpPreference -SubmitSamplesConsent 1
+      try {
+          Set-MpPreference -SubmitSamplesConsent 1 -ErrorAction Stop
+      } catch {
+          # Skip Defender error 0x800106ba when its service is unavailable; other errors must fail.
+          if ($_.Exception.Message -notmatch '\\b0x800106ba\\b' -and $_.Exception.HResult -ne 0x800106BA) {
+              throw
+          }
+          Write-Warning 'Defender sample submission preference could not be restored; Defender may be unavailable or disabled.'
+          Write-WinUtilLog -Level 'WARN' -Component 'Script' -Message 'Defender sample submission preference could not be restored; Defender may be unavailable or disabled.'
+      }
 
       # Enable PowerShell 7 telemetry
       [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '', 'Machine')
@@ -596,9 +628,16 @@
     "panel": "1",
     "InvokeScript": [
       "
-      $Path = Resolve-Path -Path \"$Env:ProgramFiles (x86)\\Microsoft\\Edge\\Application\\*\\Installer\\setup.exe\" | Select-Object -Last 1
+      $EdgeAppDir = \"$Env:ProgramFiles (x86)\\Microsoft\\Edge\\Application\"
+      $Path = $null
+      if (Test-Path -LiteralPath $EdgeAppDir -ErrorAction Stop) {
+          $InstallerPattern = Join-Path $EdgeAppDir \"*\\Installer\\setup.exe\"
+          if (Test-Path -Path $InstallerPattern -ErrorAction Stop) {
+              $Path = Resolve-Path -Path $InstallerPattern -ErrorAction Stop | Select-Object -Last 1
+          }
+      }
 
-      if (Test-Path $Path) {
+      if ($Path) {
           New-Item -Path \"$Env:SystemRoot\\SystemApps\\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\\MicrosoftEdge.exe\" -Force
           Start-Process -FilePath $Path -ArgumentList \"--uninstall --system-level --force-uninstall --delete-profile\" -Wait
           Write-Host \"Microsoft Edge was removed\"
@@ -621,7 +660,15 @@
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
-      "Disable-BitLocker -MountPoint $Env:SystemDrive"
+      "
+      $bitLockerVolume = Get-BitLockerVolume -MountPoint $Env:SystemDrive -ErrorAction Stop
+
+      if ($bitLockerVolume.VolumeStatus -eq 'FullyDecrypted') {
+          Write-Host \"BitLocker is already disabled on $($Env:SystemDrive).\"
+      } else {
+          Disable-BitLocker -MountPoint $Env:SystemDrive -ErrorAction Stop
+      }
+      "
     ],
     "UndoScript": [
       "Enable-BitLocker -MountPoint $Env:SystemDrive"
@@ -1196,6 +1243,26 @@
       "netsh interface teredo set state default"
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/teredo"
+  },
+  "WPFTweaksDisableSearchIndexing": {
+    "Content": "Windows Search Indexing - Disable",
+    "Description": "Stops and disables the Windows Search service (WSearch) to cut background disk activity, mainly useful on mechanical hard drives. Warning: file searches in Explorer and the Start menu become much slower because Windows no longer maintains a search index. Undo restores the service and starts it again.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "service": [
+      {
+        "Name": "WSearch",
+        "StartupType": "Disabled",
+        "OriginalType": "Automatic"
+      }
+    ],
+    "InvokeScript": [
+      "$search = Get-Service -Name WSearch -ErrorAction SilentlyContinue\n      if ($search -and $search.StartType -eq 'Disabled' -and $search.Status -ne 'Stopped') {\n        Stop-Service -Name WSearch -Force -ErrorAction Stop\n      }"
+    ],
+    "UndoScript": [
+      "$search = Get-Service -Name WSearch -ErrorAction SilentlyContinue\n      if ($search -and $search.StartType -eq 'Automatic' -and $search.Status -ne 'Running') {\n        Start-Service -Name WSearch -ErrorAction Stop\n      }"
+    ],
+    "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/disablesearchindexing"
   },
   "WPFTweaksDisableIPv6": {
     "Content": "IPv6 - Disable",
@@ -1905,6 +1972,7 @@
   },
   "WPFOOSUbutton": {
     "Content": "O&O ShutUp10++ - Run",
+    "Description": "Downloads O&O ShutUp10++ (about 82 MB) from oo-software.com on every click and launches it. Nothing is installed; the file is saved under %LocalAppData%\\winutil.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Type": "Button",

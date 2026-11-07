@@ -173,8 +173,8 @@ exit 23
     }
 
     It "cleans up even when the run throws" {
-        # Without a finally a failed run leaves the worker pool open and the transcript running
-        $script:mainScript | Should -Match '\} finally \{[\s\S]*Close-WinUtilRunspacePool[\s\S]*Stop-Transcript'
+        # Without a finally a failed run leaves the worker pool open and the log file held
+        $script:mainScript | Should -Match '\} finally \{[\s\S]*Close-WinUtilRunspacePool[\s\S]*Close-WinUtilLog'
     }
 
     It "names the presets that exist when given one that does not" {

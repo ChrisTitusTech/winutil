@@ -20,6 +20,8 @@ Use the quick-selection buttons at the top of the Tweaks tab to speed up setup:
 * **Clear**: Clears all currently selected tweaks.
 * **Select Installed Tweaks**: Best-effort detection for tweaks already applied to your system.
 
+For checkbox tweaks and AppX entries, search matches entry descriptions and preset keys. The tooltip label "Preset key:" itself does not count as a match. Toggle search matches the displayed label and description.
+
 ### Run Tweaks
 * **Open the Tweaks tab**: Navigate to the **Tweaks** tab in the application.
 * **Select Tweaks**: Choose the tweaks you want to apply. You can use the presets available at the top for convenience.
@@ -31,16 +33,24 @@ To see what each preset includes, view [preset.json](https://github.com/ChrisTit
 
 When a listed service does not exist, WinUtil logs a warning and skips it. The remaining services and tweaks still run.
 
+When Microsoft Edge is already absent, the Edge removal tweak reports it as not installed and skips the uninstaller instead of logging errors.
+
 :::caution
 Some tweaks take effect immediately, while others may require Explorer to restart, a sign-out, or a full reboot.
 :::
+
+Apply and undo progress use each tweak's displayed label, such as "Telemetry - Disable". Session logs retain the preset key for troubleshooting.
+
+While applying or undoing tweaks, the tab shows a spinner and live status. The tweak list and action buttons return when the job finishes; the progress bar keeps its final result.
 
 ### Undo Tweaks
 * **Open the Tweaks tab**: Go to the **Tweaks** tab located next to **Install**.
 * **Select Tweaks to Remove**: Choose the tweaks you want to disable or remove.
 * **Undo Tweaks**: Click **Undo Selected Tweaks** at the bottom of the screen to apply the changes.
 
-Undo restores a service default only when its current startup type matches the type applied by the tweak. Other current startup types are preserved. WinUtil does not track whether a matching startup type was set before the tweak, so undo can also reset a service that already had that type.
+Undo restores a service default only when its current startup type matches the type applied by the tweak. Other current startup types are preserved and logged as a warning. WinUtil does not track whether a matching startup type was set before the tweak, so undo can also reset a service that already had that type.
+
+Review the available undo actions in the [Tweak Explorer](/tweak-explorer/). Its **Has undo** filter identifies tweaks with an undo action, which may reset defaults or reinstall software without recovering deleted data or your previous settings.
 
 ### AppX Packages
 
@@ -55,9 +65,16 @@ During AppX installation or removal, the window-level progress bar shows the cur
 ### Essential Tweaks
 Essential Tweaks are the safest starting point for most systems. They focus on lower-risk changes that improve usability, reduce noise, and avoid the more invasive changes found in advanced options.
 
-**Telemetry - Disable** disables the Windows Error Reporting service (`WerSvc`) when its startup type is still the default Manual, and undo restores Manual. Removing an already absent feedback-frequency registry value is treated as complete rather than as an error.
+**BitLocker - Disable** reports when the system drive is already fully decrypted and skips disabling it again. An encrypted drive with suspended protection still needs decryption.
+
+**Telemetry - Disable** disables the Windows Error Reporting service (`WerSvc`) when its startup type is still the default Manual, and undo restores Manual. Removing an already absent feedback-frequency registry value is treated as complete rather than as an error. If Defender reports error `0x800106ba` while changing automatic sample submission, apply and undo log a warning and continue with the remaining telemetry changes. That Defender preference is left unchanged; other Defender errors are reported as failures.
 
 ### Advanced Tweaks (CAUTION)
+
+**Services - Set to Manual** changes service startup settings only. Disabling service-host splitting is a separate **svchost.exe Splitting - Disable** advanced tweak. It is recommended for low-performance systems with 12 GB of RAM or less to reduce service-host memory overhead. It can interfere with Xbox services; use it only when you understand that tradeoff. Undo restores the Windows client threshold of 0x380000, rather than a custom threshold you previously configured. If you applied the previous Services tweak, select **svchost.exe Splitting - Disable** and run **Undo Selected Tweaks** directly; do not apply the new tweak first. Restart Windows after changing this setting.
+
+**Windows Search Indexing - Disable** stops the Windows Search service and sets it to Disabled. That lowers background disk activity on mechanical drives, but file searches in Explorer and the Start menu become noticeably slower because Windows no longer maintains a search index. Apply changes the startup type only while it is still the default Automatic, and undo restores Automatic only while it is still Disabled; the service is stopped only while it is Disabled and started only while it is Automatic. A startup type changed elsewhere, such as Manual, is left alone and logged as a warning.
+
 Advanced Tweaks are for users who understand the side effects of deeper Windows changes. Create a restore point first, review each item, and avoid treating the full advanced list as a one-click baseline.
 
 **Windows AI - Disable And Remove** runs the Recall feature change through Windows PowerShell 5.1 to avoid DISM hangs and COM errors in Microsoft Store PowerShell 7. It suppresses automatic restarts and reports failures in the tweak log.
@@ -65,7 +82,7 @@ Advanced Tweaks are for users who understand the side effects of deeper Windows 
 **Microsoft OneDrive - Remove** skips folder cleanup when the OneDrive path is empty or absent, and stops FileCoAuth and Explorer only when they are running. Nonempty OneDrive folders, including folders containing only hidden files, are kept.
 
 ### O&O ShutUp10++
-[O&O ShutUp10++](https://www.oo-software.com/en/shutup10) can be launched from WinUtil with one click. It is a free privacy tool for Windows that helps users manage telemetry, update behavior, and app permission settings.
+[O&O ShutUp10++](https://www.oo-software.com/en/shutup10) can be launched from WinUtil with one click. It is a free privacy tool for Windows that helps users manage telemetry, update behavior, and app permission settings. The button downloads the tool (about 82 MB) each time it is clicked; hover over it to see this before starting, and, when the download size is available, the progress label shows it alongside the percentage.
 
 Watch a walkthrough:
 
@@ -90,6 +107,8 @@ Use the DNS section to switch both IPv4 and IPv6 DNS providers without editing a
 ### Customize Preferences
 
 Use Customize Preferences for smaller visual and behavior changes that do not fit the main tweak presets.
+
+The [Tweak Explorer](/tweak-explorer/) shows the registry values for each Multiplane Overlay dropdown state. Selecting a state in WinUtil applies it immediately. Choose another state to revert it; **Undo Selected Tweaks** does not manage dropdowns.
 
 ### Performance Plans
 

@@ -61,6 +61,7 @@
 	--sl-color-bg-nav: #fafafa;
 	--sl-color-bg-inline-code: #f1f1f1;
 	--sl-color-hairline-light: #ececec;
+	--sl-color-hairline: #ececec;
 	--sl-color-hairline-shade: #ececec;
 }
 
@@ -158,7 +159,7 @@ body {
 }
 .wu-btn-secondary:hover {
 	border-color: var(--sl-color-accent);
-	color: var(--sl-color-accent);
+	color: var(--sl-color-accent-high);
 }
 /* Neutralizes any stray <p> MDX wraps around icon+text content, so it never breaks the flex row. */
 .wu-btn > p,
@@ -180,7 +181,10 @@ body {
 .sl-markdown-content .wu-benefit-list > *,
 .sl-markdown-content .wu-trust-bar > *,
 .sl-markdown-content .wu-badges > *,
-.sl-markdown-content .wu-btn-row > * {
+.sl-markdown-content .wu-btn-row > *,
+.sl-markdown-content .wu-stats > *,
+.sl-markdown-content .wu-marquee-track > *,
+.sl-markdown-content .wu-solution-grid > astro-island > * {
 	margin-top: 0;
 }
 
@@ -338,10 +342,10 @@ body {
 	color: var(--sl-color-gray-3);
 }
 
-/* Feature grid: wraps <CornerCard> instances. */
+/* Feature list: one <CornerCard> per row, so the reading highlight lands on a single card. */
 .wu-feature-grid {
 	display: grid;
-	gap: 1.25rem;
+	gap: 1rem;
 	margin-top: 3rem;
 }
 
@@ -384,7 +388,7 @@ body {
 	border: 1px solid var(--sl-color-hairline-light);
 	background: var(--sl-color-bg);
 	font-weight: 700;
-	color: var(--sl-color-accent);
+	color: var(--sl-color-accent-high);
 }
 .wu-timeline-step h3 {
 	margin: 0;
@@ -461,20 +465,373 @@ body {
 	color: var(--sl-color-gray-3);
 }
 
+/* Stats row: tweak and feature counts from the reference pages. */
+.wu-section--stats {
+	padding-block: 3rem;
+}
+.wu-stats {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 2rem 6rem;
+}
+.wu-stat {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5rem;
+}
+.wu-stat-value {
+	display: inline-flex;
+	font-size: clamp(3rem, 2rem + 4vw, 5.5rem);
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: -0.04em;
+	font-variant-numeric: tabular-nums;
+	color: var(--sl-color-white);
+}
+.wu-stat-label {
+	font-size: var(--sl-text-sm);
+	font-weight: 500;
+	color: var(--sl-color-gray-3);
+}
+/* Odometer digits built by landing-motion.js: a 1em window over a column of numerals. */
+.wu-odo-digit {
+	display: inline-block;
+	height: 1em;
+	overflow: hidden;
+}
+.wu-odo-strip {
+	display: flex;
+	flex-direction: column;
+}
+
+/* Solution cards: the islands become real grid items so each card can animate on its own. */
+.wu-solution-grid > astro-island {
+	display: block;
+}
+.wu-solution-grid .border-glow-card {
+	height: 100%;
+}
+/* The card surface follows the theme in CSS so the server-rendered cards are right before they hydrate.
+   BorderGlow only adds its light styles for a hex colour, so they're repeated here for the light theme. */
+.wu-solution-grid {
+	--wu-glow-card-bg: #0d0d0d;
+}
+:root[data-theme='light'] .wu-solution-grid {
+	--wu-glow-card-bg: #ffffff;
+}
+:root[data-theme='light'] .wu-solution-grid .border-glow-card {
+	border-color: rgb(24 24 27 / 12%);
+	box-shadow:
+		rgb(24 24 27 / 4%) 0 1px 2px,
+		rgb(24 24 27 / 5%) 0 8px 24px;
+}
+:root[data-theme='light'] .wu-solution-grid .border-glow-card::after,
+:root[data-theme='light'] .wu-solution-grid .border-glow-card > .edge-light {
+	mix-blend-mode: normal;
+}
+/* BorderGlow has no reduced-motion handling of its own, so the glow that follows the pointer is left off. */
+@media (prefers-reduced-motion: reduce) {
+	.wu-solution-grid .border-glow-card::before,
+	.wu-solution-grid .border-glow-card::after,
+	.wu-solution-grid .border-glow-card > .edge-light {
+		display: none;
+	}
+}
+.wu-solution-grid .border-glow-inner {
+	gap: 0.75rem;
+	padding: 1.5rem;
+}
+
+/* Feature section: on wide screens the heading stays beside the cards, with a progress bar and counter. */
+.wu-feature-progress {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	margin-top: 2rem;
+	font-family: var(--sl-font-mono);
+	font-size: var(--sl-text-xs);
+	color: var(--sl-color-gray-3);
+}
+.wu-feature-bar {
+	flex: 1;
+	max-width: 12rem;
+	height: 2px;
+	overflow: hidden;
+	background: var(--sl-color-hairline-light);
+}
+.wu-feature-bar span {
+	display: block;
+	height: 100%;
+	transform-origin: 0 50%;
+	background: var(--sl-color-accent);
+}
+@media (min-width: 60em) {
+	.wu-section--features .wu-section-inner {
+		display: grid;
+		grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+		align-items: start;
+		gap: 4rem;
+	}
+	.wu-section--features .wu-section-head {
+		position: sticky;
+		top: calc(var(--sl-nav-height) + 4rem);
+		margin: 0;
+		text-align: left;
+	}
+	.wu-section--features .wu-section-head h2 {
+		font-size: var(--sl-text-4xl);
+		line-height: 1.15;
+	}
+	.sl-markdown-content .wu-section--features .wu-feature-grid {
+		margin-top: 0;
+	}
+}
+
+/* ============================================================
+   Landing motion (landing-motion.js).
+   index.mdx adds .wu-motion to <html> unless the visitor prefers reduced motion.
+   ============================================================ */
+
+/* The hero starts hidden for its entrance animation, and shows anyway after 4s if the script never runs. */
+.wu-motion .wu-hero-copy h1 {
+	visibility: hidden;
+	animation: wu-show 0s 4s forwards;
+}
+.wu-motion
+	:is(
+		.wu-eyebrow,
+		.wu-hero-tagline,
+		.wu-hero-caption,
+		.wu-hero-media,
+		.wu-hero-actions .wu-btn,
+		.wu-hero-bottom .wu-badges > *
+	) {
+	opacity: 0;
+	animation: wu-show 0s 4s forwards;
+}
+@keyframes wu-show {
+	to {
+		opacity: 1;
+		visibility: visible;
+	}
+}
+
+/* Interactive dot field (React Bits DotGrid) replaces the static grid lines when motion is on. */
+.wu-hero-dots {
+	mask-image: radial-gradient(at top, #000 45%, transparent 90%);
+	-webkit-mask-image: radial-gradient(at top, #000 45%, transparent 90%);
+}
+html:not(.wu-motion) .wu-hero-dots,
+.wu-motion .wu-hero-grid {
+	display: none;
+}
+
+/* Trust bar as a scrolling strip with faded edges. */
+.wu-marquee {
+	width: 100%;
+	overflow: hidden;
+	mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent);
+	-webkit-mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent);
+}
+.wu-marquee-track {
+	display: flex;
+	width: max-content;
+}
+.wu-marquee .wu-trust-bar {
+	flex: none;
+	flex-wrap: nowrap;
+	gap: 2.5rem;
+	padding-right: 2.5rem;
+}
+.wu-marquee .wu-trust-item {
+	white-space: nowrap;
+}
+
+/* Problem list: items read dim until they reach the reading line. */
+.wu-motion .wu-problem-list li {
+	color: var(--sl-color-gray-4);
+	transition: color 0.5s ease;
+}
+.wu-motion .wu-problem-list .wu-bullet {
+	transition:
+		background-color 0.5s ease,
+		color 0.5s ease;
+}
+.wu-motion .wu-problem-list li.is-lit {
+	color: var(--sl-color-gray-2);
+}
+.wu-motion .wu-problem-list li.is-lit .wu-bullet {
+	background: hsl(var(--wu-accent-h) 100% 51% / 0.14);
+}
+.wu-motion .wu-problem-list li.is-lit .wu-bullet svg {
+	color: var(--sl-color-accent);
+}
+
+/* Timeline: accent line over the static one, and a ring drawn around each number once reached. */
+.wu-timeline-progress {
+	display: none;
+}
+.wu-motion .wu-timeline-progress {
+	display: block;
+	position: absolute;
+	left: calc(1.25rem - 0.5px);
+	top: 1.25rem;
+	bottom: 1.25rem;
+	width: 1px;
+	transform: scaleY(0);
+	transform-origin: top;
+	background: var(--sl-color-accent);
+}
+.wu-timeline-number {
+	transition:
+		background-color 0.4s ease,
+		color 0.4s ease;
+}
+/* The tint sits on a solid fill so the timeline line doesn't show through the number. */
+.wu-timeline-step.is-active .wu-timeline-number {
+	background:
+		linear-gradient(hsl(var(--wu-accent-h) 100% 51% / 0.12), hsl(var(--wu-accent-h) 100% 51% / 0.12)),
+		var(--sl-color-bg);
+}
+/* Sits on top of the number's border, so the drawn ring replaces it. */
+.wu-ring {
+	position: absolute;
+	inset: -1px;
+	width: calc(100% + 2px);
+	height: calc(100% + 2px);
+	rotate: -90deg;
+	overflow: visible;
+	pointer-events: none;
+}
+.wu-ring circle {
+	fill: none;
+	stroke: var(--sl-color-accent);
+	stroke-width: 1.5;
+	stroke-linecap: round;
+}
+
+/* Final CTA: full-bleed WebGL light beams (React Bits Beams) behind the copy. */
+.wu-section--cta {
+	position: relative;
+	isolation: isolate;
+}
+.wu-cta-beams {
+	position: absolute;
+	z-index: -1;
+	top: 0;
+	bottom: 0;
+	left: 50%;
+	width: 100vw;
+	margin-left: -50vw;
+	pointer-events: none;
+	mask-image: linear-gradient(transparent, #000 25%, #000 75%, transparent);
+	-webkit-mask-image: linear-gradient(transparent, #000 25%, #000 75%, transparent);
+}
+
+/* Closing wordmark: an outline with a filled copy stacked on top (clipped in by landing-motion.js). */
+.wu-outro {
+	display: grid;
+	place-items: center;
+	margin-inline: calc(-1 * var(--sl-content-pad-x));
+	padding-top: 2rem;
+	overflow: hidden;
+	pointer-events: none;
+	user-select: none;
+}
+.wu-outro > span {
+	grid-area: 1 / 1;
+	font-size: clamp(5rem, 20vw, 22rem);
+	font-weight: 800;
+	line-height: 0.9;
+	letter-spacing: -0.06em;
+}
+.wu-outro-stroke {
+	color: transparent;
+	-webkit-text-stroke: 1px var(--sl-color-gray-5);
+}
+.wu-outro-fill {
+	background: linear-gradient(180deg, var(--sl-color-gray-5), transparent 90%);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+/* Back-to-top button; its ring doubles as page progress. */
+.wu-to-top {
+	position: fixed;
+	right: 1.5rem;
+	bottom: 1.5rem;
+	z-index: 20;
+	display: grid;
+	place-items: center;
+	width: 2.75rem;
+	height: 2.75rem;
+	padding: 0;
+	border: 1px solid var(--sl-color-hairline-light);
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--sl-color-bg) 80%, transparent);
+	backdrop-filter: blur(8px);
+	color: var(--sl-color-white);
+	cursor: pointer;
+	opacity: 0;
+	translate: 0 0.5rem;
+	visibility: hidden;
+	pointer-events: none;
+	/* visibility waits for the fade-out, so the hidden button also leaves the tab order. */
+	transition:
+		opacity 0.3s ease,
+		translate 0.3s ease,
+		border-color 0.2s ease,
+		visibility 0s 0.3s;
+}
+.wu-to-top.is-visible {
+	opacity: 1;
+	translate: 0 0;
+	visibility: visible;
+	pointer-events: auto;
+	transition-delay: 0s;
+}
+.wu-to-top:hover {
+	border-color: var(--sl-color-accent);
+}
+html:not(.wu-motion) .wu-to-top {
+	display: none;
+}
+.wu-to-top-progress {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	fill: none;
+	stroke-width: 1.5;
+	stroke-linecap: round;
+}
+.wu-to-top-icon {
+	width: 1.15rem;
+	height: 1.15rem;
+	margin: 0;
+}
+.wu-to-top-track {
+	stroke: var(--sl-color-hairline-light);
+}
+/* Start the progress ring at 12 o'clock. */
+.wu-to-top-ring {
+	stroke: var(--sl-color-accent);
+	rotate: -90deg;
+	transform-origin: center;
+	transform-box: fill-box;
+}
+
 /* Grid breakpoints: 1 col mobile, 2 col tablet, 3 col desktop. */
 @media (min-width: 40em) {
 	.wu-solution-grid {
 		grid-template-columns: repeat(2, 1fr);
 	}
-	.wu-feature-grid {
-		grid-template-columns: repeat(2, 1fr);
-	}
 }
 @media (min-width: 60em) {
 	.wu-solution-grid {
-		grid-template-columns: repeat(3, 1fr);
-	}
-	.wu-feature-grid {
 		grid-template-columns: repeat(3, 1fr);
 	}
 	.wu-timeline {

@@ -11,7 +11,7 @@ function Invoke-WPFFeatureInstall {
         return
     }
 
-    Start-WinUtilJob -Name "Features" -Description "Installing Windows features" -Parameters @{
+    Start-WinUtilJob -Name "Features" -Description "Installing Windows features" -QueueIfBusy -Parameters @{
         Features = @($sync.selectedFeatures)
     } -ScriptBlock {
         param($Features)

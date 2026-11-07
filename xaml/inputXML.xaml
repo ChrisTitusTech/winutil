@@ -85,12 +85,18 @@
         <Setter Property="BorderBrush" Value="Gray"/>
         <Setter Property="BorderThickness" Value="{DynamicResource AppEntryBorderThickness}"/>
         <Setter Property="CornerRadius" Value="5"/>
-        <Setter Property="Padding" Value="6,4"/>
-        <Setter Property="Width" Value="{DynamicResource AppEntryWidth}"/>
+        <Setter Property="Padding" Value="7,5"/>
+        <Setter Property="Width" Value="{DynamicResource AppEntryCardWidth}"/>
         <Setter Property="VerticalAlignment" Value="Top"/>
         <Setter Property="Margin" Value="{DynamicResource AppEntryMargin}"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Background" Value="{DynamicResource AppInstallUnselectedColor}"/>
+        <Style.Triggers>
+            <!-- A selected card carries its own colour, which wins over this -->
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource AppInstallHighlightedColor}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
     <Style x:Key="AppEntryCheckboxStyle" TargetType="CheckBox">
         <Setter Property="Background" Value="Transparent"/>
@@ -114,6 +120,30 @@
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Margin" Value="{DynamicResource AppEntryMargin}"/>
         <Setter Property="Background" Value="Transparent"/>
+    </Style>
+    <!-- A very soft shadow, in a colour that follows the theme, lifts each logo off the card -->
+    <Style x:Key="AppEntryIconPlateStyle" TargetType="Border">
+        <Setter Property="Width" Value="{DynamicResource AppEntryIconSize}"/>
+        <Setter Property="Height" Value="{DynamicResource AppEntryIconSize}"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="2"/>
+        <Setter Property="Margin" Value="0,0,8,0"/>
+    </Style>
+    <Style x:Key="AppEntryIconStyle" TargetType="Image">
+        <Setter Property="Stretch" Value="Uniform"/>
+        <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect ShadowDepth="0" BlurRadius="7" Opacity="{DynamicResource AppIconShadowOpacity}" Color="{DynamicResource CAppIconShadowColor}"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="AppEntryIconLetterStyle" TargetType="TextBlock">
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="FontSize" Value="{DynamicResource AppEntryFontSize}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ToggleButtonOnColor}"/>
     </Style>
     <Style x:Key="AppEntryButtonStyle" TargetType="Button">
         <Setter Property="Width" Value="{DynamicResource IconButtonSize}"/>
@@ -385,18 +415,18 @@
                                 <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource ButtonBackgroundMouseoverColor}"/>
                                 <Setter Property="Effect">
                                     <Setter.Value>
-                                        <DropShadowEffect Opacity="1" ShadowDepth="5" Color="{DynamicResource CButtonBackgroundMouseoverColor}" Direction="-100" BlurRadius="15"/>
+                                        <DropShadowEffect Opacity="0.4" ShadowDepth="2" Color="{DynamicResource CButtonBackgroundMouseoverColor}" Direction="-100" BlurRadius="8"/>
                                     </Setter.Value>
                                 </Setter>
                                 <Setter Property="Panel.ZIndex" Value="2000"/>
                             </Trigger>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter Property="BorderBrush" Value="Pink"/>
+                                <Setter TargetName="ButtonGlow" Property="BorderBrush" Value="{DynamicResource ToggleButtonOnColor}"/>
                                 <Setter Property="BorderThickness" Value="2"/>
                                 <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource ButtonBackgroundSelectedColor}"/>
                                 <Setter Property="Effect">
                                     <Setter.Value>
-                                        <DropShadowEffect Opacity="1" ShadowDepth="2" Color="{DynamicResource CButtonBackgroundMouseoverColor}" Direction="-111" BlurRadius="10"/>
+                                        <DropShadowEffect Opacity="0.35" ShadowDepth="2" Color="{DynamicResource CButtonBackgroundMouseoverColor}" Direction="-111" BlurRadius="8"/>
                                     </Setter.Value>
                                 </Setter>
                             </Trigger>
@@ -562,7 +592,7 @@
         <!-- Checkbox template -->
         <Style TargetType="CheckBox">
             <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
-            <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}"/>
+            <Setter Property="Background" Value="Transparent"/>
             <Setter Property="FontSize" Value="{DynamicResource FontSize}" />
             <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
             <Setter Property="TextElement.FontFamily" Value="{DynamicResource FontFamily}"/>
@@ -616,7 +646,7 @@
         </Style>
         <Style TargetType="RadioButton">
             <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
-            <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}"/>
+            <Setter Property="Background" Value="Transparent"/>
             <Setter Property="FontSize" Value="{DynamicResource FontSize}" />
             <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
             <Setter Property="Template">
@@ -821,7 +851,7 @@
 
 
         <Style x:Key="BorderStyle" TargetType="Border">
-            <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}"/>
+            <Setter Property="Background" Value="{DynamicResource SurfaceBackgroundColor}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource BorderColor}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CornerRadius" Value="5"/>
@@ -829,7 +859,7 @@
             <Setter Property="Margin" Value="5"/>
             <Setter Property="Effect">
                 <Setter.Value>
-                    <DropShadowEffect ShadowDepth="5" BlurRadius="5" Opacity="{DynamicResource BorderOpacity}" Color="{DynamicResource CBorderColor}"/>
+                    <DropShadowEffect ShadowDepth="2" BlurRadius="10" Opacity="{DynamicResource BorderOpacity}" Color="{DynamicResource CBorderColor}"/>
                 </Setter.Value>
             </Setter>
         </Style>
@@ -883,7 +913,7 @@
             </Setter>
             <Setter Property="Effect">
                 <Setter.Value>
-                    <DropShadowEffect ShadowDepth="5" BlurRadius="5" Opacity="{DynamicResource BorderOpacity}" Color="{DynamicResource CBorderColor}"/>
+                    <DropShadowEffect ShadowDepth="2" BlurRadius="10" Opacity="{DynamicResource BorderOpacity}" Color="{DynamicResource CBorderColor}"/>
                 </Setter.Value>
             </Setter>
         </Style>
@@ -913,7 +943,7 @@
             </Setter>
             <Setter Property="Effect">
                 <Setter.Value>
-                    <DropShadowEffect ShadowDepth="5" BlurRadius="5" Opacity="{DynamicResource BorderOpacity}" Color="{DynamicResource CBorderColor}"/>
+                    <DropShadowEffect ShadowDepth="2" BlurRadius="10" Opacity="{DynamicResource BorderOpacity}" Color="{DynamicResource CBorderColor}"/>
                 </Setter.Value>
             </Setter>
         </Style>
@@ -1032,7 +1062,14 @@
             </Setter>
         </Style>
     </Window.Resources>
-    <Grid Background="{DynamicResource MainBackgroundColor}" ShowGridLines="False" Name="WPFMainGrid" Width="Auto" Height="Auto" HorizontalAlignment="Stretch">
+    <Grid ShowGridLines="False" Name="WPFMainGrid" Width="Auto" Height="Auto" HorizontalAlignment="Stretch">
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="{DynamicResource CMainGradientTopColor}" Offset="0"/>
+                <GradientStop Color="{DynamicResource CMainGradientTopColor}" Offset="0.3"/>
+                <GradientStop Color="{DynamicResource CMainGradientBottomColor}" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -1047,7 +1084,7 @@
             <TextBlock Text="&#x26A0; Offline Mode - No Internet Connection" Foreground="White" FontWeight="Bold"
                 HorizontalAlignment="Center" FontSize="13" Background="Transparent"/>
         </Border>
-        <Grid Grid.Row="1" Background="{DynamicResource MainBackgroundColor}">
+        <Grid Grid.Row="1" Background="Transparent">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/> <!-- Navigation buttons -->
                 <ColumnDefinition Width="*"/> <!-- Search bar and buttons -->
@@ -1055,7 +1092,7 @@
 
             <!-- Navigation Buttons Panel -->
             <StackPanel Name="NavDockPanel" Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center" Margin="5,5,10,5">
-                <StackPanel Name="NavLogoPanel" Orientation="Horizontal" HorizontalAlignment="Left" Background="{DynamicResource MainBackgroundColor}" SnapsToDevicePixels="True" Margin="10,0,20,0">
+                <StackPanel Name="NavLogoPanel" Orientation="Horizontal" HorizontalAlignment="Left" Background="Transparent" SnapsToDevicePixels="True" Margin="10,0,20,0">
                 </StackPanel>
                 <ToggleButton Style="{StaticResource TabToggleButton}" Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="{DynamicResource TabButtonWidth}"
                     Background="{DynamicResource ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
@@ -1100,7 +1137,7 @@
             </StackPanel>
 
             <!-- Search Bar and Action Buttons -->
-            <Grid Name="GridBesideNavDockPanel" Grid.Column="1" Background="{DynamicResource MainBackgroundColor}" ShowGridLines="False" Height="Auto">
+            <Grid Name="GridBesideNavDockPanel" Grid.Column="1" Background="Transparent" ShowGridLines="False" Height="Auto">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*"/> <!-- Search bar area - priority space -->
                     <ColumnDefinition Width="Auto"/><!-- Buttons area -->
@@ -1139,10 +1176,43 @@
 
                 <!-- Buttons Container -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5">
+                    <Button Name="JobQueueButton"
+                        Style="{StaticResource HoverButtonStyle}"
+                        BorderBrush="Transparent"
+                        Background="{DynamicResource MainBackgroundColor}"
+                        Foreground="{DynamicResource MainForegroundColor}"
+                        MinWidth="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Margin="0,0,2,0"
+                        Visibility="Collapsed"
+                        ToolTip="Running and queued operations"
+                        AutomationProperties.Name="Queue">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="{DynamicResource SettingsIconFontSize}" VerticalAlignment="Center">&#xE823;</TextBlock>
+                            <TextBlock Name="JobQueueCount" FontSize="{DynamicResource ButtonFontSize}" FontWeight="Bold" VerticalAlignment="Center" Margin="3,0,3,0"/>
+                        </StackPanel>
+                    </Button>
+                    <Popup Name="JobQueuePopup"
+                        IsOpen="False" StaysOpen="False"
+                        PlacementTarget="{Binding ElementName=JobQueueButton}" Placement="Bottom"
+                        HorizontalAlignment="Right" VerticalAlignment="Top">
+                        <Border Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
+                            <StackPanel Width="260" Background="{DynamicResource MainBackgroundColor}">
+                                <TextBlock Name="JobQueueRunning"
+                                    FontSize="{DynamicResource ButtonFontSize}" FontWeight="Bold"
+                                    Foreground="{DynamicResource MainForegroundColor}"
+                                    TextTrimming="CharacterEllipsis"
+                                    Margin="10,5,10,5"/>
+                                <ScrollViewer MaxHeight="240" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                    <StackPanel Name="JobQueueItems" Margin="5,0,5,5"/>
+                                </ScrollViewer>
+                            </StackPanel>
+                        </Border>
+                    </Popup>
                     <Button Name="ThemeButton"
                         Style="{StaticResource HoverButtonStyle}"
                         BorderBrush="Transparent"
-                    Background="{DynamicResource MainBackgroundColor}"
+                    Background="Transparent"
                     Foreground="{DynamicResource MainForegroundColor}"
                     FontSize="{DynamicResource SettingsIconFontSize}"
                     Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
@@ -1181,7 +1251,7 @@
                     <Button Name="FontScalingButton"
                         Style="{StaticResource HoverButtonStyle}"
                         BorderBrush="Transparent"
-                    Background="{DynamicResource MainBackgroundColor}"
+                    Background="Transparent"
                     Foreground="{DynamicResource MainForegroundColor}"
                     FontSize="{DynamicResource SettingsIconFontSize}"
                     Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
@@ -1254,7 +1324,7 @@
                     <Button Name="SettingsButton"
                         Style="{StaticResource HoverButtonStyle}"
                         BorderBrush="Transparent"
-                    Background="{DynamicResource MainBackgroundColor}"
+                    Background="Transparent"
                     Foreground="{DynamicResource MainForegroundColor}"
                     FontSize="{DynamicResource SettingsIconFontSize}"
                     Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
@@ -1299,7 +1369,7 @@
                         Style="{StaticResource HoverButtonStyle}"
                         BorderThickness="0"
                         BorderBrush="Transparent"
-                        Background="{DynamicResource MainBackgroundColor}"
+                        Background="Transparent"
                         Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
                         HorizontalAlignment="Right" VerticalAlignment="Center"
                         Margin="0"
@@ -1312,7 +1382,7 @@
                     <Button
                         BorderThickness="0"
                         BorderBrush="Transparent"
-                        Background="{DynamicResource MainBackgroundColor}"
+                        Background="Transparent"
                         Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
                         HorizontalAlignment="Right" VerticalAlignment="Center"
                         Margin="0,0,0,0"
@@ -1341,7 +1411,7 @@
                         Style="{StaticResource HoverButtonStyle}"
                         BorderThickness="0"
                         BorderBrush="Transparent"
-                        Background="{DynamicResource MainBackgroundColor}"
+                        Background="Transparent"
                         Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
                         HorizontalAlignment="Right" VerticalAlignment="Center"
                         Margin="0"
@@ -1387,15 +1457,83 @@
                     </WrapPanel>
 
                     <Grid Grid.Row="1" Margin="{DynamicResource TabContentMargin}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
+                        <Grid Name="WPFInstallContentGrid">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
 
-                        <Grid Name="appscategory" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <Grid Name="appscategory" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            </Grid>
+
+                            <Grid Name="appspanel" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            </Grid>
                         </Grid>
 
-                        <Grid Name="appspanel" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <!-- ─── Install working view: shown while Install/Uninstall/Upgrade runs ─── -->
+                        <Grid Name="WPFInstallWorkingPanel" Visibility="Collapsed" Background="Transparent"
+                              HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <StackPanel MaxWidth="620" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                                <!-- BitmapCache because this is text: without it WPF re-rasterises the
+                                     glyph every frame on the interface thread and the spin stutters.
+                                     Cached, the rotation is a transform on an image the GPU already has. -->
+                                <TextBlock Name="WPFInstallWorkingSpinner"
+                                           Text="&#xE895;"
+                                           FontFamily="Segoe MDL2 Assets"
+                                           FontSize="{DynamicResource Win11StepHeroFontSize}"
+                                           Foreground="{DynamicResource LabelboxForegroundColor}"
+                                           Background="Transparent"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,0,0,14"
+                                           RenderTransformOrigin="0.5,0.5"
+                                           CacheMode="BitmapCache">
+                                    <TextBlock.RenderTransform>
+                                        <RotateTransform Angle="0"/>
+                                    </TextBlock.RenderTransform>
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <!-- Tied to visibility, not to Loaded: the panel stays loaded
+                                                     while collapsed, so a Loaded trigger would spin forever -->
+                                                <DataTrigger Binding="{Binding IsVisible, RelativeSource={RelativeSource Self}}" Value="True">
+                                                    <DataTrigger.EnterActions>
+                                                        <BeginStoryboard Name="InstallSpin">
+                                                            <Storyboard RepeatBehavior="Forever">
+                                                                <DoubleAnimation
+                                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                                                    From="0" To="360" Duration="0:0:1.4"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </DataTrigger.EnterActions>
+                                                    <DataTrigger.ExitActions>
+                                                        <StopStoryboard BeginStoryboardName="InstallSpin"/>
+                                                    </DataTrigger.ExitActions>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock Name="WPFInstallWorkingLabel"
+                                           FontSize="{DynamicResource Win11StepTitleFontSize}"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource LabelboxForegroundColor}"
+                                           Background="Transparent"
+                                           HorizontalAlignment="Center"
+                                           TextAlignment="Center"
+                                           TextWrapping="Wrap"
+                                           Margin="0,0,0,6"
+                                           Text="Installing..."/>
+                                <TextBlock FontSize="{DynamicResource FontSize}"
+                                           Foreground="{DynamicResource MainForegroundColor}"
+                                           Background="Transparent"
+                                           Opacity="0.75"
+                                           HorizontalAlignment="Center"
+                                           TextAlignment="Center"
+                                           TextWrapping="Wrap"
+                                           MaxWidth="520"
+                                           Margin="0,0,0,20"
+                                           Text="This can take several minutes. Progress is shown below."/>
+                            </StackPanel>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -1408,7 +1546,7 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Grid.Row="0" Margin="{DynamicResource TabContentMargin}">
+                    <ScrollViewer Name="WPFTweaksContentScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Grid.Row="0" Margin="{DynamicResource TabContentMargin}">
                         <Grid Background="Transparent">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -1416,7 +1554,7 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <StackPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Vertical" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="5">
+                            <StackPanel Background="Transparent" Orientation="Vertical" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="5">
                                 <Label Content="Recommended Selections:" FontSize="{DynamicResource FontSize}" VerticalAlignment="Center" Margin="2"/>
                                 <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,2,0,0">
                                     <Button Name="WPFstandard" Content=" Standard " Margin="2" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
@@ -1433,7 +1571,7 @@
                             </Grid>
 
                             <Border Grid.ColumnSpan="2" Grid.Row="2" Grid.Column="0" Style="{StaticResource BorderStyle}">
-                                <StackPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left">
+                                <StackPanel Background="Transparent" Orientation="Horizontal" HorizontalAlignment="Left">
                                     <TextBlock Padding="10">
                                         Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
                                         <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else!
@@ -1442,12 +1580,79 @@
                             </Border>
                         </Grid>
                     </ScrollViewer>
-                    <Border Grid.Row="1" Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="5" HorizontalAlignment="Stretch" Padding="10">
+                    <Border Name="WPFTweaksActionBar" Grid.Row="1" Background="{DynamicResource SurfaceBackgroundColor}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="5" HorizontalAlignment="Stretch" Padding="10">
                         <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0">
                             <Button Name="WPFTweaksbutton" Content="Run Tweaks" Margin="5" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
                             <Button Name="WPFUndoall" Content="Undo Selected Tweaks" Margin="5" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
                         </WrapPanel>
                     </Border>
+
+                    <!-- ─── Tweaks working view: shown while Tweaks/Undo runs ─── -->
+                    <Grid Name="WPFTweaksWorkingPanel" Grid.Row="0" Grid.RowSpan="2" Visibility="Collapsed"
+                          Background="{DynamicResource MainBackgroundColor}"
+                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <StackPanel MaxWidth="620" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                            <!-- BitmapCache because this is text: without it WPF re-rasterises the
+                                 glyph every frame on the interface thread and the spin stutters.
+                                 Cached, the rotation is a transform on an image the GPU already has. -->
+                            <TextBlock Name="WPFTweaksWorkingSpinner"
+                                       Text="&#xE895;"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       FontSize="{DynamicResource Win11StepHeroFontSize}"
+                                       Foreground="{DynamicResource LabelboxForegroundColor}"
+                                       Background="Transparent"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,0,0,14"
+                                       RenderTransformOrigin="0.5,0.5"
+                                       CacheMode="BitmapCache">
+                                <TextBlock.RenderTransform>
+                                    <RotateTransform Angle="0"/>
+                                </TextBlock.RenderTransform>
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <!-- Tied to visibility, not to Loaded: the panel stays loaded
+                                                 while collapsed, so a Loaded trigger would spin forever -->
+                                            <DataTrigger Binding="{Binding IsVisible, RelativeSource={RelativeSource Self}}" Value="True">
+                                                <DataTrigger.EnterActions>
+                                                    <BeginStoryboard Name="TweaksSpin">
+                                                        <Storyboard RepeatBehavior="Forever">
+                                                            <DoubleAnimation
+                                                                Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                                                From="0" To="360" Duration="0:0:1.4"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </DataTrigger.EnterActions>
+                                                <DataTrigger.ExitActions>
+                                                    <StopStoryboard BeginStoryboardName="TweaksSpin"/>
+                                                </DataTrigger.ExitActions>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <TextBlock Name="WPFTweaksWorkingLabel"
+                                       FontSize="{DynamicResource Win11StepTitleFontSize}"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource LabelboxForegroundColor}"
+                                       Background="Transparent"
+                                       HorizontalAlignment="Center"
+                                       TextAlignment="Center"
+                                       TextWrapping="Wrap"
+                                       Margin="0,0,0,6"
+                                       Text="Applying tweaks..."/>
+                            <TextBlock FontSize="{DynamicResource FontSize}"
+                                       Foreground="{DynamicResource MainForegroundColor}"
+                                       Background="Transparent"
+                                       Opacity="0.75"
+                                       HorizontalAlignment="Center"
+                                       TextAlignment="Center"
+                                       TextWrapping="Wrap"
+                                       MaxWidth="520"
+                                       Margin="0,0,0,20"
+                                       Text="This can take several minutes. Progress is shown below."/>
+                        </StackPanel>
+                    </Grid>
                 </Grid>
             </TabItem>
             <TabItem Header="Config" Visibility="Collapsed" Name="WPFTab3">
@@ -1629,6 +1834,7 @@
                                 Background="Transparent"
                                 HorizontalAlignment="Right" VerticalAlignment="Center"
                                 Panel.ZIndex="1"
+                                AutomationProperties.Name="Previous Step"
                                 ToolTip="Back to the previous step">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource HoverButtonStyle}">
@@ -1651,6 +1857,7 @@
                                 Background="Transparent"
                                 HorizontalAlignment="Left" VerticalAlignment="Center"
                                 Panel.ZIndex="1"
+                                AutomationProperties.Name="Next Step"
                                 ToolTip="Forward to the next step">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource HoverButtonStyle}">
@@ -1832,7 +2039,7 @@
                                 </Style>
 
                                 <Style x:Key="Win11InfoPanel" TargetType="Border">
-                                    <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}"/>
+                                    <Setter Property="Background" Value="{DynamicResource SurfaceBackgroundColor}"/>
                                     <Setter Property="BorderBrush" Value="{DynamicResource BorderColor}"/>
                                     <Setter Property="BorderThickness" Value="1"/>
                                     <Setter Property="CornerRadius" Value="5"/>
@@ -1872,6 +2079,7 @@
                                                 </Grid.ColumnDefinitions>
                                                 <TextBox Grid.Column="0"
                                                          Name="WPFWin11ISOPath"
+                                                         AutomationProperties.Name="ISO file"
                                                          IsReadOnly="True"
                                                          VerticalAlignment="Center"
                                                          VerticalContentAlignment="Center"
@@ -1954,6 +2162,7 @@
                                         <StackPanel>
                                             <TextBlock Style="{StaticResource Win11StepLabel}" Text="Windows edition"/>
                                             <ComboBox Name="WPFWin11ISOEditionComboBox"
+                                                      AutomationProperties.Name="Windows edition"
                                                       FontSize="{DynamicResource FontSize}"
                                                       Foreground="{DynamicResource MainForegroundColor}"
                                                       Background="{DynamicResource MainBackgroundColor}"
@@ -2051,6 +2260,7 @@
                                                 </Grid.ColumnDefinitions>
                                                 <ComboBox Grid.Column="0"
                                                           Name="WPFWin11ISOUSBDriveComboBox"
+                                                          AutomationProperties.Name="USB drive"
                                                           Foreground="{DynamicResource MainForegroundColor}"
                                                           Background="{DynamicResource MainBackgroundColor}"
                                                           VerticalAlignment="Center"
@@ -2178,6 +2388,7 @@
                                      text wraps, and its drop shadow lands on the glyphs with no background
                                      here to sit under. -->
                                 <TextBox Name="WPFWin11ISOStatusLog"
+                                         AutomationProperties.Name="Status Log"
                                          IsReadOnly="True"
                                          TextWrapping="Wrap"
                                          TextAlignment="Left"
@@ -2211,7 +2422,7 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <StackPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Vertical" Grid.Row="0" Grid.Column="0" Margin="5">
+                            <StackPanel Background="Transparent" Orientation="Vertical" Grid.Row="0" Grid.Column="0" Margin="5">
                                 <Label Content="Selections:" FontSize="{DynamicResource FontSize}" VerticalAlignment="Center" Margin="2"/>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,2,0,0">
                                     <Button Name="WPFDefaultAppxSelection" Content=" Default " Margin="2" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
@@ -2225,7 +2436,7 @@
                             </Grid>
 
                             <Border Grid.Row="2" Style="{StaticResource BorderStyle}" Margin="5,15,5,5">
-                                <WrapPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left">
+                                <WrapPanel Background="Transparent" Orientation="Horizontal" HorizontalAlignment="Left">
                                     <TextBlock Padding="10" TextWrapping="Wrap" Foreground="{DynamicResource MainForegroundColor}">
                                         Note: Select the Windows AppX packages you wish to install or remove.
                                         <LineBreak/>'Install Selected' registers a local manifest for the current user when available, then falls back to the Microsoft Store.
@@ -2236,7 +2447,7 @@
                         </Grid>
                     </ScrollViewer>
 
-                    <Border Grid.Row="1" Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="5" HorizontalAlignment="Stretch" Padding="10">
+                    <Border Grid.Row="1" Background="{DynamicResource SurfaceBackgroundColor}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="5" HorizontalAlignment="Stretch" Padding="10">
                         <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
                             <Button Name="WPFBackToTweaks" Content="Back to Tweaks" Margin="5" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
                             <Button Name="WPFInstallSelectedAppx" Content="Install Selected" Margin="5" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
@@ -2248,7 +2459,7 @@
         </TabControl>
 
         <!-- Window-level progress indicator - visible regardless of active tab -->
-        <Border Name="WPFTweaksProgressBar" Grid.Row="3" Background="{DynamicResource MainBackgroundColor}" Visibility="Collapsed" Padding="10,6">
+        <Border Name="WPFTweaksProgressBar" Grid.Row="3" Background="Transparent" Visibility="Collapsed" Padding="10,6">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>

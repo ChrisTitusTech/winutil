@@ -184,6 +184,15 @@ Describe "XAML document" {
             "WPFSearchChipUtilities",
             "appscategory",
             "appspanel",
+            "WPFInstallContentGrid",
+            "WPFInstallWorkingPanel",
+            "WPFInstallWorkingSpinner",
+            "WPFInstallWorkingLabel",
+            "WPFTweaksContentScroll",
+            "WPFTweaksActionBar",
+            "WPFTweaksWorkingPanel",
+            "WPFTweaksWorkingSpinner",
+            "WPFTweaksWorkingLabel",
             "tweakspanel",
             "featurespanel",
             "appxpanel",
@@ -274,6 +283,22 @@ Describe "XAML document" {
         }
     }
 
+    It "names the Win11 Creator wizard controls for screen readers" {
+        $expectedNames = @{
+            WPFWin11ISOBackButton = "Previous Step"
+            WPFWin11ISOForwardButton = "Next Step"
+            WPFWin11ISOPath = "ISO file"
+            WPFWin11ISOEditionComboBox = "Windows edition"
+            WPFWin11ISOUSBDriveComboBox = "USB drive"
+            WPFWin11ISOStatusLog = "Status Log"
+        }
+
+        foreach ($controlName in $expectedNames.Keys) {
+            $control = $script:xaml.SelectSingleNode("//*[@Name='$controlName']")
+            $control.GetAttribute("AutomationProperties.Name") | Should -Be $expectedNames[$controlName]
+        }
+    }
+
     It "defines core tabs in the expected order" {
         $tabItems = @($script:xaml.SelectNodes('//*[local-name()="TabControl"][@Name="WPFTabNav"]/*[local-name()="TabItem"]'))
         $actualTabs = @($tabItems | ForEach-Object { "$($_.GetAttribute("Name")):$($_.GetAttribute("Header"))" })
@@ -304,6 +329,7 @@ Describe "XAML document" {
         $minimizeButton = $script:xaml.SelectSingleNode('//*[local-name()="Button"][@Name="WPFMinimizeButton"]')
         $actionPanel = $minimizeButton.ParentNode
         $topBarButtonNames = @(
+            "JobQueueButton",
             "ThemeButton",
             "FontScalingButton",
             "SettingsButton",
@@ -324,6 +350,31 @@ Describe "XAML document" {
 
 
 
+
+    It "has a queue button that starts hidden and a dropdown that closes on outside clicks" {
+        $button = $script:xaml.SelectSingleNode('//*[local-name()="Button"][@Name="JobQueueButton"]')
+        $popup = $script:xaml.SelectSingleNode('//*[local-name()="Popup"][@Name="JobQueuePopup"]')
+
+        $button.GetAttribute("Visibility") | Should -Be "Collapsed"
+        $button.ParentNode.GetAttribute("Orientation") | Should -Be "Horizontal"
+        $button.InnerText | Should -Match ([regex]::Escape([string][char]0xE823))
+        $popup.GetAttribute("StaysOpen") | Should -Be "False"
+        $popup.GetAttribute("Placement") | Should -Be "Bottom"
+        $popup.GetAttribute("PlacementTarget") | Should -Match 'JobQueueButton'
+        foreach ($name in "JobQueueCount", "JobQueueRunning", "JobQueueItems") {
+            $popup.OwnerDocument.SelectSingleNode("//*[@Name='$name']") | Should -Not -BeNullOrEmpty -Because $name
+        }
+        ($button.OuterXml + $popup.OuterXml) | Should -Not -Match '="#[0-9A-Fa-f]{3,8}"'
+    }
+
+    It "wires the queue button and popup and refreshes the rows when the dropdown opens" {
+        $uiSource = Get-Content -Path $script:uiScriptPath -Raw
+
+        $uiSource | Should -Match '\$sync\["JobQueueButton"\]\.Add_Click'
+        $uiSource | Should -Match '\$sync\["JobQueuePopup"\]\.Add_Opened\(\{ Update-WinUtilJobQueueUI \}\)'
+        $clickHandler = [regex]::Match($uiSource, '(?s)\$sync\["JobQueueButton"\]\.Add_Click\(\{.*?\r?\n    \}\)').Value
+        $clickHandler | Should -Match '"JobQueue" = "Show"'
+    }
 
     It "scopes toggle button styles without leaking into combo boxes" {
         $resources = $script:xaml.SelectSingleNode('//*[local-name()="Window.Resources"]')
@@ -421,15 +472,22 @@ Describe "XAML and sync wiring" {
             "IsLocalCompile",
             "winutildir",
             "logPath",
-            "transcriptPath",
+            "LogWriter",
+            "LogWriterPath",
             "ActiveJob",
             "ActiveJobToken",
             "LastJobResult",
+            "JobQueue",
+            "JobHandoff",
+            "JobClosePromptOpen",
+            "JobQueuePopupClosedAt",
             # Intrinsic to the synchronized hashtable rather than WinUtil state; the job layer
             # locks on it to claim and release the active job slot
             "SyncRoot",
             "UIRunspace",
             "UIDispatchDelegate",
+            "WindowInsetsPending",
+            "WindowInsetsUpdate",
             "StepTimings",
             "LoggedErrors",
             "StartedAt",
@@ -473,10 +531,12 @@ Describe "XAML and sync wiring" {
             "AppCategoryChips",
             "SelectedAppCategories",
             "AppCategoryAutoExpanded",
+            "TweakCategoryAutoExpanded",
             "RenderedAssetCache",
             "ToggleStatusCache",
             "InstallAppRenderQueue",
             "InstallAppEntriesRendered",
+            "BuildingBeforeShow",
             "FontScaleFactor",
             "Win11ISOImageInfo",
             "Win11ISODriveLetter",

@@ -59,6 +59,7 @@ Given the current wave of npm/pnpm/yarn supply-chain worms (malicious postinstal
 
 - Never run `npm install`, `npm run <script>`, `npx <pkg>`, `pnpm`, or `yarn` directly on the host shell in `docs/`. Use `docker compose run --rm winutil-astro <command>` / `docker compose up winutil-astro` instead (see Section 1 for the exact commands).
 - If a task needs a new docs dependency, add it to `docs/package.json` yourself, then rebuild the image and drop the `node_modules` volume so it repopulates from the new image (run from `docs/`): `docker compose build winutil-astro`, then `docker compose down -v`. Docker only seeds a named volume from the image the first time it's created, so a plain rebuild silently leaves the old `node_modules` in place. Don't install packages on the host, even temporarily, "just to check something."
+- Run Playwright browser checks inside the container too (`docker compose run --rm winutil-astro npx --no-install playwright ...`). The image installs browsers for the `@playwright/test` version pinned in `docs/package.json`; bump that pin rather than letting `npx` fetch a different Playwright.
 - If Docker isn't available on the host, propose the install command for the current OS and wait for confirmation before running it — don't fall back to running npm on the host instead. If the daemon just isn't running (Docker is installed but not started), tell the user rather than trying to start it yourself.
 - Treat any `postinstall`/`preinstall` lifecycle script in a new dependency as worth flagging to the user before installing — summarize what it does.
 - Don't put real secrets anywhere under `docs/`. `docs/.dockerignore` only trims what `docker build` copies into the image — it does not affect the `docker compose` bind mount, which exposes the entire `docs/` directory (including any `.env` file) inside the container for every dev/build/preview command (see the next bullet). There is no "keep it out unless mounted" middle ground here.
@@ -139,6 +140,7 @@ If a check cannot be run, say exactly why and what residual risk remains. See SP
 - Update `docs/src/content/docs/guides/` when user-facing behavior changes.
 - Update `docs/src/content/docs/code-reference/architecture.mdx` and other hand-written developer docs when architecture, build flow, config schema, or contribution workflow changes — but never hand-edit the auto-generated `code-reference/tweaks/` or `code-reference/features/` subfolders (see Non-Negotiables).
 - Keep sidebar entries in `docs/astro.config.mjs` in sync with page slugs (see SPEC.md's Docs Site).
+- When a change adds or renames a preset, adds a selection key prefix, or gives tweaks a new kind of change field, update the Config Builder and Tweak Explorer in the same change (SPEC.md's Docs Site lists the exact files). When you add a new docs tool page, or anything else that has to be kept in sync by hand, record it in SPEC.md's Docs Site and in `docs/README.md`.
 - Keep README changes brief and high-level.
 - Put detailed user and developer documentation under `docs/`.
 - Keep SPEC.md aligned with project/architecture changes, and this file aligned with process changes.
@@ -174,7 +176,7 @@ When the user corrects an agent approach, add or tighten one concrete rule here 
 - Keep WinUtil runtime logging in the existing timestamped `%LocalAppData%\winutil\logs\winutil_*.log` session file; do not create a separate root `winutil.log`.
 - Import Pester 5.8.0 before running tests so `Invoke-Pester -Output Detailed -CI` does not resolve to Windows' inbox Pester 3.4.0.
 - Keep package install/uninstall process launches simple unless explicitly requested; do not add a separate stdout/stderr process logging helper for winget or Chocolatey.
-- When the active log file is owned by `Start-Transcript`, do not call `Add-Content` against that file; write to host output so the transcript captures the line in the same log file without recording a terminating-error diagnostic.
+- Do not use `Start-Transcript` for the session log; it only records the runspace that started it, so the UI thread and jobs never reached the file. Log through `Write-WinUtilLog`, and use `Write-WinUtilHost` rather than `Write-Host` for console-only output such as banners and progress.
 - Keep UI helpers such as `Invoke-WPFUIThread` and `Step-WinUtilJob` safe to call without a window; the `-Preset` and `-Config` paths run the workflows before the form is created and before PresentationCore is loaded. Ask `Test-WinUtilUIAlive` rather than writing the `$sync.Form` / dispatcher / `HasShutdownStarted` check out by hand.
 - Put long operations on the job layer with `Start-WinUtilJob` and report from them with `Step-WinUtilJob`; a job body must not set the busy flag, print its own banner, or carry its own try/catch/finally around the interface. `Invoke-WPFRunspace` directly is for fire-and-forget work that is not a job.
 - Drain interface work that nobody is waiting for through `Start-WinUtilBackgroundQueue`; do not hand-roll another dequeue-and-re-post pump.
@@ -187,4 +189,5 @@ When the user corrects an agent approach, add or tighten one concrete rule here 
 - For Script Analyzer cleanup, fix actionable source warnings first and do not globally suppress accepted convention warnings such as plural names, `ShouldProcess` on UI helpers, `$global:sync`, or compile-time cross-file false positives.
 - For DNS DHCP reset, keep the cmdlet reset and explicitly set IPv4 and IPv6 DNS source to DHCP.
 - Public pull-request diffs may be sent to configured external review services without a separate privacy approval; do not block the review loop on upload authorization for this public repository.
+- Fetch and inspect third-party frontend code (React Bits sources, npm registry metadata, package tarballs) inside the `winutil-astro` container, not with host `curl`/`python`; only the reviewed files land in the repo.
 - Keep install-tab favicon loading overlapped with app-entry rendering; do not replace native WPF loading with a deferred second phase unless visible completion time is proven no slower than `main`.

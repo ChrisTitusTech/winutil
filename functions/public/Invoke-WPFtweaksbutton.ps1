@@ -19,7 +19,7 @@ function Invoke-WPFtweaksbutton {
 
   Write-WinUtilLog -Component "Tweaks" -Message "Tweaks requested: $(@($Tweaks).Count) selected tweak(s), DNS provider: $dnsProvider"
 
-  Start-WinUtilJob -Name "Tweaks" -Description "Applying tweaks" -Parameters @{
+  Start-WinUtilJob -Name "Tweaks" -Description "Applying tweaks" -QueueIfBusy -Parameters @{
     Tweaks = @($Tweaks)
     DnsProvider = $dnsProvider
   } -ScriptBlock {
@@ -53,7 +53,8 @@ function Invoke-WPFtweaksbutton {
     }
 
     foreach ($tweak in $tweaksToRun) {
-      Step-WinUtilJob -Status "Applying $tweak ($($completedSteps + 1)/$totalSteps)" -Percent ([int](($completedSteps / $totalSteps) * 100))
+      $tweakLabel = Get-WinUtilTweakDisplayName -Key $tweak
+      Step-WinUtilJob -Status "Applying $tweakLabel ($($completedSteps + 1)/$totalSteps)" -Percent ([int](($completedSteps / $totalSteps) * 100))
       Measure-WinUtilStep -Scope "Tweaks" -Name $tweak -ScriptBlock {
         Invoke-WinUtilTweaks $tweak
       }
