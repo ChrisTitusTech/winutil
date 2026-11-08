@@ -169,8 +169,11 @@ if (`$launch.Headless) { `$env:WINUTIL_HEADLESS_CHILD = '1' }
 if (`$launch.ScriptPath) {
     & `$launch.ScriptPath @invokeParameters
 } else {
-    `$remoteScript = [ScriptBlock]::Create((Invoke-RestMethod 'https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1'))
-    & `$remoteScript @invokeParameters
+    # Never fetch and execute a floating 'latest' release in the elevated child: the bytes run
+    # as Administrator would not be the instance the user launched. Require a saved file.
+    Write-Host "WinUtil was launched from memory and cannot relaunch itself elevated safely." -ForegroundColor Red
+    Write-Host "Save the script to a file and run it again so it can elevate." -ForegroundColor Yellow
+    exit 1
 }
 "@
 
@@ -225,6 +228,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.version = "#{replaceme}"
+$sync.commitSha = "#{commitsha}"
 $sync.IsLocalCompile = "#{islocalcompile}" -eq "true"
 $sync.configs = @{}
 $sync.Buttons = [System.Collections.Generic.List[PSObject]]::new()
