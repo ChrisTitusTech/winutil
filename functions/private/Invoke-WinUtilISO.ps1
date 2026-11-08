@@ -460,6 +460,10 @@ function Invoke-WinUtilISOModify {
             $sync["Win11ISOWorkDir"]     = $workDir
             $sync["Win11ISOContentsDir"] = $isoContents
 
+            # Marker proves this directory was produced by a completed WinUtil run, so
+            # resume detection never adopts a directory a local process merely named.
+            New-Item -ItemType File -Path (Join-Path $workDir ".winutil-created") -Force | Out-Null
+
             Step-WinUtilJob -Status "Modification complete" -Percent 100
             Write-WinUtilISOLog "install.wim modification complete. Choose an output option in the last step."
 
@@ -535,6 +539,9 @@ function Invoke-WinUtilISOCheckExistingWork {
 
     $isoContents = Join-Path $existingWorkDir.FullName "iso_contents"
     if (-not (Test-Path $isoContents)) { return }
+
+    # Only adopt directories carrying the marker written by a completed WinUtil modification.
+    if (-not (Test-Path -LiteralPath (Join-Path $existingWorkDir.FullName ".winutil-created"))) { return }
 
     $sync["Win11ISOWorkDir"]     = $existingWorkDir.FullName
     $sync["Win11ISOContentsDir"] = $isoContents
