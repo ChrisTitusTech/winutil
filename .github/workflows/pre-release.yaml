@@ -80,7 +80,8 @@ jobs:
               exit 1
             }
           } else {
-            Write-Host "Tag $env:VERSION already exists, skipping tag creation"
+            Write-Error "Tag $env:VERSION already exists; refusing to reuse a date tag for a different build."
+            exit 1
           }
         shell: pwsh
 
