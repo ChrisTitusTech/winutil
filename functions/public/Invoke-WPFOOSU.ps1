@@ -18,6 +18,11 @@ function Invoke-WPFOOSU {
             Step-WinUtilJob -Status "Downloading O&O ShutUp10++ ($progress)" -Percent $percent
         }
 
+        $signature = Get-AuthenticodeSignature -FilePath $DownloadPath
+        if ($signature.Status -ne 'Valid') {
+            throw "O&O ShutUp10++ download failed Authenticode verification ($($signature.Status))."
+        }
+
         Step-WinUtilJob -Status "Launching O&O ShutUp10++" -Percent 100
         Start-Process -FilePath $DownloadPath
         Write-WinUtilLog -Component "OOSU" -Message "O&O ShutUp10++ launched."
