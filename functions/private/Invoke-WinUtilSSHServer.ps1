@@ -59,7 +59,9 @@ function Invoke-WinUtilSSHServer {
         if (-not $isAdminOwner -and (Get-Command Get-LocalGroupMember -ErrorAction SilentlyContinue)) {
             # A second administrator may legitimately own the file. Accept owners that are
             # members of the local Administrators group when the cmdlet is available.
-            $adminMemberSids = @(Get-LocalGroupMember -Group Administrators -ErrorAction SilentlyContinue | ForEach-Object {
+            # Resolve the built-in group by SID so localized Windows installs work too.
+            $adminGroupName = (New-Object System.Security.Principal.SecurityIdentifier("S-1-5-32-544")).Translate([System.Security.Principal.NTAccount]).Value
+            $adminMemberSids = @(Get-LocalGroupMember -Group $adminGroupName -ErrorAction SilentlyContinue | ForEach-Object {
                 try { (New-Object System.Security.Principal.NTAccount($_.Name)).Translate([System.Security.Principal.SecurityIdentifier]).Value } catch { $_.Name }
             })
             if ($adminMemberSids -contains $ownerSid.Value) { $isAdminOwner = $true }

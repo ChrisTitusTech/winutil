@@ -181,6 +181,16 @@ if (`$launch.ScriptPath) {
 }
 
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    # Report an in-memory launch in the original terminal before any elevation: the child
+    # cannot run the launched instance and its window may close before it can be read.
+    if ([string]::IsNullOrWhiteSpace($PSCommandPath)) {
+        Write-Host "WinUtil was launched from memory and cannot relaunch itself elevated safely." -ForegroundColor Red
+        Write-Host "Save the script to a file and run it again so it can elevate." -ForegroundColor Yellow
+        $global:LASTEXITCODE = 1
+        if ($script:WinUtilIsFileProcess) { exit 1 }
+        return 1
+    }
+
     Write-Output "WinUtil needs to be run as Administrator. Attempting to relaunch."
     $elevationParameters = @{}
     foreach ($parameter in $PSBoundParameters.GetEnumerator()) {

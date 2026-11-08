@@ -532,16 +532,17 @@ function Invoke-WinUtilISOCheckExistingWork {
     }
     $sync["Win11ISOExistingWorkRetryPending"] = $false
 
+    # Only adopt directories carrying the marker written by a completed WinUtil modification;
+    # filter before sorting so an unmarked (crashed or unrelated) newer directory cannot shadow
+    # an older completed one.
     $existingWorkDir = Get-Item -Path (Join-Path $env:TEMP "WinUtil_Win11ISO*") |
-        Where-Object { $_.PSIsContainer } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+        Where-Object { $_.PSIsContainer -and (Test-Path -LiteralPath (Join-Path $_.FullName ".winutil-created")) } |
+        Sort-Object LastWriteTime -Descending | Select-Object -First 1
 
     if (-not $existingWorkDir) { return }
 
     $isoContents = Join-Path $existingWorkDir.FullName "iso_contents"
     if (-not (Test-Path $isoContents)) { return }
-
-    # Only adopt directories carrying the marker written by a completed WinUtil modification.
-    if (-not (Test-Path -LiteralPath (Join-Path $existingWorkDir.FullName ".winutil-created"))) { return }
 
     $sync["Win11ISOWorkDir"]     = $existingWorkDir.FullName
     $sync["Win11ISOContentsDir"] = $isoContents
