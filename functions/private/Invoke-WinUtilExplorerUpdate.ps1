@@ -34,7 +34,12 @@ public class Win32 {
                 [ref]([IntPtr]::Zero))
         }
     } elseif ($action -eq "restart") {
-        taskkill.exe /F /IM "explorer.exe"
+        # Kill only this session's Explorer so per-user tweaks cannot tear down other
+        # logged-on users' shells (shared availability).
+        $currentSessionId = [System.Diagnostics.Process]::GetCurrentProcess().SessionId
+        Get-Process -Name explorer -ErrorAction SilentlyContinue |
+            Where-Object { $_.SessionId -eq $currentSessionId } |
+            ForEach-Object { taskkill.exe /F /PID $_.Id | Out-Null }
         Start-Process "explorer.exe"
     }
 }
