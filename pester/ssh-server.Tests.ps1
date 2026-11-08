@@ -217,4 +217,12 @@ Describe "Invoke-WinUtilSSHServer" {
         $keys | Should -Contain "ssh-ed25519 AAAAexisting server"
         $keys | Should -Contain "ssh-ed25519 AAAAnew laptop"
     }
+
+    It "refuses pre-existing files not owned by Administrators, SYSTEM, or the current user" {
+        New-SshdConfig -AdministratorsBlock $script:defaultAdministratorsBlock | Out-Null
+        Set-Content -Path $script:authorizedKeysPath -Value "ssh-ed25519 AAAAplanted attacker"
+        Mock Get-Acl { [pscustomobject]@{ Owner = 'S-1-5-21-999-999-999-1001' } }
+
+        { Invoke-WinUtilSSHServer } | Should -Throw "*Refusing to adopt*"
+    }
 }

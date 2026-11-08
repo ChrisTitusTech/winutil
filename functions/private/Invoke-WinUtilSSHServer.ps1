@@ -42,6 +42,33 @@ function Invoke-WinUtilSSHServer {
         New-Item -Path $sshProgramDataPath -ItemType Directory -Force | Out-Null
     }
 
+    # Refuse to adopt pre-existing sshd_config / administrators_authorized_keys that are not
+    # owned by SYSTEM, Administrators, or the current (elevated) user: a low-privilege local
+    # user could otherwise plant keys or settings that this feature later activates.
+    $currentUserSid = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+    foreach ($existingPath in @($sshdConfigPath, $authorizedKeysPath)) {
+        if (-not (Test-Path -LiteralPath $existingPath)) { continue }
+
+        $owner = (Get-Acl -LiteralPath $existingPath).Owner
+        $ownerSid = $null
+        try { $ownerSid = [System.Security.Principal.SecurityIdentifier]::new($owner) } catch { }
+        if (-not $ownerSid) {
+            try { $ownerSid = (New-Object System.Security.Principal.NTAccount($owner)).Translate([System.Security.Principal.SecurityIdentifier]) } catch { }
+        }
+        $isAdminOwner = $ownerSid.Value -in @("S-1-5-32-544", "S-1-5-18") -or $ownerSid.Value -eq $currentUserSid
+        if (-not $isAdminOwner -and (Get-Command Get-LocalGroupMember -ErrorAction SilentlyContinue)) {
+            # A second administrator may legitimately own the file. Accept owners that are
+            # members of the local Administrators group when the cmdlet is available.
+            $adminMemberSids = @(Get-LocalGroupMember -Group Administrators -ErrorAction SilentlyContinue | ForEach-Object {
+                try { (New-Object System.Security.Principal.NTAccount($_.Name)).Translate([System.Security.Principal.SecurityIdentifier]).Value } catch { $_.Name }
+            })
+            if ($adminMemberSids -contains $ownerSid.Value) { $isAdminOwner = $true }
+        }
+        if (-not $ownerSid -or -not $isAdminOwner) {
+            throw "Refusing to adopt pre-existing $existingPath (owner: $owner). It must be owned by Administrators or SYSTEM before WinUtil enables OpenSSH Server."
+        }
+    }
+
     # Earlier WinUtil versions commented out the administrators block in
     # sshd_config. Detect that state before restoring it, so administrator keys
     # already in use are carried over instead of silently stopping working.
