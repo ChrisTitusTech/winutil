@@ -462,7 +462,7 @@ function Invoke-WinUtilISOModify {
 
             # Marker proves this directory was produced by a completed WinUtil run, so
             # resume detection never adopts a directory a local process merely named.
-            New-Item -ItemType File -Path (Join-Path $workDir ".winutil-created") -Force | Out-Null
+            New-Item -ItemType File -Path (Join-Path $workDir ".winutil-created") -Force -ErrorAction Stop | Out-Null
 
             Step-WinUtilJob -Status "Modification complete" -Percent 100
             Write-WinUtilISOLog "install.wim modification complete. Choose an output option in the last step."
