@@ -68,6 +68,10 @@ jobs:
         id: create_tag
         run: |
           $tagExists = git ls-remote --tags origin "refs/tags/$env:VERSION"
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Could not query remote tags (git ls-remote exit $LASTEXITCODE)."
+            exit 1
+          }
           if (-not $tagExists) {
             git tag $env:VERSION
             if ($LASTEXITCODE -ne 0) {
