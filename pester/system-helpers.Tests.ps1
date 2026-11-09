@@ -12,6 +12,7 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilService.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFPanelAutologin.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFOOSU.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Save-WinUtilFile.ps1")
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilInstallPSProfile.ps1")
 
     function winget {

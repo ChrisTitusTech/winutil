@@ -86,6 +86,7 @@ Describe "Invoke-WPFOOSU" {
         Mock Show-WinUtilMessage { }
         Mock Write-WinUtilLog { }
         Mock Start-Process { }
+        Mock Get-AuthenticodeSignature { [pscustomobject]@{ Status = 'Valid' } }
     }
 
     AfterEach {
