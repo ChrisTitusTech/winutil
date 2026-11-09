@@ -95,18 +95,24 @@ function Invoke-WinUtilISOWriteUSB {
 
             # Phase 1: Clean disk via diskpart (retry once if the drive is not yet ready)
             $dpFile1 = New-WinUtilDiskpartScriptFile -Content "select disk $DiskNumber`nclean`nexit"
-            Write-WinUtilISOLog "Running diskpart clean on Disk $DiskNumber..."
-            $dpCleanOut = diskpart /s $dpFile1
-            $dpCleanOut | Where-Object { $_ -match '\S' } | ForEach-Object { Write-WinUtilISOLog "  diskpart: $_" }
-            Remove-Item $dpFile1 -Force
+            try {
+                Write-WinUtilISOLog "Running diskpart clean on Disk $DiskNumber..."
+                $dpCleanOut = diskpart /s $dpFile1
+                $dpCleanOut | Where-Object { $_ -match '\S' } | ForEach-Object { Write-WinUtilISOLog "  diskpart: $_" }
+            } finally {
+                Remove-Item -LiteralPath $dpFile1 -Force -ErrorAction SilentlyContinue
+            }
 
             if (($dpCleanOut -join ' ') -match 'device is not ready') {
                 Write-WinUtilISOLog "Disk $DiskNumber was not ready; waiting 5 seconds and retrying clean..."
                 Start-Sleep -Seconds 5
                 Update-Disk -Number $DiskNumber
                 $dpFile1b = New-WinUtilDiskpartScriptFile -Content "select disk $DiskNumber`nclean`nexit"
-                diskpart /s $dpFile1b | Where-Object { $_ -match '\S' } | ForEach-Object { Write-WinUtilISOLog "  diskpart: $_" }
-                Remove-Item $dpFile1b -Force
+                try {
+                    diskpart /s $dpFile1b | Where-Object { $_ -match '\S' } | ForEach-Object { Write-WinUtilISOLog "  diskpart: $_" }
+                } finally {
+                    Remove-Item -LiteralPath $dpFile1b -Force -ErrorAction SilentlyContinue
+                }
             }
 
             # Phase 2: Initialize as GPT
@@ -137,9 +143,12 @@ function Invoke-WinUtilISOWriteUSB {
                 $createPartitionCommand
                 "exit"
             ) -join "`n")
-            Write-WinUtilISOLog "Creating partitions on Disk $DiskNumber..."
-            diskpart /s $dpFile2 | Where-Object { $_ -match '\S' } | ForEach-Object { Write-WinUtilISOLog "  diskpart: $_" }
-            Remove-Item $dpFile2 -Force
+            try {
+                Write-WinUtilISOLog "Creating partitions on Disk $DiskNumber..."
+                diskpart /s $dpFile2 | Where-Object { $_ -match '\S' } | ForEach-Object { Write-WinUtilISOLog "  diskpart: $_" }
+            } finally {
+                Remove-Item -LiteralPath $dpFile2 -Force -ErrorAction SilentlyContinue
+            }
 
             Step-WinUtilJob -Status "Formatting USB partition..." -Percent 25
             Start-Sleep -Seconds 3
