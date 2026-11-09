@@ -457,12 +457,14 @@ function Invoke-WinUtilISOModify {
             Write-WinUtilISOLog "Dismounting original ISO..."
             Dismount-DiskImage -ImagePath $isoPath -ErrorAction Stop
 
-            $sync["Win11ISOWorkDir"]     = $workDir
-            $sync["Win11ISOContentsDir"] = $isoContents
-
             # Marker proves this directory was produced by a completed WinUtil run, so
             # resume detection never adopts a directory a local process merely named.
+            # Publish the $sync state only after the marker exists, so a failed marker
+            # write cannot leave the UI pointing at a directory cleanup just deleted.
             New-Item -ItemType File -Path (Join-Path $workDir ".winutil-created") -Force -ErrorAction Stop | Out-Null
+
+            $sync["Win11ISOWorkDir"]     = $workDir
+            $sync["Win11ISOContentsDir"] = $isoContents
 
             Step-WinUtilJob -Status "Modification complete" -Percent 100
             Write-WinUtilISOLog "install.wim modification complete. Choose an output option in the last step."
