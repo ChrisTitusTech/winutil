@@ -38,6 +38,9 @@ function Invoke-WinUtilSSHServer {
         if (-not $ownerSid) {
             try { $ownerSid = (New-Object System.Security.Principal.NTAccount($owner)).Translate([System.Security.Principal.SecurityIdentifier]) } catch { }
         }
+        if (-not $ownerSid) {
+            throw "Refusing to adopt pre-existing $existingPath (owner: $owner). The owner could not be resolved."
+        }
         $isAdminOwner = $ownerSid.Value -in @("S-1-5-32-544", "S-1-5-18") -or $ownerSid.Value -eq $currentUserSid
         if (-not $isAdminOwner -and (Get-Command Get-LocalGroupMember -ErrorAction SilentlyContinue)) {
             # A second administrator may legitimately own the file. Accept owners that are
