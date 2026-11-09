@@ -63,5 +63,5 @@ To recover, compare the reported key with the current files in the [WinUtil conf
 :::
 
 :::note
-Run the command in an elevated PowerShell session so WinUtil can apply system-level changes.
+WinUtil must run elevated to apply system-level changes. When the command above is invoked from memory (`& ([ScriptBlock]::Create((irm ...)))`) in a **non-elevated** shell, the process cannot relaunch itself as Administrator and stops with a message telling you to save the script to a file first. Start an elevated PowerShell session before running the command, or download `winutil.ps1` to a file and run that file instead.
 :::
