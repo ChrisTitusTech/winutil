@@ -536,9 +536,14 @@ function Invoke-WinUtilISOCheckExistingWork {
 
     # Only adopt directories carrying the marker written by a completed WinUtil modification;
     # filter before sorting so an unmarked (crashed or unrelated) newer directory cannot shadow
-    # an older completed one.
+    # an older completed one. Reparse points (junctions/symlinks) are rejected so a planted
+    # directory cannot alias content from elsewhere.
     $existingWorkDir = Get-Item -Path (Join-Path $env:TEMP "WinUtil_Win11ISO*") |
-        Where-Object { $_.PSIsContainer -and (Test-Path -LiteralPath (Join-Path $_.FullName ".winutil-created")) } |
+        Where-Object {
+            $_.PSIsContainer -and
+            -not ([bool]($_.Attributes -band [System.IO.FileAttributes]::ReparsePoint)) -and
+            (Test-Path -LiteralPath (Join-Path $_.FullName ".winutil-created"))
+        } |
         Sort-Object LastWriteTime -Descending | Select-Object -First 1
 
     if (-not $existingWorkDir) { return }
