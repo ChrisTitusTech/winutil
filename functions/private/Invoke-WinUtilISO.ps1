@@ -516,6 +516,25 @@ function Invoke-WinUtilISOModify {
     }
 }
 
+function Test-WinUtilISOWorkDirComplete {
+    # Pre-marker work is only recoverable when a finished modification's output is present;
+    # a leftover WIM mount means driver injection was interrupted.
+    param([Parameter(Mandatory)][string]$WorkDir)
+
+    $isoContents = Join-Path $WorkDir "iso_contents"
+    if (Test-Path -LiteralPath (Join-Path $WorkDir "wim_mount")) { return $false }
+    if (-not (Test-Path -LiteralPath (Join-Path $isoContents "sources\install.wim")) -and
+        -not (Test-Path -LiteralPath (Join-Path $isoContents "sources\install.esd"))) {
+        return $false
+    }
+
+    foreach ($relativePath in "autounattend.xml", 'sources\$OEM$\$$\Setup\Scripts\WinUtil-PostInstall.ps1') {
+        if (-not (Test-Path -LiteralPath (Join-Path $isoContents $relativePath))) { return $false }
+    }
+
+    return $true
+}
+
 function Invoke-WinUtilISOCheckExistingWork {
     if ($sync["Win11ISOContentsDir"] -and (Test-Path $sync["Win11ISOContentsDir"])) { return }
 
@@ -538,15 +557,36 @@ function Invoke-WinUtilISOCheckExistingWork {
     # filter before sorting so an unmarked (crashed or unrelated) newer directory cannot shadow
     # an older completed one. Reparse points (junctions/symlinks) are rejected so a planted
     # directory cannot alias content from elsewhere.
-    $existingWorkDir = Get-Item -Path (Join-Path $env:TEMP "WinUtil_Win11ISO*") |
+    $workDirs = @(Get-Item -Path (Join-Path $env:TEMP "WinUtil_Win11ISO*") |
         Where-Object {
             $_.PSIsContainer -and
-            -not ([bool]($_.Attributes -band [System.IO.FileAttributes]::ReparsePoint)) -and
-            (Test-Path -LiteralPath (Join-Path $_.FullName ".winutil-created"))
-        } |
+            -not ([bool]($_.Attributes -band [System.IO.FileAttributes]::ReparsePoint))
+        })
+
+    $existingWorkDir = $workDirs |
+        Where-Object { (Test-Path -LiteralPath (Join-Path $_.FullName ".winutil-created")) } |
         Sort-Object LastWriteTime -Descending | Select-Object -First 1
 
-    if (-not $existingWorkDir) { return }
+    if (-not $existingWorkDir) {
+        # Directories from builds that predate the marker are never adopted automatically.
+        # Offer recovery only when the completed output is present, and write the marker only
+        # after the user explicitly consents.
+        $existingWorkDir = $workDirs |
+            Where-Object { (Test-WinUtilISOWorkDirComplete -WorkDir $_.FullName) } |
+            Sort-Object LastWriteTime -Descending | Select-Object -First 1
+
+        if (-not $existingWorkDir) { return }
+
+        $confirm = Show-WinUtilMessage -Message "A completed WinUtil ISO working directory from an older version was found:`n`n$($existingWorkDir.FullName)`n`nIt has no completion marker, so WinUtil cannot verify it automatically. Recover it only if the earlier run finished without errors.`n`nRecover this directory?" -Title "Recover Previous Work" -Button "YesNo" -Icon "Warning"
+        if ($confirm -ne "Yes") { return }
+
+        try {
+            New-Item -ItemType File -Path (Join-Path $existingWorkDir.FullName ".winutil-created") -Force -ErrorAction Stop | Out-Null
+        } catch {
+            Write-WinUtilISOLog -Level "WARN" -Message "Could not mark the previous working directory for recovery: $_"
+            return
+        }
+    }
 
     $isoContents = Join-Path $existingWorkDir.FullName "iso_contents"
     if (-not (Test-Path $isoContents)) { return }
