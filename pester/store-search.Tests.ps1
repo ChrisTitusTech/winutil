@@ -105,6 +105,22 @@ Describe 'Microsoft Store search results tweak' {
         Get-TestDenyRuleCount -Path $script:localState | Should -Be 1
     }
 
+    It 'leaves a deny rule it did not add in place' {
+        Initialize-TestStoreData -Catalog 'store.db'
+        icacls $script:activeCatalog /deny '*S-1-1-0:(DE)' | Out-Null
+        icacls $script:localState /deny '*S-1-1-0:(OI)(CI)(DE)' | Out-Null
+
+        & $script:applyStoreSearch | Out-Null
+        & $script:applyStoreSearch | Out-Null
+
+        Get-TestDacl -Path $script:activeCatalog | Should -BeLike '*(D;;SD;;;WD)*'
+        Get-TestDacl -Path $script:localState | Should -BeLike '*(D;OICI;SD;;;WD)*'
+        ([regex]::Matches((Get-TestDacl -Path $script:activeCatalog), '\(D;;FA;;;WD\)')).Count | Should -Be 1
+        ([regex]::Matches((Get-TestDacl -Path $script:localState), '\(D;;DC;;;WD\)')).Count | Should -Be 1
+        { [System.IO.File]::ReadAllBytes($script:activeCatalog) } | Should -Throw
+        { New-Item -Path (Join-Path $script:localState 'store-new.db') -ItemType File -ErrorAction Stop } | Should -Throw
+    }
+
     It 'restores the original permissions on undo' {
         Initialize-TestStoreData -Catalog 'store.db', 'store-0f3c2a9e-6b1d-4c57-9a43-2e8f5d7b1c60.db'
         $folderBefore = Get-TestDacl -Path $script:localState

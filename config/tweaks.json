@@ -107,16 +107,25 @@
         # so block each catalog that exists and stop new ones from being created in this folder.
         $Catalogs = @(Get-ChildItem -LiteralPath $StoreData -File -Force | Where-Object Name -like 'store*.db')
 
-        # icacls adds a second identical deny rule on every run, so clear the old one first.
-        foreach ($Catalog in $Catalogs) {
-          icacls $Catalog.FullName /remove:d \"*S-1-1-0\"
-          icacls $Catalog.FullName /deny \"*S-1-1-0:F\"
-          if ($LASTEXITCODE -ne 0) { throw \"icacls failed to deny access to $($Catalog.FullName) (exit code $LASTEXITCODE)\" }
+        # icacls adds a second identical deny rule on every run, so skip a target that already has one.
+        # Any other deny rule on the target stays as it is.
+        $IsDenied = {
+          param($Path, $Rights)
+          $Rules = (Get-Acl -LiteralPath $Path -ErrorAction Stop).GetAccessRules($true, $false, [System.Security.Principal.SecurityIdentifier])
+          [bool]($Rules | Where-Object { $_.AccessControlType -eq 'Deny' -and $_.IdentityReference.Value -eq 'S-1-1-0' -and $_.PropagationFlags -notmatch 'InheritOnly' -and ($_.FileSystemRights -band $Rights) -eq $Rights })
         }
 
-        icacls $StoreData /remove:d \"*S-1-1-0\"
-        icacls $StoreData /deny \"*S-1-1-0:(WD)\"
-        if ($LASTEXITCODE -ne 0) { throw \"icacls failed to deny file creation in $StoreData (exit code $LASTEXITCODE)\" }
+        foreach ($Catalog in $Catalogs) {
+          if (-not (& $IsDenied $Catalog.FullName 'FullControl')) {
+            icacls $Catalog.FullName /deny \"*S-1-1-0:F\"
+            if ($LASTEXITCODE -ne 0) { throw \"icacls failed to deny access to $($Catalog.FullName) (exit code $LASTEXITCODE)\" }
+          }
+        }
+
+        if (-not (& $IsDenied $StoreData 'WriteData')) {
+          icacls $StoreData /deny \"*S-1-1-0:(WD)\"
+          if ($LASTEXITCODE -ne 0) { throw \"icacls failed to deny file creation in $StoreData (exit code $LASTEXITCODE)\" }
+        }
       }
       "
     ],
