@@ -40,6 +40,15 @@ Describe 'Explorer automatic folder discovery apply and undo' {
         Should -Invoke Remove-Item -Times 0 -Exactly
     }
 
+    # Applying the tweak recreates Bags\AllFolders, so a second apply finds Bags without BagMRU.
+    It 'removes Bags and skips BagMRU when only Bags exists' {
+        $bags, $bagMRU = $script:bagKeys
+        $script:existingKeys = @($bags)
+        Invoke-WinUtilTweaks -CheckBox 'WPFTweaksDisableExplorerAutoDiscovery'
+        Should -Invoke Remove-Item -Times 1 -Exactly -ParameterFilter { $Path -eq $bags -and $Recurse -and $Force }
+        Should -Invoke Remove-Item -Times 0 -Exactly -ParameterFilter { $Path -eq $bagMRU }
+    }
+
     It 'still creates AllFolders and sets the generic view when the keys are missing' {
         Invoke-WinUtilTweaks -CheckBox 'WPFTweaksDisableExplorerAutoDiscovery'
         Should -Invoke New-Item -Times 1 -Exactly -ParameterFilter { $Path -eq "$script:shellRoot\Bags\AllFolders\Shell" }
