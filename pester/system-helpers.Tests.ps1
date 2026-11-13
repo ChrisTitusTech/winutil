@@ -11,6 +11,8 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilRegistry.ps1")
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilService.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFPanelAutologin.ps1")
+    . (Join-Path $script:repoRoot "functions\public\Invoke-WPFOOSU.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Save-WinUtilFile.ps1")
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilInstallPSProfile.ps1")
 
     function winget {
@@ -22,6 +24,9 @@ BeforeAll {
     # The CLI path is what these tests cover; the module path is verified against real winget
     function Step-WinUtilJob { param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay, [switch]$Hide) }
     function Write-WinUtilLog { param($Message, $Level, $Component, [switch]$Detail) }
+    function Start-WinUtilJob {
+        param([string]$Name, [scriptblock]$ScriptBlock, [hashtable]$Parameters, [string]$Description, [switch]$DisableAppList)
+    }
 }
 
 Describe "Invoke-WPFPanelAutologin" {
@@ -29,6 +34,7 @@ Describe "Invoke-WPFPanelAutologin" {
         $script:sync = [Hashtable]::Synchronized(@{ winutildir = $TestDrive })
         Mock Invoke-WebRequest { }
         Mock Start-Process { }
+        Mock Get-AuthenticodeSignature { [pscustomobject]@{ Status = 'Valid' } }
     }
 
     It "uses the shared WinUtil data directory from a worker runspace" {
@@ -37,6 +43,39 @@ Describe "Invoke-WPFPanelAutologin" {
         $expectedPath = Join-Path $TestDrive "autologin.exe"
         Should -Invoke -CommandName Invoke-WebRequest -Times 1 -Exactly -ParameterFilter { $OutFile -eq $expectedPath }
         Should -Invoke -CommandName Start-Process -Times 1 -Exactly -ParameterFilter { $FilePath -eq $expectedPath }
+    }
+
+    It "refuses to launch an unverified Autologon download" {
+        Mock Get-AuthenticodeSignature { [pscustomobject]@{ Status = 'HashMismatch' } }
+
+        { Invoke-WPFPanelAutologin } | Should -Throw "*Authenticode*"
+        Should -Invoke -CommandName Start-Process -Times 0 -Exactly
+    }
+}
+
+Describe "Invoke-WPFOOSU" {
+    BeforeEach {
+        $script:sync = [Hashtable]::Synchronized(@{ winutildir = $TestDrive })
+        Mock Save-WinUtilFile { }
+        Mock Get-AuthenticodeSignature { [pscustomobject]@{ Status = 'Valid' } }
+        Mock Start-Process { }
+        Mock Start-WinUtilJob {
+            $jobParameters = $Parameters
+            & $ScriptBlock @jobParameters
+        }
+    }
+
+    It "launches OOSU only after Authenticode validation" {
+        Invoke-WPFOOSU
+
+        Should -Invoke -CommandName Start-Process -Times 1 -Exactly -ParameterFilter { $FilePath -like "*ooshutup10.exe" }
+    }
+
+    It "refuses to launch an unverified OOSU download" {
+        Mock Get-AuthenticodeSignature { [pscustomobject]@{ Status = 'HashMismatch' } }
+
+        { Invoke-WPFOOSU } | Should -Throw "*Authenticode*"
+        Should -Invoke -CommandName Start-Process -Times 0 -Exactly
     }
 }
 

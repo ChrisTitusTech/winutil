@@ -470,6 +470,7 @@ Describe "XAML and sync wiring" {
             "PSScriptRoot",
             "version",
             "IsLocalCompile",
+            "commitSha",
             "winutildir",
             "logPath",
             "LogWriter",

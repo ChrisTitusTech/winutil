@@ -8,7 +8,8 @@ $OFS = "`r`n"
 $sync = [Hashtable]::Synchronized(@{})
 $sync.configs = @{}
 
-$script = (Get-Content -Path scripts\start.ps1) -replace '#{replaceme}', (Get-Date -Format 'yy.MM.dd')
+$buildSha = if ($env:GITHUB_SHA) { $env:GITHUB_SHA.Substring(0, [Math]::Min(12, $env:GITHUB_SHA.Length)) } else { "local" }
+$script = (Get-Content -Path scripts\start.ps1) -replace '#{replaceme}', (Get-Date -Format 'yy.MM.dd') -replace '#{commitsha}', $buildSha
 $isLocalCompile = -not [string]::Equals($env:GITHUB_ACTIONS, "true", [StringComparison]::OrdinalIgnoreCase)
 $script = $script -replace '#{islocalcompile}', $isLocalCompile.ToString().ToLowerInvariant()
 

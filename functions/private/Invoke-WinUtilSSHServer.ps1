@@ -10,6 +10,53 @@ function Invoke-WinUtilSSHServer {
         Add-WindowsCapability -Name OpenSSH.Server -Online
     }
 
+    # An SSH logon for a member of the administrators group gets a full token
+    # with no UAC prompt, so sshd reads administrator keys from a machine-wide
+    # file that only Administrators and SYSTEM may write. WinUtil always runs
+    # elevated, so the account being set up here is always an administrator.
+    $sshProgramDataPath = Join-Path $env:ProgramData "ssh"
+    $sshdConfigPath = Join-Path $sshProgramDataPath "sshd_config"
+    $authorizedKeysPath = Join-Path $sshProgramDataPath "administrators_authorized_keys"
+    $profileKeysPath = Join-Path $env:USERPROFILE ".ssh\authorized_keys"
+
+    if (-not (Test-Path -Path $sshProgramDataPath)) {
+        New-Item -Path $sshProgramDataPath -ItemType Directory -Force | Out-Null
+    }
+
+    # Refuse to adopt pre-existing sshd_config / administrators_authorized_keys that are not
+    # owned by SYSTEM, Administrators, or the current (elevated) user: a low-privilege local
+    # user could otherwise plant keys or settings that this feature later activates. This must
+    # run before the service and firewall side effects below, so a planted config is never
+    # consumed by a starting sshd.
+    $currentUserSid = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+    foreach ($existingPath in @($sshdConfigPath, $authorizedKeysPath)) {
+        if (-not (Test-Path -LiteralPath $existingPath)) { continue }
+
+        $owner = (Get-Acl -LiteralPath $existingPath).Owner
+        $ownerSid = $null
+        try { $ownerSid = [System.Security.Principal.SecurityIdentifier]::new($owner) } catch { }
+        if (-not $ownerSid) {
+            try { $ownerSid = (New-Object System.Security.Principal.NTAccount($owner)).Translate([System.Security.Principal.SecurityIdentifier]) } catch { }
+        }
+        if (-not $ownerSid) {
+            throw "Refusing to adopt pre-existing $existingPath (owner: $owner). The owner could not be resolved."
+        }
+        $isAdminOwner = $ownerSid.Value -in @("S-1-5-32-544", "S-1-5-18") -or $ownerSid.Value -eq $currentUserSid
+        if (-not $isAdminOwner -and (Get-Command Get-LocalGroupMember -ErrorAction SilentlyContinue)) {
+            # A second administrator may legitimately own the file. Accept owners that are
+            # members of the local Administrators group when the cmdlet is available.
+            # Resolve the built-in group by SID so localized Windows installs work too.
+            $adminGroupName = (New-Object System.Security.Principal.SecurityIdentifier("S-1-5-32-544")).Translate([System.Security.Principal.NTAccount]).Value
+            $adminMemberSids = @(Get-LocalGroupMember -Group $adminGroupName -ErrorAction SilentlyContinue | ForEach-Object {
+                try { (New-Object System.Security.Principal.NTAccount($_.Name)).Translate([System.Security.Principal.SecurityIdentifier]).Value } catch { $_.Name }
+            })
+            if ($adminMemberSids -contains $ownerSid.Value) { $isAdminOwner = $true }
+        }
+        if (-not $ownerSid -or -not $isAdminOwner) {
+            throw "Refusing to adopt pre-existing $existingPath (owner: $owner). It must be owned by Administrators or SYSTEM before WinUtil enables OpenSSH Server."
+        }
+    }
+
     Write-Host "Starting the services"
 
     Set-Service -Name sshd -StartupType Automatic
@@ -27,19 +74,6 @@ function Invoke-WinUtilSSHServer {
     } elseif ([int]$firewallRule.Enabled -eq 2) {
         Set-NetFirewallRule -Name 'sshd' -Enabled True
         Write-Host "Firewall rule for OpenSSH Server enabled."
-    }
-
-    # An SSH logon for a member of the administrators group gets a full token
-    # with no UAC prompt, so sshd reads administrator keys from a machine-wide
-    # file that only Administrators and SYSTEM may write. WinUtil always runs
-    # elevated, so the account being set up here is always an administrator.
-    $sshProgramDataPath = Join-Path $env:ProgramData "ssh"
-    $sshdConfigPath = Join-Path $sshProgramDataPath "sshd_config"
-    $authorizedKeysPath = Join-Path $sshProgramDataPath "administrators_authorized_keys"
-    $profileKeysPath = Join-Path $env:USERPROFILE ".ssh\authorized_keys"
-
-    if (-not (Test-Path -Path $sshProgramDataPath)) {
-        New-Item -Path $sshProgramDataPath -ItemType Directory -Force | Out-Null
     }
 
     # Earlier WinUtil versions commented out the administrators block in

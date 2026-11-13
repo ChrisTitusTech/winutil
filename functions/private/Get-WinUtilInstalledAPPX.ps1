@@ -13,7 +13,7 @@ function Get-WinUtilInstalledAPPX {
         Get-AppxPackage -AllUsers -ErrorAction Stop | Select-Object -ExpandProperty Name
     }
 
-    $packageOutput = powershell.exe -NoProfile -NonInteractive -Command $ps5Command 2>&1
+    $packageOutput = & (Get-WinUtilWindowsPowerShellPath) -NoProfile -NonInteractive -Command $ps5Command 2>&1
     if ($LASTEXITCODE -ne 0) {
         $failureDetails = ($packageOutput | Out-String).Trim()
         Write-WinUtilLog -Level "ERROR" -Component "AppX" -Message "Failed to get installed AppX packages: $failureDetails"

@@ -217,4 +217,29 @@ Describe "Invoke-WinUtilSSHServer" {
         $keys | Should -Contain "ssh-ed25519 AAAAexisting server"
         $keys | Should -Contain "ssh-ed25519 AAAAnew laptop"
     }
+
+    It "refuses pre-existing files not owned by Administrators, SYSTEM, or the current user" {
+        New-SshdConfig -AdministratorsBlock $script:defaultAdministratorsBlock | Out-Null
+        Set-Content -Path $script:authorizedKeysPath -Value "ssh-ed25519 AAAAplanted attacker"
+        Mock Get-Acl { [pscustomobject]@{ Owner = 'S-1-5-21-999-999-999-1001' } }
+
+        { Invoke-WinUtilSSHServer } | Should -Throw "*Refusing to adopt*"
+    }
+
+    It "does not start sshd or open the firewall when a pre-existing file is refused" {
+        New-SshdConfig -AdministratorsBlock $script:defaultAdministratorsBlock | Out-Null
+        Set-Content -Path $script:authorizedKeysPath -Value "ssh-ed25519 AAAAplanted attacker"
+        Mock Get-Acl { [pscustomobject]@{ Owner = 'S-1-5-21-999-999-999-1001' } }
+        Mock Set-Service { }
+        Mock Start-Service { }
+        Mock New-NetFirewallRule { }
+        Mock Set-NetFirewallRule { }
+
+        { Invoke-WinUtilSSHServer } | Should -Throw "*Refusing to adopt*"
+
+        Should -Invoke -CommandName Set-Service -Times 0 -Exactly
+        Should -Invoke -CommandName Start-Service -Times 0 -Exactly
+        Should -Invoke -CommandName New-NetFirewallRule -Times 0 -Exactly
+        Should -Invoke -CommandName Set-NetFirewallRule -Times 0 -Exactly
+    }
 }

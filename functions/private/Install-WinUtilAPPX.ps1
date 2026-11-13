@@ -53,7 +53,7 @@ function Install-WinUtilAPPX {
         }
     }
 
-    $manifestOutput = powershell.exe -NoProfile -NonInteractive -Command $ps5Command -args $Name 2>&1
+    $manifestOutput = & (Get-WinUtilWindowsPowerShellPath) -NoProfile -NonInteractive -Command $ps5Command -args $Name 2>&1
     if ($LASTEXITCODE -eq 0 -and $null -ne $manifestOutput) {
         $manifestPath = ($manifestOutput | Select-Object -Last 1).ToString().Trim()
         if (-not [string]::IsNullOrWhiteSpace($manifestPath)) {

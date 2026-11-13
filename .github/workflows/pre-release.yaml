@@ -67,20 +67,41 @@ jobs:
       - name: Create Tag
         id: create_tag
         run: |
-          $tagExists = git tag -l $env:VERSION
-          if ($tagExists -eq "") {
+          $tagRef = "refs/tags/$env:VERSION"
+          $tagLine = git ls-remote --tags origin $tagRef
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Could not query remote tags (git ls-remote exit $LASTEXITCODE)."
+            exit 1
+          }
+          if (-not $tagLine) {
+            # Reserve the date tag. A concurrent run targeting the same commit may win the
+            # race and make this push a silent no-op ("Everything up-to-date"); the
+            # same-commit check below then treats that as the identical build and resumes.
             git tag $env:VERSION
             if ($LASTEXITCODE -ne 0) {
               Write-Error "Failed to create tag $env:VERSION"
               exit 1
             }
-            git push origin $env:VERSION
+            git push origin $tagRef
             if ($LASTEXITCODE -ne 0) {
-              Write-Error "Failed to push tag $env:VERSION"
+              Write-Error "Failed to reserve tag $env:VERSION (does it already exist remotely?)"
               exit 1
             }
           } else {
-            Write-Host "Tag $env:VERSION already exists, skipping tag creation"
+            # Recovery after a partial release: reuse the tag only when it points at this exact
+            # commit, meaning the same build that reserved it. Never repoint an existing tag.
+            $peeledLine = git ls-remote --tags origin "$tagRef^{}"
+            if ($LASTEXITCODE -ne 0) {
+              Write-Error "Could not resolve the existing tag (git ls-remote exit $LASTEXITCODE)."
+              exit 1
+            }
+            $existingCommit = if ($peeledLine) { ($peeledLine -split '\s+')[0] } else { ($tagLine -split '\s+')[0] }
+            $headCommit = git rev-parse HEAD
+            if ($existingCommit -ne $headCommit) {
+              Write-Error "Tag $env:VERSION already exists for commit $existingCommit, not $headCommit; refusing to reuse a date tag for a different build."
+              exit 1
+            }
+            Write-Host "Tag $env:VERSION already exists for this commit; resuming the release."
           }
         shell: pwsh
 

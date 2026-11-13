@@ -4,6 +4,10 @@ on:
   pull_request:
     types: [closed]
 
+permissions:
+  contents: read
+  discussions: write
+
 jobs:
   closeDiscussion:
     runs-on: ubuntu-latest

@@ -142,6 +142,7 @@ Describe "Win11 Creator setup media" {
         $script:modifyFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Invoke-WinUtilISOModify"
         $script:mountAndVerifyFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Invoke-WinUtilISOMountAndVerify"
         $script:checkExistingWorkFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Invoke-WinUtilISOCheckExistingWork"
+        $script:workDirCompleteFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Test-WinUtilISOWorkDirComplete"
         $script:cleanAndResetFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Invoke-WinUtilISOCleanAndReset"
         $script:exportFunction = Get-WinUtilFunctionText -Path $script:isoWorkflowPath -FunctionName "Invoke-WinUtilISOExport"
         $script:writeUsbFunction = Get-WinUtilFunctionText -Path $script:isoUsbWorkflowPath -FunctionName "Invoke-WinUtilISOWriteUSB"
@@ -345,6 +346,31 @@ Describe "Win11 Creator setup media" {
         $script:checkExistingWorkFunction | Should -Match ([regex]::Escape('Invoke-WinUtilWhenIdle -DelayMilliseconds 500'))
         $script:checkExistingWorkFunction | Should -Match ([regex]::Escape('Invoke-WinUtilISOCheckExistingWork'))
         $script:checkExistingWorkFunction | Should -Match ([regex]::Escape('$sync["Win11ISOExistingWorkRetryPending"] = $false'))
+    }
+
+    It "recognizes a completed pre-marker working directory without trusting a partial one" {
+        . ([scriptblock]::Create($script:workDirCompleteFunction))
+
+        $workDir = Join-Path $TestDrive "WinUtil_Win11ISO_20260101_000000"
+        $isoContents = Join-Path $workDir "iso_contents"
+        $setupScripts = Join-Path $isoContents 'sources\$OEM$\$$\Setup\Scripts'
+        New-Item -Path $setupScripts -ItemType Directory -Force | Out-Null
+
+        Test-WinUtilISOWorkDirComplete -WorkDir $workDir | Should -BeFalse
+
+        New-Item -Path (Join-Path $isoContents "sources\install.wim") -ItemType File -Force | Out-Null
+        New-Item -Path (Join-Path $isoContents "autounattend.xml") -ItemType File -Force | Out-Null
+        New-Item -Path (Join-Path $setupScripts "WinUtil-PostInstall.ps1") -ItemType File -Force | Out-Null
+
+        Test-WinUtilISOWorkDirComplete -WorkDir $workDir | Should -BeTrue
+
+        New-Item -Path (Join-Path $workDir "wim_mount") -ItemType Directory -Force | Out-Null
+        Test-WinUtilISOWorkDirComplete -WorkDir $workDir | Should -BeFalse
+    }
+
+    It "keeps the recovery confirmation result" {
+        $script:checkExistingWorkFunction | Should -Match ([regex]::Escape('$confirm = Show-WinUtilMessage'))
+        $script:checkExistingWorkFunction | Should -Not -Match '\$confirm = Show-WinUtilMessage[^\r\n]*Out-Null'
     }
 
     It "reports ISO progress and logging through the shared helpers" {

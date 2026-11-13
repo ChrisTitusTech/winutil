@@ -94,21 +94,25 @@ function Invoke-WinUtilISOWriteUSB {
             Step-WinUtilJob -Status "Formatting USB drive..." -Percent 10
 
             # Phase 1: Clean disk via diskpart (retry once if the drive is not yet ready)
-            $dpFile1 = Join-Path $env:TEMP "winutil_diskpart_$(Get-Random).txt"
-            "select disk $DiskNumber`nclean`nexit" | Set-Content -Path $dpFile1 -Encoding ASCII
-            Write-WinUtilISOLog "Running diskpart clean on Disk $DiskNumber..."
-            $dpCleanOut = diskpart /s $dpFile1
-            $dpCleanOut | Where-Object { $_ -match '\S' } | ForEach-Object { Write-WinUtilISOLog "  diskpart: $_" }
-            Remove-Item $dpFile1 -Force
+            $dpFile1 = New-WinUtilDiskpartScriptFile -Content "select disk $DiskNumber`nclean`nexit"
+            try {
+                Write-WinUtilISOLog "Running diskpart clean on Disk $DiskNumber..."
+                $dpCleanOut = diskpart /s $dpFile1
+                $dpCleanOut | Where-Object { $_ -match '\S' } | ForEach-Object { Write-WinUtilISOLog "  diskpart: $_" }
+            } finally {
+                Remove-Item -LiteralPath $dpFile1 -Force -ErrorAction SilentlyContinue
+            }
 
             if (($dpCleanOut -join ' ') -match 'device is not ready') {
                 Write-WinUtilISOLog "Disk $DiskNumber was not ready; waiting 5 seconds and retrying clean..."
                 Start-Sleep -Seconds 5
                 Update-Disk -Number $DiskNumber
-                $dpFile1b = Join-Path $env:TEMP "winutil_diskpart_$(Get-Random).txt"
-                "select disk $DiskNumber`nclean`nexit" | Set-Content -Path $dpFile1b -Encoding ASCII
-                diskpart /s $dpFile1b | Where-Object { $_ -match '\S' } | ForEach-Object { Write-WinUtilISOLog "  diskpart: $_" }
-                Remove-Item $dpFile1b -Force
+                $dpFile1b = New-WinUtilDiskpartScriptFile -Content "select disk $DiskNumber`nclean`nexit"
+                try {
+                    diskpart /s $dpFile1b | Where-Object { $_ -match '\S' } | ForEach-Object { Write-WinUtilISOLog "  diskpart: $_" }
+                } finally {
+                    Remove-Item -LiteralPath $dpFile1b -Force -ErrorAction SilentlyContinue
+                }
             }
 
             # Phase 2: Initialize as GPT
@@ -126,7 +130,6 @@ function Invoke-WinUtilISOWriteUSB {
             # Phase 3: Create FAT32 partition via diskpart, then format with Format-Volume
             # (diskpart's 'format' command can fail with "no volume selected" on fresh/never-formatted drives)
             $volLabel = "W11-" + (Get-Date).ToString('yyMMdd')
-            $dpFile2  = Join-Path $env:TEMP "winutil_diskpart2_$(Get-Random).txt"
             $maxFat32PartitionMB = 32768
             $diskSizeMB = [int][Math]::Floor((Get-Disk -Number $DiskNumber).Size / 1MB)
             $createPartitionCommand = "create partition primary"
@@ -135,14 +138,17 @@ function Invoke-WinUtilISOWriteUSB {
                 Write-WinUtilISOLog "Disk $DiskNumber is $diskSizeMB MB; creating FAT32 partition capped at $maxFat32PartitionMB MB (32 GB)."
             }
 
-            @(
+            $dpFile2 = New-WinUtilDiskpartScriptFile -Content (@(
                 "select disk $DiskNumber"
                 $createPartitionCommand
                 "exit"
-            ) | Set-Content -Path $dpFile2 -Encoding ASCII
-            Write-WinUtilISOLog "Creating partitions on Disk $DiskNumber..."
-            diskpart /s $dpFile2 | Where-Object { $_ -match '\S' } | ForEach-Object { Write-WinUtilISOLog "  diskpart: $_" }
-            Remove-Item $dpFile2 -Force
+            ) -join "`n")
+            try {
+                Write-WinUtilISOLog "Creating partitions on Disk $DiskNumber..."
+                diskpart /s $dpFile2 | Where-Object { $_ -match '\S' } | ForEach-Object { Write-WinUtilISOLog "  diskpart: $_" }
+            } finally {
+                Remove-Item -LiteralPath $dpFile2 -Force -ErrorAction SilentlyContinue
+            }
 
             Step-WinUtilJob -Status "Formatting USB partition..." -Percent 25
             Start-Sleep -Seconds 3

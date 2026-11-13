@@ -9,6 +9,8 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Complete-WinUtilPackageRun.ps1")
     . (Join-Path $script:repoRoot "functions\private\Remove-WinUtilAPPX.ps1")
     . (Join-Path $script:repoRoot "functions\private\Remove-WinUtilProvisionedAPPX.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilWindowsPowerShellPath.ps1")
+    Mock Get-WinUtilWindowsPowerShellPath { 'powershell.exe' }
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFAppxInstall.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFAppxRemoval.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFButton.ps1")
@@ -372,7 +374,7 @@ Describe "Remove-WinUtilProvisionedAPPX" {
     It "throws after logging child process failures" {
         $source = Get-Content -Path $provisionedSourcePath -Raw
 
-        $source | Should -Match '\$removalOutput = powershell\.exe .* 2>&1'
+        $source | Should -Match '\$removalOutput = & \(Get-WinUtilWindowsPowerShellPath\) .* 2>&1'
         $source | Should -Match 'Write-WinUtilLog -Level "ERROR" -Component "AppX" -Message \$errorMessage'
         $source | Should -Match '(?s)AppX provisioned package removal failed:.*WinUtilErrorReported.*throw \$exception.*AppX provisioned package removal completed\.'
     }

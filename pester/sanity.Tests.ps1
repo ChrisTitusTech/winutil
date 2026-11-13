@@ -204,6 +204,7 @@ Describe "Compiled WinUtil sanity" {
 
         $content | Should -Not -Match ([regex]::Escape("#{replaceme}"))
         $content | Should -Not -Match ([regex]::Escape("#{islocalcompile}"))
+        $content | Should -Not -Match ([regex]::Escape("#{commitsha}"))
         $content | Should -Match ([regex]::Escape('$sync.version = "' + $expectedBuildDate + '"'))
         $content | Should -Match ([regex]::Escape('$sync.IsLocalCompile = "' + $expectedLocalCompile + '" -eq "true"'))
     }
