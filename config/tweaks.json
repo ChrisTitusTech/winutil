@@ -563,7 +563,7 @@
         "Path": "HKCU:\\Software\\Microsoft\\Siuf\\Rules",
         "Name": "PeriodInNanoSeconds",
         "Value": "<RemoveEntry>",
-        "Type": "DWord",
+        "Type": "QWord",
         "OriginalValue": "<RemoveEntry>"
       }
     ],
