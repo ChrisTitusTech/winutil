@@ -1,0 +1,31 @@
+---
+title: "Windows Search Indexing - Disable"
+description: "Stops and disables the Windows Search service (WSearch) to cut background disk activity, mainly useful on mechanical hard drives. Warning: file searches in Explorer and the Start menu become much slower because Windows no longer maintains a search index. Undo restores the service and starts it again."
+editUrl: false
+---
+
+:::note
+This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
+:::
+
+```json title="config/tweaks.json"
+  "WPFTweaksDisableSearchIndexing": {
+    "Content": "Windows Search Indexing - Disable",
+    "Description": "Stops and disables the Windows Search service (WSearch) to cut background disk activity, mainly useful on mechanical hard drives. Warning: file searches in Explorer and the Start menu become much slower because Windows no longer maintains a search index. Undo restores the service and starts it again.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "service": [
+      {
+        "Name": "WSearch",
+        "StartupType": "Disabled",
+        "OriginalType": "Automatic"
+      }
+    ],
+    "InvokeScript": [
+      "$search = Get-Service -Name WSearch -ErrorAction SilentlyContinue\n      if ($search -and $search.StartType -eq 'Disabled' -and $search.Status -ne 'Stopped') {\n        Stop-Service -Name WSearch -Force -ErrorAction Stop\n      }"
+    ],
+    "UndoScript": [
+      "$search = Get-Service -Name WSearch -ErrorAction SilentlyContinue\n      if ($search -and $search.StartType -eq 'Automatic' -and $search.Status -ne 'Running') {\n        Start-Service -Name WSearch -ErrorAction Stop\n      }"
+    ],
+  }
+```
