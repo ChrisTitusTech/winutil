@@ -364,7 +364,7 @@ Describe "Tweaks config" {
             Path          = (Join-Path $configRoot "tweaks.json")
             Tweak         = "WPFTweaksDisableStoreSearch"
             Sid           = '*S-1-1-0'
-            ExpectedCount = 2
+            ExpectedCount = 3
         }
         @{
             Path          = (Join-Path $configRoot "tweaks.json")

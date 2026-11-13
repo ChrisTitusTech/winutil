@@ -99,10 +99,49 @@
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
-      "icacls \"$Env:LocalAppData\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db\" /deny *S-1-1-0:F"
+      "
+      $StoreData = \"$Env:LocalAppData\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\"
+
+      if (Test-Path -LiteralPath $StoreData) {
+        # The Store swaps store.db for a store-<guid>.db on every catalog refresh and deletes the old file,
+        # so block each catalog that exists and stop new ones from being created in this folder.
+        $Catalogs = @(Get-ChildItem -LiteralPath $StoreData -File -Force | Where-Object Name -like 'store*.db')
+
+        # icacls adds a second identical deny rule on every run, so skip a target that already has one.
+        # Any other deny rule on the target stays as it is.
+        $IsDenied = {
+          param($Path, $Rights)
+          $Rules = (Get-Acl -LiteralPath $Path -ErrorAction Stop).GetAccessRules($true, $false, [System.Security.Principal.SecurityIdentifier])
+          [bool]($Rules | Where-Object { $_.AccessControlType -eq 'Deny' -and $_.IdentityReference.Value -eq 'S-1-1-0' -and $_.PropagationFlags -notmatch 'InheritOnly' -and ($_.FileSystemRights -band $Rights) -eq $Rights })
+        }
+
+        foreach ($Catalog in $Catalogs) {
+          if (-not (& $IsDenied $Catalog.FullName 'FullControl')) {
+            icacls $Catalog.FullName /deny \"*S-1-1-0:F\"
+            if ($LASTEXITCODE -ne 0) { throw \"icacls failed to deny access to $($Catalog.FullName) (exit code $LASTEXITCODE)\" }
+          }
+        }
+
+        if (-not (& $IsDenied $StoreData 'WriteData')) {
+          icacls $StoreData /deny \"*S-1-1-0:(WD)\"
+          if ($LASTEXITCODE -ne 0) { throw \"icacls failed to deny file creation in $StoreData (exit code $LASTEXITCODE)\" }
+        }
+      }
+      "
     ],
     "UndoScript": [
-      "icacls \"$Env:LocalAppData\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db\" /grant *S-1-1-0:F"
+      "
+      $StoreData = \"$Env:LocalAppData\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\"
+
+      if (Test-Path -LiteralPath $StoreData) {
+        $Targets = @($StoreData) + @(Get-ChildItem -LiteralPath $StoreData -File -Force | Where-Object Name -like 'store*.db' | ForEach-Object FullName)
+
+        foreach ($Target in $Targets) {
+          icacls $Target /remove:d \"*S-1-1-0\"
+          if ($LASTEXITCODE -ne 0) { throw \"icacls failed to remove the deny rule on $Target (exit code $LASTEXITCODE)\" }
+        }
+      }
+      "
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/disablestoresearch"
   },
