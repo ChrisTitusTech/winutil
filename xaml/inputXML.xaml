@@ -1179,7 +1179,7 @@
                     <Button Name="JobQueueButton"
                         Style="{StaticResource HoverButtonStyle}"
                         BorderBrush="Transparent"
-                        Background="{DynamicResource Transparent}"
+                        Background="Transparent"
                         Foreground="{DynamicResource MainForegroundColor}"
                         MinWidth="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
                         HorizontalAlignment="Right" VerticalAlignment="Center"
