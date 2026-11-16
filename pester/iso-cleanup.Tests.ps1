@@ -77,9 +77,26 @@ Describe 'ISO cleanup path confinement' {
         Get-Content -LiteralPath (Join-Path $script:outside 'keep.txt') | Should -Be 'keep me'
     }
 
-    It 'accepts the workstation TEMP spelling even when it uses a short directory name' {
-        $env:TEMP = $script:savedTemp
-        $unusedPath = Join-Path $env:TEMP ('WinUtil_Win11ISO_' + [guid]::NewGuid().ToString('N'))
-        { Assert-WinUtilISOCleanupRoot -WorkDir $unusedPath } | Should -Not -Throw
+    It 'accepts equivalent short and long work-directory spellings with a short TEMP path' {
+        $longTemp = (New-Item -ItemType Directory -Path (Join-Path $env:TEMP 'Long TEMP directory for cleanup validation')).FullName
+        $fileSystem = New-Object -ComObject Scripting.FileSystemObject
+        $folder = $null
+        try {
+            $folder = $fileSystem.GetFolder($longTemp)
+            $shortTemp = $folder.ShortPath
+        } finally {
+            if ($null -ne $folder) { [void][Runtime.InteropServices.Marshal]::ReleaseComObject($folder) }
+            [void][Runtime.InteropServices.Marshal]::ReleaseComObject($fileSystem)
+        }
+        if ([string]::Equals($shortTemp, $longTemp, [StringComparison]::OrdinalIgnoreCase)) {
+            Set-ItResult -Skipped -Because 'The test volume does not provide an 8.3 spelling for this directory.'
+            return
+        }
+
+        $workName = 'WinUtil_Win11ISO_short_path'
+        $longWorkDir = (New-Item -ItemType Directory -Path (Join-Path $longTemp $workName)).FullName
+        $env:TEMP = $shortTemp
+        { Assert-WinUtilISOCleanupRoot -WorkDir (Join-Path $shortTemp $workName) } | Should -Not -Throw
+        { Assert-WinUtilISOCleanupRoot -WorkDir $longWorkDir } | Should -Not -Throw
     }
 }
