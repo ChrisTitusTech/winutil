@@ -46,14 +46,17 @@ function Invoke-WinUtilCloseRequest {
     $queuedNote = if ($QueuedCount -gt 0) { "`n$QueuedCount queued operation(s) will be discarded.`n" } else { "" }
 
     # The question carries the meaning rather than naming buttons: Windows labels them in its own
-    # language, so "Yes" in the text would not match a button reading "Ja".
+    # language, so "Yes" in the text would not match a button reading "Ja". The stated minute
+    # bound is Wait-WinUtilRemainingWork's default, so a user who chooses to wait knows when the
+    # job is stopped anyway.
     $answer = Show-WinUtilJobCloseMessage -Button "YesNoCancel" -Icon "Warning" -Title "$RunningJob is still running" -Message @"
 $RunningJob has not finished yet.
 $queuedNote
 Close the window and let it finish in the console?
 
-WinUtil will exit on its own once it is done. If you do not, it will be
-stopped and everything closes now. Cancel keeps WinUtil open.
+WinUtil will exit on its own when the job is done. It waits up to 120
+minutes, then stops the job and exits. If you choose not to wait, WinUtil
+stops the job and closes now. Cancel keeps WinUtil open.
 "@
 
     switch ("$answer") {
