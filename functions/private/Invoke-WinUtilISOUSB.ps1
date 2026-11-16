@@ -101,6 +101,7 @@ function Invoke-WinUtilISOWriteUSB {
                 $dpCleanOut | Where-Object { $_ -match '\S' } | ForEach-Object { Write-WinUtilISOLog "  diskpart: $_" }
             } finally {
                 Remove-Item -LiteralPath $dpFile1 -Force -ErrorAction SilentlyContinue
+                Remove-Item -LiteralPath (Split-Path -Parent $dpFile1) -Force -ErrorAction SilentlyContinue
             }
 
             if (($dpCleanOut -join ' ') -match 'device is not ready') {
@@ -112,6 +113,7 @@ function Invoke-WinUtilISOWriteUSB {
                     diskpart /s $dpFile1b | Where-Object { $_ -match '\S' } | ForEach-Object { Write-WinUtilISOLog "  diskpart: $_" }
                 } finally {
                     Remove-Item -LiteralPath $dpFile1b -Force -ErrorAction SilentlyContinue
+                    Remove-Item -LiteralPath (Split-Path -Parent $dpFile1b) -Force -ErrorAction SilentlyContinue
                 }
             }
 
@@ -148,6 +150,7 @@ function Invoke-WinUtilISOWriteUSB {
                 diskpart /s $dpFile2 | Where-Object { $_ -match '\S' } | ForEach-Object { Write-WinUtilISOLog "  diskpart: $_" }
             } finally {
                 Remove-Item -LiteralPath $dpFile2 -Force -ErrorAction SilentlyContinue
+                Remove-Item -LiteralPath (Split-Path -Parent $dpFile2) -Force -ErrorAction SilentlyContinue
             }
 
             Step-WinUtilJob -Status "Formatting USB partition..." -Percent 25
