@@ -93,6 +93,18 @@ Describe 'Microsoft Store search results tweak' {
         { New-Item -Path (Join-Path $script:localState 'store-new.db') -ItemType File -ErrorAction Stop } | Should -Throw
     }
 
+    It 'blocks catalog creation before enumerating the existing catalogs' {
+        Initialize-TestStoreData -Catalog 'store.db'
+        $script:catalogSnapshot = @(Get-ChildItem -LiteralPath $script:localState -File)
+        Mock Get-ChildItem {
+            Get-TestDenyRuleCount -Path $script:localState | Should -Be 1
+            $script:catalogSnapshot
+        } -ParameterFilter { $LiteralPath -eq $script:localState -and $File }
+
+        & $script:applyStoreSearch
+        Should -Invoke Get-ChildItem -Times 1 -Exactly -ParameterFilter { $LiteralPath -eq $script:localState -and $File }
+    }
+
     It 'leaves the subfolders of the data folder writable' {
         Initialize-TestStoreData -Catalog 'store.db'
 

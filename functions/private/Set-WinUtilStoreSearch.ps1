@@ -9,15 +9,8 @@ function Set-WinUtilStoreSearch {
     $accessSection = [System.Security.AccessControl.AccessControlSections]::Access
     $everyone = [System.Security.Principal.SecurityIdentifier]::new('S-1-1-0')
 
-    $names = if ($Undo) {
-        if ($null -eq $stateKey) { return }
-        @($stateKey.GetValueNames())
-    } else {
-        @('.') + @(Get-ChildItem -LiteralPath $storeData -File -Force -ErrorAction Stop |
-            Where-Object Name -like 'store*.db' | ForEach-Object Name)
-    }
-
-    foreach ($name in $names) {
+    $updateTarget = {
+        param($name)
         # State can only refer to this Store folder or its immediate catalog files.
         if ($name -ne '.' -and ($name -notlike 'store*.db' -or $name -match '[/\\:]')) {
             throw "Invalid Store search ACL state name '$name'."
@@ -27,7 +20,7 @@ function Set-WinUtilStoreSearch {
         $state = if ($saved) { $saved | ConvertFrom-Json -ErrorAction Stop }
         if (-not (Test-Path -LiteralPath $path)) {
             if ($Undo) { Remove-ItemProperty -LiteralPath $statePath -Name $name -ErrorAction Stop }
-            continue
+            return
         }
         $created = (Get-Item -LiteralPath $path -ErrorAction Stop).CreationTimeUtc.Ticks
         $acl = Get-Acl -LiteralPath $path -ErrorAction Stop
@@ -38,7 +31,7 @@ function Set-WinUtilStoreSearch {
                 if ($Undo) {
                     # The Store replaced the catalog; its old ACL must not be applied to a new file.
                     Remove-ItemProperty -LiteralPath $statePath -Name $name -ErrorAction Stop
-                    continue
+                    return
                 }
                 throw "Store search target '$path' was replaced; undo its saved state before applying again."
             }
@@ -51,16 +44,16 @@ function Set-WinUtilStoreSearch {
                 Set-WinUtilStoreSearchAcl -Path $path -AclObject $acl
             }
             if ($Undo) { Remove-ItemProperty -LiteralPath $statePath -Name $name -ErrorAction Stop }
-            continue
+            return
         }
 
-        if ($Undo) { continue }
+        if ($Undo) { return }
         $rights = if ($name -eq '.') { [System.Security.AccessControl.FileSystemRights]::WriteData } else { [System.Security.AccessControl.FileSystemRights]::FullControl }
         $rules = $acl.GetAccessRules($true, $false, [System.Security.Principal.SecurityIdentifier])
         if ($rules | Where-Object {
             $_.AccessControlType -eq 'Deny' -and $_.IdentityReference -eq $everyone -and
             $_.PropagationFlags -notmatch 'InheritOnly' -and ($_.FileSystemRights -band $rights) -eq $rights
-        }) { continue }
+        }) { return }
 
         $acl.AddAccessRule([System.Security.AccessControl.FileSystemAccessRule]::new($everyone, $rights, 'Deny'))
         $state = [ordered]@{ Created = $created; Original = $current; Applied = $acl.GetSecurityDescriptorSddlForm($accessSection) }
@@ -70,6 +63,15 @@ function Set-WinUtilStoreSearch {
         # Persist both states before changing permissions, so a failed write can be retried or undone.
         New-ItemProperty -LiteralPath $statePath -Name $name -Value ($state | ConvertTo-Json -Compress) -PropertyType String -ErrorAction Stop | Out-Null
         Set-WinUtilStoreSearchAcl -Path $path -AclObject $acl
+    }
+    if ($Undo) {
+        if ($null -eq $stateKey) { return }
+        foreach ($name in @($stateKey.GetValueNames())) { . $updateTarget $name }
+    } else {
+        # Block catalog creation before taking the snapshot of existing catalog files.
+        . $updateTarget '.'
+        $catalogs = @(Get-ChildItem -LiteralPath $storeData -File -Force -ErrorAction Stop | Where-Object Name -like 'store*.db')
+        foreach ($catalog in $catalogs) { . $updateTarget $catalog.Name }
     }
 }
 
