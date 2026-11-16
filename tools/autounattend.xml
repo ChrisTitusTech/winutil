@@ -323,11 +323,15 @@ $scripts = @(
     };
     {
         reg.exe add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /ve /f;
-        $classicMenuPath = 'HKCU:\Software\Classes\CLSID\{51668040-5e31-4023-bbe3-149163bd80f1}';
-        if (-not (Test-Path -LiteralPath $classicMenuPath -ErrorAction Stop)) {
-            New-Item -Path $classicMenuPath -ErrorAction Stop | Out-Null;
-            New-ItemProperty -LiteralPath $classicMenuPath -Name 'WinUtilClassicContextMenu' -Value 1 -PropertyType DWord -ErrorAction Stop | Out-Null;
-            New-Item -Path "$classicMenuPath\InprocServer32" -Value '' -ErrorAction Stop | Out-Null;
+        try {
+            $classicMenuPath = 'HKCU:\Software\Classes\CLSID\{51668040-5e31-4023-bbe3-149163bd80f1}';
+            if (-not (Test-Path -LiteralPath $classicMenuPath -ErrorAction Stop)) {
+                New-Item -Path $classicMenuPath -ErrorAction Stop | Out-Null;
+                New-ItemProperty -LiteralPath $classicMenuPath -Name 'WinUtilClassicContextMenu' -Value 1 -PropertyType DWord -ErrorAction Stop | Out-Null;
+                New-Item -Path "$classicMenuPath\InprocServer32" -Value '' -ErrorAction Stop | Out-Null;
+            };
+        } catch {
+            Write-Warning "Could not apply the newer classic context menu workaround: $($_.Exception.Message)";
         };
     };
     {

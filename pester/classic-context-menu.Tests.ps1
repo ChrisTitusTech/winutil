@@ -105,6 +105,12 @@ Describe 'Classic context menu apply and undo' {
         Should -Invoke New-ItemProperty -Times 0 -Exactly
     }
 
+    It 'reports an unattended marker failure without terminating user setup' {
+        Mock New-ItemProperty { throw 'Marker write denied' }
+        { & $script:unattendedClassicMenu } | Should -Not -Throw
+        Should -Invoke Write-Warning -Times 1 -Exactly -ParameterFilter { $Message -like '*Marker write denied*' }
+    }
+
     It 'creates the second registration once and removes both overrides on undo' {
         Invoke-WinUtilTweaks -CheckBox $script:classicMenuTweakName
         Invoke-WinUtilTweaks -CheckBox $script:classicMenuTweakName
