@@ -173,7 +173,7 @@ Describe "The close question" {
     }
 
     It "states the wait limit that the console hand-off enforces" {
-        # the prompt says the job is stopped at the bound, so it must quote the real default
+        # the prompt quotes the real default before requesting a stop
         $tokens = $null
         $errors = $null
         $ast = [System.Management.Automation.Language.Parser]::ParseFile(
