@@ -1,8 +1,9 @@
-# Run the configured scripts with the real icacls against a throwaway profile folder and read
+# Run the configured scripts with real ACLs against a throwaway profile folder and read
 # the resulting permissions. $Env:LocalAppData points at TestDrive for every test, so nothing
 # here touches the real Microsoft Store data.
 BeforeAll {
     $repoRoot = Split-Path $PSScriptRoot -Parent
+    . (Join-Path $repoRoot 'functions/private/Set-WinUtilStoreSearch.ps1')
     $tweak = (Get-Content (Join-Path $repoRoot 'config/tweaks.json') -Raw | ConvertFrom-Json).WPFTweaksDisableStoreSearch
     $script:applyStoreSearch = [scriptblock]::Create($tweak.InvokeScript -join "`n")
     $script:undoStoreSearch = [scriptblock]::Create($tweak.UndoScript -join "`n")
@@ -43,6 +44,13 @@ BeforeAll {
 
 Describe 'Microsoft Store search results tweak' {
     BeforeEach {
+        $script:testStatePath = 'TestRegistry:\' + [guid]::NewGuid().ToString('N')
+        $script:statePath = 'HKCU:\Software\WinUtil\StoreSearch'
+        Mock Test-Path { Test-Path -LiteralPath $script:testStatePath } -ParameterFilter { $LiteralPath -eq $script:statePath }
+        Mock Get-Item { Get-Item -LiteralPath $script:testStatePath } -ParameterFilter { $LiteralPath -eq $script:statePath }
+        Mock New-Item { New-Item -Path $script:testStatePath -Force } -ParameterFilter { $Path -eq $script:statePath }
+        Mock New-ItemProperty { New-ItemProperty -LiteralPath $script:testStatePath -Name $Name -Value $Value -PropertyType String } -ParameterFilter { $LiteralPath -eq $script:statePath }
+        Mock Remove-ItemProperty { Remove-ItemProperty -LiteralPath $script:testStatePath -Name $Name } -ParameterFilter { $LiteralPath -eq $script:statePath }
         $script:originalLocalAppData = $Env:LocalAppData
         $script:profileRoot = Join-Path $TestDrive ([guid]::NewGuid().ToString())
         $Env:LocalAppData = $script:profileRoot
@@ -109,16 +117,21 @@ Describe 'Microsoft Store search results tweak' {
         Initialize-TestStoreData -Catalog 'store.db'
         icacls $script:activeCatalog /deny '*S-1-1-0:(DE)' | Out-Null
         icacls $script:localState /deny '*S-1-1-0:(OI)(CI)(DE)' | Out-Null
+        $folderBefore = Get-TestDacl -Path $script:localState
+        $activeBefore = Get-TestDacl -Path $script:activeCatalog
 
         & $script:applyStoreSearch | Out-Null
         & $script:applyStoreSearch | Out-Null
 
-        Get-TestDacl -Path $script:activeCatalog | Should -BeLike '*(D;;SD;;;WD)*'
         Get-TestDacl -Path $script:localState | Should -BeLike '*(D;OICI;SD;;;WD)*'
         ([regex]::Matches((Get-TestDacl -Path $script:activeCatalog), '\(D;;FA;;;WD\)')).Count | Should -Be 1
         ([regex]::Matches((Get-TestDacl -Path $script:localState), '\(D;;DC;;;WD\)')).Count | Should -Be 1
         { [System.IO.File]::ReadAllBytes($script:activeCatalog) } | Should -Throw
         { New-Item -Path (Join-Path $script:localState 'store-new.db') -ItemType File -ErrorAction Stop } | Should -Throw
+
+        & $script:undoStoreSearch | Out-Null
+        Get-TestDacl -Path $script:localState | Should -Be $folderBefore
+        Get-TestDacl -Path $script:activeCatalog | Should -Be $activeBefore
     }
 
     It 'restores the original permissions on undo' {
@@ -137,6 +150,8 @@ Describe 'Microsoft Store search results tweak' {
 
     It 'leaves the permissions alone when undo runs without a prior apply' {
         Initialize-TestStoreData -Catalog 'store.db'
+        icacls $script:activeCatalog /deny '*S-1-1-0:(DE)' | Out-Null
+        icacls $script:localState /deny '*S-1-1-0:(OI)(CI)(DE)' | Out-Null
         $folderBefore = Get-TestDacl -Path $script:localState
         $activeBefore = Get-TestDacl -Path $script:activeCatalog
 
@@ -145,6 +160,27 @@ Describe 'Microsoft Store search results tweak' {
         $errors | Should -BeNullOrEmpty
         Get-TestDacl -Path $script:localState | Should -Be $folderBefore
         Get-TestDacl -Path $script:activeCatalog | Should -Be $activeBefore
+    }
+
+    It 'preserves later permission changes rather than restoring over them' {
+        Initialize-TestStoreData -Catalog 'store.db'
+        & $script:applyStoreSearch | Out-Null
+        icacls $script:localState /deny '*S-1-1-0:(DE)' | Out-Null
+        $changed = Get-TestDacl -Path $script:localState
+
+        { & $script:undoStoreSearch } | Should -Throw '*changed after*'
+        Get-TestDacl -Path $script:localState | Should -Be $changed
+    }
+
+    It 'can undo after permission assignment failed with state already saved' {
+        Initialize-TestStoreData -Catalog 'store.db'
+        $before = Get-TestDacl -Path $script:localState
+        Mock Set-WinUtilStoreSearchAcl { throw 'ACL write denied' }
+
+        { & $script:applyStoreSearch } | Should -Throw '*ACL write denied*'
+        & $script:undoStoreSearch
+
+        Get-TestDacl -Path $script:localState | Should -Be $before
     }
 
     It 'does nothing on <Action> when the Store data folder is missing' -TestCases @(
@@ -161,16 +197,17 @@ Describe 'Microsoft Store search results tweak' {
         Test-Path -LiteralPath $script:profileRoot | Should -BeFalse
     }
 
-    It 'fails the <Action> script when icacls reports an error' -TestCases @(
+    It 'fails the <Action> script when writing permissions fails' -TestCases @(
         @{ Action = 'apply' }
         @{ Action = 'undo' }
     ) {
         param([string]$Action)
 
         Initialize-TestStoreData -Catalog 'store.db'
+        if ($Action -eq 'undo') { & $script:applyStoreSearch | Out-Null }
         $script = if ($Action -eq 'apply') { $script:applyStoreSearch } else { $script:undoStoreSearch }
-        Mock icacls { $global:LASTEXITCODE = 5 }
+        Mock Set-WinUtilStoreSearchAcl { throw 'ACL write denied' }
 
-        { & $script } | Should -Throw '*exit code 5*'
+        { & $script } | Should -Throw '*ACL write denied*'
     }
 }
