@@ -95,6 +95,7 @@ Because the final script is concatenated, code cannot rely on runtime module imp
 
 - Registry, service, package manager, Windows Update, AppX removal, and ISO operations affect the host system and are treated as high-risk.
 - Tweak changes include undo metadata when the schema supports it, so changes stay reversible.
+- DiskPart command files are created with administrator ownership and protected ACLs in a private directory under the Windows common application-data folder. The file and empty directory are removed after each command, including failures; ordinary user processes cannot replace commands between creation and execution.
 - ISO workflows never modify the user's original ISO file; they work on copied/mounted content.
 
 ## Docs Site (Astro)
@@ -124,3 +125,5 @@ Because the final script is concatenated, code cannot rely on runtime module imp
 ## Release Artifact
 
 GitHub Actions is responsible for producing the release `winutil.ps1` from repository sources. A release is considered valid only if the generated script came from the compile process, not from direct manual edits to `winutil.ps1`.
+
+Release builds embed the GitHub commit SHA in `$sync.commitSha` for the About dialog; local builds use `local`. Pre-release runs are serialized through a workflow concurrency group. An existing date tag can be reused only for the same commit, allowing a partial release to resume without publishing a different build under that tag.

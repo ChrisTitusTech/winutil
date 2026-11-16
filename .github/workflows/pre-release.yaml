@@ -8,6 +8,10 @@ permissions:
 on:
   workflow_dispatch: # Manual trigger added
 
+concurrency:
+  group: winutil-pre-release
+  cancel-in-progress: false
+
 jobs:
   build-runspace:
     runs-on: windows-latest
