@@ -63,6 +63,12 @@ function Set-WinUtilClassicContextMenu {
         }
         if ($ownsWorkaround -and -not (Test-Path -LiteralPath $serverPath -ErrorAction Stop)) {
             New-Item -Path $serverPath -Value '' -ErrorAction Stop | Out-Null
+        } elseif ($ownsWorkaround) {
+            $serverKey = Get-Item -LiteralPath $serverPath -ErrorAction Stop
+            if ($serverKey.ValueCount -eq 0 -and $serverKey.SubKeyCount -eq 0) {
+                # Key creation can succeed before assigning its default value fails.
+                Set-Item -LiteralPath $serverPath -Value '' -Force -ErrorAction Stop
+            }
         }
     }
 

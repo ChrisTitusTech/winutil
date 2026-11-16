@@ -8,6 +8,17 @@ BeforeAll {
     $script:legacyMenuPath = 'HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}'
     $script:workaroundMenuPath = 'HKCU:\Software\Classes\CLSID\{51668040-5e31-4023-bbe3-149163bd80f1}'
     $script:workaroundServerPath = "$script:workaroundMenuPath\InprocServer32"
+    [xml]$unattend = Get-Content (Join-Path $repoRoot 'tools/autounattend.xml') -Raw
+    $userOnce = $unattend.SelectSingleNode("//*[local-name()='File' and @path='C:\Windows\Setup\Scripts\UserOnce.ps1']").InnerText
+    $ast = [System.Management.Automation.Language.Parser]::ParseInput($userOnce, [ref]$null, [ref]$null)
+    $blocks = @($ast.FindAll({
+        param($node)
+        $node -is [System.Management.Automation.Language.ScriptBlockExpressionAst] -and
+            $node.ScriptBlock.Extent.Text -match '^\{\s*reg\.exe add "HKCU\\Software\\Classes\\CLSID\\\{86ca1aa0'
+    }, $true))
+    if ($blocks.Count -ne 1) { throw 'Expected one unattended classic menu block.' }
+    $script:unattendedClassicMenu = $blocks[0].ScriptBlock.GetScriptBlock()
+    function reg.exe { param([Parameter(ValueFromRemainingArguments)][string[]]$Arguments) }
 
     function Write-WinUtilLog {
         param($Level, $Component, $Message)
@@ -39,6 +50,7 @@ Describe 'Classic context menu apply and undo' {
 
         Mock Write-Warning {}
         Mock Stop-Process {}
+        Mock reg.exe {}
         Mock Get-Item {
             $keyPath = [string]$LiteralPath
             if (-not $script:menuRegistry.ContainsKey($keyPath)) {
@@ -60,6 +72,7 @@ Describe 'Classic context menu apply and undo' {
             $script:menuRegistry[$keyPath]
         }
         Mock New-ItemProperty { $script:menuRegistry[[string]$LiteralPath].Values[$Name] = $Value }
+        Mock Set-Item { $script:menuRegistry[[string]$LiteralPath].Values[''] = $Value }
         Mock Remove-Item {
             $keyPath = [string]$LiteralPath
             if (-not $script:menuRegistry.ContainsKey($keyPath)) {
@@ -75,6 +88,21 @@ Describe 'Classic context menu apply and undo' {
     AfterEach {
         $global:WinUtilJobErrorCount = $script:previousClassicMenuErrorCount
         Remove-Variable sync -Scope Script -ErrorAction SilentlyContinue
+    }
+
+    It 'creates the newer unattended registration and preserves it on a repeated run' {
+        & $script:unattendedClassicMenu
+        & $script:unattendedClassicMenu
+        $script:menuRegistry[$script:workaroundServerPath].Values[''] | Should -BeExactly ''
+        $script:menuRegistry[$script:workaroundMenuPath].Values['WinUtilClassicContextMenu'] | Should -Be 1
+        Should -Invoke New-ItemProperty -Times 1 -Exactly
+    }
+
+    It 'preserves a pre-existing unattended registration' {
+        $script:menuRegistry[$script:workaroundMenuPath] = New-TestRegistryKey -Values @{ Vendor = 'Custom' }
+        & $script:unattendedClassicMenu
+        $script:menuRegistry[$script:workaroundMenuPath].Values['Vendor'] | Should -Be 'Custom'
+        Should -Invoke New-ItemProperty -Times 0 -Exactly
     }
 
     It 'creates the second registration once and removes both overrides on undo' {
@@ -135,6 +163,23 @@ Describe 'Classic context menu apply and undo' {
 
         $script:menuRegistry.ContainsKey($script:deniedMenuPath) | Should -BeTrue
         $global:WinUtilJobErrorCount | Should -Be 1
+        Should -Invoke Stop-Process -Times 1 -Exactly
+    }
+
+    It 'completes an empty owned server key after a partial creation failure' {
+        Mock New-Item {
+            $script:menuRegistry[$script:workaroundServerPath] = New-TestRegistryKey
+            $script:menuRegistry[$script:workaroundMenuPath].SubKeys = @('InprocServer32')
+            throw [System.UnauthorizedAccessException]::new('Default value creation denied')
+        } -ParameterFilter { [string]$Path -eq $script:workaroundServerPath }
+
+        Invoke-WinUtilTweaks -CheckBox $script:classicMenuTweakName
+        $global:WinUtilJobErrorCount | Should -Be 1
+        $script:menuRegistry[$script:workaroundServerPath].ValueCount | Should -Be 0
+
+        Invoke-WinUtilTweaks -CheckBox $script:classicMenuTweakName
+        $script:menuRegistry[$script:workaroundServerPath].Values.ContainsKey('') | Should -BeTrue
+        $script:menuRegistry[$script:workaroundServerPath].Values[''] | Should -BeExactly ''
         Should -Invoke Stop-Process -Times 1 -Exactly
     }
 
