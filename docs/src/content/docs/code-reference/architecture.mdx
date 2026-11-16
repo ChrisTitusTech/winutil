@@ -236,7 +236,7 @@ Invoke-WinUtilISOCleanAndReset (optional)
 - Stages fallback setup scripts under `sources\$OEM$\$$\Setup\Scripts\` with `UseConfigurationSet` enabled
 
 **Work Session Recovery**:
-- Auto-detects incomplete work from previous sessions
+- Detects marked work or completed output from previous sessions and requires confirmation before adoption
 - Allows resuming the export step without re-running selection and modification
 - Prevents redundant modifications
 
@@ -245,6 +245,7 @@ Invoke-WinUtilISOCleanAndReset (optional)
 - Original ISO never modified; only working copy
 - Logged to the shared `%LocalAppData%\winutil\logs\winutil_<timestamp>.log` session file and the live UI status panel, so the log survives cleanup
 - DISM handles image dismount with automatic cleanup and discard on error
+- Cleanup validates the TEMP working-directory boundary, rejects reparse points, and holds native directory handles to prevent replacement during scanning and file deletion. Directory removal is nonrecursive, so files created after the scan are retained.
 
 ### Win11 Creator Registry Tweaks
 

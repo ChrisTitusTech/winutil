@@ -84,6 +84,8 @@ Advanced Tweaks are for users who understand the side effects of deeper Windows 
 ### O&O ShutUp10++
 [O&O ShutUp10++](https://www.oo-software.com/en/shutup10) can be launched from WinUtil with one click. It is a free privacy tool for Windows that helps users manage telemetry, update behavior, and app permission settings. The button downloads the tool (about 82 MB) each time it is clicked; hover over it to see this before starting, and, when the download size is available, the progress label shows it alongside the percentage.
 
+The executable is stored under `%ProgramData%\WinUtilDownloads`, with ownership and permissions restricted to Administrators and SYSTEM, and its Authenticode signature is checked before launch. WinUtil refuses an existing cache path that does not have those protections.
+
 Watch a walkthrough:
 
 <YouTubeEmbed id="3HvNr8eMcv0" title="O&O ShutUp10++ walkthrough" />

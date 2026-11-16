@@ -96,6 +96,8 @@ Because the final script is concatenated, code cannot rely on runtime module imp
 - Registry, service, package manager, Windows Update, AppX removal, and ISO operations affect the host system and are treated as high-risk.
 - Tweak changes include undo metadata when the schema supports it, so changes stay reversible.
 - DiskPart command files are created with administrator ownership and protected ACLs in a private directory under the Windows common application-data folder. The file and empty directory are removed after each command, including failures; ordinary user processes cannot replace commands between creation and execution.
+- O&O ShutUp10++ and Autologon downloads use the administrator-owned `%ProgramData%\WinUtilDownloads` cache. Existing paths are checked for protected ACLs and reparse points before use, and downloads must pass Authenticode verification before launch.
+- ISO recovery always requires confirmation, including for marked work. Cleanup validates its TEMP boundary and holds native handles on directory ancestors and descendants while scanning and deleting files; it rejects reparse points and removes directories nonrecursively.
 - ISO workflows never modify the user's original ISO file; they work on copied/mounted content.
 
 ## Docs Site (Astro)

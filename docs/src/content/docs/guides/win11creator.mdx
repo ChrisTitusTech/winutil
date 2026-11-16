@@ -119,6 +119,8 @@ Double-check you have selected the correct drive before confirming. This operati
 
 Click **Start Over** to delete the temporary working directory (~10–15 GB) and return the tool to its initial state, ready for a new ISO. You will be asked to confirm before anything is deleted.
 
+When a previous working directory is found, WinUtil asks before restoring the output step, even if a completion marker exists. Recover it only when you recognize the directory and the earlier modification finished successfully. Cleanup refuses junctions and symbolic links, locks the scanned directories against replacement, and leaves files added after the scan in place rather than deleting them recursively.
+
 ---
 
 ### What the Modified ISO Does Differently
