@@ -106,9 +106,18 @@ Describe 'Classic context menu apply and undo' {
     }
 
     It 'reports an unattended marker failure without terminating user setup' {
-        Mock New-ItemProperty { throw 'Marker write denied' }
+        Mock New-ItemProperty {
+            if (-not $script:allowMenuMarkerWrite) { throw 'Marker write denied' }
+            $script:menuRegistry[[string]$LiteralPath].Values[$Name] = $Value
+        }
+        $script:allowMenuMarkerWrite = $false
         { & $script:unattendedClassicMenu } | Should -Not -Throw
         Should -Invoke Write-Warning -Times 1 -Exactly -ParameterFilter { $Message -like '*Marker write denied*' }
+        $script:menuRegistry.ContainsKey($script:workaroundMenuPath) | Should -BeFalse
+
+        $script:allowMenuMarkerWrite = $true
+        & $script:unattendedClassicMenu
+        $script:menuRegistry[$script:workaroundServerPath].Values[''] | Should -BeExactly ''
     }
 
     It 'creates the second registration once and removes both overrides on undo' {
