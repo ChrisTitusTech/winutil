@@ -46,11 +46,12 @@ function Invoke-WinUtilSSHServer {
             # A second administrator may legitimately own the file. Accept owners that are
             # members of the local Administrators group when the cmdlet is available.
             # Resolve the built-in group by SID so localized Windows installs work too.
-            $adminGroupName = (New-Object System.Security.Principal.SecurityIdentifier("S-1-5-32-544")).Translate([System.Security.Principal.NTAccount]).Value
-            $adminMemberSids = @(Get-LocalGroupMember -Group $adminGroupName -ErrorAction SilentlyContinue | ForEach-Object {
-                try { (New-Object System.Security.Principal.NTAccount($_.Name)).Translate([System.Security.Principal.SecurityIdentifier]).Value } catch { $_.Name }
-            })
+            $adminMemberSids = @(Get-LocalGroupMember -SID 'S-1-5-32-544' -ErrorAction Stop | ForEach-Object { $_.SID.Value })
             if ($adminMemberSids -contains $ownerSid.Value) { $isAdminOwner = $true }
+            if (-not $isAdminOwner) {
+                $authorizationGroups = @(Get-WinUtilAccountAuthorizationGroupSid -UserSid $ownerSid.Value)
+                $isAdminOwner = [bool]($adminMemberSids | Where-Object { $authorizationGroups -contains $_ })
+            }
         }
         if (-not $ownerSid -or -not $isAdminOwner) {
             throw "Refusing to adopt pre-existing $existingPath (owner: $owner). It must be owned by Administrators or SYSTEM before WinUtil enables OpenSSH Server."
