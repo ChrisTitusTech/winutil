@@ -1,6 +1,6 @@
 function Invoke-WPFOOSU {
     Start-WinUtilJob -Name "OOSU" -Description "Downloading O&O ShutUp10++" -Parameters @{
-        DownloadPath = Join-Path $sync.winutildir "ooshutup10.exe"
+        DownloadPath = Get-WinUtilProtectedDownloadPath -Name 'ooshutup10.exe'
     } -ScriptBlock {
         param($DownloadPath)
 

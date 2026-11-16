@@ -1,5 +1,5 @@
 function Invoke-WPFPanelAutologin {
-    $autologonPath = Join-Path $sync.winutildir "autologin.exe"
+    $autologonPath = Get-WinUtilProtectedDownloadPath -Name 'autologin.exe'
     Invoke-WebRequest -Uri https://live.sysinternals.com/Autologon.exe -OutFile $autologonPath
 
     $signature = Get-AuthenticodeSignature -FilePath $autologonPath

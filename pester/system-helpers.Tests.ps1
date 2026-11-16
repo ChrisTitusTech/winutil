@@ -13,6 +13,7 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFPanelAutologin.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFOOSU.ps1")
     . (Join-Path $script:repoRoot "functions\private\Save-WinUtilFile.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilProtectedDownloadPath.ps1")
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilInstallPSProfile.ps1")
 
     function winget {
@@ -35,14 +36,16 @@ Describe "Invoke-WPFPanelAutologin" {
         Mock Invoke-WebRequest { }
         Mock Start-Process { }
         Mock Get-AuthenticodeSignature { [pscustomobject]@{ Status = 'Valid' } }
+        Mock Get-WinUtilProtectedDownloadPath { Join-Path $TestDrive $Name }
     }
 
-    It "uses the shared WinUtil data directory from a worker runspace" {
+    It "uses protected executable storage from a worker runspace" {
         Invoke-WPFPanelAutologin
 
         $expectedPath = Join-Path $TestDrive "autologin.exe"
         Should -Invoke -CommandName Invoke-WebRequest -Times 1 -Exactly -ParameterFilter { $OutFile -eq $expectedPath }
         Should -Invoke -CommandName Start-Process -Times 1 -Exactly -ParameterFilter { $FilePath -eq $expectedPath }
+        Should -Invoke Get-WinUtilProtectedDownloadPath -Times 1 -Exactly -ParameterFilter { $Name -eq 'autologin.exe' }
     }
 
     It "refuses to launch an unverified Autologon download" {
@@ -59,6 +62,7 @@ Describe "Invoke-WPFOOSU" {
         Mock Save-WinUtilFile { }
         Mock Get-AuthenticodeSignature { [pscustomobject]@{ Status = 'Valid' } }
         Mock Start-Process { }
+        Mock Get-WinUtilProtectedDownloadPath { Join-Path $TestDrive $Name }
         Mock Start-WinUtilJob {
             $jobParameters = $Parameters
             & $ScriptBlock @jobParameters

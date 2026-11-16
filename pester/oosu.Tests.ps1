@@ -6,6 +6,7 @@ BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 
     . (Join-Path $script:repoRoot "functions\private\Save-WinUtilFile.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilProtectedDownloadPath.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFOOSU.ps1")
 
     function Invoke-WPFRunspace {
@@ -87,6 +88,7 @@ Describe "Invoke-WPFOOSU" {
         Mock Write-WinUtilLog { }
         Mock Start-Process { }
         Mock Get-AuthenticodeSignature { [pscustomobject]@{ Status = 'Valid' } }
+        Mock Get-WinUtilProtectedDownloadPath { Join-Path $TestDrive $Name }
     }
 
     AfterEach {
@@ -99,6 +101,7 @@ Describe "Invoke-WPFOOSU" {
 
         Should -Invoke Start-WinUtilJob -Times 1 -Exactly -ParameterFilter { $Name -eq "OOSU" }
         $script:capturedJob.Parameters.DownloadPath | Should -Be (Join-Path $TestDrive "ooshutup10.exe")
+        Should -Invoke Get-WinUtilProtectedDownloadPath -Times 1 -Exactly -ParameterFilter { $Name -eq 'ooshutup10.exe' }
     }
 
     It "maps download progress to the job indicator and launches O&O ShutUp10++" {
@@ -138,7 +141,8 @@ Describe "Invoke-WPFOOSU" {
 
     It "falls back to the plain percentage when the server sends no size" {
         Mock Save-WinUtilFile {
-            & $ProgressCallback 100 -1
+            # HTTP Content-Length is Int64; keep the negative sentinel numeric on Windows PowerShell 5.1.
+            & $ProgressCallback 100 ([long]-1)
         }
 
         Invoke-WPFOOSU
