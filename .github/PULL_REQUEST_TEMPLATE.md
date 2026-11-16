@@ -1,14 +1,16 @@
-<!--Before you make this PR have you followed the docs here? - https://winutil.christitus.com/contributing/ -->
-<!--Documentation is auto-generated from configs - no manual documentation updates needed -->
+<!--Code reference documentation is auto-generated from configs - no manual documentation updates needed -->
 
-## Type of Change
-- [ ] New feature
-- [ ] Bug fix
-- [ ] Documentation update
-- [ ] Refactor
-- [ ] UI/UX improvement
+<!--
+For proper labeling on each PR better use next title strategy:
+fix(section): Some bug fix for that section
+feat(section): Providing a new feature on that section/major refactoring of present code
+chore(section): Some chores - code clearing, typo fixes etc
+docs: Documentation update
+ui-ux(section): Bare UI/UX updates with no major feature implementation
 
-<!-- This automatically adds labels to your PR based on the selections above. -->
+Brackets part is optional, title "tag: added a thing" still results in feature labeling
+
+-->
 
 ## Description
 <!--[What does this PR do? Provide Screenshots when possible.]-->
@@ -16,3 +18,7 @@
 ## Issue related to PR
 <!--[List any ISSUES this is related to as it AUTO-CLOSES Them!]-->
 - Resolves #
+
+## PR human checks
+- [ ] This PR is not a blind result of a prompt 'make this project better, no mistakes'
+- [ ] I've read the [contributing guidelines](https://winutil.christitus.com/contributing/)

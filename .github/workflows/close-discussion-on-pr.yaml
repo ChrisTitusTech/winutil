@@ -4,9 +4,13 @@ on:
   pull_request:
     types: [closed]
 
+
 jobs:
   closeDiscussion:
     runs-on: ubuntu-latest
+    permissions: 
+      discussions: write
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7

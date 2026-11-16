@@ -13,7 +13,11 @@ categories:
   - title: 'Documentation'
     label: 'documentation'
   - title: 'UI/UX Improvements'
-    label: 'ui update'
+    labels:
+      - 'ui update'
+      - 'ui-ux'
+  - title: 'Slop cleaning'
+    label: 'chore'
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 template: |
   ## Changes
