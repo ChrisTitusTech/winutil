@@ -1169,14 +1169,10 @@
   "category": "z__Advanced Tweaks - CAUTION",
   "panel": "1",
   "InvokeScript": [
-    "New-Item -Path 'HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}' -Name InprocServer32 -Value '' -Force | Out-Null",
-    "New-Item -Path 'HKCU:\\Software\\Classes\\CLSID\\{51668040-5e31-4023-bbe3-149163bd80f1}' -Name InprocServer32 -Value '' -Force | Out-Null",
-    "Stop-Process -Name explorer -ErrorAction SilentlyContinue"
+    "Set-WinUtilClassicContextMenu"
   ],
   "UndoScript": [
-    "Remove-Item -Path 'HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}' -Recurse -Force -ErrorAction SilentlyContinue",
-    "Remove-Item -Path 'HKCU:\\Software\\Classes\\CLSID\\{51668040-5e31-4023-bbe3-149163bd80f1}' -Recurse -Force -ErrorAction SilentlyContinue",
-    "Stop-Process -Name explorer -ErrorAction SilentlyContinue"
+    "Set-WinUtilClassicContextMenu -Undo"
   ],
   "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/rightclickmenu"
 },
