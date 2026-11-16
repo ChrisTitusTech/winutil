@@ -1,4 +1,4 @@
-<!--Code reference documentation is auto-generated from configs - no manual documentation updates needed -->
+<!--The generated code-reference pages (tweaks and features) need no manual updates. Other code-reference pages are hand-written; update them when your change affects them. -->
 
 <!--
 For proper labeling on each PR better use next title strategy:
