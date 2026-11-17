@@ -405,6 +405,21 @@ function Start-WinUtilUserInterface {
     $sync["ThemeButton"].Add_Click({
         Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "Theme" = "Toggle"; "FontScaling" = "Hide" }
     })
+    $sync["AutoThemeMenuItem"].Add_MouseEnter({
+        Invoke-WinutilThemeChange -theme "Auto" -Preview
+    })
+    $sync["DarkThemeMenuItem"].Add_MouseEnter({
+        Invoke-WinutilThemeChange -theme "Dark" -Preview
+    })
+    $sync["LightThemeMenuItem"].Add_MouseEnter({
+        Invoke-WinutilThemeChange -theme "Light" -Preview
+    })
+    $sync["ThemeMenuItems"].Add_MouseLeave({
+        Invoke-WinutilThemeChange -theme $sync.preferences.theme -Preview
+    })
+    $sync["ThemePopup"].Add_Closed({
+        Invoke-WinutilThemeChange -theme $sync.preferences.theme -Preview
+    })
     $sync["AutoThemeMenuItem"].Add_Click({
         Invoke-WPFPopup -Action "Hide" -Popups @("Theme")
         Invoke-WinutilThemeChange -theme "Auto"
