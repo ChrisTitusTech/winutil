@@ -3,10 +3,15 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import react from '@astrojs/react';
 import { siteLinks } from './src/lib/site-links.ts';
+import { satteri } from '@astrojs/markdown-satteri';
+import { mermaidPlugin } from './src/lib/mermaid-plugin.js';
 
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://winutil.christitus.com/',
+	markdown: {
+		processor: satteri({ hastPlugins: [mermaidPlugin] }),
+	},
 	integrations: [
 		starlight({
 			title: 'WinUtil',
