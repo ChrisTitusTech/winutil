@@ -9,6 +9,7 @@ body:
       value: |
         - Remember, we only support Windows 11. If you encounter problems on Windows 10, please consider upgrading to Windows 11.
         - For general questions, join our Community-driven [Discord Server](https://discord.gg/RUbZUZyByQ).
+        - For issues related to WinOneShot, please address its [respective repo](https://github.com/CT-Tech-Group/winoneshot/issues) (if you are GH Sponsor) or on [public tracker](https://issues.christitus.com)
 
   - type: checkboxes
     id: read_issues
