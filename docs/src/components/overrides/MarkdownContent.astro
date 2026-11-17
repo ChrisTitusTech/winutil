@@ -20,11 +20,17 @@ import Default from '@astrojs/starlight/components/MarkdownContent.astro';
 				theme: document.documentElement.dataset.theme === 'light' ? 'default' : 'dark',
 				themeVariables: { fontFamily: getComputedStyle(document.body).fontFamily },
 			});
-			diagrams.forEach((el, i) => {
+			for (const [i, el] of diagrams.entries()) {
 				el.removeAttribute('data-processed');
 				el.textContent = sources[i];
-			});
-			await mermaid.run({ nodes: diagrams });
+				try {
+					await mermaid.run({ nodes: [el] });
+				} catch (error) {
+					// mermaid empties the block before its diagram code has loaded, so a failure would leave nothing behind.
+					el.textContent = sources[i];
+					console.error('Mermaid diagram failed to render', error);
+				}
+			}
 		};
 
 		// Chained so a theme change mid-draw waits rather than drawing into the same nodes at once.
