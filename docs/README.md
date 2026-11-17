@@ -24,7 +24,7 @@ Starlight handles routing, Markdown rendering, and the search index. The site's 
 │   ├── content/
 │   │   └── docs/            # Pages (.md/.mdx); code-reference/tweaks and /features are generated
 │   ├── hooks/               # React hooks
-│   ├── lib/                 # Shared code (site links, release config loader, config links)
+│   ├── lib/                 # Shared code (site links, release config loader, config links, Mermaid Markdown plugin)
 │   ├── scripts/             # Client-side scripts (landing-page GSAP + Lenis motion)
 │   ├── styles/              # Global CSS: theme, fonts, docs UI
 │   └── content.config.ts
