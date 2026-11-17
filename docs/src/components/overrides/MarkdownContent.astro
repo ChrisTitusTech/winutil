@@ -1,0 +1,49 @@
+---
+// Markdown content override that draws ```mermaid diagrams, loading mermaid only on pages that have one.
+import Default from '@astrojs/starlight/components/MarkdownContent.astro';
+---
+
+<Default><slot /></Default>
+
+<script>
+	const diagrams = [...document.querySelectorAll<HTMLElement>('pre.mermaid')];
+
+	async function drawDiagrams() {
+		// Keep the source, since mermaid replaces it with the SVG and a theme change has to draw it again.
+		const sources = diagrams.map((el) => el.textContent ?? '');
+		const { default: mermaid } = await import('mermaid');
+		await document.fonts.ready;
+
+		const draw = async () => {
+			mermaid.initialize({
+				startOnLoad: false,
+				theme: document.documentElement.dataset.theme === 'light' ? 'default' : 'dark',
+				themeVariables: { fontFamily: getComputedStyle(document.body).fontFamily },
+			});
+			diagrams.forEach((el, i) => {
+				el.removeAttribute('data-processed');
+				el.textContent = sources[i];
+			});
+			await mermaid.run({ nodes: diagrams });
+		};
+
+		// Chained so a theme change mid-draw waits rather than drawing into the same nodes at once.
+		let drawing = draw();
+		new MutationObserver(() => {
+			drawing = drawing.catch(() => {}).then(draw);
+		}).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+		await drawing;
+	}
+
+	// If mermaid fails to load, the diagram source stays on the page as plain text.
+	if (diagrams.length > 0) drawDiagrams().catch((error) => console.error('Mermaid diagrams failed to render', error));
+</script>
+
+<style>
+	:global(.sl-markdown-content pre.mermaid) {
+		border: 0;
+		background: transparent;
+		display: flex;
+		justify-content: center;
+	}
+</style>

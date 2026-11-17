@@ -45,6 +45,7 @@ export default defineConfig({
 				MobileTableOfContents: './src/components/overrides/MobileTableOfContents.astro',
 				PageTitle: './src/components/overrides/PageTitle.astro',
 				Pagination: './src/components/overrides/Pagination.astro',
+				MarkdownContent: './src/components/overrides/MarkdownContent.astro',
 				ThemeSelect: './src/components/overrides/ThemeSelect.astro',
 			},
 			editLink: {
