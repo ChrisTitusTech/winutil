@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const test = require('node:test');
 
-const workflow = fs.readFileSync(path.join(__dirname, '../workflows/label-pr.yaml'), 'utf8');
+const workflow = fs.readFileSync(path.join(__dirname, '../workflows/label-pr.yaml'), 'utf8').replace(/\r\n/g, '\n');
 const script = workflow.split('          script: |\n')[1]
   .split('\n')
   .map(line => line.slice(12))

@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v7
+    - name: Test discussion closing
+      run: node --test .github/tests/close-discussion.test.cjs
     - name: Install PSScriptAnalyzer
       run: |
         Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
