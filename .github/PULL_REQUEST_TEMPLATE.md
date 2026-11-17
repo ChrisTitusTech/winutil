@@ -9,6 +9,8 @@ docs: Documentation update
 ui-ux(section): Bare UI/UX updates with no major feature implementation
 
 Brackets part is optional, title "tag: added a thing" still results in feature labeling
+The mapped type labels are managed by the title workflow, even when added manually.
+Retitling a PR removes mapped labels that no longer match; an unrecognized title removes all of them.
 
 -->
 

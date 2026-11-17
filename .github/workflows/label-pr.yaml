@@ -7,6 +7,9 @@ on:
 jobs:
   label-pr:
     runs-on: ubuntu-latest
+    concurrency:
+      group: label-pr-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
     permissions:
       pull-requests: write
       issues: write
@@ -16,7 +19,12 @@ jobs:
         uses: actions/github-script@v9
         with:
           script: |
-            const title = context.payload.pull_request.title || '';
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+            const title = pr.title || '';
             const labelsByTag = {
               'feat': 'new feature',
               'fix': 'bug',
@@ -27,13 +35,26 @@ jobs:
 
             // Title format from the PR template: "tag(section): description" or "docs: description"
             const match = title.match(/^\s*(feat|fix|chore|docs|ui-ux)(?:\([^)]*\))?:/i);
+            const typeLabel = match && labelsByTag[match[1].toLowerCase()];
+            const managedLabels = Object.values(labelsByTag);
 
-            if (match) {
+            for (const label of pr.labels) {
+              if (managedLabels.includes(label.name) && label.name !== typeLabel) {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  name: label.name
+                });
+              }
+            }
+
+            if (typeLabel && !pr.labels.some(label => label.name === typeLabel)) {
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: context.payload.pull_request.number,
-                labels: [labelsByTag[match[1].toLowerCase()]]
+                issue_number: pr.number,
+                labels: [typeLabel]
               });
             }
 
@@ -44,12 +65,13 @@ jobs:
               per_page: 100
             });
             const codePaths = ['functions/', 'scripts/', 'config/', 'xaml/'];
+            const codeFiles = ['Compile.ps1', 'tools/autounattend.xml'];
             const hasCodeChanges = files.some(file =>
               [file.filename, file.previous_filename].some(path =>
-                path && (path === 'Compile.ps1' || codePaths.some(prefix => path.startsWith(prefix)))
+                path && (codeFiles.includes(path) || codePaths.some(prefix => path.startsWith(prefix)))
               )
             );
-            const hasSkipChangelog = context.payload.pull_request.labels.some(
+            const hasSkipChangelog = pr.labels.some(
               label => label.name === 'skip-changelog'
             );
 

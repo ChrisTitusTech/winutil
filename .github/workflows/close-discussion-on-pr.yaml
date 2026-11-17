@@ -1,7 +1,7 @@
 name: Close Discussion on PR Merge
 
 on:
-  pull_request:
+  pull_request_target: 
     types: [closed]
 
 
@@ -12,9 +12,6 @@ jobs:
       discussions: write
       contents: read
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-
       - name: Check if PR was merged
         if: github.event.pull_request.merged == true
         run: echo "PR was merged"
