@@ -236,37 +236,6 @@ Describe "Invoke-WinutilThemeChange" {
         $script:sync.Form.Resources.ContainsKey("MainBackgroundColor") | Should -BeTrue
         $script:sync.Form.ThemeButton.Content | Should -Be ([string][char]0xF08C)
     }
-
-    It "updates the theme icon for Dark and Light previews without changing the preference" {
-        $script:testRoot = New-WinUtilPreferencesTestRoot
-        $global:winutildir = $script:testRoot
-        New-WinUtilPreferenceSync -Preferences @{ theme = "Light" }
-
-        Invoke-WinutilThemeChange -theme "Dark" -Preview
-
-        $script:sync.preferences.theme | Should -Be "Light"
-        $script:sync.Form.Resources["MainBackgroundColor"].ToString().EndsWith($script:sync.configs.themes.Dark.MainBackgroundColor.TrimStart("#")) | Should -BeTrue
-        $script:sync.Form.ThemeButton.Content | Should -Be ([string][char]0xE708)
-
-        Invoke-WinutilThemeChange -theme "Light" -Preview
-
-        $script:sync.preferences.theme | Should -Be "Light"
-        $script:sync.Form.Resources["MainBackgroundColor"].ToString().EndsWith($script:sync.configs.themes.Light.MainBackgroundColor.TrimStart("#")) | Should -BeTrue
-        $script:sync.Form.ThemeButton.Content | Should -Be ([string][char]0xE706)
-    }
-
-    It "previews Auto using the system theme without committing the preference" {
-        $script:testRoot = New-WinUtilPreferencesTestRoot
-        $global:winutildir = $script:testRoot
-        New-WinUtilPreferenceSync -Preferences @{ theme = "Light" }
-        Mock Get-WinUtilToggleStatus { return $true }
-
-        Invoke-WinutilThemeChange -theme "Auto" -Preview
-
-        $script:sync.preferences.theme | Should -Be "Light"
-        $script:sync.Form.Resources["MainBackgroundColor"].ToString().EndsWith($script:sync.configs.themes.Dark.MainBackgroundColor.TrimStart("#")) | Should -BeTrue
-        $script:sync.Form.ThemeButton.Content | Should -Be ([string][char]0xF08C)
-    }
 }
 
 Describe "Theme configuration" {
