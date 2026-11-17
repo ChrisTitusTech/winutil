@@ -6,6 +6,7 @@ on:
 
 jobs:
   label-pr:
+    if: github.event.pull_request.head.repo.full_name != github.repository || github.event.pull_request.head.ref != 'docs-update'
     runs-on: ubuntu-latest
     concurrency:
       group: label-pr-${{ github.event.pull_request.number }}

@@ -50,5 +50,6 @@ replacers:
     replace: ''
 exclude-labels:
   - 'skip-changelog'
+  - 'automated'
 
 filter-by-commitish: true
