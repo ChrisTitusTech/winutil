@@ -10,8 +10,6 @@ categories:
       - 'hotfix'
       - 'bugfix'
       - 'bug'
-  - title: 'Documentation'
-    label: 'documentation'
   - title: 'UI/UX Improvements'
     labels:
       - 'ui update'
