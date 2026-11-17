@@ -64,7 +64,7 @@ body:
       description: "Paste the full error output (if available) or replace pre-filled text with a screenshot or video clip."
       placeholder: "Include any relevant logs or error messages. Keep any sensitive info out of the presented log"
       value: |
-      <details>
+        <details>
         <summary>Click to expand</summary>
         <!--Place your log under this tag-->
 
