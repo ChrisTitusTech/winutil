@@ -15,8 +15,7 @@ function Invoke-WinutilThemeChange {
 
     #>
     param (
-        [string]$theme = "Auto",
-        [switch]$Preview
+        [string]$theme = "Auto"
     )
 
     function Set-WinutilTheme {
@@ -124,13 +123,10 @@ function Invoke-WinutilThemeChange {
         }
     }
 
-    if (-not $Preview) {
-        $sync.preferences.theme = $theme
-    }
-
+    $sync.preferences.theme = $theme
     Set-WinutilTheme -currentTheme "shared"
 
-    switch ($theme) {
+    switch ($sync.preferences.theme) {
         "Auto" {
             $systemUsesDarkMode = Get-WinUtilToggleStatus WPFToggleDarkMode
             if ($systemUsesDarkMode) {
@@ -144,11 +140,11 @@ function Invoke-WinutilThemeChange {
             $themeButtonIcon = [char]0xF08C
         }
         "Dark" {
-            Set-WinutilTheme -currentTheme $theme
+            Set-WinutilTheme -currentTheme $sync.preferences.theme
             $themeButtonIcon = [char]0xE708
            }
         "Light" {
-            Set-WinutilTheme -currentTheme $theme
+            Set-WinutilTheme -currentTheme $sync.preferences.theme
             $themeButtonIcon = [char]0xE706
         }
     }
