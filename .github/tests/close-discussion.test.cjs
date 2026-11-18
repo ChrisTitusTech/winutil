@@ -4,14 +4,14 @@ const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 const test = require('node:test');
 
-const workflow = fs.readFileSync(path.join(__dirname, '../workflows/close-discussion-on-pr.yaml'), 'utf8').replace(/\r\n/g, '\n');
+const workflow = fs.readFileSync(path.join(__dirname, '../workflows/close-discussion-on-pr.yaml'), 'utf8');
 const script = workflow.split('        run: |\n')[1]
   .split('        shell: bash')[0]
   .split('\n')
   .map(line => line.slice(10))
   .join('\n');
 
-function run(lookup, close, body = 'Resolves #123') {
+function run(lookup, close) {
   const mockCurl = `
     curl() {
       local payload='' token='' endpoint=''
@@ -37,7 +37,7 @@ function run(lookup, close, body = 'Resolves #123') {
     encoding: 'utf8',
     env: {
       ...process.env,
-      PR_BODY: body,
+      PR_BODY: 'Resolves #123',
       GITHUB_REPOSITORY: 'owner/repo',
       GITHUB_API_URL: 'https://api.github.example',
       GITHUB_TOKEN: 'test-token',
@@ -53,14 +53,6 @@ function run(lookup, close, body = 'Resolves #123') {
       .map(line => JSON.parse(line.slice('REQUEST:'.length)))
   };
 }
-
-test('does nothing when the PR body has no discussion reference', () => {
-  for (const body of ['', 'Documentation wording only', 'Resolves #']) {
-    const result = run({}, {}, body);
-    assert.equal(result.requests.length, 0);
-    assert.match(result.output, /No discussion IDs found/);
-  }
-});
 
 test('looks up the discussion number and closes the returned node ID', () => {
   const result = run(

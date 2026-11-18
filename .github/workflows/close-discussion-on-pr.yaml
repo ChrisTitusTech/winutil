@@ -24,7 +24,7 @@ jobs:
         id: extract-discussion
         run: |
           pr_body="$PR_BODY"
-          discussion_ids=$(echo "$pr_body" | grep -oP '(?i)(resolve|fix|close)[s|d]? #\K[0-9]+' || test "$?" -eq 1)
+          discussion_ids=$(echo "$pr_body" | grep -oP '(?i)(resolve|fix|close)[s|d]? #\K[0-9]+')
 
           if [ -z "$discussion_ids" ]; then
             echo "No discussion IDs found."
