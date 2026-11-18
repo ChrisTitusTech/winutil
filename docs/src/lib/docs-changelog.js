@@ -12,6 +12,7 @@ const UNLISTED = /^docs\/(src\/content\/docs\/code-reference\/(tweaks|features)\
 const GIT_OPTIONS = ['-c', 'core.quotePath=false'];
 // No --first-parent: a local "Merge branch 'main'" leaves PRs merged on GitHub on its second parent.
 const LOG_ARGS = [
+	'--encoding=UTF-8',
 	'--full-diff',
 	'--no-renames',
 	'--name-only',
