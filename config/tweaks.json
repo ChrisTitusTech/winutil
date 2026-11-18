@@ -1315,12 +1315,17 @@
       # Folder types lookup table
       $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
 
-      # Flush Explorer view database
-      Remove-Item -Path $bags -Recurse -Force
-      Write-Host \"Removed $bags\"
+      # Flush Explorer view database. Explorer creates these keys only after a folder
+      # view has been saved, so skip them when missing or already removed
+      if (Test-Path $bags) {
+        Remove-Item -Path $bags -Recurse -Force
+        Write-Host \"Removed $bags\"
+      }
 
-      Remove-Item -Path $bagMRU -Recurse -Force
-      Write-Host \"Removed $bagMRU\"
+      if (Test-Path $bagMRU) {
+        Remove-Item -Path $bagMRU -Recurse -Force
+        Write-Host \"Removed $bagMRU\"
+      }
 
       # Every folder
       $allFolders = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\\AllFolders\\Shell\"
@@ -1345,12 +1350,17 @@
       # Folder types lookup table
       $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
 
-      # Flush Explorer view database
-      Remove-Item -Path $bags -Recurse -Force
-      Write-Host \"Removed $bags\"
+      # Flush Explorer view database. Explorer creates these keys only after a folder
+      # view has been saved, so skip them when missing or already removed
+      if (Test-Path $bags) {
+        Remove-Item -Path $bags -Recurse -Force
+        Write-Host \"Removed $bags\"
+      }
 
-      Remove-Item -Path $bagMRU -Recurse -Force
-      Write-Host \"Removed $bagMRU\"
+      if (Test-Path $bagMRU) {
+        Remove-Item -Path $bagMRU -Recurse -Force
+        Write-Host \"Removed $bagMRU\"
+      }
 
       Write-Host Please sign out and back in, or restart your computer to apply the changes!
       "
