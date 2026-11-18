@@ -160,6 +160,28 @@ Describe 'Microsoft Store search results tweak' {
         Get-TestDacl -Path $script:pendingCatalog | Should -Be $pendingBefore
     }
 
+    It 'accepts the Windows auto-inherited bookkeeping flag when comparing saved ACLs' {
+        Initialize-TestStoreData -Catalog 'store.db'
+        & $script:applyStoreSearch | Out-Null
+        $saved = (Get-Item -LiteralPath $script:testStatePath).GetValue('.') | ConvertFrom-Json
+        $saved.Applied = $saved.Applied -replace '^D:(P?)AI', 'D:$1'
+        Set-ItemProperty -LiteralPath $script:testStatePath -Name '.' -Value ($saved | ConvertTo-Json -Compress)
+
+        & $script:applyStoreSearch | Out-Null
+        & $script:undoStoreSearch | Out-Null
+        New-Item -Path (Join-Path $script:localState 'store-restored.db') -ItemType File -ErrorAction Stop | Out-Null
+    }
+
+    It 'restores creation of unrelated files on undo as well as catalog access' {
+        Initialize-TestStoreData -Catalog 'store.db'
+        $otherFile = Join-Path $script:localState 'settings.json'
+        & $script:applyStoreSearch | Out-Null
+        { New-Item -Path $otherFile -ItemType File -ErrorAction Stop } | Should -Throw
+        & $script:undoStoreSearch | Out-Null
+        New-Item -Path $otherFile -ItemType File -ErrorAction Stop | Out-Null
+        Test-Path -LiteralPath $otherFile | Should -BeTrue
+    }
+
     It 'leaves the permissions alone when undo runs without a prior apply' {
         Initialize-TestStoreData -Catalog 'store.db'
         icacls $script:activeCatalog /deny '*S-1-1-0:(DE)' | Out-Null

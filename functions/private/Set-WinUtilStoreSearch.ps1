@@ -35,7 +35,12 @@ function Set-WinUtilStoreSearch {
                 }
                 throw "Store search target '$path' was replaced; undo its saved state before applying again."
             }
-            if ($current -ne $state.Original -and $current -ne $state.Applied) {
+            # Windows may set SE_DACL_AUTO_INHERITED when persisting an otherwise
+            # identical ACL. Ignore that bookkeeping flag, but retain protection and ACEs.
+            $comparableCurrent = $current -replace '^D:(P?)AI', 'D:$1'
+            $comparableOriginal = $state.Original -replace '^D:(P?)AI', 'D:$1'
+            $comparableApplied = $state.Applied -replace '^D:(P?)AI', 'D:$1'
+            if ($comparableCurrent -ne $comparableOriginal -and $comparableCurrent -ne $comparableApplied) {
                 throw "Permissions on '$path' changed after the Store search tweak; leaving them intact."
             }
             $desired = if ($Undo) { $state.Original } else { $state.Applied }
