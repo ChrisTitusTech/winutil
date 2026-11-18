@@ -10,10 +10,12 @@ categories:
       - 'hotfix'
       - 'bugfix'
       - 'bug'
-  - title: 'Documentation'
-    label: 'documentation'
   - title: 'UI/UX Improvements'
-    label: 'ui update'
+    labels:
+      - 'ui update'
+      - 'ui-ux'
+  - title: 'Slop cleaning'
+    label: 'chore'
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 template: |
   ## Changes
@@ -48,5 +50,6 @@ replacers:
     replace: ''
 exclude-labels:
   - 'skip-changelog'
+  - 'automated'
 
 filter-by-commitish: true
