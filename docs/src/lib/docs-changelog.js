@@ -30,7 +30,8 @@ function parseLog(log) {
 		.slice(1)
 		.map((entry) => {
 			const [header, ...files] = entry.split('\n').filter(Boolean);
-			const [, hash, date, subject] = header.match(/^(\w+)\t(\S+)\t(.*)$/);
+			// The s flag lets titles hold line separators like U+2028, which . won't match otherwise.
+			const [, hash, date, subject] = header.match(/^(\w+)\t(\S+)\t(.*)$/s);
 			return { hash, date, subject, files };
 		});
 }
@@ -64,7 +65,7 @@ export function docsChangelogLoader() {
 			for (const { hash, date, subject, files } of parseLog(log)) {
 				if (files.some((file) => CODE.test(file))) continue;
 				if (!files.some((file) => file.startsWith('docs/') && !UNLISTED.test(file))) continue;
-				const [, title, pr] = subject.match(/^\s*(.*?)\s*(?:\(#(\d+)\))?$/);
+				const [, title, pr] = subject.match(/^\s*(.*?)\s*(?:\(#(\d+)\))?$/s);
 				const data = { title, date, pr: pr && Number(pr) };
 				store.set({ id: hash, data: await parseData({ id: hash, data }) });
 			}
