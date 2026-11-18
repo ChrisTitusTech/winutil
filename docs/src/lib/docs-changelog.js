@@ -67,7 +67,8 @@ export function docsChangelogLoader() {
 				if (files.some((file) => CODE.test(file))) continue;
 				if (!files.some((file) => file.startsWith('docs/') && !UNLISTED.test(file))) continue;
 				const [, title, pr] = subject.match(/^\s*(.*?)\s*(?:\(#(\d+)\))?$/s);
-				const data = { title, date, pr: pr && Number(pr) };
+				// A commit with an empty message still needs text for its link.
+				const data = { title: title || `Commit ${hash.slice(0, 7)}`, date, pr: pr && Number(pr) };
 				store.set({ id: hash, data: await parseData({ id: hash, data }) });
 			}
 		},
