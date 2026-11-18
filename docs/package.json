@@ -10,6 +10,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/markdown-satteri": "^0.4.6",
     "@astrojs/react": "^7.0.0",
     "@astrojs/starlight": "^0.41.5",
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
@@ -18,6 +19,7 @@
     "astro": "^7.4.3",
     "gsap": "^3.15.0",
     "lenis": "^1.3.26",
+    "mermaid": "^12.3.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "sharp": "^0.35.5"
