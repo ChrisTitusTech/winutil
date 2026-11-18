@@ -1,6 +1,6 @@
 // Loads the Docs Changelog entries from git history.
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 
 // The Astro site starts here (#4892).
 const FIRST_COMMIT = '6f0629207ac1411c32a692aa6ec20398483ebe57';
@@ -51,9 +51,9 @@ export function docsChangelogLoader() {
 				});
 			} catch (error) {
 				if (process.env.GITHUB_ACTIONS) throw error;
-				try {
-					log = readFileSync(HISTORY_FILE, 'utf8');
-				} catch {
+				log = existsSync(HISTORY_FILE) ? readFileSync(HISTORY_FILE, 'utf8') : '';
+				// Missing, or emptied by a run of the command that failed.
+				if (!log) {
 					const args = [...GIT_OPTIONS, 'log', `--output=${HISTORY_FILE}`, ...LOG_ARGS].map((arg) => `'${arg}'`);
 					logger.warn(
 						'No git history for the docs changelog. Run this from docs/ on the host to fill it in:\n' +
