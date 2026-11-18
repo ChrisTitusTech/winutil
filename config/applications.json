@@ -846,6 +846,15 @@
         "winget": "XBMCFoundation.Kodi",
         "foss": true
     },
+    "krita": {
+        "category": "Multimedia Tools",
+        "choco": "krita",
+        "content": "Krita (Image Editor)",
+        "description": "Krita is a powerful open-source painting application. It is designed for concept artists, illustrators, matte and texture artists, and the VFX industry.",
+        "link": "https://krita.org/en/features/",
+        "winget": "KDE.Krita",
+        "foss": true
+    },
     "lazygit": {
         "category": "Development",
         "choco": "lazygit",
