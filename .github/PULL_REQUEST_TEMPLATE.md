@@ -9,9 +9,8 @@ docs: Documentation update
 ui-ux(section): Bare UI/UX updates with no major feature implementation
 
 Brackets part is optional, title "tag: added a thing" still results in feature labeling
-The title workflow adds type labels without removing existing labels. Remove obsolete labels manually after retitling.
-PRs touching only docs/ or README.md receive the automatic docs-only label and stay out of release notes.
-Adding other files removes docs-only. The manual skip-changelog label is always preserved.
+The mapped type labels are managed by the title workflow, even when added manually.
+Retitling a PR removes mapped labels that no longer match; an unrecognized title removes all of them.
 
 -->
 

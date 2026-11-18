@@ -37,7 +37,19 @@ jobs:
             // Title format from the PR template: "tag(section): description" or "docs: description"
             const match = title.match(/^\s*(feat|fix|chore|docs|ui-ux)(?:\([^)]*\))?:/i);
             const typeLabel = match && labelsByTag[match[1].toLowerCase()];
-            // Labels may have been assigned by a maintainer; never remove type labels.
+            const managedLabels = Object.values(labelsByTag);
+
+            for (const label of pr.labels) {
+              if (managedLabels.includes(label.name) && label.name !== typeLabel) {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  name: label.name
+                });
+              }
+            }
+
             if (typeLabel && !pr.labels.some(label => label.name === typeLabel)) {
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
@@ -53,29 +65,29 @@ jobs:
               pull_number: context.payload.pull_request.number,
               per_page: 100
             });
-            const isDocsPath = path => path.startsWith('docs/') || path === 'README.md';
-            const docsOnly = files.length > 0 && files.every(file =>
-              [file.filename, file.previous_filename].filter(Boolean).every(path =>
-                isDocsPath(path)
+            const codePaths = ['functions/', 'scripts/', 'config/', 'xaml/'];
+            const codeFiles = ['Compile.ps1', 'tools/autounattend.xml'];
+            const hasCodeChanges = files.some(file =>
+              [file.filename, file.previous_filename].some(path =>
+                path && (codeFiles.includes(path) || codePaths.some(prefix => path.startsWith(prefix)))
               )
             );
-            // Keep automatic classification separate from the manual skip-changelog override.
-            const hasDocsOnly = pr.labels.some(
-              label => label.name === 'docs-only'
+            const hasSkipChangelog = pr.labels.some(
+              label => label.name === 'skip-changelog'
             );
 
-            if (!docsOnly && hasDocsOnly) {
+            if (hasCodeChanges && hasSkipChangelog) {
               await github.rest.issues.removeLabel({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.payload.pull_request.number,
-                name: 'docs-only'
+                name: 'skip-changelog'
               });
-            } else if (docsOnly && !hasDocsOnly) {
+            } else if (!hasCodeChanges && !hasSkipChangelog) {
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.payload.pull_request.number,
-                labels: ['docs-only']
+                labels: ['skip-changelog']
               });
             }

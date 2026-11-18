@@ -114,7 +114,6 @@ Because the final script is concatenated, code cannot rely on runtime module imp
 
 ## Testing And CI
 
-- PR title labels are additive: maintainers remove obsolete labels manually. The label workflow manages a separate `docs-only` label for PRs touching only `docs/` or root `README.md`, checking both paths of renames. Release notes exclude `docs-only` and the manual `skip-changelog` override, which the workflow never removes. Generated `docs-update` PRs retain their existing labels.
 - `.\Compile.ps1` verifies the compiler can generate `winutil.ps1`.
 - `.\Compile.ps1 -Run` compiles and launches the generated utility for manual GUI verification.
 - Pester 5.8.0 runs the suite under `pester/*.Tests.ps1`. GitHub Actions (`unittests.yaml`) installs Pester 5.8.0 fresh and runs with `-CI`, which produces `testResults.xml` and exits non-zero on failure.
