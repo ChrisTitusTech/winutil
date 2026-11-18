@@ -1,5 +1,6 @@
 // Loads the Docs Changelog entries from git history.
 import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 
 // The Astro site starts here (#4892).
 const FIRST_COMMIT = '6f0629207ac1411c32a692aa6ec20398483ebe57';
@@ -17,6 +18,8 @@ const LOG_ARGS = [
 	'--',
 	':(top)docs',
 ];
+// Written by git on the host, since the docs container can't see .git.
+const HISTORY_FILE = '.changelog-history';
 
 // Splits the raw log into commits with the files each one changed.
 function parseLog(log) {
@@ -35,14 +38,22 @@ export function docsChangelogLoader() {
 		name: 'docs-changelog',
 		load: async ({ store, logger, parseData }) => {
 			store.clear();
-			// Read the log from git.
+			// Read the log from git, or from the history file in local builds.
 			let log;
 			try {
 				log = execFileSync('git', ['log', ...LOG_ARGS], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
 			} catch (error) {
 				if (process.env.GITHUB_ACTIONS) throw error;
-				logger.warn(`No git history for the docs changelog: ${error.message}`);
-				return;
+				try {
+					log = readFileSync(HISTORY_FILE, 'utf8');
+				} catch {
+					const args = [`--output=${HISTORY_FILE}`, ...LOG_ARGS].map((arg) => `'${arg}'`).join(' ');
+					logger.warn(
+						'No git history for the docs changelog. Run this from docs/ on the host to fill it in:\n' +
+							`git log ${args}`
+					);
+					return;
+				}
 			}
 			// Keep the docs-only commits and store each one's title, date and PR number.
 			for (const { hash, date, subject, files } of parseLog(log)) {

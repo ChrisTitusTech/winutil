@@ -2,6 +2,7 @@ node_modules
 .astro
 dist
 .git
+.changelog-history
 .env
 .env.*
 *.log
