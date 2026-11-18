@@ -37,7 +37,8 @@ const formatDate = (day: string) =>
 							<time datetime={day}>{formatDate(day)}</time>
 						</a>
 					</h2>
-					<ol>
+					{/* role="list" because Safari drops list semantics from lists with list-style: none. */}
+					<ol role="list">
 						{items.map(({ id, data }) => (
 							<li>
 								<a href={data.pr ? `${REPO}/pull/${data.pr}` : `${REPO}/commit/${id}`}>{data.title}</a>
