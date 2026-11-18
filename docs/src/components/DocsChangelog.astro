@@ -1,0 +1,141 @@
+---
+import { getCollection } from 'astro:content';
+
+const REPO = 'https://github.com/ChrisTitusTech/winutil';
+
+// Sorted by the date as written so the order matches the days they're grouped under.
+const entries = (await getCollection('docsChangelog')).sort((a, b) => (b.data.date > a.data.date ? 1 : -1));
+const days = Map.groupBy(entries, (entry) => entry.data.date.slice(0, 10));
+
+// Formats a day like "Oct 30, 2026" without shifting it to another timezone.
+const formatDate = (day: string) =>
+	new Date(`${day}T00:00:00Z`).toLocaleDateString('en-US', {
+		month: 'short',
+		day: 'numeric',
+		year: 'numeric',
+		timeZone: 'UTC',
+	});
+---
+
+{/* A link to the history on GitHub when there's nothing to show, otherwise the timeline. */}
+{
+	entries.length === 0 ? (
+		<p>
+			This list is built from the repository's git history when the site is deployed. Until then, see the{' '}
+			<a href={`${REPO}/commits/main/docs`}>docs history on GitHub</a>.
+		</p>
+	) : (
+		<div class="changelog not-content">
+			{/* One section per merge day: the date, then its commits on the line. */}
+			{[...days].map(([day, items]) => (
+				<section>
+					<h2 id={day}>
+						<a href={`#${day}`}>
+							<time datetime={day}>{formatDate(day)}</time>
+						</a>
+					</h2>
+					<ol>
+						{items.map(({ id, data }) => (
+							<li>
+								<a href={data.pr ? `${REPO}/pull/${data.pr}` : `${REPO}/commit/${id}`}>{data.title}</a>
+								<span class="ref">{data.pr ? `#${data.pr}` : id.slice(0, 7)}</span>
+							</li>
+						))}
+					</ol>
+				</section>
+			))}
+		</div>
+	)
+}
+
+<style>
+	/* Timeline wrapper and the gap between days. */
+	.changelog {
+		--ring: 0.75rem;
+		margin: 2.5rem 0 4rem;
+	}
+
+	section + section {
+		margin-top: 2.25rem;
+	}
+
+	/* Date headings, each linking to itself. */
+	h2 {
+		margin: 0 0 0.5rem;
+		font-family: var(--sl-font-mono);
+		font-size: var(--sl-text-sm);
+		font-weight: 600;
+		color: var(--sl-color-gray-2);
+	}
+	h2 a {
+		color: inherit;
+		text-decoration: none;
+	}
+	h2 a:hover,
+	h2 a:focus-visible {
+		text-decoration: underline;
+	}
+
+	/* The line down each day's commits. */
+	ol {
+		position: relative;
+		/* Puts the rings under the second character of the date. */
+		margin: 0 0 0 0.4rem;
+		padding: 0;
+		list-style: none;
+	}
+	ol::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: calc(var(--ring) / 2 - 1px);
+		width: 2px;
+		background: var(--sl-color-hairline-light);
+	}
+
+	/* Commit rows, each with a ring on the line that fills on hover or focus. */
+	li {
+		position: relative;
+		padding: 0.5rem 0 0.5rem 2rem;
+		line-height: 1.5;
+	}
+	/* Centered on the first line of the title. */
+	li::before {
+		content: '';
+		position: absolute;
+		top: calc(0.5rem + (1.5em - var(--ring)) / 2);
+		left: 0;
+		width: var(--ring);
+		height: var(--ring);
+		box-sizing: border-box;
+		border: 2px solid var(--sl-color-accent);
+		border-radius: 50%;
+		background: var(--sl-color-bg);
+		transition: background-color 0.2s ease;
+	}
+	li:hover::before,
+	li:focus-within::before {
+		background: var(--sl-color-accent);
+	}
+
+	/* Commit titles, linking to the PR or commit. */
+	li a {
+		color: var(--sl-color-white);
+		text-decoration: none;
+	}
+	li a:hover,
+	li a:focus-visible {
+		color: var(--sl-color-accent-high);
+		text-decoration: underline;
+	}
+
+	/* PR number, or short hash, after the title. */
+	.ref {
+		margin-left: 0.75rem;
+		font-family: var(--sl-font-mono);
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-3);
+		white-space: nowrap;
+	}
+</style>
