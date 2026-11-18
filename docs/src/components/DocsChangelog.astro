@@ -1,11 +1,14 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 
 const REPO = 'https://github.com/ChrisTitusTech/winutil';
 
-// Sorted by the date as written so the order matches the days they're grouped under.
-const entries = (await getCollection('docsChangelog')).sort((a, b) => (b.data.date > a.data.date ? 1 : -1));
-const days = Map.groupBy(entries, (entry) => entry.data.date.slice(0, 10));
+// Newest day first, then newest commit within each day.
+const dayOf = (entry: CollectionEntry<'docsChangelog'>) => entry.data.date.slice(0, 10);
+const entries = (await getCollection('docsChangelog')).sort(
+	(a, b) => dayOf(b).localeCompare(dayOf(a)) || Date.parse(b.data.date) - Date.parse(a.data.date)
+);
+const days = Map.groupBy(entries, dayOf);
 
 // Formats a day like "Oct 30, 2026" without shifting it to another timezone.
 const formatDate = (day: string) =>
