@@ -171,6 +171,26 @@ Describe "The close question" {
             $Button -eq "YesNoCancel" -and $Message -like "*Install*" -and $Message -like "*console*"
         }
     }
+
+    It "states the wait limit that the console hand-off enforces" {
+        # the prompt quotes the real default before requesting a stop
+        $tokens = $null
+        $errors = $null
+        $ast = [System.Management.Automation.Language.Parser]::ParseFile(
+            (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilCloseRequest.ps1"), [ref]$tokens, [ref]$errors)
+        $wait = $ast.Find({
+                $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
+                $args[0].Name -eq "Wait-WinUtilRemainingWork"
+            }, $true)
+        $limit = $wait.Body.ParamBlock.Parameters[0].DefaultValue.Extent.Text
+
+        $script:closeMessage = $null
+        Mock Show-WinUtilMessage { $script:closeMessage = $Message; "Cancel" }
+
+        Invoke-WinUtilCloseRequest -RunningJob "Install"
+
+        $script:closeMessage | Should -Match "up to $limit"
+    }
 }
 
 Describe "Waiting for work that outlived the window" {
