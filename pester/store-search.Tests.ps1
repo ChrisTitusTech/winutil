@@ -1,0 +1,281 @@
+# Run the configured scripts with real ACLs against a throwaway profile folder and read
+# the resulting permissions. $Env:LocalAppData points at TestDrive for every test, so nothing
+# here touches the real Microsoft Store data.
+BeforeAll {
+    $repoRoot = Split-Path $PSScriptRoot -Parent
+    . (Join-Path $repoRoot 'functions/private/Set-WinUtilStoreSearch.ps1')
+    $script:writeStoreAcl = ${function:Set-WinUtilStoreSearchAcl}
+    $tweak = (Get-Content (Join-Path $repoRoot 'config/tweaks.json') -Raw | ConvertFrom-Json).WPFTweaksDisableStoreSearch
+    $script:applyStoreSearch = [scriptblock]::Create($tweak.InvokeScript -join "`n")
+    $script:undoStoreSearch = [scriptblock]::Create($tweak.UndoScript -join "`n")
+
+    function Initialize-TestStoreData {
+        param([string[]]$Catalog)
+
+        New-Item -Path (Join-Path $script:localState 'JumpListIcons') -ItemType Directory -Force | Out-Null
+        foreach ($name in $Catalog) {
+            Set-Content -LiteralPath (Join-Path $script:localState $name) -Value 'catalog'
+        }
+    }
+
+    function Get-TestDacl {
+        param([string]$Path)
+
+        # Read the rules through icacls /save: Get-Acl folds identical rules into one, which hides
+        # stacked deny entries. The flags between "D:" and the first rule are dropped, because
+        # icacls marks every DACL it writes as auto-inherited and that says nothing about access.
+        $saved = Join-Path $TestDrive ([guid]::NewGuid().ToString())
+        icacls $Path /save $saved | Out-Null
+        $sddl = @(Get-Content -LiteralPath $saved -Encoding Unicode)[-1]
+        $sddl.Substring($sddl.IndexOf('('))
+    }
+
+    function Get-TestDenyRuleCount {
+        param([string]$Path)
+
+        ([regex]::Matches((Get-TestDacl -Path $Path), '\(D;')).Count
+    }
+
+    function Get-TestErrorRecord {
+        param([scriptblock]$Script)
+
+        @(& $Script 2>&1 | Where-Object { $_ -is [System.Management.Automation.ErrorRecord] })
+    }
+}
+
+Describe 'Microsoft Store search results tweak' {
+    BeforeEach {
+        $script:testStatePath = 'TestRegistry:\' + [guid]::NewGuid().ToString('N')
+        $script:statePath = 'HKCU:\Software\WinUtil\StoreSearch'
+        Mock Test-Path { Test-Path -LiteralPath $script:testStatePath } -ParameterFilter { $LiteralPath -eq $script:statePath }
+        Mock Get-Item { Get-Item -LiteralPath $script:testStatePath } -ParameterFilter { $LiteralPath -eq $script:statePath }
+        Mock New-Item { New-Item -Path $script:testStatePath -Force } -ParameterFilter { $Path -eq $script:statePath }
+        Mock New-ItemProperty { New-ItemProperty -LiteralPath $script:testStatePath -Name $Name -Value $Value -PropertyType String } -ParameterFilter { $LiteralPath -eq $script:statePath }
+        Mock Remove-ItemProperty { Remove-ItemProperty -LiteralPath $script:testStatePath -Name $Name } -ParameterFilter { $LiteralPath -eq $script:statePath }
+        $script:originalLocalAppData = $Env:LocalAppData
+        $script:profileRoot = Join-Path $TestDrive ([guid]::NewGuid().ToString())
+        $Env:LocalAppData = $script:profileRoot
+        $script:localState = Join-Path $script:profileRoot 'Packages\Microsoft.WindowsStore_8wekyb3d8bbwe\LocalState'
+        $script:activeCatalog = Join-Path $script:localState 'store.db'
+        $script:pendingCatalog = Join-Path $script:localState 'store-0f3c2a9e-6b1d-4c57-9a43-2e8f5d7b1c60.db'
+    }
+
+    AfterEach {
+        $Env:LocalAppData = $script:originalLocalAppData
+
+        # Lift every deny rule so Pester can delete TestDrive, whatever the script under test did.
+        if (Test-Path -LiteralPath $script:profileRoot) {
+            icacls $script:profileRoot /remove:d '*S-1-1-0' /T /C /Q | Out-Null
+        }
+    }
+
+    It 'blocks every catalog file, not only store.db' {
+        Initialize-TestStoreData -Catalog 'store.db', 'store-0f3c2a9e-6b1d-4c57-9a43-2e8f5d7b1c60.db'
+
+        & $script:applyStoreSearch | Out-Null
+
+        { [System.IO.File]::ReadAllBytes($script:activeCatalog) } | Should -Throw
+        { [System.IO.File]::ReadAllBytes($script:pendingCatalog) } | Should -Throw
+    }
+
+    It 'applies without an error when store.db was never created' {
+        Initialize-TestStoreData -Catalog 'store-0f3c2a9e-6b1d-4c57-9a43-2e8f5d7b1c60.db'
+
+        $errors = Get-TestErrorRecord -Script $script:applyStoreSearch
+
+        $errors | Should -BeNullOrEmpty
+    }
+
+    It 'stops a new catalog file from being created' {
+        Initialize-TestStoreData -Catalog 'store.db'
+
+        & $script:applyStoreSearch | Out-Null
+
+        { New-Item -Path (Join-Path $script:localState 'store-new.db') -ItemType File -ErrorAction Stop } | Should -Throw
+    }
+
+    It 'blocks catalog creation before enumerating the existing catalogs' {
+        Initialize-TestStoreData -Catalog 'store.db'
+        $script:catalogSnapshot = @(Get-ChildItem -LiteralPath $script:localState -File)
+        Mock Get-ChildItem {
+            Get-TestDenyRuleCount -Path $script:localState | Should -Be 1
+            $script:catalogSnapshot
+        } -ParameterFilter { $LiteralPath -eq $script:localState -and $File }
+
+        & $script:applyStoreSearch
+        Should -Invoke Get-ChildItem -Times 1 -Exactly -ParameterFilter { $LiteralPath -eq $script:localState -and $File }
+    }
+
+    It 'leaves the subfolders of the data folder writable' {
+        Initialize-TestStoreData -Catalog 'store.db'
+
+        & $script:applyStoreSearch | Out-Null
+
+        $icon = Join-Path $script:localState 'JumpListIcons\icon.png'
+        New-Item -Path $icon -ItemType File -ErrorAction Stop | Out-Null
+        Test-Path -LiteralPath $icon | Should -BeTrue
+    }
+
+    It 'keeps one deny rule per target when applied twice' {
+        Initialize-TestStoreData -Catalog 'store.db'
+
+        & $script:applyStoreSearch | Out-Null
+        & $script:applyStoreSearch | Out-Null
+
+        Get-TestDenyRuleCount -Path $script:activeCatalog | Should -Be 1
+        Get-TestDenyRuleCount -Path $script:localState | Should -Be 1
+    }
+
+    It 'leaves a deny rule it did not add in place' {
+        Initialize-TestStoreData -Catalog 'store.db'
+        icacls $script:activeCatalog /deny '*S-1-1-0:(DE)' | Out-Null
+        icacls $script:localState /deny '*S-1-1-0:(OI)(CI)(DE)' | Out-Null
+        $folderBefore = Get-TestDacl -Path $script:localState
+        $activeBefore = Get-TestDacl -Path $script:activeCatalog
+
+        & $script:applyStoreSearch | Out-Null
+        & $script:applyStoreSearch | Out-Null
+
+        Get-TestDacl -Path $script:localState | Should -BeLike '*(D;OICI;SD;;;WD)*'
+        ([regex]::Matches((Get-TestDacl -Path $script:activeCatalog), '\(D;;FA;;;WD\)')).Count | Should -Be 1
+        ([regex]::Matches((Get-TestDacl -Path $script:localState), '\(D;;DC;;;WD\)')).Count | Should -Be 1
+        { [System.IO.File]::ReadAllBytes($script:activeCatalog) } | Should -Throw
+        { New-Item -Path (Join-Path $script:localState 'store-new.db') -ItemType File -ErrorAction Stop } | Should -Throw
+
+        & $script:undoStoreSearch | Out-Null
+        Get-TestDacl -Path $script:localState | Should -Be $folderBefore
+        Get-TestDacl -Path $script:activeCatalog | Should -Be $activeBefore
+    }
+
+    It 'restores the original permissions on undo' {
+        Initialize-TestStoreData -Catalog 'store.db', 'store-0f3c2a9e-6b1d-4c57-9a43-2e8f5d7b1c60.db'
+        $folderBefore = Get-TestDacl -Path $script:localState
+        $activeBefore = Get-TestDacl -Path $script:activeCatalog
+        $pendingBefore = Get-TestDacl -Path $script:pendingCatalog
+
+        & $script:applyStoreSearch | Out-Null
+        & $script:undoStoreSearch | Out-Null
+
+        Get-TestDacl -Path $script:localState | Should -Be $folderBefore
+        Get-TestDacl -Path $script:activeCatalog | Should -Be $activeBefore
+        Get-TestDacl -Path $script:pendingCatalog | Should -Be $pendingBefore
+    }
+
+    It 'accepts the Windows auto-inherited bookkeeping flag when comparing saved ACLs' {
+        Initialize-TestStoreData -Catalog 'store.db'
+        & $script:applyStoreSearch | Out-Null
+        $saved = (Get-Item -LiteralPath $script:testStatePath).GetValue('.') | ConvertFrom-Json
+        $saved.Applied = $saved.Applied -replace '^D:(P?)AI', 'D:$1'
+        Set-ItemProperty -LiteralPath $script:testStatePath -Name '.' -Value ($saved | ConvertTo-Json -Compress)
+
+        & $script:applyStoreSearch | Out-Null
+        & $script:undoStoreSearch | Out-Null
+        New-Item -Path (Join-Path $script:localState 'store-restored.db') -ItemType File -ErrorAction Stop | Out-Null
+    }
+
+    It 'restores creation of unrelated files on undo as well as catalog access' {
+        Initialize-TestStoreData -Catalog 'store.db'
+        $otherFile = Join-Path $script:localState 'settings.json'
+        & $script:applyStoreSearch | Out-Null
+        { New-Item -Path $otherFile -ItemType File -ErrorAction Stop } | Should -Throw
+        & $script:undoStoreSearch | Out-Null
+        New-Item -Path $otherFile -ItemType File -ErrorAction Stop | Out-Null
+        Test-Path -LiteralPath $otherFile | Should -BeTrue
+    }
+
+    It 'leaves the permissions alone when undo runs without a prior apply' {
+        Initialize-TestStoreData -Catalog 'store.db'
+        icacls $script:activeCatalog /deny '*S-1-1-0:(DE)' | Out-Null
+        icacls $script:localState /deny '*S-1-1-0:(OI)(CI)(DE)' | Out-Null
+        $folderBefore = Get-TestDacl -Path $script:localState
+        $activeBefore = Get-TestDacl -Path $script:activeCatalog
+
+        $errors = Get-TestErrorRecord -Script $script:undoStoreSearch
+
+        $errors | Should -BeNullOrEmpty
+        Get-TestDacl -Path $script:localState | Should -Be $folderBefore
+        Get-TestDacl -Path $script:activeCatalog | Should -Be $activeBefore
+    }
+
+    It 'preserves later permission changes rather than restoring over them' {
+        Initialize-TestStoreData -Catalog 'store.db'
+        & $script:applyStoreSearch | Out-Null
+        icacls $script:localState /deny '*S-1-1-0:(DE)' | Out-Null
+        $changed = Get-TestDacl -Path $script:localState
+
+        { & $script:undoStoreSearch } | Should -Throw '*changed after*'
+        Get-TestDacl -Path $script:localState | Should -Be $changed
+    }
+
+    It 'can undo after permission assignment failed with state already saved' {
+        Initialize-TestStoreData -Catalog 'store.db'
+        $before = Get-TestDacl -Path $script:localState
+        Mock Set-WinUtilStoreSearchAcl { throw 'ACL write denied' }
+
+        { & $script:applyStoreSearch } | Should -Throw '*ACL write denied*'
+        & $script:undoStoreSearch
+
+        Get-TestDacl -Path $script:localState | Should -Be $before
+    }
+
+    It 'stops the caller after a real ACL write failure under default error handling' {
+        $job = Start-Job -ArgumentList $script:writeStoreAcl.ToString(), (Join-Path $TestDrive 'missing\store.db') -ScriptBlock {
+            param($writer, $path)
+            $ErrorActionPreference = 'Continue'
+            $acl = [System.Security.AccessControl.FileSecurity]::new()
+            $acl.SetSecurityDescriptorSddlForm('D:(A;;FA;;;SY)')
+            & ([scriptblock]::Create($writer)) -Path $path -AclObject $acl
+            'continued after failed write'
+        }
+        try {
+            $job | Wait-Job | Out-Null
+            $output = @($job | Receive-Job -ErrorAction SilentlyContinue)
+            $output | Should -Not -Contain 'continued after failed write'
+            $job.State | Should -Be 'Failed'
+        } finally {
+            $job | Remove-Job -Force
+        }
+    }
+
+    It 'retains undo state after a real ACL write failure with Continue error handling' {
+        Initialize-TestStoreData -Catalog 'store.db'
+        & $script:applyStoreSearch | Out-Null
+        $before = (Get-Item -LiteralPath $script:testStatePath).GetValue('.')
+        Mock Set-WinUtilStoreSearchAcl {
+            & $script:writeStoreAcl -Path (Join-Path $TestDrive 'missing\store.db') -AclObject $AclObject
+        }
+
+        $ErrorActionPreference = 'Continue'
+        { & $script:undoStoreSearch } | Should -Throw
+        (Get-Item -LiteralPath $script:testStatePath).GetValue('.') | Should -Be $before
+        Get-TestDenyRuleCount -Path $script:localState | Should -Be 1
+    }
+
+    It 'does nothing on <Action> when the Store data folder is missing' -TestCases @(
+        @{ Action = 'apply' }
+        @{ Action = 'undo' }
+    ) {
+        param([string]$Action)
+
+        $script = if ($Action -eq 'apply') { $script:applyStoreSearch } else { $script:undoStoreSearch }
+
+        $errors = Get-TestErrorRecord -Script $script
+
+        $errors | Should -BeNullOrEmpty
+        Test-Path -LiteralPath $script:profileRoot | Should -BeFalse
+    }
+
+    It 'fails the <Action> script when writing permissions fails' -TestCases @(
+        @{ Action = 'apply' }
+        @{ Action = 'undo' }
+    ) {
+        param([string]$Action)
+
+        Initialize-TestStoreData -Catalog 'store.db'
+        if ($Action -eq 'undo') { & $script:applyStoreSearch | Out-Null }
+        $script = if ($Action -eq 'apply') { $script:applyStoreSearch } else { $script:undoStoreSearch }
+        Mock Set-WinUtilStoreSearchAcl { throw 'ACL write denied' }
+
+        { & $script } | Should -Throw '*ACL write denied*'
+    }
+}
