@@ -50,10 +50,11 @@ function Initialize-InstallAppEntries {
 <Border Style="{DynamicResource AppEntryBorderStyle}" Tag="$key" ToolTip="$tooltip" AutomationProperties.Name="$name"><Grid><CheckBox x:Name="$id" Tag="$key" Style="{DynamicResource AppEntryCheckboxStyle}" AutomationProperties.Name="$name"><StackPanel Orientation="Horizontal" VerticalAlignment="Center"><Border Style="{DynamicResource AppEntryIconPlateStyle}"><Grid><TextBlock Style="{DynamicResource AppEntryIconLetterStyle}" Text="$letter"$letterVisibility/><Image x:Name="Icon_$id" Style="{DynamicResource AppEntryIconStyle}"/></Grid></Border><TextBlock Style="{DynamicResource AppEntryNameStyle}" Text="$name"/></StackPanel></CheckBox>
 "@)
 
-        # Marks FOSS apps with a corner badge, bled into the border padding so it sits on the edge.
+        # Keep the corner badge inside the card's layout bounds to avoid clipping.
+        # The Viewbox scales the artwork, so leave its own dimensions unrounded at fractional DPI.
         # The same artwork as New-WinUtilFossBadge, written out so it is parsed with the rest.
         if ($app.foss -eq $true) {
-            [void]$document.Append('<Viewbox Width="24" Height="24" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-4,-6,0" ToolTip="Free and Open Source Software"><Grid Width="22" Height="22"><Path Fill="#138F53" Data="M 0,0 L 17,0 A 5,5 0 0 1 22,5 L 22,22 Z"/><Path Stroke="#F7F7F7" StrokeThickness="2.4" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Data="M 13.61,9.225 A 3.4,3.4 0 1 1 17.51,9.225"/></Grid></Viewbox>')
+            [void]$document.Append('<Viewbox Width="24" Height="24" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,1,1,0" UseLayoutRounding="False" ToolTip="Free and Open Source Software"><Grid Width="22" Height="22"><Path Fill="#138F53" Data="M 0,0 L 17,0 A 5,5 0 0 1 22,5 L 22,22 Z"/><Path Stroke="#F7F7F7" StrokeThickness="2.4" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Data="M 13.61,9.225 A 3.4,3.4 0 1 1 17.51,9.225"/></Grid></Viewbox>')
         }
         [void]$document.Append('</Grid></Border>')
     }
