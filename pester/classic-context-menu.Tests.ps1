@@ -50,6 +50,7 @@ Describe 'Classic context menu apply and undo' {
 
         Mock Write-Warning {}
         Mock Stop-Process {}
+        Mock Get-Process { [pscustomobject]@{ Id = 12345; SessionId = [System.Diagnostics.Process]::GetCurrentProcess().SessionId } }
         Mock reg.exe {}
         Mock Get-Item {
             $keyPath = [string]$LiteralPath
@@ -131,7 +132,19 @@ Describe 'Classic context menu apply and undo' {
         Invoke-WinUtilTweaks -CheckBox $script:classicMenuTweakName -undo $true
         $script:menuRegistry.Count | Should -Be 0
         $global:WinUtilJobErrorCount | Should -Be 0
-        Should -Invoke Stop-Process -Times 3 -Exactly -ParameterFilter { $Name -eq 'explorer' }
+        Should -Invoke Stop-Process -Times 3 -Exactly -ParameterFilter { $Id -eq 12345 }
+    }
+
+    It 'leaves Explorer in other sessions running on apply and undo' {
+        Mock Get-Process {
+            $currentSession = [System.Diagnostics.Process]::GetCurrentProcess().SessionId
+            [pscustomobject]@{ Id = 12345; SessionId = $currentSession }
+            [pscustomobject]@{ Id = 23456; SessionId = $currentSession + 1 }
+        }
+        Invoke-WinUtilTweaks -CheckBox $script:classicMenuTweakName
+        Invoke-WinUtilTweaks -CheckBox $script:classicMenuTweakName -undo $true
+        Should -Invoke Stop-Process -Times 2 -Exactly -ParameterFilter { $Id -eq 12345 }
+        Should -Invoke Stop-Process -Times 0 -Exactly -ParameterFilter { $Id -eq 23456 -or $Name }
     }
 
     It 'preserves a pre-existing second registration across apply and undo' {

@@ -72,5 +72,8 @@ function Set-WinUtilClassicContextMenu {
         }
     }
 
-    Stop-Process -Name explorer -ErrorAction SilentlyContinue
+    $sessionId = [System.Diagnostics.Process]::GetCurrentProcess().SessionId
+    Get-Process -Name explorer -ErrorAction SilentlyContinue |
+        Where-Object { $_.SessionId -eq $sessionId } |
+        ForEach-Object { Stop-Process -Id $_.Id -ErrorAction SilentlyContinue }
 }
