@@ -8,6 +8,8 @@ const FIRST_COMMIT = '6f0629207ac1411c32a692aa6ec20398483ebe57';
 const CODE = /^(functions|scripts|config|xaml)\/|^(Compile\.ps1|tools\/autounattend\.xml)$/;
 // Generated reference pages and dependency bumps.
 const UNLISTED = /^docs\/(src\/content\/docs\/code-reference\/(tweaks|features)\/|package(-lock)?\.json$)/;
+// Unquoted paths, so non-ASCII file names still match the prefixes above.
+const GIT_OPTIONS = ['-c', 'core.quotePath=false'];
 // No --first-parent: a local "Merge branch 'main'" leaves PRs merged on GitHub on its second parent.
 const LOG_ARGS = [
 	'--full-diff',
@@ -41,16 +43,19 @@ export function docsChangelogLoader() {
 			// Read the log from git, or from the history file in local builds.
 			let log;
 			try {
-				log = execFileSync('git', ['log', ...LOG_ARGS], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+				log = execFileSync('git', [...GIT_OPTIONS, 'log', ...LOG_ARGS], {
+					encoding: 'utf8',
+					maxBuffer: 64 * 1024 * 1024,
+				});
 			} catch (error) {
 				if (process.env.GITHUB_ACTIONS) throw error;
 				try {
 					log = readFileSync(HISTORY_FILE, 'utf8');
 				} catch {
-					const args = [`--output=${HISTORY_FILE}`, ...LOG_ARGS].map((arg) => `'${arg}'`).join(' ');
+					const args = [...GIT_OPTIONS, 'log', `--output=${HISTORY_FILE}`, ...LOG_ARGS].map((arg) => `'${arg}'`);
 					logger.warn(
 						'No git history for the docs changelog. Run this from docs/ on the host to fill it in:\n' +
-							`git log ${args}`
+							`git ${args.join(' ')}`
 					);
 					return;
 				}
