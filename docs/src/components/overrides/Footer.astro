@@ -25,8 +25,11 @@ const year = new Date().getFullYear();
 		)
 	}
 
-	{/* Copyright line. */}
-	<div class="site-footer-copyright">© {year} <a href="https://christitus.com">Chris Titus Tech</a>. All rights reserved.</div>
+	{/* Copyright line, with the docs changelog link on the right. */}
+	<div class="site-footer-bottom">
+		<div class="site-footer-copyright">© {year} <a href="https://christitus.com">Chris Titus Tech</a>. All rights reserved.</div>
+		<a class="site-footer-link" href="/docs-changelog/">Docs Changelog</a>
+	</div>
 </footer>
 
 <style>
@@ -86,5 +89,21 @@ const year = new Date().getFullYear();
 	}
 	.site-footer-copyright a:hover {
 		color: var(--sl-color-white);
+	}
+	/* Copyright row, with the docs changelog link pushed to the right. */
+	.site-footer-bottom {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 0.5rem 1.5rem;
+	}
+	.site-footer-link {
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-3);
+		text-decoration: none;
+	}
+	.site-footer-link:hover {
+		color: var(--sl-color-white);
+		text-decoration: underline;
 	}
 </style>

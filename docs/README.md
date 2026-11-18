@@ -20,11 +20,12 @@ Starlight handles routing, Markdown rendering, and the search index. The site's 
 │   │   ├── overrides/       # Starlight component overrides (thin .astro wrappers, registered in astro.config.mjs)
 │   │   ├── react-bits/      # Vendored React Bits components (see react-bits/LICENSE.md)
 │   │   ├── tweak-explorer/  # Tweak Explorer page component and styles
+│   │   ├── DocsChangelog.astro
 │   │   └── YouTubeEmbed.astro
 │   ├── content/
 │   │   └── docs/            # Pages (.md/.mdx); code-reference/tweaks and /features are generated
 │   ├── hooks/               # React hooks
-│   ├── lib/                 # Shared code (site links, release config loader, config links)
+│   ├── lib/                 # Shared code (site links, release config loader, config links, docs changelog loader)
 │   ├── scripts/             # Client-side scripts (landing-page GSAP + Lenis motion)
 │   ├── styles/              # Global CSS: theme, fonts, docs UI
 │   └── content.config.ts
@@ -54,6 +55,12 @@ New apps, tweaks, toggles, features, AppX packages, and categories appear in the
 Config Builder links carry the selected keys in the URL hash, e.g. `/config-builder/#WPFInstall7zip,WPFTweaksTelemetry`. `src/lib/config-link.js` builds and reads them for both pages. People post these links on Discord and the forums, so keep reading the existing format if you ever change it.
 
 If you add another tool page, or anything else that has to be kept in sync by hand, list it here and in SPEC.md's Docs Site section.
+
+## 📜 Docs Changelog
+
+The Docs Changelog (`/docs-changelog/`) is built from git history when the site builds, by `src/lib/docs-changelog.js`. It lists commits since the Astro site began that touch `docs/` but no WinUtil code, since those are in the release notes. Generated reference pages and dependency bumps are skipped. The code paths it checks mirror the ones `.github/workflows/label-pr.yaml` uses for `skip-changelog`, so update both together.
+
+The container only mounts `docs/` and never gets `.git`, so to see the list locally, run the `git log` command the build prints from `docs/` on your machine. It writes `.changelog-history` (ignored), which local builds read instead of git. Run it again after pulling and restart the dev server. Without the file the page just links to GitHub. The deploy always reads git directly and fails if it can't.
 
 ## 🧞 Commands
 

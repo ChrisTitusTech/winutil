@@ -2,6 +2,7 @@ import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { docsLoader } from '@astrojs/starlight/loaders';
 import { docsSchema } from '@astrojs/starlight/schema';
+import { docsChangelogLoader } from './lib/docs-changelog.js';
 
 export const collections = {
 	docs: defineCollection({
@@ -24,6 +25,15 @@ export const collections = {
 						)
 						.optional(),
 				}),
+		}),
+	}),
+	// Docs changes read from git history for the Docs Changelog page.
+	docsChangelog: defineCollection({
+		loader: docsChangelogLoader(),
+		schema: z.object({
+			title: z.string(),
+			date: z.string(),
+			pr: z.number().optional(),
 		}),
 	}),
 };

@@ -2,6 +2,8 @@
 dist/
 # generated types
 .astro/
+# git history for local docs changelog builds
+.changelog-history
 
 # dependencies
 node_modules/
