@@ -89,9 +89,14 @@ function Set-WinUtilStoreSearchAcl {
     } else {
         [System.IO.FileInfo]::new($Path)
     }
-    if ($PSVersionTable.PSEdition -eq 'Core') {
-        [System.IO.FileSystemAclExtensions]::SetAccessControl($item, $AclObject)
-    } else {
-        $item.SetAccessControl($AclObject)
+    try {
+        if ($PSVersionTable.PSEdition -eq 'Core') {
+            [System.IO.FileSystemAclExtensions]::SetAccessControl($item, $AclObject)
+        } else {
+            $item.SetAccessControl($AclObject)
+        }
+    } catch {
+        # Preserve saved restore data when the underlying .NET write fails.
+        throw
     }
 }

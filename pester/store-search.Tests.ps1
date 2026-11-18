@@ -4,6 +4,7 @@
 BeforeAll {
     $repoRoot = Split-Path $PSScriptRoot -Parent
     . (Join-Path $repoRoot 'functions/private/Set-WinUtilStoreSearch.ps1')
+    $script:writeStoreAcl = ${function:Set-WinUtilStoreSearchAcl}
     $tweak = (Get-Content (Join-Path $repoRoot 'config/tweaks.json') -Raw | ConvertFrom-Json).WPFTweaksDisableStoreSearch
     $script:applyStoreSearch = [scriptblock]::Create($tweak.InvokeScript -join "`n")
     $script:undoStoreSearch = [scriptblock]::Create($tweak.UndoScript -join "`n")
@@ -215,6 +216,39 @@ Describe 'Microsoft Store search results tweak' {
         & $script:undoStoreSearch
 
         Get-TestDacl -Path $script:localState | Should -Be $before
+    }
+
+    It 'stops the caller after a real ACL write failure under default error handling' {
+        $job = Start-Job -ArgumentList $script:writeStoreAcl.ToString(), (Join-Path $TestDrive 'missing\store.db') -ScriptBlock {
+            param($writer, $path)
+            $ErrorActionPreference = 'Continue'
+            $acl = [System.Security.AccessControl.FileSecurity]::new()
+            $acl.SetSecurityDescriptorSddlForm('D:(A;;FA;;;SY)')
+            & ([scriptblock]::Create($writer)) -Path $path -AclObject $acl
+            'continued after failed write'
+        }
+        try {
+            $job | Wait-Job | Out-Null
+            $output = @($job | Receive-Job -ErrorAction SilentlyContinue)
+            $output | Should -Not -Contain 'continued after failed write'
+            $job.State | Should -Be 'Failed'
+        } finally {
+            $job | Remove-Job -Force
+        }
+    }
+
+    It 'retains undo state after a real ACL write failure with Continue error handling' {
+        Initialize-TestStoreData -Catalog 'store.db'
+        & $script:applyStoreSearch | Out-Null
+        $before = (Get-Item -LiteralPath $script:testStatePath).GetValue('.')
+        Mock Set-WinUtilStoreSearchAcl {
+            & $script:writeStoreAcl -Path (Join-Path $TestDrive 'missing\store.db') -AclObject $AclObject
+        }
+
+        $ErrorActionPreference = 'Continue'
+        { & $script:undoStoreSearch } | Should -Throw
+        (Get-Item -LiteralPath $script:testStatePath).GetValue('.') | Should -Be $before
+        Get-TestDenyRuleCount -Path $script:localState | Should -Be 1
     }
 
     It 'does nothing on <Action> when the Store data folder is missing' -TestCases @(
