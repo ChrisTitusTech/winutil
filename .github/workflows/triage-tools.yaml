@@ -47,7 +47,7 @@ jobs:
             const command = comment.body.trim().toLowerCase();
             const triageMatch = command.match(/^\/triage$/);
             const triageOffMatch = command.match(/^\/triageoff$/);
-            const notPlannedMatch = command.match(/^\/np(?:\s+(\w+))?$/);
+            const notPlannedMatch = command.match(/^\/np(?:\s+(wontfix|notrelated))?$/);
             const duplicateMatch = command.match(/^\/duplicate\s+#?(\d+)$/);
             const fixedMatch = command.match(/^\/fixed\s+#?(\d+)$/);
             const closeMatch = comment.body.trim().match(/^\/close(?:\s+([\s\S]+))?$/i);

@@ -29,7 +29,7 @@ Describe "GitHub issue triage workflow" {
         $script:workflow.Contains('const command = comment.body.trim().toLowerCase();') | Should -BeTrue
         $script:workflow.Contains('const triageMatch = command.match(/^\/triage$/);') | Should -BeTrue
         $script:workflow.Contains('const triageOffMatch = command.match(/^\/triageoff$/);') | Should -BeTrue
-        $script:workflow.Contains('const notPlannedMatch = command.match(/^\/np(?:\s+(\w+))?$/);') | Should -BeTrue
+        $script:workflow.Contains('const notPlannedMatch = command.match(/^\/np(?:\s+(wontfix|notrelated))?$/);') | Should -BeTrue
         $script:workflow.Contains('const duplicateMatch = command.match(/^\/duplicate\s+#?(\d+)$/);') | Should -BeTrue
         $script:workflow.Contains('} else if (triageOffMatch) {') | Should -BeTrue
         $script:workflow.Contains('} else if (notPlannedMatch) {') | Should -BeTrue
