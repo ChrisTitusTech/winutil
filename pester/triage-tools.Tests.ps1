@@ -20,6 +20,12 @@ Describe "GitHub issue triage workflow" {
         $script:workflow | Should -Not -Match '(?m)^\s+pull-requests:\s+write\s*$'
     }
 
+    It "queues commands on the same issue instead of running them together" {
+        $script:workflow | Should -Match '(?m)^\s+group:\s+triage-tools-\$\{\{\s*github\.event\.issue\.number\s*\}\}\s*$'
+        $script:workflow | Should -Match '(?m)^\s+queue:\s+max\s*$'
+        $script:workflow | Should -Not -Match 'cancel-in-progress:\s+true'
+    }
+
     It "authorizes trusted users by immutable numeric ID" {
         $script:workflow | Should -Match 'trustedUsers\.includes\(commentAuthor\.id\)'
         $script:workflow | Should -Not -Match 'trustedUsers\.includes\(commentAuthor\.login\)'
@@ -29,11 +35,60 @@ Describe "GitHub issue triage workflow" {
         $script:workflow.Contains('const command = comment.body.trim().toLowerCase();') | Should -BeTrue
         $script:workflow.Contains('const triageMatch = command.match(/^\/triage$/);') | Should -BeTrue
         $script:workflow.Contains('const triageOffMatch = command.match(/^\/triageoff$/);') | Should -BeTrue
-        $script:workflow.Contains('const notPlannedMatch = command.match(/^\/np(?:\s+(\w+))?$/);') | Should -BeTrue
+        $script:workflow.Contains('const notPlannedMatch = command.match(/^\/np(?:\s+(wontfix|notrelated))?$/);') | Should -BeTrue
         $script:workflow.Contains('const duplicateMatch = command.match(/^\/duplicate\s+#?(\d+)$/);') | Should -BeTrue
         $script:workflow.Contains('} else if (triageOffMatch) {') | Should -BeTrue
         $script:workflow.Contains('} else if (notPlannedMatch) {') | Should -BeTrue
         $script:workflow.Contains('} else if (duplicateMatch) {') | Should -BeTrue
+        $script:workflow.Contains('const fixedMatch = command.match(/^\/fixed\s+#?(\d+)$/);') | Should -BeTrue
+        $script:workflow.Contains('const reopenMatch = command.match(/^\/reopen$/);') | Should -BeTrue
+        $script:workflow.Contains('const keepOpenMatch = command.match(/^\/keepopen$/);') | Should -BeTrue
+        $script:workflow.Contains('const keepOpenOffMatch = command.match(/^\/keepopenoff$/);') | Should -BeTrue
+        $script:workflow.Contains('} else if (fixedMatch) {') | Should -BeTrue
+        $script:workflow.Contains('} else if (closeMatch) {') | Should -BeTrue
+        $script:workflow.Contains('} else if (reopenMatch) {') | Should -BeTrue
+        $script:workflow.Contains('} else if (keepOpenMatch) {') | Should -BeTrue
+        $script:workflow.Contains('} else if (keepOpenOffMatch) {') | Should -BeTrue
+    }
+
+    It "refuses closing commands on an issue that is already closed" {
+        $script:workflow.Contains('const isClosingCommand = Boolean(notPlannedMatch || duplicateMatch || fixedMatch || closeMatch);') | Should -BeTrue
+        $script:workflow.Contains('if (isClosingCommand && issueState === "closed") {') | Should -BeTrue
+
+        $refusalBlock = [regex]::Match($script:workflow, '(?s)if \(isClosingCommand && issueState === "closed"\) \{.*?\} else if').Value
+        $refusalBlock | Should -Match 'return;'
+    }
+
+    It "reads the issue state and labels at run time" {
+        $script:workflow.Contains('const issueState = currentIssue.state;') | Should -BeTrue
+        $script:workflow | Should -Match 'hasKeepOpenLabel = currentIssue\.labels\.some'
+        $script:workflow | Should -Not -Match 'context\.payload\.issue\.(state|labels)'
+    }
+
+    It "removes the /np labels when reopening" {
+        $reopenBlock = [regex]::Match($script:workflow, '(?s)\} else if \(reopenMatch\) \{.*?\} else if').Value
+        $reopenBlock.Contains('for (const name of ["wontfix", "not-related"]) {') | Should -BeTrue
+        $reopenBlock | Should -Match 'github\.rest\.issues\.removeLabel'
+        $reopenBlock.IndexOf('removeLabel') | Should -BeLessThan $reopenBlock.IndexOf('state: "open"')
+    }
+
+    It "only links a merged pull request as the fix" {
+        $script:workflow | Should -Match 'if \(!fixPull\?\.pull_request\)'
+        $script:workflow | Should -Match 'else if \(!fixPull\.pull_request\.merged_at\)'
+        $script:workflow | Should -Match 'closed this issue as fixed by #\$\{fixPullNumber\}'
+    }
+
+    It "uses the label the inactive-issue workflow exempts" {
+        $staleWorkflow = Get-Content -Path (Join-Path $script:repoRoot ".github\workflows\close-old-issues.yaml") -Raw
+        $staleWorkflow | Should -Match 'exempt-issue-labels: "Keep Issue Open"'
+        $script:workflow | Should -Match 'labels: \["Keep Issue Open"\]'
+        $script:workflow | Should -Match 'name: "Keep Issue Open"'
+    }
+
+    It "requires a comment for /close and keeps its original case" {
+        $script:workflow.Contains('const closeMatch = comment.body.trim().match(/^\/close(?:\s+([\s\S]+))?$/i);') | Should -BeTrue
+        $script:workflow | Should -Match 'if \(!closeComment\)'
+        $script:workflow | Should -Match 'closed this issue:\\n\\n\$\{closeComment\}'
     }
 
     It "preserves existing labels for not-related closures" {

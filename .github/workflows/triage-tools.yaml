@@ -1,4 +1,4 @@
-name: Repo Contributors' Issue Triage Tools
+name: Issue Commands for Trusted Users
 
 on:
   issue_comment:
@@ -8,6 +8,10 @@ jobs:
   triage-tools:
     if: ${{ !github.event.issue.pull_request }}
     runs-on: ubuntu-latest
+    # Run commands on the same issue one at a time, queueing the rest instead of cancelling them
+    concurrency:
+      group: triage-tools-${{ github.event.issue.number }}
+      queue: max
     permissions:
       issues: write
       pull-requests: none
@@ -47,10 +51,36 @@ jobs:
             const command = comment.body.trim().toLowerCase();
             const triageMatch = command.match(/^\/triage$/);
             const triageOffMatch = command.match(/^\/triageoff$/);
-            const notPlannedMatch = command.match(/^\/np(?:\s+(\w+))?$/);
+            const notPlannedMatch = command.match(/^\/np(?:\s+(wontfix|notrelated))?$/);
             const duplicateMatch = command.match(/^\/duplicate\s+#?(\d+)$/);
+            const fixedMatch = command.match(/^\/fixed\s+#?(\d+)$/);
+            const closeMatch = comment.body.trim().match(/^\/close(?:\s+([\s\S]+))?$/i);
+            const reopenMatch = command.match(/^\/reopen$/);
+            const keepOpenMatch = command.match(/^\/keepopen$/);
+            const keepOpenOffMatch = command.match(/^\/keepopenoff$/);
+            const isClosingCommand = Boolean(notPlannedMatch || duplicateMatch || fixedMatch || closeMatch);
 
-            if (triageMatch) {
+            // The event payload can be out of date by the time this run starts
+            const {data: currentIssue} = await github.rest.issues.get({
+              owner,
+              repo,
+              issue_number: issueNumber
+            });
+            const issueState = currentIssue.state;
+            const hasKeepOpenLabel = currentIssue.labels.some(label => label.name === "Keep Issue Open");
+
+            // Closing an already closed issue would overwrite its close reason
+            if (isClosingCommand && issueState === "closed") {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issueNumber,
+                body: "This issue is already closed. Use /reopen first if it needs to be closed differently."
+              });
+
+              // Keep the command so a /close explanation or /fixed reference is not lost
+              return;
+            } else if (triageMatch) {
               const issue = await github.rest.issues.get({
                 owner,
                 repo,
@@ -200,6 +230,158 @@ jobs:
                     body: `Issue #${duplicateIssueNumber} does not exist.`
                   });
                 }
+              }
+            } else if (fixedMatch) {
+              const fixPullNumber = Number(fixedMatch[1]);
+              let fixPull;
+
+              if (Number.isSafeInteger(fixPullNumber) && fixPullNumber > 0) {
+                try {
+                  const response = await github.rest.issues.get({
+                    owner,
+                    repo,
+                    issue_number: fixPullNumber
+                  });
+                  fixPull = response.data;
+                } catch (error) {
+                  if (error.status !== 404) {
+                    throw error;
+                  }
+                }
+              }
+
+              if (!fixPull?.pull_request) {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: `#${fixPullNumber} is not a pull request in this repository.`
+                });
+              } else if (!fixPull.pull_request.merged_at) {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: `Pull request #${fixPullNumber} has not been merged yet.`
+                });
+              } else {
+                await github.rest.issues.update({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  state: "closed",
+                  state_reason: "completed"
+                });
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: `${commentAuthor.login} closed this issue as fixed by #${fixPullNumber}.`
+                });
+              }
+            } else if (closeMatch) {
+              const closeComment = closeMatch[1]?.trim();
+
+              if (!closeComment) {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: "The /close command needs a comment explaining why the issue is being closed."
+                });
+              } else {
+                await github.rest.issues.update({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  state: "closed",
+                  state_reason: "not_planned"
+                });
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: `${commentAuthor.login} closed this issue:\n\n${closeComment}`
+                });
+              }
+            } else if (reopenMatch) {
+              if (issueState !== "closed") {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: "This issue is already open."
+                });
+              } else {
+                // Drop the labels /np adds before reopening, so a failed run leaves the issue closed for a retry
+                for (const name of ["wontfix", "not-related"]) {
+                  if (currentIssue.labels.some(label => label.name === name)) {
+                    await github.rest.issues.removeLabel({
+                      owner,
+                      repo,
+                      issue_number: issueNumber,
+                      name
+                    });
+                  }
+                }
+
+                await github.rest.issues.update({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  state: "open",
+                  state_reason: "reopened"
+                });
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: `${commentAuthor.login} reopened this issue.`
+                });
+              }
+            } else if (keepOpenMatch) {
+              if (hasKeepOpenLabel) {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: "This issue already has the 'Keep Issue Open' label. Use /keepopenoff to remove it."
+                });
+              } else {
+                await github.rest.issues.addLabels({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  labels: ["Keep Issue Open"]
+                });
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: `${commentAuthor.login} exempted this issue from being closed for inactivity.`
+                });
+              }
+            } else if (keepOpenOffMatch) {
+              if (hasKeepOpenLabel) {
+                await github.rest.issues.removeLabel({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  name: "Keep Issue Open"
+                });
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: `${commentAuthor.login} allowed this issue to be closed for inactivity again.`
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: "This issue does not have the 'Keep Issue Open' label."
+                });
               }
             } else {
               console.log("Comment does not contain a supported issue command. Exiting.");

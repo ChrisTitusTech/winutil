@@ -1,6 +1,6 @@
 ---
 title: Issue Triage Commands
-description: Commands trusted maintainers can use to label and close GitHub issues.
+description: Commands trusted maintainers can use to label, close, and reopen GitHub issues.
 ---
 
 Trusted repository members whose numeric GitHub user IDs are listed in the issue triage workflow can run the commands below. These commands work only on issues. Comments on pull requests are ignored, and the workflow token has no pull-request write permission.
@@ -12,14 +12,18 @@ Trusted repository members whose numeric GitHub user IDs are listed in the issue
 - `/np` closes the issue as not planned.
 - `/np wontfix` adds the `wontfix` label without replacing existing labels, then closes the issue as not planned.
 - `/np notrelated` adds the `not-related` label without replacing existing labels, then closes the issue as not planned.
-- `/np <reason>` closes the issue as not planned without adding a label for unrecognized reasons.
 - `/duplicate <issue number>` closes the issue as a duplicate of another issue. The positive issue number may optionally start with `#`; pull request numbers are rejected.
+- `/fixed <pull request number>` closes the issue as completed and links the pull request that fixed it. The number may optionally start with `#`; issue numbers and pull requests that have not been merged are rejected.
+- `/close <comment>` closes the issue as not planned and repeats the comment in the audit comment. The comment is required; `/close` on its own is rejected without closing the issue.
+- `/reopen` reopens a closed issue and removes the `wontfix` and `not-related` labels if it has them.
+- `/keepopen` adds the `Keep Issue Open` label, which stops the inactive-issue workflow from marking the issue stale or closing it.
+- `/keepopenoff` removes the `Keep Issue Open` label when it is present.
 
 ## Command handling
 
-Put exactly one command in the comment. Leading and trailing whitespace is allowed, but text before or after the command is not. Command matching is case-insensitive, and malformed issue numbers are rejected.
+Put exactly one command in the comment. Leading and trailing whitespace is allowed, but text before or after the command is not, apart from the comment that follows `/close`, which may span several lines and keeps its original case. `/np` only accepts the reasons listed above; use `/close <comment>` to record any other reason. Command matching is case-insensitive, and malformed issue numbers are rejected.
 
-After a command is handled, the workflow deletes the command comment and leaves an audit comment describing the result. A missing duplicate target or a request to duplicate an issue into itself is reported without closing the issue. Unexpected GitHub API failures stop the workflow and leave the command comment available for retry.
+After a command is handled, the workflow deletes the command comment and leaves an audit comment describing the result. A missing duplicate target, a request to duplicate an issue into itself, or a `/fixed` number that is not a merged pull request is reported without closing the issue. The closing commands (`/np`, `/duplicate`, `/fixed`, and `/close`) are refused on an issue that is already closed, so its close reason is not overwritten. The refused command comment is kept so it can be run again after `/reopen`. Unexpected GitHub API failures stop the workflow and leave the command comment available for retry. Commands on the same issue run one at a time; later ones wait in a queue rather than being cancelled.
 
 ## Access
 
