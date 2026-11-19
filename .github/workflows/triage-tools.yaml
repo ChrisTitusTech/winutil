@@ -309,15 +309,7 @@ jobs:
                   body: "This issue is already open."
                 });
               } else {
-                await github.rest.issues.update({
-                  owner,
-                  repo,
-                  issue_number: issueNumber,
-                  state: "open",
-                  state_reason: "reopened"
-                });
-
-                // The labels /np adds no longer apply once the issue is open again
+                // Drop the labels /np adds before reopening, so a failed run leaves the issue closed for a retry
                 for (const name of ["wontfix", "not-related"]) {
                   if (currentIssue.labels.some(label => label.name === name)) {
                     await github.rest.issues.removeLabel({
@@ -329,6 +321,13 @@ jobs:
                   }
                 }
 
+                await github.rest.issues.update({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  state: "open",
+                  state_reason: "reopened"
+                });
                 await github.rest.issues.createComment({
                   owner,
                   repo,

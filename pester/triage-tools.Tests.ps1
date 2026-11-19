@@ -63,6 +63,7 @@ Describe "GitHub issue triage workflow" {
         $reopenBlock = [regex]::Match($script:workflow, '(?s)\} else if \(reopenMatch\) \{.*?\} else if').Value
         $reopenBlock.Contains('for (const name of ["wontfix", "not-related"]) {') | Should -BeTrue
         $reopenBlock | Should -Match 'github\.rest\.issues\.removeLabel'
+        $reopenBlock.IndexOf('removeLabel') | Should -BeLessThan $reopenBlock.IndexOf('state: "open"')
     }
 
     It "only links a merged pull request as the fix" {
