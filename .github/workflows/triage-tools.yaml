@@ -55,8 +55,15 @@ jobs:
             const keepOpenMatch = command.match(/^\/keepopen$/);
             const keepOpenOffMatch = command.match(/^\/keepopenoff$/);
             const isClosingCommand = Boolean(notPlannedMatch || duplicateMatch || fixedMatch || closeMatch);
-            const issueState = context.payload.issue.state;
-            const hasKeepOpenLabel = context.payload.issue.labels.some(label => label.name === "Keep Issue Open");
+
+            // The event payload can be out of date by the time this run starts
+            const {data: currentIssue} = await github.rest.issues.get({
+              owner,
+              repo,
+              issue_number: issueNumber
+            });
+            const issueState = currentIssue.state;
+            const hasKeepOpenLabel = currentIssue.labels.some(label => label.name === "Keep Issue Open");
 
             // Closing an already closed issue would overwrite its close reason
             if (isClosingCommand && issueState === "closed") {
@@ -309,7 +316,7 @@ jobs:
 
                 // The labels /np adds no longer apply once the issue is open again
                 for (const name of ["wontfix", "not-related"]) {
-                  if (context.payload.issue.labels.some(label => label.name === name)) {
+                  if (currentIssue.labels.some(label => label.name === name)) {
                     await github.rest.issues.removeLabel({
                       owner,
                       repo,
