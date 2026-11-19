@@ -20,6 +20,12 @@ Describe "GitHub issue triage workflow" {
         $script:workflow | Should -Not -Match '(?m)^\s+pull-requests:\s+write\s*$'
     }
 
+    It "queues commands on the same issue instead of running them together" {
+        $script:workflow | Should -Match '(?m)^\s+group:\s+triage-tools-\$\{\{\s*github\.event\.issue\.number\s*\}\}\s*$'
+        $script:workflow | Should -Match '(?m)^\s+queue:\s+max\s*$'
+        $script:workflow | Should -Not -Match 'cancel-in-progress:\s+true'
+    }
+
     It "authorizes trusted users by immutable numeric ID" {
         $script:workflow | Should -Match 'trustedUsers\.includes\(commentAuthor\.id\)'
         $script:workflow | Should -Not -Match 'trustedUsers\.includes\(commentAuthor\.login\)'

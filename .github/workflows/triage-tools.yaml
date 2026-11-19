@@ -8,6 +8,10 @@ jobs:
   triage-tools:
     if: ${{ !github.event.issue.pull_request }}
     runs-on: ubuntu-latest
+    # Run commands on the same issue one at a time, queueing the rest instead of cancelling them
+    concurrency:
+      group: triage-tools-${{ github.event.issue.number }}
+      queue: max
     permissions:
       issues: write
       pull-requests: none
