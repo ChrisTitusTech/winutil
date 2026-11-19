@@ -1,4 +1,4 @@
-name: Repo Contributors' Issue Triage Tools
+name: Issue Commands for Trusted Users
 
 on:
   issue_comment:
