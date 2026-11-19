@@ -36,9 +36,13 @@ Describe "GitHub issue triage workflow" {
         $script:workflow.Contains('} else if (duplicateMatch) {') | Should -BeTrue
         $script:workflow.Contains('const fixedMatch = command.match(/^\/fixed\s+#?(\d+)$/);') | Should -BeTrue
         $script:workflow.Contains('const reopenMatch = command.match(/^\/reopen$/);') | Should -BeTrue
+        $script:workflow.Contains('const keepOpenMatch = command.match(/^\/keepopen$/);') | Should -BeTrue
+        $script:workflow.Contains('const keepOpenOffMatch = command.match(/^\/keepopenoff$/);') | Should -BeTrue
         $script:workflow.Contains('} else if (fixedMatch) {') | Should -BeTrue
         $script:workflow.Contains('} else if (closeMatch) {') | Should -BeTrue
         $script:workflow.Contains('} else if (reopenMatch) {') | Should -BeTrue
+        $script:workflow.Contains('} else if (keepOpenMatch) {') | Should -BeTrue
+        $script:workflow.Contains('} else if (keepOpenOffMatch) {') | Should -BeTrue
     }
 
     It "refuses closing commands on an issue that is already closed" {
@@ -49,6 +53,13 @@ Describe "GitHub issue triage workflow" {
     It "only links a pull request as the fix" {
         $script:workflow | Should -Match 'if \(!fixPull\?\.pull_request\)'
         $script:workflow | Should -Match 'closed this issue as fixed by #\$\{fixPullNumber\}'
+    }
+
+    It "uses the label the inactive-issue workflow exempts" {
+        $staleWorkflow = Get-Content -Path (Join-Path $script:repoRoot ".github\workflows\close-old-issues.yaml") -Raw
+        $staleWorkflow | Should -Match 'exempt-issue-labels: "Keep Issue Open"'
+        $script:workflow | Should -Match 'labels: \["Keep Issue Open"\]'
+        $script:workflow | Should -Match 'name: "Keep Issue Open"'
     }
 
     It "requires a comment for /close and keeps its original case" {

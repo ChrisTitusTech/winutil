@@ -17,6 +17,8 @@ Trusted repository members whose numeric GitHub user IDs are listed in the issue
 - `/fixed <pull request number>` closes the issue as completed and links the pull request that fixed it. The number may optionally start with `#`; issue numbers are rejected.
 - `/close <comment>` closes the issue as not planned and repeats the comment in the audit comment. The comment is required; `/close` on its own is rejected without closing the issue.
 - `/reopen` reopens a closed issue.
+- `/keepopen` adds the `Keep Issue Open` label, which stops the inactive-issue workflow from marking the issue stale or closing it.
+- `/keepopenoff` removes the `Keep Issue Open` label when it is present.
 
 ## Command handling
 

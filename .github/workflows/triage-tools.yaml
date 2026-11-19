@@ -52,8 +52,11 @@ jobs:
             const fixedMatch = command.match(/^\/fixed\s+#?(\d+)$/);
             const closeMatch = comment.body.trim().match(/^\/close(?:\s+([\s\S]+))?$/i);
             const reopenMatch = command.match(/^\/reopen$/);
+            const keepOpenMatch = command.match(/^\/keepopen$/);
+            const keepOpenOffMatch = command.match(/^\/keepopenoff$/);
             const isClosingCommand = Boolean(notPlannedMatch || duplicateMatch || fixedMatch || closeMatch);
             const issueState = context.payload.issue.state;
+            const hasKeepOpenLabel = context.payload.issue.labels.some(label => label.name === "Keep Issue Open");
 
             // Closing an already closed issue would overwrite its close reason
             if (isClosingCommand && issueState === "closed") {
@@ -301,6 +304,50 @@ jobs:
                   repo,
                   issue_number: issueNumber,
                   body: `${commentAuthor.login} reopened this issue.`
+                });
+              }
+            } else if (keepOpenMatch) {
+              if (hasKeepOpenLabel) {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: "This issue already has the 'Keep Issue Open' label. Use /keepopenoff to remove it."
+                });
+              } else {
+                await github.rest.issues.addLabels({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  labels: ["Keep Issue Open"]
+                });
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: `${commentAuthor.login} exempted this issue from being closed for inactivity.`
+                });
+              }
+            } else if (keepOpenOffMatch) {
+              if (hasKeepOpenLabel) {
+                await github.rest.issues.removeLabel({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  name: "Keep Issue Open"
+                });
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: `${commentAuthor.login} allowed this issue to be closed for inactivity again.`
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: "This issue does not have the 'Keep Issue Open' label."
                 });
               }
             } else {
