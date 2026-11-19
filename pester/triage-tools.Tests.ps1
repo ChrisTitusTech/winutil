@@ -56,8 +56,9 @@ Describe "GitHub issue triage workflow" {
         $reopenBlock | Should -Match 'github\.rest\.issues\.removeLabel'
     }
 
-    It "only links a pull request as the fix" {
+    It "only links a merged pull request as the fix" {
         $script:workflow | Should -Match 'if \(!fixPull\?\.pull_request\)'
+        $script:workflow | Should -Match 'else if \(!fixPull\.pull_request\.merged_at\)'
         $script:workflow | Should -Match 'closed this issue as fixed by #\$\{fixPullNumber\}'
     }
 

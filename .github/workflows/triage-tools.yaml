@@ -243,6 +243,13 @@ jobs:
                   issue_number: issueNumber,
                   body: `#${fixPullNumber} is not a pull request in this repository.`
                 });
+              } else if (!fixPull.pull_request.merged_at) {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: `Pull request #${fixPullNumber} has not been merged yet.`
+                });
               } else {
                 await github.rest.issues.update({
                   owner,
