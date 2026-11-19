@@ -49,6 +49,8 @@ jobs:
             const triageOffMatch = command.match(/^\/triageoff$/);
             const notPlannedMatch = command.match(/^\/np(?:\s+(\w+))?$/);
             const duplicateMatch = command.match(/^\/duplicate\s+#?(\d+)$/);
+            const fixedMatch = command.match(/^\/fixed\s+#?(\d+)$/);
+            const closeMatch = comment.body.trim().match(/^\/close(?:\s+([\s\S]+))?$/i);
 
             if (triageMatch) {
               const issue = await github.rest.issues.get({
@@ -200,6 +202,72 @@ jobs:
                     body: `Issue #${duplicateIssueNumber} does not exist.`
                   });
                 }
+              }
+            } else if (fixedMatch) {
+              const fixPullNumber = Number(fixedMatch[1]);
+              let fixPull;
+
+              if (Number.isSafeInteger(fixPullNumber) && fixPullNumber > 0) {
+                try {
+                  const response = await github.rest.issues.get({
+                    owner,
+                    repo,
+                    issue_number: fixPullNumber
+                  });
+                  fixPull = response.data;
+                } catch (error) {
+                  if (error.status !== 404) {
+                    throw error;
+                  }
+                }
+              }
+
+              if (!fixPull?.pull_request) {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: `#${fixPullNumber} is not a pull request in this repository.`
+                });
+              } else {
+                await github.rest.issues.update({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  state: "closed",
+                  state_reason: "completed"
+                });
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: `${commentAuthor.login} closed this issue as fixed by #${fixPullNumber}.`
+                });
+              }
+            } else if (closeMatch) {
+              const closeComment = closeMatch[1]?.trim();
+
+              if (!closeComment) {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: "The /close command needs a comment explaining why the issue is being closed."
+                });
+              } else {
+                await github.rest.issues.update({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  state: "closed",
+                  state_reason: "not_planned"
+                });
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: `${commentAuthor.login} closed this issue:\n\n${closeComment}`
+                });
               }
             } else {
               console.log("Comment does not contain a supported issue command. Exiting.");

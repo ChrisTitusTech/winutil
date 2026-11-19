@@ -14,12 +14,14 @@ Trusted repository members whose numeric GitHub user IDs are listed in the issue
 - `/np notrelated` adds the `not-related` label without replacing existing labels, then closes the issue as not planned.
 - `/np <reason>` closes the issue as not planned without adding a label for unrecognized reasons.
 - `/duplicate <issue number>` closes the issue as a duplicate of another issue. The positive issue number may optionally start with `#`; pull request numbers are rejected.
+- `/fixed <pull request number>` closes the issue as completed and links the pull request that fixed it. The number may optionally start with `#`; issue numbers are rejected.
+- `/close <comment>` closes the issue as not planned and repeats the comment in the audit comment. The comment is required; `/close` on its own is rejected without closing the issue.
 
 ## Command handling
 
-Put exactly one command in the comment. Leading and trailing whitespace is allowed, but text before or after the command is not. Command matching is case-insensitive, and malformed issue numbers are rejected.
+Put exactly one command in the comment. Leading and trailing whitespace is allowed, but text before or after the command is not, apart from the comment that follows `/close`, which may span several lines and keeps its original case. Command matching is case-insensitive, and malformed issue numbers are rejected.
 
-After a command is handled, the workflow deletes the command comment and leaves an audit comment describing the result. A missing duplicate target or a request to duplicate an issue into itself is reported without closing the issue. Unexpected GitHub API failures stop the workflow and leave the command comment available for retry.
+After a command is handled, the workflow deletes the command comment and leaves an audit comment describing the result. A missing duplicate target, a request to duplicate an issue into itself, or a `/fixed` number that is not a pull request is reported without closing the issue. Unexpected GitHub API failures stop the workflow and leave the command comment available for retry.
 
 ## Access
 

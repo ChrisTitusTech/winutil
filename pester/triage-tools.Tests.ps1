@@ -34,6 +34,20 @@ Describe "GitHub issue triage workflow" {
         $script:workflow.Contains('} else if (triageOffMatch) {') | Should -BeTrue
         $script:workflow.Contains('} else if (notPlannedMatch) {') | Should -BeTrue
         $script:workflow.Contains('} else if (duplicateMatch) {') | Should -BeTrue
+        $script:workflow.Contains('const fixedMatch = command.match(/^\/fixed\s+#?(\d+)$/);') | Should -BeTrue
+        $script:workflow.Contains('} else if (fixedMatch) {') | Should -BeTrue
+        $script:workflow.Contains('} else if (closeMatch) {') | Should -BeTrue
+    }
+
+    It "only links a pull request as the fix" {
+        $script:workflow | Should -Match 'if \(!fixPull\?\.pull_request\)'
+        $script:workflow | Should -Match 'closed this issue as fixed by #\$\{fixPullNumber\}'
+    }
+
+    It "requires a comment for /close and keeps its original case" {
+        $script:workflow.Contains('const closeMatch = comment.body.trim().match(/^\/close(?:\s+([\s\S]+))?$/i);') | Should -BeTrue
+        $script:workflow | Should -Match 'if \(!closeComment\)'
+        $script:workflow | Should -Match 'closed this issue:\\n\\n\$\{closeComment\}'
     }
 
     It "preserves existing labels for not-related closures" {
