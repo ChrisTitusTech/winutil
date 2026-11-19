@@ -1165,7 +1165,7 @@
         "content": "OpenCode",
         "description": "OpenCode is an open-source AI coding agent built for the terminal. It is provider-agnostic and supports local and hosted AI models.",
         "link": "https://opencode.ai/",
-        "winget": "SST.opencode",
+        "winget": "Anomaly.OpenCode",
         "foss": true
     },
     "openrgb": {
