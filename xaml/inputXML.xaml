@@ -85,7 +85,6 @@
         <Setter Property="BorderBrush" Value="Gray"/>
         <Setter Property="BorderThickness" Value="{DynamicResource AppEntryBorderThickness}"/>
         <Setter Property="CornerRadius" Value="5"/>
-        <Setter Property="Padding" Value="7,5"/>
         <Setter Property="Width" Value="{DynamicResource AppEntryCardWidth}"/>
         <Setter Property="VerticalAlignment" Value="Top"/>
         <Setter Property="Margin" Value="{DynamicResource AppEntryMargin}"/>
@@ -107,6 +106,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBox">
                     <ContentPresenter Content="{TemplateBinding Content}"
+                                      Margin="7,5"
                                       VerticalAlignment="Center"
                                       HorizontalAlignment="Left"/>
                 </ControlTemplate>

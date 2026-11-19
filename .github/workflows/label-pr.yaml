@@ -6,40 +6,88 @@ on:
 
 jobs:
   label-pr:
+    if: github.event.pull_request.head.repo.full_name != github.repository || github.event.pull_request.head.ref != 'docs-update'
     runs-on: ubuntu-latest
+    concurrency:
+      group: label-pr-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
     permissions:
       pull-requests: write
       issues: write
       contents: read  # Often needed for github-script
     steps:
-      - name: Check PR body for Type of Change
+      - name: Check PR Title for Type of Change
         uses: actions/github-script@v9
         with:
           script: |
-            const prBody = context.payload.pull_request.body || '';
-            const labelsToAdd = [];
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+            const title = pr.title || '';
+            const labelsByTag = {
+              'feat': 'new feature',
+              'fix': 'bug',
+              'chore': 'chore',
+              'docs': 'documentation',
+              'ui-ux': 'ui update'
+            };
 
-            if (/\[x\]\s*New feature/i.test(prBody)) {
-              labelsToAdd.push('new feature');
-            }
-            if (/\[x\]\s*Bug fix/i.test(prBody)) {
-              labelsToAdd.push('bug');
-            }
-            if (/\[x\]\s*Documentation update/i.test(prBody)) {
-              labelsToAdd.push('documentation');
-            }
-            if (/\[x\]\s*Hotfix/i.test(prBody)) {
-              labelsToAdd.push('hotfix');
-            }
-            if (/\[x\]\s*UI\/UX improvement/i.test(prBody)) {
-              labelsToAdd.push('ui update');
+            // Title format from the PR template: "tag(section): description" or "docs: description"
+            const match = title.match(/^\s*(feat|fix|chore|docs|ui-ux)(?:\([^)]*\))?:/i);
+            const typeLabel = match && labelsByTag[match[1].toLowerCase()];
+            const managedLabels = Object.values(labelsByTag);
+
+            for (const label of pr.labels) {
+              if (managedLabels.includes(label.name) && label.name !== typeLabel) {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  name: label.name
+                });
+              }
             }
 
-            if (labelsToAdd.length > 0) {
+            if (typeLabel && !pr.labels.some(label => label.name === typeLabel)) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                labels: [typeLabel]
+              });
+            }
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              per_page: 100
+            });
+            const codePaths = ['functions/', 'scripts/', 'config/', 'xaml/'];
+            const codeFiles = ['Compile.ps1', 'tools/autounattend.xml'];
+            const hasCodeChanges = files.some(file =>
+              [file.filename, file.previous_filename].some(path =>
+                path && (codeFiles.includes(path) || codePaths.some(prefix => path.startsWith(prefix)))
+              )
+            );
+            const hasSkipChangelog = pr.labels.some(
+              label => label.name === 'skip-changelog'
+            );
+
+            if (hasCodeChanges && hasSkipChangelog) {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                name: 'skip-changelog'
+              });
+            } else if (!hasCodeChanges && !hasSkipChangelog) {
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.payload.pull_request.number,
-                labels: labelsToAdd
+                labels: ['skip-changelog']
               });
             }
