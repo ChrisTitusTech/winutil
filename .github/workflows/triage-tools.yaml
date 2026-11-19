@@ -73,6 +73,9 @@ jobs:
                 issue_number: issueNumber,
                 body: "This issue is already closed. Use /reopen first if it needs to be closed differently."
               });
+
+              // Keep the command so a /close explanation or /fixed reference is not lost
+              return;
             } else if (triageMatch) {
               const issue = await github.rest.issues.get({
                 owner,

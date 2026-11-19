@@ -48,6 +48,9 @@ Describe "GitHub issue triage workflow" {
     It "refuses closing commands on an issue that is already closed" {
         $script:workflow.Contains('const isClosingCommand = Boolean(notPlannedMatch || duplicateMatch || fixedMatch || closeMatch);') | Should -BeTrue
         $script:workflow.Contains('if (isClosingCommand && issueState === "closed") {') | Should -BeTrue
+
+        $refusalBlock = [regex]::Match($script:workflow, '(?s)if \(isClosingCommand && issueState === "closed"\) \{.*?\} else if').Value
+        $refusalBlock | Should -Match 'return;'
     }
 
     It "reads the issue state and labels at run time" {
