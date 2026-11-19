@@ -50,6 +50,12 @@ Describe "GitHub issue triage workflow" {
         $script:workflow.Contains('if (isClosingCommand && issueState === "closed") {') | Should -BeTrue
     }
 
+    It "removes the /np labels when reopening" {
+        $reopenBlock = [regex]::Match($script:workflow, '(?s)\} else if \(reopenMatch\) \{.*?\} else if').Value
+        $reopenBlock.Contains('for (const name of ["wontfix", "not-related"]) {') | Should -BeTrue
+        $reopenBlock | Should -Match 'github\.rest\.issues\.removeLabel'
+    }
+
     It "only links a pull request as the fix" {
         $script:workflow | Should -Match 'if \(!fixPull\?\.pull_request\)'
         $script:workflow | Should -Match 'closed this issue as fixed by #\$\{fixPullNumber\}'

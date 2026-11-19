@@ -299,6 +299,19 @@ jobs:
                   state: "open",
                   state_reason: "reopened"
                 });
+
+                // The labels /np adds no longer apply once the issue is open again
+                for (const name of ["wontfix", "not-related"]) {
+                  if (context.payload.issue.labels.some(label => label.name === name)) {
+                    await github.rest.issues.removeLabel({
+                      owner,
+                      repo,
+                      issue_number: issueNumber,
+                      name
+                    });
+                  }
+                }
+
                 await github.rest.issues.createComment({
                   owner,
                   repo,
