@@ -35,8 +35,15 @@ Describe "GitHub issue triage workflow" {
         $script:workflow.Contains('} else if (notPlannedMatch) {') | Should -BeTrue
         $script:workflow.Contains('} else if (duplicateMatch) {') | Should -BeTrue
         $script:workflow.Contains('const fixedMatch = command.match(/^\/fixed\s+#?(\d+)$/);') | Should -BeTrue
+        $script:workflow.Contains('const reopenMatch = command.match(/^\/reopen$/);') | Should -BeTrue
         $script:workflow.Contains('} else if (fixedMatch) {') | Should -BeTrue
         $script:workflow.Contains('} else if (closeMatch) {') | Should -BeTrue
+        $script:workflow.Contains('} else if (reopenMatch) {') | Should -BeTrue
+    }
+
+    It "refuses closing commands on an issue that is already closed" {
+        $script:workflow.Contains('const isClosingCommand = Boolean(notPlannedMatch || duplicateMatch || fixedMatch || closeMatch);') | Should -BeTrue
+        $script:workflow.Contains('if (isClosingCommand && issueState === "closed") {') | Should -BeTrue
     }
 
     It "only links a pull request as the fix" {

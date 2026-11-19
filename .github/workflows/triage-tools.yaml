@@ -51,8 +51,19 @@ jobs:
             const duplicateMatch = command.match(/^\/duplicate\s+#?(\d+)$/);
             const fixedMatch = command.match(/^\/fixed\s+#?(\d+)$/);
             const closeMatch = comment.body.trim().match(/^\/close(?:\s+([\s\S]+))?$/i);
+            const reopenMatch = command.match(/^\/reopen$/);
+            const isClosingCommand = Boolean(notPlannedMatch || duplicateMatch || fixedMatch || closeMatch);
+            const issueState = context.payload.issue.state;
 
-            if (triageMatch) {
+            // Closing an already closed issue would overwrite its close reason
+            if (isClosingCommand && issueState === "closed") {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issueNumber,
+                body: "This issue is already closed. Use /reopen first if it needs to be closed differently."
+              });
+            } else if (triageMatch) {
               const issue = await github.rest.issues.get({
                 owner,
                 repo,
@@ -267,6 +278,29 @@ jobs:
                   repo,
                   issue_number: issueNumber,
                   body: `${commentAuthor.login} closed this issue:\n\n${closeComment}`
+                });
+              }
+            } else if (reopenMatch) {
+              if (issueState !== "closed") {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: "This issue is already open."
+                });
+              } else {
+                await github.rest.issues.update({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  state: "open",
+                  state_reason: "reopened"
+                });
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: `${commentAuthor.login} reopened this issue.`
                 });
               }
             } else {
