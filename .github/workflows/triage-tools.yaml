@@ -25,7 +25,8 @@ jobs:
               121827219, // MyDrift-user
               17331812, // Callum
               101426328, // CodingWonders
-              70659536 // og-mrk
+              70659536, // og-mrk
+              36518683 // ANGRYxScotsman
             ];
 
             if (context.payload.issue.pull_request) {

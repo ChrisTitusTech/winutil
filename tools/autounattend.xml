@@ -323,6 +323,36 @@ $scripts = @(
     };
     {
         reg.exe add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /ve /f;
+        $createdClassicMenuKey = $null;
+        try {
+            $classicMenuPath = 'HKCU:\Software\Classes\CLSID\{51668040-5e31-4023-bbe3-149163bd80f1}';
+            if (-not (Test-Path -LiteralPath $classicMenuPath -ErrorAction Stop)) {
+                $createdClassicMenuKey = New-Item -Path $classicMenuPath -ErrorAction Stop;
+                New-ItemProperty -LiteralPath $classicMenuPath -Name 'WinUtilClassicContextMenu' -Value 1 -PropertyType DWord -ErrorAction Stop | Out-Null;
+            };
+            $classicMenuKey = Get-Item -LiteralPath $classicMenuPath -ErrorAction Stop;
+            $classicMenuMarker = $classicMenuKey.GetValue('WinUtilClassicContextMenu');
+            if ($classicMenuMarker -is [int] -and $classicMenuMarker -eq 1) {
+                $classicMenuServer = "$classicMenuPath\InprocServer32";
+                if (-not (Test-Path -LiteralPath $classicMenuServer -ErrorAction Stop)) {
+                    New-Item -Path $classicMenuServer -Value '' -ErrorAction Stop | Out-Null;
+                } else {
+                    $classicMenuServerKey = Get-Item -LiteralPath $classicMenuServer -ErrorAction Stop;
+                    if ($classicMenuServerKey.ValueCount -eq 0 -and $classicMenuServerKey.SubKeyCount -eq 0) {
+                        Set-Item -LiteralPath $classicMenuServer -Value '' -Force -ErrorAction Stop;
+                    };
+                };
+            };
+        } catch {
+            Write-Warning "Could not apply the newer classic context menu workaround: $($_.Exception.Message)";
+            if ($null -ne $createdClassicMenuKey -and $createdClassicMenuKey.ValueCount -eq 0 -and $createdClassicMenuKey.SubKeyCount -eq 0) {
+                try {
+                    Remove-Item -LiteralPath $classicMenuPath -ErrorAction Stop;
+                } catch {
+                    Write-Warning "Could not remove the empty classic context menu key: $($_.Exception.Message)";
+                };
+            };
+        };
     };
     {
         Set-ItemProperty -LiteralPath 'Registry::HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'LaunchTo' -Type 'DWord' -Value 1;

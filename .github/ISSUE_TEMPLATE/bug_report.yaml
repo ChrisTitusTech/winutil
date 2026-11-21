@@ -60,6 +60,12 @@ body:
   - type: textarea
     id: error_output
     attributes:
-      label: Paste the full error output (if available) or Screenshot or Video.
-      description: "If you're willing to share the whole log, please provide an external link to text-sharing service, i.e. Pastebin"
+      label: Error logs
+      description: "Paste the full error output (if available) or replace pre-filled text with a screenshot or video clip."
       placeholder: "Include any relevant logs or error messages. Keep any sensitive info out of the presented log"
+      value: |
+        <details>
+        <summary>Click to expand</summary>
+        <!--Place your log under this tag-->
+
+        </details>
