@@ -29,7 +29,7 @@ function Initialize-InstallAppEntries {
     )
 
     $document = [System.Text.StringBuilder]::new()
-    [void]$document.Append('<WrapPanel xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">')
+    [void]$document.Append('<WrapPanel xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" FlowDirection="LeftToRight">')
 
     $icons = @{}
     foreach ($appKey in $AppKeys) {
@@ -47,7 +47,7 @@ function Initialize-InstallAppEntries {
         $letterVisibility = if ($icon) { ' Visibility="Collapsed"' } else { '' }
 
         [void]$document.Append(@"
-<Border Style="{DynamicResource AppEntryBorderStyle}" Tag="$key" ToolTip="$tooltip" AutomationProperties.Name="$name"><Grid><CheckBox x:Name="$id" Tag="$key" Style="{DynamicResource AppEntryCheckboxStyle}" AutomationProperties.Name="$name"><StackPanel Orientation="Horizontal" VerticalAlignment="Center"><Border Style="{DynamicResource AppEntryIconPlateStyle}"><Grid><TextBlock Style="{DynamicResource AppEntryIconLetterStyle}" Text="$letter"$letterVisibility/><Image x:Name="Icon_$id" Style="{DynamicResource AppEntryIconStyle}"/></Grid></Border><TextBlock Style="{DynamicResource AppEntryNameStyle}" Text="$name"/></StackPanel></CheckBox>
+<Border Style="{DynamicResource AppEntryBorderStyle}" Tag="$key" ToolTip="$tooltip" AutomationProperties.Name="$name" FlowDirection="LeftToRight"><Grid><CheckBox x:Name="$id" Tag="$key" Style="{DynamicResource AppEntryCheckboxStyle}" AutomationProperties.Name="$name" FlowDirection="LeftToRight"><StackPanel Orientation="Horizontal" VerticalAlignment="Center" FlowDirection="LeftToRight"><Border Style="{DynamicResource AppEntryIconPlateStyle}"><Grid><TextBlock Style="{DynamicResource AppEntryIconLetterStyle}" Text="$letter"$letterVisibility/><Image x:Name="Icon_$id" Style="{DynamicResource AppEntryIconStyle}"/></Grid></Border><TextBlock Style="{DynamicResource AppEntryNameStyle}" Text="$name"/></StackPanel></CheckBox>
 "@)
 
         # Marks FOSS apps with a corner badge, bled into the border padding so it sits on the edge.

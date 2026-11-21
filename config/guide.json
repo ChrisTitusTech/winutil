@@ -1,0 +1,140 @@
+{
+  "RestorePoint": {
+    "Title": "Create a system restore point?",
+    "Description": "Windows can take a snapshot of your system settings before anything changes. If something does not behave as expected, you can roll back to this point.",
+    "WhatChanges": [
+      "Creates a restore point through Windows System Protection.",
+      "Does not change applications, files, or personal settings."
+    ],
+    "Benefits": [
+      "Gives you a rollback point before tweaks and features are applied.",
+      "Takes only a few seconds and needs no restart."
+    ],
+    "Info": "Recommended on a fresh install. WinUtil still finishes the remaining steps if you choose No.",
+    "Warning": "",
+    "WarningIfBattery": false,
+    "Undoable": false,
+    "Kind": "Boolean",
+    "Default": true
+  },
+  "Install": {
+    "Title": "Choose applications to install",
+    "Description": "Pick the applications you want on this machine. WinUtil installs them with your preferred package manager and upgrades the ones that already have a newer version.",
+    "WhatChanges": [
+      "Downloads and installs the selected applications.",
+      "Upgrades applications that already have a newer version available."
+    ],
+    "Benefits": [
+      "One pass for all your apps.",
+      "Uses winget or Chocolatey according to your preference."
+    ],
+    "Info": "Nothing is installed until you press Apply all in order on the review screen.",
+    "Warning": "",
+    "WarningIfBattery": false,
+    "Undoable": false,
+    "Kind": "Apps"
+  },
+  "Tweaks": {
+    "Title": "Apply a tweak preset?",
+    "Description": "Presets are curated groups of Windows tweaks. Pick the level that matches how much you want to change.",
+    "WhatChanges": [
+      "Standard: balanced defaults for most users.",
+      "Minimal: only the safest, least invasive tweaks.",
+      "Advanced: deeper changes for power users."
+    ],
+    "Benefits": [
+      "No need to review every tweak individually.",
+      "You can undo the applied tweaks later from the Tweaks tab."
+    ],
+    "Info": "Choosing None leaves your current tweaks untouched.",
+    "Warning": "Advanced includes changes that may need a restart or sign-out.",
+    "WarningIfBattery": false,
+    "Undoable": true,
+    "Kind": "Options",
+    "Options": [
+      { "Label": "None", "Value": "None" },
+      { "Label": "Standard", "Value": "Standard" },
+      { "Label": "Minimal", "Value": "Minimal" },
+      { "Label": "Advanced", "Value": "Advanced" }
+    ],
+    "Default": "None"
+  },
+  "Config": {
+    "Title": "Enable recommended Windows features?",
+    "Description": "Adds the .NET Framework versions that many older Windows applications still depend on.",
+    "WhatChanges": [
+      "Enables .NET Framework 4 Advanced Services and .NET Framework 3.5.",
+      "May require a restart to finish."
+    ],
+    "Benefits": [
+      "Older applications and installers run without missing-runtime errors."
+    ],
+    "Info": "Only a small, well-understood set of features is enabled here. Use the Advanced Config tab for anything else.",
+    "Warning": "",
+    "WarningIfBattery": false,
+    "Undoable": false,
+    "Kind": "Boolean",
+    "Default": false,
+    "Features": ["WPFFeaturesdotnet"],
+    "DefaultFeatures": ["WPFFeaturesdotnet"]
+  },
+  "Updates": {
+    "Title": "Choose a Windows Update profile",
+    "Description": "Windows Update can be left as it is, restored to defaults, set to recommended values, or disabled.",
+    "WhatChanges": [
+      "Recommended: defers feature updates and configures download-and-notify.",
+      "Defaults: restores the Windows Update policies and services.",
+      "Disable: turns off Windows Update and its services."
+    ],
+    "Benefits": [
+      "Applies a consistent update policy in one step.",
+      "Keep current makes no change at all."
+    ],
+    "Info": "Disable Updates asks for confirmation before it runs.",
+    "Warning": "Disabling Windows Update is not recommended: your machine stops receiving security fixes.",
+    "WarningIfBattery": false,
+    "Undoable": false,
+    "Kind": "Options",
+    "Options": [
+      { "Label": "Keep current", "Value": "Keep" },
+      { "Label": "Recommended", "Value": "Recommended" },
+      { "Label": "Restore defaults", "Value": "Defaults" },
+      { "Label": "Disable updates", "Value": "Disable" }
+    ],
+    "Default": "Keep"
+  },
+  "AppX": {
+    "Title": "Remove default AppX packages?",
+    "Description": "Removes the pre-installed consumer apps that are usually not needed on a fresh Windows install.",
+    "WhatChanges": [
+      "Removes the AppxDefault set of packaged apps for all users.",
+      "Stops those apps from being provisioned for new profiles."
+    ],
+    "Benefits": [
+      "A cleaner Start menu.",
+      "Less background activity from apps you do not use."
+    ],
+    "Info": "You can restore most of these apps from the Microsoft Store later.",
+    "Warning": "On a portable device this also removes built-in utilities you may rely on.",
+    "WarningIfBattery": true,
+    "Undoable": false,
+    "Kind": "Boolean",
+    "Default": false
+  },
+  "Review": {
+    "Title": "Review and apply",
+    "Description": "Check what you selected. Press Apply all in order to run the actions in the safest order.",
+    "WhatChanges": [
+      "Restore point (if chosen), then tweaks, apps, features, AppX, and finally updates."
+    ],
+    "Benefits": [
+      "One click runs everything in order.",
+      "Jobs are queued, so nothing runs at the same time."
+    ],
+    "Info": "Skipped steps are listed in the summary and are not applied.",
+    "Warning": "",
+    "WarningIfBattery": false,
+    "Undoable": false,
+    "Kind": "Review"
+  }
+}

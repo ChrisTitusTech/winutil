@@ -17,9 +17,20 @@ function Get-WinUtilEntryToolTip {
         [string]$Key
     )
 
-    if ([string]::IsNullOrWhiteSpace($Description)) {
-        return "Preset key: $Key"
+    $label = "Preset key:"
+    $locales = $sync.configs.locales
+    $language = if ($sync.preferences) { $sync.preferences.language } else { $null }
+    if ($locales -and $language) {
+        $locale = if ($locales -is [System.Collections.IDictionary]) { $locales[$language] } else { $locales.$language }
+        if ($null -ne $locale) {
+            $p = $locale.PSObject.Properties["s_preset_key"]
+            if ($null -ne $p) { $label = [string]$p.Value }
+        }
     }
 
-    return "$Description`n`nPreset key: $Key"
+    if ([string]::IsNullOrWhiteSpace($Description)) {
+        return "$label $Key"
+    }
+
+    return "$Description`n`n$label $Key"
 }
