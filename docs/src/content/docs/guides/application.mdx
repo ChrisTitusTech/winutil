@@ -13,6 +13,10 @@ Application cards use bundled icons so they can display without a network reques
 
 While installing, uninstalling, or upgrading applications, the tab shows a spinner and live status. The application list returns when the job finishes; the progress bar keeps its final result.
 
+In Setup mode, the Install step shows the same applications as categorized cards with a search box and circular selection markers. Type a name to filter the list. If an app is not in the fixed catalog, press **Search packages** to query WinGet and Chocolatey; results appear with icons taken from package metadata where available, and selecting a result adds it to the final install. Everything you select installs or upgrades when you press **Apply all in order**.
+
+Missing bundled icons can be filled in with `tools/Update-WinUtilAppIcons.ps1`. It uses the Chocolatey package icon, then the WinGet package icon, then the website favicon, skips SVG images, and writes a 48×48 PNG into `config/icons` where the compile step embeds it.
+
 <Tabs>
 <TabItem label="Install & Upgrade">
 * Choose the applications you want to install or upgrade.

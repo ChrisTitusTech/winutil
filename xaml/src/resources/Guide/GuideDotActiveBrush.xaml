@@ -1,0 +1,29 @@
+    <!-- Fixed guide step colours: the same in every theme and at full opacity -->
+    <SolidColorBrush x:Key="GuideDotActiveBrush" Color="#2E9B57"/>
+    <SolidColorBrush x:Key="GuideDotCompletedBrush" Color="#2F7FD1"/>
+    <SolidColorBrush x:Key="GuideDotSkippedBrush" Color="#E39B2B"/>
+    <SolidColorBrush x:Key="GuideDotUpcomingBrush" Color="#B9B9B9"/>
+    <Style TargetType="ToolTip">
+        <Setter Property="Background" Value="{DynamicResource ToolTipBackgroundColor}"/>
+        <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderColor}"/>
+        <Setter Property="MaxWidth" Value="{DynamicResource ToolTipWidth}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="2"/>
+        <Setter Property="FontSize" Value="{DynamicResource FontSize}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
+        <!-- This ContentTemplate ensures that the content of the ToolTip wraps text properly for better readability -->
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <ContentPresenter Content="{TemplateBinding Content}">
+                        <ContentPresenter.Resources>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="TextWrapping" Value="Wrap"/>
+                            </Style>
+                        </ContentPresenter.Resources>
+                    </ContentPresenter>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>

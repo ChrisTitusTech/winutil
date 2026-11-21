@@ -162,9 +162,9 @@ function Invoke-WPFButtonAction {
         "WPFInstallUpgrade" {Invoke-WPFInstallUpgrade -ManagerPreference $ManagerPreference}
         "WPFCollapseAllCategories" {Invoke-WPFToggleAllCategories -Action "Collapse"}
         "WPFExpandAllCategories" {Invoke-WPFToggleAllCategories -Action "Expand"}
-        "WPFStandard" {Invoke-WPFPresets "Standard" -checkboxfilterpattern "WPFTweak*"}
-        "WPFMinimal" {Invoke-WPFPresets "Minimal" -checkboxfilterpattern "WPFTweak*"}
-        "WPFAdvanced" {Invoke-WPFPresets "Advanced" -checkboxfilterpattern "WPFTweak*"}
+        "WPFStandard" {if ($sync.UiMode -eq "Setup") { $sync.GuideChoices["Tweaks"] = "Standard" }; Invoke-WPFPresets "Standard" -checkboxfilterpattern "WPFTweak*"}
+        "WPFMinimal" {if ($sync.UiMode -eq "Setup") { $sync.GuideChoices["Tweaks"] = "Minimal" }; Invoke-WPFPresets "Minimal" -checkboxfilterpattern "WPFTweak*"}
+        "WPFAdvanced" {if ($sync.UiMode -eq "Setup") { $sync.GuideChoices["Tweaks"] = "Advanced" }; Invoke-WPFPresets "Advanced" -checkboxfilterpattern "WPFTweak*"}
         "WPFClearTweaksSelection" {Invoke-WPFPresets -imported $true -checkboxfilterpattern "WPFTweak*"}
         "WPFClearInstallSelection" {Invoke-WPFPresets -imported $true -checkboxfilterpattern "WPFInstall*"}
         "WPFtweaksbutton" {Invoke-WPFtweaksbutton}
@@ -211,5 +211,22 @@ function Invoke-WPFButtonAction {
             }
         }
         "WPFselectedAppsButton" {$sync.selectedAppsPopup.IsOpen = -not $sync.selectedAppsPopup.IsOpen}
+
+        # Startup mode chooser and the simple-mode decision wizard. These only change what is
+        # shown; Apply all in order queues the work through the original job-backed functions.
+        "WPFModeSetupButton" {Set-WinUtilUiMode -Mode "Setup"}
+        "WPFModeAdvancedButton" {Set-WinUtilUiMode -Mode "Advanced"}
+        "WPFModeCloseButton" {$sync.Form.Close()}
+        "WPFGuideBackButton" {Move-WinUtilGuideStep -Direction "Previous"}
+        "WPFGuideNextButton" {Move-WinUtilGuideStep -Direction "Next"}
+        "WPFGuideSkipButton" {Set-WinUtilGuideStepSkipped}
+        "WPFGuideYesButton" {Set-WinUtilGuideChoice -Choice "Yes"}
+        "WPFGuideNoButton" {Set-WinUtilGuideChoice -Choice "No"}
+        "WPFGuideOption1" {Set-WinUtilGuideOption -Index 1}
+        "WPFGuideOption2" {Set-WinUtilGuideOption -Index 2}
+        "WPFGuideOption3" {Set-WinUtilGuideOption -Index 3}
+        "WPFGuideOption4" {Set-WinUtilGuideOption -Index 4}
+        "WPFGuideApplyAllButton" {Invoke-WinUtilGuideApplyAll}
+        "WPFGuideSearchPackagesButton" {Invoke-WinUtilPackageSearch -Query $sync.WPFGuideAppSearch.Text}
     }
 }

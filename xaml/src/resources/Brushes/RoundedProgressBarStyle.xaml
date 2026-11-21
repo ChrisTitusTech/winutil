@@ -1,0 +1,54 @@
+
+        <!-- Slim, rounded progress bar. The fill follows Foreground so a run that ended badly
+             can say so; the job layer points it at the error/warning colour and back again. -->
+        <Style x:Key="RoundedProgressBarStyle" TargetType="ProgressBar">
+            <Setter Property="Foreground" Value="{DynamicResource ProgressBarForegroundColor}"/>
+            <Setter Property="Height" Value="8"/>
+            <Setter Property="Minimum" Value="0"/>
+            <Setter Property="Maximum" Value="100"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Border CornerRadius="4" Padding="0"
+                                Background="{DynamicResource ScrollBarBackgroundColor}"
+                                BorderBrush="{DynamicResource BorderColor}" BorderThickness="0.5">
+                            <Grid ClipToBounds="True">
+                                <Border Name="PART_Track" CornerRadius="4" Background="Transparent"/>
+                                <Border Name="PART_Indicator" CornerRadius="4"
+                                        Background="{TemplateBinding Foreground}"
+                                        HorizontalAlignment="Left" Margin="0.5"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <!-- Work whose length cannot be measured, such as an installer that
+                                 reports nothing until it exits. Pulsing says "still running"
+                                 where a static bar would read as finished.
+
+                                 Driven by Tag rather than IsIndeterminate: that property makes
+                                 WPF ignore Value and stretch the indicator across the whole
+                                 track, which would throw away the progress reached so far. -->
+                            <Trigger Property="Tag" Value="Pulse">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard Name="IndeterminatePulse">
+                                        <Storyboard AutoReverse="True" RepeatBehavior="Forever">
+                                            <DoubleAnimation Storyboard.TargetName="PART_Indicator"
+                                                             Storyboard.TargetProperty="Opacity"
+                                                             From="1.0" To="0.45" Duration="0:0:1.1">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <QuadraticEase EasingMode="EaseInOut"/>
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <!-- Remove, not Stop: stopping leaves the indicator at
+                                         whatever opacity the pulse was on -->
+                                    <RemoveStoryboard BeginStoryboardName="IndeterminatePulse"/>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>

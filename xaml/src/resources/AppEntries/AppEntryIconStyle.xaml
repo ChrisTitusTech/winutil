@@ -1,0 +1,10 @@
+
+    <Style x:Key="AppEntryIconStyle" TargetType="Image">
+        <Setter Property="Stretch" Value="Uniform"/>
+        <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect ShadowDepth="0" BlurRadius="7" Opacity="{DynamicResource AppIconShadowOpacity}" Color="{DynamicResource CAppIconShadowColor}"/>
+            </Setter.Value>
+        </Setter>
+    </Style>

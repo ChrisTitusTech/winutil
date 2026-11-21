@@ -1,0 +1,18 @@
+
+    <Style x:Key="AppEntryBorderStyle" TargetType="Border">
+        <Setter Property="BorderBrush" Value="Gray"/>
+        <Setter Property="BorderThickness" Value="{DynamicResource AppEntryBorderThickness}"/>
+        <Setter Property="CornerRadius" Value="5"/>
+        <Setter Property="Padding" Value="7,5"/>
+        <Setter Property="Width" Value="{DynamicResource AppEntryCardWidth}"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="Margin" Value="{DynamicResource AppEntryMargin}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Background" Value="{DynamicResource AppInstallUnselectedColor}"/>
+        <Style.Triggers>
+            <!-- A selected card carries its own colour, which wins over this -->
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource AppInstallHighlightedColor}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>

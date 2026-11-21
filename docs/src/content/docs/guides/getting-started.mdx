@@ -78,6 +78,19 @@ The first time you run WinUtil, it may take a few moments to:
 - Initialize the interface
 - Load all features and settings
 
+### Step 4: Choose a mode
+
+Every launch starts with a **Setup / Advanced** choice:
+
+- **Setup** is a seven-step decision wizard for a freshly installed Windows: Restore Point, Install, Tweaks, Config, Updates, AppX, and Review. Each step shows one decision card with what changes, the benefits, and any warning that applies to your device. The Install step is an application picker with circular checkboxes. Use **Previous**, **Next**, or **Skip** to move between steps; the dots at the bottom show your position. Skipped steps are listed in the review and are not applied. Nothing changes on your system until you press **Apply all in order** on the last step, which queues the accepted actions in the order Restore Point → Tweaks → Install → Features → AppX → Updates.
+- **Advanced** opens the full tabbed interface exactly as before, including Win11 Creator.
+
+The choice lasts for the current session only; the chooser appears again the next time you start WinUtil.
+
+### Changing the language
+
+Use **Settings → Language** to switch between **English** and **العربية (Arabic)**. The entire interface updates immediately, and Arabic switches the window to a right-to-left layout. UI text is stored in `config/locales/en.json` and `config/locales/ar.json`; adding another language means adding a file with the same keys.
+
 ## First time setup
 
 ### Understanding the interface

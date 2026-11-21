@@ -1,0 +1,16 @@
+
+            <TabItem Header="{DynamicResource s_config}" Visibility="Collapsed" Name="WPFTab3">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="{DynamicResource TabContentMargin}">
+                    <StackPanel>
+                        <Border Name="WPFGuidePowerPanel" Visibility="Collapsed" Background="{DynamicResource SurfaceBackgroundColor}"
+                                BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="5"
+                                Padding="12" Margin="0,0,0,14">
+                            <CheckBox Name="WPFGuideHighPerformance" AutomationProperties.Name="{DynamicResource s_enable_high_performance_power_plan}"
+                                      FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}"
+                                      Background="Transparent" Content="{DynamicResource s_enable_high_performance_power_plan}"/>
+                        </Border>
+                        <Grid Name="featurespanel" Background="Transparent">
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>

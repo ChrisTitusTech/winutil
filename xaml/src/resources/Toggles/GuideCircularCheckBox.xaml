@@ -1,0 +1,28 @@
+
+        <!-- Simple mode: circular selection marker on application cards -->
+        <Style x:Key="GuideCircularCheckBox" TargetType="{x:Type CheckBox}">
+            <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <StackPanel Orientation="Horizontal" Background="Transparent">
+                            <Border Name="GuideCircle" Width="18" Height="18" CornerRadius="9" Margin="0,0,8,0"
+                                    BorderThickness="2" BorderBrush="{DynamicResource BorderColor}" Background="Transparent"
+                                    VerticalAlignment="Center">
+                                <TextBlock Name="GuideMark" Text="&#xE73E;" FontFamily="Segoe MDL2 Assets"
+                                           FontSize="12" Visibility="Collapsed" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" Background="Transparent"
+                                           Foreground="{DynamicResource ToggleButtonOnColor}"/>
+                            </Border>
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="GuideMark" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="GuideCircle" Property="BorderBrush" Value="{DynamicResource ToggleButtonOnColor}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>

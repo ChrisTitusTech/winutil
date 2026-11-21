@@ -1,0 +1,22 @@
+
+
+        <Style x:Key="SearchBarClearButtonStyle" TargetType="Button">
+            <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
+            <Setter Property="FontSize" Value="{DynamicResource SearchBarClearButtonFontSize}"/>
+            <Setter Property="Content" Value="X"/>
+            <Setter Property="Height" Value="{DynamicResource SearchBarClearButtonFontSize}"/>
+            <Setter Property="Width" Value="{DynamicResource SearchBarClearButtonFontSize}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="Red"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderThickness" Value="10"/>
+                    <Setter Property="Cursor" Value="Hand"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>

@@ -1,0 +1,106 @@
+
+        <!-- Checkbox: rounded box that fills with the accent colour and shows a crisp tick. -->
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="FontSize" Value="{DynamicResource FontSize}" />
+            <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
+            <Setter Property="TextElement.FontFamily" Value="{DynamicResource FontFamily}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid Background="{TemplateBinding Background}" Margin="{DynamicResource CheckBoxMargin}">
+                            <BulletDecorator Background="Transparent">
+                                <BulletDecorator.Bullet>
+                                    <Grid Width="{DynamicResource CheckBoxBulletDecoratorSize}" Height="{DynamicResource CheckBoxBulletDecoratorSize}">
+                                        <Border Name="Border"
+                                                BorderBrush="{DynamicResource BorderColor}"
+                                                Background="{DynamicResource SurfaceBackgroundColor}"
+                                                BorderThickness="1"
+                                                CornerRadius="3"
+                                                Width="{DynamicResource CheckBoxBulletDecoratorSize *0.85}"
+                                                Height="{DynamicResource CheckBoxBulletDecoratorSize *0.85}"
+                                                Margin="1"
+                                                SnapsToDevicePixels="True"/>
+                                        <!-- Tick is deliberately smaller than the box so it does not
+                                             fill it: crisp, complete, with breathing room around it. -->
+                                        <Viewbox Name="CheckMarkContainer"
+                                                 Width="12" Height="12"
+                                                 HorizontalAlignment="Center"
+                                                 VerticalAlignment="Center"
+                                                 Visibility="Collapsed">
+                                            <!-- Draw-on tick: dash length covers the whole path; animating
+                                                 StrokeDashOffset from that length to 0 reveals the stroke
+                                                 from its start (the short head) to the end (the long head). -->
+                                            <Path Name="CheckMark"
+                                                  Stroke="{DynamicResource ToggleButtonOnColor}"
+                                                  StrokeThickness="2"
+                                                  StrokeStartLineCap="Round"
+                                                  StrokeEndLineCap="Round"
+                                                  StrokeDashArray="24 24"
+                                                  StrokeDashOffset="24"
+                                                  Data="M 0 5 L 5 10 L 12 0"
+                                                  Stretch="Uniform">
+                                                <Path.Style>
+                                                    <Style TargetType="Path">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource AncestorType={x:Type CheckBox}}}" Value="True">
+                                                                <DataTrigger.EnterActions>
+                                                                    <BeginStoryboard Name="TickDraw">
+                                                                        <Storyboard>
+                                                                            <DoubleAnimation Storyboard.TargetProperty="StrokeDashOffset"
+                                                                                             To="0" Duration="0:0:0.28">
+                                                                                <DoubleAnimation.EasingFunction>
+                                                                                    <QuadraticEase EasingMode="EaseOut"/>
+                                                                                </DoubleAnimation.EasingFunction>
+                                                                            </DoubleAnimation>
+                                                                        </Storyboard>
+                                                                    </BeginStoryboard>
+                                                                </DataTrigger.EnterActions>
+                                                                <DataTrigger.ExitActions>
+                                                                    <!-- Reverse draw: erase from the long head back
+                                                                         to the short head, then remove the storyboard. -->
+                                                                    <BeginStoryboard Name="TickErase">
+                                                                        <Storyboard>
+                                                                            <DoubleAnimation Storyboard.TargetProperty="StrokeDashOffset"
+                                                                                             To="24" Duration="0:0:0.24">
+                                                                                <DoubleAnimation.EasingFunction>
+                                                                                    <QuadraticEase EasingMode="EaseInOut"/>
+                                                                                </DoubleAnimation.EasingFunction>
+                                                                            </DoubleAnimation>
+                                                                        </Storyboard>
+                                                                    </BeginStoryboard>
+                                                                    <RemoveStoryboard BeginStoryboardName="TickDraw"/>
+                                                                </DataTrigger.ExitActions>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Path.Style>
+                                            </Path>
+                                        </Viewbox>
+                                    </Grid>
+                                </BulletDecorator.Bullet>
+                                <ContentPresenter Margin="6,0,0,0"
+                                                  HorizontalAlignment="Left"
+                                                  VerticalAlignment="Center"
+                                                  RecognizesAccessKey="True"/>
+                            </BulletDecorator>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="CheckMarkContainer" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="Border" Property="BorderBrush"
+                                        Value="{DynamicResource ToggleButtonOnColor}"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="BorderBrush"
+                                        Value="{DynamicResource ButtonBackgroundPressedColor}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Border" Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>

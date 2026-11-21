@@ -1,0 +1,6 @@
+
+        <Style TargetType="Label">
+            <Setter Property="Foreground" Value="{DynamicResource LabelboxForegroundColor}"/>
+            <Setter Property="Background" Value="{DynamicResource LabelBackgroundColor}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
+        </Style>

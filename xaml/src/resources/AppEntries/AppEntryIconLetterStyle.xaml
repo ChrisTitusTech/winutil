@@ -1,0 +1,8 @@
+
+    <Style x:Key="AppEntryIconLetterStyle" TargetType="TextBlock">
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="FontSize" Value="{DynamicResource AppEntryFontSize}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ToggleButtonOnColor}"/>
+    </Style>

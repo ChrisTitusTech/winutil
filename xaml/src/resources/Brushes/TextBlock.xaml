@@ -1,0 +1,8 @@
+
+
+        <!-- TextBlock template -->
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="{DynamicResource FontSize}"/>
+            <Setter Property="Foreground" Value="{DynamicResource LabelboxForegroundColor}"/>
+            <Setter Property="Background" Value="{DynamicResource LabelBackgroundColor}"/>
+        </Style>

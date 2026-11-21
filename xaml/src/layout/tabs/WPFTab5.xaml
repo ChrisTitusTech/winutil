@@ -1,0 +1,607 @@
+
+            <TabItem Header="{DynamicResource s_win11iso}" Visibility="Collapsed" Name="WPFTab5">
+                <Grid Name="Win11ISOPanel" Margin="{DynamicResource TabContentMargin}" Background="Transparent">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0" Style="{StaticResource BorderStyle}" Padding="20,16">
+                        <Grid>
+                        <!-- The lopsided weight is what makes the middle column min(available, 620)
+                             rather than a third of the card -->
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="1000*" MaxWidth="620"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Name="WPFWin11ISOBackButton"
+                                Grid.Column="0"
+                                Margin="0,0,10,0"
+                                Content="&#xE76B;"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontSize="{DynamicResource Win11StepTitleFontSize}"
+                                Width="44" Height="44"
+                                Background="{DynamicResource SurfaceBackgroundColor}"
+                                HorizontalAlignment="Right" VerticalAlignment="Center"
+                                Panel.ZIndex="1"
+                                AutomationProperties.Name="{DynamicResource s_previous_step}"
+                                ToolTip="{DynamicResource s_back_to_the_previous_step}">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource HoverButtonStyle}">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsSelected, ElementName=WPFWin11ISOModifySection}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button Name="WPFWin11ISOForwardButton"
+                                Grid.Column="2"
+                                Margin="10,0,0,0"
+                                Content="&#xE76C;"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontSize="{DynamicResource Win11StepTitleFontSize}"
+                                Width="44" Height="44"
+                                Background="{DynamicResource SurfaceBackgroundColor}"
+                                HorizontalAlignment="Left" VerticalAlignment="Center"
+                                Panel.ZIndex="1"
+                                AutomationProperties.Name="{DynamicResource s_next_step}"
+                                ToolTip="{DynamicResource s_forward_to_the_next_step}">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource HoverButtonStyle}">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                    <Style.Triggers>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding IsSelected, ElementName=WPFWin11ISOSelectSection}" Value="True"/>
+                                                <Condition Binding="{Binding IsEnabled, ElementName=WPFWin11ISOModifySection}" Value="True"/>
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </MultiDataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <TabControl Name="WPFWin11ISOSteps"
+                                    Grid.Column="0" Grid.ColumnSpan="3"
+                                    Background="Transparent"
+                                    BorderThickness="0">
+                            <TabControl.Resources>
+                                <!-- Text colours: the implicit TextBlock style would paint anything unstyled
+                                     cyan on a label background, so every text block here carries a style. -->
+                                <Style x:Key="Win11StepHeaderText" TargetType="TextBlock">
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Foreground"
+                                            Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type TabItem}}}"/>
+                                </Style>
+                                <Style x:Key="Win11ButtonText" TargetType="TextBlock" BasedOn="{StaticResource Win11StepHeaderText}">
+                                    <Setter Property="FontSize" Value="{DynamicResource ButtonFontSize}"/>
+                                    <Setter Property="Foreground"
+                                            Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"/>
+                                </Style>
+                                <Style x:Key="Win11StepIcon" TargetType="TextBlock" BasedOn="{StaticResource Win11StepHeaderText}">
+                                    <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+                                    <Setter Property="FontSize" Value="{DynamicResource IconFontSize}"/>
+                                    <Setter Property="Margin" Value="0,0,8,0"/>
+                                </Style>
+                                <Style x:Key="Win11ButtonIcon" TargetType="TextBlock" BasedOn="{StaticResource Win11ButtonText}">
+                                    <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+                                    <Setter Property="FontSize" Value="{DynamicResource IconFontSize}"/>
+                                    <Setter Property="Margin" Value="0,0,10,0"/>
+                                </Style>
+
+                                <Style TargetType="TabItem">
+                                    <Setter Property="FontSize" Value="{DynamicResource FontSize}"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
+                                    <Setter Property="HeaderTemplate">
+                                        <Setter.Value>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" Cursor="Hand" Margin="4,0">
+                                                    <TextBlock Style="{StaticResource Win11StepIcon}"
+                                                               Text="{Binding Tag, RelativeSource={RelativeSource AncestorType={x:Type TabItem}}}"/>
+                                                    <TextBlock Style="{StaticResource Win11StepHeaderText}" Text="{Binding}"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="TabItem">
+                                                <Border Name="StepChip" CornerRadius="8" Margin="0,0,8,0"
+                                                        Padding="10,6" Background="Transparent"
+                                                        BorderBrush="{DynamicResource BorderColor}" BorderThickness="1">
+                                                    <ContentPresenter ContentSource="Header" VerticalAlignment="Center"
+                                                                      HorizontalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsSelected" Value="True">
+                                                        <Setter TargetName="StepChip" Property="Background"
+                                                                Value="{DynamicResource ButtonBackgroundSelectedColor}"/>
+                                                        <Setter TargetName="StepChip" Property="BorderBrush"
+                                                                Value="{DynamicResource LabelboxForegroundColor}"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="StepChip" Property="Background"
+                                                                Value="{DynamicResource ButtonBackgroundMouseoverColor}"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Opacity" Value="0.4"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                                <Style TargetType="TabControl">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="TabControl">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
+                                                    <TabPanel Grid.Row="0"
+                                                              IsItemsHost="True"
+                                                              Background="Transparent"
+                                                              Margin="0,0,0,10"/>
+                                                    <Border Grid.Row="1"
+                                                            BorderBrush="{DynamicResource BorderColor}"
+                                                            BorderThickness="0,1,0,0"
+                                                            Padding="0,10,0,0">
+                                                        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                                                      HorizontalScrollBarVisibility="Disabled">
+                                                            <Grid MinHeight="{Binding ViewportHeight, RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}}">
+                                                                <ContentPresenter ContentSource="SelectedContent"/>
+                                                            </Grid>
+                                                        </ScrollViewer>
+                                                    </Border>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+
+                                <Style x:Key="Win11StepColumn" TargetType="StackPanel">
+                                    <Setter Property="MaxWidth" Value="620"/>
+                                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                                <Style x:Key="Win11StepHero" TargetType="TextBlock">
+                                    <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+                                    <Setter Property="FontSize" Value="{DynamicResource Win11StepHeroFontSize}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource LabelboxForegroundColor}"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="Margin" Value="0,0,0,14"/>
+                                </Style>
+                                <Style x:Key="Win11StepTitle" TargetType="TextBlock">
+                                    <Setter Property="FontSize" Value="{DynamicResource Win11StepTitleFontSize}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource LabelboxForegroundColor}"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="TextAlignment" Value="Center"/>
+                                    <Setter Property="TextWrapping" Value="Wrap"/>
+                                    <Setter Property="Margin" Value="0,0,0,6"/>
+                                </Style>
+                                <Style x:Key="Win11StepBody" TargetType="TextBlock">
+                                    <Setter Property="FontSize" Value="{DynamicResource FontSize}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="TextWrapping" Value="Wrap"/>
+                                    <Setter Property="Margin" Value="0,0,0,10"/>
+                                </Style>
+                                <Style x:Key="Win11StepSubtitle" TargetType="TextBlock" BasedOn="{StaticResource Win11StepBody}">
+                                    <Setter Property="Opacity" Value="0.75"/>
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="TextAlignment" Value="Center"/>
+                                    <Setter Property="MaxWidth" Value="520"/>
+                                    <Setter Property="Margin" Value="0,0,0,20"/>
+                                </Style>
+                                <Style x:Key="Win11StepLabel" TargetType="TextBlock" BasedOn="{StaticResource Win11StepBody}">
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource LabelboxForegroundColor}"/>
+                                    <Setter Property="Margin" Value="0,0,0,6"/>
+                                </Style>
+                                <Style x:Key="Win11StepValue" TargetType="TextBlock" BasedOn="{StaticResource Win11StepBody}">
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Margin" Value="0"/>
+                                </Style>
+                                <Style x:Key="Win11StepCaption" TargetType="TextBlock" BasedOn="{StaticResource Win11StepBody}">
+                                    <Setter Property="Opacity" Value="0.75"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Margin" Value="0,0,6,0"/>
+                                </Style>
+
+                                <Style x:Key="Win11StepButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Setter Property="Height" Value="34"/>
+                                    <Setter Property="Padding" Value="16,0"/>
+                                    <!-- The implicit style pins Width to ButtonWidth, which clips the longer labels -->
+                                    <Setter Property="Width" Value="Auto"/>
+                                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                    <Setter Property="ContentTemplate">
+                                        <Setter.Value>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Style="{StaticResource Win11ButtonIcon}"
+                                                               Text="{Binding Tag, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"/>
+                                                    <TextBlock Style="{StaticResource Win11ButtonText}" Text="{Binding}"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+
+                                <Style x:Key="Win11InfoPanel" TargetType="Border">
+                                    <Setter Property="Background" Value="{DynamicResource SurfaceBackgroundColor}"/>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource BorderColor}"/>
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Setter Property="CornerRadius" Value="10"/>
+                                    <Setter Property="Padding" Value="20"/>
+                                </Style>
+                                <Style x:Key="Win11FormPanel" TargetType="Border" BasedOn="{StaticResource Win11InfoPanel}">
+                                    <Setter Property="BorderBrush" Value="{DynamicResource LabelboxForegroundColor}"/>
+                                </Style>
+                                <Style x:Key="Win11SummaryIcon" TargetType="TextBlock" BasedOn="{StaticResource Win11StepIcon}">
+                                    <Setter Property="Foreground" Value="{DynamicResource LabelboxForegroundColor}"/>
+                                    <Setter Property="VerticalAlignment" Value="Top"/>
+                                    <Setter Property="Margin" Value="0,1,12,0"/>
+                                </Style>
+                                <Style x:Key="Win11SummaryRow" TargetType="StackPanel">
+                                    <Setter Property="Orientation" Value="Horizontal"/>
+                                    <Setter Property="Margin" Value="0,0,0,10"/>
+                                </Style>
+                            </TabControl.Resources>
+
+                            <!-- ─── STEP 1 : Select Windows 11 ISO ─────────────── -->
+                            <TabItem Name="WPFWin11ISOSelectSection" Tag="&#xE958;" Header="{DynamicResource s_1_select_iso}">
+                                <StackPanel Style="{StaticResource Win11StepColumn}">
+                                    <TextBlock Text="&#xE958;" Style="{StaticResource Win11StepHero}"/>
+                                    <TextBlock Style="{StaticResource Win11StepTitle}" Text="{DynamicResource s_select_your_windows_11_iso}"/>
+                                    <TextBlock Style="{StaticResource Win11StepSubtitle}">
+                                        <Run Text="{DynamicResource s_choose_official_iso}"/>
+                                    </TextBlock>
+
+                                    <Border Style="{StaticResource Win11FormPanel}" Margin="0,0,0,16">
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource Win11StepLabel}" Text="{DynamicResource s_iso_file}"/>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBox Grid.Column="0"
+                                                         Name="WPFWin11ISOPath"
+                                                         AutomationProperties.Name="{DynamicResource s_iso_file}"
+                                                         IsReadOnly="True"
+                                                         VerticalAlignment="Center"
+                                                         VerticalContentAlignment="Center"
+                                                         Height="34"
+                                                         Padding="10,0"
+                                                         Margin="0,0,12,0"
+                                                         Text="{DynamicResource s_no_iso_selected}"
+                                                         Foreground="{DynamicResource MainForegroundColor}"
+                                                         Background="{DynamicResource MainBackgroundColor}"/>
+                                                <Button Grid.Column="1" Name="WPFWin11ISOBrowseButton" MinWidth="130"
+                                                        Style="{StaticResource Win11StepButton}" Tag="&#xE838;" Content="{DynamicResource s_browse}"/>
+                                            </Grid>
+                                            <!-- Hidden rather than collapsed so picking an ISO does not shift the page -->
+                                            <TextBlock Name="WPFWin11ISOFileInfo"
+                                                       Style="{StaticResource Win11StepBody}"
+                                                       Margin="0,10,0,0"
+                                                       Visibility="Hidden"
+                                                       Text="{DynamicResource s_file_size}"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Button Name="WPFWin11ISOMountButton" Margin="0,0,0,20"
+                                            Style="{StaticResource Win11StepButton}" Tag="&#xE8FB;" Content="{DynamicResource s_mount_verify_iso}"/>
+
+                                    <Border Style="{StaticResource Win11InfoPanel}">
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource Win11StepLabel}" Foreground="OrangeRed" Margin="0,0,0,10">
+                                                <Run FontFamily="Segoe MDL2 Assets" Text="&#xE7BA;"/>
+                                                <Run Text="{DynamicResource s_you_must_use_an_official_microsoft_iso}"/>
+                                            </TextBlock>
+                                            <TextBlock Style="{StaticResource Win11StepBody}">
+                                                <Run Text="{DynamicResource s_third_party_images}"/>
+                                            </TextBlock>
+                                            <TextBlock Style="{StaticResource Win11StepBody}" Margin="0,0,0,12">
+                                                <Run Text="{DynamicResource s_download_page_choice}"/>
+                                            </TextBlock>
+                                            <Button Name="WPFWin11ISODownloadLink"
+                                                    Style="{StaticResource Win11StepButton}" Tag="&#xE8A7;" Content="{DynamicResource s_open_microsoft_download_page}"/>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </TabItem>
+
+                            <!-- ─── STEP 2 : Modify install.wim ───────────────────── -->
+                            <TabItem Name="WPFWin11ISOModifySection" IsEnabled="False" Tag="&#xE713;" Header="{DynamicResource s_2_modify_image}">
+                                <StackPanel Style="{StaticResource Win11StepColumn}">
+                                    <TextBlock Text="&#xE713;" Style="{StaticResource Win11StepHero}"/>
+                                    <TextBlock Style="{StaticResource Win11StepTitle}" Text="{DynamicResource s_modify_the_image}"/>
+                                    <TextBlock Style="{StaticResource Win11StepSubtitle}">
+                                        <Run Text="{DynamicResource s_pick_what_goes_into_image}"/>
+                                    </TextBlock>
+
+                                    <Border Name="WPFWin11ISOVerifyResultPanel"
+                                            Style="{StaticResource Win11InfoPanel}"
+                                            Padding="14,10"
+                                            Margin="0,0,0,14"
+                                            Visibility="Collapsed">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="1" Text="&#xE8FB;" Style="{StaticResource Win11SummaryIcon}"
+                                                       VerticalAlignment="Center" Margin="12,0,0,0"/>
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                                <TextBlock Text="&#xE958;" Style="{StaticResource Win11StepIcon}"/>
+                                                <TextBlock Style="{StaticResource Win11StepCaption}" Text="{DynamicResource s_mounted_at}"/>
+                                                <TextBlock Name="WPFWin11ISOMountDriveLetter" Style="{StaticResource Win11StepValue}"/>
+                                                <TextBlock Text="&#xE8A5;" Style="{StaticResource Win11StepIcon}" Margin="22,0,8,0"/>
+                                                <TextBlock Style="{StaticResource Win11StepCaption}" Text="{DynamicResource s_image_file}"/>
+                                                <TextBlock Name="WPFWin11ISOImageFile" Style="{StaticResource Win11StepValue}"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                    <Border Style="{StaticResource Win11FormPanel}" Margin="0,0,0,16">
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource Win11StepLabel}" Text="{DynamicResource s_windows_edition}"/>
+                                            <ComboBox Name="WPFWin11ISOEditionComboBox"
+                                                      AutomationProperties.Name="{DynamicResource s_windows_edition}"
+                                                      FontSize="{DynamicResource FontSize}"
+                                                      Foreground="{DynamicResource MainForegroundColor}"
+                                                      Background="{DynamicResource MainBackgroundColor}"
+                                                      HorizontalAlignment="Stretch"
+                                                      Height="34"
+                                                      Margin="0,0,0,14"/>
+                                            <CheckBox Name="WPFWin11ISOInjectDrivers"
+                                                      Content="{DynamicResource s_inject_current_system_drivers}"
+                                                      FontSize="{DynamicResource FontSize}"
+                                                      Foreground="{DynamicResource MainForegroundColor}"
+                                                      IsChecked="False"
+                                                      Cursor="Hand"
+                                                      ToolTip="{DynamicResource s_injects_boot_storage_drivers_for_setup_and_adds}"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Button Name="WPFWin11ISOModifyButton" Margin="0,0,0,20"
+                                            Style="{StaticResource Win11StepButton}" Tag="&#xE768;"
+                                            Content="{DynamicResource s_run_windows_iso_modification_and_creator}"/>
+
+                                    <Border Style="{StaticResource Win11InfoPanel}">
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource Win11StepLabel}" Margin="0,0,0,12" Text="{DynamicResource s_what_this_does_to_the_image}"/>
+                                            <StackPanel Style="{StaticResource Win11SummaryRow}">
+                                                <TextBlock Text="&#xE74D;" Style="{StaticResource Win11SummaryIcon}"/>
+                                                <TextBlock Style="{StaticResource Win11StepBody}" Margin="0"
+                                                           Text="{DynamicResource s_removes_the_preinstalled_apps_and_the_onedrive_s}"/>
+                                            </StackPanel>
+                                            <StackPanel Style="{StaticResource Win11SummaryRow}">
+                                                <TextBlock Text="&#xE950;" Style="{StaticResource Win11SummaryIcon}"/>
+                                                <TextBlock Style="{StaticResource Win11StepBody}" Margin="0"
+                                                           Text="{DynamicResource s_bypasses_the_tpm_secure_boot_cpu_ram_and_storage}"/>
+                                            </StackPanel>
+                                            <StackPanel Style="{StaticResource Win11SummaryRow}">
+                                                <TextBlock Text="&#xE77B;" Style="{StaticResource Win11SummaryIcon}"/>
+                                                <TextBlock Style="{StaticResource Win11StepBody}" Margin="0"
+                                                           Text="{DynamicResource s_skips_the_microsoft_account_screen_so_you_can_us}"/>
+                                            </StackPanel>
+                                            <StackPanel Style="{StaticResource Win11SummaryRow}">
+                                                <TextBlock Text="&#xE7EE;" Style="{StaticResource Win11SummaryIcon}"/>
+                                                <TextBlock Style="{StaticResource Win11StepBody}" Margin="0"
+                                                           Text="{DynamicResource s_turns_off_telemetry_copilot_the_chat_icon_and_se}"/>
+                                            </StackPanel>
+                                            <StackPanel Style="{StaticResource Win11SummaryRow}" Margin="0">
+                                                <TextBlock Text="&#xE8EF;" Style="{StaticResource Win11SummaryIcon}"/>
+                                                <TextBlock Style="{StaticResource Win11StepBody}" Margin="0"
+                                                           Text="{DynamicResource s_pins_the_edition_you_picked_above_so_setup_does}"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </TabItem>
+
+                            <!-- ─── STEP 3 : Output Options ───────────────────────── -->
+                            <TabItem Name="WPFWin11ISOOutputSection" IsEnabled="False" Tag="&#xE88E;" Header="{DynamicResource s_3_output}">
+                                <StackPanel Style="{StaticResource Win11StepColumn}">
+                                    <TextBlock Text="&#xE88E;" Style="{StaticResource Win11StepHero}"/>
+                                    <TextBlock Style="{StaticResource Win11StepTitle}" Text="{DynamicResource s_your_image_is_ready}"/>
+                                    <TextBlock Style="{StaticResource Win11StepSubtitle}">
+                                        <Run Text="{DynamicResource s_save_modified_image}"/>
+                                    </TextBlock>
+
+                                    <Border Name="WPFWin11ISODonePanel"
+                                            Style="{StaticResource Win11InfoPanel}"
+                                            Padding="14,10"
+                                            Margin="0,0,0,14"
+                                            Visibility="Collapsed">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE8FB;" Style="{StaticResource Win11SummaryIcon}"
+                                                       VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                            <TextBlock Name="WPFWin11ISODoneLabel" Style="{StaticResource Win11StepValue}"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Button Name="WPFWin11ISOChooseISOButton" Margin="0,0,0,10"
+                                            Style="{StaticResource Win11StepButton}" Tag="&#xE74E;" Content="{DynamicResource s_save_as_an_iso_file}"/>
+                                    <Button Name="WPFWin11ISOChooseUSBButton" Foreground="OrangeRed"
+                                            Style="{StaticResource Win11StepButton}" Tag="&#xE88E;"
+                                            Content="{DynamicResource s_write_directly_to_a_usb_drive_erases_drive}"/>
+
+                                    <Border Name="WPFWin11ISOOptionUSB"
+                                            Style="{StaticResource Win11FormPanel}"
+                                            Visibility="Collapsed"
+                                            Margin="0,14,0,0">
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource Win11StepBody}">
+                                                <Run FontWeight="Bold" Foreground="OrangeRed" Text="{DynamicResource s_usb_erase_warning}"/>
+                                            </TextBlock>
+                                            <TextBlock Style="{StaticResource Win11StepLabel}" Text="{DynamicResource s_usb_drive}"/>
+                                            <Grid Margin="0,0,0,12">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ComboBox Grid.Column="0"
+                                                          Name="WPFWin11ISOUSBDriveComboBox"
+                                                          AutomationProperties.Name="{DynamicResource s_usb_drive}"
+                                                          Foreground="{DynamicResource MainForegroundColor}"
+                                                          Background="{DynamicResource MainBackgroundColor}"
+                                                          VerticalAlignment="Center"
+                                                          Height="34"
+                                                          Margin="0,0,12,0"/>
+                                                <Button Grid.Column="1" Name="WPFWin11ISORefreshUSBButton" MinWidth="130"
+                                                        Style="{StaticResource Win11StepButton}" Tag="&#xE895;" Content="{DynamicResource s_refresh}"/>
+                                            </Grid>
+                                            <Button Name="WPFWin11ISOWriteUSBButton" Foreground="OrangeRed"
+                                                    Style="{StaticResource Win11StepButton}" Tag="&#xE7BA;" Content="{DynamicResource s_erase_write_to_usb}"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border BorderBrush="{DynamicResource BorderColor}" BorderThickness="0,1,0,0"
+                                            Margin="0,20,0,0" Padding="0,14,0,0">
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource Win11StepSubtitle}" Margin="0,0,0,10"
+                                                       Text="{DynamicResource s_done_with_this_image_clear_the_temporary_files_a}"/>
+                                            <Button Name="WPFWin11ISOCleanResetButton"
+                                                    HorizontalAlignment="Center" MinWidth="240"
+                                                    Style="{StaticResource Win11StepButton}" Tag="&#xE72C;" Content="{DynamicResource s_start_over}"
+                                                    ToolTip="{DynamicResource s_delete_the_temporary_working_directory_and_go_ba}"/>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </TabItem>
+
+                            <!-- ─── Working page: selected while a step runs, no header of its own ─── -->
+                            <TabItem Name="WPFWin11ISOWorkingSection" Visibility="Collapsed">
+                                <StackPanel Style="{StaticResource Win11StepColumn}">
+                                    <!-- BitmapCache because this is text: without it WPF re-rasterises the
+                                         glyph every frame on the interface thread and the spin stutters.
+                                         Cached, the rotation is a transform on an image the GPU already has. -->
+                                    <TextBlock Name="WPFWin11ISOWorkingSpinner"
+                                               Text="&#xE895;"
+                                               Tag="Forward"
+                                               RenderTransformOrigin="0.5,0.5"
+                                               CacheMode="BitmapCache">
+                                        <TextBlock.RenderTransform>
+                                            <RotateTransform Angle="0"/>
+                                        </TextBlock.RenderTransform>
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource Win11StepHero}">
+                                                <Style.Triggers>
+                                                    <!-- Tied to visibility, not to Loaded: the working page stays loaded
+                                                         while collapsed, so a Loaded trigger left it spinning forever -->
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding IsVisible, RelativeSource={RelativeSource Self}}" Value="True"/>
+                                                            <Condition Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="Forward"/>
+                                                        </MultiDataTrigger.Conditions>
+                                                        <MultiDataTrigger.EnterActions>
+                                                            <BeginStoryboard Name="Win11ISOSpin">
+                                                                <Storyboard RepeatBehavior="Forever">
+                                                                    <DoubleAnimation
+                                                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                                                        From="0" To="360" Duration="0:0:1.4"/>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </MultiDataTrigger.EnterActions>
+                                                        <MultiDataTrigger.ExitActions>
+                                                            <StopStoryboard BeginStoryboardName="Win11ISOSpin"/>
+                                                        </MultiDataTrigger.ExitActions>
+                                                    </MultiDataTrigger>
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding IsVisible, RelativeSource={RelativeSource Self}}" Value="True"/>
+                                                            <Condition Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="Reverse"/>
+                                                        </MultiDataTrigger.Conditions>
+                                                        <MultiDataTrigger.EnterActions>
+                                                            <BeginStoryboard Name="Win11ISOSpinReverse">
+                                                                <Storyboard RepeatBehavior="Forever">
+                                                                    <DoubleAnimation
+                                                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                                                        From="360" To="0" Duration="0:0:1.4"/>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </MultiDataTrigger.EnterActions>
+                                                        <MultiDataTrigger.ExitActions>
+                                                            <StopStoryboard BeginStoryboardName="Win11ISOSpinReverse"/>
+                                                        </MultiDataTrigger.ExitActions>
+                                                    </MultiDataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <TextBlock Name="WPFWin11ISOWorkingLabel"
+                                               Style="{StaticResource Win11StepTitle}"
+                                               Text="{DynamicResource s_working}"/>
+                                    <TextBlock Style="{StaticResource Win11StepSubtitle}"
+                                               Margin="0"
+                                               Text="{DynamicResource s_this_can_take_several_minutes_progress_is_writte}"/>
+                                </StackPanel>
+                            </TabItem>
+                        </TabControl>
+                        </Grid>
+                    </Border>
+
+                    <!-- ─── Status log ─── -->
+                    <Border Grid.Column="1" Style="{StaticResource BorderStyle}" Padding="20,16">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                                <TextBlock Text="&#xE9D9;" FontFamily="Segoe MDL2 Assets"
+                                           FontSize="{DynamicResource IconFontSize}"
+                                           Background="Transparent"
+                                           Foreground="{DynamicResource LabelboxForegroundColor}"
+                                           VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <TextBlock FontSize="{DynamicResource FontSize}"
+                                           FontWeight="Bold"
+                                           Background="Transparent"
+                                           Foreground="{DynamicResource LabelboxForegroundColor}"
+                                           VerticalAlignment="Center"
+                                           Text="{DynamicResource s_status_log}"/>
+                            </StackPanel>
+                            <Border Grid.Row="1"
+                                    BorderBrush="{DynamicResource BorderColor}"
+                                    BorderThickness="0,1,0,0"
+                                    Padding="0,10,0,0">
+                                <!-- TextAlignment and Effect look redundant but are not: the shared TextBox
+                                     style stretches content alignment, which WPF renders as justified once
+                                     text wraps, and its drop shadow lands on the glyphs with no background
+                                     here to sit under. -->
+                                <TextBox Name="WPFWin11ISOStatusLog"
+                                         AutomationProperties.Name="{DynamicResource s_status_log}"
+                                         IsReadOnly="True"
+                                         TextWrapping="Wrap"
+                                         TextAlignment="Left"
+                                         FontFamily="{DynamicResource Win11LogFontFamily}"
+                                         VerticalScrollBarVisibility="Auto"
+                                         VerticalAlignment="Stretch"
+                                         Padding="0"
+                                         Background="Transparent"
+                                         Foreground="{DynamicResource MainForegroundColor}"
+                                         BorderThickness="0"
+                                         Effect="{x:Null}"
+                                         Text="{DynamicResource s_ready_please_select_a_windows_11_iso_to_begin}"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                </Grid>
+            </TabItem>

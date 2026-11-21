@@ -1,0 +1,2 @@
+resources-region-lines=19-1095
+fragments=33

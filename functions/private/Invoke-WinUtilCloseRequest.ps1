@@ -87,6 +87,46 @@ stopped and everything closes now. Cancel keeps WinUtil open.
     }
 }
 
+function Stop-WinUtilAllWork {
+    <#
+        .SYNOPSIS
+            Stops every running and queued operation without closing WinUtil.
+
+        .DESCRIPTION
+            Reuses the same confirmation dialog shown when closing during work. On confirmation it
+            drops the whole queue and sets the shutdown flag so no further job starts, then restores
+            the tab's normal view. The in-flight worker is left to unwind on its own (the same way
+            the close path handles it); it cannot be hard-aborted safely without a cancellation token.
+    #>
+    [CmdletBinding()]
+    param()
+
+    $running = [string]$sync.ActiveJob
+    $queued = [int]($sync.JobQueue.Count)
+
+    if (-not $running -and $queued -eq 0) { return }
+
+    $title = if ($running) { "$running is still running" } else { "Queued operations" }
+    $message = if ($running) {
+        "$running has not finished yet.`n$queued queued operation(s) will be discarded.`n`nStop all operations? WinUtil will stay open."
+    } else {
+        "$queued queued operation(s) are waiting.`n`nDiscard all of them? WinUtil will stay open."
+    }
+
+    $answer = Show-WinUtilJobCloseMessage -Button "YesNo" -Icon "Warning" -Title $title -Message $message
+    if ("$answer" -ne "Yes") {
+        Write-WinUtilLog -Component "UI" -Message "Stop cancelled; work continues."
+        return
+    }
+
+    Write-WinUtilLog -Component "UI" -Message "Stop requested: discarding all queued and running operations."
+    $null = Stop-WinUtilQueuedWork
+
+    if ($running) {
+        try { Set-WinUtilWorkingView -Area "Install" -Working $false } catch { }
+    }
+}
+
 function Show-WinUtilJobCloseMessage {
     <#
         .SYNOPSIS

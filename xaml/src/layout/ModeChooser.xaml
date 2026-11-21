@@ -1,0 +1,108 @@
+        <Grid Name="WPFModeSelectionOverlay" Grid.Row="0" Grid.RowSpan="5" Grid.Column="0"
+              Background="{DynamicResource MainBackgroundColor}" Visibility="Visible">
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Margin="24">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="{DynamicResource s_choose_a_mode}" FontSize="30" FontWeight="SemiBold"
+                           Foreground="{DynamicResource LabelboxForegroundColor}" Background="Transparent"
+                           HorizontalAlignment="Center" Margin="0,0,0,4"/>
+                <TextBlock Grid.Row="1" Text="{DynamicResource s_setup_shows_one_step_at_a_time_advanced_opens_t}"
+                           FontSize="13" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="520"
+                           Foreground="{DynamicResource MainForegroundColor}" Opacity="0.75"
+                           Background="Transparent" Margin="0,0,0,20"/>
+
+                <!-- Two mode cards side by side; each card uses the same internal structure
+                     (icon + title + short description) so the two options read clearly. -->
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                    <!-- SIMPLE — primary card. The whole card is a Button; its template draws
+                         the border, and the content (outside the template) holds the texts. -->
+                    <Button Name="WPFModeSetupButton" Cursor="Hand" Focusable="False" Width="300" Height="140"
+                            Background="{DynamicResource SurfaceBackgroundColor}"
+                            BorderBrush="{DynamicResource ProgressBarForegroundColor}" BorderThickness="1"
+                            ToolTip="{DynamicResource s_setup_mode_description}"
+                            AutomationProperties.Name="{DynamicResource s_setup_mode}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        CornerRadius="10" Padding="24">
+                                    <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="&#xE8FD;" FontFamily="Segoe MDL2 Assets" FontSize="28"
+                                           Foreground="{DynamicResource ProgressBarForegroundColor}"
+                                           FlowDirection="LeftToRight" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="{DynamicResource s_setup}" FontSize="20" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource LabelboxForegroundColor}"/>
+                                    <TextBlock Text="{DynamicResource s_setup_mode_description}" FontSize="12"
+                                               TextWrapping="Wrap" Foreground="{DynamicResource MainForegroundColor}"
+                                               Margin="0,5,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Button>
+
+                    <!-- ADVANCED — ghost card, more neutral -->
+                    <Button Name="WPFModeAdvancedButton" Cursor="Hand" Focusable="False" Width="300" Height="140"
+                            Margin="16,0,0,0"
+                            Background="{DynamicResource SurfaceBackgroundColor}"
+                            BorderBrush="{DynamicResource ProgressBarForegroundColor}" BorderThickness="1"
+                            ToolTip="{DynamicResource s_full_interface_with_all_tabs}"
+                            AutomationProperties.Name="{DynamicResource s_advanced_mode}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        CornerRadius="10" Padding="24">
+                                    <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="28"
+                                           Foreground="{DynamicResource ProgressBarForegroundColor}"
+                                           FlowDirection="LeftToRight" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="{DynamicResource s_advanced_2}" FontSize="20" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource LabelboxForegroundColor}"/>
+                                    <TextBlock Text="{DynamicResource s_full_interface_with_all_tabs}" FontSize="12"
+                                               TextWrapping="Wrap" Foreground="{DynamicResource MainForegroundColor}"
+                                               Margin="0,5,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Button>
+                </StackPanel>
+
+                <Button Grid.Row="3" Name="WPFModeCloseButton" Content="{DynamicResource s_exit}" Width="80" Height="26"
+                        HorizontalAlignment="Right" Margin="0,8,0,0" ToolTip="{DynamicResource s_close_winutil}"
+                        AutomationProperties.Name="{DynamicResource s_exit_winutil}"/>
+            </Grid>
+        </Grid>

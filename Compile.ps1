@@ -7,6 +7,7 @@ $OFS = "`r`n"
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.configs = @{}
+$sync.configs.locales = @{}
 
 $script = (Get-Content -Path scripts\start.ps1) -replace '#{replaceme}', (Get-Date -Format 'yy.MM.dd')
 $isLocalCompile = -not [string]::Equals($env:GITHUB_ACTIONS, "true", [StringComparison]::OrdinalIgnoreCase)
@@ -43,15 +44,30 @@ $iconsObject = [pscustomobject]$icons
 $sync.configs["icons"] = $iconsObject
 $script += "`$sync.configs.icons = @'`r`n$($iconsObject | ConvertTo-Json)`r`n'@ | ConvertFrom-Json"
 
+# Locale files live in config\locales and are embedded as $sync.configs.locales.<language>
+$script += "`$sync.configs.locales = @{}`r`n"
+Get-ChildItem config\locales -File -Filter *.json | ForEach-Object {
+    $obj = Get-Content -Path $_.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
+    $json = $obj | ConvertTo-Json -Depth 10
+    $sync.configs.locales[$_.BaseName] = $obj
+    $script += "`$sync.configs.locales['$($_.BaseName)'] = @'`r`n$json`r`n'@ | ConvertFrom-Json"
+}
+
+# Rebuild inputXML.xaml from the source fragments before embedding it.
+& (Join-Path $PSScriptRoot 'xaml\build-xaml.ps1')
+
 $xaml = Get-Content -Path xaml\inputXML.xaml -Raw
 $script += "`$inputXML = @'`r`n$xaml`r`n'@"
+
+$settingsDialogXaml = Get-Content -Path xaml\settingsDialog.xaml -Raw
+$script += "`$sync.settingsDialogXaml = @'`r`n$settingsDialogXaml`r`n'@"
 
 $autounattendXml = Get-Content -Path tools\autounattend.xml -Raw
 $script += "`$WinUtilAutounattendXml = @'`r`n$autounattendXml`r`n'@"
 
 $script += Get-Content -Path scripts\main.ps1 -Raw
 
-Set-Content -Path winutil.ps1 -Value $script
+Set-Content -Path winutil.ps1 -Value $script -Encoding UTF8
 
 if ($Run) {
     .\Winutil.ps1

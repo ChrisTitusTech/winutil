@@ -80,6 +80,10 @@ function Start-WinUtilUserInterface {
         })
     })
 
+    Measure-WinUtilStep -Scope "UI" -Name "apply language" -ScriptBlock {
+        Set-WinUtilLanguage -Language $sync.preferences.language
+    }
+
     Measure-WinUtilStep -Scope "UI" -Name "apply theme" -ScriptBlock {
         Invoke-WinutilThemeChange -theme $sync.preferences.theme
     }
@@ -308,17 +312,16 @@ function Start-WinUtilUserInterface {
 
             # Show offline indicator
             Write-Host "Offline mode detected - Install tab disabled." -ForegroundColor Yellow
-
-            # Optionally switch to a different tab if install tab was going to be default
-            Invoke-WPFTab "WPFTab2BT" -Yield  # Switch to Tweaks tab instead
         }
         else {
             # Online - ensure install tab is enabled
             $sync.WPFTab1BT.IsEnabled = $true
             $sync.WPFTab1BT.Opacity = 1.0
             $sync.WPFTab1BT.ToolTip = $null
-            Invoke-WPFTab "WPFTab1BT" -Yield  # Default to install tab
         }
+
+        # The startup mode chooser decides which tab opens: Advanced starts on Install (or Tweaks
+        # offline), Simple starts on the first step. Both paths select the tab after the choice.
 
         $sync["Form"].Focus()
         $sync["Form"].Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{ Initialize-WinUtilRunspacePool | Out-Null }) | Out-Null
@@ -427,10 +430,11 @@ function Start-WinUtilUserInterface {
         if (([DateTime]::UtcNow - $sync.JobQueuePopupClosedAt).TotalMilliseconds -lt 300) { return }
         Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "Theme" = "Hide"; "FontScaling" = "Hide"; "JobQueue" = "Show" }
     })
+    # Stop every running and queued operation after confirmation, without closing WinUtil.
+    $sync["WPFInstallWorkingCancel"].Add_Click({ Stop-WinUtilAllWork })
 
-    $sync["SettingsButton"].Add_Click({
-        Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Toggle"; "Theme" = "Hide"; "FontScaling" = "Hide" }
-    })
+    # The settings gear opens the unified settings dialog.
+    $sync["SettingsButton"].Add_Click({ Show-WinUtilSettingsDialog })
     $sync["ImportMenuItem"].Add_Click({
         Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
         Invoke-WPFImpex -type "import"
@@ -443,6 +447,8 @@ function Start-WinUtilUserInterface {
         Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
         Invoke-WPFExportEnvironmentReport
     })
+    # Build the language menu from config/languages.json so adding a locale needs no XAML change.
+    Initialize-WinUtilLanguageMenu
     $sync["AboutMenuItem"].Add_Click({
         Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
 
@@ -498,6 +504,7 @@ Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sy
         Invoke-WinUtilFontScaling -ScaleFactor $scaleFactor
         Invoke-WPFPopup -Action "Hide" -Popups @("FontScaling")
     })
+
 
     # Win11ISO Tab button handlers
     $sync["WPFWin11ISOBrowseButton"].Add_Click({

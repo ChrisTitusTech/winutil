@@ -1,0 +1,44 @@
+
+        <Style TargetType="RadioButton">
+            <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="FontSize" Value="{DynamicResource FontSize}" />
+            <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <StackPanel Orientation="Horizontal" Margin="{DynamicResource CheckBoxMargin}">
+                            <Viewbox Width="{DynamicResource CheckBoxBulletDecoratorSize}" Height="{DynamicResource CheckBoxBulletDecoratorSize}">
+                                <Grid Width="14" Height="14">
+                                    <Ellipse Name="OuterCircle"
+                                            Stroke="{DynamicResource ToggleButtonOffColor}"
+                                            Fill="{DynamicResource ButtonBackgroundColor}"
+                                            StrokeThickness="1"
+                                            Width="14"
+                                            Height="14"
+                                            SnapsToDevicePixels="True"/>
+                                    <Ellipse Name="InnerCircle"
+                                            Fill="{DynamicResource ToggleButtonOnColor}"
+                                            Width="8"
+                                            Height="8"
+                                            Visibility="Collapsed"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"/>
+                                </Grid>
+                            </Viewbox>
+                            <ContentPresenter Margin="4,0,0,0"
+                                            VerticalAlignment="Center"
+                                            RecognizesAccessKey="True"/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="InnerCircle" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="OuterCircle" Property="Stroke" Value="{DynamicResource ToggleButtonOnColor}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>

@@ -1,0 +1,13 @@
+
+
+    <Style TargetType="TextBlock" x:Key="HoverTextBlockStyle">
+        <Setter Property="Foreground" Value="{DynamicResource LinkForegroundColor}" />
+        <Setter Property="TextDecorations" Value="Underline" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{DynamicResource LinkHoverForegroundColor}" />
+                <Setter Property="TextDecorations" Value="Underline" />
+                <Setter Property="Cursor" Value="Hand" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>

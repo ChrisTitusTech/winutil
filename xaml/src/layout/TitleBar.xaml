@@ -1,0 +1,359 @@
+                <GradientStop Color="{DynamicResource CMainGradientTopColor}" Offset="0"/>
+                <GradientStop Color="{DynamicResource CMainGradientTopColor}" Offset="0.3"/>
+                <GradientStop Color="{DynamicResource CMainGradientBottomColor}" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <!-- Offline banner -->
+        <Border Name="WPFOfflineBanner" Grid.Row="0" Background="#8B0000" Visibility="Collapsed" Padding="6,4">
+            <TextBlock Text="&#x26A0; Offline Mode - No Internet Connection" Foreground="White" FontWeight="Bold"
+                HorizontalAlignment="Center" FontSize="13" Background="Transparent"/>
+        </Border>
+        <Grid Grid.Row="1" Background="Transparent" FlowDirection="LeftToRight">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/> <!-- Navigation buttons -->
+                <ColumnDefinition Width="*"/> <!-- Search bar and buttons -->
+            </Grid.ColumnDefinitions>
+
+            <!-- Navigation Buttons Panel -->
+            <StackPanel Name="NavDockPanel" Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center" Margin="5,5,10,5" FlowDirection="LeftToRight">
+                <StackPanel Name="NavLogoPanel" Orientation="Horizontal" HorizontalAlignment="Left" Background="Transparent" SnapsToDevicePixels="True" Margin="10,0,20,0">
+                </StackPanel>
+                <ToggleButton Style="{StaticResource TabToggleButton}" Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="{DynamicResource TabButtonWidth}"
+                    Background="{DynamicResource ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
+                    <ToggleButton.Content>
+                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonInstallForegroundColor}"
+                                   Text="{DynamicResource s_install}"/>
+                    </ToggleButton.Content>
+                </ToggleButton>
+                <ToggleButton Style="{StaticResource TabToggleButton}" Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="{DynamicResource TabButtonWidth}"
+                    Background="{DynamicResource ButtonTweaksBackgroundColor}" Foreground="{DynamicResource ButtonTweaksForegroundColor}" FontWeight="Bold" Name="WPFTab2BT">
+                    <ToggleButton.Content>
+                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonTweaksForegroundColor}"
+                                   Text="{DynamicResource s_tweaks}"/>
+                    </ToggleButton.Content>
+                </ToggleButton>
+                <ToggleButton Style="{StaticResource TabToggleButton}" Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="{DynamicResource TabButtonWidth}"
+                    Background="{DynamicResource ButtonConfigBackgroundColor}" Foreground="{DynamicResource ButtonConfigForegroundColor}" FontWeight="Bold" Name="WPFTab3BT">
+                    <ToggleButton.Content>
+                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonConfigForegroundColor}"
+                                   Text="{DynamicResource s_config}"/>
+                    </ToggleButton.Content>
+                </ToggleButton>
+                <ToggleButton Style="{StaticResource TabToggleButton}" Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="{DynamicResource TabButtonWidth}"
+                    Background="{DynamicResource ButtonUpdatesBackgroundColor}" Foreground="{DynamicResource ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab4BT">
+                    <ToggleButton.Content>
+                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonUpdatesForegroundColor}"
+                                   Text="{DynamicResource s_updates}"/>
+                    </ToggleButton.Content>
+                </ToggleButton>
+                <ToggleButton Style="{StaticResource TabToggleButton}" Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="Auto" MinWidth="{DynamicResource TabButtonWidth}"
+                    Background="{DynamicResource ButtonWin11ISOBackgroundColor}" Foreground="{DynamicResource ButtonWin11ISOForegroundColor}" FontWeight="Bold" Name="WPFTab5BT">
+                    <ToggleButton.Content>
+                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonWin11ISOForegroundColor}"
+                                   Text="{DynamicResource s_win11_creator}"/>
+                    </ToggleButton.Content>
+                </ToggleButton>
+            </StackPanel>
+
+            <!-- Search Bar and Action Buttons -->
+            <Grid Name="GridBesideNavDockPanel" Grid.Column="1" Background="Transparent" ShowGridLines="False" Height="Auto" FlowDirection="LeftToRight">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/> <!-- Search bar area - priority space -->
+                    <ColumnDefinition Width="Auto"/><!-- Buttons area -->
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Margin="5,0,10,0" MinWidth="120" Height="{DynamicResource SearchBarHeight}" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                    <Grid>
+                        <TextBox
+                            Height="{DynamicResource SearchBarHeight}"
+                            FontSize="{DynamicResource SearchBarTextBoxFontSize}"
+                            VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                            BorderThickness="1"
+                            Name="SearchBar"
+                            Foreground="{DynamicResource MainForegroundColor}" Background="{DynamicResource MainBackgroundColor}"
+                            Padding="3,3,30,0"
+                            ToolTip="{DynamicResource s_press_ctrl_f_and_type_app_name_to_filter_applica}"
+                            AutomationProperties.Name="{DynamicResource s_search}">
+                        </TextBox>
+                        <TextBlock
+                            Name="SearchBarIcon"
+                            VerticalAlignment="Center" HorizontalAlignment="Right"
+                            FontFamily="Segoe MDL2 Assets"
+                            Foreground="{DynamicResource ButtonBackgroundSelectedColor}"
+                            FontSize="{DynamicResource IconFontSize}"
+                            Margin="0,0,8,0" Width="Auto" Height="Auto">&#xE721;
+                        </TextBlock>
+                    </Grid>
+                </Border>
+                <Button Grid.Column="0"
+                    VerticalAlignment="Center" HorizontalAlignment="Right"
+                    Name="SearchBarClearButton"
+                    Style="{StaticResource SearchBarClearButtonStyle}"
+                    AutomationProperties.Name="{DynamicResource s_clear_search}"
+                    Margin="0,0,20,0" Visibility="Collapsed">
+                </Button>
+
+                <!-- Buttons Container -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5" FlowDirection="LeftToRight">
+                    <Button Name="JobQueueButton"
+                        Style="{StaticResource HoverButtonStyle}"
+                        BorderBrush="Transparent"
+                        Background="{DynamicResource MainBackgroundColor}"
+                        Foreground="{DynamicResource MainForegroundColor}"
+                        MinWidth="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Margin="0,0,2,0"
+                        Visibility="Collapsed"
+                        ToolTip="{DynamicResource s_running_and_queued_operations}"
+                        AutomationProperties.Name="{DynamicResource s_queue}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="{DynamicResource SettingsIconFontSize}" VerticalAlignment="Center">&#xE823;</TextBlock>
+                            <TextBlock Name="JobQueueCount" FontSize="{DynamicResource ButtonFontSize}" FontWeight="Bold" VerticalAlignment="Center" Margin="3,0,3,0"/>
+                        </StackPanel>
+                    </Button>
+                    <Popup Name="JobQueuePopup"
+                        IsOpen="False" StaysOpen="False"
+                        PlacementTarget="{Binding ElementName=JobQueueButton}" Placement="Bottom"
+                        HorizontalAlignment="Right" VerticalAlignment="Top">
+                        <Border Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
+                            <StackPanel Width="260" Background="{DynamicResource MainBackgroundColor}">
+                                <TextBlock Name="JobQueueRunning"
+                                    FontSize="{DynamicResource ButtonFontSize}" FontWeight="Bold"
+                                    Foreground="{DynamicResource MainForegroundColor}"
+                                    TextTrimming="CharacterEllipsis"
+                                    Margin="10,5,10,5"/>
+                                <ScrollViewer MaxHeight="240" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                    <StackPanel Name="JobQueueItems" Margin="5,0,5,5"/>
+                                </ScrollViewer>
+                            </StackPanel>
+                        </Border>
+                    </Popup>
+                    <Button Name="ThemeButton"
+                        Style="{StaticResource HoverButtonStyle}"
+                        BorderBrush="Transparent"
+                    Background="Transparent"
+                    Foreground="{DynamicResource MainForegroundColor}"
+                    FontSize="{DynamicResource SettingsIconFontSize}"
+                    Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
+                    HorizontalAlignment="Right" VerticalAlignment="Center"
+                    Margin="0,0,2,0"
+                    FontFamily="Segoe MDL2 Assets"
+                    Content="{DynamicResource s_n_a}"
+                    ToolTip="{DynamicResource s_change_the_winutil_ui_theme}"
+                    AutomationProperties.Name="{DynamicResource s_theme}"
+                />
+                    <Popup Name="ThemePopup"
+                    IsOpen="False"
+                    PlacementTarget="{Binding ElementName=ThemeButton}" Placement="Bottom"
+                    HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <Border Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
+                        <StackPanel Background="{DynamicResource MainBackgroundColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="{DynamicResource s_auto}" Name="AutoThemeMenuItem" Foreground="{DynamicResource MainForegroundColor}">
+                                <MenuItem.ToolTip>
+                                    <ToolTip Content="{DynamicResource s_follow_the_windows_theme}"/>
+                                </MenuItem.ToolTip>
+                            </MenuItem>
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="{DynamicResource s_dark}" Name="DarkThemeMenuItem" Foreground="{DynamicResource MainForegroundColor}">
+                                <MenuItem.ToolTip>
+                                    <ToolTip Content="{DynamicResource s_use_dark_theme}"/>
+                                </MenuItem.ToolTip>
+                            </MenuItem>
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="{DynamicResource s_light}" Name="LightThemeMenuItem" Foreground="{DynamicResource MainForegroundColor}">
+                                <MenuItem.ToolTip>
+                                    <ToolTip Content="{DynamicResource s_use_light_theme}"/>
+                                </MenuItem.ToolTip>
+                            </MenuItem>
+                        </StackPanel>
+                    </Border>
+                </Popup>
+
+                    <Button Name="FontScalingButton"
+                        Style="{StaticResource HoverButtonStyle}"
+                        BorderBrush="Transparent"
+                    Background="Transparent"
+                    Foreground="{DynamicResource MainForegroundColor}"
+                    FontSize="{DynamicResource SettingsIconFontSize}"
+                    Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
+                    HorizontalAlignment="Right" VerticalAlignment="Center"
+                    Margin="0,0,2,0"
+                    FontFamily="Segoe MDL2 Assets"
+                    Content="&#xE8D3;"
+                    ToolTip="{DynamicResource s_adjust_font_scaling_for_accessibility}"
+                    AutomationProperties.Name="{DynamicResource s_font_scaling}"
+                />
+                    <Popup Name="FontScalingPopup"
+                    IsOpen="False"
+                    PlacementTarget="{Binding ElementName=FontScalingButton}" Placement="Bottom"
+                    HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <Border Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
+                        <StackPanel Background="{DynamicResource MainBackgroundColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinWidth="200">
+                            <TextBlock Text="{DynamicResource s_font_scaling}"
+                                       FontSize="{DynamicResource ButtonFontSize}"
+                                       Foreground="{DynamicResource MainForegroundColor}"
+                                       HorizontalAlignment="Center"
+                                       Margin="10,5,10,5"
+                                       FontWeight="Bold"/>
+                            <Separator Margin="5,0,5,5"/>
+                            <StackPanel Orientation="Horizontal" Margin="10,5,10,10">
+                                <TextBlock Text="{DynamicResource s_small}"
+                                           FontSize="{DynamicResource ButtonFontSize}"
+                                           Foreground="{DynamicResource MainForegroundColor}"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,10,0"/>
+                                <Slider Name="FontScalingSlider"
+                                        Minimum="0.75" Maximum="2.0"
+                                        Value="1.0"
+                                        TickFrequency="0.25"
+                                        TickPlacement="BottomRight"
+                                        IsSnapToTickEnabled="True"
+                                        IsMoveToPointEnabled="True"
+                                        SmallChange="0.25"
+                                        LargeChange="0.25"
+                                        Width="120"
+                                        VerticalAlignment="Center"
+                                        AutomationProperties.Name="{DynamicResource s_font_scaling}"/>
+                                <TextBlock Text="{DynamicResource s_large}"
+                                           FontSize="{DynamicResource ButtonFontSize}"
+                                           Foreground="{DynamicResource MainForegroundColor}"
+                                           VerticalAlignment="Center"
+                                           Margin="10,0,0,0"/>
+                            </StackPanel>
+                            <TextBlock Name="FontScalingValue"
+                                       Text="{DynamicResource s_100}"
+                                       FontSize="{DynamicResource ButtonFontSize}"
+                                       Foreground="{DynamicResource MainForegroundColor}"
+                                       HorizontalAlignment="Center"
+                                       Margin="10,0,10,5"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10,0,10,10">
+                                <Button Name="FontScalingResetButton"
+                                        Content="{DynamicResource s_reset}"
+                                        Style="{StaticResource HoverButtonStyle}"
+                                        Width="60" Height="25"
+                                        Margin="5,0,5,0"/>
+                                <Button Name="FontScalingApplyButton"
+                                        Content="{DynamicResource s_apply}"
+                                        Style="{StaticResource HoverButtonStyle}"
+                                        Width="60" Height="25"
+                                        Margin="5,0,5,0"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Popup>
+
+                    <Button Name="SettingsButton"
+                        Style="{StaticResource HoverButtonStyle}"
+                        BorderBrush="Transparent"
+                    Background="Transparent"
+                    Foreground="{DynamicResource MainForegroundColor}"
+                    FontSize="{DynamicResource SettingsIconFontSize}"
+                    Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
+                    HorizontalAlignment="Right" VerticalAlignment="Center"
+                    Margin="0,0,2,0"
+                    FontFamily="Segoe MDL2 Assets"
+                    ToolTip="{DynamicResource s_settings}"
+                    AutomationProperties.Name="{DynamicResource s_settings}"
+                    Content="&#xE713;"/>
+                    <Popup Name="SettingsPopup"
+                    IsOpen="False"
+                    PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom"
+                    HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <Border Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
+                        <StackPanel Background="{DynamicResource MainBackgroundColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="{DynamicResource s_import}" Name="ImportMenuItem" Foreground="{DynamicResource MainForegroundColor}">
+                                <MenuItem.ToolTip>
+                                    <ToolTip Content="{DynamicResource s_import_configuration_from_exported_file}"/>
+                                </MenuItem.ToolTip>
+                            </MenuItem>
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="{DynamicResource s_export}" Name="ExportMenuItem" Foreground="{DynamicResource MainForegroundColor}">
+                                <MenuItem.ToolTip>
+                                    <ToolTip Content="{DynamicResource s_export_selected_elements_and_copy_execution_comm}"/>
+                                </MenuItem.ToolTip>
+                            </MenuItem>
+                            <Separator/>
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="{DynamicResource s_export_environment_report}" Name="ExportEnvironmentReportMenuItem" Foreground="{DynamicResource MainForegroundColor}">
+                                <MenuItem.ToolTip>
+                                    <ToolTip Content="{DynamicResource s_export_a_read_only_diagnostics_report_for_troubl}"/>
+                                </MenuItem.ToolTip>
+                            </MenuItem>
+                            <Separator/>
+                            <!-- Language menu items are generated from config/languages.json -->
+                            <StackPanel Name="LanguageMenuItems"/>
+                            <Separator/>
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="{DynamicResource s_about}" Name="AboutMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="{DynamicResource s_documentation}" Name="DocumentationMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="{DynamicResource s_sponsors}" Name="SponsorMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
+                        </StackPanel>
+                    </Border>
+                </Popup>
+
+                    <Button
+                        Content="&#xE921;"
+                        Style="{StaticResource HoverButtonStyle}"
+                        BorderThickness="0"
+                        BorderBrush="Transparent"
+                        Background="Transparent"
+                        Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Margin="0"
+                        FontFamily="Segoe MDL2 Assets"
+                        Foreground="{DynamicResource MainForegroundColor}"
+                        FontSize="{DynamicResource CloseIconFontSize}"
+                        ToolTip="{DynamicResource s_minimize}"
+                        AutomationProperties.Name="{DynamicResource s_minimize}"
+                        Name="WPFMinimizeButton" />
+                    <Button
+                        BorderThickness="0"
+                        BorderBrush="Transparent"
+                        Background="Transparent"
+                        Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Margin="0,0,0,0"
+                        FontFamily="Segoe MDL2 Assets"
+                        Foreground="{DynamicResource MainForegroundColor}"
+                        FontSize="{DynamicResource CloseIconFontSize}"
+                        Name="WPFMaximizeButton">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource HoverButtonStyle}">
+                                <Setter Property="Content" Value="&#xE922;"/>
+                                <Setter Property="ToolTip" Value="Maximize"/>
+                                <Setter Property="AutomationProperties.Name" Value="Maximize"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="Maximized">
+                                        <Setter Property="Content" Value="&#xE923;"/>
+                                        <Setter Property="ToolTip" Value="Restore"/>
+                                        <Setter Property="AutomationProperties.Name" Value="Restore"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button
+                        Content="&#xE8BB;"
+                        Style="{StaticResource HoverButtonStyle}"
+                        BorderThickness="0"
+                        BorderBrush="Transparent"
+                        Background="Transparent"
+                        Width="{DynamicResource IconButtonSize}" Height="{DynamicResource IconButtonSize}"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Margin="0"
+                        FontFamily="Segoe MDL2 Assets"
+                        Foreground="{DynamicResource MainForegroundColor}"
+                        FontSize="{DynamicResource CloseIconFontSize}"
+                        ToolTip="{DynamicResource s_close}"
+                        AutomationProperties.Name="{DynamicResource s_close}"
+                        Name="WPFCloseButton" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+

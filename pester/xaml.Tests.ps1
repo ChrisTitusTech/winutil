@@ -228,6 +228,12 @@ Describe "XAML document" {
         $updatesTab = $script:xaml.SelectSingleNode('//*[local-name()="TabItem"][@Name="WPFTab4"]')
         $profileGrid = $updatesTab.SelectSingleNode('.//*[local-name()="UniformGrid"]')
         $expectedButtons = @{
+            WPFUpdatessecurity = "s_apply_recommended"
+            WPFUpdatesdefault = "s_restore_defaults"
+            WPFUpdatesdisable = "s_disable_updates"
+        }
+        $english = Get-Content -Path (Join-Path $script:repoRoot "config\locales\en.json") -Raw | ConvertFrom-Json
+        $expectedText = @{
             WPFUpdatessecurity = "Apply Recommended"
             WPFUpdatesdefault = "Restore Defaults"
             WPFUpdatesdisable = "Disable Updates"
@@ -236,7 +242,8 @@ Describe "XAML document" {
         $profileGrid.GetAttribute("Columns") | Should -Be "3"
         foreach ($buttonName in $expectedButtons.Keys) {
             $button = $updatesTab.SelectSingleNode(".//*[local-name()='Button'][@Name='$buttonName']")
-            $button.GetAttribute("Content") | Should -Be $expectedButtons[$buttonName]
+            $button.GetAttribute("Content") | Should -Be "{DynamicResource $($expectedButtons[$buttonName])}"
+            $english.PSObject.Properties[$expectedButtons[$buttonName]].Value | Should -Be $expectedText[$buttonName]
         }
         $updatesTab.SelectSingleNode('.//*[@Name="updatespanel"]') | Should -BeNullOrEmpty
     }
@@ -285,17 +292,19 @@ Describe "XAML document" {
 
     It "names the Win11 Creator wizard controls for screen readers" {
         $expectedNames = @{
-            WPFWin11ISOBackButton = "Previous Step"
-            WPFWin11ISOForwardButton = "Next Step"
-            WPFWin11ISOPath = "ISO file"
-            WPFWin11ISOEditionComboBox = "Windows edition"
-            WPFWin11ISOUSBDriveComboBox = "USB drive"
-            WPFWin11ISOStatusLog = "Status Log"
+            WPFWin11ISOBackButton = "s_previous_step"
+            WPFWin11ISOForwardButton = "s_next_step"
+            WPFWin11ISOPath = "s_iso_file"
+            WPFWin11ISOEditionComboBox = "s_windows_edition"
+            WPFWin11ISOUSBDriveComboBox = "s_usb_drive"
+            WPFWin11ISOStatusLog = "s_status_log"
         }
+        $english = Get-Content -Path (Join-Path $script:repoRoot "config\locales\en.json") -Raw | ConvertFrom-Json
 
         foreach ($controlName in $expectedNames.Keys) {
             $control = $script:xaml.SelectSingleNode("//*[@Name='$controlName']")
-            $control.GetAttribute("AutomationProperties.Name") | Should -Be $expectedNames[$controlName]
+            $control.GetAttribute("AutomationProperties.Name") | Should -Be "{DynamicResource $($expectedNames[$controlName])}"
+            $english.PSObject.Properties[$expectedNames[$controlName]].Value | Should -Not -BeNullOrEmpty
         }
     }
 
@@ -303,12 +312,12 @@ Describe "XAML document" {
         $tabItems = @($script:xaml.SelectNodes('//*[local-name()="TabControl"][@Name="WPFTabNav"]/*[local-name()="TabItem"]'))
         $actualTabs = @($tabItems | ForEach-Object { "$($_.GetAttribute("Name")):$($_.GetAttribute("Header"))" })
         $expectedTabs = @(
-            "WPFTab1:Install",
-            "WPFTab2:Tweaks",
-            "WPFTab3:Config",
-            "WPFTab4:Updates",
-            "WPFTab5:Win11ISO",
-            "WPFTab6:AppX"
+            "WPFTab1:{DynamicResource s_install}",
+            "WPFTab2:{DynamicResource s_tweaks}",
+            "WPFTab3:{DynamicResource s_config}",
+            "WPFTab4:{DynamicResource s_updates}",
+            "WPFTab5:{DynamicResource s_win11iso}",
+            "WPFTab6:{DynamicResource s_appx}"
         )
 
         if (@($actualTabs).Count -ne $expectedTabs.Count) {
@@ -465,6 +474,7 @@ Describe "XAML and sync wiring" {
             "Form",
             "configs",
             "preferences",
+            "locales",
             "runspace",
             "Buttons",
             "PSScriptRoot",
@@ -512,6 +522,16 @@ Describe "XAML and sync wiring" {
             "selectedToggles",
             "selectedFeatures",
             "currentTab",
+            "UiMode",
+            "GuideStep",
+            "GuideStepName",
+            "GuideChoices",
+            "GuideSkipped",
+            "GuideIsLaptop",
+            "GuideConfigInitialized",
+            "GuideAppCards",
+            "GuideAppCategories",
+            "GuideDynamicPackages",
             "selectedAppsStackPanel",
             "selectedAppsstackPanel",
             "selectedAppsPopup",
@@ -545,7 +565,9 @@ Describe "XAML and sync wiring" {
             "Win11ISOWorkDir",
             "Win11ISOContentsDir",
             "Win11ISOExistingWorkRetryPending",
-            "Win11ISOUSBDisks"
+            "Win11ISOUSBDisks",
+            "settingsDialogXaml",
+            "SettingsDialog"
         )
         $allowedNames = @($xamlNames + $generatedNames + $dynamicStateNames) | Sort-Object -Unique
         $bracketReferences = @(

@@ -1,0 +1,65 @@
+
+        <Style TargetType="ComboBox">
+            <Setter Property="Foreground" Value="{DynamicResource ComboBoxForegroundColor}" />
+            <Setter Property="Background" Value="{DynamicResource ComboBoxBackgroundColor}" />
+            <Setter Property="MinWidth"   Value="{DynamicResource ButtonWidth}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <Border Name="OuterBorder"
+                                    BorderBrush="{DynamicResource BorderColor}"
+                                    BorderThickness="1"
+                                    CornerRadius="{DynamicResource ButtonCornerRadius}"
+                                    Background="{TemplateBinding Background}">
+                                <ToggleButton Name="ToggleButton"
+                                              Style="{StaticResource ComboBoxToggleButtonStyle}"
+                                              Background="Transparent"
+                                              BorderThickness="0"
+                                              IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                              ClickMode="Press">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0"
+                                                   Text="{TemplateBinding SelectionBoxItem}"
+                                                   Foreground="{TemplateBinding Foreground}"
+                                                   Background="Transparent"
+                                                   HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                   Margin="6,3,2,3"/>
+                                        <Path Grid.Column="1"
+                                              Data="M 0,0 L 8,0 L 4,5 Z"
+                                              Fill="{TemplateBinding Foreground}"
+                                              Width="8" Height="5"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Center"
+                                              Stretch="Uniform"
+                                              Margin="4,0,6,0"/>
+                                    </Grid>
+                                </ToggleButton>
+                            </Border>
+                            <Popup Name="Popup"
+                                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   Placement="Bottom"
+                                   Focusable="False"
+                                   AllowsTransparency="True"
+                                   PopupAnimation="Slide">
+                                <Border Name="DropDownBorder"
+                                        MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{DynamicResource BorderColor}"
+                                        BorderThickness="1"
+                                        CornerRadius="4">
+                                    <ScrollViewer>
+                                        <!-- Stretched, so an item's highlight spans the popup rather than just its text -->
+                                        <ItemsPresenter HorizontalAlignment="Stretch" Margin="4,2"/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>

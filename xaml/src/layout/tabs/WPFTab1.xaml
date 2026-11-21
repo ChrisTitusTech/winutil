@@ -1,0 +1,118 @@
+            <TabItem Header="{DynamicResource s_install}" Visibility="Collapsed" Name="WPFTab1">
+                <Grid Background="Transparent" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Category filters. Click one to filter, ctrl click to combine several. -->
+                    <WrapPanel Grid.Row="0" Orientation="Horizontal" Margin="5,5,5,5" Name="WPFSearchChips">
+                        <TextBlock Text="&#xE71C;"
+                                   FontFamily="Segoe MDL2 Assets"
+                                   FontSize="{DynamicResource IconFontSize}"
+                                   Foreground="{DynamicResource LabelboxForegroundColor}"
+                                   Background="Transparent"
+                                   VerticalAlignment="Center"
+                                   Margin="10,0,10,0"
+                                   ToolTip="{DynamicResource s_filter_by_category_ctrl_click_to_select_more_tha}"/>
+                        <ToggleButton Name="WPFSearchChipAll"             Content="{DynamicResource s_all}"               Style="{StaticResource FilterChipToggleStyle}" IsChecked="True"/>
+                        <ToggleButton Name="WPFSearchChipBrowsers"        Content="{DynamicResource s_browsers}"          Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipCommunications"  Content="{DynamicResource s_communications}"    Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipDevelopment"     Content="{DynamicResource s_development}"       Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipDocument"        Content="{DynamicResource s_document}"          Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipGames"           Content="{DynamicResource s_games}"             Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipMicrosoftTools"  Content="{DynamicResource s_microsoft_tools}"   Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipMultimediaTools" Content="{DynamicResource s_multimedia_tools}"  Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipProTools"        Content="{DynamicResource s_pro_tools}"         Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipSelfhostedTools" Content="{DynamicResource s_selfhosted_tools}"  Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipUtilities"       Content="{DynamicResource s_utilities}"         Style="{StaticResource FilterChipToggleStyle}"/>
+                    </WrapPanel>
+
+                    <Grid Grid.Row="1" Margin="{DynamicResource TabContentMargin}">
+                        <Grid Name="WPFInstallContentGrid">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Grid Name="appscategory" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            </Grid>
+
+                            <Grid Name="appspanel" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            </Grid>
+                        </Grid>
+
+                        <!-- ─── Install working view: a calm, focused card shown during install ─── -->
+                        <Grid Name="WPFInstallWorkingPanel" Visibility="Collapsed" Background="Transparent"
+                              HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <Border HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    Width="460" Padding="32" CornerRadius="12"
+                                    Background="{DynamicResource SurfaceBackgroundColor}"
+                                    BorderBrush="{DynamicResource BorderColor}" BorderThickness="1">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <!-- Spinner inside a soft accent disc; BitmapCache keeps the
+                                         rotation smooth because this glyph is text. -->
+                                    <Grid HorizontalAlignment="Center" Width="76" Height="76" Margin="0,0,0,18">
+                                        <Ellipse Fill="{DynamicResource ButtonBackgroundSelectedColor}" Opacity="0.45"/>
+                                        <TextBlock Name="WPFInstallWorkingSpinner"
+                                                   Text="&#xE895;"
+                                                   FontFamily="Segoe MDL2 Assets"
+                                                   FontSize="34"
+                                                   Foreground="{DynamicResource LabelboxForegroundColor}"
+                                                   Background="Transparent"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                   RenderTransformOrigin="0.5,0.5"
+                                                   CacheMode="BitmapCache">
+                                            <TextBlock.RenderTransform>
+                                                <RotateTransform Angle="0"/>
+                                            </TextBlock.RenderTransform>
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsVisible, RelativeSource={RelativeSource Self}}" Value="True">
+                                                            <DataTrigger.EnterActions>
+                                                                <BeginStoryboard Name="InstallSpin">
+                                                                    <Storyboard RepeatBehavior="Forever">
+                                                                        <DoubleAnimation
+                                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                                                            From="0" To="360" Duration="0:0:1.4"/>
+                                                                    </Storyboard>
+                                                                </BeginStoryboard>
+                                                            </DataTrigger.EnterActions>
+                                                            <DataTrigger.ExitActions>
+                                                                <StopStoryboard BeginStoryboardName="InstallSpin"/>
+                                                            </DataTrigger.ExitActions>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Grid>
+                                    <TextBlock Name="WPFInstallWorkingLabel"
+                                               FontSize="{DynamicResource Win11StepTitleFontSize}"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource LabelboxForegroundColor}"
+                                               Background="Transparent"
+                                               HorizontalAlignment="Center"
+                                               TextAlignment="Center"
+                                               TextWrapping="Wrap"
+                                               Margin="0,0,0,8"
+                                               Text="{DynamicResource s_installing}"/>
+                                    <TextBlock FontSize="{DynamicResource FontSize}"
+                                               Foreground="{DynamicResource MainForegroundColor}"
+                                               Background="Transparent"
+                                               Opacity="0.7"
+                                               HorizontalAlignment="Center"
+                                               TextAlignment="Center"
+                                               TextWrapping="Wrap"
+                                               MaxWidth="380"
+                                               Text="{DynamicResource s_this_can_take_several_minutes_progress_is_shown}"/>
+                                    <Button Name="WPFInstallWorkingCancel" Content="{DynamicResource s_cancel_operations}"
+                                            Width="170" Height="30" HorizontalAlignment="Center"
+                                            Margin="0,20,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </TabItem>

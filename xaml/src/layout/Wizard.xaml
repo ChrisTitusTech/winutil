@@ -1,0 +1,174 @@
+        <Grid Name="WPFGuidePanel" Grid.Row="2" Grid.Column="0" Visibility="Collapsed" Background="Transparent">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid Name="WPFGuideCard" Grid.Row="0" Visibility="Collapsed" Background="Transparent">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel MaxWidth="900" HorizontalAlignment="Center" Margin="{DynamicResource TabContentMargin}">
+                        <TextBlock Name="WPFGuideTitle" Text="" FontSize="26" FontWeight="Bold" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource LabelboxForegroundColor}" Background="Transparent" Margin="0,0,0,10"/>
+                        <TextBlock Name="WPFGuideDescription" Text="" FontSize="{DynamicResource FontSize}" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource MainForegroundColor}" Background="Transparent" Margin="0,0,0,16"/>
+                        <Border Name="WPFGuideUndoBadge" HorizontalAlignment="Left" Visibility="Collapsed" Padding="6,2"
+                                BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="10" Margin="0,0,0,16">
+                            <TextBlock Text="{DynamicResource s_can_be_undone}" FontSize="12" Foreground="{DynamicResource LabelboxForegroundColor}" Background="Transparent"/>
+                        </Border>
+                        <TextBlock Text="{DynamicResource s_what_changes}" FontSize="{DynamicResource FontSize}" FontWeight="Bold"
+                                   Foreground="{DynamicResource LabelboxForegroundColor}" Background="Transparent" Margin="0,0,0,4"/>
+                        <TextBlock Name="WPFGuideChanges" Text="" FontSize="{DynamicResource FontSize}" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource MainForegroundColor}" Background="Transparent" Margin="0,0,0,14"/>
+                        <TextBlock Text="{DynamicResource s_benefits}" FontSize="{DynamicResource FontSize}" FontWeight="Bold"
+                                   Foreground="{DynamicResource LabelboxForegroundColor}" Background="Transparent" Margin="0,0,0,4"/>
+                        <TextBlock Name="WPFGuideBenefits" Text="" FontSize="{DynamicResource FontSize}" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource MainForegroundColor}" Background="Transparent" Margin="0,0,0,16"/>
+                        <Border Background="{DynamicResource SurfaceBackgroundColor}" BorderBrush="{DynamicResource BorderColor}"
+                                BorderThickness="1" Padding="12" Margin="0,0,0,12">
+                            <TextBlock Name="WPFGuideInfo" Text="" FontSize="{DynamicResource FontSize}" TextWrapping="Wrap"
+                                       Foreground="{DynamicResource MainForegroundColor}" Background="Transparent"/>
+                        </Border>
+                        <Border Name="WPFGuideWarning" Visibility="Collapsed" BorderBrush="#E39B2B" BorderThickness="1"
+                                Padding="12" Margin="0,0,0,12" Background="Transparent">
+                            <TextBlock Name="WPFGuideWarningText" Text="" FontSize="{DynamicResource FontSize}" TextWrapping="Wrap"
+                                       Foreground="{DynamicResource MainForegroundColor}" Background="Transparent"/>
+                        </Border>
+                        <WrapPanel Name="WPFGuideOptions" Orientation="Horizontal" Margin="0,8,0,0">
+                            <Button Name="WPFGuideOption1" Content="" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}" Margin="5" Visibility="Collapsed"/>
+                            <Button Name="WPFGuideOption2" Content="" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}" Margin="5" Visibility="Collapsed"/>
+                            <Button Name="WPFGuideOption3" Content="" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}" Margin="5" Visibility="Collapsed"/>
+                            <Button Name="WPFGuideOption4" Content="" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}" Margin="5" Visibility="Collapsed"/>
+                        </WrapPanel>
+                        <StackPanel Name="WPFGuideBooleanActions" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+                            <Button Name="WPFGuideNoButton" Content="{DynamicResource s_no}" Width="120" Height="{DynamicResource ButtonHeight}" Margin="5"/>
+                            <Button Name="WPFGuideYesButton" Content="{DynamicResource s_yes}" Width="120" Height="{DynamicResource ButtonHeight}" Margin="5"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+
+            <Grid Name="WPFGuideAppPanel" Grid.Row="0" Visibility="Collapsed" Background="Transparent">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="{DynamicResource TabContentMargin}">
+                        <TextBlock Text="{DynamicResource s_choose_applications}" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource LabelboxForegroundColor}"
+                                   Background="Transparent" Margin="0,0,0,6"/>
+                        <TextBlock Text="{DynamicResource s_selected_apps_are_installed_or_upgraded_when_you}"
+                                   FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}"
+                                   Background="Transparent" TextWrapping="Wrap" Margin="0,0,0,12"/>
+                        <Border Margin="0,0,0,14" Height="{DynamicResource SearchBarHeight}" HorizontalAlignment="Stretch"
+                                CornerRadius="{DynamicResource ButtonCornerRadius}"
+                                Background="{DynamicResource SurfaceBackgroundColor}"
+                                BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" Padding="10,0">
+                            <Grid>
+                                <TextBox Name="WPFGuideAppSearch" Height="{DynamicResource SearchBarHeight}"
+                                         FontSize="{DynamicResource SearchBarTextBoxFontSize}"
+                                         Foreground="{DynamicResource MainForegroundColor}" Background="Transparent"
+                                         BorderThickness="0" Padding="0,0,30,0" VerticalContentAlignment="Center"
+                                         CaretBrush="{DynamicResource MainForegroundColor}"
+                                         ToolTip="{DynamicResource s_type_to_filter_applications_by_name_description}"
+                                         AutomationProperties.Name="{DynamicResource s_search_applications}"/>
+                                <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="{DynamicResource IconFontSize}"
+                                           Foreground="{DynamicResource LabelboxForegroundColor}"
+                                           Background="Transparent" Text="&#xE721;" HorizontalAlignment="Right"
+                                           VerticalAlignment="Center" Margin="0,0,2,0" IsHitTestVisible="False"/>
+                            </Grid>
+                        </Border>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <Button Name="WPFGuideSearchPackagesButton" Content="{DynamicResource s_search_packages}" Width="150" Height="30"
+                                    ToolTip="{DynamicResource s_search_winget_and_chocolatey_for_packages_not_in}"
+                                    AutomationProperties.Name="{DynamicResource s_search_packages}"/>
+                            <TextBlock Name="WPFGuideSearchStatus" Text="" FontSize="{DynamicResource FontSize}"
+                                       Foreground="{DynamicResource MainForegroundColor}" Background="Transparent"
+                                       VerticalAlignment="Center" Margin="10,0,0,0"/>
+                        </StackPanel>
+                        <Border Name="WPFGuidePackageResults" Visibility="Collapsed" Background="{DynamicResource SurfaceBackgroundColor}"
+                                BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="5"
+                                Padding="10" Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource s_package_search_results}" FontSize="{DynamicResource FontSize}" FontWeight="Bold"
+                                           Foreground="{DynamicResource LabelboxForegroundColor}" Background="Transparent"
+                                           Margin="0,0,0,8"/>
+                                <WrapPanel Name="WPFGuidePackageList" Orientation="Horizontal"/>
+                            </StackPanel>
+                        </Border>
+                        <StackPanel Name="WPFGuideAppList" Orientation="Vertical"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+
+            <Grid Name="WPFGuideReviewPanel" Grid.Row="0" Visibility="Collapsed" Background="Transparent">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel MaxWidth="900" HorizontalAlignment="Center" Margin="{DynamicResource TabContentMargin}">
+                        <TextBlock Text="{DynamicResource s_review_and_apply}" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource LabelboxForegroundColor}"
+                                   Background="Transparent" Margin="0,0,0,10"/>
+                        <TextBox Name="WPFGuideSummary" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
+                                 MinHeight="220" MaxHeight="460" Padding="10"
+                                 VerticalScrollBarVisibility="Auto"
+                                 Background="{DynamicResource MainBackgroundColor}" Foreground="{DynamicResource MainForegroundColor}"
+                                 FontFamily="{DynamicResource FontFamily}" FontSize="{DynamicResource FontSize}"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+                            <Button Name="WPFGuideApplyAllButton" Content="{DynamicResource s_apply_all_in_order}" Width="200" Height="40"
+                                    ToolTip="{DynamicResource s_run_the_selected_actions_in_the_safest_order}" AutomationProperties.Name="{DynamicResource s_apply_all_in_order}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+
+        </Grid>
+
+        <!-- Window-level progress indicator - visible regardless of active tab -->
+        <Border Name="WPFTweaksProgressBar" Grid.Row="3" Background="Transparent" Visibility="Collapsed" Padding="10,6">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Vertical">
+                    <TextBlock Name="WPFTweaksProgressLabel" Text="" Foreground="{DynamicResource MainForegroundColor}" FontSize="13" Background="Transparent" Margin="0,0,0,4"/>
+                    <ProgressBar Name="WPFTweaksProgressValue" Height="6" Minimum="0" Maximum="100" Value="0" Style="{StaticResource RoundedProgressBarStyle}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Simple mode footer: navigation stays visible while the Advanced tabs are shown too -->
+        <Border Name="WPFGuideFooter" Grid.Row="4" Background="{DynamicResource SurfaceBackgroundColor}"
+                BorderBrush="{DynamicResource BorderColor}" BorderThickness="0,1,0,0" Padding="8,6"
+                Visibility="Collapsed" FlowDirection="LeftToRight">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <Button Name="WPFGuideBackButton" Content="{DynamicResource s_previous}" Width="100" Height="30" Margin="5,0"
+                            AutomationProperties.Name="{DynamicResource s_previous_step}" IsEnabled="False"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Name="WPFGuideCurrentLabel" Text="{DynamicResource s_step_1}" FontSize="{DynamicResource FontSize}"
+                               FontWeight="Bold" Foreground="{DynamicResource MainForegroundColor}"
+                               Background="Transparent" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                    <StackPanel Name="WPFGuideDots" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Ellipse Name="WPFGuideDot1" Width="10" Height="10" Margin="4,0" Fill="{StaticResource GuideDotUpcomingBrush}"/>
+                        <Ellipse Name="WPFGuideDot2" Width="10" Height="10" Margin="4,0" Fill="{StaticResource GuideDotUpcomingBrush}"/>
+                        <Ellipse Name="WPFGuideDot3" Width="10" Height="10" Margin="4,0" Fill="{StaticResource GuideDotUpcomingBrush}"/>
+                        <Ellipse Name="WPFGuideDot4" Width="10" Height="10" Margin="4,0" Fill="{StaticResource GuideDotUpcomingBrush}"/>
+                        <Ellipse Name="WPFGuideDot5" Width="10" Height="10" Margin="4,0" Fill="{StaticResource GuideDotUpcomingBrush}"/>
+                        <Ellipse Name="WPFGuideDot6" Width="10" Height="10" Margin="4,0" Fill="{StaticResource GuideDotUpcomingBrush}"/>
+                        <Ellipse Name="WPFGuideDot7" Width="10" Height="10" Margin="4,0" Fill="{StaticResource GuideDotUpcomingBrush}"/>
+                    </StackPanel>
+                    <TextBlock Name="WPFGuideTotalLabel" Text="{DynamicResource s_7_steps}" FontSize="{DynamicResource FontSize}"
+                               Foreground="{DynamicResource MainForegroundColor}" Background="Transparent"
+                               Margin="12,0,0,0" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button Name="WPFGuideSkipButton" Content="{DynamicResource s_skip}" Width="80" Height="30" Margin="5,0"
+                            AutomationProperties.Name="{DynamicResource s_skip_step}"/>
+                    <Button Name="WPFGuideNextButton" Content="{DynamicResource s_next}" Width="100" Height="30" Margin="5,0"
+                            AutomationProperties.Name="{DynamicResource s_next_step}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Startup mode chooser. Shown on every launch; the rest of the window waits for a choice.
+             Each card's named button covers the whole card, so pressing anywhere on the card
+             selects that mode. Both cards are styled identically. -->
