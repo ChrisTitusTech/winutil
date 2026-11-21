@@ -420,6 +420,17 @@ Describe "XAML document" {
         $maximizeStyle.GetAttribute("BasedOn") | Should -Be "{StaticResource HoverButtonStyle}"
         [int]$themes.shared.CloseIconFontSize | Should -BeLessThan ([int]$themes.shared.SettingsIconFontSize)
     }
+
+    It "keeps the window inside the screen when maximized" {
+        $chrome = $script:xaml.SelectSingleNode('//*[local-name()="WindowChrome.WindowChrome"]/*[local-name()="WindowChrome"]')
+        $windowStyle = $script:xaml.SelectSingleNode('/*[local-name()="Window"]/*[local-name()="Window.Style"]/*[local-name()="Style"]')
+        $maximizedTrigger = $windowStyle.SelectSingleNode('./*[local-name()="Style.Triggers"]/*[local-name()="Trigger"][@Property="WindowState"][@Value="Maximized"]')
+        $borderSetter = $maximizedTrigger.SelectSingleNode('./*[local-name()="Setter"][@Property="BorderThickness"]')
+
+        $chrome.GetAttribute("CaptionHeight") | Should -Be "0"
+        $windowStyle.GetAttribute("TargetType") | Should -Be "Window"
+        $borderSetter.GetAttribute("Value") | Should -Be "{x:Static SystemParameters.WindowResizeBorderThickness}"
+    }
 }
 
 Describe "XAML and sync wiring" {

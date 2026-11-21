@@ -15,6 +15,15 @@
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" CornerRadius="10" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
+    <Window.Style>
+        <Style TargetType="Window">
+            <Style.Triggers>
+                <Trigger Property="WindowState" Value="Maximized">
+                    <Setter Property="BorderThickness" Value="{x:Static SystemParameters.WindowResizeBorderThickness}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Style>
     <Window.Resources>
     <Style TargetType="ToolTip">
         <Setter Property="Background" Value="{DynamicResource ToolTipBackgroundColor}"/>
