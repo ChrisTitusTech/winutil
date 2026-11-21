@@ -124,6 +124,7 @@ function Invoke-WinutilThemeChange {
     }
 
     $sync.preferences.theme = $theme
+    if (Get-Command Save-WinUtilPreferences -ErrorAction SilentlyContinue) { Save-WinUtilPreferences }
     Set-WinutilTheme -currentTheme "shared"
 
     switch ($sync.preferences.theme) {

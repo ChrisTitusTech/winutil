@@ -26,7 +26,19 @@ function Invoke-WPFUIElements {
 
         # Let the interface answer between batches of entries. Only for content nobody is
         # waiting on: a user who just clicked the tab is better served by finishing at once.
-        [switch]$Yield
+        [switch]$Yield,
+
+        # Optional locale prefix for entries that are neither tweaks nor features (e.g. the
+        # Install tab action panel). When set, Content/Description/Category resolve through it.
+        [string]$LocalePrefix,
+
+        # Prefix used for descriptions. Defaults to the tweak-specific key so existing callers
+        # keep working; callers passing -LocalePrefix should pass the matching description prefix.
+        [string]$DescriptionPrefix = 's_desc_',
+
+        # Prefix applied to entries that do not match a known naming pattern (e.g. WPFToggle*).
+        # Passed by the Tweaks tab so those entries still resolve their localized labels.
+        [string]$DefaultPrefix
     )
 
     $window = $sync.form
@@ -60,17 +72,38 @@ function Invoke-WPFUIElements {
     $radioButtonGroups = @{}
     $organizedData = @{}
 
+    # Resolve a localized string from the active locale, falling back to the original value
+    $locales = $sync.configs.locales
+    $language = if ($sync.preferences) { $sync.preferences.language } else { $null }
+    $locale = $null
+    if ($locales -and $language) {
+        $locale = if ($locales -is [System.Collections.IDictionary]) { $locales[$language] } else { $locales.$language }
+    }
+    function Get-Localized {
+        param([string]$Key, [string]$Fallback)
+        if ($null -ne $locale) {
+            $p = $locale.PSObject.Properties[$Key]
+            if ($null -ne $p -and -not [string]::IsNullOrWhiteSpace([string]$p.Value)) { return [string]$p.Value }
+        }
+        return $Fallback
+    }
+
     # Iterate through JSON data and organize by panel and category using generic lists
     foreach ($prop in $configVariable.PSObject.Properties) {
         $entryInfo = $prop.Value
 
+        $nameKey = $prop.Name
+        $prefix = if ($nameKey -like 'WPFTweaks*') { 's_tweak_' } elseif ($nameKey -like 'WPFFeature*') { 's_feature_' } elseif ($LocalePrefix) { $LocalePrefix } else { $DefaultPrefix }
+        $shortKey = $nameKey -replace '^WPFTweaks', '' -replace '^WPFFeature', ''
+        $catKey = if ($LocalePrefix) { $LocalePrefix + 'cat_' + (([string]$entryInfo.Category) -replace '[^A-Za-z0-9]+', '_').ToLowerInvariant() } else { 's_cat_' + (([string]$entryInfo.Category) -replace '[^A-Za-z0-9]+', '_').ToLowerInvariant() }
+
         $entryObject = [PSCustomObject]@{
             Name        = $prop.Name
-            Category    = $entryInfo.Category
-            Content     = $entryInfo.Content
+            Category    = Get-Localized -Key $catKey -Fallback ([string]$entryInfo.Category)
+            Content     = if ($prefix) { Get-Localized -Key "$prefix$shortKey" -Fallback ([string]$entryInfo.Content) } else { [string]$entryInfo.Content }
             Panel       = if ($entryInfo.Panel) { $entryInfo.Panel } else { "0" }
             Link        = $entryInfo.link
-            Description = $entryInfo.description
+            Description = if ($prefix) { Get-Localized -Key "$DescriptionPrefix$shortKey" -Fallback ([string]$entryInfo.description) } else { [string]$entryInfo.description }
             Type        = $entryInfo.type
             ComboItems  = $entryInfo.ComboItems
             ComboDescriptions = $entryInfo.ComboDescriptions
@@ -147,6 +180,11 @@ function Invoke-WPFUIElements {
 
         # Now proceed with adding category labels and entries to $stackPanelContainer
         foreach ($category in ($organizedData[$panelKey].Keys | Sort-Object)) {
+
+            # The guided Config step keeps features only; legacy panels belong to Advanced mode
+            if ($sync.UiMode -eq "Setup" -and $category -like "*Legacy Windows Panels*") {
+                continue
+            }
 
             $label = New-Object Windows.Controls.Label
             $categoryCleanName = $category -replace ".*__", ""
@@ -276,6 +314,7 @@ function Invoke-WPFUIElements {
                         $horizontalStackPanel = New-Object Windows.Controls.StackPanel
                         $horizontalStackPanel.Orientation = "Horizontal"
                         $horizontalStackPanel.Margin = "0,5,0,0"
+                        $horizontalStackPanel.FlowDirection = "LeftToRight"
                         [System.Windows.Automation.AutomationProperties]::SetName($horizontalStackPanel, $entryInfo.Content)
 
                         $label = New-Object Windows.Controls.Label
@@ -390,6 +429,7 @@ function Invoke-WPFUIElements {
                             $textBlock = New-Object Windows.Controls.TextBlock
                             $textBlock.Name = $comboBox.Name + "Link"
                             $textBlock.Text = "(?)"
+                            $textBlock.FlowDirection = "LeftToRight"
                             $textBlock.ToolTip = $entryInfo.Link
                             $textBlock.Style = $HoverTextBlockStyle
                             $textBlock.UseLayoutRounding = $true
@@ -498,6 +538,7 @@ function Invoke-WPFUIElements {
                     default {
                         $horizontalStackPanel = New-Object Windows.Controls.StackPanel
                         $horizontalStackPanel.Orientation = "Horizontal"
+                        $horizontalStackPanel.FlowDirection = "LeftToRight"
                         [System.Windows.Automation.AutomationProperties]::SetName($horizontalStackPanel, $entryInfo.Content)
 
                         $checkBox = New-Object Windows.Controls.CheckBox
@@ -517,6 +558,7 @@ function Invoke-WPFUIElements {
                             $textBlock = New-Object Windows.Controls.TextBlock
                             $textBlock.Name = $checkBox.Name + "Link"
                             $textBlock.Text = "(?)"
+                            $textBlock.FlowDirection = "LeftToRight"
                             $textBlock.ToolTip = $entryInfo.Link
                             $textBlock.Style = $HoverTextBlockStyle
                             $textBlock.UseLayoutRounding = $true

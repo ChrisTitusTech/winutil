@@ -34,7 +34,9 @@ function Invoke-WPFTab {
                 $sync["$ClickedTab"].IsChecked = $true
             }
         }
-        $sync.currentTab = $sync.WPFTabNav.Items[$tabNumber].Header
+        # The tab Header is a DynamicResource key, so read the stable internal name by index
+        # instead. Initialize-WinUtilTabContent switches on these exact English names.
+        $sync.currentTab = @("Install", "Tweaks", "Config", "Updates", "Win11ISO", "AppX")[$tabNumber]
     }
 
     Measure-WinUtilStep -Scope "Tab" -Name "$ClickedTab content" -ScriptBlock {

@@ -1,0 +1,162 @@
+{
+  "en": {
+    "code": "en",
+    "displayNameKey": "s_language_english",
+    "flowDirection": "LeftToRight"
+  },
+  "ar": {
+    "code": "ar",
+    "displayNameKey": "s_language_arabic",
+    "flowDirection": "RightToLeft"
+  },
+  "de": {
+    "code": "de",
+    "displayNameKey": "s_language_de",
+    "flowDirection": "LeftToRight"
+  },
+  "fr": {
+    "code": "fr",
+    "displayNameKey": "s_language_fr",
+    "flowDirection": "LeftToRight"
+  },
+  "es": {
+    "code": "es",
+    "displayNameKey": "s_language_es",
+    "flowDirection": "LeftToRight"
+  },
+  "it": {
+    "code": "it",
+    "displayNameKey": "s_language_it",
+    "flowDirection": "LeftToRight"
+  },
+  "pt": {
+    "code": "pt",
+    "displayNameKey": "s_language_pt",
+    "flowDirection": "LeftToRight"
+  },
+  "nl": {
+    "code": "nl",
+    "displayNameKey": "s_language_nl",
+    "flowDirection": "LeftToRight"
+  },
+  "sv": {
+    "code": "sv",
+    "displayNameKey": "s_language_sv",
+    "flowDirection": "LeftToRight"
+  },
+  "no": {
+    "code": "no",
+    "displayNameKey": "s_language_no",
+    "flowDirection": "LeftToRight"
+  },
+  "da": {
+    "code": "da",
+    "displayNameKey": "s_language_da",
+    "flowDirection": "LeftToRight"
+  },
+  "fi": {
+    "code": "fi",
+    "displayNameKey": "s_language_fi",
+    "flowDirection": "LeftToRight"
+  },
+  "pl": {
+    "code": "pl",
+    "displayNameKey": "s_language_pl",
+    "flowDirection": "LeftToRight"
+  },
+  "cs": {
+    "code": "cs",
+    "displayNameKey": "s_language_cs",
+    "flowDirection": "LeftToRight"
+  },
+  "sk": {
+    "code": "sk",
+    "displayNameKey": "s_language_sk",
+    "flowDirection": "LeftToRight"
+  },
+  "hu": {
+    "code": "hu",
+    "displayNameKey": "s_language_hu",
+    "flowDirection": "LeftToRight"
+  },
+  "ro": {
+    "code": "ro",
+    "displayNameKey": "s_language_ro",
+    "flowDirection": "LeftToRight"
+  },
+  "tr": {
+    "code": "tr",
+    "displayNameKey": "s_language_tr",
+    "flowDirection": "LeftToRight"
+  },
+  "el": {
+    "code": "el",
+    "displayNameKey": "s_language_el",
+    "flowDirection": "LeftToRight"
+  },
+  "he": {
+    "code": "he",
+    "displayNameKey": "s_language_he",
+    "flowDirection": "RightToLeft"
+  },
+  "hi": {
+    "code": "hi",
+    "displayNameKey": "s_language_hi",
+    "flowDirection": "LeftToRight"
+  },
+  "th": {
+    "code": "th",
+    "displayNameKey": "s_language_th",
+    "flowDirection": "LeftToRight"
+  },
+  "vi": {
+    "code": "vi",
+    "displayNameKey": "s_language_vi",
+    "flowDirection": "LeftToRight"
+  },
+  "id": {
+    "code": "id",
+    "displayNameKey": "s_language_id",
+    "flowDirection": "LeftToRight"
+  },
+  "ms": {
+    "code": "ms",
+    "displayNameKey": "s_language_ms",
+    "flowDirection": "LeftToRight"
+  },
+  "tl": {
+    "code": "tl",
+    "displayNameKey": "s_language_tl",
+    "flowDirection": "LeftToRight"
+  },
+  "ja": {
+    "code": "ja",
+    "displayNameKey": "s_language_ja",
+    "flowDirection": "LeftToRight"
+  },
+  "ko": {
+    "code": "ko",
+    "displayNameKey": "s_language_ko",
+    "flowDirection": "LeftToRight"
+  },
+  "zh": {
+    "code": "zh",
+    "displayNameKey": "s_language_zh",
+    "flowDirection": "LeftToRight"
+  },
+  "uk": {
+    "code": "uk",
+    "displayNameKey": "s_language_uk",
+    "flowDirection": "LeftToRight"
+  },
+  "ru": {
+    "code": "ru",
+    "displayNameKey": "s_language_ru",
+    "flowDirection": "LeftToRight"
+  },
+  "fa": {
+    "code": "fa",
+    "displayNameKey": "s_language_fa",
+    "flowDirection": "RightToLeft"
+  }
+}

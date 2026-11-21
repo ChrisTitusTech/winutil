@@ -14,11 +14,13 @@ function Initialize-WinUtilInstallTabControls {
     if ($sync.ChocoRadioButton) {
         $sync.ChocoRadioButton.Add_Checked({
             $sync.preferences.packagemanager = "Choco"
+            if (Get-Command Save-WinUtilPreferences -ErrorAction SilentlyContinue) { Save-WinUtilPreferences }
         })
     }
     if ($sync.WingetRadioButton) {
         $sync.WingetRadioButton.Add_Checked({
             $sync.preferences.packagemanager = "Winget"
+            if (Get-Command Save-WinUtilPreferences -ErrorAction SilentlyContinue) { Save-WinUtilPreferences }
         })
     }
 
