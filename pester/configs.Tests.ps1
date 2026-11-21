@@ -924,10 +924,15 @@ Describe "UI-rendered config entries" {
             [regex]::Matches($xamlText, 'x:Key="([^"]+)"') |
                 ForEach-Object { $_.Groups[1].Value }
         ) | Sort-Object -Unique
+        $localeKeys = @()
+        Get-ChildItem -Path (Join-Path $script:configRoot "locales") -Filter *.json -File | ForEach-Object {
+            $localeKeys += (Get-Content -Path $_.FullName -Raw | ConvertFrom-Json).PSObject.Properties.Name
+        }
         $themeResourceNames = @(
             $themes.shared.PSObject.Properties.Name
             $themes.Light.PSObject.Properties.Name
             $themes.Dark.PSObject.Properties.Name
+            $localeKeys
             "CBorderColor"
             "CButtonBackgroundMouseoverColor"
             "CAppIconShadowColor"
