@@ -182,6 +182,7 @@ Describe "XAML document" {
             "WPFSearchChipProTools",
             "WPFSearchChipSelfhostedTools",
             "WPFSearchChipUtilities",
+            "WPFSearchChipOpenSource",
             "appscategory",
             "appspanel",
             "WPFInstallContentGrid",

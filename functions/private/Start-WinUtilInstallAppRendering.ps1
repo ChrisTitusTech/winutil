@@ -31,7 +31,7 @@ function Invoke-WinUtilInstallAppRenderBatch {
     if ($sync.currentTab -eq "Install" -and $sync.SearchBar) {
         $selectedCategories = if ($sync.SelectedAppCategories) { $sync.SelectedAppCategories.ToArray() } else { @() }
 
-        if (-not [string]::IsNullOrWhiteSpace($sync.SearchBar.Text) -or $selectedCategories.Count -gt 0) {
+        if (-not [string]::IsNullOrWhiteSpace($sync.SearchBar.Text) -or $selectedCategories.Count -gt 0 -or $sync.WPFSearchChipOpenSource.IsChecked) {
             Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text -Categories $selectedCategories
         }
     }

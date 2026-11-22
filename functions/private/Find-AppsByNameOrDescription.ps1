@@ -57,9 +57,10 @@ function Find-AppsByNameOrDescription {
         $activeCategories = @($Categories | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
         $hasSearch = -not [string]::IsNullOrWhiteSpace($SearchString)
         $hasCategories = $activeCategories.Count -gt 0
+        $hasSourceFilter = $sync.WPFSearchChipOpenSource.IsChecked -eq $true
 
         # Nothing is filtered, so put every entry back and leave the collapsed categories collapsed
-        if (-not $hasSearch -and -not $hasCategories) {
+        if (-not $hasSearch -and -not $hasCategories -and -not $hasSourceFilter) {
             $sync.ItemsControl.Items | ForEach-Object {
                 $_.Visibility = [Windows.Visibility]::Visible
 
@@ -108,12 +109,13 @@ function Find-AppsByNameOrDescription {
 
                     if ($null -ne $appEntry) {
                         $categoryMatch = -not $hasCategories -or $activeCategories -contains $appEntry.Category
+                        $sourceMatch = -not $hasSourceFilter -or $appEntry.Foss -eq $true
                         $textMatch = -not $hasSearch -or
                             ([string]$appEntry.Content).IndexOf($SearchString, [System.StringComparison]::OrdinalIgnoreCase) -ge 0 -or
                             ([string]$appEntry.Description).IndexOf($SearchString, [System.StringComparison]::OrdinalIgnoreCase) -ge 0 -or
                             ([string]$appTag).IndexOf($SearchString, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
 
-                        if ($categoryMatch -and $textMatch) {
+                        if ($categoryMatch -and $sourceMatch -and $textMatch) {
                             $appControl.Visibility = [Windows.Visibility]::Visible
                             $categoryHasMatch = $true
                         } else {
