@@ -384,6 +384,7 @@ function Start-WinUtilUserInterface {
         $sync[$appCategoryChip.Name].Tag = $appCategoryChip.Category
         $sync[$appCategoryChip.Name].Add_Click({ Invoke-WinUtilAppCategoryChip -Chip $this })
     }
+    $sync.WPFSearchChipOpenSource.Add_Click({ Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text -Categories $sync.SelectedAppCategories.ToArray() })
 
     $sync["Form"].Add_Loaded({
         param($e)

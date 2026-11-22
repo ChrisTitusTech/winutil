@@ -204,6 +204,7 @@ namespace Windows.Controls
                         Content = "PowerToys"
                         Description = "A collection of system utilities"
                         Category = "Microsoft Tools"
+                        Foss = $true
                     }
                 }
             }
@@ -426,6 +427,23 @@ Describe "Find-AppsByNameOrDescription" {
         $utilityItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
         $powerToysItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
         $category.Visibility | Should -Be ([Windows.Visibility]::Visible)
+    }
+
+    It "filters by the FOSS flag and restores all apps when cleared" {
+        $openItem = New-WinUtilAppSearchItem -Tag "WPFInstallPowerToys"
+        $closedItem = New-WinUtilAppSearchItem -Tag "WPFInstallLiteral"
+        $category = New-WinUtilAppCategory -Label "- Tools" -Items @($openItem, $closedItem)
+        New-WinUtilAppSearchContext -Categories @($category)
+        $sync.WPFSearchChipOpenSource = [pscustomobject]@{ IsChecked = $true }
+
+        Find-AppsByNameOrDescription
+        $openItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $closedItem.Visibility | Should -Be ([Windows.Visibility]::Collapsed)
+
+        $sync.WPFSearchChipOpenSource.IsChecked = $false
+        Find-AppsByNameOrDescription
+        $openItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
+        $closedItem.Visibility | Should -Be ([Windows.Visibility]::Visible)
     }
 
     It "shows apps from every selected category when several chips are active" {
