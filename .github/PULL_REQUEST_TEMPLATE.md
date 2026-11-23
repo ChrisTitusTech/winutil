@@ -24,7 +24,4 @@ by hand, so update them if your change affects them.
 - [ ] This PR is not the blind result of a prompt like "make this project better, no mistakes"
 - [ ] I've read the [contributing guidelines](https://winutil.christitus.com/contributing/)
 - [ ] This PR covers one feature or fix, with no formatter runs or unrelated line changes
-- [ ] I've tested my changes with `.\Compile.ps1 -Run`
-- [ ] `winutil.ps1` is not included in this PR
-- [ ] Any new tweak has a working undo, if one is possible
 - [ ] I've updated the docs if this changes how WinUtil works for users
