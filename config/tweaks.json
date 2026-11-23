@@ -1316,11 +1316,20 @@
 
       # Save current folder views so undo can put them back
       $backup = \"$Env:LocalAppData\\winutil\\FolderViews\"
-      if ((Test-Path $bags) -and !(Test-Path \"$backup\\Bags.reg\")) {
+      $applied = (Get-ItemProperty -Path \"$bags\\AllFolders\\Shell\" -Name FolderType -ErrorAction SilentlyContinue).FolderType -eq \"NotSpecified\"
+      if ((Test-Path $bags) -and !$applied) {
+        Remove-Item -Path $backup -Recurse -Force -ErrorAction SilentlyContinue
         New-Item -Path $backup -ItemType Directory -Force | Out-Null
         reg export \"HKCU\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\" \"$backup\\Bags.reg\" /y | Out-Null
-        if (Test-Path $bagMRU) {
+        $saved = $LASTEXITCODE -eq 0
+        if ($saved -and (Test-Path $bagMRU)) {
           reg export \"HKCU\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\" \"$backup\\BagMRU.reg\" /y | Out-Null
+          $saved = $LASTEXITCODE -eq 0
+        }
+        if (!$saved) {
+          Remove-Item -Path $backup -Recurse -Force -ErrorAction SilentlyContinue
+          Write-Warning \"Could not back up folder views, leaving them untouched\"
+          return
         }
         Write-Host \"Saved folder views to $backup\"
       }
@@ -1376,11 +1385,16 @@
       $backup = \"$Env:LocalAppData\\winutil\\FolderViews\"
       if (Test-Path \"$backup\\Bags.reg\") {
         reg import \"$backup\\Bags.reg\" 2>&1 | Out-Null
+        $restored = $LASTEXITCODE -eq 0
         if (Test-Path \"$backup\\BagMRU.reg\") {
           reg import \"$backup\\BagMRU.reg\" 2>&1 | Out-Null
+          $restored = $restored -and $LASTEXITCODE -eq 0
         }
-        Remove-Item -Path $backup -Recurse -Force
-        Write-Host \"Restored folder views from $backup\"
+        if ($restored) {
+          Write-Host \"Restored folder views from $backup\"
+        } else {
+          Write-Warning \"Could not fully restore folder views, the backup is still in $backup\"
+        }
       } else {
         Write-Host \"No saved folder views found, Explorer will use default views\"
       }
