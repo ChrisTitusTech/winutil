@@ -1,26 +1,27 @@
-<!--The generated code-reference pages (tweaks and features) need no manual updates. Other code-reference pages are hand-written; update them when your change affects them. -->
-
 <!--
-For proper labeling on each PR better use next title strategy:
-fix(section): Some bug fix for that section
-feat(section): Providing a new feature on that section/major refactoring of present code
-chore(section): Some chores - code clearing, typo fixes etc
-docs: Documentation update
-ui-ux(section): Bare UI/UX updates with no major feature implementation
+Start the PR title with one of these prefixes so it gets labelled:
+  feat(section):  new feature or major refactor
+  fix(section):   bug fix
+  chore(section): code cleanup, typo fixes, etc.
+  ui-ux(section): UI/UX changes with no new feature
+  docs:           documentation update
 
-Brackets part is optional, title "tag: added a thing" still results in feature labeling
-The mapped type labels are managed by the title workflow, even when added manually.
-Retitling a PR removes mapped labels that no longer match; an unrecognized title removes all of them.
+The (section) part is optional, so "feat: add a thing" still works.
+These labels follow the title: retitling a PR swaps them, and a title without a known prefix removes them.
 
+The generated code-reference pages (tweaks and features) update themselves. Other code-reference pages are written
+by hand, so update them if your change affects them.
 -->
 
 ## Description
-<!--[What does this PR do? Provide Screenshots when possible.]-->
+<!-- What does this PR do, and why? Screenshots help, but they're not required. -->
 
-## Issue related to PR
-<!--[List any ISSUES this is related to as it AUTO-CLOSES Them!]-->
+## Related issues
+<!-- Issues and discussions listed with "Resolves" close when this PR merges. Use one "Resolves #" line for each. -->
 - Resolves #
 
-## PR human checks
-- [ ] This PR is not a blind result of a prompt 'make this project better, no mistakes'
+## Checklist
+- [ ] This PR is not the blind result of a prompt like "make this project better, no mistakes"
 - [ ] I've read the [contributing guidelines](https://winutil.christitus.com/contributing/)
+- [ ] This PR covers one feature or fix, with no formatter runs or unrelated line changes
+- [ ] I've updated the docs if this changes how WinUtil works for users
