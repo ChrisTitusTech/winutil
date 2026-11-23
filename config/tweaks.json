@@ -1314,6 +1314,17 @@
       # Folder types lookup table
       $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
 
+      # Save current folder views so undo can put them back
+      $backup = \"$Env:LocalAppData\\winutil\\FolderViews\"
+      if ((Test-Path $bags) -and !(Test-Path \"$backup\\Bags.reg\")) {
+        New-Item -Path $backup -ItemType Directory -Force | Out-Null
+        reg export \"HKCU\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\" \"$backup\\Bags.reg\" /y | Out-Null
+        if (Test-Path $bagMRU) {
+          reg export \"HKCU\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\" \"$backup\\BagMRU.reg\" /y | Out-Null
+        }
+        Write-Host \"Saved folder views to $backup\"
+      }
+
       # Flush Explorer view database. Explorer creates these keys only after a folder
       # view has been saved, so skip them when missing or already removed
       if (Test-Path $bags) {
@@ -1359,6 +1370,19 @@
       if (Test-Path $bagMRU) {
         Remove-Item -Path $bagMRU -Recurse -Force
         Write-Host \"Removed $bagMRU\"
+      }
+
+      # Put back the folder views saved when the tweak was applied
+      $backup = \"$Env:LocalAppData\\winutil\\FolderViews\"
+      if (Test-Path \"$backup\\Bags.reg\") {
+        reg import \"$backup\\Bags.reg\" 2>&1 | Out-Null
+        if (Test-Path \"$backup\\BagMRU.reg\") {
+          reg import \"$backup\\BagMRU.reg\" 2>&1 | Out-Null
+        }
+        Remove-Item -Path $backup -Recurse -Force
+        Write-Host \"Restored folder views from $backup\"
+      } else {
+        Write-Host \"No saved folder views found, Explorer will use default views\"
       }
 
       Write-Host Please sign out and back in, or restart your computer to apply the changes!
