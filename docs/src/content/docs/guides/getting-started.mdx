@@ -254,6 +254,10 @@ It does not include computer or user names, paths, IP or MAC addresses, serial n
 
 You'll be asked whether to also bundle the last 7 days of WinUtil logs into a companion `.txt` file, which maintainers often need alongside the report to diagnose an issue. This companion is raw log output and does not use the JSON report's privacy allowlist: it may contain local paths, commands, and error details. Review it before sharing.
 
+## Finding the logs
+
+Each WinUtil session writes its own log file to `%LocalAppData%\winutil\logs`, named `winutil_<date>_<time>.log`. When an operation finishes with errors or warnings and tells you to see the log, this is the file it means. You can also save a copy wherever you like with **Export Environment Report** by answering **Yes** when asked to include logs.
+
 ## Getting help
 
 If you need assistance:
