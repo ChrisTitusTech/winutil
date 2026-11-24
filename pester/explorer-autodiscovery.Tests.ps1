@@ -26,6 +26,7 @@ Describe 'Explorer automatic folder discovery apply and undo' {
         Mock Write-WinUtilLog { }
         Mock Write-Host { }
         Mock Write-Warning { }
+        Mock Set-Content { }
     }
 
     AfterEach {
@@ -87,16 +88,39 @@ Describe 'Explorer automatic folder discovery apply and undo' {
     }
 
     It 'does not back up again when the tweak is already applied' {
-        $script:existingKeys = $script:bagKeys
+        $script:existingKeys = $script:bagKeys + "$script:backup\Bags.reg"
         Mock Get-ItemProperty { [pscustomobject]@{ FolderType = 'NotSpecified' } }
         Invoke-WinUtilTweaks -CheckBox 'WPFTweaksDisableExplorerAutoDiscovery'
         Should -Invoke reg -Times 0 -Exactly
     }
 
+    It 'backs up when FolderType is NotSpecified but there is no backup' {
+        $script:existingKeys = $script:bagKeys
+        Mock Get-ItemProperty { [pscustomobject]@{ FolderType = 'NotSpecified' } }
+        Invoke-WinUtilTweaks -CheckBox 'WPFTweaksDisableExplorerAutoDiscovery'
+        Should -Invoke reg -Times 2 -Exactly -ParameterFilter { $Arguments[0] -eq 'export' }
+    }
+
+    It 'backs up BagMRU when Bags is missing' {
+        $script:existingKeys = @($script:bagKeys[1])
+        Invoke-WinUtilTweaks -CheckBox 'WPFTweaksDisableExplorerAutoDiscovery'
+        Should -Invoke reg -Times 1 -Exactly -ParameterFilter { $Arguments[0] -eq 'export' -and $Arguments[1] -like '*\BagMRU' }
+        Should -Invoke reg -Times 0 -Exactly -ParameterFilter { $Arguments[0] -eq 'export' -and $Arguments[1] -like '*\Bags' }
+    }
+
     It 'undo restores the backup and keeps it for another undo' {
         $script:existingKeys = @("$script:backup\Bags.reg", "$script:backup\BagMRU.reg")
+        Mock Get-Content { "Windows Registry Editor Version 5.00`r`n`r`n[HKEY_CURRENT_USER\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags]`r`n" }
         Invoke-WinUtilTweaks -CheckBox 'WPFTweaksDisableExplorerAutoDiscovery' -undo $true
-        Should -Invoke reg -Times 2 -Exactly -ParameterFilter { $Arguments[0] -eq 'import' }
+        Should -Invoke reg -Times 2 -Exactly -ParameterFilter { $Arguments[0] -eq 'import' -and $Arguments[1] -notlike "$script:backup*" }
+        Should -Invoke Remove-Item -Times 0 -Exactly -ParameterFilter { $Path -like "$script:backup*" }
+    }
+
+    It 'undo leaves the current views alone when the backup has other keys' {
+        $script:existingKeys = $script:bagKeys + "$script:backup\Bags.reg"
+        Mock Get-Content { "Windows Registry Editor Version 5.00`r`n`r`n[HKEY_LOCAL_MACHINE\SOFTWARE\Test]`r`n" }
+        Invoke-WinUtilTweaks -CheckBox 'WPFTweaksDisableExplorerAutoDiscovery' -undo $true
         Should -Invoke Remove-Item -Times 0 -Exactly
+        Should -Invoke reg -Times 0 -Exactly
     }
 }
