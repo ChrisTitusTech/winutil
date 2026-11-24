@@ -1405,7 +1405,25 @@
       if ($saved.Count -gt 0) {
         $restored = $true
         foreach ($text in $saved) {
-          # Only the
+          # Only the admin that creates a file in Windows\\Temp can change it
+          $tmp = \"$Env:SystemRoot\\Temp\\winutil-$([guid]::NewGuid()).reg\"
+          Set-Content -Path $tmp -Value $text -Encoding Unicode
+          reg import $tmp 2>&1 | Out-Null
+          $restored = $restored -and $LASTEXITCODE -eq 0
+          Remove-Item -Path $tmp -Force -ErrorAction SilentlyContinue
+        }
+        if ($restored) {
+          Write-Host \"Restored folder views from $backup\"
+        } else {
+          Write-Warning \"Could not fully restore folder views, the backup is still in $backup\"
+        }
+      } else {
+        Write-Host \"No saved folder views found, Explorer will use default views\"
+      }
+
+      Write-Host Please sign out and back in, or restart your computer to apply the changes!
+      "
+    ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/disableexplorerautodiscovery"
   },
   "WPFToggleDetailedBSoD": {
