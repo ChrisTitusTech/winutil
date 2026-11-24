@@ -1317,7 +1317,7 @@
       # Save current folder views so undo can put them back
       $backup = \"$Env:LocalAppData\\winutil\\FolderViews\"
       $applied = (Get-ItemProperty -Path \"$bags\\AllFolders\\Shell\" -Name FolderType -ErrorAction SilentlyContinue).FolderType -eq \"NotSpecified\"
-      if ((Test-Path $bags) -and !$applied) {
+      if ((Test-Path $bags) -and !($applied -and (Test-Path \"$backup\\Bags.reg\"))) {
         Remove-Item -Path $backup -Recurse -Force -ErrorAction SilentlyContinue
         New-Item -Path $backup -ItemType Directory -Force | Out-Null
         reg export \"HKCU\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\" \"$backup\\Bags.reg\" /y | Out-Null
@@ -1383,6 +1383,13 @@
 
       # Put back the folder views saved when the tweak was applied
       $backup = \"$Env:LocalAppData\\winutil\\FolderViews\"
+      $prefix = \"[HKEY_CURRENT_USER\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bag\"
+      foreach ($f in \"$backup\\Bags.reg\", \"$backup\\BagMRU.reg\") {
+        if ((Test-Path $f) -and (Get-Content $f | Where-Object { $_.StartsWith(\"[\") -and !$_.StartsWith($prefix) })) {
+          Write-Warning \"Backup in $backup has unexpected keys, not importing it\"
+          return
+        }
+      }
       if (Test-Path \"$backup\\Bags.reg\") {
         reg import \"$backup\\Bags.reg\" 2>&1 | Out-Null
         $restored = $LASTEXITCODE -eq 0
