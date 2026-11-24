@@ -1317,11 +1317,15 @@
       # Save current folder views so undo can put them back
       $backup = \"$Env:LocalAppData\\winutil\\FolderViews\"
       $applied = (Get-ItemProperty -Path \"$bags\\AllFolders\\Shell\" -Name FolderType -ErrorAction SilentlyContinue).FolderType -eq \"NotSpecified\"
-      if ((Test-Path $bags) -and !($applied -and (Test-Path \"$backup\\Bags.reg\"))) {
+      $hasBackup = (Test-Path \"$backup\\Bags.reg\") -or (Test-Path \"$backup\\BagMRU.reg\")
+      if (((Test-Path $bags) -or (Test-Path $bagMRU)) -and !($applied -and $hasBackup)) {
         Remove-Item -Path $backup -Recurse -Force -ErrorAction SilentlyContinue
         New-Item -Path $backup -ItemType Directory -Force | Out-Null
-        reg export \"HKCU\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\" \"$backup\\Bags.reg\" /y | Out-Null
-        $saved = $LASTEXITCODE -eq 0
+        $saved = $true
+        if (Test-Path $bags) {
+          reg export \"HKCU\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\" \"$backup\\Bags.reg\" /y | Out-Null
+          $saved = $LASTEXITCODE -eq 0
+        }
         if ($saved -and (Test-Path $bagMRU)) {
           reg export \"HKCU\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\" \"$backup\\BagMRU.reg\" /y | Out-Null
           $saved = $LASTEXITCODE -eq 0
@@ -1369,6 +1373,22 @@
       # Folder types lookup table
       $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
 
+      # Read the saved folder views once and check them before removing anything.
+      # The checked copy is what gets imported, so the file can't be swapped in between
+      $backup = \"$Env:LocalAppData\\winutil\\FolderViews\"
+      $prefix = \"[HKEY_CURRENT_USER\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bag\"
+      $saved = @()
+      foreach ($f in \"$backup\\Bags.reg\", \"$backup\\BagMRU.reg\") {
+        if (Test-Path $f) {
+          $text = Get-Content -Path $f -Raw
+          if ($text -split \"`r?`n\" | Where-Object { $_.TrimStart().StartsWith(\"[\") -and !$_.TrimStart().StartsWith($prefix) }) {
+            Write-Warning \"Backup in $backup has unexpected keys, leaving folder views untouched\"
+            return
+          }
+          $saved += $text
+        }
+      }
+
       # Flush Explorer view database. Explorer creates these keys only after a folder
       # view has been saved, so skip them when missing or already removed
       if (Test-Path $bags) {
@@ -1382,33 +1402,10 @@
       }
 
       # Put back the folder views saved when the tweak was applied
-      $backup = \"$Env:LocalAppData\\winutil\\FolderViews\"
-      $prefix = \"[HKEY_CURRENT_USER\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bag\"
-      foreach ($f in \"$backup\\Bags.reg\", \"$backup\\BagMRU.reg\") {
-        if ((Test-Path $f) -and (Get-Content $f | Where-Object { $_.StartsWith(\"[\") -and !$_.StartsWith($prefix) })) {
-          Write-Warning \"Backup in $backup has unexpected keys, not importing it\"
-          return
-        }
-      }
-      if (Test-Path \"$backup\\Bags.reg\") {
-        reg import \"$backup\\Bags.reg\" 2>&1 | Out-Null
-        $restored = $LASTEXITCODE -eq 0
-        if (Test-Path \"$backup\\BagMRU.reg\") {
-          reg import \"$backup\\BagMRU.reg\" 2>&1 | Out-Null
-          $restored = $restored -and $LASTEXITCODE -eq 0
-        }
-        if ($restored) {
-          Write-Host \"Restored folder views from $backup\"
-        } else {
-          Write-Warning \"Could not fully restore folder views, the backup is still in $backup\"
-        }
-      } else {
-        Write-Host \"No saved folder views found, Explorer will use default views\"
-      }
-
-      Write-Host Please sign out and back in, or restart your computer to apply the changes!
-      "
-    ],
+      if ($saved.Count -gt 0) {
+        $restored = $true
+        foreach ($text in $saved) {
+          # Only the
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/disableexplorerautodiscovery"
   },
   "WPFToggleDetailedBSoD": {
