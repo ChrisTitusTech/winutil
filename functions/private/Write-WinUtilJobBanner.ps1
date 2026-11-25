@@ -12,13 +12,13 @@ function Write-WinUtilJobBanner {
             The line to box, for example "Installing apps".
 
         .PARAMETER Level
-            INFO for a normal banner, ERROR to colour it as a failure.
+            INFO for a normal banner. WARN and ERROR also show the open session log, when available.
     #>
     param(
         [Parameter(Mandatory)]
         [string]$Message,
 
-        [ValidateSet("INFO", "ERROR")]
+        [ValidateSet("INFO", "WARN", "ERROR")]
         [string]$Level = "INFO"
     )
 
@@ -51,4 +51,7 @@ function Write-WinUtilJobBanner {
         Write-WinUtilHost ("-- {0}$(' ' * ($longest - $line.Length)) --" -f $line) -ForegroundColor $colour
     }
     Write-WinUtilHost $border -ForegroundColor $colour
+    if ($Level -ne "INFO" -and $sync.LogWriterPath) {
+        Write-WinUtilHost "Session log: $($sync.LogWriterPath)"
+    }
 }

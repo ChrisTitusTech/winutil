@@ -226,11 +226,11 @@ function Start-WinUtilJob {
             $newWarnings = $global:WinUtilJobWarningCount
             if ($newErrors -gt 0) {
                 Write-WinUtilLog -Level "WARN" -Component $JobName -Message "$JobName job finished in $($jobClock.ElapsedMilliseconds) ms with $newErrors error(s)."
-                Write-WinUtilJobBanner -Message "$JobLabel finished with $newErrors error(s), see the log" -Level "ERROR"
+                Write-WinUtilJobBanner -Message "$JobLabel finished with $newErrors error(s)" -Level "ERROR"
                 Step-WinUtilJob -Status "$JobName finished with $newErrors error(s)" -Percent 100 -State "Paused" -Overlay "warning"
             } elseif ($newWarnings -gt 0) {
                 Write-WinUtilLog -Level "WARN" -Component $JobName -Message "$JobName job finished in $($jobClock.ElapsedMilliseconds) ms with $newWarnings warning(s)."
-                Write-WinUtilJobBanner -Message "$JobLabel finished with $newWarnings warning(s), see the log"
+                Write-WinUtilJobBanner -Message "$JobLabel finished with $newWarnings warning(s)" -Level "WARN"
                 Step-WinUtilJob -Status "$JobName finished with $newWarnings warning(s)" -Percent 100 -State "Paused" -Overlay "warning"
             } else {
                 Write-WinUtilLog -Component $JobName -Message "$JobName job finished in $($jobClock.ElapsedMilliseconds) ms."
