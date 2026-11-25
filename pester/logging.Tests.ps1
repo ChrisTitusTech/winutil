@@ -415,6 +415,47 @@ Describe "Collected runspace output" {
     }
 }
 
+Describe "WinUtil job banner log location" {
+    BeforeEach {
+        $script:bannerLogPath = Join-Path $TestDrive "Session logs\winutil_2026-07-01_12-00-00.log"
+        $script:sync = @{ LogWriterPath = $script:bannerLogPath }
+        Mock Write-WinUtilHost { }
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync, bannerLogPath -Scope Script -ErrorAction SilentlyContinue
+    }
+
+    It "shows the open session log as a separate line for <Level>" -ForEach @(
+        @{ Level = "WARN" }
+        @{ Level = "ERROR" }
+    ) {
+        Write-WinUtilJobBanner -Message "Install encountered a problem" -Level $Level
+
+        Should -Invoke Write-WinUtilHost -Times 1 -Exactly -ParameterFilter {
+            $Object -eq "Session log: $script:bannerLogPath"
+        }
+    }
+
+    It "does not show the log path for routine banners" {
+        Write-WinUtilJobBanner -Message "Install finished"
+
+        Should -Invoke Write-WinUtilHost -Times 0 -Exactly -ParameterFilter {
+            $Object -like "Session log:*"
+        }
+    }
+
+    It "omits a configured path when the log could not be opened" {
+        $script:sync.logPath = $script:bannerLogPath
+        $script:sync.LogWriterPath = $null
+        Write-WinUtilJobBanner -Message "Install failed" -Level "ERROR"
+
+        Should -Invoke Write-WinUtilHost -Times 0 -Exactly -ParameterFilter {
+            $Object -like "Session log:*"
+        }
+    }
+}
+
 Describe "Session log wiring" {
     It "does not hand the session log to a transcript" {
         # A transcript only records the runspace that starts it, so the UI thread and jobs never
