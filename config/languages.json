@@ -579,7 +579,15 @@
                 "Content": "OpenSSH Server - Enable",
                 "Description": ""
             }
-        }
+        },
+        "Tab_Install_Prefix": "",
+        "Tab_Tweaks_Prefix": "",
+        "Tab_Config_Prefix": "",
+        "Tab_Updates_Prefix": "",
+        "Tab_Win11Creator_Prefix": "",
+        "AppX_BackToTweaks": "Back to Tweaks",
+        "AppX_InstallSelected": "Install Selected",
+        "AppX_RemoveSelected": "Remove Selected"
     },
     "es": {
         "_meta": "Español — traducción de la interfaz",
@@ -587,14 +595,14 @@
         "Tab_Install_Underline": "I",
         "Tab_Install_Rest": "nstalar",
         "Tab_Tweaks": "Ajustes",
-        "Tab_Tweaks_Underline": "A",
-        "Tab_Tweaks_Rest": "justes",
+        "Tab_Tweaks_Underline": "t",
+        "Tab_Tweaks_Rest": "es",
         "Tab_Config": "Config",
         "Tab_Config_Underline": "C",
         "Tab_Config_Rest": "onfig",
         "Tab_Updates": "Actualiz.",
-        "Tab_Updates_Underline": "A",
-        "Tab_Updates_Rest": "ctualiz.",
+        "Tab_Updates_Underline": "u",
+        "Tab_Updates_Rest": "aliz.",
         "Tab_Win11Creator": "Win11 Creador",
         "Tab_Win11Creator_Underline": "W",
         "Tab_Win11Creator_Rest": "in11 Creador",
@@ -837,7 +845,7 @@
             },
             "WPFTweaksReservedStorage": {
                 "Content": "Almacenamiento reservado - Desactivar",
-                "Description": "Desactiva el almacenamiento reservado (7-10 GB retenidos para actualizaciones/temporales). Recomendado en discos pequeños."
+                "Description": "Desactiva el almacenamiento reservado (7-10 GB retenidos para actualizaciones/temporales). Recomendado en discos pequeños. Reactívalo antes de actualizaciones mayores de Windows para evitar errores de instalación."
             },
             "WPFTweaksRestorePoint": {
                 "Content": "Punto de restauración - Crear",
@@ -1161,6 +1169,14 @@
                 "Content": "Servidor OpenSSH - Activar",
                 "Description": "Instala, inicia y habilita el servicio de servidor OpenSSH para acceso remoto seguro."
             }
-        }
+        },
+        "Tab_Install_Prefix": "",
+        "Tab_Tweaks_Prefix": "Ajus",
+        "Tab_Config_Prefix": "",
+        "Tab_Updates_Prefix": "Act",
+        "Tab_Win11Creator_Prefix": "",
+        "AppX_BackToTweaks": "Volver a Ajustes",
+        "AppX_InstallSelected": "Instalar seleccionados",
+        "AppX_RemoveSelected": "Eliminar seleccionados"
     }
 }

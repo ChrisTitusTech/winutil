@@ -30,30 +30,45 @@ function Invoke-WinUtilLanguageChange {
     if ($sync.WPFTab1BT -and $sync.WPFTab1BT.Content -is [System.Windows.Controls.TextBlock]) {
         $tb = $sync.WPFTab1BT.Content
         $tb.Inlines.Clear()
+        if ($strings.Tab_Install_Prefix) {
+            $null = $tb.Inlines.Add([System.Windows.Documents.Run]::new($strings.Tab_Install_Prefix))
+        }
         $null = $tb.Inlines.Add([System.Windows.Documents.Underline]::new([System.Windows.Documents.Run]::new($strings.Tab_Install_Underline)))
         $null = $tb.Inlines.Add([System.Windows.Documents.Run]::new($strings.Tab_Install_Rest))
     }
     if ($sync.WPFTab2BT -and $sync.WPFTab2BT.Content -is [System.Windows.Controls.TextBlock]) {
         $tb = $sync.WPFTab2BT.Content
         $tb.Inlines.Clear()
+        if ($strings.Tab_Tweaks_Prefix) {
+            $null = $tb.Inlines.Add([System.Windows.Documents.Run]::new($strings.Tab_Tweaks_Prefix))
+        }
         $null = $tb.Inlines.Add([System.Windows.Documents.Underline]::new([System.Windows.Documents.Run]::new($strings.Tab_Tweaks_Underline)))
         $null = $tb.Inlines.Add([System.Windows.Documents.Run]::new($strings.Tab_Tweaks_Rest))
     }
     if ($sync.WPFTab3BT -and $sync.WPFTab3BT.Content -is [System.Windows.Controls.TextBlock]) {
         $tb = $sync.WPFTab3BT.Content
         $tb.Inlines.Clear()
+        if ($strings.Tab_Config_Prefix) {
+            $null = $tb.Inlines.Add([System.Windows.Documents.Run]::new($strings.Tab_Config_Prefix))
+        }
         $null = $tb.Inlines.Add([System.Windows.Documents.Underline]::new([System.Windows.Documents.Run]::new($strings.Tab_Config_Underline)))
         $null = $tb.Inlines.Add([System.Windows.Documents.Run]::new($strings.Tab_Config_Rest))
     }
     if ($sync.WPFTab4BT -and $sync.WPFTab4BT.Content -is [System.Windows.Controls.TextBlock]) {
         $tb = $sync.WPFTab4BT.Content
         $tb.Inlines.Clear()
+        if ($strings.Tab_Updates_Prefix) {
+            $null = $tb.Inlines.Add([System.Windows.Documents.Run]::new($strings.Tab_Updates_Prefix))
+        }
         $null = $tb.Inlines.Add([System.Windows.Documents.Underline]::new([System.Windows.Documents.Run]::new($strings.Tab_Updates_Underline)))
         $null = $tb.Inlines.Add([System.Windows.Documents.Run]::new($strings.Tab_Updates_Rest))
     }
     if ($sync.WPFTab5BT -and $sync.WPFTab5BT.Content -is [System.Windows.Controls.TextBlock]) {
         $tb = $sync.WPFTab5BT.Content
         $tb.Inlines.Clear()
+        if ($strings.Tab_Win11Creator_Prefix) {
+            $null = $tb.Inlines.Add([System.Windows.Documents.Run]::new($strings.Tab_Win11Creator_Prefix))
+        }
         $null = $tb.Inlines.Add([System.Windows.Documents.Underline]::new([System.Windows.Documents.Run]::new($strings.Tab_Win11Creator_Underline)))
         $null = $tb.Inlines.Add([System.Windows.Documents.Run]::new($strings.Tab_Win11Creator_Rest))
     }
@@ -96,6 +111,9 @@ function Invoke-WinUtilLanguageChange {
         if ($sync.LightThemeMenuItem.ToolTip) { $sync.LightThemeMenuItem.ToolTip.Content = $strings.Theme_Light_ToolTip }
     }
     if ($sync.FontScalingButton) { $sync.FontScalingButton.ToolTip = $strings.FontScaling_ToolTip }
+    if ($sync.FontScalingTitleTextBlock) { $sync.FontScalingTitleTextBlock.Text = $strings.FontScaling_Title }
+    if ($sync.FontScalingSmallTextBlock) { $sync.FontScalingSmallTextBlock.Text = $strings.FontScaling_Small }
+    if ($sync.FontScalingLargeTextBlock) { $sync.FontScalingLargeTextBlock.Text = $strings.FontScaling_Large }
     if ($sync.FontScalingResetButton) { $sync.FontScalingResetButton.Content = $strings.FontScaling_Reset }
     if ($sync.FontScalingApplyButton) { $sync.FontScalingApplyButton.Content = $strings.FontScaling_Apply }
     if ($sync.SettingsButton) { $sync.SettingsButton.ToolTip = $strings.Settings_ToolTip }
@@ -207,7 +225,7 @@ function Invoke-WinUtilLanguageChange {
         $sync.WPFWin11ISOInjectDrivers.Content = $strings.Win11ISO_InjectDrivers
         $sync.WPFWin11ISOInjectDrivers.ToolTip = $strings.Win11ISO_InjectDrivers_ToolTip
     }
-    if ($sync.WPFWin11ISOModifyButton) { $sync.WPFWin11ISOModifyButton.Content = $strings.Win11ISO_RunModification }
+    if ($sync.WPFWin11ISOModifyButton) { $sync.WPFWin11ISOModifyButton.Content = $strings.Win11ISO_Title }
     if ($sync.WPFWin11ISODoesHeader) { $sync.WPFWin11ISODoesHeader.Text = $strings.Win11ISO_WhatThisDoes }
     if ($sync.WPFWin11ISODoesRemoveApps) { $sync.WPFWin11ISODoesRemoveApps.Text = $strings.Win11ISO_RemoveApps }
     if ($sync.WPFWin11ISODoesBypassTPM) { $sync.WPFWin11ISODoesBypassTPM.Text = $strings.Win11ISO_BypassTPM }
@@ -229,6 +247,20 @@ function Invoke-WinUtilLanguageChange {
     if ($sync.WPFWin11ISOStatusLogLabel) { $sync.WPFWin11ISOStatusLogLabel.Text = $strings.Win11ISO_StatusLog }
     if ($sync.WPFWin11ISOBackButton) { $sync.WPFWin11ISOBackButton.ToolTip = $strings.Win11ISO_Back_ToolTip }
     if ($sync.WPFWin11ISOForwardButton) { $sync.WPFWin11ISOForwardButton.ToolTip = $strings.Win11ISO_Forward_ToolTip }
+    if ($sync.WPFWin11ISOPath) {
+        if ([string]::IsNullOrWhiteSpace($sync.WPFWin11ISOPath.Text) -or
+            $sync.WPFWin11ISOPath.Text -eq "No ISO selected..." -or
+            $sync.WPFWin11ISOPath.Text -eq "No se ha seleccionado ninguna ISO...") {
+            $sync.WPFWin11ISOPath.Text = $strings.Win11ISO_NoISO
+        }
+    }
+    if ($sync.WPFWin11ISOStatusLog) {
+        if ([string]::IsNullOrWhiteSpace($sync.WPFWin11ISOStatusLog.Text) -or
+            $sync.WPFWin11ISOStatusLog.Text -eq "Ready. Please select a Windows 11 ISO to begin." -or
+            $sync.WPFWin11ISOStatusLog.Text -eq "Listo. Por favor selecciona una ISO de Windows 11 para comenzar.") {
+            $sync.WPFWin11ISOStatusLog.Text = $strings.Win11ISO_Ready
+        }
+    }
 
     # 9. AppX Tab Buttons & Content
     if ($sync.WPFAppxSelectionsLabel) { $sync.WPFAppxSelectionsLabel.Content = $strings.AppX_Selections }
@@ -237,6 +269,9 @@ function Invoke-WinUtilLanguageChange {
     if ($sync.WPFSelectAllAppx) { $sync.WPFSelectAllAppx.Content = $strings.AppX_SelectAll }
     if ($sync.WPFClearAppxSelection) { $sync.WPFClearAppxSelection.Content = $strings.AppX_ClearSelection }
     if ($sync.WPFAppxNoteTextBlock) { $sync.WPFAppxNoteTextBlock.Text = $strings.AppX_Note }
+    if ($sync.WPFBackToTweaks) { $sync.WPFBackToTweaks.Content = $strings.AppX_BackToTweaks }
+    if ($sync.WPFInstallSelectedAppx) { $sync.WPFInstallSelectedAppx.Content = $strings.AppX_InstallSelected }
+    if ($sync.WPFRemoveSelectedAppx) { $sync.WPFRemoveSelectedAppx.Content = $strings.AppX_RemoveSelected }
 
     # 10. Dynamic Categories in Tweaks, Config, and AppNavigation
     if ($strings.categories) {
@@ -251,21 +286,45 @@ function Invoke-WinUtilLanguageChange {
         }
     }
 
+    # Helper scriptblock to update a generated entry control (handles CheckBox, Toggle switch, ComboBox, Button, RadioButton)
+    $updateEntryControl = {
+        param($ctrl, $entryData, $entryName)
+        if (-not $ctrl) { return }
+
+        # Check if control is inside a container with a sibling Label (Toggle DockPanel or ComboBox StackPanel)
+        $label = $null
+        if ($ctrl.Parent -and ($ctrl.Parent -is [System.Windows.Controls.DockPanel] -or $ctrl.Parent -is [System.Windows.Controls.StackPanel])) {
+            $label = @($ctrl.Parent.Children) | Where-Object { $_ -is [System.Windows.Controls.Label] } | Select-Object -First 1
+        }
+
+        if ($label) {
+            if ($entryData.Content) {
+                $label.Content = $entryData.Content
+            }
+            if ($entryData.Description) {
+                $label.ToolTip = Get-WinUtilEntryToolTip -Description $entryData.Description -Key $entryName
+            } else {
+                $label.ToolTip = $null
+            }
+        } else {
+            if ($entryData.Content -and ($ctrl.PSObject.Properties.Match('Content').Count -gt 0)) {
+                $ctrl.Content = $entryData.Content
+            }
+            if ($entryData.Description) {
+                $ctrl.ToolTip = Get-WinUtilEntryToolTip -Description $entryData.Description -Key $entryName
+            } else {
+                $ctrl.ToolTip = $null
+            }
+        }
+    }
+
     # 11. Dynamic Tweaks (all 68 tweaks)
     if ($strings.tweaks) {
         foreach ($prop in $strings.tweaks.PSObject.Properties) {
             $tweakName = $prop.Name
             $tweakData = $prop.Value
             if ($sync.ContainsKey($tweakName)) {
-                $ctrl = $sync[$tweakName]
-                if ($ctrl) {
-                    if ($tweakData.Content) {
-                        $ctrl.Content = $tweakData.Content
-                    }
-                    if ($tweakData.Description) {
-                        $ctrl.ToolTip = Get-WinUtilEntryToolTip -Description $tweakData.Description -Key $tweakName
-                    }
-                }
+                & $updateEntryControl $sync[$tweakName] $tweakData $tweakName
             }
         }
     }
@@ -276,15 +335,7 @@ function Invoke-WinUtilLanguageChange {
             $featName = $prop.Name
             $featData = $prop.Value
             if ($sync.ContainsKey($featName)) {
-                $ctrl = $sync[$featName]
-                if ($ctrl) {
-                    if ($featData.Content) {
-                        $ctrl.Content = $featData.Content
-                    }
-                    if ($featData.Description) {
-                        $ctrl.ToolTip = Get-WinUtilEntryToolTip -Description $featData.Description -Key $featName
-                    }
-                }
+                & $updateEntryControl $sync[$featName] $featData $featName
             }
         }
     }
