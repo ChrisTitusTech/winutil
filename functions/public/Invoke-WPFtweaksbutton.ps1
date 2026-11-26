@@ -19,7 +19,7 @@ function Invoke-WPFtweaksbutton {
 
   Write-WinUtilLog -Component "Tweaks" -Message "Tweaks requested: $(@($Tweaks).Count) selected tweak(s), DNS provider: $dnsProvider"
 
-  Start-WinUtilJob -Name "Tweaks" -Description "Applying tweaks" -Parameters @{
+  Start-WinUtilJob -Name "Tweaks" -Description "Applying tweaks" -QueueIfBusy -Parameters @{
     Tweaks = @($Tweaks)
     DnsProvider = $dnsProvider
   } -ScriptBlock {

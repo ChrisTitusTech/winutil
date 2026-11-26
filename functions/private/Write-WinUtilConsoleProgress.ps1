@@ -58,13 +58,13 @@ function Write-WinUtilConsoleProgress {
     $line = "$prefix$text"
 
     if ($redirected) {
-        Write-Host $line -ForegroundColor DarkCyan
+        Write-WinUtilHost $line -ForegroundColor DarkCyan
         return
     }
 
     # Pad to the previous length so a shorter line does not leave the tail of the longer one
     $padding = [Math]::Max(0, $state.LineLength - $line.Length)
-    Write-Host ("`r$line" + (" " * $padding)) -NoNewline -ForegroundColor DarkCyan
+    Write-WinUtilHost ("`r$line" + (" " * $padding)) -NoNewline -ForegroundColor DarkCyan
     $state.LineLength = $line.Length
     $state.LineOpen = $true
 }
@@ -84,7 +84,7 @@ function Complete-WinUtilConsoleProgress {
         return
     }
 
-    Write-Host ""
+    Write-WinUtilHost ""
     $state.LineOpen = $false
     $state.LineLength = 0
     $state.LastText = ""

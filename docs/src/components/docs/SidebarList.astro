@@ -1,0 +1,51 @@
+---
+import { Icon } from '@astrojs/starlight/components';
+import type { SidebarEntry } from '@astrojs/starlight/route-data';
+
+interface Props {
+	entries: SidebarEntry[];
+	depth?: number;
+}
+
+const { entries, depth = 0 } = Astro.props;
+
+const hasCurrent = (items: SidebarEntry[]): boolean =>
+	items.some((item) => (item.type === 'link' ? item.isCurrent : hasCurrent(item.entries)));
+---
+
+<ul class:list={['docs-sidebar-list', depth === 0 && 'docs-sidebar-top']}>
+	{
+		entries.map((entry) => {
+			if (entry.type === 'link') {
+				const { class: linkClass, ...attrs } = entry.attrs;
+				return (
+					<li>
+						<a
+							{...attrs}
+							href={entry.href}
+							class:list={['docs-sidebar-link', linkClass]}
+							aria-current={entry.isCurrent ? 'page' : undefined}
+						>
+							<span>{entry.label}</span>
+							{attrs.target === '_blank' && <Icon name="external" class="docs-sidebar-external" />}
+						</a>
+					</li>
+				);
+			}
+			return (
+				<li>
+					<details
+						class:list={['docs-sidebar-group', depth === 0 ? 'docs-sidebar-group--top' : 'docs-sidebar-group--nested']}
+						open={hasCurrent(entry.entries) || !entry.collapsed}
+					>
+						<summary>
+							<span>{entry.label}</span>
+							<Icon name="right-caret" class="docs-sidebar-caret" />
+						</summary>
+						<Astro.self entries={entry.entries} depth={depth + 1} />
+					</details>
+				</li>
+			);
+		})
+	}
+</ul>

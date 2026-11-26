@@ -26,6 +26,16 @@ function Start-WinUtilJob {
         .PARAMETER DisableAppList
             Greys out the app list for the duration, for jobs that change what is installed.
 
+        .PARAMETER QueueIfBusy
+            Waits in $sync.JobQueue for its turn instead of being refused, for actions the user
+            starts. The parameters are held as they were when it was queued. A job with the same
+            name and parameters as the last queued job is ignored, so consecutive clicks do not repeat
+            the work.
+
+        .PARAMETER FromQueue
+            Internal to Start-WinUtilNextQueuedJob: this is the queued job taking its turn, so it
+            may claim the slot while $sync.JobHandoff holds it for the queue.
+
         .EXAMPLE
             Start-WinUtilJob -Name "Install" -Parameters @{ Packages = $packages } -ScriptBlock {
                 param($Packages)
@@ -43,10 +53,15 @@ function Start-WinUtilJob {
 
         [string]$Description,
 
-        [switch]$DisableAppList
+        [switch]$DisableAppList,
+
+        [switch]$QueueIfBusy,
+
+        [switch]$FromQueue
     )
 
     if ($sync.ShuttingDown -or $sync.FinishInConsole) {
+        if ($FromQueue) { Reset-WinUtilJobHandoff }
         Write-WinUtilLog -Level "WARN" -Component $Name -Message "Refused to start $Name, WinUtil is closing."
         return $null
     }
@@ -64,10 +79,55 @@ function Start-WinUtilJob {
     # still unwinding cannot release a slot the next job holds.
     $jobToken = [guid]::NewGuid().ToString()
     $blockedBy = $null
+    $queuePosition = 0
+    $duplicate = $false
+
+    # Built outside the lock. A value that cannot be serialised just leaves the job undeduplicated.
+    $signature = $null
+    if ($QueueIfBusy) {
+        try {
+            $sortedKeys = [string[]]$Parameters.Keys
+            [array]::Sort($sortedKeys)
+            $ordered = [ordered]@{}
+            foreach ($key in $sortedKeys) { $ordered[$key] = $Parameters[$key] }
+            $signature = "$Name|" + (ConvertTo-Json -InputObject $ordered -Compress -Depth 5 -WarningAction SilentlyContinue)
+        } catch {
+            Write-WinUtilLog -Level "WARN" -Component $Name -Message "Could not compare $Name with the queue, so it will not be checked for duplicates: $($_.Exception.Message)"
+        }
+    }
+
     [System.Threading.Monitor]::Enter($sync.SyncRoot)
     try {
-        if ($sync.ActiveJob) {
-            $blockedBy = $sync.ActiveJob
+        # Closing can win while the signature is built or this caller waits for the lock.
+        if ($sync.ShuttingDown -or $sync.FinishInConsole) {
+            if ($FromQueue) { $sync.JobHandoff = $false }
+            Write-WinUtilLog -Level "WARN" -Component $Name -Message "Refused to start $Name, WinUtil is closing."
+            return $null
+        }
+        if ($FromQueue) {
+            $sync.JobHandoff = $false
+        }
+        # A finished job's slot is promised to the queue until its head has started
+        if ($sync.ActiveJob -or $sync.JobHandoff) {
+            $blockedBy = if ($sync.ActiveJob) { $sync.ActiveJob } else { "Queued operations" }
+            # In the same lock as the busy test: a job finishing between the two would leave
+            # this one queued behind nothing
+            if ($QueueIfBusy -and $signature -and $sync.JobQueue.Count -gt 0) {
+                # An intervening action can change the state again; only collapse adjacent clicks.
+                $duplicate = $sync.JobQueue[$sync.JobQueue.Count - 1].Signature -eq $signature
+            }
+            if ($QueueIfBusy -and -not $duplicate) {
+                $sync.JobQueue.Add([pscustomobject]@{
+                    Id = [guid]::NewGuid().ToString()
+                    Signature = $signature
+                    Name = $Name
+                    Description = $Description
+                    ScriptBlock = $ScriptBlock.ToString()
+                    Parameters = $Parameters
+                    DisableAppList = [bool]$DisableAppList
+                })
+                $queuePosition = $sync.JobQueue.Count
+            }
         } else {
             $sync.ActiveJob = $Name
             $sync.ActiveJobToken = $jobToken
@@ -75,6 +135,17 @@ function Start-WinUtilJob {
         }
     } finally {
         [System.Threading.Monitor]::Exit($sync.SyncRoot)
+    }
+
+    if ($duplicate) {
+        Write-WinUtilLog -Component $Name -Message "$Name is already queued, ignored."
+        return $null
+    }
+
+    if ($queuePosition -gt 0) {
+        Write-WinUtilLog -Component $Name -Message "$Name queued behind $blockedBy, position $queuePosition."
+        Invoke-WPFUIThread -Async -ScriptBlock { Update-WinUtilJobQueueUI }
+        return $null
     }
 
     if ($blockedBy) {
@@ -87,8 +158,24 @@ function Start-WinUtilJob {
         $timingStartIndex = if ($sync.StepTimings) { $sync.StepTimings.Count } else { 0 }
 
         Write-WinUtilLog -Component $Name -Message "$Name job started."
+        Invoke-WPFUIThread -Async -ScriptBlock { Update-WinUtilJobQueueUI }
         Write-WinUtilJobBanner -Message $label
         Step-WinUtilJob -Status "$label..." -Percent 0 -State "Normal" -Overlay "logo"
+
+        # Tabs with a working view (spinner + live status) swap to it while their
+        # jobs run. Adding a new one is a new XAML panel plus one entry here.
+        $jobWorkingArea = switch ($Name) {
+            "Install"     { "Install" }
+            "Uninstall"   { "Install" }
+            "Upgrade all Applications" { "Install" }
+            "Tweaks"      { "Tweaks" }
+            "Undo tweaks" { "Tweaks" }
+            default       { $null }
+        }
+
+        if ($jobWorkingArea) {
+            Set-WinUtilWorkingView -Area $jobWorkingArea -Working $true -Label "$label..."
+        }
 
         if ($DisableAppList -and (Test-WinUtilUIAlive)) {
             Invoke-WPFUIThread -ScriptBlock {
@@ -105,10 +192,11 @@ function Start-WinUtilJob {
             ("JobBody", $ScriptBlock.ToString()),
             ("JobParameters", $Parameters),
             ("JobRestoresAppList", [bool]$DisableAppList),
+            ("JobWorkingArea", $jobWorkingArea),
             ("JobToken", $jobToken),
             ("TimingStartIndex", $timingStartIndex)
         ) -ScriptBlock {
-        param($JobName, $JobLabel, $JobBody, $JobParameters, $JobRestoresAppList, $JobToken, $TimingStartIndex)
+        param($JobName, $JobLabel, $JobBody, $JobParameters, $JobRestoresAppList, $JobWorkingArea, $JobToken, $TimingStartIndex)
 
         # Marks this runspace as the one doing the work, so a pause holds here and not in
         # whoever asked for it
@@ -120,15 +208,13 @@ function Start-WinUtilJob {
         try {
             $body = [scriptblock]::Create($JobBody)
 
-            # A worker's warning and error streams buffer on a PowerShell object nobody reads.
-            # Merging them into the output stream is what gets them to the log.
-            & $body @JobParameters 2>&1 3>&1 | ForEach-Object {
+            # A worker's warning, error and Write-Host output buffers on a PowerShell object
+            # nobody reads. Merging it into the output stream is what gets it to the log.
+            & $body @JobParameters 2>&1 3>&1 6>&1 | ForEach-Object {
                 if ($_ -is [System.Management.Automation.WarningRecord]) {
                     $global:WinUtilJobWarningCount++
-                    Write-WinUtilLog -Level "WARN" -Component $JobName -Message $_.Message
-                } elseif ($_ -is [System.Management.Automation.ErrorRecord]) {
-                    Write-WinUtilErrorRecord -ErrorRecord $_ -Component $JobName -Context "Non-terminating error"
                 }
+                Write-WinUtilStreamRecord -Record $_ -Component $JobName
             }
 
             $jobClock.Stop()
@@ -188,14 +274,26 @@ function Start-WinUtilJob {
             }
 
             if ($stillOwns) {
+                # Each restoration is attempted on its own: a dispatcher failure
+                # while re-enabling the app list must not skip hiding the working
+                # view, which would otherwise keep covering the tab.
                 try {
-                    if ($JobRestoresAppList -and (Test-WinUtilUIAlive)) {
-                        Invoke-WPFUIThread -ScriptBlock {
-                            if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }
+                    try {
+                        if ($JobRestoresAppList -and (Test-WinUtilUIAlive)) {
+                            Invoke-WPFUIThread -ScriptBlock {
+                                if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }
+                            }
                         }
+                    } catch {
+                        Write-WinUtilLog -Level "WARN" -Component $JobName -Message "Could not restore the app list after $JobName finished: $($_.Exception.Message)"
                     }
-                } catch {
-                    Write-WinUtilLog -Level "WARN" -Component $JobName -Message "Could not restore the app list after $JobName finished: $($_.Exception.Message)"
+                    try {
+                        if ($JobWorkingArea) {
+                            Set-WinUtilWorkingView -Area $JobWorkingArea -Working $false
+                        }
+                    } catch {
+                        Write-WinUtilLog -Level "WARN" -Component $JobName -Message "Could not hide the working view after $JobName finished: $($_.Exception.Message)"
+                    }
                 } finally {
                     # Dispatcher shutdown can race the alive check and abort the restore call.
                     # The worker is still finished, so its slot must always be released.
@@ -217,13 +315,22 @@ function Start-WinUtilJob {
             Write-WinUtilLog -Level "WARN" -Component $Name -Message "Could not report that $Name failed to start: $($_.Exception.Message)"
         } finally {
             try {
-                if ($DisableAppList -and (Test-WinUtilUIAlive)) {
-                    Invoke-WPFUIThread -ScriptBlock {
-                        if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }
+                try {
+                    if ($DisableAppList -and (Test-WinUtilUIAlive)) {
+                        Invoke-WPFUIThread -ScriptBlock {
+                            if ($null -ne $sync.ItemsControl) { $sync.ItemsControl.IsEnabled = $true }
+                        }
                     }
+                } catch {
+                    Write-WinUtilLog -Level "WARN" -Component $Name -Message "Could not restore the app list after $Name failed to start: $($_.Exception.Message)"
                 }
-            } catch {
-                Write-WinUtilLog -Level "WARN" -Component $Name -Message "Could not restore the app list after $Name failed to start: $($_.Exception.Message)"
+                try {
+                    if ($jobWorkingArea) {
+                        Set-WinUtilWorkingView -Area $jobWorkingArea -Working $false
+                    }
+                } catch {
+                    Write-WinUtilLog -Level "WARN" -Component $Name -Message "Could not hide the working view after $Name failed to start: $($_.Exception.Message)"
+                }
             } finally {
                 $null = Clear-WinUtilActiveJob -Token $jobToken
             }
@@ -244,15 +351,32 @@ function Clear-WinUtilActiveJob {
     #>
     param([string]$Token)
 
+    $released = $false
     [System.Threading.Monitor]::Enter($sync.SyncRoot)
     try {
         if (-not $Token -or $sync.ActiveJobToken -eq $Token) {
             $sync.ActiveJobToken = $null
             $sync.ActiveJob = $null
-            return $true
+            $released = $true
+            # Between here and the posted dispatch the slot is free, and a new action must not
+            # take it ahead of the queue
+            if ($Token -and $sync.JobQueue.Count -gt 0 -and -not $sync.ShuttingDown -and -not $sync.FinishInConsole) {
+                $sync.JobHandoff = $true
+            }
         }
-        return $false
     } finally {
         [System.Threading.Monitor]::Exit($sync.SyncRoot)
     }
+
+    # A job that ended, however it ended, hands the slot to the next queued one. A release with no
+    # token is a forced reset, which must not start anything.
+    if ($released -and $Token) {
+        try {
+            Invoke-WPFUIThread -Async -ScriptBlock { Start-WinUtilNextQueuedJob }
+        } catch {
+            Reset-WinUtilJobHandoff
+            Write-WinUtilLog -Level "WARN" -Component "UI" -Message "Could not start the next queued job: $($_.Exception.Message)"
+        }
+    }
+    return $released
 }

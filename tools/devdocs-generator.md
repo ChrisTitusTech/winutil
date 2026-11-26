@@ -51,7 +51,7 @@ For each entry in `feature.json` that belongs to a documented category:
 
 ### 6. Output Format
 
-- Every `.mdx` file gets Starlight frontmatter with `title` and `description` (description comes from the entry's `Description` field when present)
+- Every `.mdx` file gets Starlight frontmatter with `title` and `description` (description comes from the entry's `Description` field when present). Values are serialized as JSON quoted strings, which are valid YAML scalars and preserve Windows paths, quotation marks, and line breaks.
 - A `:::note` aside points back at the source file (JSON config or PowerShell function) it was generated from
 - Code blocks use Starlight/Expressive Code syntax with a `title` attribute naming the source file
 - Files are organized into category subdirectories matching the JSON `category` field

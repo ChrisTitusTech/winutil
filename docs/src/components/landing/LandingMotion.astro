@@ -1,0 +1,17 @@
+---
+// Loads the landing page's scroll and entrance animations.
+import UpArrow from '../../assets/icons/up-arrow.svg';
+---
+
+{/* Back-to-top button. Shows once you're past the hero; the ring fills as you scroll. */}
+<button type="button" class="wu-to-top" aria-label="Back to top">
+	<svg class="wu-to-top-progress" viewBox="0 0 44 44" aria-hidden="true">
+		<circle class="wu-to-top-track" cx="22" cy="22" r="20"></circle>
+		<circle class="wu-to-top-ring" cx="22" cy="22" r="20"></circle>
+	</svg>
+	<UpArrow class="wu-to-top-icon" aria-hidden="true" />
+</button>
+
+<script>
+	import '../../scripts/landing-motion.js';
+</script>

@@ -77,6 +77,19 @@ function Step-WinUtilJob {
         if ($HasStatus) {
             $sync.WPFTweaksProgressLabel.Text = $Status
             $sync.WPFTweaksProgressLabel.ToolTip = $Status
+
+            # Tab working views mirror the same status beneath their spinner while
+            # showing. Guarded: headless fixtures and other tabs have no panel.
+            foreach ($pair in @(
+                @("WPFInstallWorkingPanel", "WPFInstallWorkingLabel"),
+                @("WPFTweaksWorkingPanel", "WPFTweaksWorkingLabel")
+            )) {
+                $workingPanel = $sync[$pair[0]]
+                $workingLabel = $sync[$pair[1]]
+                if ($null -ne $workingPanel -and $null -ne $workingLabel -and "$($workingPanel.Visibility)" -eq "Visible") {
+                    $workingLabel.Text = $Status
+                }
+            }
         }
         if ($hasPercent) {
             $sync.WPFTweaksProgressValue.Value = $Percent

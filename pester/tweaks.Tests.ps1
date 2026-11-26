@@ -179,6 +179,13 @@ Describe "Invoke-WinUtilTweaks" {
 
         Should -Invoke -CommandName Get-Service -Times 1 -Exactly
         Should -Invoke -CommandName Set-WinUtilService -Times 0 -Exactly
+        # The skip is reported, so the log does not read as if the tweak changed the service
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "WARN" -and $Message -match "DiagTrack.*Manual.*Automatic"
+        }
+        Should -Invoke -CommandName Write-Warning -Times 1 -Exactly -ParameterFilter {
+            $Message -match "DiagTrack.*Manual.*Automatic"
+        }
     }
 
     It "leaves a service alone on undo when its startup type is not the applied value" {
@@ -193,6 +200,9 @@ Describe "Invoke-WinUtilTweaks" {
 
         Should -Invoke -CommandName Get-Service -Times 1 -Exactly
         Should -Invoke -CommandName Set-WinUtilService -Times 0 -Exactly
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "WARN" -and $Message -match "DiagTrack.*Manual.*Disabled"
+        }
     }
 
     It "forces the service back to its original startup type on undo when it still matches the applied value" {
@@ -329,6 +339,7 @@ Describe "Invoke-WinUtilTweaks completion status" {
     }
 
     AfterEach {
+        Close-WinUtilLog
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name WinUtilJobErrorCount -Scope Global -ErrorAction SilentlyContinue
         Remove-Item -Path $script:testRoot -Recurse -Force -ErrorAction SilentlyContinue

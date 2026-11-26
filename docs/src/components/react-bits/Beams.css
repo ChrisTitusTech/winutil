@@ -1,0 +1,15 @@
+/* React Bits Beams styles (https://reactbits.dev/backgrounds/beams). See LICENSE.md. Unmodified. */
+.beams-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.beams-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}

@@ -48,6 +48,39 @@ BeforeAll {
         '\Microsoft\Windows\WindowsUpdate\*',
         '\Microsoft\WindowsUpdate\*'
     )
+
+    function Get-TestServiceKeyAcl {
+        param(
+            [string[]]$DenySid = @()
+        )
+
+        $acl = New-Object System.Security.AccessControl.RegistrySecurity
+        $allowSystem = New-Object System.Security.AccessControl.RegistryAccessRule(
+            (New-Object System.Security.Principal.SecurityIdentifier("S-1-5-18")),
+            [System.Security.AccessControl.RegistryRights]::FullControl,
+            [System.Security.AccessControl.InheritanceFlags]::None,
+            [System.Security.AccessControl.PropagationFlags]::None,
+            [System.Security.AccessControl.AccessControlType]::Allow
+        )
+        $acl.AddAccessRule($allowSystem)
+
+        foreach ($sid in $DenySid) {
+            $denyRule = New-Object System.Security.AccessControl.RegistryAccessRule(
+                (New-Object System.Security.Principal.SecurityIdentifier($sid)),
+                [System.Security.AccessControl.RegistryRights]"SetValue, CreateSubKey, Delete",
+                [System.Security.AccessControl.InheritanceFlags]::None,
+                [System.Security.AccessControl.PropagationFlags]::None,
+                [System.Security.AccessControl.AccessControlType]::Deny
+            )
+            $acl.AddAccessRule($denyRule)
+        }
+
+        return $acl
+    }
+
+    $script:updateServiceKeys = @("BITS", "wuauserv", "UsoSvc", "WaaSMedicSvc") | ForEach-Object {
+        "HKLM:\SYSTEM\CurrentControlSet\Services\$_"
+    }
 }
 
 Describe "Invoke-WPFUpdatesdisable" {
@@ -174,6 +207,9 @@ Describe "Invoke-WPFUpdatesdefault" {
         }
         Mock Set-Service { }
         Mock Start-Service { }
+        Mock Set-ItemProperty { }
+        Mock Get-Acl { Get-TestServiceKeyAcl }
+        Mock Set-Acl { }
         Mock Get-ScheduledTask {
             [pscustomobject]@{
                 TaskPath = $TaskPath
@@ -243,6 +279,96 @@ Describe "Invoke-WPFUpdatesdefault" {
         }
         Should -Not -Invoke Set-Service -ParameterFilter {
             $Name -eq "WaaSMedicSvc"
+        }
+    }
+
+    It "restores WaaSMedicSvc through its registry start value" {
+        Invoke-WPFUpdatesdefault
+
+        Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly
+        Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
+            $Path -eq "HKLM:\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" -and
+                $Name -eq "Start" -and
+                $Type -eq "DWord" -and
+                $Value -eq 3
+        }
+    }
+
+    It "leaves WaaSMedicSvc alone when it is already Manual" {
+        Mock Get-ItemProperty {
+            [pscustomobject]@{ Start = 3 }
+        } -ParameterFilter { $Name -eq "Start" }
+
+        Invoke-WPFUpdatesdefault
+
+        Should -Not -Invoke Set-ItemProperty
+    }
+
+    It "warns and continues when WaaSMedicSvc cannot be restored" {
+        Mock Set-ItemProperty { throw "Requested registry access is not allowed." }
+
+        { Invoke-WPFUpdatesdefault } | Should -Not -Throw
+
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "WARN" -and $Message -like "*WaaSMedicSvc*Requested registry access*"
+        }
+        Should -Invoke -CommandName Enable-ScheduledTask -Times $script:updateTaskPaths.Count -Exactly
+    }
+
+    It "removes only SYSTEM deny rules from update service keys" {
+        Mock Get-Acl { Get-TestServiceKeyAcl -DenySid "S-1-5-18", "S-1-1-0" }
+        $script:savedAcls = @{}
+        Mock Set-Acl { $script:savedAcls["$Path"] = $AclObject }
+
+        Invoke-WPFUpdatesdefault
+
+        Should -Invoke -CommandName Set-Acl -Times $script:updateServiceKeys.Count -Exactly
+        foreach ($serviceKey in $script:updateServiceKeys) {
+            $remainingRules = $script:savedAcls[$serviceKey].GetAccessRules($true, $false, [System.Security.Principal.SecurityIdentifier])
+            $denied = @($remainingRules | Where-Object { $_.AccessControlType -eq "Deny" } | ForEach-Object { $_.IdentityReference.Value })
+            $allowed = @($remainingRules | Where-Object { $_.AccessControlType -eq "Allow" } | ForEach-Object { $_.IdentityReference.Value })
+
+            $denied | Should -Be @("S-1-1-0")
+            $allowed | Should -Be @("S-1-5-18")
+        }
+    }
+
+    It "clears SYSTEM deny rules before changing service startup types" {
+        Mock Get-Acl { Get-TestServiceKeyAcl -DenySid "S-1-5-18" }
+        $script:restoreOrder = [System.Collections.Generic.List[string]]::new()
+        Mock Set-Acl { $script:restoreOrder.Add("Set-Acl") }
+        Mock Set-Service { $script:restoreOrder.Add("Set-Service") }
+        Mock Set-ItemProperty { $script:restoreOrder.Add("Set-ItemProperty") }
+
+        Invoke-WPFUpdatesdefault
+
+        $lastAclWrite = $script:restoreOrder.LastIndexOf("Set-Acl")
+        $lastAclWrite | Should -BeLessThan $script:restoreOrder.IndexOf("Set-Service")
+        $lastAclWrite | Should -BeLessThan $script:restoreOrder.IndexOf("Set-ItemProperty")
+    }
+
+    It "leaves service key permissions alone when SYSTEM is not denied" {
+        Mock Get-Acl { Get-TestServiceKeyAcl -DenySid "S-1-1-0" }
+
+        Invoke-WPFUpdatesdefault
+
+        Should -Not -Invoke Set-Acl
+    }
+
+    It "warns and continues when service key permissions cannot be changed" {
+        Mock Get-Acl { Get-TestServiceKeyAcl -DenySid "S-1-5-18" }
+        Mock Set-Acl { throw "Requested registry access is not allowed." }
+
+        { Invoke-WPFUpdatesdefault } | Should -Not -Throw
+
+        foreach ($serviceName in @("BITS", "wuauserv", "UsoSvc", "WaaSMedicSvc")) {
+            $expected = $serviceName
+            Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+                $Level -eq "WARN" -and $Message -like "*$expected*Requested registry access*"
+            }
+        }
+        Should -Invoke -CommandName Set-Service -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "wuauserv" -and $StartupType -eq "Manual"
         }
     }
 

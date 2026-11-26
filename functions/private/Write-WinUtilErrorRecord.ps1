@@ -53,6 +53,6 @@ function Write-WinUtilErrorRecord {
     }
 
     if (-not $DetailOnly) {
-        Write-Host "$Component : $headline" -ForegroundColor Red
+        Write-WinUtilHost "$Component : $headline" -ForegroundColor Red
     }
 }

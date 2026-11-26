@@ -14,6 +14,18 @@ This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitus
     "Description": "Disables Microsoft Telemetry.",
     "category": "Essential Tweaks",
     "panel": "1",
+    "service": [
+      {
+        "Name": "diagtrack",
+        "StartupType": "Disabled",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "WerSvc",
+        "StartupType": "Disabled",
+        "OriginalType": "Manual"
+      }
+    ],
     "registry": [
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo",
@@ -98,35 +110,46 @@ This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitus
         "Value": "0",
         "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Siuf\\Rules",
+        "Name": "PeriodInNanoSeconds",
+        "Value": "<RemoveEntry>",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "InvokeScript": [
       "
       # Disable Defender Auto Sample Submission
-      Set-MpPreference -SubmitSamplesConsent 2
-
-      # Disable (Connected User Experiences and Telemetry) Service
-      Set-Service -Name diagtrack -StartupType Disabled
-
-      # Disable (Windows Error Reporting Manager) Service
-      Set-Service -Name wermgr -StartupType Disabled
+      try {
+          Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction Stop
+      } catch {
+          # Skip Defender error 0x800106ba when its service is unavailable; other errors must fail.
+          if ($_.Exception.Message -notmatch '\\b0x800106ba\\b' -and $_.Exception.HResult -ne 0x800106BA) {
+              throw
+          }
+          Write-Warning 'Defender sample submission preference could not be changed; Defender may be unavailable or disabled.'
+          Write-WinUtilLog -Level 'WARN' -Component 'Script' -Message 'Defender sample submission preference could not be changed; Defender may be unavailable or disabled.'
+      }
 
       # Disable PowerShell 7 telemetry
       [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
-
-      Remove-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Siuf\\Rules\" -Name PeriodInNanoSeconds
       "
     ],
     "UndoScript": [
       "
       # Enable Defender Auto Sample Submission
-      Set-MpPreference -SubmitSamplesConsent 1
-
-      # Enable (Connected User Experiences and Telemetry) Service
-      Set-Service -Name diagtrack -StartupType Automatic
-
-      # Enable (Windows Error Reporting Manager) Service
-      Set-Service -Name wermgr -StartupType Automatic
+      try {
+          Set-MpPreference -SubmitSamplesConsent 1 -ErrorAction Stop
+      } catch {
+          # Skip Defender error 0x800106ba when its service is unavailable; other errors must fail.
+          if ($_.Exception.Message -notmatch '\\b0x800106ba\\b' -and $_.Exception.HResult -ne 0x800106BA) {
+              throw
+          }
+          Write-Warning 'Defender sample submission preference could not be restored; Defender may be unavailable or disabled.'
+          Write-WinUtilLog -Level 'WARN' -Component 'Script' -Message 'Defender sample submission preference could not be restored; Defender may be unavailable or disabled.'
+      }
 
       # Enable PowerShell 7 telemetry
       [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '', 'Machine')

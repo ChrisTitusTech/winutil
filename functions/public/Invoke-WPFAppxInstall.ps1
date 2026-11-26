@@ -4,7 +4,7 @@ function Invoke-WPFAppxInstall {
         return
     }
 
-    Start-WinUtilJob -Name "AppX install" -Description "Installing AppX packages" -Parameters @{
+    Start-WinUtilJob -Name "AppX install" -Description "Installing AppX packages" -QueueIfBusy -Parameters @{
         Selected = @($sync.selectedAppx)
         Apps = $sync.configs.appxHashtable
     } -ScriptBlock {

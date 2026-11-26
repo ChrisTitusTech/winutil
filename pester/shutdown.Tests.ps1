@@ -10,6 +10,7 @@ BeforeAll {
     function Test-WinUtilUIAlive { $null -ne $sync.Form -and $null -ne $sync.Form.Dispatcher }
 
     . (Join-Path $script:functionRoot "private\Invoke-WinUtilCloseRequest.ps1")
+    . (Join-Path $script:functionRoot "private\Start-WinUtilNextQueuedJob.ps1")
 
     function Write-WinUtilLog { param($Level, $Component, $Message, [switch]$Detail) }
     function Step-WinUtilJob { param($Status, $Percent, $State, $Overlay, [switch]$Hide) }
@@ -117,6 +118,7 @@ Describe "The close question" {
     BeforeEach {
         $global:sync = [hashtable]::Synchronized(@{})
         $sync.ActiveJob = "Install"
+        $sync.JobQueue = [System.Collections.Generic.List[object]]::new()
         Mock Write-WinUtilLog { }
         Mock Step-WinUtilJob { }
     }
@@ -168,6 +170,26 @@ Describe "The close question" {
         Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
             $Button -eq "YesNoCancel" -and $Message -like "*Install*" -and $Message -like "*console*"
         }
+    }
+
+    It "states the wait limit that the console hand-off enforces" {
+        # the prompt quotes the real default before requesting a stop
+        $tokens = $null
+        $errors = $null
+        $ast = [System.Management.Automation.Language.Parser]::ParseFile(
+            (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilCloseRequest.ps1"), [ref]$tokens, [ref]$errors)
+        $wait = $ast.Find({
+                $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
+                $args[0].Name -eq "Wait-WinUtilRemainingWork"
+            }, $true)
+        $limit = $wait.Body.ParamBlock.Parameters[0].DefaultValue.Extent.Text
+
+        $script:closeMessage = $null
+        Mock Show-WinUtilMessage { $script:closeMessage = $Message; "Cancel" }
+
+        Invoke-WinUtilCloseRequest -RunningJob "Install"
+
+        $script:closeMessage | Should -Match "up to $limit"
     }
 }
 

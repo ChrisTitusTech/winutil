@@ -195,7 +195,7 @@
       Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value 3670016 -Type DWord -Force
       "
     ],
-    "link": "https://winutil.christitus.com/guides/tweaks/#advanced-tweaks-caution"
+    "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/svchostsplitting"
   },
   "WPFTweaksBraveDebloat": {
     "Content": "Brave Browser - Debloat",
@@ -563,14 +563,23 @@
         "Path": "HKCU:\\Software\\Microsoft\\Siuf\\Rules",
         "Name": "PeriodInNanoSeconds",
         "Value": "<RemoveEntry>",
-        "Type": "DWord",
+        "Type": "QWord",
         "OriginalValue": "<RemoveEntry>"
       }
     ],
     "InvokeScript": [
       "
       # Disable Defender Auto Sample Submission
-      Set-MpPreference -SubmitSamplesConsent 2
+      try {
+          Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction Stop
+      } catch {
+          # Skip Defender error 0x800106ba when its service is unavailable; other errors must fail.
+          if ($_.Exception.Message -notmatch '\\b0x800106ba\\b' -and $_.Exception.HResult -ne 0x800106BA) {
+              throw
+          }
+          Write-Warning 'Defender sample submission preference could not be changed; Defender may be unavailable or disabled.'
+          Write-WinUtilLog -Level 'WARN' -Component 'Script' -Message 'Defender sample submission preference could not be changed; Defender may be unavailable or disabled.'
+      }
 
       # Disable PowerShell 7 telemetry
       [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
@@ -579,7 +588,16 @@
     "UndoScript": [
       "
       # Enable Defender Auto Sample Submission
-      Set-MpPreference -SubmitSamplesConsent 1
+      try {
+          Set-MpPreference -SubmitSamplesConsent 1 -ErrorAction Stop
+      } catch {
+          # Skip Defender error 0x800106ba when its service is unavailable; other errors must fail.
+          if ($_.Exception.Message -notmatch '\\b0x800106ba\\b' -and $_.Exception.HResult -ne 0x800106BA) {
+              throw
+          }
+          Write-Warning 'Defender sample submission preference could not be restored; Defender may be unavailable or disabled.'
+          Write-WinUtilLog -Level 'WARN' -Component 'Script' -Message 'Defender sample submission preference could not be restored; Defender may be unavailable or disabled.'
+      }
 
       # Enable PowerShell 7 telemetry
       [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '', 'Machine')
@@ -642,7 +660,15 @@
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
-      "Disable-BitLocker -MountPoint $Env:SystemDrive"
+      "
+      $bitLockerVolume = Get-BitLockerVolume -MountPoint $Env:SystemDrive -ErrorAction Stop
+
+      if ($bitLockerVolume.VolumeStatus -eq 'FullyDecrypted') {
+          Write-Host \"BitLocker is already disabled on $($Env:SystemDrive).\"
+      } else {
+          Disable-BitLocker -MountPoint $Env:SystemDrive -ErrorAction Stop
+      }
+      "
     ],
     "UndoScript": [
       "Enable-BitLocker -MountPoint $Env:SystemDrive"
@@ -1136,22 +1162,21 @@
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/blockadobenet"
   },
-  "WPFTweaksRightClickMenu": {
-    "Content": "Right-Click Menu Previous Layout - Enable",
-    "Description": "Restores the classic context menu when right-clicking in File Explorer, replacing the simplified Windows 11 version.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "InvokeScript": [
-      "
-      New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name InprocServer32 -Value \"\" -Force
-      Stop-Process -Name explorer
-      "
-    ],
-    "UndoScript": [
-      "Remove-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Recurse"
-    ],
-    "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/rightclickmenu"
-  },
+
+"WPFTweaksRightClickMenu": {
+  "Content": "Right-Click Menu Previous Layout - Enable",
+  "Description": "Attempts to restore the classic Windows 11 File Explorer context menu on newer builds. Compatibility may vary.",
+  "category": "z__Advanced Tweaks - CAUTION",
+  "panel": "1",
+  "InvokeScript": [
+    "Set-WinUtilClassicContextMenu"
+  ],
+  "UndoScript": [
+    "Set-WinUtilClassicContextMenu -Undo"
+  ],
+  "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/rightclickmenu"
+},
+
   "WPFTweaksDiskCleanup": {
     "Content": "Disk Cleanup - Run",
     "Description": "Runs Disk Cleanup on Drive C: and removes old Windows Updates.",
@@ -1218,6 +1243,26 @@
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/teredo"
   },
+  "WPFTweaksDisableSearchIndexing": {
+    "Content": "Windows Search Indexing - Disable",
+    "Description": "Stops and disables the Windows Search service (WSearch) to cut background disk activity, mainly useful on mechanical hard drives. Warning: file searches in Explorer and the Start menu become much slower because Windows no longer maintains a search index. Undo restores the service and starts it again.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "service": [
+      {
+        "Name": "WSearch",
+        "StartupType": "Disabled",
+        "OriginalType": "Automatic"
+      }
+    ],
+    "InvokeScript": [
+      "$search = Get-Service -Name WSearch -ErrorAction SilentlyContinue\n      if ($search -and $search.StartType -eq 'Disabled' -and $search.Status -ne 'Stopped') {\n        Stop-Service -Name WSearch -Force -ErrorAction Stop\n      }"
+    ],
+    "UndoScript": [
+      "$search = Get-Service -Name WSearch -ErrorAction SilentlyContinue\n      if ($search -and $search.StartType -eq 'Automatic' -and $search.Status -ne 'Running') {\n        Start-Service -Name WSearch -ErrorAction Stop\n      }"
+    ],
+    "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/disablesearchindexing"
+  },
   "WPFTweaksDisableIPv6": {
     "Content": "IPv6 - Disable",
     "Description": "Disables IPv6.",
@@ -1269,12 +1314,17 @@
       # Folder types lookup table
       $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
 
-      # Flush Explorer view database
-      Remove-Item -Path $bags -Recurse -Force
-      Write-Host \"Removed $bags\"
+      # Flush Explorer view database. Explorer creates these keys only after a folder
+      # view has been saved, so skip them when missing or already removed
+      if (Test-Path $bags) {
+        Remove-Item -Path $bags -Recurse -Force
+        Write-Host \"Removed $bags\"
+      }
 
-      Remove-Item -Path $bagMRU -Recurse -Force
-      Write-Host \"Removed $bagMRU\"
+      if (Test-Path $bagMRU) {
+        Remove-Item -Path $bagMRU -Recurse -Force
+        Write-Host \"Removed $bagMRU\"
+      }
 
       # Every folder
       $allFolders = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\\AllFolders\\Shell\"
@@ -1299,12 +1349,17 @@
       # Folder types lookup table
       $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
 
-      # Flush Explorer view database
-      Remove-Item -Path $bags -Recurse -Force
-      Write-Host \"Removed $bags\"
+      # Flush Explorer view database. Explorer creates these keys only after a folder
+      # view has been saved, so skip them when missing or already removed
+      if (Test-Path $bags) {
+        Remove-Item -Path $bags -Recurse -Force
+        Write-Host \"Removed $bags\"
+      }
 
-      Remove-Item -Path $bagMRU -Recurse -Force
-      Write-Host \"Removed $bagMRU\"
+      if (Test-Path $bagMRU) {
+        Remove-Item -Path $bagMRU -Recurse -Force
+        Write-Host \"Removed $bagMRU\"
+      }
 
       Write-Host Please sign out and back in, or restart your computer to apply the changes!
       "

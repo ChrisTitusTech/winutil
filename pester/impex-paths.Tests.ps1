@@ -39,6 +39,33 @@ Describe "Configuration file paths" {
         @($script:sync.selectedApps) | Should -Be @("WPFInstallGit")
     }
 
+    It "imports remote JSON without web-page parsing" {
+        Mock Invoke-WebRequest {
+            if (-not $UseBasicParsing) { throw "Unsafe web-page parsing requested" }
+            [pscustomobject]@{ Content = '["WPFInstallGit"]' }
+        }
+
+        Invoke-WPFImpex -type "import" -Config "https://example.com/config.json" -ThrowOnError
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallGit")
+        Should -Invoke Invoke-WebRequest -Times 1 -Exactly -ParameterFilter {
+            $Uri -eq "https://example.com/config.json" -and $UseBasicParsing
+        }
+    }
+
+    It "rejects a remote HTML response without changing selections" {
+        $script:sync.selectedApps.Add("WPFInstallFirefox")
+        Mock Invoke-WebRequest {
+            if (-not $UseBasicParsing) { throw "Unsafe web-page parsing requested" }
+            [pscustomobject]@{ Content = '<html><body>Not a WinUtil config</body></html>' }
+        }
+
+        { Invoke-WPFImpex -type "import" -Config "https://example.com/config.json" -ThrowOnError } | Should -Throw
+
+        @($script:sync.selectedApps) | Should -Be @("WPFInstallFirefox")
+        Should -Invoke Invoke-WebRequest -Times 1 -Exactly -ParameterFilter { $UseBasicParsing }
+    }
+
     It "exports to the exact file at <RelativePath> without overwriting its wildcard match" -ForEach @(
         @{ RelativePath = 'export[1].json'; DecoyPath = 'export1.json' }
         @{ RelativePath = '[export]\config.json'; DecoyPath = 'e\config.json' }

@@ -19,7 +19,7 @@ Describe "Install app rendering startup contract" {
         . (Join-Path $script:repoRoot "functions\private\Start-WinUtilInstallAppRendering.ps1")
 
         $previousSync = Get-Variable -Name sync -Scope Global -ErrorAction SilentlyContinue
-        $previousInitializeAppEntry = Get-Item -Path Function:\Initialize-InstallAppEntry -ErrorAction SilentlyContinue
+        $previousInitializeAppEntries = Get-Item -Path Function:\Initialize-InstallAppEntries -ErrorAction SilentlyContinue
         $previousSearch = Get-Item -Path Function:\Find-AppsByNameOrDescription -ErrorAction SilentlyContinue
         $errorCountBefore = $global:Error.Count
 
@@ -32,10 +32,10 @@ Describe "Install app rendering startup contract" {
 
             $renderedApps = [System.Collections.Generic.List[string]]::new()
 
-            function global:Initialize-InstallAppEntry {
-                param($TargetElement, $AppKey)
-                $renderedApps.Add($AppKey)
-                return "entry:$AppKey"
+            function global:Initialize-InstallAppEntries {
+                param($TargetElement, $AppKeys)
+                foreach ($appKey in $AppKeys) { $renderedApps.Add($appKey) }
+                return @($AppKeys | ForEach-Object { "entry:$_" })
             }
 
 
@@ -83,7 +83,7 @@ Describe "Install app rendering startup contract" {
             }
 
             foreach ($functionBackup in @(
-                    @{ Name = "Initialize-InstallAppEntry"; Backup = $previousInitializeAppEntry },
+                    @{ Name = "Initialize-InstallAppEntries"; Backup = $previousInitializeAppEntries },
                     @{ Name = "Find-AppsByNameOrDescription"; Backup = $previousSearch }
                 )) {
                 if ($functionBackup.Backup) {
