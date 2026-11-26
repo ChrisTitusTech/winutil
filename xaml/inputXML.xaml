@@ -1081,7 +1081,7 @@
         </Grid.ColumnDefinitions>
         <!-- Offline banner -->
         <Border Name="WPFOfflineBanner" Grid.Row="0" Background="#8B0000" Visibility="Collapsed" Padding="6,4">
-            <TextBlock Text="&#x26A0; Offline Mode - No Internet Connection" Foreground="White" FontWeight="Bold"
+            <TextBlock Name="WPFOfflineBannerTextBlock" Text="&#x26A0; Offline Mode - No Internet Connection" Foreground="White" FontWeight="Bold"
                 HorizontalAlignment="Center" FontSize="13" Background="Transparent"/>
         </Border>
         <Grid Grid.Row="1" Background="Transparent">
@@ -1361,7 +1361,7 @@
                             </MenuItem>
                             <Separator/>
                             <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="English" Name="EnglishLanguageMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
-                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Espahnol" Name="SpanishLanguageMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Espa&#xF1;ol" Name="SpanishLanguageMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
                             <Separator/>
                             <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="About" Name="AboutMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
                             <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Documentation" Name="DocumentationMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>

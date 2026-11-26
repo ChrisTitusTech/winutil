@@ -120,6 +120,7 @@ function Invoke-WinUtilLanguageChange {
     if ($sync.WPFMinimizeButton) { $sync.WPFMinimizeButton.ToolTip = $strings.Minimize_ToolTip }
     if ($sync.WPFCloseButton) { $sync.WPFCloseButton.ToolTip = $strings.Close_ToolTip }
     if ($sync.SearchBar) { $sync.SearchBar.ToolTip = $strings.SearchBar_ToolTip }
+    if ($sync.WPFOfflineBannerTextBlock) { $sync.WPFOfflineBannerTextBlock.Text = $strings.OfflineMode }
 
     # 4. Install Tab Category Filter Chips
     if ($sync.WPFSearchChipAll) { $sync.WPFSearchChipAll.Content = $strings.Chip_All }
@@ -162,6 +163,10 @@ function Invoke-WinUtilLanguageChange {
     if ($sync.WPFGetInstalled) {
         $sync.WPFGetInstalled.Content = $strings.Nav_ShowInstalled
         $sync.WPFGetInstalled.ToolTip = $strings.Nav_ShowInstalled_Desc
+    }
+    if ($sync.WPFselectedAppsButton) {
+        $count = if ($sync.selectedApps) { $sync.selectedApps.Count } else { 0 }
+        $sync.WPFselectedAppsButton.Content = "$($strings.Nav_SelectedApps)$count"
     }
 
     # 6. Tweaks Tab Buttons & Static Text
@@ -291,15 +296,22 @@ function Invoke-WinUtilLanguageChange {
         param($ctrl, $entryData, $entryName)
         if (-not $ctrl) { return }
 
-        # Check if control is inside a container with a sibling Label (Toggle DockPanel or ComboBox StackPanel)
+        # Check if control is inside a container with a dedicated sibling Label (Toggle DockPanel or ComboBox StackPanel)
         $label = $null
-        if ($ctrl.Parent -and ($ctrl.Parent -is [System.Windows.Controls.DockPanel] -or $ctrl.Parent -is [System.Windows.Controls.StackPanel])) {
+        if ($ctrl -is [System.Windows.Controls.CheckBox] -and $ctrl.Parent -is [System.Windows.Controls.DockPanel]) {
+            $label = @($ctrl.Parent.Children) | Where-Object { $_ -is [System.Windows.Controls.Label] } | Select-Object -First 1
+        } elseif ($ctrl -is [System.Windows.Controls.ComboBox] -and $ctrl.Parent -is [System.Windows.Controls.StackPanel]) {
             $label = @($ctrl.Parent.Children) | Where-Object { $_ -is [System.Windows.Controls.Label] } | Select-Object -First 1
         }
 
         if ($label) {
             if ($entryData.Content) {
                 $label.Content = $entryData.Content
+                [System.Windows.Automation.AutomationProperties]::SetName($label, $entryData.Content)
+                [System.Windows.Automation.AutomationProperties]::SetName($ctrl, $entryData.Content)
+                if ($ctrl.Parent) {
+                    [System.Windows.Automation.AutomationProperties]::SetName($ctrl.Parent, $entryData.Content)
+                }
             }
             if ($entryData.Description) {
                 $label.ToolTip = Get-WinUtilEntryToolTip -Description $entryData.Description -Key $entryName
@@ -309,6 +321,7 @@ function Invoke-WinUtilLanguageChange {
         } else {
             if ($entryData.Content -and ($ctrl.PSObject.Properties.Match('Content').Count -gt 0)) {
                 $ctrl.Content = $entryData.Content
+                [System.Windows.Automation.AutomationProperties]::SetName($ctrl, $entryData.Content)
             }
             if ($entryData.Description) {
                 $ctrl.ToolTip = Get-WinUtilEntryToolTip -Description $entryData.Description -Key $entryName
@@ -336,6 +349,22 @@ function Invoke-WinUtilLanguageChange {
             $featData = $prop.Value
             if ($sync.ContainsKey($featName)) {
                 & $updateEntryControl $sync[$featName] $featData $featName
+            }
+        }
+    }
+
+    # 13. Reapply active search filter if query is present
+    if ($sync.SearchBar -and -not [string]::IsNullOrWhiteSpace($sync.SearchBar.Text)) {
+        switch ($sync.CurrentTab) {
+            "Install" {
+                if (Get-Command Find-AppsByNameOrDescription -ErrorAction SilentlyContinue) {
+                    Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text -Categories $sync.SelectedAppCategories.ToArray()
+                }
+            }
+            { $_ -in "Tweaks", "Config" } {
+                if (Get-Command Find-TweaksByNameOrDescription -ErrorAction SilentlyContinue) {
+                    Find-TweaksByNameOrDescription -SearchString $sync.SearchBar.Text
+                }
             }
         }
     }

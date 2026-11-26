@@ -46,7 +46,8 @@ function Reset-WPFCheckBoxes {
     # whichever tab is built first: offline starts on Tweaks, so they are not there yet.
     if ($sync.selectedAppsstackPanel) {
         $count = $sync.SelectedApps.Count
-        $sync.WPFselectedAppsButton.Content = "Selected Apps: $count"
+        $prefix = if ($sync.configs.languages -and $sync.preferences.language -and $sync.configs.languages.$($sync.preferences.language).Nav_SelectedApps) { $sync.configs.languages.$($sync.preferences.language).Nav_SelectedApps } else { "Selected Apps: " }
+        $sync.WPFselectedAppsButton.Content = "$prefix$count"
         # On every change, remove all entries inside the Popup Menu. This is done, so we can keep the alphabetical order even if elements are selected in a random way
         $sync.selectedAppsstackPanel.Children.Clear()
         $sync.selectedApps | Foreach-Object { Add-SelectedAppsMenuItem -name $($sync.configs.applicationsHashtable.$_.Content) -key $_ }
